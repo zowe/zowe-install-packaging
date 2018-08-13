@@ -47,7 +47,7 @@ mkdir -p ./wlp/usr/servers/Atlas/resources
 chmod g+w ./wlp/usr/servers/Atlas/resources
 # Added to pre-create liberty directories which are normally created at first startup
 mkdir -p ./wlp/usr/servers/.pid
-chmod ug+rwx ./wlp/usr/servers/.pid
+chmod -R ug+rwx ./wlp/usr/servers/.pid
 mkdir -p ./wlp/usr/servers/Atlas/workarea/org.eclipse.osgi/169/0/.cp/lib
 chmod -R +X ./wlp/usr/servers/Atlas/workarea
 
