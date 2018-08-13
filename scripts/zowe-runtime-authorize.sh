@@ -30,6 +30,12 @@ if extattr ./zlux-example-server/bin/zssServer | grep "APF authorized = NO"; the
   exit 1
 fi
 
+#
+# Permission fix for zLux Server
+# 
+chmod -R ug+w ./zlux-example-server/deploy/site
+chmod -R ug+w ./zlux-example-server/deploy/instance
+
 # This is from the explorer-server install
 cd explorer-server
 
@@ -40,6 +46,8 @@ chmod -R g+w wlp
 mkdir -p ./wlp/usr/servers/Atlas/resources
 chmod g+w ./wlp/usr/servers/Atlas/resources
 # Added to pre-create liberty directories which are normally created at first startup
+mkdir -p ./wlp/usr/servers/.pid
+chmod ug+rwx ./wlp/usr/servers/.pid
 mkdir -p ./wlp/usr/servers/Atlas/workarea/org.eclipse.osgi/169/0/.cp/lib
 chmod -R +X ./wlp/usr/servers/Atlas/workarea
 
