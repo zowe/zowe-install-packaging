@@ -1,0 +1,19 @@
+/* A CLIST to copy a USS file to a PDS member, DISP=SHR */
+/* The path to the uss JCL file must be the full pathname - */
+/* caller ensures this is true */
+
+PROC 2 TOPDS TOMEMBER
+CONTROL ASIS 
+/* WRITE &STR(CLIST copy file from uss file ussfile to pds &TOPDS member &TOMEMBER    debug */
+alloc fi(proc) path('ussfile') 
+/* WRITE &STR(return code from alloc proc is &LASTCC) */
+
+alloc fi(pds) dataset('&TOPDS(&TOMEMBER)') shr 
+/* WRITE &STR(return code from alloc pds is &LASTCC) */
+
+ocopy indd(proc) outdd(pds)
+SET   MYRC = &LASTCC
+/* WRITE &STR(return code from ocopy is &MYRC) */
+
+free  fi(proc pds)
+EXIT CODE(&MYRC)

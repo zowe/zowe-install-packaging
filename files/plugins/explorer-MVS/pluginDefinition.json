@@ -1,0 +1,22 @@
+{
+  "identifier": "com.ibm.atlas.atlasMVS",
+  "apiVersion": "1.0",
+  "pluginVersion": "0.0.3",
+  "pluginType": "application",
+  "webContent": {
+    "framework": "iframe",
+    "startingPage": "index.html",
+    "launchDefinition": {
+      "pluginShortNameKey": "MVS Explorer",
+      "pluginShortNameDefault": "MVS Explorer", 
+      "imageSrc": "images/explorer-MVS.png"
+    },
+    "descriptionKey": "",
+    "descriptionDefault": "",
+    "isSingleWindowApp": true,
+    "defaultWindowStyle": {
+      "width": 1400,
+      "height": 800
+    }
+  }
+}

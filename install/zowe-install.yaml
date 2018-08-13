@@ -1,0 +1,30 @@
+# =================================================================
+# zowe install configuration
+# =================================================================
+# zowe-install: The directory that zowe will be installed into
+install:
+  rootDir=~/zowe/0.9.0
+
+# https ports for the api mediation layer
+api-mediation:
+  catalogHttpPort=7552
+  discoveryHttpPort=7553
+  gatewayHttpsPort=7554
+
+# http and https ports for the explorer liberty server
+explorer-server:
+  httpPort=7080
+  httpsPort=7443
+
+# http and https ports for the zlux node server, as well as the port for the zss server
+zlux-server:
+  httpPort=8543
+  httpsPort=8544
+  zssPort=8542
+
+# Ports for the TN3270 and the VT terminal to connect to
+terminals:
+  sshPort=22
+  telnetPort=23
+
+# Do not delete this last line
