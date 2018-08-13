@@ -93,10 +93,6 @@ echo "-----"
 . $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
 # Run deploy on the zLUX app server to propogate the changes made
 
-# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product/ZLUX
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance/ZLUX
-
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 . deploy.sh > /dev/null
