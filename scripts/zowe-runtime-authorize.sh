@@ -39,6 +39,9 @@ chgrp IZUADMIN $PWD
 chmod -R g+w wlp
 mkdir -p ./wlp/usr/servers/Atlas/resources
 chmod g+w ./wlp/usr/servers/Atlas/resources
+# Added to pre-create liberty directories which are normally created at first startup
+mkdir -p ./wlp/usr/servers/Atlas/workarea/org.eclipse.osgi/169/0/.cp/lib
+chmod -R +X ./wlp/usr/servers/Atlas/workarea
 
 # Permission fixing for the explorer server
 # These must be done before the symlinks are changed, as otherwise it tries to change the actual
