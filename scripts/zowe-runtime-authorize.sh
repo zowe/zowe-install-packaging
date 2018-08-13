@@ -33,6 +33,7 @@ fi
 #
 # Permission fix for zLux Server
 # 
+chmod -R ug+w ./zlux-example-server/deploy
 chmod -R ug+w ./zlux-example-server/deploy/site
 chmod -R ug+w ./zlux-example-server/deploy/instance
 
