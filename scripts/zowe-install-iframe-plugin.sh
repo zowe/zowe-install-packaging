@@ -36,7 +36,7 @@ PLUGIN_FOLDER=$ZOWE_ROOT_DIR/$PLUGIN_FOLDER_NAME
 mkdir -p $PLUGIN_FOLDER/web/images
 cp $TILE_IMAGE_PATH $PLUGIN_FOLDER/web/images
 # Tag the graphic as binary.
-chtag -b $PLUGIN_FOLDER/web/images/explorer-USS.png
+chtag -b $PLUGIN_FOLDER/web/images/$(basename $TILE_IMAGE_PATH)
 
 cat <<EOF >$PLUGIN_FOLDER/web/index.html
 <!DOCTYPE html>
