@@ -30,7 +30,7 @@ zluxserverdirectory='zlux-example-server'
 
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 # switch spaces to underscores and lower case it for use as folder name
-PLUGIN_FOLDER_NAME=$(echo ${PLUGIN_SHORTNAME// /_} | tr '[:upper:]' '[:lower:]')
+PLUGIN_FOLDER_NAME=$(echo $PLUGIN_SHORTNAME | tr -s ' ' | tr ' ' '_' | tr '[:upper:]' '[:lower:]')
 PLUGIN_FOLDER=$ZOWE_ROOT_DIR/$PLUGIN_FOLDER_NAME
 
 mkdir -p $PLUGIN_FOLDER/web/images
