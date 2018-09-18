@@ -161,6 +161,7 @@ getJavaVersion() {
 persist() {
     echo "** Adding line: export "$1"="$2" to "~/$PROFILE " **"
     echo "** Adding line: export "$1"="$2" to "~/$PROFILE " **" >> $LOG_FILE
+    grep -v "export $1=" ~/$PROFILE > ~/$PROFILE.zowe-tmp && mv ~/$PROFILE.zowe-tmp ~/$PROFILE
     echo "export $1="$2 >> ~/$PROFILE
 }
 
