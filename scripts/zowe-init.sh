@@ -38,9 +38,9 @@ then
     PROFILE=".profile"
 fi
 
-if [[ ! -f $PROFILE ]]
+if [[ ! -f ~/$PROFILE ]]
 then
-    touch $PROFILE
+    touch ~/$PROFILE
 fi
 
 . ~/$PROFILE > /dev/null
