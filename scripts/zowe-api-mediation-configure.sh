@@ -24,6 +24,8 @@ echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
 cd $ZOWE_ROOT_DIR"/api-mediation"
 
+echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
+
 cd scripts/
 # Add JAVA_HOME to both script templates
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \

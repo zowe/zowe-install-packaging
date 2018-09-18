@@ -37,6 +37,8 @@ cd $ZOWE_ROOT_DIR"/explorer-server"
 echo "Unpax of $EXPLORER_PAX into $PWD" >> $LOG_FILE 
 pax -rf $EXPLORER_PAX -ppx
 
+echo "About to inject JAVA_HOME to $ZOWE_JAVA_HOME into server.env" >> $LOG_FILE
+
 # Inject the JAVA_HOME into the server.env file
 echo "JAVA_HOME=$ZOWE_JAVA_HOME" >> server.env
 iconv -f IBM-1047 -t IBM-850 server.env > ./wlp/usr/servers/Atlas/server.env
