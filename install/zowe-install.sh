@@ -41,6 +41,8 @@ echo "Install started at: "`date` >> $LOG_FILE
 # Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
 . $INSTALL_DIR/scripts/zowe-init.sh
 
+echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
+
 # zowe-parse-yaml.sh to get the variables for 
 # ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTP_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
