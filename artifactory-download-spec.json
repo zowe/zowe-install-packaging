@@ -20,7 +20,7 @@
       "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-*.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
-      "explode": "true"
+      "explode": "true",
       "sortBy": ["created"],
       "sortOrder": "desc",
       "limit": 1
