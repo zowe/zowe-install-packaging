@@ -17,10 +17,13 @@
       "build": "atlas-wlp-package-pipeline :: master"
     },
     {
-      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-OB1/mfaas-zowe-install-0.2.0-OB1.zip",
+      "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-*.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
-      "explode": "true"
+      "explode": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },
     {
       "pattern": "libs-release-local/org/zowe/licenses/0.9.0/Zowe_Open_Beta_License_Agreement.pdf",
