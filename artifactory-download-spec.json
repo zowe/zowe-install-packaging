@@ -17,7 +17,7 @@
       "build": "atlas-wlp-package-pipeline :: master"
     },
     {
-      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-OB1/mfaas-zowe-install-0.2.0-OB1.zip",
+      "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-0.2.0-20180919.113852-65.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
       "explode": "true"
