@@ -38,9 +38,9 @@ then
     PROFILE=".profile"
 fi
 
-if [[ ! -f $PROFILE ]]
+if [[ ! -f ~/$PROFILE ]]
 then
-    touch $PROFILE
+    touch ~/$PROFILE
 fi
 
 . ~/$PROFILE > /dev/null
@@ -73,9 +73,12 @@ promptNodeHome(){
 loop=1
 while [ $loop -eq 1 ]
 do
-    echo "    NODE_HOME was not set "
-    echo "    Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
-    read NODE_HOME
+    if [[ "$NODE_HOME" == "" ]]
+    then
+        echo "    NODE_HOME was not set "
+        echo "    Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
+        read NODE_HOME
+    fi
     if [[ -f $NODE_HOME/"./bin/node" ]] 
     then
         persist "NODE_HOME" $NODE_HOME
@@ -88,6 +91,8 @@ do
         then
             persist "NODE_HOME" $NODE_HOME
             loop=0
+        else
+            NODE_HOME=
         fi
     fi
 done
@@ -101,6 +106,12 @@ locateJavaHome() {
             echo "   java version $version found at " $1
             persist "ZOWE_JAVA_HOME" $1
         else
+            if [ "$javaVersion" = "-1" ]
+            then
+                echo "    No executable file found in $1/bin/java"
+            else
+                echo "    The version of java at $1 is $version, and must be Java 8, or newer"
+            fi
             loop=1
             while [ $loop -eq 1 ]
             do
@@ -150,6 +161,7 @@ getJavaVersion() {
 persist() {
     echo "** Adding line: export "$1"="$2" to "~/$PROFILE " **"
     echo "** Adding line: export "$1"="$2" to "~/$PROFILE " **" >> $LOG_FILE
+    grep -v "export $1=" ~/$PROFILE > ~/$PROFILE.zowe-tmp && mv ~/$PROFILE.zowe-tmp ~/$PROFILE
     echo "export $1="$2 >> ~/$PROFILE
 }
 
@@ -166,20 +178,20 @@ fi
 echo "Locating Java Home ..."
 if [[ $ZOWE_JAVA_HOME == "" ]]
 then    
-    locateJavaHome "/usr/lpp/java/J8.0_64"
+    ZOWE_JAVA_HOME=/usr/lpp/java/J8.0_64
 else    
-    echo "ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be used"
+    echo "ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be validated"
     echo "  ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 fi
+locateJavaHome $ZOWE_JAVA_HOME
 
 echo "Locating Node Home ..."
-if [[ $NODE_HOME == "" ]]
+if [[ $NODE_HOME != "" ]]
 then
-    promptNodeHome
-else
-    echo "NODE_HOME value of "$NODE_HOME" will be used"
+    echo "NODE_HOME value of "$NODE_HOME" will be validated"
     echo "  NODE_HOME environment variable was set="$NODE_HOME >> $LOG_FILE
 fi
+promptNodeHome
 
 echo "Locating host name ..."
 if [[ $ZOWE_EXPLORER_HOST == "" ]]
