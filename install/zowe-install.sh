@@ -72,17 +72,17 @@ mkdir -p $TEMP_DIR
 echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 . $INSTALL_DIR/scripts/zowe-api-mediation-install.sh
 
-# Configure mediation ports
-. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
-
-chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
-
 # Install the zLUX server
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
 # configure the ports for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
+
+# Configure mediation ports
+. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
+
+chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
 
 # install the liberty-server by expanding the /bin/atlas-pax file to ZOWE_ROOT_DIR/liberty-server/wlp/...
 . $INSTALL_DIR/scripts/zowe-install-liberty-server.sh
