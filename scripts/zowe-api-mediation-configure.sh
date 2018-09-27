@@ -24,6 +24,10 @@ echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
 cd $ZOWE_ROOT_DIR"/api-mediation"
 
+# Create the static api definitions folder
+STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/config/local/api-defs"
+mkdir -p $STATIC_DEF_CONFIG
+
 echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
 
 cd scripts/
@@ -61,6 +65,7 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_HTTP_PORT'/g' \
     -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_HTTP_PORT'/g' \
     -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_HTTPS_PORT'/g' \
+    -e 's/\*\*STATIC_DEF_CONFIG\*\*/'$STATIC_DEF_CONFIG'/g' \
     api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
 
 # Make configured script executable
