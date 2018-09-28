@@ -3,7 +3,7 @@
 # =================================================================
 # zowe-install: The directory that zowe will be installed into
 install:
-  rootDir=~/zowe/0.9.0
+  rootDir=~/zowe/0.9.1
 
 # https ports for the api mediation layer
 api-mediation:
