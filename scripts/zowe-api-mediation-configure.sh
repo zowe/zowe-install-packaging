@@ -25,7 +25,7 @@ echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 cd $ZOWE_ROOT_DIR"/api-mediation"
 
 # Create the static api definitions folder
-STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/config/local/api-defs"
+STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/api-defs"
 mkdir -p $STATIC_DEF_CONFIG
 
 echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
