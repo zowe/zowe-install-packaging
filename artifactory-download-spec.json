@@ -5,7 +5,7 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/zowe-cli/bundle/zowe-cli-bundle.zip",
+      "pattern": "libs-release-local/zowe-cli/bundle/0.9.1/zowe-cli-bundle.zip",
       "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/files/",
       "flat": "true"
     },
