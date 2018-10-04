@@ -59,3 +59,13 @@ cp -R ./explorer-MVS $ZOWE_ROOT_DIR/
 cp com.ibm.atlas.explorer-MVS.json $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 
 chtag -b $ZOWE_ROOT_DIR/explorer-MVS/web/images/explorer-MVS.png
+
+# Add plugins to pinned plugins
+pinnedPluginsDirectory=$ZOWE_ROOT_DIR/$zluxserverdirectory/deploy/product/ZLUX/pluginStorage/com.rs.mvd.ng2desktop/ui/launchbar/plugins
+chmod u+w $pinnedPluginsDirectory/pinnedPlugins.json
+awk '/"com.rs.mvd.vt",/{print "\"com.ibm.explorer-jes\","}1' $pinnedPluginsDirectory/pinnedPlugins.json > tempPinned
+awk '/"com.rs.mvd.vt",/{print "\"com.ibm.explorer-mvs\","}1' tempPinned > tempPinned2
+awk '/"com.rs.mvd.vt",/{print "\"com.ibm.explorer-uss\","}1' tempPinned2 > $pinnedPluginsDirectory/pinnedPlugins.json
+
+rm tempPinned
+rm tempPinned2
