@@ -14,7 +14,7 @@
       "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/files/",
       "flat": "true",
       "explode": "true",
-      "build": "atlas-wlp-package-pipeline :: master"
+      "build": "explorer-wlp-packaging :: master"
     },
     {
       "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-0.2.0-20181001.103514-77.zip",
