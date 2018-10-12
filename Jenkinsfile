@@ -138,6 +138,8 @@ node ('ibm-jenkins-slave-nvm') {
       sh "echo 'Effective Artifactory upload spec >>>>>>>' && cat artifactory-upload-spec.converted.json"
       def buildName = env.JOB_NAME.replace('/', ' :: ')
       echo "Artifactory build name/number: ${buildName} #${env.BUILD_NUMBER}"
+      sh "jfrog rt bp \"${buildName}\" ${env.BUILD_NUMBER}"
+      sh "jfrog rt bce \"${buildName}\" ${env.BUILD_NUMBER}"
       sh "jfrog rt u --spec=artifactory-upload-spec.converted.json --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER}"
     }
 
