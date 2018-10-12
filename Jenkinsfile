@@ -90,7 +90,8 @@ node ('ibm-jenkins-slave-nvm') {
       echo 'preparing PAX workspace folder...'
 
       // download artifactories
-      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/' artifactory-download-spec.json > artifactory-download-spec.converted.json"
+      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' artifactory-download-spec.json > artifactory-download-spec.converted.json"
+      sh "echo 'Effective Artifactory download spec >>>>>>>' && cat artifactory-download-spec.converted.json"
       sh "jfrog rt dl --spec=artifactory-download-spec.converted.json"
 
       // prepare folder
@@ -133,8 +134,10 @@ node ('ibm-jenkins-slave-nvm') {
       def releaseIdentifier = getReleaseIdentifier()
       def buildIdentifier = getBuildIdentifier(true, '__EXCLUDE__', true)
 
-      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/' -e 's/{RELEASE_IDENTIFIER}/${releaseIdentifier}/' -e 's/{BUILD_IDENTIFIER}/${buildIdentifier}/' artifactory-upload-spec.json > artifactory-upload-spec.converted.json"
+      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' -e 's/{RELEASE_IDENTIFIER}/${releaseIdentifier}/g' -e 's/{BUILD_IDENTIFIER}/${buildIdentifier}/g' artifactory-upload-spec.json > artifactory-upload-spec.converted.json"
+      sh "echo 'Effective Artifactory upload spec >>>>>>>' && cat artifactory-upload-spec.converted.json"
       def buildName = env.JOB_NAME.replace('/', ' :: ')
+      echo "Artifactory build name/number: ${buildName} #${env.BUILD_NUMBER}"
       sh "jfrog rt u --spec=artifactory-upload-spec.converted.json --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER}"
     }
 
