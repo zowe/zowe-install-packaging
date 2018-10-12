@@ -49,7 +49,7 @@ customParameters.push(string(
 customParameters.push(string(
   name: 'ZOWE_VERSION',
   description: 'Zowe version number',
-  defaultValue: '0.9.1',
+  defaultValue: '0.9.2',
   trim: true
 ))
 opts.push(parameters(customParameters))

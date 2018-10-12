@@ -17,7 +17,7 @@
       "build": "explorer-wlp-packaging :: master"
     },
     {
-      "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-0.2.0-20181001.103514-77.zip",
+      "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-0.2.0-20181012.084950-84.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
       "explode": "true"

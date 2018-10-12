@@ -206,7 +206,10 @@ fi
 echo "Locating host IP Address..."
 if [[ $ZOWE_IPADDRESS == "" ]]
 then
-    ZOWE_IPADDRESS=$(host ${ZOWE_EXPLORER_HOST} | sed 's/.*addresses\ //g')
+    # host may return aliases, which may result in ZOWE_IPADDRESS has value of "10.1.1.2 EZZ8322I aliases: S0W1"
+    # EZZ8321I S0W1.DAL-EBIS.IHOST.COM has addresses 10.1.1.2
+    # EZZ8322I aliases: S0W1
+    ZOWE_IPADDRESS=$(host ${ZOWE_EXPLORER_HOST} | grep 'has addresses' | sed 's/.*addresses\ //g')
     persist "ZOWE_IPADDRESS" $ZOWE_IPADDRESS
 else
     echo "ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"
