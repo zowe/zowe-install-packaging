@@ -136,9 +136,9 @@ node ('ibm-jenkins-slave-nvm') {
 
       sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' -e 's/{RELEASE_IDENTIFIER}/${releaseIdentifier}/g' -e 's/{BUILD_IDENTIFIER}/${buildIdentifier}/g' artifactory-upload-spec.json > artifactory-upload-spec.converted.json"
       sh "echo 'Effective Artifactory upload spec >>>>>>>' && cat artifactory-upload-spec.converted.json"
+      sh "jfrog rt u --spec=artifactory-upload-spec.converted.json"
       def buildName = env.JOB_NAME.replace('/', ' :: ')
       echo "Artifactory build name/number: \\\"${buildName}\\\" #${env.BUILD_NUMBER}"
-      sh "jfrog rt u --spec=artifactory-upload-spec.converted.json --build-name=\\\"${buildName}\\\" --build-number=${env.BUILD_NUMBER}"
       sh "jfrog rt bce \\\"${buildName}\\\" ${env.BUILD_NUMBER}"
       sh "jfrog rt bp \\\"${buildName}\\\" ${env.BUILD_NUMBER}"
     }
