@@ -133,14 +133,22 @@ node ('ibm-jenkins-slave-nvm') {
 
       def releaseIdentifier = getReleaseIdentifier()
       def buildIdentifier = getBuildIdentifier(true, '__EXCLUDE__', true)
-
-      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' -e 's/{RELEASE_IDENTIFIER}/${releaseIdentifier}/g' -e 's/{BUILD_IDENTIFIER}/${buildIdentifier}/g' artifactory-upload-spec.json > artifactory-upload-spec.converted.json"
-      sh "echo 'Effective Artifactory upload spec >>>>>>>' && cat artifactory-upload-spec.converted.json"
-      sh "jfrog rt u --spec=artifactory-upload-spec.converted.json"
       def buildName = env.JOB_NAME.replace('/', ' :: ')
-      echo "Artifactory build name/number: \\\"${buildName}\\\" #${env.BUILD_NUMBER}"
-      sh "jfrog rt bce \\\"${buildName}\\\" ${env.BUILD_NUMBER}"
-      sh "jfrog rt bp \\\"${buildName}\\\" ${env.BUILD_NUMBER}"
+      echo "Artifactory build name/number: ${buildName}/${env.BUILD_NUMBER}"
+
+      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' -e 's#{BUILD}#${buildName}/${env.BUILD_NUMBER}#g' -e 's/{RELEASE_IDENTIFIER}/${releaseIdentifier}/g' -e 's/{BUILD_IDENTIFIER}/${buildIdentifier}/g' artifactory-upload-spec.json > artifactory-upload-spec.converted.json"
+      sh "echo 'Effective Artifactory upload spec >>>>>>>' && cat artifactory-upload-spec.converted.json"
+
+      // prepare build info
+      sh "jfrog rt bc '${buildName}' ${env.BUILD_NUMBER}"
+      // attach git information to build info
+      sh "jfrog rt bag '${buildName}' ${env.BUILD_NUMBER} ."
+      // upload and attach to build info
+      sh "jfrog rt u --spec=artifactory-upload-spec.converted.json"
+      // add environment variables to build info
+      sh "jfrog rt bce '${buildName}' ${env.BUILD_NUMBER}"
+      // publish build info
+      sh "jfrog rt bp '${buildName}' ${env.BUILD_NUMBER} --build-url=${env.BUILD_URL}"
     }
 
     stage('done') {
