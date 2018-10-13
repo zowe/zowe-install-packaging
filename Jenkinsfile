@@ -144,7 +144,8 @@ node ('ibm-jenkins-slave-nvm') {
       // attach git information to build info
       sh "jfrog rt bag '${buildName}' ${env.BUILD_NUMBER} ."
       // upload and attach to build info
-      sh "jfrog rt u --spec=artifactory-upload-spec.converted.json"
+      // sh "jfrog rt u --spec=artifactory-upload-spec.converted.json"
+      sh "jfrog rt u 'pax-workspace/zowe.pax' 'libs-snapshot-local/com/project/zowe/${params.ZOWE_VERSION}-${releaseIdentifier}/zowe-${params.ZOWE_VERSION}-${buildIdentifier}.pax' --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER} --flat"
       // add environment variables to build info
       sh "jfrog rt bce '${buildName}' ${env.BUILD_NUMBER}"
       // publish build info
