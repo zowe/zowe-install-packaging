@@ -18,6 +18,7 @@
     <webApplication id="explorer-mvs" name="explorer-mvs" location="explorer-mvs.war" contextRoot="/explorer-mvs"/>
     <webApplication id="explorer-jes" name="explorer-jes" location="explorer-jes.war" contextRoot="/explorer-jes"/>
     <webApplication id="explorer-uss" name="explorer-uss" location="explorer-uss.war" contextRoot="/explorer-uss"/>
+    <webApplication id="explorer-languages" name="explorer-languages" location="languages.war" contextRoot="/explorer-languages"/> 
 
     <!-- SAF -->
     <safRegistry id="saf" realm="${izu.user.registry.realm}"/>
