@@ -16,6 +16,7 @@
 
 # The environment variables
 # ZOWE_ZOSMF_PATH    points to the /lib directory of the zOSMF install
+# ZOWE_ZOSMF_PORT https port of the zOSMF server
 # ZOWE_JAVA_HOME points to Java to be used
 # ZOWE_SDSF_PATH points to SDSF location
 # ZOWE_EXPLORER_HOST points to the current host name
@@ -29,6 +30,7 @@ echo "<zowe-init.sh>" >> $LOG_FILE
 
 #set-x
 export ZOWE_ZOSMF_PATH
+export ZOWE_ZOSMF_PORT
 export ZOWE_JAVA_HOME
 export ZOWE_EXPLORER_HOST
 export NODE_HOME
@@ -56,6 +58,7 @@ locateZOSMFBootstrapProperties() {
     if [[ -f $1$2$3$4 ]] 
     then
         echo "  Liberty "$4" found  at "$1$2$3
+        ZOWE_ZOSMF_PORT=$(cat $1$2$3$4 | grep izu.https.port | cut -d'=' -f2)
         ZOWE_ZOSMF_PATH=$1$2$3
         persist "ZOWE_ZOSMF_PATH" $1$2$3
     else 
@@ -67,6 +70,17 @@ locateZOSMFBootstrapProperties() {
         ZOWE_ZOSMF_PATH=$1$2$3
         persist "ZOWE_ZOSMF_PATH" $1$2$3
     fi
+}
+
+getZosmfHttpsPort() {
+    ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
+    if [[ "$ZOWE_ZOSMF_PORT" == "" ]]
+    then
+        echo "    Unable to detect z/OS MF HTTPS port"
+        echo "    Please enter the HTTPS port of z/OS MF server on this system"
+        read ZOWE_ZOSMF_PORT
+    fi
+    persist "ZOWE_ZOSMF_PORT" $ZOWE_ZOSMF_PORT
 }
 
 promptNodeHome(){
@@ -173,6 +187,15 @@ then
 else 
     echo "ZOWE_ZOSMF_PATH value of "$ZOWE_ZOSMF_PATH" will be used"
     echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
+fi
+
+echo "Finding z/OSMF HTTPS port..."
+if [[ $ZOWE_ZOSMF_PORT == "" ]]
+then
+    getZosmfHttpsPort
+else 
+    echo "ZOWE_ZOSMF_PORT value of "$ZOWE_ZOSMF_PORT" will be used"
+    echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
 echo "Locating Java Home ..."
