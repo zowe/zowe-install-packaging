@@ -14,7 +14,7 @@ URL=$4
 TILE_IMAGE_PATH=$5
 
 if [ "$#" -ne 5 ]; then
-  echo "Usage: $0 ZOWE_INSTALL_ROOT_DIRECTORY PLUGIN_ID PLUGIN_SHORTNAME URL TILE_IMAGE_PATH\neg. install-iframe-plugin.sh \"~/zowe-0.9.1\" \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe_plugin/artifacts/tile_image.png\"" >&2
+  echo "Usage: $0 ZOWE_INSTALL_ROOT_DIRECTORY PLUGIN_ID PLUGIN_SHORTNAME URL TILE_IMAGE_PATH\neg. install-iframe-plugin.sh \"~/zowe-0.9.2\" \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe_plugin/artifacts/tile_image.png\"" >&2
   exit 1
 fi
 if ! [ -d "$1" ]; then
