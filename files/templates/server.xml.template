@@ -14,6 +14,7 @@
 
     <jndiEntry jndiName="zOSMFHttpsPort" value="${izu.https.port}"/>
 
+    <!-- API-Mediation-Layer -->
     <webApplication id="atlas" name="Atlas" location="atlas-server.war" contextRoot="/api/v1"/> 
     <webApplication id="explorer-mvs" name="explorer-mvs" location="explorer-mvs.war" contextRoot="/ui/v1/datasets"/>
     <webApplication id="explorer-jes" name="explorer-jes" location="explorer-jes.war" contextRoot="/ui/v1/jobs"/>
