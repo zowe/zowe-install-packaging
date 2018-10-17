@@ -58,7 +58,6 @@ locateZOSMFBootstrapProperties() {
     if [[ -f $1$2$3$4 ]] 
     then
         echo "  Liberty "$4" found  at "$1$2$3
-        ZOWE_ZOSMF_PORT=$(cat $1$2$3$4 | grep izu.https.port | cut -d'=' -f2)
         ZOWE_ZOSMF_PATH=$1$2$3
         persist "ZOWE_ZOSMF_PATH" $1$2$3
     else 
