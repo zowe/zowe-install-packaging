@@ -235,6 +235,6 @@ then
     persist "ZOWE_IPADDRESS" $ZOWE_IPADDRESS
 else
     echo "ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"
-    echo " ZOWE_IPADDRESS variable value="$ZOWE_IPADDRESS >> $LOG_FILE
+    echo "  ZOWE_IPADDRESS variable value="$ZOWE_IPADDRESS >> $LOG_FILE
 fi
 echo "</zowe-init.sh>" >> $LOG_FILE
