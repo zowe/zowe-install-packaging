@@ -17,10 +17,13 @@
       "build": "explorer-wlp-packaging :: master"
     },
     {
-      "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-0.2.0-20181012.084950-84.zip",
+      "pattern": "libs-snapshot-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.2.0-SNAPSHOT/mfaas-zowe-install-*.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
-      "explode": "true"
+      "explode": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },
     {
       "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_Open_Beta_License_Agreement.pdf",

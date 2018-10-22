@@ -41,10 +41,18 @@ customParameters.push(string(
   trim: true
 ))
 customParameters.push(string(
-  name: 'ARTIFACTORY_SERVER',
-  description: 'Artifactory server, should be pre-defined in Jenkins configuration',
-  defaultValue: 'gizaArtifactory',
-  trim: true
+  name: 'ARTIFACTORY_URL',
+  description: 'Artifactory URL',
+  defaultValue: 'https://gizaartifactory.jfrog.io/gizaartifactory',
+  trim: true,
+  required: true
+))
+customParameters.push(credentials(
+  name: 'ARTIFACTORY_SECRET',
+  description: 'Artifactory access secret',
+  credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
+  defaultValue: 'GizaArtifactory',
+  required: true
 ))
 customParameters.push(string(
   name: 'ZOWE_VERSION',
@@ -57,7 +65,7 @@ opts.push(parameters(customParameters))
 // set build properties
 properties(opts)
 
-node ('jenkins-slave') {
+node ('ibm-jenkins-slave-nvm') {
   currentBuild.result = 'SUCCESS'
 
   try {
@@ -71,16 +79,20 @@ node ('jenkins-slave') {
       if (isPullRequest) {
         echo "This is a pull request"
       }
+
+      // prepare JFrog CLI configurations
+      withCredentials([usernamePassword(credentialsId: params.ARTIFACTORY_SECRET, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+        sh "jfrog rt config rt-server-1 --url=${params.ARTIFACTORY_URL} --user=${USERNAME} --password=${PASSWORD}"
+      }
     }
 
     stage('prepare') {
       echo 'preparing PAX workspace folder...'
 
       // download artifactories
-      def server = Artifactory.server params.ARTIFACTORY_SERVER
-      def downloadSpec = readFile "artifactory-download-spec.json"
-      downloadSpec = downloadSpec.replaceAll(/\{ARTIFACTORY_VERSION\}/, params.ZOWE_VERSION)
-      server.download(downloadSpec)
+      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' artifactory-download-spec.json > artifactory-download-spec.converted.json"
+      sh "echo 'Effective Artifactory download spec >>>>>>>' && cat artifactory-download-spec.converted.json"
+      sh "jfrog rt dl --spec=artifactory-download-spec.converted.json"
 
       // prepare folder
       // - pax-workspace/content holds binary files
@@ -121,15 +133,19 @@ node ('jenkins-slave') {
 
       def releaseIdentifier = getReleaseIdentifier()
       def buildIdentifier = getBuildIdentifier(true, '__EXCLUDE__', true)
+      def buildName = env.JOB_NAME.replace('/', ' :: ')
+      echo "Artifactory build name/number: ${buildName}/${env.BUILD_NUMBER}"
 
-      def server = Artifactory.server params.ARTIFACTORY_SERVER
-      def uploadSpec = readFile "artifactory-upload-spec.json"
-      uploadSpec = uploadSpec.replaceAll(/\{ARTIFACTORY_VERSION\}/, params.ZOWE_VERSION)
-      uploadSpec = uploadSpec.replaceAll(/\{RELEASE_IDENTIFIER\}/, releaseIdentifier)
-      uploadSpec = uploadSpec.replaceAll(/\{BUILD_IDENTIFIER\}/, buildIdentifier)
-      def buildInfo = Artifactory.newBuildInfo()
-      server.upload spec: uploadSpec, buildInfo: buildInfo
-      server.publishBuildInfo buildInfo
+      // prepare build info
+      sh "jfrog rt bc '${buildName}' ${env.BUILD_NUMBER}"
+      // attach git information to build info
+      sh "jfrog rt bag '${buildName}' ${env.BUILD_NUMBER} ."
+      // upload and attach to build info
+      sh "jfrog rt u 'pax-workspace/zowe.pax' 'libs-snapshot-local/com/project/zowe/${params.ZOWE_VERSION}-${releaseIdentifier}/zowe-${params.ZOWE_VERSION}-${buildIdentifier}.pax' --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER} --flat"
+      // add environment variables to build info
+      sh "jfrog rt bce '${buildName}' ${env.BUILD_NUMBER}"
+      // publish build info
+      sh "jfrog rt bp '${buildName}' ${env.BUILD_NUMBER} --build-url=${env.BUILD_URL}"
     }
 
     stage('done') {
