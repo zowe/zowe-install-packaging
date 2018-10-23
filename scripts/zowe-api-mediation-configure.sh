@@ -78,23 +78,6 @@ cd ..
 # Execute the self-signed keystore generation - no user input required
 ./scripts/gen-selfsigned-keystore.sh
 
-# Add static definition for zosmf
-cat <<EOF >$STATIC_DEF_CONFIG/zosmf.yml
-# Static definition for z/OSMF
-#
-# Once configured you can access z/OSMF via the API gateway:
-# http --verify=no GET https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
-#
-services:
-    - serviceId: zosmf
-      instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_ZOSMF_PORT/zosmf/
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: 
-EOF
-
 # Add apiml catalog tile to zlux 
 CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/ui/v1/apicatalog
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
