@@ -57,7 +57,7 @@ customParameters.push(credentials(
 customParameters.push(string(
   name: 'ZOWE_VERSION',
   description: 'Zowe version number',
-  defaultValue: '0.9.2',
+  defaultValue: '0.9.3',
   trim: true
 ))
 opts.push(parameters(customParameters))
