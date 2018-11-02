@@ -48,7 +48,7 @@ rm server.env
 
 # Inject the http, https ports and SDSF and z/OSMF /lib dir into server.xml
 
-echo "Injecting the http, https ports, SDSF and z/OSMF into $PWD/wlp/usr/servers/Atlas/server.xml" >> $LOG_FILE
+echo "Injecting the http, https ports, and z/OSMF into $PWD/wlp/usr/servers/Atlas/server.xml" >> $LOG_FILE
 sed -e 's|${atlashttp}|'$ZOWE_EXPLORER_SERVER_HTTP_PORT'|' -e 's|${atlashttps}|'$ZOWE_EXPLORER_SERVER_HTTPS_PORT'|g' $INSTALL_DIR/files/templates/server.xml.template > $TEMP_DIR/server.xml
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/server.xml > ./wlp/usr/servers/Atlas/server.xml
 
