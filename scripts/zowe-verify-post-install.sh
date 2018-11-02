@@ -1,0 +1,760 @@
+#!/bin/sh
+# Verify that an installed Zowe build is healthy after you install it on z/OS
+# Note:  This script does not change anything on your system.
+
+echo Script zowe-verify-post-install.sh started
+echo
+
+# This script is expected to be located in ${ZOWE_ROOT_DIR}/scripts,
+# otherwise you must set ZOWE_ROOT_DIR to where the Zowe runtime is installed before you run this script
+# e.g. ZOWE_ROOT_DIR=/u/userid/zowe/1.0.0       
+
+if [[ -n "${ZOWE_ROOT_DIR}" ]]
+then 
+    echo ZOWE_ROOT_DIR environment variable is set to ${ZOWE_ROOT_DIR}
+else 
+    echo Info: ZOWE_ROOT_DIR environment variable is empty
+    if [[ `basename $PWD` != scripts ]]
+    then
+        echo You are not in the ZOWE_ROOT_DIR/scripts directory
+        echo Warning: '${ZOWE_ROOT_DIR} is not set'
+        echo '${ZOWE_ROOT_DIR} must be set to where Zowe runtime is installed'
+        echo Warning: script will run, but with errors
+    else
+        ZOWE_ROOT_DIR=`dirname $PWD`
+        echo ZOWE_ROOT_DIR environment variable is now set to ${ZOWE_ROOT_DIR}
+    fi    
+fi
+
+# version 0.9.0
+echo
+echo Check we are in the right directory, with the right contents
+
+for dir in \
+README.md             explorer-USS          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
+api-mediation         explorer-server       scripts               zlux-build            zlux-proxy-server     zss-auth \
+explorer-JES          explorer-server-auth  tn3270-ng2            zlux-example-server   zlux-shared \
+explorer-MVS          sample-app            vt-ng2                zlux-ng2              zos-subsystems
+#
+do
+  ls ${ZOWE_ROOT_DIR}/$dir 1>/dev/null 2>/dev/null
+  if [[ $? -ne 0 ]]
+  then
+    echo Warning: directory \"$dir\" not found in ${ZOWE_ROOT_DIR}
+  fi
+done
+
+# version 0.9.0  
+# STC #  1 2 3 4 5 6 7 8 9      # ZOWESVRn, n=(1.9)
+zowestc="1 1 3 0 0 1 0 1 3"     # expected number of Zowe STCs for jobs 1-9       
+zowenports=8                    # expected number of ports assigned to Zowe
+
+
+# version 0.9.1
+# STC #  1 2 3 4 5 6 7 8 9
+zowestc="2 0 2 0 0 2 2 0 2"         
+zowenports=8
+
+# 1.2.	Verification post-install
+# 1.2.1.	of configuration
+# 0. ZOESVR PROC is in a JES PROCLIB
+
+echo
+echo Check SAF security settings are correct
+
+# 2.1 RACF 
+tsocmd lg izuadmin 2>/dev/null |grep IZUSVR >/dev/null
+if [[ $? -ne 0 ]]
+then
+  echo Error: userid IZUSVR is not in RACF group IZUADMIN
+fi
+
+# 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
+#  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
+
+# tsocmd rl started \*|grep ZO
+# rl started *
+# STARTED    ZOE*.* (G)
+# STARTED    ZOWE*.* (G)
+# tsocmd rl started 'zowe*.*' stdata
+
+# tsocmd rl started \*|sed -n 's/STARTED *\([^ ]*\) .*/\1/p' | sed 's/[.*]//g'
+
+# ZOWESVR=ZOEJAD  # test
+
+if [[ -n "${ZOWESVR}" ]]
+then 
+    echo ZOWESVR environment variable is set to ${ZOWESVR}
+else 
+    echo ZOWESVR environment variable is empty, defaulting to ZOWESVR for this test
+    ZOWESVR=ZOWESVR
+fi
+
+echo
+echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
+
+# find names of STARTED profiles
+izusvr=0        # set success flag
+izuadmin=0      # set success flag
+
+tsocmd rl started \* 2>/dev/null |sed -n 's/STARTED *\([^ ]*\) .*/\1/p' \
+ | sed 's/\([^.*]*\)\(.*\)/\1\2 \1/' \
+ | while read prof pref
+    do
+        echo $ZOWESVR | grep ^$pref > /dev/null    # does the profile name match the ZOWESVR name?
+        if [[ $? -eq 0 ]]
+        then
+            tsocmd rl started $prof stdata 2>/dev/null | grep "USER= IZUSVR" > /dev/null    # is the profile user name IZUSVR?
+            if [[ $? -ne 0 ]]
+            then 
+                echo Error: profile $prof is not assigned to user IZUSVR
+            else
+                echo OK: Profile $prof is assigned to user IZUSVR
+                izusvr=1        # set success flag
+            fi
+            tsocmd rl started $prof stdata 2>/dev/null | grep "GROUP= IZUADMIN" > /dev/null # is the profile group name IZUADMIN?
+            if [[ $? -ne 0 ]]
+            then 
+                echo Error: profile $prof is not assigned to group IZUADMIN
+            else
+                echo Profile $prof is assigned to group IZUADMIN
+                izuadmin=1        # set success flag
+            fi
+        fi
+    done
+
+if [[ $izusvr -eq 0 || $izuadmin -eq 0 ]]
+then    
+    echo Warning: Started task $ZOWESVR not assigned to the correct RACF user or group
+else
+    echo OK: Started task $ZOWESVR is assigned to the correct RACF user and group
+fi
+
+
+# 2.1.2  Activate the SDSF RACF class and add the following 3 profiles your system:
+    # - GROUP.ISFSPROG
+    # - GROUP.ISFSPROG.SDSF                 
+    # - ISF.CONNECT.**
+    # - ISF.CONNECT.sysname (e.g. TVT6019)
+# 2.1.3 Mike Fulton's script (amended)
+
+# 2.2    ACF2
+# 2.3    TOPSECRET
+
+
+# Users must belong to a group that has READ access to these profiles.
+# have the following ISF profile defined:
+# class profile SDSF ISF.CONNECT.** (G)
+
+
+
+
+# 4. Hostname is correct in 
+# web directory:
+#  in the index.html file in the web directory of atlasJES, atlasMVS and atlasUSS 
+#  to point to the hostname of your machine
+# plugin config:  
+# Check hostname of the plugin configuration per "Giza zD&T boxnote.pdf"
+# (File: /zaas1/giza/zluxexampleserver/
+# deploy/instance/ZLUX/pluginStorage/com.rs.mvd.tn3270/sessions/_defaultTN3270.json)
+
+# 5. LTPA keys are readable and sym-linked
+# No redundant izu.ltpa.key.password entries in bootstrap.properties
+# 6. localhost is defined for real, VM and zD&T systems:
+# Add “127.0.0.1 localhost” to ADCD.Z23A.TCPPARMS(GBLIPNOD)
+
+# 1.2.2.	of function
+#  
+
+echo
+echo Check ZOESVR job is started on user IZUSVR
+
+# ZOWESVR=ZOEJAD  # temporary test; normally it's ZOWESVR ... or a parm.
+echo Info: ZOWE job name is ${ZOWESVR}
+
+function checkJob {
+jobname=$1
+tsocmd status ${jobname} 2> /dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
+if [[ $? != 0 ]]
+then 
+    echo Error: job ${jobname} is not executing
+else 
+    echo OK: job ${jobname} is executing
+fi
+}
+
+checkJob ${ZOWESVR}
+
+# 0.  Check user of ZOWESVR is IZUSVR
+
+if [[ -n "${ZOWE_ROOT_DIR}" ]]
+then 
+    echo Info: ZOWE_ROOT_DIR is set to ${ZOWE_ROOT_DIR} 
+else
+    echo Error: ZOWE_ROOT_DIR is not set
+    echo Some parts of this script will not work as a result
+fi 
+
+${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
+if [[ $? -ne 0 ]]
+then
+  echo Error: Unable to run opercmd REXX exec from # >> $LOG_FILE
+  ls -l ${ZOWE_ROOT_DIR}/scripts/internal/opercmd # try to list opercmd
+  echo Error: No Zowe jobs will be checked
+  echo Error: Correct this error and re-run this script
+else
+    echo OK: opercmd is available
+
+
+    # There could be >1 STC named ZOWESVR
+
+    echo
+    echo Does any ZOWESVR have userid IZUSVR?
+
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=IZUSVR" > /dev/null
+    if [[ $? -ne 0 ]]
+    then    
+        echo Error:  USERID of ${ZOWESVR} is not IZUSVR
+
+    else    # we found >0 zowe STCs, do any of them NOT have USERID=IZUSVR?
+        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=" | grep -v "USERID=IZUSVR" > /dev/null
+        if [[ $? -eq 0 ]]
+        then    
+            echo Error:  Some USERID of ${ZOWESVR} is not IZUSVR
+        else
+            echo OK:  All USERIDs of ${ZOWESVR} are IZUSVR
+        fi
+    fi
+
+# number of ZOESVR started tasks expected to be active in a running system
+    echo
+    echo check ${ZOWESVR}1-9 jobs in execution
+
+    # If jobname is > 7 chars, all tasks will have same jobname, no digit suffixes
+    if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
+    then
+        echo job name ${ZOWESVR} is short enough to have numeric suffixes
+        i=1                 # first STC number
+        for enj in $zowestc   # list of expected number of jobs per STC
+        do
+            jobname=${ZOWESVR}$i
+            # tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"
+            # jobsEx=`tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"`
+            # 0.2 Jobs 1-9 with no JCT
+            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
+                # the selected lines will look like this ...
+                                                        # ZOEJAD9  *OMVSEX  IZUSVR   IN   AO  A=00F0   PER=NO   SMC=000
+                                                        # ZOEJAD9  STEP1    IZUSVR   OWT  AO  A=00F2   PER=NO   SMC=000
+                                                        # ZOEJAD9  *OMVSEX  IZUSVR   OWT  AO  A=00F1   PER=NO   SMC=000
+
+            nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
+            rm /tmp/${jobname}.dj >/dev/null
+
+            # check we found the expected number of jobs
+            if [[ $nj -ne $enj ]]
+            then
+                echo error: Expecting $enj jobs for $jobname, found $nj
+            else
+                echo OK: Found $nj jobs for $jobname
+            fi
+            i=$((i+1))      # next STC number
+        done
+    else
+        echo ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
+        jobname=${ZOWESVR}
+
+        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
+        enj=11
+        if [[ `cat /tmp/${jobname}.dj | wc -l` -ne $enj ]]
+        then
+            echo error: Expecting $enj jobs for $jobname, found $nj
+        else
+            echo OK: Found $nj jobs for $jobname
+        fi 
+        rm /tmp/${jobname}.dj >/dev/null
+        
+    fi
+
+fi
+
+
+# 3. Ports are available
+
+    # explorer-server:
+    #   httpPort=7080
+    #   httpsPort=7443
+    # http and https ports for the node server
+    #   zlux-server:
+    #   httpPort=8543
+    #   httpsPort=8544
+    #   zssPort=8542
+
+
+# 0. check netstat portlist or other view of pre-allocated ports    
+
+
+# 0. Extract port settings from Zowe config files.  
+#   Zowe runtime root directory=/u/tstradm/zowe/0.9.0
+
+
+# here are the defaults:
+  api_mediation_catalog_http_port=7552      # api-mediation/scripts/api-mediation-start-catalog.sh
+  api_mediation_discovery_http_port=7553    # api-mediation/scripts/api-mediation-start-discovery.sh
+  api_mediation_gateway_https_port=7554     # api-mediation/scripts/api-mediation-start-gateway.sh
+
+  explorer_server_http_port=7290            # explorer-server/wlp/usr/servers/Atlas/server.xml  ASCII
+  explorer_server_https_port=7941           # explorer-server/wlp/usr/servers/Atlas/server.xml  ASCII
+                                            # explorer-??S/web/index.html
+  zlux_server_http_port=8543                # zlux-example-server/config/zluxserver.json
+  zlux_server_https_port=8544               # zlux-example-server/config/zluxserver.json
+  zss_server_http_port=8542                 # zlux-example-server/config/zluxserver.json
+  terminal_sshPort=22                       # vt-ng2/_defaultVT.json
+  terminal_telnetPort=23                    # tn3270-ng2/_defaultTN3270.json
+
+for file in \
+ "api-mediation/scripts/api-mediation-start-catalog.sh" \
+ "api-mediation/scripts/api-mediation-start-discovery.sh" \
+ "api-mediation/scripts/api-mediation-start-gateway.sh" \
+ "explorer-server/wlp/usr/servers/Atlas/server.xml" \
+ "zlux-example-server/config/zluxserver.json" \
+ "vt-ng2/_defaultVT.json" \
+ "tn3270-ng2/_defaultTN3270.json"
+do
+    # echo file $file
+    # grep -i port ${ZOWE_ROOT_DIR}/$file
+    case $file in
+    
+        tn3270*) 
+        echo Checking tn3270
+        # fragile search
+        terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
+        echo terminal_telnetPort is $terminal_telnetPort
+        ;;
+
+        vt*) 
+        echo Checking vt
+        # fragile search
+        terminal_sshPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
+        echo terminal_sshPort is $terminal_sshPort
+        ;;
+
+        *\.sh) 
+        echo Checking .sh files  
+        port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`      
+        case $file in 
+            *catalog*)
+                echo api catalog port is $port
+                api_mediation_catalog_http_port=$port
+                ;;
+            *discovery*)
+                echo api discovery port is $port
+                api_mediation_discovery_http_port=$port
+                ;;
+            *gateway*)
+                echo api gateway port is $port
+                api_mediation_gateway_https_port=$port
+        esac
+        
+        
+        ;;
+
+        *\.xml) 
+        echo Checking .xml files
+        
+        explorer_server_http_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpPort="\([0-9]*\)" .*/\1/p'`
+        echo explorer server httpPort is $explorer_server_http_port
+        
+        explorer_server_https_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpsPort="\([0-9]*\)" .*/\1/p'`
+        echo explorer server httpsPort is $explorer_server_https_port
+        
+        ;;
+
+        *\.json) 
+        echo Checking .json files 
+        # fragile search
+        zlux_server_http_port=`sed -n 's/.*"port" *: *\([0-9]*\) *$/\1/p' ${ZOWE_ROOT_DIR}/$file`
+        echo zlux server httpPort is $zlux_server_http_port
+                
+        zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p'   ${ZOWE_ROOT_DIR}/$file`
+        echo zlux server httpsPort is $zlux_server_https_port
+        
+        zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
+        echo zss server port is $zss_server_http_port
+        ;;
+
+        *) 
+        echo Error:  Unexpected file $file
+        
+    esac
+    echo
+done
+
+# check MVD web index files
+echo
+echo Check the 3 explorer web/index.html files for default explorer server https port
+echo "(script will check correct ports in a future version)"
+
+# sed -n 's+.*https:\/\/.*:\([0-9]*\)/explorer-..s.*+\1+p' `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`    
+
+for file in  `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`
+do
+    port=`sed -n 's+.*https:\/\/.*:\([0-9]*\)/explorer-..s.*+\1+p' $file`
+
+    if [[ $port -ne $explorer_server_https_port ]]
+    then 
+        echo Error: Found $port expecting $explorer_server_https_port
+        echo in file $file
+    else 
+        echo OK: Port $port
+    fi
+done
+
+# 0. Verify server.env ... explorer-server/wlp/usr/servers/Atlas/server.env 
+# should contain JAVA_HOME and ZOWE_HOSTNAME?                                                 
+
+
+echo
+echo Check Ports are assigned to jobs
+
+
+
+
+
+# zowenports
+totPortsAssigned=0
+# Is job name too long to have a suffix?
+if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
+then    # job name is short enough to have a suffix
+    i=1
+    for enj in $zowestc   # list of expected number of jobs per STC
+    do
+            if [[ $enj -ne 0 ]]
+            then
+                jobname=${ZOWESVR}$i
+                # echo $jobname active jobs
+                # ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] "
+                echo Ports in use by $jobname jobs
+                netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
+                cat /tmp/${jobname}.ports
+
+                # check correct ports are assigned to each job
+
+                case $i in 
+                3)
+                # job3
+                    for port in \
+                        $api_mediation_gateway_https_port \
+                        $explorer_server_http_port \
+                        $explorer_server_https_port
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+                ;;
+
+                6)
+                # job6
+                    for port in \
+                        $zlux_server_http_port \
+                        $api_mediation_discovery_http_port \
+                        $zss_server_http_port 
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+                ;;
+
+                9)
+                # job9
+                    for port in \
+                        $zss_server_http_port \
+                        $api_mediation_catalog_http_port
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+                ;;
+                esac
+
+                totPortsAssigned=$((totPortsAssigned+`cat /tmp/${jobname}.ports | wc -l `))
+                rm /tmp/${jobname}.ports
+                echo
+            fi
+            i=$((i+1))      # next STC number
+    done
+else        # job name is too long to have a suffix
+            jobname=${ZOWESVR}
+            echo Ports in use by $jobname jobs
+            netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' /tmp/${jobname}.ports
+            cat /tmp/${jobname}.ports
+            totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
+            rm /tmp/${jobname}.ports
+            echo
+fi
+if [[ $totPortsAssigned -ne $zowenports ]]
+then
+    echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
+fi
+
+# 3.2 check ports are open in linux firewall
+# use an iptables command to verify this?
+
+# 2.  You must be authorized to use SDSF with REXX on your z/OS system
+
+echo
+echo Check Node is installed and working
+
+# IBM SDK for Node.js z/OS Version 6.11.2 or later.
+  response=`node --version`
+  echo $response | grep 'not found'
+  if [[ `echo $?` == 0 ]]
+then 
+    echo node not found in your path ... searching standard location
+else 
+    nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`
+    if [[ `echo $?` == 0 ]]
+    then 
+        echo symlink to node found $nodelink
+        echo node version is
+        /usr`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`/bin/node --version
+    else 
+        echo node not found
+    fi
+fi
+
+echo
+echo Check version of z/OS
+
+release=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd 'd iplinfo'|grep RELEASE`
+# the selected line will look like this ...
+# RELEASE z/OS 02.03.00    LICENSE = z/OS
+
+vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
+echo release of z/OS is $release
+if [[ $vrm < "02.02.00" ]]
+    then echo version $vrm not supported
+    else echo version $vrm is supported
+fi
+
+
+
+#  
+
+
+# 4. z/OSMF is up 
+
+echo
+echo Check Zowe environment variables are set correctly.
+
+# • ZOWE_ZOSMF_PATH: The path where z/OSMF is installed. Defaults to /usr/lpp/zosmf/lib/
+# defaults/servers/zosmfServer
+if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
+then 
+    echo OK: ZOWE_ZOSMF_PATH is not empty 
+    ls ${ZOWE_ZOSMF_PATH}/server.xml > /dev/null    # pick a file to check
+    if [[ $? != 0 ]]
+    then    
+        echo Error: ZOWE_ZOSMF_PATH does not point to a valid install of z/OSMF
+    fi
+else 
+    echo Error: ZOWE_ZOSMF_PATH is empty
+fi
+
+# • ZOWE_JAVA_HOME: The path where 64 bit Java 8 or later is installed. Defaults to /usr/lpp/java/
+# J8.0_64
+if [[ -n "${ZOWE_JAVA_HOME}" ]]
+then 
+    echo OK: ZOWE_JAVA_HOME is not empty 
+    ls ${ZOWE_JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
+    if [[ $? != 0 ]]
+    then    
+        echo Error: ZOWE_JAVA_HOME does not point to a valid install of Java
+    fi
+else 
+    echo Error: ZOWE_JAVA_HOME is empty
+fi
+
+
+# • ZOWE_EXPLORER_HOST: The IP address of where the explorer servers are launched from. Defaults to
+# running hostname
+if [[ -n "${ZOWE_EXPLORER_HOST}" ]]
+then 
+    echo OK: ZOWE_EXPLORER_HOST is not empty 
+    ping ${ZOWE_EXPLORER_HOST} > /dev/null    # check host
+    if [[ $? != 0 ]]
+    then    
+        echo Error: ZOWE_EXPLORER_HOST does not point to a valid hostname
+    fi
+else 
+    echo Error: ZOWE_EXPLORER_HOST is empty
+fi
+
+# • localhost: The IP address of this host
+# 
+    ping localhost > /dev/null    # check host
+    if [[ $? != 0 ]]
+    then    
+        echo Error: can not ping localhost
+    else
+        echo OK: can ping localhost
+    fi
+
+
+# 0. IZUFPROC
+echo
+echo Check IZUFPROC
+# The PROC that z/OSMF uses to run your request
+# It requires access to a link lib, and this is usually provided via a DD statement
+#
+# //ISPLLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE <----extra dataset
+#
+# tsocmd listc "ent('SYS1.SIEALNKE')" 2>/dev/null| sed -n 's/^N.*- \(.*\)/\1/p'
+tsocmd listd "('sys1.SIEALNKE')" 2> /dev/null 1> /dev/null
+if [[ $? -eq 0 ]]
+then
+    echo OK: Dataset SYS1.SIEALNKE exists
+else
+    echo Warning: SYS1.SIEALNKE not found
+    echo Another *.SIEALNKE dataset must be allocated in IZUFPROC, or link-listed
+fi
+
+# find IZUFPROC in PROCLIB concatenation
+# ${ZOWE_ROOT_DIR}/scripts/internal/opercmd '$d proclib'
+
+IZUFPROC_found=0        # set initial condition
+
+# fetch a list of PROCLIBs
+${ZOWE_ROOT_DIR}/scripts/internal/opercmd '$d proclib'| sed -n 's/.*DSNAME=\(.*[A-Z0-9]\).*/\1/p' > /tmp/proclib.list
+while read dsn 
+do
+    tsocmd listd "('$dsn')" mem 2> /dev/null | grep IZUFPROC 1> /dev/null 2> /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        : # echo IZUFPROC not found in $dsn
+    else
+        echo OK: IZUFPROC found in $dsn
+        IZUFPROC_found=1
+        break
+    fi
+done <      /tmp/proclib.list
+rm          /tmp/proclib.list
+
+if [[ IZUFPROC_found -eq 0 ]]
+then
+    echo Error: PROC IZUFPROC not found in any active PROCLIB
+else
+    echo Check contents of IZUFPROC
+    tsocmd "oput '$dsn(izufproc)' '/tmp/izufproc.txt'" 1> /dev/null 2> /dev/null
+    SIEALNKE_DSN=`sed -n 's/.*DS.*=\(.*SIEALNKE\).*/\1/p' /tmp/izufproc.txt`    # check for DSN (but not ISPLLIB DD)
+
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: SIEALNKE not found in $dsn"(IZUFPROC)"
+    else
+        echo OK: Reference to SIEALNKE dataset $SIEALNKE_DSN found in $dsn"(IZUFPROC)"
+        tsocmd listd "('$SIEALNKE_DSN')" 1> /dev/null 2> /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            echo Error: $SIEALNKE_DSN not found
+        fi
+
+        echo check that ISPLLIB is present # ... 
+        grep "\/\/ISPLLIB *DD *" /tmp/izufproc.txt > /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            echo Error : No ISPLLIB DD statement found in IZUFPROC
+        else
+            echo OK: ISPLLIB DD statement found in IZUFPROC
+            grep "\/\/ISPLLIB *DD *.*DS.*=.*SIEALNKE" /tmp/izufproc.txt > /dev/null
+            if [[ $? -eq 0 ]]
+            then
+                echo OK: SIEALNKE dataset is allocated to ISPLLIB
+            fi
+        fi
+
+
+    fi
+fi
+rm /tmp/izufproc.txt
+
+# 5. z/OSMF
+echo
+echo Check LTPA keys are readable
+
+if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
+then 
+    echo Info: ZOWE_ZOSMF_PATH is already set to ${ZOWE_ZOSMF_PATH} 
+else
+    ZOWE_ZOSMF_PATH="/var/zosmf/configuration/servers/zosmfServer/"   # this won't normally be set until Zowe is configured
+fi    
+
+ls -l ${ZOWE_ZOSMF_PATH}/resources/security/ltpa.keys | grep "^-r.* IZUSVR *IZUADMIN .*ltpa.keys$" >/dev/null
+if [[ $? -ne 0 ]]
+then
+  echo z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
+else
+  echo z/OSMF ltpa.keys file is OK
+fi
+
+
+# 6. Other required jobs
+echo
+echo Check servers are up
+
+
+ echo
+  echo Check jobs AXR and CEA
+  for jobname in AXR CEA 
+  do
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/dev/null
+      # the selected line will look like this ...
+      #  AXR      AXR      IEFPROC  NSW  *   A=001B   PER=NO   SMC=000
+      
+    if [[ $? -eq 0 ]]
+    then 
+        echo Job ${jobname} is executing
+    else 
+        echo Job ${jobname} is not executing
+    fi
+  done
+
+      # 4.2 Jobs with JCT
+
+
+ICSF=0
+
+for jobname in IZUANG1 IZUSVR1 ICSF CSF RACF
+do
+  tsocmd status ${jobname} 2>/dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
+  if [[ $? -eq 0 ]]
+  then 
+      echo Job ${jobname} is executing
+      if [[ ${jobname} = ICSF || ${jobname} = CSF ]]
+      then
+        ICSF=1
+      fi
+  else 
+      echo Job ${jobname} is not executing
+  fi
+done
+
+if [[ ${ICSF} -eq 1 ]]
+then
+  echo OK:  ICSF or CSF is running
+  else
+  echo Error:  neither ICSF nor CSF is running
+fi
+
+# Check relevant -a extattr bits 
+
+echo
+echo Script zowe-verify-post-install.sh finished
