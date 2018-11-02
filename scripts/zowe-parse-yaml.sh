@@ -122,8 +122,8 @@ parseConfiguationFile ./zowe-install.yaml
 # If the values are not set default them
 if [[ $ZOWE_ROOT_DIR == "" ]] 
 then
-    $ZOWE_ROOT_DIR = "~/zowe/0.9.2"
-    echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/0.9.2"
+    $ZOWE_ROOT_DIR = "~/zowe/0.9.3"
+    echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/0.9.3"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_HTTP_PORT == "" ]]
 then
