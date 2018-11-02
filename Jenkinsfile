@@ -21,7 +21,7 @@ opts.push(disableConcurrentBuilds())
 // set upstream triggers
 if (env.BRANCH_NAME == 'master') {
   opts.push(pipelineTriggers([
-    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/atlas-wlp-package-pipeline/master')
+    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/explorer-wlp-packaging/master,/API_Mediation/master')
   ]))
 }
 
