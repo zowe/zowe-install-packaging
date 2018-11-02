@@ -1,6 +1,0 @@
-{
-  "files": [{
-    "pattern": "pax-workspace/zowe.pax",
-    "target": "libs-snapshot-local/com/project/zowe/{ARTIFACTORY_VERSION}-{RELEASE_IDENTIFIER}/zowe-{ARTIFACTORY_VERSION}-{BUILD_IDENTIFIER}.pax"
-  }]
-}
