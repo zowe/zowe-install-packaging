@@ -130,6 +130,9 @@ cat <<EOF >$TEMP_DIR/datasets.yml
 #
 services:
     - serviceId: datasets
+      title: IBM z/OS Datasets
+      description: IBM z/OS Datasets REST API service
+      catalogUiTileId: datasets
       instanceBaseUrls:
         - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
@@ -138,6 +141,15 @@ services:
           serviceRelativeUrl: api/v1/datasets
         - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
           serviceRelativeUrl: ui/v1/datasets
+      apiInfo:
+        - apiId: com.ibm.datasets
+          gatewayUrl: api/v1
+          version: 1.0.0
+          documentationUrl: https://winmvs3b.hursley.ibm.com:7949/ibm/api/explorer/
+catalogUiTiles:
+    datasets:
+        title: z/OS Datasets services
+        description: IBM z/OS Datasets REST services
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
 
@@ -146,6 +158,9 @@ cat <<EOF >$TEMP_DIR/jobs.yml
 #
 services:
     - serviceId: jobs
+      title: IBM z/OS Jobs
+      description: IBM z/OS Jobs REST API service
+      catalogUiTileId: jobs
       instanceBaseUrls:
         - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
@@ -154,6 +169,15 @@ services:
           serviceRelativeUrl: api/v1/jobs
         - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
           serviceRelativeUrl: ui/v1/jobs
+      apiInfo:
+        - apiId: com.ibm.jobs
+          gatewayUrl: api/v1
+          version: 1.0.0
+          documentationUrl: https://winmvs3b.hursley.ibm.com:7949/ibm/api/explorer/
+catalogUiTiles:
+    jobs:
+        title: z/OS Jobs services
+        description: IBM z/OS Jobs REST services
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
 
@@ -162,13 +186,24 @@ cat <<EOF >$TEMP_DIR/zos.yml
 #
 services:
     - serviceId: zos
+      title: IBM z/OS miscellaneous
+      description: IBM z/OS Miscellaneous REST API service
+      catalogUiTileId: zos
       instanceBaseUrls:
         - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
           serviceRelativeUrl: api/v1/zos
-
+      apiInfo:
+        - apiId: com.ibm.zos
+          gatewayUrl: api/v1
+          version: 1.0.0
+          documentationUrl: https://winmvs3b.hursley.ibm.com:7949/ibm/api/explorer/
+catalogUiTiles:
+    zos:
+        title: z/OS Miscellaneous services
+        description: IBM z/OS Miscellaneous REST services
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zos.yml > $STATIC_DEF_CONFIG/zos.yml	
 
@@ -177,6 +212,9 @@ cat <<EOF >$TEMP_DIR/orion.yml
 #
 services:
     - serviceId: orion
+      title: IBM z/OS Orion
+      description: IBM z/OS Orion Languages REST API service
+      catalogUiTileId: orion
       instanceBaseUrls:
         - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
       homePageRelativeUrl:  # Home page is at the same URL
