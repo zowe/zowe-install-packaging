@@ -78,6 +78,86 @@ cd ..
 # Execute the self-signed keystore generation - no user input required
 ./scripts/gen-selfsigned-keystore.sh
 
+# Add static definition for zosmf	
+cat <<EOF >$TEMP_DIR/zosmf.yml
+# Static definition for z/OSMF
+#
+# Once configured you can access z/OSMF via the API gateway:
+# http --verify=no GET https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
+#	
+services:
+    - serviceId: zosmf
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_ZOSMF_PORT/zosmf/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl:
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zosmf.yml > $STATIC_DEF_CONFIG/zosmf.yml	
+
+# Add static definition for MVS datasets
+cat <<EOF >$TEMP_DIR/datasets.yml
+#
+services:
+    - serviceId: datasets
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: api/v1/datasets
+        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: ui/v1/datasets
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
+
+# Add static definition for Jobs
+cat <<EOF >$TEMP_DIR/jobs.yml
+#
+services:
+    - serviceId: jobs
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: api/v1/jobs
+        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: ui/v1/jobs
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
+
+# Add static definition for zos
+cat <<EOF >$TEMP_DIR/zos.yml
+#
+services:
+    - serviceId: zos
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: api/v1/zos
+
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zos.yml > $STATIC_DEF_CONFIG/zos.yml	
+
+# Add static definition for languages
+cat <<EOF >$TEMP_DIR/orion.yml
+#
+services:
+    - serviceId: orion
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: explorer-languages  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl:
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml	
+chmod -R 777 $STATIC_DEF_CONFIG
+
 # Add apiml catalog tile to zlux 
 CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/ui/v1/apicatalog
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
