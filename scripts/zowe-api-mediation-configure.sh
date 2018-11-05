@@ -79,6 +79,115 @@ cd ..
 # Execute the APIML certificate generation - no user input required
 ./scripts/setup-apiml-certificates.sh
 
+# Get the zos version
+ZOSMF_VERSION=""
+ZOSMF_DOC_URL=""
+ZOS_RELEASE=`$INSTALL_DIR/scripts/opercmd 'd iplinfo'|grep RELEASE`
+ZOS_VRM=`echo $ZOS_RELEASE | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
+
+if [[ $ZOS_VRM == "02.03.00" ]]
+then    
+    ZOSMF_VERSION=2.3.0
+    ZOSMF_DOC_URL="https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.izua700/IZUHPINFO_RESTServices.htm"
+elif [[ $ZOS_VRM == "02.02.00" ]]
+then    
+    ZOSMF_VERSION=2.2.0
+    ZOSMF_DOC_URL="https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.2.0/com.ibm.zos.v2r2.izua700/IZUHPINFO_RESTServices.htm"
+fi
+
+# Add static definition for zosmf	
+cat <<EOF >$TEMP_DIR/zosmf.yml
+# Static definition for z/OSMF
+#
+# Once configured you can access z/OSMF via the API gateway:
+# http --verify=no GET https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
+#	
+services:
+    - serviceId: zosmf
+      title: IBM z/OSMF
+      description: IBM z/OS Management Facility REST API service
+      catalogUiTileId: zosmf
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_ZOSMF_PORT/zosmf/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl:
+      apiInfo:
+        - apiId: com.ibm.zosmf
+          gatewayUrl: api/v1
+          version: $ZOSMF_VERSION
+          documentationUrl: $ZOSMF_DOC_URL
+
+catalogUiTiles:
+    zosmf:
+        title: z/OSMF services
+        description: IBM z/OS Management Facility REST services
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zosmf.yml > $STATIC_DEF_CONFIG/zosmf.yml	
+
+# Add static definition for MVS datasets
+cat <<EOF >$TEMP_DIR/datasets.yml
+#
+services:
+    - serviceId: datasets
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: api/v1/datasets
+        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: ui/v1/datasets
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
+
+# Add static definition for Jobs
+cat <<EOF >$TEMP_DIR/jobs.yml
+#
+services:
+    - serviceId: jobs
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: api/v1/jobs
+        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: ui/v1/jobs
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
+
+# Add static definition for zos
+cat <<EOF >$TEMP_DIR/zos.yml
+#
+services:
+    - serviceId: zos
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: api/v1/zos
+
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zos.yml > $STATIC_DEF_CONFIG/zos.yml	
+
+# Add static definition for languages
+cat <<EOF >$TEMP_DIR/orion.yml
+#
+services:
+    - serviceId: orion
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: explorer-languages  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl:
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml	
+chmod -R 777 $STATIC_DEF_CONFIG
+
 # Add apiml catalog tile to zlux 
 CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/ui/v1/apicatalog
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
