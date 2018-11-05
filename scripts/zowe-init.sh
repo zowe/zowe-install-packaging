@@ -16,6 +16,7 @@
 
 # The environment variables
 # ZOWE_ZOSMF_PATH    points to the /lib directory of the zOSMF install
+# ZOWE_ZOSMF_PORT https port of the zOSMF server
 # ZOWE_JAVA_HOME points to Java to be used
 # ZOWE_SDSF_PATH points to SDSF location
 # ZOWE_EXPLORER_HOST points to the current host name
@@ -29,6 +30,7 @@ echo "<zowe-init.sh>" >> $LOG_FILE
 
 #set-x
 export ZOWE_ZOSMF_PATH
+export ZOWE_ZOSMF_PORT
 export ZOWE_JAVA_HOME
 export ZOWE_EXPLORER_HOST
 export NODE_HOME
@@ -67,6 +69,17 @@ locateZOSMFBootstrapProperties() {
         ZOWE_ZOSMF_PATH=$1$2$3
         persist "ZOWE_ZOSMF_PATH" $1$2$3
     fi
+}
+
+getZosmfHttpsPort() {
+    ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
+    if [[ "$ZOWE_ZOSMF_PORT" == "" ]]
+    then
+        echo "    Unable to detect z/OS MF HTTPS port"
+        echo "    Please enter the HTTPS port of z/OS MF server on this system"
+        read ZOWE_ZOSMF_PORT
+    fi
+    persist "ZOWE_ZOSMF_PORT" $ZOWE_ZOSMF_PORT
 }
 
 promptNodeHome(){
@@ -175,6 +188,15 @@ else
     echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
 fi
 
+echo "Finding z/OSMF HTTPS port..."
+if [[ $ZOWE_ZOSMF_PORT == "" ]]
+then
+    getZosmfHttpsPort
+else 
+    echo "ZOWE_ZOSMF_PORT value of "$ZOWE_ZOSMF_PORT" will be used"
+    echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
+fi
+
 echo "Locating Java Home ..."
 if [[ $ZOWE_JAVA_HOME == "" ]]
 then    
@@ -206,7 +228,10 @@ fi
 echo "Locating host IP Address..."
 if [[ $ZOWE_IPADDRESS == "" ]]
 then
-    ZOWE_IPADDRESS=$(host ${ZOWE_EXPLORER_HOST} | sed 's/.*addresses\ //g')
+    # host may return aliases, which may result in ZOWE_IPADDRESS has value of "10.1.1.2 EZZ8322I aliases: S0W1"
+    # EZZ8321I S0W1.DAL-EBIS.IHOST.COM has addresses 10.1.1.2
+    # EZZ8322I aliases: S0W1
+    ZOWE_IPADDRESS=$(host ${ZOWE_EXPLORER_HOST} | grep 'has addresses' | sed 's/.*addresses\ //g')
     persist "ZOWE_IPADDRESS" $ZOWE_IPADDRESS
 else
     echo "ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"

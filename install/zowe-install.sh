@@ -47,7 +47,7 @@ echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FIL
 # ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTP_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
-echo "Beginning install of Zowe 0.9.1 into directory " $ZOWE_ROOT_DIR
+echo "Beginning install of Zowe 0.9.3 into directory " $ZOWE_ROOT_DIR
 
 # warn about any prior installation
 if [[ -d $ZOWE_ROOT_DIR ]]; then
@@ -103,7 +103,7 @@ cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 . deploy.sh > /dev/null
 
-echo "Zowe 0.9.1 runtime install completed into directory "$ZOWE_ROOT_DIR
+echo "Zowe 0.9.3 runtime install completed into directory "$ZOWE_ROOT_DIR
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 echo "Attempting to set Unix file permissions ..."
