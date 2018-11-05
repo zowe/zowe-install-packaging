@@ -145,7 +145,7 @@ services:
         - apiId: com.ibm.datasets
           gatewayUrl: api/v1
           version: 1.0.0
-          documentationUrl: https://winmvs3b.hursley.ibm.com:7949/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     datasets:
         title: z/OS Datasets services
@@ -173,7 +173,7 @@ services:
         - apiId: com.ibm.jobs
           gatewayUrl: api/v1
           version: 1.0.0
-          documentationUrl: https://winmvs3b.hursley.ibm.com:7949/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     jobs:
         title: z/OS Jobs services
@@ -199,7 +199,7 @@ services:
         - apiId: com.ibm.zos
           gatewayUrl: api/v1
           version: 1.0.0
-          documentationUrl: https://winmvs3b.hursley.ibm.com:7949/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     zos:
         title: z/OS Miscellaneous services
