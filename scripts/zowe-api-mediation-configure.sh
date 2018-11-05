@@ -72,6 +72,7 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
 chmod a+x api-mediation-start-gateway.sh
 chmod a+x api-mediation-start-discovery.sh
 chmod a+x api-mediation-start-catalog.sh
+chmod a+x apiml_cm.sh
 
 cd ..
 
