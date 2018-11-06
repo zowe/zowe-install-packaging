@@ -37,14 +37,18 @@ cd $ZOWE_ROOT_DIR"/explorer-server"
 echo "Unpax of $EXPLORER_PAX into $PWD" >> $LOG_FILE 
 pax -rf $EXPLORER_PAX -ppx
 
-echo "About to inject JAVA_HOME to $ZOWE_JAVA_HOME into server.env" >> $LOG_FILE
-
 # Inject the JAVA_HOME into the server.env file
+echo "Injecting JAVA_HOME to $ZOWE_JAVA_HOME into server.env" >> $LOG_FILE
 echo "JAVA_HOME=$ZOWE_JAVA_HOME" >> server.env
+
+echo "Injecting ZOSMF_HOST to $ZOWE_IPADDRESS into $PWD/wlp/usr/servers/Atlas/server.env" >> $LOG_FILE
+echo "ZOSMF_HOST=$ZOWE_IPADDRESS" >> server.env
 iconv -f IBM-1047 -t IBM-850 server.env > ./wlp/usr/servers/Atlas/server.env
 rm server.env
 
 # Inject the http, https ports and SDSF and z/OSMF /lib dir into server.xml
+
+echo "Injecting the http and https ports into $PWD/wlp/usr/servers/Atlas/server.xml" >> $LOG_FILE
 sed -e 's|${atlashttp}|'$ZOWE_EXPLORER_SERVER_HTTP_PORT'|' -e 's|${atlashttps}|'$ZOWE_EXPLORER_SERVER_HTTPS_PORT'|g' $INSTALL_DIR/files/templates/server.xml.template > $TEMP_DIR/server.xml
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/server.xml > ./wlp/usr/servers/Atlas/server.xml
 
