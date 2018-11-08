@@ -145,7 +145,7 @@ services:
       apiInfo:
         - apiId: com.ibm.datasets
           gatewayUrl: api/v1
-          version: 1.0.0
+          version: 0.9.3
           documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     datasets:
@@ -173,7 +173,7 @@ services:
       apiInfo:
         - apiId: com.ibm.jobs
           gatewayUrl: api/v1
-          version: 1.0.0
+          version: 0.9.3
           documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     jobs:
@@ -187,6 +187,9 @@ cat <<EOF >$TEMP_DIR/uss.yml
 #
 services:
     - serviceId: uss
+      title: IBM z/OS USS
+      description: IBM z/OS USS REST API service
+      catalogUiTileId: uss
       instanceBaseUrls:
         - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
@@ -195,6 +198,15 @@ services:
           serviceRelativeUrl: api/v1/uss
         - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
           serviceRelativeUrl: ui/v1/uss
+      apiInfo:
+        - apiId: com.ibm.uss
+          gatewayUrl: api/v1
+          version: 0.9.3
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+catalogUiTiles:
+    uss:
+        title: z/OS USS services
+        description: IBM z/OS USS REST services          
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
@@ -215,7 +227,7 @@ services:
       apiInfo:
         - apiId: com.ibm.zos
           gatewayUrl: api/v1
-          version: 1.0.0
+          version: 0.9.3
           documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     zos:
@@ -229,9 +241,6 @@ cat <<EOF >$TEMP_DIR/orion.yml
 #
 services:
     - serviceId: orion
-      title: IBM z/OS Orion
-      description: IBM z/OS Orion Languages REST API service
-      catalogUiTileId: orion
       instanceBaseUrls:
         - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
       homePageRelativeUrl:  # Home page is at the same URL
