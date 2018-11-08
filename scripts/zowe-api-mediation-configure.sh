@@ -182,6 +182,22 @@ catalogUiTiles:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
 
+# Add static definition for uss
+cat <<EOF >$TEMP_DIR/uss.yml
+#
+services:
+    - serviceId: uss
+      instanceBaseUrls:
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      homePageRelativeUrl:  # Home page is at the same URL
+      routedServices:
+        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: api/v1/uss
+        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
+          serviceRelativeUrl: ui/v1/uss
+EOF
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
+
 # Add static definition for zos
 cat <<EOF >$TEMP_DIR/zos.yml
 #
