@@ -92,7 +92,19 @@ node ('ibm-jenkins-slave-nvm') {
       // download artifactories
       sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' artifactory-download-spec.json > artifactory-download-spec.converted.json"
       sh "echo 'Effective Artifactory download spec >>>>>>>' && cat artifactory-download-spec.converted.json"
-      sh "jfrog rt dl --spec=artifactory-download-spec.converted.json"
+      def downloadResult = sh(
+        script: "jfrog rt dl --spec=artifactory-download-spec.converted.json",
+        returnStdout: true
+      ).trim()
+      echo "artifactory download result:"
+      echo downloadResult
+      def downloadResultObject = readJSON(text: downloadResult)
+      if (downloadResultObject['status'] != 'success' ||
+          downloadResultObject['totals']['success'] != 9 || downloadResultObject['totals']['failure'] != 0) {
+        error "Failed on verifying download result"
+      } else {
+        echo "download result is successful as expected"
+      }
 
       // prepare folder
       // - pax-workspace/content holds binary files
@@ -141,7 +153,19 @@ node ('ibm-jenkins-slave-nvm') {
       // attach git information to build info
       sh "jfrog rt bag '${buildName}' ${env.BUILD_NUMBER} ."
       // upload and attach to build info
-      sh "jfrog rt u 'pax-workspace/zowe.pax' 'libs-snapshot-local/com/project/zowe/${params.ZOWE_VERSION}-${releaseIdentifier}/zowe-${params.ZOWE_VERSION}-${buildIdentifier}.pax' --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER} --flat"
+      def uploadResult = sh(
+        script: "jfrog rt u 'pax-workspace/zowe.pax' 'libs-snapshot-local/com/project/zowe/${params.ZOWE_VERSION}-${releaseIdentifier}/zowe-${params.ZOWE_VERSION}-${buildIdentifier}.pax' --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER} --flat",
+        returnStdout: true
+      ).trim()
+      echo "artifactory upload result:"
+      echo uploadResult
+      def uploadResultObject = readJSON(text: uploadResult)
+      if (uploadResultObject['status'] != 'success' ||
+          uploadResultObject['totals']['success'] != 1 || uploadResultObject['totals']['failure'] != 0) {
+        error "Failed on verifying upload result"
+      } else {
+        echo "upload result is successful as expected"
+      }
       // add environment variables to build info
       sh "jfrog rt bce '${buildName}' ${env.BUILD_NUMBER}"
       // publish build info
