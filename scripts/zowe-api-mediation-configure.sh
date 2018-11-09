@@ -187,8 +187,8 @@ cat <<EOF >$TEMP_DIR/uss.yml
 #
 services:
     - serviceId: uss
-      title: IBM z/OS USS
-      description: IBM z/OS USS REST API service
+      title: IBM z/OS Unix Files
+      description: IBM z/OS Unix Files REST API service
       catalogUiTileId: uss
       instanceBaseUrls:
         - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
@@ -205,8 +205,8 @@ services:
           documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     uss:
-        title: z/OS USS services
-        description: IBM z/OS USS REST services          
+        title: z/OS Unix Files services
+        description: IBM z/OS Unix Files REST services          
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
