@@ -43,6 +43,9 @@ if [ -z "$ZOWE_VERSION" ]; then
   echo "Error: failed to determine Zowe version."
   echo "Error: failed to determine Zowe version." >> $LOG_FILE
   exit 1
+else
+  echo "Zowe v$ZOWE_VERSION"
+  echo "Zowe v$ZOWE_VERSION" >> $LOG_FILE
 fi
 
 echo "Install started at: "`date` >> $LOG_FILE
