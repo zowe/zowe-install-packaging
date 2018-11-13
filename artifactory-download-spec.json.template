@@ -1,17 +1,17 @@
 {
   "files": [{
       "pattern": "rocket-closed-source-builds/latest/ZLUX.pax",
-      "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/files/",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
     {
       "pattern": "libs-release-local/zowe-cli/bundle/0.9.3/zowe-cli-bundle.zip",
-      "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/files/",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
     {
       "pattern": "atlas-local-snapshots/com/ibm/atlas/atlas-wlp-package/*.zip",
-      "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/files/",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true",
       "build": "explorer-wlp-packaging :: master"
@@ -27,22 +27,22 @@
     },
     {
       "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_Open_Beta_License_Agreement.pdf",
-      "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/licenses/",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
       "flat": "true"
     },
     {
       "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_CLI_TPSRs.zip",
-      "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/licenses/",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
       "flat": "true"
     },
     {
       "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_APIML_TPSRs.zip",
-      "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/licenses/",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
       "flat": "true"
     },
     {
       "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Explorer_Server_Licenses.zip",
-      "target": "pax-workspace/content/zowe-{ARTIFACTORY_VERSION}/licenses/",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
       "flat": "true"
     },
     {
