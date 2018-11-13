@@ -185,10 +185,38 @@ else
   echo OK:  No BPX profiles are wild-carded
 fi
 
+echo
+echo Check user can issue START/STOP commands
+# 1- RDEFINE OPERCMDS MVS.START.** UACC(NONE)
+# 2- PERMIT MVS.START.** CLASS(OPERCMDS) ACC(UPDATE) ID(IBMUSER)
+# 3- SETR GENERIC(OPERCMDS) RACLIST(OPERCMDS) REFRESH
+
+#  echo MVS.STOP.STC | grep -e "$string"
+
+#  tsocmd "search class(opercmds) user(tstradm)"|sed 's/\(.*\) .*/\1/' |  \
+#  while read string 
+#  do
+# echo string $string
+#     for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+#     do
+#       prefix=`echo $string | awk -v i="$i" '{print substr($1,1,i)}'`
+#       echo prefix $prefix
+#       if [[ `echo $prefix | cut -c $i,$i` = "*" ]]
+#       then
+#         echo $i
+#         break
+#       fi
+#     done
+#  done
+
+
+# Here are the latest set of TSO commands to resolve the issue: 
+# 1- RDEFINE SDSF  ISF*.** UACC(NONE)
+# 2- PERMIT  ISF*.** CLASS(SDSF) ACC(READ) ID(IBMUSER)
+# 3- SETR GENERIC(SDSF) RACLIST(SDSF) REFRESH 
 
 
 # 3. Ports are available
-
 echo
 echo Are the ports in the yaml file already in use?
 portList=`sed -n 's/.*\(Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/install/zowe-install.yaml`
@@ -241,9 +269,19 @@ then
   echo Error:  neither ICSF nor CSF is running
 fi
     
+# 9. z/OSMF    
+
+# IEFC001I PROCEDURE IZUSVR1 WAS EXPANDED USING SYSTEM LIBRARY ADCD.Z23B.PROCLIB
+
     # 4.2  Ability to to send HTTP requests to zOSMF with X-CSRF-ZOSMF-HEADER.
     # When trying to call zOSMF such as using the URL:
     # https://aquagiza21.fyre.ibm.com:10443/zosmf/restfiles/ds?dslevel=tstradm
+
+# https://9.20.65.202:10443/zosmf/info  on ukzowe1
+# https://9.20.65.202:10443/zosmf/restjobs/jobs (you need to log in)
+
+# IEE252I MEMBER IZUPRM00 FOUND IN ADCD.Z23B.PARMLIB
+# CSRF_SWITCH(OFF) 
 
 
 echo
@@ -318,7 +356,7 @@ then
   # node version error
 
   echo $nodeVersion | grep 'not found'
-  if [[ $? -eq 0 ]]
+  if [[ $? -eq 0 ]]   # this test is wrong.
   then 
     echo node not found in your path ... trying standard location
     nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`  # is there a node symlink in this list?
@@ -359,6 +397,10 @@ fi
 
 # 9.2 Java installed and right version
 # IBM Java Version 1.8 or later.
+# /java/java80_64/J8.0_64/bin/java
+# it might be here ... ls /*
+# /usr/lpp/java/current_64
+# /usr/lpp/java/current_64/bin/java -version   # on zD&T
 
 java -version 1>/dev/null 2>/dev/null
 if [[ $? -ne 0 ]]
@@ -382,22 +424,22 @@ fi
 
 # C:\GIZA\giza-packaging\ZoeInstall>
 
-checkConfig.sh
-checkPorts.sh
+# - external scripts, in preparation:
+# checkConfig.sh
+# checkPorts.sh
 
 
-verifyConfig.sh
-# verifyhttpserver.jstemplate
-# verifyhttpsserver.jstemplate
-verifyptfs.sh
-verifyZoe.sh
-# verifyzosmf.jstemplate
-verifyzosmf.sh
-verifyzosmfaccess.sh
+# verifyConfig.sh
+# # verifyhttpserver.jstemplate
+# # verifyhttpsserver.jstemplate
+# verifyptfs.sh
+# verifyZoe.sh
+# # verifyzosmf.jstemplate
+# verifyzosmf.sh
+# verifyzosmfaccess.sh
 
-# Do you print out the state of all the CEE_RUNOPTS? 
-# I know the Query Monitor went through a spate of support calls 
-# caused by people having crazy runopts… 
+# print out the state of all the CEE_RUNOPTS 
+
 echo
 echo Checking CEE_RUNOPTS
 
@@ -431,3 +473,5 @@ fi
 
 echo
 echo Script zowe-verify-pre-install.sh ended
+
+

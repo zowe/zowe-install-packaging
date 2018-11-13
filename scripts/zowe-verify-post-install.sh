@@ -98,8 +98,8 @@ izusvr=0        # set success flag
 izuadmin=0      # set success flag
 
 tsocmd rl started \* 2>/dev/null |sed -n 's/STARTED *\([^ ]*\) .*/\1/p' \
- | sed 's/\([^.*]*\)\(.*\)/\1\2 \1/' \
- | while read prof pref
+ | sed 's/\([^.*]*\)\(.*\)/\1\2 \1/' > /tmp/rl.started.out
+while read prof pref
     do
         echo $ZOWESVR | grep ^$pref > /dev/null    # does the profile name match the ZOWESVR name?
         if [[ $? -eq 0 ]]
@@ -121,7 +121,8 @@ tsocmd rl started \* 2>/dev/null |sed -n 's/STARTED *\([^ ]*\) .*/\1/p' \
                 izuadmin=1        # set success flag
             fi
         fi
-    done
+    done  <     /tmp/rl.started.out
+    rm          /tmp/rl.started.out
 
 if [[ $izusvr -eq 0 || $izuadmin -eq 0 ]]
 then    
@@ -136,7 +137,7 @@ fi
     # - GROUP.ISFSPROG.SDSF                 
     # - ISF.CONNECT.**
     # - ISF.CONNECT.sysname (e.g. TVT6019)
-# 2.1.3 Mike Fulton's script (amended)
+# 2.1.3 external scripts (amended)
 
 # 2.2    ACF2
 # 2.3    TOPSECRET
@@ -407,6 +408,10 @@ do
     else 
         echo OK: Port $port
     fi
+
+    #
+    #   0.  TBD: also check hostname or IP is right for this machine
+    #
 done
 
 # 0. Verify server.env ... explorer-server/wlp/usr/servers/Atlas/server.env 
@@ -705,6 +710,40 @@ else
   echo z/OSMF ltpa.keys file is OK
 fi
 
+#  is zosmfServer ready to run a smarter planet?
+zosmfMsgLog=/var/zosmf/data/logs/zosmfServer/logs/messages.log
+ls $zosmfMsgLog 1> /dev/null 
+if [[ $? -eq 0 ]]
+then    
+    # log file could be large ... msg is normally at record number 79.  Allow for 200.
+    head -200 $zosmfMsgLog | iconv -f IBM-850 -t IBM-1047 | grep "zosmfServer is ready to run a smarter planet" > /dev/null
+    if [[ $? -ne 0 ]]
+    then    
+        echo Error: zosmfServer is not ready to run a smarter planet > /dev/null
+    fi
+fi
+
+# ZOSMF_HOST=your_system_ip_address
+zosmfHost=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/explorer-server/wlp/usr/servers/Atlas/server.env | grep "ZOSMF_HOST="`
+if [[ $? -eq 0 ]]
+then 
+    # is it set to a non-empty value?
+    echo $zosmfHost | grep "ZOSMF_HOST=[^ ]"
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: ZOSMF_HOST is set to empty
+    else
+        hostname=`echo $zosmfHost | sed -n 's/.*ZOSMF_HOST=\([^ ]*\).*/\1/'`
+        echo hostname = $hostname
+        ping $hostname > /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Error: Unable to ping $hostname
+        fi
+    fi
+else 
+    echo ZOSMF_HOST is not set in server.env
+fi
 
 # 6. Other required jobs
 echo
@@ -712,8 +751,10 @@ echo Check servers are up
 
 
  echo
-  echo Check jobs AXR and CEA
-  for jobname in AXR CEA 
+  echo Check jobs AXR CEA ICSF CSF  # jobs with no JCT
+
+  ICSF=0        #   neither ICSF nor CSF is running?
+  for jobname in AXR CEA ICSF CSF
   do
     ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/dev/null
       # the selected line will look like this ...
@@ -722,17 +763,25 @@ echo Check servers are up
     if [[ $? -eq 0 ]]
     then 
         echo Job ${jobname} is executing
+        if [[ ${jobname} = ICSF || ${jobname} = CSF ]]
+        then
+            ICSF=1
+        fi
     else 
         echo Job ${jobname} is not executing
     fi
   done
 
-      # 4.2 Jobs with JCT
+    if [[ ${ICSF} -eq 1 ]]
+    then
+    echo OK:  ICSF or CSF is running
+    else
+    echo Error:  neither ICSF nor CSF is running
+    fi
+      
+# 4.2 Jobs with JCT
 
-
-ICSF=0
-
-for jobname in IZUANG1 IZUSVR1 ICSF CSF RACF
+for jobname in IZUANG1 IZUSVR1 RACF
 do
   tsocmd status ${jobname} 2>/dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
   if [[ $? -eq 0 ]]
@@ -747,14 +796,60 @@ do
   fi
 done
 
-if [[ ${ICSF} -eq 1 ]]
-then
-  echo OK:  ICSF or CSF is running
-  else
-  echo Error:  neither ICSF nor CSF is running
-fi
 
-# Check relevant -a extattr bits 
+
+echo
+echo Check relevant -a extattr bits 
+
+ls -RE ${ZOWE_ROOT_DIR} |grep " [a][-p][-s][^ ] " > /tmp/extattr.a.list
+
+for file in \
+    bbgzachk \
+    bbgzadrm \
+    bbgzafsm \
+    bbgzangl \
+    bbgzcsl \
+    bbgzsafm \
+    bbgzscfm \
+    bboacall \
+    zssServer 
+do
+    grep $file /tmp/extattr.a.list 1>/dev/null 2>/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: File $file does not have the -a extattr bit set
+    else
+        echo File $file is OK
+    fi
+done
+
+echo
+echo Check relevant -p extattr bits 
+ls -RE ${ZOWE_ROOT_DIR} |grep " [-a][p][-s][^ ] " > /tmp/extattr.p.list
+
+for file in \
+    batchManagerZos \
+    bbgzachk \
+    bbgzadrm \
+    bbgzafsm \
+    bbgzangl \
+    bbgzcsl \
+    bbgzsafm \
+    bbgzscfm \
+    bbgzsrv \
+    bbgzsufm \
+    bboacall 
+do
+    grep $file /tmp/extattr.p.list 1>/dev/null 2>/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: File $file does not have the -p extattr bit set
+    else
+        echo File $file is OK
+    fi
+done
+
+rm /tmp/extattr.*.list
 
 echo
 echo Script zowe-verify-post-install.sh finished
