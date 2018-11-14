@@ -9,6 +9,9 @@
         <feature>apiDiscovery-1.0</feature>
         <feature>cdi-1.2</feature>
     </featureManager>
+    
+    <config updateTrigger="disabled"/>                                    
+    <applicationMonitor updateTrigger="disabled" dropinsEnabled="false"/> 
 
     <httpEndpoint host="*" httpPort="${atlashttp}" httpsPort="${atlashttps}" id="defaultHttpEndpoint"/>
 
