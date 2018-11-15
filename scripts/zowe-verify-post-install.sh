@@ -7,7 +7,7 @@ echo
 
 # This script is expected to be located in ${ZOWE_ROOT_DIR}/scripts,
 # otherwise you must set ZOWE_ROOT_DIR to where the Zowe runtime is installed before you run this script
-# e.g. ZOWE_ROOT_DIR=/u/userid/zowe/1.0.0       
+# e.g. export ZOWE_ROOT_DIR=/u/userid/zowe/1.0.0       
 
 if [[ -n "${ZOWE_ROOT_DIR}" ]]
 then 
@@ -44,6 +44,7 @@ do
   fi
 done
 
+# Check number of started tasks and ports (varies by Zowe release)
 # version 0.9.0  
 # STC #  1 2 3 4 5 6 7 8 9      # ZOWESVRn, n=(1.9)
 zowestc="1 1 3 0 0 1 0 1 3"     # expected number of Zowe STCs for jobs 1-9       
@@ -72,14 +73,6 @@ fi
 # 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
 #  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
 
-# tsocmd rl started \*|grep ZO
-# rl started *
-# STARTED    ZOE*.* (G)
-# STARTED    ZOWE*.* (G)
-# tsocmd rl started 'zowe*.*' stdata
-
-# tsocmd rl started \*|sed -n 's/STARTED *\([^ ]*\) .*/\1/p' | sed 's/[.*]//g'
-
 # ZOWESVR=ZOEJAD  # test
 
 if [[ -n "${ZOWESVR}" ]]
@@ -88,41 +81,86 @@ then
 else 
     echo ZOWESVR environment variable is empty, defaulting to ZOWESVR for this test
     ZOWESVR=ZOWESVR
+    echo To set the ZOWESVR name for this script next time, issue the command
+    echo export ZOWESVR=yourserver
 fi
 
 echo
 echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
 
-# find names of STARTED profiles
+# similar function as in pre-install.sh ...
+match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
+{
+    set -f
+  entry=$1                  # the RACF definition entry in the list
+  profileName=${ZOWESVR}  # the profile that we want to match in that list
+
+  l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
+
+    i=1
+    while [[ $i -lt $l ]]
+    do
+        r=`echo $entry        | cut -c $i,$i` # ith char from RACF definition
+        p=`echo $profileName  | cut -c $i,$i` # ith char from profile we're looking for
+
+        if [[ $r = '*' ]]
+        then
+          return 0  # asterisk matches rest of string
+        fi
+
+        if [[ $r != $p ]]
+        then
+          break   # mismatch char for this profile, quit
+        fi
+
+        i=$((i+1))
+    done
+
+    if [[ $i -eq $l ]]
+    then
+      return 0  # whole string matched
+    fi
+
+  return 1    # no strings matched
+}
+
 izusvr=0        # set success flag
 izuadmin=0      # set success flag
 
-tsocmd rl started \* 2>/dev/null |sed -n 's/STARTED *\([^ ]*\) .*/\1/p' \
- | sed 's/\([^.*]*\)\(.*\)/\1\2 \1/' > /tmp/rl.started.out
-while read prof pref
-    do
-        echo $ZOWESVR | grep ^$pref > /dev/null    # does the profile name match the ZOWESVR name?
+# # find names of STARTED profiles
+set -f
+
+  tsocmd rl started \* 2>/dev/null |sed -n 's/STARTED *\([^ ]*\) .*/\1/p' > /tmp/find_profile.out
+  while read entry 
+  do
+        match_profile ${entry}
         if [[ $? -eq 0 ]]
         then
-            tsocmd rl started $prof stdata 2>/dev/null | grep "USER= IZUSVR" > /dev/null    # is the profile user name IZUSVR?
-            if [[ $? -ne 0 ]]
-            then 
-                echo Error: profile $prof is not assigned to user IZUSVR
-            else
-                echo OK: Profile $prof is assigned to user IZUSVR
-                izusvr=1        # set success flag
-            fi
-            tsocmd rl started $prof stdata 2>/dev/null | grep "GROUP= IZUADMIN" > /dev/null # is the profile group name IZUADMIN?
-            if [[ $? -ne 0 ]]
-            then 
-                echo Error: profile $prof is not assigned to group IZUADMIN
-            else
-                echo Profile $prof is assigned to group IZUADMIN
-                izuadmin=1        # set success flag
-            fi
+                echo OK: Found matching STARTED profile entry $entry for task ${ZOWESVR}
+
+                tsocmd rl started $entry stdata 2>/dev/null | grep "^USER= IZUSVR" > /dev/null    # is the profile user name IZUSVR?
+                if [[ $? -ne 0 ]]
+                then 
+                    echo Error: profile $entry is not assigned to user IZUSVR
+                else
+                    echo OK: Profile $entry is assigned to user IZUSVR
+                    izusvr=1        # set success flag
+                fi
+
+                tsocmd rl started $entry stdata 2>/dev/null | grep "^GROUP= IZUADMIN" > /dev/null # is the profile group name IZUADMIN?
+                if [[ $? -ne 0 ]]
+                then 
+                    echo Warning: profile $entry is not assigned to group IZUADMIN
+                    # This is not a barrier to correct execution, but if the group is not null, we think it must be IZUADMIN.
+                else
+                    echo OK: Profile $entry is assigned to group IZUADMIN
+                    izuadmin=1        # set success flag
+                fi
+            
+                break   # don't look for any more matches        
         fi
-    done  <     /tmp/rl.started.out
-    rm          /tmp/rl.started.out
+  done <    /tmp/find_profile.out
+  rm        /tmp/find_profile.out
 
 if [[ $izusvr -eq 0 || $izuadmin -eq 0 ]]
 then    
@@ -130,6 +168,8 @@ then
 else
     echo OK: Started task $ZOWESVR is assigned to the correct RACF user and group
 fi
+
+set +f 
 
 
 # 2.1.2  Activate the SDSF RACF class and add the following 3 profiles your system:
@@ -160,17 +200,16 @@ fi
 # deploy/instance/ZLUX/pluginStorage/com.rs.mvd.tn3270/sessions/_defaultTN3270.json)
 
 # 5. LTPA keys are readable and sym-linked
-# No redundant izu.ltpa.key.password entries in bootstrap.properties
+# No redundant izu.ltpa.key.password entries in bootstrap.properties ** TBD **
 # 6. localhost is defined for real, VM and zD&T systems:
 # Add “127.0.0.1 localhost” to ADCD.Z23A.TCPPARMS(GBLIPNOD)
 
-# 1.2.2.	of function
+# 1.2.2.	function
 #  
 
 echo
 echo Check ZOESVR job is started on user IZUSVR
 
-# ZOWESVR=ZOEJAD  # temporary test; normally it's ZOWESVR ... or a parm.
 echo Info: ZOWE job name is ${ZOWESVR}
 
 function checkJob {
@@ -179,8 +218,10 @@ tsocmd status ${jobname} 2> /dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTIN
 if [[ $? != 0 ]]
 then 
     echo Error: job ${jobname} is not executing
+    return 1
 else 
     echo OK: job ${jobname} is executing
+    return 0
 fi
 }
 
@@ -206,26 +247,36 @@ then
 else
     echo OK: opercmd is available
 
+    # Check STCs
 
     # There could be >1 STC named ZOWESVR
 
     echo
-    echo Does any ZOWESVR have userid IZUSVR?
+    echo Do all ZOWESVR jobs have userid IZUSVR?
 
-    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=IZUSVR" > /dev/null
+    # check status first ...
+
+    checkJob ${ZOWESVR}
     if [[ $? -ne 0 ]]
     then    
-        echo Error:  USERID of ${ZOWESVR} is not IZUSVR
-
-    else    # we found >0 zowe STCs, do any of them NOT have USERID=IZUSVR?
-        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=" | grep -v "USERID=IZUSVR" > /dev/null
-        if [[ $? -eq 0 ]]
+        echo Error:  job ${ZOWESVR} is not executing, its user id will not be checked
+    else 
+        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=IZUSVR" > /dev/null
+        if [[ $? -ne 0 ]]
         then    
-            echo Error:  Some USERID of ${ZOWESVR} is not IZUSVR
-        else
-            echo OK:  All USERIDs of ${ZOWESVR} are IZUSVR
+            echo Error:  USERID of ${ZOWESVR} is not IZUSVR
+
+        else    # we found >0 zowe STCs, do any of them NOT have USERID=IZUSVR?
+            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=" | grep -v "USERID=IZUSVR" > /dev/null
+            if [[ $? -eq 0 ]]
+            then    
+                echo Error:  Some USERID of ${ZOWESVR} is not IZUSVR
+            else
+                echo OK:  All USERIDs of ${ZOWESVR} are IZUSVR
+            fi
         fi
     fi
+
 
 # number of ZOESVR started tasks expected to be active in a running system
     echo
@@ -295,8 +346,6 @@ fi
 
 
 # 0. Extract port settings from Zowe config files.  
-#   Zowe runtime root directory=/u/tstradm/zowe/0.9.0
-
 
 # here are the defaults:
   api_mediation_catalog_http_port=7552      # api-mediation/scripts/api-mediation-start-catalog.sh
@@ -519,7 +568,7 @@ echo
 echo Check Node is installed and working
 
 # IBM SDK for Node.js z/OS Version 6.11.2 or later.
-  response=`node --version`
+  response=`node --version`  2>/dev/null
   echo $response | grep 'not found'
   if [[ `echo $?` == 0 ]]
 then 
@@ -549,11 +598,6 @@ if [[ $vrm < "02.02.00" ]]
     then echo version $vrm not supported
     else echo version $vrm is supported
 fi
-
-
-
-#  
-
 
 # 4. z/OSMF is up 
 
@@ -850,6 +894,37 @@ do
 done
 
 rm /tmp/extattr.*.list
+
+echo
+echo Check files are executable 
+ls -l ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server | grep "^-r.xr.x... .* IZUADMIN *[0-9]" 1> /dev/null 2> /dev/null
+if [[ $? -eq 0 ]]
+then    
+    echo OK: ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server is executable and owned by a user in group IZUADMIN
+else 
+    echo Error: ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server is not executable or not owned by a user in group IZUADMIN 
+fi 
+
+# check permission of parent directories.  Iterate back up to root directory, checking each is executable.
+savedir=$PWD    # save CWD
+
+cd ${ZOWE_ROOT_DIR}
+while [[ 1 ]]
+do
+    ls -l ${PWD} | grep "^dr.x..x..x " 1> /dev/null 2> /dev/null
+    if [[ $? -eq 0 ]]
+    then    
+        echo OK: ${PWD} is executable
+    else 
+        echo Error: ${PWD} is not executable
+    fi 
+    if  [[ $PWD = "/" ]]
+    then
+        break
+    fi
+    cd ..
+done
+cd $savedir # restore CWD
 
 echo
 echo Script zowe-verify-post-install.sh finished

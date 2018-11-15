@@ -5,17 +5,37 @@
 # Testing:  You must set these variables before you run this script:
 # INSTALL_DIR=/u/tstradm/zowe/zowe-0.9.0       # this is the test location for testing this script on MV3B.  Remove this line before shipping.  
 
-
 # Run this script AFTER you un-PAX the Zowe PAX file.
 
 # Assume this script is invoked from the 'install' directory.  
 #
-#  This script may invoke others, e.g.  giza-packaging/Zoeinstall/verify*.sh
+#  This script may invoke others later, e.g.  giza-packaging/Zoeinstall/verify*.sh
 
 echo Script zowe-verify-pre-install.sh started
 
+# This script is expected to be located in ${INSTALL_DIR}/scripts,
+# otherwise you must set INSTALL_DIR to the Zowe install directory before you run this script
+# e.g. export INSTALL_DIR=/u/tstradm/zowe/zowe-0.9.0       
+
+if [[ -n "${INSTALL_DIR}" ]]
+then 
+    echo INSTALL_DIR environment variable is set to ${INSTALL_DIR}
+else 
+    echo Info: INSTALL_DIR environment variable is empty
+    if [[ `basename $PWD` != scripts ]]
+    then
+        echo You are not in the INSTALL_DIR/scripts directory
+        echo Warning: '${INSTALL_DIR} is not set'
+        echo '${INSTALL_DIR} must be set to the Zowe install directory'
+        echo Warning: script will run, but with errors
+    else
+        INSTALL_DIR=`dirname $PWD`
+        echo INSTALL_DIR environment variable is now set to ${INSTALL_DIR}
+    fi    
+fi
+
 echo
-echo Check we are in the right directory
+echo Check entries in the install directory
 
 for dir in files install licenses log scripts
 do
@@ -52,25 +72,6 @@ USER=IZUSVR\ *)
   echo $msg
 esac
 
-# List of things to check
-# 0. Supported version of z/OS
-echo
-echo Check INSTALL_DIR is set
-
-
-
-if [[ -n "${INSTALL_DIR}" ]]
-then 
-    echo Info: INSTALL_DIR is set to ${INSTALL_DIR} 
-else
-    echo Error: INSTALL_DIR is not set
-    echo Some parts of this script will not work as a result
-fi  
-
-
-echo INSTALL_DIR is ${INSTALL_DIR}
-
-
 
 echo
 echo Is opercmd available?
@@ -102,8 +103,10 @@ else
   # 0.2 Jobs with no JCT
   
   echo
-  echo Check jobs AXR and CEA
-  for jobname in AXR CEA 
+  echo Check jobs AXR CEA CSF ICSF
+
+  ICSF=0
+  for jobname in AXR CEA CSF ICSF
   do
     ${INSTALL_DIR}/scripts/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/dev/null
       # the selected line will look like this ...
@@ -112,14 +115,24 @@ else
     if [[ $? -eq 0 ]]
     then 
         echo Job ${jobname} is executing
+        if [[ ${jobname} = ICSF || ${jobname} = CSF ]]
+        then
+          ICSF=1
+        fi
     else 
         echo Job ${jobname} is not executing
     fi
   done
 
+  if [[ ${ICSF} -eq 1 ]]
+  then
+    echo OK:  ICSF or CSF is running
+    else
+    echo Error:  neither ICSF nor CSF is running
+  fi
+
+
 fi
-
-
 
 # z/OSMF and other pre-req jobs are up and running
 # z/OS V2R2 with PTF UI46658 or z/OS V2R3, 
@@ -154,66 +167,100 @@ else
 fi
 
 
-echo
-echo Check user is able to set -a extattr bits 
-tsocmd "search class(facility) user(tstradm)" 2>/dev/null | grep BPX\.FILEATTR\.APF 1>/dev/null 2>/dev/null
-if [[ $? -ne 0 ]]
-then
-  echo Error:  User $userid has no access to BPX.FILEATTR.APF
-else  
-  echo OK:  User $userid has access to BPX.FILEATTR.APF
-fi
 
-echo
-echo Check user is able to set program control bits
-tsocmd "search class(facility) user(tstradm)" 2>/dev/null | grep BPX\.FILEATTR\.PROGCTL 1>/dev/null 2>/dev/null
-if [[ $? -ne 0 ]]
-then
-  echo Error:  User $userid has no access to BPX.FILEATTR.PROGCTL
-else  
-  echo OK:  User $userid has access to BPX.FILEATTR.PROGCTL
-fi
-
-echo
-echo Check wildcard BPX profiles
-tsocmd rl facility \* 2>/dev/null | grep "^FACILITY *BPX" | grep '*'
-if [[ $? -eq 0 ]]
-then
-  echo Warning:  Some BPX profiles are wild-carded 
-  echo This will be checked in a future version of this script
-else  
-  echo OK:  No BPX profiles are wild-carded
-fi
-
-echo
-echo Check user can issue START/STOP commands
 # 1- RDEFINE OPERCMDS MVS.START.** UACC(NONE)
 # 2- PERMIT MVS.START.** CLASS(OPERCMDS) ACC(UPDATE) ID(IBMUSER)
 # 3- SETR GENERIC(OPERCMDS) RACLIST(OPERCMDS) REFRESH
 
-#  echo MVS.STOP.STC | grep -e "$string"
 
-#  tsocmd "search class(opercmds) user(tstradm)"|sed 's/\(.*\) .*/\1/' |  \
-#  while read string 
-#  do
-# echo string $string
-#     for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
-#     do
-#       prefix=`echo $string | awk -v i="$i" '{print substr($1,1,i)}'`
-#       echo prefix $prefix
-#       if [[ `echo $prefix | cut -c $i,$i` = "*" ]]
-#       then
-#         echo $i
-#         break
-#       fi
-#     done
-#  done
+match_profile ()
+{
+  className=$1    # the CLASS containing all the profiles that user can access
+  profileName=$2  # the profile that we want to match in that list
+  tsocmd "search class($className) user($userid)" 2> /dev/null |sed 's/\(.*\) .*/\1/' > /tmp/find_profile.out
+  while read string 
+  do
+    
+    l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator
+    i=1
+    while [[ $i -lt $l ]]
+    do
+        r=`echo $string       | cut -c $i,$i` # ith char from RACF definition
+        p=`echo $profileName  | cut -c $i,$i` # ith char from profile we're looking for
+
+        if [[ $r = '*' ]]
+        then
+          rm        /tmp/find_profile.out
+          return 0  # asterisk matches rest of string
+        fi
+
+        if [[ $r != $p ]]
+        then
+          break   # mismatch char for this profile, try next
+        fi
+
+        i=$((i+1))
+    done
+
+    if [[ $i -eq $l ]]
+    then
+      rm        /tmp/find_profile.out
+      return 0  # whole string matched
+    fi
 
 
+  done <    /tmp/find_profile.out
+  rm        /tmp/find_profile.out
+  return 1    # no strings matched
+}
+
+echo
+echo Check user can issue START/STOP commands
+
+for profile in "MVS.START.STC" "MVS.STOP.STC"
+do
+  match_profile "OPERCMDS" $profile
+  if [[ $? -eq 0 ]]
+  then
+    echo OK: User $userid is authorized to use OPERCMDS $profile
+  else 
+    echo Error: User $userid is not authorized to use OPERCMDS $profile
+  fi
+done
+
+echo
+echo Check user can issue SDSF commands
+# Check ISF access:
 # Here are the latest set of TSO commands to resolve the issue: 
 # 1- RDEFINE SDSF  ISF*.** UACC(NONE)
 # 2- PERMIT  ISF*.** CLASS(SDSF) ACC(READ) ID(IBMUSER)
 # 3- SETR GENERIC(SDSF) RACLIST(SDSF) REFRESH 
+
+for profile in "ISF.CONNECT" "ISFATTR" "ISFCMD.ODSP" "ISFOPER"
+do
+  match_profile "SDSF" $profile
+  if [[ $? -eq 0 ]]
+  then
+    echo OK: User $userid is authorized to use SDSF $profile
+  else 
+    echo Info: User $userid is not authorized to use SDSF $profile
+  fi
+done
+
+
+echo
+echo Check user is authorized to set -a extattr APF and -p program control bits 
+
+for profile in "BPX.FILEATTR.APF" "BPX.FILEATTR.PROGCTL"
+do
+  match_profile "FACILITY" $profile
+  if [[ $? -eq 0 ]]
+  then
+    echo OK: User $userid is authorized to use $profile
+  else 
+    echo Error: User $userid is not authorized to use $profile
+  fi
+done
 
 
 # 3. Ports are available
@@ -226,6 +273,8 @@ do
   if [[ $? -eq 0 ]]
   then
     echo Error: port $port is already in use
+  else  
+    echo OK: port $port is not in use
   fi
 done
 
@@ -245,32 +294,24 @@ done
 echo
 echo Check servers are up
 
-ICSF=0
 
-for jobname in IZUANG1 IZUSVR1 ICSF CSF RACF
+
+for jobname in IZUANG1 IZUSVR1 RACF
 do
   tsocmd status ${jobname} 2>/dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
   if [[ $? -eq 0 ]]
   then 
       echo Job ${jobname} is executing
-      if [[ ${jobname} = ICSF || ${jobname} = CSF ]]
-      then
-        ICSF=1
-      fi
+
   else 
       echo Job ${jobname} is not executing
   fi
 done
 
-if [[ ${ICSF} -eq 1 ]]
-then
-  echo OK:  ICSF or CSF is running
-  else
-  echo Error:  neither ICSF nor CSF is running
-fi
     
 # 9. z/OSMF    
 
+# --- this section is TBD ------
 # IEFC001I PROCEDURE IZUSVR1 WAS EXPANDED USING SYSTEM LIBRARY ADCD.Z23B.PROCLIB
 
     # 4.2  Ability to to send HTTP requests to zOSMF with X-CSRF-ZOSMF-HEADER.
