@@ -215,7 +215,7 @@ echo Info: ZOWE job name is ${ZOWESVR}
 function checkJob {
 jobname=$1
 tsocmd status ${jobname} 2> /dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
-if [[ $? != 0 ]]
+if [[ $? -ne 0 ]]
 then 
     echo Error: job ${jobname} is not executing
     return 1
@@ -610,7 +610,7 @@ if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
 then 
     echo OK: ZOWE_ZOSMF_PATH is not empty 
     ls ${ZOWE_ZOSMF_PATH}/server.xml > /dev/null    # pick a file to check
-    if [[ $? != 0 ]]
+    if [[ $? -ne 0 ]]
     then    
         echo Error: ZOWE_ZOSMF_PATH does not point to a valid install of z/OSMF
     fi
@@ -624,7 +624,7 @@ if [[ -n "${ZOWE_JAVA_HOME}" ]]
 then 
     echo OK: ZOWE_JAVA_HOME is not empty 
     ls ${ZOWE_JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
-    if [[ $? != 0 ]]
+    if [[ $? -ne 0 ]]
     then    
         echo Error: ZOWE_JAVA_HOME does not point to a valid install of Java
     fi
@@ -639,7 +639,7 @@ if [[ -n "${ZOWE_EXPLORER_HOST}" ]]
 then 
     echo OK: ZOWE_EXPLORER_HOST is not empty 
     ping ${ZOWE_EXPLORER_HOST} > /dev/null    # check host
-    if [[ $? != 0 ]]
+    if [[ $? -ne 0 ]]
     then    
         echo Error: ZOWE_EXPLORER_HOST does not point to a valid hostname
     fi
@@ -647,10 +647,46 @@ else
     echo Error: ZOWE_EXPLORER_HOST is empty
 fi
 
+# ZOE_SDSF_PATH="/usr/lpp/sdsf/java"
+if [[ -n "${ZOE_SDSF_PATH}" ]]
+then 
+    echo OK: ZOE_SDSF_PATH is not empty 
+    ls ${ZOE_SDSF_PATH}/classes | grep 'isfjcall\.jar'  > /dev/null    # check one .jar file
+    if [[ $? -ne 0 ]]
+    then    
+        echo Error: ZOE_SDSF_PATH does not point to a valid SDSF path
+    fi
+else 
+    echo Error: ZOE_SDSF_PATH is empty
+fi
+
+
+
+# ZOWE_IPADDRESS="9.20.5.48"
+if [[ -n "${ZOWE_IPADDRESS}" ]]
+then 
+    echo OK: ZOWE_IPADDRESS is not empty 
+    echo ${ZOWE_IPADDRESS} | grep '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*'  > /dev/null    # check one .jar file
+    if [[ $? -ne 0 ]]
+    then    
+        echo Error: ZOWE_IPADDRESS does not point to a numeric IP address
+    fi
+        
+    ping ${ZOWE_IPADDRESS} > /dev/null    # check host
+    if [[ $? -ne 0 ]]
+    then    
+        echo Error: can not ping ZOWE_IPADDRESS ${ZOWE_IPADDRESS}
+    else
+        echo OK: can ping ZOWE_IPADDRESS ${ZOWE_IPADDRESS}
+    fi
+else 
+    echo Error: ZOWE_IPADDRESS is empty
+fi
+
 # • localhost: The IP address of this host
 # 
     ping localhost > /dev/null    # check host
-    if [[ $? != 0 ]]
+    if [[ $? -ne 0 ]]
     then    
         echo Error: can not ping localhost
     else
