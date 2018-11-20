@@ -182,34 +182,6 @@ catalogUiTiles:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
 
-# Add static definition for uss
-cat <<EOF >$TEMP_DIR/uss.yml
-#
-services:
-    - serviceId: uss
-      title: IBM z/OS Unix Files
-      description: IBM z/OS Unix Files REST API service
-      catalogUiTileId: uss
-      instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: api/v1/uss
-        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: ui/v1/uss
-      apiInfo:
-        - apiId: com.ibm.uss
-          gatewayUrl: api/v1
-          version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
-catalogUiTiles:
-    uss:
-        title: z/OS Unix Files services
-        description: IBM z/OS Unix Files REST services          
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
-
 # Add static definition for zos
 cat <<EOF >$TEMP_DIR/zos.yml
 #
