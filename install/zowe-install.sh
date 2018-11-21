@@ -137,10 +137,11 @@ echo "Attempting to create ZOWESVR PROCLIB ..."
 # Create the ZOWESVR JCL
 # Insert the default Zowe install path in the JCL
 
-echo "Copying the zowe-start;stop;server-start.sh into "$ZOWE_ROOT_DIR/scripts >> $LOG_FILE
+echo "Copying the zowe-start;stop;verify;server-start.sh into "$ZOWE_ROOT_DIR/scripts >> $LOG_FILE
 cd $INSTALL_DIR/scripts
 cp $INSTALL_DIR/scripts/zowe-start.sh $ZOWE_ROOT_DIR/scripts/zowe-start.sh
 cp $INSTALL_DIR/scripts/zowe-stop.sh $ZOWE_ROOT_DIR/scripts/zowe-stop.sh
+cp $INSTALL_DIR/scripts/zowe-verify-post-install.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
 chmod -R 777 $ZOWE_ROOT_DIR/scripts
 
 mkdir $ZOWE_ROOT_DIR/scripts/internal
@@ -160,7 +161,7 @@ separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
 echo "   (or in SDSF directly issue the command /S ZOWESVR)"
 echo "To stop Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-stop.sh
-echo "  (or in SDSF directly the command /C ZOWESVR)"
+echo "  (or in SDSF directly issue the command /C ZOWESVR)"
 
 # remove the working directory
 rm -rf $TEMP_DIR
