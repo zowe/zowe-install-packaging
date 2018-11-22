@@ -40,6 +40,9 @@
     <authCache timeout="${izu.authCache.timeout}"/>
     <webAppSecurity allowFailOverToBasicAuth="true" ssoDomainNames="${izu.sso.domain.names}" ssoRequiresSSL="true" 
      ssoUseDomainFromURL="${izu.sso.usedomainfromurl}"/>
+
+    <config updateTrigger="disabled"/>
+    <applicationMonitor updateTrigger="disabled" dropinsEnabled="false"/>
      
 	<applicationManager autoExpand="true"/>
 	

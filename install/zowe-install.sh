@@ -15,6 +15,9 @@
 export PROFILE=.profile
 export INSTALL_DIR=$PWD/../
 
+# extract Zowe version from manifest.json
+export ZOWE_VERSION=$(cat $INSTALL_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+
 separator() {
     echo "---------------------------------------------------------------------"
 }
@@ -36,6 +39,12 @@ LOG_FILE=$LOG_DIR/$LOG_FILE
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
+if [ -z "$ZOWE_VERSION" ]; then
+  echo "Error: failed to determine Zowe version."
+  echo "Error: failed to determine Zowe version." >> $LOG_FILE
+  exit 1
+fi
+
 echo "Install started at: "`date` >> $LOG_FILE
 
 # Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
@@ -47,7 +56,7 @@ echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FIL
 # ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTP_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
-echo "Beginning install of Zowe 0.9.3 into directory " $ZOWE_ROOT_DIR
+echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
 # warn about any prior installation
 if [[ -d $ZOWE_ROOT_DIR ]]; then
@@ -63,6 +72,9 @@ else
     mkdir -p $ZOWE_ROOT_DIR
 fi
 chmod a+rx $ZOWE_ROOT_DIR
+
+# copy manifest.json to root folder
+cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
 
 # Create a temp directory to be a working directory for sed replacements
 export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
@@ -103,7 +115,7 @@ cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 . deploy.sh > /dev/null
 
-echo "Zowe 0.9.3 runtime install completed into directory "$ZOWE_ROOT_DIR
+echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 echo "Attempting to set Unix file permissions ..."

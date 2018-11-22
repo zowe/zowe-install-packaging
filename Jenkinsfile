@@ -12,6 +12,7 @@
 
 
 def isPullRequest = env.BRANCH_NAME.startsWith('PR-')
+def zoweVersion = null
 
 def opts = []
 // keep last 20 builds for regular branches, no keep for pull requests
@@ -54,12 +55,6 @@ customParameters.push(credentials(
   defaultValue: 'GizaArtifactory',
   required: true
 ))
-customParameters.push(string(
-  name: 'ZOWE_VERSION',
-  description: 'Zowe version number',
-  defaultValue: '0.9.3',
-  trim: true
-))
 opts.push(parameters(customParameters))
 
 // set build properties
@@ -79,6 +74,19 @@ node ('ibm-jenkins-slave-nvm') {
       if (isPullRequest) {
         echo "This is a pull request"
       }
+    }
+
+    stage('config') {
+      // load zowe version from manifest
+      zoweVersion = sh(
+        script: "cat manifest.json | jq -r '.version'",
+        returnStdout: true
+      ).trim()
+      if (zoweVersion) {
+        echo "Packaging Zowe v${zoweVersion} started..."
+      } else {
+        error "Cannot find Zowe version"
+      }
 
       // prepare JFrog CLI configurations
       withCredentials([usernamePassword(credentialsId: params.ARTIFACTORY_SECRET, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
@@ -87,12 +95,28 @@ node ('ibm-jenkins-slave-nvm') {
     }
 
     stage('prepare') {
+      // replace templates
+      echo 'replacing templates...'
+      sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' artifactory-download-spec.json.template > artifactory-download-spec.json && rm artifactory-download-spec.json.template"
+      sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
+
       echo 'preparing PAX workspace folder...'
 
       // download artifactories
-      sh "sed -e 's/{ARTIFACTORY_VERSION}/${params.ZOWE_VERSION}/g' artifactory-download-spec.json > artifactory-download-spec.converted.json"
-      sh "echo 'Effective Artifactory download spec >>>>>>>' && cat artifactory-download-spec.converted.json"
-      sh "jfrog rt dl --spec=artifactory-download-spec.converted.json"
+      sh "echo 'Effective Artifactory download spec >>>>>>>' && cat artifactory-download-spec.json"
+      def downloadResult = sh(
+        script: "jfrog rt dl --spec=artifactory-download-spec.json",
+        returnStdout: true
+      ).trim()
+      echo "artifactory download result:"
+      echo downloadResult
+      def downloadResultObject = readJSON(text: downloadResult)
+      if (downloadResultObject['status'] != 'success' ||
+          downloadResultObject['totals']['success'] != 9 || downloadResultObject['totals']['failure'] != 0) {
+        error "Failed on verifying download result"
+      } else {
+        echo "download result is successful as expected"
+      }
 
       // prepare folder
       // - pax-workspace/content holds binary files
@@ -100,10 +124,11 @@ node ('ibm-jenkins-slave-nvm') {
       sh 'mkdir -p pax-workspace/ascii/scripts'
       sh 'mkdir -p pax-workspace/ascii/install'
       sh 'mkdir -p pax-workspace/ascii/files'
-      sh "mkdir -p pax-workspace/content/zowe-${params.ZOWE_VERSION}/files"
+      sh "mkdir -p pax-workspace/content/zowe-${zoweVersion}/files"
       // copy from current github source
-      sh "cp -R files/* pax-workspace/content/zowe-${params.ZOWE_VERSION}/files"
-      sh "rsync -rv --include '*.json' --include '*.html' --include '*.jcl' --include '*.template' --exclude '*.zip' --exclude '*.png' --exclude '*.tgz' --exclude '*.tar.gz' --exclude '*.pax' --prune-empty-dirs --remove-source-files pax-workspace/content/zowe-${params.ZOWE_VERSION}/files pax-workspace/ascii"
+      sh "cp -R files/* pax-workspace/content/zowe-${zoweVersion}/files"
+      sh "rsync -rv --include '*.json' --include '*.html' --include '*.jcl' --include '*.template' --exclude '*.zip' --exclude '*.png' --exclude '*.tgz' --exclude '*.tar.gz' --exclude '*.pax' --prune-empty-dirs --remove-source-files pax-workspace/content/zowe-${zoweVersion}/files pax-workspace/ascii"
+      sh 'cp manifest.json pax-workspace/ascii'
       sh 'cp -R install/* pax-workspace/ascii/install'
       sh 'cp -R scripts/* pax-workspace/ascii/scripts'
       // tar ascii files
@@ -124,7 +149,7 @@ node ('ibm-jenkins-slave-nvm') {
         createPax('zowe-install-packaging', "zowe.pax",
                   params.PAX_SERVER_IP, params.PAX_SERVER_CREDENTIALS_ID,
                   './pax-workspace', '/zaas1/buildWorkspace', '-x os390',
-                  ['ZOWE_VERSION':params.ZOWE_VERSION])
+                  ['ZOWE_VERSION':zoweVersion])
       }
     }
 
@@ -141,7 +166,19 @@ node ('ibm-jenkins-slave-nvm') {
       // attach git information to build info
       sh "jfrog rt bag '${buildName}' ${env.BUILD_NUMBER} ."
       // upload and attach to build info
-      sh "jfrog rt u 'pax-workspace/zowe.pax' 'libs-snapshot-local/com/project/zowe/${params.ZOWE_VERSION}-${releaseIdentifier}/zowe-${params.ZOWE_VERSION}-${buildIdentifier}.pax' --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER} --flat"
+      def uploadResult = sh(
+        script: "jfrog rt u 'pax-workspace/zowe.pax' 'libs-snapshot-local/com/project/zowe/${zoweVersion}-${releaseIdentifier}/zowe-${zoweVersion}-${buildIdentifier}.pax' --build-name=\"${buildName}\" --build-number=${env.BUILD_NUMBER} --flat",
+        returnStdout: true
+      ).trim()
+      echo "artifactory upload result:"
+      echo uploadResult
+      def uploadResultObject = readJSON(text: uploadResult)
+      if (uploadResultObject['status'] != 'success' ||
+          uploadResultObject['totals']['success'] != 1 || uploadResultObject['totals']['failure'] != 0) {
+        error "Failed on verifying upload result"
+      } else {
+        echo "upload result is successful as expected"
+      }
       // add environment variables to build info
       sh "jfrog rt bce '${buildName}' ${env.BUILD_NUMBER}"
       // publish build info
