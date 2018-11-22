@@ -77,7 +77,10 @@ chmod a+x apiml_cm.sh
 cd ..
 
 # Execute the APIML certificate generation - no user input required
-./scripts/setup-apiml-certificates.sh
+# TODO: Add RC check / print better message
+echo "Setting up APIML Certificates..."
+./scripts/setup-apiml-certificates.sh >> $LOG_FILE
+echo "Done."
 
 # Get the zos version
 ZOSMF_VERSION=""
