@@ -85,7 +85,8 @@ echo "Done."
 # Get the zos version
 ZOSMF_VERSION=""
 ZOSMF_DOC_URL=""
-ZOS_RELEASE=`$INSTALL_DIR/scripts/opercmd 'd iplinfo'|grep RELEASE`
+# Hack - if opercmd fails default to latest OS
+ZOS_RELEASE=`$INSTALL_DIR/scripts/opercmd 'd iplinfo'|grep RELEASE` || ZOS_RELEASE="RELEASE z/OS 02.03.00"
 ZOS_VRM=`echo $ZOS_RELEASE | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
 
 if [[ $ZOS_VRM == "02.03.00" ]]
