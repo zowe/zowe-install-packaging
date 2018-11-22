@@ -52,6 +52,11 @@ echo "Injecting the http and https ports into $PWD/wlp/usr/servers/Atlas/server.
 sed -e 's|${atlashttp}|'$ZOWE_EXPLORER_SERVER_HTTP_PORT'|' -e 's|${atlashttps}|'$ZOWE_EXPLORER_SERVER_HTTPS_PORT'|g' $INSTALL_DIR/files/templates/server.xml.template > $TEMP_DIR/server.xml
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/server.xml > ./wlp/usr/servers/Atlas/server.xml
 
+# Inject wait time into jvm.options
+iconv -f IBM-850  -t IBM-1047 ./wlp/usr/servers/Atlas/jvm.options > $TEMP_DIR/jvm.options
+echo "-Dcom.ibm.ws.classloading.tcclLockWaitTimeMillis=300000" >>   $TEMP_DIR/jvm.options
+iconv -f IBM-1047 -t IBM-850  $TEMP_DIR/jvm.options > ./wlp/usr/servers/Atlas/jvm.options
+
 # Set permissions on any files in the atlas.pax file
 chmod a+x $INSTALL_DIR/scripts/*
 
