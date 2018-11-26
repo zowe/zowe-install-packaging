@@ -5,11 +5,6 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/zowe-cli/bundle/0.9.3/zowe-cli-bundle.zip",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true"
-    },
-    {
       "pattern": "atlas-local-snapshots/com/ibm/atlas/atlas-wlp-package/*.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
