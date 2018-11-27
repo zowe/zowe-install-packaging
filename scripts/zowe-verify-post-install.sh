@@ -448,20 +448,14 @@ echo "(script will check correct ports in a future version)"
 
 for file in  `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`
 do
-    port=`sed -n 's+.*https:\/\/.*:\([0-9]*\)/.*+\1+p' $file`  
+    port=`sed -n 's+.*https:\/\/.*:\([0-9]*\)/explorer-..s.*+\1+p' $file`
 
-
-    if [[ -n "$port" ]]
-    then
-        if [[ $port -ne $explorer_server_https_port ]]
-        then 
-            echo Error: Found $port expecting $explorer_server_https_port
-            echo in file $file
-        else 
-            echo OK: Port $port
-        fi
-    else
-        echo Error: Could not determine port in file $file
+    if [[ $port -ne $explorer_server_https_port ]]
+    then 
+        echo Error: Found $port expecting $explorer_server_https_port
+        echo in file $file
+    else 
+        echo OK: Port $port
     fi
 
     #
@@ -865,23 +859,6 @@ echo Check servers are up
     echo Error:  neither ICSF nor CSF is running
     fi
       
-echo
-echo Check ICSF service
-    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d icsf|grep " ICSF " >/dev/null
-      # the output lines will look like this ...
-        #   CSFM668I 11.23.43 ICSF LIST 438                           
-        #   Systems supporting SETICSF and DISPLAY ICSF commands:   
-        #     P04       HCR77C0  DOMAIN = N/A                       
-            
-    if [[ $? -eq 0 ]]
-    then 
-        echo ICSF is executing
-
-    else 
-        echo ICSF is not executing
-    fi
-
-
 # 4.2 Jobs with JCT
 
 for jobname in IZUANG1 IZUSVR1 RACF

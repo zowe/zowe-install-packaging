@@ -13,23 +13,23 @@
 
 echo Script zowe-verify-pre-install.sh started
 
-# This script is expected to be located in ${INSTALL_DIR}/scripts,
+# This script is expected to be located in 'install' directory
 # otherwise you must set INSTALL_DIR to the Zowe install directory before you run this script
-# e.g. export INSTALL_DIR=/u/tstradm/zowe/zowe-0.9.0       
+# e.g. export INSTALL_DIR=/u/tstradm/zowe/zowe-0.9.0/install
 
 if [[ -n "${INSTALL_DIR}" ]]
 then 
     echo INSTALL_DIR environment variable is set to ${INSTALL_DIR}
 else 
     echo Info: INSTALL_DIR environment variable is empty
-    if [[ `basename $PWD` != scripts ]]
+    if [[ `basename $PWD` != install ]]
     then
-        echo You are not in the INSTALL_DIR/scripts directory
+        echo You are not in the \'install\' directory
         echo Warning: '${INSTALL_DIR} is not set'
         echo '${INSTALL_DIR} must be set to the Zowe install directory'
         echo Warning: script will run, but with errors
     else
-        INSTALL_DIR=`dirname $PWD`
+        INSTALL_DIR=`pwd`
         echo INSTALL_DIR environment variable is now set to ${INSTALL_DIR}
     fi    
 fi
@@ -39,10 +39,10 @@ echo Check entries in the install directory
 
 for dir in files install licenses log scripts
 do
-  ls ${INSTALL_DIR}/$dir >/dev/null
+  ls ${INSTALL_DIR}/../$dir >/dev/null
   if [[ $? -ne 0 ]]
   then
-    echo Error: directory \"$dir\" not found in ${INSTALL_DIR}
+    echo Error: directory \"$dir\" not found in ${INSTALL_DIR}/..
   fi
 done
 
@@ -56,15 +56,33 @@ msg=`tsocmd lu izusvr 2>/dev/null | head -1`
 case $msg in
 UNABLE\ TO\ LOCATE\ USER\ *) 
   echo Error:  User IZUSVR is not defined 
+  echo IZUADMIN, IZUGUEST and IZUUNGRP will not be checked as a result
 ;;
 
 NOT\ AUTHORIZED\ TO\ LIST\ *) 
-  echo Error:  User IZUSVR is defined but you are not authorized to list it
-  echo Some parts of this script will not work as a result   
+  echo Info:  User IZUSVR is defined but you are not authorized to list it
+  echo IZUADMIN, IZUGUEST and IZUUNGRP will not be checked as a result   
 ;;
 
 USER=IZUSVR\ *) 
-  echo OK:  User IZUSVR is defined and you are authorized to list it  
+  # echo OK:  User IZUSVR is defined and you are authorized to list it  
+
+  echo
+  echo Check RACF or other SAF security settings are correct
+  tsocmd lg izuadmin 2>/dev/null |grep IZUSVR >/dev/null
+  if [[ $? -ne 0 ]]
+  then
+    echo Error: user IZUSVR is not in group IZUADMIN
+  fi
+
+  echo
+  echo Check IZUGUEST
+  tsocmd lg izuungrp 2>/dev/null |grep IZUGUEST >/dev/null
+  if [[ $? -ne 0 ]]
+  then
+    echo Error: user IZUGUEST is not in group IZUUNGRP 
+  fi
+
 ;;
 
 *) 
@@ -75,11 +93,11 @@ esac
 
 echo
 echo Is opercmd available?
-${INSTALL_DIR}/scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
+${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
 if [[ $? -ne 0 ]]
 then
   echo Unable to run opercmd REXX exec from # >> $LOG_FILE
-  ls -l ${INSTALL_DIR}/scripts/opercmd # try to list opercmd
+  ls -l ${INSTALL_DIR}/../scripts/opercmd # try to list opercmd
   echo z/OS release will not be checked
   echo jobs AXR and CEA will not be checked
 else
@@ -89,7 +107,7 @@ else
   echo opercmd is available
   echo
   echo Check z/OS RELEASE
-  release=`${INSTALL_DIR}/scripts/opercmd 'd iplinfo'|grep RELEASE`
+  release=`${INSTALL_DIR}/../scripts/opercmd 'd iplinfo'|grep RELEASE`
   # the selected line will look like this ...
   # RELEASE z/OS 02.03.00    LICENSE = z/OS
   
@@ -108,7 +126,7 @@ else
   ICSF=0
   for jobname in AXR CEA CSF ICSF
   do
-    ${INSTALL_DIR}/scripts/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/dev/null
+    ${INSTALL_DIR}/../scripts/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/dev/null
       # the selected line will look like this ...
       #  AXR      AXR      IEFPROC  NSW  *   A=001B   PER=NO   SMC=000
       
@@ -140,21 +158,7 @@ fi
 # z/OS UNIX System Services enabled, and 
 # Integrated Cryptographic Service Facility (ICSF) configured and started.
 
-echo
-echo Check RACF or other SAF security settings are correct
-tsocmd lg izuadmin 2>/dev/null |grep IZUSVR >/dev/null
-if [[ $? -ne 0 ]]
-then
-  echo Error: user IZUSVR is not in group IZUADMIN
-fi
 
-echo
-echo Check IZUGUEST
-tsocmd lg izuungrp 2>/dev/null |grep IZUGUEST >/dev/null
-if [[ $? -ne 0 ]]
-then
-  echo Error: user IZUGUEST is not in group IZUUNGRP 
-fi
 
 # 2.2  Check install user has auth to set extattr bit
 # BPX.FILEATTR.APF
@@ -274,9 +278,11 @@ done
 # 3. Ports are available
 echo
 echo Are the ports in the yaml file already in use?
-portList=`sed -n 's/.*\(Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/install/zowe-install.yaml`
+portList=`sed -n 's/.*\(Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe-install.yaml`
 for port in $portList 
 do
+if [[ $port -ne 22 && $port -ne 23 ]]
+then
   tsocmd netstat 2>/dev/null | grep "Local Socket:   ::\.\.${port} *$" >/dev/null
   if [[ $? -eq 0 ]]
   then
@@ -284,6 +290,7 @@ do
   else  
     echo OK: port $port is not in use
   fi
+fi
 done
 
 
@@ -304,15 +311,15 @@ echo Check servers are up
 
 
 
-for jobname in IZUANG1 IZUSVR1 RACF
+for jobname in IZUANG1 IZUSVR1 # RACF
 do
   tsocmd status ${jobname} 2>/dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
   if [[ $? -eq 0 ]]
   then 
-      echo Job ${jobname} is executing
+      echo OK: Job ${jobname} is executing
 
   else 
-      echo Job ${jobname} is not executing
+      echo Error: Job ${jobname} is not executing
   fi
 done
 
@@ -351,45 +358,6 @@ else
   echo z/OSMF ltpa.keys file is OK
 fi
 
-echo
-echo Check Enough free space available in target z/OS USS HFS install folder
-
-rootDir=`sed -n 's/ *rootDir=\(.*\)/\1/p' ${INSTALL_DIR}/install/zowe-install.yaml`
-
-yamlDir=`eval echo $rootDir`    # may contain shell expansion chars e.g. '~'
-#du -sk $yamlDir                 # what we use now, for interest - this won't be populated until after install and config.
-echo Size of $rootDir is `du -sk $yamlDir | sed 's/ *\([0-9]*\) .*/\1/'` KB
-
-sizes=`df -k ${yamlDir} | grep -v ^Mounted |  sed 's+.*(.*) *\([0-9]*\)/.*+\1+'`     # extract the 'Avail' byte count in kibibytes
-adequate=0    # no adequate-sized areas yet
-largest=0     # no largest yet
-minspace=800    # in units of MB
-
-for s in $sizes
-do
-        if [[ $s -gt ${minspace}000 ]]  # compare MB with (KB x 1000)
-        then 
-          echo $s is big enough
-          adequate=$((adequate+1))
-        fi
-        if [[ $s -gt $largest  ]]
-        then 
-          largest=$s
-        fi
-done
-if [[ $adequate -gt 0 ]]
-then
-  echo "$adequate adequate-sized area(s) found"
-else
-  echo "NO adequate-sized area(s) found"
-fi
-echo size of largest free area in $yamlDir is $largest KB
-echo minimum required is ${minspace} MB
-
-
-
-#  ... and enough space in install/zoe-install.yaml install location 
-# at least 300 G?
 
 # 7. Check interface name specified in /zaas1/scripts/ipupdate.sh ?
 # 8. /u/tstradm/.profile file exists
@@ -506,7 +474,7 @@ echo
 echo
 echo Check the USS environment
 
-${INSTALL_DIR}/scripts/opercmd "D OMVS,o" | grep "AUTOCVT *= OFF" > /dev/null
+${INSTALL_DIR}/../scripts/opercmd "D OMVS,o" | grep "AUTOCVT *= OFF" > /dev/null
 if [[ $? -ne 0 ]]
 then
   echo Warning:  OMVS AUTOCVT is not set to OFF.  Files may appear in wrong code page.
@@ -522,5 +490,4 @@ fi
 
 echo
 echo Script zowe-verify-pre-install.sh ended
-
 
