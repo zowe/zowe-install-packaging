@@ -11,38 +11,43 @@ echo
 
 if [[ -n "${ZOWE_ROOT_DIR}" ]]
 then 
-    echo ZOWE_ROOT_DIR environment variable is set to ${ZOWE_ROOT_DIR}
+    echo Info: ZOWE_ROOT_DIR environment variable is set to ${ZOWE_ROOT_DIR}
 else 
     echo Info: ZOWE_ROOT_DIR environment variable is empty
     if [[ `basename $PWD` != scripts ]]
     then
-        echo You are not in the ZOWE_ROOT_DIR/scripts directory
+        echo Warning: You are not in the ZOWE_ROOT_DIR/scripts directory
         echo Warning: '${ZOWE_ROOT_DIR} is not set'
-        echo '${ZOWE_ROOT_DIR} must be set to where Zowe runtime is installed'
+        echo Warning: '${ZOWE_ROOT_DIR} must be set to where Zowe runtime is installed'
         echo Warning: script will run, but with errors
     else
         ZOWE_ROOT_DIR=`dirname $PWD`
-        echo ZOWE_ROOT_DIR environment variable is now set to ${ZOWE_ROOT_DIR}
+        echo Info: ZOWE_ROOT_DIR environment variable is now set to ${ZOWE_ROOT_DIR}
     fi    
 fi
 
 # version 0.9.0
 echo
 echo Check we are in the right directory, with the right contents
-
+dirOK=1
 for dir in \
 README.md             explorer-USS          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
 api-mediation         explorer-server       scripts               zlux-build            zlux-proxy-server     zss-auth \
 explorer-JES          explorer-server-auth  tn3270-ng2            zlux-example-server   zlux-shared \
-explorer-MVS          sample-app            vt-ng2                zlux-ng2              zos-subsystems
+explorer-MVS          vt-ng2                zlux-ng2              zos-subsystems
 #
 do
   ls ${ZOWE_ROOT_DIR}/$dir 1>/dev/null 2>/dev/null
   if [[ $? -ne 0 ]]
   then
     echo Warning: directory \"$dir\" not found in ${ZOWE_ROOT_DIR}
+    dirOK=0
   fi
 done
+if [[ $dirOK -eq 1 ]]
+then 
+    echo OK
+fi
 
 # Check number of started tasks and ports (varies by Zowe release)
 # version 0.9.0  
@@ -208,9 +213,9 @@ set +f
 #  
 
 echo
-echo Check ZOESVR job is started on user IZUSVR
-
 echo Info: ZOWE job name is ${ZOWESVR}
+echo Check ${ZOWESVR} job is started with user IZUSVR
+
 
 function checkJob {
 jobname=$1
@@ -252,15 +257,16 @@ else
     # There could be >1 STC named ZOWESVR
 
     echo
-    echo Do all ZOWESVR jobs have userid IZUSVR?
+    echo Check all ZOWESVR jobs have userid IZUSVR
 
     # check status first ...
 
     checkJob ${ZOWESVR}
     if [[ $? -ne 0 ]]
     then    
-        echo Error:  job ${ZOWESVR} is not executing, its user id will not be checked
+        echo Error:  job ${ZOWESVR} is not executing, ${ZOWESVR} userid and STCs will not be checked
     else 
+        # check userid is IZUSVR
         ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=IZUSVR" > /dev/null
         if [[ $? -ne 0 ]]
         then    
@@ -275,57 +281,65 @@ else
                 echo OK:  All USERIDs of ${ZOWESVR} are IZUSVR
             fi
         fi
-    fi
 
+        # number of ZOESVR started tasks expected to be active in a running system
+        echo
+        echo check ${ZOWESVR} jobs in execution
 
-# number of ZOESVR started tasks expected to be active in a running system
-    echo
-    echo check ${ZOWESVR}1-9 jobs in execution
+        jobsOK=1
+        # If jobname is > 7 chars, all tasks will have same jobname, no digit suffixes
+        if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
+        then
+            # echo job name ${ZOWESVR} is short enough to have numeric suffixes
+            i=1                 # first STC number
+            for enj in $zowestc   # list of expected number of jobs per STC
+            do
+                jobname=${ZOWESVR}$i
+                # tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"
+                # jobsEx=`tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"`
+                # 0.2 Jobs 1-9 with no JCT
+                ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
+                    # the selected lines will look like this ...
+                                                            # ZOEJAD9  *OMVSEX  IZUSVR   IN   AO  A=00F0   PER=NO   SMC=000
+                                                            # ZOEJAD9  STEP1    IZUSVR   OWT  AO  A=00F2   PER=NO   SMC=000
+                                                            # ZOEJAD9  *OMVSEX  IZUSVR   OWT  AO  A=00F1   PER=NO   SMC=000
 
-    # If jobname is > 7 chars, all tasks will have same jobname, no digit suffixes
-    if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
-    then
-        echo job name ${ZOWESVR} is short enough to have numeric suffixes
-        i=1                 # first STC number
-        for enj in $zowestc   # list of expected number of jobs per STC
-        do
-            jobname=${ZOWESVR}$i
-            # tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"
-            # jobsEx=`tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"`
-            # 0.2 Jobs 1-9 with no JCT
+                nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
+                rm /tmp/${jobname}.dj >/dev/null
+
+                # check we found the expected number of jobs
+                if [[ $nj -ne $enj ]]
+                then
+                    echo error: Expecting $enj jobs for $jobname, found $nj
+                    jobsOK=0
+                else
+                    : # echo OK: Found $nj jobs for $jobname
+                fi
+                i=$((i+1))      # next STC number
+            done
+        else
+            echo ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
+            jobname=${ZOWESVR}
+
             ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-                # the selected lines will look like this ...
-                                                        # ZOEJAD9  *OMVSEX  IZUSVR   IN   AO  A=00F0   PER=NO   SMC=000
-                                                        # ZOEJAD9  STEP1    IZUSVR   OWT  AO  A=00F2   PER=NO   SMC=000
-                                                        # ZOEJAD9  *OMVSEX  IZUSVR   OWT  AO  A=00F1   PER=NO   SMC=000
-
-            nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
-            rm /tmp/${jobname}.dj >/dev/null
-
-            # check we found the expected number of jobs
-            if [[ $nj -ne $enj ]]
+            enj=11
+            if [[ `cat /tmp/${jobname}.dj | wc -l` -ne $enj ]]
             then
                 echo error: Expecting $enj jobs for $jobname, found $nj
+                jobsOK=0
             else
-                echo OK: Found $nj jobs for $jobname
-            fi
-            i=$((i+1))      # next STC number
-        done
-    else
-        echo ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
-        jobname=${ZOWESVR}
-
-        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-        enj=11
-        if [[ `cat /tmp/${jobname}.dj | wc -l` -ne $enj ]]
-        then
-            echo error: Expecting $enj jobs for $jobname, found $nj
-        else
-            echo OK: Found $nj jobs for $jobname
-        fi 
-        rm /tmp/${jobname}.dj >/dev/null
-        
+                : # echo OK: Found $nj jobs for $jobname
+            fi 
+            rm /tmp/${jobname}.dj >/dev/null
+            
+        fi
+        if [[ $jobsOK -eq 1 ]]
+        then    
+            echo OK
+        fi
     fi
+
+
 
 fi
 
@@ -346,6 +360,8 @@ fi
 
 
 # 0. Extract port settings from Zowe config files.  
+echo 
+echo Check port settings from Zowe config files
 
 # here are the defaults:
   api_mediation_catalog_http_port=7552      # api-mediation/scripts/api-mediation-start-catalog.sh
@@ -370,26 +386,26 @@ for file in \
  "vt-ng2/_defaultVT.json" \
  "tn3270-ng2/_defaultTN3270.json"
 do
-    # echo file $file
+    echo Checking $file
     # grep -i port ${ZOWE_ROOT_DIR}/$file
     case $file in
     
         tn3270*) 
-        echo Checking tn3270
+        # echo Checking tn3270
         # fragile search
         terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
         echo terminal_telnetPort is $terminal_telnetPort
         ;;
 
         vt*) 
-        echo Checking vt
+        # echo Checking vt
         # fragile search
         terminal_sshPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
         echo terminal_sshPort is $terminal_sshPort
         ;;
 
         *\.sh) 
-        echo Checking .sh files  
+        # echo Checking .sh files  
         port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`      
         case $file in 
             *catalog*)
@@ -409,7 +425,7 @@ do
         ;;
 
         *\.xml) 
-        echo Checking .xml files
+        # echo Checking .xml files
         
         explorer_server_http_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpPort="\([0-9]*\)" .*/\1/p'`
         echo explorer server httpPort is $explorer_server_http_port
@@ -420,12 +436,12 @@ do
         ;;
 
         *\.json) 
-        echo Checking .json files 
+        # echo Checking .json files 
         # fragile search
         zlux_server_http_port=`sed -n 's/.*"port" *: *\([0-9]*\) *$/\1/p' ${ZOWE_ROOT_DIR}/$file`
         echo zlux server httpPort is $zlux_server_http_port
                 
-        zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p'   ${ZOWE_ROOT_DIR}/$file`
+        zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
         echo zlux server httpsPort is $zlux_server_https_port
         
         zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
@@ -441,8 +457,7 @@ done
 
 # check MVD web index files
 echo
-echo Check the 3 explorer web/index.html files for default explorer server https port
-echo "(script will check correct ports in a future version)"
+echo Check explorer server https port in the 3 explorer web/index.html files 
 
 # sed -n 's+.*https:\/\/.*:\([0-9]*\)/explorer-..s.*+\1+p' `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`    
 
@@ -520,7 +535,7 @@ then    # job name is short enough to have a suffix
                     for port in \
                         $zlux_server_http_port \
                         $api_mediation_discovery_http_port \
-                        $zss_server_http_port 
+                        $zlux_server_https_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
                         if [[ $? -ne 0 ]]
@@ -578,16 +593,16 @@ echo Check Node is installed and working
   echo $response | grep 'not found'
   if [[ `echo $?` == 0 ]]
 then 
-    echo node not found in your path ... searching standard location
+    echo Info: node not found in your path ... searching standard location
 else 
     nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`
     if [[ `echo $?` == 0 ]]
     then 
-        echo symlink to node found $nodelink
-        echo node version is
+        # echo "Info: symlink to node found : $nodelink"
+        echo Info: node version is
         /usr`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`/bin/node --version
     else 
-        echo node not found
+        echo Error: node not found
     fi
 fi
 
@@ -599,110 +614,112 @@ release=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd 'd iplinfo'|grep RELEASE`
 # RELEASE z/OS 02.03.00    LICENSE = z/OS
 
 vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
-echo release of z/OS is $release
+echo Info: release of z/OS is $release
 if [[ $vrm < "02.02.00" ]]
-    then echo version $vrm not supported
-    else echo version $vrm is supported
+    then echo Error: version $vrm not supported
+    else echo OK: version $vrm is supported
 fi
 
 # 4. z/OSMF is up 
 
-echo
-echo Check Zowe environment variables are set correctly.
+# echo
+# echo Check Zowe environment variables are set correctly.
 
-# • ZOWE_ZOSMF_PATH: The path where z/OSMF is installed. Defaults to /usr/lpp/zosmf/lib/
-# defaults/servers/zosmfServer
-if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
-then 
-    echo OK: ZOWE_ZOSMF_PATH is not empty 
-    ls ${ZOWE_ZOSMF_PATH}/server.xml > /dev/null    # pick a file to check
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error: ZOWE_ZOSMF_PATH does not point to a valid install of z/OSMF
-    fi
-else 
-    echo Error: ZOWE_ZOSMF_PATH is empty
-fi
+# # • ZOWE_ZOSMF_PATH: The path where z/OSMF is installed. Defaults to /usr/lpp/zosmf/lib/
+# # defaults/servers/zosmfServer
+# if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
+# then 
+#     echo OK: ZOWE_ZOSMF_PATH is not empty 
+#     ls ${ZOWE_ZOSMF_PATH}/server.xml > /dev/null    # pick a file to check
+#     if [[ $? -ne 0 ]]
+#     then    
+#         echo Error: ZOWE_ZOSMF_PATH does not point to a valid install of z/OSMF
+#     fi
+# else 
+#     echo Error: ZOWE_ZOSMF_PATH is empty
+# fi
 
-# • ZOWE_JAVA_HOME: The path where 64 bit Java 8 or later is installed. Defaults to /usr/lpp/java/
-# J8.0_64
-if [[ -n "${ZOWE_JAVA_HOME}" ]]
-then 
-    echo OK: ZOWE_JAVA_HOME is not empty 
-    ls ${ZOWE_JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error: ZOWE_JAVA_HOME does not point to a valid install of Java
-    fi
-else 
-    echo Error: ZOWE_JAVA_HOME is empty
-fi
-
-
-# • ZOWE_EXPLORER_HOST: The IP address of where the explorer servers are launched from. Defaults to
-# running hostname
-if [[ -n "${ZOWE_EXPLORER_HOST}" ]]
-then 
-    echo OK: ZOWE_EXPLORER_HOST is not empty 
-    ping ${ZOWE_EXPLORER_HOST} > /dev/null    # check host
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error: ZOWE_EXPLORER_HOST does not point to a valid hostname
-    fi
-else 
-    echo Error: ZOWE_EXPLORER_HOST is empty
-fi
-
-# ZOE_SDSF_PATH="/usr/lpp/sdsf/java"
-if [[ -n "${ZOE_SDSF_PATH}" ]]
-then 
-    echo OK: ZOE_SDSF_PATH is not empty 
-    ls ${ZOE_SDSF_PATH}/classes | grep 'isfjcall\.jar'  > /dev/null    # check one .jar file
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error: ZOE_SDSF_PATH does not point to a valid SDSF path
-    fi
-else 
-    echo Error: ZOE_SDSF_PATH is empty
-fi
+# # • ZOWE_JAVA_HOME: The path where 64 bit Java 8 or later is installed. Defaults to /usr/lpp/java/
+# # J8.0_64
+# if [[ -n "${ZOWE_JAVA_HOME}" ]]
+# then 
+#     echo OK: ZOWE_JAVA_HOME is not empty 
+#     ls ${ZOWE_JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
+#     if [[ $? -ne 0 ]]
+#     then    
+#         echo Error: ZOWE_JAVA_HOME does not point to a valid install of Java
+#     fi
+# else 
+#     echo Error: ZOWE_JAVA_HOME is empty
+# fi
 
 
+# # • ZOWE_EXPLORER_HOST: The IP address of where the explorer servers are launched from. Defaults to
+# # running hostname
+# if [[ -n "${ZOWE_EXPLORER_HOST}" ]]
+# then 
+#     echo OK: ZOWE_EXPLORER_HOST is not empty 
+#     ping ${ZOWE_EXPLORER_HOST} > /dev/null    # check host
+#     if [[ $? -ne 0 ]]
+#     then    
+#         echo Error: ZOWE_EXPLORER_HOST does not point to a valid hostname
+#     fi
+# else 
+#     echo Error: ZOWE_EXPLORER_HOST is empty
+# fi
 
-# ZOWE_IPADDRESS="9.20.5.48"
-if [[ -n "${ZOWE_IPADDRESS}" ]]
-then 
-    echo OK: ZOWE_IPADDRESS is not empty 
-    echo ${ZOWE_IPADDRESS} | grep '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*'  > /dev/null    # check one .jar file
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error: ZOWE_IPADDRESS does not point to a numeric IP address
-    fi
+# # ZOE_SDSF_PATH="/usr/lpp/sdsf/java"
+# if [[ -n "${ZOE_SDSF_PATH}" ]]
+# then 
+#     echo OK: ZOE_SDSF_PATH is not empty 
+#     ls ${ZOE_SDSF_PATH}/classes | grep 'isfjcall\.jar'  > /dev/null    # check one .jar file
+#     if [[ $? -ne 0 ]]
+#     then    
+#         echo Error: ZOE_SDSF_PATH does not point to a valid SDSF path
+#     fi
+# else 
+#     echo Error: ZOE_SDSF_PATH is empty
+# fi
+
+
+
+# # ZOWE_IPADDRESS="9.20.5.48"
+# if [[ -n "${ZOWE_IPADDRESS}" ]]
+# then 
+#     echo OK: ZOWE_IPADDRESS is not empty 
+#     echo ${ZOWE_IPADDRESS} | grep '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*'  > /dev/null    # check one .jar file
+#     if [[ $? -ne 0 ]]
+#     then    
+#         echo Error: ZOWE_IPADDRESS does not point to a numeric IP address
+#     fi
         
-    ping ${ZOWE_IPADDRESS} > /dev/null    # check host
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error: can not ping ZOWE_IPADDRESS ${ZOWE_IPADDRESS}
-    else
-        echo OK: can ping ZOWE_IPADDRESS ${ZOWE_IPADDRESS}
-    fi
-else 
-    echo Error: ZOWE_IPADDRESS is empty
-fi
+#     ping ${ZOWE_IPADDRESS} > /dev/null    # check host
+#     if [[ $? -ne 0 ]]
+#     then    
+#         echo Error: can not ping ZOWE_IPADDRESS ${ZOWE_IPADDRESS}
+#     else
+#         echo OK: can ping ZOWE_IPADDRESS ${ZOWE_IPADDRESS}
+#     fi
+# else 
+#     echo Error: ZOWE_IPADDRESS is empty
+# fi
 
-# • localhost: The IP address of this host
-# 
-    ping localhost > /dev/null    # check host
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error: can not ping localhost
-    else
-        echo OK: can ping localhost
-    fi
+# # • localhost: The IP address of this host
+# # 
+#     ping localhost > /dev/null    # check host
+#     if [[ $? -ne 0 ]]
+#     then    
+#         echo Error: can not ping localhost
+#     else
+#         echo OK: can ping localhost
+#     fi
 
 
 # 0. IZUFPROC
 echo
 echo Check IZUFPROC
+
+fPROC=1
 # The PROC that z/OSMF uses to run your request
 # It requires access to a link lib, and this is usually provided via a DD statement
 #
@@ -712,10 +729,11 @@ echo Check IZUFPROC
 tsocmd listd "('sys1.SIEALNKE')" 2> /dev/null 1> /dev/null
 if [[ $? -eq 0 ]]
 then
-    echo OK: Dataset SYS1.SIEALNKE exists
+    : # echo OK: Dataset SYS1.SIEALNKE exists
 else
     echo Warning: SYS1.SIEALNKE not found
     echo Another *.SIEALNKE dataset must be allocated in IZUFPROC, or link-listed
+    fPROC=0
 fi
 
 # find IZUFPROC in PROCLIB concatenation
@@ -732,7 +750,7 @@ do
     then
         : # echo IZUFPROC not found in $dsn
     else
-        echo OK: IZUFPROC found in $dsn
+        : # echo OK: IZUFPROC found in $dsn
         IZUFPROC_found=1
         break
     fi
@@ -742,33 +760,37 @@ rm          /tmp/proclib.list
 if [[ IZUFPROC_found -eq 0 ]]
 then
     echo Error: PROC IZUFPROC not found in any active PROCLIB
+    fPROC=0
 else
-    echo Check contents of IZUFPROC
+    : # echo Check contents of IZUFPROC
     tsocmd "oput '$dsn(izufproc)' '/tmp/izufproc.txt'" 1> /dev/null 2> /dev/null
     SIEALNKE_DSN=`sed -n 's/.*DS.*=\(.*SIEALNKE\).*/\1/p' /tmp/izufproc.txt`    # check for DSN (but not ISPLLIB DD)
 
     if [[ $? -ne 0 ]]
     then
         echo Error: SIEALNKE not found in $dsn"(IZUFPROC)"
+        fPROC=0
     else
-        echo OK: Reference to SIEALNKE dataset $SIEALNKE_DSN found in $dsn"(IZUFPROC)"
+        : # echo OK: Reference to SIEALNKE dataset $SIEALNKE_DSN found in $dsn"(IZUFPROC)"
         tsocmd listd "('$SIEALNKE_DSN')" 1> /dev/null 2> /dev/null
         if [[ $? -ne 0 ]]
         then
             echo Error: $SIEALNKE_DSN not found
+            fPROC=0
         fi
 
-        echo check that ISPLLIB is present # ... 
+        : # echo check that ISPLLIB is present # ... 
         grep "\/\/ISPLLIB *DD *" /tmp/izufproc.txt > /dev/null
         if [[ $? -ne 0 ]]
         then
             echo Error : No ISPLLIB DD statement found in IZUFPROC
+            fPROC=0
         else
-            echo OK: ISPLLIB DD statement found in IZUFPROC
+            : # echo OK: ISPLLIB DD statement found in IZUFPROC
             grep "\/\/ISPLLIB *DD *.*DS.*=.*SIEALNKE" /tmp/izufproc.txt > /dev/null
             if [[ $? -eq 0 ]]
             then
-                echo OK: SIEALNKE dataset is allocated to ISPLLIB
+                : # echo OK: SIEALNKE dataset is allocated to ISPLLIB
             fi
         fi
 
@@ -777,13 +799,18 @@ else
 fi
 rm /tmp/izufproc.txt
 
+if [[ $fPROC -eq 1 ]]
+then    
+    echo OK
+fi
+
 # 5. z/OSMF
 echo
 echo Check LTPA keys are readable
-
+ltpaOK=1
 if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
 then 
-    echo Info: ZOWE_ZOSMF_PATH is already set to ${ZOWE_ZOSMF_PATH} 
+    : # echo Info: ZOWE_ZOSMF_PATH is already set to ${ZOWE_ZOSMF_PATH} 
 else
     ZOWE_ZOSMF_PATH="/var/zosmf/configuration/servers/zosmfServer/"   # this won't normally be set until Zowe is configured
 fi    
@@ -792,10 +819,17 @@ ls -l ${ZOWE_ZOSMF_PATH}/resources/security/ltpa.keys | grep "^-r.* IZUSVR *IZUA
 if [[ $? -ne 0 ]]
 then
   echo z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
+  ltpaOK=0
 else
-  echo z/OSMF ltpa.keys file is OK
+  : # echo z/OSMF ltpa.keys file is OK
+fi
+if [[ $ltpaOK -eq 1 ]]
+then
+    echo OK
 fi
 
+echo
+echo Check zosmfServer is ready to run a smarter planet
 #  is zosmfServer ready to run a smarter planet?
 zosmfMsgLog=/var/zosmf/data/logs/zosmfServer/logs/messages.log
 ls $zosmfMsgLog 1> /dev/null 
@@ -805,10 +839,15 @@ then
     head -200 $zosmfMsgLog | iconv -f IBM-850 -t IBM-1047 | grep "zosmfServer is ready to run a smarter planet" > /dev/null
     if [[ $? -ne 0 ]]
     then    
-        echo Error: zosmfServer is not ready to run a smarter planet > /dev/null
+        echo Error: zosmfServer is not ready to run a smarter planet # > /dev/null
+    else
+        echo OK
     fi
 fi
 
+echo 
+echo Check ZOSMF_HOST
+zosmfhostOK=1
 # ZOSMF_HOST=your_system_ip_address
 zosmfHost=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/explorer-server/wlp/usr/servers/Atlas/server.env | grep "ZOSMF_HOST="`
 if [[ $? -eq 0 ]]
@@ -818,17 +857,24 @@ then
     if [[ $? -ne 0 ]]
     then
         echo Error: ZOSMF_HOST is set to empty
+        zosmfhostOK=0
     else
-        hostname=`echo $zosmfHost | sed -n 's/.*ZOSMF_HOST=\([^ ]*\).*/\1/'`
+        hostname=`echo $zosmfHost | sed -n 's/.*ZOSMF_HOST=\([^ ]*\).*/\1/p'`
         echo hostname = $hostname
         ping $hostname > /dev/null
         if [[ $? -ne 0 ]]
         then 
             echo Error: Unable to ping $hostname
+            zosmfhostOK=0
         fi
     fi
 else 
     echo ZOSMF_HOST is not set in server.env
+    zosmfhostOK=0
+fi
+if [[ $zosmfhostOK -eq 1 ]]
+then 
+    echo OK
 fi
 
 # 6. Other required jobs
@@ -838,6 +884,7 @@ echo Check servers are up
 
  echo
   echo Check jobs AXR CEA ICSF CSF  # jobs with no JCT
+  jobsOK=1
 
   ICSF=0        #   neither ICSF nor CSF is running?
   for jobname in AXR CEA ICSF CSF
@@ -848,23 +895,50 @@ echo Check servers are up
       
     if [[ $? -eq 0 ]]
     then 
-        echo Job ${jobname} is executing
+        : # echo Job ${jobname} is executing
         if [[ ${jobname} = ICSF || ${jobname} = CSF ]]
         then
             ICSF=1
         fi
     else 
-        echo Job ${jobname} is not executing
+        if [[ ${jobname} = ICSF || ${jobname} = CSF ]]
+        then
+            :
+        else 
+            echo Error: Job ${jobname} is not executing
+            jobsOK=0
+        fi
+        
     fi
   done
 
     if [[ ${ICSF} -eq 1 ]]
     then
-    echo OK:  ICSF or CSF is running
+    : # echo OK:  ICSF or CSF is running
     else
-    echo Error:  neither ICSF nor CSF is running
+        echo Error:  neither ICSF nor CSF is running
+        jobsOK=0
     fi
-      
+
+# 4.2 Jobs with JCT
+
+for jobname in IZUANG1 IZUSVR1 # RACF
+do
+  tsocmd status ${jobname} 2>/dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
+  if [[ $? -eq 0 ]]
+  then 
+      : # echo Job ${jobname} is executing
+  else 
+      echo Job ${jobname} is not executing
+      jobsOK=0
+  fi
+done
+
+if [[ $jobsOK -eq 1 ]]      
+then 
+    echo OK
+fi
+
 echo
 echo Check ICSF service
     ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d icsf|grep " ICSF " >/dev/null
@@ -875,36 +949,18 @@ echo Check ICSF service
             
     if [[ $? -eq 0 ]]
     then 
-        echo ICSF is executing
+        echo OK: ICSF is executing
 
     else 
-        echo ICSF is not executing
+        echo Error: ICSF is not executing
     fi
-
-
-# 4.2 Jobs with JCT
-
-for jobname in IZUANG1 IZUSVR1 RACF
-do
-  tsocmd status ${jobname} 2>/dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
-  if [[ $? -eq 0 ]]
-  then 
-      echo Job ${jobname} is executing
-      if [[ ${jobname} = ICSF || ${jobname} = CSF ]]
-      then
-        ICSF=1
-      fi
-  else 
-      echo Job ${jobname} is not executing
-  fi
-done
-
 
 
 echo
 echo Check relevant -a extattr bits 
 
 ls -RE ${ZOWE_ROOT_DIR} |grep " [a][-p][-s][^ ] " > /tmp/extattr.a.list
+bitsOK=1
 
 for file in \
     bbgzachk \
@@ -921,15 +977,20 @@ do
     if [[ $? -ne 0 ]]
     then
         echo Error: File $file does not have the -a extattr bit set
+        bitsOK=0
     else
-        echo File $file is OK
+        : # echo File $file is OK
     fi
 done
+if [[ $bitsOK -eq 1 ]]
+then
+    echo OK
+fi
 
 echo
 echo Check relevant -p extattr bits 
 ls -RE ${ZOWE_ROOT_DIR} |grep " [-a][p][-s][^ ] " > /tmp/extattr.p.list
-
+bitsOK=1
 for file in \
     batchManagerZos \
     bbgzachk \
@@ -947,21 +1008,28 @@ do
     if [[ $? -ne 0 ]]
     then
         echo Error: File $file does not have the -p extattr bit set
+        bitsOK=0
     else
-        echo File $file is OK
+        : # echo File $file is OK
     fi
 done
+if [[ $bitsOK -eq 1 ]]
+then
+    echo OK
+fi
 
 rm /tmp/extattr.*.list
 
 echo
 echo Check files are executable 
+filesxeq=1
 ls -l ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server | grep "^-r.xr.x... .* IZUADMIN *[0-9]" 1> /dev/null 2> /dev/null
 if [[ $? -eq 0 ]]
 then    
-    echo OK: ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server is executable and owned by a user in group IZUADMIN
+    : # echo OK: ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server is executable and owned by a user in group IZUADMIN
 else 
     echo Error: ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server is not executable or not owned by a user in group IZUADMIN 
+    filesxeq=0
 fi 
 
 # check permission of parent directories.  Iterate back up to root directory, checking each is executable.
@@ -973,7 +1041,7 @@ do
     ls -l ${PWD} | grep "^dr.x..x..x " 1> /dev/null 2> /dev/null
     if [[ $? -eq 0 ]]
     then    
-        echo OK: ${PWD} is executable
+        : # echo OK: ${PWD} is executable
     else 
         echo Error: ${PWD} is not executable
     fi 
@@ -983,6 +1051,12 @@ do
     fi
     cd ..
 done
+
+if [[ $filesxeq -eq 1 ]]
+then 
+    echo OK
+fi
+
 cd $savedir # restore CWD
 
 echo
