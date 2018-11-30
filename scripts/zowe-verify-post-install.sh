@@ -82,12 +82,12 @@ fi
 
 if [[ -n "${ZOWESVR}" ]]
 then 
-    echo ZOWESVR environment variable is set to ${ZOWESVR}
+    echo Info: ZOWESVR environment variable is set to ${ZOWESVR}
 else 
-    echo ZOWESVR environment variable is empty, defaulting to ZOWESVR for this test
+    echo Info: ZOWESVR environment variable is empty, defaulting to ZOWESVR for this test
     ZOWESVR=ZOWESVR
-    echo To set the ZOWESVR name for this script next time, issue the command
-    echo export ZOWESVR=yourserver
+    echo Info: To set the ZOWESVR name for this script next time, issue the command
+    echo Info: export ZOWESVR=yourserver
 fi
 
 echo
@@ -239,7 +239,7 @@ then
     echo Info: ZOWE_ROOT_DIR is set to ${ZOWE_ROOT_DIR} 
 else
     echo Error: ZOWE_ROOT_DIR is not set
-    echo Some parts of this script will not work as a result
+    echo Info: Some parts of this script will not work as a result
 fi 
 
 ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
@@ -318,7 +318,7 @@ else
                 i=$((i+1))      # next STC number
             done
         else
-            echo ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
+            echo Info: ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
             jobname=${ZOWESVR}
 
             ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
@@ -386,7 +386,7 @@ for file in \
  "vt-ng2/_defaultVT.json" \
  "tn3270-ng2/_defaultTN3270.json"
 do
-    echo Checking $file
+    # echo Checking $file
     # grep -i port ${ZOWE_ROOT_DIR}/$file
     case $file in
     
@@ -394,33 +394,63 @@ do
         # echo Checking tn3270
         # fragile search
         terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        echo terminal_telnetPort is $terminal_telnetPort
+        if [[ -n "$terminal_telnetPort" ]]
+        then
+            echo OK: terminal_telnetPort is $terminal_telnetPort
+        else
+            echo Error: terminal_telnetPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
+        
         ;;
 
         vt*) 
         # echo Checking vt
         # fragile search
         terminal_sshPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        echo terminal_sshPort is $terminal_sshPort
+        if [[ -n "$terminal_sshPort" ]]
+        then
+            echo OK: terminal_sshPort is $terminal_sshPort
+        else
+            echo Error: terminal_sshPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
+        
         ;;
 
         *\.sh) 
         # echo Checking .sh files  
-        port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`      
+        port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`
         case $file in 
+
             *catalog*)
-                echo api catalog port is $port
-                api_mediation_catalog_http_port=$port
+                if [[ -n "$port" ]]
+                then
+                    api_mediation_catalog_http_port=$port
+                    echo OK: api catalog port is $port
+                else
+                    echo Error: api catalog port not found in ${ZOWE_ROOT_DIR}/$file
+                fi    
                 ;;
+
             *discovery*)
-                echo api discovery port is $port
-                api_mediation_discovery_http_port=$port
+                if [[ -n "$port" ]]
+                then
+                    echo OK: api discovery port is $port
+                    api_mediation_discovery_http_port=$port
+                else
+                    echo Error: api discovery port not found in ${ZOWE_ROOT_DIR}/$file
+                fi    
+                
                 ;;
+
             *gateway*)
-                echo api gateway port is $port
-                api_mediation_gateway_https_port=$port
+                if [[ -n "$port" ]]
+                then
+                    echo OK: api gateway port is $port
+                    api_mediation_gateway_https_port=$port
+                else
+                    echo Error: api gateway port not found in ${ZOWE_ROOT_DIR}/$file
+                fi    
         esac
-        
         
         ;;
 
@@ -428,10 +458,20 @@ do
         # echo Checking .xml files
         
         explorer_server_http_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpPort="\([0-9]*\)" .*/\1/p'`
-        echo explorer server httpPort is $explorer_server_http_port
+        if [[ -n "$explorer_server_http_port" ]]
+        then
+            echo OK: explorer server httpPort is $explorer_server_http_port
+        else
+            echo Error: explorer server httpPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
         
         explorer_server_https_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpsPort="\([0-9]*\)" .*/\1/p'`
-        echo explorer server httpsPort is $explorer_server_https_port
+        if [[ -n "$explorer_server_https_port" ]]
+        then
+            echo OK: explorer server httpsPort is $explorer_server_https_port
+        else
+            echo Error: explorer server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
         
         ;;
 
@@ -439,13 +479,30 @@ do
         # echo Checking .json files 
         # fragile search
         zlux_server_http_port=`sed -n 's/.*"port" *: *\([0-9]*\) *$/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        echo zlux server httpPort is $zlux_server_http_port
+        if [[ -n "$zlux_server_http_port" ]]
+        then
+            echo OK: zlux server httpPort is $zlux_server_http_port
+        else
+            echo Error: zlux server httpPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi         
                 
         zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
-        echo zlux server httpsPort is $zlux_server_https_port
+        if [[ -n "$zlux_server_https_port" ]]
+        then
+            echo OK: zlux server httpsPort is $zlux_server_https_port
+        else
+            echo Error: zlux server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi         
         
         zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
-        echo zss server port is $zss_server_http_port
+        if [[ -n "$zss_server_http_port" ]]
+        then
+            echo OK: zss server port is $zss_server_http_port
+        else
+            echo Error: zss server port not found in ${ZOWE_ROOT_DIR}/$file
+        fi         
+
+        echo 
         ;;
 
         *) 
@@ -508,7 +565,7 @@ then    # job name is short enough to have a suffix
                 jobname=${ZOWESVR}$i
                 # echo $jobname active jobs
                 # ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] "
-                echo Ports in use by $jobname jobs
+                echo Info: Ports in use by $jobname jobs
                 netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
                 cat /tmp/${jobname}.ports
 
@@ -568,7 +625,7 @@ then    # job name is short enough to have a suffix
     done
 else        # job name is too long to have a suffix
             jobname=${ZOWESVR}
-            echo Ports in use by $jobname jobs
+            echo Info: Ports in use by $jobname jobs
             netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' /tmp/${jobname}.ports
             cat /tmp/${jobname}.ports
             totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
@@ -818,7 +875,7 @@ fi
 ls -l ${ZOWE_ZOSMF_PATH}/resources/security/ltpa.keys | grep "^-r.* IZUSVR *IZUADMIN .*ltpa.keys$" >/dev/null
 if [[ $? -ne 0 ]]
 then
-  echo z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
+  echo Error: z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
   ltpaOK=0
 else
   : # echo z/OSMF ltpa.keys file is OK
@@ -836,14 +893,49 @@ ls $zosmfMsgLog 1> /dev/null
 if [[ $? -eq 0 ]]
 then    
     # log file could be large ... msg is normally at record number 79.  Allow for 200.
-    head -200 $zosmfMsgLog | iconv -f IBM-850 -t IBM-1047 | grep "zosmfServer is ready to run a smarter planet" > /dev/null
+    # This file should have "t ISO8859-1   T=on" so no need to "iconv -f IBM-850 -t IBM-1047"
+    
+    export _BPXK_AUTOCVT=ON     # But to ensure it will be converted regardless of any AUTOCVT setting
+    # the first line is asterisks, this verifies conversion
+    head -1   $zosmfMsgLog  | grep '\*\*\*\*\*\*\*\*' 1> /dev/null 2> /dev/null 
     if [[ $? -ne 0 ]]
     then    
-        echo Error: zosmfServer is not ready to run a smarter planet # > /dev/null
+        echo Error: $zosmfMsgLog not auto-converted to EBCDIC
     else
-        echo OK
-    fi
+        head -200 $zosmfMsgLog  | grep "zosmfServer is ready to run a smarter planet" > /dev/null
+        if [[ $? -ne 0 ]]
+        then    
+            echo Error: zosmfServer is not ready to run a smarter planet # > /dev/null
+        else
+            echo OK
+        fi        
+    fi    
+
+else 
+    echo Error: Failed to list $zosmfMsgLog
 fi
+
+echo
+echo Check automatic code page conversion settings 
+# Show env vars
+echo
+echo List the environment variables for AUTOCVT
+set | grep AUTOCVT
+echo End of list
+
+echo
+echo Check AUTOCVT is enabled 
+testString="zowe.test.string"
+echo $testString > /tmp/${testString}.ebcdic                                        # create EBCDIC file
+iconv -f IBM-1047 -t ISO8859-1 /tmp/${testString}.ebcdic > /tmp/${testString}.ascii # convert to ASCII
+chtag -tc ISO8859-1 /tmp/${testString}.ascii                                        # tag it as ASCII
+if [[ `cat /tmp/${testString}.ascii` = $testString ]]                               # check it gets converted to EBCDIC now
+then
+  echo OK   # : AUTOCVT is enabled 
+else
+  echo Error: AUTOCVT is not enabled.  Files may appear in wrong code page.  
+fi
+rm /tmp/${testString}.*
 
 echo 
 echo Check ZOSMF_HOST
@@ -860,7 +952,7 @@ then
         zosmfhostOK=0
     else
         hostname=`echo $zosmfHost | sed -n 's/.*ZOSMF_HOST=\([^ ]*\).*/\1/p'`
-        echo hostname = $hostname
+        echo Info: hostname = $hostname
         ping $hostname > /dev/null
         if [[ $? -ne 0 ]]
         then 
@@ -869,7 +961,7 @@ then
         fi
     fi
 else 
-    echo ZOSMF_HOST is not set in server.env
+    echo Error: ZOSMF_HOST is not set in server.env
     zosmfhostOK=0
 fi
 if [[ $zosmfhostOK -eq 1 ]]
@@ -929,7 +1021,7 @@ do
   then 
       : # echo Job ${jobname} is executing
   else 
-      echo Job ${jobname} is not executing
+      echo Error: Job ${jobname} is not executing
       jobsOK=0
   fi
 done
@@ -938,23 +1030,6 @@ if [[ $jobsOK -eq 1 ]]
 then 
     echo OK
 fi
-
-echo
-echo Check ICSF service
-    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d icsf|grep " ICSF " >/dev/null
-      # the output lines will look like this ...
-        #   CSFM668I 11.23.43 ICSF LIST 438                           
-        #   Systems supporting SETICSF and DISPLAY ICSF commands:   
-        #     P04       HCR77C0  DOMAIN = N/A                       
-            
-    if [[ $? -eq 0 ]]
-    then 
-        echo OK: ICSF is executing
-
-    else 
-        echo Error: ICSF is not executing
-    fi
-
 
 echo
 echo Check relevant -a extattr bits 

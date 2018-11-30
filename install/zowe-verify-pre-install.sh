@@ -37,7 +37,7 @@ fi
 echo
 echo Check entries in the install directory
 instdirOK=1
-for dir in files install licenses log scripts
+for dir in files install scripts
 do
   ls ${INSTALL_DIR}/../$dir >/dev/null
   if [[ $? -ne 0 ]]
@@ -205,10 +205,10 @@ match_profile ()
 }
 
 echo
-echo Check user can issue START/STOP commands
+echo Check user can issue START/STOP/CANCEL commands
 
 startstopOK=1
-for profile in "MVS.START.STC" "MVS.STOP.STC"
+for profile in "MVS.START.STC" "MVS.STOP.STC" "MVS.CANCEL.STC"
 do
   match_profile "OPERCMDS" $profile
   if [[ $? -eq 0 ]]
@@ -373,7 +373,7 @@ echo Check Node version
 
 # 9.1. Node is installed and working
 # IBM SDK for Node.js z/OS Version 6.11.2 or later.
-nodeVersion=`node --version`
+nodeVersion=`node --version` 1> /dev/null 2> /dev/null
 if [[ $? -ne 0 ]]
 then
   # node version error
@@ -484,7 +484,7 @@ echo Check the USS AUTOCVT
 ${INSTALL_DIR}/../scripts/opercmd "D OMVS,o" | grep "AUTOCVT *= OFF" > /dev/null
 if [[ $? -ne 0 ]]
 then
-  echo Warning:  OMVS AUTOCVT is not set to OFF.  Files may appear in wrong code page.
+  echo Warning:  OMVS AUTOCVT is not set to OFF.  Files may appear in wrong code page.  
 else
   echo OK:  OMVS AUTOCVT is set to OFF
 fi
