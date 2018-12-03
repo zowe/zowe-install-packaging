@@ -938,23 +938,6 @@ then
 fi
 
 echo
-echo Check ICSF service
-    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d icsf|grep " ICSF " >/dev/null
-      # the output lines will look like this ...
-        #   CSFM668I 11.23.43 ICSF LIST 438                           
-        #   Systems supporting SETICSF and DISPLAY ICSF commands:   
-        #     P04       HCR77C0  DOMAIN = N/A                       
-            
-    if [[ $? -eq 0 ]]
-    then 
-        echo OK: ICSF is executing
-
-    else 
-        echo Error: ICSF is not executing
-    fi
-
-
-echo
 echo Check relevant -a extattr bits 
 
 ls -RE ${ZOWE_ROOT_DIR} |grep " [a][-p][-s][^ ] " > /tmp/extattr.a.list
