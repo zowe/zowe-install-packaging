@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org"
