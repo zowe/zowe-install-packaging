@@ -386,8 +386,6 @@ for file in \
  "vt-ng2/_defaultVT.json" \
  "tn3270-ng2/_defaultTN3270.json"
 do
-    # echo Checking $file
-    # grep -i port ${ZOWE_ROOT_DIR}/$file
     case $file in
     
         tn3270*) 
