@@ -82,12 +82,12 @@ fi
 
 if [[ -n "${ZOWESVR}" ]]
 then 
-    echo ZOWESVR environment variable is set to ${ZOWESVR}
+    echo Info: ZOWESVR environment variable is set to ${ZOWESVR}
 else 
-    echo ZOWESVR environment variable is empty, defaulting to ZOWESVR for this test
+    echo Info: ZOWESVR environment variable is empty, defaulting to ZOWESVR for this test
     ZOWESVR=ZOWESVR
-    echo To set the ZOWESVR name for this script next time, issue the command
-    echo export ZOWESVR=yourserver
+    echo Info: To set the ZOWESVR name for this script next time, issue the command
+    echo Info: export ZOWESVR=yourserver
 fi
 
 echo
@@ -239,7 +239,7 @@ then
     echo Info: ZOWE_ROOT_DIR is set to ${ZOWE_ROOT_DIR} 
 else
     echo Error: ZOWE_ROOT_DIR is not set
-    echo Some parts of this script will not work as a result
+    echo Info: Some parts of this script will not work as a result
 fi 
 
 ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
@@ -318,7 +318,7 @@ else
                 i=$((i+1))      # next STC number
             done
         else
-            echo ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
+            echo Info: ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
             jobname=${ZOWESVR}
 
             ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
@@ -386,8 +386,6 @@ for file in \
  "vt-ng2/_defaultVT.json" \
  "tn3270-ng2/_defaultTN3270.json"
 do
-    echo Checking $file
-    # grep -i port ${ZOWE_ROOT_DIR}/$file
     case $file in
     
         tn3270*) 
@@ -508,7 +506,7 @@ then    # job name is short enough to have a suffix
                 jobname=${ZOWESVR}$i
                 # echo $jobname active jobs
                 # ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] "
-                echo Ports in use by $jobname jobs
+                echo Info: Ports in use by $jobname jobs
                 netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
                 cat /tmp/${jobname}.ports
 
@@ -568,7 +566,7 @@ then    # job name is short enough to have a suffix
     done
 else        # job name is too long to have a suffix
             jobname=${ZOWESVR}
-            echo Ports in use by $jobname jobs
+            echo Info: Ports in use by $jobname jobs
             netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' /tmp/${jobname}.ports
             cat /tmp/${jobname}.ports
             totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
@@ -818,7 +816,7 @@ fi
 ls -l ${ZOWE_ZOSMF_PATH}/resources/security/ltpa.keys | grep "^-r.* IZUSVR *IZUADMIN .*ltpa.keys$" >/dev/null
 if [[ $? -ne 0 ]]
 then
-  echo z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
+  echo Error: z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
   ltpaOK=0
 else
   : # echo z/OSMF ltpa.keys file is OK
@@ -860,7 +858,7 @@ then
         zosmfhostOK=0
     else
         hostname=`echo $zosmfHost | sed -n 's/.*ZOSMF_HOST=\([^ ]*\).*/\1/p'`
-        echo hostname = $hostname
+        echo Info: hostname = $hostname
         ping $hostname > /dev/null
         if [[ $? -ne 0 ]]
         then 
@@ -869,7 +867,7 @@ then
         fi
     fi
 else 
-    echo ZOSMF_HOST is not set in server.env
+    echo Error: ZOSMF_HOST is not set in server.env
     zosmfhostOK=0
 fi
 if [[ $zosmfhostOK -eq 1 ]]
@@ -929,7 +927,7 @@ do
   then 
       : # echo Job ${jobname} is executing
   else 
-      echo Job ${jobname} is not executing
+      echo Error: Job ${jobname} is not executing
       jobsOK=0
   fi
 done
@@ -938,23 +936,6 @@ if [[ $jobsOK -eq 1 ]]
 then 
     echo OK
 fi
-
-echo
-echo Check ICSF service
-    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d icsf|grep " ICSF " >/dev/null
-      # the output lines will look like this ...
-        #   CSFM668I 11.23.43 ICSF LIST 438                           
-        #   Systems supporting SETICSF and DISPLAY ICSF commands:   
-        #     P04       HCR77C0  DOMAIN = N/A                       
-            
-    if [[ $? -eq 0 ]]
-    then 
-        echo OK: ICSF is executing
-
-    else 
-        echo Error: ICSF is not executing
-    fi
-
 
 echo
 echo Check relevant -a extattr bits 
