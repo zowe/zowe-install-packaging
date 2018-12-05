@@ -392,33 +392,60 @@ do
         # echo Checking tn3270
         # fragile search
         terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        echo terminal_telnetPort is $terminal_telnetPort
+        if [[ -n "$terminal_telnetPort" ]]
+        then
+            echo OK: terminal_telnetPort is $terminal_telnetPort
+        else
+            echo Error: terminal_telnetPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
+        
         ;;
 
         vt*) 
         # echo Checking vt
         # fragile search
         terminal_sshPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        echo terminal_sshPort is $terminal_sshPort
+        if [[ -n "$terminal_sshPort" ]]
+        then
+            echo OK: terminal_sshPort is $terminal_sshPort
+        else
+            echo Error: terminal_sshPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
+        
         ;;
 
         *\.sh) 
         # echo Checking .sh files  
-        port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`      
+        port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`
         case $file in 
             *catalog*)
-                echo api catalog port is $port
-                api_mediation_catalog_http_port=$port
+                if [[ -n "$port" ]]
+                then
+                    api_mediation_catalog_http_port=$port
+                    echo OK: api catalog port is $port
+                else
+                    echo Error: api catalog port not found in ${ZOWE_ROOT_DIR}/$file
+                fi    
                 ;;
             *discovery*)
-                echo api discovery port is $port
-                api_mediation_discovery_http_port=$port
+                if [[ -n "$port" ]]
+                then
+                    echo OK: api discovery port is $port
+                    api_mediation_discovery_http_port=$port
+                else
+                    echo Error: api discovery port not found in ${ZOWE_ROOT_DIR}/$file
+                fi    
+                
                 ;;
             *gateway*)
-                echo api gateway port is $port
-                api_mediation_gateway_https_port=$port
+                if [[ -n "$port" ]]
+                then
+                    echo OK: api gateway port is $port
+                    api_mediation_gateway_https_port=$port
+                else
+                    echo Error: api gateway port not found in ${ZOWE_ROOT_DIR}/$file
+                fi    
         esac
-        
         
         ;;
 
@@ -426,10 +453,20 @@ do
         # echo Checking .xml files
         
         explorer_server_http_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpPort="\([0-9]*\)" .*/\1/p'`
-        echo explorer server httpPort is $explorer_server_http_port
+        if [[ -n "$explorer_server_http_port" ]]
+        then
+            echo OK: explorer server httpPort is $explorer_server_http_port
+        else
+            echo Error: explorer server httpPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
         
         explorer_server_https_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpsPort="\([0-9]*\)" .*/\1/p'`
-        echo explorer server httpsPort is $explorer_server_https_port
+        if [[ -n "$explorer_server_https_port" ]]
+        then
+            echo OK: explorer server httpsPort is $explorer_server_https_port
+        else
+            echo Error: explorer server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi 
         
         ;;
 
@@ -437,13 +474,29 @@ do
         # echo Checking .json files 
         # fragile search
         zlux_server_http_port=`sed -n 's/.*"port" *: *\([0-9]*\) *$/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        echo zlux server httpPort is $zlux_server_http_port
+        if [[ -n "$zlux_server_http_port" ]]
+        then
+            echo OK: zlux server httpPort is $zlux_server_http_port
+        else
+            echo Error: zlux server httpPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi         
                 
         zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
-        echo zlux server httpsPort is $zlux_server_https_port
+        if [[ -n "$zlux_server_https_port" ]]
+        then
+            echo OK: zlux server httpsPort is $zlux_server_https_port
+        else
+            echo Error: zlux server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
+        fi         
         
         zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
-        echo zss server port is $zss_server_http_port
+        if [[ -n "$zss_server_http_port" ]]
+        then
+            echo OK: zss server port is $zss_server_http_port
+        else
+            echo Error: zss server port not found in ${ZOWE_ROOT_DIR}/$file
+        fi         
+        echo 
         ;;
 
         *) 
