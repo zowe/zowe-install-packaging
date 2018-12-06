@@ -78,17 +78,45 @@ fi
 # 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
 #  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
 
-# ZOWESVR=ZOEJAD  # test
+# Discover ZOWESVR name for this runtime
+# Look in zowe-start.sh
+serverName=`sed -n 's/.*opercmd.*S \([^ ]*\),SRVRPATH=.*/\1/p' zowe-start.sh 2> /dev/null`
 
-if [[ -n "${ZOWESVR}" ]]
+if [[ $? -eq 0 && -n "$serverName" ]]
 then 
-    echo Info: ZOWESVR environment variable is set to ${ZOWESVR}
+    ZOWESVR=$serverName
+    # echo Info: ZOWESVR name is ${ZOWESVR}
 else 
-    echo Info: ZOWESVR environment variable is empty, defaulting to ZOWESVR for this test
+    echo Error: Failed to find ZOWESVR name in zowe-start.sh, defaulting to ZOWESVR for this check 
     ZOWESVR=ZOWESVR
-    echo Info: To set the ZOWESVR name for this script next time, issue the command
-    echo Info: export ZOWESVR=yourserver
 fi
+# Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
+internal/opercmd "d omvs,a=all" \
+    | sed '{/ IZUSVR /N;s/\n */ /;}' \
+    | grep -v CMD=grep \
+    | grep ${ZOWE_ROOT_DIR} \
+    | awk '{ print $2 }'\
+    | sed 's/[1-9]$//' | sort | uniq > /tmp/zowe.omvs.ps 
+n=$((`cat /tmp/zowe.omvs.ps | wc -l`))
+case $n in
+    
+    0) echo Warning: No jobs are running ${ZOWE_ROOT_DIR} code
+    ;;
+    1) # is it the right job?
+    jobname=`cat /tmp/zowe.omvs.ps`
+    if [[ $jobname != ${ZOWESVR} ]]
+    then 
+        echo Warning: Found PROC ${ZOWESVR} in zowe-start.sh, but ${ZOWE_ROOT_DIR} code is running in $jobname instead
+        echo Info: Switching to job $jobname
+        ZOWESVR=$jobname
+    fi 
+    ;;
+    *) echo Warning: $n different jobs are running ${ZOWE_ROOT_DIR} code
+    echo List of jobs
+    cat /tmp/zowe.omvs.ps
+    echo End of list
+esac 
+rm /tmp/zowe.omvs.ps 2> /dev/null
 
 echo
 echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
@@ -620,7 +648,7 @@ then    # job name is short enough to have a suffix
 else        # job name is too long to have a suffix
             jobname=${ZOWESVR}
             echo Info: Ports in use by $jobname jobs
-            netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' /tmp/${jobname}.ports
+            netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
             cat /tmp/${jobname}.ports
             totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
             rm /tmp/${jobname}.ports
