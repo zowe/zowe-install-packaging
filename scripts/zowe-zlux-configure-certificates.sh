@@ -12,6 +12,10 @@
 
 ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-example-server/config
 APIML_KEYSTORE_PATH=${ZOWE_ROOT_DIR}/api-mediation/keystore
+SUFFIX=""
+if [ `uname` = "OS/390" ]; then
+  SUFFIX="-ebcdic"
+fi
 
 echo "<zowe-zlux-configure-certificates.sh>" >> $LOG_FILE
 
@@ -21,8 +25,8 @@ cd ${ZLUX_SERVER_CONFIG_PATH}
 
 # Update the /zlux-example-server/deploy/instance/ZLUX/serverConfig/zluxserver.json
 echo "Updating certificates in zluxserver.json to use key store in ${APIML_KEYSTORE_PATH}" >> $LOG_FILE 
-sed 's|.*"keys".*|      "keys": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.key"]   ,|g' zluxserver.json > ${TEMP_DIR}/transform1.json
-sed 's|.*"certificates".*|      "certificates": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.cer"],|g' ${TEMP_DIR}/transform1.json > ${TEMP_DIR}/transform2.json
-sed 's|.*"certificateAuthorities".*|      "certificateAuthorities": ["'${APIML_KEYSTORE_PATH}'/local_ca/localca.cer"]|g' ${TEMP_DIR}/transform2.json > zluxserver.json
+sed 's|.*"keys".*|      "keys": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.key"]|g' zluxserver.json > ${TEMP_DIR}/transform1.json
+sed 's|.*"certificates".*|    , "certificates": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.cer'${SUFFIX}'"]|g' ${TEMP_DIR}/transform1.json > ${TEMP_DIR}/transform2.json
+sed 's|.*"certificateAuthorities".*|    , "certificateAuthorities": ["'${APIML_KEYSTORE_PATH}'/local_ca/localca.cer'${SUFFIX}'"]|g' ${TEMP_DIR}/transform2.json > zluxserver.json
 
 echo "</zowe-zlux-configure-certificates.sh>" >> $LOG_FILE
