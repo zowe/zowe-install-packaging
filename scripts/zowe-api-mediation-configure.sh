@@ -77,8 +77,7 @@ chmod a+x apiml_cm.sh
 cd ..
 
 # Execute the APIML certificate generation - no user input required
-# TODO: Add RC check / print better message
-echo "Setting up APIML Certificates..."
+echo "Setting up Zowe API Mediation Layer certificates..."
 ./scripts/setup-apiml-certificates.sh >> $LOG_FILE
 echo "Done."
 
