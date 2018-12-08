@@ -1,0 +1,63 @@
+{
+  "node": {
+    "https": {
+      "port": 8544,
+      //pfx (string), keys, certificates, certificateAuthorities, and certificateRevocationLists are all valid here.
+      "keys": ["../deploy/product/ZLUX/serverConfig/zlux.keystore.key"],
+      "certificates": ["../deploy/product/ZLUX/serverConfig/zlux.keystore.cer"],
+      "certificateAuthorities": ["../deploy/product/ZLUX/serverConfig/apiml-localca.cer"]
+    },
+    "http": {
+      "port": 8543
+    },
+    "mediationLayer": {
+      "server": {
+        "hostname": "localhost",
+        "port": 10011,
+        "isHttps": false
+      },
+      "enabled": false
+    },
+    "childProcesses": [
+      {
+        "path": "../bin/zssServer.sh",
+        "once": true
+      }
+    ]
+  },
+// All paths relative to ZLUX/node or ZLUX/bin
+// In real installations, these values will be configured during the install.
+  "rootDir":"../deploy",
+  "productDir":"../deploy/product",
+  "siteDir":"../deploy/site",
+  "instanceDir":"../deploy/instance",
+  "groupsDir":"../deploy/instance/groups",
+  "usersDir":"../deploy/instance/users",
+  "pluginsDir":"../deploy/instance/ZLUX/plugins",
+
+  "dataserviceAuthentication": {
+    //this specifies the default authentication type for dataservices that didn't specify which type to use. These dataservices therefore should not expect a particular type of authentication to be used.
+    "defaultAuthentication": "zss",
+    
+    //each authentication type may have more than one implementing plugin. define defaults and fallbacks below as well
+    //any types that have no implementers are ignored, and any implementations specified here that are not known to the server are also ignored.
+    "implementationDefaults": {
+      //each type has an object which describes which implementation to use based on some criteria to find which is best for the task. For now, just "plugins" will
+      //be used to state that you want a particular plugin.
+      "zosmf": {
+      // zosmf plugin needs to be configured to target a zosmf instance. configure before using.
+      // "plugins": ["com.rs.auth.zosmfAuth"]
+      },
+
+      "explorerServer": {
+      //  "plugins": ["com.zowe.explorer.server.auth"]
+      },
+      "zss": {
+        "plugins": ["com.rs.auth.zssAuth"]
+      } 
+      
+    }
+  },
+  // internal port, do not connect browser to this port
+  "zssPort":8542
+}
