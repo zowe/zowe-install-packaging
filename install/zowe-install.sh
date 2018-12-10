@@ -88,13 +88,14 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
-# configure the ports for the zLUX server
-. $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
-
-# Configure mediation ports
+# Configure API Mediation layer 
 . $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
 
-chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
+# Configure the ports for the zLUX server
+. $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
+
+# Configure the TLS certificates for the zLUX server
+. $INSTALL_DIR/scripts/zowe-zlux-configure-certificates.sh
 
 # install the liberty-server by expanding the /bin/atlas-pax file to ZOWE_ROOT_DIR/liberty-server/wlp/...
 . $INSTALL_DIR/scripts/zowe-install-liberty-server.sh

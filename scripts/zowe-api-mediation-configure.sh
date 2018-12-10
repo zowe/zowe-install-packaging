@@ -77,8 +77,7 @@ chmod a+x apiml_cm.sh
 cd ..
 
 # Execute the APIML certificate generation - no user input required
-# TODO: Add RC check / print better message
-echo "Setting up APIML Certificates..."
+echo "Setting up Zowe API Mediation Layer certificates..."
 ./scripts/setup-apiml-certificates.sh >> $LOG_FILE
 echo "Done."
 
@@ -227,8 +226,10 @@ EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml	
 chmod -R 777 $STATIC_DEF_CONFIG
 
-# Add apiml catalog tile to zlux 
+# Add API Catalog application to zLUX 
 CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/ui/v1/apicatalog
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
+
+chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
 
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE

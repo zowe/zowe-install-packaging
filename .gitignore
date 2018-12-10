@@ -1,4 +1,8 @@
 .history/
+tmp/
+.vscode/
+.pytest_cache/
+*.pyc
 
 # logs
 *.log
