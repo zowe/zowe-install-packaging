@@ -122,47 +122,47 @@ parseConfiguationFile ./zowe-install.yaml
 # If the values are not set default them
 if [[ $ZOWE_ROOT_DIR == "" ]] 
 then
-    $ZOWE_ROOT_DIR = "~/zowe/$ZOWE_VERSION"
+    ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
     echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_HTTP_PORT == "" ]]
 then
-    $ZOWE_EXPLORER_SERVER_HTTP_PORT = 7080
+    ZOWE_EXPLORER_SERVER_HTTP_PORT=7080
     echo "  ZOWE_EXPLORER_SERVER_HTTP_PORT not specified:  Defaulting to 7080"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_HTTPS_PORT == "" ]]
 then
-    $ZOWE_EXPLORER_SERVER_HTTPS_PORT = 7443
+    ZOWE_EXPLORER_SERVER_HTTPS_PORT=7443
     echo "  ZOWE_EXPLORER_SERVER_HTTPS_PORT not specified:  Defaulting to 7443"
 fi
 if [[ $ZOWE_ZLUX_SERVER_HTTPS_PORT == "" ]]
 then
-    $ZOWE_ZLUX_SERVER_HTTPS_PORT = 8544
+    ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
     echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT not specified:  Defaulting to 8544"
 fi
 if [[ $ZOWE_ZLUX_SERVER_HTTP_PORT == "" ]]
 then
-    $ZOWE_ZLUX_SERVER_HTTP_PORT = 8543
+    ZOWE_ZLUX_SERVER_HTTP_PORT=8543
     echo "  ZOWE_ZLUX_SERVER_HTTP_PORT not specified:  Defaulting to 8543"
 fi
 if [[ $ZOWE_ZSS_SERVER_PORT == "" ]]
 then
-    $ZOWE_ZSS_SERVER_PORT = 8542
+    ZOWE_ZSS_SERVER_PORT=8542
     echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542"
 fi
-if [[ ZOWE_APIM_CATALOG_HTTP_PORT == "" ]]
+if [[ $ZOWE_APIM_CATALOG_HTTP_PORT == "" ]]
 then
-    $ZOWE_APIM_CATALOG_HTTP_PORT = 7552
+    ZOWE_APIM_CATALOG_HTTP_PORT=7552
     echo "  ZOWE_APIM_CATALOG_HTTP_PORT not specified:  Defaulting to 7552"
 fi
-if [[ ZOWE_APIM_DISCOVERY_HTTP_PORT == "" ]]
+if [[ $ZOWE_APIM_DISCOVERY_HTTP_PORT == "" ]]
 then
-    $ZOWE_APIM_DISCOVERY_HTTP_PORT = 7553
+    ZOWE_APIM_DISCOVERY_HTTP_PORT=7553
     echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT not specified:  Defaulting to 7553"
 fi
-if [[ ZOWE_APIM_GATEWAY_HTTPS_PORT == "" ]]
+if [[ $ZOWE_APIM_GATEWAY_HTTPS_PORT == "" ]]
 then
-    $ZOWE_APIM_GATEWAY_HTTPS_PORT = 7554
+    ZOWE_APIM_GATEWAY_HTTPS_PORT=7554
     echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT not specified:  Defaulting to 7554"
 fi
 # Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
@@ -170,11 +170,11 @@ fi
 # and echoing them may create confusion
 if [[ $ZOWE_ZLUX_SSH_PORT == "" ]]
 then
-    $ZOWE_ZLUX_SSH_PORT = 22
+    ZOWE_ZLUX_SSH_PORT=22
 fi
 if [[ $ZOWE_ZLUX_TELNET_PORT == "" ]]
 then
-    $ZOWE_ZLUX_TELNET_PORT = 23
+    ZOWE_ZLUX_TELNET_PORT=23
 fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
