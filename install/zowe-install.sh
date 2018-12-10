@@ -168,7 +168,7 @@ cp $TEMP_DIR/run-zowe.sh $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 sed -e 's|/zowe/install/path|'$ZOWE_ROOT_DIR'|' $INSTALL_DIR/files/templates/ZOWESVR.jcl > $TEMP_DIR/ZOWESVR.jcl
-$INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl ZOWESVR
+$INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
 
 separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
