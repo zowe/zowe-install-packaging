@@ -30,7 +30,7 @@ terminals:
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:
 # dsname=SYS1.PROCLIB   # Example of required dataset name.  Do not enclose it in quotes.
-  dsname=auto           # Auto-choose dataset name, which is the default
-  membername=ZOWESVR    # this is the default
+  dsname=auto
+  membername=ZOWESVR
 
 # Do not delete this last line
