@@ -93,25 +93,50 @@ do
                 ZOWE_ZLUX_TELNET_PORT=$value
                 export ZOWE_ZLUX_TELNET_PORT
             fi
-# api-mediation ports
-            if [[ $key == "catalogHttpPort" ]] && [[ $section == "api-mediation" ]]
+# api-mediation settings:
+            if [[ $key == "catalogPort" ]] && [[ $section == "api-mediation" ]]
             then
-                ZOWE_APIM_CATALOG_HTTP_PORT=$value
-                echo "  api-mediation catalog http port="$ZOWE_APIM_CATALOG_HTTP_PORT
+                ZOWE_APIM_CATALOG_PORT=$value
+                echo "  api-mediation catalog port="$ZOWE_APIM_CATALOG_PORT
                 export ZOWE_APIM_CATALOG_HTTP_PORT
             fi
-            if [[ $key == "discoveryHttpPort" ]] && [[ $section == "api-mediation" ]]
+            if [[ $key == "discoveryPort" ]] && [[ $section == "api-mediation" ]]
             then
-                ZOWE_APIM_DISCOVERY_HTTP_PORT=$value
-                echo "  api-mediation discovery http port="$ZOWE_APIM_DISCOVERY_HTTP_PORT
-                export ZOWE_APIM_DISCOVERY_HTTP_PORT
+                ZOWE_APIM_DISCOVERY_PORT=$value
+                echo "  api-mediation discovery port="$ZOWE_APIM_DISCOVERY_PORT
+                export ZOWE_APIM_DISCOVERY_PORT
             fi
-            if [[ $key == "gatewayHttpsPort" ]] && [[ $section == "api-mediation" ]]
+            if [[ $key == "gatewayPort" ]] && [[ $section == "api-mediation" ]]
             then
-                ZOWE_APIM_GATEWAY_HTTPS_PORT=$value
-                echo "  api-mediation gateway https port="$ZOWE_APIM_GATEWAY_HTTPS_PORT
-                export ZOWE_APIM_GATEWAY_HTTPS_PORT
+                ZOWE_APIM_GATEWAY_PORT=$value
+                echo "  api-mediation gateway port="$ZOWE_APIM_GATEWAY_PORT
+                export ZOWE_APIM_GATEWAY_PORT
             fi
+            if [[ $key == "externalCertificate" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_APIM_EXTERNAL_CERTIFICATE=$value
+                echo "  api-mediation external certificate="$ZOWE_APIM_EXTERNAL_CERTIFICATE
+                export ZOWE_APIM_EXTERNAL_CERTIFICATE
+            fi
+            if [[ $key == "externalCertificateAlias" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS=$value
+                echo "  api-mediation external certificate alias="$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
+                export ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
+            fi
+            if [[ $key == "externalCertificateAuthorities" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES=$value
+                echo "  api-mediation external certificate authorities="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
+                export ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
+            fi
+            if [[ $key == "verifyCertificatesOfServices" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_APIM_VERIFY_CERTIFICATES=$value
+                echo "  api-mediation verify certificates of services="$ZOWE_APIM_VERIFY_CERTIFICATES
+                export ZOWE_APIM_VERIFY_CERTIFICATES
+            fi
+
         fi
     fi
 #    echo "--- End of loop ---"
@@ -150,20 +175,25 @@ then
     ZOWE_ZSS_SERVER_PORT=8542
     echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542"
 fi
-if [[ $ZOWE_APIM_CATALOG_HTTP_PORT == "" ]]
+if [[ $ZOWE_APIM_CATALOG_PORT == "" ]]
 then
-    ZOWE_APIM_CATALOG_HTTP_PORT=7552
-    echo "  ZOWE_APIM_CATALOG_HTTP_PORT not specified:  Defaulting to 7552"
+    ZOWE_APIM_CATALOG_PORT=7552
+    echo "  ZOWE_APIM_CATALOG_PORT not specified:  Defaulting to 7552"
 fi
-if [[ $ZOWE_APIM_DISCOVERY_HTTP_PORT == "" ]]
+if [[ $ZOWE_APIM_DISCOVERY_PORT == "" ]]
 then
-    ZOWE_APIM_DISCOVERY_HTTP_PORT=7553
-    echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT not specified:  Defaulting to 7553"
+    ZOWE_APIM_DISCOVERY_PORT=7553
+    echo "  ZOWE_APIM_DISCOVERY_PORT not specified:  Defaulting to 7553"
 fi
-if [[ $ZOWE_APIM_GATEWAY_HTTPS_PORT == "" ]]
+if [[ $ZOWE_APIM_GATEWAY_PORT == "" ]]
 then
-    ZOWE_APIM_GATEWAY_HTTPS_PORT=7554
-    echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT not specified:  Defaulting to 7554"
+    ZOWE_APIM_GATEWAY_PORT=7554
+    echo "  ZOWE_APIM_GATEWAY_PORT not specified:  Defaulting to 7554"
+fi
+if [[ $ZOWE_APIM_VERIFY_CERTIFICATES == "" ]]
+then
+    ZOWE_APIM_VERIFY_CERTIFICATES="true"
+    echo "  ZOWE_APIM_VERIFY_CERTIFICATES not specified:  Defaulting to true"
 fi
 # Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
 # The ssh and telnet ports are there and already being used and exploited by the apps
@@ -185,7 +215,11 @@ echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
+echo "  ZOWE_APIM_CATALOG_PORT="$ZOWE_APIM_CATALOG_PORT >> $LOG_FILE
+echo "  ZOWE_APIM_DISCOVERY_PORT="$ZOWE_APIM_DISCOVERY_PORT >> $LOG_FILE
+echo "  ZOWE_APIM_GATEWAY_PORT="$ZOWE_APIM_GATEWAY_PORT >> $LOG_FILE
+echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE="$ZOWE_APIM_EXTERNAL_CERTIFICATE >> $LOG_FILE
+echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS="$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS >> $LOG_FILE
+echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES >> $LOG_FILE
+echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FILE
 echo "</zowe-parse-yaml.sh>" >> $LOG_FILE
