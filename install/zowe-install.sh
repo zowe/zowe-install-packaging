@@ -152,8 +152,8 @@ echo "Attempting to create ZOWESVR PROCLIB ..."
 
 echo "Copying the zowe-start;stop;server-start.sh into "$ZOWE_ROOT_DIR/scripts >> $LOG_FILE
 cd $INSTALL_DIR/scripts
-cp $INSTALL_DIR/scripts/zowe-start.sh $ZOWE_ROOT_DIR/scripts/zowe-start.sh
-cp $INSTALL_DIR/scripts/zowe-stop.sh $ZOWE_ROOT_DIR/scripts/zowe-stop.sh
+sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-start.sh > $ZOWE_ROOT_DIR/scripts/zowe-start.sh
+sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-stop.sh > $ZOWE_ROOT_DIR/scripts/zowe-stop.sh
 cp $INSTALL_DIR/scripts/zowe-verify-post-install.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
 chmod -R 777 $ZOWE_ROOT_DIR/scripts
 
