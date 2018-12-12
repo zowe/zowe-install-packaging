@@ -28,25 +28,25 @@ exitone(){
 }
 exitzero(){
   tsocmd delete "'$userid.zowetemp.clist' " 1>/dev/null 2>/dev/null
-  echo "  "PROC $membername placed in $proclib
-  echo "  PROC $membername placed in $proclib " >> $LOG_FILE
+  echo "  "PROC $memberName placed in $proclib
+  echo "  PROC $memberName placed in $proclib " >> $LOG_FILE
   echo "</zowe-copy-proc.sh>" >> $LOG_FILE
   exit 0
 }
 
 if [[ $# != 3 ]]
 then
-	echo Usage: copyproc.sh ussfile membername proclib
+	echo Usage: copyproc.sh ussfile memberName proclib
 	echo ussfile: name of JCL file on USS
-	echo membername: name of member to be written to PROCLIB PDS
+	echo memberName: name of member to be written to PROCLIB PDS
   echo proclib: name of PROCLIB PDS, or "auto" for automatic selection
-  echo "Not called with 3 parameters: ussfile, membername, proclib" >> $LOG_FILE
+  echo "Not called with 3 parameters: ussfile, memberName, proclib" >> $LOG_FILE
   echo "Called with $# parameters: $@" >> $LOG_FILE
   exitone
 fi
 
 ussfile=$1
-membername=$2   # default is set in zowe-parse-yaml.sh
+memberName=$2   # default is set in zowe-parse-yaml.sh
 proclib=$3      # default is set in zowe-parse-yaml.sh
 
 if [[ `basename $ussfile` == $ussfile ]] # add pathname if not present
@@ -54,7 +54,7 @@ then
   ussfile=$INSTALL_DIR/files/templates/$ussfile
 fi
 
-# echo "Copying the file" $ussfile "to PROCLIB member" $membername
+# echo "Copying the file" $ussfile "to PROCLIB member" $memberName
 ls $ussfile 1>/dev/null 2>/dev/null
 if [[ $? > 0 ]]
 then
@@ -145,18 +145,18 @@ fi
 #echo "CLIST copy done, RC $?"
 
 # Process member name
-echo Member name $membername was specified >> $LOG_FILE
-# check membername is valid
+echo Member name $memberName was specified >> $LOG_FILE
+# check memberName is valid
 # Is member name too long?
-if [[ `echo ${membername} | wc -c` -gt 9 ]]        # 9 includes the string-terminating null character
+if [[ `echo ${memberName} | wc -c` -gt 9 ]]        # 9 includes the string-terminating null character
 then 
-  echo Member name $membername longer than 8 characters
+  echo Member name $memberName longer than 8 characters
   exitone
   # echo Defaulting to ZOWESVR
-  # membername=ZOWESVR
+  # memberName=ZOWESVR
 fi 
 # end of check
-echo Member name $membername was used >> $LOG_FILE
+echo Member name $memberName was used >> $LOG_FILE
 
 # Process proclib name
 echo $proclib | grep -i ^auto$ 1>/dev/null 2>/dev/null  # allow for mixed case
@@ -173,7 +173,7 @@ then
     exitone 
   else
     echo "    "found PROCLIB dataset $proclib >> $LOG_FILE
-      ./ocopyshr.sh $proclib $membername
+      ./ocopyshr.sh $proclib $memberName
       if [[ $? > 0 ]]
       then
         echo "  "Unable to write to requested PROCLIB $proclib >> $LOG_FILE
@@ -197,7 +197,7 @@ else
     for proclib in $procs
     do
       echo "  "proclib = $proclib >> $LOG_FILE
-      ./ocopyshr.sh $proclib $membername 
+      ./ocopyshr.sh $proclib $memberName 
       if [[ $? > 0 ]]
       then
         echo Unable to write to $proclib, try next PROCLIB >> $LOG_FILE
@@ -218,7 +218,7 @@ else
     rm mstjcl00
     for proclib in $procs
     do
-        ./ocopyshr.sh $proclib $membername
+        ./ocopyshr.sh $proclib $memberName
         if [[ $? > 0 ]]
         then
           echo Unable to write to $proclib, try another PROCLIB >> $LOG_FILE
@@ -230,7 +230,7 @@ else
 
     echo Try SYS1.PROCLIB >> $LOG_FILE
     proclib=SYS1.PROCLIB
-    ./ocopyshr.sh $proclib $membername
+    ./ocopyshr.sh $proclib $memberName
     if [[ $? > 0 ]]
     then
       echo Unable to write to SYS1.PROCLIB >> $LOG_FILE

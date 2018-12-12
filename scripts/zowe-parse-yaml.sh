@@ -113,13 +113,13 @@ do
                 export ZOWE_APIM_GATEWAY_HTTPS_PORT
             fi
 # started task JCL member for Zowe job
-            if [[ $key == "dsname" ]] && [[ $section == "zowe-server-proclib" ]]
+            if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
             then
                 ZOWE_SERVER_PROCLIB_DSNAME=$value
                 echo "  server PROCLIB dataset name="$ZOWE_SERVER_PROCLIB_DSNAME
                 export ZOWE_SERVER_PROCLIB_DSNAME
             fi
-            if [[ $key == "membername" ]] && [[ $section == "zowe-server-proclib" ]]
+            if [[ $key == "memberName" ]] && [[ $section == "zowe-server-proclib" ]]
             then
                 ZOWE_SERVER_PROCLIB_MEMBER=$value
                 echo "  server PROCLIB member name="$ZOWE_SERVER_PROCLIB_MEMBER
