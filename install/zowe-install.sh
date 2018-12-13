@@ -154,7 +154,7 @@ echo "Copying the zowe-start;stop;server-start.sh into "$ZOWE_ROOT_DIR/scripts >
 cd $INSTALL_DIR/scripts
 sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-start.sh > $ZOWE_ROOT_DIR/scripts/zowe-start.sh
 sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-stop.sh > $ZOWE_ROOT_DIR/scripts/zowe-stop.sh
-cp $INSTALL_DIR/scripts/zowe-verify-post-install.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
+cp $INSTALL_DIR/scripts/zowe-troubleshoot.sh $ZOWE_ROOT_DIR/scripts/zowe-troubleshoot.sh
 chmod -R 777 $ZOWE_ROOT_DIR/scripts
 
 mkdir $ZOWE_ROOT_DIR/scripts/internal
