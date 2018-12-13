@@ -137,6 +137,18 @@ do
                 export ZOWE_APIM_VERIFY_CERTIFICATES
             fi
 
+            if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
+            then
+                ZOWE_SERVER_PROCLIB_DSNAME=$value
+                echo "  server PROCLIB dataset name="$ZOWE_SERVER_PROCLIB_DSNAME
+                export ZOWE_SERVER_PROCLIB_DSNAME
+            fi
+            if [[ $key == "memberName" ]] && [[ $section == "zowe-server-proclib" ]]
+            then
+                ZOWE_SERVER_PROCLIB_MEMBER=$value
+                echo "  server PROCLIB member name="$ZOWE_SERVER_PROCLIB_MEMBER
+                export ZOWE_SERVER_PROCLIB_MEMBER
+            fi
         fi
     fi
 #    echo "--- End of loop ---"
@@ -205,6 +217,16 @@ fi
 if [[ $ZOWE_ZLUX_TELNET_PORT == "" ]]
 then
     ZOWE_ZLUX_TELNET_PORT=23
+fi 
+if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
+then
+    ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR 
+    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR"
+fi
+if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
+then
+    ZOWE_SERVER_PROCLIB_DSNAME=auto
+    echo "  ZOWE_SERVER_PROCLIB_DSNAME not specified:  PROCLIB DSNAME will be selected automatically"
 fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
@@ -222,4 +244,9 @@ echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE="$ZOWE_APIM_EXTERNAL_CERTIFICATE >> $LOG_
 echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS="$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS >> $LOG_FILE
 echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES >> $LOG_FILE
 echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FILE
+echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
+echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
+echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
+echo "  ZOWE_SERVER_PROCLIB_MEMBER="$ZOWE_SERVER_PROCLIB_MEMBER >> $LOG_FILE
+echo "  ZOWE_SERVER_PROCLIB_DSNAME="$ZOWE_SERVER_PROCLIB_DSNAME >> $LOG_FILE
 echo "</zowe-parse-yaml.sh>" >> $LOG_FILE

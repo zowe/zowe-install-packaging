@@ -25,6 +25,10 @@ cd zlux-example-server
 chmod -R a-w bin/ build/ config/ deploy/product/ js/ plugins/ .gitattributes .gitignore README.md 2>/dev/null
 chmod ug+w bin/zssServer
 
+# grant write permission for Zowe task owner (IZUSVR) to update configurations
+chown -R IZUSVR deploy/instance
+chown -R IZUSVR deploy/site
+
 # Open the permission so that a user other than the one who does the install can start the nodeServer
 # and create logs
 chmod a+w log
