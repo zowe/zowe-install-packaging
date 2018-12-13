@@ -2,7 +2,7 @@
 # Verify that an installed Zowe build is healthy after you install it on z/OS
 # Note:  This script does not change anything on your system.
 
-echo Script zowe-troubleshoot.sh started
+echo Script zowe-verify.sh started
 echo
 
 # This script is expected to be located in ${ZOWE_ROOT_DIR}/scripts,
@@ -1122,4 +1122,4 @@ fi
 cd $savedir # restore CWD
 
 echo
-echo Script zowe-troubleshoot.sh finished
+echo Script zowe-verify.sh finished

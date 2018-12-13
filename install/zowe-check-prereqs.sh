@@ -11,7 +11,7 @@
 #
 #  This script may invoke others later, e.g.  giza-packaging/Zoeinstall/verify*.sh
 
-echo Script zowe-check-preqs.sh started
+echo Script zowe-check-prereqs.sh started
 
 # This script is expected to be located in 'install' directory
 # otherwise you must set INSTALL_DIR to the Zowe install directory before you run this script
@@ -496,6 +496,6 @@ fi
 
 
 echo
-echo Script zowe-check-preqs.sh ended
+echo Script zowe-check-prereqs.sh ended
 
 
