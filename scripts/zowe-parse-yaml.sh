@@ -87,11 +87,17 @@ do
                 ZOWE_ZLUX_SSH_PORT=$value
                 export ZOWE_ZLUX_SSH_PORT
             fi
-# Look for telnetPort= beneath libertyServer:
+# Look for telnetPort= beneath terminals:
             if [[ $key == "telnetPort" ]] && [[ $section == "terminals" ]] 
             then
                 ZOWE_ZLUX_TELNET_PORT=$value
                 export ZOWE_ZLUX_TELNET_PORT
+            fi
+# Look for security= beneath terminals:
+            if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
+            then
+                ZOWE_ZLUX_SECURITY_TYPE=$value
+                export ZOWE_ZLUX_SECURITY_TYPE
             fi
 # api-mediation settings:
             if [[ $key == "catalogPort" ]] && [[ $section == "api-mediation" ]]
@@ -237,6 +243,7 @@ echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
+echo "  ZOWE_ZLUX_SECURITY_TYPE="$ZOWE_ZLUX_SECURITY_TYPE >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_PORT="$ZOWE_APIM_CATALOG_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_PORT="$ZOWE_APIM_DISCOVERY_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_PORT="$ZOWE_APIM_GATEWAY_PORT >> $LOG_FILE
