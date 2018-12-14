@@ -224,21 +224,6 @@ catalogUiTiles:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zos.yml > $STATIC_DEF_CONFIG/zos.yml	
 
-# Add static definition for languages
-cat <<EOF >$TEMP_DIR/orion.yml
-#
-services:
-    - serviceId: orion
-      instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/explorer-languages/orion
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: explorer-languages  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl:
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml	
-chmod -R 777 $STATIC_DEF_CONFIG
-
 # Add API Catalog application to zLUX 
 CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
