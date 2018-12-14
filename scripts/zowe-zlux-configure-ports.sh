@@ -17,10 +17,9 @@ echo "<zowe-zlux-configure-ports.sh>" >> $LOG_FILE
 chmod -R u+w $ZLUX_SERVER_CONFIG_PATH/
 cd $ZLUX_SERVER_CONFIG_PATH/
 
-echo "Updating ports in zluxserver.json "$ZOWE_ZLUX_SERVER_HTTPS_PORT";"$ZOWE_ZLUX_SERVER_HTTP_PORT";"$ZOWE_ZLUX_SERVER_HTTPS_PORT  >> $LOG_FILE 
+echo "Updating ports in zluxserver.json "$ZOWE_ZLUX_SERVER_HTTPS_PORT";"$ZOWE_ZSS_SERVER_PORT  >> $LOG_FILE 
 sed 's/"port": 8544,/"port": '"${ZOWE_ZLUX_SERVER_HTTPS_PORT}",'/g' zluxserver.json > $TEMP_DIR/transform1.json
-sed 's/"port": 8543/"port": '"${ZOWE_ZLUX_SERVER_HTTP_PORT}"'/g' $TEMP_DIR/transform1.json > $TEMP_DIR/transform2.json
-sed 's/"zssPort":8542/"zssPort": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform2.json > zluxserver.json
+sed 's/"zssPort":8542/"zssPort": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform1.json > zluxserver.json
 
 # SSH port for the VT terminal app
 echo "Updating port in _defaultVT.json to "$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE 

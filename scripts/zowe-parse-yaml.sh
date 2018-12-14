@@ -60,13 +60,6 @@ do
                 echo "  explorer-server https port="$ZOWE_EXPLORER_SERVER_HTTPS_PORT              
                 export ZOWE_EXPLORER_SERVER_HTTPS_PORT
             fi
-# Look for httpPort= beneath zlux-server:
-            if [[ $key == "httpPort" ]] && [[ $section == "zlux-server" ]] 
-            then
-                ZOWE_ZLUX_SERVER_HTTP_PORT=$value
-               echo "  zlux-server http port"=$ZOWE_ZLUX_SERVER_HTTP_PORT
-                export ZOWE_ZLUX_SERVER_HTTP_PORT
-            fi
 # Look for httpsPort= beneath zlux-server:
             if [[ $key == "httpsPort" ]] && [[ $section == "zlux-server" ]] 
             then
@@ -177,11 +170,6 @@ then
     ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
     echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT not specified:  Defaulting to 8544"
 fi
-if [[ $ZOWE_ZLUX_SERVER_HTTP_PORT == "" ]]
-then
-    ZOWE_ZLUX_SERVER_HTTP_PORT=8543
-    echo "  ZOWE_ZLUX_SERVER_HTTP_PORT not specified:  Defaulting to 8543"
-fi
 if [[ $ZOWE_ZSS_SERVER_PORT == "" ]]
 then
     ZOWE_ZSS_SERVER_PORT=8542
@@ -232,7 +220,6 @@ fi
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_HTTP_PORT="$ZOWE_EXPLORER_SERVER_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_HTTPS_PORT="$ZOWE_EXPLORER_SERVER_HTTPS_PORT >> $LOG_FILE
-echo "  ZOWE_ZLUX_SERVER_HTTP_PORT="$ZOWE_ZLUX_SERVER_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE

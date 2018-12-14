@@ -53,7 +53,7 @@ echo "Install started at: "`date` >> $LOG_FILE
 echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 
 # zowe-parse-yaml.sh to get the variables for 
-# ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTP_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
+# ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR

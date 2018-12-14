@@ -7,9 +7,6 @@
       "certificates": ["../deploy/product/ZLUX/serverConfig/zlux.keystore.cer"],
       "certificateAuthorities": ["../deploy/product/ZLUX/serverConfig/apiml-localca.cer"]
     },
-    "http": {
-      "port": 8543
-    },
     "mediationLayer": {
       "server": {
         "hostname": "localhost",
