@@ -5,11 +5,15 @@
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
 
-# https ports for the api mediation layer
+# Ports and certificate settings for the API Mediation Layer
 api-mediation:
-  catalogHttpPort=7552
-  discoveryHttpPort=7553
-  gatewayHttpsPort=7554
+  catalogPort=7552
+  discoveryPort=7553
+  gatewayPort=7554
+  externalCertificate=
+  externalCertificateAlias=
+  externalCertificateAuthorities=
+  verifyCertificatesOfServices=true  
 
 # http and https ports for the explorer liberty server
 explorer-server:

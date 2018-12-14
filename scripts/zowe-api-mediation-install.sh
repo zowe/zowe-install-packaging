@@ -26,7 +26,7 @@ if [ ! -f $API_MEDIATION_PAX ]
 fi
 
 # unpax the API Mediation services
-echo "  Installing API Mediation into " $ZOWE_ROOT_DIR"/api-mediation ..."
+echo "Installing API Mediation into" $ZOWE_ROOT_DIR"/api-mediation ..."  >> $LOG_FILE
 umask 0002
 mkdir -p $ZOWE_ROOT_DIR"/api-mediation"
 cd $ZOWE_ROOT_DIR"/api-mediation"

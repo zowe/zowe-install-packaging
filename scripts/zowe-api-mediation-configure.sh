@@ -16,13 +16,20 @@
 # $ZOWE_ROOT_DIR
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_IPADDRESS
-# $ZOWE_APIM_CATALOG_HTTP_PORT
-# $ZOWE_APIM_DISCOVERY_HTTP_PORT
-# $ZOWE_APIM_GATEWAY_HTTPS_PORT
+# $ZOWE_APIM_CATALOG_PORT
+# $ZOWE_APIM_DISCOVERY_PORT
+# $ZOWE_APIM_GATEWAY_PORT
+# $ZOWE_APIM_EXTERNAL_CERTIFICATE
+# $ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
+# $ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
+# $$ZOWE_APIM_VERIFY_CERTIFICATES
 
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
 cd $ZOWE_ROOT_DIR"/api-mediation"
+
+# Set a+rx for API Mediation JARs. 
+chmod a+rx *.jar
 
 # Create the static api definitions folder
 STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/api-defs"
@@ -35,6 +42,9 @@ cd scripts/
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
     -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
+    -e "s|\*\*EXTERNAL_CERTIFICATE\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE|g" \
+    -e "s|\*\*EXTERNAL_CERTIFICATE_ALIAS\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS|g" \
+    -e "s|\*\*EXTERNAL_CERTIFICATE_AUTHORITIES\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES|g" \
     setup-apiml-certificates-template.sh > setup-apiml-certificates.sh
 
 # Make configured script executable
@@ -44,28 +54,31 @@ chmod a+x setup-apiml-certificates.sh
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
     -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_HTTP_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_HTTP_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_HTTPS_PORT'/g' \
+    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
+    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
+    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
+    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
     api-mediation-start-catalog-template.sh > api-mediation-start-catalog.sh
 
 # Inject parameters into API Mediation startup, which contains command-line parameters as configuration
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
     -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_HTTP_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_HTTP_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_HTTPS_PORT'/g' \
+    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
+    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
+    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
+    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
     api-mediation-start-gateway-template.sh > api-mediation-start-gateway.sh
 
 # Inject parameters into API Mediation startup, which contains command-line parameters as configuration
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
     -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_HTTP_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_HTTP_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_HTTPS_PORT'/g' \
+    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
+    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
+    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
     -e 's|\*\*STATIC_DEF_CONFIG\*\*|'$STATIC_DEF_CONFIG'|g' \
+    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
     api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
 
 # Make configured script executable
@@ -77,9 +90,9 @@ chmod a+x apiml_cm.sh
 cd ..
 
 # Execute the APIML certificate generation - no user input required
-echo "Setting up Zowe API Mediation Layer certificates..."
+echo "  Setting up Zowe API Mediation Layer certificates..."
 ./scripts/setup-apiml-certificates.sh >> $LOG_FILE
-echo "Done."
+echo "  Certificate setup done."
 
 # Get the zos version
 ZOSMF_VERSION=""
@@ -103,7 +116,7 @@ cat <<EOF >$TEMP_DIR/zosmf.yml
 # Static definition for z/OSMF
 #
 # Once configured you can access z/OSMF via the API gateway:
-# http --verify=no GET https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
+# http --verify=no GET https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
 #	
 services:
     - serviceId: zosmf
@@ -138,7 +151,7 @@ services:
       description: IBM z/OS Datasets REST API service
       catalogUiTileId: datasets
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -149,7 +162,7 @@ services:
         - apiId: com.ibm.datasets
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
 catalogUiTiles:
     datasets:
         title: z/OS Datasets services
@@ -166,7 +179,7 @@ services:
       description: IBM z/OS Jobs REST API service
       catalogUiTileId: jobs
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -177,7 +190,7 @@ services:
         - apiId: com.ibm.jobs
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
 catalogUiTiles:
     jobs:
         title: z/OS Jobs services
@@ -194,7 +207,7 @@ services:
       description: IBM z/OS Miscellaneous REST API service
       catalogUiTileId: zos
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -203,7 +216,7 @@ services:
         - apiId: com.ibm.zos
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
 catalogUiTiles:
     zos:
         title: z/OS Miscellaneous services
@@ -217,7 +230,7 @@ cat <<EOF >$TEMP_DIR/orion.yml
 services:
     - serviceId: orion
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/explorer-languages/orion
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: explorer-languages  # [api/ui/ws]/v{majorVersion}
@@ -227,7 +240,7 @@ iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml
 chmod -R 777 $STATIC_DEF_CONFIG
 
 # Add API Catalog application to zLUX 
-CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_HTTPS_PORT/ui/v1/apicatalog
+CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
 chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
