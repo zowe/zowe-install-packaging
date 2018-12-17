@@ -88,9 +88,6 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
-# Configure API Mediation layer 
-. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
-
 # Configure the ports for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
 
@@ -109,8 +106,8 @@ echo "-----"
 # Run deploy on the zLUX app server to propogate the changes made
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
@@ -118,6 +115,13 @@ chmod a+x deploy.sh
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
+separator
+
+# Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
+# this script is run after all the folders have been created and paxes expanded above
+echo "Attempting to setup Zowe API Mediation Layer certificates ... "
+. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
+
 separator
 echo "Attempting to set Unix file permissions ..."
 
