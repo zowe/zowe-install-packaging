@@ -31,8 +31,10 @@ if extattr ./zlux-example-server/bin/zssServer | grep "APF authorized = NO"; the
 fi
 
 #
-# Permission fix for zLux Server
+# Permission fix for zLux Server.  This is so that the user IZUSVR that owns the ZOWESVR
+# started task is able to write to folder in order to persist details like pinned desktop items
 # 
+chgrp -R IZUUSER ./zlux-example-server/deploy
 chmod -R ug+w ./zlux-example-server/deploy
 chmod -R ug+w ./zlux-example-server/deploy/site
 chmod -R ug+w ./zlux-example-server/deploy/instance
