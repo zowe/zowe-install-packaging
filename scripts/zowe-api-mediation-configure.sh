@@ -151,7 +151,7 @@ services:
       description: IBM z/OS Datasets REST API service
       catalogUiTileId: datasets
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -162,7 +162,7 @@ services:
         - apiId: com.ibm.datasets
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     datasets:
         title: z/OS Datasets services
@@ -179,7 +179,7 @@ services:
       description: IBM z/OS Jobs REST API service
       catalogUiTileId: jobs
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -190,7 +190,7 @@ services:
         - apiId: com.ibm.jobs
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     jobs:
         title: z/OS Jobs services
@@ -207,7 +207,7 @@ services:
       description: IBM z/OS Miscellaneous REST API service
       catalogUiTileId: zos
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -216,7 +216,7 @@ services:
         - apiId: com.ibm.zos
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     zos:
         title: z/OS Miscellaneous services
@@ -230,7 +230,7 @@ cat <<EOF >$TEMP_DIR/orion.yml
 services:
     - serviceId: orion
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/explorer-languages/orion
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: explorer-languages  # [api/ui/ws]/v{majorVersion}
