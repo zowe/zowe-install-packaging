@@ -87,6 +87,13 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
+# Install Explorer UI plugins
+echo "  Installing Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
+# Configure Explorer UI plugins
+echo "  Attempting to setup Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-configure.sh
+
 # Configure the ports for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
 

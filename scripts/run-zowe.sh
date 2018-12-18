@@ -28,3 +28,4 @@ export NODE_HOME=$nodehome
 `dirname $0`/../../api-mediation/scripts/api-mediation-start-gateway.sh
 `dirname $0`/../../explorer-server/wlp/lib/native/zos/s390x/bbgzsrv Atlas
 
+`dirname $0`/../../jes-explorer/scripts/start-explorer-jes-ui-server.sh
