@@ -97,6 +97,7 @@ do
             if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
             then
                 ZOWE_ZLUX_SECURITY_TYPE=$value
+                echo "  zowe zlux security type="$ZOWE_ZLUX_SECURITY_TYPE
                 export ZOWE_ZLUX_SECURITY_TYPE
             fi
 # api-mediation settings:
