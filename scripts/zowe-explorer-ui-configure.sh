@@ -73,14 +73,24 @@ if [ -z "$EXPLORER_JES_BASEURI" ]; then
   exit 0
 fi
 
+# make scripts executable
+cd scripts
+chmod +x *.sh
+cd ..
+
+# update default config.json
 cd server/configs
 # - replace port from zowe configuration
 # - replace certificates
 sed -e "s|\"port\":.\+,|\"port\": ${ZOWE_EXPLORER_JES_UI_PORT},|g" \
-    -e "s|\"key\":.\+,|\"key\": \"${ZLUX_CERTIFICATE_KEY}\",|g" \
-    -e "s|\"cert\":.\+|\"cert\": \"${ZLUX_CERTIFICATE_CERT}\"|g" \
+    -e "s|\"port\":[^,]\+|\"port\": ${ZOWE_EXPLORER_JES_UI_PORT}|g" \
+    -e "s|\"key\":[^,]\+,|\"key\": \"${ZLUX_CERTIFICATE_KEY}\",|g" \
+    -e "s|\"key\":[^,]\+|\"key\": \"${ZLUX_CERTIFICATE_KEY}\"|g" \
+    -e "s|\"cert\":[^,]\+,|\"cert\": \"${ZLUX_CERTIFICATE_CERT}\",|g" \
+    -e "s|\"cert\":[^,]\+|\"cert\": \"${ZLUX_CERTIFICATE_CERT}\"|g" \
     config.json > config.json.tmp
 mv config.json.tmp config.json
+cd ../..
 
 # Add explorer plugin to zLUX 
 EXPLORER_JES_FULLURL="https://${ZOWE_EXPLORER_HOST}:${ZOWE_EXPLORER_JES_UI_PORT}${EXPLORER_JES_BASEURI}"
