@@ -92,7 +92,7 @@ else
 fi
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
 internal/opercmd "d omvs,a=all" \
-    | sed '{/ IZUSVR /N;s/\n */ /;}' \
+    | sed '{/ [0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] /N;s/\n */ /;}' \
     | grep -v CMD=grep \
     | grep ${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
