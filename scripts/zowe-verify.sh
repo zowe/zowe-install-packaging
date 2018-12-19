@@ -92,7 +92,7 @@ else
 fi
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
 internal/opercmd "d omvs,a=all" \
-    | sed '{/ IZUSVR /N;s/\n */ /;}' \
+    | sed '{/ [0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] /N;s/\n */ /;}' \
     | grep -v CMD=grep \
     | grep ${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
@@ -126,6 +126,12 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
 {
     set -f
   entry=$1                  # the RACF definition entry in the list
+
+  if [[ $entry = '*' ]]     # RLIST syntax does not permit listing of just the '*' profile
+  then
+    return 1    # no strings matched
+  fi  
+  
   profileName=${ZOWESVR}  # the profile that we want to match in that list
 
   l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"

@@ -45,6 +45,7 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_ALIAS\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_AUTHORITIES\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES|g" \
+    -e "s|\*\*ZOWE_ROOT_DIR\*\*|$ZOWE_ROOT_DIR|g" \
     setup-apiml-certificates-template.sh > setup-apiml-certificates.sh
 
 # Make configured script executable
@@ -246,10 +247,6 @@ services:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml	
 chmod -R 777 $STATIC_DEF_CONFIG
-
-# Add API Catalog application to zLUX 
-CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
-. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
 chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
 
