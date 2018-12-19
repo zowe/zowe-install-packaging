@@ -106,32 +106,43 @@ fi
 
 echo
 echo Is opercmd available?
-${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
-if [[ $? -ne 0 ]]
-then
-  echo Error: Unable to run opercmd REXX exec from # >> $LOG_FILE
-  ls -l ${INSTALL_DIR}/../scripts/opercmd # try to list opercmd
-  echo Warning: z/OS release will not be checked
-else
-# use opercmd
 
-  echo
-  echo OK: opercmd is available
-  echo
-  echo Check z/OS RELEASE
-  release=`${INSTALL_DIR}/../scripts/opercmd 'd iplinfo'|grep RELEASE`
-  # the selected line will look like this ...
-  # RELEASE z/OS 02.03.00    LICENSE = z/OS
-  
-  vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
-  echo release of z/OS is $release
-  if [[ $vrm < "02.02.00" ]]
-        then echo Error: version $vrm not supported
-        else echo OK: version $vrm is supported
-  fi
-  
-fi
+if [[ -r ${INSTALL_DIR}/../scripts/opercmd ]]
+then 
+  chmod a+x ${INSTALL_DIR}/../scripts/opercmd
+  if [[ $? -ne 0 ]]
+  then
+    echo Error:  Unable to make opercmd executable
+  else 
+    ${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
+    if [[ $? -ne 0 ]]
+    then
+      echo Error: Unable to run opercmd REXX exec from # >> $LOG_FILE
+      ls -l ${INSTALL_DIR}/../scripts/opercmd # try to list opercmd
+      echo Warning: z/OS release will not be checked
+    else
+    # use opercmd
 
+      echo
+      echo OK: opercmd is available
+      echo
+      echo Check z/OS RELEASE
+      release=`${INSTALL_DIR}/../scripts/opercmd 'd iplinfo'|grep RELEASE`
+      # the selected line will look like this ...
+      # RELEASE z/OS 02.03.00    LICENSE = z/OS
+      
+      vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
+      echo release of z/OS is $release
+      if [[ $vrm < "02.02.00" ]]
+            then echo Error: version $vrm not supported
+            else echo OK: version $vrm is supported
+      fi
+    fi
+  fi 
+else 
+  echo Error: Cannot access opercmd
+  echo Warning: z/OS release will not be checked 
+fi 
 # z/OSMF and other pre-req jobs are up and running
 # z/OS V2R2 with PTF UI46658 or z/OS V2R3, 
 
