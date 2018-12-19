@@ -199,7 +199,7 @@ services:
     homePageRelativeUrl:
     routedServices:
       - gatewayUrl: ui/v1
-        serviceRelativeUrl: ui/v1/jobs
+        serviceRelativeUrl: ui/v1/explorer-jes
 catalogUiTiles:
   jobs:
     title: z/OS Jobs services
