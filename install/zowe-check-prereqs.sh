@@ -37,7 +37,7 @@ fi
 echo
 echo Check entries in the install directory
 instdirOK=1
-for dir in files install licenses log scripts
+for dir in files install licenses scripts
 do
   ls ${INSTALL_DIR}/../$dir >/dev/null
   if [[ $? -ne 0 ]]
