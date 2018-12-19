@@ -45,6 +45,7 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_ALIAS\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_AUTHORITIES\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES|g" \
+    -e "s|\*\*ZOWE_ROOT_DIR\*\*|$ZOWE_ROOT_DIR|g" \
     setup-apiml-certificates-template.sh > setup-apiml-certificates.sh
 
 # Make configured script executable
@@ -151,7 +152,7 @@ services:
       description: IBM z/OS Datasets REST API service
       catalogUiTileId: datasets
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -162,7 +163,7 @@ services:
         - apiId: com.ibm.datasets
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     datasets:
         title: z/OS Datasets services
@@ -179,7 +180,7 @@ services:
       description: IBM z/OS Jobs REST API service
       catalogUiTileId: jobs
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -190,7 +191,7 @@ services:
         - apiId: com.ibm.jobs
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     jobs:
         title: z/OS Jobs services
@@ -207,7 +208,7 @@ services:
       description: IBM z/OS Miscellaneous REST API service
       catalogUiTileId: zos
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -216,7 +217,7 @@ services:
         - apiId: com.ibm.zos
           gatewayUrl: api/v1
           version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/ibm/api/explorer/
+          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
 catalogUiTiles:
     zos:
         title: z/OS Miscellaneous services
@@ -230,7 +231,7 @@ cat <<EOF >$TEMP_DIR/orion.yml
 services:
     - serviceId: orion
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_PORT/explorer-languages/orion
+        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: explorer-languages  # [api/ui/ws]/v{majorVersion}
@@ -238,10 +239,6 @@ services:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml	
 chmod -R 777 $STATIC_DEF_CONFIG
-
-# Add API Catalog application to zLUX 
-CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
-. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
 chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
 
