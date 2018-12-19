@@ -126,6 +126,12 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
 {
     set -f
   entry=$1                  # the RACF definition entry in the list
+
+  if [[ $entry = '*' ]]     # RLIST syntax does not permit listing of just the '*' profile
+  then
+    return 1    # no strings matched
+  fi  
+  
   profileName=${ZOWESVR}  # the profile that we want to match in that list
 
   l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
