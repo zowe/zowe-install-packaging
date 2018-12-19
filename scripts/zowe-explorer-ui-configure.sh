@@ -18,6 +18,7 @@
 # $LOG_FILE
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_EXPLORER_JES_UI_PORT
+# $ZOWE_APIM_GATEWAY_PORT
 
 echo "<zowe-explorer-ui-configure.sh>" >> $LOG_FILE
 
@@ -93,7 +94,7 @@ mv config.json.tmp config.json
 cd ../..
 
 # Add explorer plugin to zLUX 
-EXPLORER_JES_FULLURL="https://${ZOWE_EXPLORER_HOST}:${ZOWE_EXPLORER_JES_UI_PORT}${EXPLORER_JES_BASEURI}"
+EXPLORER_JES_FULLURL="https://${ZOWE_EXPLORER_HOST}:${ZOWE_APIM_GATEWAY_PORT}${EXPLORER_JES_BASEURI}"
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh \
     "$ZOWE_ROOT_DIR" \
     "${EXPLORER_JES_PLUGIN_ID}" \
