@@ -106,32 +106,43 @@ fi
 
 echo
 echo Is opercmd available?
-${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
-if [[ $? -ne 0 ]]
-then
-  echo Error: Unable to run opercmd REXX exec from # >> $LOG_FILE
-  ls -l ${INSTALL_DIR}/../scripts/opercmd # try to list opercmd
-  echo Warning: z/OS release will not be checked
-else
-# use opercmd
 
-  echo
-  echo OK: opercmd is available
-  echo
-  echo Check z/OS RELEASE
-  release=`${INSTALL_DIR}/../scripts/opercmd 'd iplinfo'|grep RELEASE`
-  # the selected line will look like this ...
-  # RELEASE z/OS 02.03.00    LICENSE = z/OS
-  
-  vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
-  echo release of z/OS is $release
-  if [[ $vrm < "02.02.00" ]]
-        then echo Error: version $vrm not supported
-        else echo OK: version $vrm is supported
-  fi
-  
-fi
+if [[ -r ${INSTALL_DIR}/../scripts/opercmd ]]
+then 
+  chmod a+x ${INSTALL_DIR}/../scripts/opercmd
+  if [[ $? -ne 0 ]]
+  then
+    echo Error:  Unable to make opercmd executable
+  else 
+    ${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
+    if [[ $? -ne 0 ]]
+    then
+      echo Error: Unable to run opercmd REXX exec from # >> $LOG_FILE
+      ls -l ${INSTALL_DIR}/../scripts/opercmd # try to list opercmd
+      echo Warning: z/OS release will not be checked
+    else
+    # use opercmd
 
+      echo
+      echo OK: opercmd is available
+      echo
+      echo Check z/OS RELEASE
+      release=`${INSTALL_DIR}/../scripts/opercmd 'd iplinfo'|grep RELEASE`
+      # the selected line will look like this ...
+      # RELEASE z/OS 02.03.00    LICENSE = z/OS
+      
+      vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
+      echo release of z/OS is $release
+      if [[ $vrm < "02.02.00" ]]
+            then echo Error: version $vrm not supported
+            else echo OK: version $vrm is supported
+      fi
+    fi
+  fi 
+else 
+  echo Error: Cannot access opercmd
+  echo Warning: z/OS release will not be checked 
+fi 
 # z/OSMF and other pre-req jobs are up and running
 # z/OS V2R2 with PTF UI46658 or z/OS V2R3, 
 
@@ -364,6 +375,50 @@ else
   echo OK
 fi
 
+echo
+echo Check enough free space is available in target z/OS USS HFS install folder
+
+rootDir=`sed -n 's/ *rootDir=\(.*\)/\1/p' ${INSTALL_DIR}/zowe-install.yaml`
+
+yamlDir=`eval echo $rootDir`    # may contain shell expansion chars e.g. '~'
+#du -sk $yamlDir                 # what we use now, for interest - this won't be populated until after install and config.
+# echo Size of $rootDir is `du -sk $yamlDir | sed 's/ *\([0-9]*\) .*/\1/'` KB
+
+if [[ -r $yamlDir ]]
+then 
+
+  #  $yamlDir exists
+
+  sizes=`df -k ${yamlDir} | grep -v ^Mounted |  sed 's+.*(.*) *\([0-9]*\)/.*+\1+'`     # extract the 'Avail' byte count in kibibytes
+  adequate=0    # no adequate-sized areas yet
+  largest=0     # no largest yet
+  minspace=650  # in units of MB (0.9.5 uses 594 MB)
+
+  for s in $sizes
+  do
+          if [[ $s -gt ${minspace}000 ]]  # compare MB with (KB x 1000)
+          then 
+            # echo $s is big enough
+            adequate=$((adequate+1))
+          fi
+          if [[ $s -gt $largest  ]]
+          then 
+            largest=$s
+          fi
+  done
+  if [[ $adequate -gt 0 ]]
+  then
+    # echo "$adequate adequate-sized area(s) found"
+    echo OK
+  else
+    echo Error: "NO adequate-sized area(s) found"
+    echo size of largest free area in $yamlDir is $largest KB
+    echo minimum required is ${minspace} MB
+  fi
+
+else 
+  echo Error: rootDir $rootDir from yaml file does not exist
+fi
 
 # 7. Check interface name specified in /zaas1/scripts/ipupdate.sh ?
 # 8. /u/tstradm/.profile file exists
