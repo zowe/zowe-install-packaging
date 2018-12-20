@@ -30,6 +30,7 @@ zlux-server:
 terminals:
   sshPort=22
   telnetPort=23
+# security=tls
 
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:
