@@ -367,9 +367,33 @@ fi
 echo
 echo Check enough free space is available in target z/OS USS HFS install folder
 
+# extract the target install directory from the yaml file
 rootDir=`sed -n 's/ *rootDir=\(.*\)/\1/p' ${INSTALL_DIR}/zowe-install.yaml`
 
+if [[ -n "$rootDir" ]]
+then 
+  : # root dir was extracted from yaml
+else
+  echo Warning: rootDir not set in zowe-install.yaml file
+  rootDir=~/zowe
+  echo defaulting to $rootDir
+fi 
+
 yamlDir=`eval echo $rootDir`    # may contain shell expansion chars e.g. '~'
+
+# We can only check space in a directory that exists.
+# Find the first target install directory that exists, starting from the full 
+# pathname and working back up the path to root.
+while [[ "$yamlDir" != "/" ]]
+do 
+  if [[ -d $yamlDir ]]
+  then 
+    break
+  fi 
+  yamlDir=`dirname $yamlDir`
+done 
+echo Info: Existing directory to be checked is $yamlDir
+
 #du -sk $yamlDir                 # what we use now, for interest - this won't be populated until after install and config.
 # echo Size of $rootDir is `du -sk $yamlDir | sed 's/ *\([0-9]*\) .*/\1/'` KB
 
