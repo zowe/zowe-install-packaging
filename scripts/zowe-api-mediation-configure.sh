@@ -231,7 +231,7 @@ catalogUiTiles:
     title: IBM Unix System Services
     description: IBM z/OS Unix System services UI
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/uss.yml	
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
 # Add static definition for zos
 cat <<EOF >$TEMP_DIR/zos.yml
