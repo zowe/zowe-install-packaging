@@ -57,7 +57,7 @@ EXPLORER_INSTALL_FOLDER=uss_explorer
 echo "Installing Explorer USS into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
 echo "Installing Explorer USS into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
 umask 0002
-
+mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
 # unpax package
 cd "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
 echo "Unpax of ${EXPLORER_USS_PAX} into ${PWD}" >> $LOG_FILE
