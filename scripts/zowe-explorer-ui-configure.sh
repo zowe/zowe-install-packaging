@@ -113,7 +113,7 @@ echo "Configuring USS Explorer UI ..."
 echo "Configuring USS Explorer UI ..." >> $LOG_FILE
 
 # NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
-EXPLORER_INSTALL_FOLDER=uss
+EXPLORER_INSTALL_FOLDER=uss_explorer
 cd "$ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER"
 
 EXPLORER_USS_BASEURI=$($NODE_BIN -e "process.stdout.write(require('./package.json').config.baseuri)")

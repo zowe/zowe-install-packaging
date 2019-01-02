@@ -43,7 +43,7 @@ pax -rf $EXPLORER_JES_PAX -ppx
 # Install explorer-jes ended
 #############################################
 
-
+cd $INSTALL_DIR
 #############################################
 # Install explorer-uss started
 EXPLORER_USS_PAX=$PWD/$(ls -t ./files/explorer-uss-*.pax | head -1)
