@@ -59,13 +59,13 @@ echo "  - port        : ${ZOWE_EXPLORER_JES_UI_PORT}" >> $LOG_FILE
 echo "  - base uri    : ${EXPLORER_JES_BASEURI}"
 echo "  - base uri    : ${EXPLORER_JES_BASEURI}" >> $LOG_FILE
 if [ -z "$EXPLORER_JES_PLUGIN_ID" ]; then
-  echo "Error: cannot read plguin ID, install aborted."
-  echo "Error: cannot read plguin ID, install aborted." >> $LOG_FILE
+  echo "Error: cannot read plugin ID, install aborted."
+  echo "Error: cannot read plugin ID, install aborted." >> $LOG_FILE
   exit 0
 fi
 if [ -z "$EXPLORER_JES_PLUGIN_NAME" ]; then
-  echo "Error: cannot read plguin name, install aborted."
-  echo "Error: cannot read plguin name, install aborted." >> $LOG_FILE
+  echo "Error: cannot read plugin name, install aborted."
+  echo "Error: cannot read plugin name, install aborted." >> $LOG_FILE
   exit 0
 fi
 if [ -z "$EXPLORER_JES_BASEURI" ]; then
@@ -128,13 +128,13 @@ echo "  - port        : ${ZOWE_EXPLORER_USS_UI_PORT}" >> $LOG_FILE
 echo "  - base uri    : ${EXPLORER_USS_BASEURI}"
 echo "  - base uri    : ${EXPLORER_USS_BASEURI}" >> $LOG_FILE
 if [ -z "$EXPLORER_USS_PLUGIN_ID" ]; then
-  echo "Error: cannot read plguin ID, install aborted."
-  echo "Error: cannot read plguin ID, install aborted." >> $LOG_FILE
+  echo "Error: cannot read plugin ID, install aborted."
+  echo "Error: cannot read plugin ID, install aborted." >> $LOG_FILE
   exit 0
 fi
 if [ -z "$EXPLORER_USS_PLUGIN_NAME" ]; then
-  echo "Error: cannot read plguin name, install aborted."
-  echo "Error: cannot read plguin name, install aborted." >> $LOG_FILE
+  echo "Error: cannot read plugin name, install aborted."
+  echo "Error: cannot read plugin name, install aborted." >> $LOG_FILE
   exit 0
 fi
 if [ -z "$EXPLORER_USS_BASEURI" ]; then

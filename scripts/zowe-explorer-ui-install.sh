@@ -27,6 +27,14 @@ if [ ! -f $EXPLORER_JES_PAX ]; then
   echo "Installation terminated"
   exit 0
 fi
+#############################################
+# Install explorer-uss started
+EXPLORER_USS_PAX=$PWD/$(ls -t ./files/explorer-uss-*.pax | head -1)
+if [ ! -f $EXPLORER_USS_PAX ]; then
+  echo "USS Explorer UI (explorer-uss*.pax) missing"
+  echo "Installation terminated"
+  exit 0
+fi
 
 # NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
 EXPLORER_INSTALL_FOLDER=jes_explorer
@@ -43,24 +51,13 @@ pax -rf $EXPLORER_JES_PAX -ppx
 # Install explorer-jes ended
 #############################################
 
-cd $INSTALL_DIR
-#############################################
-# Install explorer-uss started
-EXPLORER_USS_PAX=$PWD/$(ls -t ./files/explorer-uss-*.pax | head -1)
-if [ ! -f $EXPLORER_USS_PAX ]; then
-  echo "USS Explorer UI (explorer-uss*.pax) missing"
-  echo "Installation terminated"
-  exit 0
-fi
 
 # NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
 EXPLORER_INSTALL_FOLDER=uss_explorer
 echo "Installing Explorer USS into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
 echo "Installing Explorer USS into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
 umask 0002
-# remove old folders installed by atlas
-rm -fr "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}" 2&>1 >/dev/null
-mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
+
 # unpax package
 cd "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
 echo "Unpax of ${EXPLORER_USS_PAX} into ${PWD}" >> $LOG_FILE
