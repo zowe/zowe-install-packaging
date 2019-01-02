@@ -45,10 +45,10 @@ pax -rf $EXPLORER_JES_PAX -ppx
 
 
 #############################################
-# Install explorer-jes started
-EXPLORER_JES_PAX=$PWD/$(ls -t ./files/explorer-jes-*.pax | head -1)
-if [ ! -f $EXPLORER_JES_PAX ]; then
-  echo "JES Explorer UI (explorer-jes*.pax) missing"
+# Install explorer-uss started
+EXPLORER_USS_PAX=$PWD/$(ls -t ./files/explorer-uss-*.pax | head -1)
+if [ ! -f $EXPLORER_USS_PAX ]; then
+  echo "USS Explorer UI (explorer-uss*.pax) missing"
   echo "Installation terminated"
   exit 0
 fi
