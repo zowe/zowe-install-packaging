@@ -52,8 +52,7 @@ echo "Install started at: "`date` >> $LOG_FILE
 
 echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 
-# zowe-parse-yaml.sh to get the variables for 
-# ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTP_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
+# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
@@ -88,8 +87,12 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
-# Configure API Mediation layer 
-. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
+# Install Explorer UI plugins
+echo "  Installing Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
+# Configure Explorer UI plugins
+echo "  Attempting to setup Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-configure.sh
 
 # Configure the ports for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
@@ -100,6 +103,10 @@ echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..."
 # install the liberty-server by expanding the /bin/atlas-pax file to ZOWE_ROOT_DIR/liberty-server/wlp/...
 . $INSTALL_DIR/scripts/zowe-install-liberty-server.sh
 
+# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
+CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
+. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
+
 echo "---- After expanding ZLUX.pax and Atlas.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
@@ -109,15 +116,22 @@ echo "-----"
 # Run deploy on the zLUX app server to propogate the changes made
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
-. deploy.sh > /dev/null
+./deploy.sh > /dev/null
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
+separator
+
+# Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
+# this script is run after all the folders have been created and paxes expanded above
+echo "Attempting to setup Zowe API Mediation Layer certificates ... "
+. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
+
 separator
 echo "Attempting to set Unix file permissions ..."
 

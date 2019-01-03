@@ -34,4 +34,10 @@ chmod -R u+w ../../tn3270-ng2/
 sed 's/"port": 23,/"port": '"${ZOWE_ZLUX_TELNET_PORT}",'/g' ../../tn3270-ng2/_defaultTN3270.json > $TEMP_DIR/_defaultTN3270.json
 mv $TEMP_DIR/_defaultTN3270.json ../../tn3270-ng2/_defaultTN3270.json
 
+if [[ -n "${ZOWE_ZLUX_SECURITY_TYPE}" ]]
+then
+    echo "Updating security type in _defaultTN3270.json to "$ZOWE_ZLUX_SECURITY_TYPE >> $LOG_FILE 
+    sed 's/"type": "telnet"/"type": "'"${ZOWE_ZLUX_SECURITY_TYPE}"'"/' ../../tn3270-ng2/_defaultTN3270.json > $TEMP_DIR/_defaultTN3270.json
+    mv $TEMP_DIR/_defaultTN3270.json ../../tn3270-ng2/_defaultTN3270.json
+fi 
 echo "</zowe-zlux-configure-ports.sh>" >> $LOG_FILE

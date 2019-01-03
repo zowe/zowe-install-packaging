@@ -30,6 +30,14 @@ zlux-server:
 terminals:
   sshPort=22
   telnetPort=23
+# security=tls
+
+# Reserve port 8545, 8547, 8549 for explorer apis
+# https ports for explorer ui applications
+explorer-ui:
+  explorerJESUI=8546
+  explorerMVSUI=8548
+  explorerUSSUI=8550
 
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:
