@@ -32,10 +32,10 @@ cd $INSTALL_DIR/files/plugins/
 #fi
 
 sed 's/$atlasPortPlaceholder/'"${ZOWE_EXPLORER_SERVER_HTTPS_PORT}"'/g' ./explorer-USS/web/index.html > $TEMP_DIR/ussWithPort.html
-sed 's/$atlasHostnamePlaceholder/'"${ZOWE_EXPLORER_HOST}"'/g' $TEMP_DIR/ussWithPort.html > ./explorer-USS/web/index.html
+sed 's/$atlasHostnamePlaceholder/'"${ZOWE_IPADDRESS}"'/g' $TEMP_DIR/ussWithPort.html > ./explorer-USS/web/index.html
 
 sed 's/$atlasPortPlaceholder/'"${ZOWE_EXPLORER_SERVER_HTTPS_PORT}"'/g' ./explorer-MVS/web/index.html > $TEMP_DIR/mvsWithPort.html
-sed 's/$atlasHostnamePlaceholder/'"${ZOWE_EXPLORER_HOST}"'/g' $TEMP_DIR/mvsWithPort.html > ./explorer-MVS/web/index.html
+sed 's/$atlasHostnamePlaceholder/'"${ZOWE_IPADDRESS}"'/g' $TEMP_DIR/mvsWithPort.html > ./explorer-MVS/web/index.html
 
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 mkdir -p $ZOWE_ROOT_DIR/explorer-USS

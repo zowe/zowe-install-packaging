@@ -113,6 +113,12 @@ do
                 ZOWE_EXPLORER_USS_UI_PORT=$value
                 echo "  USS explorer UI https port="$ZOWE_EXPLORER_USS_UI_PORT
                 export ZOWE_EXPLORER_USS_UI_PORT
+# Look for security= beneath terminals:
+            if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
+            then
+                ZOWE_ZLUX_SECURITY_TYPE=$value
+                echo "  zowe zlux security type="$ZOWE_ZLUX_SECURITY_TYPE
+                export ZOWE_ZLUX_SECURITY_TYPE
             fi
 # api-mediation settings:
             if [[ $key == "catalogPort" ]] && [[ $section == "api-mediation" ]]
@@ -276,6 +282,7 @@ echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_JES_UI_PORT="$ZOWE_EXPLORER_JES_UI_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_MVS_UI_PORT="$ZOWE_EXPLORER_MVS_UI_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_USS_UI_PORT="$ZOWE_EXPLORER_USS_UI_PORT >> $LOG_FILE
+echo "  ZOWE_ZLUX_SECURITY_TYPE="$ZOWE_ZLUX_SECURITY_TYPE >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_PORT="$ZOWE_APIM_CATALOG_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_PORT="$ZOWE_APIM_DISCOVERY_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_PORT="$ZOWE_APIM_GATEWAY_PORT >> $LOG_FILE
