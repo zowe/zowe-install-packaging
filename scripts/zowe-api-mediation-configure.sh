@@ -216,7 +216,7 @@ services:
     description: IBM z/OS Unix System services UI
     catalogUiTileId: uss
     instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_USS_UI_PORT/
     homePageRelativeUrl:
     routedServices:
       - gatewayUrl: ui/v1
