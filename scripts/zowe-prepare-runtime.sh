@@ -31,19 +31,10 @@ cd $INSTALL_DIR/files/plugins/
 #		done
 #fi
 
-sed 's/$atlasPortPlaceholder/'"${ZOWE_EXPLORER_SERVER_HTTPS_PORT}"'/g' ./explorer-USS/web/index.html > $TEMP_DIR/ussWithPort.html
-sed 's/$atlasHostnamePlaceholder/'"${ZOWE_EXPLORER_HOST}"'/g' $TEMP_DIR/ussWithPort.html > ./explorer-USS/web/index.html
-
 sed 's/$atlasPortPlaceholder/'"${ZOWE_EXPLORER_SERVER_HTTPS_PORT}"'/g' ./explorer-MVS/web/index.html > $TEMP_DIR/mvsWithPort.html
 sed 's/$atlasHostnamePlaceholder/'"${ZOWE_EXPLORER_HOST}"'/g' $TEMP_DIR/mvsWithPort.html > ./explorer-MVS/web/index.html
 
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
-mkdir -p $ZOWE_ROOT_DIR/explorer-USS
-cp -R ./explorer-USS $ZOWE_ROOT_DIR/
-cp com.ibm.atlas.explorer-USS.json $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
-
-# Tag the graphic as binary.  Also untag any text files so they are treated as ASCII
-chtag -b $ZOWE_ROOT_DIR/explorer-USS/web/images/explorer-USS.png
 
 mkdir -p $ZOWE_ROOT_DIR/explorer-MVS
 cp -R ./explorer-MVS $ZOWE_ROOT_DIR/
