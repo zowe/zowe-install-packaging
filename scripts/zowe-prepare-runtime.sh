@@ -31,9 +31,6 @@ cd $INSTALL_DIR/files/plugins/
 #		done
 #fi
 
-sed 's/$atlasPortPlaceholder/'"${ZOWE_EXPLORER_SERVER_HTTPS_PORT}"'/g' ./explorer-JES/web/index.html > $TEMP_DIR/jesWithPort.html
-sed 's/$atlasHostnamePlaceholder/'"${ZOWE_IPADDRESS}"'/g' $TEMP_DIR/jesWithPort.html > ./explorer-JES/web/index.html
-
 sed 's/$atlasPortPlaceholder/'"${ZOWE_EXPLORER_SERVER_HTTPS_PORT}"'/g' ./explorer-USS/web/index.html > $TEMP_DIR/ussWithPort.html
 sed 's/$atlasHostnamePlaceholder/'"${ZOWE_IPADDRESS}"'/g' $TEMP_DIR/ussWithPort.html > ./explorer-USS/web/index.html
 
@@ -41,12 +38,6 @@ sed 's/$atlasPortPlaceholder/'"${ZOWE_EXPLORER_SERVER_HTTPS_PORT}"'/g' ./explore
 sed 's/$atlasHostnamePlaceholder/'"${ZOWE_IPADDRESS}"'/g' $TEMP_DIR/mvsWithPort.html > ./explorer-MVS/web/index.html
 
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
-mkdir -p $ZOWE_ROOT_DIR/explorer-JES
-cp -R ./explorer-JES $ZOWE_ROOT_DIR/
-cp com.ibm.atlas.explorer-JES.json $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
-# The chtag -b is needed because without it the graphics don't appear
-chtag -b $ZOWE_ROOT_DIR/explorer-JES/web/images/explorer-JES.png
-
 mkdir -p $ZOWE_ROOT_DIR/explorer-USS
 cp -R ./explorer-USS $ZOWE_ROOT_DIR/
 cp com.ibm.atlas.explorer-USS.json $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/

@@ -175,27 +175,35 @@ iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/dataset
 cat <<EOF >$TEMP_DIR/jobs.yml
 #
 services:
-    - serviceId: jobs
-      title: IBM z/OS Jobs
-      description: IBM z/OS Jobs REST API service
-      catalogUiTileId: jobs
-      instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: api/v1/jobs
-        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: ui/v1/jobs
-      apiInfo:
-        - apiId: com.ibm.jobs
-          gatewayUrl: api/v1
-          version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+  - serviceId: jobs
+    title: IBM z/OS Jobs
+    description: IBM z/OS Jobs REST API service
+    catalogUiTileId: jobs
+    instanceBaseUrls:
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+    homePageRelativeUrl:
+    routedServices:
+      - gatewayUrl: api/v1
+        serviceRelativeUrl: api/v1/jobs
+    apiInfo:
+      - apiId: com.ibm.jobs
+        gatewayUrl: api/v1
+        version: 0.9.3
+        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+  - serviceId: explorer-jes
+    title: IBM z/OS Jobs UI
+    description: IBM z/OS Jobs UI service
+    catalogUiTileId:
+    instanceBaseUrls:
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_JES_UI_PORT/
+    homePageRelativeUrl:
+    routedServices:
+      - gatewayUrl: ui/v1
+        serviceRelativeUrl: ui/v1/explorer-jes
 catalogUiTiles:
-    jobs:
-        title: z/OS Jobs services
-        description: IBM z/OS Jobs REST services
+  jobs:
+    title: z/OS Jobs services
+    description: IBM z/OS Jobs REST services
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
 
