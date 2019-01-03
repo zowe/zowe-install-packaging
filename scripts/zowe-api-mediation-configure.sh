@@ -211,7 +211,7 @@ iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml
 cat <<EOF >$TEMP_DIR/uss.yml
 #
 services:
-  - serviceId: uss
+  - serviceId: explorer-uss
     title: IBM Unix System Services
     description: IBM z/OS Unix System services UI
     catalogUiTileId: uss
@@ -220,7 +220,7 @@ services:
     homePageRelativeUrl:
     routedServices:
       - gatewayUrl: ui/v1
-        serviceRelativeUrl: ui/v1/uss
+        serviceRelativeUrl: ui/v1/explorer-uss
     apiInfo:
       - apiId: com.ibm.uss
         gatewayUrl: ui/v1
