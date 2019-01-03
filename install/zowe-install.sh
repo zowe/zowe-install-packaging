@@ -115,7 +115,7 @@ chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
-. deploy.sh > /dev/null
+./deploy.sh > /dev/null
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
