@@ -127,7 +127,7 @@ node ('ibm-jenkins-slave-nvm') {
       sh "mkdir -p pax-workspace/content/zowe-${zoweVersion}/files"
       // copy from current github source
       sh "cp -R files/* pax-workspace/content/zowe-${zoweVersion}/files"
-      sh "rsync -rv --include '*.json' --include '*.html' --include '*.jcl' --include '*.template' --exclude '*.zip' --exclude '*.png' --exclude '*.tgz' --exclude '*.tar.gz' --exclude '*.pax' --prune-empty-dirs --remove-source-files pax-workspace/content/zowe-${zoweVersion}/files pax-workspace/ascii"
+      sh "rsync -rv --include '*.json' --include '*.html' --include '*.jcl' --include '*.template' --exclude '*.zip' --exclude '*.png' --exclude '*.tgz' --exclude '*.tar.gz' --exclude '*.pax' --exclude '*.jar' --prune-empty-dirs --remove-source-files pax-workspace/content/zowe-${zoweVersion}/files pax-workspace/ascii"
       sh 'cp manifest.json pax-workspace/ascii'
       sh 'cp -R install/* pax-workspace/ascii/install'
       sh 'cp -R scripts/* pax-workspace/ascii/scripts'
