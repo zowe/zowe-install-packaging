@@ -120,6 +120,7 @@ do
                 ZOWE_EXPLORER_USS_UI_PORT=$value
                 echo "  USS explorer UI https port="$ZOWE_EXPLORER_USS_UI_PORT
                 export ZOWE_EXPLORER_USS_UI_PORT
+            fi
 # Look for security= beneath terminals:
             if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
             then
