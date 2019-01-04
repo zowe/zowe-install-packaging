@@ -131,6 +131,9 @@ node ('ibm-jenkins-slave-nvm') {
       sh 'cp manifest.json pax-workspace/ascii'
       sh 'cp -R install/* pax-workspace/ascii/install'
       sh 'cp -R scripts/* pax-workspace/ascii/scripts'
+      sh 'mkdir -p pax-workspace/content/files/scripts'
+      // jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
+      sh 'mv pax-workspace/ascii/files/scripts/jobs-api-server-start.sh pax-workspace/content/files/scripts/jobs-api-server-start.sh'
       // tar ascii files
       // debug purpose, list all ascii files before tar
       sh 'find ./pax-workspace/ascii -print'
