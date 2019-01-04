@@ -106,32 +106,43 @@ fi
 
 echo
 echo Is opercmd available?
-${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
-if [[ $? -ne 0 ]]
-then
-  echo Error: Unable to run opercmd REXX exec from # >> $LOG_FILE
-  ls -l ${INSTALL_DIR}/../scripts/opercmd # try to list opercmd
-  echo Warning: z/OS release will not be checked
-else
-# use opercmd
 
-  echo
-  echo OK: opercmd is available
-  echo
-  echo Check z/OS RELEASE
-  release=`${INSTALL_DIR}/../scripts/opercmd 'd iplinfo'|grep RELEASE`
-  # the selected line will look like this ...
-  # RELEASE z/OS 02.03.00    LICENSE = z/OS
-  
-  vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
-  echo release of z/OS is $release
-  if [[ $vrm < "02.02.00" ]]
-        then echo Error: version $vrm not supported
-        else echo OK: version $vrm is supported
-  fi
-  
-fi
+if [[ -r ${INSTALL_DIR}/../scripts/opercmd ]]
+then 
+  chmod a+x ${INSTALL_DIR}/../scripts/opercmd
+  if [[ $? -ne 0 ]]
+  then
+    echo Error:  Unable to make opercmd executable
+  else 
+    ${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
+    if [[ $? -ne 0 ]]
+    then
+      echo Error: Unable to run opercmd REXX exec from # >> $LOG_FILE
+      ls -l ${INSTALL_DIR}/../scripts/opercmd # try to list opercmd
+      echo Warning: z/OS release will not be checked
+    else
+    # use opercmd
 
+      echo
+      echo OK: opercmd is available
+      echo
+      echo Check z/OS RELEASE
+      release=`${INSTALL_DIR}/../scripts/opercmd 'd iplinfo'|grep RELEASE`
+      # the selected line will look like this ...
+      # RELEASE z/OS 02.03.00    LICENSE = z/OS
+      
+      vrm=`echo $release | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
+      echo release of z/OS is $release
+      if [[ $vrm < "02.02.00" ]]
+            then echo Error: version $vrm not supported
+            else echo OK: version $vrm is supported
+      fi
+    fi
+  fi 
+else 
+  echo Error: Cannot access opercmd
+  echo Warning: z/OS release will not be checked 
+fi 
 # z/OSMF and other pre-req jobs are up and running
 # z/OS V2R2 with PTF UI46658 or z/OS V2R3, 
 
@@ -367,9 +378,33 @@ fi
 echo
 echo Check enough free space is available in target z/OS USS HFS install folder
 
+# extract the target install directory from the yaml file
 rootDir=`sed -n 's/ *rootDir=\(.*\)/\1/p' ${INSTALL_DIR}/zowe-install.yaml`
 
+if [[ -n "$rootDir" ]]
+then 
+  : # root dir was extracted from yaml
+else
+  echo Warning: rootDir not set in zowe-install.yaml file
+  rootDir=~/zowe
+  echo defaulting to $rootDir
+fi 
+
 yamlDir=`eval echo $rootDir`    # may contain shell expansion chars e.g. '~'
+
+# We can only check space in a directory that exists.
+# Find the first target install directory that exists, starting from the full 
+# pathname and working back up the path to root.
+while [[ "$yamlDir" != "/" ]]
+do 
+  if [[ -d $yamlDir ]]
+  then 
+    break
+  fi 
+  yamlDir=`dirname $yamlDir`
+done 
+echo Info: Existing directory to be checked is $yamlDir
+
 #du -sk $yamlDir                 # what we use now, for interest - this won't be populated until after install and config.
 # echo Size of $rootDir is `du -sk $yamlDir | sed 's/ *\([0-9]*\) .*/\1/'` KB
 
