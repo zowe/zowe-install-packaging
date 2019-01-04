@@ -28,6 +28,13 @@ echo "<zowe-explorer-api-configure.sh>" >> $LOG_FILE
 EXPLORER_INSTALL_FOLDER=explorer-jobs-api
 cd "$ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER"
 
+EXPLORER_JOBS_JAR=$(ls -t jobs-api-server-*.jar | head -1)
+if [ ! -f $EXPLORER_JOBS_JAR ]; then
+  echo "Explorer jobs api (jobs-api-server-*.jar) missing"
+  echo "Installation terminated"
+  exit 0
+fi
+
 # Set a+rx for API Mediation JARs. 
 chmod a+rx *.jar
 
@@ -37,6 +44,7 @@ cd scripts/
 
 # Add JAVA_HOME to start script templates
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
+    -e 's/\*\*JOBS_JAR\*\*/'$EXPLORER_JOBS_JAR'/g' \
     -e 's/\*\*SERVER_PORT\*\*/'$ZOWE_EXPLORER_SERVER_JOBS_PORT'/g' \
     -e "s|\*\*KEY_ALIAS\*\*|localhost|g" \
     -e "s|\*\*KEYSTORE\*\*|$ZOWE_ROOT_DIR/api-mediation/keystore/localhost/localhost.keystore.p12|g" \
