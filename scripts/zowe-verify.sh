@@ -31,7 +31,7 @@ echo
 echo Check we are in the right directory, with the right contents
 dirOK=1
 for dir in \
-README.md             explorer-USS          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
+README.md             uss_explorer          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
 api-mediation         explorer-server       scripts               zlux-build            zlux-proxy-server     zss-auth \
 jes_explorer          explorer-server-auth  tn3270-ng2            zlux-example-server   zlux-shared \
 explorer-MVS          vt-ng2                zlux-ng2              zos-subsystems
