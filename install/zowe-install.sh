@@ -160,7 +160,7 @@ if [[ $AUTH_RETURN_CODE == "0" ]]; then
 fi
 
 separator
-echo "Attempting to create ZOWESVR PROCLIB ..."
+echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
 # Create the ZOWESVR JCL
 # Insert the default Zowe install path in the JCL
 
@@ -186,9 +186,13 @@ $INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl $ZOWE_SERVER_PROCLI
 
 separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
-echo "   (or in SDSF directly issue the command /S ZOWESVR)"
+echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER)"
 echo "To stop Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-stop.sh
-echo "  (or in SDSF directly the command /C ZOWESVR)"
+echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
+
+# save install log in runtime directory
+mkdir  $ZOWE_ROOT_DIR/install_log
+cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR
