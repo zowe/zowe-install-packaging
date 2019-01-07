@@ -52,8 +52,7 @@ echo "Install started at: "`date` >> $LOG_FILE
 
 echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 
-# zowe-parse-yaml.sh to get the variables for 
-# ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTP_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
+# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
@@ -88,6 +87,13 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
+# Install Explorer UI plugins
+echo "  Installing Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
+# Configure Explorer UI plugins
+echo "  Attempting to setup Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-configure.sh
+
 # Configure the ports for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
 
@@ -115,7 +121,7 @@ chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
-. deploy.sh > /dev/null
+./deploy.sh > /dev/null
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
