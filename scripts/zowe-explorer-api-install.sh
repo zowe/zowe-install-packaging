@@ -39,8 +39,6 @@ EXPLORER_INSTALL_FOLDER=explorer-jobs-api
 echo "Installing Explorer Jobs API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
 echo "Installing Explorer Jobs API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
 umask 0002
-# remove old folders installed by atlas
-rm -fr "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}" 2&>1 >/dev/null
 mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
 # copy jar
 cd "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
