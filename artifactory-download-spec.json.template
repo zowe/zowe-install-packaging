@@ -12,6 +12,12 @@
       "build": "explorer-wlp-packaging :: master"
     },
     {
+      "pattern": "libs-snapshot-local/org/zowe/explorer/jobs/jobs-zowe-server-package/0.0.1-SNAPSHOT/jobs-zowe-server-package-0.0.1-20190104.160320-6.zip",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
+      "flat": "true",
+      "explode": "true"
+    },
+    {
       "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.2/explorer-jes-0.0.2.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
