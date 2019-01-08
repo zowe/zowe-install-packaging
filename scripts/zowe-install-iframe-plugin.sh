@@ -55,8 +55,8 @@ EOF
 cat <<EOF >$PLUGIN_FOLDER/pluginDefinition.json
 {
   "identifier": "$PLUGIN_ID",
-  "apiVersion": "1.0",
-  "pluginVersion": "1.0",
+  "apiVersion": "1.0.0",
+  "pluginVersion": "1.0.0",
   "pluginType": "application",
   "webContent": {
     "framework": "iframe",
