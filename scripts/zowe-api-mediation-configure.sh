@@ -180,7 +180,7 @@ services:
     description: IBM z/OS Jobs REST API service
     catalogUiTileId: jobs
     instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/
     homePageRelativeUrl:
     routedServices:
       - gatewayUrl: api/v1
@@ -189,7 +189,7 @@ services:
       - apiId: com.ibm.jobs
         gatewayUrl: api/v1
         version: 0.9.3
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/swagger-ui.html
   - serviceId: explorer-jes
     title: IBM z/OS Jobs UI
     description: IBM z/OS Jobs UI service
