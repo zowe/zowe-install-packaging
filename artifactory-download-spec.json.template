@@ -18,7 +18,7 @@
       "explode": "true"
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/explorer-jes/0.0.2-PR-47/explorer-jes-0.0.2-snapshot.20190108155143-pr-47.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.2/explorer-jes-0.0.2.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
