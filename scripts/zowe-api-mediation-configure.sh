@@ -147,27 +147,37 @@ iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zosmf.yml > $STATIC_DEF_CONFIG/zosmf.yml
 cat <<EOF >$TEMP_DIR/datasets.yml
 #
 services:
-    - serviceId: datasets
-      title: IBM z/OS Datasets
-      description: IBM z/OS Datasets REST API service
-      catalogUiTileId: datasets
-      instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: api/v1/datasets
-        - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: ui/v1/datasets
-      apiInfo:
-        - apiId: com.ibm.datasets
-          gatewayUrl: api/v1
-          version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+  - serviceId: datasets
+    title: IBM z/OS Datasets
+    description: IBM z/OS Datasets REST API service
+    catalogUiTileId: datasets
+    instanceBaseUrls:
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
+    homePageRelativeUrl:  # Home page is at the same URL
+    routedServices:
+      - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+        serviceRelativeUrl: api/v1/datasets
+      - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
+        serviceRelativeUrl: ui/v1/datasets
+    apiInfo:
+      - apiId: com.ibm.datasets
+        gatewayUrl: api/v1
+        version: 0.9.3
+        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
+  - serviceId: explorer-mvs
+    title: IBM z/OS MVS Explorer UI
+    description: IBM z/OS MVS Explorer UI service
+    catalogUiTileId:
+    instanceBaseUrls:
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_MVS_UI_PORT/
+    homePageRelativeUrl:
+    routedServices:
+      - gatewayUrl: ui/v1
+        serviceRelativeUrl: ui/v1/explorer-mvs
 catalogUiTiles:
-    datasets:
-        title: z/OS Datasets services
-        description: IBM z/OS Datasets REST services
+  datasets:
+    title: z/OS Datasets services
+    description: IBM z/OS Datasets REST services
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
 
