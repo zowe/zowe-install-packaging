@@ -486,7 +486,7 @@ fi
 if [[ -n "${nodeVersion}" ]]
 then 
     # nodeVersion is not empty 
-    if [[ "$nodeVersion" < "v6.11" ]]
+    if [[ "$nodeVersion" < "v6.14" ]]
           then 
             echo Error: node version $nodeVersion is less than minimum level required
           else 
