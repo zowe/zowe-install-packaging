@@ -214,22 +214,12 @@ services:
   - serviceId: explorer-uss
     title: IBM Unix System Services
     description: IBM z/OS Unix System services UI
-    catalogUiTileId: uss
     instanceBaseUrls:
       - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_USS_UI_PORT/
     homePageRelativeUrl:
     routedServices:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-uss
-    apiInfo:
-      - apiId: com.ibm.uss
-        gatewayUrl: ui/v1
-        version: 0.9.6
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
-catalogUiTiles:
-  uss:
-    title: IBM Unix System Services
-    description: IBM z/OS Unix System services UI
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
@@ -259,19 +249,6 @@ catalogUiTiles:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zos.yml > $STATIC_DEF_CONFIG/zos.yml	
 
-# Add static definition for languages
-cat <<EOF >$TEMP_DIR/orion.yml
-#
-services:
-    - serviceId: orion
-      instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/explorer-languages/orion
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: explorer-languages  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl:
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/orion.yml > $STATIC_DEF_CONFIG/orion.yml	
 chmod -R 777 $STATIC_DEF_CONFIG
 
 chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
