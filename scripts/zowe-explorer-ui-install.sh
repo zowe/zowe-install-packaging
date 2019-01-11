@@ -28,6 +28,14 @@ if [ ! -f $EXPLORER_JES_PAX ]; then
   exit 0
 fi
 #############################################
+# Install explorer-mvs started
+EXPLORER_MVS_PAX=$PWD/$(ls -t ./files/explorer-mvs-*.pax | head -1)
+if [ ! -f $EXPLORER_MVS_PAX ]; then
+  echo "MVS Explorer UI (explorer-mvs*.pax) missing"
+  echo "Installation terminated"
+  exit 0
+fi
+#############################################
 # Install explorer-uss started
 EXPLORER_USS_PAX=$PWD/$(ls -t ./files/explorer-uss-*.pax | head -1)
 if [ ! -f $EXPLORER_USS_PAX ]; then
@@ -47,6 +55,20 @@ cd "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
 echo "Unpax of ${EXPLORER_JES_PAX} into ${PWD}" >> $LOG_FILE
 pax -rf $EXPLORER_JES_PAX -ppx
 # Install explorer-jes ended
+#############################################
+
+
+# NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
+EXPLORER_INSTALL_FOLDER=mvs_explorer
+echo "Installing Explorer MVS into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
+echo "Installing Explorer MVS into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
+umask 0002
+mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
+# unpax package
+cd "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
+echo "Unpax of ${EXPLORER_MVS_PAX} into ${PWD}" >> $LOG_FILE
+pax -rf $EXPLORER_MVS_PAX -ppx
+# Install explorer-mvs ended
 #############################################
 
 
