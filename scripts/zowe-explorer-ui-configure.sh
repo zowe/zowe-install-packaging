@@ -18,6 +18,8 @@
 # $LOG_FILE
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_EXPLORER_JES_UI_PORT
+# $ZOWE_EXPLORER_MVS_UI_PORT
+# $ZOWE_EXPLORER_USS_UI_PORT
 # $ZOWE_APIM_GATEWAY_PORT
 
 echo "<zowe-explorer-ui-configure.sh>" >> $LOG_FILE
@@ -105,6 +107,76 @@ EXPLORER_JES_FULLURL="https://${ZOWE_EXPLORER_HOST}:${ZOWE_APIM_GATEWAY_PORT}${E
 echo "JES Explorer UI configured."
 echo "JES Explorer UI configured." >> $LOG_FILE
 # Configure explorer-jes ended
+#############################################
+
+
+#############################################
+# Configure explorer-mvs started
+echo "Configuring MVS Explorer UI ..."
+echo "Configuring MVS Explorer UI ..." >> $LOG_FILE
+
+# NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
+EXPLORER_INSTALL_FOLDER=mvs_explorer
+cd "$ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER"
+
+EXPLORER_MVS_BASEURI=$($NODE_BIN -e "process.stdout.write(require('./package.json').config.baseuri)")
+EXPLORER_MVS_PLUGIN_ID=$($NODE_BIN -e "process.stdout.write(require('./package.json').config.pluginId)")
+EXPLORER_MVS_PLUGIN_NAME=$($NODE_BIN -e "process.stdout.write(require('./package.json').config.pluginName)")
+echo "  - plugin ID   : ${EXPLORER_MVS_PLUGIN_ID}"
+echo "  - plugin ID   : ${EXPLORER_MVS_PLUGIN_ID}" >> $LOG_FILE
+echo "  - plugin name : ${EXPLORER_MVS_PLUGIN_NAME}"
+echo "  - plugin name : ${EXPLORER_MVS_PLUGIN_NAME}" >> $LOG_FILE
+echo "  - port        : ${ZOWE_EXPLORER_MVS_UI_PORT}"
+echo "  - port        : ${ZOWE_EXPLORER_MVS_UI_PORT}" >> $LOG_FILE
+echo "  - base uri    : ${EXPLORER_MVS_BASEURI}"
+echo "  - base uri    : ${EXPLORER_MVS_BASEURI}" >> $LOG_FILE
+if [ -z "$EXPLORER_MVS_PLUGIN_ID" ]; then
+  echo "Error: cannot read plugin ID, install aborted."
+  echo "Error: cannot read plugin ID, install aborted." >> $LOG_FILE
+  exit 0
+fi
+if [ -z "$EXPLORER_MVS_PLUGIN_NAME" ]; then
+  echo "Error: cannot read plugin name, install aborted."
+  echo "Error: cannot read plugin name, install aborted." >> $LOG_FILE
+  exit 0
+fi
+if [ -z "$EXPLORER_MVS_BASEURI" ]; then
+  echo "Error: cannot read server base uri, install aborted."
+  echo "Error: cannot read server base uri, install aborted." >> $LOG_FILE
+  exit 0
+fi
+
+# make scripts executable
+cd scripts
+chmod +x *.sh
+cd ..
+
+# update default config.json
+cd server/configs
+# - replace port from zowe configuration
+# - replace certificates
+sed -e "s|\"port\":.\+,|\"port\": ${ZOWE_EXPLORER_MVS_UI_PORT},|g" \
+    -e "s|\"port\":[^,]\+|\"port\": ${ZOWE_EXPLORER_MVS_UI_PORT}|g" \
+    -e "s|\"key\":[^,]\+,|\"key\": \"${ZLUX_CERTIFICATE_KEY}\",|g" \
+    -e "s|\"key\":[^,]\+|\"key\": \"${ZLUX_CERTIFICATE_KEY}\"|g" \
+    -e "s|\"cert\":[^,]\+,|\"cert\": \"${ZLUX_CERTIFICATE_CERT}\",|g" \
+    -e "s|\"cert\":[^,]\+|\"cert\": \"${ZLUX_CERTIFICATE_CERT}\"|g" \
+    config.json > config.json.tmp
+mv config.json.tmp config.json
+cd ../..
+
+# Add explorer plugin to zLUX 
+EXPLORER_MVS_FULLURL="https://${ZOWE_EXPLORER_HOST}:${ZOWE_APIM_GATEWAY_PORT}${EXPLORER_MVS_BASEURI}"
+. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh \
+    "$ZOWE_ROOT_DIR" \
+    "${EXPLORER_MVS_PLUGIN_ID}" \
+    "${EXPLORER_MVS_PLUGIN_NAME}" \
+    $EXPLORER_MVS_FULLURL \
+    $ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER/plugin-definition/zlux/images/explorer-MVS.png
+
+echo "MVS Explorer UI configured."
+echo "MVS Explorer UI configured." >> $LOG_FILE
+# Configure explorer-mvs ended
 #############################################
 
 #############################################
