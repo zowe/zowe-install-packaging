@@ -28,5 +28,6 @@ export NODE_HOME=$nodehome
 `dirname $0`/../../api-mediation/scripts/api-mediation-start-gateway.sh
 `dirname $0`/../../explorer-jobs-api/scripts/jobs-api-server-start.sh
 `dirname $0`/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
+`dirname $0`/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
 `dirname $0`/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
 `dirname $0`/../../explorer-server/wlp/lib/native/zos/s390x/bbgzsrv Atlas
