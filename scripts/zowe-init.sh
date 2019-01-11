@@ -35,23 +35,13 @@ export ZOWE_JAVA_HOME
 export ZOWE_EXPLORER_HOST
 export NODE_HOME
 
-if [[ $PROFILE == "" ]]
-then    
-    PROFILE=".profile"
-fi
-
-if [[ ! -f ~/$PROFILE ]]
-then
-    touch ~/$PROFILE
-fi
-
 # Purpose: Set Zowe vars, if present in .profile.  We may have changed .profile since we last logged in.  
 # Action: Find the lines in .profile that set Zowe env vars, put them in a separate .zowe-profile file, and ‘source’ that instead.
 # The .zowe-profile file persists across installs.  If it exists, your .profile will not be scanned for Zowe variables.  
 # If you delete it, it will be recreated here from .profile.  
 
 # 1. find existing environment variable settings in .profile
-if [[ ! -e ~/.zowe-profile ]]
+if [[ ! -e ~/.zowe-profile && -e ~/$PROFILE ]]
 then
     grep \
     -e ZOWE_ZOSMF_PATH= \
