@@ -34,7 +34,6 @@ if [ ! -f $EXPLORER_JOBS_START_SCRIPT ]; then
   exit 0
 fi
 
-# NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
 EXPLORER_INSTALL_FOLDER=explorer-jobs-api
 echo "Installing Explorer Jobs API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
 echo "Installing Explorer Jobs API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
@@ -49,6 +48,38 @@ mkdir scripts
 cd scripts
 cp $EXPLORER_JOBS_START_SCRIPT .
 # Install explorer jobs api ended
+#############################################
+
+
+#############################################
+# Install explorer data sets api started
+EXPLORER_DATASETS_JAR=$PWD/$(ls -t ./files/data-sets-api-server-*-boot.jar | head -1)
+if [ ! -f $EXPLORER_DATASETS_JAR ]; then
+  echo "Explorer data sets api (data-sets-api-server-*-boot.jar) missing"
+  echo "Installation terminated"
+  exit 0
+fi
+EXPLORER_DATASETS_START_SCRIPT=$PWD/$(ls -t ./files/scripts/data-sets-api-server-start.sh | head -1)
+if [ ! -f $EXPLORER_DATASETS_START_SCRIPT ]; then
+  echo "Explorer data sets api start script (data-sets-api-server-start.sh) missing"
+  echo "Installation terminated"
+  exit 0
+fi
+
+EXPLORER_INSTALL_FOLDER=explorer-data-sets-api
+echo "Installing Explorer Data Sets API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
+echo "Installing Explorer Data Sets API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
+umask 0002
+mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
+# copy jar
+cd "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
+echo "Copy ${EXPLORER_DATASETS_JAR} into ${PWD}" >> $LOG_FILE
+cp $EXPLORER_DATASETS_JAR .
+# copy start script
+mkdir scripts
+cd scripts
+cp $EXPLORER_DATASETS_START_SCRIPT .
+# Install explorer data sets api ended
 #############################################
 
 echo "</zowe-explorer-api-install.sh>" >> $LOG_FILE
