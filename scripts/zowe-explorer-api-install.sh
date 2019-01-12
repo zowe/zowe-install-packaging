@@ -17,10 +17,10 @@
 # $LOG_FILE
 
 echo "<zowe-explorer-api-install.sh>" >> $LOG_FILE
-cd $INSTALL_DIR
 
 #############################################
 # Install explorer jobs api started
+cd $INSTALL_DIR
 EXPLORER_JOBS_JAR=$PWD/$(ls -t ./files/jobs-api-server-*.jar | head -1)
 if [ ! -f $EXPLORER_JOBS_JAR ]; then
   echo "Explorer jobs api (jobs-api-server-*.jar) missing"
@@ -53,6 +53,7 @@ cp $EXPLORER_JOBS_START_SCRIPT .
 
 #############################################
 # Install explorer data sets api started
+cd $INSTALL_DIR
 EXPLORER_DATASETS_JAR=$PWD/$(ls -t ./files/data-sets-api-server-*-boot.jar | head -1)
 if [ ! -f $EXPLORER_DATASETS_JAR ]; then
   echo "Explorer data sets api (data-sets-api-server-*-boot.jar) missing"
