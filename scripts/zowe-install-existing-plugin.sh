@@ -17,7 +17,7 @@ if ! [ -d "$1" ]; then
   echo "$1 not a directory, please provide the full path to the root installation directory of Zowe" >&2
   exit 1
 fi
-if ! [ -f "$3" ]; then
+if ! [ -d "$3" ]; then
   echo "$3 not a directory, please provide the full path to the directory with the plugin" >&2
   exit 1
 fi
