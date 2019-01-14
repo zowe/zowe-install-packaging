@@ -84,7 +84,7 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 . $INSTALL_DIR/scripts/zowe-api-mediation-install.sh
 
 # Install the zLUX server
-echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-app-server ..." 
+echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
 # Install the Explorer API
@@ -114,14 +114,14 @@ CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/ap
 echo "---- After expanding ZLUX.pax and Atlas.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
-# run the atlasZluxInection script that copies folders into the zlux-app-server
+# run the atlasZluxInection script that copies folders into the zlux-example-server
 # and gets the explorer tiles onto the desktop
 . $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
 # Run deploy on the zLUX app server to propogate the changes made
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
