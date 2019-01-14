@@ -11,6 +11,12 @@
       "explode": "true"
     },
     {
+      "pattern": "libs-snapshot-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.0.1-SNAPSHOT/data-sets-zowe-server-package-0.0.1-20190112.060234-2.zip",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
+      "flat": "true",
+      "explode": "true"
+    },
+    {
       "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.2/explorer-jes-0.0.2.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"

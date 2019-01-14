@@ -17,8 +17,8 @@ api-mediation:
 
 # http and https ports for the explorer server
 explorer-server:
-  mvsPort=7080
-  jobsPort=7443
+  jobsPort=8545
+  dataSetsPort=8547
 
 # http and https ports for the zlux node server, as well as the port for the zss server
 zlux-server:

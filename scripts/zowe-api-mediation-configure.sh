@@ -152,7 +152,7 @@ services:
     description: IBM z/OS Datasets REST API service
     catalogUiTileId: datasets
     instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_MVS_PORT/
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/
     homePageRelativeUrl:  # Home page is at the same URL
     routedServices:
       - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -163,7 +163,7 @@ services:
       - apiId: com.ibm.datasets
         gatewayUrl: api/v1
         version: 0.9.3
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_MVS_PORT/ibm/api/explorer/
+        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
   - serviceId: explorer-mvs
     title: IBM z/OS MVS Explorer UI
     description: IBM z/OS MVS Explorer UI service

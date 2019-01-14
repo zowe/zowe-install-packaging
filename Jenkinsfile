@@ -112,7 +112,7 @@ node ('ibm-jenkins-slave-nvm') {
       echo downloadResult
       def downloadResultObject = readJSON(text: downloadResult)
       if (downloadResultObject['status'] != 'success' ||
-          downloadResultObject['totals']['success'] != 11 || downloadResultObject['totals']['failure'] != 0) {
+          downloadResultObject['totals']['success'] != 12 || downloadResultObject['totals']['failure'] != 0) {
         error "Failed on verifying download result"
       } else {
         echo "download result is successful as expected"
@@ -134,6 +134,7 @@ node ('ibm-jenkins-slave-nvm') {
       sh "mkdir -p pax-workspace/content/zowe-${zoweVersion}/files/scripts"
       // jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
       sh "mv pax-workspace/ascii/files/scripts/jobs-api-server-start.sh pax-workspace/content/zowe-${zoweVersion}/files/scripts/jobs-api-server-start.sh"
+      sh "mv pax-workspace/ascii/files/scripts/data-sets-api-server-start.sh pax-workspace/content/zowe-${zoweVersion}/files/scripts/data-sets-api-server-start.sh"
       // tar ascii files
       // debug purpose, list all ascii files before tar
       sh 'find ./pax-workspace/ascii -print'

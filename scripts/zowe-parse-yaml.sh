@@ -52,13 +52,13 @@ do
                 echo "  explorer-server jobs api port="$ZOWE_EXPLORER_SERVER_JOBS_PORT
                 export ZOWE_EXPLORER_SERVER_JOBS_PORT
             fi
-# Look for mvsPort= beneath explorer-server:
-            if [[ $key == "mvsPort" ]] && [[ $section == "explorer-server" ]] 
+# Look for dataSetsPort= beneath explorer-server:
+            if [[ $key == "dataSetsPort" ]] && [[ $section == "explorer-server" ]] 
             then
-                ZOWE_EXPLORER_SERVER_MVS_PORT=$value
-                echo "  explorer-server mvs api port="$ZOWE_EXPLORER_SERVER_MVS_PORT
-                export ZOWE_EXPLORER_SERVER_MVS_PORT
-            fi            
+                ZOWE_EXPLORER_SERVER_DATASETS_PORT=$value
+                echo "  explorer-server data sets api port="$ZOWE_EXPLORER_SERVER_DATASETS_PORT
+                export ZOWE_EXPLORER_SERVER_DATASETS_PORT
+            fi
 # Look for httpPort= beneath zlux-server:
             if [[ $key == "httpPort" ]] && [[ $section == "zlux-server" ]] 
             then
@@ -199,6 +199,11 @@ then
     ZOWE_EXPLORER_SERVER_MVS_PORT=7443
     echo "  ZOWE_EXPLORER_SERVER_MVS_PORT not specified:  Defaulting to 7443"
 fi
+if [[ $ZOWE_EXPLORER_SERVER_DATASETS_PORT == "" ]]
+then
+    ZOWE_EXPLORER_SERVER_DATASETS_PORT=8547
+    echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT not specified:  Defaulting to 8547"
+fi
 if [[ $ZOWE_ZLUX_SERVER_HTTPS_PORT == "" ]]
 then
     ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
@@ -275,7 +280,7 @@ echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTP_PORT="$ZOWE_ZLUX_SERVER_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_MVS_PORT="$ZOWE_EXPLORER_SERVER_MVS_PORT >> $LOG_FILE
+echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT="$ZOWE_EXPLORER_SERVER_DATASETS_PORT >> $LOG_FILE
 echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
