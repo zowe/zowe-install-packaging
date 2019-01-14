@@ -402,9 +402,6 @@ echo Check port settings from Zowe config files
   api_mediation_discovery_http_port=7553    # api-mediation/scripts/api-mediation-start-discovery.sh
   api_mediation_gateway_https_port=7554     # api-mediation/scripts/api-mediation-start-gateway.sh
 
-  explorer_server_http_port=7290            # explorer-server/wlp/usr/servers/Atlas/server.xml  ASCII
-  explorer_server_https_port=7941           # explorer-server/wlp/usr/servers/Atlas/server.xml  ASCII
-                                            # explorer-??S/web/index.html
   zlux_server_http_port=8543                # zlux-example-server/config/zluxserver.json
   zlux_server_https_port=8544               # zlux-example-server/config/zluxserver.json
   zss_server_http_port=8542                 # zlux-example-server/config/zluxserver.json
@@ -415,7 +412,6 @@ for file in \
  "api-mediation/scripts/api-mediation-start-catalog.sh" \
  "api-mediation/scripts/api-mediation-start-discovery.sh" \
  "api-mediation/scripts/api-mediation-start-gateway.sh" \
- "explorer-server/wlp/usr/servers/Atlas/server.xml" \
  "zlux-example-server/config/zluxserver.json" \
  "vt-ng2/_defaultVT.json" \
  "tn3270-ng2/_defaultTN3270.json"
@@ -567,11 +563,7 @@ do
     #
     #   0.  TBD: also check hostname or IP is right for this machine
     #
-done
-
-# 0. Verify server.env ... explorer-server/wlp/usr/servers/Atlas/server.env 
-# should contain JAVA_HOME and ZOWE_HOSTNAME?                                                 
-
+done                                       
 
 echo
 echo Check Ports are assigned to jobs
@@ -931,36 +923,6 @@ then
 fi
 
 echo 
-echo Check ZOSMF_HOST
-zosmfhostOK=1
-# ZOSMF_HOST=your_system_ip_address
-zosmfHost=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/explorer-server/wlp/usr/servers/Atlas/server.env | grep "ZOSMF_HOST="`
-if [[ $? -eq 0 ]]
-then 
-    # is it set to a non-empty value?
-    echo $zosmfHost | grep "ZOSMF_HOST=[^ ]"
-    if [[ $? -ne 0 ]]
-    then
-        echo Error: ZOSMF_HOST is set to empty
-        zosmfhostOK=0
-    else
-        hostname=`echo $zosmfHost | sed -n 's/.*ZOSMF_HOST=\([^ ]*\).*/\1/p'`
-        echo Info: hostname = $hostname
-        ping $hostname > /dev/null
-        if [[ $? -ne 0 ]]
-        then 
-            echo Error: Unable to ping $hostname
-            zosmfhostOK=0
-        fi
-    fi
-else 
-    echo Error: ZOSMF_HOST is not set in server.env
-    zosmfhostOK=0
-fi
-if [[ $zosmfhostOK -eq 1 ]]
-then 
-    echo OK
-fi
 
 # 6. Other required jobs
 echo

@@ -87,10 +87,6 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
-# Install the Explorer API
-echo "  Installing Explorer API into $ZOWE_ROOT_DIR/explorer-*-api ..."
-. $INSTALL_DIR/scripts/zowe-explorer-api-install.sh
-
 # Install Explorer UI plugins
 echo "  Installing Zowe Explorer UI Plugins ... "
 . $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
@@ -104,17 +100,14 @@ echo "  Attempting to setup Zowe Explorer UI Plugins ... "
 # Configure the TLS certificates for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-certificates.sh
 
-# install the liberty-server by expanding the /bin/atlas-pax file to ZOWE_ROOT_DIR/liberty-server/wlp/...
-. $INSTALL_DIR/scripts/zowe-install-liberty-server.sh
-
 # Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
 CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
-echo "---- After expanding ZLUX.pax and Atlas.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
+echo "---- After expanding ZLUX.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
-# run the atlasZluxInection script that copies folders into the zlux-example-server
+# run the ZluxInection script that copies folders into the zlux-example-server
 # and gets the explorer tiles onto the desktop
 . $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
 # Run deploy on the zLUX app server to propogate the changes made
@@ -138,7 +131,7 @@ echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 
 # Configure Explorer API servers. This should be after APIML CM generated certificates
 echo "Attempting to setup Zowe Explorer API certificates ... "
-. $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
+# . $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
 
 separator
 echo "Attempting to set Unix file permissions ..."

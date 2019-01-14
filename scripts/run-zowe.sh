@@ -11,7 +11,7 @@
 ################################################################################
 
 #
-# Script to start node server and Atlas server.
+# Script to start node server.
 #
 #
 # Your JCL must invoke it like this:
@@ -30,4 +30,3 @@ export NODE_HOME=$nodehome
 `dirname $0`/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
 `dirname $0`/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
 `dirname $0`/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
-`dirname $0`/../../explorer-server/wlp/lib/native/zos/s390x/bbgzsrv Atlas
