@@ -15,10 +15,8 @@ api-mediation:
   externalCertificateAuthorities=
   verifyCertificatesOfServices=true  
 
-# http and https ports for the explorer liberty server
+# http and https ports for the explorer server
 explorer-server:
-  httpPort=7080
-  httpsPort=7443
   jobsPort=8545
   dataSetsPort=8547
 

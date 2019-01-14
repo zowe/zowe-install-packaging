@@ -39,38 +39,4 @@ chmod -R ug+w ./zlux-example-server/deploy
 chmod -R ug+w ./zlux-example-server/deploy/site
 chmod -R ug+w ./zlux-example-server/deploy/instance
 
-# This is from the explorer-server install
-cd explorer-server
-
-#echo "Creating symlink from the explorer server for its bootstrap properties to where z/OSMF is"
-chgrp -R IZUADMIN wlp
-chgrp IZUADMIN $PWD
-chmod -R g+w wlp
-mkdir -p ./wlp/usr/servers/Atlas/resources
-chmod g+w ./wlp/usr/servers/Atlas/resources
-# Added to pre-create liberty directories which are normally created at first startup
-mkdir -p ./wlp/usr/servers/.pid
-chmod -R ug+rwx ./wlp/usr/servers/.pid
-mkdir -p ./wlp/usr/servers/Atlas/workarea/org.eclipse.osgi/169/0/.cp/lib
-chmod -R +X ./wlp/usr/servers/Atlas/workarea
-
-# Permission fixing for the explorer server
-# These must be done before the symlinks are changed, as otherwise it tries to change the actual
-# target of the symlink which lies in z/OSMF and the permission fails and aborts the install
-chmod a+rw ./
-chmod a+rx ./
-chmod -R 755  ./
-chmod a+w ./wlp/usr/servers
-chmod a+w ./wlp/usr/servers/.classCache
-chmod a+w ./wlp/usr/servers/.classCache/javasharedresources/*
-chmod a+w ./wlp/usr/servers/.classCache/javasharedresources
-chmod -R a+rwx ./wlp/usr/servers/Atlas
-
-ln -s %zosmfpath%bootstrap.properties ./wlp/usr/servers/Atlas/bootstrap.properties
-# "Creating symlink from the explorer server to z/OSMF for sharing the ltpa.keys file and sharing authentication credentials"
-ln -s %zosmfpath%jvm.security.override.properties ./wlp/usr/servers/Atlas/jvm.security.override.properties
-
-mkdir -p ./wlp/usr/servers/Atlas/resources/security
-chmod a+w ./wlp/usr/servers/Atlas/resources/security
-ln -s %zosmfpath%resources/security/ltpa.keys ./wlp/usr/servers/Atlas/resources/security/ltpa.keys
 
