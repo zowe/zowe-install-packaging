@@ -39,7 +39,7 @@
       "flat": "true"
     },    
     {
-      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.3.*/mfaas-zowe-install-0.3.*.zip",
+      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/0.4.*/mfaas-zowe-install-0.4.*.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
       "explode": "true",
