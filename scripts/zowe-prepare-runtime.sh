@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2018
 ################################################################################
 
-zluxserverdirectory='zlux-example-server'
+zluxserverdirectory='zlux-app-server'
 
 echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
