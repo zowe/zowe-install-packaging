@@ -11,9 +11,6 @@
 ################################################################################
 
 #
-# Script to start node server.
-#
-#
 # Your JCL must invoke it like this:
 #
 # //        EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,

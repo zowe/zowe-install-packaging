@@ -114,10 +114,9 @@ CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLU
 echo "---- After expanding ZLUX.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
-# run the atlasZluxInection script that copies folders into the zlux-example-server
-# and gets the explorer tiles onto the desktop
+
 . $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
-# Run deploy on the zLUX app server to propogate the changes made
+# Run deploy on the zLUX app server to propagate the changes made
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	

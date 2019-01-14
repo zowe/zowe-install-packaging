@@ -11,18 +11,19 @@
 //*                                                                  *
 //* ZOWE SERVER PROCEDURE                                            *
 //*                                                                  *
-//* This is a procedure to start the Node server.                    *
+//* This is a procedure to start the Node servers, API Mediation     *
+//* and explorera                                                    *
 //*                                                                  *
-//* Invoke this procedure, specifying the path where the ZOWE server *
-//* is installed on your system.                                     *
+//* Invoke this procedure, specifying the root path where the        *
+//* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,SRVRPATH='/zowe/install/path'          *
+//*   S ZOWESVR,SRVRPATH='/zowe/install/path'                        *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
 //ZOWESVR   PROC SRVRPATH='/zowe/install/path'
 //*-------------------------------------------------------------------
-//* SRVRPATH - The path to the HFS directory where the api-mediation
+//* SRVRPATH - The path to the HFS directory where the 
 //*            server was installed.
 //*-------------------------------------------------------------------
 //EXPORT EXPORT SYMLIST=*
