@@ -26,7 +26,7 @@ for one in $EXPLORER_API_LIST; do
   if [ "$one" = "jobs" ]; then
     ZOWE_EXPLORER_API_PORT=$ZOWE_EXPLORER_SERVER_JOBS_PORT
     ZOWE_EXPLORER_JAR_MACRO=JOBS_JAR
-  elif if [ "$one" = "jobs" ]; then
+  elif [ "$one" = "data-sets" ]; then
     ZOWE_EXPLORER_API_PORT=$ZOWE_EXPLORER_SERVER_DATASETS_PORT
     ZOWE_EXPLORER_JAR_MACRO=DATASETS_JAR
   else
