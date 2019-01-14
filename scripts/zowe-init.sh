@@ -35,23 +35,23 @@ export ZOWE_JAVA_HOME
 export ZOWE_EXPLORER_HOST
 export NODE_HOME
 
-if [[ $PROFILE == "" ]]
-then    
-    PROFILE=".profile"
-fi
+# Purpose: Set Zowe vars, if present in .profile.  We may have changed .profile since we last logged in.  
+# Action: Find the lines in .profile that set Zowe env vars, put them in a separate .zowe_profile file, and ‘source’ that instead.
+# The .zowe_profile file persists across installs.  If it exists, your .profile will not be scanned for Zowe variables.  
+# If you delete it, it will be recreated here from .profile.  
 
-if [[ ! -f ~/$PROFILE ]]
+# 1. find existing environment variable settings in .profile
+if [[ ! -e ~/.zowe_profile && -e ~/$PROFILE ]]
 then
-    touch ~/$PROFILE
+    grep \
+    -e ZOWE_ZOSMF_PATH= \
+    -e ZOWE_ZOSMF_PORT= \
+    -e ZOWE_JAVA_HOME= \
+    -e ZOWE_EXPLORER_HOST= \
+    -e NODE_HOME= ~/$PROFILE > ~/.zowe_profile
 fi
-
-. ~/$PROFILE > /dev/null
-
-# Run the .profile so that any set environment variables from a previous install 
-# in the same shell are not set again.  send results to /dev/null to squelch any output
-# so the user sees a clean log
-# . ~/$PROFILE  > /dev/null
-# Failure to run the script causes the install to abort
+# 2. set those variables in Zowe install environment
+. ~/.zowe_profile 
 
 locateZOSMFBootstrapProperties() {
 # $1$2$3$4 together are the full path to an expected bootstrap.properties file used to create a symlink
@@ -172,10 +172,13 @@ getJavaVersion() {
 }
 
 persist() {
-    echo "** Adding line: export "$1"="$2" to "~/$PROFILE " **"
-    echo "** Adding line: export "$1"="$2" to "~/$PROFILE " **" >> $LOG_FILE
-    grep -v "export $1=" ~/$PROFILE > ~/$PROFILE.zowe-tmp && mv ~/$PROFILE.zowe-tmp ~/$PROFILE
-    echo "export $1="$2 >> ~/$PROFILE
+#   Append a command to export a Zowe environment variable to the .zowe_profile file.  
+#   The .zowe_profile file will be run on subsequent installs, to avoid having to re-discover the Zowe environment variables.  
+
+    echo "** Adding line: export "$1"="$2" to "~/.zowe_profile " **"
+    echo "** Adding line: export "$1"="$2" to "~/.zowe_profile " **" >> $LOG_FILE
+    grep -v "export $1=" ~/.zowe_profile > ~/.zowe_profile.zowe-tmp && mv ~/.zowe_profile.zowe-tmp ~/.zowe_profile
+    echo "export $1="$2 >> ~/.zowe_profile
 }
 
 # Run the main shell script logic
