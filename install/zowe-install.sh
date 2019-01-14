@@ -87,6 +87,10 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
+# Install the Explorer API
+echo "  Installing Explorer API into $ZOWE_ROOT_DIR/explorer-*-api ..."
+. $INSTALL_DIR/scripts/zowe-explorer-api-install.sh
+
 # Install Explorer UI plugins
 echo "  Installing Zowe Explorer UI Plugins ... "
 . $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
@@ -131,7 +135,7 @@ echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 
 # Configure Explorer API servers. This should be after APIML CM generated certificates
 echo "Attempting to setup Zowe Explorer API certificates ... "
-# . $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
+. $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
 
 separator
 echo "Attempting to set Unix file permissions ..."

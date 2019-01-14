@@ -17,7 +17,7 @@
 # Your JCL must invoke it like this:
 #
 # //        EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-# //  PARM='PGM /bin/sh &SRVRPATH/../scripts/internal/run-zowe.sh'
+# //  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
 #
 #
 #export "NODE_PATH='"$ZOWE_ROOT_DIR"/zlux-example-server/bin':$NODE_PATH"

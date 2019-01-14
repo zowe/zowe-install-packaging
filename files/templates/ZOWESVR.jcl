@@ -16,11 +16,11 @@
 //* Invoke this procedure, specifying the path where the ZOWE server *
 //* is installed on your system.                                     *
 //*                                                                  *
-//*   S ZOWESVR,SRVRPATH='/zowe/install/path/api-mediation'          *
+//*   S ZOWESVR,SRVRPATH='/zowe/install/path'          *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
-//ZOWESVR   PROC SRVRPATH='/zowe/install/path/api-mediation'
+//ZOWESVR   PROC SRVRPATH='/zowe/install/path'
 //*-------------------------------------------------------------------
 //* SRVRPATH - The path to the HFS directory where the api-mediation
 //*            server was installed.
@@ -30,7 +30,7 @@
 //* Start the node server
 //*---------------------------------------------------------
 //ZOWESTEP EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-//  PARM='PGM /bin/sh &SRVRPATH/../scripts/internal/run-zowe.sh'
+//  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //*STDENV   DD  PATH='&SRVRPATH/wlp/usr/shared/config/zowesvr.stdenv',

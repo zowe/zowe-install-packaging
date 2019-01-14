@@ -192,12 +192,12 @@ fi
 if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
 then
     ZOWE_EXPLORER_SERVER_JOBS_PORT=7080
-    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 8545"
+    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_MVS_PORT == "" ]]
 then
     ZOWE_EXPLORER_SERVER_MVS_PORT=7443
-    echo "  ZOWE_EXPLORER_SERVER_MVS_PORT not specified:  Defaulting to 8545"
+    echo "  ZOWE_EXPLORER_SERVER_MVS_PORT not specified:  Defaulting to 7443"
 fi
 if [[ $ZOWE_ZLUX_SERVER_HTTPS_PORT == "" ]]
 then
