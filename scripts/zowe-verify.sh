@@ -385,7 +385,6 @@ fi
     #   httpsPort=7443
     # http and https ports for the node server
     #   zlux-server:
-    #   httpPort=8543
     #   httpsPort=8544
     #   zssPort=8542
 
@@ -402,7 +401,6 @@ echo Check port settings from Zowe config files
   api_mediation_discovery_http_port=7553    # api-mediation/scripts/api-mediation-start-discovery.sh
   api_mediation_gateway_https_port=7554     # api-mediation/scripts/api-mediation-start-gateway.sh
 
-  zlux_server_http_port=8543                # zlux-app-server/config/zluxserver.json
   zlux_server_https_port=8544               # zlux-app-server/config/zluxserver.json
   zss_server_http_port=8542                 # zlux-app-server/config/zluxserver.json
   terminal_sshPort=22                       # vt-ng2/_defaultVT.json
@@ -503,14 +501,6 @@ do
         *\.json) 
         # echo Checking .json files 
         # fragile search
-        zlux_server_http_port=`sed -n 's/.*"port" *: *\([0-9]*\) *$/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        if [[ -n "$zlux_server_http_port" ]]
-        then
-            echo OK: zlux server httpPort is $zlux_server_http_port
-        else
-            echo Error: zlux server httpPort not found in ${ZOWE_ROOT_DIR}/$file
-        fi         
-                
         zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
         if [[ -n "$zlux_server_https_port" ]]
         then
@@ -610,7 +600,6 @@ then    # job name is short enough to have a suffix
                 6)
                 # job6
                     for port in \
-                        $zlux_server_http_port \
                         $api_mediation_discovery_http_port \
                         $zlux_server_https_port 
                     do
