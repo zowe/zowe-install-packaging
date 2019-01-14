@@ -182,24 +182,6 @@ persist() {
 }
 
 # Run the main shell script logic
-echo "Locating z/OSMF ..."
-if [[ $ZOWE_ZOSMF_PATH == "" ]]
-then
-    locateZOSMFBootstrapProperties "/var/zosmf/" "configuration" "/servers/zosmfServer/" "bootstrap.properties"
-else 
-    echo "ZOWE_ZOSMF_PATH value of "$ZOWE_ZOSMF_PATH" will be used"
-    echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
-fi
-
-echo "Finding z/OSMF HTTPS port..."
-if [[ $ZOWE_ZOSMF_PORT == "" ]]
-then
-    getZosmfHttpsPort
-else 
-    echo "ZOWE_ZOSMF_PORT value of "$ZOWE_ZOSMF_PORT" will be used"
-    echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
-fi
-
 echo "Locating Java Home ..."
 if [[ $ZOWE_JAVA_HOME == "" ]]
 then    

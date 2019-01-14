@@ -28,7 +28,7 @@ do
     if [[ ! $firstCharacter == "#" ]]
     then
 # Look for lines ending in :
-# these are the headings.  There are three, install-path, liberty-server and node-server
+# these are the headings.  There are three, install-path and node-server
        if [[ $lastCharacter == ":" ]]
        then
             headingLength=`expr $lineLength - 1`
@@ -36,7 +36,6 @@ do
             section=$heading
 # If we are not a heading then look for one of three key=value pairings
 # rootDir if we are part of the install-path
-# httpPort or httpsPort if we are part of the node-server or liberty-server
         else
 # Look for rootDir= beneath install:
             if [[ $key == "rootDir" ]] && [[ $section == "install" ]]
@@ -45,20 +44,6 @@ do
                 ZOWE_ROOT_DIR=`sh -c "echo $value"` 
                 echo "  Zowe runtime root directory="$ZOWE_ROOT_DIR
                 export ZOWE_ROOT_DIR
-            fi
-# Look for httpPort= beneath libertyServer:
-            if [[ $key == "httpPort" ]] && [[ $section == "explorer-server" ]] 
-            then
-                ZOWE_EXPLORER_SERVER_HTTP_PORT=$value
-                echo "  explorer-server http port="$ZOWE_EXPLORER_SERVER_HTTP_PORT
-                export ZOWE_EXPLORER_SERVER_HTTP_PORT
-            fi
-# Look for httpSPort= beneath libertyServer:
-            if [[ $key == "httpsPort" ]] && [[ $section == "explorer-server" ]] 
-            then
-                ZOWE_EXPLORER_SERVER_HTTPS_PORT=$value
-                echo "  explorer-server https port="$ZOWE_EXPLORER_SERVER_HTTPS_PORT              
-                export ZOWE_EXPLORER_SERVER_HTTPS_PORT
             fi
 # Look for jobsPort= beneath explorer-server:
             if [[ $key == "jobsPort" ]] && [[ $section == "explorer-server" ]] 
@@ -204,20 +189,15 @@ then
     ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
     echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION"
 fi
-if [[ $ZOWE_EXPLORER_SERVER_HTTP_PORT == "" ]]
-then
-    ZOWE_EXPLORER_SERVER_HTTP_PORT=7080
-    echo "  ZOWE_EXPLORER_SERVER_HTTP_PORT not specified:  Defaulting to 7080"
-fi
-if [[ $ZOWE_EXPLORER_SERVER_HTTPS_PORT == "" ]]
-then
-    ZOWE_EXPLORER_SERVER_HTTPS_PORT=7443
-    echo "  ZOWE_EXPLORER_SERVER_HTTPS_PORT not specified:  Defaulting to 7443"
-fi
 if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
 then
-    ZOWE_EXPLORER_SERVER_JOBS_PORT=8545
-    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 8545"
+    ZOWE_EXPLORER_SERVER_JOBS_PORT=7080
+    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080"
+fi
+if [[ $ZOWE_EXPLORER_SERVER_MVS_PORT == "" ]]
+then
+    ZOWE_EXPLORER_SERVER_MVS_PORT=7443
+    echo "  ZOWE_EXPLORER_SERVER_MVS_PORT not specified:  Defaulting to 7443"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_DATASETS_PORT == "" ]]
 then
@@ -297,8 +277,6 @@ then
 fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_HTTP_PORT="$ZOWE_EXPLORER_SERVER_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_HTTPS_PORT="$ZOWE_EXPLORER_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTP_PORT="$ZOWE_ZLUX_SERVER_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE

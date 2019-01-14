@@ -11,13 +11,10 @@
 ################################################################################
 
 #
-# Script to start node server and Atlas server.
-#
-#
 # Your JCL must invoke it like this:
 #
 # //        EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-# //  PARM='PGM /bin/sh &SRVRPATH/../scripts/internal/run-zowe.sh'
+# //  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
 #
 #
 #export "NODE_PATH='"$ZOWE_ROOT_DIR"/zlux-app-server/bin':$NODE_PATH"
@@ -31,4 +28,3 @@ export NODE_HOME=$nodehome
 `dirname $0`/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
 `dirname $0`/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
 `dirname $0`/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
-`dirname $0`/../../explorer-server/wlp/lib/native/zos/s390x/bbgzsrv Atlas
