@@ -22,7 +22,7 @@ if ! [ -d "$3" ]; then
   exit 1
 fi
 
-zluxserverdirectory='zlux-example-server'
+zluxserverdirectory='zlux-app-server'
 
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 
