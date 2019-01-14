@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Broadcom 2018, 2019
+# Copyright Broadcom 2018
 ################################################################################
 
 ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-example-server/config

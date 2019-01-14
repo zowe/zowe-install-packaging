@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Broadcom 2018, 2019
+# Copyright Broadcom 2018
 ################################################################################
 
 import os
