@@ -23,7 +23,7 @@ for one in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_UPPERCASE=$(echo $one | tr '[a-z]' '[A-Z]')
 
   cd $INSTALL_DIR
-  EXPLORER_PLUGIN_PAX=$PWD/$(ls -t "./files/explorer-${one}-*.pax" | head -1)
+  EXPLORER_PLUGIN_PAX=$PWD/$(ls -t ./files/explorer-${one}-*.pax | head -1)
   if [ ! -f $EXPLORER_PLUGIN_PAX ]; then
     echo "  ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI (explorer-${one}-*.pax) missing"
     echo "  Installation terminated"

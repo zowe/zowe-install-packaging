@@ -21,7 +21,7 @@ echo "<zowe-explorer-api-install.sh>" >> $LOG_FILE
 EXPLORER_API_LIST="jobs data-sets"
 for one in $EXPLORER_API_LIST; do
   cd $INSTALL_DIR
-  EXPLORER_API_JAR=$PWD/$(ls -t "./files/${one}-api-server-*.jar" | head -1)
+  EXPLORER_API_JAR=$PWD/$(ls -t ./files/${one}-api-server-*.jar | head -1)
   if [ ! -f $EXPLORER_API_JAR ]; then
     echo "  Error: Explorer ${one} api (${one}-api-server-*.jar) missing"
     echo "  Installation terminated"
