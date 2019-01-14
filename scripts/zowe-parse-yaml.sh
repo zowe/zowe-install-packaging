@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018
+# Copyright IBM Corporation 2018, 2019
 ################################################################################
 
 # Assign default values that will be filled in as we parse the yaml file

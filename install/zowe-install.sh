@@ -5,7 +5,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018
+# Copyright IBM Corporation 2018, 2019
 ################################################################################
 
 # Run zowe-locate-zosmf.sh to ensure the environment variables for where
