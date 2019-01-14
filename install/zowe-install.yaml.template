@@ -20,6 +20,7 @@ explorer-server:
   httpPort=7080
   httpsPort=7443
   jobsPort=8545
+  dataSetsPort=8547
 
 # http and https ports for the zlux node server, as well as the port for the zss server
 zlux-server:
