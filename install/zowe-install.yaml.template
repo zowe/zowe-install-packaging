@@ -22,7 +22,6 @@ explorer-server:
 
 # http and https ports for the zlux node server, as well as the port for the zss server
 zlux-server:
-  httpPort=8543
   httpsPort=8544
   zssPort=8542
 
