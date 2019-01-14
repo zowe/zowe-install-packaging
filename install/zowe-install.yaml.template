@@ -15,10 +15,10 @@ api-mediation:
   externalCertificateAuthorities=
   verifyCertificatesOfServices=true  
 
-# http and https ports for the explorer liberty server
+# http and https ports for the explorer server
 explorer-server:
-  httpPort=7080
-  httpsPort=7443
+  jobsPort=8545
+  dataSetsPort=8547
 
 # http and https ports for the zlux node server, as well as the port for the zss server
 zlux-server:
@@ -29,6 +29,14 @@ zlux-server:
 terminals:
   sshPort=22
   telnetPort=23
+# security=tls
+
+# Reserve port 8545, 8547, 8549 for explorer apis
+# https ports for explorer ui applications
+explorer-ui:
+  explorerJESUI=8546
+  explorerMVSUI=8548
+  explorerUSSUI=8550
 
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:

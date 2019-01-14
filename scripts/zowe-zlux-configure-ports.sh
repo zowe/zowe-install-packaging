@@ -19,7 +19,12 @@ cd $ZLUX_SERVER_CONFIG_PATH/
 
 echo "Updating ports in zluxserver.json "$ZOWE_ZLUX_SERVER_HTTPS_PORT";"$ZOWE_ZSS_SERVER_PORT  >> $LOG_FILE 
 sed 's/"port": 8544,/"port": '"${ZOWE_ZLUX_SERVER_HTTPS_PORT}",'/g' zluxserver.json > $TEMP_DIR/transform1.json
-sed 's/"zssPort":8542/"zssPort": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform1.json > zluxserver.json
+sed 's/"zssPort":8542/"zssPort": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform1.json > $TEMP_DIR/transform3.json
+if grep -q gatewayPort "zluxserver.json"; then
+    sed 's/"gatewayPort":10010/"gatewayPort": '"${ZOWE_APIM_GATEWAY_PORT}"'/g' $TEMP_DIR/transform3.json > zluxserver.json
+else
+    sed 's/"hostname"/"gatewayPort": '"${ZOWE_APIM_GATEWAY_PORT}"', "hostname"/g' $TEMP_DIR/transform3.json > zluxserver.json
+fi
 
 # SSH port for the VT terminal app
 echo "Updating port in _defaultVT.json to "$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE 
@@ -33,4 +38,10 @@ chmod -R u+w ../../tn3270-ng2/
 sed 's/"port": 23,/"port": '"${ZOWE_ZLUX_TELNET_PORT}",'/g' ../../tn3270-ng2/_defaultTN3270.json > $TEMP_DIR/_defaultTN3270.json
 mv $TEMP_DIR/_defaultTN3270.json ../../tn3270-ng2/_defaultTN3270.json
 
+if [[ -n "${ZOWE_ZLUX_SECURITY_TYPE}" ]]
+then
+    echo "Updating security type in _defaultTN3270.json to "$ZOWE_ZLUX_SECURITY_TYPE >> $LOG_FILE 
+    sed 's/"type": "telnet"/"type": "'"${ZOWE_ZLUX_SECURITY_TYPE}"'"/' ../../tn3270-ng2/_defaultTN3270.json > $TEMP_DIR/_defaultTN3270.json
+    mv $TEMP_DIR/_defaultTN3270.json ../../tn3270-ng2/_defaultTN3270.json
+fi 
 echo "</zowe-zlux-configure-ports.sh>" >> $LOG_FILE

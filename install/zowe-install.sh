@@ -52,8 +52,7 @@ echo "Install started at: "`date` >> $LOG_FILE
 
 echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 
-# zowe-parse-yaml.sh to get the variables for 
-# ZOWE_ROOT_DIR,  ZOWE_EXPLORER_SERVER_HTTP_PORT,  ZOWE_EXPLORER_SERVER_HTTPS_PORT,  ZOWE_ZLUX_SERVER_HTTPS_PORT,  ZOWE_ZSS_SERVER_PORT
+# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
@@ -88,8 +87,16 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
-# Configure API Mediation layer 
-. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
+# Install the Explorer API
+echo "  Installing Explorer API into $ZOWE_ROOT_DIR/explorer-*-api ..."
+. $INSTALL_DIR/scripts/zowe-explorer-api-install.sh
+
+# Install Explorer UI plugins
+echo "  Installing Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
+# Configure Explorer UI plugins
+echo "  Attempting to setup Zowe Explorer UI Plugins ... "
+. $INSTALL_DIR/scripts/zowe-explorer-ui-configure.sh
 
 # Configure the ports for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
@@ -97,27 +104,41 @@ echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..."
 # Configure the TLS certificates for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-certificates.sh
 
-# install the liberty-server by expanding the /bin/atlas-pax file to ZOWE_ROOT_DIR/liberty-server/wlp/...
-. $INSTALL_DIR/scripts/zowe-install-liberty-server.sh
+# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
+CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
+. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
-echo "---- After expanding ZLUX.pax and Atlas.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
+# Add APIML authentication plugin to zLUX
+. $INSTALL_DIR/scripts/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
+
+echo "---- After expanding ZLUX.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
-# run the atlasZluxInection script that copies folders into the zlux-example-server
-# and gets the explorer tiles onto the desktop
+
 . $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
-# Run deploy on the zLUX app server to propogate the changes made
+# Run deploy on the zLUX app server to propagate the changes made
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
-chmod -R 755 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
-. deploy.sh > /dev/null
+./deploy.sh > /dev/null
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
+separator
+
+# Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
+# this script is run after all the folders have been created and paxes expanded above
+echo "Attempting to setup Zowe API Mediation Layer certificates ... "
+. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
+
+# Configure Explorer API servers. This should be after APIML CM generated certificates
+echo "Attempting to setup Zowe Explorer API certificates ... "
+. $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
+
 separator
 echo "Attempting to set Unix file permissions ..."
 
@@ -146,7 +167,7 @@ if [[ $AUTH_RETURN_CODE == "0" ]]; then
 fi
 
 separator
-echo "Attempting to create ZOWESVR PROCLIB ..."
+echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
 # Create the ZOWESVR JCL
 # Insert the default Zowe install path in the JCL
 
@@ -154,7 +175,7 @@ echo "Copying the zowe-start;stop;server-start.sh into "$ZOWE_ROOT_DIR/scripts >
 cd $INSTALL_DIR/scripts
 sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-start.sh > $ZOWE_ROOT_DIR/scripts/zowe-start.sh
 sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-stop.sh > $ZOWE_ROOT_DIR/scripts/zowe-stop.sh
-cp $INSTALL_DIR/scripts/zowe-verify-post-install.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
+cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
 chmod -R 777 $ZOWE_ROOT_DIR/scripts
 
 mkdir $ZOWE_ROOT_DIR/scripts/internal
@@ -172,9 +193,13 @@ $INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl $ZOWE_SERVER_PROCLI
 
 separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
-echo "   (or in SDSF directly issue the command /S ZOWESVR)"
+echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER)"
 echo "To stop Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-stop.sh
-echo "  (or in SDSF directly the command /C ZOWESVR)"
+echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
+
+# save install log in runtime directory
+mkdir  $ZOWE_ROOT_DIR/install_log
+cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR

@@ -2,7 +2,7 @@
 # Verify that an installed Zowe build is healthy after you install it on z/OS
 # Note:  This script does not change anything on your system.
 
-echo Script zowe-verify-post-install.sh started
+echo Script zowe-verify.sh started
 echo
 
 # This script is expected to be located in ${ZOWE_ROOT_DIR}/scripts,
@@ -31,10 +31,10 @@ echo
 echo Check we are in the right directory, with the right contents
 dirOK=1
 for dir in \
-README.md             explorer-USS          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
+README.md             uss_explorer          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
 api-mediation         explorer-server       scripts               zlux-build            zlux-proxy-server     zss-auth \
-explorer-JES          explorer-server-auth  tn3270-ng2            zlux-example-server   zlux-shared \
-explorer-MVS          vt-ng2                zlux-ng2              zos-subsystems
+jes_explorer          explorer-server-auth  tn3270-ng2            zlux-example-server   zlux-shared \
+mvs_explorer          vt-ng2                zlux-ng2              zos-subsystems
 #
 do
   ls ${ZOWE_ROOT_DIR}/$dir 1>/dev/null 2>/dev/null
@@ -92,7 +92,7 @@ else
 fi
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
 internal/opercmd "d omvs,a=all" \
-    | sed '{/ IZUSVR /N;s/\n */ /;}' \
+    | sed '{/ [0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] /N;s/\n */ /;}' \
     | grep -v CMD=grep \
     | grep ${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
@@ -126,6 +126,12 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
 {
     set -f
   entry=$1                  # the RACF definition entry in the list
+
+  if [[ $entry = '*' ]]     # RLIST syntax does not permit listing of just the '*' profile
+  then
+    return 1    # no strings matched
+  fi  
+  
   profileName=${ZOWESVR}  # the profile that we want to match in that list
 
   l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
@@ -395,9 +401,6 @@ echo Check port settings from Zowe config files
   api_mediation_discovery_http_port=7553    # api-mediation/scripts/api-mediation-start-discovery.sh
   api_mediation_gateway_https_port=7554     # api-mediation/scripts/api-mediation-start-gateway.sh
 
-  explorer_server_http_port=7290            # explorer-server/wlp/usr/servers/Atlas/server.xml  ASCII
-  explorer_server_https_port=7941           # explorer-server/wlp/usr/servers/Atlas/server.xml  ASCII
-                                            # explorer-??S/web/index.html
   zlux_server_https_port=8544               # zlux-example-server/config/zluxserver.json
   zss_server_http_port=8542                 # zlux-example-server/config/zluxserver.json
   terminal_sshPort=22                       # vt-ng2/_defaultVT.json
@@ -407,7 +410,6 @@ for file in \
  "api-mediation/scripts/api-mediation-start-catalog.sh" \
  "api-mediation/scripts/api-mediation-start-discovery.sh" \
  "api-mediation/scripts/api-mediation-start-gateway.sh" \
- "explorer-server/wlp/usr/servers/Atlas/server.xml" \
  "zlux-example-server/config/zluxserver.json" \
  "vt-ng2/_defaultVT.json" \
  "tn3270-ng2/_defaultTN3270.json"
@@ -551,11 +553,7 @@ do
     #
     #   0.  TBD: also check hostname or IP is right for this machine
     #
-done
-
-# 0. Verify server.env ... explorer-server/wlp/usr/servers/Atlas/server.env 
-# should contain JAVA_HOME and ZOWE_HOSTNAME?                                                 
-
+done                                       
 
 echo
 echo Check Ports are assigned to jobs
@@ -914,36 +912,6 @@ then
 fi
 
 echo 
-echo Check ZOSMF_HOST
-zosmfhostOK=1
-# ZOSMF_HOST=your_system_ip_address
-zosmfHost=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/explorer-server/wlp/usr/servers/Atlas/server.env | grep "ZOSMF_HOST="`
-if [[ $? -eq 0 ]]
-then 
-    # is it set to a non-empty value?
-    echo $zosmfHost | grep "ZOSMF_HOST=[^ ]"
-    if [[ $? -ne 0 ]]
-    then
-        echo Error: ZOSMF_HOST is set to empty
-        zosmfhostOK=0
-    else
-        hostname=`echo $zosmfHost | sed -n 's/.*ZOSMF_HOST=\([^ ]*\).*/\1/p'`
-        echo Info: hostname = $hostname
-        ping $hostname > /dev/null
-        if [[ $? -ne 0 ]]
-        then 
-            echo Error: Unable to ping $hostname
-            zosmfhostOK=0
-        fi
-    fi
-else 
-    echo Error: ZOSMF_HOST is not set in server.env
-    zosmfhostOK=0
-fi
-if [[ $zosmfhostOK -eq 1 ]]
-then 
-    echo OK
-fi
 
 # 6. Other required jobs
 echo
@@ -1111,4 +1079,4 @@ fi
 cd $savedir # restore CWD
 
 echo
-echo Script zowe-verify-post-install.sh finished
+echo Script zowe-verify.sh finished

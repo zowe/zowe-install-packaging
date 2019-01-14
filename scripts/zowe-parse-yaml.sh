@@ -28,7 +28,7 @@ do
     if [[ ! $firstCharacter == "#" ]]
     then
 # Look for lines ending in :
-# these are the headings.  There are three, install-path, liberty-server and node-server
+# these are the headings.  There are three, install-path and node-server
        if [[ $lastCharacter == ":" ]]
        then
             headingLength=`expr $lineLength - 1`
@@ -36,7 +36,6 @@ do
             section=$heading
 # If we are not a heading then look for one of three key=value pairings
 # rootDir if we are part of the install-path
-# httpPort or httpsPort if we are part of the node-server or liberty-server
         else
 # Look for rootDir= beneath install:
             if [[ $key == "rootDir" ]] && [[ $section == "install" ]]
@@ -46,19 +45,19 @@ do
                 echo "  Zowe runtime root directory="$ZOWE_ROOT_DIR
                 export ZOWE_ROOT_DIR
             fi
-# Look for httpPort= beneath libertyServer:
-            if [[ $key == "httpPort" ]] && [[ $section == "explorer-server" ]] 
+# Look for jobsPort= beneath explorer-server:
+            if [[ $key == "jobsPort" ]] && [[ $section == "explorer-server" ]] 
             then
-                ZOWE_EXPLORER_SERVER_HTTP_PORT=$value
-                echo "  explorer-server http port="$ZOWE_EXPLORER_SERVER_HTTP_PORT
-                export ZOWE_EXPLORER_SERVER_HTTP_PORT
+                ZOWE_EXPLORER_SERVER_JOBS_PORT=$value
+                echo "  explorer-server jobs api port="$ZOWE_EXPLORER_SERVER_JOBS_PORT
+                export ZOWE_EXPLORER_SERVER_JOBS_PORT
             fi
-# Look for httpSPort= beneath libertyServer:
-            if [[ $key == "httpsPort" ]] && [[ $section == "explorer-server" ]] 
+# Look for dataSetsPort= beneath explorer-server:
+            if [[ $key == "dataSetsPort" ]] && [[ $section == "explorer-server" ]] 
             then
-                ZOWE_EXPLORER_SERVER_HTTPS_PORT=$value
-                echo "  explorer-server https port="$ZOWE_EXPLORER_SERVER_HTTPS_PORT              
-                export ZOWE_EXPLORER_SERVER_HTTPS_PORT
+                ZOWE_EXPLORER_SERVER_DATASETS_PORT=$value
+                echo "  explorer-server data sets api port="$ZOWE_EXPLORER_SERVER_DATASETS_PORT
+                export ZOWE_EXPLORER_SERVER_DATASETS_PORT
             fi
 # Look for httpsPort= beneath zlux-server:
             if [[ $key == "httpsPort" ]] && [[ $section == "zlux-server" ]] 
@@ -67,7 +66,7 @@ do
                 echo "  zlux-server https port="$ZOWE_ZLUX_SERVER_HTTPS_PORT
                 export ZOWE_ZLUX_SERVER_HTTPS_PORT
             fi
-# Look for httpsPort= beneath zlux-server:
+# Look for zssPort= beneath zlux-server:
             if [[ $key == "zssPort" ]] && [[ $section == "zlux-server" ]] 
             then
                 ZOWE_ZSS_SERVER_PORT=$value
@@ -80,11 +79,39 @@ do
                 ZOWE_ZLUX_SSH_PORT=$value
                 export ZOWE_ZLUX_SSH_PORT
             fi
-# Look for telnetPort= beneath libertyServer:
+# Look for telnetPort= beneath terminals:
             if [[ $key == "telnetPort" ]] && [[ $section == "terminals" ]] 
             then
                 ZOWE_ZLUX_TELNET_PORT=$value
                 export ZOWE_ZLUX_TELNET_PORT
+            fi
+# Look for explorerJESUI= beneath explorer-ui:
+            if [[ $key == "explorerJESUI" ]] && [[ $section == "explorer-ui" ]] 
+            then
+                ZOWE_EXPLORER_JES_UI_PORT=$value
+                echo "  JES explorer UI https port="$ZOWE_EXPLORER_JES_UI_PORT
+                export ZOWE_EXPLORER_JES_UI_PORT
+            fi
+# Look for explorerMVSUI= beneath explorer-ui:
+            if [[ $key == "explorerMVSUI" ]] && [[ $section == "explorer-ui" ]] 
+            then
+                ZOWE_EXPLORER_MVS_UI_PORT=$value
+                echo "  MVS explorer UI https port="$ZOWE_EXPLORER_MVS_UI_PORT
+                export ZOWE_EXPLORER_MVS_UI_PORT
+            fi
+# Look for explorerUSSUI= beneath explorer-ui:
+            if [[ $key == "explorerUSSUI" ]] && [[ $section == "explorer-ui" ]] 
+            then
+                ZOWE_EXPLORER_USS_UI_PORT=$value
+                echo "  USS explorer UI https port="$ZOWE_EXPLORER_USS_UI_PORT
+                export ZOWE_EXPLORER_USS_UI_PORT
+            fi
+# Look for security= beneath terminals:
+            if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
+            then
+                ZOWE_ZLUX_SECURITY_TYPE=$value
+                echo "  zowe zlux security type="$ZOWE_ZLUX_SECURITY_TYPE
+                export ZOWE_ZLUX_SECURITY_TYPE
             fi
 # api-mediation settings:
             if [[ $key == "catalogPort" ]] && [[ $section == "api-mediation" ]]
@@ -155,15 +182,20 @@ then
     ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
     echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION"
 fi
-if [[ $ZOWE_EXPLORER_SERVER_HTTP_PORT == "" ]]
+if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
 then
-    ZOWE_EXPLORER_SERVER_HTTP_PORT=7080
-    echo "  ZOWE_EXPLORER_SERVER_HTTP_PORT not specified:  Defaulting to 7080"
+    ZOWE_EXPLORER_SERVER_JOBS_PORT=7080
+    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080"
 fi
-if [[ $ZOWE_EXPLORER_SERVER_HTTPS_PORT == "" ]]
+if [[ $ZOWE_EXPLORER_SERVER_MVS_PORT == "" ]]
 then
-    ZOWE_EXPLORER_SERVER_HTTPS_PORT=7443
-    echo "  ZOWE_EXPLORER_SERVER_HTTPS_PORT not specified:  Defaulting to 7443"
+    ZOWE_EXPLORER_SERVER_MVS_PORT=7443
+    echo "  ZOWE_EXPLORER_SERVER_MVS_PORT not specified:  Defaulting to 7443"
+fi
+if [[ $ZOWE_EXPLORER_SERVER_DATASETS_PORT == "" ]]
+then
+    ZOWE_EXPLORER_SERVER_DATASETS_PORT=8547
+    echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT not specified:  Defaulting to 8547"
 fi
 if [[ $ZOWE_ZLUX_SERVER_HTTPS_PORT == "" ]]
 then
@@ -174,6 +206,21 @@ if [[ $ZOWE_ZSS_SERVER_PORT == "" ]]
 then
     ZOWE_ZSS_SERVER_PORT=8542
     echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542"
+fi
+if [[ $ZOWE_EXPLORER_JES_UI_PORT == "" ]]
+then
+    ZOWE_ZSS_SERVER_PORT=8546
+    echo "  ZOWE_EXPLORER_JES_UI_PORT not specified:  Defaulting to 8546"
+fi
+if [[ $ZOWE_EXPLORER_MVS_UI_PORT == "" ]]
+then
+    ZOWE_EXPLORER_MVS_UI_PORT=8548
+    echo "  ZOWE_EXPLORER_MVS_UI_PORT not specified:  Defaulting to 8548"
+fi
+if [[ $ZOWE_EXPLORER_USS_UI_PORT == "" ]]
+then
+    ZOWE_EXPLORER_USS_UI_PORT=8550
+    echo "  ZOWE_EXPLORER_USS_UI_PORT not specified:  Defaulting to 8550"
 fi
 if [[ $ZOWE_APIM_CATALOG_PORT == "" ]]
 then
@@ -218,12 +265,16 @@ then
 fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_HTTP_PORT="$ZOWE_EXPLORER_SERVER_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_HTTPS_PORT="$ZOWE_EXPLORER_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
+echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
+echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT="$ZOWE_EXPLORER_SERVER_DATASETS_PORT >> $LOG_FILE
 echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
+echo "  ZOWE_EXPLORER_JES_UI_PORT="$ZOWE_EXPLORER_JES_UI_PORT >> $LOG_FILE
+echo "  ZOWE_EXPLORER_MVS_UI_PORT="$ZOWE_EXPLORER_MVS_UI_PORT >> $LOG_FILE
+echo "  ZOWE_EXPLORER_USS_UI_PORT="$ZOWE_EXPLORER_USS_UI_PORT >> $LOG_FILE
+echo "  ZOWE_ZLUX_SECURITY_TYPE="$ZOWE_ZLUX_SECURITY_TYPE >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_PORT="$ZOWE_APIM_CATALOG_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_PORT="$ZOWE_APIM_DISCOVERY_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_PORT="$ZOWE_APIM_GATEWAY_PORT >> $LOG_FILE
