@@ -1,6 +1,6 @@
 {
   "files": [{
-      "pattern": "rocket-closed-source-builds/0.9.6+20190114/ZLUX.pax",
+      "pattern": "rocket-closed-source-builds/0.9.4+20181127/ZLUX.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },

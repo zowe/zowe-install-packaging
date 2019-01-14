@@ -11,10 +11,10 @@
 set -e
 # We are in the /scripts folder beneath a Zowe install
 # If we are run directly from the shell we need to switch up a directory to 
-# be able to work with zlux-app-server and explorer-server
+# be able to work with zlux-example-server and explorer-server
 # If we are run from the zowe-install.sh script then we need to switch into the
 # ZOWE_ROOT_DIR as this will be where the install has put us, so we can work from there
-# cd to the top level folder as this is where the zlux-app-server and the explorer-server are
+# cd to the top level folder as this is where the zlux-example-server and the explorer-server are
 if [[ $ZOWE_ROOT_DIR == "" ]]
     then
         cd ..
@@ -24,9 +24,9 @@ fi
 
 # This is from the zLUX install
 
-if extattr ./zlux-app-server/bin/zssServer | grep "APF authorized = NO"; then
+if extattr ./zlux-example-server/bin/zssServer | grep "APF authorized = NO"; then
   echo "zssServer does not have the proper extattr values"
-  echo "   Please run extattr +a $PWD/zlux-app-server/bin/zssServer"
+  echo "   Please run extattr +a $PWD/zlux-example-server/bin/zssServer"
   exit 1
 fi
 
@@ -34,9 +34,9 @@ fi
 # Permission fix for zLux Server.  This is so that the user IZUSVR that owns the ZOWESVR
 # started task is able to write to folder in order to persist details like pinned desktop items
 # 
-chgrp -R IZUUSER ./zlux-app-server/deploy
-chmod -R ug+w ./zlux-app-server/deploy
-chmod -R ug+w ./zlux-app-server/deploy/site
-chmod -R ug+w ./zlux-app-server/deploy/instance
+chgrp -R IZUUSER ./zlux-example-server/deploy
+chmod -R ug+w ./zlux-example-server/deploy
+chmod -R ug+w ./zlux-example-server/deploy/site
+chmod -R ug+w ./zlux-example-server/deploy/instance
 
 
