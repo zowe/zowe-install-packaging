@@ -6,34 +6,32 @@
 //*                                                                  *
 //* SPDX-License-Identifier: EPL-2.0                                 *
 //*                                                                  *
-//* Copyright IBM Corporation 2018                                   *
+//* Copyright IBM Corporation 2018, 2019                             *
 //********************************************************************
 //*                                                                  *
 //* ZOWE SERVER PROCEDURE                                            *
 //*                                                                  *
-//* This is a procedure to start the Zowe web server and Node server.*
-//* This procedure requires a WebSphere Liberty Angel procedure      *
-//* to be running, such as z/OSMF procedure "IZUANG*".               *
+//* This is a procedure to start the Node servers, API Mediation     *
+//* and explorera                                                    *
 //*                                                                  *
-//* Invoke this procedure, specifying the path where the ZOWE server *
-//* is installed on your system.                                     *
+//* Invoke this procedure, specifying the root path where the        *
+//* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,SRVRPATH='/zowe/install/path/explorer-server'        *
+//*   S ZOWESVR,SRVRPATH='/zowe/install/path'                        *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
-//ZOWESVR   PROC SRVRPATH='/zowe/install/path/explorer-server'
+//ZOWESVR   PROC SRVRPATH='/zowe/install/path'
 //*-------------------------------------------------------------------
-//* SRVRPATH - The path to the HFS directory where the Atlas server
-//*            was installed.
+//* SRVRPATH - The path to the HFS directory where the 
+//*            server was installed.
 //*-------------------------------------------------------------------
 //EXPORT EXPORT SYMLIST=*
 //*---------------------------------------------------------
 //* Start the node server
-//* Start the Zowe Atlas server
 //*---------------------------------------------------------
 //ZOWESTEP EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-//  PARM='PGM /bin/sh &SRVRPATH/../scripts/internal/run-zowe.sh'
+//  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //*STDENV   DD  PATH='&SRVRPATH/wlp/usr/shared/config/zowesvr.stdenv',

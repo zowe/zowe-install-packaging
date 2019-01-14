@@ -104,9 +104,6 @@ echo "  Attempting to setup Zowe Explorer UI Plugins ... "
 # Configure the TLS certificates for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-certificates.sh
 
-# Install the liberty-server by expanding the /bin/atlas-pax file to ZOWE_ROOT_DIR/liberty-server/wlp/...
-. $INSTALL_DIR/scripts/zowe-install-liberty-server.sh
-
 # Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
 CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
@@ -114,13 +111,12 @@ CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLU
 # Add APIML authentication plugin to zLUX
 . $INSTALL_DIR/scripts/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
 
-echo "---- After expanding ZLUX.pax and Atlas.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
+echo "---- After expanding ZLUX.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
-# run the atlasZluxInection script that copies folders into the zlux-example-server
-# and gets the explorer tiles onto the desktop
+
 . $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
-# Run deploy on the zLUX app server to propogate the changes made
+# Run deploy on the zLUX app server to propagate the changes made
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
