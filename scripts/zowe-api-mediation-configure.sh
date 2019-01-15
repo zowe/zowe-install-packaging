@@ -31,6 +31,11 @@ cd $ZOWE_ROOT_DIR"/api-mediation"
 # Set a+rx for API Mediation JARs. 
 chmod a+rx *.jar
 
+# Make the apiml-auth plugin readable by everyone
+chmod a+rx apiml-auth
+chmod a+rx apiml-auth/lib
+chmod -R a+r apiml-auth
+
 # Create the static api definitions folder
 STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/api-defs"
 mkdir -p $STATIC_DEF_CONFIG
