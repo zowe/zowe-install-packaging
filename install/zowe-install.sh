@@ -84,7 +84,7 @@ echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 . $INSTALL_DIR/scripts/zowe-api-mediation-install.sh
 
 # Install the zLUX server
-echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-example-server ..." 
+echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-app-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
 # Install the Explorer API
@@ -119,8 +119,8 @@ echo "-----"
 # Run deploy on the zLUX app server to propagate the changes made
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/product	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-example-server/deploy/instance
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh

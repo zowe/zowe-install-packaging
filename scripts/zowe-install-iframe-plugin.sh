@@ -36,7 +36,7 @@ if ! [ -f "$5" ]; then
   exit 1
 fi
 
-zluxserverdirectory='zlux-example-server'
+zluxserverdirectory='zlux-app-server'
 
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 # switch spaces to underscores and lower case it for use as folder name
