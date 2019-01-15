@@ -16,12 +16,12 @@ umask 0002
 echo "Unpax $INSTALL_DIR/files/ZLUX.pax " >> $LOG_FILE
 pax -r -px -f $INSTALL_DIR/files/ZLUX.pax
 
-chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-example-server/ zlux-ng2/ zlux-proxy-server/ zlux-shared/ zos-subsystems/ 2>/dev/null
-chmod ug+w zlux-example-server/
-mkdir zlux-example-server/log
-chmod ug-w zlux-example-server/
+chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ zos-subsystems/ 2>/dev/null
+chmod ug+w zlux-app-server/
+mkdir zlux-app-server/log
+chmod ug-w zlux-app-server/
 
-cd zlux-example-server
+cd zlux-app-server
 chmod -R a-w bin/ build/ config/ deploy/product/ js/ plugins/ .gitattributes .gitignore README.md 2>/dev/null
 chmod ug+w bin/zssServer
 

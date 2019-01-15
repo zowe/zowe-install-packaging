@@ -43,8 +43,8 @@ echo Check we are in the right directory, with the right contents
 dirOK=1
 for dir in \
 README.md             uss_explorer          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
-api-mediation         explorer-server       scripts               zlux-build            zlux-proxy-server     zss-auth \
-jes_explorer          explorer-server-auth  tn3270-ng2            zlux-example-server   zlux-shared \
+api-mediation         explorer-server       scripts               zlux-build            zlux-server-framework     zss-auth \
+jes_explorer          explorer-server-auth  tn3270-ng2            zlux-app-server   zlux-shared \
 mvs_explorer          vt-ng2                zlux-ng2              zos-subsystems
 #
 do
@@ -412,8 +412,8 @@ echo Check port settings from Zowe config files
   api_mediation_discovery_http_port=7553    # api-mediation/scripts/api-mediation-start-discovery.sh
   api_mediation_gateway_https_port=7554     # api-mediation/scripts/api-mediation-start-gateway.sh
 
-  zlux_server_https_port=8544               # zlux-example-server/config/zluxserver.json
-  zss_server_http_port=8542                 # zlux-example-server/config/zluxserver.json
+  zlux_server_https_port=8544               # zlux-app-server/config/zluxserver.json
+  zss_server_http_port=8542                 # zlux-app-server/config/zluxserver.json
   terminal_sshPort=22                       # vt-ng2/_defaultVT.json
   terminal_telnetPort=23                    # tn3270-ng2/_defaultTN3270.json
 
@@ -421,7 +421,7 @@ for file in \
  "api-mediation/scripts/api-mediation-start-catalog.sh" \
  "api-mediation/scripts/api-mediation-start-discovery.sh" \
  "api-mediation/scripts/api-mediation-start-gateway.sh" \
- "zlux-example-server/config/zluxserver.json" \
+ "zlux-app-server/config/zluxserver.json" \
  "vt-ng2/_defaultVT.json" \
  "tn3270-ng2/_defaultTN3270.json"
 do
