@@ -104,12 +104,26 @@ echo "  Attempting to setup Zowe Explorer UI Plugins ... "
 # Configure the TLS certificates for the zLUX server
 . $INSTALL_DIR/scripts/zowe-zlux-configure-certificates.sh
 
-# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
-. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
+if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
+    # Add APIML authentication plugin to zLUX
+    . $INSTALL_DIR/scripts/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
 
-# Add APIML authentication plugin to zLUX
-. $INSTALL_DIR/scripts/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
+    # Activate the plugin
+    _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
+    ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-example-server/config
+    sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json > ${TEMP_DIR}/transform1.json
+    cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json
+    rm ${TEMP_DIR}/transform1.json
+    
+    # Access API Catalog with token injector
+    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
+else
+    # Access API Catalog directly
+    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
+fi
+
+# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
+. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
 echo "---- After expanding ZLUX.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
