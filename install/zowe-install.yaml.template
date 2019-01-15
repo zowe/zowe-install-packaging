@@ -13,7 +13,8 @@ api-mediation:
   externalCertificate=
   externalCertificateAlias=
   externalCertificateAuthorities=
-  verifyCertificatesOfServices=true  
+  verifyCertificatesOfServices=true
+  enableSso=false  
 
 # http and https ports for the explorer server
 explorer-server:

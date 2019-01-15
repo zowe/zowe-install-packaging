@@ -156,6 +156,12 @@ do
                 echo "  api-mediation verify certificates of services="$ZOWE_APIM_VERIFY_CERTIFICATES
                 export ZOWE_APIM_VERIFY_CERTIFICATES
             fi
+            if [[ $key == "enableSso" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_APIM_ENABLE_SSO=$value
+                echo "  api-mediation enable SSO="$ZOWE_APIM_ENABLE_SSO
+                export ZOWE_APIM_ENABLE_SSO
+            fi
 
             if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
             then
@@ -242,6 +248,12 @@ then
     ZOWE_APIM_VERIFY_CERTIFICATES="true"
     echo "  ZOWE_APIM_VERIFY_CERTIFICATES not specified:  Defaulting to true"
 fi
+if [[ $ZOWE_APIM_ENABLE_SSO == "" ]]
+then
+    ZOWE_APIM_ENABLE_SSO="false"
+    echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false"
+fi
+
 # Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
 # The ssh and telnet ports are there and already being used and exploited by the apps
 # and echoing them may create confusion
@@ -282,6 +294,7 @@ echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE="$ZOWE_APIM_EXTERNAL_CERTIFICATE >> $LOG_
 echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS="$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS >> $LOG_FILE
 echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES >> $LOG_FILE
 echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FILE
+echo "  ZOWE_APIM_ENABLE_SSO="$ZOWE_APIM_ENABLE_SSO >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
