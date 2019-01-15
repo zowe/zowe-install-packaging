@@ -47,6 +47,8 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
+chmod a+x $INSTALL_DIR/scripts/opercmd
+
 # Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
 . $INSTALL_DIR/scripts/zowe-init.sh
 
