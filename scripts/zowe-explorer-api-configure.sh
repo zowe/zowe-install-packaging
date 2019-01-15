@@ -38,7 +38,7 @@ for one in $EXPLORER_API_LIST; do
   EXPLORER_INSTALL_FOLDER="explorer-${one}-api"
   cd "$ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER"
 
-  EXPLORER_API_JAR=$(ls -t "${one}-api-server-*.jar" | head -1)
+  EXPLORER_API_JAR=$(ls -t ${one}-api-server-*.jar | head -1)
   if [ ! -f $EXPLORER_API_JAR ]; then
     echo "  Error: Explorer ${one} api (${one}-api-server-*.jar) missing"
     echo "  Installation terminated"
