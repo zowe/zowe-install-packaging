@@ -48,4 +48,6 @@ find . -print
 
 echo "$FUNC change scripts to be executable..."
 chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
+chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
+chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh

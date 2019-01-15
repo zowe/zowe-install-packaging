@@ -1,3 +1,13 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Broadcom 2018
+################################################################################
+
 import os
 import subprocess
 import shutil
@@ -5,10 +15,10 @@ import json
 
 
 def test_script_replaces_correctly():
-    if not os.path.exists("tmp/zlux-example-server/config"):
-        os.makedirs("tmp/zlux-example-server/config")
+    if not os.path.exists("tmp/zlux-app-server/config"):
+        os.makedirs("tmp/zlux-app-server/config")
     shutil.copy("tests/data/zluxserver.json",
-                "tmp/zlux-example-server/config/zluxserver.json")
+                "tmp/zlux-app-server/config/zluxserver.json")
 
     env = {
         "LOG_FILE": os.path.join(os.getcwd(), "tmp", "test.log"),
@@ -28,7 +38,7 @@ def test_script_replaces_correctly():
     assert result.stdout.strip() == ""
     assert result.stderr.strip() == ""
 
-    with open(os.path.join(env["TEMP_DIR"], "zlux-example-server", "config", "zluxserver.json")) as json_data:
+    with open(os.path.join(env["TEMP_DIR"], "zlux-app-server", "config", "zluxserver.json")) as json_data:
         lines = []
         for line in json_data.readlines():
             if not line.strip().startswith("//"):

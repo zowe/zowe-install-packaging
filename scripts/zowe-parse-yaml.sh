@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018
+# Copyright IBM Corporation 2018, 2019
 ################################################################################
 
 # Assign default values that will be filled in as we parse the yaml file
@@ -192,11 +192,6 @@ if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
 then
     ZOWE_EXPLORER_SERVER_JOBS_PORT=7080
     echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080"
-fi
-if [[ $ZOWE_EXPLORER_SERVER_MVS_PORT == "" ]]
-then
-    ZOWE_EXPLORER_SERVER_MVS_PORT=7443
-    echo "  ZOWE_EXPLORER_SERVER_MVS_PORT not specified:  Defaulting to 7443"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_DATASETS_PORT == "" ]]
 then

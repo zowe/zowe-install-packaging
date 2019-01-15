@@ -7,11 +7,11 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018
+# Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-# update the /zlux-example-server/deploy/instance/ZLUX/serverConfig/zluxserver.json
-ZLUX_SERVER_CONFIG_PATH=$ZOWE_ROOT_DIR/zlux-example-server/config/
+# update the /zlux-app-server/deploy/instance/ZLUX/serverConfig/zluxserver.json
+ZLUX_SERVER_CONFIG_PATH=$ZOWE_ROOT_DIR/zlux-app-server/config/
 echo "<zowe-zlux-configure-ports.sh>" >> $LOG_FILE
 # Change the permission to allow us to write and modify the port numbers
 chmod -R u+w $ZLUX_SERVER_CONFIG_PATH/

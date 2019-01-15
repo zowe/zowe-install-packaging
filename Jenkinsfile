@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018
+ * Copyright IBM Corporation 2018, 2019
  */
 
 
@@ -22,7 +22,7 @@ opts.push(disableConcurrentBuilds())
 // set upstream triggers
 if (env.BRANCH_NAME == 'master') {
   opts.push(pipelineTriggers([
-    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/explorer-wlp-packaging/master,/API_Mediation/master')
+    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/API_Mediation/master')
   ]))
 }
 

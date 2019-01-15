@@ -1,5 +1,15 @@
 #!/bin/sh
 
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright IBM Corporation 2018, 2019
+################################################################################
+
 # Requires passed in:
 # ZOWE_ROOT_DIR - install root directory
 # PLUGIN_ID - id of the plugin eg org.zowe.explorer-jes
@@ -26,7 +36,7 @@ if ! [ -f "$5" ]; then
   exit 1
 fi
 
-zluxserverdirectory='zlux-example-server'
+zluxserverdirectory='zlux-app-server'
 
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 # switch spaces to underscores and lower case it for use as folder name
