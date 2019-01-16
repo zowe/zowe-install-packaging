@@ -36,7 +36,7 @@ export ZOWE_EXPLORER_HOST
 export NODE_HOME
 
 # Purpose: Set Zowe vars, if present in .profile.  We may have changed .profile since we last logged in.  
-# Action: Find the lines in .profile that set Zowe env vars, put them in a separate .zowe_profile file, and ‘source’ that instead.
+# Action: Find the lines in .profile that set Zowe env vars, put them in a separate .zowe_profile file, and �Ĺsource��� that instead.
 # The .zowe_profile file persists across installs.  If it exists, your .profile will not be scanned for Zowe variables.  
 # If you delete it, it will be recreated here from .profile.  
 
@@ -94,7 +94,10 @@ do
     fi
     if [[ -f $NODE_HOME/"./bin/node" ]] 
     then
-        persist "NODE_HOME" $NODE_HOME
+    	if [ NODE_HOME_ALREADY_SET = "false" ]
+    	then
+        	persist "NODE_HOME" $NODE_HOME
+        fi 
         loop=0
     else
         echo "        No /bin/node found in directory "$NODE_HOME
@@ -116,8 +119,11 @@ locateJavaHome() {
     getJavaVersion $1
     if [ "$javaVersion" -ge "18" ]
         then
-            echo "   java version $version found at " $1
-            persist "ZOWE_JAVA_HOME" $1
+            echo "    $1 is valid java version $version"
+            if [ $JAVA_HOME_ALREADY_SET = "false" ]
+            then
+            	persist "ZOWE_JAVA_HOME" $1
+            fi
         else
             if [ "$javaVersion" = "-1" ]
             then
@@ -182,35 +188,53 @@ persist() {
 }
 
 # Run the main shell script logic
-echo "Locating Java Home ..."
+echo "Locating environment variables ..."
+
+if [[ $ZOWE_ZOSMF_PATH == "" ]]
+then
+    locateZOSMFBootstrapProperties "/var/zosmf/" "configuration" "/servers/zosmfServer/" "bootstrap.properties"
+else 
+    echo "  ZOWE_ZOSMF_PATH value of "$ZOWE_ZOSMF_PATH" will be used"
+    echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
+fi
+
+if [[ $ZOWE_ZOSMF_PORT == "" ]]
+then
+    getZosmfHttpsPort
+else 
+    echo "  ZOWE_ZOSMF_PORT value of "$ZOWE_ZOSMF_PORT" will be used"
+    echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
+fi
+
+JAVA_HOME_ALREADY_SET="false"
 if [[ $ZOWE_JAVA_HOME == "" ]]
 then    
     ZOWE_JAVA_HOME=/usr/lpp/java/J8.0_64
 else    
-    echo "ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be validated"
+    JAVA_HOME_ALREADY_SET="true"
+    echo "  ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be validated"
     echo "  ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 fi
 locateJavaHome $ZOWE_JAVA_HOME
 
-echo "Locating Node Home ..."
+NODE_HOME_ALREADY_SET="false"
 if [[ $NODE_HOME != "" ]]
+    NODE_HOME_ALREADY_SET="true"
 then
-    echo "NODE_HOME value of "$NODE_HOME" will be validated"
+    echo "  NODE_HOME value of "$NODE_HOME" will be validated"
     echo "  NODE_HOME environment variable was set="$NODE_HOME >> $LOG_FILE
 fi
 promptNodeHome
 
-echo "Locating host name ..."
 if [[ $ZOWE_EXPLORER_HOST == "" ]]
 then
     ZOWE_EXPLORER_HOST=$(hostname -c)
     persist "ZOWE_EXPLORER_HOST" $ZOWE_EXPLORER_HOST
 else    
-    echo "ZOWE_EXPLORER_HOST value of "$ZOWE_EXPLORER_HOST" will be used"
+    echo "  ZOWE_EXPLORER_HOST value of "$ZOWE_EXPLORER_HOST" will be used"
     echo "  ZOWE_EXPLORER_HOST variable value="$ZOWE_EXPLORER_HOST >> $LOG_FILE
 fi
 
-echo "Locating host IP Address..."
 if [[ $ZOWE_IPADDRESS == "" ]]
 then
     # host may return aliases, which may result in ZOWE_IPADDRESS has value of "10.1.1.2 EZZ8322I aliases: S0W1"
@@ -219,7 +243,7 @@ then
     ZOWE_IPADDRESS=$(host ${ZOWE_EXPLORER_HOST} | grep 'has addresses' | sed 's/.*addresses\ //g')
     persist "ZOWE_IPADDRESS" $ZOWE_IPADDRESS
 else
-    echo "ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"
+    echo "  ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"
     echo "  ZOWE_IPADDRESS variable value="$ZOWE_IPADDRESS >> $LOG_FILE
 fi
 echo "</zowe-init.sh>" >> $LOG_FILE
