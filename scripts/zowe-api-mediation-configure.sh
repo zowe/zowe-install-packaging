@@ -28,8 +28,8 @@ echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
 cd $ZOWE_ROOT_DIR"/api-mediation"
 
-# Set a+rx for API Mediation JARs. 
-chmod a+rx *.jar
+# Set a+rx for API Mediation JARs
+chmod a+rx *.jar 
 
 # Make the apiml-auth plugin readable by everyone
 chmod a+rx apiml-auth
@@ -87,11 +87,8 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
     api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
 
-# Make configured script executable
-chmod a+x api-mediation-start-gateway.sh
-chmod a+x api-mediation-start-discovery.sh
-chmod a+x api-mediation-start-catalog.sh
-chmod a+x apiml_cm.sh
+# Make the scripts executable
+chmod a+rx *.sh
 
 cd ..
 
