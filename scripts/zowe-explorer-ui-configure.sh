@@ -47,7 +47,6 @@ for one in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_PORT_VAR="ZOWE_EXPLORER_${EXPLORER_PLUGIN_UPPERCASE}_UI_PORT"
   eval EXPLORER_PLUGIN_PORT='$'$EXPLORER_PLUGIN_PORT_VAR
 
-  echo "  Configuring Explorer UI: ${EXPLORER_PLUGIN_UPPERCASE} ..."
   echo "  Configuring Explorer UI: ${EXPLORER_PLUGIN_UPPERCASE} ..." >> $LOG_FILE
 
   # NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
@@ -57,13 +56,9 @@ for one in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_BASEURI=$($NODE_BIN -e "process.stdout.write(require('./package.json').config.baseuri)")
   EXPLORER_PLUGIN_ID=$($NODE_BIN -e "process.stdout.write(require('./package.json').config.pluginId)")
   EXPLORER_PLUGIN_NAME=$($NODE_BIN -e "process.stdout.write(require('./package.json').config.pluginName)")
-  echo "    - plugin ID   : ${EXPLORER_PLUGIN_ID}"
   echo "    - plugin ID   : ${EXPLORER_PLUGIN_ID}" >> $LOG_FILE
-  echo "    - plugin name : ${EXPLORER_PLUGIN_NAME}"
   echo "    - plugin name : ${EXPLORER_PLUGIN_NAME}" >> $LOG_FILE
-  echo "    - port        : ${EXPLORER_PLUGIN_PORT}"
   echo "    - port        : ${EXPLORER_PLUGIN_PORT}" >> $LOG_FILE
-  echo "    - base uri    : ${EXPLORER_PLUGIN_BASEURI}"
   echo "    - base uri    : ${EXPLORER_PLUGIN_BASEURI}" >> $LOG_FILE
   if [ -z "$EXPLORER_PLUGIN_ID" ]; then
     echo "  Error: cannot read plugin ID, install aborted."
@@ -109,7 +104,7 @@ for one in $UI_PLUGIN_LIST; do
       $EXPLORER_PLUGIN_FULLURL \
       "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}/plugin-definition/zlux/images/explorer-${EXPLORER_PLUGIN_UPPERCASE}.png"
 
-  echo "  ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI configured."
+  echo "    ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI configured."
   echo "  ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI configured." >> $LOG_FILE
 done
 

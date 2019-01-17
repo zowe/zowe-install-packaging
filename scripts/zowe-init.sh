@@ -94,7 +94,10 @@ do
     fi
     if [[ -f $NODE_HOME/"./bin/node" ]] 
     then
-        persist "NODE_HOME" $NODE_HOME
+        if [ NODE_HOME_ALREADY_SET = "false" ]
+    	then
+        	persist "NODE_HOME" $NODE_HOME
+        fi
         loop=0
     else
         echo "        No /bin/node found in directory "$NODE_HOME
@@ -117,7 +120,10 @@ locateJavaHome() {
     if [ "$javaVersion" -ge "18" ]
         then
             echo "   java version $version found at " $1
-            persist "ZOWE_JAVA_HOME" $1
+            if [ $JAVA_HOME_ALREADY_SET = "false" ]
+            then
+            	persist "ZOWE_JAVA_HOME" $1
+            fi
         else
             if [ "$javaVersion" = "-1" ]
             then
@@ -182,7 +188,7 @@ persist() {
 }
 
 # Run the main shell script logic
-echo "Locating z/OSMF ..."
+echo "Locating Environment Variables..."
 if [[ $ZOWE_ZOSMF_PATH == "" ]]
 then
     locateZOSMFBootstrapProperties "/var/zosmf/" "configuration" "/servers/zosmfServer/" "bootstrap.properties"
@@ -191,7 +197,6 @@ else
     echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
 fi
 
-echo "Finding z/OSMF HTTPS port..."
 if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then
     getZosmfHttpsPort
@@ -200,25 +205,26 @@ else
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
-echo "Locating Java Home ..."
+JAVA_HOME_ALREADY_SET="false"
 if [[ $ZOWE_JAVA_HOME == "" ]]
 then    
     ZOWE_JAVA_HOME=/usr/lpp/java/J8.0_64
 else    
-    echo "ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be validated"
+    JAVA_HOME_ALREADY_SET="true"
+    echo "  ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be validated"
     echo "  ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 fi
 locateJavaHome $ZOWE_JAVA_HOME
 
-echo "Locating Node Home ..."
+NODE_HOME_ALREADY_SET="false"
 if [[ $NODE_HOME != "" ]]
 then
-    echo "NODE_HOME value of "$NODE_HOME" will be validated"
+    NODE_HOME_ALREADY_SET="true"
+    echo "  NODE_HOME value of "$NODE_HOME" will be validated"
     echo "  NODE_HOME environment variable was set="$NODE_HOME >> $LOG_FILE
 fi
 promptNodeHome
 
-echo "Locating host name ..."
 if [[ $ZOWE_EXPLORER_HOST == "" ]]
 then
     ZOWE_EXPLORER_HOST=$(hostname -c)
@@ -228,7 +234,6 @@ else
     echo "  ZOWE_EXPLORER_HOST variable value="$ZOWE_EXPLORER_HOST >> $LOG_FILE
 fi
 
-echo "Locating host IP Address..."
 if [[ $ZOWE_IPADDRESS == "" ]]
 then
     # host may return aliases, which may result in ZOWE_IPADDRESS has value of "10.1.1.2 EZZ8322I aliases: S0W1"
