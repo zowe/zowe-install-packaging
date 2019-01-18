@@ -17,7 +17,7 @@
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.2/explorer-jes-0.0.2.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.3/explorer-jes-0.0.3.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
