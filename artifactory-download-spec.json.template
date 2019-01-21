@@ -27,7 +27,7 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.4/explorer-uss-0.0.4.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.5/explorer-uss-0.0.5.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },    
