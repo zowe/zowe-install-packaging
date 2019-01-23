@@ -272,28 +272,6 @@ then
   echo OK
 fi 
 
-
-
-echo
-echo Check user is authorized to set -a extattr APF and -p program control bits 
-
-extrattrOK=1
-for profile in "BPX.FILEATTR.APF" "BPX.FILEATTR.PROGCTL"
-do
-  match_profile "FACILITY" $profile
-  if [[ $? -eq 0 ]]
-  then
-    : # echo OK: User $userid is authorized to use $profile
-  else 
-    echo Error: User $userid is not authorized to use $profile
-    extrattrOK=0
-  fi
-done
-if [[ $extrattrOK -eq 1 ]]
-then 
-  echo OK
-fi
-
 # 3. Ports are available
 echo
 echo Check the ports in the yaml file are not already in use
@@ -368,23 +346,6 @@ fi
 # CSRF_SWITCH(OFF) 
 
 
-echo
-echo Check z/OSMF ltpa.keys file is readable
-
-if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
-then 
-    : # echo warning: ZOWE_ZOSMF_PATH is already set to ${ZOWE_ZOSMF_PATH} 
-else
-    ZOWE_ZOSMF_PATH="/var/zosmf/configuration/servers/zosmfServer/"   # this won't normally be set until Zowe is configured
-fi    
-
-ls -l ${ZOWE_ZOSMF_PATH}/resources/security/ltpa.keys | grep "^-r.* IZUSVR *IZUADMIN .*ltpa.keys$" >/dev/null
-if [[ $? -ne 0 ]]
-then
-  echo z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
-else
-  echo OK
-fi
 
 echo
 echo Check enough free space is available in target z/OS USS HFS install folder
@@ -427,7 +388,7 @@ then
   sizes=`df -k ${yamlDir} | grep -v ^Mounted |  sed 's+.*(.*) *\([0-9]*\)/.*+\1+'`     # extract the 'Avail' byte count in kibibytes
   adequate=0    # no adequate-sized areas yet
   largest=0     # no largest yet
-  minspace=650  # in units of MB (0.9.5 uses 594 MB)
+  minspace=450  # in units of MB (1.0.0 uses 438 MB)
 
   for s in $sizes
   do
@@ -555,7 +516,7 @@ fi
 # print out the state of all the CEE_RUNOPTS 
 
 echo
-echo Checking CEE_RUNOPTS
+echo Check CEE_RUNOPTS
 
 set | grep _CEE_RUNOPTS
 echo 
@@ -569,7 +530,7 @@ echo
     # z/OSMF IZUSVR1 sets MEMLIMIT=6G on the PGM=BPXBATSL  statement
 
 echo
-echo Check the USS AUTOCVT
+echo Check USS AUTOCVT
 
 ${INSTALL_DIR}/../scripts/opercmd "D OMVS,o" | grep "AUTOCVT *= OFF" > /dev/null
 if [[ $? -ne 0 ]]
@@ -579,11 +540,21 @@ else
   echo OK:  OMVS AUTOCVT is set to OFF
 fi
 
+#  These pertain to the environment of the installer user, not IZUSVR
+#
+if [[ -n "${_BPXK_AUTOCVT}" ]]
+then 
+  echo Warning: _BPXK_AUTOCVT is set to ${_BPXK_AUTOCVT}
+else 
+  echo OK: _BPXK_AUTOCVT is not set
+fi 
 
-# Some cheap validations can be included in the startup itself 
-# which can be nice to catch config changes 
-# (and those customers that didn’t run the validation…)
-
+if [[ -n "${_BPXK_CCSIDS}" ]]
+then 
+  echo Warning: _BPXK_CCSIDS is set to ${_BPXK_CCSIDS}
+else 
+  echo OK: _BPXK_CCSIDS is not set
+fi 
 
 echo
 echo Script zowe-check-prereqs.sh ended
