@@ -18,7 +18,10 @@
 #
 #
 #export "NODE_PATH='"$ZOWE_ROOT_DIR"/zlux-app-server/bin':$NODE_PATH"
+if [[ ! -f $NODE_HOME/"./bin/node" ]]
+then
 export NODE_HOME=$nodehome
+fi
 `dirname $0`/../../zlux-app-server/bin/nodeServer.sh --allowInvalidTLSProxy=true &
 `dirname $0`/../../api-mediation/scripts/api-mediation-start-discovery.sh
 `dirname $0`/../../api-mediation/scripts/api-mediation-start-catalog.sh
