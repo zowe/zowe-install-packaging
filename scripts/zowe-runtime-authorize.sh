@@ -24,9 +24,9 @@ fi
 
 # This is from the zLUX install
 
-if extattr ./zlux-app-server/bin/zssServer | grep "APF authorized = NO"; then
+if extattr ./zlux-app-server/bin/zssServer | grep "Program controlled = NO"; then
   echo "zssServer does not have the proper extattr values"
-  echo "   Please run extattr +a $PWD/zlux-app-server/bin/zssServer"
+  echo "   Please run extattr +p $PWD/zlux-app-server/bin/zssServer"
   exit 1
 fi
 
