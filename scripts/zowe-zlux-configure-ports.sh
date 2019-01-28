@@ -19,7 +19,8 @@ cd $ZLUX_SERVER_CONFIG_PATH/
 
 echo "Updating ports in zluxserver.json "$ZOWE_ZLUX_SERVER_HTTPS_PORT";"$ZOWE_ZSS_SERVER_PORT  >> $LOG_FILE 
 sed 's/"port": 8544,/"port": '"${ZOWE_ZLUX_SERVER_HTTPS_PORT}",'/g' zluxserver.json > $TEMP_DIR/transform1.json
-sed 's/"zssPort":8542/"zssPort": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform1.json > $TEMP_DIR/transform3.json
+sed 's/"port": 8542/"port": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform1.json > $TEMP_DIR/transform2.json
+sed 's/"zssPort":8542/"zssPort": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform2.json > $TEMP_DIR/transform3.json
 sed 's/"hostname": "localhost",/"hostname": "'"${ZOWE_EXPLORER_HOST}"'",/g' $TEMP_DIR/transform3.json > $TEMP_DIR/transform4.json
 if grep -q gatewayPort "zluxserver.json"; then
     sed 's/"gatewayPort":10010/"gatewayPort": '"${ZOWE_APIM_GATEWAY_PORT}"'/g' $TEMP_DIR/transform4.json > zluxserver.json
