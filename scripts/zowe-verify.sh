@@ -42,16 +42,18 @@ echo
 echo Check we are in the right directory, with the right contents
 dirOK=1
 for dir in \
-README.md             uss_explorer          sample-iframe-app     zlux-app-manager      zlux-platform         zosmf-auth \
-api-mediation         explorer-server       scripts               zlux-build            zlux-server-framework     zss-auth \
-jes_explorer          explorer-server-auth  tn3270-ng2            zlux-app-server   zlux-shared \
-mvs_explorer          vt-ng2                zlux-ng2              zos-subsystems
+LICENSE                   explorer-jobs-api         sample-angular-app        uss_explorer              zlux-ng2                  zosmf-auth \
+README.md                 explorer-server-auth      sample-iframe-app         vt-ng2                    zlux-platform             zss-auth \
+ZOWESVR.JCL               install_log               sample-react-app          zlux-app-manager          zlux-server-framework \
+api-mediation             jes_explorer              scripts                   zlux-app-server           zlux-shared \
+api_catalog               manifest.json             sonar-project.properties  zlux-build                zlux-workflow \
+explorer-data-sets-api    mvs_explorer              tn3270-ng2                zlux-editor               zos-subsystems
 #
 do
   ls ${ZOWE_ROOT_DIR}/$dir 1>/dev/null 2>/dev/null
   if [[ $? -ne 0 ]]
   then
-    echo Warning: directory \"$dir\" not found in ${ZOWE_ROOT_DIR}
+    echo Warning: File or directory \"$dir\" not found in ${ZOWE_ROOT_DIR}
     dirOK=0
   fi
 done
@@ -61,20 +63,12 @@ then
 fi
 
 # Check number of started tasks and ports (varies by Zowe release)
-# version 0.9.0  
-# STC #  1 2 3 4 5 6 7 8 9      # ZOWESVRn, n=(1.9)
-zowestc="1 1 3 0 0 1 0 1 3"     # expected number of Zowe STCs for jobs 1-9       
-zowenports=8                    # expected number of ports assigned to Zowe
 
-
-# version 0.9.1
+# version 1.0.0
 # STC #  1 2 3 4 5 6 7 8 9
-zowestc="2 0 2 0 0 2 2 0 2"         
-zowenports=8
+zowestc="1 0 3 1 1 3 3 0 2"         
+zowenports=10
 
-# 1.2.	Verification post-install
-# 1.2.1.	of configuration
-# 0. ZOESVR PROC is in a JES PROCLIB
 
 echo
 echo Check SAF security settings are correct
@@ -412,21 +406,37 @@ echo Check port settings from Zowe config files
   api_mediation_discovery_http_port=7553    # api-mediation/scripts/api-mediation-start-discovery.sh
   api_mediation_gateway_https_port=7554     # api-mediation/scripts/api-mediation-start-gateway.sh
 
+  explorer_server_jobsPort=8545             # explorer-jobs-api/scripts/jobs-api-server-start.sh
+  explorer_server_dataSets_port=8547        # explorer-data-sets-api/scripts/data-sets-api-server-start.sh
+
   zlux_server_https_port=8544               # zlux-app-server/config/zluxserver.json
   zss_server_http_port=8542                 # zlux-app-server/config/zluxserver.json
+
   terminal_sshPort=22                       # vt-ng2/_defaultVT.json
   terminal_telnetPort=23                    # tn3270-ng2/_defaultTN3270.json
+
+  jes_explorer_server_port=8546            # jes_explorer/server/configs/config.json
+  mvs_explorer_server_port=8548            # mvs_explorer/server/configs/config.json
+  uss_explorer_server_port=8550            # uss_explorer/server/configs/config.json
+
+
+
 
 for file in \
  "api-mediation/scripts/api-mediation-start-catalog.sh" \
  "api-mediation/scripts/api-mediation-start-discovery.sh" \
  "api-mediation/scripts/api-mediation-start-gateway.sh" \
+ "explorer-jobs-api/scripts/jobs-api-server-start.sh" \
+ "explorer-data-sets-api/scripts/data-sets-api-server-start.sh" \
  "zlux-app-server/config/zluxserver.json" \
  "vt-ng2/_defaultVT.json" \
- "tn3270-ng2/_defaultTN3270.json"
+ "tn3270-ng2/_defaultTN3270.json" \
+ "jes_explorer/server/configs/config.json" \
+ "mvs_explorer/server/configs/config.json" \
+ "uss_explorer/server/configs/config.json"
 do
     case $file in
-    
+    ### WIP MARKER ###
         tn3270*) 
         # echo Checking tn3270
         # fragile search
@@ -483,7 +493,29 @@ do
                     api_mediation_gateway_https_port=$port
                 else
                     echo Error: api gateway port not found in ${ZOWE_ROOT_DIR}/$file
-                fi    
+                fi   
+
+                ;;
+            *jobs*)
+                if [[ -n "$port" ]]
+                then
+                    echo OK: explorer jobs api server port is $port
+                    explorer_server_jobsPort=$port
+                else
+                    echo Error: explorer jobs api server port not found in ${ZOWE_ROOT_DIR}/$file
+                fi 
+
+                ;;
+            *data-sets*)
+                if [[ -n "$port" ]]
+                then
+                    echo OK: explorer datasets api server port is $port
+                    explorer_server_dataSets_port=$port
+                else
+                    echo Error: explorer datasets api server port not found in ${ZOWE_ROOT_DIR}/$file
+                fi 
+  
+
         esac
         
         ;;
@@ -511,23 +543,64 @@ do
 
         *\.json) 
         # echo Checking .json files 
-        # fragile search
-        zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
-        if [[ -n "$zlux_server_https_port" ]]
-        then
-            echo OK: zlux server httpsPort is $zlux_server_https_port
-        else
-            echo Error: zlux server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
-        fi         
-        
-        zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
-        if [[ -n "$zss_server_http_port" ]]
-        then
-            echo OK: zss server port is $zss_server_http_port
-        else
-            echo Error: zss server port not found in ${ZOWE_ROOT_DIR}/$file
-        fi         
-        echo 
+        case $file in
+        zlux*)
+            # fragile search
+            zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
+            if [[ -n "$zlux_server_https_port" ]]
+            then
+                echo OK: zlux server httpsPort is $zlux_server_https_port
+            else
+                echo Error: zlux server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
+            fi         
+            
+            zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
+            if [[ -n "$zss_server_http_port" ]]
+            then
+                echo OK: zss server port is $zss_server_http_port
+            else
+                echo Error: zss server port not found in ${ZOWE_ROOT_DIR}/$file
+            fi         
+            echo 
+
+            ;;
+
+        jes_explorer*)
+            # fragile search
+            jes_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
+            if [[ -n "$jes_explorer_server_port" ]]
+            then
+                echo OK: jes explorer server port is $jes_explorer_server_port
+            else
+                echo Error: jes explorer server port not found in ${ZOWE_ROOT_DIR}/$file
+            fi       
+
+            ;;
+
+        mvs_explorer*)
+            # fragile search
+            mvs_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
+            if [[ -n "$mvs_explorer_server_port" ]]
+            then
+                echo OK: mvs explorer server port is $mvs_explorer_server_port
+            else
+                echo Error: mvs explorer server port not found in ${ZOWE_ROOT_DIR}/$file
+            fi    
+            ;;
+
+        uss_explorer*)
+            # fragile search
+            uss_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
+            if [[ -n "$uss_explorer_server_port" ]]
+            then
+                echo OK: uss explorer server port is $uss_explorer_server_port
+            else
+                echo Error: uss explorer server port not found in ${ZOWE_ROOT_DIR}/$file
+            fi    
+            ;;
+
+        esac
+
         ;;
 
         *) 
@@ -543,16 +616,16 @@ echo Check explorer server https port in the 3 explorer web/index.html files
 
 # sed -n 's+.*https:\/\/.*:\([0-9]*\)/explorer-..s.*+\1+p' `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`    
 
-for file in  `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`
+for file in  `ls ${ZOWE_ROOT_DIR}/??s_explorer/web/index.html`
 do
     port=`sed -n 's+.*https:\/\/.*:\([0-9]*\)/.*+\1+p' $file`  
 
 
-    if [[ -n "$port" ]]
+    if [[ -n "$port" ]]  
     then
-        if [[ $port -ne $explorer_server_https_port ]]
+        if [[ $port -ne $api_mediation_gateway_https_port ]]
         then 
-            echo Error: Found $port expecting $explorer_server_https_port
+            echo Error: Found $port expecting $api_mediation_gateway_https_port
             echo in file $file
         else 
             echo OK: Port $port
@@ -596,9 +669,21 @@ then    # job name is short enough to have a suffix
                 3)
                 # job3
                     for port in \
+                        $zss_server_http_port \
                         $api_mediation_gateway_https_port \
-                        $explorer_server_http_port \
-                        $explorer_server_https_port
+                        $jes_explorer_server_port
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+                ;;
+
+                5)
+                    for port in \
+                        $mvs_explorer_server_port
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
                         if [[ $? -ne 0 ]]
@@ -611,8 +696,9 @@ then    # job name is short enough to have a suffix
                 6)
                 # job6
                     for port in \
-                        $api_mediation_discovery_http_port \
-                        $zlux_server_https_port 
+                        $explorer_server_jobsPort \
+                        $zlux_server_https_port \
+                        $api_mediation_discovery_http_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
                         if [[ $? -ne 0 ]]
@@ -622,11 +708,25 @@ then    # job name is short enough to have a suffix
                     done
                 ;;
 
+                7)
+                    for port in \
+                        $uss_explorer_server_port 
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+
+
+                ;;
+
                 9)
                 # job9
                     for port in \
-                        $zss_server_http_port \
-                        $api_mediation_catalog_http_port
+                        $api_mediation_catalog_http_port \
+                        $explorer_server_dataSets_port
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
                         if [[ $? -ne 0 ]]
@@ -987,26 +1087,17 @@ then
 fi
 
 echo
-echo Check relevant -a extattr bits 
-
-ls -RE ${ZOWE_ROOT_DIR} |grep " [a][-p][-s][^ ] " > /tmp/extattr.a.list
+echo Check relevant -s extattr bits 
+ls -RE ${ZOWE_ROOT_DIR} |grep " [-a][-p]s[^ ] " > /tmp/extattr.s.list
 bitsOK=1
 
 for file in \
-    bbgzachk \
-    bbgzadrm \
-    bbgzafsm \
-    bbgzangl \
-    bbgzcsl \
-    bbgzsafm \
-    bbgzscfm \
-    bboacall \
     zssServer 
 do
-    grep $file /tmp/extattr.a.list 1>/dev/null 2>/dev/null
+    grep " ${file}$" /tmp/extattr.s.list 1>/dev/null 2>/dev/null
     if [[ $? -ne 0 ]]
     then
-        echo Error: File $file does not have the -a extattr bit set
+        echo Error: File $file does not have the -s extattr bit set
         bitsOK=0
     else
         : # echo File $file is OK
@@ -1019,22 +1110,12 @@ fi
 
 echo
 echo Check relevant -p extattr bits 
-ls -RE ${ZOWE_ROOT_DIR} |grep " [-a][p][-s][^ ] " > /tmp/extattr.p.list
+ls -RE ${ZOWE_ROOT_DIR} |grep " [-a]p[-s][^ ] " > /tmp/extattr.p.list
 bitsOK=1
 for file in \
-    batchManagerZos \
-    bbgzachk \
-    bbgzadrm \
-    bbgzafsm \
-    bbgzangl \
-    bbgzcsl \
-    bbgzsafm \
-    bbgzscfm \
-    bbgzsrv \
-    bbgzsufm \
-    bboacall 
+    zssServer 
 do
-    grep $file /tmp/extattr.p.list 1>/dev/null 2>/dev/null
+    grep " ${file}$" /tmp/extattr.p.list 1>/dev/null 2>/dev/null
     if [[ $? -ne 0 ]]
     then
         echo Error: File $file does not have the -p extattr bit set
@@ -1053,12 +1134,12 @@ rm /tmp/extattr.*.list
 echo
 echo Check files are executable 
 filesxeq=1
-ls -l ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server | grep "^-r.xr.x... .* IZUADMIN *[0-9]" 1> /dev/null 2> /dev/null
-if [[ $? -eq 0 ]]
+find ${ZOWE_ROOT_DIR} -name bin -exec ls -l {} \; | grep ^- | grep -v \.bat$ | grep -v "^-r.xr.xr.x " 2> /dev/null
+if [[ $? -ne 0 ]]
 then    
-    : # echo OK: ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server is executable and owned by a user in group IZUADMIN
+    : # echo OK: 
 else 
-    echo Error: ${ZOWE_ROOT_DIR}/explorer-server/wlp/bin/server is not executable or not owned by a user in group IZUADMIN 
+    echo Error: the bin files above in ${ZOWE_ROOT_DIR} are not readable and executable 
     filesxeq=0
 fi 
 
