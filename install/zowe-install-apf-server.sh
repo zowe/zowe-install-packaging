@@ -44,9 +44,9 @@ chmod +x ${SCRIPT_DIR}/*
 # MVS install steps
 
 # 0. Prepare STC JCL
-cp ${ZSS}/SAMPLIB/${XMEM_JCL} ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
-sed -i "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
-sed -i "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
+    -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+    ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
 
 # 1. Deploy loadlib
 echo
