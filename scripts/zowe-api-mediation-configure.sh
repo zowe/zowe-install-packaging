@@ -47,6 +47,9 @@ cd scripts/
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
     -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
+    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
+    -e 's/\*\*ZOSMF_KEYRING\*\*/'$ZOWE_ZOSMF_KEYRING'/g' \
+    -e 's/\*\*ZOSMF_USER\*\*/'$ZOWE_ZOSMF_USERID'/g' \
     -e "s|\*\*EXTERNAL_CERTIFICATE\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_ALIAS\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_AUTHORITIES\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES|g" \
@@ -164,7 +167,7 @@ services:
     apiInfo:
       - apiId: com.ibm.datasets
         gatewayUrl: api/v1
-        version: 0.9.3
+        version: 1.0.0
         documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
   - serviceId: explorer-mvs
     title: IBM z/OS MVS Explorer UI
@@ -200,7 +203,7 @@ services:
     apiInfo:
       - apiId: com.ibm.jobs
         gatewayUrl: api/v1
-        version: 0.9.3
+        version: 1.0.0
         documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/swagger-ui.html
   - serviceId: explorer-jes
     title: IBM z/OS Jobs UI
