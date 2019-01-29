@@ -14,7 +14,9 @@ api-mediation:
   externalCertificateAlias=
   externalCertificateAuthorities=
   verifyCertificatesOfServices=true
-  enableSso=false  
+  enableSso=false
+  zosmfKeyring=IZUKeyring.IZUDFLT
+  zosmfUser=IZUSVR
 
 # http and https ports for the explorer server
 explorer-server:

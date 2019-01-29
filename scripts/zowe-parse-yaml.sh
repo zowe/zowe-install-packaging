@@ -163,6 +163,18 @@ do
                 echo "  api-mediation enable SSO="$ZOWE_APIM_ENABLE_SSO
                 export ZOWE_APIM_ENABLE_SSO
             fi
+            if [[ $key == "zosmfKeyring" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_ZOSMF_KEYRING=$value
+                echo "  z/OSMF keyring="$ZOWE_ZOSMF_KEYRING
+                export ZOWE_ZOSMF_KEYRING
+            fi
+            if [[ $key == "zosmfUserid" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_ZOSMF_USERID=$value
+                echo "  z/OSMF user ID="$ZOWE_ZOSMF_USERID
+                export ZOWE_ZOSMF_USERID
+            fi
 
             if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
             then
@@ -249,6 +261,16 @@ then
     ZOWE_APIM_ENABLE_SSO="false"
     echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false"
 fi
+if [[ $ZOWE_ZOSMF_KEYRING == "" ]]
+then
+    ZOWE_ZOSMF_KEYRING="IZUKeyring.IZUDFLT"
+    echo "  ZOWE_ZOSMF_KEYRING not specified:  Defaulting to IZUKeyring.IZUDFLT"
+fi
+if [[ $ZOWE_ZOSMF_USERID == "" ]]
+then
+    ZOWE_ZOSMF_USERID="IZUSVR"
+    echo "  ZOWE_ZOSMF_USERID not specified:  Defaulting to IZUSVR"
+fi
 
 # Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
 # The ssh and telnet ports are there and already being used and exploited by the apps
@@ -291,6 +313,8 @@ echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AL
 echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES >> $LOG_FILE
 echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FILE
 echo "  ZOWE_APIM_ENABLE_SSO="$ZOWE_APIM_ENABLE_SSO >> $LOG_FILE
+echo "  ZOWE_ZOSMF_KEYRING="$ZOWE_ZOSMF_KEYRING >> $LOG_FILE
+echo "  ZOWE_ZOSMF_USERID="$ZOWE_ZOSMF_USERID >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
