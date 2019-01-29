@@ -5,6 +5,11 @@
       "flat": "true"
     },
     {
+      "pattern": "rocket-closed-source-builds/org/zowe/zss/1.0.0/zss-1.0.0-20190129.113157.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zss.pax",
+      "flat": "true"
+    },
+    {
       "pattern": "libs-release-local/org/zowe/explorer/jobs/0.0.1/jobs-zowe-server-package-0.0.1.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",

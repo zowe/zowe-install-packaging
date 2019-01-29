@@ -112,7 +112,10 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
       echo downloadResult
       def downloadResultObject = readJSON(text: downloadResult)
       if (downloadResultObject['status'] != 'success' ||
-          downloadResultObject['totals']['success'] != 12 || downloadResultObject['totals']['failure'] != 0) {
+          downloadResultObject['totals']['success'] != 13 || downloadResultObject['totals']['failure'] != 0) {
+        echo "status: ${downloadResultObject['status']}"
+        echo "success: ${downloadResultObject['totals']['success']}"
+        echo "failure: ${downloadResultObject['totals']['failure']}"
         error "Failed on verifying download result"
       } else {
         echo "download result is successful as expected"
