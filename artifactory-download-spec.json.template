@@ -22,7 +22,7 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.7/explorer-mvs-0.0.7.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.8/explorer-mvs-0.0.8.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
