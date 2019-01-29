@@ -13,7 +13,7 @@ loadlib=$1
 
 echo "APF-authorize loadlib ${loadlib}"
 
-if $BASEDIR/opercmd "SETPROG APF,ADD,DSNAME=${loadlib},SMS" | grep "CSV410I" 1>/dev/null; then
+if $BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},SMS" | grep "CSV410I" 1>/dev/null; then
   echo "Info:  dataset ${loadlib} has been added to APF list"
   exit 0
 else

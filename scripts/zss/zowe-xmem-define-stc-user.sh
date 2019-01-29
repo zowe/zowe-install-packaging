@@ -40,7 +40,7 @@ ACF2)
   if [[ $? -eq 0 ]]
   then
 
-    $BASEDIR/opercmd "F ACF2,REBUILD(USR),CLASS(P)" 1> /dev/null 2> /dev/null \
+    $BASEDIR/../opercmd "F ACF2,REBUILD(USR),CLASS(P)" 1> /dev/null 2> /dev/null \
       1> /tmp/cmd.out 2> /tmp/cmd.err
     if [[ $? -ne 0 ]]
     then
@@ -49,7 +49,7 @@ ACF2)
       rc=8
     fi
 
-    $BASEDIR/opercmd "F ACF2,OMVS" 1> /dev/null 2> /dev/null \
+    $BASEDIR/../opercmd "F ACF2,OMVS" 1> /dev/null 2> /dev/null \
       1> /tmp/cmd.out 2> /tmp/cmd.err
     if [[ $? -ne 0 ]]
     then
