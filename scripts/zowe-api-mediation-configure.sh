@@ -47,6 +47,9 @@ cd scripts/
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
     -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
+    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
+    -e 's/\*\*ZOSMF_KEYRING\*\*/'$ZOWE_ZOSMF_KEYRING'/g' \
+    -e 's/\*\*ZOSMF_USER\*\*/'$ZOWE_ZOSMF_USERID'/g' \
     -e "s|\*\*EXTERNAL_CERTIFICATE\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_ALIAS\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_AUTHORITIES\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES|g" \
@@ -164,7 +167,7 @@ services:
     apiInfo:
       - apiId: com.ibm.datasets
         gatewayUrl: api/v1
-        version: 0.9.3
+        version: 1.0.0
         documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
   - serviceId: explorer-mvs
     title: IBM z/OS MVS Explorer UI
@@ -200,7 +203,7 @@ services:
     apiInfo:
       - apiId: com.ibm.jobs
         gatewayUrl: api/v1
-        version: 0.9.3
+        version: 1.0.0
         documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/swagger-ui.html
   - serviceId: explorer-jes
     title: IBM z/OS Jobs UI
@@ -234,32 +237,6 @@ services:
         serviceRelativeUrl: ui/v1/explorer-uss
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
-
-# Add static definition for zos
-cat <<EOF >$TEMP_DIR/zos.yml
-#
-services:
-    - serviceId: zos
-      title: IBM z/OS miscellaneous
-      description: IBM z/OS Miscellaneous REST API service
-      catalogUiTileId: zos
-      instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl: api/v1/zos
-      apiInfo:
-        - apiId: com.ibm.zos
-          gatewayUrl: api/v1
-          version: 0.9.3
-          documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_HTTPS_PORT/ibm/api/explorer/
-catalogUiTiles:
-    zos:
-        title: z/OS Miscellaneous services
-        description: IBM z/OS Miscellaneous REST services
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zos.yml > $STATIC_DEF_CONFIG/zos.yml	
 
 chmod -R 777 $STATIC_DEF_CONFIG
 
