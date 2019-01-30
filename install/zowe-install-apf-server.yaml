@@ -1,0 +1,25 @@
+# =================================================================
+# Zowe APF server install configuration
+# =================================================================
+
+# Datasets that APF server will be installed into
+install:
+  # PROCLIB dataset name (required, no default values)
+  proclib=
+  # PARMLIB dataset name (${USER}.PARMLIB by default)
+  parmlib=
+  # LOADLIB dataset name (${USER}.LOADLIB by default)
+  loadlib=
+
+# APF server users
+users:
+  # User to run Zowe server (required, no default values)
+  zoweUser=
+  # APF server STC user UID (required, no default values)
+  stcUserUid=
+  # STC user group (required, no default values)
+  stcGroup=
+  # APF server STC user (ZWESISTC by default)
+  stcUser=
+
+# Do not delete this last line
