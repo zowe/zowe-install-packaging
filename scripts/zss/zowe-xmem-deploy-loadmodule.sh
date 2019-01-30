@@ -22,6 +22,8 @@ if [[ $? -ne 0 ]]; then
     echo "Error:  dataset ${loadlib} is not PDSE or the test failed. "
     echo  "If the PDSE test failed, please check the dataset in ISPF (=3.4, I) to see if its 'Data set name type' is LIBRARY."
     rc=8
+  else
+    rc=0
   fi
 else
   echo "Allocate ${loadlib}"
