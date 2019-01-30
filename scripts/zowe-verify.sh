@@ -554,6 +554,14 @@ do
                 echo Error: zlux server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
             fi         
             
+            agent_http_port=`sed -n 's/.*"port": \([0-9]*\)$/\1/p' ${ZOWE_ROOT_DIR}/$file`
+            if [[ -n "$agent_http_port" ]]
+            then
+                echo OK: zss server port is $agent_http_port
+            else
+                echo Error: agent http port not found in ${ZOWE_ROOT_DIR}/$file
+            fi 
+
             zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
             if [[ -n "$zss_server_http_port" ]]
             then
