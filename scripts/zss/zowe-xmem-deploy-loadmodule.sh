@@ -17,14 +17,10 @@ rc=8
 
 sh $BASEDIR/zowe-xmem-dataset-exists.sh ${loadlib}
 if [[ $? -ne 0 ]]; then
-  echo "Check if dataset ${loadlib} is PDSE"
-  dsntype=`tsocmd "listcat entries('${loadlib}') all" 2>/dev/null | sed -n "s/.*DSNTYPE[-]*\([^ ]*\).*/\1/p"`
-  if [[ ! -z "$dsntype" ]]
-  then
-    echo "Info:  dataset ${loadlib} is PDSE"
-    rc=0
-  else
-    echo "Error:  dataset ${loadlib} is not PDSE"
+  sh $BASEDIR/zowe-xmem-check-if-pdse.sh ${loadlib}
+  if [[ $? -ne 1 ]]; then
+    echo "Error:  dataset ${loadlib} is not PDSE or the test failed. "
+    echo  "If the PDSE test failed, please check the dataset in ISPF (=3.4, I) to see if its 'Data set name type' is LIBRARY."
     rc=8
   fi
 else
