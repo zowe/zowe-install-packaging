@@ -37,31 +37,6 @@ else
     fi    
 fi
 
-# version 0.9.0
-echo
-echo Check we are in the right directory, with the right contents
-dirOK=1
-for dir in \
-LICENSE                   explorer-jobs-api         sample-angular-app        uss_explorer              zlux-ng2                  zosmf-auth \
-README.md                 explorer-server-auth      sample-iframe-app         vt-ng2                    zlux-platform             zss-auth \
-ZOWESVR.JCL               install_log               sample-react-app          zlux-app-manager          zlux-server-framework \
-api-mediation             jes_explorer              scripts                   zlux-app-server           zlux-shared \
-api_catalog               manifest.json             sonar-project.properties  zlux-build                zlux-workflow \
-explorer-data-sets-api    mvs_explorer              tn3270-ng2                zlux-editor
-#
-do
-  ls ${ZOWE_ROOT_DIR}/$dir 1>/dev/null 2>/dev/null
-  if [[ $? -ne 0 ]]
-  then
-    echo Warning: File or directory \"$dir\" not found in ${ZOWE_ROOT_DIR}
-    dirOK=0
-  fi
-done
-if [[ $dirOK -eq 1 ]]
-then 
-    echo OK
-fi
-
 # Check number of started tasks and ports (varies by Zowe release)
 
 # version 1.0.0
@@ -243,8 +218,6 @@ set +f
 # (File: /zaas1/giza/zluxexampleserver/
 # deploy/instance/ZLUX/pluginStorage/com.rs.mvd.tn3270/sessions/_defaultTN3270.json)
 
-# 5. LTPA keys are readable and sym-linked
-# No redundant izu.ltpa.key.password entries in bootstrap.properties ** TBD **
 # 6. localhost is defined for real, VM and zD&T systems:
 # Add “127.0.0.1 localhost” to ADCD.Z23A.TCPPARMS(GBLIPNOD)
 
@@ -990,29 +963,6 @@ then
 fi
 
 # 5. z/OSMF
-echo
-echo Check LTPA keys are readable
-ltpaOK=1
-if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
-then 
-    : # echo Info: ZOWE_ZOSMF_PATH is already set to ${ZOWE_ZOSMF_PATH} 
-else
-    ZOWE_ZOSMF_PATH="/var/zosmf/configuration/servers/zosmfServer/"   # this won't normally be set until Zowe is configured
-fi    
-
-ls -l ${ZOWE_ZOSMF_PATH}/resources/security/ltpa.keys | grep "^-r.* IZUSVR *IZUADMIN .*ltpa.keys$" >/dev/null
-if [[ $? -ne 0 ]]
-then
-  echo Error: z/OSMF ltpa.keys file is not readable and owned by IZUSVR in group IZUADMIN
-  ltpaOK=0
-else
-  : # echo z/OSMF ltpa.keys file is OK
-fi
-if [[ $ltpaOK -eq 1 ]]
-then
-    echo OK
-fi
-
 echo
 echo Check zosmfServer is ready to run a smarter planet
 #  is zosmfServer ready to run a smarter planet?
