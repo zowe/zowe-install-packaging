@@ -11,7 +11,7 @@
 BASEDIR=$(dirname "$0")
 dsn=$1
 
-echo "Check if dataset ${dsn} is PDSE"
+echo "Check if dataset ${dsn} is SMS-managed"
 
 cmdout="$(tsocmd "listds '${dsn}' label" 2>&1)"
 if [[ $? -ne 0 ]]; then
@@ -35,16 +35,15 @@ if [[ -z "ds1smsfg" ]]; then
   exit 8
 fi
 
-# DS1PDSE (0x08) - Data set is a PDSE or HFS data set (must be set)
-# DS1PDSEX (0x02) - HFS data set (must be unset)
-ds1smsfg_masked="$((0x$ds1smsfg & 0x0A))"
+# DS1SMSDS (0x80) - System managed data set (must be set)
+ds1smsfg_masked="$((0x$ds1smsfg & 0x80))"
 
-# If the masked value is 0x08 (8), the dataset is PDSE
-if [[ $ds1smsfg_masked == "8" ]]; then
-  echo "Info:  dataset ${dsn} is PDSE"
+# If the masked value is 0x80 (128), the dataset is SMS-managed
+if [[ $ds1smsfg_masked == "128" ]]; then
+  echo "Info:  dataset ${dsn} is SMS-managed"
   exit 1
 else
-  echo "Info:  dataset ${dsn} is not PDSE"
+  echo "Info:  dataset ${dsn} is not SMS-managed"
   echo "$cmdout"
   exit 0
 fi

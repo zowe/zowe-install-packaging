@@ -13,11 +13,47 @@ loadlib=$1
 
 echo "APF-authorize loadlib ${loadlib}"
 
-if $BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},SMS" | grep "CSV410I" 1>/dev/null; then
+isSMS=true
+sh $BASEDIR/zowe-xmem-check-if-sms.sh ${loadlib}
+checkRC=$?
+if [[ $checkRC -eq 1 ]]; then
+  isSMS=true
+elif [[ $checkRC -eq 0 ]]; then
+  isSMS=false
+else
+  echo "Warning:  SMS check failed, please APF-authorize the dataset manually if needed"
+fi
+
+if $isSMS ; then
+
+  cmdout="$($BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},SMS" 2>&1)"
+
+else
+
+  cmdout="$(tsocmd "listds '${loadlib}'" 2>&1)"
+  if [[ $? -ne 0 ]]; then
+    echo "Error:  LISTDS failed"
+    echo "$cmdout"
+    exit 8
+  fi
+
+  volume="$(echo $cmdout | sed -n "s/.*--VOLUMES--[\s]*\([^\s]\)[\s]*/\1/p")"
+  if [[ -z "$volume" ]]; then
+    echo "Error:  volume not found"
+    echo "$cmdout"
+    exit 8
+  fi
+
+  cmdout="$($BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},VOLUME=${volume}" 2>&1)"
+
+fi
+
+if echo $cmdout | grep "CSV410I" 1>/dev/null; then
   echo "Info:  dataset ${loadlib} has been added to APF list"
   exit 0
 else
   echo "Error:  dataset ${loadlib} has not been added to APF list"
+  echo "$cmdout"
   exit 8
 fi
 
