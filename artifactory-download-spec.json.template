@@ -22,19 +22,28 @@
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.7/explorer-jes-0.0.*.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.*/explorer-jes-0.0.*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true"
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.8/explorer-mvs-0.0.*.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.*/explorer-mvs-0.0.*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true"
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.6/explorer-uss-0.0.*.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.*/explorer-uss-0.0.*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true"
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },    
     {             
       "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/1.0.*/mfaas-zowe-install-1.0.*.zip",
