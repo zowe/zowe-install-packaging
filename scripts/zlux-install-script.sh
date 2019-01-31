@@ -22,7 +22,7 @@ pax -r -px -f $INSTALL_DIR/files/zss.pax zssServer
 extattr +p zssServer
 cd ../..
 
-chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ zos-subsystems/ 2>/dev/null
+chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ 2>/dev/null
 chmod ug+w zlux-app-server/
 mkdir zlux-app-server/log
 chmod ug-w zlux-app-server/
