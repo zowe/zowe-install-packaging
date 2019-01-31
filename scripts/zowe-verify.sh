@@ -37,31 +37,6 @@ else
     fi    
 fi
 
-# version 0.9.0
-echo
-echo Check we are in the right directory, with the right contents
-dirOK=1
-for dir in \
-LICENSE                   explorer-jobs-api         sample-angular-app        uss_explorer              zlux-ng2                  zosmf-auth \
-README.md                 explorer-server-auth      sample-iframe-app         vt-ng2                    zlux-platform             zss-auth \
-ZOWESVR.JCL               install_log               sample-react-app          zlux-app-manager          zlux-server-framework \
-api-mediation             jes_explorer              scripts                   zlux-app-server           zlux-shared \
-api_catalog               manifest.json             sonar-project.properties  zlux-build                zlux-workflow \
-explorer-data-sets-api    mvs_explorer              tn3270-ng2                zlux-editor
-#
-do
-  ls ${ZOWE_ROOT_DIR}/$dir 1>/dev/null 2>/dev/null
-  if [[ $? -ne 0 ]]
-  then
-    echo Warning: File or directory \"$dir\" not found in ${ZOWE_ROOT_DIR}
-    dirOK=0
-  fi
-done
-if [[ $dirOK -eq 1 ]]
-then 
-    echo OK
-fi
-
 # Check number of started tasks and ports (varies by Zowe release)
 
 # version 1.0.0
