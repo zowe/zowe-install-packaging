@@ -31,12 +31,11 @@ if extattr ./zlux-app-server/bin/zssServer | grep "Program controlled = NO"; the
 fi
 
 #
-# Permission fix for zLux Server.  This is so that the user IZUSVR that owns the ZOWESVR
-# started task is able to write to folder in order to persist details like pinned desktop items
+# Permission fix for zLux Server.  The ZLUX server must have permission to write persistent data
+# to ZFS.  We can't chown or chgrp as the user running the install doesn't have access rights to do this on 
+# behalf of IZUSVR, so for now allow write permission for any
 # 
-chgrp -R IZUUSER ./zlux-app-server/deploy
-chmod -R ug+w ./zlux-app-server/deploy
-chmod -R ug+w ./zlux-app-server/deploy/site
-chmod -R ug+w ./zlux-app-server/deploy/instance
 
-
+chmod -R a+w zlux-app-server/deploy/instance/users/
+chmod -R a+w zlux-app-server/deploy/instance/ZLUX/pluginStorage/
+chmod -R a+w zlux-app-server/deploy/site/ZLUX/pluginStorage/
