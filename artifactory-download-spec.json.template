@@ -55,28 +55,8 @@
       "limit": 1
     },
     {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_Open_Beta_License_Agreement.pdf",
+      "pattern": "libs-release-local/org/zowe/licenses/1.0.0/zowe_licenses_full.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_CLI_TPSRs.zip",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_APIML_TPSRs.zip",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Explorer_Server_Licenses.zip",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Rocket_Notices.txt",
-      "target": "pax-workspace/ascii/licenses/",
       "flat": "true"
     }
   ]
