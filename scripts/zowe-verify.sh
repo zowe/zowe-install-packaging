@@ -47,7 +47,7 @@ README.md                 explorer-server-auth      sample-iframe-app         vt
 ZOWESVR.JCL               install_log               sample-react-app          zlux-app-manager          zlux-server-framework \
 api-mediation             jes_explorer              scripts                   zlux-app-server           zlux-shared \
 api_catalog               manifest.json             sonar-project.properties  zlux-build                zlux-workflow \
-explorer-data-sets-api    mvs_explorer              tn3270-ng2                zlux-editor               zos-subsystems
+explorer-data-sets-api    mvs_explorer              tn3270-ng2                zlux-editor
 #
 do
   ls ${ZOWE_ROOT_DIR}/$dir 1>/dev/null 2>/dev/null
