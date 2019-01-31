@@ -32,7 +32,7 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.6/explorer-uss-0.0.6.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.7/explorer-uss-0.0.7.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },    
