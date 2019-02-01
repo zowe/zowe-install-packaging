@@ -1,11 +1,11 @@
 {
   "files": [{
-      "pattern": "rocket-closed-source-builds/1.0.0+20190130/ZLUX.pax",
+      "pattern": "rocket-closed-source-builds/1.0.0+20190201/ZLUX.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
     {
-      "pattern": "rocket-closed-source-builds/org/zowe/zss/1.0.0/zss-1.0.0-20190130.143649.pax",
+      "pattern": "rocket-closed-source-builds/org/zowe/zss/1.0.0/zss-1.0.0-20190131.230822.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zss.pax",
       "flat": "true"
     },
