@@ -154,9 +154,13 @@ if $safOk ; then
   $stcUserCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
-    $stcUserCmd2
-    if [[ $? -eq 0 ]]; then
-      stcUserOk=true
+    if [[ ${XMEM_STC_USER_UID} == "" ]] || [[ ${XMEM_STC_GROUP} == "" ]]; then
+      echo "Error:  APF server STC user UID and STC user group must be specified to define STC user"
+    else
+      $stcUserCmd2
+      if [[ $? -eq 0 ]]; then
+        stcUserOk=true
+      fi
     fi
   elif [[ $rc -eq 0 ]]; then
     stcUserOk=true
@@ -172,9 +176,13 @@ if $safOk ; then
   $stcProfileCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
-    $stcProfileCmd2
-    if [[ $? -eq 0 ]]; then
-      stcProfileOk=true
+    if [[ ${XMEM_STC_GROUP} == "" ]]; then
+      echo "Error:  STC user group must be specified to define STC profile"
+    else
+      $stcProfileCmd2
+      if [[ $? -eq 0 ]]; then
+        stcProfileOk=true
+      fi
     fi
   elif [[ $rc -eq 0 ]]; then
     stcProfileOk=true
