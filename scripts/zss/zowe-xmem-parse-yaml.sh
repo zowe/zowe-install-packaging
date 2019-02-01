@@ -112,8 +112,7 @@ then
 fi
 if [[ ${XMEM_STC_USER_UID} == "" ]]
 then
-    echo "  APF server STC user UID not specified, exiting"
-    exit 1
+    echo "  APF server STC user UID not specified"
 fi
 if [[ ${XMEM_STC_USER} == "" ]]
 then
@@ -122,6 +121,5 @@ then
 fi
 if [[ ${XMEM_STC_GROUP} == "" ]]
 then
-    echo "  STC user group not specified, exiting"
-    exit 1
+    echo "  STC user group not specified"
 fi
