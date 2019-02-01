@@ -45,13 +45,13 @@ do
                 ZOWE_ROOT_DIR=`sh -c "echo $value"` 
                 export ZOWE_ROOT_DIR
             fi
-# Look for jobsAPIPort= beneath explorer-server:
+# Look for jobsAPIPort= beneath zos-services:
             if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
             then
                 ZOWE_EXPLORER_SERVER_JOBS_PORT=$value
                 export ZOWE_EXPLORER_SERVER_JOBS_PORT
             fi
-# Look for mvsAPIPort= beneath explorer-server:
+# Look for mvsAPIPort= beneath zos-services:
             if [[ $key == "mvsAPIPort" ]] && [[ $section == "zos-services" ]] 
             then
                 ZOWE_EXPLORER_SERVER_DATASETS_PORT=$value
