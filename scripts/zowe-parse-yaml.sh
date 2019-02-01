@@ -43,35 +43,30 @@ do
             then
 # If the value starts with a ~ for the home variable then evaluate it
                 ZOWE_ROOT_DIR=`sh -c "echo $value"` 
-                echo "  Zowe runtime root directory="$ZOWE_ROOT_DIR
                 export ZOWE_ROOT_DIR
             fi
-# Look for jobsPort= beneath explorer-server:
-            if [[ $key == "jobsPort" ]] && [[ $section == "explorer-server" ]] 
+# Look for jobsAPIPort= beneath zos-services:
+            if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
             then
                 ZOWE_EXPLORER_SERVER_JOBS_PORT=$value
-                echo "  explorer-server jobs api port="$ZOWE_EXPLORER_SERVER_JOBS_PORT
                 export ZOWE_EXPLORER_SERVER_JOBS_PORT
             fi
-# Look for dataSetsPort= beneath explorer-server:
-            if [[ $key == "dataSetsPort" ]] && [[ $section == "explorer-server" ]] 
+# Look for mvsAPIPort= beneath zos-services:
+            if [[ $key == "mvsAPIPort" ]] && [[ $section == "zos-services" ]] 
             then
                 ZOWE_EXPLORER_SERVER_DATASETS_PORT=$value
-                echo "  explorer-server data sets api port="$ZOWE_EXPLORER_SERVER_DATASETS_PORT
                 export ZOWE_EXPLORER_SERVER_DATASETS_PORT
             fi
 # Look for httpsPort= beneath zlux-server:
             if [[ $key == "httpsPort" ]] && [[ $section == "zlux-server" ]] 
             then
                 ZOWE_ZLUX_SERVER_HTTPS_PORT=$value
-                echo "  zlux-server https port="$ZOWE_ZLUX_SERVER_HTTPS_PORT
                 export ZOWE_ZLUX_SERVER_HTTPS_PORT
             fi
 # Look for zssPort= beneath zlux-server:
             if [[ $key == "zssPort" ]] && [[ $section == "zlux-server" ]] 
             then
                 ZOWE_ZSS_SERVER_PORT=$value
-                echo "  zss server http port="$ZOWE_ZSS_SERVER_PORT
                 export ZOWE_ZSS_SERVER_PORT
             fi
 # Look for sshPort= beneath terminals:
@@ -86,106 +81,90 @@ do
                 ZOWE_ZLUX_TELNET_PORT=$value
                 export ZOWE_ZLUX_TELNET_PORT
             fi
-# Look for explorerJESUI= beneath explorer-ui:
-            if [[ $key == "explorerJESUI" ]] && [[ $section == "explorer-ui" ]] 
+# Look for jobsExplorerPort= beneath zowe-desktop-apps:
+            if [[ $key == "jobsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
             then
                 ZOWE_EXPLORER_JES_UI_PORT=$value
-                echo "  JES explorer UI https port="$ZOWE_EXPLORER_JES_UI_PORT
                 export ZOWE_EXPLORER_JES_UI_PORT
             fi
-# Look for explorerMVSUI= beneath explorer-ui:
-            if [[ $key == "explorerMVSUI" ]] && [[ $section == "explorer-ui" ]] 
+# Look for mvsExplorerPort= beneath zowe-desktop-apps:
+            if [[ $key == "mvsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
             then
                 ZOWE_EXPLORER_MVS_UI_PORT=$value
-                echo "  MVS explorer UI https port="$ZOWE_EXPLORER_MVS_UI_PORT
                 export ZOWE_EXPLORER_MVS_UI_PORT
             fi
-# Look for explorerUSSUI= beneath explorer-ui:
-            if [[ $key == "explorerUSSUI" ]] && [[ $section == "explorer-ui" ]] 
+# Look for ussExplorerPort= beneath zowe-desktop-apps:
+            if [[ $key == "ussExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
             then
                 ZOWE_EXPLORER_USS_UI_PORT=$value
-                echo "  USS explorer UI https port="$ZOWE_EXPLORER_USS_UI_PORT
                 export ZOWE_EXPLORER_USS_UI_PORT
             fi
 # Look for security= beneath terminals:
             if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
             then
                 ZOWE_ZLUX_SECURITY_TYPE=$value
-                echo "  zowe zlux security type="$ZOWE_ZLUX_SECURITY_TYPE
                 export ZOWE_ZLUX_SECURITY_TYPE
             fi
 # api-mediation settings:
             if [[ $key == "catalogPort" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_CATALOG_PORT=$value
-                echo "  api-mediation catalog port="$ZOWE_APIM_CATALOG_PORT
                 export ZOWE_APIM_CATALOG_HTTP_PORT
             fi
             if [[ $key == "discoveryPort" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_DISCOVERY_PORT=$value
-                echo "  api-mediation discovery port="$ZOWE_APIM_DISCOVERY_PORT
                 export ZOWE_APIM_DISCOVERY_PORT
             fi
             if [[ $key == "gatewayPort" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_GATEWAY_PORT=$value
-                echo "  api-mediation gateway port="$ZOWE_APIM_GATEWAY_PORT
                 export ZOWE_APIM_GATEWAY_PORT
             fi
             if [[ $key == "externalCertificate" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_EXTERNAL_CERTIFICATE=$value
-                echo "  api-mediation external certificate="$ZOWE_APIM_EXTERNAL_CERTIFICATE
                 export ZOWE_APIM_EXTERNAL_CERTIFICATE
             fi
             if [[ $key == "externalCertificateAlias" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS=$value
-                echo "  api-mediation external certificate alias="$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
                 export ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
             fi
             if [[ $key == "externalCertificateAuthorities" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES=$value
-                echo "  api-mediation external certificate authorities="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
                 export ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
             fi
             if [[ $key == "verifyCertificatesOfServices" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_VERIFY_CERTIFICATES=$value
-                echo "  api-mediation verify certificates of services="$ZOWE_APIM_VERIFY_CERTIFICATES
                 export ZOWE_APIM_VERIFY_CERTIFICATES
             fi
             if [[ $key == "enableSso" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_ENABLE_SSO=$value
-                echo "  api-mediation enable SSO="$ZOWE_APIM_ENABLE_SSO
                 export ZOWE_APIM_ENABLE_SSO
             fi
             if [[ $key == "zosmfKeyring" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_ZOSMF_KEYRING=$value
-                echo "  z/OSMF keyring="$ZOWE_ZOSMF_KEYRING
                 export ZOWE_ZOSMF_KEYRING
             fi
             if [[ $key == "zosmfUserid" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_ZOSMF_USERID=$value
-                echo "  z/OSMF user ID="$ZOWE_ZOSMF_USERID
                 export ZOWE_ZOSMF_USERID
             fi
 
             if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
             then
                 ZOWE_SERVER_PROCLIB_DSNAME=$value
-                echo "  server PROCLIB dataset name="$ZOWE_SERVER_PROCLIB_DSNAME
                 export ZOWE_SERVER_PROCLIB_DSNAME
             fi
             if [[ $key == "memberName" ]] && [[ $section == "zowe-server-proclib" ]]
             then
                 ZOWE_SERVER_PROCLIB_MEMBER=$value
-                echo "  server PROCLIB member name="$ZOWE_SERVER_PROCLIB_MEMBER
                 export ZOWE_SERVER_PROCLIB_MEMBER
             fi
         fi

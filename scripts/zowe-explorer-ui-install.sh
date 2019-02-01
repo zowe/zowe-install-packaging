@@ -32,7 +32,6 @@ for one in $UI_PLUGIN_LIST; do
 
   # NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
   EXPLORER_INSTALL_FOLDER="${one}_explorer"
-  echo "  Installing Explorer UI ${EXPLORER_PLUGIN_UPPERCASE} into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
   echo "  Installing Explorer UI ${EXPLORER_PLUGIN_UPPERCASE} into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
   umask 0002
   mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"

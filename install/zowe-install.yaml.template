@@ -5,7 +5,6 @@
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
 
-# Ports and certificate settings for the API Mediation Layer
 api-mediation:
   catalogPort=7552
   discoveryPort=7553
@@ -18,28 +17,23 @@ api-mediation:
   zosmfKeyring=IZUKeyring.IZUDFLT
   zosmfUser=IZUSVR
 
-# http and https ports for the explorer server
-explorer-server:
-  jobsPort=8545
-  dataSetsPort=8547
+zos-services:
+  jobsAPIPort=8545
+  mvsAPIPort=8547
 
-# http and https ports for the zlux node server, as well as the port for the zss server
+zowe-desktop-apps:
+  jobsExplorerPort=8546
+  mvsExplorerPort=8548
+  ussExplorerPort=8550
+
 zlux-server:
   httpsPort=8544
   zssPort=8542
 
-# Ports for the TN3270 and the VT terminal to connect to
 terminals:
   sshPort=22
   telnetPort=23
 # security=tls
-
-# Reserve port 8545, 8547, 8549 for explorer apis
-# https ports for explorer ui applications
-explorer-ui:
-  explorerJESUI=8546
-  explorerMVSUI=8548
-  explorerUSSUI=8550
 
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:
