@@ -167,7 +167,7 @@ services:
     apiInfo:
       - apiId: com.ibm.datasets
         gatewayUrl: api/v1
-        version: 0.9.3
+        version: 1.0.0
         documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
   - serviceId: explorer-mvs
     title: IBM z/OS MVS Explorer UI
@@ -203,7 +203,7 @@ services:
     apiInfo:
       - apiId: com.ibm.jobs
         gatewayUrl: api/v1
-        version: 0.9.3
+        version: 1.0.0
         documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/swagger-ui.html
   - serviceId: explorer-jes
     title: IBM z/OS Jobs UI

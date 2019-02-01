@@ -1,35 +1,49 @@
 {
   "files": [{
-      "pattern": "rocket-closed-source-builds/1.0.0+20190115/ZLUX.pax",
+      "pattern": "rocket-closed-source-builds/1.0.0+20190201/ZLUX.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/jobs/0.0.1/jobs-zowe-server-package-0.0.1.zip",
+      "pattern": "rocket-closed-source-builds/org/zowe/zss/1.0.0/zss-1.0.0-20190131.230822.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zss.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-release-local/org/zowe/explorer/jobs/jobs-zowe-server-package/0.1.0/jobs-zowe-server-package-0.1.0.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/datasets/0.0.1/data-sets-zowe-server-package-0.0.1.zip",
+      "pattern": "libs-release-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.1.0/data-sets-zowe-server-package-0.1.0.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.6/explorer-jes-0.0.6.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.*/explorer-jes-0.0.*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true"
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.7/explorer-mvs-0.0.7.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.*/explorer-mvs-0.0.*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true"
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.6/explorer-uss-0.0.6.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.*/explorer-uss-0.0.*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true"
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },    
     {             
       "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/1.0.*/mfaas-zowe-install-1.0.*.zip",
@@ -41,28 +55,8 @@
       "limit": 1
     },
     {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_Open_Beta_License_Agreement.pdf",
+      "pattern": "libs-release-local/org/zowe/licenses/1.0.0/zowe_licenses_full.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_CLI_TPSRs.zip",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Zowe_APIML_TPSRs.zip",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Explorer_Server_Licenses.zip",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/licenses/",
-      "flat": "true"
-    },
-    {
-      "pattern": "libs-release-local/org/zowe/licenses/0.9.1/Rocket_Notices.txt",
-      "target": "pax-workspace/ascii/licenses/",
       "flat": "true"
     }
   ]
