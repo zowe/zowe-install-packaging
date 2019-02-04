@@ -36,6 +36,4 @@ fi
 # behalf of IZUSVR, so for now allow write permission for any
 # 
 
-chmod -R a+w zlux-app-server/deploy/instance/users/
-chmod -R a+w zlux-app-server/deploy/instance/ZLUX/pluginStorage/
-chmod -R a+w zlux-app-server/deploy/site/ZLUX/pluginStorage/
+chmod -R a+w zlux-app-server/deploy/
