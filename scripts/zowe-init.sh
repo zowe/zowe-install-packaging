@@ -50,7 +50,7 @@ then
     -e ZOWE_EXPLORER_HOST= \
     -e NODE_HOME= ~/$PROFILE > ~/.zowe_profile
 fi
-touch .zowe_profile     # ensure it exists
+touch ~/.zowe_profile     # ensure it exists
 # 2. set those variables (if any) in Zowe install environment
 . ~/.zowe_profile 
 
