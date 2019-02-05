@@ -77,6 +77,18 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
     }
 
     stage('config') {
+      def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
+
+      sh """
+sed -e 's/{BUILD_BRANCH}/${env.BRANCH_NAME}/g' \
+    -e 's/{BUILD_NUMBER}/${env.BUILD_NUMBER}/g' \
+    -e 's/{BUILD_COMMIT_HASH}/${commitHash}/g' \
+    -e 's/{BUILD_TIMESTAMP}/${currentBuild.startTimeInMillis}/g' \
+    manifest.json.template > manifest.json
+"""
+      echo "Current manifest.json is:"
+      sh "cat manifest.json"
+
       // load zowe version from manifest
       zoweVersion = sh(
         script: "cat manifest.json | jq -r '.version'",
@@ -87,6 +99,7 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
       } else {
         error "Cannot find Zowe version"
       }
+      error "Stop here."
 
       // prepare JFrog CLI configurations
       withCredentials([usernamePassword(credentialsId: params.ARTIFACTORY_SECRET, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
