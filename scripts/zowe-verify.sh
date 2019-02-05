@@ -747,20 +747,26 @@ echo
 echo Check Node is installed and working
 
 # IBM SDK for Node.js z/OS Version 6.11.2 or later.
-  response=`node --version`  2>/dev/null
-  echo $response | grep 'not found'
-  if [[ `echo $?` == 0 ]]
+response=`node --version`  2>/dev/null
+if [[ $? -ne 0 ]]
 then 
-    echo Info: node not found in your path ... searching standard location
-else 
+    echo Warning: node not found in your path ... searching standard location
+ 
     nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`
-    if [[ `echo $?` == 0 ]]
+    if [[ $? -eq 0 ]]
     then 
         # echo "Info: symlink to node found : $nodelink"
-        echo Info: node version is
+        echo Info: node version in /usr/lpp/IBM/cnj/IBM is
         /usr`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`/bin/node --version
     else 
         echo Error: node not found
+    fi
+else
+    if [[ $response < v6.14 ]]
+    then
+        echo Error: version $response is lower than required 
+    else 
+        echo OK: version is $response 
     fi
 fi
 
