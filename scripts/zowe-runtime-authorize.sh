@@ -35,13 +35,12 @@ fi
 # to ZFS.  We can't chown or chgrp as the user running the install doesn't have access rights to do this on 
 # behalf of IZUSVR, so for now allow write permission for any
 # 
-chmod -R 775 zlux-app-server/deploy
-chmod -R 555 zlux-app-server/deploy/product
+chmod -R 770 zlux-app-server/deploy
+chmod -R 550 zlux-app-server/deploy/product
 # For Zowe to come up the ZOWESVR STC needs read access to ../deploy/instance/ZLUX/serverConfig/zluxServer.json
 chmod -R g-w zlux-app-server/deploy/instance/ZLUX/serverConfig
 chmod -R g-w zlux-app-server/deploy/site/ZLUX/serverConfig
-# If this step fails it is because the user running this script is not part of the IZUUSER group
-# The reason they must be part of the group to do the chgrp is so that the zLux server that runs under IZUSVR 
-# (which is in the IZUUSER group) is able to write to folders 
-
-#chgrp -R IZUADMIN zlux-app-server/deploy
+# If this step fails it is because the user running this script is not part of the IZUADMIN group
+# The reason they must be part of the group to do the chgrp is so that the zLux server that runs the ZOWESVR STC is able to access the group permission
+# of the folders, which is IZUSVR : IZUADMIN
+chgrp -R IZUADMIN zlux-app-server/deploy
