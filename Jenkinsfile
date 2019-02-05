@@ -99,7 +99,6 @@ sed -e 's/{BUILD_BRANCH}/${env.BRANCH_NAME}/g' \
       } else {
         error "Cannot find Zowe version"
       }
-      error "Stop here."
 
       // prepare JFrog CLI configurations
       withCredentials([usernamePassword(credentialsId: params.ARTIFACTORY_SECRET, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
