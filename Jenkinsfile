@@ -22,7 +22,7 @@ opts.push(disableConcurrentBuilds())
 // set upstream triggers
 if (env.BRANCH_NAME == 'master') {
   opts.push(pipelineTriggers([
-    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/API_Mediation/master')
+    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/API_Mediation/master,/Explorer-Data Sets/master,/Explorer-Jobs/master,/explorer-jes/master,/explorer-mvs/master,/explorer-uss/master')
   ]))
 }
 
@@ -77,6 +77,18 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
     }
 
     stage('config') {
+      def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
+
+      sh """
+sed -e 's/{BUILD_BRANCH}/${env.BRANCH_NAME}/g' \
+    -e 's/{BUILD_NUMBER}/${env.BUILD_NUMBER}/g' \
+    -e 's/{BUILD_COMMIT_HASH}/${commitHash}/g' \
+    -e 's/{BUILD_TIMESTAMP}/${currentBuild.startTimeInMillis}/g' \
+    manifest.json.template > manifest.json
+"""
+      echo "Current manifest.json is:"
+      sh "cat manifest.json"
+
       // load zowe version from manifest
       zoweVersion = sh(
         script: "cat manifest.json | jq -r '.version'",
@@ -112,7 +124,7 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
       echo downloadResult
       def downloadResultObject = readJSON(text: downloadResult)
       if (downloadResultObject['status'] != 'success' ||
-          downloadResultObject['totals']['success'] != 13 || downloadResultObject['totals']['failure'] != 0) {
+          downloadResultObject['totals']['success'] != 9 || downloadResultObject['totals']['failure'] != 0) {
         echo "status: ${downloadResultObject['status']}"
         echo "success: ${downloadResultObject['totals']['success']}"
         echo "failure: ${downloadResultObject['totals']['failure']}"

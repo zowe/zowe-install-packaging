@@ -104,7 +104,6 @@ for one in $UI_PLUGIN_LIST; do
       $EXPLORER_PLUGIN_FULLURL \
       "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}/plugin-definition/zlux/images/explorer-${EXPLORER_PLUGIN_UPPERCASE}.png"
 
-  echo "    ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI configured."
   echo "  ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI configured." >> $LOG_FILE
 done
 

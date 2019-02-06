@@ -35,7 +35,6 @@ for one in $EXPLORER_API_LIST; do
   fi
 
   EXPLORER_INSTALL_FOLDER="explorer-${one}-api"
-  echo "  Installing Explorer ${one} API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."
   echo "  Installing Explorer ${one} API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
   umask 0002
   mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
