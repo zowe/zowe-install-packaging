@@ -22,7 +22,7 @@ if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
 export NODE_HOME=$nodehome
 fi
-`dirname $0`/../../zlux-app-server/bin/nodeServer.sh --allowInvalidTLSProxy=true &
+`dirname $0`/../../zlux-app-server/bin/nodeCluster.sh --allowInvalidTLSProxy=true &
 `dirname $0`/../../api-mediation/scripts/api-mediation-start-discovery.sh
 `dirname $0`/../../api-mediation/scripts/api-mediation-start-catalog.sh
 `dirname $0`/../../api-mediation/scripts/api-mediation-start-gateway.sh
