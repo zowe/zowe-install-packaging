@@ -22,7 +22,7 @@ opts.push(disableConcurrentBuilds())
 // set upstream triggers
 if (env.BRANCH_NAME == 'master') {
   opts.push(pipelineTriggers([
-    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/API_Mediation/master')
+    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/API_Mediation/master,/Explorer-Data Sets/master,/Explorer-Jobs/master,/explorer-jes/master,/explorer-mvs/master,/explorer-uss/master')
   ]))
 }
 
