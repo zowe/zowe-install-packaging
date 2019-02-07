@@ -746,7 +746,7 @@ fi
 echo
 echo Check Node is installed and working
 
-# IBM SDK for Node.js z/OS Version 6.11.2 or later.
+# IBM SDK for Node.js z/OS Version 6.14.4 or later.
 response=`node --version`  2>/dev/null
 if [[ $? -ne 0 ]]
 then 
@@ -762,7 +762,7 @@ then
         echo Error: node not found
     fi
 else
-    if [[ $response < v6.14 ]]
+    if [[ $response < v6.14.4]]
     then
         echo Error: version $response is lower than required 
     else 
