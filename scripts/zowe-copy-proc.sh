@@ -134,7 +134,7 @@ fi
 
 # put USS JCL file name in CLIST, because CLIST parms are always uppercased.
 cd $INSTALL_DIR/scripts
-sed "s|ussfile|$ussfile|" ocopyshr.clist > $TEMP_DIR/ocopyshr.e.clist
+sed "s|ussfile|$ussfile|" ./ocopyshr.clist > $TEMP_DIR/ocopyshr.e.clist
 tsocmd oget "'$TEMP_DIR/ocopyshr.e.clist' '$userid.zowetemp.clist(copyproc)'"  1>/dev/null 2>/dev/null
 
 if [[ $? > 0 ]]
@@ -187,12 +187,12 @@ then
 else
   echo \'auto\' was requested: choose PROCLIB dataset automatically >> $LOG_FILE
   echo Try JES2 PROCLIB concatenation >> $LOG_FILE
-  opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available?
+  ./opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available?
   if [[ $? > 0 ]]
   then
     echo "  "Unable to read JES2 PROCLIB concatenation with opercmd REXX exec >> $LOG_FILE
   else
-    procs=`opercmd '$d proclib'|grep DSNAME=.*\.PROCLIB|sed 's/.*DSNAME=\(.*\)\.PROCLIB.*/\1.PROCLIB/'`
+    procs=`./opercmd '$d proclib'|grep DSNAME=.*\.PROCLIB|sed 's/.*DSNAME=\(.*\)\.PROCLIB.*/\1.PROCLIB/'`
     echo "  "procs = $procs >> $LOG_FILE
     for proclib in $procs
     do
@@ -208,14 +208,14 @@ else
   fi
 
   echo Try master JES2 JCL >> $LOG_FILE
-  tsocmd oput \'sys1.parmlib\(mstjcl00\)\' \'mstjcl00\' 1>/dev/null 2>/dev/null
+  tsocmd oput \'sys1.parmlib\(mstjcl00\)\' \'./mstjcl00\' 1>/dev/null 2>/dev/null
   if [[ $? > 0 ]]
   then
     echo Unable to read master JES2 JCL >> $LOG_FILE
-    rm mstjcl00
+    rm ./mstjcl00
   else
     procs=`grep PROCLIB mstjcl00 | sed 's/.*DSN=\(.*\)\.PROCLIB.*/\1.PROCLIB/'`
-    rm mstjcl00
+    rm ./mstjcl00
     for proclib in $procs
     do
         ./ocopyshr.sh $proclib $memberName
