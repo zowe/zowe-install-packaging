@@ -423,14 +423,14 @@ echo
 echo Check Node version
 
 # 9.1. Node is installed and working
-# IBM SDK for Node.js z/OS Version 6.11.2 or later.
-nodeVersion=`node --version`
+# IBM SDK for Node.js z/OS Version 6.14.4 or later.
+nodeVersion=`node --version 2>&1`
 if [[ $? -ne 0 ]]
 then
   # node version error
 
   echo $nodeVersion | grep 'not found'
-  if [[ $? -eq 0 ]]   # this test is wrong.
+  if [[ $? -eq 0 ]]   # the 'node' command was not found.
   then 
     # echo node not found in your path ... trying standard location
     nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`  # is there a node symlink in this list?
@@ -458,7 +458,7 @@ fi
 if [[ -n "${nodeVersion}" ]]
 then 
     # nodeVersion is not empty 
-    if [[ "$nodeVersion" < "v6.14" ]]
+    if [[ "$nodeVersion" < "v6.14.4" ]]
           then 
             echo Error: node version $nodeVersion is less than minimum level required
           else 
