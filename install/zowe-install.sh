@@ -80,22 +80,18 @@ export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
 mkdir -p $TEMP_DIR
 
 # Install the API Mediation Layer
-echo "  Installing API Mediation into $ZOWE_ROOT_DIR/api-mediation ..."
 . $INSTALL_DIR/scripts/zowe-api-mediation-install.sh
 
 # Install the zLUX server
-echo "  Installing zLUX server into $ZOWE_ROOT_DIR/zlux-app-server ..." 
 . $INSTALL_DIR/scripts/zlux-install-script.sh
 
 # Install the Explorer API
-echo "  Installing Explorer API into $ZOWE_ROOT_DIR/explorer-*-api ..."
 . $INSTALL_DIR/scripts/zowe-explorer-api-install.sh
 
 # Install Explorer UI plugins
-echo "  Installing Zowe Explorer UI Plugins ... "
 . $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
+
 # Configure Explorer UI plugins
-echo "  Attempting to setup Zowe Explorer UI Plugins ... "
 . $INSTALL_DIR/scripts/zowe-explorer-ui-configure.sh
 
 # Configure the ports for the zLUX server
