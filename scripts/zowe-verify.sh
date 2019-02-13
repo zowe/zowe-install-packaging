@@ -39,10 +39,24 @@ fi
 
 # Check number of started tasks and ports (varies by Zowe release)
 
-# version 1.0.0
-# STC #  1 2 3 4 5 6 7 8 9
-zowestc="1 0 3 1 1 3 3 0 2"         
-zowenports=10
+# Zowe version 1.0.0
+# STC #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 
+zowestc="1 0 3 1 2 2 2 2 2"         # how many Zowe jobs  
+
+# jobname   ports assigned
+# --------  --------------
+# ZOWESVR3  api gateway port
+# ZOWESVR3  jes explorer server
+# ZOWESVR4  zss server port
+# ZOWESVR5  mvs explorer server port
+# ZOWESVR6  api discovery port
+# ZOWESVR6  explorer jobs api server port
+# ZOWESVR7  uss explorer server port
+# ZOWESVR7  zlux server httpsPort
+# ZOWESVR9  api catalog port
+# ZOWESVR9  explorer datasets api server port
+
+zowenports=10       # how many ports Zowe uses
 
 
 echo
@@ -70,17 +84,20 @@ else
     echo Error: Failed to find ZOWESVR name in zowe-start.sh, defaulting to ZOWESVR for this check 
     ZOWESVR=ZOWESVR
 fi
+echo
+echo Check ${ZOWESVR} processes are runnning ${ZOWE_ROOT_DIR} code
+
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
 internal/opercmd "d omvs,a=all" \
-    | sed '{/ [0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] /N;s/\n */ /;}' \
+    | sed "{/ ${ZOWESVR}[^ ]* /N;s/\n */ /;}" \
     | grep -v CMD=grep \
-    | grep ${ZOWE_ROOT_DIR} \
+    | grep ${ZOWESVR}.*LATCH.*${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
     | sed 's/[1-9]$//' | sort | uniq > /tmp/zowe.omvs.ps 
 n=$((`cat /tmp/zowe.omvs.ps | wc -l`))
 case $n in
     
-    0) echo Warning: No jobs are running ${ZOWE_ROOT_DIR} code
+    0) echo Warning: No ${ZOWESVR} jobs are running ${ZOWE_ROOT_DIR} code
     ;;
     1) # is it the right job?
     jobname=`cat /tmp/zowe.omvs.ps`
@@ -89,6 +106,8 @@ case $n in
         echo Warning: Found PROC ${ZOWESVR} in zowe-start.sh, but ${ZOWE_ROOT_DIR} code is running in $jobname instead
         echo Info: Switching to job $jobname
         ZOWESVR=$jobname
+    else
+        echo OK: ${ZOWE_ROOT_DIR} code is running in $jobname
     fi 
     ;;
     *) echo Warning: $n different jobs are running ${ZOWE_ROOT_DIR} code
@@ -648,9 +667,10 @@ then    # job name is short enough to have a suffix
 
                 case $i in 
                 3)
+# ZOWESVR3  api gateway port
+# ZOWESVR3  jes explorer server
                 # job3
                     for port in \
-                        $zss_server_http_port \
                         $api_mediation_gateway_https_port \
                         $jes_explorer_server_port
                     do
@@ -662,7 +682,22 @@ then    # job name is short enough to have a suffix
                     done
                 ;;
 
+                4)
+# ZOWESVR4  zss server port
+                    for port in \
+                        $zss_server_http_port 
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+                ;;
+
+
                 5)
+# ZOWESVR5  mvs explorer server port              
                     for port in \
                         $mvs_explorer_server_port
                     do
@@ -675,10 +710,11 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 6)
+# ZOWESVR6  api discovery port
+# ZOWESVR6  explorer jobs api server port                
                 # job6
                     for port in \
                         $explorer_server_jobsPort \
-                        $zlux_server_https_port \
                         $api_mediation_discovery_http_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -690,7 +726,10 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 7)
+# ZOWESVR7  uss explorer server port
+# ZOWESVR7  zlux server httpsPort                
                     for port in \
+                        $zlux_server_https_port \
                         $uss_explorer_server_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -704,6 +743,8 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 9)
+# ZOWESVR9  api catalog port
+# ZOWESVR9  explorer datasets api server port  
                 # job9
                     for port in \
                         $api_mediation_catalog_http_port \
@@ -762,7 +803,7 @@ then
         echo Error: node not found
     fi
 else
-    if [[ $response < v6.14.4]]
+    if [[ $response < v6.14.4 ]]
     then
         echo Error: version $response is lower than required 
     else 
