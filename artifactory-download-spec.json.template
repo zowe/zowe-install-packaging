@@ -5,7 +5,7 @@
       "flat": "true"
     },
     {
-      "pattern": "rocket-closed-source-builds/org/zowe/zss/1.0.0/zss-1.0.0-20190206.190121.pax",
+      "pattern": "rocket-closed-source-builds/org/zowe/zss/1.0.1/zss-1.0.1-20190215.174134.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zss.pax",
       "flat": "true"
     },
