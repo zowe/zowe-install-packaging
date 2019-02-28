@@ -69,6 +69,31 @@ then
   echo Error: userid IZUSVR is not in RACF group IZUADMIN
 fi
 
+echo Check IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
+# For zssServer to be able to operate correctly 
+profile_error=0
+for profile in SERVER DAEMON
+do
+    tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: profile BPX\.$profile is not defined
+        profile_error=1
+    fi
+
+    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *UPDATE" >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: User IZUSVR does not have UPDATE access to profile BPX\.$profile
+        profile_error=1
+    fi
+done
+if [[ profile_error -eq 0 ]]
+then
+    echo OK
+fi
+
+
 # 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
 #  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
 
