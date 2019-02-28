@@ -91,6 +91,7 @@ for one in $UI_PLUGIN_LIST; do
       -e "s|\"key\":[^,]\+|\"key\": \"${ZLUX_CERTIFICATE_KEY}\"|g" \
       -e "s|\"cert\":[^,]\+,|\"cert\": \"${ZLUX_CERTIFICATE_CERT}\",|g" \
       -e "s|\"cert\":[^,]\+|\"cert\": \"${ZLUX_CERTIFICATE_CERT}\"|g" \
+      -e "s|\"frame-ancestors\": *\[\$|\"frame-ancestors\": [\"https://${ZOWE_EXPLORER_HOST}:*\"|g" \
       config.json > config.json.tmp
   mv config.json.tmp config.json
   cd ../..
