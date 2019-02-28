@@ -29,9 +29,16 @@ end
 
 address TSO "alloc fi(file) path('"filename"')"
 if rc <> 0 then exit rc
+
 address TSO "alloc fi(ds) dataset('"dsname"') shr"
-if rc <> 0 then exit rc
+if rc <> 0 then
+do
+  alloc_rc = rc
+  address TSO "free fi(file)"
+  exit alloc_rc
+end
+
 address TSO "ocopy indd(file) outdd(ds) "mode
-if rc <> 0 then exit rc
+ocopy_rc = rc
 address TSO "free fi(file ds)"
-exit rc
+exit ocopy_rc
