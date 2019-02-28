@@ -52,9 +52,29 @@ ACF2)
 ;;
 
 TSS)
-  echo "Warning:  TopSecret support has not been implemented," \
-    "please manually check if ${profile} is defined in class ${class}"
-  rc=8
+  tsocmd "TSS WHOOWNS ${class}(${profile})" \
+    1>/tmp/cmd.out 2>/tmp/cmd.err
+  tsoRC=$?
+  if [[ $tsoRC -eq 0 ]]
+  then
+    cat /tmp/cmd.out | grep -F "${profile}" 1>/dev/null
+    if [[ $? -eq 0 ]]
+    then
+      echo "Info: profile ${profile} is defined in class ${class}"
+      rc=0
+    else
+      echo "Warning: profile ${profile} is not defined in class ${class}"
+      rc=1
+    fi
+  elif [[ $tsoRC -eq 4 ]]
+  then
+    echo "Warning: profile ${profile} is not defined in class ${class}"
+    rc=1
+  else
+    echo Error:  WHOOWNS failed with the following errors
+    cat /tmp/cmd.out /tmp/cmd.err
+    rc=8
+  fi
 ;;
 
 *)

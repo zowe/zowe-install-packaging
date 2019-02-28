@@ -41,9 +41,17 @@ ACF2)
 ;;
 
 TSS)
-  echo "Warning:  TopSecret support has not been implemented," \
-    "please manually create ${profile} in the FACILITY class with UACC(NONE)"
-  rc=8
+  tsocmd "TSS ADDTO(IZUSVR) IBMFAC(${profile})" \
+    1> /tmp/cmd.out 2> /tmp/cmd.err
+  if [[ $? -ne 0 ]]
+  then
+    echo "Error:  TSS ADD IBMFAC(${profile}) failed with the following errors: "
+    cat /tmp/cmd.out /tmp/cmd.err
+    rc=8
+  else
+    echo "Info:  IBMFAC(${profile}) has been defined to IZUSVR"
+    rc=0
+  fi
 ;;
 
 *)

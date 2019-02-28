@@ -46,9 +46,29 @@ ACF2)
 ;;
 
 TSS)
-  echo "Warning:  TopSecret support has not been implemented," \
-    "please manually check if ${user} has access"
-  rc=8
+  tsocmd "TSS WHOHAS ${class}(${profile})" \
+    1>/tmp/cmd.out 2>/tmp/cmd.err
+  tsoRC=$?
+  if [[ $tsoRC -eq 0 ]]
+  then
+    cat /tmp/cmd.out | grep -F "${user}" 1>/dev/null
+    if [[ $? -eq 0 ]]
+    then
+      echo "Info: user ${user} has access to ${profile} in class ${class}"
+      rc=0
+    else
+      echo "Warning: user ${user} has no access to ${profile} in class ${class}"
+      rc=1
+    fi
+  elif [[ $tsoRC -eq 4 ]]
+  then
+    echo "Warning: user ${user} has no access to ${profile} in class ${class}"
+    rc=1
+  else
+    echo Error:  WHOHAS failed with the following errors
+    cat /tmp/cmd.out /tmp/cmd.err
+    rc=8
+  fi
 ;;
 
 *)
