@@ -43,7 +43,7 @@ fi
 
 if [[ "$rc" = 0 ]] ; then
   echo "Copying load module ${loadmodule}"
-  if cp ${ZSS}/LOADLIB/${loadmodule} "//'${loadlib}'"
+  if ${BASEDIR}/ocopyshr.rexx ${ZSS}/LOADLIB/${loadmodule} "${loadlib}(${loadmodule})" BINARY
   then
     echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}"
     rc=0
