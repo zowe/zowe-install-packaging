@@ -42,6 +42,12 @@ customParameters.push(string(
   trim: true
 ))
 customParameters.push(string(
+  name: 'PAX_SERVER_PORT',
+  description: 'The server port used to create PAX file',
+  defaultValue: '22',
+  trim: true
+))
+customParameters.push(string(
   name: 'ARTIFACTORY_URL',
   description: 'Artifactory URL',
   defaultValue: 'https://gizaartifactory.jfrog.io/gizaartifactory',
@@ -165,8 +171,8 @@ sed -e 's/{BUILD_BRANCH}/${env.BRANCH_NAME}/g' \
       // scp files and ssh to z/OS to pax workspace
       echo "creating pax file from workspace..."
       timeout(time: 30, unit: 'MINUTES') {
-        createPax('zowe-install-packaging', "zowe.pax",
-                  params.PAX_SERVER_IP, params.PAX_SERVER_CREDENTIALS_ID,
+        createPaxWithPort('zowe-install-packaging', "zowe.pax",
+                  params.PAX_SERVER_IP, params.PAX_SERVER_PORT, params.PAX_SERVER_CREDENTIALS_ID,
                   './pax-workspace', '/zaas1/buildWorkspace', '-x os390',
                   ['ZOWE_VERSION':zoweVersion])
       }
