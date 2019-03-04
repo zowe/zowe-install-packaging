@@ -1074,7 +1074,7 @@ echo Check servers are up
 
 # 4.2 Jobs with JCT
 
-for jobname in IZUANG1 IZUSVR1 # RACF
+for jobname in IZUANG1 IZUSVR1 CFZCIM
 do
   tsocmd status ${jobname} 2>/dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
   if [[ $? -eq 0 ]]
