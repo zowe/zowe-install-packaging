@@ -49,7 +49,6 @@ TSS)
   if [[ "${class}" = "FACILITY" ]]; then
     class="IBMFAC"
   fi
-  echo "TSS WHOHAS ${class}(${profile})"
   tsocmd "TSS WHOHAS ${class}(${profile})" \
     1>/tmp/cmd.out 2>/tmp/cmd.err
   tsoRC=$?
