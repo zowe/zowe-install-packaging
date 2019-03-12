@@ -155,17 +155,30 @@ services:
   - serviceId: datasets
     title: IBM z/OS Datasets
     description: IBM z/OS Datasets REST API service
-    catalogUiTileId: datasets
+    catalogUiTileId: datasetsAndUnixFiles
     instanceBaseUrls:
       - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/
     homePageRelativeUrl:  # Home page is at the same URL
     routedServices:
       - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
         serviceRelativeUrl: api/v1/datasets
-      - gatewayUrl: ui/v1  # [api/ui/ws]/v{majorVersion}
-        serviceRelativeUrl: ui/v1/datasets
     apiInfo:
-      - apiId: com.ibm.datasets
+      - apiId: org.zowe.data.sets
+        gatewayUrl: api/v1
+        version: 1.0.0
+        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
+  - serviceId: unixfiles
+    title: IBM z/OS Unix Files
+    description: IBM z/OS Unix Files REST API service
+    catalogUiTileId: datasetsAndUnixFiles
+    instanceBaseUrls:
+      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/
+    homePageRelativeUrl:  # Home page is at the same URL
+    routedServices:
+      - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
+        serviceRelativeUrl: api/v1/unixfiles 
+    apiInfo:
+      - apiId: org.zowe.unix.files
         gatewayUrl: api/v1
         version: 1.0.0
         documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
@@ -180,9 +193,9 @@ services:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-mvs
 catalogUiTiles:
-  datasets:
-    title: z/OS Datasets services
-    description: IBM z/OS Datasets REST services
+  datasetsAndUnixFiles:
+    title: z/OS Datasets and Unix Files services
+    description: IBM z/OS Datasets and Unix Files REST services
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
 

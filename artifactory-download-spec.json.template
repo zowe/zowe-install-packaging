@@ -1,22 +1,22 @@
 {
   "files": [{
-      "pattern": "rocket-closed-source-builds/1.0.0+20190201/ZLUX.pax",
+      "pattern": "rocket-closed-source-builds/1.0.1+20190228/ZLUX.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true"
     },
     {
-      "pattern": "rocket-closed-source-builds/org/zowe/zss/1.0.1/zss-1.0.1-20190219.122948.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zss/1.0.1-SNAPSHOT/zss-1.0.1-20190228.174537-3.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zss.pax",
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/jobs/jobs-zowe-server-package/0.1.0/jobs-zowe-server-package-0.1.0.zip",
+      "pattern": "libs-release-local/org/zowe/explorer/jobs/jobs-zowe-server-package/0.1.1/jobs-zowe-server-package-0.1.1.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.1.0/data-sets-zowe-server-package-0.1.0.zip",
+      "pattern": "libs-release-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.1.1/data-sets-zowe-server-package-0.1.1.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
