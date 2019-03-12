@@ -11,6 +11,7 @@
 BASEDIR=$(dirname "$0")
 saf=$1
 profile=$2
+tssOwner=$3
 
 rc=8
 
@@ -41,7 +42,7 @@ ACF2)
 ;;
 
 TSS)
-  tsocmd "TSS ADDTO(IZUSVR) IBMFAC(${profile})" \
+  tsocmd "TSS ADDTO(${tssOwner}) IBMFAC(${profile})" \
     1> /tmp/cmd.out 2> /tmp/cmd.err
   if [[ $? -ne 0 ]]
   then
@@ -49,7 +50,7 @@ TSS)
     cat /tmp/cmd.out /tmp/cmd.err
     rc=8
   else
-    echo "Info:  IBMFAC(${profile}) has been defined to IZUSVR"
+    echo "Info:  IBMFAC(${profile}) has been defined to ${tssOwner}"
     rc=0
   fi
 ;;

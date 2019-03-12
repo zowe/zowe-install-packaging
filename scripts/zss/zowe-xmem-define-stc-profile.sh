@@ -69,15 +69,15 @@ ACF2)
   ;;
 
 TSS)
-  tsocmd "TSS ADD(${stcUser}) PROFILE(${stcGroup})" \
+  tsocmd "TSS ADD(STC) PROCNAME(${stcPrefix}*) ACID(${stcUser})" \
     1> /tmp/cmd.out 2> /tmp/cmd.err 
   if [[ $? -ne 0 ]]
   then
-    echo "Error:  TSS ADDTO(${stcUser}) PROFILE(${stcGroup}) failed with the following errors"
+    echo "Error:  TSS ADDTO(STC) PROCNAME(${stcPrefix}) ACID(${stcUser}) failed with the following errors"
     cat /tmp/cmd.out /tmp/cmd.err
     rc=8
   else
-    echo "Info:  STC profile ${stcGroup} has been added to ${stcUser}"
+    echo "Info:  STC profile ${stcPrefix}* has been added to ${stcUser}"
     rc=0
   fi 
   ;;
