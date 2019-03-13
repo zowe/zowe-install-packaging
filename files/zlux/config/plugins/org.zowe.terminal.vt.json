@@ -1,0 +1,4 @@
+{
+  "identifier": "org.zowe.terminal.vt",
+  "pluginLocation": "../../vt-ng2"
+}

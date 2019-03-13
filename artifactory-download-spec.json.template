@@ -1,7 +1,52 @@
 {
   "files": [{
-      "pattern": "rocket-closed-source-builds/1.0.1+20190228/ZLUX.pax",
-      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-core/1.0.1-STAGING/zlux-core-1.0.1-20190313.111628.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-core.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zss-auth/1.0.1-STAGING/zss-auth-1.0.1-20190313.121413.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zss-auth.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-angular-app/1.0.1-STAGING/sample-angular-app-1.0.1-20190313.115640.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/sample-angular-app.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-iframe-app/1.0.1-STAGING/sample-iframe-app-1.0.1-20190313.121210.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/sample-iframe-app.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-react-app/1.0.1-STAGING/sample-react-app-1.0.1-20190313.120623.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/sample-react-app.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/tn3270-ng2/1.0.1-STAGING/tn3270-ng2-1.0.1-20190313.125326.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/tn3270-ng2.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/vt-ng2/1.0.1-STAGING/vt-ng2-1.0.1-20190313.125120.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/vt-ng2.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.0.1-STAGING/zlux-editor-1.0.1-20190313.122244.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-editor.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-workflow/1.0.1-STAGING/zlux-workflow-1.0.1-20190313.121818.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-workflow.pax",
+      "flat": "true"
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zosmf-auth/1.0.1-STAGING/zosmf-auth-1.0.1-20190313.121551.pax",
+      "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zosmf-auth.pax",
       "flat": "true"
     },
     {
