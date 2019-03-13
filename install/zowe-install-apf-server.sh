@@ -194,7 +194,7 @@ if $safOk ; then
   echo
   echo "************************ Install step 'Security profile' start *****************"
   xmemProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-profile.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
-  xmemProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE}"
+  xmemProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE} ${ZOWE_TSS_FAC_OWNER}"
   $xmemProfileCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
