@@ -68,14 +68,14 @@ ACF2)
   ;;
 
 TSS)
-  tsocmd "TSS ADD(${stcUser}) OMVSGRP(${stcGroup}) UID(${uid})" \
+  tsocmd "TSS ADDTO(${stcUser}) DFLTGRP(${stcGroup}) UID(${uid})" \
     1>/tmp/cmd.out 2>/tmp/cmd.err
   if [[ $? -eq 0 ]]
   then
-    echo "Info:  User ${stcUser} has been added"
+    echo "Info:  Group ${stcGroup} and UID ${uid} have been added to User ${stcUser}"
     rc=0
   else
-    echo "Error:  User ${stcUser} has not been added"
+    echo "Error:  Group ${stcGroup} and UID ${uid} were not added to User ${stcUser}"
     cat /tmp/cmd.out /tmp/cmd.err
     rc=8
   fi

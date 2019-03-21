@@ -130,7 +130,7 @@ sed -e 's/{BUILD_BRANCH}/${env.BRANCH_NAME}/g' \
       echo downloadResult
       def downloadResultObject = readJSON(text: downloadResult)
       if (downloadResultObject['status'] != 'success' ||
-          downloadResultObject['totals']['success'] != 9 || downloadResultObject['totals']['failure'] != 0) {
+          downloadResultObject['totals']['success'] != 18 || downloadResultObject['totals']['failure'] != 0) {
         echo "status: ${downloadResultObject['status']}"
         echo "success: ${downloadResultObject['totals']['success']}"
         echo "failure: ${downloadResultObject['totals']['failure']}"

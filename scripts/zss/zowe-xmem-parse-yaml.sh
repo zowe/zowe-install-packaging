@@ -78,6 +78,16 @@ do
                     XMEM_STC_GROUP=$value
                     echo "  STC user group="${XMEM_STC_GROUP}
                 fi
+                if [[ $key == "tssFacilityOwner" ]] && [[ $value != "" ]]
+                then
+                    if [[ $value = "auto" ]]
+                    then
+                        ZOWE_TSS_FAC_OWNER=`id -u -n`
+                    else
+                        ZOWE_TSS_FAC_OWNER=$value
+                    fi
+                    echo "  TSS Facility Owner(if applicable)="${ZOWE_TSS_FAC_OWNER}
+                fi
             fi
         fi
     fi
@@ -122,4 +132,9 @@ fi
 if [[ ${XMEM_STC_GROUP} == "" ]]
 then
     echo "  STC user group not specified"
+fi
+if [[ ${ZOWE_TSS_FAC_OWNER} == "" ]]
+then
+    echo "  ERROR: TSS Facility Owner not specified, exiting. If you are not running TSS, please set this field to 'auto'."
+    exit 1
 fi
