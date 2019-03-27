@@ -275,12 +275,10 @@ fi
 # 3. Ports are available
 echo
 echo Check the ports in the yaml file are not already in use
-portList=`sed -n 's/.*\(Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe-install.yaml`
+portList=`sed -n 's/.*\([^ssh|telnet]Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe-install.yaml`
 portsOK=1
 for port in $portList 
 do
-if [[ $port -ne 22 && $port -ne 23 ]]
-then
   tsocmd netstat 2>/dev/null | grep "Local Socket:   ::\.\.${port} *$" >/dev/null
   if [[ $? -eq 0 ]]
   then
@@ -289,7 +287,6 @@ then
   else  
     : # echo OK: port $port is not in use
   fi
-fi
 done
 if [[ $portsOK -eq 1 ]]
 then 
