@@ -10,55 +10,37 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/jobs/jobs-zowe-server-package/0.2.*/jobs-zowe-server-package-0.2.*.zip",
+      "pattern": "libs-release-local/org/zowe/explorer/jobs/jobs-zowe-server-package/0.2.1/jobs-zowe-server-package-0.2.1.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "sortBy": ["created"],
-      "sortOrder": "desc",
-      "limit": 1,
       "flat": "true",
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.1.*/data-sets-zowe-server-package-0.1.*.zip",
+      "pattern": "libs-release-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.1.4/data-sets-zowe-server-package-0.1.4.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "sortBy": ["created"],
-      "sortOrder": "desc",
-      "limit": 1,
       "flat": "true",
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.*/explorer-jes-0.0.*.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.17/explorer-jes-0.0.17.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true",
-      "sortBy": ["created"],
-      "sortOrder": "desc",
-      "limit": 1
+      "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.*/explorer-mvs-0.0.*.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-mvs/0.0.12/explorer-mvs-0.0.12.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true",
-      "sortBy": ["created"],
-      "sortOrder": "desc",
-      "limit": 1
+      "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.*/explorer-uss-0.0.*.pax",
+      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.11/explorer-uss-0.0.11.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
-      "flat": "true",
-      "sortBy": ["created"],
-      "sortOrder": "desc",
-      "limit": 1
+      "flat": "true"
     },    
     {             
-      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/1.0.*/mfaas-zowe-install-1.0.*.zip",
+      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/1.0.0/mfaas-zowe-install-1.0.0.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
-      "explode": "true",
-      "sortBy": ["created"],
-      "sortOrder": "desc",
-      "limit": 1
+      "explode": "true"
     },
     {
       "pattern": "libs-release-local/org/zowe/licenses/1.0.0/zowe_licenses_full.zip",
