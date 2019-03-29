@@ -1,0 +1,4 @@
+{
+  "identifier": "org.zowe.zlux.logger",
+  "pluginLocation": "../../zlux-shared/src/logging"
+}

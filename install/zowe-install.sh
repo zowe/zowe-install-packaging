@@ -121,7 +121,7 @@ fi
 # Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
 . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
-echo "---- After expanding ZLUX.pax this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
+echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
 
