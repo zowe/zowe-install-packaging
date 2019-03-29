@@ -26,7 +26,10 @@
     {
       "pattern": "libs-snapshot-local/org/zowe/zlux/sample-iframe-app/1.0.*-STAGING/sample-iframe-app-*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/sample-iframe-app.pax",
-      "flat": "true"
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
     },
     {
       "pattern": "libs-snapshot-local/org/zowe/zlux/sample-react-app/1.0.*-STAGING/sample-react-app-*.pax",
