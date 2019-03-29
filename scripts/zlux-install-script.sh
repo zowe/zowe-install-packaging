@@ -13,8 +13,26 @@
 
 cd $ZOWE_ROOT_DIR
 umask 0002
-echo "Unpax $INSTALL_DIR/files/ZLUX.pax " >> $LOG_FILE
-pax -r -px -f $INSTALL_DIR/files/ZLUX.pax
+echo "Unpax $INSTALL_DIR/files/zlux/zlux-core.pax " >> $LOG_FILE
+pax -r -px -f $INSTALL_DIR/files/zlux/zlux-core.pax
+
+for paxfile in ${INSTALL_DIR}/files/zlux/*.pax
+do
+  if [[ $paxfile != "${INSTALL_DIR}/files/zlux/zlux-core.pax" ]]
+  then
+    filename=$(basename $paxfile)
+    pluginName="${filename%.*}"
+    mkdir $pluginName && cd $pluginName
+    echo "Unpax ${paxfile} " >> $LOG_FILE
+    pax -r -px -f ${paxfile}
+    cd ..
+  fi
+done
+
+mkdir -p zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
+cp -f ${INSTALL_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/config/
+cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/plugins/
 
 echo "Unpax zssServer " >> $LOG_FILE
 cd zlux-app-server/bin
