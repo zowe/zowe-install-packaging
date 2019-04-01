@@ -39,10 +39,24 @@ fi
 
 # Check number of started tasks and ports (varies by Zowe release)
 
-# version 1.0.0
-# STC #  1 2 3 4 5 6 7 8 9
-zowestc="1 0 3 1 1 3 3 0 2"         
-zowenports=10
+# Zowe version 1.0.0
+# STC #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 
+zowestc="1 0 3 1 2 2 2 2 2"         # how many Zowe jobs  
+
+# jobname   ports assigned
+# --------  --------------
+# ZOWESVR3  api gateway port
+# ZOWESVR3  jes explorer server
+# ZOWESVR4  zss server port
+# ZOWESVR5  mvs explorer server port
+# ZOWESVR6  api discovery port
+# ZOWESVR6  explorer jobs api server port
+# ZOWESVR7  uss explorer server port
+# ZOWESVR7  zlux server httpsPort
+# ZOWESVR9  api catalog port
+# ZOWESVR9  explorer datasets api server port
+
+zowenports=10       # how many ports Zowe uses
 
 
 echo
@@ -54,6 +68,31 @@ if [[ $? -ne 0 ]]
 then
   echo Error: userid IZUSVR is not in RACF group IZUADMIN
 fi
+
+echo Check IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
+# For zssServer to be able to operate correctly 
+profile_error=0
+for profile in SERVER DAEMON
+do
+    tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: profile BPX\.$profile is not defined
+        profile_error=1
+    fi
+
+    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *UPDATE" >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: User IZUSVR does not have UPDATE access to profile BPX\.$profile
+        profile_error=1
+    fi
+done
+if [[ profile_error -eq 0 ]]
+then
+    echo OK
+fi
+
 
 # 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
 #  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
@@ -70,17 +109,20 @@ else
     echo Error: Failed to find ZOWESVR name in zowe-start.sh, defaulting to ZOWESVR for this check 
     ZOWESVR=ZOWESVR
 fi
+echo
+echo Check ${ZOWESVR} processes are runnning ${ZOWE_ROOT_DIR} code
+
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
 internal/opercmd "d omvs,a=all" \
-    | sed '{/ [0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] /N;s/\n */ /;}' \
+    | sed "{/ ${ZOWESVR}[^ ]* /N;s/\n */ /;}" \
     | grep -v CMD=grep \
-    | grep ${ZOWE_ROOT_DIR} \
+    | grep ${ZOWESVR}.*LATCH.*${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
     | sed 's/[1-9]$//' | sort | uniq > /tmp/zowe.omvs.ps 
 n=$((`cat /tmp/zowe.omvs.ps | wc -l`))
 case $n in
     
-    0) echo Warning: No jobs are running ${ZOWE_ROOT_DIR} code
+    0) echo Warning: No ${ZOWESVR} jobs are running ${ZOWE_ROOT_DIR} code
     ;;
     1) # is it the right job?
     jobname=`cat /tmp/zowe.omvs.ps`
@@ -89,6 +131,8 @@ case $n in
         echo Warning: Found PROC ${ZOWESVR} in zowe-start.sh, but ${ZOWE_ROOT_DIR} code is running in $jobname instead
         echo Info: Switching to job $jobname
         ZOWESVR=$jobname
+    else
+        echo OK: ${ZOWE_ROOT_DIR} code is running in $jobname
     fi 
     ;;
     *) echo Warning: $n different jobs are running ${ZOWE_ROOT_DIR} code
@@ -648,9 +692,10 @@ then    # job name is short enough to have a suffix
 
                 case $i in 
                 3)
+# ZOWESVR3  api gateway port
+# ZOWESVR3  jes explorer server
                 # job3
                     for port in \
-                        $zss_server_http_port \
                         $api_mediation_gateway_https_port \
                         $jes_explorer_server_port
                     do
@@ -662,7 +707,22 @@ then    # job name is short enough to have a suffix
                     done
                 ;;
 
+                4)
+# ZOWESVR4  zss server port
+                    for port in \
+                        $zss_server_http_port 
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+                ;;
+
+
                 5)
+# ZOWESVR5  mvs explorer server port              
                     for port in \
                         $mvs_explorer_server_port
                     do
@@ -675,10 +735,11 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 6)
+# ZOWESVR6  api discovery port
+# ZOWESVR6  explorer jobs api server port                
                 # job6
                     for port in \
                         $explorer_server_jobsPort \
-                        $zlux_server_https_port \
                         $api_mediation_discovery_http_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -690,7 +751,10 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 7)
+# ZOWESVR7  uss explorer server port
+# ZOWESVR7  zlux server httpsPort                
                     for port in \
+                        $zlux_server_https_port \
                         $uss_explorer_server_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -704,6 +768,8 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 9)
+# ZOWESVR9  api catalog port
+# ZOWESVR9  explorer datasets api server port  
                 # job9
                     for port in \
                         $api_mediation_catalog_http_port \
@@ -746,21 +812,27 @@ fi
 echo
 echo Check Node is installed and working
 
-# IBM SDK for Node.js z/OS Version 6.11.2 or later.
-  response=`node --version`  2>/dev/null
-  echo $response | grep 'not found'
-  if [[ `echo $?` == 0 ]]
+# IBM SDK for Node.js z/OS Version 6.14.4 or later.
+response=`node --version`  2>/dev/null
+if [[ $? -ne 0 ]]
 then 
-    echo Info: node not found in your path ... searching standard location
-else 
+    echo Warning: node not found in your path ... searching standard location
+ 
     nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`
-    if [[ `echo $?` == 0 ]]
+    if [[ $? -eq 0 ]]
     then 
         # echo "Info: symlink to node found : $nodelink"
-        echo Info: node version is
+        echo Info: node version in /usr/lpp/IBM/cnj/IBM is
         /usr`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`/bin/node --version
     else 
         echo Error: node not found
+    fi
+else
+    if [[ $response < v6.14.4 ]]
+    then
+        echo Error: version $response is lower than required 
+    else 
+        echo OK: version is $response 
     fi
 fi
 

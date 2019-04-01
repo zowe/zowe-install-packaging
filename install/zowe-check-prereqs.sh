@@ -275,12 +275,10 @@ fi
 # 3. Ports are available
 echo
 echo Check the ports in the yaml file are not already in use
-portList=`sed -n 's/.*\(Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe-install.yaml`
+portList=`sed -n 's/.*\([^ssh|telnet]Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe-install.yaml`
 portsOK=1
 for port in $portList 
 do
-if [[ $port -ne 22 && $port -ne 23 ]]
-then
   tsocmd netstat 2>/dev/null | grep "Local Socket:   ::\.\.${port} *$" >/dev/null
   if [[ $? -eq 0 ]]
   then
@@ -289,7 +287,6 @@ then
   else  
     : # echo OK: port $port is not in use
   fi
-fi
 done
 if [[ $portsOK -eq 1 ]]
 then 
@@ -423,14 +420,14 @@ echo
 echo Check Node version
 
 # 9.1. Node is installed and working
-# IBM SDK for Node.js z/OS Version 6.11.2 or later.
-nodeVersion=`node --version`
+# IBM SDK for Node.js z/OS Version 6.14.4 or later.
+nodeVersion=`node --version 2>&1`
 if [[ $? -ne 0 ]]
 then
   # node version error
 
   echo $nodeVersion | grep 'not found'
-  if [[ $? -eq 0 ]]   # this test is wrong.
+  if [[ $? -eq 0 ]]   # the 'node' command was not found.
   then 
     # echo node not found in your path ... trying standard location
     nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`  # is there a node symlink in this list?
@@ -458,7 +455,7 @@ fi
 if [[ -n "${nodeVersion}" ]]
 then 
     # nodeVersion is not empty 
-    if [[ "$nodeVersion" < "v6.14" ]]
+    if [[ "$nodeVersion" < "v6.14.4" ]]
           then 
             echo Error: node version $nodeVersion is less than minimum level required
           else 
