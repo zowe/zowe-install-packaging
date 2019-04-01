@@ -1,6 +1,6 @@
 {
   "files": [{
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-core/1.0.1-RC/zlux-core-1.0.1-20190329.183543.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-core/1.1.0-RC/zlux-core-1.1.0-20190401.092048.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-core.pax",
       "flat": "true"
     },
