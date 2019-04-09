@@ -18,6 +18,13 @@
 #
 #
 #export "NODE_PATH='"$ZOWE_ROOT_DIR"/zlux-app-server/bin':$NODE_PATH"
+
+# to display errno2 codes 
+export _EDC_ADD_ERRNO2=1
+
+# to display JOBLOGMESSAGES in stderr
+export _BPXK_JOBLOG="STDERR"
+
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
 export NODE_HOME=$nodehome
