@@ -130,7 +130,7 @@
       "limit": 1
     },    
     {             
-      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/1.0.*/mfaas-zowe-install-1.0.*.zip",
+      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/1.1.*/mfaas-zowe-install-1.1.*.zip",
       "target": "pax-workspace/mediation/",
       "flat": "true",
       "explode": "true",
