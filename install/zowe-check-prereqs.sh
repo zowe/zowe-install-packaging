@@ -416,39 +416,59 @@ fi
 # 7. Check interface name specified in /zaas1/scripts/ipupdate.sh ?
 # 8. /u/tstradm/.profile file exists
 
-echo
-echo Check Node version
+
 
 # 9.1. Node is installed and working
 # IBM SDK for Node.js z/OS Version 6.14.4 or later.
-nodeVersion=`node --version 2>&1`
-if [[ $? -ne 0 ]]
-then
-  # node version error
 
-  echo $nodeVersion | grep 'not found'
-  if [[ $? -eq 0 ]]   # the 'node' command was not found.
-  then 
-    # echo node not found in your path ... trying standard location
-    nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`  # is there a node symlink in this list?
-    if [[ $? -eq 0 ]]
-    then 
-        # echo symlink to node found 
-        nodeTarget=`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`   # get target of symlink
-        nodeVersion=`/usr/${nodeTarget}/bin/node --version`
-        if [[ $? -ne 0 ]]
-        then
-          nodeVersion=    # set it to empty string
-        
-        fi
-
-    fi  
-  else
-    # the error was not just "not found"
-     nodeVersion=    # set it to empty string 
+echo 
+echo Check job ICSF or CSF  # required for node commands
+ICSF=0  # no active job
+for jobname in ICSF CSF # jobname will be one or the other
+do
+  ${INSTALL_DIR}/../scripts/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " > /dev/null
+  if [[ $? -eq 0 ]]
+  then
+    ICSF=1  # found job active
+    break
   fi
-fi
+done
 
+nodeVersion=    # set it to empty string 
+
+if [[ $ICSF -eq 1 ]]
+then 
+  echo OK # jobname ICSF or CSF is running
+
+  echo
+  echo Check Node version
+
+  nodeVersion=`node --version 2>&1`
+  if [[ $? -ne 0 ]]
+  then
+    # node version error
+
+    echo $nodeVersion | grep 'not found'
+    if [[ $? -eq 0 ]]   # the 'node' command was not found.
+    then 
+      # echo node not found in your path ... trying standard location
+      nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`  # is there a node symlink in this list?
+      if [[ $? -eq 0 ]]
+      then 
+          # echo symlink to node found 
+          nodeTarget=`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`   # get target of symlink
+          nodeVersion=`/usr/${nodeTarget}/bin/node --version`
+          if [[ $? -ne 0 ]]
+          then
+            nodeVersion=    # set it to empty string          
+          fi
+      fi  
+    fi
+  fi
+
+else
+  echo Error: jobname ICSF or CSF is not running
+fi
 
 # echo node version is \"$nodeVersion\"
 
