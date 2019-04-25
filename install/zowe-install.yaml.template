@@ -1,7 +1,8 @@
 # =================================================================
 # zowe install configuration
 # =================================================================
-# zowe-install: The directory that zowe will be installed into
+# zowe-install: The directory that zowe instance will be installed 
+# into.  (default: <home directory>/zowe/{ZOWE_VERSION} )
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
 
