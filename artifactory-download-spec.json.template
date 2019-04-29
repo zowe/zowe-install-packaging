@@ -97,7 +97,7 @@
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.1.*/data-sets-zowe-server-package-0.1.*.zip",
+      "pattern": "libs-release-local/org/zowe/explorer/datasets/data-sets-zowe-server-package/0.2.*/data-sets-zowe-server-package-0.2.*.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "sortBy": ["created"],
       "sortOrder": "desc",
