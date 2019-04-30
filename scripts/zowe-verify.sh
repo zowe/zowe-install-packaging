@@ -39,9 +39,13 @@ fi
 
 # Check number of started tasks and ports (varies by Zowe release)
 
-# Zowe version 1.0.0
-# STC #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 
-zowestc="1 0 3 1 2 2 2 2 2"         # how many Zowe jobs  
+# Zowe version 1.1.0, using nodeServer
+# zowestc="1 0 3 1 2 2 2 2 2"         # how many Zowe jobs 
+
+# Zowe version 1.1.2, using nodeCluster
+# STC        #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 1-9
+zowestc_before="1 0 3 0 2 3 2 2 4"         # how many Zowe jobs before restart
+zowestc_afterx="1 0 4 1 2 2 2 1 3"         # how many Zowe jobs after restart
 
 # jobname   ports assigned
 # --------  --------------
@@ -113,8 +117,8 @@ echo
 echo Check ${ZOWESVR} processes are runnning ${ZOWE_ROOT_DIR} code
 
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
-internal/opercmd "d omvs,a=all" \
-    | sed "{/ ${ZOWESVR}[^ ]* /N;s/\n */ /;}" \
+./internal/opercmd "d omvs,a=all" \
+    | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
     | grep -v CMD=grep \
     | grep ${ZOWESVR}.*LATCH.*${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
@@ -143,6 +147,25 @@ esac
 rm /tmp/zowe.omvs.ps 2> /dev/null
 
 echo
+echo Check ${ZOWESVR} processes are runnning nodeCluster code
+
+for cluster in nodeCluster zluxCluster
+do
+    count=$((`./internal/opercmd "d omvs,a=all" \
+            | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
+            | grep -v CMD=grep \
+            | grep ${ZOWESVR}.*LATCH.*${cluster} \
+            | awk '{ print $2 }'\
+            | wc -l`))
+    if [[ $count -ne 0 ]]
+    then
+        echo $cluster OK
+    else
+        echo Error: $cluster is not running in ${ZOWESVR}
+    fi
+done
+
+echo
 echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
 
 # similar function as in pre-install.sh ...
@@ -157,6 +180,8 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
   fi  
   
   profileName=${ZOWESVR}  # the profile that we want to match in that list
+
+
 
   l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
 
@@ -347,13 +372,31 @@ else
         if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
         then
             # echo job name ${ZOWESVR} is short enough to have numeric suffixes
+
+            # which list of STCs should we check; the before list or the after list?
+
+            i=4     # presence of ZOWESVR4 indicates nodeCluster has restarted a node server after a failure
+            jobname=${ZOWESVR}$i
+            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
+            nj=$((`cat /tmp/${jobname}.dj | wc -l` )) 
+
+            case $nj in # how many ZOWESVR4 jobs are executing?  
+                0)  zowestc=$zowestc_before
+                    echo Info: $jobname is not running
+                    ;;
+                1)  zowestc=$zowestc_afterx
+                    echo Info: $jobname is running
+                    ;;
+                *)  echo Error : number of jobs found for $jobname was "$nj"
+                    zowestc=$zowestc_before  # don't know what to expect, pick this one to allow reporting
+                    ;;
+            esac
+
             i=1                 # first STC number
             for enj in $zowestc   # list of expected number of jobs per STC
             do
                 jobname=${ZOWESVR}$i
-                # tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"
-                # jobsEx=`tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"`
-                # 0.2 Jobs 1-9 with no JCT
+
                 ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
                     # the selected lines will look like this ...
                                                             # ZOEJAD9  *OMVSEX  IZUSVR   IN   AO  A=00F0   PER=NO   SMC=000
@@ -366,7 +409,7 @@ else
                 # check we found the expected number of jobs
                 if [[ $nj -ne $enj ]]
                 then
-                    echo error: Expecting $enj jobs for $jobname, found $nj
+                    echo Error: Expecting $enj jobs for $jobname, found $nj
                     jobsOK=0
                 else
                     : # echo OK: Found $nj jobs for $jobname
@@ -378,10 +421,19 @@ else
             jobname=${ZOWESVR}
 
             ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-            enj=11
-            if [[ `cat /tmp/${jobname}.dj | wc -l` -ne $enj ]]
+            
+            # expected number of jobs is derived from the number of STCs per jobname.
+            enj=1   # include the master STC in the count
+            zowestc=zowestc_before  # don't know what to expect, pick this one to allow reporting
+            for i in $zowestc
+            do
+                enj=$((enj+i)) 
+            done 
+
+            nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
+            if [[ $nj -ne $enj ]]
             then
-                echo error: Expecting $enj jobs for $jobname, found $nj
+                echo Error: Expecting $enj jobs for $jobname, found $nj
                 jobsOK=0
             else
                 : # echo OK: Found $nj jobs for $jobname
@@ -415,6 +467,7 @@ fi
 
 
 # 0. Extract port settings from Zowe config files.  
+
 echo 
 echo Check port settings from Zowe config files
 
@@ -459,7 +512,7 @@ do
         # fragile search
         terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
         if [[ -n "$terminal_telnetPort" ]]
-        then
+        then 
             echo OK: terminal_telnetPort is $terminal_telnetPort
         else
             echo Error: terminal_telnetPort not found in ${ZOWE_ROOT_DIR}/$file
@@ -707,23 +760,11 @@ then    # job name is short enough to have a suffix
                     done
                 ;;
 
-                4)
-# ZOWESVR4  zss server port
-                    for port in \
-                        $zss_server_http_port 
-                    do
-                        grep $port /tmp/${jobname}.ports > /dev/null
-                        if [[ $? -ne 0 ]]
-                        then
-                            echo Error: Port $port not assigned to $jobname
-                        fi
-                    done
-                ;;
-
-
                 5)
+# ZOWESVR5  zss server port
 # ZOWESVR5  mvs explorer server port              
                     for port in \
+                        $zss_server_http_port \
                         $mvs_explorer_server_port
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -794,12 +835,43 @@ else        # job name is too long to have a suffix
             jobname=${ZOWESVR}
             echo Info: Ports in use by $jobname jobs
             netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
-            cat /tmp/${jobname}.ports
+            # cat /tmp/${jobname}.ports
+            
+            # check they are the right ports
+            for port_number in \
+                $api_mediation_catalog_http_port \
+                $api_mediation_discovery_http_port \
+                $api_mediation_gateway_https_port \
+                $explorer_server_jobsPort \
+                $explorer_server_dataSets_port \
+                $zlux_server_https_port \
+                $zss_server_http_port \
+                $jes_explorer_server_port \
+                $mvs_explorer_server_port \
+                $uss_explorer_server_port 
+            do 
+                grep $port_number /tmp/${jobname}.ports > /tmp/$port_number.port
+                port_count=`cat /tmp/$port_number.port | wc -l `
+                if [[ $port_count -eq 1 ]]
+                then 
+                    if [[ `cat /tmp/$port_number.port` -eq $port_number ]]
+                    then
+                        echo $port_number
+                    else
+                        # this is very unlikely
+                        echo Error: Port `cat /tmp/$port_number.port` does not match $port_number
+                    fi
+                else 
+                    echo Error: Found $port_count ports assigned for port $port_number
+                fi 
+            done 
+
             totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
-            rm /tmp/${jobname}.ports
+            rm /tmp/${jobname}.ports 2> /dev/null
+            rm /tmp/$port_number.port 2> /dev/null
             echo
 fi
-if [[ $totPortsAssigned -ne $zowenports ]]
+if [[ $totPortsAssigned -ne $zowenports ]]  
 then
     echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
 fi
@@ -1027,7 +1099,7 @@ else
 
     fi
 fi
-rm /tmp/izufproc.txt
+rm /tmp/izufproc.txt 2> /dev/null
 
 if [[ $fPROC -eq 1 ]]
 then    
