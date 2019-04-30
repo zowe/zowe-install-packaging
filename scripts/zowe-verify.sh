@@ -395,7 +395,60 @@ else
         fi
     fi
 
+    echo 
+    echo Check ZSS server is running
 
+    zss_error_status=0  # no errors yet
+    IZUSVR=IZUSVR   # remove this line when IZUSVR is an env variable
+
+    # Is program ZWESIS01 running?
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | grep -v "grep CMD=ZWESIS01" | grep CMD=ZWESIS01  > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: Program ZWESIS01 is not running
+        zss_error_status=1
+        else
+            # Is program ZWESIS01 running under user ${IZUSVR}?
+            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,u=${IZUSVR}" | grep CMD=ZWESIS01 > /dev/null
+            if [[ $? -ne 0 ]]
+            then
+                echo Error: Program ZWESIS01 is not running under user ${IZUSVR}
+                zss_error_status=1
+            fi
+    fi
+
+    # Try to determine ZSS server job name
+    ZSSSVR=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | sed "{/ /N;s/\n */ /;}"|grep -v "CMD=grep CMD=ZWESIS01" | grep CMD=ZWESIS01|awk '{ print $2 }'`
+    if [[ -n "$ZSSSVR" ]] then
+        echo ZSS server job name is $ZSSSVR
+        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${ZSSSVR}" | grep WUID=STC > /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            echo Error: Job "${ZSSSVR}" is not running as a started task
+            zss_error_status=1
+        fi
+    else 
+        echo Error:  Could not determine ZSSSVR job name
+        zss_error_status=1
+    fi
+
+    # Is the status of the ZSS server OK?
+    grep "ZIS status - Ok" `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* | head -1` > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: The status of the ZSS server is not OK in ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer log
+        zss_error_status=1
+        grep "ZIS status " `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-*` 
+        if [[ $? -ne 0 ]]
+        then
+            echo Error: Could not determine the status of the ZSS server 
+        fi
+    fi
+
+    if [[ $zss_error_status -eq 0 ]]
+    then
+        echo OK
+    fi
 
 fi
 
