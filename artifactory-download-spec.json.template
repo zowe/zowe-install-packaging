@@ -1,6 +1,6 @@
 {
   "files": [{
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-core/1.0.*-STAGING/zlux-core-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-core/1.1.*-STAGING/zlux-core-*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-core.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -8,7 +8,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zss-auth/1.0.*-STAGING/zss-auth-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zss-auth/1.1.*-STAGING/zss-auth-*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zss-auth.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -16,7 +16,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-angular-app/1.0.*-STAGING/sample-angular-app-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-angular-app/1.1.*-STAGING/sample-angular-app-*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/sample-angular-app.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -56,7 +56,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.0.*-STAGING/zlux-editor-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.1.*-STAGING/zlux-editor-*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-editor.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -64,7 +64,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-workflow/1.0.*-STAGING/zlux-workflow-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-workflow/1.1.*-STAGING/zlux-workflow-*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-workflow.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -80,7 +80,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zss/1.0.*-STAGING/zss-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zss/1.1.*-STAGING/zss-*.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zss.pax",
       "flat": "true",
       "sortBy": ["created"],
