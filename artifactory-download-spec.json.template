@@ -50,7 +50,7 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zss/1.2.0-RC/zss-1.1.0-20190426.192354-10.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zss/1.2.0-RC/zss-1.2.0-20190430.145815-4.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zss.pax",
       "flat": "true"
     },
