@@ -35,7 +35,7 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.2.0-RC/zlux-editor-1.2.0-20190430.165310.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.2.0-RC/zlux-editor-1.2.0-20190501.134954.pax",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-editor.pax",
       "flat": "true"
     },
