@@ -1,302 +1,169 @@
 #!/bin/sh
-
-################################################################################
-# This program and the accompanying materials are made available under the terms of the
-# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
 # https://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
-################################################################################
+# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+#######################################################################
 
-# Assign default values that will be filled in as we parse the yaml file
+# Set Zowe configuration environment variables based on config file.
+# Called by zowe-set-envvars.sh
+#
+# CALLED WITH SHELL SHARING (. script.sh), set $rc to indicate error
+#
+# Arguments:
+# file  file to parse, default $INSTALL_DIR/install/zowe.yaml
+#
+# Expected globals:
+# $debug $LOG_FILE $INSTALL_DIR $ZOWE_VERSION
+#
+# Alters:
+# $line $key $section $value $default $rc $orig_me
+# 
+# $rc:
+# 0: all good
+# 8: error
 
-echo "<zowe-parse-yaml.sh>" >> $LOG_FILE 
-echo "Reading install variables from zowe-install.sh"
+orig_me=$me                    # original $me, $saved_me is already in use
+me=zowe-parse-yaml.sh          # no $(basename $0) with shell sharing
+#debug=-d                      # -d or null, -d triggers early debug
+#IgNoRe_ErRoR=1                # no exit on error when not null  #debug
+#set -x                                                          #debug
 
-parseConfiguationFile() {
+test "$debug" && echo "> $me $@"
+test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
+
+# ---------------------------------------------------------------------
+# --- parse configuration file
+# $1: file to parse
+# ---------------------------------------------------------------------
+function _parseConfiguationFile
+{
+unset section                # ensure we evaluate something we have set
+
 while read line
 do
-    key=${line%%"="*}
-    lineLength=${#line}
-    keyLength=${#key}
-    lastCharacter=$(echo $line | tail -c 2)
-    firstCharacter=$(echo $line | head -c 1)
-    valueLength=`expr $lineLength - $keyLength`
-    value=$(echo $line | tail -c $valueLength | head -c `expr $valueLength - 1`)
-# Ignore comments if the first characater is a #
-    if [[ ! $firstCharacter == "#" ]]
-    then
-# Look for lines ending in :
-# these are the headings.  There are three, install-path and node-server
-       if [[ $lastCharacter == ":" ]]
-       then
-            headingLength=`expr $lineLength - 1`
-            heading=$(echo $line | head -c $headingLength)
-            section=$heading
-# If we are not a heading then look for one of three key=value pairings
-# rootDir if we are part of the install-path
-        else
-# Look for rootDir= beneath install:
-            if [[ $key == "rootDir" ]] && [[ $section == "install" ]]
-            then
-# If the value starts with a ~ for the home variable then evaluate it
-                ZOWE_ROOT_DIR=`sh -c "echo $value"` 
-                export ZOWE_ROOT_DIR
-            fi
-# Look for jobsAPIPort= beneath zos-services:
-            if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
-            then
-                ZOWE_EXPLORER_SERVER_JOBS_PORT=$value
-                export ZOWE_EXPLORER_SERVER_JOBS_PORT
-            fi
-# Look for mvsAPIPort= beneath zos-services:
-            if [[ $key == "mvsAPIPort" ]] && [[ $section == "zos-services" ]] 
-            then
-                ZOWE_EXPLORER_SERVER_DATASETS_PORT=$value
-                export ZOWE_EXPLORER_SERVER_DATASETS_PORT
-            fi
-# Look for httpsPort= beneath zlux-server:
-            if [[ $key == "httpsPort" ]] && [[ $section == "zlux-server" ]] 
-            then
-                ZOWE_ZLUX_SERVER_HTTPS_PORT=$value
-                export ZOWE_ZLUX_SERVER_HTTPS_PORT
-            fi
-# Look for zssPort= beneath zlux-server:
-            if [[ $key == "zssPort" ]] && [[ $section == "zlux-server" ]] 
-            then
-                ZOWE_ZSS_SERVER_PORT=$value
-                export ZOWE_ZSS_SERVER_PORT
-            fi
-# Look for sshPort= beneath terminals:
-            if [[ $key == "sshPort" ]] && [[ $section == "terminals" ]] 
-            then
-                ZOWE_ZLUX_SSH_PORT=$value
-                export ZOWE_ZLUX_SSH_PORT
-            fi
-# Look for telnetPort= beneath terminals:
-            if [[ $key == "telnetPort" ]] && [[ $section == "terminals" ]] 
-            then
-                ZOWE_ZLUX_TELNET_PORT=$value
-                export ZOWE_ZLUX_TELNET_PORT
-            fi
-# Look for jobsExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "jobsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
-            then
-                ZOWE_EXPLORER_JES_UI_PORT=$value
-                export ZOWE_EXPLORER_JES_UI_PORT
-            fi
-# Look for mvsExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "mvsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
-            then
-                ZOWE_EXPLORER_MVS_UI_PORT=$value
-                export ZOWE_EXPLORER_MVS_UI_PORT
-            fi
-# Look for ussExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "ussExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
-            then
-                ZOWE_EXPLORER_USS_UI_PORT=$value
-                export ZOWE_EXPLORER_USS_UI_PORT
-            fi
-# Look for security= beneath terminals:
-            if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
-            then
-                ZOWE_ZLUX_SECURITY_TYPE=$value
-                export ZOWE_ZLUX_SECURITY_TYPE
-            fi
-# api-mediation settings:
-            if [[ $key == "catalogPort" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_CATALOG_PORT=$value
-                export ZOWE_APIM_CATALOG_HTTP_PORT
-            fi
-            if [[ $key == "discoveryPort" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_DISCOVERY_PORT=$value
-                export ZOWE_APIM_DISCOVERY_PORT
-            fi
-            if [[ $key == "gatewayPort" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_GATEWAY_PORT=$value
-                export ZOWE_APIM_GATEWAY_PORT
-            fi
-            if [[ $key == "externalCertificate" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_EXTERNAL_CERTIFICATE=$value
-                export ZOWE_APIM_EXTERNAL_CERTIFICATE
-            fi
-            if [[ $key == "externalCertificateAlias" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS=$value
-                export ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
-            fi
-            if [[ $key == "externalCertificateAuthorities" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES=$value
-                export ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
-            fi
-            if [[ $key == "verifyCertificatesOfServices" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_VERIFY_CERTIFICATES=$value
-                export ZOWE_APIM_VERIFY_CERTIFICATES
-            fi
-            if [[ $key == "enableSso" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_ENABLE_SSO=$value
-                export ZOWE_APIM_ENABLE_SSO
-            fi
-            if [[ $key == "zosmfKeyring" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_ZOSMF_KEYRING=$value
-                export ZOWE_ZOSMF_KEYRING
-            fi
-            if [[ $key == "zosmfUserid" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_ZOSMF_USERID=$value
-                export ZOWE_ZOSMF_USERID
-            fi
+  # leading blanks are already stripped by read
+  test -z "${line%%#*}" && continue      # skip line if first char is #
+  test "$debug" && echo "line    $line"
 
-            if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
-            then
-                ZOWE_SERVER_PROCLIB_DSNAME=$value
-                export ZOWE_SERVER_PROCLIB_DSNAME
-            fi
-            if [[ $key == "memberName" ]] && [[ $section == "zowe-server-proclib" ]]
-            then
-                ZOWE_SERVER_PROCLIB_MEMBER=$value
-                export ZOWE_SERVER_PROCLIB_MEMBER
-            fi
-        fi
-    fi
-#    echo "--- End of loop ---"
+  key=${line%%=*}                      # keep up to first = (exclusive)
+  test "$debug" && echo "key     $key"
+  if test "$(echo $key | grep :$)"         # is last char of $key a : ?
+  then                                     # yes -> new section
+    section=${key%%:}                  # keep up to first : (exclusive)
+    test "$debug" && echo "section $section"
+  else                                     # no -> key=value pair
+    value=${line#*=}                    # keep from first = (exclusive)
+    test "$debug" && echo "value   $value"
+    # format: _export section key environment_variable default_value
+# install
+    _export install rootDir ZOWE_ROOT_DIR "~/zowe/$ZOWE_VERSION"
+    _export install hlq     ZOWE_HLQ      $(id -nu).ZWE
+# external
+    _export external nodeHome        NODE_HOME          /usr/lpp/IBM/cnj
+    _export external javaHome        ZOWE_JAVA_HOME     /usr/lpp/java/J8.0_64
+    _export external zosmfPort       ZOWE_ZOSMF_PORT    443
+    _export external zosmfConfigPath ZOWE_ZOSMF_PATH    /var/zosmf/configuration/servers/zosmfServer
+    _export external hostName        ZOWE_EXPLORER_HOST $(hostname -c)
+    _export external hostIP          ZOWE_IPADDRESS     $(host $(hostname -c) | awk '/has addresses/{print $NF}')
+# terminals
+    _export terminals sshPort    ZOWE_ZLUX_SSH_PORT      22
+    _export terminals telnetPort ZOWE_ZLUX_TELNET_PORT   23
+    _export terminals security   ZOWE_ZLUX_SECURITY_TYPE
+# datasets
+    _export datasets proclib ZOWE_PROCLIB $(id -nu).ZWE.CUST.PROCLIB
+    _export datasets parmlib ZOWE_PARMLIB $(id -nu).ZWE.CUST.PARMLIB
+    _export datasets cntl    ZOWE_CNTL    $(id -nu).ZWE.CUST.CNTL
+# zos-services
+    _export zos-services jobsAPIPort ZOWE_EXPLORER_SERVER_JOBS_PORT     7080
+    _export zos-services mvsAPIPort  ZOWE_EXPLORER_SERVER_DATASETS_PORT 8547
+# zlux-server
+    _export zlux-server httpsPort ZOWE_ZLUX_SERVER_HTTPS_PORT 8544
+    _export zlux-server zssPort   ZOWE_ZSS_SERVER_PORT        8542
+# zowe-desktop-apps
+    _export zowe-desktop-apps jobsExplorerPort ZOWE_EXPLORER_JES_UI_PORT 8546
+    _export zowe-desktop-apps mvsExplorerPort  ZOWE_EXPLORER_MVS_UI_PORT 8548
+    _export zowe-desktop-apps ussExplorerPort  ZOWE_EXPLORER_USS_UI_PORT 8550
+# api-mediation
+    _export api-mediation catalogPort                    ZOWE_APIM_CATALOG_PORT   7552
+    _export api-mediation discoveryPort                  ZOWE_APIM_DISCOVERY_PORT 7553
+    _export api-mediation gatewayPort                    ZOWE_APIM_GATEWAY_PORT   7554
+    _export api-mediation enableSso                      ZOWE_APIM_ENABLE_SSO     false
+    _export api-mediation externalCertificate            ZOWE_APIM_EXTERNAL_CERTIFICATE
+    _export api-mediation externalCertificateAlias       ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
+    _export api-mediation externalCertificateAuthorities ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
+    _export api-mediation verifyCertificatesOfServices   ZOWE_APIM_VERIFY_CERTIFICATES
+    _export api-mediation zosmfKeyring                   ZOWE_ZOSMF_KEYRING IZUKeyring.IZUDFLT
+    _export api-mediation zosmfUserid                    ZOWE_ZOSMF_USERID  IZUSVR
+# zowe-server-proclib
+    _export zowe-server-proclib dsName     ZOWE_SERVER_PROCLIB_MEMBER ZOWESVR
+    _export zowe-server-proclib memberName ZOWE_SERVER_PROCLIB_DSNAME auto
+  fi    # process key=value
 done < $1
-}
-parseConfiguationFile ./zowe-install.yaml
+}    # parseConfiguationFile
 
-# If the values are not set default them
-if [[ $ZOWE_ROOT_DIR == "" ]] 
-then
-    ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
-    echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION"
-fi
-if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
-then
-    ZOWE_EXPLORER_SERVER_JOBS_PORT=7080
-    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080"
-fi
-if [[ $ZOWE_EXPLORER_SERVER_DATASETS_PORT == "" ]]
-then
-    ZOWE_EXPLORER_SERVER_DATASETS_PORT=8547
-    echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT not specified:  Defaulting to 8547"
-fi
-if [[ $ZOWE_ZLUX_SERVER_HTTPS_PORT == "" ]]
-then
-    ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
-    echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT not specified:  Defaulting to 8544"
-fi
-if [[ $ZOWE_ZSS_SERVER_PORT == "" ]]
-then
-    ZOWE_ZSS_SERVER_PORT=8542
-    echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542"
-fi
-if [[ $ZOWE_EXPLORER_JES_UI_PORT == "" ]]
-then
-    ZOWE_ZSS_SERVER_PORT=8546
-    echo "  ZOWE_EXPLORER_JES_UI_PORT not specified:  Defaulting to 8546"
-fi
-if [[ $ZOWE_EXPLORER_MVS_UI_PORT == "" ]]
-then
-    ZOWE_EXPLORER_MVS_UI_PORT=8548
-    echo "  ZOWE_EXPLORER_MVS_UI_PORT not specified:  Defaulting to 8548"
-fi
-if [[ $ZOWE_EXPLORER_USS_UI_PORT == "" ]]
-then
-    ZOWE_EXPLORER_USS_UI_PORT=8550
-    echo "  ZOWE_EXPLORER_USS_UI_PORT not specified:  Defaulting to 8550"
-fi
-if [[ $ZOWE_APIM_CATALOG_PORT == "" ]]
-then
-    ZOWE_APIM_CATALOG_PORT=7552
-    echo "  ZOWE_APIM_CATALOG_PORT not specified:  Defaulting to 7552"
-fi
-if [[ $ZOWE_APIM_DISCOVERY_PORT == "" ]]
-then
-    ZOWE_APIM_DISCOVERY_PORT=7553
-    echo "  ZOWE_APIM_DISCOVERY_PORT not specified:  Defaulting to 7553"
-fi
-if [[ $ZOWE_APIM_GATEWAY_PORT == "" ]]
-then
-    ZOWE_APIM_GATEWAY_PORT=7554
-    echo "  ZOWE_APIM_GATEWAY_PORT not specified:  Defaulting to 7554"
-fi
-if [[ $ZOWE_APIM_VERIFY_CERTIFICATES == "" ]]
-then
-    ZOWE_APIM_VERIFY_CERTIFICATES="true"
-    echo "  ZOWE_APIM_VERIFY_CERTIFICATES not specified:  Defaulting to true"
-fi
-if [[ $ZOWE_APIM_ENABLE_SSO == "" ]]
-then
-    ZOWE_APIM_ENABLE_SSO="false"
-    echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false"
-fi
-if [[ $ZOWE_ZOSMF_KEYRING == "" ]]
-then
-    ZOWE_ZOSMF_KEYRING="IZUKeyring.IZUDFLT"
-    echo "  ZOWE_ZOSMF_KEYRING not specified:  Defaulting to IZUKeyring.IZUDFLT"
-fi
-if [[ $ZOWE_ZOSMF_USERID == "" ]]
-then
-    ZOWE_ZOSMF_USERID="IZUSVR"
-    echo "  ZOWE_ZOSMF_USERID not specified:  Defaulting to IZUSVR"
-fi
+# ---------------------------------------------------------------------
+# --- set and export environment variable if section and key match
+#     assumes $section $key $value are set
+# $1: section must match this value
+# $2: key must match this value
+# $3: environment variable that will be set and exported
+# $4: (optional) default value
+# ---------------------------------------------------------------------
+function _export
+{
+ if test "$section" = $1 -a "$key" = $2
+ then
+   # Is default value used?
+   unset default
+   test -z "$value" && default="  # default"
 
-# Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
-# The ssh and telnet ports are there and already being used and exploited by the apps
-# and echoing them may create confusion
-if [[ $ZOWE_ZLUX_SSH_PORT == "" ]]
-then
-    ZOWE_ZLUX_SSH_PORT=22
-fi
-if [[ $ZOWE_ZLUX_TELNET_PORT == "" ]]
-then
-    ZOWE_ZLUX_TELNET_PORT=23
-fi 
-if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
-then
-    ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR 
-    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR"
-fi
-if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
-then
-    ZOWE_SERVER_PROCLIB_DSNAME=auto
-    echo "  ZOWE_SERVER_PROCLIB_DSNAME not specified:  PROCLIB DSNAME will be selected automatically"
-fi
+   # Export
+   test "$debug" && echo "eval export $3=${value:-$4} $default"
+   eval export $3="${value:-$4}"
 
-echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
-echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT="$ZOWE_EXPLORER_SERVER_DATASETS_PORT >> $LOG_FILE
-echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
-echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE
-echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_JES_UI_PORT="$ZOWE_EXPLORER_JES_UI_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_MVS_UI_PORT="$ZOWE_EXPLORER_MVS_UI_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_USS_UI_PORT="$ZOWE_EXPLORER_USS_UI_PORT >> $LOG_FILE
-echo "  ZOWE_ZLUX_SECURITY_TYPE="$ZOWE_ZLUX_SECURITY_TYPE >> $LOG_FILE
-echo "  ZOWE_APIM_CATALOG_PORT="$ZOWE_APIM_CATALOG_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_DISCOVERY_PORT="$ZOWE_APIM_DISCOVERY_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_GATEWAY_PORT="$ZOWE_APIM_GATEWAY_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE="$ZOWE_APIM_EXTERNAL_CERTIFICATE >> $LOG_FILE
-echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS="$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS >> $LOG_FILE
-echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES >> $LOG_FILE
-echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FILE
-echo "  ZOWE_APIM_ENABLE_SSO="$ZOWE_APIM_ENABLE_SSO >> $LOG_FILE
-echo "  ZOWE_ZOSMF_KEYRING="$ZOWE_ZOSMF_KEYRING >> $LOG_FILE
-echo "  ZOWE_ZOSMF_USERID="$ZOWE_ZOSMF_USERID >> $LOG_FILE
-echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
-echo "  ZOWE_SERVER_PROCLIB_MEMBER="$ZOWE_SERVER_PROCLIB_MEMBER >> $LOG_FILE
-echo "  ZOWE_SERVER_PROCLIB_DSNAME="$ZOWE_SERVER_PROCLIB_DSNAME >> $LOG_FILE
-echo "</zowe-parse-yaml.sh>" >> $LOG_FILE
+   if test $? -ne 0
+   then
+     # Error details already reported
+     echo "** ERROR $me export $3=${value:-$4} failed"
+     rc=8
+   fi    #
+
+   # Expand references like ~
+   if test $3 = "ZOWE_ROOT_DIR"
+   then
+     export ZOWE_ROOT_DIR=`sh -c "echo $ZOWE_ROOT_DIR"`
+   fi    #
+
+   # Do not echo the ssh and telnet ports because unlike the others,
+   # which Zowe needs to be free to alllocate and use, the ssh and
+   # telnet ports are already being used and are exploited by Zowe.
+   # Echoing them may create confusion.
+   if test ! $3 = "ZOWE_ZLUX_SSH_PORT" \
+        -a ! $3 = "ZOWE_ZLUX_TELNET_PORT"
+   then
+     echo "  $3=${value:-$4} $default" >> $LOG_FILE
+   fi    # not suppressed
+ fi    # section & key match
+}    # _export
+
+# ---------------------------------------------------------------------
+# --- main --- main --- main --- main --- main --- main --- main ---
+# ---------------------------------------------------------------------
+function main { }     # dummy function to simplify program flow parsing
+unset rc
+
+_parseConfiguationFile ${1:-$INSTALL_DIR/install/zowe.yaml}
+
+# If not set, set rc to 0
+test -z "$rc" && rc=0
+
+test "$debug" && echo "< $me $rc"
+echo "</$me> $rc" >> $LOG_FILE
+me=$orig_me
+# no exit, shell sharing with caller
