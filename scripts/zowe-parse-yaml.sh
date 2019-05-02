@@ -78,7 +78,7 @@ do
 # datasets
     _export datasets proclib ZOWE_PROCLIB $(id -nu).ZWE.CUST.PROCLIB
     _export datasets parmlib ZOWE_PARMLIB $(id -nu).ZWE.CUST.PARMLIB
-    _export datasets cntl    ZOWE_CNTL    $(id -nu).ZWE.CUST.CNTL
+    _export datasets jcl     ZOWE_JCLLIB  $(id -nu).ZWE.CUST.JCL
 # zos-services
     _export zos-services jobsAPIPort ZOWE_EXPLORER_SERVER_JOBS_PORT     7080
     _export zos-services mvsAPIPort  ZOWE_EXPLORER_SERVER_DATASETS_PORT 8547
@@ -124,8 +124,8 @@ function _export
    test -z "$value" && default="  # default"
 
    # Export
-   test "$debug" && echo "eval export $3=${value:-$4} $default"
-   eval export $3="${value:-$4}"
+   test "$debug" && echo "eval export $3=${value:-$4} 2>&1 $default"
+   eval export $3="${value:-$4}" 2>&1
 
    if test $? -ne 0
    then

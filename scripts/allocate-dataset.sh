@@ -33,6 +33,7 @@
 #
 # Assumes other scripts are in the same directory as this one
 
+here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -42,8 +43,6 @@ test "$debug" && echo "> $me $@"
 
 # Ensure the rc variable is null
 unset rc
-# Assume other scripts are in the same directory as this one
-here=$(dirname $0)
 
 # Clear input variables
 unset pdse pds dir
@@ -71,15 +70,15 @@ space="$5"
 # (Some tests done by called scripts)
 if test "$dir" -a "$dsOrg" != "PO"
 then
-  echo "** ERROR $0 faulty startup argument: -P requires PO, not $dsOrg"
-  echo "$args"
+  echo "** ERROR $0 faulty startup argument: $args"
+  echo "-P requires PO, not $dsOrg"
   rc=8
 fi    #
 
 if test "$recFm" = "U" -a "$dsOrg" != "PO"
 then
-  echo "** ERROR $0 faulty startup argument: RECFM(U) requires DSORG(PO)"
-  echo "$args"
+  echo "** ERROR $0 faulty startup argument: $args"
+  echo "RECFM(U) requires DSORG(PO)"
   rc=8
 fi    #
 
@@ -97,7 +96,7 @@ test "$rc" -a ! "$IgNoRe_ErRoR" && exit 8                        # EXIT
 if test -z "$rc"                             # only if no rc set so far
 then
   $here/check-dataset-exist.sh $dsn
-  # Returns 0 for exist, 1 for not exist, 8 for error
+  # Returns 0 for exist, 2 for not exist, 8 for error
   rc=$?
 fi    #
 
@@ -107,10 +106,10 @@ then                                                  # data set exists
   test "$debug" && echo "use existing data set $dsn"
   test "$LOG_FILE" && echo "  Use existing data set $dsn" >> $LOG_FILE
 
-  $here/check-dcb.sh $pdse $pds $dsn "$recFm" "$lRecL" "$dsOrg"
+  $here/check-dataset-dcb.sh $pdse $pds $dsn "$recFm" "$lRecL" "$dsOrg"
   # Returns 0 for DCB match, 1 for other, 2 for not pds(e), 8 for error
   rc=$?
-elif test $rc -eq 1
+elif test $rc -eq 2
 then                                          # data set does not exist
   test "$debug" && echo "allocate $dsn"
   test "$LOG_FILE" && echo "  Allocate $dsn" >> $LOG_FILE

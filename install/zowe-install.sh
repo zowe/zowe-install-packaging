@@ -103,19 +103,6 @@ _cmd chmod -R 755 $ZOWE_ROOT_DIR
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0
 
-# Verify that everything is installed
-if test "$ReMoVe"
-then
-  echo "-- Verifying Zowe install"
-  orphan=$(find $INSTALL_DIR ! -type d | grep -v ^$INSTALL_DIR/log/)
-  if test "$orphan"
-  then
-    echo "** ERROR $me not all files are moved to $ZOWE_ROOT_DIR"
-    echo "$orphan"
-    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
-  fi    #
-fi    #
-
 echo "-- Completed install of Zowe $ZOWE_VERSION into directory" \
   "$ZOWE_ROOT_DIR and high level qualifier $ZOWE_HLQ"
 echo "Installation completed -- $(date)" >> $LOG_FILE
@@ -126,7 +113,8 @@ echo "Installation completed -- $(date)" >> $LOG_FILE
 #     stderr is routed to stdout to preserve the order of messages
 # $1: if --null then trash stdout, parm is removed when present
 # $1: if --save then append stdout to $2, parms are removed when present
-# $2: if $1 = --save then target receiving stdout
+# $1: if --repl then save stdout to $2, parms are removed when present
+# $2: if $1 = --save or --repl then target receiving stdout
 # $@: command with arguments to execute
 # ---------------------------------------------------------------------
 function _cmd
@@ -138,11 +126,17 @@ then         # stdout -> null, stderr -> stdout (without going to null)
   test "$debug" && echo "$@ 2>&1 >/dev/null"
                          $@ 2>&1 >/dev/null
 elif test "$1" = "--save"
-then         # stdout -> $2, stderr -> stdout (without going to $2)
+then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
   test "$debug" && echo "$@ 2>&1 >> $sAvE"
                          $@ 2>&1 >> $sAvE
+elif test "$1" = "--repl"
+then         # stdout -> >$2, stderr -> stdout (without going to $2)
+  sAvE=$2
+  shift 2
+  test "$debug" && echo "$@ 2>&1 > $sAvE"
+                         $@ 2>&1 > $sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
   test "$debug" && echo "$@ 2>&1"
                          $@ 2>&1
@@ -242,8 +236,6 @@ then
 
   # Configure using $ZOWE_ROOT_DIR, not $INSTALL_DIR
   _cmd $ZOWE_ROOT_DIR/scripts/zowe-configure.sh $args
-else
-  echo          # zowe-configure.sh already added a trailing blank line
 fi    # configure Zowe
 
 exit 0

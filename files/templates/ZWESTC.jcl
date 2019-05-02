@@ -17,31 +17,28 @@
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,SRVRPATH='/zowe/install/path'                        *
-//*                                                                  *
+//*   S ZOWESVR,HOME='/zowe/install/path'                            *
 //*                                                                  *
 //********************************************************************
-//ZOWESVR   PROC SRVRPATH='/zowe/install/path'
+//ZOWESVR   PROC RGN=0M,
+// HOME='/usr/lpp/zowe/v1'
 //*-------------------------------------------------------------------
-//* SRVRPATH - The path to the HFS directory where the 
-//*            server was installed.
-//*-------------------------------------------------------------------
-//EXPORT EXPORT SYMLIST=*
+//* HOME - The path where the server was installed.
 //*---------------------------------------------------------
 //* Start the node server
 //*---------------------------------------------------------
-//ZOWESTEP EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-//  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
+//ZOWESVR EXEC PGM=BPXBATSL,REGION=&RGN,TIME=NOLIMIT,
+//            PARM='PGM /bin/sh &HOME/scripts/internal/run-zowe.sh'
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
-//*STDENV   DD  PATH='&SRVRPATH/wlp/usr/shared/config/zowesvr.stdenv',
-//*             PATHOPTS=ORDONLY
+//*STDENV   DD PATH='/etc/zowe/zowesvr.stdenv',
+//*            PATHOPTS=ORDONLY
 //*-------------------------------------------------------------------
 //* Optional logging parameters that can be configured if required
 //*-------------------------------------------------------------------
-//*STDOUT   DD PATH='&SRVRPATH/std.out',
+//*STDOUT   DD PATH='/tmp/zowe.std.out',
 //*            PATHOPTS=(OWRONLY,OCREAT,OTRUNC),
 //*            PATHMODE=SIRWXU
-//*STDERR   DD PATH='&SRVRPATH/std.err',
+//*STDERR   DD PATH='/tmp/zowe.std.err',
 //*            PATHOPTS=(OWRONLY,OCREAT,OTRUNC),
 //*            PATHMODE=SIRWXU
