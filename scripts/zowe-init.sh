@@ -230,7 +230,27 @@ promptNodeHome
 
 if [[ $ZOWE_EXPLORER_HOST == "" ]]
 then
-    ZOWE_EXPLORER_HOST=$(hostname -c)
+    # ZOWE_EXPLORER_HOST=$(hostname -c)
+    hn=`hostname`
+    rc=$?
+    if [[ -n "$hn" && $rc -eq 0 ]]
+    then
+        full_hostname=`ping $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
+        if [[ $? -eq 0 && -n "$full_hostname" ]]
+        then
+            ZOWE_EXPLORER_HOST=$full_hostname
+        else
+            echo Error: ping $hn command failed to find hostname
+        fi
+    else
+        echo Error: hostname command returned non-zero RC $rc or empty string
+    fi
+
+    if [[ ! -n "$ZOWE_EXPLORER_HOST" ]]
+    then
+        echo "    Please enter the ZOWE_EXPLORER_HOST of this system"
+        read ZOWE_EXPLORER_HOST
+    fi 
     persist "ZOWE_EXPLORER_HOST" $ZOWE_EXPLORER_HOST
 else    
     echo "ZOWE_EXPLORER_HOST value of "$ZOWE_EXPLORER_HOST" will be used"
@@ -239,35 +259,42 @@ fi
 
 # Check hostname can be resolved
 checkHostnameResolves() {
-ip=$1
+if [[ $# -ne 2 ]]
+then
+    return 4
+fi
+
+hostname=$1
+ip=$2
 
 # return codes
 # 0 - OK
 # 1 - ping didn't match stated IP
 # 2 - dig found hostname and IP but IP didn't match stated IP
 # 3 - dig didn't find hostname
+# 4 - ip parameter or hostname parameter is an empty string
 
 # Does PING of hostname yield correct IP?
-ping `hostname` | grep $ip 1> /dev/null
+ping $hostname | grep $ip 1> /dev/null
 if [[ $? -eq 0 ]]
 then
         # echo ip $ip is OK
         # Does DIG of hostname yield correct IP?
-        dig `hostname -r` | grep "^`hostname -r`.*$ip" 1> /dev/null
+        dig $hostname | grep -i "^$hostname.*$ip" 1> /dev/null
         if [[ $? -eq 0 ]]
         then
             # echo dig is OK
             return 0
         else
             # what's wrong with dig?
-            dig `hostname -r` | grep "^`hostname -r`" 1> /dev/null
+            dig $hostname | grep -i "^$hostname" 1> /dev/null
             if [[ $? -eq 0 ]]
             then
                 # echo dig is OK
-                # echo ERROR: dig of hostname `hostname -r` found hostname but does not resolve to external IP $ip
+                # echo ERROR: dig of hostname found hostname but does not resolve to external IP $ip
                 return 2
             else
-                # echo ERROR: dig of hostname `hostname -r` does not resolve to external IP $ip
+                # echo ERROR: dig of hostname does not resolve to external IP $ip
                 return 3
             fi
         fi
@@ -282,9 +309,22 @@ then
     # host may return aliases, which may result in ZOWE_IPADDRESS with value of "10.1.1.2 EZZ8322I aliases: S0W1"
     # EZZ8321I S0W1.DAL-EBIS.IHOST.COM has addresses 10.1.1.2
     # EZZ8322I aliases: S0W1
-    ZOWE_IPADDRESS=$(host ${ZOWE_EXPLORER_HOST} | grep 'has addresses' | sed 's/.*addresses\ //g')
+    hn=`hostname`
+    rc=$?
+    if [[ -n "$hn" && $rc -eq 0 ]]
+    then
+          ZOWE_IPADDRESS=`ping $hn|sed -n 's/.* (\(.*\))/\1/p'`
+          if [[ -n "$ZOWE_IPADDRESS" ]]
+          then
+               echo Info: IP address is $ZOWE_IPADDRESS
+          else
+               echo Error: ping $hn command failed to find IP
+          fi
+    else
+        echo Error: hostname command returned non-zero RC $rc or empty string
+    fi
 
-    checkHostnameResolves $ZOWE_IPADDRESS
+    checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
     rc=$?
     case $rc in
         0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
@@ -295,35 +335,32 @@ then
         ;;
         3)        echo error : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
         ;;
+        4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IPADDRESS is an empty string
+        ;;    
     esac
     
     if [[ $rc -ne 0 ]]  # ask the user to enter the external IP
     then
-        done=0
-        while [[ $done -eq 0 ]]
-        do 
             echo "    Please enter the ZOWE_IPADDRESS of this system"
             read ZOWE_IPADDRESS
-            checkHostnameResolves $ZOWE_IPADDRESS
+            checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
             case $? in
                 0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
-                    done=1
                 ;;
                 1)  echo warning : "ping $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
-                    done=1
                 ;;
                 2)  echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IPADDRESS"
                 ;;
                 3)  echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
-                    done=1
-                ;;    
+                ;;  
+                4)  echo error : ZOWE_EXPLORER_HOST or ZOWE_IPADDRESS is an empty string
+                ;;   
             esac
-        done
     fi  
 
     persist "ZOWE_IPADDRESS" $ZOWE_IPADDRESS
 else
-    checkHostnameResolves $ZOWE_IPADDRESS
+    checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
 
     case $? in
         0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
@@ -334,6 +371,8 @@ else
         ;;
         3)        echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
         ;;
+        4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IPADDRESS is an empty string
+        ;; 
     esac
     
     echo "ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"
