@@ -23,6 +23,8 @@
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
 # $ZOWE_APIM_VERIFY_CERTIFICATES
+# $ZOWE_JWT_ALGORITHM
+# $ZOWE_JWT_SECRET
 
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
@@ -77,6 +79,8 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
     -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
     -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
+    -e 's/\*\*JWT_ALGORITHM\*\*/'$ZOWE_JWT_ALGORITHM'/g' \
+    -e 's/\*\*JWT_SECRET\*\*/'$ZOWE_JWT_SECRET'/g' \
     api-mediation-start-gateway-template.sh > api-mediation-start-gateway.sh
 
 # Inject parameters into API Mediation startup, which contains command-line parameters as configuration

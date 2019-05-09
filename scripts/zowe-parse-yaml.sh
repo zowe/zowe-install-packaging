@@ -156,6 +156,16 @@ do
                 ZOWE_ZOSMF_USERID=$value
                 export ZOWE_ZOSMF_USERID
             fi
+            if [[ $key == "jwtSignatureAlgorithm" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_JWT_ALGORITHM=$value
+                export ZOWE_JWT_ALGORITHM
+            fi
+            if [[ $key == "jwtSecret" ]] && [[ $section == "api-mediation" ]]
+            then
+                ZOWE_JWT_SECRET=$value
+                export ZOWE_JWT_SECRET
+            fi
 
             if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
             then
@@ -239,6 +249,15 @@ if [[ $ZOWE_APIM_ENABLE_SSO == "" ]]
 then
     ZOWE_APIM_ENABLE_SSO="false"
     echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false"
+fi
+if [[ $ZOWE_JWT_ALGORITHM == "" ]]
+then
+    ZOWE_JWT_ALGORITHM="HS512"
+    echo "  ZOWE_JWT_ALGORITHM not specified:  Defaulting to HS512"
+fi
+if [[ $ZOWE_JWT_SECRET == "" ]]
+then
+    echo "  ZOWE_JWT_SECRET is null, will be exctracted from certificate."
 fi
 if [[ $ZOWE_ZOSMF_KEYRING == "" ]]
 then

@@ -15,7 +15,9 @@ api-mediation:
   verifyCertificatesOfServices=true
   enableSso=false
   zosmfKeyring=IZUKeyring.IZUDFLT
-  zosmfUser=IZUSVR
+  zosmfUserid=IZUSVR
+  jwtSignatureAlgorithm=HS512
+  jwtSecret=
 
 zos-services:
   jobsAPIPort=8545
