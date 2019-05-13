@@ -39,13 +39,9 @@ fi
 
 # Check number of started tasks and ports (varies by Zowe release)
 
-# Zowe version 1.1.0, using nodeServer
-# zowestc="1 0 3 1 2 2 2 2 2"         # how many Zowe jobs 
-
-# Zowe version 1.1.2, using nodeCluster
-# STC        #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 1-9
-zowestc_before="1 0 3 0 2 3 2 2 4"         # how many Zowe jobs before restart
-zowestc_afterx="1 0 4 1 2 2 2 1 3"         # how many Zowe jobs after restart
+# Zowe version 1.2.0, using nodeCluster
+# STC #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 1-9
+zowestc="1 0 3 1 2 2 2 2 4"         # how many Zowe jobs 
 
 # jobname   ports assigned
 # --------  --------------
@@ -210,7 +206,7 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
     fi
 
   return 1    # no strings matched
-}
+}               #``
 
 izusvr=0        # set success flag
 izuadmin=0      # set success flag
@@ -365,7 +361,7 @@ else
 
         # number of ZOESVR started tasks expected to be active in a running system
         echo
-        echo check ${ZOWESVR} jobs in execution
+        echo Check ${ZOWESVR} jobs in execution
 
         jobsOK=1
         # If jobname is > 7 chars, all tasks will have same jobname, no digit suffixes
@@ -373,24 +369,6 @@ else
         then
             # echo job name ${ZOWESVR} is short enough to have numeric suffixes
 
-            # which list of STCs should we check; the before list or the after list?
-
-            i=4     # presence of ZOWESVR4 indicates nodeCluster has restarted a node server after a failure
-            jobname=${ZOWESVR}$i
-            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-            nj=$((`cat /tmp/${jobname}.dj | wc -l` )) 
-
-            case $nj in # how many ZOWESVR4 jobs are executing?  
-                0)  zowestc=$zowestc_before
-                    echo Info: $jobname is not running
-                    ;;
-                1)  zowestc=$zowestc_afterx
-                    echo Info: $jobname is running
-                    ;;
-                *)  echo Error : number of jobs found for $jobname was "$nj"
-                    zowestc=$zowestc_before  # don't know what to expect, pick this one to allow reporting
-                    ;;
-            esac
 
             i=1                 # first STC number
             for enj in $zowestc   # list of expected number of jobs per STC
@@ -424,7 +402,6 @@ else
             
             # expected number of jobs is derived from the number of STCs per jobname.
             enj=1   # include the master STC in the count
-            zowestc=zowestc_before  # don't know what to expect, pick this one to allow reporting
             for i in $zowestc
             do
                 enj=$((enj+i)) 
@@ -720,10 +697,6 @@ done
 echo
 echo Check Ports are assigned to jobs
 
-
-
-
-
 # zowenports
 totPortsAssigned=0
 # Is job name too long to have a suffix?
@@ -760,11 +733,22 @@ then    # job name is short enough to have a suffix
                     done
                 ;;
 
+                4)
+# ZOWESVR4  zss server port
+                    for port in \
+                        $zss_server_http_port
+                    do
+                        grep $port /tmp/${jobname}.ports > /dev/null
+                        if [[ $? -ne 0 ]]
+                        then
+                            echo Error: Port $port not assigned to $jobname
+                        fi
+                    done
+                ;;                
+
                 5)
-# ZOWESVR5  zss server port
 # ZOWESVR5  mvs explorer server port              
                     for port in \
-                        $zss_server_http_port \
                         $mvs_explorer_server_port
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -876,37 +860,133 @@ then
     echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
 fi
 
-# 3.2 check ports are open in linux firewall
-# use an iptables command to verify this?
-
-# 2.  You must be authorized to use SDSF with REXX on your z/OS system
-
 echo
-echo Check Node is installed and working
+echo Check Node is at right version
 
-# IBM SDK for Node.js z/OS Version 6.14.4 or later.
-response=`node --version`  2>/dev/null
-if [[ $? -ne 0 ]]
+# evaluate NODE_HOME from potential sources ...
+
+# 1. run-zowe.sh?
+# Zowe uses the version of Node.js located in NODE_HOME as set in run-zowe.sh
+if [[ ! -n "$nodehome" ]]
 then 
-    echo Warning: node not found in your path ... searching standard location
- 
-    nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`
-    if [[ $? -eq 0 ]]
+    ls $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
+    if [[ $? -ne 0 ]]
     then 
-        # echo "Info: symlink to node found : $nodelink"
-        echo Info: node version in /usr/lpp/IBM/cnj/IBM is
-        /usr`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`/bin/node --version
-    else 
-        echo Error: node not found
-    fi
-else
-    if [[ $response < v6.14.4 ]]
+        echo Error: run-zowe.sh not found
+    else
+        grep " *export *NODE_HOME=.* *$" $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Error: \"export NODE_HOME\" not found in run-zowe.sh
+        else
+            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Error: NODE_HOME is empty in run-zowe.sh
+            else
+                nodehome=$node_set
+                echo Info: Found in run-zowe.sh 
+            fi 
+        fi
+    fi    
+fi 
+
+# 2. install log?
+if [[ ! -n "$nodehome" ]]
+then 
+    ls $ZOWE_ROOT_DIR/install_log/*.log 1> /dev/null
+    if [[ $? -eq 0 ]]
     then
-        echo Error: version $response is lower than required 
+        # install log exists
+        install_log=`ls -t $ZOWE_ROOT_DIR/install_log/*.log | head -1`
+        node_set=`sed -n 's/NODE_HOME environment variable was set=\(.*\) *$/\1/p' $install_log`
+        if [[ -n "node_set" ]]
+        then 
+            nodehome=$node_set
+            echo Info: Found in install_log
+        else 
+            echo Error: NODE_HOME environment variable was not set in $install_log
+        fi 
     else 
-        echo OK: version is $response 
+        echo Error: no install_log found in $ZOWE_ROOT_DIR/install_log
     fi
 fi
+
+
+# 3. /etc/profile?
+if [[ ! -n "$nodehome" ]]
+then 
+    ls /etc/profile 1> /dev/null
+    if [[ $? -ne 0 ]]
+    then 
+        echo Info: /etc/profile not found
+    else
+        grep " *export *NODE_HOME=.* *$" /etc/profile 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Info: \"export NODE_HOME\" not found in /etc/profile
+        else
+            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' /etc/profile`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Warning: NODE_HOME is empty in /etc/profile
+            else
+                nodehome=$node_set
+                echo Info: Found in /etc/profile
+            fi 
+        fi
+    fi    
+fi 
+
+# 4. zowe_profile?
+
+if [[ ! -n "$nodehome" ]]
+then 
+    ls ~/.zowe_profile 1> /dev/null
+    if [[ $? -ne 0 ]]
+    then 
+        echo Info: ~/.zowe_profile not found
+    else
+        grep " *export *NODE_HOME=.* *$" ~/.zowe_profile 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Info: \"export NODE_HOME\" not found in ~/.zowe_profile
+        else
+            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' ~/.zowe_profile`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Warning: NODE_HOME is empty
+            else
+                nodehome=$node_set
+                echo Info: Found in ~/.zowe_profile
+            fi 
+        fi
+    fi    
+fi 
+
+#
+# finished searching, check resultant $nodehome
+#
+
+if [[ ! -n "$nodehome" ]]
+then 
+    echo Error: Could not determine value of NODE_HOME
+    echo Warning:  node version cannot be determined
+else
+    node_version=`$nodehome/bin/node --version` # also works if it's a symlink
+    if [[ $? -ne 0 ]]
+    then 
+        echo Error: Failed to obtain version of $nodehome/bin/node
+    else 
+        if [[ $node_version < v6.14.4 ]]
+        then
+            echo Error: version $node_version is lower than required 
+        else 
+            echo OK: version is $node_version 
+        fi
+    fi 
+fi
+
 
 echo
 echo Check version of z/OS
