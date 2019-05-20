@@ -206,7 +206,7 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
     fi
 
   return 1    # no strings matched
-}               #``
+}               #`` # needed for VS code
 
 izusvr=0        # set success flag
 izuadmin=0      # set success flag
