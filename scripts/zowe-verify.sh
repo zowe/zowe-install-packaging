@@ -39,9 +39,9 @@ fi
 
 # Check number of started tasks and ports (varies by Zowe release)
 
-# Zowe version 1.0.0
-# STC #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 
-zowestc="1 0 3 1 2 2 2 2 2"         # how many Zowe jobs  
+# Zowe version 1.2.0, using nodeCluster
+# STC #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 1-9
+zowestc="1 0 3 1 2 2 2 2 4"         # how many Zowe jobs 
 
 # jobname   ports assigned
 # --------  --------------
@@ -113,8 +113,8 @@ echo
 echo Check ${ZOWESVR} processes are runnning ${ZOWE_ROOT_DIR} code
 
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
-internal/opercmd "d omvs,a=all" \
-    | sed "{/ ${ZOWESVR}[^ ]* /N;s/\n */ /;}" \
+./internal/opercmd "d omvs,a=all" \
+    | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
     | grep -v CMD=grep \
     | grep ${ZOWESVR}.*LATCH.*${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
@@ -143,6 +143,25 @@ esac
 rm /tmp/zowe.omvs.ps 2> /dev/null
 
 echo
+echo Check ${ZOWESVR} processes are runnning nodeCluster code
+
+for cluster in nodeCluster zluxCluster
+do
+    count=$((`./internal/opercmd "d omvs,a=all" \
+            | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
+            | grep -v CMD=grep \
+            | grep ${ZOWESVR}.*LATCH.*${cluster} \
+            | awk '{ print $2 }'\
+            | wc -l`))
+    if [[ $count -ne 0 ]]
+    then
+        echo $cluster OK
+    else
+        echo Error: $cluster is not running in ${ZOWESVR}
+    fi
+done
+
+echo
 echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
 
 # similar function as in pre-install.sh ...
@@ -157,6 +176,8 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
   fi  
   
   profileName=${ZOWESVR}  # the profile that we want to match in that list
+
+
 
   l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
 
@@ -185,7 +206,7 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
     fi
 
   return 1    # no strings matched
-}
+}               #`` # needed for VS code
 
 izusvr=0        # set success flag
 izuadmin=0      # set success flag
@@ -340,20 +361,20 @@ else
 
         # number of ZOESVR started tasks expected to be active in a running system
         echo
-        echo check ${ZOWESVR} jobs in execution
+        echo Check ${ZOWESVR} jobs in execution
 
         jobsOK=1
         # If jobname is > 7 chars, all tasks will have same jobname, no digit suffixes
         if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
         then
             # echo job name ${ZOWESVR} is short enough to have numeric suffixes
+
+
             i=1                 # first STC number
             for enj in $zowestc   # list of expected number of jobs per STC
             do
                 jobname=${ZOWESVR}$i
-                # tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"
-                # jobsEx=`tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"`
-                # 0.2 Jobs 1-9 with no JCT
+
                 ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
                     # the selected lines will look like this ...
                                                             # ZOEJAD9  *OMVSEX  IZUSVR   IN   AO  A=00F0   PER=NO   SMC=000
@@ -366,7 +387,7 @@ else
                 # check we found the expected number of jobs
                 if [[ $nj -ne $enj ]]
                 then
-                    echo error: Expecting $enj jobs for $jobname, found $nj
+                    echo Error: Expecting $enj jobs for $jobname, found $nj
                     jobsOK=0
                 else
                     : # echo OK: Found $nj jobs for $jobname
@@ -378,10 +399,18 @@ else
             jobname=${ZOWESVR}
 
             ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-            enj=11
-            if [[ `cat /tmp/${jobname}.dj | wc -l` -ne $enj ]]
+            
+            # expected number of jobs is derived from the number of STCs per jobname.
+            enj=1   # include the master STC in the count
+            for i in $zowestc
+            do
+                enj=$((enj+i)) 
+            done 
+
+            nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
+            if [[ $nj -ne $enj ]]
             then
-                echo error: Expecting $enj jobs for $jobname, found $nj
+                echo Error: Expecting $enj jobs for $jobname, found $nj
                 jobsOK=0
             else
                 : # echo OK: Found $nj jobs for $jobname
@@ -395,7 +424,60 @@ else
         fi
     fi
 
+    echo 
+    echo Check ZSS server is running
 
+    zss_error_status=0  # no errors yet
+    IZUSVR=IZUSVR   # remove this line when IZUSVR is an env variable
+
+    # Is program ZWESIS01 running?
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | grep -v "grep CMD=ZWESIS01" | grep CMD=ZWESIS01  > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: Program ZWESIS01 is not running
+        zss_error_status=1
+        else
+            # Is program ZWESIS01 running under user ${IZUSVR}?
+            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,u=${IZUSVR}" | grep CMD=ZWESIS01 > /dev/null
+            if [[ $? -ne 0 ]]
+            then
+                echo Error: Program ZWESIS01 is not running under user ${IZUSVR}
+                zss_error_status=1
+            fi
+    fi
+
+    # Try to determine ZSS server job name
+    ZSSSVR=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | sed "{/ /N;s/\n */ /;}"|grep -v "CMD=grep CMD=ZWESIS01" | grep CMD=ZWESIS01|awk '{ print $2 }'`
+    if [[ -n "$ZSSSVR" ]] then
+        echo ZSS server job name is $ZSSSVR
+        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${ZSSSVR}" | grep WUID=STC > /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            echo Error: Job "${ZSSSVR}" is not running as a started task
+            zss_error_status=1
+        fi
+    else 
+        echo Error:  Could not determine ZSSSVR job name
+        zss_error_status=1
+    fi
+
+    # Is the status of the ZSS server OK?
+    grep "ZIS status - Ok" `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* | head -1` > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: The status of the ZSS server is not OK in ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer log
+        zss_error_status=1
+        grep "ZIS status " `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-*` 
+        if [[ $? -ne 0 ]]
+        then
+            echo Error: Could not determine the status of the ZSS server 
+        fi
+    fi
+
+    if [[ $zss_error_status -eq 0 ]]
+    then
+        echo OK
+    fi
 
 fi
 
@@ -415,6 +497,7 @@ fi
 
 
 # 0. Extract port settings from Zowe config files.  
+
 echo 
 echo Check port settings from Zowe config files
 
@@ -459,7 +542,7 @@ do
         # fragile search
         terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
         if [[ -n "$terminal_telnetPort" ]]
-        then
+        then 
             echo OK: terminal_telnetPort is $terminal_telnetPort
         else
             echo Error: terminal_telnetPort not found in ${ZOWE_ROOT_DIR}/$file
@@ -667,10 +750,6 @@ done
 echo
 echo Check Ports are assigned to jobs
 
-
-
-
-
 # zowenports
 totPortsAssigned=0
 # Is job name too long to have a suffix?
@@ -710,7 +789,7 @@ then    # job name is short enough to have a suffix
                 4)
 # ZOWESVR4  zss server port
                     for port in \
-                        $zss_server_http_port 
+                        $zss_server_http_port
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
                         if [[ $? -ne 0 ]]
@@ -718,8 +797,7 @@ then    # job name is short enough to have a suffix
                             echo Error: Port $port not assigned to $jobname
                         fi
                     done
-                ;;
-
+                ;;                
 
                 5)
 # ZOWESVR5  mvs explorer server port              
@@ -794,47 +872,174 @@ else        # job name is too long to have a suffix
             jobname=${ZOWESVR}
             echo Info: Ports in use by $jobname jobs
             netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
-            cat /tmp/${jobname}.ports
+            # cat /tmp/${jobname}.ports
+            
+            # check they are the right ports
+            for port_number in \
+                $api_mediation_catalog_http_port \
+                $api_mediation_discovery_http_port \
+                $api_mediation_gateway_https_port \
+                $explorer_server_jobsPort \
+                $explorer_server_dataSets_port \
+                $zlux_server_https_port \
+                $zss_server_http_port \
+                $jes_explorer_server_port \
+                $mvs_explorer_server_port \
+                $uss_explorer_server_port 
+            do 
+                grep $port_number /tmp/${jobname}.ports > /tmp/$port_number.port
+                port_count=`cat /tmp/$port_number.port | wc -l `
+                if [[ $port_count -eq 1 ]]
+                then 
+                    if [[ `cat /tmp/$port_number.port` -eq $port_number ]]
+                    then
+                        echo $port_number
+                    else
+                        # this is very unlikely
+                        echo Error: Port `cat /tmp/$port_number.port` does not match $port_number
+                    fi
+                else 
+                    echo Error: Found $port_count ports assigned for port $port_number
+                fi 
+            done 
+
             totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
-            rm /tmp/${jobname}.ports
+            rm /tmp/${jobname}.ports 2> /dev/null
+            rm /tmp/$port_number.port 2> /dev/null
             echo
 fi
-if [[ $totPortsAssigned -ne $zowenports ]]
+if [[ $totPortsAssigned -ne $zowenports ]]  
 then
     echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
 fi
 
-# 3.2 check ports are open in linux firewall
-# use an iptables command to verify this?
-
-# 2.  You must be authorized to use SDSF with REXX on your z/OS system
-
 echo
-echo Check Node is installed and working
+echo Check Node is at right version
 
-# IBM SDK for Node.js z/OS Version 6.14.4 or later.
-response=`node --version`  2>/dev/null
-if [[ $? -ne 0 ]]
+# evaluate NODE_HOME from potential sources ...
+
+# 1. run-zowe.sh?
+# Zowe uses the version of Node.js located in NODE_HOME as set in run-zowe.sh
+if [[ ! -n "$nodehome" ]]
 then 
-    echo Warning: node not found in your path ... searching standard location
- 
-    nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`
-    if [[ $? -eq 0 ]]
+    ls $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
+    if [[ $? -ne 0 ]]
     then 
-        # echo "Info: symlink to node found : $nodelink"
-        echo Info: node version in /usr/lpp/IBM/cnj/IBM is
-        /usr`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`/bin/node --version
-    else 
-        echo Error: node not found
-    fi
-else
-    if [[ $response < v6.14.4 ]]
+        echo Error: run-zowe.sh not found
+    else
+        grep " *export *NODE_HOME=.* *$" $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Error: \"export NODE_HOME\" not found in run-zowe.sh
+        else
+            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Error: NODE_HOME is empty in run-zowe.sh
+            else
+                nodehome=$node_set
+                echo Info: Found in run-zowe.sh 
+            fi 
+        fi
+    fi    
+fi 
+
+# 2. install log?
+if [[ ! -n "$nodehome" ]]
+then 
+    ls $ZOWE_ROOT_DIR/install_log/*.log 1> /dev/null
+    if [[ $? -eq 0 ]]
     then
-        echo Error: version $response is lower than required 
+        # install log exists
+        install_log=`ls -t $ZOWE_ROOT_DIR/install_log/*.log | head -1`
+        node_set=`sed -n 's/NODE_HOME environment variable was set=\(.*\) *$/\1/p' $install_log`
+        if [[ -n "node_set" ]]
+        then 
+            nodehome=$node_set
+            echo Info: Found in install_log
+        else 
+            echo Error: NODE_HOME environment variable was not set in $install_log
+        fi 
     else 
-        echo OK: version is $response 
+        echo Error: no install_log found in $ZOWE_ROOT_DIR/install_log
     fi
 fi
+
+
+# 3. /etc/profile?
+if [[ ! -n "$nodehome" ]]
+then 
+    ls /etc/profile 1> /dev/null
+    if [[ $? -ne 0 ]]
+    then 
+        echo Info: /etc/profile not found
+    else
+        grep " *export *NODE_HOME=.* *$" /etc/profile 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Info: \"export NODE_HOME\" not found in /etc/profile
+        else
+            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' /etc/profile`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Warning: NODE_HOME is empty in /etc/profile
+            else
+                nodehome=$node_set
+                echo Info: Found in /etc/profile
+            fi 
+        fi
+    fi    
+fi 
+
+# 4. zowe_profile?
+
+if [[ ! -n "$nodehome" ]]
+then 
+    ls ~/.zowe_profile 1> /dev/null
+    if [[ $? -ne 0 ]]
+    then 
+        echo Info: ~/.zowe_profile not found
+    else
+        grep " *export *NODE_HOME=.* *$" ~/.zowe_profile 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Info: \"export NODE_HOME\" not found in ~/.zowe_profile
+        else
+            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' ~/.zowe_profile`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Warning: NODE_HOME is empty
+            else
+                nodehome=$node_set
+                echo Info: Found in ~/.zowe_profile
+            fi 
+        fi
+    fi    
+fi 
+
+#
+# finished searching, check resultant $nodehome
+#
+
+if [[ ! -n "$nodehome" ]]
+then 
+    echo Error: Could not determine value of NODE_HOME
+    echo Warning:  node version cannot be determined
+else
+    node_version=`$nodehome/bin/node --version` # also works if it's a symlink
+    if [[ $? -ne 0 ]]
+    then 
+        echo Error: Failed to obtain version of $nodehome/bin/node
+    else 
+        if [[ $node_version < v6.14.4 ]]
+        then
+            echo Error: version $node_version is lower than required 
+        else 
+            echo OK: version is $node_version 
+        fi
+    fi 
+fi
+
 
 echo
 echo Check version of z/OS
@@ -1027,7 +1232,7 @@ else
 
     fi
 fi
-rm /tmp/izufproc.txt
+rm /tmp/izufproc.txt 2> /dev/null
 
 if [[ $fPROC -eq 1 ]]
 then    
