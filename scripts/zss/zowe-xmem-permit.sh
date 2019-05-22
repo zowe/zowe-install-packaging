@@ -42,10 +42,27 @@ ACF2)
 ;;
 
 TSS)
-  echo "Warning:  TopSecret support has not been implemented," \
-    "please manually grant user ${user} READ access to ${profile} in the FACILITY class"
-  rc=8
-;;
+  tsocmd "TSS PERMIT(${user}) IBMFAC(${profile}) ACCESS(READ)" \
+    1>/tmp/cmd.out 2>/tmp/cmd.err
+  tsoRC=$?
+  tss0300="TSS0300I  PERMIT   FUNCTION SUCCESSFUL"
+
+  if [[ $tsoRC -eq 0 ]]
+  then
+    cat /tmp/cmd.out | grep -F "${tss0300}" 1>/dev/null
+    if [[ $? -eq 0 ]]
+    then
+      echo "Info: User ${user} was granted READ access to ${profile}."
+      rc=0
+    else
+      rc=8
+    fi
+  fi
+  if [[ $rc -ne 0 ]]; then
+    echo "Error:  PERMIT function failed with the following errors:"
+    cat /tmp/cmd.out /tmp/cmd.err
+  fi
+  ;;
 
 *)
   echo "Error:  Unexpected SAF $saf"

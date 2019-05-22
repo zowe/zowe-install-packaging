@@ -12,7 +12,7 @@
 //* ZOWE SERVER PROCEDURE                                            *
 //*                                                                  *
 //* This is a procedure to start the Node servers, API Mediation     *
-//* and explorera                                                    *
+//* and explorers                                                    *
 //*                                                                  *
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *

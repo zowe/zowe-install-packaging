@@ -1,0 +1,4 @@
+{
+  "identifier": "org.zowe.terminal.tn3270",
+  "pluginLocation": "../../tn3270-ng2"
+}

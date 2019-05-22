@@ -43,7 +43,7 @@ fi
 
 if [[ "$rc" = 0 ]] ; then
   echo "Copying load module ${loadmodule}"
-  if cp ${ZSS}/LOADLIB/${loadmodule} "//'${loadlib}'"
+  if cp -X ${ZSS}/LOADLIB/${loadmodule} "//'${loadlib}(${loadmodule})'"
   then
     echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}"
     rc=0

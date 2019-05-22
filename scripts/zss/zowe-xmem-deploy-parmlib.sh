@@ -36,7 +36,7 @@ fi
 
 if [[ "$rc" = 0 ]] ; then
   echo "Copying parmlib member ${parm}"
-  if cp ${ZSS}/SAMPLIB/${parm} "//'${parmlib}'"
+  if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${parm} "${parmlib}(${parm})" TEXT
   then
     echo "Info:  PARMLIB member ${parm} has been successfully copied to dataset ${parmlib}"
     rc=0

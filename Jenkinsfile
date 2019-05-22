@@ -22,7 +22,7 @@ opts.push(disableConcurrentBuilds())
 // set upstream triggers
 if (env.BRANCH_NAME == 'master') {
   opts.push(pipelineTriggers([
-    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/API_Mediation/master')
+    upstream(threshold: 'SUCCESS', upstreamProjects: '/zlux,/API_Mediation/master,/Explorer-Data Sets/master,/Explorer-Jobs/master,/explorer-jes/master,/explorer-mvs/master,/explorer-uss/master')
   ]))
 }
 
@@ -32,13 +32,19 @@ customParameters.push(credentials(
   name: 'PAX_SERVER_CREDENTIALS_ID',
   description: 'The server credential used to create PAX file',
   credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
-  defaultValue: 'TestAdminzOSaaS2',
+  defaultValue: 'ssh-zdt-test-image-guest',
   required: true
 ))
 customParameters.push(string(
   name: 'PAX_SERVER_IP',
   description: 'The server IP used to create PAX file',
-  defaultValue: '172.30.0.1',
+  defaultValue: 'river.zowe.org',
+  trim: true
+))
+customParameters.push(string(
+  name: 'PAX_SERVER_PORT',
+  description: 'The server port used to create PAX file',
+  defaultValue: '2022',
   trim: true
 ))
 customParameters.push(string(
@@ -77,6 +83,18 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
     }
 
     stage('config') {
+      def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
+
+      sh """
+sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
+    -e 's#{BUILD_NUMBER}#${env.BUILD_NUMBER}#g' \
+    -e 's#{BUILD_COMMIT_HASH}#${commitHash}#g' \
+    -e 's#{BUILD_TIMESTAMP}#${currentBuild.startTimeInMillis}#g' \
+    manifest.json.template > manifest.json
+"""
+      echo "Current manifest.json is:"
+      sh "cat manifest.json"
+
       // load zowe version from manifest
       zoweVersion = sh(
         script: "cat manifest.json | jq -r '.version'",
@@ -112,7 +130,7 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
       echo downloadResult
       def downloadResultObject = readJSON(text: downloadResult)
       if (downloadResultObject['status'] != 'success' ||
-          downloadResultObject['totals']['success'] != 9 || downloadResultObject['totals']['failure'] != 0) {
+          downloadResultObject['totals']['success'] != 18 || downloadResultObject['totals']['failure'] != 0) {
         echo "status: ${downloadResultObject['status']}"
         echo "success: ${downloadResultObject['totals']['success']}"
         echo "failure: ${downloadResultObject['totals']['failure']}"
@@ -153,9 +171,9 @@ node ('ibm-jenkins-slave-nvm-jnlp') {
       // scp files and ssh to z/OS to pax workspace
       echo "creating pax file from workspace..."
       timeout(time: 30, unit: 'MINUTES') {
-        createPax('zowe-install-packaging', "zowe.pax",
-                  params.PAX_SERVER_IP, params.PAX_SERVER_CREDENTIALS_ID,
-                  './pax-workspace', '/zaas1/buildWorkspace', '-x os390',
+        createPaxWithPort('zowe-install-packaging', "zowe.pax",
+                  params.PAX_SERVER_IP, params.PAX_SERVER_PORT, params.PAX_SERVER_CREDENTIALS_ID,
+                  './pax-workspace', '/zaas1', '-x os390',
                   ['ZOWE_VERSION':zoweVersion])
       }
     }

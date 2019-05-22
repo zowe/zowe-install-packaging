@@ -194,7 +194,7 @@ if $safOk ; then
   echo
   echo "************************ Install step 'Security profile' start *****************"
   xmemProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-profile.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
-  xmemProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE}"
+  xmemProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE} ${ZOWE_TSS_FAC_OWNER}"
   $xmemProfileCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -339,11 +339,60 @@ else
   echo $xmemAccessCmd2
 fi
 
+
+rm  ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp 1>/dev/null 2>/dev/null
+
+# Ensure IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
+# For zssServer to be able to operate correctly 
+profile_refresh=0
+for profile in SERVER DAEMON
+do
+    tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        # profile BPX\.$profile is not defined
+        # Define the BPX facility
+        tsocmd "RDEFINE FACILITY BPX.$profile UACC(NONE)" 2>/dev/null  1>/dev/null
+        if [[ $? -ne 0 ]]
+        then
+          echo RDEFINE failed for BPX.$profile, please issue this command
+          echo as a user with the required RACF privilege
+          echo "    " "RDEFINE FACILITY BPX.$profile UACC(NONE)"
+        fi 
+        profile_refresh=1
+    fi
+
+    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *UPDATE" >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        # User IZUSVR does not have UPDATE access to profile BPX\.$profile
+        # Permit IZUSVR to update the BPX facilties 
+        tsocmd "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS(UPDATE)" 2>/dev/null  1>/dev/null
+        if [[ $? -ne 0 ]]
+        then
+          echo PERMIT failed for BPX.$profile, please issue this command
+          echo as a user with the required RACF privilege
+          echo "    " "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS(UPDATE)"
+        fi 
+        profile_refresh=1
+    fi
+done
+if [[ profile_refresh -eq 1 ]]
+then
+     # Activate these changes 
+    tsocmd "SETROPTS RACLIST(FACILITY) REFRESH " 2>/dev/null
+    if [[ $? -ne 0 ]]
+    then
+          echo SETROPTS failed for class FACILITY, please issue this command
+          echo as a user with the required RACF privilege
+          echo "    " "SETROPTS RACLIST(FACILITY) REFRESH "
+    fi 
+fi
+
 echo
 echo "********************************************************************************"
 echo "********************************************************************************"
 echo "********************************************************************************"
 
-rm  ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp 1>/dev/null 2>/dev/null
 exit 0
 

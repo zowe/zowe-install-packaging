@@ -11,6 +11,7 @@
 BASEDIR=$(dirname "$0")
 saf=$1
 profile=$2
+tssOwner=$3
 
 rc=8
 
@@ -41,9 +42,17 @@ ACF2)
 ;;
 
 TSS)
-  echo "Warning:  TopSecret support has not been implemented," \
-    "please manually create ${profile} in the FACILITY class with UACC(NONE)"
-  rc=8
+  tsocmd "TSS ADDTO(${tssOwner}) IBMFAC(${profile})" \
+    1> /tmp/cmd.out 2> /tmp/cmd.err
+  if [[ $? -ne 0 ]]
+  then
+    echo "Error:  TSS ADD IBMFAC(${profile}) failed with the following errors: "
+    cat /tmp/cmd.out /tmp/cmd.err
+    rc=8
+  else
+    echo "Info:  IBMFAC(${profile}) has been defined to ${tssOwner}"
+    rc=0
+  fi
 ;;
 
 *)

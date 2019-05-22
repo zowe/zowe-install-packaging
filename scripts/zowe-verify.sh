@@ -39,10 +39,28 @@ fi
 
 # Check number of started tasks and ports (varies by Zowe release)
 
-# version 1.0.0
-# STC #  1 2 3 4 5 6 7 8 9
-zowestc="1 0 3 1 1 3 3 0 2"         
-zowenports=10
+# Zowe version 1.1.0, using nodeServer
+# zowestc="1 0 3 1 2 2 2 2 2"         # how many Zowe jobs 
+
+# Zowe version 1.1.2, using nodeCluster
+# STC        #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 1-9
+zowestc_before="1 0 3 0 2 3 2 2 4"         # how many Zowe jobs before restart
+zowestc_afterx="1 0 4 1 2 2 2 1 3"         # how many Zowe jobs after restart
+
+# jobname   ports assigned
+# --------  --------------
+# ZOWESVR3  api gateway port
+# ZOWESVR3  jes explorer server
+# ZOWESVR4  zss server port
+# ZOWESVR5  mvs explorer server port
+# ZOWESVR6  api discovery port
+# ZOWESVR6  explorer jobs api server port
+# ZOWESVR7  uss explorer server port
+# ZOWESVR7  zlux server httpsPort
+# ZOWESVR9  api catalog port
+# ZOWESVR9  explorer datasets api server port
+
+zowenports=10       # how many ports Zowe uses
 
 
 echo
@@ -54,6 +72,31 @@ if [[ $? -ne 0 ]]
 then
   echo Error: userid IZUSVR is not in RACF group IZUADMIN
 fi
+
+echo Check IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
+# For zssServer to be able to operate correctly 
+profile_error=0
+for profile in SERVER DAEMON
+do
+    tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: profile BPX\.$profile is not defined
+        profile_error=1
+    fi
+
+    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *UPDATE" >/dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: User IZUSVR does not have UPDATE access to profile BPX\.$profile
+        profile_error=1
+    fi
+done
+if [[ profile_error -eq 0 ]]
+then
+    echo OK
+fi
+
 
 # 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
 #  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
@@ -70,17 +113,20 @@ else
     echo Error: Failed to find ZOWESVR name in zowe-start.sh, defaulting to ZOWESVR for this check 
     ZOWESVR=ZOWESVR
 fi
+echo
+echo Check ${ZOWESVR} processes are runnning ${ZOWE_ROOT_DIR} code
+
 # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
-internal/opercmd "d omvs,a=all" \
-    | sed '{/ [0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] /N;s/\n */ /;}' \
+./internal/opercmd "d omvs,a=all" \
+    | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
     | grep -v CMD=grep \
-    | grep ${ZOWE_ROOT_DIR} \
+    | grep ${ZOWESVR}.*LATCH.*${ZOWE_ROOT_DIR} \
     | awk '{ print $2 }'\
     | sed 's/[1-9]$//' | sort | uniq > /tmp/zowe.omvs.ps 
 n=$((`cat /tmp/zowe.omvs.ps | wc -l`))
 case $n in
     
-    0) echo Warning: No jobs are running ${ZOWE_ROOT_DIR} code
+    0) echo Warning: No ${ZOWESVR} jobs are running ${ZOWE_ROOT_DIR} code
     ;;
     1) # is it the right job?
     jobname=`cat /tmp/zowe.omvs.ps`
@@ -89,6 +135,8 @@ case $n in
         echo Warning: Found PROC ${ZOWESVR} in zowe-start.sh, but ${ZOWE_ROOT_DIR} code is running in $jobname instead
         echo Info: Switching to job $jobname
         ZOWESVR=$jobname
+    else
+        echo OK: ${ZOWE_ROOT_DIR} code is running in $jobname
     fi 
     ;;
     *) echo Warning: $n different jobs are running ${ZOWE_ROOT_DIR} code
@@ -97,6 +145,25 @@ case $n in
     echo End of list
 esac 
 rm /tmp/zowe.omvs.ps 2> /dev/null
+
+echo
+echo Check ${ZOWESVR} processes are runnning nodeCluster code
+
+for cluster in nodeCluster zluxCluster
+do
+    count=$((`./internal/opercmd "d omvs,a=all" \
+            | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
+            | grep -v CMD=grep \
+            | grep ${ZOWESVR}.*LATCH.*${cluster} \
+            | awk '{ print $2 }'\
+            | wc -l`))
+    if [[ $count -ne 0 ]]
+    then
+        echo $cluster OK
+    else
+        echo Error: $cluster is not running in ${ZOWESVR}
+    fi
+done
 
 echo
 echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
@@ -113,6 +180,8 @@ match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
   fi  
   
   profileName=${ZOWESVR}  # the profile that we want to match in that list
+
+
 
   l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
 
@@ -303,13 +372,31 @@ else
         if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
         then
             # echo job name ${ZOWESVR} is short enough to have numeric suffixes
+
+            # which list of STCs should we check; the before list or the after list?
+
+            i=4     # presence of ZOWESVR4 indicates nodeCluster has restarted a node server after a failure
+            jobname=${ZOWESVR}$i
+            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
+            nj=$((`cat /tmp/${jobname}.dj | wc -l` )) 
+
+            case $nj in # how many ZOWESVR4 jobs are executing?  
+                0)  zowestc=$zowestc_before
+                    echo Info: $jobname is not running
+                    ;;
+                1)  zowestc=$zowestc_afterx
+                    echo Info: $jobname is running
+                    ;;
+                *)  echo Error : number of jobs found for $jobname was "$nj"
+                    zowestc=$zowestc_before  # don't know what to expect, pick this one to allow reporting
+                    ;;
+            esac
+
             i=1                 # first STC number
             for enj in $zowestc   # list of expected number of jobs per STC
             do
                 jobname=${ZOWESVR}$i
-                # tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"
-                # jobsEx=`tsocmd status ${jobname} | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING"`
-                # 0.2 Jobs 1-9 with no JCT
+
                 ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
                     # the selected lines will look like this ...
                                                             # ZOEJAD9  *OMVSEX  IZUSVR   IN   AO  A=00F0   PER=NO   SMC=000
@@ -322,7 +409,7 @@ else
                 # check we found the expected number of jobs
                 if [[ $nj -ne $enj ]]
                 then
-                    echo error: Expecting $enj jobs for $jobname, found $nj
+                    echo Error: Expecting $enj jobs for $jobname, found $nj
                     jobsOK=0
                 else
                     : # echo OK: Found $nj jobs for $jobname
@@ -334,10 +421,19 @@ else
             jobname=${ZOWESVR}
 
             ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-            enj=11
-            if [[ `cat /tmp/${jobname}.dj | wc -l` -ne $enj ]]
+            
+            # expected number of jobs is derived from the number of STCs per jobname.
+            enj=1   # include the master STC in the count
+            zowestc=zowestc_before  # don't know what to expect, pick this one to allow reporting
+            for i in $zowestc
+            do
+                enj=$((enj+i)) 
+            done 
+
+            nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
+            if [[ $nj -ne $enj ]]
             then
-                echo error: Expecting $enj jobs for $jobname, found $nj
+                echo Error: Expecting $enj jobs for $jobname, found $nj
                 jobsOK=0
             else
                 : # echo OK: Found $nj jobs for $jobname
@@ -371,6 +467,7 @@ fi
 
 
 # 0. Extract port settings from Zowe config files.  
+
 echo 
 echo Check port settings from Zowe config files
 
@@ -415,7 +512,7 @@ do
         # fragile search
         terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
         if [[ -n "$terminal_telnetPort" ]]
-        then
+        then 
             echo OK: terminal_telnetPort is $terminal_telnetPort
         else
             echo Error: terminal_telnetPort not found in ${ZOWE_ROOT_DIR}/$file
@@ -648,9 +745,10 @@ then    # job name is short enough to have a suffix
 
                 case $i in 
                 3)
+# ZOWESVR3  api gateway port
+# ZOWESVR3  jes explorer server
                 # job3
                     for port in \
-                        $zss_server_http_port \
                         $api_mediation_gateway_https_port \
                         $jes_explorer_server_port
                     do
@@ -663,7 +761,10 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 5)
+# ZOWESVR5  zss server port
+# ZOWESVR5  mvs explorer server port              
                     for port in \
+                        $zss_server_http_port \
                         $mvs_explorer_server_port
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -675,10 +776,11 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 6)
+# ZOWESVR6  api discovery port
+# ZOWESVR6  explorer jobs api server port                
                 # job6
                     for port in \
                         $explorer_server_jobsPort \
-                        $zlux_server_https_port \
                         $api_mediation_discovery_http_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -690,7 +792,10 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 7)
+# ZOWESVR7  uss explorer server port
+# ZOWESVR7  zlux server httpsPort                
                     for port in \
+                        $zlux_server_https_port \
                         $uss_explorer_server_port 
                     do
                         grep $port /tmp/${jobname}.ports > /dev/null
@@ -704,6 +809,8 @@ then    # job name is short enough to have a suffix
                 ;;
 
                 9)
+# ZOWESVR9  api catalog port
+# ZOWESVR9  explorer datasets api server port  
                 # job9
                     for port in \
                         $api_mediation_catalog_http_port \
@@ -728,12 +835,43 @@ else        # job name is too long to have a suffix
             jobname=${ZOWESVR}
             echo Info: Ports in use by $jobname jobs
             netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
-            cat /tmp/${jobname}.ports
+            # cat /tmp/${jobname}.ports
+            
+            # check they are the right ports
+            for port_number in \
+                $api_mediation_catalog_http_port \
+                $api_mediation_discovery_http_port \
+                $api_mediation_gateway_https_port \
+                $explorer_server_jobsPort \
+                $explorer_server_dataSets_port \
+                $zlux_server_https_port \
+                $zss_server_http_port \
+                $jes_explorer_server_port \
+                $mvs_explorer_server_port \
+                $uss_explorer_server_port 
+            do 
+                grep $port_number /tmp/${jobname}.ports > /tmp/$port_number.port
+                port_count=`cat /tmp/$port_number.port | wc -l `
+                if [[ $port_count -eq 1 ]]
+                then 
+                    if [[ `cat /tmp/$port_number.port` -eq $port_number ]]
+                    then
+                        echo $port_number
+                    else
+                        # this is very unlikely
+                        echo Error: Port `cat /tmp/$port_number.port` does not match $port_number
+                    fi
+                else 
+                    echo Error: Found $port_count ports assigned for port $port_number
+                fi 
+            done 
+
             totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
-            rm /tmp/${jobname}.ports
+            rm /tmp/${jobname}.ports 2> /dev/null
+            rm /tmp/$port_number.port 2> /dev/null
             echo
 fi
-if [[ $totPortsAssigned -ne $zowenports ]]
+if [[ $totPortsAssigned -ne $zowenports ]]  
 then
     echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
 fi
@@ -746,21 +884,27 @@ fi
 echo
 echo Check Node is installed and working
 
-# IBM SDK for Node.js z/OS Version 6.11.2 or later.
-  response=`node --version`  2>/dev/null
-  echo $response | grep 'not found'
-  if [[ `echo $?` == 0 ]]
+# IBM SDK for Node.js z/OS Version 6.14.4 or later.
+response=`node --version`  2>/dev/null
+if [[ $? -ne 0 ]]
 then 
-    echo Info: node not found in your path ... searching standard location
-else 
+    echo Warning: node not found in your path ... searching standard location
+ 
     nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`
-    if [[ `echo $?` == 0 ]]
+    if [[ $? -eq 0 ]]
     then 
         # echo "Info: symlink to node found : $nodelink"
-        echo Info: node version is
+        echo Info: node version in /usr/lpp/IBM/cnj/IBM is
         /usr`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`/bin/node --version
     else 
         echo Error: node not found
+    fi
+else
+    if [[ $response < v6.14.4 ]]
+    then
+        echo Error: version $response is lower than required 
+    else 
+        echo OK: version is $response 
     fi
 fi
 
@@ -955,7 +1099,7 @@ else
 
     fi
 fi
-rm /tmp/izufproc.txt
+rm /tmp/izufproc.txt 2> /dev/null
 
 if [[ $fPROC -eq 1 ]]
 then    
