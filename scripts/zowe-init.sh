@@ -313,7 +313,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IPADDRESS=`ping $hn|sed -n 's/.* (\(.*\))/\1/p'`
+          ZOWE_IPADDRESS=`ping $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
           if [[ -n "$ZOWE_IPADDRESS" ]]
           then
                echo Info: IP address is $ZOWE_IPADDRESS
