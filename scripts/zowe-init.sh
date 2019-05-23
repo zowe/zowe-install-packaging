@@ -40,7 +40,7 @@ export NODE_HOME
 # Action: Find the lines in .profile that set Zowe env vars, put them in a separate .zowe_profile file, and ‘source’ that instead.
 # The .zowe_profile file persists across installs.  If it exists, your .profile will not be scanned for Zowe variables.  
 # If you delete it, it will be recreated here from .profile.  
-
+# Test comment added by Joe
 # 1. find existing environment variable settings in .profile
 if [[ ! -e ~/.zowe_profile && -e ~/$PROFILE ]]
 then
