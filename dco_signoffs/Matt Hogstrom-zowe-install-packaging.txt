@@ -1,0 +1,4 @@
+I, Matt Hogstrom hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: matt@hogstrom.org
+
+28aac630b0a5e0395da3de867d34373d2ceda9c4 Permission Fixes for Atlas and zLux
+a9ae609e4bdd7828bee2448b64c914ed9cda8a2e Fixed missing recursive on chmod for pid directory
