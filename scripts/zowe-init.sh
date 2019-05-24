@@ -313,7 +313,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IPADDRESS=`ping $hn|sed -n 's/.* (\(.*\))/\1/p'`
+          ZOWE_IPADDRESS=`ping $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
           if [[ -n "$ZOWE_IPADDRESS" ]]
           then
                echo Info: IP address is $ZOWE_IPADDRESS
@@ -342,7 +342,15 @@ then
     if [[ $rc -ne 0 ]]  # ask the user to enter the external IP
     then
             echo "    Please enter the ZOWE_IPADDRESS of this system"
-            read ZOWE_IPADDRESS
+            read ZOWE_IPADDRESS_INPUT
+            if [[ ! -n "$ZOWE_IPADDRESS_INPUT" ]]
+            then
+               echo Error: User entered blank ZOWE_IPADDRESS    # leave ZOWE_IPADDRESS unchanged,
+               echo Info: Using ZOWE_IPADDRESS=$ZOWE_IPADDRESS  # as discovered above
+            else
+               echo Info: User entered ZOWE_IPADDRESS=$ZOWE_IPADDRESS_INPUT
+               ZOWE_IPADDRESS=$ZOWE_IPADDRESS_INPUT             # take what the user entered
+            fi
             checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
             case $? in
                 0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
