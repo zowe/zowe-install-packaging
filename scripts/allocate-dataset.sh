@@ -14,6 +14,7 @@
 #
 # Arguments:
 # -e        (optional) existing partitioned data set must be PDS/E
+# -h        (optional) hide the allocate command being issued
 # -p        (optional) existing partitioned data set must be PDS
 # -P dirBlk (optional) allocate data set as PDS with x directory blocks
 # dsn       data set name
@@ -32,6 +33,8 @@
 # 8: error
 #
 # Assumes other scripts are in the same directory as this one
+# - check-dataset-dcb.sh
+# - check-dataset-exist.sh
 
 here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
@@ -45,13 +48,14 @@ test "$debug" && echo "> $me $@"
 unset rc
 
 # Clear input variables
-unset pdse pds dir
+unset pdse hide pds dir
 
 # Get startup arguments
 args="$@"
-while getopts epP opt
+while getopts ehpP opt
 do case "$opt" in
   e)   pdse="-e";;
+  h)   hide="-h";;
   p)   pds="-p";;
   P)   dir="$OPTARG";;
   [?]) echo "** ERROR $0 faulty startup argument: $@"
@@ -133,9 +137,17 @@ then                                          # data set does not exist
     dsOrg="dsntype(library) dsorg(po)"
   fi    #
 
-  # Do NOT trap output, user must see alloc command (&2) & error (&1)
-  tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
-    "space($space) tracks unit(sysallda)" 2>&1
+  if test "$hide"
+  then 
+    # trap stderr, do not show alloc command (&2), but show error (&1)
+    tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
+      "space($space) tracks unit(sysallda)" 2> /dev/null
+  else
+    # Do NOT trap output, user must see alloc command (&2) & error (&1)
+    tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
+      "space($space) tracks unit(sysallda)" 2>&1
+  fi    #
+  
   if test $? -eq 0
   then
     test "$debug" && echo "data set $dsn has been allocated"
