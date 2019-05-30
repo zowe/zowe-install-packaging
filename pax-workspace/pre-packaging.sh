@@ -12,7 +12,7 @@ set -x
 ################################################################################
 
 FUNC=[CreatePax][pre-packaging]
-PWD=$(pwd)
+CURRENT_PWD=$(pwd)
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "$FUNC ZOWE_VERSION environment variable is missing"
@@ -43,11 +43,11 @@ rm -rf mediation
 rm -f mediation.tar
 
 # extract zss.pax
-mkdir -p files/zss
-cd files/zss
+mkdir -p content/zowe-$ZOWE_VERSION/files/zss
+cd content/zowe-$ZOWE_VERSION/files/zss
 pax -r -px -f ../zss.pax
 rm ../zss.pax
-cd ../..
+cd "$CURRENT_PWD"
 
 # display extracted files
 echo "$FUNC content of $PWD...."
