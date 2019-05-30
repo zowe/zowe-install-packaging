@@ -366,6 +366,3 @@ _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh
 
 # Configure Zowe
 _config
-
-echo
-exit 0
