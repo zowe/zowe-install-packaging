@@ -7,34 +7,56 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# 5698-ZWE Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
-# Create samplib(members).
-# Called by zowe-install.sh
+# Create JCL library members.
+# Called by zowe-configure.sh
 #
 # Arguments:
 # /
 #
 # Expected globals:
-# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
+# $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
 
-list=""     # file names include path based on $INSTALL_DIR
-list="$list files/templates/ZWESECUR.jcl"   # Zowe & ZSS security setup
-list="$list files/templates/ZWESTC.jcl"     # Zowe STC
-list="$list files/zss/SAMPLIB/ZWESIPRG"     # ZSS PROGxx
-list="$list files/zss/SAMPLIB/ZWESIP00"     # ZSS config
-list="$list files/zss/SAMPLIB/ZWESISCH"     # ZSS SCHEDxx
-list="$list files/zss/SAMPLIB/ZWESISTC.jcl" # ZSS STC
 space="10,2"                   # data set space allocation
+here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
 
-echo "-- Samplib"
+echo "-- JCL library"
 test "$debug" && echo "> $me $@"
 test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
+
+# ---------------------------------------------------------------------
+# --- customize a file using sed, optionally creating a new output file
+#     assumes $SED is defined by caller and holds sed command string
+# $1: input file
+# $2: (optional) output file, default is $1
+# ---------------------------------------------------------------------
+function _sedUSS
+{
+TmP=$TEMP_DIR/$(basename $1)
+_cmd --repl $TmP sed $SED $1                      # sed '...' $1 > $TmP
+_cmd mv $TmP ${2:-$1}
+}    # _sedUSS
+
+# ---------------------------------------------------------------------
+# --- customize a member using sed, optionally creating a new output member
+#     assumes $SED is defined by caller and holds sed command string
+# $1: input DSN
+# $2: input member
+# $3: (optional) output DSN, default is $1, required if $4 is specified
+# $4: (optional) output member, default is $2
+# ---------------------------------------------------------------------
+function _sedMVS
+{
+TmP=$TEMP_DIR/$2
+_cmd --repl $TmP sed $SED "//'$1($2)'"            # sed '...' $1 > $TmP
+_cmd mv $TmP "//'${3:-$1}(${4:-$2})'"
+}    # _sedMVS
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -92,10 +114,8 @@ else
   echo "  $(date)" >> $LOG_FILE
 fi    #
 
-dsn=${ZOWE_HLQ}.SZWESAMP
-
 # Validate/create target data set
-$INSTALL_DIR/scripts/allocate-dataset.sh $dsn FB 80 PO "$space"
+$here/allocate-dataset.sh "$ZOWE_JCLLIB" FB 80 PO "$space"
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
@@ -110,34 +130,9 @@ else
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-# Copy members
-for file in $list
-do
-  file=$INSTALL_DIR/$file
-
-  # Validate file
-  test "$debug" && echo file=$file
-  if test ! -f "$file" -o ! -r "$file"
-  then
-    echo "** ERROR $me cannot access $file"
-    echo "ls -ld \"$file\""; ls -ld "$file"
-    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
-  fi    #
-
-  # Copy file to member
-  member=$(basename $file)
-  member=${member%%.*}                 # keep up to first . (exclusive)
-  echo "  Copy $file to $dsn($member)" >> $LOG_FILE
-  _cmd cp $file "//'$dsn($member)'" 
-
-# TODO v1.1.0 has ocopyshr.rexx instead of cp, why?
-
-  # Remove install source if requested
-  test "$ReMoVe" && _cmd rm -f $file
-done    # for file
-
-# Remove install script if requested
-test "$ReMoVe" && _cmd rm -f $0
+# ZWESECUR
+SED=""  # no customization
+_sedMVS "${ZOWE_HLQ}.SZWESAMP" ZWESECUR "$ZOWE_JCLLIB"
 
 test "$debug" && echo "< $me 0"
 echo "</$me> 0" >> $LOG_FILE
