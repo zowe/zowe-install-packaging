@@ -42,6 +42,13 @@ cd ..
 rm -rf mediation
 rm -f mediation.tar
 
+# extract zss.pax
+mkdir -p files/zss
+cd files/zss
+pax -r -px -f ../zss.pax
+rm ../zss.pax
+cd ../..
+
 # display extracted files
 echo "$FUNC content of $PWD...."
 find . -print
