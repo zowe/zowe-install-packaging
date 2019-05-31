@@ -51,6 +51,9 @@ rm ../zss.pax
 [ -f "SAMPLIB/ZWESISMS" ] && rm SAMPLIB/ZWESISMS
 cd "$CURRENT_PWD"
 
+# FIXME: smpe doesn't need this config file? or should be somewhere else?
+rm content/zowe-$ZOWE_VERSION/install/zowe-install.yaml
+
 # display extracted files
 echo "$FUNC content of $PWD...."
 find . -print
