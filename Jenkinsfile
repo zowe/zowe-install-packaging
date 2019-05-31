@@ -89,7 +89,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   // how we packaging jars/zips
-  pipeline.packaging(name: 'zowe', keepTempFolder: true)
+  pipeline.packaging(name: 'zowe')
 
   // define we need publish stage
   pipeline.publish(
