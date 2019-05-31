@@ -47,8 +47,8 @@ unset pds pdse
 args="$@"
 while getopts ep opt
 do case "$opt" in
-  e)   pdse="-e";;
-  p)   pds="-p";;
+  e)   pdse="1";;
+  p)   pds="1";;
   [?]) echo "** ERROR $me faulty startup argument: $@"
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
