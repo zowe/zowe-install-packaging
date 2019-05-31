@@ -33,17 +33,47 @@ node('ibm-jenkins-slave-nvm') {
       sshPort                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_PORT,
       sshCredential              : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_CREDENTIAL,
       remoteWorkspace            : lib.Constants.DEFAULT_PAX_PACKAGING_REMOTE_WORKSPACE,
-    ]
+    ],
+    extraInit: {
+      def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
+
+      sh """
+sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
+    -e 's#{BUILD_NUMBER}#${env.BUILD_NUMBER}#g' \
+    -e 's#{BUILD_COMMIT_HASH}#${commitHash}#g' \
+    -e 's#{BUILD_TIMESTAMP}#${currentBuild.startTimeInMillis}#g' \
+    manifest.json.template > manifest.json
+"""
+      echo "Current manifest.json is:"
+      sh "cat manifest.json"
+
+      // load zowe version from manifest
+      def zoweVersion = sh(
+        script: "cat manifest.json | jq -r '.version'",
+        returnStdout: true
+      ).trim()
+      if (zoweVersion) {
+        echo "Packaging Zowe v${zoweVersion} started..."
+        pipeline.setVersion(zoweVersion)
+      } else {
+        error "Cannot find Zowe version"
+      }
+    }
   )
 
   pipeline.createStage(
     name          : "Download Components",
     isSkippable   : false,
     stage         : {
+      // replace templates
+      def zoweVersion = pipeline.getVersion()
+      echo 'replacing templates...'
+      sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' artifactory-download-spec.json.template > artifactory-download-spec.json && rm artifactory-download-spec.json.template"
+      sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
 
       pipeline.artifactory.download(
-        spec        : 'artifactory-download-spec.json.template',
-        expected    : 2
+        spec        : 'artifactory-download-spec.json',
+        expected    : 18
       )
     },
     timeout: [time: 5, unit: 'MINUTES']
