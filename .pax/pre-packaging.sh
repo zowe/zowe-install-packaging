@@ -36,7 +36,3 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
 chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
-
-# display extracted files
-echo "$SCRIPT_NAME content of $(pwd) ...."
-find . -print
