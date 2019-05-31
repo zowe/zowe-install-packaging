@@ -61,22 +61,31 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     }
   )
 
-  pipeline.createStage(
-    name          : "Download Components",
+  pipeline.build(
+    timeout       : [time: 5, unit: 'MINUTES'],
     isSkippable   : false,
-    stage         : {
+    operation     : {
       // replace templates
       def zoweVersion = pipeline.getVersion()
       echo 'replacing templates...'
       sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' artifactory-download-spec.json.template > artifactory-download-spec.json && rm artifactory-download-spec.json.template"
       sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
 
+      // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
         expected    : 18
       )
+    }
+  )
+
+  // FIXME: we may move smoke test into this pipeline
+  pipeline.test(
+    name              : "Smoke",
+    operation         : {
+        echo 'Skip until test case are embeded into this pipeline.'
     },
-    timeout: [time: 5, unit: 'MINUTES']
+    allowMissingJunit : true
   )
 
   // how we packaging jars/zips
