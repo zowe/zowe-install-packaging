@@ -47,6 +47,8 @@ mkdir -p content/zowe-$ZOWE_VERSION/files/zss
 cd content/zowe-$ZOWE_VERSION/files/zss
 pax -r -px -f ../zss.pax
 rm ../zss.pax
+[ -f "SAMPLIB/ZWESIS01" ] && rm SAMPLIB/ZWESIS01
+[ -f "SAMPLIB/ZWESISMS" ] && rm SAMPLIB/ZWESISMS
 cd "$CURRENT_PWD"
 
 # display extracted files
