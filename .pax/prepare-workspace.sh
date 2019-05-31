@@ -63,6 +63,9 @@ cp -R scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 # write a version file, so pre-packaging.sh can pick up
 echo "$ZOWE_VERSION" > "${PAX_WORKSPACE_DIR}/ascii/version"
 
+# debug purpose, list all files in workspace
+find . -print
+
 # jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts"
 mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api-server-start.sh" \
