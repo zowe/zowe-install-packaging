@@ -29,9 +29,6 @@ cd ..
 ROOT_DIR=$(pwd)
 
 # prepare pax workspace
-echo "[${SCRIPT_NAME}] cleaning PAX workspace ..."
-rm -fr "${PAX_WORKSPACE_DIR}/content"
-rm -fr "${PAX_WORKSPACE_DIR}/ascii"
 echo "[${SCRIPT_NAME}] preparing folders ..."
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
@@ -62,9 +59,6 @@ cp -R scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 
 # write a version file, so pre-packaging.sh can pick up
 echo "$ZOWE_VERSION" > "${PAX_WORKSPACE_DIR}/ascii/version"
-
-# debug purpose, list all files in workspace
-find . -print
 
 # jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts"
