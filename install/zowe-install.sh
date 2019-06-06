@@ -23,15 +23,15 @@ separator() {
 }
 separator
 
-# Create a log file with the year and time.log in a log folder 
-# that scripts can echo to and can be written to by scripts to diagnose any install 
-# problems.  
+# Create a log file with the year and time.log in a log folder
+# that scripts can echo to and can be written to by scripts to diagnose any install
+# problems.
 
 export LOG_DIR=$INSTALL_DIR/log
 # Make the log directory if needed - first time through - subsequent installs create new .log files
 if [[ ! -d $LOG_DIR ]]; then
     mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
+    chmod a+rwx $LOG_DIR
 fi
 # Make the log file (unique assuming there is only one install per second)
 export LOG_FILE="`date +%Y-%m-%d-%H-%M-%S`.log"
@@ -110,7 +110,7 @@ if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
     sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json > ${TEMP_DIR}/transform1.json
     cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json
     rm ${TEMP_DIR}/transform1.json
-    
+
     # Access API Catalog with token injector
     CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
 else
@@ -128,8 +128,8 @@ echo "-----"
 . $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
 # Run deploy on the zLUX app server to propagate the changes made
 
-# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
+# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
@@ -200,6 +200,9 @@ chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 sed -e 's|/zowe/install/path|'$ZOWE_ROOT_DIR'|' $INSTALL_DIR/files/templates/ZOWESVR.jcl > $TEMP_DIR/ZOWESVR.jcl
 $INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
+
+sed -e 's|$nodehome|'$NODE_HOME'|; s|$prefix|'$ZOWE_PREFIX'|; s|$javahome|'$ZOWE_JAVA_HOME'|; s|$zowestc|'$ZOWE_SERVER_PROCLIB_MEMBER'|' $INSTALL_DIR/scripts/zowe-support.sh  > $TEMP_DIR/zowe-support.sh
+cp $TEMP_DIR/zowe-support.sh $ZOWE_ROOT_DIR/scripts/zowe-support.sh
 
 separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh

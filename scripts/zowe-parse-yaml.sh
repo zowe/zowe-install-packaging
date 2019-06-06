@@ -12,7 +12,7 @@
 
 # Assign default values that will be filled in as we parse the yaml file
 
-echo "<zowe-parse-yaml.sh>" >> $LOG_FILE 
+echo "<zowe-parse-yaml.sh>" >> $LOG_FILE
 echo "Reading install variables from zowe-install.sh"
 
 parseConfiguationFile() {
@@ -42,65 +42,65 @@ do
             if [[ $key == "rootDir" ]] && [[ $section == "install" ]]
             then
 # If the value starts with a ~ for the home variable then evaluate it
-                ZOWE_ROOT_DIR=`sh -c "echo $value"` 
+                ZOWE_ROOT_DIR=`sh -c "echo $value"`
                 export ZOWE_ROOT_DIR
             fi
 # Look for jobsAPIPort= beneath zos-services:
-            if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
+            if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]]
             then
                 ZOWE_EXPLORER_SERVER_JOBS_PORT=$value
                 export ZOWE_EXPLORER_SERVER_JOBS_PORT
             fi
 # Look for mvsAPIPort= beneath zos-services:
-            if [[ $key == "mvsAPIPort" ]] && [[ $section == "zos-services" ]] 
+            if [[ $key == "mvsAPIPort" ]] && [[ $section == "zos-services" ]]
             then
                 ZOWE_EXPLORER_SERVER_DATASETS_PORT=$value
                 export ZOWE_EXPLORER_SERVER_DATASETS_PORT
             fi
 # Look for httpsPort= beneath zlux-server:
-            if [[ $key == "httpsPort" ]] && [[ $section == "zlux-server" ]] 
+            if [[ $key == "httpsPort" ]] && [[ $section == "zlux-server" ]]
             then
                 ZOWE_ZLUX_SERVER_HTTPS_PORT=$value
                 export ZOWE_ZLUX_SERVER_HTTPS_PORT
             fi
 # Look for zssPort= beneath zlux-server:
-            if [[ $key == "zssPort" ]] && [[ $section == "zlux-server" ]] 
+            if [[ $key == "zssPort" ]] && [[ $section == "zlux-server" ]]
             then
                 ZOWE_ZSS_SERVER_PORT=$value
                 export ZOWE_ZSS_SERVER_PORT
             fi
 # Look for sshPort= beneath terminals:
-            if [[ $key == "sshPort" ]] && [[ $section == "terminals" ]] 
+            if [[ $key == "sshPort" ]] && [[ $section == "terminals" ]]
             then
                 ZOWE_ZLUX_SSH_PORT=$value
                 export ZOWE_ZLUX_SSH_PORT
             fi
 # Look for telnetPort= beneath terminals:
-            if [[ $key == "telnetPort" ]] && [[ $section == "terminals" ]] 
+            if [[ $key == "telnetPort" ]] && [[ $section == "terminals" ]]
             then
                 ZOWE_ZLUX_TELNET_PORT=$value
                 export ZOWE_ZLUX_TELNET_PORT
             fi
 # Look for jobsExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "jobsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
+            if [[ $key == "jobsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]]
             then
                 ZOWE_EXPLORER_JES_UI_PORT=$value
                 export ZOWE_EXPLORER_JES_UI_PORT
             fi
 # Look for mvsExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "mvsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
+            if [[ $key == "mvsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]]
             then
                 ZOWE_EXPLORER_MVS_UI_PORT=$value
                 export ZOWE_EXPLORER_MVS_UI_PORT
             fi
 # Look for ussExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "ussExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
+            if [[ $key == "ussExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]]
             then
                 ZOWE_EXPLORER_USS_UI_PORT=$value
                 export ZOWE_EXPLORER_USS_UI_PORT
             fi
 # Look for security= beneath terminals:
-            if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
+            if [[ $key == "security" ]] && [[ $section == "terminals" ]]
             then
                 ZOWE_ZLUX_SECURITY_TYPE=$value
                 export ZOWE_ZLUX_SECURITY_TYPE
@@ -175,7 +175,7 @@ done < $1
 parseConfiguationFile ./zowe-install.yaml
 
 # If the values are not set default them
-if [[ $ZOWE_ROOT_DIR == "" ]] 
+if [[ $ZOWE_ROOT_DIR == "" ]]
 then
     ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
     echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION"
@@ -261,10 +261,10 @@ fi
 if [[ $ZOWE_ZLUX_TELNET_PORT == "" ]]
 then
     ZOWE_ZLUX_TELNET_PORT=23
-fi 
+fi
 if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
 then
-    ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR 
+    ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR
     echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR"
 fi
 if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
