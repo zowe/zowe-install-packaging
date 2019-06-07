@@ -8,7 +8,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zss-auth/1.1.*-STAGING/zss-auth-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zss-auth/1.3.*-STAGING/zss-auth-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zss-auth.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -16,7 +16,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-angular-app/1.2.*-STAGING/sample-angular-app-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-angular-app/1.3.*-STAGING/sample-angular-app-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/sample-angular-app.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -24,7 +24,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-iframe-app/1.0.*-STAGING/sample-iframe-app-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-iframe-app/1.3.*-STAGING/sample-iframe-app-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/sample-iframe-app.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -32,7 +32,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-react-app/1.2.*-STAGING/sample-react-app-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-react-app/1.3.*-STAGING/sample-react-app-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/sample-react-app.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -40,7 +40,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/tn3270-ng2/1.2.*-STAGING/tn3270-ng2-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/tn3270-ng2/1.3.*-STAGING/tn3270-ng2-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/tn3270-ng2.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -48,7 +48,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/vt-ng2/1.2.*-STAGING/vt-ng2-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/vt-ng2/1.3.*-STAGING/vt-ng2-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/vt-ng2.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -56,7 +56,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.2.*-STAGING/zlux-editor-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.3.*-STAGING/zlux-editor-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-editor.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -64,7 +64,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-workflow/1.1.*-STAGING/zlux-workflow-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-workflow/1.3.*-STAGING/zlux-workflow-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-workflow.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -72,7 +72,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zlux/zosmf-auth/1.0.*-STAGING/zosmf-auth-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zosmf-auth/1.3.*-STAGING/zosmf-auth-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zosmf-auth.pax",
       "flat": "true",
       "sortBy": ["created"],
@@ -80,7 +80,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/zss/1.2.*-STAGING/zss-*.pax",
+      "pattern": "libs-snapshot-local/org/zowe/zss/1.3.*-STAGING/zss-*.pax",
       "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zss.pax",
       "flat": "true",
       "sortBy": ["created"],
