@@ -16,7 +16,7 @@ node('ibm-jenkins-slave-nvm') {
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
 
-  pipeline.admins.add("jackjia")
+  pipeline.admins.add("jackjia", "stevenh", "joewinchester", "markackert")
 
   pipeline.setup(
     packageName: 'org.zowe',
@@ -88,7 +88,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     allowMissingJunit : true
   )
 
-  // how we packaging jars/zips
+  // how we packaging pax
   pipeline.packaging(name: 'zowe')
 
   // define we need publish stage
