@@ -8,45 +8,30 @@ set -x
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018
+# Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-FUNC=[CreatePax][pre-packaging]
-PWD=$(pwd)
+SCRIPT_NAME=$(basename "$0")
+ZOWE_VERSION=$(cat content/version)
 
 if [ -z "$ZOWE_VERSION" ]; then
-  echo "$FUNC ZOWE_VERSION environment variable is missing"
+  echo "$SCRIPT_NAME ZOWE_VERSION environment variable is missing"
   exit 1
 else
-  echo "$FUNC working on Zowe v${ZOWE_VERSION} ..."
+  echo "$SCRIPT_NAME working on Zowe v${ZOWE_VERSION} ..."
+  # remove the version file
+  rm content/version
 fi
 
-# extract ASCII files
-echo "$FUNC extracting ASCII files ...."
-pax -r -x tar -o to=IBM-1047 -f ascii.tar
-# copy to target folder
-cp -R ascii/. content/zowe-$ZOWE_VERSION
-# remove ascii files
-rm ascii.tar
-rm -fr ascii
-
-# Extract mediation tar and go into the dir
-pax -r -x tar -f api-mediation.tar
-cd mediation
-
 # Create mediation PAX
+cd mediation
 pax -x os390 -w -f ../content/zowe-$ZOWE_VERSION/files/api-mediation-package-0.8.4.pax *
 cd ..
 
-#Cleanup working files
+# Cleanup working files
 rm -rf mediation
-rm -f mediation.tar
 
-# display extracted files
-echo "$FUNC content of $PWD...."
-find . -print
-
-echo "$FUNC change scripts to be executable..."
+echo "$SCRIPT_NAME change scripts to be executable ..."
 chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
 chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
