@@ -27,7 +27,8 @@
       "componentGroup": "Zowe Explorer APIs"
     },
     {
-      ""
+      "repository" : "zowe-cli",
+      "tag" : ""
     }
 
   ],
