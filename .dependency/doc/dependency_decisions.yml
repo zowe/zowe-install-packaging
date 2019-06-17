@@ -1,0 +1,25 @@
+---
+- - :whitelist
+  - MIT
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2019-06-06 18:36:27.819600000 Z
+- - :whitelist
+  - ISC
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2019-06-06 18:36:48.137578000 Z
+- - :whitelist
+  - Apache
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2019-06-06 18:36:51.296797000 Z
+- - :whitelist
+  - Apache 2.0
+  - :who: 
+    :why: 
+    :versions: []
+    :when: 2019-06-06 18:36:56.604210000 Z
