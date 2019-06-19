@@ -55,13 +55,13 @@
       "flat": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/jobs/0.2.4/jobs-server-zowe-package-0.2.4.zip",
+      "pattern": "libs-snapshot-local/org/zowe/explorer/jobs/0.2.5-ZIP-435/jobs-server-zowe-package-0.2.5-zip-435-1-20190619104330.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
     },
     {
-      "pattern": "libs-release-local/org/zowe/explorer/data/sets/0.2.2/data-sets-server-zowe-package-0.2.2.zip",
+      "pattern": "libs-snapshot-local/org/zowe/explorer/data/sets/0.2.3-ZIP-435/data-sets-server-zowe-package-0.2.3-zip-435-1-20190619104845.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
