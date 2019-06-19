@@ -38,6 +38,7 @@ for one in $EXPLORER_API_LIST; do
    #TODO - rename the data-set jar and api list to match the component id
   if [ "$one" = "data-sets" ]; then
     one=files
+  fi
   EXPLORER_INSTALL_FOLDER="${one}-api"
   echo "  Installing Explorer ${one} API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
   umask 0002
@@ -46,9 +47,11 @@ for one in $EXPLORER_API_LIST; do
   cd "${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin"
   echo "  Copy ${EXPLORER_API_JAR} into ${PWD}" >> $LOG_FILE
   cp $EXPLORER_API_JAR .
+
+  EXPLORER_API_JAR=$(ls -d -t ${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin/*-api-server-*.jar | head -1)
   chmod a+rx $EXPLORER_API_JAR
   # copy start script
-  sed -e "s#{{jar_file}}#${EXPLORER_API_JAR}#" \
+  sed -e "s#{{jar_path}}#${EXPLORER_API_JAR}#" \
      $EXPLORER_API_START_SCRIPT > "start.sh"  
   chmod a+x *.sh
   chmod 755 "${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin"

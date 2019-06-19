@@ -192,10 +192,10 @@ cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 
 cp "${INSTALL_DIR}/scripts/run-zowe.template.sh" "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.template.sh"
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 # Config run-zowe.sh
 . $INSTALL_DIR/scripts/zowe-configure-base.sh
+chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 sed -e 's|/zowe/install/path|'$ZOWE_ROOT_DIR'|' $INSTALL_DIR/files/templates/ZOWESVR.jcl > $TEMP_DIR/ZOWESVR.jcl
 $INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME

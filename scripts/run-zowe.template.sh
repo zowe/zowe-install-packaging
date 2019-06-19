@@ -84,6 +84,5 @@ cp ${ROOT_DIR}/manifest.json ${USER_DIR}
 
 for i in $(echo $STARTED_COMPONENTS | sed "s/,/ /g")
 do
-  echo ${ROOT_DIR}/components/${i}/bin/start.sh
-  #. ${ROOT_DIR}/components/${i}/bin/start.sh
+  . ${ROOT_DIR}/components/${i}/bin/start.sh
 done
