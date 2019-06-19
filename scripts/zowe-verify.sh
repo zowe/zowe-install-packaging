@@ -93,6 +93,13 @@ then
     echo OK
 fi
 
+echo Check IZUSVR has at least READ access to BPX.JOBNAME
+tsocmd "rl facility bpx.jobname authuser" 2>/dev/null | grep "IZUSVR" | grep -E "READ|UPDATE|ALTER"
+if [[ $? -ne 0 ]]
+then
+    echo Warning: User IZUSVR does not have access to profile BPX\.JOBNAME
+    echo You will not be able to set job names using the _BPX_JOBNAME environment variable
+fi
 
 # 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
 #  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
