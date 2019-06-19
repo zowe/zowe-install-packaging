@@ -145,10 +145,6 @@ separator
 echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 . $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
 
-# Configure Explorer API servers. This should be after APIML CM generated certificates
-echo "Attempting to setup Zowe Explorer API certificates ... "
-. $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
-
 separator
 echo "Attempting to set Unix file permissions ..."
 
@@ -194,9 +190,12 @@ chmod a+x $ZOWE_ROOT_DIR/scripts/internal
 echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
-sed -e 's|$nodehome|'$NODE_HOME'|' $INSTALL_DIR/scripts/run-zowe.sh  > $TEMP_DIR/run-zowe.sh
-cp $TEMP_DIR/run-zowe.sh $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh
+
+cp "${INSTALL_DIR}/scripts/run-zowe.template.sh" "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.template.sh"
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
+
+# Config run-zowe.sh
+. $INSTALL_DIR/scripts/zowe-configure-base.sh
 
 sed -e 's|/zowe/install/path|'$ZOWE_ROOT_DIR'|' $INSTALL_DIR/files/templates/ZOWESVR.jcl > $TEMP_DIR/ZOWESVR.jcl
 $INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
