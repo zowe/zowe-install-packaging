@@ -31,7 +31,7 @@ KEYSTORE={{keystore}}
 KEYSTORE_PASSWORD={{keystore_password}}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
-JAVA_HOME={{java_home}}
+ZOWE_JAVA_HOME={{java_home}}
 
 STARTED_COMPONENTS=files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
 
@@ -75,7 +75,7 @@ KEYSTORE=${KEYSTORE}
 KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
-JAVA_HOME=${JAVA_HOME}
+ZOWE_JAVA_HOME=${JAVA_HOME}
 STARTED_COMPONENTS=f${STARTED_COMPONENTS}
 EOF
 
