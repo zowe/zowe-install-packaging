@@ -88,13 +88,13 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/explorer/jobs/0.2.5-ZIP-435/jobs-server-zowe-package-0.2.5-zip-435-2-20190619150445.zip",
+      "pattern": "libs-snapshot-local/org/zowe/explorer/jobs/0.2.5-ZIP-435/jobs-server-zowe-package-0.2.5-zip-435-4-20190621132855.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/explorer/data/sets/0.2.3-ZIP-435/data-sets-server-zowe-package-0.2.3-zip-435-2-20190619150737.zip",
+      "pattern": "libs-snapshot-local/org/zowe/explorer/data/sets/0.2.3-ZIP-435/data-sets-server-zowe-package-0.2.3-zip-435-4-20190621133618.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
