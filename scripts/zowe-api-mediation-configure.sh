@@ -149,39 +149,9 @@ EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zosmf.yml > $STATIC_DEF_CONFIG/zosmf.yml	
 
 # Add static definition for MVS datasets
-cat <<EOF >$TEMP_DIR/datasets.yml
+cat <<EOF >$TEMP_DIR/datasets_ui.yml
 #
 services:
-  - serviceId: datasets
-    title: IBM z/OS Datasets
-    description: IBM z/OS Datasets REST API service
-    catalogUiTileId: datasetsAndUnixFiles
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/
-    homePageRelativeUrl:  # Home page is at the same URL
-    routedServices:
-      - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-        serviceRelativeUrl: api/v1/datasets
-    apiInfo:
-      - apiId: org.zowe.data.sets
-        gatewayUrl: api/v1
-        version: 1.0.0
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
-  - serviceId: unixfiles
-    title: IBM z/OS Unix Files
-    description: IBM z/OS Unix Files REST API service
-    catalogUiTileId: datasetsAndUnixFiles
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/
-    homePageRelativeUrl:  # Home page is at the same URL
-    routedServices:
-      - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-        serviceRelativeUrl: api/v1/unixfiles 
-    apiInfo:
-      - apiId: org.zowe.unix.files
-        gatewayUrl: api/v1
-        version: 1.0.0
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
   - serviceId: explorer-mvs
     title: IBM z/OS MVS Explorer UI
     description: IBM z/OS MVS Explorer UI service
@@ -192,32 +162,13 @@ services:
     routedServices:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-mvs
-catalogUiTiles:
-  datasetsAndUnixFiles:
-    title: z/OS Datasets and Unix Files services
-    description: IBM z/OS Datasets and Unix Files REST services
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets_ui.yml > $STATIC_DEF_CONFIG/datasets_ui.yml	
 
 # Add static definition for Jobs
-cat <<EOF >$TEMP_DIR/jobs.yml
+cat <<EOF >$TEMP_DIR/jobs_ui.yml
 #
 services:
-  - serviceId: jobs
-    title: IBM z/OS Jobs
-    description: IBM z/OS Jobs REST API service
-    catalogUiTileId: jobs
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/
-    homePageRelativeUrl:
-    routedServices:
-      - gatewayUrl: api/v1
-        serviceRelativeUrl: api/v1/jobs
-    apiInfo:
-      - apiId: com.ibm.jobs
-        gatewayUrl: api/v1
-        version: 1.0.0
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/swagger-ui.html
   - serviceId: explorer-jes
     title: IBM z/OS Jobs UI
     description: IBM z/OS Jobs UI service
@@ -228,10 +179,6 @@ services:
     routedServices:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-jes
-catalogUiTiles:
-  jobs:
-    title: z/OS Jobs services
-    description: IBM z/OS Jobs REST services
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
 

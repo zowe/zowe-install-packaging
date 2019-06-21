@@ -6,10 +6,12 @@
   -e "s#{{jobs_api_port}}#${ZOWE_EXPLORER_SERVER_JOBS_PORT}#" \
   -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
   -e "s#{{zosmf_ip_address}}#${ZOWE_IPADDRESS}#" \
+  -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{key_alias}}#localhost#" \
   -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/api-mediation/keystore/localhost/localhost.keystore.p12#" \
   -e "s#{{keystore_password}}#password#" \
+  -e "s#{{static_def_config_dir}}#${ZOWE_ROOT_DIR}/api-mediation/api-defs#" \
   "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.sh"

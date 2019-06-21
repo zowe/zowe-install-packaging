@@ -29,11 +29,13 @@ STC_NAME={{stc_name}}
 KEY_ALIAS={{key_alias}}
 KEYSTORE={{keystore}}
 KEYSTORE_PASSWORD={{keystore_password}}
+STATIC_DEF_CONFIG_DIR={{static_def_config_dir}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
+ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
 ZOWE_JAVA_HOME={{java_home}}
 
-STARTED_COMPONENTS=files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
+LAUNCH_COMPONENTS=files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
 
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
@@ -47,7 +49,15 @@ cd `dirname $0`/../../zlux-app-server/bin && ./nodeCluster.sh --allowInvalidTLSP
 `dirname $0`/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
 `dirname $0`/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
  
-# TODO zip #445 For each - Validate component properties
+# Validate component properties if script exists
+for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+do
+  VALIDATE_SCRIPT=${ROOT_DIR}/components/${i}/bin/validate.sh
+  if [[ -f ${VALIDATE_SCRIPT} ]]
+  then
+    . ${VALIDATE_SCRIPT}
+  fi
+done
 
 mkdir -p ${USER_DIR}
 
@@ -82,7 +92,17 @@ EOF
 # Copy manifest into user_dir so we know the version for support enquiries/migration
 cp ${ROOT_DIR}/manifest.json ${USER_DIR}
 
-for i in $(echo $STARTED_COMPONENTS | sed "s/,/ /g")
+# Run setup/configure on components if script exists
+for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+do
+  CONFIGURE_SCRIPT=${ROOT_DIR}/components/${i}/bin/configure.sh
+  if [[ -f ${CONFIGURE_SCRIPT} ]]
+  then
+    . ${CONFIGURE_SCRIPT}
+  fi
+done
+
+for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   . ${ROOT_DIR}/components/${i}/bin/start.sh
 done
