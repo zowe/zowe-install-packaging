@@ -88,7 +88,7 @@
       "limit": 1
     },
     {
-      "pattern": "libs-snapshot-local/org/zowe/explorer/jobs/0.2.5-ZIP-435/jobs-server-zowe-package-0.2.5-zip-435-4-20190621132855.zip",
+      "pattern": "libs-snapshot-local/org/zowe/explorer/jobs/0.2.5-ZIP-435/jobs-server-zowe-package-0.2.5-zip-435-5-20190621135151.zip",
       "target": "pax-workspace/content/zowe-{ZOWE_VERSION}/files/",
       "flat": "true",
       "explode": "true"
