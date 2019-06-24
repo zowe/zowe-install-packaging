@@ -63,11 +63,11 @@ echo "$ZOWE_VERSION" > "${PAX_WORKSPACE_DIR}/ascii/version"
 # jobs-api-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts"
 find ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/ -print #Debug
-ls "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh"
-mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh" \
-   "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/"
-mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh" \
-   "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/"
+ls ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh
+mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh \
+   ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
+mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh \
+   ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
 
 # debug purpose, list all files in workspace
 find ./${PAX_WORKSPACE_DIR} -print
