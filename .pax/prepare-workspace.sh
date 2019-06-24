@@ -38,7 +38,6 @@ mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
 cp -R files/* "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
-find ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/ -print
 # put text files into ascii folder
 rsync -rv \
   --include '*.json' \
@@ -56,7 +55,6 @@ rsync -rv \
   "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 cp manifest.json "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 cp -R install/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
-find ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/ -print
 cp -R scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 
 # write a version file, so pre-packaging.sh can pick up
@@ -65,6 +63,7 @@ echo "$ZOWE_VERSION" > "${PAX_WORKSPACE_DIR}/ascii/version"
 # jobs-api-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts"
 find ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/ -print #Debug
+ls "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh"
 mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh" \
    "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/"
 mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh" \
