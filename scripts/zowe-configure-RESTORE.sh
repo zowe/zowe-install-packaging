@@ -7,35 +7,29 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2018, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
-# Create samplib(members).
-# Called by zowe-install.sh
-#
-# Arguments:
-# /
-#
-# Expected globals:
-# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
+# TODO - ALTERS INSTALLED PRODUCT
 
-list=""     # file names include path based on $INSTALL_DIR
-list="$list files/templates/ZWESECUR.jcl"   # Zowe & ZSS security setup
-list="$list files/templates/ZWESTC.jcl"     # Zowe STC
-list="$list files/zss/SAMPLIB/ZWESIPRG"     # ZSS PROGxx
-list="$list files/zss/SAMPLIB/ZWESIP00"     # ZSS config
-list="$list files/zss/SAMPLIB/ZWESISCH"     # ZSS SCHEDxx
-list="$list files/zss/SAMPLIB/ZWESISTC.jcl" # ZSS STC
-space="10,2"                   # data set space allocation
+#% Restore previous version of customized Zowe configuration files.
+#%
+#% Invocation arguments:
+#% -?            show this help message
+#% -d            enable debug messages
+#%
+#% Usage scenario:
+#% 1. Install & configure Zowe.
+#% 2. Update zowe.yaml & reconfigure Zowe.
+#% 3. Restore the configuration of step 1.
+
 here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
 
-echo "-- Samplib"
 test "$debug" && echo "> $me $@"
-test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -79,67 +73,82 @@ fi    #
 }    # _cmd
 
 # ---------------------------------------------------------------------
+# --- display script usage information
+# ---------------------------------------------------------------------
+function _displayUsage
+{
+echo " "
+echo " $(basename $0)"
+sed -n 's/^#%//p' $(whence $0)
+echo " "
+}    # _displayUsage
+
+# ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 function main { }     # dummy function to simplify program flow parsing
+export _EDC_ADD_ERRNO2=1                        # show details on error
+# .profile with ENV=script with echo -> echo is in stdout (begin)
+unset ENV
+_cmd umask 0022                                  # similar to chmod 755
 
-# Set environment variables when not called via zowe-install.sh
-if test -z "$INSTALL_DIR"
-then
-  # Set all required environment variables & logging
-  # Note: script exports environment vars, so run in current shell
-  _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
-else
-  echo "  $(date)" >> $LOG_FILE
+echo
+echo "-- $me -- $(sysvar SYSNAME) -- $(date)"
+echo "-- startup arguments: $@"
+
+# Clear input variables
+# do NOT unset debug
+
+# Get startup arguments
+while getopts d? opt
+do case "$opt" in
+  d)   export debug="-d";;
+  [?]) _displayUsage
+       test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
+       test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
+  esac    # $opt
+done    # getopts
+shift $OPTIND-1
+
+# do NOT rely on zowe-set-envvars.sh, as zowe.yaml is likely out of 
+# sync with what we are about to restore
+# Assume this script is 1 directory deeper than ZOWE_ROOT_DIR
+ZOWE_ROOT_DIR=$here/..
+
+echo "-- Beginning restore of Zowe runtime configuration in $ZOWE_ROOT_DIR"
+
+# Previous failure creating a backup of the customized files ?
+if test -f "$ZOWE_ROOT_DIR/backup/restore-incomplete"
+then 
+  echo "** ERROR $me cannot restore an incomplete backup"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-dsn=${ZOWE_HLQ}.SZWESAMP
+# Get list of files that were customized in the previous run
+_cmd cd $ZOWE_ROOT_DIR/backup/restore
+customized=$(find . -type f) 2>&1
+test "$debug" && echo "$(echo $customized | wc -c) chars in \$customized"
 
-# Validate/create target data set
-$scripts/allocate-dataset.sh $dsn FB 80 PO "$space"
-# returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
-rc=$?
-if test $rc -eq 0
-then                                          # data set created/exists
-  # no operation
-elif test $rc -eq 1
-then                                       # data set exists, wrong DCB
-  echo "** ERROR $me data set $dsn does not have DCB(FB 80 PO)"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-else
-  # Error details already reported
+# Any files available to restore ?
+if test -z "$customized"
+then 
+  echo "** ERROR $me no backup available"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-# Copy members
-for file in $list
+# Restore backup
+for file in $customized
 do
-  file=$INSTALL_DIR/$file
-
-  # Validate file
-  test "$debug" && echo file=$file
-  if test ! -f "$file" -o ! -r "$file"
-  then
-    echo "** ERROR $me cannot access $file"
-    echo "ls -ld \"$file\""; ls -ld "$file"
-    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
-  fi    #
-
-  # Copy file to member
-  member=$(basename $file)
-  member=${member%%.*}                 # keep up to first . (exclusive)
-  echo "  Copy $file to $dsn($member)" >> $LOG_FILE
-  _cmd cp $file "//'$dsn($member)'"
-
-# TODO v1.1.0 has ocopyshr.rexx instead of cp, why?
-
-  # Remove install source if requested
-  test "$ReMoVe" && _cmd rm -f $file
+  _cmd cp -f $file $ZOWE_ROOT_DIR/$file
 done    # for file
 
-# Remove install script if requested
-test "$ReMoVe" && _cmd rm -f $0
+echo "** WARNING the source data for zowe-configure-zlux-deploy.sh \
+  has been restored, but the zowe-configure-zlux-deploy.sh script has \
+  NOT been executed to avoid altering third-party updates. Verify it \
+  is safe to re-deploy before manually executing the script."
+  
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
+echo "-- Completed restore of Zowe runtime configuration in $ZOWE_ROOT_DIR"
 test "$debug" && echo "< $me 0"
-echo "</$me> 0" >> $LOG_FILE
 exit 0

@@ -10,14 +10,18 @@
 # Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
-# Install the Zowe API Mediation Layer.
-# Called by zowe-install.sh
+# TODO is rename from zowe-install-existing-plugin.sh acceptable?
+
+# Add existing plugin to zLUX.
+# Called by zowe-configure-zlux.sh
 #
 # Arguments:
-# /
+# ZOWE_ROOT_DIR  Zowe root directory
+# PLUGIN_ID      id of the plugin, e.g. "org.zowe.zlux.auth.apiml"
+# PLUGIN_DIR     absolute path to the directory with the plugin
 #
 # Expected globals:
-# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
+# $IgNoRe_ErRoR $debug $LOG_FILE $ZOWE_ROOT_DIR
 
 here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
@@ -25,9 +29,34 @@ me=$(basename $0)              # script name
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
 
-echo "-- API Mediation"
 test "$debug" && echo "> $me $@"
 test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
+
+# ---------------------------------------------------------------------
+# --- display script usage information
+# ---------------------------------------------------------------------
+function _displayUsage
+{
+echo "** ERROR $me"
+echo "Usage: $me  ZOWE_ROOT_DIRECTORY  PLUGIN_ID  PLUGIN_DIRECTORY" >&2
+echo "e.g. $me  ~/zowe  org.zowe.plugin.example  ~/zowe/myplugins" >&2
+}    # _displayUsage
+
+# ---------------------------------------------------------------------
+# --- Create backup of file, will be restored on all future config runs
+# 1: absolute path to file that requires backup
+# ---------------------------------------------------------------------
+function _backup
+{
+if test -f "$ZOWE_ROOT_DIR/backup/restart-incomplete" 
+then
+  # create path that matches original path with backup/restart/ inserted
+  # ${1#*$ZOWE_ROOT_DIR/}       # keep everything after $ZOWE_ROOT_DIR/
+  _cmd mkdir -p $ZOWE_ROOT_DIR/backup/restart/$(dirname ${1#*$ZOWE_ROOT_DIR/})
+  # copy file in newly created path
+  _cmd cp -f $1 $ZOWE_ROOT_DIR/backup/restart/${1#*$ZOWE_ROOT_DIR/}
+fi    #
+}    # _backup
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -74,43 +103,61 @@ fi    #
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 function main { }     # dummy function to simplify program flow parsing
-_cmd umask 0022                                  # similar to chmod 755
 
-# Set environment variables when not called via zowe-install.sh
-if test -z "$INSTALL_DIR"
+# Ensure the rc variable is null
+unset rc
+
+# Get startup arguments
+ZOWE_ROOT_DIR=$1
+PLUGIN_ID=$2
+PLUGIN_DIR=$3
+
+zluxServer="zlux-app-server"
+zluxPlugin="$ZOWE_ROOT_DIR/$zluxserver/plugins"
+
+# Input validation, do not use elif so all tests run
+if test "$#" -ne 3
 then
-  # Set all required environment variables & logging
-  # Note: script exports environment vars, so run in current shell
-  _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
-else
-  echo "  $(date)" >> $LOG_FILE
+  _displayUsage
+  rc=8
 fi    #
 
-# Target paths based on $ZOWE_ROOT_DIR
-folder="api-mediation"
-scriptFolder=$folder/scripts
+if test ! -d "$3"
+then
+  _displayUsage
+  echo "PLUGIN_DIRECTORY $3 not a directory" >&2
+  rc=8
+fi    #
 
-_cmd $scripts/unpax.sh \
-  "$INSTALL_DIR/files/api-mediation-package*.pax" \
-  "$ZOWE_ROOT_DIR/$folder" \
-  "API Mediation"
+if test ! -d "$1"
+then
+  _displayUsage
+  echo "ZOWE_ROOT_DIRECTORY $1 not a directory" >&2
+  rc=8
+elif test ! -w $zluxPlugin
+#  chmod -R u+w $zluxPlugin
+#  if test $? -ne 0
+    _displayUsage
+    echo "cannot write to $zluxPlugin" >&2
+    rc=8
+#  fi    #
+fi    #
 
-# Create relative symlink $scriptFolder/zowe-scripts to $ZOWE_SCRIPTS
-# logic: To get to the target, sed replaces each directory in
-#        $scriptFolder with .. which brings us to $ZOWE_ROOT_DIR
-#        (without knowing $ZOWE_ROOT_DIR). To this we can append the
-#        path to the target.
-_cmd ln -s \
-  "$(echo $scriptFolder | sed 's![^/]*!..!g')/$ZOWE_SCRIPTS" \
-  "$ZOWE_ROOT_DIR/$scriptFolder/zowe-scripts"
+test -n "$rc" -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
 
-# TODO why is api-defs not in pax ?
-# Create the static api definitions folder
-_cmd mkdir -p "$ZOWE_ROOT_DIR/$folder/api-defs"
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-# Remove install script if requested
-test "$ReMoVe" && _cmd rm -f $0
+test "$debug" && echo "cat <<EOF 2>&1 >$zluxPlugin/$PLUGIN_ID.json"
+cat <<EOF 2>&1 >$zluxPlugin/$PLUGIN_ID.json
+{
+  "identifier": "$PLUGIN_ID",
+  "pluginLocation": "$PLUGIN_DIR"
+}
+EOF
+test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
+# No original to save, but add customized one so restore can process it
+_backup $zluxPlugin/$PLUGIN_ID.json
 
 test "$debug" && echo "< $me 0"
-echo "</$me> 0" >> $LOG_FILE
+test "$LOG_FILE" && echo "</$me> 0" >> $LOG_FILE
 exit 0

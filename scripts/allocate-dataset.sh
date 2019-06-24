@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
 # Allocate data set if needed, test existing data set for correct DCB.
@@ -18,7 +18,7 @@
 # -p        (optional) existing partitioned data set must be PDS
 # -P dirBlk (optional) allocate data set as PDS with x directory blocks
 # dsn       data set name
-# recFm     record format; {FB | U | VB}
+# recFm     record format; {FB | FBA | U | VB | VBA}
 # lRecL     logical record length, use ** for RECFM(U)
 # dsOrg     data set organisation; {PO | PS}
 # space     space in tracks; primary[,secondary]
@@ -58,7 +58,7 @@ do case "$opt" in
   h)   hide="-h";;
   p)   pds="-p";;
   P)   dir="$OPTARG";;
-  [?]) echo "** ERROR $0 faulty startup argument: $@"
+  [?]) echo "** ERROR $(basename $0) faulty startup argument: $@"
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
@@ -74,19 +74,19 @@ space="$5"
 # (Some tests done by called scripts)
 if test "$dir" -a "$dsOrg" != "PO"
 then
-  echo "** ERROR $0 faulty startup argument: $args"
+  echo "** ERROR $(basename $0) faulty startup argument: $args"
   echo "-P requires PO, not $dsOrg"
   rc=8
 fi    #
 
 if test "$recFm" = "U" -a "$dsOrg" != "PO"
 then
-  echo "** ERROR $0 faulty startup argument: $args"
+  echo "** ERROR $(basename $0) faulty startup argument: $args"
   echo "RECFM(U) requires DSORG(PO)"
   rc=8
 fi    #
 
-# TODO test recFm in {FB | U | VB}
+# TODO test recFm in {FB | FBA | U | VB | VBA}
 # TODO lRecL numeric or ** when RECFM(U)
 # TODO dsOrg in {PO | PS}
 # TODO space numeric or numeric,numeric
@@ -99,7 +99,7 @@ test "$rc" -a ! "$IgNoRe_ErRoR" && exit 8                        # EXIT
 # Does data set exist?
 if test -z "$rc"                             # only if no rc set so far
 then
-  $here/check-dataset-exist.sh $dsn
+  $here/check-dataset-exist.sh "$dsn"
   # Returns 0 for exist, 2 for not exist, 8 for error
   rc=$?
 fi    #
@@ -110,7 +110,7 @@ then                                                  # data set exists
   test "$debug" && echo "use existing data set $dsn"
   test "$LOG_FILE" && echo "  Use existing data set $dsn" >> $LOG_FILE
 
-  $here/check-dataset-dcb.sh $pdse $pds $dsn "$recFm" "$lRecL" "$dsOrg"
+  $here/check-dataset-dcb.sh $pdse $pds "$dsn" "$recFm" "$lRecL" "$dsOrg"
   # Returns 0 for DCB match, 1 for other, 2 for not pds(e), 8 for error
   rc=$?
 elif test $rc -eq 2
@@ -155,7 +155,7 @@ then                                          # data set does not exist
     rc=0
   else
     # Error details already reported
-    echo "** ERROR data set $dsn has not been allocated"
+    echo "** ERROR $(basename $0) data set $dsn has not been allocated"
     test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
     rc=8
   fi    #

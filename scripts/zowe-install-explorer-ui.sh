@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
 # Install the Zowe Explorer UI.
@@ -17,9 +17,10 @@
 # /
 #
 # Expected globals:
-# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR $ZOWE_ROOT_DIR
+# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
 
-list="jes mvs uss"
+list="jes mvs uss"             # plugins to process
+here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -86,16 +87,15 @@ else
   echo "  $(date)" >> $LOG_FILE
 fi    #
 
-for subSys in $list
+for plugin in $list
 do
-  _cmd $INSTALL_DIR/scripts/unpax.sh \
-    "$INSTALL_DIR/files/explorer-${subSys}-*.pax" \
-    "$ZOWE_ROOT_DIR/${subSys}_explorer" \
-    "Explorer $subSys UI"
+  PLUGIN=$(echo $plugin | tr '[:lower:]' '[:upper:]')       # uppercase
 
-  # NOTICE: zowe-install-iframe-plugin.sh will try to automatically
-  # create install folder based on plugin name
-done    # for subSys
+  _cmd $scripts/unpax.sh \
+    "$INSTALL_DIR/files/explorer-${plugin}-*.pax" \
+    "$ZOWE_ROOT_DIR/${plugin}_explorer" \
+    "$PLUGIN Explorer UI"
+done    # for plugin
 
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0

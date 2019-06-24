@@ -12,7 +12,7 @@
 
 # TODO - ALTERS INSTALLED PRODUCT
 
-# Configure Explorer UI plugins.
+# Configure zLUX.
 # Called by zowe-configure.sh
 #
 # Arguments:
@@ -21,45 +21,15 @@
 # Expected globals:
 # $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
 
-list="jes mvs uss"             # plugins to process
 here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
 
-echo "-- Explorer UI plugins"
+echo "-- zLUX"
 test "$debug" && echo "> $me $@"
 test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
-
-# ---------------------------------------------------------------------
-# --- get plugin-specific data from Node
-#     assumes to be in $ZOWE_ROOT_DIR/$pluginFolder
-# $1: environment variable to hold value
-# $2: Node key
-# $3: Node description
-# ---------------------------------------------------------------------
-function _prime
-{
-test "$debug" && echo "set $1"
-TmP=$($node -e \
-  "process.stdout.write(require('./package.json').config.$2)") 2>&1
-sTaTuS=$?
-
-if test $sTaTuS -ne 0
-then
-  echo "** ERROR $me invoking node for $3 failed with RC $sTaTuS"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-fi    #
-
-if test -z $TmP
-then
-  echo "** ERROR $me cannot read $3" | tee -a $LOG_FILE
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-fi    #
-
-_cmd eval $1=$TmP
-}    # _prime
 
 # ---------------------------------------------------------------------
 # --- Create backup of file, will be restored on all future config runs
@@ -155,84 +125,84 @@ else
   echo "  $(date)" >> $LOG_FILE
 fi    #
 
-# Verify that Node is available
-if test ! -d "$NODE_HOME"
-then
-  echo "** ERROR $me NODE_HOME specified in $ZOWE_CFG is not valid" \
-    | tee -a $LOG_FILE
-  echo "ls -ld \"$NODE_HOME\""; ls -ld "$NODE_HOME"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-fi    #
-
-node="$NODE_HOME/bin/node"
-if test ! -x $node
-then
-  echo "** ERROR $me cannot execute '$node'" | tee -a $LOG_FILE
-  echo "ls -ld \"$node\""; ls -ld "$node"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-fi    #
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
-# Define certificates from apiml keystore
 unset suffix
 test $(uname) = "OS/390" && suffix="-ebcdic"
 keystorePath="$ZOWE_ROOT_DIR/api-mediation/keystore"
 keystoreKey="$keystorePath/localhost/localhost.keystore.key"
 keystoreCert="$keystorePath/localhost/localhost.keystore.cer${suffix}"
+keystoreCA="$keystorePath/local_ca/localca.cer${suffix}"
 
-for plugin in $list
-do
-  test "$debug" && echo "plugin=$plugin"
+# zLUX server
+echo "  Updating zlux-app-server/config/zluxserver.json" >> $LOG_FILE
+SED=""
+SED="$SED;s/%8544%/$ZOWE_ZLUX_SERVER_HTTPS_PORT/g"
+SED="$SED;s/%8542%/$ZOWE_ZSS_SERVER_PORT/g"
+SED="$SED;s/%10010%/$ZOWE_APIM_GATEWAY_PORT/g"
+SED="$SED;/hostname/s/localhost/$ZOWE_EXPLORER_HOST/"
+SED="$SED;s|.*\"keys\".*|      \"keys\": [\"$keystoreKey\"],|g"
+SED="$SED;s|.*\"certificates\".*|      \"certificates\": [\"$keystoreCert\"],|g"
+SED="$SED;s|.*\"certificateAuthorities\".*|      \"certificateAuthorities\": [\"$keystoreCA\"]|g"
+_backup $ZOWE_ROOT_DIR/zlux-app-server/config/zluxserver.json
+_sed $ZOWE_ROOT_DIR/zlux-app-server/config/zluxserver.json
 
-  PLUGIN=$(echo $plugin | tr '[:lower:]' '[:upper:]')       # uppercase
-  echo "  Configuring $PLUGIN Explorer UI" >> $LOG_FILE
+# SSH port for the VT terminal app
+echo "  Updating vt-ng2/_defaultVT.json" >> $LOG_FILE
+SED="s/22/$ZOWE_ZLUX_SSH_PORT/g"
+_backup $ZOWE_ROOT_DIR/vt-ng2/_defaultVT.json
+_sed $ZOWE_ROOT_DIR/vt-ng2/_defaultVT.json
 
-  pluginPort="ZOWE_EXPLORER_${PLUGIN}_UI_PORT" 2>&1  # name of variable
-  _cmd eval pluginPort='$'$pluginPort               # value of variable
-
-  pluginFolder="$plugin_explorer"
-  _cmd cd "$ZOWE_ROOT_DIR/$pluginFolder"
-
-  _prime pluginBaseURI baseuri "server base uri"
-  _prime pluginId pluginId "plugin ID"
-  _prime pluginName pluginName "plugin name"
-
-  echo "    - plugin ID   : $pluginID" >> $LOG_FILE
-  echo "    - plugin name : $pluginName" >> $LOG_FILE
-  echo "    - port        : $pluginPort" >> $LOG_FILE
-  echo "    - base uri    : $pluginBaseURI" >> $LOG_FILE
-
-  # Update default config.json
-  # - replace URL
-  # - replace port
-  # - replace certificates
-  SED="s|\"frame-ancestors\": *\[\$|\"frame-ancestors\": [\"https://${ZOWE_EXPLORER_HOST}:*\"|g" \
-  SED="$SED;s|\"port\":.\+,|\"port\": ${pluginPort},|g"
-  SED="$SED;s|\"port\":[^,]\+|\"port\": ${pluginPort}|g"
-  SED="$SED;s|\"key\":[^,]\+,|\"key\": \"${keystoreKey}\",|g"
-  SED="$SED;s|\"key\":[^,]\+|\"key\": \"${keystoreKey}\"|g"
-  SED="$SED;s|\"cert\":[^,]\+,|\"cert\": \"${keystoreCert}\",|g"
-  SED="$SED;s|\"cert\":[^,]\+|\"cert\": \"${keystoreCert}\"|g"
-  _backup $ZOWE_ROOT_DIR/$pluginFolder/server/configs/config.json
-  _sed $ZOWE_ROOT_DIR/$pluginFolder/server/configs/config.json
-
-  # Add explorer plugin to zLUX
-  pluginImage="$ZOWE_ROOT_DIR/$pluginFolder/plugin-definition/zlux/images/explorer-${PLUGIN}.png"
-  pluginURL="https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT$pluginBaseURI"
-  _cmd $scripts/zowe-configure-zlux-add-iframe-plugin.sh \
-    "$ZOWE_ROOT_DIR" \
-    "$pluginID" \
-    "$pluginName" \
-    "$pluginURL" \
-    "$pluginImage"
-
-  echo "  $PLUGIN Explorer UI configured." >> $LOG_FILE
-done    # for plugin
+# Telnet port & security type for the 3270 emulator app
+echo "  Updating tn3270-ng2/_defaultTN3270.json" >> $LOG_FILE
+SED="s/23/$ZOWE_ZLUX_TELNET_PORT/g"
+test "$ZOWE_ZLUX_SECURITY_TYPE" = "tls" && \
+  SED="$SED;s/telnet/$ZOWE_ZLUX_SECURITY_TYPE/g"
+_backup $ZOWE_ROOT_DIR/tn3270-ng2/_defaultTN3270.json
+_sed $ZOWE_ROOT_DIR/tn3270-ng2/_defaultTN3270.json
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# Configure access to API Catalog
+echo "  Configure access to API Catalog" >> $LOG_FILE
+if test "$ZOWE_APIM_ENABLE_SSO" != "true"
+then                                      # Access API Catalog directly
+  test "$debug" && echo "access API Catalog directly"
+  CATALOG_GATEWAY_URL="https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog/"
+else                           # Access API Catalog with token injector
+  test "$debug" && echo "access API Catalog with token injector"
+  CATALOG_GATEWAY_URL="https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/"
+
+  # Add API Mediation Layer authentication plugin to zLUX
+  _cmd $scripts/zowe-configure-zlux-add-plugin.sh \
+     $ZOWE_ROOT_DIR \
+     "org.zowe.zlux.auth.apiml" \
+     $ZOWE_ROOT_DIR/api-mediation/apiml-auth
+
+  # Define the plugin to zLUX
+  SED='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
+  SED='s/"zss": {/'"$SED"', "zss": {/g'
+  _backup $ZOWE_ROOT_DIR/zlux-app-server/config/zluxserver.json
+  _sed $ZOWE_ROOT_DIR/zlux-app-server/config/zluxserver.json
+fi    # Configure access to API Catalog
+
+# Add API Catalog application to zLUX
+# required before we issue zLUX deploy.sh
+_cmd $scripts/zowe-configure-zlux-add-iframe-plugin.sh \
+  $ZOWE_ROOT_DIR \
+  "org.zowe.api.catalog" \
+  "API Catalog" \
+  $CATALOG_GATEWAY_URL \
+  $ZOWE_ROOT_DIR/files/assets/api-catalog.png
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# Run deploy on the zLUX app server to propagate the changes made
+silent="-s"
+test "$debug" && unset silent
+_cmd $scripts/zowe-configure-zlux-deploy.sh $silent
+
+# Adjust zLUX access permisions, must run after deploy
+_cmd $scripts/zowe-configure-zlux-authorize.sh
 
 test "$debug" && echo "< $me 0"
 echo "</$me> 0" >> $LOG_FILE
 exit 0
-

@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
 # Create PARMLIB library members.
@@ -90,11 +90,11 @@ fi    #
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 function main { }     # dummy function to simplify program flow parsing
+_cmd umask 0022                                  # similar to chmod 755
 
-# Set environment variables when not called via zowe-install.sh
+# Set environment variables when not called via zowe-configure.sh
 if test -z "$INSTALL_DIR"
 then
-  # Set all required environment variables & logging
   # Note: script exports environment vars, so run in current shell
   _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
 else
@@ -102,7 +102,7 @@ else
 fi    #
 
 # Validate/create target data set
-$here/allocate-dataset.sh "$ZOWE_PARMLIB" FB 80 PO "$space"
+$scripts/allocate-dataset.sh "$ZOWE_PARMLIB" FB 80 PO "$space"
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
@@ -122,11 +122,11 @@ fi    #
 #ZWESIPRG
 # Get volser & SMS-managed flag of SZWEAUTH
 # Show everything in debug mode
-test "$debug" && $here/check-dataset-exist -sv "${ZOWE_HLQ}.SZWEAUTH" 2>&1
+test "$debug" && $scripts/check-dataset-exist.sh -sv "${ZOWE_HLQ}.SZWEAUTH" 2>&1
 # Get volser (no debug mode to avoid debug messages)
 saved_debug=$debug
 unset debug
-volser=$($here/check-dataset-exist -sv "${ZOWE_HLQ}.SZWEAUTH") 2>&1
+volser=$($scripts/check-dataset-exist.sh -sv "${ZOWE_HLQ}.SZWEAUTH") 2>&1
 # returns 0 for exist, 1 for (non)SMS mismatch, 2 for not exist, 8 for error
 rc=$?
 debug=$saved_debug
@@ -139,7 +139,7 @@ then                             # data set exists & is not SMS managed
 elif test $rc -eq 2
 then                                         # data set does not exists
   echo "** ERROR $me data set $dsn does not exist"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT  
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 else
   # Error details already reported
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT

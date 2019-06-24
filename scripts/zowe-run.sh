@@ -10,7 +10,7 @@
 # Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
-#% Start Zowe server started task.
+#% Start Zowe server components.
 #%
 #% Invocation arguments:
 #% -?            show this help message
@@ -20,6 +20,8 @@
 #% If -c is not specified, then the server is started using default
 #% values.
 
+# Called by Zowe server started task.
+
 here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
@@ -27,6 +29,30 @@ me=$(basename $0)              # script name
 #set -x                                                          #debug
 
 test "$debug" && echo "> $me $@"
+
+# ---------------------------------------------------------------------
+# --- invoke a server startup script and track return code
+# $1: if -b then run in background, parm is removed when present
+# $@: script to execute, relative to $ZOWE_ROOT_PATH, with arguments
+# ---------------------------------------------------------------------
+function _start
+{
+test "$debug" && echo
+
+if test "$1" = "-b"
+then  # run in background
+  shift
+  test "$debug" && echo "$ZOWE_ROOT_DIR/$@ &"
+  $ZOWE_ROOT_DIR/$@ &
+  RC=$?
+else  # run in foreground
+  test "$debug" && echo "$ZOWE_ROOT_DIR/$@"
+  $ZOWE_ROOT_DIR/$@
+  RC=$?
+fi    #
+
+test $RC -gt $rc && rc=$RC
+}    # _start
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -112,42 +138,25 @@ unset inst conf
 # NOTE: script exports environment vars, so run in current shell
 _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
 
-# Start server
-if test -z "$ZOWE_JOBCARD1"
-then                                     # issue START operator command
-  _cmd $scripts/opercmd.rex $debug \
-    "S $ZOWE_STC_ZOWE,HOME='$ZOWE_ROOT_DIR',CFG='$ZOWE_CFG'"
-else                                     # submit job
-  # substitute &SYSUID. with user ID
-  ZOWE_JOBCARD1=$(echo $ZOWE_JOBCARD1 | sed "s/&SYSUID\./$(id -un)/")
-  test "$debug" && echo "ZOWE_JOBCARD1=$ZOWE_JOBCARD1"
+# Set initial return code
+rc=0
 
-  # Add job name to job card if none provided
-  # sed will grab all non-blank characters from column 3 to first blank
-  test -z "$(echo $ZOWE_JOBCARD1 | sed 's/..\([^ ]*\).*/\1/')" && \
-    ZOWE_JOBCARD1=$(echo $ZOWE_JOBCARD1 \
-    | awk -v label=$ZOWE_STC_ZOWE '{printf "//%-8s JOB %s/n",label,$3}')
-  test "$debug" && echo "ZOWE_JOBCARD1=$ZOWE_JOBCARD1"
+# Start server components
+echo "Starting server components $(date)..."
+# Note: nodeCluster.sh alters installed product (zlux-app-server/log)
+#       if $ZLUX_NODE_LOG_DIR is not defined
+_start -b zlux-app-server/bin/nodeCluster.sh --allowInvalidTLSProxy=true
+_start api-mediation/scripts/api-mediation-start-discovery.sh
+_start api-mediation/scripts/api-mediation-start-catalog.sh
+_start api-mediation/scripts/api-mediation-start-gateway.sh
+_start explorer-jobs-api/scripts/jobs-api-server-start.sh
+_start explorer-data-sets-api/scripts/data-sets-api-server-start.sh
+_start jes_explorer/scripts/start-explorer-jes-ui-server.sh
+_start mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
+_start uss_explorer/scripts/start-explorer-uss-ui-server.sh
 
-  # Create and submit job
-  cat <<EOF 2>&1 > submit
-${ZOWE_JOBCARD1}
-${ZOWE_JOBCARD2:-//*}
-//         JCLLIB ORDER=${ZOWE_HLQ}.SZWESAMP
-//*
-//ZOWESVR  EXEC PROC=${ZOWE_STC_ZOWE},PRM=,
-// HOME='${ZOWE_ROOT_DIR}',
-//  CFG='${ZOWE_CFG}'
-//*
-EOF
+# Show a list of the servers
+_cmd ps -u $(id -u) -o pid,jobname,xasid -o comm
 
-  sTaTuS=$?
-  if test $sTaTuS -ne 0
-  then
-    echo "** ERROR $me 'submit' ended with status $sTaTuS"
-    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
-  fi    #
-fi    #
-
-test "$debug" && echo "< $me 0"
-exit 0
+test "$debug" && echo "< $me $rc"
+exit $rc

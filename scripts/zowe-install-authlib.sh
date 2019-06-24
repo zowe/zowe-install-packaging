@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
 # Create authlib(members).
@@ -22,6 +22,7 @@
 list=""     # file names include path based on $INSTALL_DIR
 list="$list files/zss/LOADLIB/ZWESIS01"  # ZSS load module
 space="10,2"                   # data set space allocation
+here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -90,7 +91,7 @@ fi    #
 dsn=${ZOWE_HLQ}.SZWEAUTH
 
 # Validate/create target data set
-$INSTALL_DIR/scripts/allocate-dataset.sh -e $dsn U "**" PO "$space"
+$scripts/allocate-dataset.sh -e $dsn U "**" PO "$space"
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
@@ -128,7 +129,7 @@ do
   member=${member%%.*}                 # keep up to first . (exclusive)
   echo "  Copy $file to $dsn($member)" >> $LOG_FILE
   # cp -X requires z/OS V2R2 UA96711, z/OS V2R3 UA96707 (August 2018)
-  _cmd cp -X $file "//'$dsn($member)'" 
+  _cmd cp -X $file "//'$dsn($member)'"
 
   # Remove install source if requested
   test "$ReMoVe" && _cmd rm -f $file

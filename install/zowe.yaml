@@ -8,10 +8,44 @@
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 install:
-  # Directory where Zowe will be installed, default ~/zowe/{zowe_version}
+  # Directory where Zowe will be installed
+  # default ~/zowe/{zowe_version}
   rootDir=
-  # High Level Qualifier of SZWE* data sets, default {userid}.ZWE
+  # High Level Qualifier of SZWE* data sets
+  # default {userid}.ZWE{zowe_version}
   hlq=
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# References to external resources, these must exist at runtime
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+external:
+  # node.js install directory
+  # default /usr/lpp/IBM/cnj
+  nodeHome=
+  # 64-bit Java J8.0 or newer install directory
+  # default /usr/lpp/java/J8.0_64
+  javaHome=
+  # z/OSMF HTTPS port
+  # default 443
+  zosmfPort=
+  # z/OSMF configuration directory
+  # default /var/zosmf/configuration/servers/zosmfServer
+  zosmfConfigPath=
+  # TCP/IP host name (including domain name)
+  # default as defined by hostname command
+  hostName=
+  # TCP/IP host address
+  # default as defined by host command for hostName value
+  hostIP=
+  # SSH port
+  # default 22
+  sshPort=
+  # TN3270 telnet port
+  # default 23
+  telnetPort=
+  # uncomment and specify tls to enable encrypted TN3270 communication
+# security=tls
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # Zowe configuration options
@@ -19,38 +53,56 @@ install:
 
 # Data sets that Zowe will be configured into
 datasets:
-  # PROCLIB data set name, default {userid}.ZWE.CUST.PROCLIB
+  # PROCLIB data set name
+  # default {userid}.ZWE{zowe_version}.CUST.PROCLIB
   proclib=
-  # PARMLIB data set name, default {userid}.ZWE.CUST.PARMLIB
+  # PARMLIB data set name
+  # default {userid}.ZWE{zowe_version}.CUST.PARMLIB
   parmlib=
-  # Miscelaneous JCL data set name, default {userid}.ZWE.CUST.JCL
-  jcl=
+  # Miscelaneous JCL data set name
+  # default {userid}.ZWE{zowe_version}.CUST.JCL
+  jcllib=
 
-# References to external resources, these must exist
-external:
-  # node.js install directory
-  nodeHome=/usr/lpp/IBM/cnj
-  # Java J8.0 or newer install directory
-  javaHome=/usr/lpp/java/J8.0_64
-  # z/OSMF HTTPS port
-  zosmfPort=443
-  # z/OSMF configuration directory
-  zosmfConfigPath=/var/zosmf/configuration/servers/zosmfServer
-  # TCP/IP host name, default as defined by hostname command
-  hostName=
-  # TCP/IP host address, default as defined by host command
-  hostIP=
-  
-# References to external resources, these must exist
-terminals:
-  sshPort=22
-  telnetPort=23
-# security=tls
+# 
+admin:
+  # A customizable copy of this file created during customization
+  # (during install, this file is saved as {rootDir}/admin/zowe.yaml)
+  # no default value
+  config=/etc/zowe.yaml
+  # group for Zowe administrators (can add plugins)
+  # default ZWEADMIN
+  adminGroup=
+
+# Zowe server 
+servers:
+  # Zowe started task name
+  # default ZOWESVR
+  zoweSTC=
+  # Zowe started task user ID
+  # default ZOWEUSR
+  zoweUser=
+  # ZSS started task name (Z Secure Services)
+  # default ZOWEZSS
+  zssSTC=
+  # ZSS started task user ID
+  # default ZSSUSR
+  zssUser=
+# TODO currently not used as variable
+#  # group for Zowe started tasks
+#  # default STCGROUP
+#  stcGroup=
+  # job card for starting a personal Zowe server
+  # no default - to use, uncomment and adjust sample job card lines
+  # ({zoweSTC} is used if no job name is provided)
+  # (string &SYSUID. in the job name is replaced by the submitter's user ID)
+#  jobCard1=//  JOB CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#  jobCard2=//*
 
 api-mediation:
   catalogPort=7552
   discoveryPort=7553
   gatewayPort=7554
+  # either all or no externalCertificate* variables must be set
   externalCertificate=
   externalCertificateAlias=
   externalCertificateAuthorities=
@@ -71,15 +123,8 @@ zowe-desktop-apps:
 zlux-server:
   httpsPort=8544
   zssPort=8542
-
-# started task JCL member for Zowe job - these entries are not case-sensitive
-zowe-server-proclib:
-# dsName=SYS1.PROCLIB   # Example of required dataset name.  Do not enclose it in quotes.
-#  If you omit the 'dsName' tag or specify 'dsName=auto', 
-#  the install script scans the datasets in the PROCLIB concatenation 
-#  and places the JCL member in the first dataset where the installing 
-#  user has write access.  
-  dsName=auto
-  memberName=ZOWESVR
+  # directory for zLUX node server logs
+  # default $TMPDIR (default /tmp), set to /dev/null to disable
+  nodeLogs=
 
 # Do not delete this last line

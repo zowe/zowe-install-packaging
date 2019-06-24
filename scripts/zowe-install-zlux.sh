@@ -7,8 +7,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
+
+# TODO why is deploy.sh in zlux-core.pax (zlux-build/deploy.sh) instead of scripts?
 
 # Install the Zowe zLUX server.
 # Called by zowe-install.sh
@@ -21,7 +23,7 @@
 # /
 #
 # Expected globals:
-# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR $ZOWE_ROOT_DIR
+# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
 
 list=""
 list="$list sample-angular-app.pax"
@@ -34,6 +36,7 @@ list="$list zlux-editor.pax"
 list="$list zlux-workflow.pax"
 list="$list zosmf-auth.pax"
 list="$list zss-auth.pax"
+here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -42,6 +45,28 @@ me=$(basename $0)              # script name
 echo "-- zLUX"
 test "$debug" && echo "> $me $@"
 test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
+
+# ---------------------------------------------------------------------
+# --- customize a file using sed, optionally creating a new output file
+#     assumes $SED is defined by caller and holds sed command string
+# $1: if -x then make result executable, parm is removed when present
+# $1: input file
+# $2: (optional) output file, default is $1
+# ---------------------------------------------------------------------
+function _sed
+{
+unset ExEc
+if test "$1" = "-x"
+then                                     # make exectuable after update
+  shift
+  ExEc=1
+fi    #
+
+TmP=$TMPDIR/$(basename $1)
+_cmd --repl $TmP sed $SED $1                    # sed '...' $1 > $TmP
+_cmd mv $TmP ${2:-$1}                           # give $TmP actual name
+test -n "$ExEc" && _cmd chmod a+x ${2:-$1}      # make executable
+}    # _sed
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -107,14 +132,14 @@ do
   unset dir
   test "$file" != "zlux-core.pax" && dir=$plugin
 
-  _cmd $INSTALL_DIR/scripts/unpax.sh \
+  _cmd $scripts/unpax.sh \
     "$INSTALL_DIR/files/zlux/$file" \
     "$ZOWE_ROOT_DIR/$dir" \
     "$plugin"
 done    # for file
 
-# Copy zss server front-end, extattr +p is lost
-_cmd $INSTALL_DIR/scripts/copy.sh \
+# Copy zss server front-end, extattr +p is lost (set again later)
+_cmd $scripts/copy.sh \
   "$INSTALL_DIR/files/zss/zssServer" \
   "$ZOWE_ROOT_DIR/zlux-app-server/bin/" \
   "zss server front-end"
@@ -123,25 +148,42 @@ _cmd $INSTALL_DIR/scripts/copy.sh \
 
 # Prepare for additional tasks
 config=$INSTALL_DIR/files/zlux/config
-_cmd cd $ZOWE_ROOT_DIR
+app-server=$ZOWE_ROOT_DIR/zlux-app-server
 
 # Mark executable as program controlled
-_cmd extattr +p zlux-app-server/bin/zssServer
+_cmd extattr +p $app-server/bin/zssServer
 
-# TODO why not in pax?
-# Create log directory
-# Requires new R/W file system when ZOWE_ROOT_DIR is mounted R/O
-_cmd mkdir -p zlux-app-server/log
+# removed - nodeLogs in zowe.yaml set explicit log directory
+# TODO why is this not in pax?
+# TODO zlux-app-server/log requires new R/W file system when ZOWE_ROOT_DIR is mounted R/O
+#_cmd mkdir -p $app-server/log
 
-# TODO why not in pax?
-# Create directory not part of plugin pax file
-_cmd mkdir -p zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
+# TODO why is this not in pax?
+_cmd mkdir -p $app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
 
-# TODO move to configuration steps? If so move $config to ZOWE_ROOT_DIR
+# TODO why are these not in pax?
 # Add default config files
-_cmd cp -f $config/pinnedPlugins.json zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
-_cmd cp -f $config/zluxserver.json    zlux-app-server/config/
-_cmd cp -f $config/plugins/*          zlux-app-server/plugins/      #*/
+echo "  Copy of $config/<...> into $app-server/<...>" >> $LOG_FILE
+_cmd cp -f $config/pinnedPlugins.json $app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+_cmd cp -f $config/plugins/*          $app-server/plugins/          #*/
+# TODO why is there a missing line in zluxserver.json?
+if grep -q gatewayPort "$config/zluxserver.json"
+then  # copy as-is
+  _cmd cp -f $config/zluxserver.json $app-server/config/
+else  # add missing line
+  _cmd --repl $app-server/config/zluxserver.json \
+    awk -v line='        "gatewayPort": 10010,' \
+    '/hostname/{printf("%s\n",line)} {print $0}' \
+    $config/zluxserver.json
+fi    #
+
+# TODO zluxserver.json should ship with unique port markers
+# Create unique port-markers in zluxserver.json
+SED=""
+SED="$SED;s/8544/%8544%/g"
+SED="$SED;s/8542/%8542%/g"
+SED="$SED;s/10010/%10010%/g"
+_sed $ZOWE_ROOT_DIR/zlux-app-server/config/zluxserver.json
 
 # Remove install source if requested
 test "$ReMoVe" && _cmd rm -f $config/pinnedPlugins.json
@@ -151,8 +193,8 @@ test "$ReMoVe" && _cmd rm -f $config/plugins/*
 # TODO if keep then move to configuration steps
 # Open the permission so that a user other than the one who does the
 # install can start the nodeServer and create logs
-#_cmd chmod 777 zlux-app-server/log               
-#_cmd chmod ug+w zlux-app-server/bin/zssServer
+#_cmd chmod 777 $app-server/log
+#_cmd chmod ug+w $app-server/bin/zssServer
 
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0

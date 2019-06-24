@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
 # Create PROCLIB library members.
@@ -90,11 +90,11 @@ fi    #
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 function main { }     # dummy function to simplify program flow parsing
+_cmd umask 0022                                  # similar to chmod 755
 
-# Set environment variables when not called via zowe-install.sh
+# Set environment variables when not called via zowe-configure.sh
 if test -z "$INSTALL_DIR"
 then
-  # Set all required environment variables & logging
   # Note: script exports environment vars, so run in current shell
   _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
 else
@@ -102,7 +102,7 @@ else
 fi    #
 
 # Validate/create target data set
-$here/allocate-dataset.sh "$ZOWE_PROCLIB" FB 80 PO "$space"
+$scripts/allocate-dataset.sh "$ZOWE_PROCLIB" FB 80 PO "$space"
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
@@ -121,15 +121,17 @@ fi    #
 
 # ZWESISTC
 SED=""
-SED="$SED;s/DSN=ZWE.SZWEAUTH/DSN=${ZOWE_HLQ}.SZWEAUTH/"
-SED="$SED;s/DSN=ZWE.SZWESAMP/DSN=$ZOWE_PARMLIB/"
-_sedMVS "${ZOWE_HLQ}.SZWESAMP" ZWESISTC "$ZOWE_PROCLIB" ZSS
+SED="$SED;s/HLQ=[^,]*/HLQ=${ZOWE_HLQ}/"
+SED="$SED;s/CFG=[^,]*/HLQ=${ZOWE_PARMLIB}/"
+_sedMVS "${ZOWE_HLQ}.SZWESAMP" ZWESISTC "$ZOWE_PROCLIB" "$ZOWE_STC_ZSS"
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # ZWESTC
-SED="s!\(.* HOME='\).*!\1$ZOWE_ROOT_DIR'!"
-_sedMVS "${ZOWE_HLQ}.SZWESAMP" ZWESTC "$ZOWE_PROCLIB" ZOWESVR
+SED=""
+SED="$SED;s!HOME=[^,]*!HOME='${ZOWE_ROOT_DIR}'!"
+SED="$SED;s!CFG=[^,]*!CFG='${ZOWE_CFG}'!"
+_sedMVS "${ZOWE_HLQ}.SZWESAMP" ZWESTC "$ZOWE_PROCLIB" "$ZOWE_STC_ZOWE"
 
 test "$debug" && echo "< $me 0"
 echo "</$me> 0" >> $LOG_FILE

@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
 # Test if dsn exists. Optionally test for (non-)SMS, and optionally
@@ -45,8 +45,8 @@ unset nonSms sms volumes
 args="$@"
 while getopts nsv opt
 do case "$opt" in
-  n)   nonsms="-n";;
-  s)   sms="-s";;
+  n)   nonSms="1";;
+  s)   sms="1";;
   v)   volumes="-v";;
   [?]) echo "** ERROR $me faulty startup argument: $@"
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
@@ -57,14 +57,14 @@ shift $OPTIND-1
 dsn="$1"
 
 # Input validation, do not use elif so all tests run
-if test -n "$nonsms" -a -n "$sms"
+if test -n "$nonSms" -a -n "$sms"
 then
   echo "** ERROR $me faulty startup argument: $args"
   echo "-n mutually exclusive with -s"
   rc=8
 fi    #
 
-#if test "$volumes" -a -z "$nonsms"
+#if test "$volumes" -a -z "$nonSms"
 #then
 #  echo "** ERROR $me faulty startup argument: $args"
 #  echo "-v requires -n"
@@ -135,7 +135,7 @@ then
 fi    # get VOLUMES
 
 # Set rc if no (non)SMS requirement
-test -z "$rc" -a -z "$nonsms$sms" && rc=0    # only if no rc set so far
+test -z "$rc" -a -z "$nonSms$sms" && rc=0    # only if no rc set so far
 
 # Get DSCB data
 if test -z "$rc"                             # only if no rc set so far
@@ -184,7 +184,7 @@ then
   if test "$ds1smsfg_masked" = "128"
   then
     test "$debug" && echo "data set $dsn is SMS-managed"
-    test "$nonsms" && rc=1             # set rc if non-SMS was required
+    test "$nonSms" && rc=1             # set rc if non-SMS was required
   else
     test "$debug" && echo "data set $dsn is not SMS-managed"
     test "$sms" && rc=1                # set rc if SMS was required

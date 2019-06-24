@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
 # Install the Zowe Explorer API.
@@ -17,11 +17,9 @@
 # /
 #
 # Expected globals:
-# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR $ZOWE_ROOT_DIR
+# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
 
-list=""     # unique keys of files to process
-list="$list jobs"
-list="$list data-sets"
+here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -30,6 +28,70 @@ me=$(basename $0)              # script name
 echo "-- Explorer API"
 test "$debug" && echo "> $me $@"
 test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
+
+# ---------------------------------------------------------------------
+# --- install API server code & startup script
+# $1: API name
+# $2: name of API port environment variable (see zowe-parse-yaml.sh)
+# ---------------------------------------------------------------------
+function _install
+{
+name=$1
+portVar=$2
+
+test "$debug" && echo "processing $name API"
+
+# Target paths based on $ZOWE_ROOT_DIR
+folder="explorer-${name}-api"
+scriptFolder=$folder/scripts
+
+# Update template startup script (in $INSTALL_DIR)
+SED="s|\*\*SERVER_NAME\*\*|${name}|g"
+SED="$SED;s|\*\*SERVER_PORT\*\*|${portVar}|g"
+_sed -x $INSTALL_DIR/files/scripts/${name}-api-server-start.sh
+
+# Install
+_cmd $scripts/copy.sh \
+  "$INSTALL_DIR/files/${name}-api-server-*.jar" \
+  "$ZOWE_ROOT_DIR/$folder" \
+  "$name explorer API"
+
+_cmd $scripts/copy.sh \
+  "$INSTALL_DIR/files/scripts/${name}-api-server-start.sh" \
+  "$ZOWE_ROOT_DIR/$scriptFolder" \
+  "$name explorer API"
+
+# Create relative symlink $scriptFolder/zowe-scripts to $ZOWE_SCRIPTS
+# logic: To get to the target, sed replaces each directory in
+#        $scriptFolder with .. which brings us to $ZOWE_ROOT_DIR
+#        (without knowing $ZOWE_ROOT_DIR). To this we can append the
+#        path to the target.
+_cmd ln -s \
+  "$(echo $scriptFolder | sed 's![^/]*!..!g')/$ZOWE_SCRIPTS" \
+  "$ZOWE_ROOT_DIR/$scriptFolder/zowe-scripts"
+}    # _install
+
+# ---------------------------------------------------------------------
+# --- customize a file using sed, optionally creating a new output file
+#     assumes $SED is defined by caller and holds sed command string
+# $1: if -x then make result executable, parm is removed when present
+# $1: input file
+# $2: (optional) output file, default is $1
+# ---------------------------------------------------------------------
+function _sed
+{
+unset ExEc
+if test "$1" = "-x"
+then                                     # make exectuable after update
+  shift
+  ExEc=1
+fi    #
+
+TmP=$TMPDIR/$(basename $1)
+_cmd --repl $TmP sed $SED $1                    # sed '...' $1 > $TmP
+_cmd mv $TmP ${2:-$1}                           # give $TmP actual name
+test -n "$ExEc" && _cmd chmod a+x ${2:-$1}      # make executable
+}    # _sed
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -88,20 +150,9 @@ else
   echo "  $(date)" >> $LOG_FILE
 fi    #
 
-for key in $list
-do
-  folder="explorer-${key}-api"
-  
-  _cmd $INSTALL_DIR/scripts/copy.sh \
-    "$INSTALL_DIR/files/${key}-api-server-*.jar" \
-    "$ZOWE_ROOT_DIR/$folder" \
-    "Explorer API"
-
-  _cmd $INSTALL_DIR/scripts/copy.sh \
-    "$INSTALL_DIR/files/scripts/${key}-api-server-start.sh" \
-    "$ZOWE_ROOT_DIR/$folder/scripts" \
-    "Explorer API"
-done    # for key
+# Customize placeholders in server startup scripts & install
+_install jobs      ZOWE_EXPLORER_SERVER_JOBS_PORT
+_install data-sets ZOWE_EXPLORER_SERVER_DATASETS_PORT
 
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0

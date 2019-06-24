@@ -7,120 +7,163 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright IBM Corp. 2018, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
-# TODO cleanup
+# TODO - ALTERS INSTALLED PRODUCT
 
-#********************************************************************
+# Configure the Zowe API Mediation Layer.
+# Called by zowe-configure.sh
+#
+# Arguments:
+# /
+#
 # Expected globals:
-# $ZOWE_JAVA_HOME
-# $ZOWE_ROOT_DIR
-# $ZOWE_EXPLORER_HOST
-# $ZOWE_IPADDRESS
-# $ZOWE_APIM_CATALOG_PORT
-# $ZOWE_APIM_DISCOVERY_PORT
-# $ZOWE_APIM_GATEWAY_PORT
-# $ZOWE_APIM_EXTERNAL_CERTIFICATE
-# $ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
-# $ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
-# $ZOWE_APIM_VERIFY_CERTIFICATES
+# $IgNoRe_ErRoR $debug $LOG_FILE $INSTALL_DIR
+#
+# caller needs these RACF permits when install is done by another ID:
+# TSO PE SUPERUSER.FILESYS.CHANGEPERMS CL(UNIXPRIV) ACCESS(READ) ID(userid)
 
-echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
+here=$(dirname $0)             # script location
+me=$(basename $0)              # script name
+#debug=-d                      # -d or null, -d triggers early debug
+#IgNoRe_ErRoR=1                # no exit on error when not null  #debug
+#set -x                                                          #debug
 
-cd $ZOWE_ROOT_DIR"/api-mediation"
+echo "-- API mediation"
+test "$debug" && echo "> $me $@"
+test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
 
-# Set a+rx for API Mediation JARs
-chmod a+rx *.jar 
+# ---------------------------------------------------------------------
+# --- Create backup of file, will be restored on all future config runs
+# 1: absolute path to file that requires backup
+# ---------------------------------------------------------------------
+function _backup
+{
+if test -f "$ZOWE_ROOT_DIR/backup/restart-incomplete" 
+then
+  # create path that matches original path with backup/restart/ inserted
+  # ${1#*$ZOWE_ROOT_DIR/}       # keep everything after $ZOWE_ROOT_DIR/
+  _cmd mkdir -p $ZOWE_ROOT_DIR/backup/restart/$(dirname ${1#*$ZOWE_ROOT_DIR/})
+  # copy file in newly created path
+  _cmd cp -f $1 $ZOWE_ROOT_DIR/backup/restart/${1#*$ZOWE_ROOT_DIR/}
+fi    #
+}    # _backup
 
-# Make the apiml-auth plugin readable by everyone
-chmod a+rx apiml-auth
-chmod a+rx apiml-auth/lib
-chmod -R a+r apiml-auth
+# ---------------------------------------------------------------------
+# --- customize a file using sed and save in codepage IBM850,
+#     optionally creating a new output file
+#     assumes $SED is defined by caller and holds sed command string
+# $1: if -x then make result executable, parm is removed when present
+# $1: input file
+# $2: (optional) output file, default is $1
+# ---------------------------------------------------------------------
+function _sed850
+{
+unset ExEc
+if test "$1" = "-x"
+then                                     # make exectuable after update
+  shift
+  ExEc=1
+fi    #
 
-# Create the static api definitions folder
-STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/api-defs"
-mkdir -p $STATIC_DEF_CONFIG
+TmP=$TMPDIR/$(basename $1)
+_cmd --repl $TmP sed $SED $1                      # sed '...' $1 > $TmP
+_cmd --repl ${2:-$1} iconv -f IBM-1047 -t IBM-850 $TmP
+_cmd chtag -tc IBM-850 ${2:-$1}             # tag as pure text in cp850
+_cmd rm -f $TmP
+test -n "$ExEc" && _cmd chmod a+x ${2:-$1}            # make executable
+}    # _sed850
 
-echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
+# ---------------------------------------------------------------------
+# --- show & execute command, and bail with message on error
+#     stderr is routed to stdout to preserve the order of messages
+# $1: if --null then trash stdout, parm is removed when present
+# $1: if --save then append stdout to $2, parms are removed when present
+# $1: if --repl then save stdout to $2, parms are removed when present
+# $2: if $1 = --save or --repl then target receiving stdout
+# $@: command with arguments to execute
+# ---------------------------------------------------------------------
+function _cmd
+{
+test "$debug" && echo
+if test "$1" = "--null"
+then         # stdout -> null, stderr -> stdout (without going to null)
+  shift
+  test "$debug" && echo "$@ 2>&1 >/dev/null"
+                         $@ 2>&1 >/dev/null
+elif test "$1" = "--save"
+then         # stdout -> >>$2, stderr -> stdout (without going to $2)
+  sAvE=$2
+  shift 2
+  test "$debug" && echo "$@ 2>&1 >> $sAvE"
+                         $@ 2>&1 >> $sAvE
+elif test "$1" = "--repl"
+then         # stdout -> >$2, stderr -> stdout (without going to $2)
+  sAvE=$2
+  shift 2
+  test "$debug" && echo "$@ 2>&1 > $sAvE"
+                         $@ 2>&1 > $sAvE
+else         # stderr -> stdout, caller can add >/dev/null to trash all
+  test "$debug" && echo "$@ 2>&1"
+                         $@ 2>&1
+fi    #
+sTaTuS=$?
+if test $sTaTuS -ne 0
+then
+  echo "** ERROR $me '$@' ended with status $sTaTuS"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+}    # _cmd
 
-cd scripts/
-# Add JAVA_HOME to both script templates
-sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
-    -e 's/\*\*ZOSMF_KEYRING\*\*/'$ZOWE_ZOSMF_KEYRING'/g' \
-    -e 's/\*\*ZOSMF_USER\*\*/'$ZOWE_ZOSMF_USERID'/g' \
-    -e "s|\*\*EXTERNAL_CERTIFICATE\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE|g" \
-    -e "s|\*\*EXTERNAL_CERTIFICATE_ALIAS\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS|g" \
-    -e "s|\*\*EXTERNAL_CERTIFICATE_AUTHORITIES\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES|g" \
-    -e "s|\*\*ZOWE_ROOT_DIR\*\*|$ZOWE_ROOT_DIR|g" \
-    setup-apiml-certificates-template.sh > setup-apiml-certificates.sh
+# ---------------------------------------------------------------------
+# --- main --- main --- main --- main --- main --- main --- main ---
+# ---------------------------------------------------------------------
+function main { }     # dummy function to simplify program flow parsing
+_cmd umask 0022                                  # similar to chmod 755
 
-# Make configured script executable
-chmod a+x setup-apiml-certificates.sh
+# Set environment variables when not called via zowe-configure.sh
+if test -z "$INSTALL_DIR"
+then
+  # Note: script exports environment vars, so run in current shell
+  _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
+else
+  echo "  $(date)" >> $LOG_FILE
+fi    #
 
-# Inject parameters into API Mediation startup scripts, which contains command-line parameters as configuration
-sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
-    api-mediation-start-catalog-template.sh > api-mediation-start-catalog.sh
+STATIC_DEF_CONFIG="$ZOWE_ROOT_DIR/api-mediation/api-defs"
 
-# Inject parameters into API Mediation startup, which contains command-line parameters as configuration
-sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
-    api-mediation-start-gateway-template.sh > api-mediation-start-gateway.sh
+# Get z/OSMF version (this matches z/OS version)
+ZOSMF_VERSION=$($scripts/get-OS-version.rex) 2>&1
+test "$debug" && echo "ZOSMF_VERSION=$ZOSMF_VERSION"       # e.g. 2.3.0
+vr=$(echo $ZOSMF_VERSION | awk -F '.' '{printf "v%dr%d\n",$1,$2}')
+test "$debug" && echo "vr=$vr"                             # e.g. v2r3
 
-# Inject parameters into API Mediation startup, which contains command-line parameters as configuration
-sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
-    -e 's|\*\*STATIC_DEF_CONFIG\*\*|'$STATIC_DEF_CONFIG'|g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
-    api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
+# Get z/OSMF documetation URL 
+case "$ZOSMF_VERSION" in
+  version-with-special-link | or-other-special ) 
+    ZOSMF_DOC_URL="something-special"
+    ;;
+  * )
+    ZOSMF_DOC_URL="https://www.ibm.com/support/knowledgecenter/en"
+    ZOSMF_DOC_URL="${ZOSMF_DOC_URL}/SSLTBW_${ZOSMF_VERSION}"
+    ZOSMF_DOC_URL="${ZOSMF_DOC_URL}/com.ibm.zos.${vr}.izua700"
+    ZOSMF_DOC_URL="${ZOSMF_DOC_URL}/IZUHPINFO_RESTServices.htm"
+    ;;
+esac    # case $ZOSMF_VERSION
+test "$debug" && echo "ZOSMF_DOC_URL=$ZOSMF_DOC_URL"
 
-# Make the scripts executable
-chmod a+rx *.sh
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-cd ..
-
-# Execute the APIML certificate generation - no user input required
-echo "  Setting up Zowe API Mediation Layer certificates..."
-./scripts/setup-apiml-certificates.sh >> $LOG_FILE
-echo "  Certificate setup done."
-
-# Get the zos version
-ZOSMF_VERSION=""
-ZOSMF_DOC_URL=""
-# Hack - if opercmd fails default to latest OS
-ZOS_RELEASE=`$INSTALL_DIR/scripts/opercmd 'd iplinfo'|grep RELEASE` || ZOS_RELEASE="RELEASE z/OS 02.03.00"
-ZOS_VRM=`echo $ZOS_RELEASE | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
-
-if [[ $ZOS_VRM == "02.03.00" ]]
-then    
-    ZOSMF_VERSION=2.3.0
-    ZOSMF_DOC_URL="https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.izua700/IZUHPINFO_RESTServices.htm"
-elif [[ $ZOS_VRM == "02.02.00" ]]
-then    
-    ZOSMF_VERSION=2.2.0
-    ZOSMF_DOC_URL="https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.2.0/com.ibm.zos.v2r2.izua700/IZUHPINFO_RESTServices.htm"
-fi
+# TODO ship static defintions as files & only customize here
+# TODO write entries in $LOG_FILE
 
 # Add static definition for zosmf	
-cat <<EOF >$TEMP_DIR/zosmf.yml
+file=zosmf.yml
+echo "  creating $STATIC_DEF_CONFIG/$file" >> $LOG_FILE
+test "$debug" && echo
+test "$debug" && echo "cat <<EOF 2>&1 >$TMPDIR/$file"
+cat <<EOF 2>&1 >$TMPDIR/$file
 # Static definition for z/OSMF
 #
 # Once configured you can access z/OSMF via the API gateway:
@@ -148,10 +191,26 @@ catalogUiTiles:
         title: z/OSMF services
         description: IBM z/OS Management Facility REST services
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zosmf.yml > $STATIC_DEF_CONFIG/zosmf.yml	
+if test $? -ne 0
+then
+  echo "** ERROR $me creating $file failed"
+  echo "ls -ld \"$TMPDIR/$file\""; ls -ld "$TMPDIR/$file"
+  rc=8
+fi    #
+_cmd --repl $STATIC_DEF_CONFIG/$file \
+  iconv -f IBM-1047 -t IBM-850 $TMPDIR/$file 
+_cmd rm -f $TMPDIR/$file
+# No original to save, but add customized one so restore can process it
+_backup $STATIC_DEF_CONFIG/$file
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # Add static definition for MVS datasets
-cat <<EOF >$TEMP_DIR/datasets.yml
+file=datasets.yml
+echo "  creating $STATIC_DEF_CONFIG/$file" >> $LOG_FILE
+test "$debug" && echo
+test "$debug" && echo "cat <<EOF 2>&1 >$TMPDIR/$file"
+cat <<EOF 2>&1 >$TMPDIR/$file
 #
 services:
   - serviceId: datasets
@@ -199,10 +258,26 @@ catalogUiTiles:
     title: z/OS Datasets and Unix Files services
     description: IBM z/OS Datasets and Unix Files REST services
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
+if test $? -ne 0
+then
+  echo "** ERROR $me creating $file failed"
+  echo "ls -ld \"$TMPDIR/$file\""; ls -ld "$TMPDIR/$file"
+  rc=8
+fi    #
+_cmd --repl $STATIC_DEF_CONFIG/$file \
+  iconv -f IBM-1047 -t IBM-850 $TMPDIR/$file 
+_cmd rm -f $TMPDIR/$file
+# No original to save, but add customized one so restore can process it
+_backup $STATIC_DEF_CONFIG/$file
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # Add static definition for Jobs
-cat <<EOF >$TEMP_DIR/jobs.yml
+file=jobs.yml
+echo "  creating $STATIC_DEF_CONFIG/$file" >> $LOG_FILE
+test "$debug" && echo
+test "$debug" && echo "cat <<EOF 2>&1 >$TMPDIR/$file"
+cat <<EOF 2>&1 >$TMPDIR/$file
 #
 services:
   - serviceId: jobs
@@ -235,10 +310,26 @@ catalogUiTiles:
     title: z/OS Jobs services
     description: IBM z/OS Jobs REST services
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
+if test $? -ne 0
+then
+  echo "** ERROR $me creating $file failed"
+  echo "ls -ld \"$TMPDIR/$file\""; ls -ld "$TMPDIR/$file"
+  rc=8
+fi    #
+_cmd --repl $STATIC_DEF_CONFIG/$file \
+  iconv -f IBM-1047 -t IBM-850 $TMPDIR/$file 
+_cmd rm -f $TMPDIR/$file
+# No original to save, but add customized one so restore can process it
+_backup $STATIC_DEF_CONFIG/$file
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # Add static definition for USS
-cat <<EOF >$TEMP_DIR/uss.yml
+file=uss.yml
+echo "  creating $STATIC_DEF_CONFIG/$file" >> $LOG_FILE
+test "$debug" && echo
+test "$debug" && echo "cat <<EOF 2>&1 >$TMPDIR/$file"
+cat <<EOF 2>&1 >$TMPDIR/$file
 #
 services:
   - serviceId: explorer-uss
@@ -251,10 +342,26 @@ services:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-uss
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
+if test $? -ne 0
+then
+  echo "** ERROR $me creating $file failed"
+  echo "ls -ld \"$TMPDIR/$file\""; ls -ld "$TMPDIR/$file"
+  rc=8
+fi    #
+_cmd --repl $STATIC_DEF_CONFIG/$file \
+  iconv -f IBM-1047 -t IBM-850 $TMPDIR/$file 
+_cmd rm -f $TMPDIR/$file
+# No original to save, but add customized one so restore can process it
+_backup $STATIC_DEF_CONFIG/$file
 
-chmod -R 777 $STATIC_DEF_CONFIG
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
+# TODO really 777 for $STATIC_DEF_CONFIG ?
+_cmd chmod -R 777 $STATIC_DEF_CONFIG
 
-echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE
+# API Mediation certificate generation
+_cmd $scripts/zowe-configure-apiml-certificates.sh
+
+test "$debug" && echo "< $me 0"
+echo "</$me> 0" >> $LOG_FILE
+exit 0

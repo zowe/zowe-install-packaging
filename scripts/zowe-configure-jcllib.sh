@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# 5698-ZWE Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
 # Create JCL library members.
@@ -90,11 +90,11 @@ fi    #
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 function main { }     # dummy function to simplify program flow parsing
+_cmd umask 0022                                  # similar to chmod 755
 
-# Set environment variables when not called via zowe-install.sh
+# Set environment variables when not called via zowe-configure.sh
 if test -z "$INSTALL_DIR"
 then
-  # Set all required environment variables & logging
   # Note: script exports environment vars, so run in current shell
   _cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
 else
@@ -102,7 +102,7 @@ else
 fi    #
 
 # Validate/create target data set
-$here/allocate-dataset.sh "$ZOWE_JCLLIB" FB 80 PO "$space"
+$scripts/allocate-dataset.sh "$ZOWE_JCLLIB" FB 80 PO "$space"
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
@@ -119,8 +119,34 @@ fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
+# Stage substitution for zowe.yaml data
+SED="s!ZOWESTC=[^ ]*!ZOWESTC=$ZOWE_STC_ZOWE!"
+SED="$SED;s!ZSSSTC=[^ ]*!ZSSSTC=$ZOWE_STC_ZSS!"
+SED="$SED;s!ZOWEUSER=[^ ]*!ZOWEUSER=$ZOWE_USER_ZOWE!"
+SED="$SED;s!ZSSUSER=[^ ]*!ZSSUSER=$ZOWE_USER_ZSS!"
+# TODO currently not used as variable
+#SED="$SED;s!STCGROUP=[^ ]*!STCGROUP=$ZOWE_STC_GROUP!"
+SED="$SED;s!ADMINGRP=[^ ]*!ADMINGRP=$ZOWE_ADMIN_GROUP!"
+
+# Stage substitution for primary security product
+$scripts/get-security-product.rex $debug
+# Returns 0 for RACF, 1 for ACF2, 2 for TSS, 8 for unknown
+rc=$?
+if test $rc -eq 0
+then                                                             # RACF
+  # no operation
+elif test $rc -eq 1
+then                                                             # ACF2
+  SED="$SED;s/PRODUCT=RACF/PRODUCT=ACF2/"
+elif test $rc -eq 2
+then                                                              # TSS
+  SED="$SED;s/PRODUCT=RACF/PRODUCT=TSS /"
+else                                                          # unknown
+  # no operation
+  test "$debug" && echo "assuming RACF as security product"
+fi    # security product
+
 # ZWESECUR
-SED=""  # no customization
 _sedMVS "${ZOWE_HLQ}.SZWESAMP" ZWESECUR "$ZOWE_JCLLIB"
 
 test "$debug" && echo "< $me 0"

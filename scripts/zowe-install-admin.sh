@@ -10,7 +10,7 @@
 # Copyright Contributors to the Zowe Project. 2018, 2019
 #######################################################################
 
-# Install the Zowe API Mediation Layer.
+# Install administrator scripts.
 # Called by zowe-install.sh
 #
 # Arguments:
@@ -25,7 +25,7 @@ me=$(basename $0)              # script name
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
 
-echo "-- API Mediation"
+echo "-- Administrator scripts"
 test "$debug" && echo "> $me $@"
 test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
 
@@ -86,27 +86,10 @@ else
   echo "  $(date)" >> $LOG_FILE
 fi    #
 
-# Target paths based on $ZOWE_ROOT_DIR
-folder="api-mediation"
-scriptFolder=$folder/scripts
-
 _cmd $scripts/unpax.sh \
-  "$INSTALL_DIR/files/api-mediation-package*.pax" \
-  "$ZOWE_ROOT_DIR/$folder" \
-  "API Mediation"
-
-# Create relative symlink $scriptFolder/zowe-scripts to $ZOWE_SCRIPTS
-# logic: To get to the target, sed replaces each directory in
-#        $scriptFolder with .. which brings us to $ZOWE_ROOT_DIR
-#        (without knowing $ZOWE_ROOT_DIR). To this we can append the
-#        path to the target.
-_cmd ln -s \
-  "$(echo $scriptFolder | sed 's![^/]*!..!g')/$ZOWE_SCRIPTS" \
-  "$ZOWE_ROOT_DIR/$scriptFolder/zowe-scripts"
-
-# TODO why is api-defs not in pax ?
-# Create the static api definitions folder
-_cmd mkdir -p "$ZOWE_ROOT_DIR/$folder/api-defs"
+  "$INSTALL_DIR/files/admin.pax" \
+  "$ZOWE_ROOT_DIR/admin" \
+  "Administrator scripts"
 
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0
