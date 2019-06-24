@@ -28,17 +28,19 @@ for one in $EXPLORER_API_LIST; do
     echo "  Installation terminated"
     exit 0
   fi
-  EXPLORER_API_START_SCRIPT=$PWD/$(ls -t ./files/scripts/${one}-api-server-start.sh | head -1)
-  if [ ! -f $EXPLORER_API_START_SCRIPT ]; then
-    echo "  Error: Explorer ${one} api start script (${one}-api-server-start.sh) missing"
-    echo "  Installation terminated"
-    exit 0
-  fi
 
    #TODO - rename the data-set jar and api list to match the component id
   if [ "$one" = "data-sets" ]; then
     one=files
   fi
+
+  EXPLORER_API_START_SCRIPT=$PWD/$(ls -t ./files/scripts/${one}-start.sh | head -1)
+  if [ ! -f $EXPLORER_API_START_SCRIPT ]; then
+    echo "  Error: Explorer ${one} api start script (${one}-start.sh) missing"
+    echo "  Installation terminated"
+    exit 0
+  fi
+
   EXPLORER_INSTALL_FOLDER="${one}-api"
   echo "  Installing Explorer ${one} API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
   umask 0002
@@ -53,6 +55,19 @@ for one in $EXPLORER_API_LIST; do
   # copy start script
   sed -e "s#{{jar_path}}#${EXPLORER_API_JAR}#" \
      $EXPLORER_API_START_SCRIPT > "start.sh"  
+
+  CONFIGURE_SCRIPT=$PWD/$(ls -t ./files/scripts/${one}-configure.sh | head -1)
+  if [[ -f ${CONFIGURE_SCRIPT} ]]
+  then
+    cp ${CONFIGURE_SCRIPT} configure.sh
+  fi
+
+  VALIDATE_SCRIPT=$PWD/$(ls -t ./files/scripts/${one}-validate.sh | head -1)
+  if [[ -f ${VALIDATE_SCRIPT} ]]
+  then
+    cp ${VALIDATE_SCRIPT} validate.sh
+  fi
+
   chmod a+x *.sh
   chmod 755 "${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin"
 done
