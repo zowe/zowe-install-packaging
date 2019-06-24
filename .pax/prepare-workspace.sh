@@ -38,7 +38,7 @@ mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
 cp -R files/* "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
-find ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/ -print
+find ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/ -print
 # put text files into ascii folder
 rsync -rv \
   --include '*.json' \
