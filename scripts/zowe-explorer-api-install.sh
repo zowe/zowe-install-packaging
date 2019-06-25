@@ -19,57 +19,55 @@
 echo "<zowe-explorer-api-install.sh>" >> $LOG_FILE
 
 
-EXPLORER_API_LIST="jobs data-sets"
-for one in $EXPLORER_API_LIST; do
+EXPLORER_API_LIST="jobs-api data-sets-api"
+for COMPONENT_ID in $EXPLORER_API_LIST; do
   cd $INSTALL_DIR
-  EXPLORER_API_JAR=$PWD/$(ls -t ./files/${one}-api-server-*.jar | head -1)
+  EXPLORER_API_JAR=$PWD/$(ls -t ./files/${COMPONENT_ID}-server-*.jar | head -1)
   if [ ! -f $EXPLORER_API_JAR ]; then
-    echo "  Error: Explorer ${one} api (${one}-api-server-*.jar) missing"
+    echo "  Error: Explorer ${COMPONENT_ID} (${COMPONENT_ID}-server-*.jar) missing"
     echo "  Installation terminated"
     exit 0
   fi
 
-   #TODO - rename the data-set jar and api list to match the component id
-  if [ "$one" = "data-sets" ]; then
-    one=files
+   #TODO - rename the data-set jar and api list to match the compCOMPONENT_IDnt id
+  if [ "$COMPONENT_ID" = "data-sets-api" ]; then
+    COMPONENT_ID=files-api
   fi
 
-  EXPLORER_API_START_SCRIPT=$PWD/$(ls -t ./files/scripts/${one}-start.sh | head -1)
+  EXPLORER_API_START_SCRIPT=$PWD/files/scripts/${COMPONENT_ID}-start.sh
+  CONFIGURE_SCRIPT=$PWD/files/scripts/${COMPONENT_ID}-configure.sh
+  VALIDATE_SCRIPT=$PWD/files/scripts/${COMPONENT_ID}-validate.sh
+
   if [ ! -f $EXPLORER_API_START_SCRIPT ]; then
-    echo "  Error: Explorer ${one} api start script (${one}-start.sh) missing"
+    echo "  Error: Explorer ${COMPONENT_ID} api start script (${COMPONENT_ID}-start.sh) missing"
     echo "  Installation terminated"
     exit 0
   fi
 
-  EXPLORER_INSTALL_FOLDER="${one}-api"
-  echo "  Installing Explorer ${one} API into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
+  echo "  Installing Explorer ${COMPONENT_ID} API into ${ZOWE_ROOT_DIR}/${COMPONENT_ID} ..."  >> $LOG_FILE
   umask 0002
-  mkdir -p "${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin"
+  mkdir -p "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
   # copy jar
-  cd "${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin"
+  cd "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
   echo "  Copy ${EXPLORER_API_JAR} into ${PWD}" >> $LOG_FILE
   cp $EXPLORER_API_JAR .
 
-  EXPLORER_API_JAR=$(ls -d -t ${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin/*-api-server-*.jar | head -1)
+  EXPLORER_API_JAR=$(ls -d -t ${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin/*-api-server-*.jar | head -1)
   chmod a+rx $EXPLORER_API_JAR
   # copy start script
   sed -e "s#{{jar_path}}#${EXPLORER_API_JAR}#" \
      $EXPLORER_API_START_SCRIPT > "start.sh"  
 
-  CONFIGURE_SCRIPT=$PWD/$(ls -t ./files/scripts/${one}-configure.sh | head -1)
   if [[ -f ${CONFIGURE_SCRIPT} ]]
   then
     cp ${CONFIGURE_SCRIPT} configure.sh
   fi
 
-  VALIDATE_SCRIPT=$PWD/$(ls -t ./files/scripts/${one}-validate.sh | head -1)
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
     cp ${VALIDATE_SCRIPT} validate.sh
   fi
-
-  chmod a+x *.sh
-  chmod 755 "${ZOWE_ROOT_DIR}/components/${EXPLORER_INSTALL_FOLDER}/bin"
+  chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
 done
 
 echo "</zowe-explorer-api-install.sh>" >> $LOG_FILE

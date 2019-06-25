@@ -180,7 +180,7 @@ services:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-jes
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs_ui.yml > $STATIC_DEF_CONFIG/jobs_ui.yml	
 
 # Add static definition for USS
 cat <<EOF >$TEMP_DIR/uss.yml
