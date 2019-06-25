@@ -17,20 +17,316 @@
       "source": "artifactory",
       "pattern": "libs-snapshot-local/org/zowe/explorer-mvs/${version}/explorer-mvs-${version}.pax",
       "version": "0.0.21"
-    }
-
-  ],
-  "sourceDependencies": [
-    {
-      "repository": "explorer-api-common",
-      "tag": "0.3.1",
-      "componentGroup": "Zowe Explorer APIs"
     },
     {
-      "repository" : "zowe-cli",
-      "tag" : ""
-    }
+      "name" : "@zowe/zlux-core",
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-core/${version}/zlux-core-${version}.pax",
+      "source": "artifactory",
+      "version": "1.3.*-STAGING",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-core.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zss-auth/1.3.*-STAGING/zss-auth-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zss-auth.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-angular-app/1.3.*-STAGING/sample-angular-app-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/sample-angular-app.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-iframe-app/1.3.*-STAGING/sample-iframe-app-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/sample-iframe-app.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/sample-react-app/1.3.*-STAGING/sample-react-app-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/sample-react-app.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/tn3270-ng2/1.3.*-STAGING/tn3270-ng2-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/tn3270-ng2.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/vt-ng2/1.3.*-STAGING/vt-ng2-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/vt-ng2.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-editor/1.3.*-STAGING/zlux-editor-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-editor.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zlux-workflow/1.3.*-STAGING/zlux-workflow-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zlux-workflow.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zlux/zosmf-auth/1.3.*-STAGING/zosmf-auth-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zlux/zosmf-auth.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-snapshot-local/org/zowe/zss/1.3.*-STAGING/zss-*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/zss.pax",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-release-local/org/zowe/explorer/jobs/0.2.*/jobs-server-zowe-package-0.2.*.zip",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1,
+      "flat": "true",
+      "explode": "true"
+    },
+    {
+      "pattern": "libs-release-local/org/zowe/explorer/data/sets/0.2.*/data-sets-server-zowe-package-0.2.*.zip",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1,
+      "flat": "true",
+      "explode": "true"
+    },
+    {
+      "pattern": "libs-release-local/org/zowe/explorer-jes/0.0.*/explorer-jes-0.0.*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
 
+    {
+      "pattern": "libs-release-local/org/zowe/explorer-uss/0.0.*/explorer-uss-0.0.*.pax",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/files/",
+      "flat": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-release-local/com/ca/mfaas/sdk/mfaas-zowe-install/1.1.*/mfaas-zowe-install-1.1.*.zip",
+      "target": ".pax/mediation/",
+      "flat": "true",
+      "explode": "true",
+      "sortBy": ["created"],
+      "sortOrder": "desc",
+      "limit": 1
+    },
+    {
+      "pattern": "libs-release-local/org/zowe/licenses/1.0.0/zowe_licenses_full.zip",
+      "target": ".pax/content/zowe-{ZOWE_VERSION}/licenses/",
+      "flat": "true"
+    }
   ],
-  "dependencyDecisions" : ".dependency/doc/"
+  "sourceDependencies": [{
+      "componentGroup": "Imperative CLI Framework",
+      "entries": [{
+        "repository": "imperative",
+        "tag": "v2.4.8"
+      }]
+    }, {
+      "componentGroup": "Zowe API Mediation Layer",
+      "entries": [{
+        "repository": "api-layer",
+        "tag": "v1.1.5"
+      }]
+    }, {
+      "componentGroup": "Zowe Application Framework",
+      "entries": [{
+          "repository": "zlux-app-manager",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zlux-app-server",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zlux-editor",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zlux-file-explorer",
+          "tag": "v1.0.0"
+        },
+        {
+          "repository": "zlux-grid",
+          "tag": "v0.0.5"
+        },
+        {
+          "repository": "zlux-platform",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zlux-server-framework",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zlux-shared",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zlux-widgets",
+          "tag": "v0.0.3"
+        },
+        {
+          "repository": "zlux-workflow",
+          "tag": "v1.3.0"
+        }
+      ]
+    }, {
+      "componentGroup": "Zowe CLI",
+      "entries": [{
+        "repository": "zowe-cli",
+        "tag": "v2.28.2"
+      }]
+    }, {
+      "componentGroup": "Zowe CLI Plug-in for IBM CICS",
+      "entries": [{
+        "repository": "zowe-cli-cics-plugin",
+        "tag": "v1.0.0"
+      }]
+    }, {
+      "componentGroup": "Zowe CLI Plug-in for IBM Db2 Database",
+      "entries": [{
+        "repository": "zowe-cli-db2-plugin",
+        "tag": "v2.1.0"
+      }]
+    }, {
+      "componentGroup": "Zowe Desktop Data Sets UI Plugin",
+      "entries": [{
+        "repository": "explorer-mvs",
+        "tag": "v0.0.15"
+      }]
+    }, {
+      "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
+      "entries": [{
+        "repository": "orion-editor-component",
+        "tag": "v0.0.9"
+      }]
+    }, {
+      "componentGroup": "Zowe Desktop JES UI Plugin",
+      "entries": [{
+        "repository": "explorer-jes",
+        "tag": "v0.0.21"
+      }]
+    }, {
+      "componentGroup": "Zowe Desktop Web Plug-in Server",
+      "entries": [{
+        "repository": "explorer-ui-server",
+        "tag": "v0.2.8"
+      }]
+    }, {
+      "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
+      "entries": [{
+        "repository": "explorer-uss",
+        "tag": "v0.0.13"
+      }]
+    }, {
+      "componentGroup": "Zowe Explorer Common REST Server",
+      "entries": [{
+        "repository": "explorer-api-common",
+        "tag": "0.3.2"
+      }]
+    }, {
+      "componentGroup": "Zowe Explorer Data Sets REST Server",
+      "entries": [{
+        "repository": "data-sets",
+        "tag": "v0.2.2"
+      }]
+    }, {
+      "componentGroup": "Zowe Explorer Jobs REST Server",
+      "entries": [{
+        "repository": "jobs",
+        "tag": "v0.2.4"
+      }]
+    }, {
+      "componentGroup": "Zowe Application Framework Authentication Handlers",
+      "entries": [{
+        "repository": "zss-auth",
+        "tag": "v1.3.0"
+      }, {
+        "repository": "zosmf-auth",
+        "tag": "v1.3.0"
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
+      "entries": [{
+        "repository": "tn3270-ng2",
+        "tag": "v1.3.0"
+      }]
+    }, {
+      "componentGroup": "Zowe Desktop Sample Angular Application",
+      "entries": [{
+        "repository": "sample-angular-app",
+        "tag": "v1.3.0"
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop Sample iFrame Application",
+      "entries": [{
+        "repository": "sample-iframe-app",
+        "tag": "v1.3.0"
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop Sample React Application",
+      "entries": [{
+        "repository": "sample-react-app",
+        "tag": "v1.3.0"
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
+      "entries": [{
+        "repository": "vt-ng2",
+        "tag": "v1.3.0"
+      }]
+    }
+  ],
+  "dependencyDecisions": {
+    "relative": ".dependency/doc/",
+    "absolute": "https://raw.github.com/zowe/zowe-install-packaging/tree/{BUILD_BRANCH}/.dependency/doc/dependency_decisions.yml"
+  }
 }
