@@ -326,7 +326,6 @@
     }
   ],
   "dependencyDecisions": {
-    "relative": ".dependency/doc/",
-    "absolute": "https://raw.github.com/zowe/zowe-install-packaging/tree/{BUILD_BRANCH}/.dependency/doc/dependency_decisions.yml"
+    "rel": ".dependency/doc/dependency_decisions.yml"
   }
 }
