@@ -1,25 +1,49 @@
 ---
 - - :whitelist
   - MIT
-  - :who: 
-    :why: 
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
     :versions: []
     :when: 2019-06-06 18:36:27.819600000 Z
 - - :whitelist
   - ISC
-  - :who: 
-    :why: 
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
     :versions: []
     :when: 2019-06-06 18:36:48.137578000 Z
 - - :whitelist
   - Apache
-  - :who: 
-    :why: 
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
     :versions: []
     :when: 2019-06-06 18:36:51.296797000 Z
 - - :whitelist
   - Apache 2.0
-  - :who: 
-    :why: 
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
     :versions: []
-    :when: 2019-06-06 18:36:56.604210000 Z
+    :when: 2019-06-25 18:36:56.604210000 Z
+- - :whitelist
+  - Simplified BSD
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
+    :versions: []
+    :when: 2019-06-25 18:36:56.604210000 Z
+- - :whitelist
+  - New BSD
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
+    :versions: []
+    :when: 2019-06-25 18:36:56.604210000 Z
+- - :whitelist
+  - (MIT OR Apache-2.0)
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
+    :versions: []
+    :when: 2019-06-25 18:36:56.604210000 Z
+- - :whitelist
+  - COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
+  - :who: Mark Ackert
+    :why: Compatible with EPL-2.0
+    :versions: []
+    :when: 2019-06-25 18:36:56.604210000 Z
