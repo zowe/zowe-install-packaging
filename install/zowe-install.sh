@@ -93,7 +93,6 @@ mkdir -p $TEMP_DIR
 
 echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
-echo "-----"
 
 separator
 echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
