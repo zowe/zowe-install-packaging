@@ -135,7 +135,10 @@ separator
 # with where ZOSMF is located, so that the script can create symlinks and if it fails
 # be able to be run stand-alone
 echo "Copying zowe-runtime-authorize.sh to "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh >> $LOG_FILE
-cp $INSTALL_DIR/scripts/zowe-runtime-authorize.sh $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
+
+ sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
+  "$INSTALL_DIR/scripts/zowe-runtime-authorize.sh" \
+  > "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
 chmod a+x $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
 $(. $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh)
 AUTH_RETURN_CODE=$?
