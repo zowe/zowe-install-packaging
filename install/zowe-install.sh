@@ -102,8 +102,8 @@ echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
 
 # Create the /scripts folder in the runtime directory
 # where the scripts to start and the Zowe server will be coped into
-mkdir $ZOWE_ROOT_DIR/scripts
-chmod a+w $ZOWE_ROOT_DIR/scripts
+mkdir -p $ZOWE_ROOT_DIR/scripts/templates
+chmod -R a+w $ZOWE_ROOT_DIR/scripts
 
 echo "Copying the zowe-start;stop;server-start.sh into "${ZOWE_ROOT_DIR}/scripts >> $LOG_FILE
 cd $INSTALL_DIR/scripts
@@ -112,7 +112,6 @@ cp $INSTALL_DIR/scripts/zowe-start.template.sh ${ZOWE_ROOT_DIR}/scripts/template
 cp $INSTALL_DIR/scripts/zowe-stop.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-stop.template.sh
 
 cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
-chmod -R 777 $ZOWE_ROOT_DIR/scripts
 
 mkdir $ZOWE_ROOT_DIR/scripts/internal
 chmod a+x $ZOWE_ROOT_DIR/scripts/internal

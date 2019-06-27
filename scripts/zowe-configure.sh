@@ -57,6 +57,7 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
+chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
 . $INSTALL_DIR/scripts/zowe-configure-proclib.sh
