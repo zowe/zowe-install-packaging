@@ -4,6 +4,26 @@ PREV_DIR=`pwd`
 cd $(dirname $0)
 ZOWE_ROOT_DIR={{root_dir}}
 
+# TODO - refactor, or work out how to improve?
+export LOG_DIR=`pwd`/log
+# Make the log directory if needed - first time through - subsequent installs create new .log files
+if [[ ! -d $LOG_DIR ]]; then
+    mkdir -p $LOG_DIR
+    chmod a+rwx $LOG_DIR 
+fi
+
+export LOG_FILE="config_`date +%Y-%m-%d-%H-%M-%S`.log"
+LOG_FILE=$LOG_DIR/$LOG_FILE
+touch $LOG_FILE
+chmod a+rw $LOG_FILE
+
+# Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
+. zowe-init.sh
+
+# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
+. zowe-parse-yaml.sh
+
+
 # Configure Explorer UI plugins
 . zowe-configure-explorer-ui.sh
 
@@ -32,7 +52,8 @@ else
 fi
 
 # Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-. zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
+# TODO - move into apiml config? run before deploy?
+. zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/api-mediation/api-catalog.png"
 
 # Run deploy on the zLUX app server to propagate the changes made
 zluxserverdirectory='zlux-app-server'

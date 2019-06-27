@@ -11,8 +11,6 @@
 # Run zowe-locate-zosmf.sh to ensure the environment variables for where
 # ZOSMF/lib and bootstrap.properties are persisted in ZOSMF_DIR and ZOSMF_BOOTSTRAP_PROPERTIES
 
-# on a mac the profile is .bash_profile, on z/OS it will be .profile
-export PROFILE=.profile
 export INSTALL_DIR=$PWD/../
 
 # extract Zowe version from manifest.json
@@ -130,14 +128,17 @@ echo "The install script zowe-install.sh does not need to be re-run as it comple
 separator
 
 # Prepare configure directory 
+mkdir ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/scripts/zowe-init.sh ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/install/zowe-install.yaml ${ZOWE_ROOT_DIR}/scripts/configure
 
-cp -a $INSTALL_DIR/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
+cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
 sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   "${INSTALL_DIR}/scripts/configure/zowe-configure.sh" \
   > "$ZOWE_ROOT_DIR/scripts/configure/zowe-configure.sh"
+
+chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
 # TODO - review if this is still a failure risk and whether it really needs moving to runtime
 # The file zowe-runtime-authorize.sh is in the install directory /scripts

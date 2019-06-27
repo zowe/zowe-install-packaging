@@ -13,7 +13,6 @@
 #********************************************************************
 # Expected globals:
 # $ZOWE_ROOT_DIR
-# $INSTALL_DIR
 # $NODE_HOME
 # $LOG_FILE
 # $ZOWE_EXPLORER_HOST
@@ -98,7 +97,7 @@ for one in $UI_PLUGIN_LIST; do
 
   # Add explorer plugin to zLUX 
   EXPLORER_PLUGIN_FULLURL="https://${ZOWE_EXPLORER_HOST}:${ZOWE_APIM_GATEWAY_PORT}${EXPLORER_PLUGIN_BASEURI}"
-  . $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh \
+  . zowe-install-iframe-plugin.sh \
       "$ZOWE_ROOT_DIR" \
       "${EXPLORER_PLUGIN_ID}" \
       "${EXPLORER_PLUGIN_NAME}" \

@@ -49,11 +49,6 @@ ussfile=$1
 memberName=$2   # default is set in zowe-parse-yaml.sh
 proclib=$3      # default is set in zowe-parse-yaml.sh
 
-if [[ `basename $ussfile` == $ussfile ]] # add pathname if not present
-then
-  ussfile=$INSTALL_DIR/files/templates/$ussfile
-fi
-
 # echo "Copying the file" $ussfile "to PROCLIB member" $memberName
 ls $ussfile 1>/dev/null 2>/dev/null
 if [[ $? > 0 ]]
@@ -133,7 +128,6 @@ then
 fi
 
 # put USS JCL file name in CLIST, because CLIST parms are always uppercased.
-cd $INSTALL_DIR/scripts
 sed "s|ussfile|$ussfile|" ./ocopyshr.clist > $TEMP_DIR/ocopyshr.e.clist
 tsocmd oget "'$TEMP_DIR/ocopyshr.e.clist' '$userid.zowetemp.clist(copyproc)'"  1>/dev/null 2>/dev/null
 
