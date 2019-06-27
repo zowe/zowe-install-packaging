@@ -16,7 +16,7 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 
 sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
-  "${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh" \
+  "${ZOWE_ROOT_DIR}/scripts/templates/run-zowe.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.sh"
 
 chmod -R 777 $ZOWE_ROOT_DIR/scripts

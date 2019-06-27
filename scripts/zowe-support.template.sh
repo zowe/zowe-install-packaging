@@ -3,7 +3,7 @@
 # Variable Definition
 VAR=`dirname $0`			# Obtain the scripts directory name
 cd $VAR/..				    # Change to its parent which should be ZOWE_ROOT_DIR
-ZOWE_ROOT_DIR=`pwd`			# Set our environment variable
+ZOWE_ROOT_DIR={{root_dir}}		# Set our environment variable
 ZOWE_PREFIX={{zowe_prefix}}
 ZOWE_INSTALL_LOG_DIR=${ZOWE_ROOT_DIR}/install_log/
 ZOWE_INSTALL_ZLUX_SERVER_LOG=${ZOWE_ROOT_DIR}/zlux-app-server/log/
@@ -18,7 +18,7 @@ VERSION_FILE=${SUPPORT_ARCHIVE_LOCATION}"version_output"
 
 # These variables should be populated during installation process
 NODE_HOME={{node_home}}
-JAVA_HOME={{java_home}}
+ZOWE_JAVA_HOME={{java_home}}
 ZOWE_STC={{stc_name}}
 
 # In case NODE_HOME, JAVA_HOME, ZOWE_STC and ZOWE_PREFIX are empty
@@ -27,7 +27,7 @@ if [[ -z "${NODE_HOME}" ]];then
     echo "The NODE_HOME environment variable wasn't properly populated during install. Exiting."
     exit
 fi
-if [[ -z "${JAVA_HOME}" ]];then
+if [[ -z "${ZOWE_JAVA_HOME}" ]];then
     echo "The JAVA_HOME environment variable wasn't properly populated during install. Exiting."
     exit
 fi
@@ -95,7 +95,7 @@ function add_to_pax {
 write_to_log "Collecting version of z/OS, Java, NodeJS"
 ZOS_VERSION=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd "D IPLINFO" | grep -i release | xargs`
 write_to_log "  - z/OS "$ZOS_VERSION
-JAVA_VERSION=`$JAVA_HOME/bin/java -version 2>&1 | head -n 1`
+JAVA_VERSION=`$ZOWE_JAVA_HOME/bin/java -version 2>&1 | head -n 1`
 write_to_log "  - Java "$JAVA_VERSION
 NODE_VERSION=`$NODE_HOME/bin/node --version`
 write_to_log "  - NodeJS "$NODE_VERSION

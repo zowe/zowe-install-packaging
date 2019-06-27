@@ -55,6 +55,7 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+  -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
