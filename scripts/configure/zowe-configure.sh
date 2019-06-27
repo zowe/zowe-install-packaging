@@ -1,15 +1,21 @@
+
+# Cache original directory, then change our directory to be here so we can rely on the script offset
+PREV_DIR=`pwd`	
+cd $(dirname $0)
+ZOWE_ROOT_DIR={{root_dir}}
+
 # Configure Explorer UI plugins
-. $INSTALL_DIR/scripts/zowe-explorer-ui-configure.sh
+. zowe-configure-explorer-ui.sh
 
 # Configure the ports for the zLUX server
-. $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
+. zowe-configure-zlux-ports.sh
 
 # Configure the TLS certificates for the zLUX server
-. $INSTALL_DIR/scripts/zowe-zlux-configure-certificates.sh
+. zowe-configure-zlux-certificates.sh
 
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
     # Add APIML authentication plugin to zLUX
-    . $INSTALL_DIR/scripts/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
+    . zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
 
     # Activate the plugin
     _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
@@ -26,10 +32,12 @@ else
 fi
 
 # Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
+. zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
 
-. $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
 # Run deploy on the zLUX app server to propagate the changes made
+zluxserverdirectory='zlux-app-server'
+echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
+chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
@@ -45,14 +53,14 @@ $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
 # Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
 # this script is run after all the folders have been created and paxes expanded above
 echo "Attempting to setup Zowe API Mediation Layer certificates ... "
-. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
+. zowe-configure-api-mediation.sh
 
 # Configure Explorer API servers. This should be after APIML CM generated certificates
 echo "Attempting to setup Zowe Explorer API certificates ... "
-. $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
+. zowe-configure-explorer-api.sh
 
 echo "Attempting to setup Zowe Scripts ... "
-. $INSTALL_DIR/scripts/zowe-configure-scripts.sh
+. zowe-configure-scripts.sh
 
 sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
@@ -64,4 +72,6 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
-. $INSTALL_DIR/scripts/zowe-configure-proclib.sh
+. zowe-configure-proclib.sh
+
+cd $PREV_DIR

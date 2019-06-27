@@ -129,6 +129,16 @@ echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 
+# Prepare configure directory 
+cp $INSTALL_DIR/scripts/zowe-init.sh ${ZOWE_ROOT_DIR}/scripts/configure
+cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
+cp $INSTALL_DIR/install/zowe-install.yaml ${ZOWE_ROOT_DIR}/scripts/configure
+
+cp -a $INSTALL_DIR/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
+sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
+  "${INSTALL_DIR}/scripts/configure/zowe-configure.sh" \
+  > "$ZOWE_ROOT_DIR/scripts/configure/zowe-configure.sh"
+
 # TODO - review if this is still a failure risk and whether it really needs moving to runtime
 # The file zowe-runtime-authorize.sh is in the install directory /scripts
 # copy this to the runtime directory /scripts, and replace {ZOWE_ZOSMF_PATH}
@@ -136,9 +146,10 @@ separator
 # be able to be run stand-alone
 echo "Copying zowe-runtime-authorize.sh to "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh >> $LOG_FILE
 
- sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
+sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   "$INSTALL_DIR/scripts/zowe-runtime-authorize.sh" \
   > "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
+
 chmod a+x $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
 $(. $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh)
 AUTH_RETURN_CODE=$?
@@ -152,7 +163,7 @@ if [[ $AUTH_RETURN_CODE == "0" ]]; then
 fi
 
 # Run configure
-. $INSTALL_DIR/scripts/zowe-configure.sh
+. ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
 
 separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
