@@ -1,14 +1,13 @@
 #!/bin/sh
-#######################################################################
-# This program and the accompanying materials are made available
-# under the terms of the Eclipse Public License v2.0 which
-# accompanies this distribution, and is available at
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
 # https://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
-#######################################################################
+# Copyright IBM Corporation 2018, 2019
+################################################################################
 
 # Set environment variables for Zowe install & configuration.
 # Called by zowe-install*.sh
@@ -104,10 +103,6 @@ export _EDC_ADD_ERRNO2=1                        # show details on error
 # .profile with ENV=script with echo -> echo is in stdout (begin)
 unset ENV
 
-# Ensure TMPDIR is defined (note: TMPDIR is used by /bin/sh)
-export TMPDIR=${TMPDIR:-/tmp}
-test "$debug" && echo "TMPDIR=$TMPDIR"
-
 # Get real path when called via symbolic link
 #test "$debug" && echo ". PWD=$PWD"                             # trace
 #test "$debug" && echo ". \$0=$0"                               # trace
@@ -139,8 +134,18 @@ test "$debug" && echo "INSTALL_DIR=$INSTALL_DIR"
 
 ZOWE_SCRIPTS="scripts"
 test "$debug" && echo "ZOWE_SCRIPTS=$ZOWE_SCRIPTS"
-scripts="$INSTALL_DIR/$ZOWE_SCRIPTS"
+export scripts="$INSTALL_DIR/$ZOWE_SCRIPTS"
 test "$debug" && echo "scripts=$scripts"
+
+# ---
+
+# Ensure TMPDIR is defined (note: TMPDIR is used by /bin/sh)
+#export TMPDIR=${TMPDIR:-/tmp}
+
+export TMPDIR=$INSTALL_DIR/temp_`date +%Y-%m-%d`
+mkdir -p $TMPDIR
+
+test "$debug" && echo "TMPDIR=$TMPDIR"
 
 # ---
 
@@ -287,3 +292,4 @@ test "$debug" && echo "< $me 0"
 echo "</$me> 0" >> $LOG_FILE
 me=$orig_me
 # no exit, shell sharing with caller
+

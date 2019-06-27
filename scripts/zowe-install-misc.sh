@@ -133,16 +133,9 @@ test "$ReMoVe" -a "$ZOWE_CFG" = "$INSTALL_DIR/install/zowe.yaml" && \
   _cmd rm -f $INSTALL_DIR/install/zowe.yaml
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
-# TODO adjust zLUX to have deploy with the rest of Zowe scripts
-# Create relative symlink scripts/zowe-configure-zlux-deploy.sh to zlux-build/deploy.sh
-# logic: To get to the target, sed replaces each directory in
-#        $ZOWE_SCRIPTS with .. which brings us to $ZOWE_ROOT_DIR
-#        (without knowing $ZOWE_ROOT_DIR). To this we can append the
-#        path to the target.
 _cmd ln -s \
-  "$(echo $ZOWE_SCRIPTS | sed 's![^/]*!..!g')/zlux-build/deploy.sh" \
-  "$ZOWE_ROOT_DIR/$ZOWE_SCRIPTS/zowe-configure-zlux-deploy.sh"
+  "$ZOWE_ROOT_DIR/zlux-build/deploy.sh" \
+  "$ZOWE_ROOT_DIR/zowe-configure-zlux-deploy.sh"
 
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0

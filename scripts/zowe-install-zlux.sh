@@ -148,30 +148,30 @@ _cmd $scripts/copy.sh \
 
 # Prepare for additional tasks
 config=$INSTALL_DIR/files/zlux/config
-app-server=$ZOWE_ROOT_DIR/zlux-app-server
+app_server=$ZOWE_ROOT_DIR/zlux-app-server
 
 # Mark executable as program controlled
-_cmd extattr +p $app-server/bin/zssServer
+_cmd extattr +p $app_server/bin/zssServer
 
 # removed - nodeLogs in zowe.yaml set explicit log directory
 # TODO why is this not in pax?
 # TODO zlux-app-server/log requires new R/W file system when ZOWE_ROOT_DIR is mounted R/O
-#_cmd mkdir -p $app-server/log
+#_cmd mkdir -p $app_server/log
 
 # TODO why is this not in pax?
-_cmd mkdir -p $app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
+_cmd mkdir -p $app_server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
 
 # TODO why are these not in pax?
 # Add default config files
-echo "  Copy of $config/<...> into $app-server/<...>" >> $LOG_FILE
-_cmd cp -f $config/pinnedPlugins.json $app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
-_cmd cp -f $config/plugins/*          $app-server/plugins/          #*/
+echo "  Copy of $config/<...> into $app_server/<...>" >> $LOG_FILE
+_cmd cp -f $config/pinnedPlugins.json $app_server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+_cmd cp -f $config/plugins/*          $app_server/plugins/          #*/
 # TODO why is there a missing line in zluxserver.json?
 if grep -q gatewayPort "$config/zluxserver.json"
 then  # copy as-is
-  _cmd cp -f $config/zluxserver.json $app-server/config/
+  _cmd cp -f $config/zluxserver.json $app_server/config/
 else  # add missing line
-  _cmd --repl $app-server/config/zluxserver.json \
+  _cmd --repl $app_server/config/zluxserver.json \
     awk -v line='        "gatewayPort": 10010,' \
     '/hostname/{printf("%s\n",line)} {print $0}' \
     $config/zluxserver.json
@@ -193,8 +193,8 @@ test "$ReMoVe" && _cmd rm -f $config/plugins/*
 # TODO if keep then move to configuration steps
 # Open the permission so that a user other than the one who does the
 # install can start the nodeServer and create logs
-#_cmd chmod 777 $app-server/log
-#_cmd chmod ug+w $app-server/bin/zssServer
+#_cmd chmod 777 $app_server/log
+#_cmd chmod ug+w $app_server/bin/zssServer
 
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0

@@ -86,10 +86,19 @@ else
   echo "  $(date)" >> $LOG_FILE
 fi    #
 
-_cmd $scripts/unpax.sh \
-  "$INSTALL_DIR/files/admin.pax" \
-  "$ZOWE_ROOT_DIR/admin" \
-  "Administrator scripts"
+# Create a /admin folder in the root directory and copy scripts across
+
+mkdir -p $ZOWE_ROOT_DIR/admin 2>&1
+cp $scripts/zowe-configure-RESTORE.sh \
+   $scripts/zowe-configure.sh \
+   $scripts/zowe-start.sh \
+   $scripts/zowe-stop.sh \
+   $ZOWE_ROOT_DIR/admin 2>&1
+
+#_cmd $scripts/unpax.sh \
+#  "$INSTALL_DIR/files/admin.pax" \
+#  "$ZOWE_ROOT_DIR/admin" \
+#  "Administrator scripts"
 
 # Remove install script if requested
 test "$ReMoVe" && _cmd rm -f $0
