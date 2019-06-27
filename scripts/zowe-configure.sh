@@ -39,6 +39,9 @@ cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 ./deploy.sh > /dev/null
 
+# TODO LATER - same as the above - zss won't start with those permissions, so re-run runtime-authorise to lock it back now
+$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
+
 # Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
 # this script is run after all the folders have been created and paxes expanded above
 echo "Attempting to setup Zowe API Mediation Layer certificates ... "

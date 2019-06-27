@@ -10,17 +10,10 @@
 ################################################################################
 
 set -e
-# We are in the /scripts folder beneath a Zowe install
-# If we are run directly from the shell we need to switch up a directory to 
-# be able to work with zlux-app-server and explorer-server
-# If we are run from the zowe-install.sh script then we need to switch into the
-# ZOWE_ROOT_DIR as this will be where the install has put us, so we can work from there
-# cd to the top level folder as this is where the zlux-app-server and the explorer-server are
 ZOWE_ROOT_DIR={{root_dir}}
 
 # This is from the zLUX install
-
-if extattr ./zlux-app-server/bin/zssServer | grep "Program controlled = NO"; then
+if extattr ${ZOWE_ROOT_DIR}/zlux-app-server/bin/zssServer | grep "Program controlled = NO"; then
   echo "zssServer does not have the proper extattr values"
   echo "   Please run extattr +p $PWD/zlux-app-server/bin/zssServer"
   exit 1
