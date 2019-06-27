@@ -4,7 +4,7 @@
 VAR=`dirname $0`			# Obtain the scripts directory name
 cd $VAR/..				    # Change to its parent which should be ZOWE_ROOT_DIR
 ZOWE_ROOT_DIR=`pwd`			# Set our environment variable
-ZOWE_PREFIX=$prefix
+ZOWE_PREFIX={{zowe_prefix}}
 ZOWE_INSTALL_LOG_DIR=${ZOWE_ROOT_DIR}/install_log/
 ZOWE_INSTALL_ZLUX_SERVER_LOG=${ZOWE_ROOT_DIR}/zlux-app-server/log/
 
@@ -17,9 +17,9 @@ PS_OUTPUT_FILE=${SUPPORT_ARCHIVE_LOCATION}"ps_output"
 VERSION_FILE=${SUPPORT_ARCHIVE_LOCATION}"version_output"
 
 # These variables should be populated during installation process
-NODE_HOME=$nodehome
-JAVA_HOME=$javahome
-ZOWE_STC=$zowestc
+NODE_HOME={{node_home}}
+JAVA_HOME={{java_home}}
+ZOWE_STC={{stc_name}}
 
 # In case NODE_HOME, JAVA_HOME, ZOWE_STC and ZOWE_PREFIX are empty
 # this script sould exit with a warning message

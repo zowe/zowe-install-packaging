@@ -91,79 +91,53 @@ mkdir -p $TEMP_DIR
 # Install Explorer UI plugins
 . $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
 
-# Configure Explorer UI plugins
-. $INSTALL_DIR/scripts/zowe-explorer-ui-configure.sh
-
-# Configure the ports for the zLUX server
-. $INSTALL_DIR/scripts/zowe-zlux-configure-ports.sh
-
-# Configure the TLS certificates for the zLUX server
-. $INSTALL_DIR/scripts/zowe-zlux-configure-certificates.sh
-
-if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
-    # Add APIML authentication plugin to zLUX
-    . $INSTALL_DIR/scripts/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
-
-    # Activate the plugin
-    _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
-    ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/config
-    sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json > ${TEMP_DIR}/transform1.json
-    cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json
-    rm ${TEMP_DIR}/transform1.json
-    
-    # Access API Catalog with token injector
-    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
-else
-    # Access API Catalog directly
-    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
-fi
-
-# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-. $INSTALL_DIR/scripts/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $INSTALL_DIR/files/assets/api-catalog.png
-
 echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 echo "-----"
 
-. $INSTALL_DIR/scripts/zowe-prepare-runtime.sh
-# Run deploy on the zLUX app server to propagate the changes made
-
-# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
-
-cd $ZOWE_ROOT_DIR/zlux-build
-chmod a+x deploy.sh
-./deploy.sh > /dev/null
-
-echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
-echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
-
-# Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
-# this script is run after all the folders have been created and paxes expanded above
-echo "Attempting to setup Zowe API Mediation Layer certificates ... "
-. $INSTALL_DIR/scripts/zowe-api-mediation-configure.sh
-
-# Configure Explorer API servers. This should be after APIML CM generated certificates
-echo "Attempting to setup Zowe Explorer API certificates ... "
-. $INSTALL_DIR/scripts/zowe-explorer-api-configure.sh
-
-separator
-echo "Attempting to set Unix file permissions ..."
+echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
+# Create the ZOWESVR JCL
+# Insert the default Zowe install path in the JCL
 
 # Create the /scripts folder in the runtime directory
 # where the scripts to start and the Zowe server will be coped into
 mkdir $ZOWE_ROOT_DIR/scripts
 chmod a+w $ZOWE_ROOT_DIR/scripts
+
+echo "Copying the zowe-start;stop;server-start.sh into "${ZOWE_ROOT_DIR}/scripts >> $LOG_FILE
+cd $INSTALL_DIR/scripts
+cp $INSTALL_DIR/scripts/zowe-support.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh
+cp $INSTALL_DIR/scripts/zowe-start.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-start.template.sh
+cp $INSTALL_DIR/scripts/zowe-stop.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-stop.template.sh
+
+cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
+chmod -R 777 $ZOWE_ROOT_DIR/scripts
+
+mkdir $ZOWE_ROOT_DIR/scripts/internal
+chmod a+x $ZOWE_ROOT_DIR/scripts/internal
+
+echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
+cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
+echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
+cp $INSTALL_DIR/scripts/run-zowe.template.sh $ZOWE_ROOT_DIR/scripts/templates/run-zowe.template.sh
+
+chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
+
+#TODO LATER - do we need a better location rather than scripts - covered by zip #519
+cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.template.jcl
+
+echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
+echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
+separator
+
+# TODO - review if this is still a failure risk and whether it really needs moving to runtime
 # The file zowe-runtime-authorize.sh is in the install directory /scripts
 # copy this to the runtime directory /scripts, and replace {ZOWE_ZOSMF_PATH}
 # with where ZOSMF is located, so that the script can create symlinks and if it fails
 # be able to be run stand-alone
 echo "Copying zowe-runtime-authorize.sh to "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh >> $LOG_FILE
-sed "s#%zosmfpath%#$ZOWE_ZOSMF_PATH#g" $INSTALL_DIR/scripts/zowe-runtime-authorize.sh > $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
-
-#cp $INSTALL_DIR/scripts/zowe-runtime-authorize.sh $ZOWE_ROOT_DIR/scripts
+cp $INSTALL_DIR/scripts/zowe-runtime-authorize.sh $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
 chmod a+x $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
 $(. $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh)
 AUTH_RETURN_CODE=$?
@@ -176,33 +150,8 @@ if [[ $AUTH_RETURN_CODE == "0" ]]; then
     echo "  zowe-runtime-authorize.sh failed to run successfully" >> $LOG_FILE
 fi
 
-separator
-echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
-# Create the ZOWESVR JCL
-# Insert the default Zowe install path in the JCL
-
-echo "Copying the zowe-start;stop;server-start.sh into "$ZOWE_ROOT_DIR/scripts >> $LOG_FILE
-cd $INSTALL_DIR/scripts
-sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-start.sh > $ZOWE_ROOT_DIR/scripts/zowe-start.sh
-sed 's/ZOWESVR/'$ZOWE_SERVER_PROCLIB_MEMBER'/' $INSTALL_DIR/scripts/zowe-stop.sh > $ZOWE_ROOT_DIR/scripts/zowe-stop.sh
-cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
-chmod -R 777 $ZOWE_ROOT_DIR/scripts
-
-mkdir $ZOWE_ROOT_DIR/scripts/internal
-chmod a+x $ZOWE_ROOT_DIR/scripts/internal
-
-echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
-cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
-echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
-sed -e 's|$nodehome|'$NODE_HOME'|; s|$prefix|'$ZOWE_PREFIX'|' $INSTALL_DIR/scripts/run-zowe.sh > $TEMP_DIR/run-zowe.sh
-cp $TEMP_DIR/run-zowe.sh $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
-
-sed -e 's|/zowe/install/path|'$ZOWE_ROOT_DIR'|' $INSTALL_DIR/files/templates/ZOWESVR.jcl > $TEMP_DIR/ZOWESVR.jcl
-$INSTALL_DIR/scripts/zowe-copy-proc.sh $TEMP_DIR/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
-
-sed -e 's|$nodehome|'$NODE_HOME'|; s|$prefix|'$ZOWE_PREFIX'|; s|$javahome|'$ZOWE_JAVA_HOME'|; s|$zowestc|'$ZOWE_SERVER_PROCLIB_MEMBER'|' $INSTALL_DIR/scripts/zowe-support.sh  > $TEMP_DIR/zowe-support.sh
-cp $TEMP_DIR/zowe-support.sh $ZOWE_ROOT_DIR/scripts/zowe-support.sh
+# Run configure
+. $INSTALL_DIR/scripts/zowe-configure.sh
 
 separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh

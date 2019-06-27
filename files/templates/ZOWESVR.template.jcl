@@ -17,11 +17,11 @@
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,SRVRPATH='/zowe/install/path'                        *
+//*   S ZOWESVR,SRVRPATH='{{root_dir}}'                        *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
-//ZOWESVR   PROC SRVRPATH='/zowe/install/path'
+//ZOWESVR   PROC SRVRPATH='{{root_dir}}'
 //*-------------------------------------------------------------------
 //* SRVRPATH - The path to the HFS directory where the 
 //*            server was installed.
