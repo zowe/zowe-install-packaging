@@ -64,6 +64,7 @@
     "com.ca.mfaas.sdk.mfaas-zowe-install": {
       "version": "~1.1.5",
       "artifact": "mfaas-zowe-install-*.zip",
+      "target": ".pax/mediation",
       "explode": "true"
     },
     "org.zowe.licenses": {
