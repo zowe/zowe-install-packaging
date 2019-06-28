@@ -41,7 +41,10 @@ test "$LOG_FILE" && echo "<$me> $@" >> $LOG_FILE
 function _sedMVS
 {
 TmP=$TEMP_DIR/$2
-_cmd --repl $TmP sed $SED "//'$1($2)'"            # sed '...' $1 > $TmP
+#echo ---SED=$SED
+#echo ---FILE="//'$1($2)'" 
+#_cmd --repl $TmP sed $SED "//'$1($2)'"            # sed '...' $1 > $TmP
+sed "$SED" "//'$1($2)'" > $TmP                     # sed '...' $1 > $TmP
 _cmd mv $TmP "//'${3:-$1}(${4:-$2})'"
 }    # _sedMVS
 
