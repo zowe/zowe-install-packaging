@@ -66,16 +66,16 @@ mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zowe_licenses_full.zi
 
 # move zlux files to zlux folder
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux"
-mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux-editor-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/zlux-editor.pax"
-mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/vt-ng2-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/vt-ng2.pax"
-mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux-workflow-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/zlux-workflow.pax"
-mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/sample-react-app-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/sample-react-app.pax"
-mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/sample-iframe-app-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/sample-iframe-app.pax"
 mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux-core-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/zlux-core.pax"
 mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zss-auth-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/zss-auth.pax"
-mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/sample-angular-app-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/sample-angular-app.pax"
 mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zosmf-auth-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/zosmf-auth.pax"
+mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux-editor-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/zlux-editor.pax"
+mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux-workflow-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/zlux-workflow.pax"
 mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/tn3270-ng2-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/tn3270-ng2.pax"
+mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/vt-ng2-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/vt-ng2.pax"
+mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/sample-react-app-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/sample-react-app.pax"
+mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/sample-iframe-app-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/sample-iframe-app.pax"
+mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/sample-angular-app-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zlux/sample-angular-app.pax"
 mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zss-*.pax "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zss.pax"
 
 # jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
