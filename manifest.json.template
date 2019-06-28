@@ -94,10 +94,6 @@
           "tag": "v1.3.0"
         },
         {
-          "repository": "zlux-editor",
-          "tag": "v1.3.0"
-        },
-        {
           "repository": "zlux-file-explorer",
           "tag": "v1.0.0"
         },
@@ -119,11 +115,19 @@
         },
         {
           "repository": "zlux-widgets",
-          "tag": "v0.0.3"
+          "tag": "v0.0.4"
         },
         {
-          "repository": "zlux-workflow",
+          "repository": "zlux-build",
           "tag": "v1.3.0"
+        },
+        {
+          "repository": "zss",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zowe-common-c",
+          "tag": "zss-v1.3.0"
         }
       ]
     }, {
@@ -233,6 +237,20 @@
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
+        "tag": "v1.3.0"
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop Editor Plugin-in",
+      "entries": [{
+        "repository": "zlux-editor",
+        "tag": "v1.3.0"
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop Workflows Plugin-in",
+      "entries": [{
+        "repository": "zlux-workflow",
         "tag": "v1.3.0"
       }]
     }
