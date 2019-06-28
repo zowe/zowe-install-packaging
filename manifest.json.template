@@ -204,6 +204,18 @@
         {
           "repository": "zlux-widgets",
           "tag": "v0.0.4"
+        },
+        {
+          "repository": "zlux-build",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zss",
+          "tag": "v1.3.0"
+        },
+        {
+          "repository": "zowe-common-c",
+          "tag": "zss-v1.3.0"
         }
       ]
     }, {
