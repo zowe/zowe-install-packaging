@@ -12,9 +12,10 @@
 
 
 node('ibm-jenkins-slave-nvm') {
-  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library@features/parse-artifact").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
+  def manifest
 
   pipeline.admins.add("jackjia")
 
@@ -46,18 +47,12 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 """
       echo "Current manifest.json is:"
       sh "cat manifest.json"
-
-      // load zowe version from manifest
-      def zoweVersion = sh(
-        script: "cat manifest.json | jq -r '.version'",
-        returnStdout: true
-      ).trim()
-      if (zoweVersion) {
-        echo "Packaging Zowe v${zoweVersion} started..."
-        pipeline.setVersion(zoweVersion)
-      } else {
-        error "Cannot find Zowe version"
+      manifest = readJSON(file: 'manifest.json')
+      if (!manifest || !manifest['name'] || manifest['name'] != 'Zowe' || !manifest['version']) {
+        error "Cannot read manifest or manifest is invalid."
       }
+
+      pipeline.setVersion(manifest['version'])
     }
   )
 
@@ -68,8 +63,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // replace templates
       def zoweVersion = pipeline.getVersion()
       echo 'replacing templates...'
-      sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' artifactory-download-spec.json.template > artifactory-download-spec.json && rm artifactory-download-spec.json.template"
-      sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
+      // sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' artifactory-download-spec.json.template > artifactory-download-spec.json && rm artifactory-download-spec.json.template"
+      // sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
+
+      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-{ZOWE_VERSION}/files/"])
+      echo "$spec"
+
+      error 'stop here...'
 
       // download components
       pipeline.artifactory.download(
