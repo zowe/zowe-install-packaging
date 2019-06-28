@@ -84,6 +84,3 @@ mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api-serve
    "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/jobs-api-server-start.sh"
 mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/data-sets-api-server-start.sh" \
    "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/data-sets-api-server-start.sh"
-
-# debug purpose, list all files in workspace
-find ./${PAX_WORKSPACE_DIR} -print
