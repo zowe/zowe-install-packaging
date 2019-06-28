@@ -60,13 +60,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 5, unit: 'MINUTES'],
     isSkippable   : false,
     operation     : {
-      // replace templates
-      def zoweVersion = pipeline.getVersion()
-      echo 'replacing templates...'
-      // sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' artifactory-download-spec.json.template > artifactory-download-spec.json && rm artifactory-download-spec.json.template"
-      // sh "sed -e 's/{ZOWE_VERSION}/${zoweVersion}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
-
-      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-{ZOWE_VERSION}/files/"])
+      // prepareing download spec
+      echo 'prepareing download spec ...'
+      echo "${manifest['binaryDependencies']}"
+      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/"])
       echo "$spec"
 
       error 'stop here...'
