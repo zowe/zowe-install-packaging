@@ -166,12 +166,6 @@ fi
 # Run configure
 . ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
 
-separator
-echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
-echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER)"
-echo "To stop Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-stop.sh
-echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
-
 # save install log in runtime directory
 mkdir  $ZOWE_ROOT_DIR/install_log
 cp $LOG_FILE $ZOWE_ROOT_DIR/install_log

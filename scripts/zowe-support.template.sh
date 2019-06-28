@@ -6,6 +6,7 @@ cd $VAR/..				    # Change to its parent which should be ZOWE_ROOT_DIR
 ZOWE_ROOT_DIR={{root_dir}}		# Set our environment variable
 ZOWE_PREFIX={{zowe_prefix}}
 ZOWE_INSTALL_LOG_DIR=${ZOWE_ROOT_DIR}/install_log/
+ZOWE_CONFIGURE_LOG_DIR=${ZOWE_ROOT_DIR}/configure_log/
 ZOWE_INSTALL_ZLUX_SERVER_LOG=${ZOWE_ROOT_DIR}/zlux-app-server/log/
 
 DATE=`date +%Y-%m-%d-%H-%M-%S`
@@ -133,6 +134,14 @@ if [[ -d ${ZOWE_INSTALL_LOG_DIR} ]];then
     add_to_pax ${ZOWE_INSTALL_LOG_DIR} installation_log *.log
 else
     write_to_log "Directory ${ZOWE_INSTALL_LOG_DIR} was not found."
+fi
+
+# Collect configure logs
+if [[ -d ${ZOWE_CONFIGURE_LOG_DIR} ]];then
+    write_to_log "Collecting configure log files from ${ZOWE_CONFIGURE_LOG_DIR}:"
+    add_to_pax ${ZOWE_CONFIGURE_LOG_DIR} configure_log *.log
+else
+    write_to_log "Directory ${ZOWE_CONFIGURE_LOG_DIR} was not found."
 fi
 
 # Collect launch scripts
