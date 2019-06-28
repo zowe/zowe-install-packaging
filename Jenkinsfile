@@ -64,7 +64,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       echo 'prepareing download spec ...'
       echo "${manifest['binaryDependencies']}"
       def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/"])
-      echo "$spec"
+      writeJSON file: 'artifactory-download-spec.json', json: spec
+      sh "cat artifactory-download-spec.json"
 
       error 'stop here...'
 
