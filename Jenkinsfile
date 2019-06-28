@@ -62,12 +62,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     operation     : {
       // prepareing download spec
       echo 'prepareing download spec ...'
-      echo "${manifest['binaryDependencies']}"
-      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/"])
-      writeJSON file: 'artifactory-download-spec.json', json: spec
+      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
+      writeJSON file: 'artifactory-download-spec.json', json: spec, pretty: 2
+      echo "================ download spec ================"
       sh "cat artifactory-download-spec.json"
-
-      error 'stop here...'
 
       // download components
       pipeline.artifactory.download(
