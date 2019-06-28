@@ -128,7 +128,7 @@ then
 fi
 
 # put USS JCL file name in CLIST, because CLIST parms are always uppercased.
-sed "s|ussfile|$ussfile|" ./ocopyshr.clist > $TEMP_DIR/ocopyshr.e.clist
+sed "s|ussfile|$ussfile|" ${ZOWE_ROOT_DIR}/scripts/internal/ocopyshr.clist > $TEMP_DIR/ocopyshr.e.clist
 tsocmd oget "'$TEMP_DIR/ocopyshr.e.clist' '$userid.zowetemp.clist(copyproc)'"  1>/dev/null 2>/dev/null
 
 if [[ $? > 0 ]]
@@ -181,17 +181,17 @@ then
 else
   echo \'auto\' was requested: choose PROCLIB dataset automatically >> $LOG_FILE
   echo Try JES2 PROCLIB concatenation >> $LOG_FILE
-  ./opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available?
+  ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available?
   if [[ $? > 0 ]]
   then
     echo "  "Unable to read JES2 PROCLIB concatenation with opercmd REXX exec >> $LOG_FILE
   else
-    procs=`./opercmd '$d proclib'|grep DSNAME=.*\.PROCLIB|sed 's/.*DSNAME=\(.*\)\.PROCLIB.*/\1.PROCLIB/'`
+    procs=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd '$d proclib'|grep DSNAME=.*\.PROCLIB|sed 's/.*DSNAME=\(.*\)\.PROCLIB.*/\1.PROCLIB/'`
     echo "  "procs = $procs >> $LOG_FILE
     for proclib in $procs
     do
       echo "  "proclib = $proclib >> $LOG_FILE
-      ./ocopyshr.sh $proclib $memberName 
+      ${ZOWE_ROOT_DIR}/scripts/internal/ocopyshr.sh $proclib $memberName 
       if [[ $? > 0 ]]
       then
         echo Unable to write to $proclib, try next PROCLIB >> $LOG_FILE
@@ -212,7 +212,7 @@ else
     rm ./mstjcl00
     for proclib in $procs
     do
-        ./ocopyshr.sh $proclib $memberName
+        ${ZOWE_ROOT_DIR}/scripts/internal/ocopyshr.sh $proclib $memberName
         if [[ $? > 0 ]]
         then
           echo Unable to write to $proclib, try another PROCLIB >> $LOG_FILE
@@ -224,7 +224,7 @@ else
 
     echo Try SYS1.PROCLIB >> $LOG_FILE
     proclib=SYS1.PROCLIB
-    ./ocopyshr.sh $proclib $memberName
+    ${ZOWE_ROOT_DIR}/scripts/internal/ocopyshr.sh $proclib $memberName
     if [[ $? > 0 ]]
     then
       echo Unable to write to SYS1.PROCLIB >> $LOG_FILE

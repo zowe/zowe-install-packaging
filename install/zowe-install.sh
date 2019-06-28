@@ -115,6 +115,8 @@ chmod a+x $ZOWE_ROOT_DIR/scripts/internal
 
 echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
+cp $INSTALL_DIR/scripts/ocopyshr.sh $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.sh
+cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.clist
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 cp $INSTALL_DIR/scripts/run-zowe.template.sh $ZOWE_ROOT_DIR/scripts/templates/run-zowe.template.sh
 

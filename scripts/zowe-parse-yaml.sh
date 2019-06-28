@@ -13,7 +13,7 @@
 # Assign default values that will be filled in as we parse the yaml file
 
 echo "<zowe-parse-yaml.sh>" >> $LOG_FILE 
-echo "Reading install variables from zowe-install.sh"
+echo "Reading variables from zowe-install.yaml"
 
 parseConfiguationFile() {
 while read line

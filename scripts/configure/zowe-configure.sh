@@ -2,11 +2,11 @@
 # Cache original directory, then change our directory to be here so we can rely on the script offset
 PREV_DIR=`pwd`	
 cd $(dirname $0)
-CONFIG_DIR=`$(dirname $0)
+CONFIG_DIR=`pwd`
 ZOWE_ROOT_DIR={{root_dir}}
 
 # TODO - refactor, or work out how to improve?
-export LOG_DIR=`pwd`/log
+export LOG_DIR=${CONFIG_DIR}/log
 # Make the log directory if needed - first time through - subsequent installs create new .log files
 if [[ ! -d $LOG_DIR ]]; then
     mkdir -p $LOG_DIR
@@ -17,6 +17,10 @@ export LOG_FILE="config_`date +%Y-%m-%d-%H-%M-%S`.log"
 LOG_FILE=$LOG_DIR/$LOG_FILE
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
+
+# Create a temp directory to be a working directory for sed replacements
+export TEMP_DIR=$CONFIG_DIR/temp_"`date +%Y-%m-%d`"
+mkdir -p $TEMP_DIR
 
 # Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
 . $CONFIG_DIR/zowe-init.sh
@@ -107,3 +111,6 @@ echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
 # save config log in runtime directory
 mkdir  $ZOWE_ROOT_DIR/configure_log
 cp $LOG_FILE $ZOWE_ROOT_DIR/configure_log
+
+# remove the working directory
+rm -rf $TEMP_DIR
