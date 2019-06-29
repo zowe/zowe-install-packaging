@@ -98,11 +98,11 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
-. $CONFIG_DIR/zowe-configure-proclib.sh
+# Note: this calls exit code, so can't be run in 'source' mode
+$CONFIG_DIR/zowe-configure-proclib.sh
 
 cd $PREV_DIR
 
-separator
 echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
 echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER)"
 echo "To stop Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-stop.sh
