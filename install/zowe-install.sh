@@ -8,13 +8,14 @@
 # Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-while getopts ":i" opt; do
+while getopts ":I" opt; do
   case $opt in
-    i)
+    I)
       INSTALL_ONLY=1
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
+      exit 1
       ;;
   esac
 done
@@ -185,5 +186,6 @@ then
   # Run configure - note not in source mode
   ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
 else
-  echo "Installation ran, but not configure, so you must configure zowe before you use it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
+  separator
+  echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
 fi
