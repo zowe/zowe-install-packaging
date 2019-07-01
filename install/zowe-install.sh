@@ -8,8 +8,16 @@
 # Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-# Run zowe-locate-zosmf.sh to ensure the environment variables for where
-# ZOSMF/lib and bootstrap.properties are persisted in ZOSMF_DIR and ZOSMF_BOOTSTRAP_PROPERTIES
+while getopts ":i" opt; do
+  case $opt in
+    i)
+      INSTALL_ONLY=1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
 
 export INSTALL_DIR=$PWD/../
 
@@ -172,5 +180,10 @@ cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 # remove the working directory
 rm -rf $TEMP_DIR
 
-# Run configure - note not in source mode
-${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
+if [ -z $INSTALL_ONLY ]
+then
+  # Run configure - note not in source mode
+  ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
+else
+  echo "Installation ran, but not configure, so you must configure zowe before you use it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
+fi
