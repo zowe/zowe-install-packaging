@@ -165,12 +165,12 @@ if [[ $AUTH_RETURN_CODE == "0" ]]; then
     echo "  zowe-runtime-authorize.sh failed to run successfully" >> $LOG_FILE
 fi
 
-# Run configure
-. ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
-
 # save install log in runtime directory
 mkdir  $ZOWE_ROOT_DIR/install_log
 cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR
+
+# Run configure - note not in source mode
+${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh

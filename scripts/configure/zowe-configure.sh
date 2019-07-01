@@ -98,8 +98,7 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
-# Note: this calls exit code, so can't be run in 'source' mode
-$CONFIG_DIR/zowe-configure-proclib.sh
+. $CONFIG_DIR/zowe-configure-proclib.sh
 
 cd $PREV_DIR
 
