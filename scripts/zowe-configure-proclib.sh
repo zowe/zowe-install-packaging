@@ -123,12 +123,6 @@ fi    #
 SED=""
 SED="$SED;s/HLQ=[^,]*/HLQ=${ZOWE_HLQ}/"
 SED="$SED;s/CFG=[^,]*/HLQ=${ZOWE_PARMLIB}/"
-echo ----- JRW Debug Begin ------
-echo ZOWE_HLQ=${ZOWE_HLQ}
-echo ZOWE_PROCLIB=$ZOWE_PROCLIB
-echo ZOWE_STC_ZSS=$ZOWE_STC_ZSS
-echo ----- JRW Debug End ------
-
 _sedMVS "${ZOWE_HLQ}.SZWESAMP" ZWESISTC "$ZOWE_PROCLIB" "$ZOWE_STC_ZSS"
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

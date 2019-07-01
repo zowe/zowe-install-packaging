@@ -183,7 +183,7 @@ else                    # some but not all variables have data -> error
   echo "externalCertificate='$ZOWE_APIM_EXTERNAL_CERTIFICATE'"
   echo "externalCertificateAlias='$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS'"
   echo "externalCertificateAuthorities='$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES'"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit 8                        # EXIT
 fi    #
 
 # TODO add IPv6 support to Subject Alternate Name (SAN)
@@ -194,7 +194,7 @@ SAN="$SAN,dns:localhost"
 SAN="$SAN,ip:127.0.0.1"
 
 # Invoke apiml_cm.sh
-_cmd $here/apiml_cm.sh \
+_cmd $here/../api-mediation/scripts/apiml_cm.sh \
   --action setup \
   --service-ext $SAN \
   $options  
@@ -208,8 +208,7 @@ done    # for file
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # Trust z/OSMF
-
-if test "${ZOWE_APIM_VERIFY_CERTIFICATES}" == "true"
+if [[ "${ZOWE_APIM_VERIFY_CERTIFICATES}" == "true" ]]
 then
   # Set apiml_cm.sh options
   unset options
@@ -229,7 +228,7 @@ then
   fi    #
 
   # Invoke apiml_cm.sh (do not use _cmd wo we can test return code)
-  cmd="$here/apiml_cm.sh --action trust-zosmf"
+  cmd="$here/../api-mediation/scripts/apiml_cm.sh --action trust-zosmf"
   test "$debug" && echo
   test "$debug" && echo "$cmd $options 2>&1"
   $cmd $options 2>&1
