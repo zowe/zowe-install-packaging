@@ -184,7 +184,7 @@ options="-Xms32m -Xmx256m \
   -Dserver.ssl.trustStoreType=PKCS12 \
   -Dserver.ssl.trustStorePassword=password \
   -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
-  -jar $DIR/../discovery-service.jar"
+  -jar $here/../discovery-service.jar"
 test "$debug" && echo "java $options &"
 java $options &
 rc=$?

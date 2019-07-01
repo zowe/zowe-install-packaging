@@ -141,9 +141,11 @@ test "$debug" && echo "scripts=$scripts"
 
 # Ensure TMPDIR is defined (note: TMPDIR is used by /bin/sh)
 #export TMPDIR=${TMPDIR:-/tmp}
-
-export TMPDIR=$INSTALL_DIR/temp_`date +%Y-%m-%d`
+mkdir -p $INSTALL_DIR/tmp/
+chmod a+x $INSTALL_DIR/tmp/
+export TMPDIR=$INSTALL_DIR/tmp/$(date +%Y-%m-%d-%H-%M-%S)
 mkdir -p $TMPDIR
+chmod a+x $TMPDIR
 
 test "$debug" && echo "TMPDIR=$TMPDIR"
 
