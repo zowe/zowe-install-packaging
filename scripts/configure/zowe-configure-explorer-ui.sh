@@ -93,6 +93,7 @@ for one in $UI_PLUGIN_LIST; do
       -e "s|\"frame-ancestors\": *\[\$|\"frame-ancestors\": [\"https://${ZOWE_EXPLORER_HOST}:*\"|g" \
       config.json > config.json.tmp
   mv config.json.tmp config.json
+  chmod 775 config.json
   cd ../..
 
   # Add explorer plugin to zLUX 

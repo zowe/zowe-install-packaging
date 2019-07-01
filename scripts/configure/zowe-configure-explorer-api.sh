@@ -65,8 +65,7 @@ for one in $EXPLORER_API_LIST; do
   mv "${one}-api-server-start.sh.tmp" "${one}-api-server-start.sh"
 
   # Make configured script executable
-  chmod a+x *.sh
-  chmod 755 $ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER/scripts
+  chmod -R 755 $ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER/scripts
 done
 
 echo "</zowe-explorer-api-configure.sh>" >> $LOG_FILE
