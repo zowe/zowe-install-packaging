@@ -20,7 +20,8 @@ while getopts ":I" opt; do
   esac
 done
 
-export INSTALL_DIR=$PWD/../
+PREV_DIR=`pwd`	
+export INSTALL_DIR=$(dirname $0)/../
 
 # extract Zowe version from manifest.json
 export ZOWE_VERSION=$(cat $INSTALL_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
@@ -59,6 +60,7 @@ echo "Install started at: "`date` >> $LOG_FILE
 
 echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 
+cd $INSTALL_DIR/install
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
@@ -180,6 +182,8 @@ cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR
+
+cd $PREV_DIR
 
 if [ -z $INSTALL_ONLY ]
 then
