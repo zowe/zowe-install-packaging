@@ -74,7 +74,7 @@ if [[ -d $ZOWE_ROOT_DIR ]]; then
         echo "    $ZOWE_ROOT_DIR is not empty"
         echo "    Please clear the contents of this directory, or edit zowe-install.yaml's root directory location before attempting the install."
         echo "Exiting non emptry install directory $ZOWE_ROOT_DIR has `expr $directoryListLines - 3` directory entries" >> $LOG_FILE
-        exit 0
+        exit 2
     fi
 else
     mkdir -p $ZOWE_ROOT_DIR
