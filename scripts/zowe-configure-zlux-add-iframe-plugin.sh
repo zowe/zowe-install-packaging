@@ -1,4 +1,3 @@
-#!/bin/sh
 #######################################################################
 # This program and the accompanying materials are made available
 # under the terms of the Eclipse Public License v2.0 which
@@ -123,7 +122,7 @@ PLUGIN_SHORTNAME=$3
 URL=$4
 TILE_IMAGE_PATH=$5
 
-zluxServer="zlux-app-server"
+zluxserver="zlux-app-server"
 zluxPlugin="$ZOWE_ROOT_DIR/$zluxserver/plugins"
 
 # Input validation, do not use elif so all tests run
@@ -139,6 +138,7 @@ then
   echo "ZOWE_ROOT_DIRECTORY $1 not a directory" >&2
   rc=8
 elif test ! -w $zluxPlugin
+then
 #  chmod -R u+w $zluxPlugin
 #  if test $? -ne 0
     _displayUsage

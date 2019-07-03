@@ -189,7 +189,7 @@ fi    # Configure access to API Catalog
 _cmd $scripts/zowe-configure-zlux-add-iframe-plugin.sh \
   $ZOWE_ROOT_DIR \
   "org.zowe.api.catalog" \
-  "API Catalog" \
+  "API_Catalog" \
   $CATALOG_GATEWAY_URL \
   $ZOWE_ROOT_DIR/files/assets/api-catalog.png
 
