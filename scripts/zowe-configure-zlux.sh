@@ -64,7 +64,8 @@ then                                     # make exectuable after update
 fi    #
 
 TmP=$TMPDIR/$(basename $1)
-_cmd --repl $TmP sed $SED $1                    # sed '...' $1 > $TmP
+echo "$SED" > $TMPDIR/test.sed
+_cmd --repl $TmP sed -f $TMPDIR/test.sed $1                    # sed '...' $1 > $TmP
 _cmd mv $TmP ${2:-$1}                           # give $TmP actual name
 test -n "$ExEc" && _cmd chmod a+x ${2:-$1}      # make executable
 }    # _sed
@@ -198,8 +199,8 @@ _cmd $scripts/zowe-configure-zlux-add-iframe-plugin.sh \
 # Run deploy on the zLUX app server to propagate the changes made
 silent="-s"
 test "$debug" && unset silent
-_cmd $scripts/zowe-configure-zlux-deploy.sh $silent
-
+#_cmd $scripts/zowe-configure-zlux-deploy.sh $silent
+./$ZOWE_ROOT_DIR/zlux-build/deploy.sh >/dev/null
 # Adjust zLUX access permisions, must run after deploy
 _cmd $scripts/zowe-configure-zlux-authorize.sh
 
