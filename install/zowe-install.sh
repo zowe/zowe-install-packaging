@@ -194,7 +194,7 @@ chmod a+x $ZOWE_ROOT_DIR/scripts/internal
 echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
-sed -e 's|$nodehome|'$NODE_HOME'|; s|$prefix|'$ZOWE_PREFIX'|' $INSTALL_DIR/scripts/run-zowe.sh > $TEMP_DIR/run-zowe.sh
+sed -e "s|\$nodehome|$NODE_HOME|" $INSTALL_DIR/scripts/run-zowe.sh  > $TEMP_DIR/run-zowe.sh
 cp $TEMP_DIR/run-zowe.sh $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
