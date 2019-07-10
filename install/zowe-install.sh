@@ -20,8 +20,9 @@ while getopts ":I" opt; do
   esac
 done
 
-PREV_DIR=`pwd`	
-export INSTALL_DIR=$(dirname $0)/../
+PREV_DIR=`pwd`
+cd $(dirname $0)/../
+export INSTALL_DIR=`pwd`
 
 # extract Zowe version from manifest.json
 export ZOWE_VERSION=$(cat $INSTALL_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
