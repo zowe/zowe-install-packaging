@@ -34,7 +34,6 @@
 //  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
-//*STDENV   DD  PATH='&SRVRPATH/wlp/usr/shared/config/zowesvr.stdenv',
 //*             PATHOPTS=ORDONLY
 //*-------------------------------------------------------------------
 //* Optional logging parameters that can be configured if required
