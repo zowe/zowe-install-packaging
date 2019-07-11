@@ -1,4 +1,3 @@
-
 # Cache original directory, then change our directory to be here so we can rely on the script offset
 PREV_DIR=`pwd`	
 cd $(dirname $0)
@@ -28,6 +27,7 @@ mkdir -p $TEMP_DIR
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $CONFIG_DIR/zowe-parse-yaml.sh
 
+echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
 # Configure Explorer UI plugins
 . $CONFIG_DIR/zowe-configure-explorer-ui.sh
