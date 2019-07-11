@@ -17,11 +17,11 @@
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,SRVRPATH='/zowe/install/path'                        *
+//*   S ZOWESVR,SRVRPATH='{{root_dir}}'                        *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
-//ZOWESVR   PROC SRVRPATH='/zowe/install/path'
+//ZOWESVR   PROC SRVRPATH='{{root_dir}}'
 //*-------------------------------------------------------------------
 //* SRVRPATH - The path to the HFS directory where the 
 //*            server was installed.
@@ -34,7 +34,6 @@
 //  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
-//*STDENV   DD  PATH='&SRVRPATH/wlp/usr/shared/config/zowesvr.stdenv',
 //*             PATHOPTS=ORDONLY
 //*-------------------------------------------------------------------
 //* Optional logging parameters that can be configured if required

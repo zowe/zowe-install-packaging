@@ -34,4 +34,7 @@ cd $ZOWE_ROOT_DIR"/api-mediation"
 echo "Unpax of $API_MEDIATION_PAX into $PWD" >> $LOG_FILE
 pax -rf $API_MEDIATION_PAX -ppx
 
+# TODO - move image into apiml pax
+cp $INSTALL_DIR/files/assets/api-catalog.png ${ZOWE_ROOT_DIR}"/api-mediation"
+
 echo "</zowe-api-mediation-install.sh>" >> $LOG_FILE

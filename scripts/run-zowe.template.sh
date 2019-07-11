@@ -19,7 +19,7 @@
 #
 #export "NODE_PATH='"$ZOWE_ROOT_DIR"/zlux-app-server/bin':$NODE_PATH"
 
-export ZOWE_PREFIX=$prefix
+export ZOWE_PREFIX={{zowe_prefix}}
 ZOWE_API_GW=${ZOWE_PREFIX}AGW1
 ZOWE_API_DS=${ZOWE_PREFIX}ADS1
 ZOWE_API_CT=${ZOWE_PREFIX}AAC1
@@ -32,7 +32,7 @@ ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}EUU1
 
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
-export NODE_HOME=$nodehome
+export NODE_HOME={{node_home}}
 fi
 
 DIR=`dirname $0`
