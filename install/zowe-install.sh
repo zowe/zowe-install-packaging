@@ -152,6 +152,7 @@ cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
 echo "Copying zowe-runtime-authorize.template.sh to "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh >> $LOG_FILE
+cp "$INSTALL_DIR/scripts/zowe-runtime-authorize.template.sh" "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh"
 
 # save install log in runtime directory
 mkdir  $ZOWE_ROOT_DIR/install_log
