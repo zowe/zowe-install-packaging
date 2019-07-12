@@ -2,7 +2,8 @@
 PREV_DIR=`pwd`	
 cd $(dirname $0)
 CONFIG_DIR=`pwd`
-ZOWE_ROOT_DIR={{root_dir}}
+cd ../../  #we are in <ZOWE_ROOT_DIR>/scripts/configure
+ZOWE_ROOT_DIR=`pwd`
 
 # TODO - refactor, or work out how to improve?
 export LOG_DIR=${CONFIG_DIR}/log

@@ -145,13 +145,10 @@ separator
 mkdir ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/scripts/zowe-init.sh ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/install/zowe-install.yaml ${ZOWE_ROOT_DIR}/scripts/configure
+# Copy all but root dir from yaml as we can derive that once there
+grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
 
 cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
-sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
-  "${INSTALL_DIR}/scripts/configure/zowe-configure.sh" \
-  > "$ZOWE_ROOT_DIR/scripts/configure/zowe-configure.sh"
-
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
 # TODO - review if this is still a failure risk and whether it really needs moving to runtime
