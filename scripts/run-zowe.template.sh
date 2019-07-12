@@ -1,4 +1,4 @@
- #!/bin/sh
+#!/bin/sh
 
 ################################################################################
 # This program and the accompanying materials are made available under the terms of the
@@ -37,17 +37,29 @@ ZOWE_JAVA_HOME={{java_home}}
 
 LAUNCH_COMPONENTS=files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
 
+export ZOWE_PREFIX={{zowe_prefix}}
+ZOWE_API_GW=${ZOWE_PREFIX}AGW1
+ZOWE_API_DS=${ZOWE_PREFIX}ADS1
+ZOWE_API_CT=${ZOWE_PREFIX}AAC1
+ZOWE_DESKTOP=${ZOWE_PREFIX}DS1
+ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}EUJ1
+ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}EUD1
+ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}EUU1
+
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
 export NODE_HOME={{node_home}}
 fi
-cd `dirname $0`/../../zlux-app-server/bin && ./nodeCluster.sh --allowInvalidTLSProxy=true &
-`dirname $0`/../../api-mediation/scripts/api-mediation-start-discovery.sh
-`dirname $0`/../../api-mediation/scripts/api-mediation-start-catalog.sh
-`dirname $0`/../../api-mediation/scripts/api-mediation-start-gateway.sh
-`dirname $0`/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
-`dirname $0`/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
-`dirname $0`/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
+
+DIR=`dirname $0`
+
+cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
+_BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
+_BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
+_BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
+_BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
+_BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
+_BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
  
 # Validate component properties if script exists
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
