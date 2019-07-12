@@ -2,7 +2,9 @@
 PREV_DIR=`pwd`	
 cd $(dirname $0)
 CONFIG_DIR=`pwd`
-ZOWE_ROOT_DIR={{root_dir}}
+cd ../../  #we are in <ZOWE_ROOT_DIR>/scripts/configure
+export ZOWE_ROOT_DIR=`pwd`
+cd ${CONFIG_DIR}
 
 # TODO - refactor, or work out how to improve?
 export LOG_DIR=${CONFIG_DIR}/log
@@ -73,8 +75,22 @@ cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 ./deploy.sh > /dev/null
 
-# TODO LATER - same as the above - zss won't start with those permissions, so re-run runtime-authorise to lock it back now
-$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
+# TODO LATER - same as the above - zss won't start with those permissions,
+sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
+  "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh" \
+  > "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
+
+chmod a+x $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
+$(. $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh)
+AUTH_RETURN_CODE=$?
+if [[ $AUTH_RETURN_CODE == "0" ]]; then
+    echo "  The permissions were successfully changed"
+    echo "  zowe-runtime-authorize.sh run successfully" >> $LOG_FILE
+    else
+    echo "  The current user does not have sufficient authority to modify all the file and directory permissions."
+    echo "  A user with sufficient authority must run $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
+    echo "  zowe-runtime-authorize.sh failed to run successfully" >> $LOG_FILE
+fi
 
 # Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
 # this script is run after all the folders have been created and paxes expanded above
