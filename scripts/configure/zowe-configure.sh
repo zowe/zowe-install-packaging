@@ -3,7 +3,8 @@ PREV_DIR=`pwd`
 cd $(dirname $0)
 CONFIG_DIR=`pwd`
 cd ../../  #we are in <ZOWE_ROOT_DIR>/scripts/configure
-ZOWE_ROOT_DIR=`pwd`
+export ZOWE_ROOT_DIR=`pwd`
+cd ${CONFIG_DIR}
 
 # TODO - refactor, or work out how to improve?
 export LOG_DIR=${CONFIG_DIR}/log
