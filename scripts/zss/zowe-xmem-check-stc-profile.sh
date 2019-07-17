@@ -17,7 +17,7 @@ echo "Check STC profile ${profile} (SAF=${saf})"
 case $saf in
 
 RACF)
-  sh ${SCRIPT_DIR}/zowe-xmem-check-profile.sh $saf STARTED $profile
+  . ${SCRIPT_DIR}/zowe-xmem-check-profile.sh $saf STARTED $profile
 ;;
 
 ACF2)
