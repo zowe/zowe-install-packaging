@@ -57,7 +57,7 @@ sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
 echo
 echo "************************ Install step 'LOADLIB' start **************************"
 echo $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh
-loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_MODULE}"
+loadlibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_MODULE}"
 $loadlibCmd1
 if [[ $? -eq 0 ]]
 then
@@ -68,7 +68,7 @@ echo "************************ Install step 'LOADLIB' end **********************
 # 2. APF-authorize loadlib
 echo
 echo "************************ Install step 'APF-auth' start *************************"
-apfCmd1="sh $SCRIPT_DIR/zowe-xmem-apf.sh ${XMEM_LOADLIB}"
+apfCmd1=". $SCRIPT_DIR/zowe-xmem-apf.sh ${XMEM_LOADLIB}"
 if $loadlibOk ; then
   $apfCmd1
   if [[ $? -eq 0 ]]; then
@@ -82,7 +82,7 @@ echo "************************ Install step 'APF-auth' end *********************
 # 3. Deploy parmlib
 echo
 echo "************************ Install step 'PARMLIB' start **************************"
-parmlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${ZSS} ${XMEM_PARMLIB} ${XMEM_PARM}"
+parmlibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${ZSS} ${XMEM_PARMLIB} ${XMEM_PARM}"
 $parmlibCmd1
 if [[ $? -eq 0 ]]
 then
@@ -94,7 +94,7 @@ echo "************************ Install step 'PARMLIB' end **********************
 # 4. Deploy PROCLIB
 echo
 echo "************************ Install step 'PROCLIB' start **************************"
-proclibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
+proclibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
 $proclibCmd1
 if [[ $? -eq 0 ]]
 then
@@ -106,7 +106,7 @@ echo "************************ Install step 'PROCLIB' end **********************
 # 5. PPT-entry
 echo
 echo "************************ Install step 'PPT-entry' start ************************"
-pptCmd1="sh $SCRIPT_DIR/zowe-xmem-ppt.sh ${XMEM_MODULE} ${XMEM_KEY}"
+pptCmd1=". $SCRIPT_DIR/zowe-xmem-ppt.sh ${XMEM_MODULE} ${XMEM_KEY}"
 $pptCmd1
 if [[ $? -eq 0 ]]
 then
@@ -154,8 +154,8 @@ if $safOk ; then
   # 7. Handle STC user
   echo
   echo "************************ Install step 'STC user' start *************************"
-  stcUserCmd1="sh $SCRIPT_DIR/zowe-xmem-check-user.sh ${saf} ${XMEM_STC_USER}"
-  stcUserCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
+  stcUserCmd1=". $SCRIPT_DIR/zowe-xmem-check-user.sh ${saf} ${XMEM_STC_USER}"
+  stcUserCmd2=". $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
   $stcUserCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -176,8 +176,8 @@ if $safOk ; then
   # 8. Handle STC profile
   echo
   echo "************************ Install step 'STC profile' start **********************"
-  stcProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-stc-profile.sh ${saf} ${XMEM_STC_PREFIX}"
-  stcProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
+  stcProfileCmd1=". $SCRIPT_DIR/zowe-xmem-check-stc-profile.sh ${saf} ${XMEM_STC_PREFIX}"
+  stcProfileCmd2=". $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
   $stcProfileCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -198,8 +198,8 @@ if $safOk ; then
   # 9. Handle security profile
   echo
   echo "************************ Install step 'Security profile' start *****************"
-  xmemProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-profile.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
-  xmemProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE} ${ZOWE_TSS_FAC_OWNER}"
+  xmemProfileCmd1=". $SCRIPT_DIR/zowe-xmem-check-profile.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
+  xmemProfileCmd2=". $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE} ${ZOWE_TSS_FAC_OWNER}"
   $xmemProfileCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -216,8 +216,8 @@ if $safOk ; then
   # 10. Check access
   echo
   echo "************************ Install step 'Security profile access' start **********"
-  xmemAccessCmd1="sh $SCRIPT_DIR/zowe-xmem-check-access.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
-  xmemAccessCmd2="sh $SCRIPT_DIR/zowe-xmem-permit.sh ${saf} ${XMEM_PROFILE} ${ZOWE_USER}"
+  xmemAccessCmd1=". $SCRIPT_DIR/zowe-xmem-check-access.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
+  xmemAccessCmd2=". $SCRIPT_DIR/zowe-xmem-permit.sh ${saf} ${XMEM_PROFILE} ${ZOWE_USER}"
   if [[ "$xmemProfileOk" = "true" ]]; then
     $xmemAccessCmd1
     rc=$?
@@ -402,4 +402,3 @@ echo "**************************************************************************
 cd $PREV_DIR
 
 exit 0
-
