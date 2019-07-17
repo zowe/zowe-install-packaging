@@ -33,14 +33,14 @@ else
   if [[ $? -ne 0 ]]; then
     echo "Error:  LISTDS failed"
     echo "$cmdout"
-    exit 8
+    return 8
   fi
 
   volume="$(echo $cmdout | sed -n "s/.*--VOLUMES--[\s]*\([^\s]\)[\s]*/\1/p")"
   if [[ -z "$volume" ]]; then
     echo "Error:  volume not found"
     echo "$cmdout"
-    exit 8
+    return 8
   fi
 
   cmdout="$(${OPERCMD} "SETPROG APF,ADD,DSNAME=${loadlib},VOLUME=${volume}" 2>&1)"
@@ -49,10 +49,10 @@ fi
 
 if echo $cmdout | grep "CSV410I" 1>/dev/null; then
   echo "Info:  dataset ${loadlib} has been added to APF list"
-  exit 0
+  return 0
 else
   echo "Error:  dataset ${loadlib} has not been added to APF list"
   echo "$cmdout"
-  exit 8
+  return 8
 fi
 

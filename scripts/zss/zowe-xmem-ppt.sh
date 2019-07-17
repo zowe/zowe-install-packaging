@@ -21,16 +21,16 @@ if [[ "${module}" == "${loadmodule}" ]]; then
   echo "Info:  module ${loadmodule} has a PPT-entry with NS=${isNonSwappable}, key=${key}"
   if [[ "${isNonSwappable}" != "Y" ]]; then
     echo "Error:  module ${loadmodule} must be non-swappable"
-    exit 8
+    return 8
   fi
   if [[ "${key}" != "${xmemKey}" ]]; then
     echo "Error:  module ${loadmodule} must run in key ${xmemKey}"
-    exit 8
+    return 8
   fi
-  exit 0
+  return 0
 else
   echo "Error:  PPT-entry has not been found for module ${loadmodule}"
-  exit 8
+  return 8
 fi
 
 

@@ -17,9 +17,9 @@ lastcc=`tsocmd "listcat entries('$dsn')" 2>/dev/null | sed -n "s/.*LASTCC=\([0-9
 if [[ -z "$lastcc" ]]
 then
   echo "Info:  dataset $dsn exists"
-  exit 1
+  return 1
 else
   echo "Info:  dataset $dsn doesn't exit"
-  exit 0
+  return 0
 fi
 

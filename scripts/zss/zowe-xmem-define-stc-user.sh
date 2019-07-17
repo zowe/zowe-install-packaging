@@ -87,5 +87,5 @@ TSS)
 esac
 
 rm /tmp/cmd.out /tmp/cmd.err 1> /dev/null 2> /dev/null
-exit $rc
+return $rc
 

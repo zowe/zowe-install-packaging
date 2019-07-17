@@ -17,14 +17,14 @@ cmdout="$(tsocmd "listds '${dsn}' label" 2>&1)"
 if [[ $? -ne 0 ]]; then
   echo "Error:  LISTDS failed"
   echo "$cmdout"
-  exit 8
+  return 8
 fi
 
 dscb="$(echo $cmdout | sed -n "s/.*--FORMAT 1 DSCB-- \(.*\)/\1/p")"
 if [[ -z "$dscb" ]]; then
   echo "Error:  DSCB1 not found"
   echo "$cmdout"
-  exit 8
+  return 8
 fi
 
 # DS1SMSFG - System managed storage indicators
@@ -32,7 +32,7 @@ ds1smsfg="$(echo $dscb | sed -n "s/.\{77\}\(.\{2\}\).*/\1/p")"
 if [[ -z "ds1smsfg" ]]; then
   echo "Error:  DS1SMSFG not found in DSCB1"
   echo "$cmdout"
-  exit 8
+  return 8
 fi
 
 # DS1PDSE (0x08) - Data set is a PDSE or HFS data set (must be set)
@@ -42,10 +42,10 @@ ds1smsfg_masked="$((0x$ds1smsfg & 0x0A))"
 # If the masked value is 0x08 (8), the dataset is PDSE
 if [[ $ds1smsfg_masked == "8" ]]; then
   echo "Info:  dataset ${dsn} is PDSE"
-  exit 1
+  return 1
 else
   echo "Info:  dataset ${dsn} is not PDSE"
   echo "$cmdout"
-  exit 0
+  return 0
 fi
 

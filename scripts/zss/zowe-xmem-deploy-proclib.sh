@@ -15,16 +15,16 @@ member=$3
 sh ${SCRIPT_DIR}/zowe-xmem-dataset-exists.sh ${proclib}
 if [[ $? -eq 0 ]]; then
   echo "Error:  PROCLIB ${XMEM_PROCLIB} doesn't exist"
-  exit 8
+  return 8
 fi
 
 echo "Copy PROCLIB member ${member} to ${proclib}"
 if ${SCRIPT_DIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} "${proclib}(${member})" TEXT
 then
   echo "Info:  PROCLIB member ${member} has been successfully copied to dataset ${proclib}"
-  exit 0
+  return 0
 else
   echo "Error:  PROCLIB member ${member} has not been copied to dataset ${proclib}"
-  exit 8
+  return 8
 fi
 

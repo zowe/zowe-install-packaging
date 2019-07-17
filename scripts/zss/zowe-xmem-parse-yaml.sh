@@ -103,7 +103,7 @@ XMEM_ELEMENT_ID=ZWES
 if [[ ${XMEM_PROCLIB} == "" ]]
 then
     echo "  ERROR: APF server PROCLIB dataset not specified, exiting"
-    exit 1
+    return 1
 fi
 if [[ ${XMEM_PARMLIB} == "" ]]
 then
@@ -118,7 +118,7 @@ fi
 if [[ ${ZOWE_USER} == "" ]]
 then
     echo "  ERROR: User to run Zowe server not specified, exiting"
-    exit 1
+    return 1
 fi
 if [[ ${XMEM_STC_USER_UID} == "" ]]
 then
@@ -136,5 +136,5 @@ fi
 if [[ ${ZOWE_TSS_FAC_OWNER} == "" ]]
 then
     echo "  ERROR: TSS Facility Owner not specified, exiting. If you are not running TSS, please set this field to 'auto'."
-    exit 1
+    return 1
 fi

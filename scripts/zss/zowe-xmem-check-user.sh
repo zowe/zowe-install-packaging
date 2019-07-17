@@ -16,26 +16,26 @@ RACF)
   case $msg in
   UNABLE\ TO\ LOCATE\ USER\ *)
     echo "Warning:  User ${user} is not defined"
-    exit 1
+    return 1
   ;;
   NOT\ AUTHORIZED\ TO\ LIST\ *)
     echo "Error: User ${user} is defined but you are not authorized to list it"
-    exit 8
+    return 8
   ;;
   USER=${user}\ *)
     echo "Info:  User ${user} is defined and you are authorized to list it"
-    exit 0
+    return 0
   ;;
   *)
     echo "Error:  Unexpected response to LU command"
     echo $msg
-    exit 8
+    exreturnit 8
   esac
 ;;
 ACF2)
   echo "Warning:  ACF2 support has not been implemented," \
     "please manually check if user ${user} is defined"
-  exit 8
+  return 8
 ;;
 TSS)
   tss0314="TSS0314E  ACID DOES NOT EXIST"
@@ -44,23 +44,23 @@ TSS)
   case $msg in
   ${tss0314}*)
     echo "Warning:  User ${user} is not defined"
-    exit 1
+    return 1
   ;;
   ${tss0352}*)
     echo "Error: User ${user} is defined but you are not authorized to list it"
-    exit 8
+    return 8
   ;;
   ACCESSORID\ =\ ${user}\ *)
     echo "Info:  User ${user} is defined and you are authorized to list it"
-    exit 0
+    return 0
   ;;
   *)
     echo "Error:  Unexpected response to TSS LIST command"
     echo $msg
-    exit 8
+    return 8
   esac
 ;;
 *)
   echo "Error:  Unexpected SAF $saf"
-  exit 8
+  return 8
 esac
