@@ -10,10 +10,12 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
+#Note - these are sed replaced in zowe-copy-xmem.sh, so don't change without checking that
 INSTALL_DIR=$PWD/..
 SCRIPT_DIR=${INSTALL_DIR}/scripts/zss
-
 ZSS=${INSTALL_DIR}/files/zss
+OPERCMD=${SCRIPT_DIR}/../opercmd
+
 XMEM_ELEMENT_ID=ZWES
 XMEM_MODULE=${XMEM_ELEMENT_ID}IS01
 XMEM_PARM=${XMEM_ELEMENT_ID}IP00
@@ -37,7 +39,7 @@ xmemProfileAccessOk=false
 
 
 sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
-chmod +x ${SCRIPT_DIR}/../opercmd
+chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
 
