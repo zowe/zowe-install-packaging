@@ -251,8 +251,6 @@ services:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
-chmod -R 777 $STATIC_DEF_CONFIG
-
-chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
+chmod -R 755 $ZOWE_ROOT_DIR/api-mediation/
 
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE
