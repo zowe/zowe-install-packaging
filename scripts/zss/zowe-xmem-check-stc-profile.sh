@@ -8,7 +8,6 @@
 # 
 # Copyright Contributors to the Zowe Project.
 
-BASEDIR=$(dirname "$0")
 saf=$1
 prefix=$2
 profile=$prefix"*.*"
@@ -18,7 +17,7 @@ echo "Check STC profile ${profile} (SAF=${saf})"
 case $saf in
 
 RACF)
-  sh $BASEDIR/zowe-xmem-check-profile.sh $saf STARTED $profile
+  sh ${SCRIPT_DIR}/zowe-xmem-check-profile.sh $saf STARTED $profile
 ;;
 
 ACF2)

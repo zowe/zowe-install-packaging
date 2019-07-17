@@ -8,20 +8,18 @@
 #
 # Copyright Contributors to the Zowe Project.
 
-BASEDIR=$(dirname "$0")
-ZSS=$1
-proclib=$2
-jclfile=$3
-member=$4
+proclib=$1
+jclfile=$2
+member=$3
 
-sh $BASEDIR/zowe-xmem-dataset-exists.sh ${proclib}
+sh ${SCRIPT_DIR}/zowe-xmem-dataset-exists.sh ${proclib}
 if [[ $? -eq 0 ]]; then
   echo "Error:  PROCLIB ${XMEM_PROCLIB} doesn't exist"
   exit 8
 fi
 
 echo "Copy PROCLIB member ${member} to ${proclib}"
-if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} "${proclib}(${member})" TEXT
+if ${SCRIPT_DIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} "${proclib}(${member})" TEXT
 then
   echo "Info:  PROCLIB member ${member} has been successfully copied to dataset ${proclib}"
   exit 0

@@ -8,14 +8,12 @@
 #
 # Copyright Contributors to the Zowe Project.
 
-BASEDIR=$(dirname "$0")
-ZSS=$1
-parmlib=$2
-parm=$3
+parmlib=$1
+parm=$2
 
 rc=8
 
-sh $BASEDIR/zowe-xmem-dataset-exists.sh ${parmlib}
+sh ${SCRIPT_DIR}/zowe-xmem-dataset-exists.sh ${parmlib}
 if [[ $? -eq 0 ]]; then
   echo "Allocate ${parmlib}"
   tsocmd "allocate da('${parmlib}') dsntype(pds) dsorg(po) recfm(f,b) lrecl(80) blksize(23440) dir(64) space(10,2) tracks new " \
@@ -36,7 +34,7 @@ fi
 
 if [[ "$rc" = 0 ]] ; then
   echo "Copying parmlib member ${parm}"
-  if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${parm} "${parmlib}(${parm})" TEXT
+  if ${SCRIPT_DIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${parm} "${parmlib}(${parm})" TEXT
   then
     echo "Info:  PARMLIB member ${parm} has been successfully copied to dataset ${parmlib}"
     rc=0

@@ -57,7 +57,7 @@ sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
 echo
 echo "************************ Install step 'LOADLIB' start **************************"
 echo $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh
-loadlibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_MODULE}"
+loadlibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${XMEM_LOADLIB} ${XMEM_MODULE}"
 $loadlibCmd1
 if [[ $? -eq 0 ]]
 then
@@ -82,7 +82,7 @@ echo "************************ Install step 'APF-auth' end *********************
 # 3. Deploy parmlib
 echo
 echo "************************ Install step 'PARMLIB' start **************************"
-parmlibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${ZSS} ${XMEM_PARMLIB} ${XMEM_PARM}"
+parmlibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${XMEM_PARMLIB} ${XMEM_PARM}"
 $parmlibCmd1
 if [[ $? -eq 0 ]]
 then
@@ -94,7 +94,7 @@ echo "************************ Install step 'PARMLIB' end **********************
 # 4. Deploy PROCLIB
 echo
 echo "************************ Install step 'PROCLIB' start **************************"
-proclibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
+proclibCmd1=". $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
 $proclibCmd1
 if [[ $? -eq 0 ]]
 then
