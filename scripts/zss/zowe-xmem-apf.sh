@@ -13,7 +13,7 @@ loadlib=$1
 echo "APF-authorize loadlib ${loadlib}"
 
 isSMS=true
-sh ${SCRIPT_DIR}/zowe-xmem-check-if-sms.sh ${loadlib}
+. ${SCRIPT_DIR}/zowe-xmem-check-if-sms.sh ${loadlib}
 checkRC=$?
 if [[ $checkRC -eq 1 ]]; then
   isSMS=true

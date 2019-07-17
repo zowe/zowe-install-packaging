@@ -13,9 +13,9 @@ loadmodule=$2
 
 rc=8
 
-sh $SCRIPT_DIR/zowe-xmem-dataset-exists.sh ${loadlib}
+. $SCRIPT_DIR/zowe-xmem-dataset-exists.sh ${loadlib}
 if [[ $? -ne 0 ]]; then
-  sh $SCRIPT_DIR/zowe-xmem-check-if-pdse.sh ${loadlib}
+  . $SCRIPT_DIR/zowe-xmem-check-if-pdse.sh ${loadlib}
   if [[ $? -ne 1 ]]; then
     echo "Error:  dataset ${loadlib} is not PDSE or the test failed. "
     echo  "If the PDSE test failed, please check the dataset in ISPF (=3.4, I) to see if its 'Data set name type' is LIBRARY."
