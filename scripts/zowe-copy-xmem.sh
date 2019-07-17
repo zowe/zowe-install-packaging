@@ -18,20 +18,24 @@
 
 echo "<zowe-copy-xmem.sh>" >> $LOG_FILE
 XMEM_DIR=$ZOWE_ROOT_DIR"/xmem-server"
+XMEM_SCRIPTS_DIR="${XMEM_DIR}/scripts"
 
 echo "  Creating xms directory ${XMEM_DIR}" >> $LOG_FILE
 mkdir -p ${XMEM_DIR}
 
 cp ${INSTALL_DIR}/files/zss.pax ${XMEM_DIR}
 cp ${INSTALL_DIR}/install/zowe-install-apf-server.yaml ${XMEM_DIR}
-sed -e "s#SCRIPT_DIR=.*#SCRIPT_DIR=${XMEM_DIR}/scripts#" \
+sed -e "s#SCRIPT_DIR=.*#SCRIPT_DIR=${XMEM_SCRIPTS_DIR}#" \
   -e "s#ZSS=.*#ZSS=${XMEM_DIR}/zss#" \
   -e "s#INSTALL_DIR=.*#\#INSTALL_DIR not needed#" \
   -e "s#OPERCMD=.*#OPERCMD=${ZOWE_ROOT_DIR}/scripts/internal/opercmd#" \
   "${INSTALL_DIR}/install/zowe-install-apf-server.sh" \
   > "${XMEM_DIR}/zowe-install-apf-server.sh"
+chmod -R a+rx "${XMEM_DIR}/zowe-install-apf-server.sh"
 
-cp -r ${INSTALL_DIR}/scripts/zss ${XMEM_DIR}"/scripts"
+cp -r ${INSTALL_DIR}/scripts/zss "${XMEM_SCRIPTS_DIR}"
+chmod -R a+rx "${XMEM_SCRIPTS_DIR}"
+
 echo "  Copied all content over to ${XMEM_DIR}" >> $LOG_FILE
 
 echo "</zowe-copy-xmem.sh>" >> $LOG_FILE 
