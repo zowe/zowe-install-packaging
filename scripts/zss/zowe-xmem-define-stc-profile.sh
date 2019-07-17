@@ -53,7 +53,7 @@ ACF2)
       cat /tmp/cmd.out /tmp/cmd.err
       rc=8
     else
-      $BASEDIR/../opercmd "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
+      ${OPERCMD} "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
         1> /tmp/cmd.out 2> /tmp/cmd.err 
       if [[ $? -ne 0 ]]
       then

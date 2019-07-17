@@ -26,7 +26,7 @@ fi
 
 if $isSMS ; then
 
-  cmdout="$($BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},SMS" 2>&1)"
+  cmdout="$(${OPERCMD} "SETPROG APF,ADD,DSNAME=${loadlib},SMS" 2>&1)"
 
 else
 
@@ -44,7 +44,7 @@ else
     exit 8
   fi
 
-  cmdout="$($BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},VOLUME=${volume}" 2>&1)"
+  cmdout="$(${OPERCMD} "SETPROG APF,ADD,DSNAME=${loadlib},VOLUME=${volume}" 2>&1)"
 
 fi
 
