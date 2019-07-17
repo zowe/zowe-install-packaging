@@ -10,6 +10,9 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
+PREV_DIR=`pwd`
+cd $(dirname $0)
+
 #Note - these are sed replaced in zowe-copy-xmem.sh, so don't change without checking that
 INSTALL_DIR=$PWD/..
 SCRIPT_DIR=${INSTALL_DIR}/scripts/zss
@@ -395,6 +398,8 @@ echo
 echo "********************************************************************************"
 echo "********************************************************************************"
 echo "********************************************************************************"
+
+cd $PREV_DIR
 
 exit 0
 
