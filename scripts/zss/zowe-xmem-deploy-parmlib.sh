@@ -13,7 +13,7 @@ parm=$2
 
 rc=8
 
-sh ${SCRIPT_DIR}/zowe-xmem-dataset-exists.sh ${parmlib}
+. ${SCRIPT_DIR}/zowe-xmem-dataset-exists.sh ${parmlib}
 if [[ $? -eq 0 ]]; then
   echo "Allocate ${parmlib}"
   tsocmd "allocate da('${parmlib}') dsntype(pds) dsorg(po) recfm(f,b) lrecl(80) blksize(23440) dir(64) space(10,2) tracks new " \

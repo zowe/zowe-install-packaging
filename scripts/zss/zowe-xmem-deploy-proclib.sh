@@ -12,7 +12,7 @@ proclib=$1
 jclfile=$2
 member=$3
 
-sh ${SCRIPT_DIR}/zowe-xmem-dataset-exists.sh ${proclib}
+. ${SCRIPT_DIR}/zowe-xmem-dataset-exists.sh ${proclib}
 if [[ $? -eq 0 ]]; then
   echo "Error:  PROCLIB ${XMEM_PROCLIB} doesn't exist"
   return 8
