@@ -9,11 +9,12 @@
 # Copyright Contributors to the Zowe Project.
 
 BASEDIR=$(dirname "$0")
-loadmodule=$1
-xmemKey=$2
+OPERCMD=$1
+loadmodule=$2
+xmemKey=$3
 
 echo "Obtain PPT information"
-ppt=`${BASEDIR}/../opercmd "d ppt,name=${loadmodule}" | grep "${loadmodule}  ."`
+ppt=`${OPERCMD} "d ppt,name=${loadmodule}" | grep "${loadmodule}  ."`
 module=$(echo $ppt | cut -f1 -d ' ')
 isNonSwappable=$(echo $ppt | cut -f3 -d ' ')
 key=$(echo $ppt | cut -f8 -d ' ')
