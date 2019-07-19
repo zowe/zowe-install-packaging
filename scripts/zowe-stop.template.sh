@@ -10,7 +10,9 @@
 # Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-zluxserverdirectory='zlux-app-server'
-
-echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
+# 					# To discover ZOWE_ROOT_DIR, this script must be in the scripts directory
+VAR=`dirname $0`			# Obtain the scripts directory name
+cd $VAR/..				# Change to its parent which should be ZOWE_ROOT_DIR
+ZOWE_ROOT_DIR=`pwd`			# Set our environment variable
+echo Stopping ZOWE server
+$ZOWE_ROOT_DIR/scripts/internal/opercmd "c {{stc_name}}"

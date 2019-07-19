@@ -122,7 +122,7 @@ locateJavaHome() {
     getJavaVersion $1
     if [ "$javaVersion" -ge "18" ]
         then
-            echo "   java version $version found at " $1
+            echo "   java version $version found at " $1 >> $LOG_FILE
             if [ $JAVA_HOME_ALREADY_SET = "false" ]
             then
             	persist "ZOWE_JAVA_HOME" $1
@@ -183,8 +183,6 @@ getJavaVersion() {
 persist() {
 #   Append a command to export a Zowe environment variable to the .zowe_profile file.  
 #   The .zowe_profile file will be run on subsequent installs, to avoid having to re-discover the Zowe environment variables.  
-
-    echo "** Adding line: export "$1"="$2" to "~/.zowe_profile " **"
     echo "** Adding line: export "$1"="$2" to "~/.zowe_profile " **" >> $LOG_FILE
     grep -v "export $1=" ~/.zowe_profile > ~/.zowe_profile.zowe-tmp && mv ~/.zowe_profile.zowe-tmp ~/.zowe_profile
     echo "export $1="$2 >> ~/.zowe_profile
@@ -196,7 +194,6 @@ if [[ $ZOWE_ZOSMF_PATH == "" ]]
 then
     locateZOSMFBootstrapProperties "/var/zosmf/" "configuration" "/servers/zosmfServer/" "bootstrap.properties"
 else 
-    echo "ZOWE_ZOSMF_PATH value of "$ZOWE_ZOSMF_PATH" will be used"
     echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
 fi
 
@@ -204,7 +201,6 @@ if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then
     getZosmfHttpsPort
 else 
-    echo "ZOWE_ZOSMF_PORT value of "$ZOWE_ZOSMF_PORT" will be used"
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
@@ -214,7 +210,6 @@ then
     ZOWE_JAVA_HOME=/usr/lpp/java/J8.0_64
 else    
     JAVA_HOME_ALREADY_SET="true"
-    echo "  ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be validated"
     echo "  ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 fi
 locateJavaHome $ZOWE_JAVA_HOME
@@ -223,7 +218,6 @@ NODE_HOME_ALREADY_SET="false"
 if [[ $NODE_HOME != "" ]]
 then
     NODE_HOME_ALREADY_SET="true"
-    echo "  NODE_HOME value of "$NODE_HOME" will be validated"
     echo "  NODE_HOME environment variable was set="$NODE_HOME >> $LOG_FILE
 fi
 promptNodeHome
@@ -253,7 +247,6 @@ then
     fi 
     persist "ZOWE_EXPLORER_HOST" $ZOWE_EXPLORER_HOST
 else    
-    echo "ZOWE_EXPLORER_HOST value of "$ZOWE_EXPLORER_HOST" will be used"
     echo "  ZOWE_EXPLORER_HOST variable value="$ZOWE_EXPLORER_HOST >> $LOG_FILE
 fi
 
@@ -327,7 +320,7 @@ then
     checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
     rc=$?
     case $rc in
-        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
+        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS >> $LOG_FILE
         ;;
         1)        echo error : "ping $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
         ;;
@@ -353,7 +346,7 @@ then
             fi
             checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
             case $? in
-                0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
+                0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS >> $LOG_FILE
                 ;;
                 1)  echo warning : "ping $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
                 ;;
@@ -371,7 +364,7 @@ else
     checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
 
     case $? in
-        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
+        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS >> $LOG_FILE
         ;;
         1)        echo warning : "ping $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
         ;;
@@ -382,8 +375,6 @@ else
         4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IPADDRESS is an empty string
         ;; 
     esac
-    
-    echo "ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"
     echo "  ZOWE_IPADDRESS variable value="$ZOWE_IPADDRESS >> $LOG_FILE
 fi
 echo "</zowe-init.sh>" >> $LOG_FILE
