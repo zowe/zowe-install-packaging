@@ -1,5 +1,6 @@
 #Inject variables into zowe runtime scripts
 sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+    -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/zowe-start.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/zowe-start.sh" 
 
