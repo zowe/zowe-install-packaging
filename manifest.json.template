@@ -97,7 +97,7 @@
       "componentGroup": "Imperative CLI Framework",
       "entries": [{
         "repository": "imperative",
-        "tag": "v2.4.8"
+        "tag": "v2.4.9"
       }]
     }, {
       "componentGroup": "Zowe API Mediation Layer",
@@ -156,19 +156,19 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v2.28.2"
+        "tag": "v2.30.0"
       }]
     }, {
       "componentGroup": "Zowe CLI Plug-in for IBM CICS",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "v1.0.0"
+        "tag": "v1.1.2"
       }]
     }, {
       "componentGroup": "Zowe CLI Plug-in for IBM Db2 Database",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v2.1.0"
+        "tag": "v2.1.1"
       }]
     }, {
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
