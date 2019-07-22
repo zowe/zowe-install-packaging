@@ -109,11 +109,11 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v1.3.0"
+          "tag": "v1.4.0"
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v1.3.0"
+          "tag": "v1.4.0"
         },
         {
           "repository": "zlux-file-explorer",
@@ -125,15 +125,15 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v1.3.0"
+          "tag": "v1.4.0"
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v1.3.0"
+          "tag": "v1.4.0"
         },
         {
           "repository": "zlux-shared",
-          "tag": "v1.3.0"
+          "tag": "v1.4.0"
         },
         {
           "repository": "zlux-widgets",
@@ -141,15 +141,15 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v1.3.0"
+          "tag": "v1.4.0"
         },
         {
           "repository": "zss",
-          "tag": "v1.3.0"
+          "tag": "v1.4.0"
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v1.3.0"
+          "tag": "zss-v1.4.0"
         }
       ]
     }, {
@@ -222,58 +222,58 @@
       "componentGroup": "Zowe Application Framework Authentication Handlers",
       "entries": [{
         "repository": "zss-auth",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }, {
         "repository": "zosmf-auth",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     },
     {
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     },
     {
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     },
     {
       "componentGroup": "Zowe Desktop Sample React Application",
       "entries": [{
         "repository": "sample-react-app",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     },
     {
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     },
     {
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     },
     {
       "componentGroup": "Zowe Desktop Workflows Plugin-in",
       "entries": [{
         "repository": "zlux-workflow",
-        "tag": "v1.3.0"
+        "tag": "v1.4.0"
       }]
     }
   ],
