@@ -67,11 +67,11 @@
       "artifact": "zss-1.4.0-20190718.145739-8.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "0.2.4",
+      "version": "0.2.6",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "0.2.2",
+      "version": "0.2.3",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
@@ -204,19 +204,19 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "0.3.2"
+        "tag": "0.3.5"
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v0.2.2"
+        "tag": "v0.2.3"
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v0.2.4"
+        "tag": "v0.2.6"
       }]
     }, {
       "componentGroup": "Zowe Application Framework Authentication Handlers",
