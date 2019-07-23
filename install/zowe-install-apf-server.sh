@@ -10,10 +10,15 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
+PREV_DIR=`pwd`
+cd $(dirname $0)
+
+ #Note - these are sed replaced in zowe-copy-xmem.sh, so don't change without checking that
 INSTALL_DIR=$PWD/..
 SCRIPT_DIR=${INSTALL_DIR}/scripts/zss
-
 ZSS=${INSTALL_DIR}/files/zss
+OPERCMD=${SCRIPT_DIR}/../opercmd
+
 XMEM_ELEMENT_ID=ZWES
 XMEM_MODULE=${XMEM_ELEMENT_ID}IS01
 XMEM_PARM=${XMEM_ELEMENT_ID}IP00
@@ -37,7 +42,7 @@ xmemProfileAccessOk=false
 
 
 sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
-chmod +x ${SCRIPT_DIR}/../opercmd
+chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
 
@@ -63,7 +68,7 @@ echo "************************ Install step 'LOADLIB' end **********************
 # 2. APF-authorize loadlib
 echo
 echo "************************ Install step 'APF-auth' start *************************"
-apfCmd1="sh $SCRIPT_DIR/zowe-xmem-apf.sh ${XMEM_LOADLIB}"
+apfCmd1="sh $SCRIPT_DIR/zowe-xmem-apf.sh ${OPERCMD} ${XMEM_LOADLIB}"
 if $loadlibOk ; then
   $apfCmd1
   if [[ $? -eq 0 ]]; then
@@ -101,7 +106,7 @@ echo "************************ Install step 'PROCLIB' end **********************
 # 5. PPT-entry
 echo
 echo "************************ Install step 'PPT-entry' start ************************"
-pptCmd1="sh $SCRIPT_DIR/zowe-xmem-ppt.sh ${XMEM_MODULE} ${XMEM_KEY}"
+pptCmd1="sh $SCRIPT_DIR/zowe-xmem-ppt.sh ${OPERCMD} ${XMEM_MODULE} ${XMEM_KEY}"
 $pptCmd1
 if [[ $? -eq 0 ]]
 then
@@ -150,7 +155,7 @@ if $safOk ; then
   echo
   echo "************************ Install step 'STC user' start *************************"
   stcUserCmd1="sh $SCRIPT_DIR/zowe-xmem-check-user.sh ${saf} ${XMEM_STC_USER}"
-  stcUserCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
+  stcUserCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${OPERCMD} ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
   $stcUserCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -172,7 +177,7 @@ if $safOk ; then
   echo
   echo "************************ Install step 'STC profile' start **********************"
   stcProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-stc-profile.sh ${saf} ${XMEM_STC_PREFIX}"
-  stcProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
+  stcProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${OPERCMD} ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
   $stcProfileCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -394,5 +399,6 @@ echo "**************************************************************************
 echo "********************************************************************************"
 echo "********************************************************************************"
 
-exit 0
+cd $PREV_DIR
 
+exit 0
