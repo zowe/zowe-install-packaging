@@ -90,8 +90,8 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
     api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
 
-# Make the scripts executable
-chmod a+rx *.sh
+# Make the scripts read and executable, but not write to others
+chmod -R 750 *.sh
 
 cd ..
 
@@ -251,6 +251,7 @@ services:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
-chmod -R 755 $ZOWE_ROOT_DIR/api-mediation/
+#Make the static defs read/write to owner/group (so that IZUSVR can read them)
+chmod -R 770 ${STATIC_DEF_CONFIG}
 
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE
