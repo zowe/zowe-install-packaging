@@ -102,7 +102,7 @@ echo "  Setting up Zowe API Mediation Layer certificates..."
 ./scripts/setup-apiml-certificates.sh >> $LOG_FILE
 echo "  Certificate setup done."
 
-chmod -R ug+rx "${API_MEDIATION_DIR}/keystore"
+chmod -R 751 "${API_MEDIATION_DIR}/keystore"
 
 # Get the zos version
 ZOSMF_VERSION=""
