@@ -39,3 +39,5 @@ fi
 # The reason they must be part of the group to do the chgrp is so that the zLux server that runs the ZOWESVR STC is able to access the group permission
 # of the folders, which is IZUSVR : IZUADMIN
 chgrp -R IZUADMIN ${ZOWE_ROOT_DIR}/zlux-app-server/deploy
+chgrp -R IZUADMIN ${ZOWE_ROOT_DIR}/api-mediation #If this fails might need to run chmod 755 on the folder instead
+
