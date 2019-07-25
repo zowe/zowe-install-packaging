@@ -167,7 +167,7 @@ then
     exitone 
   else
     echo "    "found PROCLIB dataset $proclib >> $LOG_FILE
-      ./ocopyshr.sh $proclib $memberName
+      ${ZOWE_ROOT_DIR}/scripts/internal/ocopyshr.sh $proclib $memberName
       if [[ $? > 0 ]]
       then
         echo "  "Unable to write to requested PROCLIB $proclib >> $LOG_FILE
