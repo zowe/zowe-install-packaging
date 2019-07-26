@@ -23,10 +23,10 @@ if extattr ${ZOWE_ROOT_DIR}/zlux-app-server/bin/zssServer | grep "Program contro
 fi
 
 #Give all directories -rw+x permission so they can be listed, but files -rwx
-echo "  About to run find and chmods to remove o+x on files" >> $LOG_FILE
 chmod -R o-rwx ${ZOWE_ROOT_DIR}
+#echo "  About to run find and chmods to add o+x on directories" >> $LOG_FILE
 # find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
-echo "  Completed find and chmods to remove o+x on files" >> $LOG_FILE
+#echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
 
 # If this step fails it is because the user running this script is not part of the IZUADMIN group
 chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
