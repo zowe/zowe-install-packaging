@@ -92,8 +92,8 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
     api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
 
-# Make the scripts read and executable, but not write to others
-chmod -R 755 "${API_MEDIATION_DIR}/scripts"
+# Make the scripts read and executable
+chmod -R 750 "${API_MEDIATION_DIR}/scripts"
 
 cd ..
 
@@ -102,7 +102,7 @@ echo "  Setting up Zowe API Mediation Layer certificates..."
 ./scripts/setup-apiml-certificates.sh >> $LOG_FILE
 echo "  Certificate setup done."
 
-chmod -R 751 "${API_MEDIATION_DIR}/keystore"
+chmod -R 750 "${API_MEDIATION_DIR}/keystore"
 
 # Get the zos version
 ZOSMF_VERSION=""
@@ -256,6 +256,6 @@ EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
 #Make the static defs read/write to owner/group (so that IZUSVR can read them)
-chmod -R 751 ${STATIC_DEF_CONFIG}
+chmod -R 750 ${STATIC_DEF_CONFIG}
 
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE
