@@ -69,6 +69,7 @@ chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/deploy/site/plugins/
 
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/site	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
 
