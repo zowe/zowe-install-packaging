@@ -19,11 +19,14 @@ if extattr ${ZOWE_ROOT_DIR}/zlux-app-server/bin/zssServer | grep "Program contro
   exit 1
 fi
 
-#
-# Permission fix for zLux Server.  The ZLUX server must have permission to write persistent data
-# to ZFS.  We can't chown or chgrp as the user running the install doesn't have access rights to do this on 
-# behalf of IZUSVR, so for now allow write permission for any
-# 
+# If this step fails it is because the user running this script is not part of the IZUADMIN group
+chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
+
+#Give all directories -rw+x permission so they can be listed, but files -rwx
+chmod -R o-rw ${ZOWE_ROOT_DIR}
+find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
+find ${ZOWE_ROOT_DIR} -type f -exec chmod o-x {} \; 2>/dev/null
+
 chmod -R 770 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy
 chmod -R 550 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/product
 # For Zowe to come up the ZOWESVR STC needs read access to ../deploy/instance/ZLUX/serverConfig/zluxServer.json
@@ -35,9 +38,3 @@ fi
 if [ "$(ls -A ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/site/ZLUX/serverConfig)" ]; then
   chmod -R g-x ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/site/ZLUX/serverConfig/*
 fi
-# If this step fails it is because the user running this script is not part of the IZUADMIN group
-# The reason they must be part of the group to do the chgrp is so that the zLux server that runs the ZOWESVR STC is able to access the group permission
-# of the folders, which is IZUSVR : IZUADMIN
-chgrp -R IZUADMIN ${ZOWE_ROOT_DIR}/zlux-app-server/deploy
-chgrp -R IZUADMIN ${ZOWE_ROOT_DIR}/api-mediation #If this fails might need to run chmod 755 on the folder instead
-

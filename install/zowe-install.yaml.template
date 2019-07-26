@@ -6,6 +6,10 @@ install:
   rootDir=~/zowe/{ZOWE_VERSION}
   prefix=ZOWE
 
+zosmf:
+  zosmfUserid=IZUSVR
+  zosmfAdminGroup=IZUADMIN
+
 api-mediation:
   catalogPort=7552
   discoveryPort=7553
