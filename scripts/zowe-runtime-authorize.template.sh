@@ -24,9 +24,8 @@ fi
 
 #Give all directories -rw+x permission so they can be listed, but files -rwx
 echo "  About to run find and chmods to remove o+x on files" >> $LOG_FILE
-chmod -R o-rw ${ZOWE_ROOT_DIR}
-find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
-find ${ZOWE_ROOT_DIR} -type f -exec chmod o-x {} \; 2>/dev/null
+chmod -R o-rwx ${ZOWE_ROOT_DIR}
+# find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
 echo "  Completed find and chmods to remove o+x on files" >> $LOG_FILE
 
 # If this step fails it is because the user running this script is not part of the IZUADMIN group
