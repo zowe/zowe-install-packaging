@@ -12,7 +12,7 @@
 set -e
 ZOWE_ROOT_DIR={{root_dir}}
 ZOWE_ZOSMF_ADMIN_GROUP={{zosmf_admin_group}}
-LOG_DIR={{configure_log_dir}}
+LOG_FILE={{configure_log_file}}
 
 echo "<zowe-runtime-authorize.sh>" >> $LOG_FILE
 
