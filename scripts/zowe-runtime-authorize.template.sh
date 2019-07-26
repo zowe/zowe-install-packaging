@@ -11,8 +11,9 @@
 
 set -e
 ZOWE_ROOT_DIR={{root_dir}}
+ZOWE_ZOSMF_ADMIN_GROUP={{zosmf_admin_group}}
 
-echo "<zowe-runtime-authorise.sh>" >> $LOG_FILE
+echo "<zowe-runtime-authorize.sh>" >> $LOG_FILE
 
 # This is from the zLUX install
 if extattr ${ZOWE_ROOT_DIR}/zlux-app-server/bin/zssServer | grep "Program controlled = NO"; then
@@ -21,17 +22,15 @@ if extattr ${ZOWE_ROOT_DIR}/zlux-app-server/bin/zssServer | grep "Program contro
   exit 1
 fi
 
-
-# If this step fails it is because the user running this script is not part of the IZUADMIN group
-chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
-
 #Give all directories -rw+x permission so they can be listed, but files -rwx
-chmod -R o-rw ${ZOWE_ROOT_DIR}
-
 echo "  About to run find and chmods to remove o+x on files" >> $LOG_FILE
+chmod -R o-rw ${ZOWE_ROOT_DIR}
 find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
 find ${ZOWE_ROOT_DIR} -type f -exec chmod o-x {} \; 2>/dev/null
 echo "  Completed find and chmods to remove o+x on files" >> $LOG_FILE
+
+# If this step fails it is because the user running this script is not part of the IZUADMIN group
+chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
 
 chmod -R 770 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy
 chmod -R 550 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/product
@@ -44,4 +43,4 @@ fi
 if [ "$(ls -A ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/site/ZLUX/serverConfig)" ]; then
   chmod -R g-x ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/site/ZLUX/serverConfig/*
 fi
-echo "</zowe-runtime-authorise.sh>" >> $LOG_FILE
+echo "</zowe-runtime-authorize.sh>" >> $LOG_FILE
