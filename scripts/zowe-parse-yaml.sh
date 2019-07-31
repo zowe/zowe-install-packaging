@@ -157,10 +157,16 @@ do
                 ZOWE_ZOSMF_KEYRING=$value
                 export ZOWE_ZOSMF_KEYRING
             fi
-            if [[ $key == "zosmfUserid" ]] && [[ $section == "api-mediation" ]]
+
+            if [[ $key == "zosmfUserid" ]] && [[ $section == "zosmf" ]]
             then
                 ZOWE_ZOSMF_USERID=$value
                 export ZOWE_ZOSMF_USERID
+            fi
+            if [[ $key == "zosmfAdminGroup" ]] && [[ $section == "zosmf" ]]
+            then
+                ZOWE_ZOSMF_ADMIN_GROUP=$value
+                export ZOWE_ZOSMF_ADMIN_GROUP
             fi
 
             if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
@@ -261,6 +267,11 @@ then
     ZOWE_ZOSMF_USERID="IZUSVR"
     echo "  ZOWE_ZOSMF_USERID not specified:  Defaulting to IZUSVR"
 fi
+if [[ $ZOWE_ZOSMF_ADMIN_GROUP == "" ]]
+then
+    ZOWE_ZOSMF_ADMIN_GROUP="IZUADMIN"
+    echo "  ZOWE_ZOSMF_ADMIN_GROUP not specified:  Defaulting to IZUADMIN"
+fi
 
 # Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
 # The ssh and telnet ports are there and already being used and exploited by the apps
@@ -306,6 +317,7 @@ echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FI
 echo "  ZOWE_APIM_ENABLE_SSO="$ZOWE_APIM_ENABLE_SSO >> $LOG_FILE
 echo "  ZOWE_ZOSMF_KEYRING="$ZOWE_ZOSMF_KEYRING >> $LOG_FILE
 echo "  ZOWE_ZOSMF_USERID="$ZOWE_ZOSMF_USERID >> $LOG_FILE
+echo "  ZOWE_ZOSMF_ADMIN_GROUP="$ZOWE_ZOSMF_ADMIN_GROUP >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
