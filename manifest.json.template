@@ -49,7 +49,7 @@
     "org.zowe.zlux.zlux-editor": {
       "version": "1.4.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-editor-1.4.0-20190718.160448.pax"
+      "artifact": "zlux-editor-1.4.0-20190801.173950.pax"
     },
     "org.zowe.zlux.zlux-workflow": {
       "version": "1.4.0-RC",
