@@ -8,7 +8,7 @@ tmp/
 *.log
 
 # zip files
-*.pax
+# *.pax
 *.zip
 *.tar
 *.gz
@@ -17,10 +17,11 @@ tmp/
 .DS_Store
 
 # workspace content should be updated by program
-pax-workspace/*
-!pax-workspace/.keep
-!pax-workspace/pre-packaging.sh
-!pax-workspace/post-packaging.sh
+.pax/*
+!.pax/.keep
+!.pax/pre-packaging.sh
+!.pax/post-packaging.sh
+!.pax/prepare-workspace.sh
 
 # zowe jobs output
 output/

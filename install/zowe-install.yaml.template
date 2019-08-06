@@ -4,6 +4,11 @@
 # zowe-install: The directory that zowe will be installed into
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
+  prefix=ZOWE
+
+zosmf:
+  zosmfUserid=IZUSVR
+  zosmfAdminGroup=IZUADMIN
 
 api-mediation:
   catalogPort=7552
@@ -15,7 +20,6 @@ api-mediation:
   verifyCertificatesOfServices=true
   enableSso=false
   zosmfKeyring=IZUKeyring.IZUDFLT
-  zosmfUser=IZUSVR
 
 zos-services:
   jobsAPIPort=8545

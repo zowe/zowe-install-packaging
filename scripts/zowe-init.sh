@@ -122,7 +122,7 @@ locateJavaHome() {
     getJavaVersion $1
     if [ "$javaVersion" -ge "18" ]
         then
-            echo "   java version $version found at " $1
+            echo "   java version $version found at " $1 >> $LOG_FILE
             if [ $JAVA_HOME_ALREADY_SET = "false" ]
             then
             	persist "ZOWE_JAVA_HOME" $1
@@ -183,11 +183,28 @@ getJavaVersion() {
 persist() {
 #   Append a command to export a Zowe environment variable to the .zowe_profile file.  
 #   The .zowe_profile file will be run on subsequent installs, to avoid having to re-discover the Zowe environment variables.  
-
-    echo "** Adding line: export "$1"="$2" to "~/.zowe_profile " **"
     echo "** Adding line: export "$1"="$2" to "~/.zowe_profile " **" >> $LOG_FILE
     grep -v "export $1=" ~/.zowe_profile > ~/.zowe_profile.zowe-tmp && mv ~/.zowe_profile.zowe-tmp ~/.zowe_profile
     echo "export $1="$2 >> ~/.zowe_profile
+}
+
+getPing_bin() {
+#  Identifies name of ping command if ping is not available oping is used
+#  populates ping_bin variable with ping or oping
+    ping -h 2>/dev/null 1>/dev/null
+    if [[ $? -eq 0 ]]
+    then
+        ping_bin=ping
+    else
+        echo "ping command not found trying oping"
+        oping -h 2>/dev/null 1>/dev/null
+        if [[ $? -eq 0 ]]
+        then
+            ping_bin=oping
+        else
+            echo "neither ping nor oping has not been found, add folder with ping or oping on \$PATH, normally they are in /bin"
+        fi
+    fi
 }
 
 # Run the main shell script logic
@@ -196,7 +213,6 @@ if [[ $ZOWE_ZOSMF_PATH == "" ]]
 then
     locateZOSMFBootstrapProperties "/var/zosmf/" "configuration" "/servers/zosmfServer/" "bootstrap.properties"
 else 
-    echo "ZOWE_ZOSMF_PATH value of "$ZOWE_ZOSMF_PATH" will be used"
     echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
 fi
 
@@ -204,7 +220,6 @@ if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then
     getZosmfHttpsPort
 else 
-    echo "ZOWE_ZOSMF_PORT value of "$ZOWE_ZOSMF_PORT" will be used"
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
@@ -214,7 +229,6 @@ then
     ZOWE_JAVA_HOME=/usr/lpp/java/J8.0_64
 else    
     JAVA_HOME_ALREADY_SET="true"
-    echo "  ZOWE_JAVA_HOME value of "$ZOWE_JAVA_HOME" will be validated"
     echo "  ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 fi
 locateJavaHome $ZOWE_JAVA_HOME
@@ -223,10 +237,12 @@ NODE_HOME_ALREADY_SET="false"
 if [[ $NODE_HOME != "" ]]
 then
     NODE_HOME_ALREADY_SET="true"
-    echo "  NODE_HOME value of "$NODE_HOME" will be validated"
     echo "  NODE_HOME environment variable was set="$NODE_HOME >> $LOG_FILE
 fi
 promptNodeHome
+
+###identify ping
+getPing_bin
 
 if [[ $ZOWE_EXPLORER_HOST == "" ]]
 then
@@ -235,12 +251,12 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-        full_hostname=`ping $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
+        full_hostname=`$ping_bin $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
         if [[ $? -eq 0 && -n "$full_hostname" ]]
         then
             ZOWE_EXPLORER_HOST=$full_hostname
         else
-            echo Error: ping $hn command failed to find hostname
+            echo Error: $ping_bin $hn command failed to find hostname
         fi
     else
         echo Error: hostname command returned non-zero RC $rc or empty string
@@ -253,7 +269,6 @@ then
     fi 
     persist "ZOWE_EXPLORER_HOST" $ZOWE_EXPLORER_HOST
 else    
-    echo "ZOWE_EXPLORER_HOST value of "$ZOWE_EXPLORER_HOST" will be used"
     echo "  ZOWE_EXPLORER_HOST variable value="$ZOWE_EXPLORER_HOST >> $LOG_FILE
 fi
 
@@ -275,7 +290,7 @@ ip=$2
 # 4 - ip parameter or hostname parameter is an empty string
 
 # Does PING of hostname yield correct IP?
-ping $hostname | grep $ip 1> /dev/null
+$ping_bin $hostname | grep $ip 1> /dev/null
 if [[ $? -eq 0 ]]
 then
         # echo ip $ip is OK
@@ -299,7 +314,7 @@ then
             fi
         fi
 else
-        # echo ERROR: ping of hostname `hostname` does not resolve to external IP $ip
+        # echo ERROR: $ping_bin of hostname `hostname` does not resolve to external IP $ip
         return 1
 fi
 }
@@ -313,12 +328,12 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IPADDRESS=`ping $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
+          ZOWE_IPADDRESS=`$ping_bin $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
           if [[ -n "$ZOWE_IPADDRESS" ]]
           then
                echo Info: IP address is $ZOWE_IPADDRESS
           else
-               echo Error: ping $hn command failed to find IP
+               echo Error: $ping_bin $hn command failed to find IP
           fi
     else
         echo Error: hostname command returned non-zero RC $rc or empty string
@@ -327,9 +342,9 @@ then
     checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
     rc=$?
     case $rc in
-        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
+        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS >> $LOG_FILE
         ;;
-        1)        echo error : "ping $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
+        1)        echo error : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
         ;;
         2)        echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IPADDRESS"
         ;;
@@ -353,9 +368,9 @@ then
             fi
             checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
             case $? in
-                0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
+                0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS >> $LOG_FILE
                 ;;
-                1)  echo warning : "ping $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
+                1)  echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
                 ;;
                 2)  echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IPADDRESS"
                 ;;
@@ -371,9 +386,9 @@ else
     checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IPADDRESS
 
     case $? in
-        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS
+        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IPADDRESS >> $LOG_FILE
         ;;
-        1)        echo warning : "ping $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
+        1)        echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IPADDRESS"
         ;;
         2)        echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IPADDRESS"
         ;;
@@ -382,8 +397,6 @@ else
         4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IPADDRESS is an empty string
         ;; 
     esac
-    
-    echo "ZOWE_IPADDRESS value of "$ZOWE_IPADDRESS" will be used"
     echo "  ZOWE_IPADDRESS variable value="$ZOWE_IPADDRESS >> $LOG_FILE
 fi
 echo "</zowe-init.sh>" >> $LOG_FILE
