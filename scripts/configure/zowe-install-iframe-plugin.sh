@@ -93,3 +93,5 @@ cat <<EOF >$ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/$PLUGIN_ID.json
     "pluginLocation": "../../$PLUGIN_FOLDER_NAME"
 }
 EOF
+
+chmod -R a+rx $PLUGIN_FOLDER

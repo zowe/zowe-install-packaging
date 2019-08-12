@@ -151,28 +151,10 @@ grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scr
 cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
-# TODO - review if this is still a failure risk and whether it really needs moving to runtime
-# The file zowe-runtime-authorize.sh is in the install directory /scripts
-# copy this to the runtime directory /scripts, and replace {ZOWE_ZOSMF_PATH}
-# with where ZOSMF is located, so that the script can create symlinks and if it fails
-# be able to be run stand-alone
-echo "Copying zowe-runtime-authorize.sh to "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh >> $LOG_FILE
+echo "Copying zowe-runtime-authorize.template.sh to "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh >> $LOG_FILE
+cp "$INSTALL_DIR/scripts/zowe-runtime-authorize.template.sh" "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh"
 
-sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
-  "$INSTALL_DIR/scripts/zowe-runtime-authorize.sh" \
-  > "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
-
-chmod a+x $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
-$(. $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh)
-AUTH_RETURN_CODE=$?
-if [[ $AUTH_RETURN_CODE == "0" ]]; then
-    echo "  The permissions were successfully changed"
-    echo "  zowe-runtime-authorize.sh run successfully" >> $LOG_FILE
-    else
-    echo "  The current user does not have sufficient authority to modify all the file and directory permissions."
-    echo "  A user with sufficient authority must run $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
-    echo "  zowe-runtime-authorize.sh failed to run successfully" >> $LOG_FILE
-fi
+. $INSTALL_DIR/scripts/zowe-copy-xmem.sh
 
 # save install log in runtime directory
 mkdir  $ZOWE_ROOT_DIR/install_log
