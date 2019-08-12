@@ -18,6 +18,7 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
   -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
+  -e "s#{{user_dir}}#${ZOWE_USER_DIR}#" \
   -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{files_api_port}}#${ZOWE_EXPLORER_SERVER_DATASETS_PORT}#" \
   -e "s#{{jobs_api_port}}#${ZOWE_EXPLORER_SERVER_JOBS_PORT}#" \

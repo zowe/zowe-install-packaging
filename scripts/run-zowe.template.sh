@@ -20,7 +20,7 @@
 
 # New Cupids work - once we have PARMLIB/properties files removed properly this won't be needed anymore
 ROOT_DIR={{root_dir}} # the install directory of zowe
-USER_DIR=~/zowe-user-dir # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
+USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
 FILES_API_PORT={{files_api_port}} # the port the files api service will use
 JOBS_API_PORT={{jobs_api_port}} # the port the files api service will use
 STC_NAME={{stc_name}}
