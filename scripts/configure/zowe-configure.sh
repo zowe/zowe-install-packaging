@@ -80,10 +80,6 @@ chmod a+x deploy.sh
 echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 . $CONFIG_DIR/zowe-configure-api-mediation.sh
 
-# Configure Explorer API servers. This should be after APIML CM generated certificates
-echo "Attempting to setup Zowe Explorer API certificates ... "
-. $CONFIG_DIR/zowe-configure-explorer-api.sh
-
 echo "Attempting to setup Zowe Scripts ... "
 . $CONFIG_DIR/zowe-configure-scripts.sh
 
