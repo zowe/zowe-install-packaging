@@ -71,7 +71,7 @@ do
   fi
 done
 
-mkdir -p ${USER_DIR}
+mkdir -p ${USER_DIR}/backups
 # Make accessible to group so owning user can edit?
 chmod -R 771 ${USER_DIR}
 
