@@ -48,7 +48,7 @@ ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}EUU1
 
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
-export NODE_HOME={{node_home}}
+  export NODE_HOME={{node_home}}
 fi
 
 DIR=`dirname $0`
@@ -76,9 +76,8 @@ mkdir -p ${USER_DIR}
 #Backup previous directory if it exists
 if [[ -f ${USER_DIR}"/active_configuration.cfg" ]]
 then
-PREVIOUS_DATE=$(cat ${USER_DIR}/active_configuration.cfg | grep CREATION_DATE | cut -d'=' -f2)
-mv ${USER_DIR}/active_configuration.cfg ${USER_DIR}/backup_configuration.${PREVIOUS_DATE}.cfg
-# Backup previous
+  PREVIOUS_DATE=$(cat ${USER_DIR}/active_configuration.cfg | grep CREATION_DATE | cut -d'=' -f2)
+  mv ${USER_DIR}/active_configuration.cfg ${USER_DIR}/backup_configuration.${PREVIOUS_DATE}.cfg
 fi
 
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
@@ -98,8 +97,8 @@ KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
-ZOWE_JAVA_HOME=${JAVA_HOME}
-STARTED_COMPONENTS=f${STARTED_COMPONENTS}
+ZOWE_JAVA_HOME=${ZOWE_JAVA_HOME}
+STARTED_COMPONENTS=${STARTED_COMPONENTS}
 EOF
 
 # Copy manifest into user_dir so we know the version for support enquiries/migration
