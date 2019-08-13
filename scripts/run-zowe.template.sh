@@ -77,7 +77,7 @@ mkdir -p ${USER_DIR}
 if [[ -f ${USER_DIR}"/active_configuration.cfg" ]]
 then
   PREVIOUS_DATE=$(cat ${USER_DIR}/active_configuration.cfg | grep CREATION_DATE | cut -d'=' -f2)
-  mv ${USER_DIR}/active_configuration.cfg ${USER_DIR}/backup_configuration.${PREVIOUS_DATE}.cfg
+  mv ${USER_DIR}/active_configuration.cfg ${USER_DIR}/backups/backup_configuration.${PREVIOUS_DATE}.cfg
 fi
 
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
