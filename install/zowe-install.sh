@@ -84,7 +84,7 @@ chmod a+rx $ZOWE_ROOT_DIR
 
 # copy manifest.json to root folder
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
-chmod 750 "${INSTALL_DIR}/manifest.json"
+chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
 
 # Create a temp directory to be a working directory for sed replacements
 export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
