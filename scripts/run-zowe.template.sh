@@ -72,6 +72,8 @@ do
 done
 
 mkdir -p ${USER_DIR}
+# Make accessible to group so owning user can edit?
+chmod -R 771 ${USER_DIR}
 
 #Backup previous directory if it exists
 if [[ -f ${USER_DIR}"/active_configuration.cfg" ]]
