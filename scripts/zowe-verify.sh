@@ -367,7 +367,7 @@ else
     # ZOWESVR job name
     # 
     # $ZOWE_ROOT_DIR/scripts/internal/opercmd \
-    #     "S {{stc_name}},SRVRPATH='"$ZOWE_ROOT_DIR"'",JOBNAME={{zowe_prefix}}SV1
+    #     "S {{stc_name}},SRVRPATH='"$ZOWE_ROOT_DIR"'",JOBNAME={{zowe_prefix}}SV
 
     zowe_start=${ZOWE_ROOT_DIR}/scripts/zowe-start.sh
     if [[ ! -r $zowe_start ]]
@@ -380,20 +380,26 @@ else
         then
             echo Error: Failed to find JOBNAME in $zowe_start
         else 
-            ZOWE_PREFIX=`sed -n 's/.*JOBNAME=\(.*\)SV1/\1/p' $zowe_start`   # normal
-            # ZOWE_PREFIX=`sed -n 's/.*JOBNAME=\(.*\)0SV/\1/p' $zowe_start`   # test
-            ZOWESVR_job_name=${ZOWE_PREFIX}SV1
+            ZOWE_PREFIX=`sed -n 's/.*JOBNAME=\([^ ]*\)SV *$/\1/p' $zowe_start`   # JOBNAME must end with SV
+            if [[ ! -n "${ZOWE_PREFIX}" ]]
+            then
+                echo Error: Failed to find ZOWE_PREFIX in $zowe_start
+                echo Warning: Using ZOWE instead
+                ZOWE_PREFIX=ZOWE1   # best guess, allow us to proceed                
+            fi
+
+            ZOWESVR_job_name=${ZOWE_PREFIX}SV
 
             # must be same list as in run-zowe.template.sh
-            ZOWE_API_GW=${ZOWE_PREFIX}AGW1
-            ZOWE_API_DS=${ZOWE_PREFIX}ADS1
-            ZOWE_API_CT=${ZOWE_PREFIX}AAC1
-            ZOWE_DESKTOP=${ZOWE_PREFIX}DS1
-            ZOWE_EXPL_JOBS=${ZOWE_PREFIX}EAJ1
-            ZOWE_EXPL_DATA=${ZOWE_PREFIX}EAD1
-            ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}EUJ1
-            ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}EUD1
-            ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}EUU1
+            ZOWE_API_GW=${ZOWE_PREFIX}AG
+            ZOWE_API_DS=${ZOWE_PREFIX}AD
+            ZOWE_API_CT=${ZOWE_PREFIX}AC
+            ZOWE_DESKTOP=${ZOWE_PREFIX}DT
+            ZOWE_EXPL_JOBS=${ZOWE_PREFIX}EJ
+            ZOWE_EXPL_DATA=${ZOWE_PREFIX}ED
+            ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}UJ
+            ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}UD
+            ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}UU
 
             #now check zowe jobs
             zoweJobErrors=0
@@ -545,7 +551,9 @@ else
     fi
 
     # Try to determine ZSS server job name
-    ZSSSVR=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | sed "{/ /N;s/\n */ /;}"|grep -v "CMD=grep CMD=ZWESIS01" | grep CMD=ZWESIS01|awk '{ print $2 }'`
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > /tmp/d.omvs.all.$$.txt
+    ZSSSVR=`sed -n '/LATCHWAITPID/!h;/CMD=ZWESIS01/{x;p;}' /tmp/d.omvs.all.$$.txt | awk '{ print $2 }'`
+    rm /tmp/d.omvs.all.$$.txt > /dev/null
     if [[ -n "$ZSSSVR" ]] then
         echo ZSS server job name is $ZSSSVR
         ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${ZSSSVR}" | grep WUID=STC > /dev/null
@@ -560,22 +568,29 @@ else
     fi
 
     # # Is the status of the ZSS server OK?
-    # grep "ZIS status - Ok" `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* | head -1` > /dev/null
-    # if [[ $? -ne 0 ]]
-    # then
-    #     echo Error: The status of the ZSS server is not OK in ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer log
-    #     zss_error_status=1
-    #     grep "ZIS status " `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-*` 
-    #     if [[ $? -ne 0 ]]
-    #     then
-    #         echo Error: Could not determine the status of the ZSS server 
-    #     fi
-    # fi
+    ls ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: No ZSS server logs found in ${ZOWE_ROOT_DIR}/zlux-app-server/log
+        zss_error_status=1
+    else
+        grep "ZIS status - Ok" `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* | head -1` > /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            echo Error: The status of the ZSS server is not OK in ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer log
+            zss_error_status=1
+            grep "ZIS status " `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-*` 
+            if [[ $? -ne 0 ]]
+            then
+                echo Error: Could not determine the status of the ZSS server 
+            fi
+        fi
+    fi
 
-    # if [[ $zss_error_status -eq 0 ]]
-    # then
-    #     echo OK
-    # fi
+    if [[ $zss_error_status -eq 0 ]]
+    then
+        echo OK
+    fi
 
 fi
 
@@ -831,52 +846,52 @@ echo Check Node is at right version
 
 # evaluate NODE_HOME from potential sources ...
 
-# # 1. run-zowe.sh?
-# # Zowe uses the version of Node.js located in NODE_HOME as set in run-zowe.sh
-# if [[ ! -n "$nodehome" ]]
-# then 
-#     ls $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
-#     if [[ $? -ne 0 ]]
-#     then 
-#         echo Error: run-zowe.sh not found
-#     else
-#         grep " *export *NODE_HOME=.* *$" $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
-#         if [[ $? -ne 0 ]]
-#         then 
-#             echo Error: \"export NODE_HOME\" not found in run-zowe.sh
-#         else
-#             node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh`
-#             if [[ ! -n "$node_set" ]]
-#             then
-#                 echo Error: NODE_HOME is empty in run-zowe.sh
-#             else
-#                 nodehome=$node_set
-#                 echo Info: Found in run-zowe.sh 
-#             fi 
-#         fi
-#     fi    
-# fi 
+# 1. run-zowe.sh?
+# Zowe uses the version of Node.js located in NODE_HOME as set in run-zowe.sh
+if [[ ! -n "$nodehome" ]]
+then 
+    ls $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
+    if [[ $? -ne 0 ]]
+    then 
+        echo Error: run-zowe.sh not found
+    else
+        grep " *export *NODE_HOME=.* *$" $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Error: \"export NODE_HOME\" not found in run-zowe.sh
+        else
+            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Error: NODE_HOME is empty in run-zowe.sh
+            else
+                nodehome=$node_set
+                echo Info: Found in run-zowe.sh 
+            fi 
+        fi
+    fi    
+fi 
 
-# # 2. install log?
-# if [[ ! -n "$nodehome" ]]
-# then 
-#     ls $ZOWE_ROOT_DIR/install_log/*.log 1> /dev/null
-#     if [[ $? -eq 0 ]]
-#     then
-#         # install log exists
-#         install_log=`ls -t $ZOWE_ROOT_DIR/install_log/*.log | head -1`
-#         node_set=`sed -n 's/NODE_HOME environment variable was set=\(.*\) *$/\1/p' $install_log`
-#         if [[ -n "node_set" ]]
-#         then 
-#             nodehome=$node_set
-#             echo Info: Found in install_log
-#         else 
-#             echo Error: NODE_HOME environment variable was not set in $install_log
-#         fi 
-#     else 
-#         echo Error: no install_log found in $ZOWE_ROOT_DIR/install_log
-#     fi
-# fi
+# 2. configure log?
+if [[ ! -n "$nodehome" ]]
+then 
+    ls $ZOWE_ROOT_DIR/configure_log/*.log 1> /dev/null
+    if [[ $? -eq 0 ]]
+    then
+        # configure log exists
+        configure_log=`ls -t $ZOWE_ROOT_DIR/configure_log/*.log | head -1`
+        node_set=`sed -n 's/NODE_HOME environment variable was set=\(.*\) *$/\1/p' $configure_log`
+        if [[ -n "node_set" ]]
+        then 
+            nodehome=$node_set
+            echo Info: Found in configure_log
+        else 
+            echo Error: NODE_HOME environment variable was not set in $configure_log
+        fi 
+    else 
+        echo Error: no configure_log found in $ZOWE_ROOT_DIR/configure_log
+    fi
+fi
 
 
 # 3. /etc/profile?
