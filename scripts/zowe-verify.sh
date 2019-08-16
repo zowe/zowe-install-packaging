@@ -1250,6 +1250,32 @@ then
 fi
 
 echo
+echo Check CIM server is running
+
+cim_error_status=0  # no errors yet
+
+# Try to determine CIM server job name
+${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > /tmp/d.omvs.all.$$.txt
+CIMSVR=`sed -n '/LATCHWAITPID/!h;/CMD=.*\/cimserver /{x;p;}' /tmp/d.omvs.all.$$.txt | awk '{ print $2 }'`
+rm /tmp/d.omvs.all.$$.txt > /dev/null
+if [[ -n "$CIMSVR" ]] then
+    # echo CIM server job name is $CIMSVR
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${CIMSVR}" | grep WUID=STC > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: CIMSVR job "${CIMSVR}" is not running as a started task
+        cim_error_status=1
+    fi
+else
+    echo Error:  Could not determine CIMSVR job name
+    cim_error_status=1
+fi
+if [[ $cim_error_status -eq 0 ]]
+then
+    echo OK
+fi
+
+echo
 echo Check relevant -s extattr bits 
 ls -RE ${ZOWE_ROOT_DIR} |grep " [-a][-p]s[^ ] " > /tmp/extattr.s.list
 bitsOK=1
