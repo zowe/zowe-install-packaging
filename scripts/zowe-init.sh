@@ -14,10 +14,8 @@
 #TODO - Get the script to try and locate the 64 bit Java 8
 
 # The environment variables
-# ZOWE_ZOSMF_PATH    points to the /lib directory of the zOSMF install
 # ZOWE_ZOSMF_PORT https port of the zOSMF server
 # ZOWE_JAVA_HOME points to Java to be used
-# ZOWE_SDSF_PATH points to SDSF location
 # ZOWE_EXPLORER_HOST points to the current host name
 # ZOWE_IPADDRESS is the external IP address of the host ZOWE_EXPLORER_HOST where Zowe is installed 
 # NODE_HOME points to the node directory
@@ -29,7 +27,6 @@ echo "<zowe-init.sh>" >> $LOG_FILE
 
 
 #set-x
-export ZOWE_ZOSMF_PATH
 export ZOWE_ZOSMF_PORT
 export ZOWE_JAVA_HOME
 export ZOWE_EXPLORER_HOST
@@ -45,7 +42,6 @@ export NODE_HOME
 if [[ ! -e ~/.zowe_profile && -e ~/$PROFILE ]]
 then
     grep \
-    -e ZOWE_ZOSMF_PATH= \
     -e ZOWE_ZOSMF_PORT= \
     -e ZOWE_JAVA_HOME= \
     -e ZOWE_EXPLORER_HOST= \
@@ -55,24 +51,6 @@ fi
 touch ~/.zowe_profile     # ensure it exists
 # 2. set those variables (if any) in Zowe install environment
 . ~/.zowe_profile 
-
-locateZOSMFBootstrapProperties() {
-# $1$2$3$4 together are the full path to an expected bootstrap.properties file used to create a symlink
-    if [[ -f $1$2$3$4 ]] 
-    then
-        echo "  Liberty "$4" found  at "$1$2$3
-        ZOWE_ZOSMF_PATH=$1$2$3
-        persist "ZOWE_ZOSMF_PATH" $1$2$3
-    else 
-# on some machines the user may not have permission to look into $3, in which case if $1$2 exists set the variable
-# as the symlink permission will be allowed by the IZUUSR user ID that starts the explorer-server
-        echo "  Unable to determine whether "$1$2$3$4 "exists"
-        echo "  This may be because the current user is not authorized to look into "$1$2
-        echo "  The runtime user for the liberty-server needs to have sufficient authority"
-        ZOWE_ZOSMF_PATH=$1$2$3
-        persist "ZOWE_ZOSMF_PATH" $1$2$3
-    fi
-}
 
 getZosmfHttpsPort() {
     ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
@@ -209,13 +187,6 @@ getPing_bin() {
 
 # Run the main shell script logic
 echo "Locating Environment Variables..."
-if [[ $ZOWE_ZOSMF_PATH == "" ]]
-then
-    locateZOSMFBootstrapProperties "/var/zosmf/" "configuration" "/servers/zosmfServer/" "bootstrap.properties"
-else 
-    echo "  ZOWE_ZOSMF_PATH variable value="$ZOWE_ZOSMF_PATH >> $LOG_FILE
-fi
-
 if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then
     getZosmfHttpsPort
