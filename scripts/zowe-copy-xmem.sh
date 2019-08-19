@@ -26,7 +26,8 @@ mkdir -p ${XMEM_DIR}
 cp ${INSTALL_DIR}/files/zss.pax ${XMEM_DIR}
 cp ${INSTALL_DIR}/install/zowe-install-apf-server.yaml ${XMEM_DIR}
 
-sed -e "s#INSTALL_DIR=.*#cd ../ \&\& export ZOWE_ROOT_DIR=\`pwd\` \#we are in <ZOWE_ROOT_DIR>/xmem-server#" \
+# SH: sed injection is a mess as we need to get multiple commands in and varaibles they can't be evaluated at copy time due to smpe running in a different root from the install location
+sed -e "s#INSTALL_DIR=.*#cd ../ \&\& export ZOWE_ROOT_DIR=\`pwd\` \&\& cd ${ZOWE_ROOT_DIR}/xmem-server \#we are in <ZOWE_ROOT_DIR>/xmem-server#" \
   -e "s#SCRIPT_DIR=.*#SCRIPT_DIR=\${ZOWE_ROOT_DIR}/xmem-server/scripts#" \
   -e "s#ZSS=.*#ZSS=\${ZOWE_ROOT_DIR}/xmem-server/zss#" \
   -e "s#OPERCMD=.*#OPERCMD=\${ZOWE_ROOT_DIR}/scripts/internal/opercmd#" \
