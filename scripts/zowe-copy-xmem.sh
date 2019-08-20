@@ -39,3 +39,4 @@ cp -r ${INSTALL_DIR}/scripts/zss "${XMEM_DIR}/scripts"
 chmod -R a+rx "${XMEM_DIR}/scripts"
 
 echo "  Copied all content over to ${XMEM_DIR}" >> $LOG_FILE echo "</zowe-copy-xmem.sh>" >> $LOG_FILE  
+echo "</zowe-copy-xmem.sh>" >> $LOG_FILE
