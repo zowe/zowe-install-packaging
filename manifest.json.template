@@ -45,11 +45,11 @@
       "version": "~1.3.0-STAGING"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~0.2.6-ZIP-435",
+      "version": "~0.2.4",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "~0.2.3-ZIP-435",
+      "version": "~0.2.2",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
