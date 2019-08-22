@@ -105,9 +105,6 @@ echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
 
 separator
-echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
-# Create the ZOWESVR JCL
-# Insert the default Zowe install path in the JCL
 
 # Create the /scripts folder in the runtime directory
 # where the scripts to start and the Zowe server will be coped into
