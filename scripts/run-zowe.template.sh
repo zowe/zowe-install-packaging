@@ -62,14 +62,22 @@ _BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mv
 _BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
  
 # Validate component properties if script exists
+ERRORS_FOUND=0
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   VALIDATE_SCRIPT=${ROOT_DIR}/components/${i}/bin/validate.sh
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
-    . ${VALIDATE_SCRIPT}
+    retval=$(. ${VALIDATE_SCRIPT})
+    let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
 done
+if [[ $ERRORS_FOUND > 0 ]]
+then
+	echo "$ERRORS_FOUND errors were found during validatation, please correct and re-launch Zowe"
+	exit $ERRORS_FOUND
+fi
+
 
 mkdir -p ${USER_DIR}/backups
 # Make accessible to group so owning user can edit?
