@@ -55,6 +55,11 @@ do
                     XMEM_LOADLIB=$value
                     echo "  APF server LOADLIB dataset="${XMEM_LOADLIB}
                 fi
+                if [[ $key == "zssServerName" ]] && [[ $value != "" ]]
+                then
+                    XMEM_SERVER_NAME=$value
+                    echo "  APF server NAME="${XMEM_SERVER_NAME}
+                fi                
             fi
             if [[ $section == "users" ]]
             then
@@ -114,6 +119,11 @@ if [[ ${XMEM_LOADLIB} == "" ]]
 then
     XMEM_LOADLIB=${USER}.LOADLIB
     echo "  APF server LOADLIB dataset: defaulting to ${XMEM_LOADLIB}"
+fi
+if [[ ${XMEM_SERVER_NAME} == "" ]]
+then
+    XMEM_SERVER_NAME=ZWESIS_STD
+    echo "  APF server SERVER NAME defaulting to ${XMEM_SERVER_NAME}"
 fi
 if [[ ${ZOWE_USER} == "" ]]
 then

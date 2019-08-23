@@ -33,6 +33,8 @@ zowe-desktop-apps:
 zlux-server:
   httpsPort=8544
   zssPort=8542
+  # make sure that this equals to zssServerName in install in zowe-install-apf-server.yaml
+  zssServerName=ZWESIS_STD
 
 terminals:
   sshPort=22

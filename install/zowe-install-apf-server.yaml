@@ -10,6 +10,9 @@ install:
   parmlib=
   # LOADLIB dataset name (${USER}.LOADLIB by default)
   loadlib=
+  # ZSS server name (default name is ZWESIS_STD),
+  # make sure that this equals to zssServerName in zlux-server in zowe-install.yaml
+  zssServerName=ZWESIS_STD
 
 # APF server users
 users:

@@ -22,10 +22,11 @@ sed 's/"port": 8544,/"port": '"${ZOWE_ZLUX_SERVER_HTTPS_PORT}",'/g' zluxserver.j
 sed 's/"port": 8542/"port": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform1.json > $TEMP_DIR/transform2.json
 sed 's/"zssPort":8542/"zssPort": '"${ZOWE_ZSS_SERVER_PORT}"'/g' $TEMP_DIR/transform2.json > $TEMP_DIR/transform3.json
 sed 's/"hostname": "localhost",/"hostname": "'"${ZOWE_EXPLORER_HOST}"'",/g' $TEMP_DIR/transform3.json > $TEMP_DIR/transform4.json
+sed 's/"privilegedServerName": "ZWESIS_STD",/"privilegedServerName": "'"${ZOWE_ZSS_SERVER_NAME}"'",/g' $TEMP_DIR/transform4.json > $TEMP_DIR/transform5.json
 if grep -q gatewayPort "zluxserver.json"; then
-    sed 's/"gatewayPort":10010/"gatewayPort": '"${ZOWE_APIM_GATEWAY_PORT}"'/g' $TEMP_DIR/transform4.json > zluxserver.json
+    sed 's/"gatewayPort":10010/"gatewayPort": '"${ZOWE_APIM_GATEWAY_PORT}"'/g' $TEMP_DIR/transform5.json > zluxserver.json
 else
-    sed 's/"hostname"/"gatewayPort": '"${ZOWE_APIM_GATEWAY_PORT}"', "hostname"/g' $TEMP_DIR/transform4.json > zluxserver.json
+    sed 's/"hostname"/"gatewayPort": '"${ZOWE_APIM_GATEWAY_PORT}"', "hostname"/g' $TEMP_DIR/transform5.json > zluxserver.json
 fi
 
 # SSH port for the VT terminal app
