@@ -55,7 +55,7 @@ do
                     XMEM_LOADLIB=$value
                     echo "  APF server LOADLIB dataset="${XMEM_LOADLIB}
                 fi
-                if [[ $key == "zssServerName" ]] && [[ $value != "" ]]
+                if [[ $key == "zssCrossMemoryServerName" ]] && [[ $value != "" ]]
                 then
                     XMEM_SERVER_NAME=$value
                     echo "  APF server NAME="${XMEM_SERVER_NAME}

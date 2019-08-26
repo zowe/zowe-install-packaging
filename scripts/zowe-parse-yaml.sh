@@ -76,7 +76,7 @@ do
                 export ZOWE_ZSS_SERVER_PORT
             fi
 # Look for privilegedServerName= beneath zlux-server:
-            if [[ $key == "zssServerName" ]] && [[ $section == "zlux-server" ]] 
+            if [[ $key == "zssCrossMemoryServerName" ]] && [[ $section == "zlux-server" ]] 
             then
                 ZOWE_ZSS_SERVER_NAME=$value
                 export ZOWE_ZSS_SERVER_NAME
