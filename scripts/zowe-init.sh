@@ -31,6 +31,7 @@ echo "<zowe-init.sh>" >> $LOG_FILE
 #set-x
 export ZOWE_ZOSMF_PATH
 export ZOWE_ZOSMF_PORT
+export ZOWE_ZOSMF_HOST
 export ZOWE_JAVA_HOME
 export ZOWE_EXPLORER_HOST
 export ZOWE_IPADDRESS
@@ -47,6 +48,7 @@ then
     grep \
     -e ZOWE_ZOSMF_PATH= \
     -e ZOWE_ZOSMF_PORT= \
+    -e ZOWE_ZOSMF_HOST= \
     -e ZOWE_JAVA_HOME= \
     -e ZOWE_EXPLORER_HOST= \
     -e ZOWE_IPADDRESS= \
@@ -399,4 +401,15 @@ else
     esac
     echo "  ZOWE_IPADDRESS variable value="$ZOWE_IPADDRESS >> $LOG_FILE
 fi
+
+if [[ $ZOWE_ZOSMF_HOST == "" ]]
+then
+    ZOWE_ZOSMF_HOST = $ZOWE_EXPLORER_HOST
+    echo "  ZOWE_ZOSMF_HOST variable not specified, value defaults to "$ZOWE_ZOSMF_HOST >> $LOG_FILE
+    persist "ZOWE_ZOSMF_HOST" $ZOWE_ZOSMF_HOST
+else
+    echo "  ZOWE_ZOSMF_HOST variable value="$ZOWE_ZOSMF_HOST >> $LOG_FILE
+fi
+    
+
 echo "</zowe-init.sh>" >> $LOG_FILE
