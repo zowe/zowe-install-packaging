@@ -16,6 +16,8 @@
 # $ZOWE_ROOT_DIR
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_IPADDRESS
+# $ZOWE_ZOSMF_HOST
+# $ZOWE_ZOSMF_PORT
 # $ZOWE_APIM_CATALOG_PORT
 # $ZOWE_APIM_DISCOVERY_PORT
 # $ZOWE_APIM_GATEWAY_PORT
@@ -126,7 +128,7 @@ cat <<EOF >$TEMP_DIR/zosmf.yml
 # Static definition for z/OSMF
 #
 # Once configured you can access z/OSMF via the API gateway:
-# http --verify=no GET https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
+# http --verify=no GET https://$ZOWE_ZOSMF_HOST:$ZOWE_APIM_GATEWAY_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
 #	
 services:
     - serviceId: zosmf
@@ -134,7 +136,7 @@ services:
       description: IBM z/OS Management Facility REST API service
       catalogUiTileId: zosmf
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_ZOSMF_PORT/zosmf/
+        - https://$ZOWE_ZOSMF_HOST:$ZOWE_ZOSMF_PORT/zosmf/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}

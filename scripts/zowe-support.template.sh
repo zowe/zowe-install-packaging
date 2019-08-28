@@ -4,7 +4,7 @@
 VAR=`dirname $0`			# Obtain the scripts directory name
 cd $VAR/..				    # Change to its parent which should be ZOWE_ROOT_DIR
 ZOWE_ROOT_DIR={{root_dir}}		# Set our environment variable
-ZOWE_PREFIX={{zowe_prefix}}
+ZOWE_PREFIX={{zowe_prefix}}{{zowe_instance}}
 ZOWE_INSTALL_LOG_DIR=${ZOWE_ROOT_DIR}/install_log/
 ZOWE_CONFIGURE_LOG_DIR=${ZOWE_ROOT_DIR}/configure_log/
 ZOWE_INSTALL_ZLUX_SERVER_LOG=${ZOWE_ROOT_DIR}/zlux-app-server/log/
@@ -40,7 +40,10 @@ if [[ -z "${ZOWE_PREFIX}" ]];then
     echo "The ZOWE_PREFIX environment variable wasn't properly populated during install. Exiting."
     exit
 fi
-
+if [[ -z "${ZOWE_INSTANCE}" ]];then
+    echo "The ZOWE_INSTANCE environment variable wasn't properly populated during install. Exiting."
+    exit
+fi
 # Function Definition
 # Not really sure if we should use this, it takes a lot of time to search in directory tree
 # Alternative is to count on the directory structure, and assume that needed files are there
@@ -111,8 +114,8 @@ write_to_log "Collecting manifest.json"
 add_to_pax $ZOWE_ROOT_DIR/manifest.json
 
 # Collect process information
-write_to_log "Collecting current process information based on the following prefix: ${ZOWE_PREFIX}"
-psgrep $ZOWE_PREFIX > $PS_OUTPUT_FILE
+write_to_log "Collecting current process information based on the following prefix: ${ZOWE_PREFIX}$ZOWE_INSTANCE"
+psgrep $ZOWE_PREFIX$ZOWE_INSTANCE > $PS_OUTPUT_FILE
 write_to_log "Adding ${PS_OUTPUT_FILE}"
 add_to_pax $PS_OUTPUT_FILE process_info
 rm $PS_OUTPUT_FILE
