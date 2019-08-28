@@ -58,12 +58,6 @@ do
                 ZOWE_PREFIX=$value
                 export ZOWE_PREFIX
             fi
-# Look for instance= beneath install:
-            if [[ $key == "instance" ]] && [[ $section == "install" ]]
-            then
-                ZOWE_INSTANCE=$value
-                export ZOWE_INSTANCE
-            fi            
 # Look for jobsAPIPort= beneath zos-services:
             if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
             then
@@ -220,11 +214,6 @@ if [[ $ZOWE_PREFIX == "" ]]
 then
     ZOWE_PREFIX="ZOWE"
     echo "  ZOWE_PREFIX not specified:  Defaulting to ZOWE"
-fi
-if [[ $ZOWE_INSTANCE == "" ]]
-then
-    ZOWE_INSTANCE="1"
-    echo "  ZOWE_INSTANCE not specified:  Defaulting to 1"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
 then
