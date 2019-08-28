@@ -56,7 +56,7 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-# Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
+# Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
 . $INSTALL_DIR/scripts/zowe-init.sh
 
 echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
@@ -84,6 +84,7 @@ chmod a+rx $ZOWE_ROOT_DIR
 
 # copy manifest.json to root folder
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
+chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
 
 # Create a temp directory to be a working directory for sed replacements
 export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
@@ -103,8 +104,6 @@ mkdir -p $TEMP_DIR
 
 echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
-
-separator
 
 # Create the /scripts folder in the runtime directory
 # where the scripts to start and the Zowe server will be coped into

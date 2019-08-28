@@ -988,20 +988,6 @@ fi
 # echo
 # echo Check Zowe environment variables are set correctly.
 
-# # • ZOWE_ZOSMF_PATH: The path where z/OSMF is installed. Defaults to /usr/lpp/zosmf/lib/
-# # defaults/servers/zosmfServer
-# if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
-# then 
-#     echo OK: ZOWE_ZOSMF_PATH is not empty 
-#     ls ${ZOWE_ZOSMF_PATH}/server.xml > /dev/null    # pick a file to check
-#     if [[ $? -ne 0 ]]
-#     then    
-#         echo Error: ZOWE_ZOSMF_PATH does not point to a valid install of z/OSMF
-#     fi
-# else 
-#     echo Error: ZOWE_ZOSMF_PATH is empty
-# fi
-
 # # • ZOWE_JAVA_HOME: The path where 64 bit Java 8 or later is installed. Defaults to /usr/lpp/java/
 # # J8.0_64
 # if [[ -n "${ZOWE_JAVA_HOME}" ]]

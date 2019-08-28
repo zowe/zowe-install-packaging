@@ -23,7 +23,7 @@ chmod a+rw $LOG_FILE
 export TEMP_DIR=$CONFIG_DIR/temp_"`date +%Y-%m-%d`"
 mkdir -p $TEMP_DIR
 
-# Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
+# Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
 . $CONFIG_DIR/zowe-init.sh
 
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
@@ -79,10 +79,6 @@ chmod a+x deploy.sh
 # this script is run after all the folders have been created and paxes expanded above
 echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 . $CONFIG_DIR/zowe-configure-api-mediation.sh
-
-# Configure Explorer API servers. This should be after APIML CM generated certificates
-echo "Attempting to setup Zowe Explorer API certificates ... "
-. $CONFIG_DIR/zowe-configure-explorer-api.sh
 
 echo "Attempting to setup Zowe Scripts ... "
 . $CONFIG_DIR/zowe-configure-scripts.sh
