@@ -23,7 +23,7 @@ sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{files_api_port}}#${ZOWE_EXPLORER_SERVER_DATASETS_PORT}#" \
   -e "s#{{jobs_api_port}}#${ZOWE_EXPLORER_SERVER_JOBS_PORT}#" \
   -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
-  -e "s#{{zosmf_ip_address}}#${ZOWE_IPADDRESS}#" \
+  -e "s#{{zosmf_ip_address}}#${ZOWE_ZOSMF_HOST}#" \
   -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
   -e "s#{{key_alias}}#localhost#" \
