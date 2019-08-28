@@ -81,6 +81,12 @@ do
                 ZOWE_ZSS_SERVER_PORT=$value
                 export ZOWE_ZSS_SERVER_PORT
             fi
+# Look for privilegedServerName= beneath zlux-server:
+            if [[ $key == "zssCrossMemoryServerName" ]] && [[ $section == "zlux-server" ]] 
+            then
+                ZOWE_ZSS_XMEM_SERVER_NAME=$value
+                export ZOWE_ZSS_XMEM_SERVER_NAME
+            fi
 # Look for sshPort= beneath terminals:
             if [[ $key == "sshPort" ]] && [[ $section == "terminals" ]] 
             then
@@ -228,9 +234,14 @@ then
     ZOWE_ZSS_SERVER_PORT=8542
     echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542"
 fi
+if [[ $ZOWE_ZSS_XMEM_SERVER_NAME == "" ]]
+then
+    ZOWE_ZSS_XMEM_SERVER_NAME=ZWESIS_STD
+    echo "  ZOWE_ZSS_XMEM_SERVER_NAME not specified:  Defaulting to ZWESIS_STD"
+fi
 if [[ $ZOWE_EXPLORER_JES_UI_PORT == "" ]]
 then
-    ZOWE_ZSS_SERVER_PORT=8546
+    ZOWE_EXPLORER_JES_UI_PORT=8546
     echo "  ZOWE_EXPLORER_JES_UI_PORT not specified:  Defaulting to 8546"
 fi
 if [[ $ZOWE_EXPLORER_MVS_UI_PORT == "" ]]
@@ -312,6 +323,7 @@ echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT="$ZOWE_EXPLORER_SERVER_DATASETS_PORT >> $LOG_FILE
 echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
+echo "  ZOWE_ZSS_XMEM_SERVER_NAME="$ZOWE_ZSS_XMEM_SERVER_NAME >> $LOG_FILE
 echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE
 echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_JES_UI_PORT="$ZOWE_EXPLORER_JES_UI_PORT >> $LOG_FILE
