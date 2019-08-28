@@ -32,7 +32,7 @@ sed -e "s/zssCrossMemoryServerName=ZWESIS_STD/zssCrossMemoryServerName=${ZOWE_ZS
 cp ${zowe_install_apf_server} ${XMEM_DIR}
 
 # SH: sed injection is a mess as we need to get multiple commands in and varaibles they can't be evaluated at copy time due to smpe running in a different root from the install location
-sed -e "s#INSTALL_DIR=.*#cd ../ \&\& export ZOWE_ROOT_DIR=\`pwd\` \&\& cd ${ZOWE_ROOT_DIR}/xmem-server \#we are in <ZOWE_ROOT_DIR>/xmem-server#" \
+sed -e "s#INSTALL_DIR=.*#cd ../ \&\& export ZOWE_ROOT_DIR=\`pwd\` \&\& cd \${ZOWE_ROOT_DIR}/xmem-server \#we are in <ZOWE_ROOT_DIR>/xmem-server#" \
   -e "s#SCRIPT_DIR=.*#SCRIPT_DIR=\${ZOWE_ROOT_DIR}/xmem-server/scripts#" \
   -e "s#ZSS=.*#ZSS=\${ZOWE_ROOT_DIR}/xmem-server/zss#" \
   -e "s#OPERCMD=.*#OPERCMD=\${ZOWE_ROOT_DIR}/scripts/internal/opercmd#" \

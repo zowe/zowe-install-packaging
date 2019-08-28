@@ -404,7 +404,7 @@ fi
 
 if [[ $ZOWE_ZOSMF_HOST == "" ]]
 then
-    ZOWE_ZOSMF_HOST = $ZOWE_EXPLORER_HOST
+    ZOWE_ZOSMF_HOST=$ZOWE_EXPLORER_HOST
     echo "  ZOWE_ZOSMF_HOST variable not specified, value defaults to "$ZOWE_ZOSMF_HOST >> $LOG_FILE
     persist "ZOWE_ZOSMF_HOST" $ZOWE_ZOSMF_HOST
 else
