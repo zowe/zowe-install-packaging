@@ -60,7 +60,7 @@ for one in $EXPLORER_API_LIST; do
       -e "s|\*\*KEYSTORE\*\*|$ZOWE_ROOT_DIR/api-mediation/keystore/localhost/localhost.keystore.p12|g" \
       -e "s|\*\*KEYSTORE_PASSWORD\*\*|password|g" \
       -e "s/\*\*ZOSMF_HTTPS_PORT\*\*/$ZOWE_ZOSMF_PORT/g" \
-      -e "s/\*\*ZOSMF_IP\*\*/$ZOWE_IPADDRESS/g" \
+      -e "s/\*\*ZOSMF_IP\*\*/$ZOWE_ZOSMF_HOST/g" \
       "${one}-api-server-start.sh" > "${one}-api-server-start.sh.tmp"
   mv "${one}-api-server-start.sh.tmp" "${one}-api-server-start.sh"
 

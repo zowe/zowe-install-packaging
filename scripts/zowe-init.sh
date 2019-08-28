@@ -31,6 +31,7 @@ echo "<zowe-init.sh>" >> $LOG_FILE
 #set-x
 export ZOWE_ZOSMF_PATH
 export ZOWE_ZOSMF_PORT
+export ZOWE_ZOSMF_HOST
 export ZOWE_JAVA_HOME
 export ZOWE_EXPLORER_HOST
 export ZOWE_IPADDRESS
@@ -47,6 +48,7 @@ then
     grep \
     -e ZOWE_ZOSMF_PATH= \
     -e ZOWE_ZOSMF_PORT= \
+    -e ZOWE_ZOSMF_HOST= \
     -e ZOWE_JAVA_HOME= \
     -e ZOWE_EXPLORER_HOST= \
     -e ZOWE_IPADDRESS= \
@@ -196,13 +198,13 @@ getPing_bin() {
     then
         ping_bin=ping
     else
-        echo "ping command not found trying oping"
+        echo "Warning: ping command not found trying oping"
         oping -h 2>/dev/null 1>/dev/null
         if [[ $? -eq 0 ]]
         then
             ping_bin=oping
         else
-            echo "neither ping nor oping has not been found, add folder with ping or oping on \$PATH, normally they are in /bin"
+            echo "Error: neither ping nor oping has not been found, add folder with ping or oping on \$PATH, normally they are in /bin"
         fi
     fi
 }
@@ -399,4 +401,15 @@ else
     esac
     echo "  ZOWE_IPADDRESS variable value="$ZOWE_IPADDRESS >> $LOG_FILE
 fi
+
+if [[ $ZOWE_ZOSMF_HOST == "" ]]
+then
+    ZOWE_ZOSMF_HOST = $ZOWE_EXPLORER_HOST
+    echo "  ZOWE_ZOSMF_HOST variable not specified, value defaults to "$ZOWE_ZOSMF_HOST >> $LOG_FILE
+    persist "ZOWE_ZOSMF_HOST" $ZOWE_ZOSMF_HOST
+else
+    echo "  ZOWE_ZOSMF_HOST variable value="$ZOWE_ZOSMF_HOST >> $LOG_FILE
+fi
+    
+
 echo "</zowe-init.sh>" >> $LOG_FILE
