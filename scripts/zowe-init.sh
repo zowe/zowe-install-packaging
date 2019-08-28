@@ -196,13 +196,13 @@ getPing_bin() {
     then
         ping_bin=ping
     else
-        echo "ping command not found trying oping"
+        echo "Warning: ping command not found trying oping"
         oping -h 2>/dev/null 1>/dev/null
         if [[ $? -eq 0 ]]
         then
             ping_bin=oping
         else
-            echo "neither ping nor oping has not been found, add folder with ping or oping on \$PATH, normally they are in /bin"
+            echo "Error: neither ping nor oping has not been found, add folder with ping or oping on \$PATH, normally they are in /bin"
         fi
     fi
 }
