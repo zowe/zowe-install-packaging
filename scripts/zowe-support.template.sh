@@ -4,7 +4,8 @@
 VAR=`dirname $0`			# Obtain the scripts directory name
 cd $VAR/..				    # Change to its parent which should be ZOWE_ROOT_DIR
 ZOWE_ROOT_DIR={{root_dir}}		# Set our environment variable
-ZOWE_PREFIX={{zowe_prefix}}{{zowe_instance}}
+ZOWE_PREFIX={{zowe_prefix}}
+ZOWE_INSTANCE={{zowe_instance}}
 ZOWE_INSTALL_LOG_DIR=${ZOWE_ROOT_DIR}/install_log/
 ZOWE_CONFIGURE_LOG_DIR=${ZOWE_ROOT_DIR}/configure_log/
 ZOWE_INSTALL_ZLUX_SERVER_LOG=${ZOWE_ROOT_DIR}/zlux-app-server/log/
