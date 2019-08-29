@@ -25,11 +25,9 @@ mkdir -p ${XMEM_DIR}
 
 cp ${INSTALL_DIR}/files/zss.pax ${XMEM_DIR}
 
-echo "  Customizing zssCrossMemoryServerName=${ZOWE_ZSS_XMEM_SERVER_NAME} in zowe-install-apf-server.yaml"
+echo "  Customizing zssCrossMemoryServerName=${ZOWE_ZSS_XMEM_SERVER_NAME} in zowe-install-apf-server.yaml" >> $LOG_FILE
 zowe_install_apf_server=${INSTALL_DIR}/install/zowe-install-apf-server.yaml
-cp ${zowe_install_apf_server} ${zowe_install_apf_server}.orig
-sed -e "s/zssCrossMemoryServerName=ZWESIS_STD/zssCrossMemoryServerName=${ZOWE_ZSS_XMEM_SERVER_NAME}/g" ${zowe_install_apf_server}.orig > ${zowe_install_apf_server}
-cp ${zowe_install_apf_server} ${XMEM_DIR}
+sed -e "s/zssCrossMemoryServerName=ZWESIS_STD/zssCrossMemoryServerName=${ZOWE_ZSS_XMEM_SERVER_NAME}/g" ${zowe_install_apf_server} > ${XMEM_DIR}/${zowe_install_apf_server}
 
 # SH: sed injection is a mess as we need to get multiple commands in and varaibles they can't be evaluated at copy time due to smpe running in a different root from the install location
 sed -e "s#INSTALL_DIR=.*#cd ../ \&\& export ZOWE_ROOT_DIR=\`pwd\` \&\& cd \${ZOWE_ROOT_DIR}/xmem-server \#we are in <ZOWE_ROOT_DIR>/xmem-server#" \
