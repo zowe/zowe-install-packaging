@@ -103,6 +103,7 @@ echo "Attempting to setup Zowe Proclib ... "
 # TODO LATER - same as the above - zss won't start with those permissions,
 sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   -e "s#{{zosmf_admin_group}}#${ZOWE_ZOSMF_ADMIN_GROUP}#" \
+  -e "s#{{configure_log_file}}#${LOG_FILE}#" \
   "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh" \
   > "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
 
@@ -117,7 +118,6 @@ if [[ $AUTH_RETURN_CODE == "0" ]]; then
     echo "  A user with sufficient authority must run $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
     echo "  zowe-runtime-authorize.sh failed to run successfully" >> $LOG_FILE
 fi
-
 
 cd $PREV_DIR
 
