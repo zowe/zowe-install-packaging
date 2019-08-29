@@ -66,7 +66,7 @@ fi
 zluxserverdirectory='zlux-app-server'
 echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/deploy/site
+
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
@@ -74,6 +74,23 @@ chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 ./deploy.sh > /dev/null
+
+# TODO LATER - same as the above - zss won't start with those permissions,
+sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
+  "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh" \
+  > "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
+
+chmod a+x $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
+$(. $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh)
+AUTH_RETURN_CODE=$?
+if [[ $AUTH_RETURN_CODE == "0" ]]; then
+    echo "  The permissions were successfully changed"
+    echo "  zowe-runtime-authorize.sh run successfully" >> $LOG_FILE
+    else
+    echo "  The current user does not have sufficient authority to modify all the file and directory permissions."
+    echo "  A user with sufficient authority must run $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
+    echo "  zowe-runtime-authorize.sh failed to run successfully" >> $LOG_FILE
+fi
 
 # Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
 # this script is run after all the folders have been created and paxes expanded above
@@ -90,6 +107,7 @@ echo "Attempting to setup Zowe Scripts ... "
 sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
+  -e "s#{{zowe_instance}}#${ZOWE_INSTANCE}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
   -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh" \
@@ -98,25 +116,6 @@ chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
 . $CONFIG_DIR/zowe-configure-proclib.sh
-
-# TODO LATER - same as the above - zss won't start with those permissions,
-sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
-  -e "s#{{zosmf_admin_group}}#${ZOWE_ZOSMF_ADMIN_GROUP}#" \
-  -e "s#{{configure_log_file}}#${LOG_FILE}#" \
-  "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh" \
-  > "$ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
-
-chmod a+x $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh
-$(. $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh)
-AUTH_RETURN_CODE=$?
-if [[ $AUTH_RETURN_CODE == "0" ]]; then
-    echo "  The permissions were successfully changed"
-    echo "  zowe-runtime-authorize.sh run successfully" >> $LOG_FILE
-    else
-    echo "  The current user does not have sufficient authority to modify all the file and directory permissions."
-    echo "  A user with sufficient authority must run $ZOWE_ROOT_DIR/scripts/zowe-runtime-authorize.sh"
-    echo "  zowe-runtime-authorize.sh failed to run successfully" >> $LOG_FILE
-fi
 
 cd $PREV_DIR
 
