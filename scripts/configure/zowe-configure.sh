@@ -37,9 +37,6 @@ echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 # Configure the ports for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-ports.sh
 
-# Configure the TLS certificates for the zLUX server
-. $CONFIG_DIR/zowe-configure-zlux-certificates.sh
-
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
     # Add APIML authentication plugin to zLUX
     . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
@@ -62,6 +59,18 @@ fi
 # TODO - move into apiml config? run before deploy?
 . $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/api-mediation/api-catalog.png"
 
+# Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
+# this script is run after all the folders have been created and paxes expanded above
+echo "Attempting to setup Zowe API Mediation Layer certificates ... "
+. $CONFIG_DIR/zowe-configure-api-mediation.sh
+
+# Configure Explorer API servers. This should be after APIML CM generated certificates
+echo "Attempting to setup Zowe Explorer API certificates ... "
+. $CONFIG_DIR/zowe-configure-explorer-api.sh
+
+# Configure the TLS certificates for the zLUX server
+. $CONFIG_DIR/zowe-configure-zlux-certificates.sh
+
 # Run deploy on the zLUX app server to propagate the changes made
 zluxserverdirectory='zlux-app-server'
 echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
@@ -74,15 +83,6 @@ chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 ./deploy.sh > /dev/null
-
-# Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
-# this script is run after all the folders have been created and paxes expanded above
-echo "Attempting to setup Zowe API Mediation Layer certificates ... "
-. $CONFIG_DIR/zowe-configure-api-mediation.sh
-
-# Configure Explorer API servers. This should be after APIML CM generated certificates
-echo "Attempting to setup Zowe Explorer API certificates ... "
-. $CONFIG_DIR/zowe-configure-explorer-api.sh
 
 echo "Attempting to setup Zowe Scripts ... "
 . $CONFIG_DIR/zowe-configure-scripts.sh
