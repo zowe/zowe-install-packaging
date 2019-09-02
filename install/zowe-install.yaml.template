@@ -5,6 +5,7 @@
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
   prefix=ZOWE
+  instance=1
 
 zosmf:
   zosmfUserid=IZUSVR
