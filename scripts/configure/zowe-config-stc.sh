@@ -14,7 +14,7 @@
 
 # Script entry criteria:
 # 1. The ZOWESVR STC name must be set in the environment variable ${ZOWESVR}, otherwise it defaults to "ZOWESVR"
-# 2. The script must be run from directory $ZOWE_ROOT_DIR/scripts to run this script for ACF2
+# 2. The script must be run from directory $ZOWE_ROOT_DIR/scripts/configure to run this script for ACF2
 
 # The user of this script must be authorized to issue the necessary commands to the installed security product
 
@@ -35,7 +35,7 @@ echo Script zowe-config-stc.sh started
 
 # Discover ZOWESVR name for this runtime
 # Look in zowe-start.sh
-serverName=`sed -n 's/.*opercmd.*S \([^ ]*\),SRVRPATH=.*/\1/p' zowe-start.sh 2> /dev/null`
+serverName=`sed -n 's/.*opercmd.*S \([^ ]*\),SRVRPATH=.*/\1/p' ../zowe-start.sh 2> /dev/null`
 
 if [[ $? -eq 0 && -n "$serverName" ]]
 then 
@@ -107,9 +107,9 @@ then
                 cat /tmp/cmd.out /tmp/cmd.err
             else
 
-                if [[ -x ../scripts/internal/opercmd ]]
+                if [[ -x ../internal/opercmd ]]
                 then 
-                    ../scripts/internal/opercmd "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
+                    ../internal/opercmd "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
                         1> /tmp/cmd.out 2> /tmp/cmd.err 
                     if [[ $? -ne 0 ]]
                     then
@@ -120,7 +120,7 @@ then
                     fi
                 else 
                     echo Error: opercmd is missing or not executable
-                    echo Error: you must be in $ZOWE_ROOT_DIR/scripts directory to run this script for ACF2
+                    echo Error: you must be in $ZOWE_ROOT_DIR/configure directory to run this script for ACF2
                 fi 
 
             fi            
