@@ -45,6 +45,13 @@ do
                 ZOWE_ROOT_DIR=`sh -c "echo $value"` 
                 export ZOWE_ROOT_DIR
             fi
+# Look for userDir= beneath install:
+            if [[ $key == "userDir" ]] && [[ $section == "install" ]]
+            then
+# If the value starts with a ~ for the home variable then evaluate it
+                ZOWE_USER_DIR=`sh -c "echo $value"` 
+                export ZOWE_USER_DIR
+            fi
 # Look for prefix= beneath install:
             if [[ $key == "prefix" ]] && [[ $section == "install" ]]
             then
@@ -203,6 +210,11 @@ then
     ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
     echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION" | tee -a $LOG_FILE
 fi
+if [[ $ZOWE_USER_DIR == "" ]] 
+then
+    ZOWE_USER_DIR="~/zowe/user_directory"
+    echo "  ZOWE_USER_DIR not specified:  Defaulting to ~/zowe/user_directory"
+fi
 if [[ $ZOWE_PREFIX == "" ]]
 then
     ZOWE_PREFIX="ZOWE"
@@ -317,6 +329,7 @@ then
 fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
+echo "  ZOWE_USER_DIR="$ZOWE_USER_DIR >> $LOG_FILE
 echo "  ZOWE_PREFIX="$ZOWE_PREFIX >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
