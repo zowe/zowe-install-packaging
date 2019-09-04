@@ -100,6 +100,13 @@ chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 echo "Attempting to setup Zowe Proclib ... "
 . $CONFIG_DIR/zowe-configure-proclib.sh
 
+# Inject stc name into config-stc
+sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+   "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh" \
+  > "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new"
+mv "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new" "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
+chmod 770 "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
+
 # TODO LATER - same as the above - zss won't start with those permissions,
 sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   -e "s#{{zosmf_admin_group}}#${ZOWE_ZOSMF_ADMIN_GROUP}#" \
