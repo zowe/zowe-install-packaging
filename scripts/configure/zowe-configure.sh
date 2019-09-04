@@ -64,10 +64,6 @@ fi
 echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 . $CONFIG_DIR/zowe-configure-api-mediation.sh
 
-# Configure Explorer API servers. This should be after APIML CM generated certificates
-echo "Attempting to setup Zowe Explorer API certificates ... "
-. $CONFIG_DIR/zowe-configure-explorer-api.sh
-
 # Configure the TLS certificates for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-certificates.sh
 
