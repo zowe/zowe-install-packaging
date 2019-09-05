@@ -13,38 +13,26 @@
 #  Configure Zowe as a started task
 
 # Script entry criteria:
-# 1. The ZOWESVR STC name must be set in the environment variable ${ZOWESVR}, otherwise it defaults to "ZOWESVR"
-# 2. The script must be run from directory $ZOWE_ROOT_DIR/scripts to run this script for ACF2
+# 1. The script must be run from directory $ZOWE_ROOT_DIR/scripts/configure to run this script for ACF2
 
 # The user of this script must be authorized to issue the necessary commands to the installed security product
 
-# • If you use RACF, the following commands will be issued:
+# If you use RACF, the following commands will be issued:
 # RDEFINE STARTED ${ZOWESVR}.* UACC(NONE) STDATA(USER(IZUSVR) GROUP(IZUADMIN)
 # PRIVILEGED(NO) TRUSTED(NO) TRACE(YES))
 # SETROPTS REFRESH RACLIST(STARTED)
 
-# • If you use CA ACF2, the following commands will be issued:
+# If you use CA ACF2, the following commands will be issued:
 # SET CONTROL(GSO)
 # INSERT STC.${ZOWESVR} LOGONID(IZUSVR) GROUP(IZUADMIN) STCID(${ZOWESVR})
 # F ACF2,REFRESH(STC)
 
-# • If you use CA Top Secret, the following commands will be issued:
+# If you use CA Top Secret, the following commands will be issued:
 # TSS ADDTO(STC) PROCNAME(${ZOWESVR}) ACID(IZUSVR)
 
+ZOWESVR={{stc_name}}
+
 echo Script zowe-config-stc.sh started
-
-# Discover ZOWESVR name for this runtime
-# Look in zowe-start.sh
-serverName=`sed -n 's/.*opercmd.*S \([^ ]*\),SRVRPATH=.*/\1/p' zowe-start.sh 2> /dev/null`
-
-if [[ $? -eq 0 && -n "$serverName" ]]
-then 
-    ZOWESVR=$serverName
-    # echo Info: ZOWESVR name is ${ZOWESVR}
-else 
-    echo Error: Failed to find ZOWESVR name in zowe-start.sh, defaulting to ZOWESVR for this check 
-    ZOWESVR=ZOWESVR
-fi
 
 echo
 echo Detecting active SAF security product
@@ -107,9 +95,9 @@ then
                 cat /tmp/cmd.out /tmp/cmd.err
             else
 
-                if [[ -x ../scripts/internal/opercmd ]]
+                if [[ -x ../internal/opercmd ]]
                 then 
-                    ../scripts/internal/opercmd "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
+                    ../internal/opercmd "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
                         1> /tmp/cmd.out 2> /tmp/cmd.err 
                     if [[ $? -ne 0 ]]
                     then
@@ -120,7 +108,7 @@ then
                     fi
                 else 
                     echo Error: opercmd is missing or not executable
-                    echo Error: you must be in $ZOWE_ROOT_DIR/scripts directory to run this script for ACF2
+                    echo Error: you must be in $ZOWE_ROOT_DIR/configure directory to run this script for ACF2
                 fi 
 
             fi            

@@ -80,7 +80,7 @@ mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zss-*.pax "${PAX_WORK
 
 # jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts"
-mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api-server-start.sh" \
-   "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/jobs-api-server-start.sh"
-mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/data-sets-api-server-start.sh" \
-   "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/data-sets-api-server-start.sh"
+mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh \
+   ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
+mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh \
+   ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/

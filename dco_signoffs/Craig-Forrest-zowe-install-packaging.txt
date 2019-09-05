@@ -1,0 +1,5 @@
+I, Craig-Forrest hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: Craig.Forrest@ibm.com
+
+ad7cc83bd89790e2724fe1880db4294f2e757d5c changed wording in comment to fit with new variable names
+6d651348496beee83059f9f443c5878f2d026303 added install/ changes to template and script
+2892d1862cbebcf03f6c107d976d06693c263d3e removed excess logging from install script and renamed some ports in zowe-install.yaml.template
