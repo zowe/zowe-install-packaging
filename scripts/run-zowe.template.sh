@@ -68,16 +68,16 @@ do
   VALIDATE_SCRIPT=${ROOT_DIR}/components/${i}/bin/validate.sh
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
-    retval=$(. ${VALIDATE_SCRIPT})
+    . ${VALIDATE_SCRIPT}
+    retval=$?
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
 done
 if [[ $ERRORS_FOUND > 0 ]]
 then
-	echo "$ERRORS_FOUND errors were found during validatation, please correct and re-launch Zowe"
+	echo "$ERRORS_FOUND errors were found during validatation, please correct the properties in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
 	exit $ERRORS_FOUND
 fi
-
 
 mkdir -p ${USER_DIR}/backups
 # Make accessible to group so owning user can edit?
