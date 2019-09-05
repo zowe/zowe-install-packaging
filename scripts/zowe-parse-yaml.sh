@@ -25,7 +25,7 @@ do
     firstCharacter=$(echo $line | head -c 1)
     valueLength=`expr $lineLength - $keyLength`
     value=$(echo $line | tail -c $valueLength | head -c `expr $valueLength - 1`)
-# Ignore comments if the first characater is a #
+# Ignore comments if the first character is a #
     if [[ ! $firstCharacter == "#" ]]
     then
 # Look for lines ending in :
@@ -58,6 +58,12 @@ do
                 ZOWE_PREFIX=$value
                 export ZOWE_PREFIX
             fi
+# Look for instance= beneath install:
+            if [[ $key == "instance" ]] && [[ $section == "install" ]]
+            then
+                ZOWE_INSTANCE=$value
+                export ZOWE_INSTANCE
+            fi            
 # Look for jobsAPIPort= beneath zos-services:
             if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
             then
@@ -87,7 +93,7 @@ do
             then
                 ZOWE_ZSS_XMEM_SERVER_NAME=$value
                 export ZOWE_ZSS_XMEM_SERVER_NAME
-            fi
+            fi            
 # Look for sshPort= beneath terminals:
             if [[ $key == "sshPort" ]] && [[ $section == "terminals" ]] 
             then
@@ -170,7 +176,6 @@ do
                 ZOWE_ZOSMF_KEYRING=$value
                 export ZOWE_ZOSMF_KEYRING
             fi
-
             if [[ $key == "zosmfUserid" ]] && [[ $section == "zosmf" ]]
             then
                 ZOWE_ZOSMF_USERID=$value
@@ -203,7 +208,7 @@ parseConfiguationFile ./zowe-install.yaml
 if [[ $ZOWE_ROOT_DIR == "" ]] 
 then
     ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
-    echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION"
+    echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_USER_DIR == "" ]] 
 then
@@ -213,88 +218,93 @@ fi
 if [[ $ZOWE_PREFIX == "" ]]
 then
     ZOWE_PREFIX="ZOWE"
-    echo "  ZOWE_PREFIX not specified:  Defaulting to ZOWE"
+    echo "  ZOWE_PREFIX not specified:  Defaulting to ZOWE" | tee -a $LOG_FILE
+fi
+if [[ $ZOWE_INSTANCE == "" ]]
+then
+    ZOWE_INSTANCE="1"
+    echo "  ZOWE_INSTANCE not specified:  Defaulting to 1" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
 then
     ZOWE_EXPLORER_SERVER_JOBS_PORT=7080
-    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080"
+    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_EXPLORER_SERVER_DATASETS_PORT == "" ]]
 then
     ZOWE_EXPLORER_SERVER_DATASETS_PORT=8547
-    echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT not specified:  Defaulting to 8547"
+    echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT not specified:  Defaulting to 8547" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_ZLUX_SERVER_HTTPS_PORT == "" ]]
 then
     ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
-    echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT not specified:  Defaulting to 8544"
+    echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT not specified:  Defaulting to 8544" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_ZSS_SERVER_PORT == "" ]]
 then
     ZOWE_ZSS_SERVER_PORT=8542
-    echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542"
+    echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_ZSS_XMEM_SERVER_NAME == "" ]]
 then
     ZOWE_ZSS_XMEM_SERVER_NAME=ZWESIS_STD
-    echo "  ZOWE_ZSS_XMEM_SERVER_NAME not specified:  Defaulting to ZWESIS_STD"
+    echo "  ZOWE_ZSS_XMEM_SERVER_NAME not specified:  Defaulting to ZWESIS_STD" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_EXPLORER_JES_UI_PORT == "" ]]
 then
     ZOWE_EXPLORER_JES_UI_PORT=8546
-    echo "  ZOWE_EXPLORER_JES_UI_PORT not specified:  Defaulting to 8546"
+    echo "  ZOWE_EXPLORER_JES_UI_PORT not specified:  Defaulting to 8546" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_EXPLORER_MVS_UI_PORT == "" ]]
 then
     ZOWE_EXPLORER_MVS_UI_PORT=8548
-    echo "  ZOWE_EXPLORER_MVS_UI_PORT not specified:  Defaulting to 8548"
+    echo "  ZOWE_EXPLORER_MVS_UI_PORT not specified:  Defaulting to 8548" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_EXPLORER_USS_UI_PORT == "" ]]
 then
     ZOWE_EXPLORER_USS_UI_PORT=8550
-    echo "  ZOWE_EXPLORER_USS_UI_PORT not specified:  Defaulting to 8550"
+    echo "  ZOWE_EXPLORER_USS_UI_PORT not specified:  Defaulting to 8550" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_APIM_CATALOG_PORT == "" ]]
 then
     ZOWE_APIM_CATALOG_PORT=7552
-    echo "  ZOWE_APIM_CATALOG_PORT not specified:  Defaulting to 7552"
+    echo "  ZOWE_APIM_CATALOG_PORT not specified:  Defaulting to 7552" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_APIM_DISCOVERY_PORT == "" ]]
 then
     ZOWE_APIM_DISCOVERY_PORT=7553
-    echo "  ZOWE_APIM_DISCOVERY_PORT not specified:  Defaulting to 7553"
+    echo "  ZOWE_APIM_DISCOVERY_PORT not specified:  Defaulting to 7553" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_APIM_GATEWAY_PORT == "" ]]
 then
     ZOWE_APIM_GATEWAY_PORT=7554
-    echo "  ZOWE_APIM_GATEWAY_PORT not specified:  Defaulting to 7554"
+    echo "  ZOWE_APIM_GATEWAY_PORT not specified:  Defaulting to 7554" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_APIM_VERIFY_CERTIFICATES == "" ]]
 then
     ZOWE_APIM_VERIFY_CERTIFICATES="true"
-    echo "  ZOWE_APIM_VERIFY_CERTIFICATES not specified:  Defaulting to true"
+    echo "  ZOWE_APIM_VERIFY_CERTIFICATES not specified:  Defaulting to true" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_APIM_ENABLE_SSO == "" ]]
 then
     ZOWE_APIM_ENABLE_SSO="false"
-    echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false"
+    echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_ZOSMF_KEYRING == "" ]]
 then
     ZOWE_ZOSMF_KEYRING="IZUKeyring.IZUDFLT"
-    echo "  ZOWE_ZOSMF_KEYRING not specified:  Defaulting to IZUKeyring.IZUDFLT"
+    echo "  ZOWE_ZOSMF_KEYRING not specified:  Defaulting to IZUKeyring.IZUDFLT" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_ZOSMF_USERID == "" ]]
 then
     ZOWE_ZOSMF_USERID="IZUSVR"
-    echo "  ZOWE_ZOSMF_USERID not specified:  Defaulting to IZUSVR"
+    echo "  ZOWE_ZOSMF_USERID not specified:  Defaulting to IZUSVR" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_ZOSMF_ADMIN_GROUP == "" ]]
 then
     ZOWE_ZOSMF_ADMIN_GROUP="IZUADMIN"
-    echo "  ZOWE_ZOSMF_ADMIN_GROUP not specified:  Defaulting to IZUADMIN"
-fi
+    echo "  ZOWE_ZOSMF_ADMIN_GROUP not specified:  Defaulting to IZUADMIN" | tee -a $LOG_FILE
+fi 
 
 # Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
 # The ssh and telnet ports are there and already being used and exploited by the apps
@@ -310,12 +320,12 @@ fi
 if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
 then
     ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR 
-    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR"
+    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
 then
     ZOWE_SERVER_PROCLIB_DSNAME=auto
-    echo "  ZOWE_SERVER_PROCLIB_DSNAME not specified:  PROCLIB DSNAME will be selected automatically"
+    echo "  ZOWE_SERVER_PROCLIB_DSNAME not specified:  PROCLIB DSNAME will be selected automatically" | tee -a $LOG_FILE
 fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE

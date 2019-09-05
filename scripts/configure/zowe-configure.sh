@@ -64,10 +64,6 @@ fi
 echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 . $CONFIG_DIR/zowe-configure-api-mediation.sh
 
-# Configure Explorer API servers. This should be after APIML CM generated certificates
-echo "Attempting to setup Zowe Explorer API certificates ... "
-. $CONFIG_DIR/zowe-configure-explorer-api.sh
-
 # Configure the TLS certificates for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-certificates.sh
 
@@ -90,6 +86,7 @@ echo "Attempting to setup Zowe Scripts ... "
 sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
+  -e "s#{{zowe_instance}}#${ZOWE_INSTANCE}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
   -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh" \
@@ -98,6 +95,13 @@ chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
 . $CONFIG_DIR/zowe-configure-proclib.sh
+
+# Inject stc name into config-stc
+sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+   "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh" \
+  > "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new"
+mv "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new" "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
+chmod 770 "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
 
 # TODO LATER - same as the above - zss won't start with those permissions,
 sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
