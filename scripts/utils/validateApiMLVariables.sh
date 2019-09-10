@@ -15,24 +15,24 @@
 # - KEY_ALIAS - The alias of the key within the keystore
 if [[ -z "${KEYSTORE}" ]]
 then 
-    . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "KEYSTORE is empty"
+    . ${ROOT_DIR}/scripts/utils/error.sh "KEYSTORE is empty"
 fi
 if [[ -z "${KEYSTORE_PASSWORD}" ]]
 then 
-    . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "KEYSTORE_PASSWORD is empty"
+    . ${ROOT_DIR}/scripts/utils/error.sh "KEYSTORE_PASSWORD is empty"
 fi
 if [[ -z "${KEY_ALIAS}" ]]
 then 
-    . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "KEY_ALIAS is empty"
+    . ${ROOT_DIR}/scripts/utils/error.sh "KEY_ALIAS is empty"
 fi
 
 # - STATIC_DEF_CONFIG_DIR - Should exist and be writable
 if [[ ! -d ${STATIC_DEF_CONFIG_DIR} ]]
 then	
-  . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' doesn't exist"
+  . ${ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' doesn't exist"
 else 	
 	if [[ ! -w ${STATIC_DEF_CONFIG_DIR} ]]
 	then	
-	  . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' does not have write access"	
+	  . ${ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' does not have write access"	
 	fi
 fi

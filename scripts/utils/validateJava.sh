@@ -16,14 +16,14 @@ then
     ls ${ZOWE_JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
     if [[ $? -ne 0 ]]
     then
-        . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "ZOWE_JAVA_HOME does not point to a valid install of Java"
+        . ${ROOT_DIR}/scripts/utils/error.sh "ZOWE_JAVA_HOME does not point to a valid install of Java"
     else
       JAVA_VERSION=`${ZOWE_JAVA_HOME}/bin/java -version 2>&1 | grep ^"java version"`
       if [[ "$JAVA_VERSION" < "java version \"1.8" ]]
       then 
-        . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "$JAVA_VERSION is less than minimum level required of 1.8"
+        . ${ROOT_DIR}/scripts/utils/error.sh "$JAVA_VERSION is less than minimum level required of 1.8"
       fi
     fi
 else 
-    . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "ZOWE_JAVA_HOME is empty"
+    . ${ROOT_DIR}/scripts/utils/error.sh "ZOWE_JAVA_HOME is empty"
 fi

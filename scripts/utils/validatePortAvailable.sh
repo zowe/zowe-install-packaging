@@ -14,5 +14,5 @@
 MATCHES=`onetstat -a | grep -c $1`
 if [[ $MATCHES > 0 ]]
 then
-    . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "Port $1 is already in use by process `netstat -a -P $1 | grep Listen`"
+    . ${ROOT_DIR}/scripts/utils/error.sh "Port $1 is already in use by process `netstat -a -P $1 | grep Listen`"
 fi

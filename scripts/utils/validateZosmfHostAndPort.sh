@@ -16,7 +16,7 @@
 # SH: Note - if node is not available then will continue with a warning
 if [[ -z "${ZOSMF_IP_ADDRESS}" || -z "${ZOSMF_PORT}" ]]
 then 
-    . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "ZOSMF_IP_ADDRESS and ZOSMF_PORT are not both set"
+    . ${ROOT_DIR}/scripts/utils/error.sh "ZOSMF_IP_ADDRESS and ZOSMF_PORT are not both set"
 else
   if [ ! -z "$NODE_HOME" ];
   then
@@ -28,7 +28,7 @@ else
     else
       if [[ $RESPONSE_CODE != 200 ]]
       then
-        . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "Could not contact z/OS MF on 'https://${ZOSMF_IP_ADDRESS}:${ZOSMF_PORT}/zosmf/info' - $RESPONSE_CODE"
+        . ${ROOT_DIR}/scripts/utils/error.sh "Could not contact z/OS MF on 'https://${ZOSMF_IP_ADDRESS}:${ZOSMF_PORT}/zosmf/info' - $RESPONSE_CODE"
       fi
     fi
   else

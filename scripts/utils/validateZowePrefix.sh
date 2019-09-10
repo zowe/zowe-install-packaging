@@ -16,8 +16,8 @@
 PREFIX_LENGTH=${#ZOWE_PREFIX}
 if [[ -z $ZOWE_PREFIX ]]
 then
-  . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh  "ZOWE_PREFIX is not set"
+  . ${ROOT_DIR}/scripts/utils/error.sh  "ZOWE_PREFIX is not set"
 elif [[ $PREFIX_LENGTH > 5 ]]
 then
-  . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh  "ZOWE_PREFIX '$ZOWE_PREFIX' should be less than 6 characters"
+  . ${ROOT_DIR}/scripts/utils/error.sh  "ZOWE_PREFIX '$ZOWE_PREFIX' should be less than 6 characters"
 fi

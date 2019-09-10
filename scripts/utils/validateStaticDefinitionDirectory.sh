@@ -13,10 +13,10 @@
 # - STATIC_DEF_CONFIG_DIR - Should exist and be writable
 if [[ ! -d ${STATIC_DEF_CONFIG_DIR} ]]
 then	
-  . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' doesn't exist"
+  . ${ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' doesn't exist"
 else 	
 	if [[ ! -w ${STATIC_DEF_CONFIG_DIR} ]]
 	then	
-	  . ${ZOWE_ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' does not have write access"	
+	  . ${ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' does not have write access"	
 	fi
 fi
