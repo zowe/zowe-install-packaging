@@ -21,7 +21,7 @@ else
   if [ ! -z "$NODE_HOME" ];
   then
     NODE_BIN=${NODE_HOME}/bin/node
-    RESPONSE_CODE=`$NODE_BIN httpRequest.js ${ZOSMF_IP_ADDRESS} ${ZOSMF_PORT}`
+    RESPONSE_CODE=`$NODE_BIN ${ROOT_DIR}/scripts/utils/zosmfHttpRequest.js ${ZOSMF_IP_ADDRESS} ${ZOSMF_PORT}`
     if [[ -z "${RESPONSE_CODE}" ]]
     then
       echo "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_IP_ADDRESS}:${ZOSMF_PORT}/zosmf/info'"

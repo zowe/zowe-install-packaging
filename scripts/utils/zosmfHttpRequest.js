@@ -9,7 +9,8 @@ const options = {
   port: zosmfPort,
   path: '/zosmf/info',
   method: 'GET',
-  rejectUnauthorized: false
+  rejectUnauthorized: false,
+  headers: {'X-CSRF-ZOSMF-HEADER': true}
 };
 
 const req = https.request(options, (res) => {
