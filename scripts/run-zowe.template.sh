@@ -37,7 +37,7 @@ ZOWE_JAVA_HOME={{java_home}}
 
 LAUNCH_COMPONENT_GROUPS=GATEWAY,DESKTOP
 
-LAUNCH_COMPONENTS=#TODO this is WIP - component ids not finalised at the moment
+LAUNCH_COMPONENTS=""
 
 export ZOWE_PREFIX={{zowe_prefix}}{{zowe_instance}}
 ZOWE_API_GW=${ZOWE_PREFIX}AG
