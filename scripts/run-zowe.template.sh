@@ -104,7 +104,7 @@ NOW=$(date +"%y.%m.%d.%H.%M.%S")
 #TODO - inject VERSION variable at build time?
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 cat <<EOF >${USER_DIR}/active_configuration.cfg
-VERSION=1.4
+VERSION=1.5
 CREATION_DATE=${NOW}
 ROOT_DIR=${ROOT_DIR}
 USER_DIR=${USER_DIR}
@@ -117,8 +117,10 @@ KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
+ZOWE_EXPLORER_HOST=${ZOWE_EXPLORER_HOST}
 ZOWE_JAVA_HOME=${ZOWE_JAVA_HOME}
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}
+LAUNCH_COMPONENT_GROUPS=${LAUNCH_COMPONENT_GROUPS}
 EOF
 
 # Copy manifest into user_dir so we know the version for support enquiries/migration
