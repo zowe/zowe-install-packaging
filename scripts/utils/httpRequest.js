@@ -1,4 +1,3 @@
-httpRequest.js
 const https = require('https');
 
 const args = process.argv.slice(2)
