@@ -32,7 +32,7 @@ echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
 #TODO SH: temporary fix whilst api-defs isn't in the user-dir. In order to write to the api-defs by components on start up group needs write
 chmod -R g+w ${ZOWE_ROOT_DIR}/api-mediation/api-defs
 #TODO SH: temporary fix whilst logs are't in the user-dir.
-chmod -R g+w ${ZOWE_ROOT_DIR}/zlux-app-server/logs
+chmod -R g+w ${ZOWE_ROOT_DIR}/zlux-app-server/log
 
 # If this step fails it is because the user running this script is not part of the IZUADMIN group
 chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
