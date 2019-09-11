@@ -37,28 +37,6 @@ else
     fi    
 fi
 
-# Check number of started tasks and ports (varies by Zowe release)
-
-# Zowe version 1.2.0, using nodeCluster
-# STC #  1 2 3 4 5 6 7 8 9          # Zowe job numbers 1-9
-zowestc="1 0 3 1 2 2 2 2 4"         # how many Zowe jobs 
-
-# jobname   ports assigned
-# --------  --------------
-# ZOWESVR3  api gateway port
-# ZOWESVR3  jes explorer server
-# ZOWESVR4  zss server port
-# ZOWESVR5  mvs explorer server port
-# ZOWESVR6  api discovery port
-# ZOWESVR6  explorer jobs api server port
-# ZOWESVR7  uss explorer server port
-# ZOWESVR7  zlux server httpsPort
-# ZOWESVR9  api catalog port
-# ZOWESVR9  explorer datasets api server port
-
-zowenports=10       # how many ports Zowe uses
-
-
 echo
 echo Check SAF security settings are correct
 
@@ -93,172 +71,174 @@ then
     echo OK
 fi
 
-echo Check IZUSVR has at least READ access to BPX.JOBNAME
-tsocmd "rl facility bpx.jobname authuser" 2>/dev/null | grep "IZUSVR" | grep -E "READ|UPDATE|ALTER"
+echo Check IZUSVR/IZUADMIN has at least READ access to BPX.JOBNAME
+tsocmd "rl facility bpx.jobname authuser" 2>/dev/null | grep "IZUADMIN" | grep -E "READ|UPDATE|ALTER" > /dev/null
 if [[ $? -ne 0 ]]
 then
     echo Warning: User IZUSVR does not have access to profile BPX\.JOBNAME
     echo You will not be able to set job names using the _BPX_JOBNAME environment variable
+else
+    echo OK
 fi
 
 # 2.1.1 RDEFINE STARTED ZOESVR.* UACC(NONE) 
 #  STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES)) 
 
 # Discover ZOWESVR name for this runtime
-# Look in zowe-start.sh
-serverName=`sed -n 's/.*opercmd.*S \([^ ]*\),SRVRPATH=.*/\1/p' zowe-start.sh 2> /dev/null`
+# # Look in zowe-start.sh
+# serverName=`sed -n 's/.*opercmd.*S \([^ ]*\),SRVRPATH=.*/\1/p' zowe-start.sh 2> /dev/null`
 
-if [[ $? -eq 0 && -n "$serverName" ]]
-then 
-    ZOWESVR=$serverName
-    # echo Info: ZOWESVR name is ${ZOWESVR}
-else 
-    echo Error: Failed to find ZOWESVR name in zowe-start.sh, defaulting to ZOWESVR for this check 
-    ZOWESVR=ZOWESVR
-fi
-echo
-echo Check ${ZOWESVR} processes are runnning ${ZOWE_ROOT_DIR} code
+# if [[ $? -eq 0 && -n "$serverName" ]]
+# then 
+#     ZOWESVR=$serverName
+#     # echo Info: ZOWESVR name is ${ZOWESVR}
+# else 
+#     echo Error: Failed to find ZOWESVR name in zowe-start.sh, defaulting to ZOWESVR for this check 
+#     ZOWESVR=ZOWESVR
+# fi
+# echo
+# echo Check ${ZOWESVR} processes are runnning ${ZOWE_ROOT_DIR} code
 
-# Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
-./internal/opercmd "d omvs,a=all" \
-    | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
-    | grep -v CMD=grep \
-    | grep ${ZOWESVR}.*LATCH.*${ZOWE_ROOT_DIR} \
-    | awk '{ print $2 }'\
-    | sed 's/[1-9]$//' | sort | uniq > /tmp/zowe.omvs.ps 
-n=$((`cat /tmp/zowe.omvs.ps | wc -l`))
-case $n in
+# # Look in processes that are runnning ${ZOWE_ROOT_DIR} code - there may be none
+# ./internal/opercmd "d omvs,a=all" \
+#     | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
+#     | grep -v CMD=grep \
+#     | grep ${ZOWESVR}.*LATCH.*${ZOWE_ROOT_DIR} \
+#     | awk '{ print $2 }'\
+#     | sed 's/[1-9]$//' | sort | uniq > /tmp/zowe.omvs.ps 
+# n=$((`cat /tmp/zowe.omvs.ps | wc -l`))
+# case $n in
     
-    0) echo Warning: No ${ZOWESVR} jobs are running ${ZOWE_ROOT_DIR} code
-    ;;
-    1) # is it the right job?
-    jobname=`cat /tmp/zowe.omvs.ps`
-    if [[ $jobname != ${ZOWESVR} ]]
-    then 
-        echo Warning: Found PROC ${ZOWESVR} in zowe-start.sh, but ${ZOWE_ROOT_DIR} code is running in $jobname instead
-        echo Info: Switching to job $jobname
-        ZOWESVR=$jobname
-    else
-        echo OK: ${ZOWE_ROOT_DIR} code is running in $jobname
-    fi 
-    ;;
-    *) echo Warning: $n different jobs are running ${ZOWE_ROOT_DIR} code
-    echo List of jobs
-    cat /tmp/zowe.omvs.ps
-    echo End of list
-esac 
-rm /tmp/zowe.omvs.ps 2> /dev/null
+#     0) echo Warning: No ${ZOWESVR} jobs are running ${ZOWE_ROOT_DIR} code
+#     ;;
+#     1) # is it the right job?
+#     jobname=`cat /tmp/zowe.omvs.ps`
+#     if [[ $jobname != ${ZOWESVR} ]]
+#     then 
+#         echo Warning: Found PROC ${ZOWESVR} in zowe-start.sh, but ${ZOWE_ROOT_DIR} code is running in $jobname instead
+#         echo Info: Switching to job $jobname
+#         ZOWESVR=$jobname
+#     else
+#         echo OK: ${ZOWE_ROOT_DIR} code is running in $jobname
+#     fi 
+#     ;;
+#     *) echo Warning: $n different jobs are running ${ZOWE_ROOT_DIR} code
+#     echo List of jobs
+#     cat /tmp/zowe.omvs.ps
+#     echo End of list
+# esac 
+# rm /tmp/zowe.omvs.ps 2> /dev/null
 
-echo
-echo Check ${ZOWESVR} processes are runnning nodeCluster code
+# echo
+# echo Check ${ZOWESVR} processes are runnning nodeCluster code
 
-for cluster in nodeCluster zluxCluster
-do
-    count=$((`./internal/opercmd "d omvs,a=all" \
-            | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
-            | grep -v CMD=grep \
-            | grep ${ZOWESVR}.*LATCH.*${cluster} \
-            | awk '{ print $2 }'\
-            | wc -l`))
-    if [[ $count -ne 0 ]]
-    then
-        echo $cluster OK
-    else
-        echo Error: $cluster is not running in ${ZOWESVR}
-    fi
-done
+# for cluster in nodeCluster zluxCluster
+# do
+#     count=$((`./internal/opercmd "d omvs,a=all" \
+#             | sed "{/ ${ZOWESVR}/N;s/\n */ /;}" \
+#             | grep -v CMD=grep \
+#             | grep ${ZOWESVR}.*LATCH.*${cluster} \
+#             | awk '{ print $2 }'\
+#             | wc -l`))
+#     if [[ $count -ne 0 ]]
+#     then
+#         echo $cluster OK
+#     else
+#         echo Error: $cluster is not running in ${ZOWESVR}
+#     fi
+# done
 
-echo
-echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
+# echo
+# echo Check ${ZOWESVR} is defined as STC to RACF and is assigned correct userid and group.
 
-# similar function as in pre-install.sh ...
-match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
-{
-    set -f
-  entry=$1                  # the RACF definition entry in the list
+# # similar function as in pre-install.sh ...
+# match_profile ()        # match a RACF profile entry to the ZOWESVR task name.
+# {
+#     set -f
+#   entry=$1                  # the RACF definition entry in the list
 
-  if [[ $entry = '*' ]]     # RLIST syntax does not permit listing of just the '*' profile
-  then
-    return 1    # no strings matched
-  fi  
+#   if [[ $entry = '*' ]]     # RLIST syntax does not permit listing of just the '*' profile
+#   then
+#     return 1    # no strings matched
+#   fi  
   
-  profileName=${ZOWESVR}  # the profile that we want to match in that list
+#   profileName=${ZOWESVR}  # the profile that we want to match in that list
 
 
 
-  l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
+#   l=$((`echo $profileName | wc -c`))  # length of profile we're looking for, including null terminator e.g. "ZOWESVR"
 
-    i=1
-    while [[ $i -lt $l ]]
-    do
-        r=`echo $entry        | cut -c $i,$i` # ith char from RACF definition
-        p=`echo $profileName  | cut -c $i,$i` # ith char from profile we're looking for
+#     i=1
+#     while [[ $i -lt $l ]]
+#     do
+#         r=`echo $entry        | cut -c $i,$i` # ith char from RACF definition
+#         p=`echo $profileName  | cut -c $i,$i` # ith char from profile we're looking for
 
-        if [[ $r = '*' ]]
-        then
-          return 0  # asterisk matches rest of string
-        fi
+#         if [[ $r = '*' ]]
+#         then
+#           return 0  # asterisk matches rest of string
+#         fi
 
-        if [[ $r != $p ]]
-        then
-          break   # mismatch char for this profile, quit
-        fi
+#         if [[ $r != $p ]]
+#         then
+#           break   # mismatch char for this profile, quit
+#         fi
 
-        i=$((i+1))
-    done
+#         i=$((i+1))
+#     done
 
-    if [[ $i -eq $l ]]
-    then
-      return 0  # whole string matched
-    fi
+#     if [[ $i -eq $l ]]
+#     then
+#       return 0  # whole string matched
+#     fi
 
-  return 1    # no strings matched
-}               #`` # needed for VS code
+#   return 1    # no strings matched
+# }               #` # needed for VS code
 
-izusvr=0        # set success flag
-izuadmin=0      # set success flag
+# izusvr=0        # set success flag
+# izuadmin=0      # set success flag
 
-# # find names of STARTED profiles
-set -f
+# # # find names of STARTED profiles
+# set -f
 
-  tsocmd rl started \* 2>/dev/null |sed -n 's/STARTED *\([^ ]*\) .*/\1/p' > /tmp/find_profile.out
-  while read entry 
-  do
-        match_profile ${entry}
-        if [[ $? -eq 0 ]]
-        then
-                echo OK: Found matching STARTED profile entry $entry for task ${ZOWESVR}
+#   tsocmd rl started \* 2>/dev/null |sed -n 's/STARTED *\([^ ]*\) .*/\1/p' > /tmp/find_profile.out
+#   while read entry 
+#   do
+#         match_profile ${entry}
+#         if [[ $? -eq 0 ]]
+#         then
+#                 echo OK: Found matching STARTED profile entry $entry for task ${ZOWESVR}
 
-                tsocmd rl started $entry stdata 2>/dev/null | grep "^USER= IZUSVR" > /dev/null    # is the profile user name IZUSVR?
-                if [[ $? -ne 0 ]]
-                then 
-                    echo Error: profile $entry is not assigned to user IZUSVR
-                else
-                    echo OK: Profile $entry is assigned to user IZUSVR
-                    izusvr=1        # set success flag
-                fi
+#                 tsocmd rl started $entry stdata 2>/dev/null | grep "^USER= IZUSVR" > /dev/null    # is the profile user name IZUSVR?
+#                 if [[ $? -ne 0 ]]
+#                 then 
+#                     echo Error: profile $entry is not assigned to user IZUSVR
+#                 else
+#                     echo OK: Profile $entry is assigned to user IZUSVR
+#                     izusvr=1        # set success flag
+#                 fi
 
-                tsocmd rl started $entry stdata 2>/dev/null | grep "^GROUP= IZUADMIN" > /dev/null # is the profile group name IZUADMIN?
-                if [[ $? -ne 0 ]]
-                then 
-                    echo Warning: profile $entry is not assigned to group IZUADMIN
-                    # This is not a barrier to correct execution, but if the group is not null, we think it must be IZUADMIN.
-                else
-                    echo OK: Profile $entry is assigned to group IZUADMIN
-                    izuadmin=1        # set success flag
-                fi
+#                 tsocmd rl started $entry stdata 2>/dev/null | grep "^GROUP= IZUADMIN" > /dev/null # is the profile group name IZUADMIN?
+#                 if [[ $? -ne 0 ]]
+#                 then 
+#                     echo Warning: profile $entry is not assigned to group IZUADMIN
+#                     # This is not a barrier to correct execution, but if the group is not null, we think it must be IZUADMIN.
+#                 else
+#                     echo OK: Profile $entry is assigned to group IZUADMIN
+#                     izuadmin=1        # set success flag
+#                 fi
             
-                break   # don't look for any more matches        
-        fi
-  done <    /tmp/find_profile.out
-  rm        /tmp/find_profile.out
+#                 break   # don't look for any more matches        
+#         fi
+#   done <    /tmp/find_profile.out
+#   rm        /tmp/find_profile.out
 
-if [[ $izusvr -eq 0 || $izuadmin -eq 0 ]]
-then    
-    echo Warning: Started task $ZOWESVR not assigned to the correct RACF user or group
-else
-    echo OK: Started task $ZOWESVR is assigned to the correct RACF user and group
-fi
+# if [[ $izusvr -eq 0 || $izuadmin -eq 0 ]]
+# then    
+#     echo Warning: Started task $ZOWESVR not assigned to the correct RACF user or group
+# else
+#     echo OK: Started task $ZOWESVR is assigned to the correct RACF user and group
+# fi
 
 set +f 
 
@@ -296,35 +276,19 @@ set +f
 # 1.2.2.	function
 #  
 
-echo
-echo Info: ZOWE job name is ${ZOWESVR}
-echo Check ${ZOWESVR} job is started with user IZUSVR
+# echo
+# echo Info: ZOWE job name is ${ZOWESVR}
+# echo Check ${ZOWESVR} job is started with user IZUSVR
 
+# # 0.  Check user of ZOWESVR is IZUSVR
 
-function checkJob {
-jobname=$1
-tsocmd status ${jobname} 2> /dev/null | grep "JOB ${jobname}(S.*[0-9]*) EXECUTING" >/dev/null
-if [[ $? -ne 0 ]]
-then 
-    echo Error: job ${jobname} is not executing
-    return 1
-else 
-    echo OK: job ${jobname} is executing
-    return 0
-fi
-}
-
-checkJob ${ZOWESVR}
-
-# 0.  Check user of ZOWESVR is IZUSVR
-
-if [[ -n "${ZOWE_ROOT_DIR}" ]]
-then 
-    echo Info: ZOWE_ROOT_DIR is set to ${ZOWE_ROOT_DIR} 
-else
-    echo Error: ZOWE_ROOT_DIR is not set
-    echo Info: Some parts of this script will not work as a result
-fi 
+# if [[ -n "${ZOWE_ROOT_DIR}" ]]
+# then 
+#     echo Info: ZOWE_ROOT_DIR is set to ${ZOWE_ROOT_DIR} 
+# else
+#     echo Error: ZOWE_ROOT_DIR is not set
+#     echo Info: Some parts of this script will not work as a result
+# fi 
 
 ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
 if [[ $? -ne 0 ]]
@@ -340,96 +304,229 @@ else
 
     # There could be >1 STC named ZOWESVR
 
-    echo
-    echo Check all ZOWESVR jobs have userid IZUSVR
+    # echo
+    # echo Check all ZOWESVR jobs have userid IZUSVR
 
     # check status first ...
 
-    checkJob ${ZOWESVR}
-    if [[ $? -ne 0 ]]
-    then    
-        echo Error:  job ${ZOWESVR} is not executing, ${ZOWESVR} userid and STCs will not be checked
-    else 
-        # check userid is IZUSVR
-        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=IZUSVR" > /dev/null
-        if [[ $? -ne 0 ]]
-        then    
-            echo Error:  USERID of ${ZOWESVR} is not IZUSVR
+    # checkJob ${ZOWESVR}
+    # if [[ $? -ne 0 ]]
+    # then    
+    #     echo Error:  job ${ZOWESVR} is not executing, ${ZOWESVR} userid and STCs will not be checked
+    # else 
+    #     # check userid is IZUSVR
+    #     ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=IZUSVR" > /dev/null
+    #     if [[ $? -ne 0 ]]
+    #     then    
+    #         echo Error:  USERID of ${ZOWESVR} is not IZUSVR
 
-        else    # we found >0 zowe STCs, do any of them NOT have USERID=IZUSVR?
-            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=" | grep -v "USERID=IZUSVR" > /dev/null
-            if [[ $? -eq 0 ]]
-            then    
-                echo Error:  Some USERID of ${ZOWESVR} is not IZUSVR
-            else
-                echo OK:  All USERIDs of ${ZOWESVR} are IZUSVR
-            fi
-        fi
+    #     else    # we found >0 zowe STCs, do any of them NOT have USERID=IZUSVR?
+    #         ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${ZOWESVR} | grep "USERID=" | grep -v "USERID=IZUSVR" > /dev/null
+    #         if [[ $? -eq 0 ]]
+    #         then    
+    #             echo Error:  Some USERID of ${ZOWESVR} is not IZUSVR
+    #         else
+    #             echo OK:  All USERIDs of ${ZOWESVR} are IZUSVR
+    #         fi
+    #     fi
 
-        # number of ZOESVR started tasks expected to be active in a running system
-        echo
-        echo Check ${ZOWESVR} jobs in execution
+    #     # number of ZOESVR started tasks expected to be active in a running system
+    #     echo
+    #     echo Check ${ZOWESVR} jobs in execution
 
-        jobsOK=1
-        # If jobname is > 7 chars, all tasks will have same jobname, no digit suffixes
-        if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
+    # check Zowe jobs are running
+    echo
+    echo Check Zowe jobs are running
+
+    function check_jobs {
+        if  [[ $# -lt 2 ]]
         then
-            # echo job name ${ZOWESVR} is short enough to have numeric suffixes
+            echo Error: No jobname supplied for checking
+            return 1
+        fi
+        jobname=$1
 
+        enj=$2  # expected number of jobs with this jobname
+        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
+        nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
+        rm /tmp/${jobname}.dj >/dev/null
 
-            i=1                 # first STC number
-            for enj in $zowestc   # list of expected number of jobs per STC
-            do
-                jobname=${ZOWESVR}$i
-
-                ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-                    # the selected lines will look like this ...
-                                                            # ZOEJAD9  *OMVSEX  IZUSVR   IN   AO  A=00F0   PER=NO   SMC=000
-                                                            # ZOEJAD9  STEP1    IZUSVR   OWT  AO  A=00F2   PER=NO   SMC=000
-                                                            # ZOEJAD9  *OMVSEX  IZUSVR   OWT  AO  A=00F1   PER=NO   SMC=000
-
-                nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
-                rm /tmp/${jobname}.dj >/dev/null
-
-                # check we found the expected number of jobs
-                if [[ $nj -ne $enj ]]
-                then
-                    echo Error: Expecting $enj jobs for $jobname, found $nj
-                    jobsOK=0
-                else
-                    : # echo OK: Found $nj jobs for $jobname
-                fi
-                i=$((i+1))      # next STC number
-            done
+        # check we found the expected number of jobs
+        if [[ $nj -ne $enj ]]
+        then
+            echo Error: "Expecting $enj job(s) for $jobname, found $nj"
+            return 1
         else
-            echo Info: ${ZOWESVR} jobs have no digit suffixes, all jobs have the same name
-            jobname=${ZOWESVR}
+            # echo "Found $nj job(s) for $jobname"
+            return 0
+        fi
+    }
+    # discover zowe job names
 
-            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-            
-            # expected number of jobs is derived from the number of STCs per jobname.
-            enj=1   # include the master STC in the count
-            for i in $zowestc
-            do
-                enj=$((enj+i)) 
-            done 
+    # In scripts/zowe-start.template.sh or /scripts/zowe-start.sh we should find 
+    # ZOWESVR job name
+    # 
+    # $ZOWE_ROOT_DIR/scripts/internal/opercmd \
+    #     "S {{stc_name}},SRVRPATH='"$ZOWE_ROOT_DIR"'",JOBNAME={{zowe_prefix}}SV
 
-            nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
-            if [[ $nj -ne $enj ]]
+    zowe_start=${ZOWE_ROOT_DIR}/scripts/zowe-start.sh
+    if [[ ! -r $zowe_start ]]
+    then
+        echo Error: Unable to read file $zowe_start
+        echo Warning: No Zowe jobs will be checked
+    else 
+        grep JOBNAME= $zowe_start > /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            echo Error: Failed to find JOBNAME in $zowe_start
+        else 
+            ZOWE_PREFIX=`sed -n 's/.*JOBNAME=\([^ ]*\)SV *$/\1/p' $zowe_start`   # JOBNAME must end with SV
+            if [[ ! -n "${ZOWE_PREFIX}" ]]
             then
-                echo Error: Expecting $enj jobs for $jobname, found $nj
-                jobsOK=0
-            else
-                : # echo OK: Found $nj jobs for $jobname
-            fi 
-            rm /tmp/${jobname}.dj >/dev/null
-            
-        fi
-        if [[ $jobsOK -eq 1 ]]
-        then    
-            echo OK
-        fi
-    fi
+                echo Error: Failed to find ZOWE_PREFIX in $zowe_start
+                echo Warning: Using ZOWE instead
+                ZOWE_PREFIX=ZOWE1   # best guess, allow us to proceed                
+            fi
+
+            ZOWESVR_job_name=${ZOWE_PREFIX}SV
+
+            # must be same list as in run-zowe.template.sh
+            ZOWE_API_GW=${ZOWE_PREFIX}AG
+            ZOWE_API_DS=${ZOWE_PREFIX}AD
+            ZOWE_API_CT=${ZOWE_PREFIX}AC
+            ZOWE_DESKTOP=${ZOWE_PREFIX}DT
+            ZOWE_EXPL_JOBS=${ZOWE_PREFIX}EJ
+            ZOWE_EXPL_DATA=${ZOWE_PREFIX}ED
+            ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}UJ
+            ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}UD
+            ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}UU
+
+            #now check zowe jobs
+            zoweJobErrors=0
+            check_jobs    $ZOWESVR_job_name     1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    ${ZOWESVR_job_name}2  1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_API_GW          1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_API_DS          1      
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_API_CT          1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_DESKTOP         8
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_EXPL_JOBS       1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_EXPL_DATA       1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_EXPL_UI_JES     1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_EXPL_UI_MVS     1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_EXPL_UI_USS     1
+            zoweJobErrors=$((zoweJobErrors+$?))
+
+            if [[ $zoweJobErrors -eq 0 ]]
+            then
+                echo OK
+            fi
+
+            echo
+            echo Check Zowe ports are assigned to jobs 
+
+            function check_ports {
+                if  [[ $# -eq 0 ]]
+                then
+                    echo Error: No jobname supplied
+                    return 0
+                fi
+
+                jobname=$1
+                shift 
+                
+                if  [[ $# -eq 0 ]]
+                then
+                    echo Error: No port supplied for $jobname
+                    return 0
+                fi
+
+                portsAssigned=0
+                while [[ $# -ne 0 ]] 
+                do
+                    port=$1
+                    # check port
+                    netstat -b -E $jobname \
+                        | grep Listen | awk '{printf("%d\n", $4)}' \
+                        | grep ^${port}$ > /dev/null
+                    if [[ $? -ne 0 ]]
+                    then
+                        echo Error: Port $port not assigned to $jobname
+                    else 
+                        # echo port $port is in use by job $jobname
+                        portsAssigned=$((portsAssigned+1))
+                    fi 
+                    # continue to next port in parameter list 
+                    shift
+                done
+                # echo ports assigned = $portsAssigned
+                return $portsAssigned
+            }
+            #                           
+
+            # yaml
+            yaml=${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
+
+            if [[ ! -r $yaml ]]
+            then
+                echo Error: Unable to read $yaml
+                echo Warning: Ports will not be checked
+            else  
+                # obtain ports from yaml file
+
+                api_mediation_catalog_http_port=`sed -n 's/ *catalogPort=\(.*\)/\1/p' $yaml` # 7552      
+                api_mediation_discovery_http_port=`sed -n 's/ *discoveryPort=\(.*\)/\1/p' $yaml` # 7553  
+                api_mediation_gateway_https_port=`sed -n 's/ *gatewayPort=\(.*\)/\1/p' $yaml` # 7554     
+                explorer_server_jobsPort=`sed -n 's/ *jobsAPIPort=\(.*\)/\1/p' $yaml` # 8545             
+                explorer_server_dataSets_port=`sed -n 's/ *mvsAPIPort=\(.*\)/\1/p' $yaml` # 8547        
+                zlux_server_https_port=`sed -n 's/ *httpsPort=\(.*\)/\1/p' $yaml` # 8544               
+                zss_server_http_port=`sed -n 's/ *zssPort=\(.*\)/\1/p' $yaml` # 8542                 
+                jes_explorer_server_port=`sed -n 's/ *jobsExplorerPort=\(.*\)/\1/p' $yaml` # 8546            
+                mvs_explorer_server_port=`sed -n 's/ *mvsExplorerPort=\(.*\)/\1/p' $yaml` # 8548            
+                uss_explorer_server_port=`sed -n 's/ *ussExplorerPort=\(.*\)/\1/p' $yaml` # 8550            
+            #                                                                                   here are the defaults:
+                totPortsAssigned=0
+                check_ports    $ZOWE_API_GW         $api_mediation_gateway_https_port               # 7554
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_API_DS         $api_mediation_discovery_http_port              # 7553
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_API_CT         $api_mediation_catalog_http_port                # 7552
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_DESKTOP        $zlux_server_https_port $zss_server_http_port   # 8544 8542
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_EXPL_JOBS      $explorer_server_jobsPort                       # 8545
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_EXPL_DATA      $explorer_server_dataSets_port                  # 8547
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_EXPL_UI_JES    $jes_explorer_server_port                       # 8546
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_EXPL_UI_MVS    $mvs_explorer_server_port                       # 8548
+                totPortsAssigned=$((totPortsAssigned+$?))
+                check_ports    $ZOWE_EXPL_UI_USS    $uss_explorer_server_port                       # 8550
+                totPortsAssigned=$((totPortsAssigned+$?))
+
+                zowenports=10       # how many ports Zowe uses
+                if [[ $totPortsAssigned -ne $zowenports ]]  
+                then
+                    echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
+                else
+                    echo OK
+                fi
+            fi  
+
+        fi 
+    fi 
+
+    # fi
 
     echo 
     echo Check ZSS server is running
@@ -454,7 +551,9 @@ else
     fi
 
     # Try to determine ZSS server job name
-    ZSSSVR=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | sed "{/ /N;s/\n */ /;}"|grep -v "CMD=grep CMD=ZWESIS01" | grep CMD=ZWESIS01|awk '{ print $2 }'`
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > /tmp/d.omvs.all.$$.txt
+    ZSSSVR=`sed -n '/LATCHWAITPID/!h;/CMD=ZWESIS01/{x;p;}' /tmp/d.omvs.all.$$.txt | awk '{ print $2 }'`
+    rm /tmp/d.omvs.all.$$.txt > /dev/null
     if [[ -n "$ZSSSVR" ]] then
         echo ZSS server job name is $ZSSSVR
         ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${ZSSSVR}" | grep WUID=STC > /dev/null
@@ -468,16 +567,23 @@ else
         zss_error_status=1
     fi
 
-    # Is the status of the ZSS server OK?
-    grep "ZIS status - Ok" `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* | head -1` > /dev/null
+    # # Is the status of the ZSS server OK?
+    ls ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* > /dev/null
     if [[ $? -ne 0 ]]
     then
-        echo Error: The status of the ZSS server is not OK in ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer log
+        echo Error: No ZSS server logs found in ${ZOWE_ROOT_DIR}/zlux-app-server/log
         zss_error_status=1
-        grep "ZIS status " `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-*` 
+    else
+        grep "ZIS status - Ok" `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-* | head -1` > /dev/null
         if [[ $? -ne 0 ]]
         then
-            echo Error: Could not determine the status of the ZSS server 
+            echo Error: The status of the ZSS server is not OK in ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer log
+            zss_error_status=1
+            grep "ZIS status " `ls  -t ${ZOWE_ROOT_DIR}/zlux-app-server/log/zssServer-*` 
+            if [[ $? -ne 0 ]]
+            then
+                echo Error: Could not determine the status of the ZSS server 
+            fi
         fi
     fi
 
@@ -505,420 +611,235 @@ fi
 
 # 0. Extract port settings from Zowe config files.  
 
-echo 
-echo Check port settings from Zowe config files
-
-# here are the defaults:
-  api_mediation_catalog_http_port=7552      # api-mediation/scripts/api-mediation-start-catalog.sh
-  api_mediation_discovery_http_port=7553    # api-mediation/scripts/api-mediation-start-discovery.sh
-  api_mediation_gateway_https_port=7554     # api-mediation/scripts/api-mediation-start-gateway.sh
-
-  explorer_server_jobsPort=8545             # explorer-jobs-api/scripts/jobs-api-server-start.sh
-  explorer_server_dataSets_port=8547        # explorer-data-sets-api/scripts/data-sets-api-server-start.sh
-
-  zlux_server_https_port=8544               # zlux-app-server/config/zluxserver.json
-  zss_server_http_port=8542                 # zlux-app-server/config/zluxserver.json
-
-  terminal_sshPort=22                       # vt-ng2/_defaultVT.json
-  terminal_telnetPort=23                    # tn3270-ng2/_defaultTN3270.json
-
-  jes_explorer_server_port=8546            # jes_explorer/server/configs/config.json
-  mvs_explorer_server_port=8548            # mvs_explorer/server/configs/config.json
-  uss_explorer_server_port=8550            # uss_explorer/server/configs/config.json
+# echo 
+# echo Check port settings from Zowe config files
 
 
-
-
-for file in \
- "api-mediation/scripts/api-mediation-start-catalog.sh" \
- "api-mediation/scripts/api-mediation-start-discovery.sh" \
- "api-mediation/scripts/api-mediation-start-gateway.sh" \
- "explorer-jobs-api/scripts/jobs-api-server-start.sh" \
- "explorer-data-sets-api/scripts/data-sets-api-server-start.sh" \
- "zlux-app-server/config/zluxserver.json" \
- "vt-ng2/_defaultVT.json" \
- "tn3270-ng2/_defaultTN3270.json" \
- "jes_explorer/server/configs/config.json" \
- "mvs_explorer/server/configs/config.json" \
- "uss_explorer/server/configs/config.json"
-do
-    case $file in
-    ### WIP MARKER ###
-        tn3270*) 
-        # echo Checking tn3270
-        # fragile search
-        terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        if [[ -n "$terminal_telnetPort" ]]
-        then 
-            echo OK: terminal_telnetPort is $terminal_telnetPort
-        else
-            echo Error: terminal_telnetPort not found in ${ZOWE_ROOT_DIR}/$file
-        fi 
+# for file in \
+#  "api-mediation/scripts/api-mediation-start-catalog.sh" \
+#  "api-mediation/scripts/api-mediation-start-discovery.sh" \
+#  "api-mediation/scripts/api-mediation-start-gateway.sh" \
+#  "explorer-jobs-api/scripts/jobs-api-server-start.sh" \
+#  "explorer-data-sets-api/scripts/data-sets-api-server-start.sh" \
+#  "zlux-app-server/config/zluxserver.json" \
+#  "vt-ng2/_defaultVT.json" \
+#  "tn3270-ng2/_defaultTN3270.json" \
+#  "jes_explorer/server/configs/config.json" \
+#  "mvs_explorer/server/configs/config.json" \
+#  "uss_explorer/server/configs/config.json"
+# do
+#     case $file in
+#     ### WIP MARKER ###
+#         tn3270*) 
+#         # echo Checking tn3270
+#         # fragile search
+#         terminal_telnetPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
+#         if [[ -n "$terminal_telnetPort" ]]
+#         then 
+#             echo OK: terminal_telnetPort is $terminal_telnetPort
+#         else
+#             echo Error: terminal_telnetPort not found in ${ZOWE_ROOT_DIR}/$file
+#         fi 
         
-        ;;
+#         ;;
 
-        vt*) 
-        # echo Checking vt
-        # fragile search
-        terminal_sshPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
-        if [[ -n "$terminal_sshPort" ]]
-        then
-            echo OK: terminal_sshPort is $terminal_sshPort
-        else
-            echo Error: terminal_sshPort not found in ${ZOWE_ROOT_DIR}/$file
-        fi 
+#         vt*) 
+#         # echo Checking vt
+#         # fragile search
+#         terminal_sshPort=`sed -n 's/.*"port" *: *\([0-9]*\).*/\1/p' ${ZOWE_ROOT_DIR}/$file`
+#         if [[ -n "$terminal_sshPort" ]]
+#         then
+#             echo OK: terminal_sshPort is $terminal_sshPort
+#         else
+#             echo Error: terminal_sshPort not found in ${ZOWE_ROOT_DIR}/$file
+#         fi 
         
-        ;;
+#         ;;
 
-        *\.sh) 
-        # echo Checking .sh files  
-        port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`
-        case $file in 
-            *catalog*)
-                if [[ -n "$port" ]]
-                then
-                    api_mediation_catalog_http_port=$port
-                    echo OK: api catalog port is $port
-                else
-                    echo Error: api catalog port not found in ${ZOWE_ROOT_DIR}/$file
-                fi    
-                ;;
-            *discovery*)
-                if [[ -n "$port" ]]
-                then
-                    echo OK: api discovery port is $port
-                    api_mediation_discovery_http_port=$port
-                else
-                    echo Error: api discovery port not found in ${ZOWE_ROOT_DIR}/$file
-                fi    
+#         *\.sh) 
+#         # echo Checking .sh files  
+#         port=`sed -n 's/.*port=\([0-9]*\) .*/\1/p'  ${ZOWE_ROOT_DIR}/$file`
+#         case $file in 
+#             *catalog*)
+#                 if [[ -n "$port" ]]
+#                 then
+#                     api_mediation_catalog_http_port=$port
+#                     echo OK: api catalog port is $port
+#                 else
+#                     echo Error: api catalog port not found in ${ZOWE_ROOT_DIR}/$file
+#                 fi    
+#                 ;;
+#             *discovery*)
+#                 if [[ -n "$port" ]]
+#                 then
+#                     echo OK: api discovery port is $port
+#                     api_mediation_discovery_http_port=$port
+#                 else
+#                     echo Error: api discovery port not found in ${ZOWE_ROOT_DIR}/$file
+#                 fi    
                 
-                ;;
-            *gateway*)
-                if [[ -n "$port" ]]
-                then
-                    echo OK: api gateway port is $port
-                    api_mediation_gateway_https_port=$port
-                else
-                    echo Error: api gateway port not found in ${ZOWE_ROOT_DIR}/$file
-                fi   
+#                 ;;
+#             *gateway*)
+#                 if [[ -n "$port" ]]
+#                 then
+#                     echo OK: api gateway port is $port
+#                     api_mediation_gateway_https_port=$port
+#                 else
+#                     echo Error: api gateway port not found in ${ZOWE_ROOT_DIR}/$file
+#                 fi   
 
-                ;;
-            *jobs*)
-                if [[ -n "$port" ]]
-                then
-                    echo OK: explorer jobs api server port is $port
-                    explorer_server_jobsPort=$port
-                else
-                    echo Error: explorer jobs api server port not found in ${ZOWE_ROOT_DIR}/$file
-                fi 
+#                 ;;
+#             *jobs*)
+#                 if [[ -n "$port" ]]
+#                 then
+#                     echo OK: explorer jobs api server port is $port
+#                     explorer_server_jobsPort=$port
+#                 else
+#                     echo Error: explorer jobs api server port not found in ${ZOWE_ROOT_DIR}/$file
+#                 fi 
 
-                ;;
-            *data-sets*)
-                if [[ -n "$port" ]]
-                then
-                    echo OK: explorer datasets api server port is $port
-                    explorer_server_dataSets_port=$port
-                else
-                    echo Error: explorer datasets api server port not found in ${ZOWE_ROOT_DIR}/$file
-                fi 
+#                 ;;
+#             *data-sets*)
+#                 if [[ -n "$port" ]]
+#                 then
+#                     echo OK: explorer datasets api server port is $port
+#                     explorer_server_dataSets_port=$port
+#                 else
+#                     echo Error: explorer datasets api server port not found in ${ZOWE_ROOT_DIR}/$file
+#                 fi 
   
 
-        esac
+#         esac
         
-        ;;
+#         ;;
 
-        *\.xml) 
-        # echo Checking .xml files
+#         *\.xml) 
+#         # echo Checking .xml files
         
-        explorer_server_http_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpPort="\([0-9]*\)" .*/\1/p'`
-        if [[ -n "$explorer_server_http_port" ]]
-        then
-            echo OK: explorer server httpPort is $explorer_server_http_port
-        else
-            echo Error: explorer server httpPort not found in ${ZOWE_ROOT_DIR}/$file
-        fi 
+#         explorer_server_http_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpPort="\([0-9]*\)" .*/\1/p'`
+#         if [[ -n "$explorer_server_http_port" ]]
+#         then
+#             echo OK: explorer server httpPort is $explorer_server_http_port
+#         else
+#             echo Error: explorer server httpPort not found in ${ZOWE_ROOT_DIR}/$file
+#         fi 
         
-        explorer_server_https_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpsPort="\([0-9]*\)" .*/\1/p'`
-        if [[ -n "$explorer_server_https_port" ]]
-        then
-            echo OK: explorer server httpsPort is $explorer_server_https_port
-        else
-            echo Error: explorer server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
-        fi 
+#         explorer_server_https_port=`iconv -f IBM-850 -t IBM-1047 ${ZOWE_ROOT_DIR}/$file | sed -n 's/.*httpsPort="\([0-9]*\)" .*/\1/p'`
+#         if [[ -n "$explorer_server_https_port" ]]
+#         then
+#             echo OK: explorer server httpsPort is $explorer_server_https_port
+#         else
+#             echo Error: explorer server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
+#         fi 
         
-        ;;
+#         ;;
 
-        *\.json) 
-        # echo Checking .json files 
-        case $file in
-        zlux*)
-            # fragile search
-            zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
-            if [[ -n "$zlux_server_https_port" ]]
-            then
-                echo OK: zlux server httpsPort is $zlux_server_https_port
-            else
-                echo Error: zlux server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
-            fi         
+#         *\.json) 
+#         # echo Checking .json files 
+#         case $file in
+#         zlux*)
+#             # fragile search
+#             zlux_server_https_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p; /}/q' ${ZOWE_ROOT_DIR}/$file`
+#             if [[ -n "$zlux_server_https_port" ]]
+#             then
+#                 echo OK: zlux server httpsPort is $zlux_server_https_port
+#             else
+#                 echo Error: zlux server httpsPort not found in ${ZOWE_ROOT_DIR}/$file
+#             fi         
             
-            agent_http_port=`sed -n 's/.*"port": \([0-9]*\)$/\1/p' ${ZOWE_ROOT_DIR}/$file`
-            if [[ -n "$agent_http_port" ]]
-            then
-                echo OK: zss server port is $agent_http_port
-            else
-                echo Error: agent http port not found in ${ZOWE_ROOT_DIR}/$file
-            fi 
+#             agent_http_port=`sed -n 's/.*"port": \([0-9]*\)$/\1/p' ${ZOWE_ROOT_DIR}/$file`
+#             if [[ -n "$agent_http_port" ]]
+#             then
+#                 echo OK: zss server port is $agent_http_port
+#             else
+#                 echo Error: agent http port not found in ${ZOWE_ROOT_DIR}/$file
+#             fi 
 
-            zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
-            if [[ -n "$zss_server_http_port" ]]
-            then
-                echo OK: zss server port is $zss_server_http_port
-            else
-                echo Error: zss server port not found in ${ZOWE_ROOT_DIR}/$file
-            fi         
-            echo 
+#             zss_server_http_port=`sed -n 's/.*"zssPort" *: *\([0-9]*\) *$/\1/p'   ${ZOWE_ROOT_DIR}/$file`
+#             if [[ -n "$zss_server_http_port" ]]
+#             then
+#                 echo OK: zss server port is $zss_server_http_port
+#             else
+#                 echo Error: zss server port not found in ${ZOWE_ROOT_DIR}/$file
+#             fi         
+#             echo 
 
-            ;;
+#             ;;
 
-        jes_explorer*)
-            # fragile search
-            jes_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
-            if [[ -n "$jes_explorer_server_port" ]]
-            then
-                echo OK: jes explorer server port is $jes_explorer_server_port
-            else
-                echo Error: jes explorer server port not found in ${ZOWE_ROOT_DIR}/$file
-            fi       
+#         jes_explorer*)
+#             # fragile search
+#             jes_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
+#             if [[ -n "$jes_explorer_server_port" ]]
+#             then
+#                 echo OK: jes explorer server port is $jes_explorer_server_port
+#             else
+#                 echo Error: jes explorer server port not found in ${ZOWE_ROOT_DIR}/$file
+#             fi       
 
-            ;;
+#             ;;
 
-        mvs_explorer*)
-            # fragile search
-            mvs_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
-            if [[ -n "$mvs_explorer_server_port" ]]
-            then
-                echo OK: mvs explorer server port is $mvs_explorer_server_port
-            else
-                echo Error: mvs explorer server port not found in ${ZOWE_ROOT_DIR}/$file
-            fi    
-            ;;
+#         mvs_explorer*)
+#             # fragile search
+#             mvs_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
+#             if [[ -n "$mvs_explorer_server_port" ]]
+#             then
+#                 echo OK: mvs explorer server port is $mvs_explorer_server_port
+#             else
+#                 echo Error: mvs explorer server port not found in ${ZOWE_ROOT_DIR}/$file
+#             fi    
+#             ;;
 
-        uss_explorer*)
-            # fragile search
-            uss_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
-            if [[ -n "$uss_explorer_server_port" ]]
-            then
-                echo OK: uss explorer server port is $uss_explorer_server_port
-            else
-                echo Error: uss explorer server port not found in ${ZOWE_ROOT_DIR}/$file
-            fi    
-            ;;
+#         uss_explorer*)
+#             # fragile search
+#             uss_explorer_server_port=`sed -n 's/.*"port" *: *\([0-9]*\) *,.*/\1/p;' ${ZOWE_ROOT_DIR}/$file`
+#             if [[ -n "$uss_explorer_server_port" ]]
+#             then
+#                 echo OK: uss explorer server port is $uss_explorer_server_port
+#             else
+#                 echo Error: uss explorer server port not found in ${ZOWE_ROOT_DIR}/$file
+#             fi    
+#             ;;
 
-        esac
+#         esac
 
-        ;;
+#         ;;
 
-        *) 
-        echo Error:  Unexpected file $file
+#         *) 
+#         echo Error:  Unexpected file $file
         
-    esac
-    echo
-done
+#     esac
+#     echo
+# done
 
-# check MVD web index files
-echo
-echo Check explorer server https port in the 3 explorer web/index.html files 
+# # check MVD web index files
+# echo
+# echo Check explorer server https port in the 3 explorer web/index.html files 
 
-# sed -n 's+.*https:\/\/.*:\([0-9]*\)/explorer-..s.*+\1+p' `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`    
+# # sed -n 's+.*https:\/\/.*:\([0-9]*\)/explorer-..s.*+\1+p' `ls ${ZOWE_ROOT_DIR}/explorer-??S/web/index.html`    
 
-for file in  `ls ${ZOWE_ROOT_DIR}/??s_explorer/web/index.html`
-do
-    port=`sed -n 's+.*https:\/\/.*:\([0-9]*\)/.*+\1+p' $file`  
-
-
-    if [[ -n "$port" ]]  
-    then
-        if [[ $port -ne $api_mediation_gateway_https_port ]]
-        then 
-            echo Error: Found $port expecting $api_mediation_gateway_https_port
-            echo in file $file
-        else 
-            echo OK: Port $port
-        fi
-    else
-        echo Error: Could not determine port in file $file
-    fi
-
-    #
-    #   0.  TBD: also check hostname or IP is right for this machine
-    #
-done                                       
-
-echo
-echo Check Ports are assigned to jobs
-
-# zowenports
-totPortsAssigned=0
-# Is job name too long to have a suffix?
-if [[ `echo ${ZOWESVR} | wc -c` -lt 9 ]]        # 9 includes the string-terminating null character
-then    # job name is short enough to have a suffix
-    i=1
-    for enj in $zowestc   # list of expected number of jobs per STC
-    do
-            if [[ $enj -ne 0 ]]
-            then
-                jobname=${ZOWESVR}$i
-                # echo $jobname active jobs
-                # ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] "
-                echo Info: Ports in use by $jobname jobs
-                netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
-                cat /tmp/${jobname}.ports
-
-                # check correct ports are assigned to each job
-
-                case $i in 
-                3)
-# ZOWESVR3  api gateway port
-# ZOWESVR3  jes explorer server
-                # job3
-                    for port in \
-                        $api_mediation_gateway_https_port \
-                        $jes_explorer_server_port
-                    do
-                        grep $port /tmp/${jobname}.ports > /dev/null
-                        if [[ $? -ne 0 ]]
-                        then
-                            echo Error: Port $port not assigned to $jobname
-                        fi
-                    done
-                ;;
-
-                4)
-# ZOWESVR4  zss server port
-                    for port in \
-                        $zss_server_http_port
-                    do
-                        grep $port /tmp/${jobname}.ports > /dev/null
-                        if [[ $? -ne 0 ]]
-                        then
-                            echo Error: Port $port not assigned to $jobname
-                        fi
-                    done
-                ;;                
-
-                5)
-# ZOWESVR5  mvs explorer server port              
-                    for port in \
-                        $mvs_explorer_server_port
-                    do
-                        grep $port /tmp/${jobname}.ports > /dev/null
-                        if [[ $? -ne 0 ]]
-                        then
-                            echo Error: Port $port not assigned to $jobname
-                        fi
-                    done
-                ;;
-
-                6)
-# ZOWESVR6  api discovery port
-# ZOWESVR6  explorer jobs api server port                
-                # job6
-                    for port in \
-                        $explorer_server_jobsPort \
-                        $api_mediation_discovery_http_port 
-                    do
-                        grep $port /tmp/${jobname}.ports > /dev/null
-                        if [[ $? -ne 0 ]]
-                        then
-                            echo Error: Port $port not assigned to $jobname
-                        fi
-                    done
-                ;;
-
-                7)
-# ZOWESVR7  uss explorer server port
-# ZOWESVR7  zlux server httpsPort                
-                    for port in \
-                        $zlux_server_https_port \
-                        $uss_explorer_server_port 
-                    do
-                        grep $port /tmp/${jobname}.ports > /dev/null
-                        if [[ $? -ne 0 ]]
-                        then
-                            echo Error: Port $port not assigned to $jobname
-                        fi
-                    done
+# for file in  `ls ${ZOWE_ROOT_DIR}/??s_explorer/web/index.html`
+# do
+#     port=`sed -n 's+.*https:\/\/.*:\([0-9]*\)/.*+\1+p' $file`  
 
 
-                ;;
+#     if [[ -n "$port" ]]  
+#     then
+#         if [[ $port -ne $api_mediation_gateway_https_port ]]
+#         then 
+#             echo Error: Found $port expecting $api_mediation_gateway_https_port
+#             echo in file $file
+#         else 
+#             echo OK: Port $port
+#         fi
+#     else
+#         echo Error: Could not determine port in file $file
+#     fi
 
-                9)
-# ZOWESVR9  api catalog port
-# ZOWESVR9  explorer datasets api server port  
-                # job9
-                    for port in \
-                        $api_mediation_catalog_http_port \
-                        $explorer_server_dataSets_port
-                    do
-                        grep $port /tmp/${jobname}.ports > /dev/null
-                        if [[ $? -ne 0 ]]
-                        then
-                            echo Error: Port $port not assigned to $jobname
-                        fi
-                    done
-                ;;
-                esac
+#     #
+#     #   0.  TBD: also check hostname or IP is right for this machine
+#     #
+# done                                       
 
-                totPortsAssigned=$((totPortsAssigned+`cat /tmp/${jobname}.ports | wc -l `))
-                rm /tmp/${jobname}.ports
-                echo
-            fi
-            i=$((i+1))      # next STC number
-    done
-else        # job name is too long to have a suffix
-            jobname=${ZOWESVR}
-            echo Info: Ports in use by $jobname jobs
-            netstat -b -E $jobname 2>/dev/null|grep Listen | awk '{ print $4 }' > /tmp/${jobname}.ports
-            # cat /tmp/${jobname}.ports
-            
-            # check they are the right ports
-            for port_number in \
-                $api_mediation_catalog_http_port \
-                $api_mediation_discovery_http_port \
-                $api_mediation_gateway_https_port \
-                $explorer_server_jobsPort \
-                $explorer_server_dataSets_port \
-                $zlux_server_https_port \
-                $zss_server_http_port \
-                $jes_explorer_server_port \
-                $mvs_explorer_server_port \
-                $uss_explorer_server_port 
-            do 
-                grep $port_number /tmp/${jobname}.ports > /tmp/$port_number.port
-                port_count=`cat /tmp/$port_number.port | wc -l `
-                if [[ $port_count -eq 1 ]]
-                then 
-                    if [[ `cat /tmp/$port_number.port` -eq $port_number ]]
-                    then
-                        echo $port_number
-                    else
-                        # this is very unlikely
-                        echo Error: Port `cat /tmp/$port_number.port` does not match $port_number
-                    fi
-                else 
-                    echo Error: Found $port_count ports assigned for port $port_number
-                fi 
-            done 
-
-            totPortsAssigned=`cat /tmp/${jobname}.ports | wc -l `
-            rm /tmp/${jobname}.ports 2> /dev/null
-            rm /tmp/$port_number.port 2> /dev/null
-            echo
-fi
-if [[ $totPortsAssigned -ne $zowenports ]]  
-then
-    echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
-fi
 
 echo
 echo Check Node is at right version
@@ -939,7 +860,7 @@ then
         then 
             echo Error: \"export NODE_HOME\" not found in run-zowe.sh
         else
-            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh`
+            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh`
             if [[ ! -n "$node_set" ]]
             then
                 echo Error: NODE_HOME is empty in run-zowe.sh
@@ -951,24 +872,24 @@ then
     fi    
 fi 
 
-# 2. install log?
+# 2. configure log?
 if [[ ! -n "$nodehome" ]]
 then 
-    ls $ZOWE_ROOT_DIR/install_log/*.log 1> /dev/null
+    ls $ZOWE_ROOT_DIR/configure_log/*.log 1> /dev/null
     if [[ $? -eq 0 ]]
     then
-        # install log exists
-        install_log=`ls -t $ZOWE_ROOT_DIR/install_log/*.log | head -1`
-        node_set=`sed -n 's/NODE_HOME environment variable was set=\(.*\) *$/\1/p' $install_log`
+        # configure log exists
+        configure_log=`ls -t $ZOWE_ROOT_DIR/configure_log/*.log | head -1`
+        node_set=`sed -n 's/NODE_HOME environment variable was set=\(.*\) *$/\1/p' $configure_log`
         if [[ -n "node_set" ]]
         then 
             nodehome=$node_set
-            echo Info: Found in install_log
+            echo Info: Found in configure_log
         else 
-            echo Error: NODE_HOME environment variable was not set in $install_log
+            echo Error: NODE_HOME environment variable was not set in $configure_log
         fi 
     else 
-        echo Error: no install_log found in $ZOWE_ROOT_DIR/install_log
+        echo Error: no configure_log found in $ZOWE_ROOT_DIR/configure_log
     fi
 fi
 
@@ -981,12 +902,12 @@ then
     then 
         echo Info: /etc/profile not found
     else
-        grep " *export *NODE_HOME=.* *$" /etc/profile 1> /dev/null
+        grep "^ *export *NODE_HOME=.* *$" /etc/profile 1> /dev/null
         if [[ $? -ne 0 ]]
         then 
             echo Info: \"export NODE_HOME\" not found in /etc/profile
         else
-            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' /etc/profile`
+            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' /etc/profile`
             if [[ ! -n "$node_set" ]]
             then
                 echo Warning: NODE_HOME is empty in /etc/profile
@@ -1012,7 +933,7 @@ then
         then 
             echo Info: \"export NODE_HOME\" not found in ~/.zowe_profile
         else
-            node_set=`sed -n 's/ *export *NODE_HOME=\(.*\) *$/\1/p' ~/.zowe_profile`
+            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' ~/.zowe_profile`
             if [[ ! -n "$node_set" ]]
             then
                 echo Warning: NODE_HOME is empty
@@ -1066,20 +987,6 @@ fi
 
 # echo
 # echo Check Zowe environment variables are set correctly.
-
-# # • ZOWE_ZOSMF_PATH: The path where z/OSMF is installed. Defaults to /usr/lpp/zosmf/lib/
-# # defaults/servers/zosmfServer
-# if [[ -n "${ZOWE_ZOSMF_PATH}" ]]
-# then 
-#     echo OK: ZOWE_ZOSMF_PATH is not empty 
-#     ls ${ZOWE_ZOSMF_PATH}/server.xml > /dev/null    # pick a file to check
-#     if [[ $? -ne 0 ]]
-#     then    
-#         echo Error: ZOWE_ZOSMF_PATH does not point to a valid install of z/OSMF
-#     fi
-# else 
-#     echo Error: ZOWE_ZOSMF_PATH is empty
-# fi
 
 # # • ZOWE_JAVA_HOME: The path where 64 bit Java 8 or later is installed. Defaults to /usr/lpp/java/
 # # J8.0_64
@@ -1325,6 +1232,32 @@ done
 
 if [[ $jobsOK -eq 1 ]]      
 then 
+    echo OK
+fi
+
+echo
+echo Check CIM server is running
+
+cim_error_status=0  # no errors yet
+
+# Try to determine CIM server job name
+${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > /tmp/d.omvs.all.$$.txt
+CIMSVR=`sed -n '/LATCHWAITPID/!h;/CMD=.*\/cimserver /{x;p;}' /tmp/d.omvs.all.$$.txt | awk '{ print $2 }'`
+rm /tmp/d.omvs.all.$$.txt > /dev/null
+if [[ -n "$CIMSVR" ]] then
+    # echo CIM server job name is $CIMSVR
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${CIMSVR}" | grep WUID=STC > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: CIMSVR job "${CIMSVR}" is not running as a started task
+        cim_error_status=1
+    fi
+else
+    echo Error:  Could not determine CIMSVR job name
+    cim_error_status=1
+fi
+if [[ $cim_error_status -eq 0 ]]
+then
     echo OK
 fi
 

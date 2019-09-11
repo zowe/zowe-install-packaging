@@ -1,0 +1,9 @@
+I, Petr Plavjanik hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: petr.plavjanik@broadcom.com
+
+5264fb058bb352f809840a420ed38d595a9aeba0 wip! Include snaphost PAX for testing
+12193dd27361933235b9a56be1c6514100ede357 User version 1.0.x
+227db50fb975d28ecb880ea8e6abc8bf8e38577d fixup!
+81561a971cb1626533e271b466ebfca32acb93d4 Include APIML with z/OSMF authentication
+3682de2f7f6487e938abd294bbe66ed8812b2106 fixup!
+f22d2a694822c1310bc2c1a044062f6e486f08f5 Installation of apimlAuth plugin
+3dd4e141f9b87b308e2e7957201bafe2f87c106c Add ZOWE_ROOT_DIR variable to setup-apiml-certificates-template template

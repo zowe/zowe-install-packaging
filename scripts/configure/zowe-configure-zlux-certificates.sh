@@ -25,8 +25,18 @@ cd ${ZLUX_SERVER_CONFIG_PATH}
 
 # Update the /zlux-app-server/deploy/instance/ZLUX/serverConfig/zluxserver.json
 echo "Updating certificates in zluxserver.json to use key store in ${APIML_KEYSTORE_PATH}" >> $LOG_FILE 
+
+#concatenate all CA (including optional external CA) into one string separated by ","
+CA_LIST=${APIML_KEYSTORE_PATH}'/local_ca/localca.cer'${SUFFIX}
+for cert_entry in $APIML_KEYSTORE_PATH/local_ca/extca*.cer${SUFFIX} ; do    
+    if [ -e "${cert_entry}" ]; then
+        CA_LIST="${CA_LIST}"'","'"${cert_entry}"
+        echo "External CA: $cert_entry" >> $LOG_FILE         
+    fi
+done
+
 sed 's|.*"keys".*|      "keys": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.key"]|g' zluxserver.json > ${TEMP_DIR}/transform1.json
 sed 's|.*"certificates".*|    , "certificates": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.cer'${SUFFIX}'"]|g' ${TEMP_DIR}/transform1.json > ${TEMP_DIR}/transform2.json
-sed 's|.*"certificateAuthorities".*|    , "certificateAuthorities": ["'${APIML_KEYSTORE_PATH}'/local_ca/localca.cer'${SUFFIX}'"]|g' ${TEMP_DIR}/transform2.json > zluxserver.json
+sed 's|.*"certificateAuthorities".*|    , "certificateAuthorities": ["'$CA_LIST'"]|g' ${TEMP_DIR}/transform2.json > zluxserver.json
 
 echo "</zowe-zlux-configure-certificates.sh>" >> $LOG_FILE

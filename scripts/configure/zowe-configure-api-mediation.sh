@@ -16,6 +16,8 @@
 # $ZOWE_ROOT_DIR
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_IPADDRESS
+# $ZOWE_ZOSMF_HOST
+# $ZOWE_ZOSMF_PORT
 # $ZOWE_APIM_CATALOG_PORT
 # $ZOWE_APIM_DISCOVERY_PORT
 # $ZOWE_APIM_GATEWAY_PORT
@@ -26,7 +28,9 @@
 
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
-cd $ZOWE_ROOT_DIR"/api-mediation"
+API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/api-mediation"
+
+cd $API_MEDIATION_DIR
 
 # Set a+rx for API Mediation JARs
 chmod a+rx *.jar 
@@ -37,7 +41,7 @@ chmod a+rx apiml-auth/lib
 chmod -R a+r apiml-auth
 
 # Create the static api definitions folder
-STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/api-defs"
+STATIC_DEF_CONFIG=$API_MEDIATION_DIR"/api-defs"
 mkdir -p $STATIC_DEF_CONFIG
 
 echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
@@ -90,8 +94,8 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
     api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
 
-# Make the scripts executable
-chmod a+rx *.sh
+# Make the scripts read and executable
+chmod -R 750 "${API_MEDIATION_DIR}/scripts"
 
 cd ..
 
@@ -99,6 +103,8 @@ cd ..
 echo "  Setting up Zowe API Mediation Layer certificates..."
 ./scripts/setup-apiml-certificates.sh >> $LOG_FILE
 echo "  Certificate setup done."
+
+chmod -R 750 "${API_MEDIATION_DIR}/keystore"
 
 # Get the zos version
 ZOSMF_VERSION=""
@@ -122,7 +128,7 @@ cat <<EOF >$TEMP_DIR/zosmf.yml
 # Static definition for z/OSMF
 #
 # Once configured you can access z/OSMF via the API gateway:
-# http --verify=no GET https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
+# http --verify=no GET https://$ZOWE_ZOSMF_HOST:$ZOWE_APIM_GATEWAY_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
 #	
 services:
     - serviceId: zosmf
@@ -130,7 +136,7 @@ services:
       description: IBM z/OS Management Facility REST API service
       catalogUiTileId: zosmf
       instanceBaseUrls:
-        - https://$ZOWE_EXPLORER_HOST:$ZOWE_ZOSMF_PORT/zosmf/
+        - https://$ZOWE_ZOSMF_HOST:$ZOWE_ZOSMF_PORT/zosmf/
       homePageRelativeUrl:  # Home page is at the same URL
       routedServices:
         - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
@@ -149,39 +155,9 @@ EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zosmf.yml > $STATIC_DEF_CONFIG/zosmf.yml	
 
 # Add static definition for MVS datasets
-cat <<EOF >$TEMP_DIR/datasets.yml
+cat <<EOF >$TEMP_DIR/datasets_ui.yml
 #
 services:
-  - serviceId: datasets
-    title: IBM z/OS Datasets
-    description: IBM z/OS Datasets REST API service
-    catalogUiTileId: datasetsAndUnixFiles
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/
-    homePageRelativeUrl:  # Home page is at the same URL
-    routedServices:
-      - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-        serviceRelativeUrl: api/v1/datasets
-    apiInfo:
-      - apiId: org.zowe.data.sets
-        gatewayUrl: api/v1
-        version: 1.0.0
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
-  - serviceId: unixfiles
-    title: IBM z/OS Unix Files
-    description: IBM z/OS Unix Files REST API service
-    catalogUiTileId: datasetsAndUnixFiles
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/
-    homePageRelativeUrl:  # Home page is at the same URL
-    routedServices:
-      - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-        serviceRelativeUrl: api/v1/unixfiles 
-    apiInfo:
-      - apiId: org.zowe.unix.files
-        gatewayUrl: api/v1
-        version: 1.0.0
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_DATASETS_PORT/swagger-ui.html
   - serviceId: explorer-mvs
     title: IBM z/OS MVS Explorer UI
     description: IBM z/OS MVS Explorer UI service
@@ -192,32 +168,13 @@ services:
     routedServices:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-mvs
-catalogUiTiles:
-  datasetsAndUnixFiles:
-    title: z/OS Datasets and Unix Files services
-    description: IBM z/OS Datasets and Unix Files REST services
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets.yml > $STATIC_DEF_CONFIG/datasets.yml	
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets_ui.yml > $STATIC_DEF_CONFIG/datasets_ui.yml	
 
 # Add static definition for Jobs
-cat <<EOF >$TEMP_DIR/jobs.yml
+cat <<EOF >$TEMP_DIR/jobs_ui.yml
 #
 services:
-  - serviceId: jobs
-    title: IBM z/OS Jobs
-    description: IBM z/OS Jobs REST API service
-    catalogUiTileId: jobs
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/
-    homePageRelativeUrl:
-    routedServices:
-      - gatewayUrl: api/v1
-        serviceRelativeUrl: api/v1/jobs
-    apiInfo:
-      - apiId: com.ibm.jobs
-        gatewayUrl: api/v1
-        version: 1.0.0
-        documentationUrl: https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_SERVER_JOBS_PORT/swagger-ui.html
   - serviceId: explorer-jes
     title: IBM z/OS Jobs UI
     description: IBM z/OS Jobs UI service
@@ -228,12 +185,8 @@ services:
     routedServices:
       - gatewayUrl: ui/v1
         serviceRelativeUrl: ui/v1/explorer-jes
-catalogUiTiles:
-  jobs:
-    title: z/OS Jobs services
-    description: IBM z/OS Jobs REST services
 EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs.yml > $STATIC_DEF_CONFIG/jobs.yml	
+iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs_ui.yml > $STATIC_DEF_CONFIG/jobs_ui.yml	
 
 # Add static definition for USS
 cat <<EOF >$TEMP_DIR/uss.yml
@@ -251,6 +204,7 @@ services:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
-chmod -R 755 $ZOWE_ROOT_DIR/api-mediation/
+#Make the static defs read/write to owner/group (so that IZUSVR can read them)
+chmod -R 750 ${STATIC_DEF_CONFIG}
 
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE

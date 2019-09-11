@@ -10,10 +10,15 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
+PREV_DIR=`pwd`
+cd $(dirname $0)
+
+ #Note - these are sed replaced in zowe-copy-xmem.sh, so don't change without checking that
 INSTALL_DIR=$PWD/..
 SCRIPT_DIR=${INSTALL_DIR}/scripts/zss
-
 ZSS=${INSTALL_DIR}/files/zss
+OPERCMD=${SCRIPT_DIR}/../opercmd
+
 XMEM_ELEMENT_ID=ZWES
 XMEM_MODULE=${XMEM_ELEMENT_ID}IS01
 XMEM_PARM=${XMEM_ELEMENT_ID}IP00
@@ -37,7 +42,7 @@ xmemProfileAccessOk=false
 
 
 sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
-chmod +x ${SCRIPT_DIR}/../opercmd
+chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
 
@@ -46,6 +51,7 @@ chmod +x ${SCRIPT_DIR}/*
 # 0. Prepare STC JCL
 sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+    -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
     ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
 
 # 1. Deploy loadlib
@@ -63,7 +69,7 @@ echo "************************ Install step 'LOADLIB' end **********************
 # 2. APF-authorize loadlib
 echo
 echo "************************ Install step 'APF-auth' start *************************"
-apfCmd1="sh $SCRIPT_DIR/zowe-xmem-apf.sh ${XMEM_LOADLIB}"
+apfCmd1="sh $SCRIPT_DIR/zowe-xmem-apf.sh ${OPERCMD} ${XMEM_LOADLIB}"
 if $loadlibOk ; then
   $apfCmd1
   if [[ $? -eq 0 ]]; then
@@ -101,7 +107,7 @@ echo "************************ Install step 'PROCLIB' end **********************
 # 5. PPT-entry
 echo
 echo "************************ Install step 'PPT-entry' start ************************"
-pptCmd1="sh $SCRIPT_DIR/zowe-xmem-ppt.sh ${XMEM_MODULE} ${XMEM_KEY}"
+pptCmd1="sh $SCRIPT_DIR/zowe-xmem-ppt.sh ${OPERCMD} ${XMEM_MODULE} ${XMEM_KEY}"
 $pptCmd1
 if [[ $? -eq 0 ]]
 then
@@ -150,7 +156,7 @@ if $safOk ; then
   echo
   echo "************************ Install step 'STC user' start *************************"
   stcUserCmd1="sh $SCRIPT_DIR/zowe-xmem-check-user.sh ${saf} ${XMEM_STC_USER}"
-  stcUserCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
+  stcUserCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${OPERCMD} ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
   $stcUserCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -172,7 +178,7 @@ if $safOk ; then
   echo
   echo "************************ Install step 'STC profile' start **********************"
   stcProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-stc-profile.sh ${saf} ${XMEM_STC_PREFIX}"
-  stcProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
+  stcProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${OPERCMD} ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
   $stcProfileCmd1
   rc=$?
   if [[ $rc -eq 1 ]]; then
@@ -344,8 +350,9 @@ rm  ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp 1>/dev/null 2>/dev/null
 
 # Ensure IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
 # For zssServer to be able to operate correctly 
+# and READ access to BPX.JOBNAME to allow Zowe START to set job names
 profile_refresh=0
-for profile in SERVER DAEMON
+for profile in SERVER DAEMON JOBNAME
 do
     tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
     if [[ $? -ne 0 ]]
@@ -362,17 +369,24 @@ do
         profile_refresh=1
     fi
 
-    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *UPDATE" >/dev/null
+    if [[ $profile = JOBNAME ]]
+    then
+      access=READ
+    else
+      access=UPDATE
+    fi
+
+    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *$access" >/dev/null
     if [[ $? -ne 0 ]]
     then
-        # User IZUSVR does not have UPDATE access to profile BPX\.$profile
+        # User IZUSVR does not have $access access to profile BPX\.$profile
         # Permit IZUSVR to update the BPX facilties 
-        tsocmd "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS(UPDATE)" 2>/dev/null  1>/dev/null
+        tsocmd "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)" 2>/dev/null  1>/dev/null
         if [[ $? -ne 0 ]]
         then
           echo PERMIT failed for BPX.$profile, please issue this command
           echo as a user with the required RACF privilege
-          echo "    " "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS(UPDATE)"
+          echo "    " "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)"
         fi 
         profile_refresh=1
     fi
@@ -394,5 +408,6 @@ echo "**************************************************************************
 echo "********************************************************************************"
 echo "********************************************************************************"
 
-exit 0
+cd $PREV_DIR
 
+exit 0

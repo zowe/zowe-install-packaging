@@ -56,7 +56,7 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-# Populate the environment variables for ZOWE_SDSF_PATH, ZOWE_ZOSMF_PATH, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST
+# Populate the environment variables for ZOWE_ZOSMF_PORT, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST, ZOWE_IPADDRESS, NODE_HOME
 . $INSTALL_DIR/scripts/zowe-init.sh
 
 echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
@@ -84,6 +84,7 @@ chmod a+rx $ZOWE_ROOT_DIR
 
 # copy manifest.json to root folder
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
+chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
 
 # Create a temp directory to be a working directory for sed replacements
 export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
@@ -103,11 +104,6 @@ mkdir -p $TEMP_DIR
 
 echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
-
-separator
-echo "Attempting to create $ZOWE_SERVER_PROCLIB_MEMBER PROCLIB member ..."
-# Create the ZOWESVR JCL
-# Insert the default Zowe install path in the JCL
 
 # Create the /scripts folder in the runtime directory
 # where the scripts to start and the Zowe server will be coped into
@@ -154,6 +150,8 @@ chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 echo "Copying zowe-runtime-authorize.template.sh to "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh >> $LOG_FILE
 cp "$INSTALL_DIR/scripts/zowe-runtime-authorize.template.sh" "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh"
 
+. $INSTALL_DIR/scripts/zowe-copy-xmem.sh
+
 # save install log in runtime directory
 mkdir  $ZOWE_ROOT_DIR/install_log
 cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
@@ -168,6 +166,5 @@ then
   # Run configure - note not in source mode
   ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
 else
-  separator
   echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
 fi
