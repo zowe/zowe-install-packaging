@@ -212,8 +212,8 @@ then
 fi
 if [[ $ZOWE_USER_DIR == "" ]] 
 then
-    ZOWE_USER_DIR="~/zowe/user_directory"
-    echo "  ZOWE_USER_DIR not specified:  Defaulting to ~/zowe/user_directory"
+    ZOWE_USER_DIR="~/zowe-user-dir"
+    echo "  ZOWE_USER_DIR not specified:  Defaulting to ~/zowe-user-dir"
 fi
 if [[ $ZOWE_PREFIX == "" ]]
 then
