@@ -20,7 +20,7 @@ if [ -z "$ZOWE_VERSION" ]; then
 else
   echo "$SCRIPT_NAME working on Zowe v${ZOWE_VERSION} ..."
   # remove the version file
-  rm content/version
+  mv content/version .
 fi
 
 # Create mediation PAX
@@ -36,3 +36,7 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
 chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
+
+# prepare for SMPE
+echo "$SCRIPT_NAME smpe is not part of zowe.pax, moving out ..."
+mv content/smpe .

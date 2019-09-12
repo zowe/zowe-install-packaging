@@ -19,6 +19,15 @@ node('ibm-jenkins-slave-nvm') {
 
   pipeline.admins.add("jackjia", "stevenh", "joewinchester", "markackert")
 
+  // we have extra parameters for integration test
+  pipeline.addBuildParameter(
+    booleanParam(
+      name: 'KEEP_TEMP_FOLDER',
+      description: 'If leave the temporary packaging folder on remote server.',
+      defaultValue: false
+    )
+  )
+
   pipeline.setup(
     packageName: 'org.zowe',
     github: [
@@ -30,10 +39,14 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
     ],
     pax: [
-      sshHost                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_HOST,
-      sshPort                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_PORT,
-      sshCredential              : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_CREDENTIAL,
-      remoteWorkspace            : lib.Constants.DEFAULT_PAX_PACKAGING_REMOTE_WORKSPACE,
+      // sshHost                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_HOST,
+      // sshPort                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_PORT,
+      // sshCredential              : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_CREDENTIAL,
+      // remoteWorkspace            : lib.Constants.DEFAULT_PAX_PACKAGING_REMOTE_WORKSPACE,
+      sshHost                    : 'river.zowe.org',
+      sshPort                    : '2022',
+      sshCredential              : 'ssh-zdt-test-image-guest',
+      remoteWorkspace            : '/zaas1',
     ],
     extraInit: {
       def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
@@ -91,10 +104,27 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   // how we packaging pax
   pipeline.packaging(name: 'zowe')
 
+  pipeline.packaging(
+    name          : "zowe",
+    timeout       : [time: 90, unit: 'MINUTES'],
+    operation: {
+      pipeline.pax.pack(
+          job             : "zowe-packaging",
+          filename        : 'zowe.pax',
+          environments    : [ 'ZOWE_VERSION': pipeline.getVersion() ],
+          extraFiles      : 'zowe-smpe.pax,readme.txt,rename-back.sh',
+          keepTempFolder  : params.KEEP_TEMP_FOLDER
+      )
+      // rename to correct suffix
+      sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
+    }
+  )
+
   // define we need publish stage
   pipeline.publish(
     artifacts: [
-      '.pax/zowe.pax'
+      '.pax/zowe.pax',
+      '.pax/AZWE*'
     ]
   )
 

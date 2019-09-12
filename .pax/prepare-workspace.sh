@@ -84,3 +84,7 @@ mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh \
    ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
 mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh \
    ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
+
+# copy smpe scripts
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe"
+cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"
