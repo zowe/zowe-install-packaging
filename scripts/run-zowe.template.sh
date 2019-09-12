@@ -42,7 +42,6 @@ STC_NAME={{stc_name}}
 KEY_ALIAS={{key_alias}}
 KEYSTORE={{keystore}}
 KEYSTORE_PASSWORD={{keystore_password}}
-STATIC_DEF_CONFIG_DIR={{static_def_config_dir}}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
 ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
@@ -67,6 +66,17 @@ then
 fi
 
 DIR=`dirname $0`
+
+# Create the user configurable api-defs
+mkdir -p ${USER_DIR}/api-defs
+STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-defs
+
+# TODO - temporary until APIML is componentised - Inject it into discovery script
+sed -e "s#-Dapiml.discovery.staticApiDefinitionsDirectories.*[^\\]#-Dapiml.discovery.staticApiDefinitionsDirectories=\"${STATIC_DEF_CONFIG_DIR};${ROOT_DIR}/api-mediation/api-defs\" #" \
+  "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh" \
+  > "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy"
+mv "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy" "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
+chmod 770 "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
