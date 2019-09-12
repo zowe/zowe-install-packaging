@@ -90,10 +90,6 @@ cnt=0                           # counter, part of target pax file name
 # "echo 0$cnt" will: create a counter at least 2 chars long
 # sed will: take the last 2 chars of the expanded counter
 
-# CLI always seperate
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file "ls zowe-cli-*.zip"
-
 # everything zlux
 # > zlux-app-server has symlinks to zlux-server-framework & zss-auth
 # > -> they must all be in the same archive
