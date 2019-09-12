@@ -19,9 +19,9 @@ if [ -z "$ZOWE_VERSION" ]; then
   exit 1
 else
   echo "$SCRIPT_NAME working on Zowe v${ZOWE_VERSION} ..."
-  # remove the version file
-  mv content/version .
 fi
+# move the version file up so won't be packaged into zowe build
+mv content/version .
 
 # Create mediation PAX
 cd mediation

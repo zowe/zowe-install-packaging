@@ -14,7 +14,7 @@ set -x
 SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
 INPUT_TXT=input.txt
-ZOWE_VERSION=$(cat content/version)
+ZOWE_VERSION=$(cat version)
 
 if [ -z "${ZOWE_VERSION}" ]; then
   echo "[$SCRIPT_NAME][ERROR] ZOWE_VERSION environment variable is missing"
