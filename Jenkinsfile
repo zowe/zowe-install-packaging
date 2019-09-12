@@ -101,9 +101,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     allowMissingJunit : true
   )
 
-  // how we packaging pax
-  pipeline.packaging(name: 'zowe')
-
   pipeline.packaging(
     name          : "zowe",
     timeout       : [time: 90, unit: 'MINUTES'],
