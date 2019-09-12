@@ -18,6 +18,19 @@
 #
 #
 
+# If -v passed in any validation failure result in the script exiting, other they are logged and continue
+while getopts ":v" opt; do
+  case $opt in
+    v)
+      VALIDATE_ABORTS=1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
 # New Cupids work - once we have PARMLIB/properties files removed properly this won't be needed anymore
 ROOT_DIR={{root_dir}} # the install directory of zowe
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
@@ -85,8 +98,12 @@ do
 done
 if [[ $ERRORS_FOUND > 0 ]]
 then
-	echo "$ERRORS_FOUND errors were found during validatation, please correct the properties in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
-	exit $ERRORS_FOUND
+	# if -v passed in any validation failures abort
+  if [ ! -z $VALIDATE_ABORTS ]
+  then
+    echo "$ERRORS_FOUND errors were found during validatation, please correct the properties in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
+    exit $ERRORS_FOUND
+  fi
 fi
 
 mkdir -p ${USER_DIR}/backups
