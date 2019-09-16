@@ -47,7 +47,9 @@ ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
 ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
 ZOWE_JAVA_HOME={{java_home}}
 
-LAUNCH_COMPONENTS=files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
+LAUNCH_COMPONENT_GROUPS=GATEWAY,DESKTOP
+
+LAUNCH_COMPONENTS=""
 
 export ZOWE_PREFIX={{zowe_prefix}}{{zowe_instance}}
 ZOWE_API_GW=${ZOWE_PREFIX}AG
@@ -76,13 +78,21 @@ sed -e "s#-Dapiml.discovery.staticApiDefinitionsDirectories.*[^\\]#-Dapiml.disco
 mv "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy" "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
 chmod 770 "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
 
-cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-_BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
-_BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
-_BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
-_BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
-_BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
-_BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
+if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+then
+  cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
+fi
+
+if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
+then
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
+  _BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
+  _BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
+  _BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
+  _BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
+  _BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
+  _BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
+fi
  
 # Validate component properties if script exists
 ERRORS_FOUND=0
@@ -121,7 +131,7 @@ NOW=$(date +"%y.%m.%d.%H.%M.%S")
 #TODO - inject VERSION variable at build time?
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 cat <<EOF >${USER_DIR}/active_configuration.cfg
-VERSION=1.4
+VERSION=1.5
 CREATION_DATE=${NOW}
 ROOT_DIR=${ROOT_DIR}
 USER_DIR=${USER_DIR}
@@ -134,8 +144,10 @@ KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
+ZOWE_EXPLORER_HOST=${ZOWE_EXPLORER_HOST}
 ZOWE_JAVA_HOME=${ZOWE_JAVA_HOME}
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}
+LAUNCH_COMPONENT_GROUPS=${LAUNCH_COMPONENT_GROUPS}
 EOF
 
 # Copy manifest into user_dir so we know the version for support enquiries/migration
