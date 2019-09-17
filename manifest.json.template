@@ -121,8 +121,7 @@
         },
         {
           "repository": "zlux-grid",
-          "tag": "master",
-          "destinations": ["Zowe PAX"]
+          "tag": "v0.0.5"
         },
         {
           "repository": "zlux-platform",
@@ -138,8 +137,7 @@
         },
         {
           "repository": "zlux-widgets",
-          "tag": "master",
-          "destinations": ["Zowe PAX"]
+          "tag": "v0.0.4"
         },
         {
           "repository": "zlux-build",
@@ -176,36 +174,31 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
+        "tag": "v0.0.15"
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
+        "tag": "v0.0.9"
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
+        "tag": "v0.0.21"
       }]
     }, {
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
+        "tag": "v0.2.8"
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
+        "tag": "v0.0.13"
       }]
     }, {
       "componentGroup": "Zowe Explorer Common REST Server",
