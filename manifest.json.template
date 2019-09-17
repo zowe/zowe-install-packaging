@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -67,11 +67,11 @@
       "artifact": "zss-1.4.0-20190731.134953-13.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "0.2.6",
+      "version": "0.2.7",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "0.2.3",
+      "version": "0.2.4",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
@@ -121,7 +121,8 @@
         },
         {
           "repository": "zlux-grid",
-          "tag": "v0.0.5"
+          "tag": "master",
+          "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-platform",
@@ -137,7 +138,8 @@
         },
         {
           "repository": "zlux-widgets",
-          "tag": "v0.0.4"
+          "tag": "master",
+          "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-build",
@@ -174,31 +176,36 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v0.0.15"
+        "tag": "staging",
+        "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "v0.0.9"
+        "tag": "staging",
+        "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v0.0.21"
+        "tag": "staging",
+        "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-        "tag": "v0.2.8"
+        "tag": "staging",
+        "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v0.0.13"
+        "tag": "staging",
+        "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Common REST Server",
@@ -210,13 +217,13 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v0.2.3"
+        "tag": "v0.2.4"
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v0.2.6"
+        "tag": "v0.2.7"
       }]
     }, {
       "componentGroup": "Zowe Application Framework Authentication Handlers",

@@ -51,6 +51,7 @@ chmod +x ${SCRIPT_DIR}/*
 # 0. Prepare STC JCL
 sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+    -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
     ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
 
 # 1. Deploy loadlib
@@ -349,8 +350,9 @@ rm  ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp 1>/dev/null 2>/dev/null
 
 # Ensure IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
 # For zssServer to be able to operate correctly 
+# and READ access to BPX.JOBNAME to allow Zowe START to set job names
 profile_refresh=0
-for profile in SERVER DAEMON
+for profile in SERVER DAEMON JOBNAME
 do
     tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
     if [[ $? -ne 0 ]]
@@ -367,17 +369,24 @@ do
         profile_refresh=1
     fi
 
-    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *UPDATE" >/dev/null
+    if [[ $profile = JOBNAME ]]
+    then
+      access=READ
+    else
+      access=UPDATE
+    fi
+
+    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *$access" >/dev/null
     if [[ $? -ne 0 ]]
     then
-        # User IZUSVR does not have UPDATE access to profile BPX\.$profile
+        # User IZUSVR does not have $access access to profile BPX\.$profile
         # Permit IZUSVR to update the BPX facilties 
-        tsocmd "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS(UPDATE)" 2>/dev/null  1>/dev/null
+        tsocmd "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)" 2>/dev/null  1>/dev/null
         if [[ $? -ne 0 ]]
         then
           echo PERMIT failed for BPX.$profile, please issue this command
           echo as a user with the required RACF privilege
-          echo "    " "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS(UPDATE)"
+          echo "    " "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)"
         fi 
         profile_refresh=1
     fi

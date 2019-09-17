@@ -434,40 +434,61 @@ do
   fi
 done
 
-nodeVersion=    # set it to empty string 
 
 if [[ $ICSF -eq 1 ]]
 then 
   echo OK # jobname ICSF or CSF is running
-
-  echo
-  echo Check Node version
-
-  nodeVersion=`node --version 2>&1`
-  if [[ $? -ne 0 ]]
-  then
-    # node version error
-
-    echo $nodeVersion | grep 'not found'
-    if [[ $? -eq 0 ]]   # the 'node' command was not found.
-    then 
-      # echo node not found in your path ... trying standard location
-      nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`  # is there a node symlink in this list?
-      if [[ $? -eq 0 ]]
-      then 
-          # echo symlink to node found 
-          nodeTarget=`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`   # get target of symlink
-          nodeVersion=`/usr/${nodeTarget}/bin/node --version`
-          if [[ $? -ne 0 ]]
-          then
-            nodeVersion=    # set it to empty string          
-          fi
-      fi  
-    fi
-  fi
-
 else
   echo Error: jobname ICSF or CSF is not running
+fi
+
+
+echo
+echo Check Node version
+
+nodeVersion=`node --version 2>&1`
+if [[ $? -ne 0 ]]
+then
+  # node version error
+  echo $nodeVersion | grep 'not found' > /dev/null
+  if [[ $? -eq 0 ]]   # the 'node' command was not found.
+  then 
+    echo Error: node not found in your path, trying /etc/profile
+    nodeVersion=    # set it to empty string 
+
+    # 3. /etc/profile?
+    ls /etc/profile 1> /dev/null
+    if [[ $? -ne 0 ]]
+    then 
+        echo Info: /etc/profile not found
+    else
+        grep "^ *export *NODE_HOME=.* *$" /etc/profile 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Info: \"export NODE_HOME\" not found in /etc/profile
+        else
+            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' /etc/profile`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Warning: NODE_HOME is empty in /etc/profile
+            else
+                nodehome=$node_set
+                # echo Info: Found in /etc/profile
+
+                nodeVersion=`$nodehome/bin/node --version` # also works if it's a symlink
+                if [[ $? -ne 0 ]]
+                then 
+                    echo Error: Failed to obtain version of $nodehome/bin/node
+                    nodeVersion=    # set it to empty string 
+                fi
+            fi 
+        fi
+    fi    
+  else
+    echo Error: Node version error
+    echo ${nodeVersion}
+    nodeVersion=    # set it to empty string 
+  fi
 fi
 
 # echo node version is \"$nodeVersion\"

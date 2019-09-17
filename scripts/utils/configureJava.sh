@@ -7,12 +7,13 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2019
 ################################################################################
 
-# 					# To discover ZOWE_ROOT_DIR, this script must be in the scripts directory
-VAR=`dirname $0`			# Obtain the scripts directory name
-cd $VAR/..				# Change to its parent which should be ZOWE_ROOT_DIR
-ZOWE_ROOT_DIR=`pwd`			# Set our environment variable
-echo Stopping ZOWE server
-$ZOWE_ROOT_DIR/scripts/internal/opercmd "c {{zowe_prefix}}{{zowe_instance}}SV"
+#Make sure Java is available on the path - 
+export JAVA_HOME=$ZOWE_JAVA_HOME
+if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]];
+then
+  echo "Appending ZOWE_JAVA_HOME/bin to the PATH..."
+  export PATH=$PATH:$JAVA_HOME/bin
+fi

@@ -29,8 +29,14 @@ echo "  About to run find and chmods to add o+x on directories" >> $LOG_FILE
 find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
 echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
 
+#TODO SH: temporary fix whilst logs are't in the user-dir.
+chmod -R g+w ${ZOWE_ROOT_DIR}/zlux-app-server/log
+#TODO SH: temporary fix whilst APIML isn't componentised - we need to write discovery script to inject user-dir static defs
+chmod -R g+w ${ZOWE_ROOT_DIR}/api-mediation/scripts/
+
 # If this step fails it is because the user running this script is not part of the IZUADMIN group
 chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
+
 
 chmod -R 770 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy
 chmod -R 550 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/product
