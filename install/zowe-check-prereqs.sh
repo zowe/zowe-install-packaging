@@ -114,16 +114,33 @@ then
   echo OK
 fi
 
+echo Check IZUSVR/IZUADMIN has at least READ access to BPX.JOBNAME
+tsocmd "rl facility bpx.jobname authuser" 1>/dev/null 2>/dev/null 
+if [[ $? -ne 0 ]]
+then
+    echo Error: Failed to list BPX.JOBNAME
+    echo Cause: User is not authorized to RLIST AUTHUSER, or other error
+    
+else
+    tsocmd "rl facility bpx.jobname authuser" 2>/dev/null | grep "IZUADMIN" | grep -E "READ|UPDATE|ALTER" > /dev/null
+    if [[ $? -ne 0 ]]
+    then
+        echo Error: User IZUSVR does not have access to profile BPX\.JOBNAME
+        echo Zowe job names will be incorrect
+    else
+        echo OK
+    fi
+fi
+
 
 echo
 echo Is opercmd available?
 
 if [[ -r ${INSTALL_DIR}/../scripts/opercmd ]]
 then 
-  chmod a+x ${INSTALL_DIR}/../scripts/opercmd
-  if [[ $? -ne 0 ]]
+  if [[ ! -x ${INSTALL_DIR}/../scripts/opercmd ]]
   then
-    echo Error:  Unable to make opercmd executable
+    echo Error:  opercmd not executable
   else 
     ${INSTALL_DIR}/../scripts/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
     if [[ $? -ne 0 ]]
@@ -246,31 +263,7 @@ then
   echo OK
 fi 
 
-echo
-echo Check user can issue SDSF commands
-# Check ISF access:
-# Here are the latest set of TSO commands to resolve the issue: 
-# 1- RDEFINE SDSF  ISF*.** UACC(NONE)
-# 2- PERMIT  ISF*.** CLASS(SDSF) ACC(READ) ID(IBMUSER)
-# 3- SETR GENERIC(SDSF) RACLIST(SDSF) REFRESH 
 
-sdsfOK=1
-for profile in "ISF.CONNECT" "ISFATTR" "ISFCMD.ODSP" "ISFOPER"
-do
-  match_profile "SDSF" $profile
-  if [[ $? -eq 0 ]]
-  then
-    : # echo OK: User $userid is authorized to use SDSF $profile
-  else 
-    echo Info: User $userid is not authorized to use SDSF $profile
-    sdsfOK=0
-  fi
-done
-
-if [[ $sdsfOK -eq 1 ]]
-then 
-  echo OK
-fi 
 
 # 3. Ports are available
 echo
@@ -434,52 +427,78 @@ do
   fi
 done
 
-nodeVersion=    # set it to empty string 
+node_version=    # set it to empty string 
 
 if [[ $ICSF -eq 1 ]]
 then 
   echo OK # jobname ICSF or CSF is running
-
-  echo
-  echo Check Node version
-
-  nodeVersion=`node --version 2>&1`
-  if [[ $? -ne 0 ]]
-  then
-    # node version error
-
-    echo $nodeVersion | grep 'not found'
-    if [[ $? -eq 0 ]]   # the 'node' command was not found.
-    then 
-      # echo node not found in your path ... trying standard location
-      nodelink=`ls -l /usr/lpp/IBM/cnj/IBM/node-*|grep ^l`  # is there a node symlink in this list?
-      if [[ $? -eq 0 ]]
-      then 
-          # echo symlink to node found 
-          nodeTarget=`echo $nodelink | sed 's+.*/usr\(.*\) ->.*+\1+'`   # get target of symlink
-          nodeVersion=`/usr/${nodeTarget}/bin/node --version`
-          if [[ $? -ne 0 ]]
-          then
-            nodeVersion=    # set it to empty string          
-          fi
-      fi  
-    fi
-  fi
-
 else
   echo Error: jobname ICSF or CSF is not running
 fi
 
-# echo node version is \"$nodeVersion\"
+echo
+echo Check Node version
 
-if [[ -n "${nodeVersion}" ]]
+node_version=`node --version 2>&1`
+if [[ $? -ne 0 ]]
+then
+  # node version error
+
+  echo $node_version | grep 'not found' > /dev/null 
+  if [[ $? -eq 0 ]]   # the 'node' command was not found.
+  then 
+    # echo node not found in your path ... trying standard location
+
+    # 3. /etc/profile?
+    ls /etc/profile 1> /dev/null
+    if [[ $? -ne 0 ]]
+    then 
+        echo Info: /etc/profile not found
+    else
+        grep "^ *export *NODE_HOME=.* *$" /etc/profile 1> /dev/null
+        if [[ $? -ne 0 ]]
+        then 
+            echo Info: \"export NODE_HOME\" not found in /etc/profile
+        else
+            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' /etc/profile`
+            if [[ ! -n "$node_set" ]]
+            then
+                echo Warning: NODE_HOME is empty in /etc/profile
+            else
+                nodehome=$node_set
+                echo Info: NODE_HOME found in /etc/profile
+            fi 
+        fi
+    fi    
+
+    if [[ ! -n "$nodehome" ]]
+    then 
+        echo Error: Could not determine value of NODE_HOME
+        echo Warning:  node version cannot be determined
+    else
+        node_version=`$nodehome/bin/node --version` # also works if it's a symlink
+        if [[ $? -ne 0 ]]
+        then 
+            echo Error: Failed to obtain version of $nodehome/bin/node
+            node_version=
+        fi 
+    fi
+  else
+    echo Error: node version error other than not found 
+    echo $node_version
+    node_version=
+  fi
+fi
+# echo node version is \"$node_version\"
+
+if [[ -n "${node_version}" ]]
 then 
-    # nodeVersion is not empty 
-    if [[ "$nodeVersion" < "v6.14.4" ]]
+    # node_version is not empty 
+    if [[ "$node_version" < "v6.14.4" ]]
           then 
-            echo Error: node version $nodeVersion is less than minimum level required
+            echo Error: node version $node_version is less than minimum level required
           else 
-            echo OK # : node version $nodeVersion is at least the minimum level required
+            echo OK # : node version $node_version is at least the minimum level required
     fi
 else
     echo Error: can not determine node version
@@ -538,14 +557,6 @@ echo Check CEE_RUNOPTS
 set | grep _CEE_RUNOPTS
 echo 
 
-# also the LDA can be used to confirm both REGION choices 
-# and the effects of any IEFUSI exits. 
-    # LDA is found using DDLIST, an ISPF command dialog, which is not directly runnable from a shell script.
-    # Or use REXX.
-    # http://www.askthezoslady.com/tso-region-size-really-means/
-    # Either way, not a 1-line command.  
-    # z/OSMF IZUSVR1 sets MEMLIMIT=6G on the PGM=BPXBATSL  statement
-
 echo
 echo Check USS AUTOCVT
 
@@ -561,9 +572,12 @@ fi
 #
 if [[ -n "${_BPXK_AUTOCVT}" ]]
 then 
-  echo Warning: _BPXK_AUTOCVT is set to ${_BPXK_AUTOCVT}
+  if [[ "${_BPXK_AUTOCVT}" = "ON" ]]
+  then 
+    echo Warning: _BPXK_AUTOCVT is set to ${_BPXK_AUTOCVT}
+  fi
 else 
-  echo OK: _BPXK_AUTOCVT is not set
+  echo OK: _BPXK_AUTOCVT is OFF 
 fi 
 
 if [[ -n "${_BPXK_CCSIDS}" ]]
