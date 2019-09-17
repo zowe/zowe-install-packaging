@@ -13,12 +13,9 @@
 DIRECTORY=$1
 USERID=`whoami`
 
-$(. . ${ROOT_DIR}/scripts/utils/validateDirectoryIsAccessible.sh)
-AUTH_RETURN_CODE=$?
-if [[ $AUTH_RETURN_CODE == "0" ]];
+if [[ ! -d ${DIRECTORY} ]]
 then	
-	if [[ ! -w ${DIRECTORY} ]]
-	then	
-	  . ${ROOT_DIR}/scripts/utils/error.sh "Directory '${DIRECTORY}' does not have write access"	
-	fi
+  . ${ROOT_DIR}/scripts/utils/error.sh "Directory '${DIRECTORY}' doesn't exist, or is not accessible to ${USERID}. If the directory exists, check all the parent directories have traversal permission (execute)"
+  return 1
 fi
+return 0

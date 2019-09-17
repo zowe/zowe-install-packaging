@@ -74,8 +74,9 @@ ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}UD
 ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}UU
 
 # Make sure ROOT DIR and USER DIR are accessible and writable to the user id running this
-. ${ROOT_DIR}/scripts/utils/validateDirectoryIsWritable.sh ${ROOT_DIR}
+mkdir -p ${USER_DIR}/
 . ${ROOT_DIR}/scripts/utils/validateDirectoryIsWritable.sh ${USER_DIR}
+. ${ROOT_DIR}/scripts/utils/validateDirectoryIsAccessible.sh ${ROOT_DIR}
 checkForErrorsFound
 
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
