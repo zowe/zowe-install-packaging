@@ -73,8 +73,4 @@ if [ "$BUILD_SMPE" = "yes" ]; then
   echo "mv zowe-smpe.pax AZWE${FMID_VERISON}.pax.Z" > "rename-back.sh.1047"
   echo "mv readme.txt AZWE${FMID_VERISON}.readme.txt" >> "rename-back.sh.1047"
   iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
-else
-  # prepare an empty rename-back.sh
-  echo "echo no SMPE package created." > "rename-back.sh.1047"
-  iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 fi

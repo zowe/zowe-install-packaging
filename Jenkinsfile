@@ -117,11 +117,11 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'ZOWE_VERSION': pipeline.getVersion(),
             'BUILD_SMPE'  : (params.BUILD_SMPE ? 'yes' : '')
           ],
-          extraFiles      : 'zowe-smpe.pax,readme.txt,rename-back.sh',
+          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,rename-back.sh' : ''),
           keepTempFolder  : params.KEEP_TEMP_FOLDER
       )
       // rename to correct suffix
-      sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
+      sh "cd .pax && test -f rename-back.sh && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
     }
   )
 
