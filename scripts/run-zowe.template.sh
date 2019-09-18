@@ -31,6 +31,19 @@ while getopts ":v" opt; do
   esac
 done
 
+checkForErrorsFound() {
+  if [[ $ERRORS_FOUND > 0 ]]
+  then
+    # if -v passed in any validation failures abort
+    if [ ! -z $VALIDATE_ABORTS ]
+    then
+      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
+      exit $ERRORS_FOUND
+    fi
+  fi
+}
+
+
 # New Cupids work - once we have PARMLIB/properties files removed properly this won't be needed anymore
 ROOT_DIR={{root_dir}} # the install directory of zowe
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
@@ -59,6 +72,11 @@ ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}UJ
 ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}UD
 ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}UU
+
+# Make sure ROOT DIR and USER DIR are accessible and writable to the user id running this
+mkdir -p ${USER_DIR}/
+. ${ROOT_DIR}/scripts/utils/validateDirectoryIsWritable.sh ${USER_DIR}
+checkForErrorsFound
 
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
@@ -106,15 +124,8 @@ do
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
 done
-if [[ $ERRORS_FOUND > 0 ]]
-then
-	# if -v passed in any validation failures abort
-  if [ ! -z $VALIDATE_ABORTS ]
-  then
-    echo "$ERRORS_FOUND errors were found during validatation, please correct the properties in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
-    exit $ERRORS_FOUND
-  fi
-fi
+
+checkForErrorsFound
 
 mkdir -p ${USER_DIR}/backups
 # Make accessible to group so owning user can edit?
