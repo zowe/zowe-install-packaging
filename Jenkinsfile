@@ -44,14 +44,10 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
     ],
     pax: [
-      // sshHost                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_HOST,
-      // sshPort                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_PORT,
-      // sshCredential              : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_CREDENTIAL,
-      // remoteWorkspace            : lib.Constants.DEFAULT_PAX_PACKAGING_REMOTE_WORKSPACE,
-      sshHost                    : 'river.zowe.org',
-      sshPort                    : '2022',
-      sshCredential              : 'ssh-zdt-test-image-guest',
-      remoteWorkspace            : '/zaas1',
+      sshHost                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_HOST,
+      sshPort                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_PORT,
+      sshCredential              : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_CREDENTIAL,
+      remoteWorkspace            : lib.Constants.DEFAULT_PAX_PACKAGING_REMOTE_WORKSPACE,
     ],
     extraInit: {
       def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
