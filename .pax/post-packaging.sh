@@ -51,8 +51,17 @@ if [ "$BUILD_SMPE" = "yes" ]; then
   cat "${INPUT_TXT}"
   mkdir -p zowe
 
-  ./smpe/bld/smpe.sh -i "${CURR_PWD}/${INPUT_TXT}" -v ${FMID_VERISON} -r "${CURR_PWD}/zowe" -d
-
+  # ZOWEAD3 and ZOWE02 is specific parameter for packaging on Marist server.
+  # To package on another server, we may need different settings.
+  # Or if the server is configured properly, may just remove -h and -L options.
+  ./smpe/bld/smpe.sh \
+    -i "${CURR_PWD}/${INPUT_TXT}" \
+    -h "ZOWEAD3" \
+    -L "ZOWE02" \
+    -v ${FMID_VERISON} \
+    -r "${CURR_PWD}/zowe" \
+    -d
+  
   # get the final build result
   ZOWE_SMPE_PAX="AZWE${FMID_VERISON}/gimzip/AZWE${FMID_VERISON}.pax.Z"
   if [ ! -f "${CURR_PWD}/zowe/${ZOWE_SMPE_PAX}" ]; then
