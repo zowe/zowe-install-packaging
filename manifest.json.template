@@ -14,12 +14,12 @@
     "org.zowe.zlux.zlux-core": {
       "version": "1.5.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.5.0-20190917.110148.pax"
+      "artifact": "zlux-core-1.5.0-20190918.163051.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "1.5.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-auth-1.5.0-20190917.111136.pax"
+      "artifact": "zss-auth-1.5.0-20190918.161731.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "1.5.0-RC",
