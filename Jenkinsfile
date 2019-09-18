@@ -20,7 +20,7 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.admins.add("jackjia", "stevenh", "joewinchester", "markackert")
 
   // we have extra parameters for integration test
-  pipeline.addBuildParameter(
+  pipeline.addBuildParameters(
     booleanParam(
       name: 'BUILD_SMPE',
       description: 'If we want to build SMP/e package.',
