@@ -22,6 +22,11 @@ node('ibm-jenkins-slave-nvm') {
   // we have extra parameters for integration test
   pipeline.addBuildParameter(
     booleanParam(
+      name: 'BUILD_SMPE',
+      description: 'If we want to build SMP/e package.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -108,7 +113,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       pipeline.pax.pack(
           job             : "zowe-packaging",
           filename        : 'zowe.pax',
-          environments    : [ 'ZOWE_VERSION': pipeline.getVersion() ],
+          environments    : [
+            'ZOWE_VERSION': pipeline.getVersion(),
+            'BUILD_SMPE'  : (params.BUILD_SMPE ? 'yes' : '')
+          ],
           extraFiles      : 'zowe-smpe.pax,readme.txt,rename-back.sh',
           keepTempFolder  : params.KEEP_TEMP_FOLDER
       )

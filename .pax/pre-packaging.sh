@@ -12,7 +12,6 @@ set -x
 ################################################################################
 
 SCRIPT_NAME=$(basename "$0")
-ZOWE_VERSION=$(cat content/version)
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "$SCRIPT_NAME ZOWE_VERSION environment variable is missing"

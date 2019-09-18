@@ -22,7 +22,13 @@ set -x
 SCRIPT_NAME=$(basename "$0")
 BASEDIR=$(dirname "$0")
 PAX_WORKSPACE_DIR=.pax
-ZOWE_VERSION=$(cat manifest.json | jq -r '.version')
+
+if [ -z "$ZOWE_VERSION" ]; then
+  echo "$SCRIPT_NAME ZOWE_VERSION environment variable is missing"
+  exit 1
+else
+  echo "$SCRIPT_NAME working on Zowe v${ZOWE_VERSION} ..."
+fi
 
 cd $BASEDIR
 cd ..
