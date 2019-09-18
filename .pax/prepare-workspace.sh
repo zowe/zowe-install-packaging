@@ -63,9 +63,6 @@ cp manifest.json "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 cp -R install/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
 cp -R scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 
-# write a version file, so pre-packaging.sh can pick up
-echo "$ZOWE_VERSION" > "${PAX_WORKSPACE_DIR}/ascii/version"
-
 # move licenses
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/licenses"
 mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zowe_licenses_full.zip "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/licenses"
