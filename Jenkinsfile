@@ -120,8 +120,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,rename-back.sh' : ''),
           keepTempFolder  : params.KEEP_TEMP_FOLDER
       )
-      // rename to correct suffix
-      sh "cd .pax && test -f rename-back.sh && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
+      if (params.BUILD_SMPE) {
+        // rename SMP/e build with correct FMID name
+        sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
+      }
     }
   )
 
