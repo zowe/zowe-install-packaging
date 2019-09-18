@@ -17,6 +17,7 @@
 # -h        (optional) hide the allocate command being issued
 # -p        (optional) existing partitioned data set must be PDS
 # -P dirBlk (optional) allocate data set as PDS with x directory blocks
+# -L volume (optional) allocate data set on specific volume
 # dsn       data set name
 # recFm     record format; {FB | FBA | U | VB | VBA}
 # lRecL     logical record length, use ** for RECFM(U)
@@ -48,16 +49,17 @@ test "$debug" && echo "> $me $@"
 unset rc
 
 # Clear input variables
-unset pdse hide pds dir
+unset pdse hide pds dir volume
 
 # Get startup arguments
 args="$@"
-while getopts ehpP opt
+while getopts ehpP:L: opt
 do case "$opt" in
   e)   pdse="-e";;
   h)   hide="-h";;
   p)   pds="-p";;
   P)   dir="$OPTARG";;
+  L)   volume="$OPTARG";;
   [?]) echo "** ERROR $(basename $0) faulty startup argument: $@"
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
@@ -137,15 +139,22 @@ then                                          # data set does not exist
     dsOrg="dsntype(library) dsorg(po)"
   fi    #
 
+  if test "$volume"
+  then
+    volume="volume($volume)"
+  else
+    volume=
+  fi    #
+
   if test "$hide"
   then 
     # trap stderr, do not show alloc command (&2), but show error (&1)
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
-      "space($space) tracks unit(sysallda)" 2> /dev/null
+      "space($space) tracks unit(sysallda) $volume" 2> /dev/null
   else
     # Do NOT trap output, user must see alloc command (&2) & error (&1)
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
-      "space($space) tracks unit(sysallda)" 2>&1
+      "space($space) tracks unit(sysallda) $volume" 2>&1
   fi    #
   
   if test $? -eq 0

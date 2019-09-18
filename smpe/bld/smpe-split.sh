@@ -334,7 +334,6 @@ then
 fi    #
 # sample output:
 # ## zowe-1.1.0.pax
-# ## zowe-cli-package-1.1.0.zip
 
 # 3. set aside all USS content for delta & reference
 #-- only file name

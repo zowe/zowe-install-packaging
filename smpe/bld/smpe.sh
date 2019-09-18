@@ -25,6 +25,7 @@
 #% -r rootDir    use the specified root directory
 #%               /$FMID is automatically added
 #%               ignored when -c is specified
+#% -L volser     use the specified volume to put the data-sets in
 #s -s stopAt.sh  stop before this sub-script is invoked          #debug
 #% -v vrm        FMID 3-character version/release/modification
 #%               ignored when -c is specified
@@ -146,11 +147,11 @@ _cmd umask 0022                                  # similar to chmod 755
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset alter YAML count HLQ input ROOT stopAt VRM fmid1 fmid2
+unset alter YAML count HLQ input ROOT VOLSER stopAt VRM fmid1 fmid2
 # do NOT unset debug
 
 # get startup arguments
-while getopts a:c:f:h:i:r:s:v:1:2:?d opt
+while getopts a:c:f:h:i:r:L:s:v:1:2:?d opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
   c)   export YAML="$OPTARG";;
@@ -159,6 +160,7 @@ do case "$opt" in
   h)   export HLQ="$OPTARG";;
   i)   export input="$OPTARG";;
   r)   export ROOT="$OPTARG";;
+  L)   export VOLSER="$OPTARG";;
   s)   export stopAt="$OPTARG";;
   v)   export VRM="$OPTARG";;
   1)   export fmid1="$OPTARG";;

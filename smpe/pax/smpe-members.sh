@@ -45,7 +45,7 @@ test "$debug" && echo && echo "> _installMVS $@"
 dsn="${mvsI}.$1"
 
 # validate/create target data set
-$here/scripts/$allocScript $dsn "$2" "$3" "$4" "$5"
+$here/scripts/$allocScript -L "$VOLSER" $dsn "$2" "$3" "$4" "$5"
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
