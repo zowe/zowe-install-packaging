@@ -20,6 +20,13 @@ while getopts ":I" opt; do
   esac
 done
 
+# Ensure that newly created files are in EBCDIC codepage
+export _CEE_RUNOPTS=""
+export _TAG_REDIR_IN=""
+export _TAG_REDIR_OUT=""
+export _TAG_REDIR_ERR=""
+export _BPXK_AUTOCVT="OFF"
+
 PREV_DIR=`pwd`
 cd $(dirname $0)/../
 export INSTALL_DIR=`pwd`
