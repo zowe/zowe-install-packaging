@@ -13,7 +13,7 @@
 # Assign default values that will be filled in as we parse the yaml file
 
 echo "<zowe-parse-yaml.sh>" >> $LOG_FILE 
-echo "Reading install variables from zowe-install.sh"
+echo "Reading variables from zowe-install.yaml"
 
 parseConfiguationFile() {
 while read line
@@ -44,6 +44,12 @@ do
 # If the value starts with a ~ for the home variable then evaluate it
                 ZOWE_ROOT_DIR=`sh -c "echo $value"` 
                 export ZOWE_ROOT_DIR
+            fi
+# Look for prefix= beneath install:
+            if [[ $key == "prefix" ]] && [[ $section == "install" ]]
+            then
+                ZOWE_PREFIX=$value
+                export ZOWE_PREFIX
             fi
 # Look for jobsAPIPort= beneath zos-services:
             if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
@@ -151,10 +157,16 @@ do
                 ZOWE_ZOSMF_KEYRING=$value
                 export ZOWE_ZOSMF_KEYRING
             fi
-            if [[ $key == "zosmfUserid" ]] && [[ $section == "api-mediation" ]]
+
+            if [[ $key == "zosmfUserid" ]] && [[ $section == "zosmf" ]]
             then
                 ZOWE_ZOSMF_USERID=$value
                 export ZOWE_ZOSMF_USERID
+            fi
+            if [[ $key == "zosmfAdminGroup" ]] && [[ $section == "zosmf" ]]
+            then
+                ZOWE_ZOSMF_ADMIN_GROUP=$value
+                export ZOWE_ZOSMF_ADMIN_GROUP
             fi
 
             if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
@@ -179,6 +191,11 @@ if [[ $ZOWE_ROOT_DIR == "" ]]
 then
     ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
     echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION"
+fi
+if [[ $ZOWE_PREFIX == "" ]]
+then
+    ZOWE_PREFIX="ZOWE"
+    echo "  ZOWE_PREFIX not specified:  Defaulting to ZOWE"
 fi
 if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
 then
@@ -250,6 +267,11 @@ then
     ZOWE_ZOSMF_USERID="IZUSVR"
     echo "  ZOWE_ZOSMF_USERID not specified:  Defaulting to IZUSVR"
 fi
+if [[ $ZOWE_ZOSMF_ADMIN_GROUP == "" ]]
+then
+    ZOWE_ZOSMF_ADMIN_GROUP="IZUADMIN"
+    echo "  ZOWE_ZOSMF_ADMIN_GROUP not specified:  Defaulting to IZUADMIN"
+fi
 
 # Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
 # The ssh and telnet ports are there and already being used and exploited by the apps
@@ -274,6 +296,7 @@ then
 fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
+echo "  ZOWE_PREFIX="$ZOWE_PREFIX >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT="$ZOWE_EXPLORER_SERVER_DATASETS_PORT >> $LOG_FILE
@@ -294,6 +317,7 @@ echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FI
 echo "  ZOWE_APIM_ENABLE_SSO="$ZOWE_APIM_ENABLE_SSO >> $LOG_FILE
 echo "  ZOWE_ZOSMF_KEYRING="$ZOWE_ZOSMF_KEYRING >> $LOG_FILE
 echo "  ZOWE_ZOSMF_USERID="$ZOWE_ZOSMF_USERID >> $LOG_FILE
+echo "  ZOWE_ZOSMF_ADMIN_GROUP="$ZOWE_ZOSMF_ADMIN_GROUP >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE

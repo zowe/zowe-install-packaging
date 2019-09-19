@@ -9,7 +9,8 @@
 # Copyright Contributors to the Zowe Project.
 
 BASEDIR=$(dirname "$0")
-loadlib=$1
+OPERCMD=$1
+loadlib=$2
 
 echo "APF-authorize loadlib ${loadlib}"
 
@@ -26,7 +27,7 @@ fi
 
 if $isSMS ; then
 
-  cmdout="$($BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},SMS" 2>&1)"
+  cmdout="$(${OPERCMD} "SETPROG APF,ADD,DSNAME=${loadlib},SMS" 2>&1)"
 
 else
 
@@ -44,7 +45,7 @@ else
     exit 8
   fi
 
-  cmdout="$($BASEDIR/../opercmd "SETPROG APF,ADD,DSNAME=${loadlib},VOLUME=${volume}" 2>&1)"
+  cmdout="$(${OPERCMD} "SETPROG APF,ADD,DSNAME=${loadlib},VOLUME=${volume}" 2>&1)"
 
 fi
 

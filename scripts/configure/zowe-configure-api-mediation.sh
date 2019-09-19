@@ -26,7 +26,9 @@
 
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
-cd $ZOWE_ROOT_DIR"/api-mediation"
+API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/api-mediation"
+
+cd $API_MEDIATION_DIR
 
 # Set a+rx for API Mediation JARs
 chmod a+rx *.jar 
@@ -37,7 +39,7 @@ chmod a+rx apiml-auth/lib
 chmod -R a+r apiml-auth
 
 # Create the static api definitions folder
-STATIC_DEF_CONFIG=$ZOWE_ROOT_DIR"/api-mediation/api-defs"
+STATIC_DEF_CONFIG=$API_MEDIATION_DIR"/api-defs"
 mkdir -p $STATIC_DEF_CONFIG
 
 echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
@@ -45,11 +47,11 @@ echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $L
 cd scripts/
 # Add JAVA_HOME to both script templates
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
-    -e 's/\*\*ZOSMF_KEYRING\*\*/'$ZOWE_ZOSMF_KEYRING'/g' \
-    -e 's/\*\*ZOSMF_USER\*\*/'$ZOWE_ZOSMF_USERID'/g' \
+    -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
+    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
+    -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
+    -e "s/\*\*ZOSMF_KEYRING\*\*/$ZOWE_ZOSMF_KEYRING/g" \
+    -e "s/\*\*ZOSMF_USER\*\*/$ZOWE_ZOSMF_USERID/g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_ALIAS\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS|g" \
     -e "s|\*\*EXTERNAL_CERTIFICATE_AUTHORITIES\*\*|$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES|g" \
@@ -61,37 +63,37 @@ chmod a+x setup-apiml-certificates.sh
 
 # Inject parameters into API Mediation startup scripts, which contains command-line parameters as configuration
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
+    -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
+    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
+    -e "s/\*\*DISCOVERY_PORT\*\*/$ZOWE_APIM_DISCOVERY_PORT/g" \
+    -e "s/\*\*CATALOG_PORT\*\*/$ZOWE_APIM_CATALOG_PORT/g" \
+    -e "s/\*\*GATEWAY_PORT\*\*/$ZOWE_APIM_GATEWAY_PORT/g" \
+    -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
     api-mediation-start-catalog-template.sh > api-mediation-start-catalog.sh
 
 # Inject parameters into API Mediation startup, which contains command-line parameters as configuration
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
+    -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
+    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
+    -e "s/\*\*DISCOVERY_PORT\*\*/$ZOWE_APIM_DISCOVERY_PORT/g" \
+    -e "s/\*\*CATALOG_PORT\*\*/$ZOWE_APIM_CATALOG_PORT/g" \
+    -e "s/\*\*GATEWAY_PORT\*\*/$ZOWE_APIM_GATEWAY_PORT/g" \
+    -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
     api-mediation-start-gateway-template.sh > api-mediation-start-gateway.sh
 
 # Inject parameters into API Mediation startup, which contains command-line parameters as configuration
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e 's/\*\*HOSTNAME\*\*/'$ZOWE_EXPLORER_HOST'/g' \
-    -e 's/\*\*IPADDRESS\*\*/'$ZOWE_IPADDRESS'/g' \
-    -e 's/\*\*DISCOVERY_PORT\*\*/'$ZOWE_APIM_DISCOVERY_PORT'/g' \
-    -e 's/\*\*CATALOG_PORT\*\*/'$ZOWE_APIM_CATALOG_PORT'/g' \
-    -e 's/\*\*GATEWAY_PORT\*\*/'$ZOWE_APIM_GATEWAY_PORT'/g' \
-    -e 's|\*\*STATIC_DEF_CONFIG\*\*|'$STATIC_DEF_CONFIG'|g' \
-    -e 's/\*\*VERIFY_CERTIFICATES\*\*/'$ZOWE_APIM_VERIFY_CERTIFICATES'/g' \
+    -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
+    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
+    -e "s/\*\*DISCOVERY_PORT\*\*/$ZOWE_APIM_DISCOVERY_PORT/g" \
+    -e "s/\*\*CATALOG_PORT\*\*/$ZOWE_APIM_CATALOG_PORT/g" \
+    -e "s/\*\*GATEWAY_PORT\*\*/$ZOWE_APIM_GATEWAY_PORT/g" \
+    -e "s|\*\*STATIC_DEF_CONFIG\*\*|$STATIC_DEF_CONFIG|g" \
+    -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
     api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
 
-# Make the scripts executable
-chmod a+rx *.sh
+# Make the scripts read and executable
+chmod -R 750 "${API_MEDIATION_DIR}/scripts"
 
 cd ..
 
@@ -100,11 +102,13 @@ echo "  Setting up Zowe API Mediation Layer certificates..."
 ./scripts/setup-apiml-certificates.sh >> $LOG_FILE
 echo "  Certificate setup done."
 
+chmod -R 750 "${API_MEDIATION_DIR}/keystore"
+
 # Get the zos version
 ZOSMF_VERSION=""
 ZOSMF_DOC_URL=""
 # Hack - if opercmd fails default to latest OS
-ZOS_RELEASE=`$INSTALL_DIR/scripts/opercmd 'd iplinfo'|grep RELEASE` || ZOS_RELEASE="RELEASE z/OS 02.03.00"
+ZOS_RELEASE=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd 'd iplinfo'|grep RELEASE` || ZOS_RELEASE="RELEASE z/OS 02.03.00"
 ZOS_VRM=`echo $ZOS_RELEASE | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
 
 if [[ $ZOS_VRM == "02.03.00" ]]
@@ -251,8 +255,7 @@ services:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
-chmod -R 777 $STATIC_DEF_CONFIG
-
-chmod 755 $ZOWE_ROOT_DIR/api-mediation/scripts
+#Make the static defs read/write to owner/group (so that IZUSVR can read them)
+chmod -R 750 ${STATIC_DEF_CONFIG}
 
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE

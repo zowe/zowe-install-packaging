@@ -9,10 +9,11 @@
 # Copyright Contributors to the Zowe Project.
 
 BASEDIR=$(dirname "$0")
-saf=$1
-stcPrefix=$2
-stcUser=$3
-stcGroup=$4
+OPERCMD=$1
+saf=$2
+stcPrefix=$3
+stcUser=$4
+stcGroup=$5
 
 rc=8
 
@@ -53,7 +54,7 @@ ACF2)
       cat /tmp/cmd.out /tmp/cmd.err
       rc=8
     else
-      $BASEDIR/../opercmd "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
+      ${OPERCMD} "F ACF2,REFRESH(STC)" 1> /dev/null 2> /dev/null \
         1> /tmp/cmd.out 2> /tmp/cmd.err 
       if [[ $? -ne 0 ]]
       then

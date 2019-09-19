@@ -55,18 +55,17 @@ for one in $EXPLORER_API_LIST; do
   # Add JAVA_HOME to start script templates
   sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
       -e "s/\*\*${ZOWE_EXPLORER_JAR_MACRO}\*\*/${EXPLORER_API_JAR}/g" \
-      -e 's/\*\*SERVER_PORT\*\*/'$ZOWE_EXPLORER_API_PORT'/g' \
+      -e "s/\*\*SERVER_PORT\*\*/$ZOWE_EXPLORER_API_PORT/g" \
       -e "s|\*\*KEY_ALIAS\*\*|localhost|g" \
       -e "s|\*\*KEYSTORE\*\*|$ZOWE_ROOT_DIR/api-mediation/keystore/localhost/localhost.keystore.p12|g" \
       -e "s|\*\*KEYSTORE_PASSWORD\*\*|password|g" \
-      -e 's/\*\*ZOSMF_HTTPS_PORT\*\*/'$ZOWE_ZOSMF_PORT'/g' \
-      -e 's/\*\*ZOSMF_IP\*\*/'$ZOWE_IPADDRESS'/g' \
+      -e "s/\*\*ZOSMF_HTTPS_PORT\*\*/$ZOWE_ZOSMF_PORT/g" \
+      -e "s/\*\*ZOSMF_IP\*\*/$ZOWE_IPADDRESS/g" \
       "${one}-api-server-start.sh" > "${one}-api-server-start.sh.tmp"
   mv "${one}-api-server-start.sh.tmp" "${one}-api-server-start.sh"
 
   # Make configured script executable
-  chmod a+x *.sh
-  chmod 755 $ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER/scripts
+  chmod -R 755 $ZOWE_ROOT_DIR/$EXPLORER_INSTALL_FOLDER/scripts
 done
 
 echo "</zowe-explorer-api-configure.sh>" >> $LOG_FILE
