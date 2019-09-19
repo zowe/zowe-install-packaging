@@ -12,15 +12,12 @@ set -x
 ################################################################################
 
 SCRIPT_NAME=$(basename "$0")
-ZOWE_VERSION=$(cat content/version)
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "$SCRIPT_NAME ZOWE_VERSION environment variable is missing"
   exit 1
 else
   echo "$SCRIPT_NAME working on Zowe v${ZOWE_VERSION} ..."
-  # remove the version file
-  rm content/version
 fi
 
 # Create mediation PAX
@@ -36,3 +33,7 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
 chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
+
+# prepare for SMPE
+echo "$SCRIPT_NAME smpe is not part of zowe.pax, moving out ..."
+mv content/smpe .

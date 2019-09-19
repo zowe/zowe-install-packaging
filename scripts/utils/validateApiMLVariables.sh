@@ -26,13 +26,4 @@ then
     . ${ROOT_DIR}/scripts/utils/error.sh "KEY_ALIAS is empty"
 fi
 
-# - STATIC_DEF_CONFIG_DIR - Should exist and be writable
-if [[ ! -d ${STATIC_DEF_CONFIG_DIR} ]]
-then	
-  . ${ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' doesn't exist"
-else 	
-	if [[ ! -w ${STATIC_DEF_CONFIG_DIR} ]]
-	then	
-	  . ${ROOT_DIR}/scripts/utils/error.sh "Static definition config directory '${STATIC_DEF_CONFIG_DIR}' does not have write access"	
-	fi
-fi
+. ${ROOT_DIR}/scripts/utils/validateDirectoryIsWritable.sh ${STATIC_DEF_CONFIG_DIR}

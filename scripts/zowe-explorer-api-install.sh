@@ -55,7 +55,8 @@ for COMPONENT_ID in $EXPLORER_API_LIST; do
   EXPLORER_API_JAR=$(ls -d -t ${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin/*-api-server-*.jar | head -1)
   chmod a+rx $EXPLORER_API_JAR
   # copy start script
-  sed -e "s#{{jar_path}}#${EXPLORER_API_JAR}#" \
+  JAR_NAME=$(basename "$EXPLORER_API_JAR")
+  sed -e "s#{{jar_path}}#\${ROOT_DIR}/components/${COMPONENT_ID}/bin/${JAR_NAME}#" \
      $EXPLORER_API_START_SCRIPT > "start.sh"  
 
   if [[ -f ${CONFIGURE_SCRIPT} ]]
