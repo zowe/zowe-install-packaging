@@ -147,6 +147,11 @@ grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scr
 cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
+# Prepare utils directory 
+mkdir ${ZOWE_ROOT_DIR}/scripts/utils
+cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
+chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
+
 echo "Copying zowe-runtime-authorize.template.sh to "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh >> $LOG_FILE
 cp "$INSTALL_DIR/scripts/zowe-runtime-authorize.template.sh" "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh"
 
