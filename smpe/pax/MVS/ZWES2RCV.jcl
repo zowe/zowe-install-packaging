@@ -1,0 +1,50 @@
+//ZWES2RCV JOB <job parameters>
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//********************************************************************
+//*
+//* This JCL will RECEIVE a service SYSMOD (PTF, APAR, USERMOD).
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this job step, you will have to make the following
+//* modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change #csihlq to the high level qualifier for the global zone
+//*    of the CSI.
+//*
+//* 3) Change #ptfhlq to the high level qualifier(s) of the data set
+//*    holding the sysmod to be received.
+//*
+//* 4) Change #sysmod to the name of the SYSMOD to be received.
+//*
+//* Note(s):
+//*
+//* 1. If you obtained additional HOLDDATA, Change NULLFILE in
+//*    DD SMPHOLD to the name of the data set holding the HOLDDATA.
+//*
+//* 2. This job should complete with a return code 0.
+//*
+//********************************************************************
+//*
+//         SET SYSMOD=#sysmod
+//         SET HLQ=#ptfhlq
+//*
+//RECEIVE  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=#csihlq.CSI
+//SMPHOLD  DD DISP=SHR,DSN=NULLFILE
+//SMPPTFIN DD DISP=SHR,DSN=&HLQ..&SYSMOD
+//SMPCNTL  DD *
+   SET BOUNDARY(GLOBAL) .
+   RECEIVE SYSMODS LIST .
+//*
