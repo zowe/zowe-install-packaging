@@ -148,6 +148,14 @@ node('ibm-jenkins-slave-nvm') {
     ]
   )
 
+  pipeline.build(
+    timeout       : [time: 5, unit: 'MINUTES'],
+    isSkippable   : false,
+    operation     : {
+      echo "build?"
+    }
+  )
+
   pipeline.createStage(
     name          : "Validate",
     isSkippable   : true,
