@@ -148,14 +148,6 @@ node('ibm-jenkins-slave-nvm') {
     ]
   )
 
-  pipeline.build(
-    timeout       : [time: 5, unit: 'MINUTES'],
-    isSkippable   : false,
-    operation     : {
-      echo "build?"
-    }
-  )
-
   pipeline.createStage(
     name          : "Validate",
     isSkippable   : true,
@@ -225,7 +217,7 @@ node('ibm-jenkins-slave-nvm') {
         echo ">>>> Build ${params.ZOWE_BUILD_NAME}/${params.ZOWE_BUILD_NUMBER} commit hash is ${gitRevision}, may proceed."
       }
       if (params.ZOWE_CLI_BUILD_NUMBER) {
-        def zoweCliBuild = pipeline.artifactory.getArtifact(
+        def zoweCliBuild = pipeline.artifactory.getBuildInfo(
           params.ZOWE_CLI_BUILD_NAME,
           params.ZOWE_CLI_BUILD_NUMBER
         )
