@@ -1,3 +1,10 @@
+# Ensure that newly created files are in EBCDIC codepage
+export _CEE_RUNOPTS=""
+export _TAG_REDIR_IN=""
+export _TAG_REDIR_OUT=""
+export _TAG_REDIR_ERR=""
+export _BPXK_AUTOCVT="OFF"
+
 # Cache original directory, then change our directory to be here so we can rely on the script offset
 PREV_DIR=`pwd`	
 cd $(dirname $0)

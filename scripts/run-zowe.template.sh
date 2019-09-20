@@ -31,6 +31,19 @@ while getopts ":v" opt; do
   esac
 done
 
+checkForErrorsFound() {
+  if [[ $ERRORS_FOUND > 0 ]]
+  then
+    # if -v passed in any validation failures abort
+    if [ ! -z $VALIDATE_ABORTS ]
+    then
+      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
+      exit $ERRORS_FOUND
+    fi
+  fi
+}
+
+
 # New Cupids work - once we have PARMLIB/properties files removed properly this won't be needed anymore
 ROOT_DIR={{root_dir}} # the install directory of zowe
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
@@ -42,13 +55,14 @@ STC_NAME={{stc_name}}
 KEY_ALIAS={{key_alias}}
 KEYSTORE={{keystore}}
 KEYSTORE_PASSWORD={{keystore_password}}
-STATIC_DEF_CONFIG_DIR={{static_def_config_dir}}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
 ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
 ZOWE_JAVA_HOME={{java_home}}
 
-LAUNCH_COMPONENTS=files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
+LAUNCH_COMPONENT_GROUPS=GATEWAY,DESKTOP
+
+LAUNCH_COMPONENTS=""
 
 export ZOWE_PREFIX={{zowe_prefix}}{{zowe_instance}}
 ZOWE_API_GW=${ZOWE_PREFIX}AG
@@ -59,6 +73,11 @@ ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}UJ
 ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}UD
 ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}UU
 
+# Make sure ROOT DIR and USER DIR are accessible and writable to the user id running this
+mkdir -p ${USER_DIR}/
+. ${ROOT_DIR}/scripts/utils/validateDirectoryIsWritable.sh ${USER_DIR}
+checkForErrorsFound
+
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
   export NODE_HOME={{node_home}}
@@ -66,13 +85,32 @@ fi
 
 DIR=`dirname $0`
 
-cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-_BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
-_BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
-_BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
-_BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
-_BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
-_BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
+# Create the user configurable api-defs
+mkdir -p ${USER_DIR}/api-defs
+STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-defs
+
+# TODO - temporary until APIML is componentised - Inject it into discovery script
+sed -e "s#-Dapiml.discovery.staticApiDefinitionsDirectories.*[^\\]#-Dapiml.discovery.staticApiDefinitionsDirectories=\"${STATIC_DEF_CONFIG_DIR};${ROOT_DIR}/api-mediation/api-defs\" #" \
+  "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh" \
+  > "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy"
+mv "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy" "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
+chmod 770 "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
+
+if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+then
+  cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
+fi
+
+if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
+then
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
+  _BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
+  _BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
+  _BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
+  _BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
+  _BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
+  _BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
+fi
  
 # Validate component properties if script exists
 ERRORS_FOUND=0
@@ -86,15 +124,8 @@ do
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
 done
-if [[ $ERRORS_FOUND > 0 ]]
-then
-	# if -v passed in any validation failures abort
-  if [ ! -z $VALIDATE_ABORTS ]
-  then
-    echo "$ERRORS_FOUND errors were found during validatation, please correct the properties in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
-    exit $ERRORS_FOUND
-  fi
-fi
+
+checkForErrorsFound
 
 mkdir -p ${USER_DIR}/backups
 # Make accessible to group so owning user can edit?
@@ -111,7 +142,7 @@ NOW=$(date +"%y.%m.%d.%H.%M.%S")
 #TODO - inject VERSION variable at build time?
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 cat <<EOF >${USER_DIR}/active_configuration.cfg
-VERSION=1.4
+VERSION=1.5
 CREATION_DATE=${NOW}
 ROOT_DIR=${ROOT_DIR}
 USER_DIR=${USER_DIR}
@@ -124,8 +155,10 @@ KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
+ZOWE_EXPLORER_HOST=${ZOWE_EXPLORER_HOST}
 ZOWE_JAVA_HOME=${ZOWE_JAVA_HOME}
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}
+LAUNCH_COMPONENT_GROUPS=${LAUNCH_COMPONENT_GROUPS}
 EOF
 
 # Copy manifest into user_dir so we know the version for support enquiries/migration
