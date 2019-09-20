@@ -30,6 +30,7 @@ do
 done
 
 mkdir -p zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
+mkdir -p zlux-app-server/pluginDefaults/org.zowe.zlux.bootstrap/plugins/
 cp -f ${INSTALL_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
 cp -f ${INSTALL_DIR}/files/zlux/config/allowedPlugins.json zlux-app-server/pluginDefaults/org.zowe.zlux.bootstrap/plugins/
 cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/config/
