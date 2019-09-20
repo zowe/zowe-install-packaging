@@ -13,7 +13,7 @@
 node('ibm-jenkins-slave-nvm') {
   def lib = library("jenkins-library@staging").org.zowe.jenkins_shared_library
 
-  def ZOWE_RELEASE_REPOSITORY = lib.artifact.JFrogArtifactory.REPOSITORY_RELEASE
+  def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
   def ZOWE_RELEASE_PATH = '/org/zowe'
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
