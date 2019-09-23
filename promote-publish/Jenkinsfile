@@ -15,18 +15,17 @@ node('ibm-jenkins-slave-nvm') {
 
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
   def ZOWE_RELEASE_PATH = '/org/zowe'
+  def ZOWE_RELEASE_FILEPATTERN = "zowe-*.pax"
+  def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "AZWE*.pax.Z"
+  def ZOWE_RELEASE_SMPE_README_FILEPATTERN = "AZWE*.txt"
+  def ZOWE_RELEASE_CLI_FILEPATTERN = "zowe-cli-package-*.zip"
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
-  def releaseFilenamePattern = "zowe-*.pax"
-  def releaseCliFilenamePattern = "zowe-cli-package-*.zip"
-  def releaseFilename
-  def releaseCliFilename
-  def releaseFilePath
-  def releaseFileFull
-  def releaseCliFileFull
+
   def isFormalRelease = false
-  def gitRevision = null
-  def gitCliRevision = null
+  def releaseFilePath
+  def releaseArtifacts = [:]
+  def smpeFmid
 
   pipeline.admins.add("jackjia", "markackert")
 
@@ -171,6 +170,8 @@ node('ibm-jenkins-slave-nvm') {
         error "ZOWE_RELEASE_VERSION is required to promote build."
       }
 
+      echo "Checking if ${params.ZOWE_RELEASE_VERSION} is a valid semantic version ..."
+      // validate release version scheme
       // thanks semver/semver, this regular expression comes from
       // https://github.com/semver/semver/issues/232#issuecomment-405596809
       if (!(params.ZOWE_RELEASE_VERSION ==~ /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/)) {
@@ -183,15 +184,11 @@ node('ibm-jenkins-slave-nvm') {
         echo ">>>> Version ${params.ZOWE_RELEASE_VERSION} is NOT considered as a FORMAL RELEASE."
       }
 
-      releaseFilename = "zowe-${params.ZOWE_RELEASE_VERSION}.pax"
-      releaseCliFilename = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip"
+      // this is the target Artifactory path will be released to
       releaseFilePath = "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/${params.ZOWE_RELEASE_VERSION}"
-      releaseFileFull = "${releaseFilePath}/${releaseFilename}"
-      releaseCliFileFull = "${releaseFilePath}/${releaseCliFilename}"
 
-      echo "Checking if ${params.ZOWE_RELEASE_VERSION} already exists ..."
-
-      // check artifactory
+      // check artifactory release path
+      echo "Checking if ${params.ZOWE_RELEASE_VERSION} already exists in Artifactory ..."
       def versionOnArtifactory
       try {
         versionOnArtifactory = pipeline.artifactory.getArtifact(releaseFilePath)
@@ -201,8 +198,17 @@ node('ibm-jenkins-slave-nvm') {
       if (versionOnArtifactory && versionOnArtifactory.path) {
         error "Zowe version ${params.ZOWE_RELEASE_VERSION} already exists (${releaseFilePath})"
       } else {
-        echo ">>>> Target artifactory folder doesn't exist, may proceed."
+        echo ">>>> Target artifactory folder ${releaseFilePath} doesn't exist, may proceed."
       }
+
+      releaseArtifacts['zowe'] = [:]
+      releaseArtifacts['zowe']['target'] = [:]
+      releaseArtifacts['zowe']['target']['filename'] = "zowe-${params.ZOWE_RELEASE_VERSION}.pax"
+      releaseArtifacts['zowe']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['zowe']['target']['filename']}"
+      releaseArtifacts['cli'] = [:]
+      releaseArtifacts['cli']['target'] = [:]
+      releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip"
+      releaseArtifacts['cli']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['cli']['target']['filename']}"
 
       // check build info
       if (params.ZOWE_BUILD_NUMBER) {
@@ -228,7 +234,7 @@ node('ibm-jenkins-slave-nvm') {
         echo ">>>> Build ${params.ZOWE_CLI_BUILD_NAME}/${params.ZOWE_CLI_BUILD_NUMBER} commit hash is ${gitCliRevision}, may proceed."
       }
 
-      // check deploy target directory
+      // check publish target directory
       withCredentials([usernamePassword(credentialsId: params.PUBLISH_SSH_CREDENTIAL, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
         // move to target folder, split and generate hash
         def versionOnPublishDir = sh(script:"""SSHPASS=${PASSWORD} sshpass -e ssh -tt -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
