@@ -30,6 +30,9 @@ ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}EUJ1
 ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}EUD1
 ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}EUU1
 
+# Set debug log level for the API Mediation Layer
+APIML_LOG_LEVEL=
+
 if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
 export NODE_HOME={{node_home}}
@@ -38,9 +41,9 @@ fi
 DIR=`dirname $0`
 
 cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-_BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
-_BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
-_BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
+_BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh $APIML_LOG_LEVEL
+_BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh $APIML_LOG_LEVEL
+_BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh $APIML_LOG_LEVEL
 _BPX_JOBNAME=$ZOWE_EXPL_JOBS $DIR/../../explorer-jobs-api/scripts/jobs-api-server-start.sh
 _BPX_JOBNAME=$ZOWE_EXPL_DATA $DIR/../../explorer-data-sets-api/scripts/data-sets-api-server-start.sh
 _BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
