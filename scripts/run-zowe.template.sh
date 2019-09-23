@@ -49,6 +49,10 @@ ROOT_DIR={{root_dir}} # the install directory of zowe
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
 FILES_API_PORT={{files_api_port}} # the port the files api service will use
 JOBS_API_PORT={{jobs_api_port}} # the port the files api service will use
+DISCOVERY_PORT={{discovery_port}} # the port the discovery service will use
+CATALOG_PORT={{catalog_port}} # the port the api catalog service will use
+GATEWAY_PORT={{gateway_port}} # the port the api gateway service will use
+VERIFY_CERTIFICATES={{verify_certificates}} # boolean saying if we accept only verified certificates
 STC_NAME={{stc_name}}
 
 # details to be read from higher level entry that instance PARMLIB/prop file?
@@ -57,6 +61,7 @@ KEYSTORE={{keystore}}
 KEYSTORE_PASSWORD={{keystore_password}}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
+ZOWE_IP_ADDRESS={{zowe_ip_address}}
 ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
 ZOWE_JAVA_HOME={{java_home}}
 
