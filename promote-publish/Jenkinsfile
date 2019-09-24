@@ -201,15 +201,11 @@ node('ibm-jenkins-slave-nvm') {
         echo ">>>> Target artifactory folder ${releaseFilePath} doesn't exist, may proceed."
       }
 
+      // prepare and check zowe pax build information
       releaseArtifacts['zowe'] = [:]
       releaseArtifacts['zowe']['target'] = [:]
       releaseArtifacts['zowe']['target']['filename'] = "zowe-${params.ZOWE_RELEASE_VERSION}.pax"
       releaseArtifacts['zowe']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['zowe']['target']['filename']}"
-      releaseArtifacts['cli'] = [:]
-      releaseArtifacts['cli']['target'] = [:]
-      releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip"
-      releaseArtifacts['cli']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['cli']['target']['filename']}"
-
       if (params.ZOWE_BUILD_RC_PATH) {
         def artifact = pipeline.artifactory.getArtifact(params.ZOWE_BUILD_RC_PATH)
         if (artifact['build.name'].contains('zowe-promote-publish') &&
@@ -237,19 +233,41 @@ node('ibm-jenkins-slave-nvm') {
       }
       echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
 
-      echo "releaseArtifacts=${releaseArtifacts}"
+      // prepare and check zowe CLI build information
+      releaseArtifacts['cli'] = [:]
+      releaseArtifacts['cli']['target'] = [:]
+      releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip"
+      releaseArtifacts['cli']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['cli']['target']['filename']}"
+      if (params.ZOWE_CLI_BUILD_RC_PATH) {
+        def artifact = pipeline.artifactory.getArtifact(params.ZOWE_CLI_BUILD_RC_PATH)
+        if (artifact['build.name'].contains('zowe-promote-publish') &&
+          artifact['build.parentName'] && artifact['build.parentNumber']) {
+          artifact['build.name'] = artifact['build.parentName']
+          artifact['build.number'] = artifact['build.parentNumber']
+        }
+        if (artifact['build.name'] && artifact['build.number']) {
+          releaseArtifacts['cli']['buildName'] = artifact['build.name']
+          releaseArtifacts['cli']['buildNumber'] = artifact['build.number']
+        } else {
+          error "Cannot find build information for artifact ${params.ZOWE_CLI_BUILD_RC_PATH}"
+        }
+      } else {
+        releaseArtifacts['cli']['buildName'] = params.ZOWE_CLI_BUILD_NAME
+        releaseArtifacts['cli']['buildNumber'] = params.ZOWE_CLI_BUILD_NUMBER
+      }
+      releaseArtifacts['cli']['build'] = pipeline.artifactory.getBuildInfo(
+        releaseArtifacts['cli']['buildName'],
+        releaseArtifacts['cli']['buildNumber']
+      )
+      releaseArtifacts['cli']['revision'] = releaseArtifacts['cli']['build'] && releaseArtifacts['cli']['build']['vcsRevision']
+      if (!("${releaseArtifacts['cli']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+        error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
+      }
+      echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
 
-      // if (params.ZOWE_CLI_BUILD_NUMBER) {
-      //   def zoweCliBuild = pipeline.artifactory.getBuildInfo(
-      //     params.ZOWE_CLI_BUILD_NAME,
-      //     params.ZOWE_CLI_BUILD_NUMBER
-      //   )
-      //   gitCliRevision = zoweCliBuild && zoweCliBuild && zoweCliBuild.vcsRevision
-      //   if (!("${gitCliRevision}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-      //     error "Cannot extract git revision from build \"${params.ZOWE_CLI_BUILD_NAME}/${params.ZOWE_CLI_BUILD_NUMBER}\""
-      //   }
-      //   echo ">>>> Build ${params.ZOWE_CLI_BUILD_NAME}/${params.ZOWE_CLI_BUILD_NUMBER} commit hash is ${gitCliRevision}, may proceed."
-      // }
+      // debug show releaseArtifacts
+      writeJSON file: '.tmp-release-artifacts.json', json: releaseArtifacts, pretty: 4
+      sh 'echo =============================================== && cat .tmp-release-artifacts.json'
 
       // check publish target directory
       withCredentials([usernamePassword(credentialsId: params.PUBLISH_SSH_CREDENTIAL, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
