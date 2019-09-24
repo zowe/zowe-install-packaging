@@ -28,7 +28,7 @@
 
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
-API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/api-mediation"
+API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"
 
 cd $API_MEDIATION_DIR
 
