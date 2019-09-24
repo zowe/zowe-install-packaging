@@ -210,29 +210,46 @@ node('ibm-jenkins-slave-nvm') {
       releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip"
       releaseArtifacts['cli']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['cli']['target']['filename']}"
 
-      // check build info
-      if (params.ZOWE_BUILD_NUMBER) {
-        def zoweBuild = pipeline.artifactory.getBuildInfo(
-          params.ZOWE_BUILD_NAME,
-          params.ZOWE_BUILD_NUMBER
-        )
-        gitRevision = zoweBuild && zoweBuild && zoweBuild.vcsRevision
-        if (!("${gitRevision}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-          error "Cannot extract git revision from build \"${params.ZOWE_BUILD_NAME}/${params.ZOWE_BUILD_NUMBER}\""
+      if (params.ZOWE_BUILD_RC_PATH) {
+        def artifact = pipeline.artifactory.getArtifact(params.ZOWE_BUILD_RC_PATH)
+        if (artifact['build.name'].contains('zowe-promote-publish') &&
+          artifact['build.parentName'] && artifact['build.parentNumber']) {
+          artifact['build.name'] = artifact['build.parentName']
+          artifact['build.number'] = artifact['build.parentNumber']
         }
-        echo ">>>> Build ${params.ZOWE_BUILD_NAME}/${params.ZOWE_BUILD_NUMBER} commit hash is ${gitRevision}, may proceed."
-      }
-      if (params.ZOWE_CLI_BUILD_NUMBER) {
-        def zoweCliBuild = pipeline.artifactory.getBuildInfo(
-          params.ZOWE_CLI_BUILD_NAME,
-          params.ZOWE_CLI_BUILD_NUMBER
-        )
-        gitCliRevision = zoweCliBuild && zoweCliBuild && zoweCliBuild.vcsRevision
-        if (!("${gitCliRevision}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-          error "Cannot extract git revision from build \"${params.ZOWE_CLI_BUILD_NAME}/${params.ZOWE_CLI_BUILD_NUMBER}\""
+        if (artifact['build.name'] && artifact['build.number']) {
+          releaseArtifacts['zowe']['buildName'] = artifact['build.name']
+          releaseArtifacts['zowe']['buildNumber'] = artifact['build.number']
+        } else {
+          error "Cannot find build information for artifact ${params.ZOWE_BUILD_RC_PATH}"
         }
-        echo ">>>> Build ${params.ZOWE_CLI_BUILD_NAME}/${params.ZOWE_CLI_BUILD_NUMBER} commit hash is ${gitCliRevision}, may proceed."
+      } else {
+        releaseArtifacts['zowe']['buildName'] = params.ZOWE_BUILD_NAME
+        releaseArtifacts['zowe']['buildNumber'] = params.ZOWE_BUILD_NUMBER
       }
+      releaseArtifacts['zowe']['build'] = pipeline.artifactory.getBuildInfo(
+        releaseArtifacts['zowe']['buildName'],
+        releaseArtifacts['zowe']['buildNumber']
+      )
+      releaseArtifacts['zowe']['revision'] = releaseArtifacts['zowe']['build'] && releaseArtifacts['zowe']['build']['vcsRevision']
+      if (!("${releaseArtifacts['zowe']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+        error "Cannot extract git revision from build \"${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']}\""
+      }
+      echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
+
+      echo "releaseArtifacts=${releaseArtifacts}"
+
+      // if (params.ZOWE_CLI_BUILD_NUMBER) {
+      //   def zoweCliBuild = pipeline.artifactory.getBuildInfo(
+      //     params.ZOWE_CLI_BUILD_NAME,
+      //     params.ZOWE_CLI_BUILD_NUMBER
+      //   )
+      //   gitCliRevision = zoweCliBuild && zoweCliBuild && zoweCliBuild.vcsRevision
+      //   if (!("${gitCliRevision}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+      //     error "Cannot extract git revision from build \"${params.ZOWE_CLI_BUILD_NAME}/${params.ZOWE_CLI_BUILD_NUMBER}\""
+      //   }
+      //   echo ">>>> Build ${params.ZOWE_CLI_BUILD_NAME}/${params.ZOWE_CLI_BUILD_NUMBER} commit hash is ${gitCliRevision}, may proceed."
+      // }
 
       // check publish target directory
       withCredentials([usernamePassword(credentialsId: params.PUBLISH_SSH_CREDENTIAL, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
