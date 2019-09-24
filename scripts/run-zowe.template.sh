@@ -96,7 +96,7 @@ STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-defs
 
 # TODO - temporary until APIML is componentised - Inject it into discovery script
 API_MEDIATION_DIR=${ROOT_DIR}"/components/api-mediation"
-sed -e "s#-Dapiml.discovery.staticApiDefinitionsDirectories.*[^\\]#-Dapiml.discovery.staticApiDefinitionsDirectories=\"${STATIC_DEF_CONFIG_DIR};${ROOT_DIR}/api-mediation/api-defs\" #" \
+sed -e "s#-Dapiml.discovery.staticApiDefinitionsDirectories.*[^\\]#-Dapiml.discovery.staticApiDefinitionsDirectories=\"${STATIC_DEF_CONFIG_DIR};${ROOT_DIR}/components/api-mediation/api-defs\" #" \
   "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh" \
   > "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh.copy"
 mv "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh.copy" "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh"
