@@ -95,11 +95,12 @@ mkdir -p ${USER_DIR}/api-defs
 STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-defs
 
 # TODO - temporary until APIML is componentised - Inject it into discovery script
+API_MEDIATION_DIR=${ROOT_DIR}"/components/api-mediation"
 sed -e "s#-Dapiml.discovery.staticApiDefinitionsDirectories.*[^\\]#-Dapiml.discovery.staticApiDefinitionsDirectories=\"${STATIC_DEF_CONFIG_DIR};${ROOT_DIR}/api-mediation/api-defs\" #" \
-  "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh" \
-  > "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy"
-mv "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy" "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
-chmod 770 "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
+  "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh" \
+  > "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh.copy"
+mv "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh.copy" "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh"
+chmod 770 "${API_MEDIATION_DIR}/scripts/api-mediation-start-discovery.sh"
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
@@ -109,9 +110,9 @@ fi
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
   LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
-  _BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
-  _BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
-  _BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
+  _BPX_JOBNAME=$ZOWE_API_DS $DIR/../../components/api-mediation/scripts/api-mediation-start-discovery.sh
+  _BPX_JOBNAME=$ZOWE_API_CT $DIR/../../components/api-mediation/scripts/api-mediation-start-catalog.sh
+  _BPX_JOBNAME=$ZOWE_API_GW $DIR/../../components/api-mediation/scripts/api-mediation-start-gateway.sh
   _BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
   _BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
   _BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh

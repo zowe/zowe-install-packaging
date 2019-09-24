@@ -31,7 +31,7 @@ if [ ! -f $NODE_BIN ]; then
   exit 0
 fi
 # define zlux certs from apiml keystore
-APIML_KEYSTORE_PATH=${ZOWE_ROOT_DIR}/api-mediation/keystore
+APIML_KEYSTORE_PATH=${ZOWE_ROOT_DIR}"/components/api-mediation/keystore"
 SUFFIX=""
 if [ `uname` = "OS/390" ]; then
   SUFFIX="-ebcdic"
