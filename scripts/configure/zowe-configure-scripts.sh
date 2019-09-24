@@ -36,7 +36,7 @@ sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_ip_address}}#${ZOWE_IPADDRESS}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
   -e "s#{{key_alias}}#localhost#" \
-  -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/api-mediation/keystore/localhost/localhost.keystore.p12#" \
+  -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.p12#" \
   -e "s#{{keystore_password}}#password#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/run-zowe.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.sh"
