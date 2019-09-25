@@ -347,7 +347,7 @@ echo All artifacts will be promoted:
 echo ===============================================
 cat .tmp-release-artifacts.json
 echo
-echo ==============================================='
+echo ===============================================
 '''
 
       releaseArtifacts.each { artifact, info ->
