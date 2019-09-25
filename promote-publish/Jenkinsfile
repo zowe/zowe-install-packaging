@@ -372,22 +372,23 @@ echo ===============================================
       def uploadArtifacts = readJSON(text:'{"files":[]}')
 
       releaseArtifacts.each { artifact, info ->
-        echo ">>> Downloading ${artifact} ..."
+        echo ">>> Downloading ${releaseFilePath}/${info['target']} ..."
         pipeline.artifactory.download(
-          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['source']['target']}\",\"target\":\".tmp/\"}]}",
+          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".tmp/\"}]}",
           expected    : 1
         )
-        echo ">>> Signing ${artifact} ..."
-        signing.sign(".tmp/${info['source']['target']}")
+
+        echo ">>> Signing ${info['target']} ..."
+        signing.sign(".tmp/${info['target']}")
         uploadArtifacts['files'].push([
-          "pattern" : ".tmp/${info['source']['target']}.asc".toString(),
+          "pattern" : ".tmp/${info['target']}.asc".toString(),
           "target"  : releaseFilePath
         ])
 
-        echo ">>> Generate hash of ${artifact} ..."
-        signing.hash(".tmp/${info['source']['target']}")
+        echo ">>> Generate hash of ${info['target']} ..."
+        signing.hash(".tmp/${info['target']}")
         uploadArtifacts['files'].push([
-          "pattern" : ".tmp/${info['source']['target']}.sha512".toString(),
+          "pattern" : ".tmp/${info['target']}.sha512".toString(),
           "target"  : releaseFilePath
         ])
       }
