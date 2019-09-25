@@ -233,6 +233,13 @@ node('ibm-jenkins-slave-nvm') {
       }
       echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
 
+      // check if we have SMP/e package there
+      releaseArtifacts['zowe']['artifacts'] = pipeline.artifactory.getArtifacts(
+        '*',
+        releaseArtifacts['zowe']['buildName'],
+        releaseArtifacts['zowe']['buildNumber']
+      )
+
       // prepare and check zowe CLI build information
       releaseArtifacts['cli'] = [:]
       releaseArtifacts['cli']['target'] = [:]
