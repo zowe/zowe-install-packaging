@@ -201,7 +201,7 @@ node('ibm-jenkins-slave-nvm') {
         echo ">>>> Target artifactory folder ${releaseFilePath} doesn't exist, may proceed."
       }
 
-      // prepare and check zowe pax build information
+      // find the Zowe build number will be promoted
       releaseArtifacts['zowe'] = [:]
       releaseArtifacts['zowe']['target'] = [:]
       releaseArtifacts['zowe']['target']['filename'] = "zowe-${params.ZOWE_RELEASE_VERSION}.pax"
@@ -217,30 +217,69 @@ node('ibm-jenkins-slave-nvm') {
           releaseArtifacts['zowe']['buildName'] = artifact['build.name']
           releaseArtifacts['zowe']['buildNumber'] = artifact['build.number']
         } else {
+          // build info is required to get commit hash
           error "Cannot find build information for artifact ${params.ZOWE_BUILD_RC_PATH}"
         }
       } else {
         releaseArtifacts['zowe']['buildName'] = params.ZOWE_BUILD_NAME
         releaseArtifacts['zowe']['buildNumber'] = params.ZOWE_BUILD_NUMBER
       }
-      releaseArtifacts['zowe']['build'] = pipeline.artifactory.getBuildInfo(
+
+      // get zowe build source artifact
+      releaseArtifacts['zowe']['source'] = pipeline.artifactory.getArtifact([
+        'pattern'      : '*/zowe-*.pax',
+        'build-name'   : releaseArtifacts['zowe']['buildName'],
+        'build-number' : releaseArtifacts['zowe']['buildNumber']
+      ])
+
+      // try to get Zowe build commit hash
+      def zoweBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['zowe']['buildName'],
         releaseArtifacts['zowe']['buildNumber']
       )
-      releaseArtifacts['zowe']['revision'] = releaseArtifacts['zowe']['build'] && releaseArtifacts['zowe']['build']['vcsRevision']
+      releaseArtifacts['zowe']['revision'] = zoweBuildInfo && zoweBuildInfo['vcsRevision']
       if (!("${releaseArtifacts['zowe']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
         error "Cannot extract git revision from build \"${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']}\""
       }
       echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
 
-      // check if we have SMP/e package there
-      releaseArtifacts['zowe']['artifacts'] = pipeline.artifactory.getArtifacts([
-        'pattern'      : '*',
-        'build-name'   : releaseArtifacts['zowe']['buildName'],
-        'build-number' : releaseArtifacts['zowe']['buildNumber']
-      ])
+      // get SMP/e build
+      try {
+        releaseArtifacts['smpe-pax'] = [:]
+        releaseArtifacts['smpe-pax']['source'] = pipeline.artifactory.getArtifact([
+          'pattern'      : '*/AZWE*.pax.Z',
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (releaseArtifacts['smpe-pax']['source']['path']) {
+          def FMID = releaseArtifacts['smpe-pax']['source']['path'].split('/').last().split('-').first()
+          releaseArtifacts['smpe-pax']['target'] = [:]
+          releaseArtifacts['smpe-pax']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.pax.Z"
+          releaseArtifacts['smpe-pax']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']['filename']}"
+        }
+      } catch (e1) {
+        echo ">>> no SMP/e pax.Z found in the build."
+      }
 
-      // prepare and check zowe CLI build information
+      // get SMP/e readme
+      try {
+        releaseArtifacts['smpe-readme'] = [:]
+        releaseArtifacts['smpe-readme']['source'] = pipeline.artifactory.getArtifact([
+          'pattern'      : '*/AZWE*.txt',
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (releaseArtifacts['smpe-readme']['source']['path']) {
+          def FMID = releaseArtifacts['smpe-readme']['source']['path'].split('/').last().split('-').first()
+          releaseArtifacts['smpe-readme']['target'] = [:]
+          releaseArtifacts['smpe-readme']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.readme.txt"
+          releaseArtifacts['smpe-readme']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']['filename']}"
+        }
+      } catch (e1) {
+        echo ">>> no SMP/e readme found in the build."
+      }
+
+      // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
       releaseArtifacts['cli']['target'] = [:]
       releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip"
@@ -262,11 +301,20 @@ node('ibm-jenkins-slave-nvm') {
         releaseArtifacts['cli']['buildName'] = params.ZOWE_CLI_BUILD_NAME
         releaseArtifacts['cli']['buildNumber'] = params.ZOWE_CLI_BUILD_NUMBER
       }
-      releaseArtifacts['cli']['build'] = pipeline.artifactory.getBuildInfo(
+
+      // get CLI build source artifact
+      releaseArtifacts['cli']['source'] = pipeline.artifactory.getArtifact([
+        'pattern'      : '*/zowe-cli-package-*.zip',
+        'build-name'   : releaseArtifacts['cli']['buildName'],
+        'build-number' : releaseArtifacts['cli']['buildNumber']
+      ])
+
+      // try to get Zowe CLI build commit hash
+      def cliBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['cli']['buildName'],
         releaseArtifacts['cli']['buildNumber']
       )
-      releaseArtifacts['cli']['revision'] = releaseArtifacts['cli']['build'] && releaseArtifacts['cli']['build']['vcsRevision']
+      releaseArtifacts['cli']['revision'] = cliBuildInfo && cliBuildInfo['vcsRevision']
       if (!("${releaseArtifacts['cli']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
         error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
       }
