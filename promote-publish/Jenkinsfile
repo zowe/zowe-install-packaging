@@ -203,9 +203,7 @@ node('ibm-jenkins-slave-nvm') {
 
       // find the Zowe build number will be promoted
       releaseArtifacts['zowe'] = [:]
-      releaseArtifacts['zowe']['target'] = [:]
-      releaseArtifacts['zowe']['target']['filename'] = "zowe-${params.ZOWE_RELEASE_VERSION}.pax".toString()
-      releaseArtifacts['zowe']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['zowe']['target']['filename']}".toString()
+      releaseArtifacts['zowe']['target'] = "zowe-${params.ZOWE_RELEASE_VERSION}.pax".toString()
       if (params.ZOWE_BUILD_RC_PATH) {
         def artifact = pipeline.artifactory.getArtifact(params.ZOWE_BUILD_RC_PATH)
         if (artifact['build.name'].contains('zowe-promote-publish') &&
@@ -256,9 +254,7 @@ node('ibm-jenkins-slave-nvm') {
           def FMID = smpePaxSource['path'].split('/').last().split('-').first()
           releaseArtifacts['smpe-pax'] = [:]
           releaseArtifacts['smpe-pax']['source'] = smpePaxSource
-          releaseArtifacts['smpe-pax']['target'] = [:]
-          releaseArtifacts['smpe-pax']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.pax.Z".toString()
-          releaseArtifacts['smpe-pax']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']['filename']}".toString()
+          releaseArtifacts['smpe-pax']['target'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.pax.Z".toString()
         }
       } catch (e1) {
         echo ">>> no SMP/e pax.Z found in the build."
@@ -276,9 +272,7 @@ node('ibm-jenkins-slave-nvm') {
           def FMID = smpeReadmeSource['path'].split('/').last().split('-').first()
           releaseArtifacts['smpe-readme'] = [:]
           releaseArtifacts['smpe-readme']['source'] = smpeReadmeSource
-          releaseArtifacts['smpe-readme']['target'] = [:]
-          releaseArtifacts['smpe-readme']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.readme.txt".toString()
-          releaseArtifacts['smpe-readme']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']['filename']}".toString()
+          releaseArtifacts['smpe-readme']['target'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.readme.txt".toString()
         }
       } catch (e1) {
         echo ">>> no SMP/e readme found in the build."
@@ -286,9 +280,7 @@ node('ibm-jenkins-slave-nvm') {
 
       // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
-      releaseArtifacts['cli']['target'] = [:]
-      releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
-      releaseArtifacts['cli']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['cli']['target']['filename']}".toString()
+      releaseArtifacts['cli']['target'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
       if (params.ZOWE_CLI_BUILD_RC_PATH) {
         def artifact = pipeline.artifactory.getArtifact(params.ZOWE_CLI_BUILD_RC_PATH)
         if (artifact['build.name'].contains('zowe-promote-publish') &&
@@ -326,10 +318,6 @@ node('ibm-jenkins-slave-nvm') {
       }
       echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
 
-      // debug show releaseArtifacts
-      writeJSON file: '.tmp-release-artifacts.json', json: releaseArtifacts, pretty: 4
-      sh 'echo =============================================== && cat .tmp-release-artifacts.json'
-
       // check publish target directory
       withCredentials([usernamePassword(credentialsId: params.PUBLISH_SSH_CREDENTIAL, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
         // move to target folder, split and generate hash
@@ -352,7 +340,24 @@ EOF""", returnStatus:true)
     name          : "Promote",
     isSkippable   : true,
     stage         : {
-      
+      // debug show releaseArtifacts
+      writeJSON file: '.tmp-release-artifacts.json', json: releaseArtifacts, pretty: 2
+      sh '''
+echo All artifacts will be promoted:
+echo ===============================================
+cat .tmp-release-artifacts.json
+echo
+echo ==============================================='
+'''
+
+      releaseArtifacts.each { artifact, info ->
+        echo ">>> Promoting ${artifact} ..."
+        pipeline.artifactory.promote([
+          'source': info['source'],
+          'targetPath': releaseFilePath,
+          'targetName': info['target']
+        ])
+      }
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
