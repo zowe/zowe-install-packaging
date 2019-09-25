@@ -368,28 +368,27 @@ echo ===============================================
     isSkippable   : true,
     stage         : {
       def signing = lib.package.Signing.new(this)
-      sh 'mkdir -p .tmp'
+      sh 'mkdir -p .signing'
       def uploadArtifacts = readJSON(text:'{"files":[]}')
 
       releaseArtifacts.each { artifact, info ->
         echo ">>> Downloading ${releaseFilePath}/${info['target']} ..."
         pipeline.artifactory.download(
-          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".tmp/\"}]}",
+          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".signing/\",\"flat\":true}]}",
           expected    : 1
         )
-        sh 'find .'
 
         echo ">>> Signing ${info['target']} ..."
-        signing.sign(".tmp/${info['target']}")
+        signing.sign(".signing/${info['target']}")
         uploadArtifacts['files'].push([
-          "pattern" : ".tmp/${info['target']}.asc".toString(),
+          "pattern" : ".signing/${info['target']}.asc".toString(),
           "target"  : releaseFilePath
         ])
 
         echo ">>> Generate hash of ${info['target']} ..."
-        signing.hash(".tmp/${info['target']}")
+        signing.hash(".signing/${info['target']}")
         uploadArtifacts['files'].push([
-          "pattern" : ".tmp/${info['target']}.sha512".toString(),
+          "pattern" : ".signing/${info['target']}.sha512".toString(),
           "target"  : releaseFilePath
         ])
       }
