@@ -27,6 +27,7 @@ node('ibm-jenkins-slave-nvm') {
   def isFormalRelease = false
   def releaseFilePath
   def releaseArtifacts = readJSON(text:'{}')
+  def publishFilePath
 
   pipeline.admins.add("jackjia", "markackert")
 
@@ -328,15 +329,16 @@ node('ibm-jenkins-slave-nvm') {
       echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
 
       // check publish target directory
+      publishFilePath = "${params.PUBLISH_DIRECTORY}/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}".toString()
       withCredentials([usernamePassword(credentialsId: params.PUBLISH_SSH_CREDENTIAL, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
         // move to target folder, split and generate hash
         def versionOnPublishDir = sh(script:"""SSHPASS=${PASSWORD} sshpass -e ssh -tt -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
-[ -d '${params.PUBLISH_DIRECTORY}/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}' ] && exit 1
+[ -d '${publishFilePath}' ] && exit 1
 exit 0
 EOF""", returnStatus:true)
         echo "Exit code: ${versionOnPublishDir}"
         if ("${versionOnPublishDir}" == "1") {
-          error "Zowe version ${params.ZOWE_RELEASE_VERSION} already exists (${params.PUBLISH_DIRECTORY}/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION})"
+          error "Zowe version ${params.ZOWE_RELEASE_VERSION} already exists (${publishFilePath})"
         } else {
           echo ">>>> Target publish folder doesn't exist, may proceed."
         }
@@ -372,15 +374,11 @@ echo ===============================================
   )
 
   pipeline.createStage(
-    name          : "Sign",
+    name          : "Download",
     isSkippable   : true,
-    shouldExecute : {
-      return isFormalRelease
-    },
     stage         : {
-      def signing = lib.package.Signing.new(this)
+      // download all promoted artifacts into .signing folder
       sh 'mkdir -p .signing'
-      def uploadArtifacts = readJSON(text:'{"files":[]}')
 
       releaseArtifacts.each { artifact, info ->
         echo ">>> Downloading ${releaseFilePath}/${info['target']} ..."
@@ -388,7 +386,22 @@ echo ===============================================
           specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".signing/\",\"flat\":\"true\"}]}",
           expected    : 1
         )
+      }
+    },
+    timeout: [time: 20, unit: 'MINUTES']
+  )
 
+  pipeline.createStage(
+    name          : "Sign",
+    isSkippable   : true,
+    shouldExecute : {
+      return isFormalRelease
+    },
+    stage         : {
+      def signing = lib.package.Signing.new(this)
+      def uploadArtifacts = readJSON(text:'{"files":[]}')
+
+      releaseArtifacts.each { artifact, info ->
         echo ">>> Signing ${info['target']} ..."
         signing.sign(".signing/${info['target']}")
         uploadArtifacts['files'].push([
@@ -418,15 +431,14 @@ echo ===============================================
         echo ">>> Uploading signing results ..."
         pipeline.artifactory.upload([spec: '.tmp-upload-artifacts.json'])
     },
-    timeout: [time: 10, unit: 'MINUTES']
+    timeout: [time: 20, unit: 'MINUTES']
   )
 
   pipeline.createStage(
     name          : "Tag Branch",
     isSkippable   : true,
     shouldExecute : {
-      return true
-      // return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision']
+      return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision']
     },
     stage         : {
       echo ">>> Tagging ${releaseArtifacts['zowe']['revision']} as v${params.ZOWE_RELEASE_VERSION} ..."
@@ -444,6 +456,43 @@ echo ===============================================
         error "Failed to checkout ${releaseArtifacts['zowe']['revision']} for tagging."
       }
       github.tag("v${params.ZOWE_RELEASE_VERSION}")
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
+    name          : "Publish",
+    isSkippable   : true,
+    stage         : {
+      def artifacts = findFiles(glob: '.signing/*')
+      echo "All files in .signing: ${artifacts}"
+      def fileUploads = []
+      artifacts.each {
+        if (it != '.' && it != '..') {
+          fileUploads.push('put ' + it)
+        }
+      }
+
+      // everything should be in .signing folder
+      withCredentials([
+        usernamePassword(
+          credentialsId: params.PUBLISH_SSH_CREDENTIAL,
+          passwordVariable: 'PASSWORD',
+          usernameVariable: 'USERNAME'
+        )
+      ]) {
+          sh """SSHPASS=${PASSWORD} sshpass -e ssh -tt -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
+mkdir -p ${publishFilePath}
+exit 0
+EOF"""
+
+          // upload to publish server
+          sh """SSHPASS=${PASSWORD} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
+${fileUploads.join("\n")}
+bye
+EOF"""
+
+      }
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
