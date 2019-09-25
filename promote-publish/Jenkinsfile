@@ -204,8 +204,8 @@ node('ibm-jenkins-slave-nvm') {
       // find the Zowe build number will be promoted
       releaseArtifacts['zowe'] = [:]
       releaseArtifacts['zowe']['target'] = [:]
-      releaseArtifacts['zowe']['target']['filename'] = "zowe-${params.ZOWE_RELEASE_VERSION}.pax"
-      releaseArtifacts['zowe']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['zowe']['target']['filename']}"
+      releaseArtifacts['zowe']['target']['filename'] = "zowe-${params.ZOWE_RELEASE_VERSION}.pax".toString()
+      releaseArtifacts['zowe']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['zowe']['target']['filename']}".toString()
       if (params.ZOWE_BUILD_RC_PATH) {
         def artifact = pipeline.artifactory.getArtifact(params.ZOWE_BUILD_RC_PATH)
         if (artifact['build.name'].contains('zowe-promote-publish') &&
@@ -231,6 +231,7 @@ node('ibm-jenkins-slave-nvm') {
         'build-name'   : releaseArtifacts['zowe']['buildName'],
         'build-number' : releaseArtifacts['zowe']['buildNumber']
       ])
+      echo ">>> Found Zowe build ${releaseArtifacts['zowe']['source']['path']}."
 
       // try to get Zowe build commit hash
       def zoweBuildInfo = pipeline.artifactory.getBuildInfo(
@@ -245,17 +246,19 @@ node('ibm-jenkins-slave-nvm') {
 
       // get SMP/e build
       try {
-        releaseArtifacts['smpe-pax'] = [:]
-        releaseArtifacts['smpe-pax']['source'] = pipeline.artifactory.getArtifact([
+        def smpePaxSource = pipeline.artifactory.getArtifact([
           'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
           'build-name'   : releaseArtifacts['zowe']['buildName'],
           'build-number' : releaseArtifacts['zowe']['buildNumber']
         ])
-        if (releaseArtifacts['smpe-pax']['source']['path']) {
-          def FMID = releaseArtifacts['smpe-pax']['source']['path'].split('/').last().split('-').first()
+        if (smpePaxSource['path']) {
+          echo ">>> Found SMP/e build ${smpePaxSource['path']}."
+          def FMID = smpePaxSource['path'].split('/').last().split('-').first()
+          releaseArtifacts['smpe-pax'] = [:]
+          releaseArtifacts['smpe-pax']['source'] = smpePaxSource
           releaseArtifacts['smpe-pax']['target'] = [:]
-          releaseArtifacts['smpe-pax']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.pax.Z"
-          releaseArtifacts['smpe-pax']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']['filename']}"
+          releaseArtifacts['smpe-pax']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.pax.Z".toString()
+          releaseArtifacts['smpe-pax']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']['filename']}".toString()
         }
       } catch (e1) {
         echo ">>> no SMP/e pax.Z found in the build."
@@ -263,17 +266,19 @@ node('ibm-jenkins-slave-nvm') {
 
       // get SMP/e readme
       try {
-        releaseArtifacts['smpe-readme'] = [:]
-        releaseArtifacts['smpe-readme']['source'] = pipeline.artifactory.getArtifact([
+        def smpeReadmeSource = pipeline.artifactory.getArtifact([
           'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/AZWE*.txt",
           'build-name'   : releaseArtifacts['zowe']['buildName'],
           'build-number' : releaseArtifacts['zowe']['buildNumber']
         ])
-        if (releaseArtifacts['smpe-readme']['source']['path']) {
-          def FMID = releaseArtifacts['smpe-readme']['source']['path'].split('/').last().split('-').first()
+        if (smpeReadmeSource['path']) {
+          echo ">>> Found SMP/e readme ${smpeReadmeSource['path']}."
+          def FMID = smpeReadmeSource['path'].split('/').last().split('-').first()
+          releaseArtifacts['smpe-readme'] = [:]
+          releaseArtifacts['smpe-readme']['source'] = smpeReadmeSource
           releaseArtifacts['smpe-readme']['target'] = [:]
-          releaseArtifacts['smpe-readme']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.readme.txt"
-          releaseArtifacts['smpe-readme']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']['filename']}"
+          releaseArtifacts['smpe-readme']['target']['filename'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.readme.txt".toString()
+          releaseArtifacts['smpe-readme']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']['filename']}".toString()
         }
       } catch (e1) {
         echo ">>> no SMP/e readme found in the build."
@@ -282,8 +287,8 @@ node('ibm-jenkins-slave-nvm') {
       // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
       releaseArtifacts['cli']['target'] = [:]
-      releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip"
-      releaseArtifacts['cli']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['cli']['target']['filename']}"
+      releaseArtifacts['cli']['target']['filename'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
+      releaseArtifacts['cli']['target']['path'] = "${releaseFilePath}/${releaseArtifacts['cli']['target']['filename']}".toString()
       if (params.ZOWE_CLI_BUILD_RC_PATH) {
         def artifact = pipeline.artifactory.getArtifact(params.ZOWE_CLI_BUILD_RC_PATH)
         if (artifact['build.name'].contains('zowe-promote-publish') &&
@@ -308,6 +313,7 @@ node('ibm-jenkins-slave-nvm') {
         'build-name'   : releaseArtifacts['cli']['buildName'],
         'build-number' : releaseArtifacts['cli']['buildNumber']
       ])
+      echo ">>> Found Zowe CLI build ${releaseArtifacts['cli']['source']['path']}."
 
       // try to get Zowe CLI build commit hash
       def cliBuildInfo = pipeline.artifactory.getBuildInfo(
@@ -338,6 +344,15 @@ EOF""", returnStatus:true)
           echo ">>>> Target publish folder doesn't exist, may proceed."
         }
       }
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
+    name          : "Promote",
+    isSkippable   : true,
+    stage         : {
+      
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
