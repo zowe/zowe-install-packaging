@@ -21,7 +21,7 @@
 #%                    ignored when -i is specified
 #% -i inputReference  file holding input names (build output archives)
 #%                    mutualy exclusive with -p
-#% -p inputDir        pre-isntalled input for this script        #debug
+#% -p inputDir        pre-installed input for this script        #debug
 #%                    mutualy exclusive with -i
 #%
 #% either -i or -p is required
