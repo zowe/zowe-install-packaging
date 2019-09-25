@@ -39,12 +39,12 @@ pax -rf $API_MEDIATION_PAX -ppx
 # TODO are these mediation steps needed (from api-ml config script)?
 
 # Set a+rx for API Mediation JARs
-chmod a+rx ${API_MEDIATION_DIR}"/*.jar" 
+chmod a+rx "${API_MEDIATION_DIR}"/*.jar 
 
 # Make the apiml-auth plugin readable by everyone
-chmod a+rx ${API_MEDIATION_DIR}"/apiml-auth"
-chmod a+rx ${API_MEDIATION_DIR}"/apiml-auth/lib"
-chmod -R a+r ${API_MEDIATION_DIR}"/apiml-auth"
+chmod a+rx "${API_MEDIATION_DIR}/apiml-auth"
+chmod a+rx "${API_MEDIATION_DIR}/apiml-auth/lib"
+chmod -R a+r "${API_MEDIATION_DIR}/apiml-auth"
 
 # TODO - move image into apiml pax
 cp $INSTALL_DIR/files/assets/api-catalog.png ${API_MEDIATION_DIR}
