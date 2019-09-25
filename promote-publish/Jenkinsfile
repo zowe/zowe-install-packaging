@@ -374,7 +374,7 @@ echo ===============================================
       releaseArtifacts.each { artifact, info ->
         echo ">>> Downloading ${releaseFilePath}/${info['target']} ..."
         pipeline.artifactory.download(
-          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".signing/\",\"flat\":true}]}",
+          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".signing/\",\"flat\":\"true\"}]}",
           expected    : 1
         )
 
