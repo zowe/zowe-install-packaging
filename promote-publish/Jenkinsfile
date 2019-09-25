@@ -382,14 +382,14 @@ echo ===============================================
         signing.sign(".signing/${info['target']}")
         uploadArtifacts['files'].push([
           "pattern" : ".signing/${info['target']}.asc".toString(),
-          "target"  : releaseFilePath
+          "target"  : releaseFilePath + '/'
         ])
 
         echo ">>> Generate hash of ${info['target']} ..."
         signing.hash(".signing/${info['target']}")
         uploadArtifacts['files'].push([
           "pattern" : ".signing/${info['target']}.sha512".toString(),
-          "target"  : releaseFilePath
+          "target"  : releaseFilePath + '/'
         ])
       }
 
