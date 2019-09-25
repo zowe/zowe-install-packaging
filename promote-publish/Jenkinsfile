@@ -22,6 +22,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
+  def github = lib.scm.GitHub.new(this)
 
   def isFormalRelease = false
   def releaseFilePath
@@ -193,6 +194,20 @@ node('ibm-jenkins-slave-nvm') {
         error "Zowe version ${params.ZOWE_RELEASE_VERSION} already exists (${releaseFilePath})"
       } else {
         echo ">>>> Target artifactory folder ${releaseFilePath} doesn't exist, may proceed."
+      }
+
+      // check if tag already exists
+      github.cloneRepository([
+        email                      : lib.Constants.DEFAULT_GITHUB_ROBOT_EMAIL,
+        usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
+        repository                 : ZOWE_INSTALL_PACKAGING_REPO,
+        folder                     : '.tag',
+        branch                     : 'master'
+      ])
+      if (github.tagExistsRemote("v${params.ZOWE_RELEASE_VERSION}")) {
+        error "Repository tag v${params.ZOWE_RELEASE_VERSION} already exists."
+      } else {
+        echo ">>>> Repository tag v${params.ZOWE_RELEASE_VERSION} doesn't exist, may proceed."
       }
 
       // find the Zowe build number will be promoted
@@ -416,7 +431,6 @@ echo ===============================================
     stage         : {
       echo ">>> Tagging ${releaseArtifacts['zowe']['revision']} as v${params.ZOWE_RELEASE_VERSION} ..."
 
-      def github = lib.scm.GitHub.new(this)
       github.cloneRepository([
         email                      : lib.Constants.DEFAULT_GITHUB_ROBOT_EMAIL,
         usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
