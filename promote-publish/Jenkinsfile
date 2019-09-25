@@ -19,13 +19,13 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "AZWE*.pax.Z"
   def ZOWE_RELEASE_SMPE_README_FILEPATTERN = "AZWE*.txt"
   def ZOWE_RELEASE_CLI_FILEPATTERN = "zowe-cli-package-*.zip"
+  def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
 
   def isFormalRelease = false
   def releaseFilePath
   def releaseArtifacts = readJSON(text:'{}')
-  def smpeFmid
 
   pipeline.admins.add("jackjia", "markackert")
 
@@ -125,13 +125,6 @@ node('ibm-jenkins-slave-nvm') {
       defaultValue: '/var/www/projectgiza.org/builds',
       trim: true,
       required: true
-    ),
-    string(
-      name: 'CODE_SIGNING_KEY_PASSPHRASE',
-      description: 'Key ID and passphrase to sign the build',
-      credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
-      defaultValue: 'code-signing-key-passphrase-jack',
-      required: false
     )
   )
 
@@ -366,6 +359,9 @@ echo ===============================================
   pipeline.createStage(
     name          : "Sign",
     isSkippable   : true,
+    shouldExecute : {
+      return isFormalRelease
+    },
     stage         : {
       def signing = lib.package.Signing.new(this)
       sh 'mkdir -p .signing'
@@ -406,6 +402,29 @@ echo ===============================================
 
         echo ">>> Uploading signing results ..."
         pipeline.artifactory.upload([spec: '.tmp-upload-artifacts.json'])
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
+    name          : "Tag Branch",
+    isSkippable   : true,
+    shouldExecute : {
+      return true
+      // return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision']
+    },
+    stage         : {
+      echo ">>> Tagging ${releaseArtifacts['zowe']['revision']} as v${params.ZOWE_RELEASE_VERSION} ..."
+
+      def github = lib.scm.GitHub.new(this)
+      pipeline.github.cloneRepository([
+        email                      : lib.Constants.DEFAULT_GITHUB_ROBOT_EMAIL,
+        usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
+        repository                 : ZOWE_INSTALL_PACKAGING_REPO,
+        folder                     : '.tag',
+        branch                     : releaseArtifacts['zowe']['revision']
+      ])
+      pipeline.github.tag([tag: "v${params.ZOWE_RELEASE_VERSION}"])
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
