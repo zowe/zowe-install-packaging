@@ -377,6 +377,7 @@ echo ===============================================
           specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".tmp/\"}]}",
           expected    : 1
         )
+        sh 'find .'
 
         echo ">>> Signing ${info['target']} ..."
         signing.sign(".tmp/${info['target']}")
@@ -403,7 +404,6 @@ cat .tmp-upload-artifacts.json
 echo
 echo ===============================================
 '''
-
 
         echo ">>> Uploading signing results ..."
         pipeline.artifactory.upload([spec: '.tmp-upload-artifacts.json'])
