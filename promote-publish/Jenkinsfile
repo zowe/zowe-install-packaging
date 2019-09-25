@@ -417,14 +417,19 @@ echo ===============================================
       echo ">>> Tagging ${releaseArtifacts['zowe']['revision']} as v${params.ZOWE_RELEASE_VERSION} ..."
 
       def github = lib.scm.GitHub.new(this)
-      pipeline.github.cloneRepository([
+      github.cloneRepository([
         email                      : lib.Constants.DEFAULT_GITHUB_ROBOT_EMAIL,
         usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
         repository                 : ZOWE_INSTALL_PACKAGING_REPO,
         folder                     : '.tag',
-        branch                     : releaseArtifacts['zowe']['revision']
+        branch                     : 'master'
       ])
-      pipeline.github.tag([tag: "v${params.ZOWE_RELEASE_VERSION}"])
+      github.command('git checkout ' + releaseArtifacts['zowe']['revision'])
+      def commit = github.getLastCommitHash()
+      if (commit != releaseArtifacts['zowe']['revision']) {
+        error "Failed to checkout ${releaseArtifacts['zowe']['revision']} for tagging."
+      }
+      github.tag("v${params.ZOWE_RELEASE_VERSION}")
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
