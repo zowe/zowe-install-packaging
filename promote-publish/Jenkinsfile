@@ -147,10 +147,11 @@ node('ibm-jenkins-slave-nvm') {
     ]
   )
 
-  pipeline.createStage(
+  pipeline.build(
     name          : "Validate",
-    isSkippable   : true,
-    stage         : {
+    timeout       : [time: 5, unit: 'MINUTES'],
+    isSkippable   : false,
+    operation     : {
       if (!params.ZOWE_BUILD_NAME) {
         error "ZOWE_BUILD_NAME is required to promote build."
       }
@@ -185,7 +186,7 @@ node('ibm-jenkins-slave-nvm') {
       }
 
       // this is the target Artifactory path will be released to
-      releaseFilePath = "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/${params.ZOWE_RELEASE_VERSION}"
+      releaseFilePath = "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/${params.ZOWE_RELEASE_VERSION}".toString()
 
       // check artifactory release path
       echo "Checking if ${params.ZOWE_RELEASE_VERSION} already exists in Artifactory ..."
@@ -272,7 +273,7 @@ node('ibm-jenkins-slave-nvm') {
           def FMID = smpeReadmeSource['path'].split('/').last().split('-').first()
           releaseArtifacts['smpe-readme'] = [:]
           releaseArtifacts['smpe-readme']['source'] = smpeReadmeSource
-          releaseArtifacts['smpe-readme']['target'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.readme.txt".toString()
+          releaseArtifacts['smpe-readme']['target'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.txt".toString()
         }
       } catch (e1) {
         echo ">>> no SMP/e readme found in the build."
@@ -332,8 +333,7 @@ EOF""", returnStatus:true)
           echo ">>>> Target publish folder doesn't exist, may proceed."
         }
       }
-    },
-    timeout: [time: 10, unit: 'MINUTES']
+    }
   )
 
   pipeline.createStage(
@@ -343,6 +343,7 @@ EOF""", returnStatus:true)
       // debug show releaseArtifacts
       writeJSON file: '.tmp-release-artifacts.json', json: releaseArtifacts, pretty: 2
       sh '''
+set +x
 echo All artifacts will be promoted:
 echo ===============================================
 cat .tmp-release-artifacts.json
@@ -358,6 +359,53 @@ echo ===============================================
           'targetName': info['target']
         ])
       }
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
+    name          : "Sign",
+    isSkippable   : true,
+    stage         : {
+      def signing = lib.package.Signing.new(this)
+      sh 'mkdir -p .tmp'
+      def uploadArtifacts = readJSON(text:'{"files":[]}')
+
+      releaseArtifacts.each { artifact, info ->
+        echo ">>> Downloading ${artifact} ..."
+        pipeline.artifactory.download(
+          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['source']['target']}\",\"target\":\".tmp/\"}]}",
+          expected    : 1
+        )
+        echo ">>> Signing ${artifact} ..."
+        signing.sign(".tmp/${info['source']['target']}")
+        uploadArtifacts['files'].push([
+          "pattern" : ".tmp/${info['source']['target']}.asc".toString(),
+          "target"  : releaseFilePath
+        ])
+
+        echo ">>> Generate hash of ${artifact} ..."
+        signing.hash(".tmp/${info['source']['target']}")
+        uploadArtifacts['files'].push([
+          "pattern" : ".tmp/${info['source']['target']}.sha512".toString(),
+          "target"  : releaseFilePath
+        ])
+      }
+
+      // debug show uploadArtifacts
+      writeJSON file: '.tmp-upload-artifacts.json', json: uploadArtifacts, pretty: 2
+      sh '''
+set +x
+echo All signing results:
+echo ===============================================
+cat .tmp-upload-artifacts.json
+echo
+echo ===============================================
+'''
+
+
+        echo ">>> Uploading signing results ..."
+        pipeline.artifactory.upload([spec: '.tmp-upload-artifacts.json'])
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
