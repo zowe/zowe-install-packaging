@@ -227,7 +227,7 @@ node('ibm-jenkins-slave-nvm') {
 
       // get zowe build source artifact
       releaseArtifacts['zowe']['source'] = pipeline.artifactory.getArtifact([
-        'pattern'      : '*/zowe-*.pax',
+        'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
         'build-name'   : releaseArtifacts['zowe']['buildName'],
         'build-number' : releaseArtifacts['zowe']['buildNumber']
       ])
@@ -247,7 +247,7 @@ node('ibm-jenkins-slave-nvm') {
       try {
         releaseArtifacts['smpe-pax'] = [:]
         releaseArtifacts['smpe-pax']['source'] = pipeline.artifactory.getArtifact([
-          'pattern'      : '*/AZWE*.pax.Z',
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
           'build-name'   : releaseArtifacts['zowe']['buildName'],
           'build-number' : releaseArtifacts['zowe']['buildNumber']
         ])
@@ -265,7 +265,7 @@ node('ibm-jenkins-slave-nvm') {
       try {
         releaseArtifacts['smpe-readme'] = [:]
         releaseArtifacts['smpe-readme']['source'] = pipeline.artifactory.getArtifact([
-          'pattern'      : '*/AZWE*.txt',
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/AZWE*.txt",
           'build-name'   : releaseArtifacts['zowe']['buildName'],
           'build-number' : releaseArtifacts['zowe']['buildNumber']
         ])
@@ -304,7 +304,7 @@ node('ibm-jenkins-slave-nvm') {
 
       // get CLI build source artifact
       releaseArtifacts['cli']['source'] = pipeline.artifactory.getArtifact([
-        'pattern'      : '*/zowe-cli-package-*.zip',
+        'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
         'build-name'   : releaseArtifacts['cli']['buildName'],
         'build-number' : releaseArtifacts['cli']['buildNumber']
       ])
