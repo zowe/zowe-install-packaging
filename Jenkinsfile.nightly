@@ -11,7 +11,7 @@
  */
 
 node('ibm-jenkins-slave-nvm') {
-  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library@staging").org.zowe.jenkins_shared_library
 
   def SLACK_CHANNEL = '#zowe-build'
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
