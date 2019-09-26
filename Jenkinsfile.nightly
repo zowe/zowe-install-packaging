@@ -147,12 +147,6 @@ node('ibm-jenkins-slave-nvm') {
         'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
         'build-name'   : ZOWE_BUILD_NAME
       ])
-
-      // find regular build info
-      if (sourceSmpeBuildInfo['build.number']) {
-        sourceRegBuildInfo = getArtifactInfoByCLI("${zoweBuildRepository}/*/zowe-*.pax", ZOWE_BUILD_NAME, sourceSmpeBuildInfo['build.number'])
-        sourceSmpeReadmeInfo = getArtifactInfoByCLI("${zoweBuildRepository}/*/AZWE*.txt", ZOWE_BUILD_NAME, sourceSmpeBuildInfo['build.number'])
-      }
     }
   )
 
