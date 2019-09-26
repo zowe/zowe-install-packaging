@@ -379,14 +379,33 @@ echo ===============================================
     stage         : {
       // download all promoted artifacts into .signing folder
       sh 'mkdir -p .signing'
+      def downloadArtifacts = readJSON(text:'{"files":[]}')
+      def expected = releaseArtifacts.size()
 
       releaseArtifacts.each { artifact, info ->
-        echo ">>> Downloading ${releaseFilePath}/${info['target']} ..."
-        pipeline.artifactory.download(
-          specContent : "{\"files\":[{\"pattern\": \"${releaseFilePath}/${info['target']}\",\"target\":\".signing/\",\"flat\":\"true\"}]}",
-          expected    : 1
-        )
+        downloadArtifacts['files'].push([
+          "pattern" : "${releaseFilePath}/${info['target']}".toString(),
+          "target"  : '.signing/',
+          "flat"    : 'true'
+        ])
       }
+
+      // debug show downloadArtifacts
+      writeJSON file: '.tmp-download-artifacts.json', json: downloadArtifacts, pretty: 2
+      sh '''
+set +x
+echo All promoted artifacts:
+echo ===============================================
+cat .tmp-download-artifacts.json
+echo
+echo ===============================================
+'''
+
+        echo ">>> Downloading all promoted artifacts ..."
+        pipeline.artifactory.download([
+          'spec'     : '.tmp-download-artifacts.json',
+          'expected' : expected
+        ])
     },
     timeout: [time: 20, unit: 'MINUTES']
   )
@@ -395,7 +414,8 @@ echo ===============================================
     name          : "Sign",
     isSkippable   : true,
     shouldExecute : {
-      return isFormalRelease
+      return true
+      // return isFormalRelease
     },
     stage         : {
       def signing = lib.package.Signing.new(this)
@@ -438,7 +458,8 @@ echo ===============================================
     name          : "Tag Branch",
     isSkippable   : true,
     shouldExecute : {
-      return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision']
+      return true
+      // return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision']
     },
     stage         : {
       echo ">>> Tagging ${releaseArtifacts['zowe']['revision']} as v${params.ZOWE_RELEASE_VERSION} ..."
@@ -488,6 +509,7 @@ EOF"""
 
           // upload to publish server
           sh """SSHPASS=${PASSWORD} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
+cd ${publishFilePath}
 ${fileUploads.join("\n")}
 bye
 EOF"""
