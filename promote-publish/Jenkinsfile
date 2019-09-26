@@ -437,6 +437,12 @@ echo ===============================================
         ])
       }
 
+      writeFile file: '.signing/code-signing-key', text: signing.getSigningKey()
+      uploadArtifacts['files'].push([
+        "pattern" : '.signing/code-signing-key',
+        "target"  : releaseFilePath + '/'
+      ])
+
       // debug show uploadArtifacts
       writeJSON file: '.tmp-upload-artifacts.json', json: uploadArtifacts, pretty: 2
       sh '''
