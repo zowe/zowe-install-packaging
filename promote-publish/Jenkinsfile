@@ -437,11 +437,15 @@ echo ===============================================
         ])
       }
 
+      // write code-signing-key
       writeFile file: '.release/code-signing-key', text: signing.getSigningKey()
       uploadArtifacts['files'].push([
         "pattern" : '.release/code-signing-key',
         "target"  : releaseFilePath + '/'
       ])
+
+      // write version, no need to upload to Artifactory
+      writeFile file: '.release/version', text: params.ZOWE_RELEASE_VERSION
 
       // debug show uploadArtifacts
       writeJSON file: '.tmp-upload-artifacts.json', json: uploadArtifacts, pretty: 2
@@ -523,6 +527,38 @@ EOF"""
       }
     },
     timeout: [time: 10, unit: 'MINUTES']
+  )
+
+
+  pipeline.createStage(
+    name          : "Message",
+    isSkippable   : true,
+    stage         : {
+      def source = ""
+      if (params.ZOWE_BUILD_NUMBER) {
+        source = "Build #${params.ZOWE_BUILD_NUMBER}"
+      } else if (params.ZOWE_BUILD_RC_PATH) {
+        source = "File \"${params.ZOWE_BUILD_RC_PATH}\""
+      }
+      def successMsg = """
+*************************************************************************************************
+
+${source} is promoted as Zowe v${params.ZOWE_RELEASE_VERSION}, you can download from:
+
+${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
+or:
+https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['zowe']['target']}
+
+The CLI Standalone Package is published here:
+${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
+or:
+https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['cli']['target']}
+
+*************************************************************************************************
+      """
+      echo successMsg
+    },
+    timeout: [time: 2, unit: 'MINUTES']
   )
 
   pipeline.end()
