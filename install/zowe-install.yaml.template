@@ -7,6 +7,8 @@ install:
   userDir=~/zowe-user-dir
   prefix=ZOWE
   instance=1
+  # Dataset prefix of SZWE* data sets:  
+  datasetPrefix={hlq}.ZWE
 
 zosmf:
   zosmfUserid=IZUSVR
