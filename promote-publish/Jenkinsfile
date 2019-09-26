@@ -377,15 +377,15 @@ echo ===============================================
     name          : "Download",
     isSkippable   : true,
     stage         : {
-      // download all promoted artifacts into .signing folder
-      sh 'mkdir -p .signing'
+      // download all promoted artifacts into .release folder
+      sh 'mkdir -p .release'
       def downloadArtifacts = readJSON(text:'{"files":[]}')
       def expected = releaseArtifacts.size()
 
       releaseArtifacts.each { artifact, info ->
         downloadArtifacts['files'].push([
           "pattern" : "${releaseFilePath}/${info['target']}".toString(),
-          "target"  : '.signing/',
+          "target"  : '.release/',
           "flat"    : 'true'
         ])
       }
@@ -423,23 +423,23 @@ echo ===============================================
 
       releaseArtifacts.each { artifact, info ->
         echo ">>> Signing ${info['target']} ..."
-        signing.sign(".signing/${info['target']}")
+        signing.sign(".release/${info['target']}")
         uploadArtifacts['files'].push([
-          "pattern" : ".signing/${info['target']}.asc".toString(),
+          "pattern" : ".release/${info['target']}.asc".toString(),
           "target"  : releaseFilePath + '/'
         ])
 
         echo ">>> Generate hash of ${info['target']} ..."
-        signing.hash(".signing/${info['target']}")
+        signing.hash(".release/${info['target']}")
         uploadArtifacts['files'].push([
-          "pattern" : ".signing/${info['target']}.sha512".toString(),
+          "pattern" : ".release/${info['target']}.sha512".toString(),
           "target"  : releaseFilePath + '/'
         ])
       }
 
-      writeFile file: '.signing/code-signing-key', text: signing.getSigningKey()
+      writeFile file: '.release/code-signing-key', text: signing.getSigningKey()
       uploadArtifacts['files'].push([
-        "pattern" : '.signing/code-signing-key',
+        "pattern" : '.release/code-signing-key',
         "target"  : releaseFilePath + '/'
       ])
 
@@ -491,8 +491,8 @@ echo ===============================================
     name          : "Publish",
     isSkippable   : true,
     stage         : {
-      def artifacts = findFiles(glob: '.signing/*')
-      echo "All files in .signing: ${artifacts}"
+      def artifacts = findFiles(glob: '.release/*')
+      echo "All files in .release: ${artifacts}"
       def fileUploads = []
       artifacts.each {
         if (it != '.' && it != '..') {
@@ -500,7 +500,7 @@ echo ===============================================
         }
       }
 
-      // everything should be in .signing folder
+      // everything should be in .release folder
       withCredentials([
         usernamePassword(
           credentialsId: params.PUBLISH_SSH_CREDENTIAL,
