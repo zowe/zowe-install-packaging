@@ -22,6 +22,8 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
 
+  def isMasterBranch = env && env['BRANCH_NAME'] == 'master'
+
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
   def sourceSmpeReadmeInfo
@@ -49,7 +51,7 @@ node('ibm-jenkins-slave-nvm') {
   )
 
   // we want to run daily on master branch
-  if (env && env.BRANCH_NAME == 'master') {
+  if (isMasterBranch) {
     pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 23 * * *")]))
   }
 
