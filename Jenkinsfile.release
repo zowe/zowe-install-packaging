@@ -31,7 +31,7 @@ node('ibm-jenkins-slave-nvm') {
 
   pipeline.admins.add("jackjia", "markackert")
 
-  // we have extra parameters for integration test
+  // we have extra parameters for the pipeline
   pipeline.addBuildParameters(
     string(
       name: 'ZOWE_BUILD_REPOSITORY',
@@ -414,8 +414,7 @@ echo ===============================================
     name          : "Sign",
     isSkippable   : true,
     shouldExecute : {
-      return true
-      // return isFormalRelease
+      return isFormalRelease
     },
     stage         : {
       def signing = lib.package.Signing.new(this)
@@ -468,8 +467,7 @@ echo ===============================================
     name          : "Tag Branch",
     isSkippable   : true,
     shouldExecute : {
-      return true
-      // return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision']
+      return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision']
     },
     stage         : {
       echo ">>> Tagging ${releaseArtifacts['zowe']['revision']} as v${params.ZOWE_RELEASE_VERSION} ..."
