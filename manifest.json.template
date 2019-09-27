@@ -62,7 +62,7 @@
       "version": "~0.0.13"
     },
     "com.ca.mfaas.sdk.mfaas-zowe-install": {
-      "version": "~1.1.11-STAGING",
+      "version": "~1.1.11",
       "artifact": "mfaas-zowe-install-*.zip",
       "target": ".pax/mediation/",
       "explode": "true"
