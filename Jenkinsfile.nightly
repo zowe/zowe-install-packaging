@@ -123,30 +123,31 @@ node('ibm-jenkins-slave-nvm') {
     name          : "Zowe",
     timeout       : [time: 1, unit: 'HOURS'],
     isSkippable   : false,
-    shouldExecute : {
-      return !sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']
-    },
     operation     : {
-      echo "Building new driver ..."
+      if (!sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']) {
+        echo "Building new driver ..."
 
-      // run build
-      def build_result = build(
-        job: '/zowe-install-packaging/staging',
-        parameters: [
-          booleanParam(name: 'BUILD_SMPE', value: true),
-        ],
-        propagate: false
-      )
-      echo "Build result: ${build_result.result}"
-      if (build_result.result != 'SUCCESS') {
-        error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
+        // run build
+        def build_result = build(
+          job: '/zowe-install-packaging/staging',
+          parameters: [
+            booleanParam(name: 'BUILD_SMPE', value: true),
+          ],
+          propagate: false
+        )
+        echo "Build result: ${build_result.result}"
+        if (build_result.result != 'SUCCESS') {
+          error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
+        }
+
+        // load build info
+        sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
+          'build-name'   : ZOWE_BUILD_NAME
+        ])
+      } else {
+        echo "No need to build new driver."
       }
-
-      // load build info
-      sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
-        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
-        'build-name'   : ZOWE_BUILD_NAME
-      ])
     }
   )
 
