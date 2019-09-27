@@ -58,6 +58,7 @@ STC_NAME={{stc_name}}
 # details to be read from higher level entry that instance PARMLIB/prop file?
 KEY_ALIAS={{key_alias}}
 KEYSTORE={{keystore}}
+TRUSTSTORE={{truststore}}
 KEYSTORE_PASSWORD={{keystore_password}}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
@@ -161,6 +162,7 @@ VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
 STC_NAME=${STC_NAME}
 KEY_ALIAS=${KEY_ALIAS}
 KEYSTORE=${KEYSTORE}
+TRUSTSTORE=${TRUSTSTORE}
 KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
