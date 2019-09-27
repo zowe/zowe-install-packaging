@@ -22,7 +22,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
 
-  // def isMasterBranch = env && env['BRANCH_NAME'] == 'master'
+  def isMasterBranch = env && env.BRANCH_NAME == 'master'
 
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
