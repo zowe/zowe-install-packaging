@@ -51,9 +51,9 @@ node('ibm-jenkins-slave-nvm') {
   )
 
   // we want to run daily on master branch
-  if (isMasterBranch) {
+  // if (isMasterBranch) {
     pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 23 * * *")]))
-  }
+  // }
 
   pipeline.setup(
     packageName: 'org.zowe',
@@ -66,15 +66,6 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
     ]
   )
-
-  // pipeline.createStage(
-  //   name          : "Test",
-  //   isSkippable   : true,
-  //   stage         : {
-      
-  //   },
-  //   timeout: [time: 10, unit: 'MINUTES']
-  // )
 
   pipeline.createStage(
     name          : "Pre-Check",
@@ -180,20 +171,18 @@ node('ibm-jenkins-slave-nvm') {
     },
     operation         : {
       if (params.TEST_RUN) {
-        echo """Skip testing with parameters:
-
-STARTED_BY_AUTOMATION: true
-SKIP_RESET_IMAGE: true
-ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'
-ZOWE_ARTIFACTORY_BUILD: ''
-IS_SMPE_PACKAGE: false
-ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo.path}'
-ZOWE_CLI_ARTIFACTORY_BUILD: ''
-TEST_CASE_DEBUG_INFORMATION: 'test:*'
-Skip Stage: Lint: true
-Skip Stage: Audit: true
-Skip Stage: SonarQube Scan: true
-"""
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "SKIP_RESET_IMAGE: true\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "IS_SMPE_PACKAGE: false\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo.path}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "TEST_CASE_DEBUG_INFORMATION: 'test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
       } else {
         def test_result = build(
             job: '/zowe-install-test/staging',
@@ -231,20 +220,18 @@ Skip Stage: SonarQube Scan: true
     },
     operation         : {
       if (params.TEST_RUN) {
-        echo """Skip testing with parameters:
-
-STARTED_BY_AUTOMATION: true
-SKIP_RESET_IMAGE: true
-ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'
-ZOWE_ARTIFACTORY_BUILD: ''
-IS_SMPE_PACKAGE: true
-ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo.path}'
-ZOWE_CLI_ARTIFACTORY_BUILD: ''
-TEST_CASE_DEBUG_INFORMATION: 'test:*'
-Skip Stage: Lint: true
-Skip Stage: Audit: true
-Skip Stage: SonarQube Scan: true
-"""
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "SKIP_RESET_IMAGE: true\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "IS_SMPE_PACKAGE: true\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo.path}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "TEST_CASE_DEBUG_INFORMATION: 'test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
       } else {
         def test_result = build(
             job: '/zowe-install-test/staging',
@@ -312,44 +299,30 @@ Skip Stage: SonarQube Scan: true
     isSkippable   : true,
     stage         : {
       def slackColor = 'good'
-      def message = """
-Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:
+      def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetSmpeReadmeFullPath}\n\n" +
+                    "The CLI Standalone Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${cliTargetFullPath}"
 
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetRegFullPath}
-
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetSmpeFullPath}
-
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetSmpeReadmeFullPath}
-
-The CLI Standalone Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:
-
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${cliTargetFullPath}
-"""
       if (testRegBuildErrorUrl) {
         slackColor = 'warning'
-        message = """
-${message}
-!!WARNING!! Smoke test FAILED on the regular build! Check test result here:
-
-${testRegBuildErrorUrl}
-"""
+        message = message + "\n" +
+                  "!!WARNING!! Smoke test FAILED on the regular build! Check test result here:\n\n" +
+                  testRegBuildErrorUrl
       }
 
       if (testSmpeBuildErrorUrl) {
         slackColor = 'warning'
-        message = """
-${message}
-!!WARNING!! Smoke test FAILED on the SMP/e build! Check test result here:
-
-${testSmpeBuildErrorUrl}
-"""
+        message = message + "\n" +
+                  "!!WARNING!! Smoke test FAILED on the SMP/e build! Check test result here:\n\n" +
+                  testSmpeBuildErrorUrl
       }
 
-      echo """
-*************************************************************************************************
-${message}
-*************************************************************************************************
-"""
+      echo "*************************************************************************************************\n" +
+           message + "\n" +
+           "*************************************************************************************************"
 
       def slackMessage = "${message}\nCheck pipeline detail: ${env.BUILD_URL}"
       if (params.TEST_RUN) {
