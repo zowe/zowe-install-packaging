@@ -22,7 +22,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
 
-  def isMasterBranch = env && env['BRANCH_NAME'] == 'master'
+  // def isMasterBranch = env && env['BRANCH_NAME'] == 'master'
 
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
@@ -46,7 +46,8 @@ node('ibm-jenkins-slave-nvm') {
     booleanParam(
       name: 'TEST_RUN',
       description: 'Test run will skip test cases and will not send out Slack message.',
-      defaultValue: isMasterBranch ? false : true
+      // defaultValue: isMasterBranch ? false : true
+      defaultValue: true
     )
   )
 
