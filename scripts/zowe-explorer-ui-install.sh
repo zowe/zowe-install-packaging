@@ -19,26 +19,53 @@
 echo "<zowe-explorer-ui-install.sh>" >> $LOG_FILE
 
 UI_PLUGIN_LIST="jes mvs uss"
-for one in $UI_PLUGIN_LIST; do
-  EXPLORER_PLUGIN_UPPERCASE=$(echo $one | tr '[a-z]' '[A-Z]')
+for COMPONENT_ID in $UI_PLUGIN_LIST; do
+  EXPLORER_PLUGIN_UPPERCASE=$(echo $COMPONENT_ID | tr '[a-z]' '[A-Z]')
 
   cd $INSTALL_DIR
-  EXPLORER_PLUGIN_PAX=$PWD/$(ls -t ./files/explorer-${one}-*.pax | head -1)
+  EXPLORER_PLUGIN_PAX=$PWD/$(ls -t ./files/explorer-${COMPONENT_ID}-*.pax | head -1)
   if [ ! -f $EXPLORER_PLUGIN_PAX ]; then
-    echo "  ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI (explorer-${one}-*.pax) missing"
+    echo "  ${EXPLORER_PLUGIN_UPPERCASE} Explorer UI (explorer-${COMPONENT_ID}-*.pax) missing"
     echo "  Installation terminated"
     exit 0
   fi
 
   # NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
-  EXPLORER_INSTALL_FOLDER="${one}_explorer"
-  echo "  Installing Explorer UI ${EXPLORER_PLUGIN_UPPERCASE} into ${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
+  EXPLORER_INSTALL_FOLDER="${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}-explorer"
+  echo "  Installing Explorer UI ${EXPLORER_PLUGIN_UPPERCASE} into ${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
   umask 0002
-  mkdir -p "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
+  mkdir -p "${EXPLORER_INSTALL_FOLDER}/bin"
+  
   # unpax package
-  cd "${ZOWE_ROOT_DIR}/${EXPLORER_INSTALL_FOLDER}"
+  cd "${EXPLORER_INSTALL_FOLDER}/bin"
   echo "  Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
   pax -rf $EXPLORER_PLUGIN_PAX -ppx
+
+  #TODO make sure scripts end up in files directory not bin.
+  EXPLORER_UI_START_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/${COMPONENT_ID}-explorer-start.sh
+  EXPLORER_UI_CONFIGURE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/${COMPONENT_ID}-explorer-configure.sh
+  #EXPLORER_UI_VALIDATE_SCRIPT
+
+  if [ ! -f $EXPLORER_UI_START_SCRIPT ]; then
+    echo "  Error: Explorer ${COMPONENT_ID} ui start script (start-explorer-${COMPONENT_ID}-ui-server.sh) missing"
+    echo "  Installation terminated"
+    exit 0
+  fi
+
+  # copy start script
+  cp ${EXPLORER_UI_START_SCRIPT} start.sh
+
+  if [[ -f ${CONFIGURE_SCRIPT} ]]
+  then
+    cp ${CONFIGURE_SCRIPT} configure.sh
+  fi
+
+  # if [[ -f ${VALIDATE_SCRIPT} ]]
+  # then
+  #   cp ${VALIDATE_SCRIPT} validate.sh
+  # fi
+  chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
+
 done
 
 echo "</zowe-explorer-ui-install.sh>" >> $LOG_FILE

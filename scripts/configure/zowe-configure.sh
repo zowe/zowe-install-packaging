@@ -38,9 +38,6 @@ mkdir -p $TEMP_DIR
 
 echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
-# Configure Explorer UI plugins
-. $CONFIG_DIR/zowe-configure-explorer-ui.sh
-
 # Configure the ports for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-ports.sh
 

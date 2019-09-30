@@ -36,12 +36,16 @@ if ! [ -f "$5" ]; then
   exit 1
 fi
 
-zluxserverdirectory='zlux-app-server'
+ZLUX_SERVER_DIRECTORY='zlux-app-server'
 
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
+chmod -R u+w $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/
 # switch spaces to underscores and lower case it for use as folder name
 PLUGIN_FOLDER_NAME=$(echo $PLUGIN_SHORTNAME | tr -s ' ' | tr ' ' '_' | tr '[:upper:]' '[:lower:]')
 PLUGIN_FOLDER=$ZOWE_ROOT_DIR/$PLUGIN_FOLDER_NAME
+
+# remove any previous plugin files
+rm -rf $PLUGIN_FOLDER
+rm -f $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
 
 mkdir -p $PLUGIN_FOLDER/web/images
 cp $TILE_IMAGE_PATH $PLUGIN_FOLDER/web/images
@@ -87,7 +91,7 @@ cat <<EOF >$PLUGIN_FOLDER/pluginDefinition.json
 }
 EOF
 
-cat <<EOF >$ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/$PLUGIN_ID.json
+cat <<EOF >$ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
 {
     "identifier": "$PLUGIN_ID",
     "pluginLocation": "../../$PLUGIN_FOLDER_NAME"

@@ -84,23 +84,6 @@ services:
 EOF
 iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets_ui.yml > $STATIC_DEF_CONFIG/datasets_ui.yml	
 
-# Add static definition for Jobs
-cat <<EOF >$TEMP_DIR/jobs_ui.yml
-#
-services:
-  - serviceId: explorer-jes
-    title: IBM z/OS Jobs UI
-    description: IBM z/OS Jobs UI service
-    catalogUiTileId:
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_JES_UI_PORT/
-    homePageRelativeUrl:
-    routedServices:
-      - gatewayUrl: ui/v1
-        serviceRelativeUrl: ui/v1/explorer-jes
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs_ui.yml > $STATIC_DEF_CONFIG/jobs_ui.yml	
-
 # Add static definition for USS
 cat <<EOF >$TEMP_DIR/uss.yml
 #
