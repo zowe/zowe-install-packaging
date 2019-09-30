@@ -538,6 +538,24 @@ EOF"""
       } else if (params.ZOWE_BUILD_RC_PATH) {
         source = "File \"${params.ZOWE_BUILD_RC_PATH}\""
       }
+
+      def smpeMessage = ''
+      if (releaseArtifacts['smpe-pax'] && releaseArtifacts['smpe-pax']['target'] &&
+        releaseArtifacts['smpe-readme'] && releaseArtifacts['smpe-readme']['target']) {
+smpeMessage = """
+
+SMP/e build:
+${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']}
+or:
+https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['smpe-pax']['target']}
+
+${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']}
+or:
+https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['smpe-readme']['target']}
+
+"""
+      }
+
       def successMsg = """
 *************************************************************************************************
 
@@ -546,7 +564,7 @@ ${source} is promoted as Zowe v${params.ZOWE_RELEASE_VERSION}, you can download 
 ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
 or:
 https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['zowe']['target']}
-
+${smpeMessage}
 The CLI Standalone Package is published here:
 ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
 or:
