@@ -108,7 +108,7 @@ _move $stage $split/$file echo zss-auth
 _move $stage $split/$file echo manifest.json
 
 # api-mediation has a few big jar files, give them their own pax
-for f in $(ls api-mediation/*.jar | grep -v /enabler)               #*/
+for f in $(ls components/api-mediation/*.jar | grep -v /enabler)               #*/
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
   _move $stage $split/$file echo $f

@@ -111,12 +111,10 @@ gimzip:
   gimzip=
   # temporary directory holding config data & symlinks
   scratch=
-  # Java home directory, for default, existing JAVA_HOME will be used if set
+  # Java home directory, default uses existing JAVA_HOME if set
   JAVA_HOME=
-  # SMP/ E home directory, for default, existing SMP_HOME will be used if set
+  # SMP/ E home directory, default uses existing SMP_HOME if set
   SMP_HOME=
-  # IBM Developer for z Systems home directory, for default, existing IDZ_HOME will be used if set
-  IDZ_HOME=
 EOF
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 if test $? -ne 0
@@ -188,8 +186,6 @@ do
                              | grep /J.*[^_64]$ | tail -1)} # permanent
     _export gimzip  SMP_HOME   SMP_HOME      \
                                   ${SMP_HOME:-/usr/lpp/smp} # permanent
-    _export gimzip  IDZ_HOME   IDZ_HOME      \
-                              ${IDZ_HOME:-/usr/lpp/IBM/idz} # permanent
 # pd
 # service
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
