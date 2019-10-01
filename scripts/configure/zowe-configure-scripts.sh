@@ -26,13 +26,19 @@ sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{files_api_port}}#${ZOWE_EXPLORER_SERVER_DATASETS_PORT}#" \
   -e "s#{{jobs_api_port}}#${ZOWE_EXPLORER_SERVER_JOBS_PORT}#" \
+  -e "s#{{discovery_port}}#${ZOWE_APIM_DISCOVERY_PORT}#" \
+  -e "s#{{catalog_port}}#${ZOWE_APIM_CATALOG_PORT}#" \
+  -e "s#{{gateway_port}}#${ZOWE_APIM_GATEWAY_PORT}#" \
+  -e "s#{{verify_certificates}}#${ZOWE_APIM_VERIFY_CERTIFICATES}#" \
   -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
   -e "s#{{zosmf_ip_address}}#${ZOWE_ZOSMF_HOST}#" \
   -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
+  -e "s#{{zowe_ip_address}}#${ZOWE_IPADDRESS}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
   -e "s#{{key_alias}}#localhost#" \
-  -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/api-mediation/keystore/localhost/localhost.keystore.p12#" \
+  -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.p12#" \
   -e "s#{{keystore_password}}#password#" \
+  -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/run-zowe.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.sh"
 

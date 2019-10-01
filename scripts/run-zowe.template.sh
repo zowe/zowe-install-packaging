@@ -49,14 +49,20 @@ ROOT_DIR={{root_dir}} # the install directory of zowe
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
 FILES_API_PORT={{files_api_port}} # the port the files api service will use
 JOBS_API_PORT={{jobs_api_port}} # the port the files api service will use
+DISCOVERY_PORT={{discovery_port}} # the port the discovery service will use
+CATALOG_PORT={{catalog_port}} # the port the api catalog service will use
+GATEWAY_PORT={{gateway_port}} # the port the api gateway service will use
+VERIFY_CERTIFICATES={{verify_certificates}} # boolean saying if we accept only verified certificates
 STC_NAME={{stc_name}}
 
 # details to be read from higher level entry that instance PARMLIB/prop file?
 KEY_ALIAS={{key_alias}}
 KEYSTORE={{keystore}}
+TRUSTSTORE={{truststore}}
 KEYSTORE_PASSWORD={{keystore_password}}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
+ZOWE_IP_ADDRESS={{zowe_ip_address}}
 ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
 ZOWE_JAVA_HOME={{java_home}}
 
@@ -89,12 +95,8 @@ DIR=`dirname $0`
 mkdir -p ${USER_DIR}/api-defs
 STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-defs
 
-# TODO - temporary until APIML is componentised - Inject it into discovery script
-sed -e "s#-Dapiml.discovery.staticApiDefinitionsDirectories.*[^\\]#-Dapiml.discovery.staticApiDefinitionsDirectories=\"${STATIC_DEF_CONFIG_DIR};${ROOT_DIR}/api-mediation/api-defs\" #" \
-  "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh" \
-  > "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy"
-mv "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh.copy" "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
-chmod 770 "${ROOT_DIR}/api-mediation/scripts/api-mediation-start-discovery.sh"
+# Until ui explorers componentised will copy them from the old location
+cp ${ROOT_DIR}/components/api-mediation/api-defs/* ${STATIC_DEF_CONFIG_DIR}
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
@@ -103,10 +105,7 @@ fi
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api #TODO this is WIP - component ids not finalised at the moment
-  _BPX_JOBNAME=$ZOWE_API_DS $DIR/../../api-mediation/scripts/api-mediation-start-discovery.sh
-  _BPX_JOBNAME=$ZOWE_API_CT $DIR/../../api-mediation/scripts/api-mediation-start-catalog.sh
-  _BPX_JOBNAME=$ZOWE_API_GW $DIR/../../api-mediation/scripts/api-mediation-start-gateway.sh
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation #TODO this is WIP - component ids not finalised at the moment
   _BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
   _BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
   _BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
@@ -148,13 +147,19 @@ ROOT_DIR=${ROOT_DIR}
 USER_DIR=${USER_DIR}
 FILES_API_PORT=${FILES_API_PORT}
 JOBS_API_PORT=${JOBS_API_PORT}
+DISCOVERY_PORT=${DISCOVERY_PORT}
+CATALOG_PORT=${CATALOG_PORT}
+GATEWAY_PORT=${GATEWAY_PORT}
+VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
 STC_NAME=${STC_NAME}
 KEY_ALIAS=${KEY_ALIAS}
 KEYSTORE=${KEYSTORE}
+TRUSTSTORE=${TRUSTSTORE}
 KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
+ZOWE_IP_ADDRESS=${ZOWE_IP_ADDRESS}
 ZOWE_EXPLORER_HOST=${ZOWE_EXPLORER_HOST}
 ZOWE_JAVA_HOME=${ZOWE_JAVA_HOME}
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}
