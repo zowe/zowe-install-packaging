@@ -178,6 +178,8 @@ then
   # Run configure - note not in source mode
   ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
 else
-  . $INSTALL_DIR/scripts/zowe-create-MVS-artefacts.sh 
-  echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
+    echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
 fi
+
+# Create MVS artefacts SZWEAUTH and SZWESAMP
+. $INSTALL_DIR/scripts/zowe-create-MVS-artefacts.sh 

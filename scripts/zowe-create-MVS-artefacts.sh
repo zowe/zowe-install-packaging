@@ -81,14 +81,16 @@ then
 
     cp $INSTALL_DIR/files/templates/ZWESECUR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZWESECUR # staging/cupids
 
-#----------------------------------------------------------------------------80
+# Statements below must not exceed col 80
+#----------------------------------------------------------------------------80|
 cat > ${TEMP_DIR}/files/zss/SAMPLIB/ZWESIPRG <<EndOfZWESIPRG
 /* issue this console command to authorize the loadlib temporarily */
 SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEAUTH,VOLUME=${volume}
 /* Add this statement to SYS1.PARMLIB(PROGxx) or equivalent 
-   to authorise the loadlib permanently */
+   to authorize the loadlib permanently */
 APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume}) 
 EndOfZWESIPRG
+#----------------------------------------------------------------------------80|
 
     # cp $INSTALL_DIR/files/templates/ZWESTC.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZWESISTC # staging/cupids
     mv ${TEMP_DIR}/files/zss/SAMPLIB/ZWESIS01 ${TEMP_DIR}/files/zss/SAMPLIB/ZWESISTC
