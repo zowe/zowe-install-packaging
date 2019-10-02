@@ -26,6 +26,7 @@ sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{files_api_port}}#${ZOWE_EXPLORER_SERVER_DATASETS_PORT}#" \
   -e "s#{{jobs_api_port}}#${ZOWE_EXPLORER_SERVER_JOBS_PORT}#" \
+  -e "s#{{jobs_ui_port}}#${ZOWE_EXPLORER_JES_UI_PORT}#"
   -e "s#{{discovery_port}}#${ZOWE_APIM_DISCOVERY_PORT}#" \
   -e "s#{{catalog_port}}#${ZOWE_APIM_CATALOG_PORT}#" \
   -e "s#{{gateway_port}}#${ZOWE_APIM_GATEWAY_PORT}#" \
@@ -39,6 +40,8 @@ sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.p12#" \
   -e "s#{{keystore_password}}#password#" \
   -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" \
+  -e "s#{{keystore_key}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.key#" \
+  -e "s#{{keystore_certificate}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.cer-ebcdic#" \
   "${ZOWE_ROOT_DIR}/scripts/templates/run-zowe.template.sh" \
   > "${ZOWE_ROOT_DIR}/scripts/internal/run-zowe.sh"
 

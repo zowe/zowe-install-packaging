@@ -49,6 +49,7 @@ ROOT_DIR={{root_dir}} # the install directory of zowe
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
 FILES_API_PORT={{files_api_port}} # the port the files api service will use
 JOBS_API_PORT={{jobs_api_port}} # the port the files api service will use
+JES_EXPLORER_UI_PORT={{jobs_ui_port}} # the port the files api service will use
 DISCOVERY_PORT={{discovery_port}} # the port the discovery service will use
 CATALOG_PORT={{catalog_port}} # the port the api catalog service will use
 GATEWAY_PORT={{gateway_port}} # the port the api gateway service will use
@@ -60,6 +61,8 @@ KEY_ALIAS={{key_alias}}
 KEYSTORE={{keystore}}
 TRUSTSTORE={{truststore}}
 KEYSTORE_PASSWORD={{keystore_password}}
+KEYSTORE_KEY={{keystore_key}}
+KEYSTORE_CERTIFICATE={{keystore_certificate}}
 ZOSMF_PORT={{zosmf_port}}
 ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
 ZOWE_IP_ADDRESS={{zowe_ip_address}}
@@ -99,9 +102,6 @@ fi
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
   LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,jes-explorer #TODO this is WIP - component ids not finalised at the moment
-  _BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
-  _BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
-  _BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
 fi
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
