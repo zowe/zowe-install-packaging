@@ -79,7 +79,7 @@ then
 
     # ... obtain members as yet not in zss.pax file ...
 
-    cp $INSTALL_DIR/files/templates/ZWESECUR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZWESECUR # staging/cupids
+    cp $INSTALL_DIR/files/templates/ZWESECUR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZWESECUR # stagings/cupids
 
 # Statements below must not exceed col 80
 #----------------------------------------------------------------------------80|
@@ -96,7 +96,7 @@ EndOfZWESIPRG
     mv ${TEMP_DIR}/files/zss/SAMPLIB/ZWESIS01 ${TEMP_DIR}/files/zss/SAMPLIB/ZWESISTC
 
     cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZOWESVR # unconfigured
-    cp ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZOWESVR # if configure-proclib was run
+    # cp ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZOWESVR # if configure-proclib was run
 
     for member in ZWESIP00 ZWESISCH ZWESISMS ZOWESVR ZWESECUR ZWESISTC ZWESIPRG 
     do
