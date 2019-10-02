@@ -18,7 +18,8 @@
 
 echo "<zowe-explorer-ui-install.sh>" >> $LOG_FILE
 
-UI_PLUGIN_LIST="jes mvs uss"
+# TODO add back uss and mvs
+UI_PLUGIN_LIST="jes"
 for COMPONENT_ID in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_UPPERCASE=$(echo $COMPONENT_ID | tr '[a-z]' '[A-Z]')
 
@@ -55,14 +56,14 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   # copy start script
   cp ${EXPLORER_UI_START_SCRIPT} start.sh
 
-  if [[ -f ${CONFIGURE_SCRIPT} ]]
+  if [[ -f ${EXPLORER_UI_CONFIGURE_SCRIPT} ]]
   then
-    cp ${CONFIGURE_SCRIPT} configure.sh
+    cp ${EXPLORER_UI_CONFIGURE_SCRIPT} configure.sh
   fi
 
-  # if [[ -f ${VALIDATE_SCRIPT} ]]
+  # if [[ -f ${EXPLORER_UI_VALIDATE_SCRIPT} ]]
   # then
-  #   cp ${VALIDATE_SCRIPT} validate.sh
+  #   cp ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
   # fi
   chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
 
