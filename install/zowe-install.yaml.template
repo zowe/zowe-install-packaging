@@ -4,7 +4,9 @@
 # zowe-install: The directory that zowe will be installed into
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
+  userDir=~/zowe-user-dir
   prefix=ZOWE
+  instance=1
 
 zosmf:
   zosmfUserid=IZUSVR
@@ -33,6 +35,8 @@ zowe-desktop-apps:
 zlux-server:
   httpsPort=8544
   zssPort=8542
+  # make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
+  zssCrossMemoryServerName=ZWESIS_STD
 
 terminals:
   sshPort=22

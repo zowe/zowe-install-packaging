@@ -22,7 +22,13 @@ set -x
 SCRIPT_NAME=$(basename "$0")
 BASEDIR=$(dirname "$0")
 PAX_WORKSPACE_DIR=.pax
-ZOWE_VERSION=$(cat manifest.json | jq -r '.version')
+
+if [ -z "$ZOWE_VERSION" ]; then
+  echo "$SCRIPT_NAME ZOWE_VERSION environment variable is missing"
+  exit 1
+else
+  echo "$SCRIPT_NAME working on Zowe v${ZOWE_VERSION} ..."
+fi
 
 cd $BASEDIR
 cd ..
@@ -57,9 +63,6 @@ cp manifest.json "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 cp -R install/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
 cp -R scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 
-# write a version file, so pre-packaging.sh can pick up
-echo "$ZOWE_VERSION" > "${PAX_WORKSPACE_DIR}/ascii/version"
-
 # move licenses
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/licenses"
 mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zowe_licenses_full.zip "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/licenses"
@@ -80,7 +83,11 @@ mv ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/zss-*.pax "${PAX_WORK
 
 # jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts"
-mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api-server-start.sh" \
-   "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/jobs-api-server-start.sh"
-mv "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/data-sets-api-server-start.sh" \
-   "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/data-sets-api-server-start.sh"
+mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh \
+   ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
+mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh \
+   ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
+
+# copy smpe scripts
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe"
+cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"
