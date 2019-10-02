@@ -97,13 +97,13 @@
       "componentGroup": "Imperative CLI Framework",
       "entries": [{
         "repository": "imperative",
-        "tag": "v2.4.9"
+        "tag": "v2.6.0"
       }]
     }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.1.6"
+        "tag": "v1.1.9"
       }]
     }, {
       "componentGroup": "Zowe Application Framework",
@@ -156,7 +156,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v2.30.0"
+        "tag": "v2.31.2"
       }]
     }, {
       "componentGroup": "Zowe CLI Plug-in for IBM CICS",
