@@ -173,6 +173,9 @@ rm -rf $TEMP_DIR
 
 cd $PREV_DIR
 
+# Create MVS artefacts SZWEAUTH and SZWESAMP
+. $INSTALL_DIR/scripts/zowe-create-MVS-artefacts.sh 
+
 if [ -z $INSTALL_ONLY ]
 then
   # Run configure - note not in source mode
@@ -181,5 +184,3 @@ else
     echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
 fi
 
-# Create MVS artefacts SZWEAUTH and SZWESAMP
-. $INSTALL_DIR/scripts/zowe-create-MVS-artefacts.sh 
