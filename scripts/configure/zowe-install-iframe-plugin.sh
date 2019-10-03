@@ -24,7 +24,7 @@ URL=$4
 TILE_IMAGE_PATH=$5
 PLUGIN_DIR_OVERRIDE=$6
 
-if [ "$#" -ne 6 ]; then
+if [ "$#" -lt 5 ]; then
   echo "Usage: $0 ZOWE_INSTALL_ROOT_DIRECTORY PLUGIN_ID PLUGIN_SHORTNAME URL TILE_IMAGE_PATH PLUGIN_DIR_OVERRIDE \neg. install-iframe-plugin.sh \"~/zowe\" \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe_plugin/artifacts/tile_image.png\" /zowe/component/plugin" >&2
   exit 1
 fi
