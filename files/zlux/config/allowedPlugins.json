@@ -1,103 +1,103 @@
 {
   "allowedPlugins": [
     {
-      "identifier": "org.zowe.configjs.json",
+      "identifier": "org.zowe.configjs",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.editor.json",
+      "identifier": "org.zowe.editor",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.terminal.proxy.json",
+      "identifier": "org.zowe.terminal.proxy",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.terminal.tn3270.json",
+      "identifier": "org.zowe.terminal.tn3270",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.terminal.vt.json",
+      "identifier": "org.zowe.terminal.vt",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.appmanager.app.propview.json",
+      "identifier": "org.zowe.zlux.appmanager.app.propview",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.auth.trivial.json",
+      "identifier": "org.zowe.zlux.auth.trivial",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.auth.zosmf.json",
+      "identifier": "org.zowe.zlux.auth.zosmf",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.auth.zss.json",
+      "identifier": "org.zowe.zlux.auth.zss",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.bootstrap.json",
+      "identifier": "org.zowe.zlux.bootstrap",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.logger.json",
+      "identifier": "org.zowe.zlux.logger",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.ng2desktop.json",
+      "identifier": "org.zowe.zlux.ng2desktop",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.proxy.zosmf.json",
+      "identifier": "org.zowe.zlux.proxy.zosmf",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.sample.angular.json",
+      "identifier": "org.zowe.zlux.sample.angular",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.sample.iframe.json",
+      "identifier": "org.zowe.zlux.sample.iframe",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zlux.sample.react.json",
+      "identifier": "org.zowe.zlux.sample.react",
       "versions": [
         "*"
       ]
     },
     {
-      "identifier": "org.zowe.zosmf.workflows.json",
+      "identifier": "org.zowe.zosmf.workflows",
       "versions": [
         "*"
       ]
