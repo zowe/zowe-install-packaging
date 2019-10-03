@@ -78,7 +78,7 @@ then
 
     # ... obtain members as yet not in zss.pax file ...
 
-    cp $INSTALL_DIR/files/templates/ZWESECUR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZWESECUR # stagings/cupids
+    # cp $INSTALL_DIR/files/templates/ZWESECUR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZWESECUR # stagings/cupids
 
 # Statements below must not exceed col 80
 #----------------------------------------------------------------------------80|
@@ -95,7 +95,7 @@ EndOfZWESIPRG
 
     cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZOWESVR # unconfigured
     
-    for member in ZWESIP00 ZWESISCH ZWESISMS ZOWESVR ZWESECUR ZWESISTC ZWESIPRG 
+    for member in ZWESIP00 ZWESISCH ZWESISMS ZOWESVR  ZWESISTC ZWESIPRG # ZWESECUR (will come from stagings/cupids)
     do
         cp -v ${TEMP_DIR}/files/zss/SAMPLIB/$member "//'${ZOWE_DSN_PREFIX}.SZWESAMP($member)'" >> ${LOG_FILE}
         rc=$?
