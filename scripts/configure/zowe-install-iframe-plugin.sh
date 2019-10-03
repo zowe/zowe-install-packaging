@@ -22,9 +22,10 @@ PLUGIN_ID=$2
 PLUGIN_SHORTNAME=$3
 URL=$4
 TILE_IMAGE_PATH=$5
+PLUGIN_DIR_OVERRIDE=$6
 
-if [ "$#" -ne 5 ]; then
-  echo "Usage: $0 ZOWE_INSTALL_ROOT_DIRECTORY PLUGIN_ID PLUGIN_SHORTNAME URL TILE_IMAGE_PATH\neg. install-iframe-plugin.sh \"~/zowe\" \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe_plugin/artifacts/tile_image.png\"" >&2
+if [ "$#" -ne 6 ]; then
+  echo "Usage: $0 ZOWE_INSTALL_ROOT_DIRECTORY PLUGIN_ID PLUGIN_SHORTNAME URL TILE_IMAGE_PATH PLUGIN_DIR_OVERRIDE \neg. install-iframe-plugin.sh \"~/zowe\" \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe_plugin/artifacts/tile_image.png\" /zowe/component/plugin" >&2
   exit 1
 fi
 if ! [ -d "$1" ]; then
@@ -43,8 +44,14 @@ chmod -R u+w $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/
 PLUGIN_FOLDER_NAME=$(echo $PLUGIN_SHORTNAME | tr -s ' ' | tr ' ' '_' | tr '[:upper:]' '[:lower:]')
 PLUGIN_FOLDER=$ZOWE_ROOT_DIR/$PLUGIN_FOLDER_NAME
 
+if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
+  PLUGIN_FOLDER=$PLUGIN_DIR_OVERRIDE
+fi
+
 # remove any previous plugin files
-rm -rf $PLUGIN_FOLDER
+rm -rf $PLUGIN_FOLDER/web/images
+rm -f $PLUGIN_FOLDER/web/index.html
+rm -f $PLUGIN_FOLDER/pluginDefinition.json
 rm -f $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
 
 mkdir -p $PLUGIN_FOLDER/web/images
@@ -91,10 +98,16 @@ cat <<EOF >$PLUGIN_FOLDER/pluginDefinition.json
 }
 EOF
 
+if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
+  PLUGIN_LOCATION=$PLUGIN_DIR_OVERRIDE
+else
+  PLUGIN_LOCATION="../../${PLUGIN_FOLDER_NAME}"
+fi
+
 cat <<EOF >$ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
 {
     "identifier": "$PLUGIN_ID",
-    "pluginLocation": "../../$PLUGIN_FOLDER_NAME"
+    "pluginLocation": "$PLUGIN_LOCATION"
 }
 EOF
 

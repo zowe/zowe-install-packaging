@@ -103,6 +103,12 @@ if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
   cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
 fi
+# Create the user configurable api-defs
+mkdir -p ${USER_DIR}/api-defs
+STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-defs
+
+# Until ui explorers componentised will copy them from the old location
+cp ${ROOT_DIR}/components/api-mediation/api-defs/* ${STATIC_DEF_CONFIG_DIR}
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
@@ -154,6 +160,7 @@ ROOT_DIR=${ROOT_DIR}
 USER_DIR=${USER_DIR}
 FILES_API_PORT=${FILES_API_PORT}
 JOBS_API_PORT=${JOBS_API_PORT}
+JES_EXPLORER_UI_PORT=${JES_EXPLORER_UI_PORT}
 DISCOVERY_PORT=${DISCOVERY_PORT}
 CATALOG_PORT=${CATALOG_PORT}
 GATEWAY_PORT=${GATEWAY_PORT}
@@ -163,6 +170,8 @@ KEY_ALIAS=${KEY_ALIAS}
 KEYSTORE=${KEYSTORE}
 TRUSTSTORE=${TRUSTSTORE}
 KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+KEYSTORE_KEY=${KEYSTORE_KEY}
+KEYSTORE_CERTIFICATE=${KEYSTORE_CERTIFICATE}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
@@ -190,3 +199,14 @@ for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   . ${ROOT_DIR}/components/${i}/bin/start.sh
 done
+
+# Deploy any installed plugins for the Desktop
+cd $ZOWE_ROOT_DIR/zlux-build
+chmod a+x deploy.sh
+./deploy.sh > /dev/null
+
+# Start the desktop
+if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+then
+  cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
+fi
