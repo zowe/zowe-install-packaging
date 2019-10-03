@@ -91,12 +91,10 @@ APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume})
 EndOfZWESIPRG
 #----------------------------------------------------------------------------80|
 
-    # cp $INSTALL_DIR/files/templates/ZWESTC.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZWESISTC # staging/cupids
     mv ${TEMP_DIR}/files/zss/SAMPLIB/ZWESIS01 ${TEMP_DIR}/files/zss/SAMPLIB/ZWESISTC
 
     cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZOWESVR # unconfigured
-    # cp ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl ${TEMP_DIR}/files/zss/SAMPLIB/ZOWESVR # if configure-proclib was run
-
+    
     for member in ZWESIP00 ZWESISCH ZWESISMS ZOWESVR ZWESECUR ZWESISTC ZWESIPRG 
     do
         cp -v ${TEMP_DIR}/files/zss/SAMPLIB/$member "//'${ZOWE_DSN_PREFIX}.SZWESAMP($member)'" >> ${LOG_FILE}
