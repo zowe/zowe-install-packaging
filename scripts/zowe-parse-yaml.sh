@@ -67,12 +67,7 @@ do
 # Look for datasetPrefix= beneath install:
             if [[ $key == "datasetPrefix" ]] && [[ $section == "install" ]]
             then
-                if [[ $value == "{userid}" ]] 
-                then
-                    ZOWE_DSN_PREFIX=${USER:-${USERNAME:-${LOGNAME}}} 
-                else
-                    ZOWE_DSN_PREFIX=$value
-                fi
+                ZOWE_DSN_PREFIX=`echo "$value" | sed "s/{userid}/${USER:-${USERNAME:-${LOGNAME}}}/"`
                 export ZOWE_DSN_PREFIX
             fi      
 # Look for jobsAPIPort= beneath zos-services:
