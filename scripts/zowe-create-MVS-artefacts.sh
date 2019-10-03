@@ -17,7 +17,6 @@ echo "Creating MVS artefacts ... "
 
 # Unpax the LOADLIB and SAMPLIB
 echo "Unpax the LOADLIB and SAMPLIB:" >> ${LOG_FILE}
-# TEMP_DIR=/tmp/zowe/$script/$$ # temporary coding
 mkdir -p ${TEMP_DIR}/files/zss/LOADLIB >> ${LOG_FILE} 2>&1
 mkdir -p ${TEMP_DIR}/files/zss/SAMPLIB >> ${LOG_FILE} 2>&1
 dir=`pwd`
