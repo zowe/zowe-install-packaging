@@ -72,6 +72,12 @@
         "*"
       ]
     },
+	{
+      "identifier": "org.zowe.zlux.ng2desktop.settings",
+      "versions": [
+        "*"
+      ]
+    },
     {
       "identifier": "org.zowe.zlux.proxy.zosmf",
       "versions": [
