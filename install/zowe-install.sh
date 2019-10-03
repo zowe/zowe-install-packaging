@@ -173,7 +173,7 @@ rm -rf $TEMP_DIR
 
 cd $PREV_DIR
 
-# Create MVS artefacts SZWEAUTH and SZWESAMP
+echo Create MVS artefacts SZWEAUTH and SZWESAMP
 . $INSTALL_DIR/scripts/zowe-create-MVS-artefacts.sh 
 
 if [ -z $INSTALL_ONLY ]
