@@ -275,7 +275,7 @@ fi
 # 3. Ports are available
 echo
 echo Check the ports in the yaml file are not already in use
-portList=`sed -n 's/.*\([^ssh|telnet]Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe-install.yaml`
+portList=`sed -n 's/.*\([^ssh|telnet]Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe.yaml`
 portsOK=1
 for port in $portList 
 do
@@ -348,13 +348,13 @@ echo
 echo Check enough free space is available in target z/OS USS HFS install folder
 
 # extract the target install directory from the yaml file
-rootDir=`sed -n 's/ *rootDir=\(.*\)/\1/p' ${INSTALL_DIR}/zowe-install.yaml`
+rootDir=`sed -n 's/ *rootDir=\(.*\)/\1/p' ${INSTALL_DIR}/zowe.yaml`
 
 if [[ -n "$rootDir" ]]
 then 
   : # root dir was extracted from yaml
 else
-  echo Warning: rootDir not set in zowe-install.yaml file
+  echo Warning: rootDir not set in zowe.yaml file
   rootDir=~/zowe
   echo defaulting to $rootDir
 fi 

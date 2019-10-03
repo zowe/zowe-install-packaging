@@ -57,11 +57,11 @@
 # Explode pax after cleanup finished.
 #
 # ---------------------------------------------------------------------
- 
+
 manifest="manifest.txt"        # all manifest files share this filetype
 pax_prefix="ZWEPAX"                   # all pax files share this prefix
 IgNoRe_ErRoR=                  # if not null, then do not exit on error
- 
+
 # ---------------------------------------------------------------------
 # --- show & execute command
 #     stderr is routed to stdout to preserve the order of messages
@@ -79,8 +79,8 @@ else         # stderr -> stdout, caller can add >/dev/null to trash all
        $@ 2>&1
 fi    #
 }    # _cmd
- 
- 
+
+
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
 #     stderr is routed to stdout to preserve the order of messages
@@ -106,8 +106,8 @@ then
   test "$IgNoRe_ErRoR" || exit $status                           # EXIT
 fi    #
 }    # _cmdrc
- 
- 
+
+
 # ---------------------------------------------------------------------
 # --- delete files/directories listed in a manifest, optionally
 #     also remove a manifest
@@ -134,7 +134,7 @@ do
   fi    #
 done    # for F
 echo -- Removing $total files and directories
- 
+
 #
 # delete all files & directories listed in active manifest
 #
@@ -148,15 +148,15 @@ do
     echo +- skip removing $F, does not exist
   fi    #
 done    # for F
- 
+
 #
 # delete active manifest
 #
 echo +- removing $active
 _cmdrc rm "$active"
 }    # _deleteFiles
- 
- 
+
+
 # ---------------------------------------------------------------------
 # --- explode pax file, path relative to current dir
 # ---------------------------------------------------------------------
@@ -167,7 +167,7 @@ function _addFiles
 #
 _cmdrc eval total=$(pax -f "$pax_file" | wc -l | sed 's/ //g')
 echo "-- Exploding $total entries"
- 
+
 #
 # explode pax
 # pax
@@ -177,9 +177,31 @@ echo "-- Exploding $total entries"
 #  -v                  verbose
 #
 _cmdrc pax -f "$pax_file" -r -px -v
- 
+
+#
+# restore symbolic links as instructed by the manifest
+# sample input:
+# #LNK ./jes_explorer/node_modules/.bin/which -> ../which/bin/which
+#
+echo +- restoring symbolic links
+sed -n '/^#LNK/p' $manifest | while read -r junk1 file junk2 target
+do
+  if test -e "$file"
+  then
+    echo "+- skip creating $file, already exists"
+  elif test -d "$(dirname $file)"
+  then
+    echo "+- creating $file -> $target"
+    ln -s $target $file 2>&1
+  else
+    echo "+- skip creating $file, directory does not exist"
+  fi    #
+done    # while read
+
 #
 # count all files, directories & links currently present
+# sample input:
+# admin
 #
 echo +- counting files
 total=0
@@ -196,8 +218,8 @@ do
 done    # for F
 echo +- $total files, directories and links currently present
 }    # _addFiles
- 
- 
+
+
 # ---------------------------------------------------------------------
 # --- process phase PRE, action DELETE
 #
@@ -219,13 +241,13 @@ echo +- $total files, directories and links currently present
 function _preDelete
 {
 # (note: $manifest == $active)
- 
+
 ##
 ## fail processing if manifest is a null string
 ## (= manifest not found in pax)
 ##
 #_cmdrc test "$manifest"
- 
+
 if test ! "$manifest"
 then
   #
@@ -234,7 +256,7 @@ then
   #
   echo "** WARNING $SMP_File does not have a manifest"
 fi    #
- 
+
 #
 # exit gracefully if manifest is no longer present in filesystem
 # (= manifest already processed)
@@ -245,14 +267,14 @@ then
   echo "** Exiting script with status 0"
   exit 0                                                         # EXIT
 fi    #
- 
+
 #
 # delete all files & directories listed in manifest + manifest itself
 #
 _deleteFiles
 }    # _preDelete
- 
- 
+
+
 # ---------------------------------------------------------------------
 # --- process phase PRE, action COPY
 #
@@ -267,8 +289,8 @@ function _preCopy
 {
 echo "-- no processing for phase PRE action COPY"
 }    # _preCopy
- 
- 
+
+
 # ---------------------------------------------------------------------
 # --- process phase POST, action COPY
 #
@@ -324,7 +346,7 @@ function _postCopy
 ## (= manifest not found in pax)
 ##
 #_cmdrc test "$manifest"
- 
+
 if test ! "$manifest"
 then
   #
@@ -333,7 +355,7 @@ then
   #
   echo "+- manifest == '', active ?? ''"
   echo "** WARNING $SMP_File does not have a manifest, no cleanup done"
- 
+
 #
 # (manifest <> '')
 #
@@ -347,7 +369,7 @@ then
   #
   echo "+- manifest <> '', active == ''"
   echo "-- No cleanup actions required"
- 
+
 #
 # (manifest <> '', active <> '')
 #
@@ -372,37 +394,37 @@ else
   #
   echo "+- manifest <> '', active <> '', manifest <> active"
   echo "-- Removing files & manifest using active manifest"
- 
+
   #
   # remove previous sysmod files
   #
   _deleteFiles
 fi    #
- 
+
 #
 # explode pax
 #
 _addFiles
 }    # _postCopy
- 
- 
+
+
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 function main { }
 echo "-- Start script processing..."
 status=0                       # script status, initial value must be 0
- 
+
 # enable detailed error messages
 _EDC_ADD_ERRNO2=1
- 
+
 # display general statistics
 echo
 whence $0
 echo $(sysvar SYSNAME) -- $(date) UTC
 id
 echo
- 
+
 echo "-- Input environment variables"
 echo
 echo "SMP_Directory=$SMP_Directory"
@@ -412,7 +434,7 @@ echo "SMP_Action   =$SMP_Action"
 echo
 echo "-- Processing $SMP_File $SMP_Phase $SMP_Action"
 echo
- 
+
 #
 # verify that the required input was received by the shell script
 #
@@ -442,7 +464,7 @@ then
   echo
   test "$IgNoRe_ErRoR" || exit $status                           # EXIT
 fi    #
- 
+
 #
 # test whether we can write to $TMPDIR (required for shell pipes)
 #
@@ -454,18 +476,18 @@ then
   echo
   test "$IgNoRe_ErRoR" || exit $status                           # EXIT
 fi    #
- 
+
 #
 # shorten the variable name
 #
 pax_file=${SMP_Directory}${SMP_File}
- 
+
 #
 # go to the product home directory
 # (expects that SMPE dir is one below home dir level)
 #
 _cmdrc cd ${SMP_Directory}..
- 
+
 #
 # create wildcard mask that covers every manifest for this product
 #
@@ -473,14 +495,14 @@ _cmdrc cd ${SMP_Directory}..
 #         assuming pax_prefix="ZWEPAX", manifest="manifest.txt"
 #
 mask="${pax_prefix}.*.${manifest}"
- 
+
 #
 # get manifest name of active sysmod (GA or PTF)
 # can be null, the same as in the pax, or an older one
 #
 active=$(ls $mask 2>/dev/null | tail -l 1)
 echo -- Existing manifest: \"$active\"                               #"
- 
+
 #
 # extract name of manifest inside pax file, if pax file exists
 # - PRE  - DELETE           : removing existing pax, pax file exists
@@ -495,7 +517,7 @@ then
   _cmdrc eval manifest=$(pax -f "$pax_file" | grep ^${mask}$)
 fi    #
 echo -- Manifest in pax: \"$manifest\"                               #"
- 
+
 #
 # continue processing based upon SMP/E action (COPY/DELETE)
 #
@@ -505,7 +527,7 @@ then  # DELETE action, PRE phase
   # SMP/E is about to delete the pax file
   #
   _preDelete
- 
+
 else  # COPY action, PRE or POST phase
   #
   # continue processing based upon SMP/E phase (PRE/POST)
@@ -516,16 +538,16 @@ else  # COPY action, PRE or POST phase
     # SMP/E is about to add/update the pax file
     #
     _preCopy
- 
+
   else  # POST phase, COPY action
     #
     # SMP/E added/updated the pax file
     #
     _postCopy
- 
+
   fi    # POST phase
 fi    # COPY action
- 
+
 echo
 echo "-- Exiting script with status 0"
 echo

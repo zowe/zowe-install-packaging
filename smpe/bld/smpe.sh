@@ -25,8 +25,8 @@
 #% -r rootDir    use the specified root directory
 #%               /$FMID is automatically added
 #%               ignored when -c is specified
-#% -L volser     use the specified volume to put the data-sets in
-#s -s stopAt.sh  stop before this sub-script is invoked          #debug
+#% -s stopAt.sh  stop before this sub-script is invoked          #debug
+#% -V volume     allocate data sets on specified volume(s)
 #% -v vrm        FMID 3-character version/release/modification
 #%               ignored when -c is specified
 #% -1 fmidChar1  first FMID character
@@ -45,14 +45,11 @@
 #% (smpe-gimzip.sh)
 #% TSO PE GIM.PGM.GIMZIP       CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
-#%
-#% relies on:
-#% (smpe-gimzip.sh) IBM Developer for z Systems
 
 # see smpe-install.sh for info on -a, -f, -i
 
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(dirname $0)             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -147,11 +144,11 @@ _cmd umask 0022                                  # similar to chmod 755
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset alter YAML count HLQ input ROOT VOLSER stopAt VRM fmid1 fmid2
+unset alter YAML count HLQ input ROOT stopAt VOLSER VRM fmid1 fmid2
 # do NOT unset debug
 
 # get startup arguments
-while getopts a:c:f:h:i:r:L:s:v:1:2:?d opt
+while getopts a:c:f:h:i:r:s:V:v:1:2:?d opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
   c)   export YAML="$OPTARG";;
@@ -160,8 +157,8 @@ do case "$opt" in
   h)   export HLQ="$OPTARG";;
   i)   export input="$OPTARG";;
   r)   export ROOT="$OPTARG";;
-  L)   export VOLSER="$OPTARG";;
   s)   export stopAt="$OPTARG";;
+  V)   export VOLSER="$OPTARG";;
   v)   export VRM="$OPTARG";;
   1)   export fmid1="$OPTARG";;
   2)   export fmid2="$OPTARG";;

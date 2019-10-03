@@ -45,8 +45,8 @@ sysprint=gimzip.sysprint.log   # GIMZIP SYSPRINT log
 sysinGimzip=sysin.gimzip       # generated SYSIN for GIMZIP
 sysinGimunzip=sysin.gimunzip   # generated SYSIN for GIMUNZIP
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
-existScript=../pax/scripts/check-dataset-exist.sh  # script to test if data set exists
-allocScript=../pax/scripts/allocate-dataset.sh  # script to allocate data set
+existScript=check-dataset-exist.sh  # script to test if data set exists
+allocScript=allocate-dataset.sh  # script to allocate data set
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
@@ -415,7 +415,8 @@ then
 fi    #
 
 # create target data set
-$here/$allocScript -h -L "$VOLSER" "$1" "$2" "$3" "$4" "$5"
+$here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
+#TODO $here/$allocScript -h -V "$VOLSER" "$1" "$2" "$3" "$4" "$5"
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -gt 0

@@ -21,10 +21,10 @@
 prefix=ZWE                     # product prefix
 parts=parts.txt                # parts known by SMP/E
 mcs=SMPMCS.txt                 # SMPMCS header
-allocScript=../pax/scripts/allocate-dataset.sh  # script to allocate data set
+allocScript=allocate-dataset.sh  # script to allocate data set
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(dirname $0)             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -73,11 +73,10 @@ list=$(awk '/^'$dd'/{print $2}' $log/$parts \
      | grep -v ^${prefix}[[:digit:]] | grep -v ^${prefix}MKDIR$)
 _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "PO" "5,2"
 
-#TODO - no files in here, so empty?
 # F3 - all load modules
-# dd="S${prefix}AUTH"
-# list=$(awk '/^'$dd'/{print $2}' $log/$parts)
-# _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "PO" "5,2"
+dd="S${prefix}AUTH"
+list=$(awk '/^'$dd'/{print $2}' $log/$parts)
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "PO" "5,2"
 
 # F4 - all USS files
 # half-track on 3390 DASD is 27998 bytes
@@ -108,7 +107,12 @@ julian=$(date +%Y%j)                                          # YYYYddd
 test "$debug" && julian=$julian
 
 # validate/create target data set
-$here/$allocScript -L "$VOLSER" $dsn "FB" "80" "PS" "1,1"
+if test -z "$VOLSER"
+then
+  $here/$allocScript $dsn "FB" "80" "PS" "1,1"
+else
+  $here/$allocScript -V "$VOLSER" $dsn "FB" "80" "PS" "1,1"
+fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
@@ -198,7 +202,7 @@ then
   echo "   these files exist but there is no definition in $mcsX"
   _cmd comm -13 $mcsX.list $partsX.list
   _cmd rm -f $mcsX.list $partsX.list
-  # test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 else
   test "$debug" && echo "SMPMCS matches staged files"  
 fi    #  
@@ -226,7 +230,12 @@ test "$debug" && echo && echo "> _copyMvsMvs $@"
 echo "-- populate $2 with $1"
 
 # create target data set
-$here/$allocScript -L "$VOLSER" "$2" "$3" "$4" "$5" "$6"
+if test -z "$VOLSER"
+then
+  $here/$allocScript "$2" "$3" "$4" "$5" "$6"
+else
+  $here/$allocScript -V "$VOLSER" "$2" "$3" "$4" "$5" "$6"
+fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
@@ -273,7 +282,12 @@ test "$debug" && echo && echo "> _copyUssMvs $@"
 echo "-- populate $2 with $1"
 
 # validate/create target data set
-$here/$allocScript -L "$VOLSER" "$2" "$3" "$4" "$5" "$6"
+if test -z "$VOLSER"
+then
+  $here/$allocScript "$2" "$3" "$4" "$5" "$6"
+else
+  $here/$allocScript -V "$VOLSER" "$2" "$3" "$4" "$5" "$6"
+fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0

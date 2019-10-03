@@ -10,27 +10,22 @@
 # Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
-#% create program directory for base FMID (++FUNCTION)
-#%
-#% -?                 show this help message
-#% -c smpe.yaml       use the specified config file
-#% -d                 enable debug messages
-#%
-#% -c is required
+# Unpax archive.
+#
+# Arguments:
+# mask    what to extract, most recent used if multiple match filter
+# folder  directory where to extract, will be created if needed
+# info    (optional) archive description
+#
+# Expected globals:
+# $ReMoVe $IgNoRe_ErRoR $debug $LOG_FILE
 
-# B2H - Convert BookMaster, GML, Script/VS and "flat" files to HTML
-# Gary L. Richtmeyer - Copyright 2001-2002 AT&T  
-# http://www.vm.ibm.com/download/packages/descript.cgi?b2h
-
-
-cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
 
-test "$debug" && echo && echo "> $me $@"
+test "$debug" && echo "> $me $@"
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -74,58 +69,39 @@ fi    #
 }    # _cmd
 
 # ---------------------------------------------------------------------
-# --- display script usage information
-# ---------------------------------------------------------------------
-function _displayUsage
-{
-echo " "
-echo " $me"
-sed -n 's/^#%//p' $(whence $0)
-echo " "
-}    # _displayUsage
-
-# ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 function main { }     # dummy function to simplify program flow parsing
 
-# misc setup
-_EDC_ADD_ERRNO2=1                               # show details on error
-unset ENV             # just in case, as it can cause unexpected output
-_cmd umask 0022                                  # similar to chmod 755
-
-echo; echo "-- $me - start $(date)"
-echo "-- startup arguments: $@"
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
-# clear input variables
-unset YAML in
-# do NOT unset debug
-
-# get startup arguments
-while getopts c:i:?d opt
-do case "$opt" in
-  c)   YAML="$OPTARG";;
-  d)   debug="-d";;
-  [?]) _displayUsage
-       test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
-       test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
-  esac    # $opt
-done    # getopts
-shift $OPTIND-1
-
-# set envvars
-. $here/$cfgScript -c                         # call with shell sharing
-if test $rc -ne 0 
-then 
-  # error details already reported
-  echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
+# Validate input
+if test -z "$1" -o -z "$2"
+then
+  echo "** ERROR $me missing invocation arguments $@"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# Find archive to process, use most recent if multiple
+file=$(ls -t $1 2>/dev/null | head -1)
+test "$debug" && echo file=$file
 
-echo "-- completed $me 0"
+# Validate findings
+if test ! -f "$file" -o ! -r "$file"
+then
+  echo "** ERROR $me Cannot access $3 archive ($basename ($1))"
+  echo "ls -ld \"$file\""; ls -ld "$file"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+# Create target directory
+_cmd mkdir -p $2
+_cmd cd $2
+
+# Extract archive
+test "$LOG_FILE" && echo "  Unpax of $file into $PWD" >> $LOG_FILE
+_cmd pax -r -px -f $file
+
+# Remove install source if requested
+test "$ReMoVe" && _cmd rm -f $file
+
 test "$debug" && echo "< $me 0"
-exit 0                                                           # EXIT
+exit 0

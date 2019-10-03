@@ -1,0 +1,24 @@
+/********************************************************************/
+/* This program and the accompanying materials are made available   */
+/* under the terms of the Eclipse Public License v2.0 which         */
+/* accompanies this distribution, and is available at               */
+/* https://www.eclipse.org/legal/epl-v20.html                       */
+/*                                                                  */
+/* SPDX-License-Identifier: EPL-2.0                                 */
+/*                                                                  */
+/* Copyright Contributors to the Zowe Project. 2018, 2019           */
+/********************************************************************/
+/*                                                                  */
+/* Zowe Open Source Project                                         */
+/*                                                                  */
+/* PROGxx: APF entry required by the Zowe ZSS Cross-Memory Server   */
+/*                                                                  */
+/* Dynamic activation with SETPROG APF,ADD,DSN=dsn,SMS              */
+/*                      or SETPROG APF,ADD,DSN=dsn,VOL=volser       */
+/* or SET PROG=xx                                                   */
+/*                                                                  */
+/********************************************************************/
+/*            ----+----1----+----2----+----3----+----4----          */
+  APF ADD DSN=ZWE.SZWEAUTH SMS
+/*APF ADD DSN=ZWE.SZWEAUTH VOL=volser*/
+

@@ -1,182 +1,363 @@
-################################################################################
-# This program and the accompanying materials are made available under the terms of the
-# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+#!/bin/sh
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
 # https://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
-################################################################################
+# Copyright Contributors to the Zowe Project. 2018, 2019
+#######################################################################
 
-while getopts ":I" opt; do
-  case $opt in
-    I)
-      INSTALL_ONLY=1
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-  esac
-done
+#% Install and/or configure Zowe.
+#%
+#% Invocation arguments:
+#% -?            show this help message
+#% -C            configure Zowe using default input file
+#%               ignored when -c is also specified
+#% -c zowe.yaml  configure Zowe using the specified input file
+#% -d            enable debug messages
+#% -f logFile    write script log in the specified file
+#% -h hlq        install Zowe in the specified data set high level qualifier
+#% -I            install Zowe using default directory & hlq,
+#%               unless overridden by -h and/or -i
+#% -i rootDir    install Zowe in the specified directory
+#% -l logDir     write script log in the specified directory
+#%               ignored when -f is also specified
+#% -R            remove source files after install               #debug
+#%               ignored unless -h/i/I is also specified
+#% -t tempDir    directory for temporary configuration data
+#%               ignored unless -c/C is also specified
+#%
+#% If neither -c, or -C nor -h, -i, or -I is specified, then -C -I is
+#% implied and Zowe is installed and configured using default values.
+#%
+#% caller needs these RACF permits:
+#% (zowe-install-zlux.sh)
+#% TSO PE BPX.FILEATTR.PROGCTL CL(FACILITY) ACCESS(READ) ID(userid)
+#% TSO SETR RACLIST(FACILITY) REFRESH
 
-# Ensure that newly created files are in EBCDIC codepage
-export _CEE_RUNOPTS=""
-export _TAG_REDIR_IN=""
-export _TAG_REDIR_OUT=""
-export _TAG_REDIR_ERR=""
-export _BPXK_AUTOCVT="OFF"
+here=$(cd $(dirname $0);pwd)   # script location
+me=$(basename $0)              # script name
+#debug=-d                      # -d or null, -d triggers early debug
+#IgNoRe_ErRoR=1                # no exit on error when not null  #debug
+#set -x                                                          #debug
 
-PREV_DIR=`pwd`
-cd $(dirname $0)/../
-export INSTALL_DIR=`pwd`
+test "$debug" && echo && echo "> $me $@"
 
-# extract Zowe version from manifest.json
-export ZOWE_VERSION=$(cat $INSTALL_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+# ---------------------------------------------------------------------
+# --- initialization tasks that should move to the build pipeline
+# ---------------------------------------------------------------------
+function _pipeline
+{
+test "$debug" && echo && echo "> _pipeline $@"
+echo "  pipeline tasks" >> $LOG_FILE
 
-separator() {
-    echo "---------------------------------------------------------------------"
-}
-separator
+# TEST BEFORE TAKING ACTION
+# actions could have been done in a previous install from same source
 
-# Create a log file with the year and time.log in a log folder 
-# that scripts can echo to and can be written to by scripts to diagnose any install 
-# problems.  
+# TODO ship zss.pax extracted so all SAMPLIB can be processed together
+if test -f $INSTALL_DIR/files/zss.pax
+then
+  _cmd $INSTALL_DIR/scripts/unpax.sh \
+    "$INSTALL_DIR/files/zss.pax" \
+    "$INSTALL_DIR/files/zss" \
+    "ZSS"
+fi    #
 
-export LOG_DIR=$INSTALL_DIR/log
-# Make the log directory if needed - first time through - subsequent installs create new .log files
-if [[ ! -d $LOG_DIR ]]; then
-    mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
-fi
-# Make the log file (unique assuming there is only one install per second)
-export LOG_FILE="`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$LOG_DIR/$LOG_FILE
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
+# ---
 
-if [ -z "$ZOWE_VERSION" ]; then
-  echo "Error: failed to determine Zowe version."
-  echo "Error: failed to determine Zowe version." >> $LOG_FILE
-  exit 1
-fi
+# TODO update zss.pax SAMPLIB
+move=" \
+  $INSTALL_DIR/files/templates/ZWESIPRG.txt \
+  $INSTALL_DIR/files/templates/ZWESIP00.txt \
+  $INSTALL_DIR/files/templates/ZWESISCH.txt \
+  $INSTALL_DIR/files/templates/ZWESISTC.jcl \
+  "
+for file in $move
+do
+  test -f "$file" && _cmd mv $file $INSTALL_DIR/files/zss/SAMPLIB/
+done    # for file
 
-echo "Install started at: "`date` >> $LOG_FILE
+# ---
 
-# Populate the environment variables for ZOWE_ZOSMF_PORT, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST, ZOWE_IPADDRESS, NODE_HOME
-. $INSTALL_DIR/scripts/zowe-init.sh
+# TODO update Explorer API scripts
+move=" \
+  $INSTALL_DIR/files/templates/files-api-configure.sh \
+  $INSTALL_DIR/files/templates/files-api-start.sh \
+  $INSTALL_DIR/files/templates/files-api-validate.sh \
+  $INSTALL_DIR/files/templates/jobs-api-configure.sh \
+  $INSTALL_DIR/files/templates/jobs-api-start.sh \
+  "
+for file in $move
+do
+  test -f "$file" && _cmd mv $file $INSTALL_DIR/files/scripts/
+done    # for file
 
-echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
+# ---
 
-cd $INSTALL_DIR/install
-# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
-. $INSTALL_DIR/scripts/zowe-parse-yaml.sh
+# TODO rename data-sets-api-server-*.jar -> files-api-server-*.jar
+for file in $(ls $INSTALL_DIR/files/data-sets-api-server-*.jar)
+do                                           # ${#*} strips 'data-sets'
+  _cmd mv $file $INSTALL_DIR/files/files${file#*data-sets}
+done    # for file
 
-echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
+# ---
 
-# warn about any prior installation
-if [[ -d $ZOWE_ROOT_DIR ]]; then
-    directoryListLines=`ls -al $ZOWE_ROOT_DIR | wc -l`
-    # Has total line, parent and self ref
-    if [[ $directoryListLines -gt 3 ]]; then
-        echo "    $ZOWE_ROOT_DIR is not empty"
-        echo "    Please clear the contents of this directory, or edit zowe-install.yaml's root directory location before attempting the install."
-        echo "Exiting non emptry install directory $ZOWE_ROOT_DIR has `expr $directoryListLines - 3` directory entries" >> $LOG_FILE
-        exit 2
-    fi
-else
-    mkdir -p $ZOWE_ROOT_DIR
-fi
-chmod a+rx $ZOWE_ROOT_DIR
+# TODO remove obsolete files from build
+obsolete=" \
+  $INSTALL_DIR/files/zss/SAMPLIB/ZWESIP00 \
+  $INSTALL_DIR/files/zss/SAMPLIB/ZWESIS01 \
+  $INSTALL_DIR/files/zss/SAMPLIB/ZWESISCH \
+  $INSTALL_DIR/files/zss/SAMPLIB/ZWESISMS \
+  $INSTALL_DIR/install/zowe-install-apf-server.sh \
+  $INSTALL_DIR/install/zowe-install-apf-server.yaml \
+  $INSTALL_DIR/install/zowe-install.yaml.template \
+  $INSTALL_DIR/scripts/zlux-install-script.sh \
+  $INSTALL_DIR/scripts/zowe-api-mediation-install.sh \
+  $INSTALL_DIR/scripts/zowe-copy-xmem.sh \
+  $INSTALL_DIR/scripts/zowe-explorer-api-install.sh \
+  $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh \
+  $INSTALL_DIR/scripts/zss/* \
+  "
+for file in $obsolete
+do
+  test -f "$file" && _cmd rm -Rf $file
+done    # for file
 
-# copy manifest.json to root folder
-cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
-chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
+# ---
 
-# Create a temp directory to be a working directory for sed replacements
-export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
-mkdir -p $TEMP_DIR
+test "$debug" && echo && echo "< _pipeline"
+}    # _pipeline
+
+# ---------------------------------------------------------------------
+# --- execute steps to install Zowe
+# ---------------------------------------------------------------------
+function _install
+{
+test "$debug" && echo && echo "> _install $@"
+
+# Create $ZOWE_ROOT_DIR
+_cmd mkdir -p $ZOWE_ROOT_DIR
+
+# Perform tasks that eventually should move to build pipeline
+_pipeline
 
 # Install the API Mediation Layer
-. $INSTALL_DIR/scripts/zowe-api-mediation-install.sh
+_cmd $scripts/zowe-install-api-mediation.sh
 
-# Install the zLUX server
-. $INSTALL_DIR/scripts/zlux-install-script.sh
-
-# Install the Explorer API
-. $INSTALL_DIR/scripts/zowe-explorer-api-install.sh
+# Install the Explorer APIs
+_cmd $scripts/zowe-install-explorer-api.sh
 
 # Install Explorer UI plugins
-. $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
+_cmd $scripts/zowe-install-explorer-ui.sh
 
-echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
-ls $ZOWE_ROOT_DIR >> $LOG_FILE
+# Install the zLUX server
+_cmd $scripts/zowe-install-zlux.sh
 
-# Create the /scripts folder in the runtime directory
-# where the scripts to start and the Zowe server will be coped into
-mkdir -p $ZOWE_ROOT_DIR/scripts/templates
-chmod -R a+w $ZOWE_ROOT_DIR/scripts
+# Install SAMPLIB members
+_cmd $scripts/zowe-install-samplib.sh
 
-echo "Copying the zowe-start;stop;server-start.sh into "${ZOWE_ROOT_DIR}/scripts >> $LOG_FILE
-cd $INSTALL_DIR/scripts
-cp $INSTALL_DIR/scripts/zowe-support.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh
-cp $INSTALL_DIR/scripts/zowe-start.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-start.template.sh
-cp $INSTALL_DIR/scripts/zowe-stop.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-stop.template.sh
+# Install APF LOADLIB members
+_cmd $scripts/zowe-install-authlib.sh
 
-cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
+# Install administrator scripts
+# MUST run last as it kills scripts/* when $ReMoVe is active        #*/
+_cmd $scripts/zowe-install-admin.sh
 
-mkdir $ZOWE_ROOT_DIR/scripts/internal
-chmod a+x $ZOWE_ROOT_DIR/scripts/internal
+# Update ZOWE_CFG variable with new file location
+export ZOWE_CFG="adminDir/$(basename $ZOWE_CFG)"
+echo ZOWE_CFG=$ZOWE_CFG | tee -a $LOG_FILE
 
-echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
-cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
-cp $INSTALL_DIR/scripts/ocopyshr.sh $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.sh
-cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.clist
-echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
-cp $INSTALL_DIR/scripts/run-zowe.template.sh $ZOWE_ROOT_DIR/scripts/templates/run-zowe.template.sh
+# Set baseline for access permissions
+_cmd chmod -R 755 $ZOWE_ROOT_DIR
 
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
+# Remove install script if requested
+test "$ReMoVe" && _cmd rm -f $0
 
-#TODO LATER - do we need a better location rather than scripts - covered by zip #519
-cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.template.jcl
+test "$debug" && echo && echo "< _install"
+}    # _install
 
-echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
-echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
-separator
-
-# Prepare configure directory 
-mkdir ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/scripts/zowe-init.sh ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
-# Copy all but root dir from yaml as we can derive that once there
-grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
-
-cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
-
-# Prepare utils directory 
-mkdir ${ZOWE_ROOT_DIR}/scripts/utils
-cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
-
-echo "Copying zowe-runtime-authorize.template.sh to "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh >> $LOG_FILE
-cp "$INSTALL_DIR/scripts/zowe-runtime-authorize.template.sh" "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh"
-
-. $INSTALL_DIR/scripts/zowe-copy-xmem.sh
-
-# save install log in runtime directory
-mkdir  $ZOWE_ROOT_DIR/install_log
-cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
-
-# remove the working directory
-rm -rf $TEMP_DIR
-
-cd $PREV_DIR
-
-if [ -z $INSTALL_ONLY ]
+# ---------------------------------------------------------------------
+# --- verify that product can be installed
+# ---------------------------------------------------------------------
+function _verify
+{
+test "$debug" && echo && echo "> _verify $@"
+# Test for any prior installation
+# (this also covers installing in the directory holding install source)
+if test -d "$ZOWE_ROOT_DIR"
 then
-  # Run configure - note not in source mode
-  ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
-else
-  echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
-fi
+  directoryListLines=$(ls -al $ZOWE_ROOT_DIR | wc -l)
+  # Has total line, parent and self ref
+  if test $directoryListLines -gt 3
+  then
+    echo "** ERROR $me $ZOWE_ROOT_DIR is not empty"
+    echo "   Please clear the contents of this directory, or edit" \
+      "zowe.yaml's root directory" \
+      "location before attempting the install."
+    echo "Exiting - non empty install directory $ZOWE_ROOT_DIR has" \
+      $(expr $directoryListLines - 3) "directory entries" >> $LOG_FILE
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+fi    # prior install
+
+test "$debug" && echo && echo "< _verify"
+}    # _verify
+
+# ---------------------------------------------------------------------
+# --- show & execute command, and bail with message on error
+#     stderr is routed to stdout to preserve the order of messages
+# $1: if --null then trash stdout, parm is removed when present
+# $1: if --save then append stdout to $2, parms are removed when present
+# $1: if --repl then save stdout to $2, parms are removed when present
+# $2: if $1 = --save or --repl then target receiving stdout
+# $@: command with arguments to execute
+# ---------------------------------------------------------------------
+function _cmd
+{
+test "$debug" && echo
+if test "$1" = "--null"
+then         # stdout -> null, stderr -> stdout (without going to null)
+  shift
+  test "$debug" && echo "$@ 2>&1 >/dev/null"
+                         $@ 2>&1 >/dev/null
+elif test "$1" = "--save"
+then         # stdout -> >>$2, stderr -> stdout (without going to $2)
+  sAvE=$2
+  shift 2
+  test "$debug" && echo "$@ 2>&1 >> $sAvE"
+                         $@ 2>&1 >> $sAvE
+elif test "$1" = "--repl"
+then         # stdout -> >$2, stderr -> stdout (without going to $2)
+  sAvE=$2
+  shift 2
+  test "$debug" && echo "$@ 2>&1 > $sAvE"
+                         $@ 2>&1 > $sAvE
+else         # stderr -> stdout, caller can add >/dev/null to trash all
+  test "$debug" && echo "$@ 2>&1"
+                         $@ 2>&1
+fi    #
+sTaTuS=$?
+if test $sTaTuS -ne 0
+then
+  echo "** ERROR $me '$@' ended with status $sTaTuS"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+}    # _cmd
+
+# ---------------------------------------------------------------------
+# --- display script usage information
+# ---------------------------------------------------------------------
+function _displayUsage
+{
+echo " "
+echo " $me"
+sed -n 's/^#%//p' $(whence $0)
+echo " "
+}    # _displayUsage
+
+# ---------------------------------------------------------------------
+# --- main --- main --- main --- main --- main --- main --- main ---
+# ---------------------------------------------------------------------
+function main { }     # dummy function to simplify program flow parsing
+export _EDC_ADD_ERRNO2=1                        # show details on error
+# .profile with ENV=script with echo -> echo is in stdout (begin)
+# Ensure that newly created files are in EBCDIC codepage
+unset ENV _CEE_RUNOPTS _TAG_REDIR_IN _TAG_REDIR_OUT _TAG_REDIR_ERR
+export _BPXK_AUTOCVT="OFF"
+_cmd umask 0022                                  # similar to chmod 755
+
+echo
+echo "-- $me -- $(sysvar SYSNAME) -- $(date)"
+echo "-- startup arguments: $@"
+
+# Clear input variables
+unset LOG_FILE LOG_DIR TEMP_DIR inst conf ReMoVe
+unset ZOWE_CFG ZOWE_ROOT_DIR ZOWE_HLQ
+# do NOT unset debug
+# always unset LOG_FILE
+
+# Get startup arguments
+# C/c & I/i constructs as getopts cannot handle optional OPTARG
+while getopts c:f:h:i:l:t:CdIR? opt
+do case "$opt" in
+  C)   conf=1;;
+  c)   conf=1
+       export ZOWE_CFG="$OPTARG";;
+  d)   export debug="-d";;
+  f)   export LOG_FILE="$OPTARG";;
+  h)   inst=1
+       export ZOWE_HLQ="$OPTARG";;
+  I)   inst=1;;
+  i)   inst=1
+       export ZOWE_ROOT_DIR="$OPTARG";;
+  l)   export LOG_DIR="$OPTARG";;
+  R)   export ReMoVe="-R";;
+  t)   export TEMP_DIR="$OPTARG";;
+  [?]) _displayUsage
+       test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
+       test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
+  esac    # $opt
+done    # getopts
+shift $OPTIND-1
+
+# If nothing is specified then install & config Zowe using defaults
+if test -z "$inst$conf"
+then
+  inst=1
+  conf=1
+fi    #
+
+# Use specified temporary directory (note: TMPDIR is used by /bin/sh)
+test -n "$TEMP_DIR" && TMPDIR=$TEMP_DIR
+
+# Set all required environment variables & logging
+# NOTE: script exports environment vars, so run in current shell
+_cmd . $(dirname $0)/../scripts/zowe-set-envvars.sh $0
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+adminDir="$ZOWE_ROOT_DIR/admin"
+#TODO rework, must currently match zowe-install-admin.sh
+adminDir="$ZOWE_ROOT_DIR/scripts/configure"
+
+# Install Zowe
+if test -n "$inst"
+then
+  echo "-- Beginning install of Zowe $ZOWE_VERSION into directory" \
+    "$ZOWE_ROOT_DIR and high level qualifier $ZOWE_HLQ"
+  # LOG_FILE is already updated by zowe-set-envvars.sh
+
+  # Ensure things are good to start install
+  _verify
+
+  # Install Zowe
+  _install
+
+  echo "-- Completed install of Zowe $ZOWE_VERSION into directory" \
+    "$ZOWE_ROOT_DIR and high level qualifier $ZOWE_HLQ"
+  echo "Installation completed -- $(date)" >> $LOG_FILE
+fi    # install Zowe
+
+# Configure Zowe
+if test -n "$conf"
+then
+  # Determine required invocation arguments
+  # Note: $ZOWE_CFG is already updated to point to the installed version
+  args="$debug"
+  args="$args -c $ZOWE_CFG"
+  args="$args -f $LOG_FILE"
+  test "$TEMP_DIR" && args="$args -t $TEMP_DIR"
+
+  # Configure steps require that INSTALL_DIR matches ZOWE_ROOT_DIR,
+  # remove the variable here so it can be set again with desired value
+  unset INSTALL_DIR
+
+  # Configure Zowe
+  _cmd $adminDir/zowe-configure.sh $args
+fi    # configure Zowe
+
+test "$debug" && echo && echo "< $me 0"
+exit 0

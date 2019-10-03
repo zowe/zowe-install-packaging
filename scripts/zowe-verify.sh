@@ -474,7 +474,7 @@ else
             #                           
 
             # yaml
-            yaml=${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
+            yaml=${ZOWE_ROOT_DIR}/scripts/configure/zowe.yaml
 
             if [[ ! -r $yaml ]]
             then

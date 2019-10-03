@@ -163,7 +163,7 @@ do
     _export base    hlq        HLQ
 # install
     _export install history    hist          5              # permanent
-    _export install log        log           ${ROOT}/log    # permanent
+    _export install log        log           ${ROOT}/logs   # permanent
     _export install extract    extract       ${ROOT}/extract # internal
     _export install stage      stage         ${ROOT}/stage  # pass
     _export install outMVS     mvsI          ${HLQ}.BLD     # output
