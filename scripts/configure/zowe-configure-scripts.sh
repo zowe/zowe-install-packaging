@@ -26,7 +26,7 @@ sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{files_api_port}}#${ZOWE_EXPLORER_SERVER_DATASETS_PORT}#" \
   -e "s#{{jobs_api_port}}#${ZOWE_EXPLORER_SERVER_JOBS_PORT}#" \
-  -e "s#{{jobs_ui_port}}#${ZOWE_EXPLORER_JES_UI_PORT}#"
+  -e "s#{{jobs_ui_port}}#${ZOWE_EXPLORER_JES_UI_PORT}#" \
   -e "s#{{discovery_port}}#${ZOWE_APIM_DISCOVERY_PORT}#" \
   -e "s#{{catalog_port}}#${ZOWE_APIM_CATALOG_PORT}#" \
   -e "s#{{gateway_port}}#${ZOWE_APIM_GATEWAY_PORT}#" \
