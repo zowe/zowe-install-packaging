@@ -20,4 +20,4 @@
 /********************************************************************/
 
 PPT PGMNAME(ZWESIS01) KEY(4) NOSWAP
-
+PPT PGMNAME(ZWESAUX)  KEY(4) NOSWAP
