@@ -144,7 +144,7 @@ then                                          # data set does not exist
   fi    #
 
   if test "$hide"
-  then 
+  then
     # trap stderr, do not show alloc command (&2), but show error (&1)
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
       "space($space) tracks unit(sysallda) $volume" 2> /dev/null
@@ -153,7 +153,7 @@ then                                          # data set does not exist
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
       "space($space) tracks unit(sysallda) $volume" 2>&1
   fi    #
-  
+
   if test $? -eq 0
   then
     test "$debug" && echo "data set $dsn has been allocated"

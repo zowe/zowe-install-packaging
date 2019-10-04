@@ -117,8 +117,8 @@ then
   #   sample output: U00230
   volumes=$(echo "$cmdOut" | \
     awk '/^--VOLUMES/{f=1;next} f{f=0;$1=$1;print}')
-  # S1=$1 prunes blanks because when you assign something to one of the 
-  # fields ($1), awk rebuilds the whole record by joining all fields 
+  # S1=$1 prunes blanks because when you assign something to one of the
+  # fields ($1), awk rebuilds the whole record by joining all fields
   # ($1, ..., $NF) with OFS (space by default), resulting a single-blank
   # delimited string.
 
