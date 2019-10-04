@@ -29,8 +29,8 @@ chmod -R 755 smpe
 
 INPUT_TXT=input.txt
 ZOWE_VERSION_MAJOR=$(echo "${ZOWE_VERSION}" | awk -F. '{print $1}')
-# FIXME: what happened if ZOWE_VERSION_MAJOR>10
-FMID_VERISON="00${ZOWE_VERSION_MAJOR}"
+# pad ZOWE_VERSION_MAJOR to be at least 3 chars long, then keep last 3
+FMID_VERISON=$(echo "00${ZOWE_VERSION_MAJOR}" | | sed 's/.*\(...\)$/\1/')
 
 # create smpe.pax
 cd smpe/pax
@@ -51,7 +51,7 @@ if [ ! -f smpe.pax ]; then
   exit 1
 fi
 
-echo "[$SCRIPT_NAME] pareparing ${INPUT_TXT} ..."
+echo "[$SCRIPT_NAME] preparing ${INPUT_TXT} ..."
 echo "${CURR_PWD}/zowe.pax" > "${INPUT_TXT}"
 echo "${CURR_PWD}/smpe.pax" >> "${INPUT_TXT}"
 echo "[$SCRIPT_NAME] content of ${INPUT_TXT}:"
@@ -60,11 +60,19 @@ mkdir -p zowe
 
 # ZOWEAD3 and ZOWE02 is specific parameter for packaging on Marist server.
 # To package on another server, we may need different settings.
-# Or if the server is configured properly, may just remove -h and -L options.
+# Or if the server is configured properly, may just remove -V option.
+#% required
+#% -h hlq        use the specified high level qualifier
+#% -i inputFile  reference file listing non-SMPE distribution files
+#% -r rootDir    use the specified root directory
+#% -v vrm        FMID 3-character version/release/modification
+#% optional
+#% -d            enable debug messages
+#% -V volume     allocate data sets on specified volume(s)
 ./smpe/bld/smpe.sh \
   -i "${CURR_PWD}/${INPUT_TXT}" \
   -h "ZOWEAD3" \
-  -L "ZOWE02" \
+  -V "ZOWE02" \
   -v ${FMID_VERISON} \
   -r "${CURR_PWD}/zowe" \
   -d
