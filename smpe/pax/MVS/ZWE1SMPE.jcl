@@ -23,7 +23,7 @@
 //* 1) Add the job parameters to meet your system requirements.
 //*
 //* 2) Change #csihlq to the high level qualifier for the CSI and
-//*    other SMP/E data sets. The maximum length is 35 characters.
+//*    other SMP/E data sets. The maximum length is 26 characters.
 //*
 //* 3) Change #tzone to your CSI target zone name.
 //*
@@ -70,8 +70,8 @@
 //*
 //*********************************************************************
 //         EXPORT SYMLIST=(CSIHLQ,CSIVOL,TZONE,DZONE,SREL,DSPREFIX)
-//*                            1         2         3
-//*                   12345678901234567890123456789012345
+//*                            1         2
+//*                   12345678901234567890123456   DSPREFIX limit
 //         SET CSIHLQ=#csihlq
 //         SET TZONE=#tzone
 //         SET DZONE=#dzone
