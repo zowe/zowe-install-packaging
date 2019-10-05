@@ -163,7 +163,7 @@ do
     _export base    hlq        HLQ
 # install
     _export install history    hist          5              # permanent
-    _export install log        log           ${ROOT}/log    # permanent
+    _export install log        log           ${ROOT}/logs   # permanent
     _export install extract    extract       ${ROOT}/extract # internal
     _export install stage      stage         ${ROOT}/stage  # pass
     _export install outMVS     mvsI          ${HLQ}.BLD     # output
@@ -177,8 +177,8 @@ do
 # fmid
     _export fmid    RFDSNPFX   RFDSNPFX      ZOWE           # output
 # gimzip
-    _export gimzip  gimzipHlq  gimzipHlq     ${HLQ}.GIMZIP  # internal  
-    _export gimzip  gimzip     gimzip        ${ROOT}/gimzip # output    
+    _export gimzip  gimzipHlq  gimzipHlq     ${HLQ}.GIMZIP  # internal
+    _export gimzip  gimzip     gimzip        ${ROOT}/gimzip # output
     _export gimzip  scratch    scratch       \
               $(echo ${ROOT}/work | tr [:lower:] [:upper:]) # internal
     _export gimzip  JAVA_HOME  JAVA_HOME     \
