@@ -46,7 +46,7 @@ echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
     # Add APIML authentication plugin to zLUX
-    . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/api-mediation/apiml-auth
+    . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
 
     # Activate the plugin
     _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
