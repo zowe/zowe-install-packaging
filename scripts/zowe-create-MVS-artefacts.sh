@@ -13,7 +13,7 @@
 # create MVS artefacts 
 script=zowe-create-MVS-artefacts.sh
 echo "<$script>" >> $LOG_FILE 
-echo "Creating MVS artefacts ... "
+echo "Creating MVS artefacts ... " >> $LOG_FILE 
 
 # Unpax the LOADLIB and SAMPLIB
 echo "Unpax the LOADLIB and SAMPLIB:" >> ${LOG_FILE}
@@ -36,7 +36,6 @@ tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEAUTH') " \
 rc=$?
 if test $rc -eq 0
 then
-    echo "  SZWEAUTH created"
     echo "  ${ZOWE_DSN_PREFIX}.SZWEAUTH successfully created" >> $LOG_FILE
 
     # copy LOADLIB to PDS
@@ -46,15 +45,12 @@ then
     rc=$?
     if test $rc -eq 0
     then
-        echo "  ZWESIS01 copied to SZWEAUTH"
         echo "  $script ZWESIS01 copied to ${ZOWE_DSN_PREFIX}.SZWEAUTH" >> $LOG_FILE
     else
-        echo "  ZWESIS01 not copied to SZWEAUTH, RC=$rc"
         echo "  $script ZWESIS01 not copied to ${ZOWE_DSN_PREFIX}.SZWEAUTH, RC=$rc" >> $LOG_FILE
     fi 
 
 else
-    echo "  SZWEAUTH not created, RC=$rc"
     echo "  $script failed to create ${ZOWE_DSN_PREFIX}.SZWEAUTH, RC=$rc" >> $LOG_FILE
 fi
 
@@ -70,7 +66,6 @@ tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWESAMP') " \
 rc=$?
 if test $rc -eq 0
 then
-    echo "  SZWESAMP created"
     echo "  ${ZOWE_DSN_PREFIX}.SZWESAMP successfully created" >> $LOG_FILE
 
     # copy SAMPLIB files to PDS
@@ -101,15 +96,12 @@ EndOfZWESIPRG
         rc=$?
         if test $rc -eq 0
         then
-            echo "  $member copied to SZWESAMP"
             echo "  $script $member copied to ${ZOWE_DSN_PREFIX}.SZWESAMP" >> $LOG_FILE
         else
-            echo "  $member not copied to SZWESAMP, RC=$rc"
             echo "  $script $member not copied to ${ZOWE_DSN_PREFIX}.SZWESAMP, RC=$rc" >> $LOG_FILE
         fi 
     done
 else
-    echo "  SZWESAMP not created, RC=$rc"
     echo "  $script failed to create ${ZOWE_DSN_PREFIX}.SZWESAMP, RC=$rc" >> $LOG_FILE
 fi
 
