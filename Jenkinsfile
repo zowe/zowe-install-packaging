@@ -113,7 +113,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'ZOWE_VERSION': pipeline.getVersion(),
             'BUILD_SMPE'  : (params.BUILD_SMPE ? 'yes' : '')
           ],
-          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,rename-back.sh' : ''),
+          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,smpe-build-logs.pax.Z,rename-back.sh' : ''),
           keepTempFolder  : params.KEEP_TEMP_FOLDER
       )
       if (params.BUILD_SMPE) {
