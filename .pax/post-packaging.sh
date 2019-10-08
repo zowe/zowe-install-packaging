@@ -85,6 +85,11 @@ cd "${CURR_PWD}"
 mv "zowe/${ZOWE_SMPE_PAX}" "zowe-smpe.pax"
 mv "zowe/${ZOWE_SMPE_README}" "readme.txt"
 
+# check what's in logs
+cd "zowe/AZWE${FMID_VERISON}"
+ls -la logs
+cat logs/*
+
 # prepare rename to original name
 echo "mv zowe-smpe.pax AZWE${FMID_VERISON}.pax.Z" > "rename-back.sh.1047"
 echo "mv readme.txt AZWE${FMID_VERISON}.readme.txt" >> "rename-back.sh.1047"
