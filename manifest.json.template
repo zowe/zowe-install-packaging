@@ -53,7 +53,7 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "artifact": "libs-snapshot-local/org/zowe/explorer-jes/0.0.23-PR-111/explorer-jes-0.0.23-pr-111-3-20191007205935.pax"
+      "artifact": "libs-snapshot-local/org/zowe/explorer-jes/0.0.23-PR-111/explorer-jes-0.0.23-pr-111-4-20191008174437.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "~0.0.15"
