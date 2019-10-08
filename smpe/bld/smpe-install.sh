@@ -55,7 +55,7 @@ prodScript=install/zowe-install.sh  # product install script
 smpeScript=smpe-members.sh     # SMP/E-member install script
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(dirname $0)             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -96,7 +96,7 @@ do
     in_pax="$(echo $in_pax $f | sed 's/^ //')"
   else
     in_other="$(echo $in_other $f | sed 's/^ //')"
-  fi    #    
+  fi    #
 done    # for f
 
 # ensure we have all input
@@ -156,7 +156,7 @@ echo "-- Updating yaml file"
 CI_ZOWE_CONFIG_FILE=$extract/install/zowe-install.yaml
 sed -e "/^install:/,\$s#rootDir=.*\$#rootDir=$stage#" \
   "${CI_ZOWE_CONFIG_FILE}" \
-  > "${CI_ZOWE_CONFIG_FILE}.tmp" 
+  > "${CI_ZOWE_CONFIG_FILE}.tmp"
 mv "${CI_ZOWE_CONFIG_FILE}.tmp" "${CI_ZOWE_CONFIG_FILE}"
 cat ${CI_ZOWE_CONFIG_FILE}
 
@@ -270,7 +270,7 @@ function _installOther
 test "$debug" && echo && echo "> _installOther $@"
 
 # add remaining input files to installed product (stage directory)
-if test "$in_other" 
+if test "$in_other"
 then
   echo "-- adding other data to $stage"
   _cmd cp $in_other $stage/
@@ -516,8 +516,8 @@ shift $OPTIND-1
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
-if test $rc -ne 0 
-then 
+if test $rc -ne 0
+then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
   test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
@@ -617,7 +617,7 @@ then
 
   # allow caller to alter product after install                  #debug
   test "$alter" && _cmd $alter $debug CONF $extract
-else 
+else
   # continue testing SMP/E tooling with broken product build     #debug
   echo "-- cloning data from $preInst to $stage"
   _cmd mkdir -p $stage

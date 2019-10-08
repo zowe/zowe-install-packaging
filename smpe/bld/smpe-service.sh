@@ -19,7 +19,7 @@
 #% -c is required
 
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(dirname $0)             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -112,8 +112,8 @@ shift $OPTIND-1
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
-if test $rc -ne 0 
-then 
+if test $rc -ne 0
+then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT

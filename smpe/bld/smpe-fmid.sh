@@ -24,7 +24,7 @@ mcs=SMPMCS.txt                 # SMPMCS header
 allocScript=../pax/scripts/allocate-dataset.sh  # script to allocate data set
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(dirname $0)             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -114,9 +114,9 @@ rc=$?
 if test $rc -eq 0
 then
   # customize SMPMCS
-  SED="s/\[FMID\]/$FMID/g"             
-  SED="$SED;s/\[YEAR\]/$year/g"        
-  SED="$SED;s/\[DATE\]/$julian/g"      
+  SED="s/\[FMID\]/$FMID/g"
+  SED="$SED;s/\[YEAR\]/$year/g"
+  SED="$SED;s/\[DATE\]/$julian/g"
   SED="$SED;s/\[RFDSNPFX\]/$RFDSNPFX/g"
   _cmd --repl $file.new sed "$SED" $file
 
@@ -170,7 +170,7 @@ cat $mcsX | tr \(\) :: \
 
 # parse parts.txt and keep SYSLIB name & part name, sorted
 # sample input:
-# SZWESAMP ZWE1SMPE 12872  
+# SZWESAMP ZWE1SMPE 12872
 # sample output:
 # SZWESAMP ZWE1SMPE
 partsX="$log/$parts"
@@ -200,8 +200,8 @@ then
   _cmd rm -f $mcsX.list $partsX.list
   # test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 else
-  test "$debug" && echo "SMPMCS matches staged files"  
-fi    #  
+  test "$debug" && echo "SMPMCS matches staged files"
+fi    #
 
 # cleanup
 test -f $mcsX.list && _cmd rm -f $mcsX.list
