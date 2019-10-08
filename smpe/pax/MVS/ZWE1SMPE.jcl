@@ -23,7 +23,7 @@
 //* 1) Add the job parameters to meet your system requirements.
 //*
 //* 2) Change #csihlq to the high level qualifier for the CSI and
-//*    other SMP/E data sets. The maximum length is 35 characters.
+//*    other SMP/E data sets. The maximum length is 26 characters.
 //*
 //* 3) Change #tzone to your CSI target zone name.
 //*
@@ -37,7 +37,7 @@
 //*    - VOLUMES(&CSIVOL) in step DEFCSI
 //*    - VOL=SER=&CSIVOL in multiple DDs of step ZONING
 //*
-//* 6) This product can install in multiple SREL subsystems; 
+//* 6) This product can install in multiple SREL subsystems;
 //*    Z038 (z/OS), P115 (IMS/DB2), and C150 (CICS). Update the
 //*    SET SREL= statement to select the desired SREL.
 //*
@@ -52,26 +52,12 @@
 //* 2. This job uses PDSE data sets. If required, you can comment out
 //*    all occurances of DSNTYPE=LIBRARY to use PDS datasets instead.
 //*
-//* 3. This job utilizes JCL variables inside inline text, which
-//*    requires z/OS 2.1 or higher. When using an older z/OS level,
-//*    - Comment out the EXPORT SYMLIST statement
-//*    - Remove ",SYMBOLS=JCLONLY" from the DD definitions that 
-//*      utilize inline JCL variables
-//*    - Replace the following variables with their actual value:
-//*      - step DEFCSI, DD SYSIN, variable &CSIHLQ. (3 times)
-//*      - step DEFCSI, DD SYSIN, variable &CSIVOL
-//*      - step ZONING, DD SMPCNTL, variable &SREL. (3 times)
-//*      - step ZONING, DD SMPCNTL, variable &TZONE (4 times)
-//*      - step ZONING, DD SMPCNTL, variable &DZONE (4 times)
-//*      - step ZONING, DD SMPCNTL, variable &CSIHLQ. (2 times)
-//*      - step ZONING, DD SMPCNTL, variable &DSPREFIX. (22 times)
-//*
-//* 4. This job should complete with a return code 0.
+//* 3. This job should complete with a return code 0.
 //*
 //*********************************************************************
 //         EXPORT SYMLIST=(CSIHLQ,CSIVOL,TZONE,DZONE,SREL,DSPREFIX)
-//*                            1         2         3
-//*                   12345678901234567890123456789012345
+//*                            1         2
+//*                   12345678901234567890123456   DSPREFIX limit
 //         SET CSIHLQ=#csihlq
 //         SET TZONE=#tzone
 //         SET DZONE=#dzone
