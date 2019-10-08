@@ -65,7 +65,7 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   # then
   #   cp ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
   # fi
-  chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
+  chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}-explorer/bin"
 
 done
 
