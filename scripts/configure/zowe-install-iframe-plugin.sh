@@ -52,7 +52,7 @@ fi
 rm -rf $PLUGIN_FOLDER/web/images
 rm -f $PLUGIN_FOLDER/web/index.html
 rm -f $PLUGIN_FOLDER/pluginDefinition.json
-rm -rf $PLUGIN_FOLDER
+
 rm -f $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
 
 mkdir -p $PLUGIN_FOLDER/web/images
