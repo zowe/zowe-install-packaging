@@ -26,7 +26,7 @@
 #%               /$FMID is automatically added
 #%               ignored when -c is specified
 #% -L volser     use the specified volume to put the data-sets in
-#s -s stopAt.sh  stop before this sub-script is invoked          #debug
+#% -s stopAt.sh  stop before this sub-script is invoked          #debug
 #% -v vrm        FMID 3-character version/release/modification
 #%               ignored when -c is specified
 #% -1 fmidChar1  first FMID character
@@ -45,14 +45,11 @@
 #% (smpe-gimzip.sh)
 #% TSO PE GIM.PGM.GIMZIP       CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
-#%
-#% relies on:
-#% (smpe-gimzip.sh) IBM Developer for z Systems
 
 # see smpe-install.sh for info on -a, -f, -i
 
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(dirname $0)             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -73,7 +70,7 @@ if test "$stopAt" = "$1"
 then
   echo "** INFO ending on request, next command would have been:"
   echo "$@"
-  exit 0                                                         # EXIT  
+  exit 0                                                         # EXIT
 fi    #
 
 test "$debug" && echo "< _stopAt"
@@ -174,8 +171,8 @@ shift $OPTIND-1
 
 # set envvars
 . $here/$cfgScript -c -v                      # call with shell sharing
-if test $rc -ne 0 
-then 
+if test $rc -ne 0
+then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
@@ -225,7 +222,7 @@ _cmd $here/smpe-gimzip.sh $debug -c $YAML $opts
 opts=""
 _stopAt smpe-pd.sh $debug -c $YAML $opts
 _cmd $here/smpe-pd.sh $debug -c $YAML $opts
-# result (final): $                                          # 
+# result (final): $                                          #
 
 # create service (++PTF)
 opts=""

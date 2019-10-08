@@ -51,7 +51,7 @@ parts=parts.txt                # parts known by SMP/E
 partsDelta=parts-delta.txt     # delta of current and previous parts
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here="$( cd "$(dirname "$0")" ; pwd -P )"             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -171,7 +171,7 @@ $@
 
 # can we move in bulk ? (not if there is a / in the input)
 if test -n "$($@ | grep /)"
-then 
+then
   # move data one by one as data is not all in root
   for FiLe in $($@)
   do
@@ -232,18 +232,18 @@ awk '/^#USS/ {printf("manifest %s\n",$4)}' $log/$manifest \
   2>&1 > $stage/manifest.list
 test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
 
-# 2. get removed symlinks layout from manifest                          
-# sample input:                                                         
-# #LNK ./jes_explorer/node_modules/.bin/which -> ../which/bin/which     
-# sample output:                                                        
-# symlinks ./jes_explorer/node_modules/.bin/which                       
+# 2. get removed symlinks layout from manifest
+# sample input:
+# #LNK ./jes_explorer/node_modules/.bin/which -> ../which/bin/which
+# sample output:
+# symlinks ./jes_explorer/node_modules/.bin/which
 cMd="awk '/^#LNK/ {printf(\"symlinks %s\n\",$2)}' $log/$manifest | sort"
-cMd="$cMd 2>&1 > $stage/symlink.list"                                   
-test "$debug" && echo                                                   
-test "$debug" && echo "$cMd"                                            
-awk '/^#LNK/ {printf("symlinks %s\n",$2)}' $log/$manifest | sort \      
-  2>&1 > $stage/symlink.list                                            
-test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT 
+cMd="$cMd 2>&1 > $stage/symlink.list"
+test "$debug" && echo
+test "$debug" && echo "$cMd"
+awk '/^#LNK/ {printf("symlinks %s\n",$2)}' $log/$manifest | sort \
+  2>&1 > $stage/symlink.list
+test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
 
 # 3. get actual directory layout from staging area
 # sample input:
@@ -268,7 +268,7 @@ test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
 # - replace first / with ' ./' and only print lines where this was done
 # -> ZWEPAX03 ./admin
 #    ZWEPAX03 ./adminzowe-configure.sh
-# awk will only keep first part of file names with blanks (manifest is 
+# awk will only keep first part of file names with blanks (manifest is
 #   positional and does this as well)
 cMd="find $split | sed -n \"s!$split!!;s!/!!;s!/! ./!p\" | sort -k 2"
 cMd="$cMd | awk '{print $1,$2}' 2>&1 > $stage/split.list"
@@ -588,7 +588,7 @@ awk '/^#USS/ {print $2,$3,$4}' $log/$manifest \
   | grep -v "^-rwxr-xr-x --s-" \
   | grep -v "^drwxr-xr-x ++++" \
   | grep -v "^lrwxrwxrwx ++++" \
-  > $log/$extAttr 
+  > $log/$extAttr
 # cannot test $? as it is only of the last pipe command
 # sample output:
 # -rwxr-xr-x -ps- ./zlux-app-server/bin/zssServer
@@ -598,8 +598,6 @@ awk '/^#USS/ {print $2,$3,$4}' $log/$manifest \
 # create data set snapshot to assist with tracking members
 echo "-- creating $log/$dataSet"
 test -f $log/$dataSet && _cmd rm -f $log/$dataSet
-pwd
-echo "I am here $here"
 
 # get data set list (no debug mode to avoid debug messages)
 datasets=$($here/$csiScript "${mvsI}.**")
@@ -721,12 +719,12 @@ test "$debug" && echo "< _parts"
 # ---------------------------------------------------------------------
 # --- pax a whole staging directory
 # $1: directory to pax
-# 
+#
 # TODO interpret $log/$extAttr and determine required pax option
 # $log/$extAttr interpretation
 # Example:
 # -rwxr-xr-x -ps- ./zlux-app-server/bin/zssServer
-# 
+#
 # WORD 1 (-rwxr-xr-x)
 #
 # The first character identifies the file type:
@@ -738,38 +736,38 @@ test "$debug" && echo "< _parts"
 # l  Symbolic link
 # p  FIFO pipe
 # s  Socket file type
-# 
-# The next 9 characters are in three groups of 3; they describe the 
-# permissions on the file. 
-# The first group of 3 describes owner permissions; the second describes 
-# group permissions; the third describes other (or "world") permissions. 
+#
+# The next 9 characters are in three groups of 3; they describe the
+# permissions on the file.
+# The first group of 3 describes owner permissions; the second describes
+# group permissions; the third describes other (or "world") permissions.
 # Characters that might appear are:
 # r  Permission to read the file.
 # w  Permission to write on the file.
 # x  Permission to execute the file or search the directory.
 # -  Attribute not set.
-# 
-# The following characters appear only in the execute permission (x) 
+#
+# The following characters appear only in the execute permission (x)
 # position of the output.
 # S  Same as s, except that the execute bit is turned off.
-# s  If in owner permissions section, the set-user-ID bit is on; if in 
+# s  If in owner permissions section, the set-user-ID bit is on; if in
 #    group permissions section, the set-group-ID bit is on.
 # T  Same as t, except that the execute bit is turned off.
 # t  The sticky bit is on.
-# 
-# The following character appears after the permissions if the file 
+#
+# The following character appears after the permissions if the file
 # contains extended ACL entries:
 # +
 #
 # WORD 2 (-ps-)
-# 
+#
 # Displays extended attributes for regular files:
 # a  Program runs APF-authorized if linked AC=1.
 # p  Program is considered program-controlled.
 # s  Program is enabled to run in a shared address space.
 # l  Program is loaded from the shared library region.
 # -  Attribute not set.
-# 
+#
 # ---------------------------------------------------------------------
 function _pax
 {
@@ -1012,11 +1010,11 @@ shift $OPTIND-1
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
-if test $rc -ne 0 
-then 
+if test $rc -ne 0
+then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
-  test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -1030,7 +1028,7 @@ manifest=${mask}.${date}.${tail}                     # manifest file
 echo "-- input:  $stage"
 echo "-- output: $ussI"
 
-# if present, do not pack install log
+# if present, do not package install log
 test -e $stage/install_log && _cmd rm -rf $stage/install_log
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
