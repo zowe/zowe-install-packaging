@@ -156,7 +156,7 @@ echo "-- Updating yaml file"
 CI_ZOWE_CONFIG_FILE=$extract/install/zowe-install.yaml
 sed -e "/^install:/,\$s#rootDir=.*\$#rootDir=$stage#" \
   "${CI_ZOWE_CONFIG_FILE}" \
-  > "${CI_ZOWE_CONFIG_FILE}.tmp" 
+  > "${CI_ZOWE_CONFIG_FILE}.tmp"
 mv "${CI_ZOWE_CONFIG_FILE}.tmp" "${CI_ZOWE_CONFIG_FILE}"
 cat ${CI_ZOWE_CONFIG_FILE}
 

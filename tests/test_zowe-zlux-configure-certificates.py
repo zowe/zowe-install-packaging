@@ -46,8 +46,8 @@ def test_script_replaces_correctly():
         j = json.loads("".join(lines))
 
     assert j["node"]["https"]["keys"] \
-        == [env["ZOWE_ROOT_DIR"] + "/api-mediation/keystore/localhost/localhost.keystore.key"]
+        == [env["ZOWE_ROOT_DIR"] + "/components/api-mediation/keystore/localhost/localhost.keystore.key"]
     assert j["node"]["https"]["certificates"] \
-        == [env["ZOWE_ROOT_DIR"] + "/api-mediation/keystore/localhost/localhost.keystore.cer"]
+        == [env["ZOWE_ROOT_DIR"] + "/components/api-mediation/keystore/localhost/localhost.keystore.cer"]
     assert j["node"]["https"]["certificateAuthorities"] \
-        == [env["ZOWE_ROOT_DIR"] + "/api-mediation/keystore/local_ca/localca.cer"]
+        == [env["ZOWE_ROOT_DIR"] + "/components/api-mediation/keystore/local_ca/localca.cer"]
