@@ -598,8 +598,6 @@ awk '/^#USS/ {print $2,$3,$4}' $log/$manifest \
 # create data set snapshot to assist with tracking members
 echo "-- creating $log/$dataSet"
 test -f $log/$dataSet && _cmd rm -f $log/$dataSet
-pwd
-echo "I am here $here"
 
 # get data set list (no debug mode to avoid debug messages)
 datasets=$($here/$csiScript "${mvsI}.**")
@@ -1030,7 +1028,7 @@ manifest=${mask}.${date}.${tail}                     # manifest file
 echo "-- input:  $stage"
 echo "-- output: $ussI"
 
-# if present, do not pack install log
+# if present, do not package install log
 test -e $stage/install_log && _cmd rm -rf $stage/install_log
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

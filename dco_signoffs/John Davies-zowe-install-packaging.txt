@@ -1,0 +1,4 @@
+I, John Davies hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: daviesja@uk.ibm.com
+
+b9c8dac4a82e006c94346b2946630cc66f6ab795 Handle userid not IZUSVR
+d1610895f5fc6fe56e2322a7cb6c3ba80eaabd8b Remove EOL comments from yaml template
