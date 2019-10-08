@@ -25,7 +25,7 @@
 //* 1) Add the job parameters to meet your system requirements.
 //*
 //* 2) Change the string "#fsdsn" to the appropriate data set name
-//*    for the file system that will be created. 
+//*    for the file system that will be created.
 //*
 //* 3) Change #fsvol to the volser for the file system,
 //*    if you choose not to use the default of letting your Automatic
@@ -67,7 +67,7 @@
 //*
 //* 3. If your complete path name (-PathPrefix-usr/lpp/zowe) extends
 //*    beyond JCL limits, you can split it over multiple lines. The
-//*    ZWEMKDIR REXX will strip leading and trailing blanks and 
+//*    ZWEMKDIR REXX will strip leading and trailing blanks and
 //*    combine all lines in DD ROOT into a single path name.
 //*
 //* 4. Ensure you execute this job with a userid that is UID 0, or
@@ -86,15 +86,7 @@
 //*       MODE(RDRW)                 /* can be MODE(READ) */
 //*       TYPE(ZFS) PARM('AGGRGROW') /* zFS, with extents */
 //*
-//* 7. This job utilizes JCL variables inside inline text, which
-//*    requires z/OS 2.1 or higher. When using an older z/OS level,
-//*    - Comment out the EXPORT SYMLIST statement
-//*    - Remove ",SYMBOLS=JCLONLY" from the DD definitions that 
-//*      utilize inline JCL variables
-//*    - Replace the following variables with their actual value:
-//*      - step ZFSALLOC, DD SYSIN, variable &DSN
-//*
-//* 8. This job should complete with a return code 0.
+//* 7. This job should complete with a return code 0.
 //*    If not, check the output, consult the z/OS UNIX System
 //*    Services Messages and Codes manual to correct the problem,
 //*    and resubmit this job.
@@ -128,7 +120,7 @@
 //SYSTSIN  DD DUMMY
 //ROOT     DD DATA,DLM=$$                        data can be multi-line
   -PathPrefix-usr/lpp/zowe
-$$  
+$$
 //SYSEXEC  DD DISP=SHR,DSN=#dsprefix.[FMID].F1
 //*
 //*SYSEXEC  DD DISP=SHR,         use when requested for service install

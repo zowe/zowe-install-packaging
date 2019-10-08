@@ -64,23 +64,7 @@
 //*
 //* 3. Run only the steps that are applicable to your installation.
 //*
-//* 4. This job utilizes JCL variables inside inline text, which
-//*    requires z/OS 2.1 or higher. When using an older z/OS level,
-//*    - Comment out the EXPORT SYMLIST statement
-//*    - Remove ",SYMBOLS=JCLONLY" from the DD definitions that
-//*      utilize inline JCL variables
-//*    - Replace the following variables with their actual value:
-//*      - step DDDEFTGT, DD SMPCNTL, variable &TZONE          
-//*      - step DDDEFTGT, DD SMPCNTL, variable &THLQ. (2 times)
-//*      - step DDDEFTGT, DD SMPCNTL, variable &TVOL (2 times) 
-//*      - step DDDEFTGT, DD SMPCNTL, variable &DHLQ. (3 times)
-//*      - step DDDEFTGT, DD SMPCNTL, variable &DVOL (3 times)
-//*      - step DDDEFDLB, DD SMPCNTL, variable &DZONE
-//*      - step DDDEFDLB, DD SMPCNTL, variable &DHLQ. (3 times)
-//*      - step DDDEFDLB, DD SMPCNTL, variable &DVOL (3 times)
-//*      - step DEFPATH, DD SMPCNTL, variable &TZONE
-//*
-//* 5. This job should complete with a return code 0.
+//* 4. This job should complete with a return code 0.
 //*    If some or all of these DDDEF entries already exist, then the
 //*    job will complete with a return code 8.
 //*    You will have to examine the output and determine wether or

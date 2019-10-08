@@ -10,58 +10,58 @@
 //* Copyright Contributors to the Zowe Project. 2019, [YEAR]
 //*
 //********************************************************************
-//*                                                                   
-//* This JCL will allocate target and distribution libraries for      
-//* Zowe Open Source Project                                          
-//*                                                                   
-//*                                                                   
-//* CAUTION: This is neither a JCL procedure nor a complete job.      
-//* Before using this job step, you will have to make the following   
-//* modifications:                                                    
-//*                                                                   
-//* 1) Add the job parameters to meet your system requirements.       
-//*                                                                   
-//* 2) Change #thlq to the appropriate high level qualifier(s) for    
-//*    the target data sets. The maximum length is 35 characters.     
-//*                                                                   
-//* 3) Change #dhlq to the appropriate high level qualifier(s) for    
+//*
+//* This JCL will allocate target and distribution libraries for
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this job step, you will have to make the following
+//* modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change #thlq to the appropriate high level qualifier(s) for
+//*    the target data sets. The maximum length is 35 characters.
+//*
+//* 3) Change #dhlq to the appropriate high level qualifier(s) for
 //*    the distribution datasets. The maximum length is 35 characters.
-//*                                                                   
-//* 4) Change DSP=CATLG on the EXEC statements to the appropriate     
-//*    final disposition of the data sets if you choose not to use    
-//*    the default.                                                   
-//*                                                                   
-//* 5) By default, this job relies on your Automatic Class Selection  
-//*    (ACS) routines to place the target data sets. You can          
-//*    place the data sets on a specific volume when you:             
-//*    a) Change #tvol to the volser for the target libraries.        
-//*    b) Uncomment all references to variable &TVOL:                 
-//*       - VOL=SER=&TVOL in multiple DDs of step ALLOCT              
-//*                                                                   
-//* 6) By default, this job relies on your Automatic Class Selection  
-//*    (ACS) routines to place the distribution data sets. You can    
-//*    place the data sets on a specific volume when you:             
-//*    a) Change #dvol to the volser for the target libraries.        
-//*    b) Uncomment all references to variable &DVOL:                 
-//*       - VOL=SER=&DVOL in multiple DDs of step ALLOCD              
-//*                                                                   
-//* Note(s):                                                          
-//*                                                                   
-//* 1. If you specify a volume for any data set in this job, you      
-//*    must also specify the same volume in the corresponding         
-//*    DDDEF entry in the DDDEF job, ZWE6DDEF.                        
-//*    Also ensure that SMS routines will not change the specified    
-//*    volser during allocation of the data set.                      
-//*                                                                   
-//* 2. This job uses PDSE data sets. If required, you can comment out 
-//*    all occurances of DSNTYPE=LIBRARY to use PDS datasets instead. 
-//*                                                                   
-//* 3. Run only the steps that are applicable to your installation.   
-//*                                                                   
-//* 4. This job WILL complete with a return code 0.                   
-//*    You must check allocation messages to verify that the          
-//*    data sets are allocated and cataloged as expected.             
-//*                                                                   
+//*
+//* 4) Change DSP=CATLG on the EXEC statements to the appropriate
+//*    final disposition of the data sets if you choose not to use
+//*    the default.
+//*
+//* 5) By default, this job relies on your Automatic Class Selection
+//*    (ACS) routines to place the target data sets. You can
+//*    place the data sets on a specific volume when you:
+//*    a) Change #tvol to the volser for the target libraries.
+//*    b) Uncomment all references to variable &TVOL:
+//*       - VOL=SER=&TVOL in multiple DDs of step ALLOCT
+//*
+//* 6) By default, this job relies on your Automatic Class Selection
+//*    (ACS) routines to place the distribution data sets. You can
+//*    place the data sets on a specific volume when you:
+//*    a) Change #dvol to the volser for the target libraries.
+//*    b) Uncomment all references to variable &DVOL:
+//*       - VOL=SER=&DVOL in multiple DDs of step ALLOCD
+//*
+//* Note(s):
+//*
+//* 1. If you specify a volume for any data set in this job, you
+//*    must also specify the same volume in the corresponding
+//*    DDDEF entry in the DDDEF job, ZWE6DDEF.
+//*    Also ensure that SMS routines will not change the specified
+//*    volser during allocation of the data set.
+//*
+//* 2. This job uses PDSE data sets. If required, you can comment out
+//*    all occurances of DSNTYPE=LIBRARY to use PDS data sets instead.
+//*
+//* 3. Run only the steps that are applicable to your installation.
+//*
+//* 4. This job WILL complete with a return code 0.
+//*    You must check allocation messages to verify that the
+//*    data sets are allocated and cataloged as expected.
+//*
 //********************************************************************
 //*
 //* ALLOCATE TARGET LIBRARIES

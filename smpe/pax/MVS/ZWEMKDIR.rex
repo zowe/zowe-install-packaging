@@ -22,7 +22,7 @@
  *%           (required when MOUNT is specified, optional otherwise)
  *% DIrs=dd   (optional) referenced DD name holds a list of
  *%           directories to be created
- *%           these directories will be prefixed by the path specified 
+ *%           these directories will be prefixed by the path specified
  *%           in ROOT
  *% MOunt=dsn (optional) mount the specified file system on the path
  *%           specified in ROOT
@@ -723,7 +723,7 @@ _syscall: /* NO PROCEDURE */
 parse arg _Cmd,_Verbose,_Exit
 parse value _Verbose 1 with _Verbose .  /* default: report USS error */
 parse value _Exit 1 with _Exit .      /* default: exit on REXX error */
-_Success=1  /* TRUE */ 
+_Success=1  /* TRUE */
 _Err.0=0
 
 if Debug then say '. (syscall)' _Cmd
@@ -944,7 +944,7 @@ end    /* not in OMVS & not found */
 if (ExecEnv \= 'OMVS') & \Exist
 then do
   if Debug then say '. parsing LISTALC output'
-  
+
   call outtrap Line.
   "LISTALC STATUS SYSNAMES"
   call outtrap 'OFF'
@@ -995,7 +995,7 @@ then do
      * IBMUSER.NEW.EXEC
      *            KEEP
      */
-  
+
     /*do T=0 to Line.0; say '. LISTALC' T Line.T; end*/     /* trace */
     do T=1 to Line.0
       parse var Line.T word1 word2 .
