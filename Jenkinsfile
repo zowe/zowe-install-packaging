@@ -127,7 +127,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   pipeline.publish(
     artifacts: [
       '.pax/zowe.pax',
-      '.pax/AZWE*'
+      '.pax/AZWE*',
+      '.pax/smpe-build-logs.pax.Z'
     ]
   )
 

@@ -69,6 +69,14 @@ mkdir -p zowe
   -r "${CURR_PWD}/zowe" \
   -d
 
+# remove tmp folder
+UC_CURR_PWD=$(echo "${CURR_PWD}" | tr [a-z] [A-Z])
+if [ "${UC_CURR_PWD}" != "${CURR_PWD}" ]; then
+  # CURR_PWD will be removed after build automatically, we just need to delete
+  # the extra temp folder in uppercase created by GIMZIP
+  rm -fr "${UC_CURR_PWD}"
+fi
+
 # get the final build result
 ZOWE_SMPE_PAX="AZWE${FMID_VERISON}/gimzip/AZWE${FMID_VERISON}.pax.Z"
 if [ ! -f "${CURR_PWD}/zowe/${ZOWE_SMPE_PAX}" ]; then
@@ -86,11 +94,11 @@ mv "zowe/${ZOWE_SMPE_PAX}" "zowe-smpe.pax"
 mv "zowe/${ZOWE_SMPE_README}" "readme.txt"
 
 # check what's in logs
-cd "zowe/AZWE${FMID_VERISON}"
-ls -la logs
-cat logs/*
+cd "zowe/AZWE${FMID_VERISON}/logs"
+pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
 
 # prepare rename to original name
+cd "${CURR_PWD}"
 echo "mv zowe-smpe.pax AZWE${FMID_VERISON}.pax.Z" > "rename-back.sh.1047"
 echo "mv readme.txt AZWE${FMID_VERISON}.readme.txt" >> "rename-back.sh.1047"
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
