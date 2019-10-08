@@ -140,7 +140,12 @@ chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 #TODO LATER - do we need a better location rather than scripts - covered by zip #519
 cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.template.jcl
 
-echo "Zowe ${ZOWE_VERSION} runtime install completed into directory "$ZOWE_ROOT_DIR
+echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
+. $INSTALL_DIR/scripts/zowe-create-MVS-artefacts.sh 
+
+echo "Zowe ${ZOWE_VERSION} runtime install completed into"
+echo "  directory " $ZOWE_ROOT_DIR
+echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP " and " ${ZOWE_DSN_PREFIX}.SZWEAUTH
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 
@@ -178,5 +183,6 @@ then
   # Run configure - note not in source mode
   ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
 else
-  echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
+    echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
 fi
+
