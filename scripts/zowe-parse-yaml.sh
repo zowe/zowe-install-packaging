@@ -63,7 +63,13 @@ do
             then
                 ZOWE_INSTANCE=$value
                 export ZOWE_INSTANCE
-            fi            
+            fi      
+# Look for datasetPrefix= beneath install:
+            if [[ $key == "datasetPrefix" ]] && [[ $section == "install" ]]
+            then
+                ZOWE_DSN_PREFIX=`echo "$value" | sed "s/{userid}/${USER:-${USERNAME:-${LOGNAME}}}/"`
+                export ZOWE_DSN_PREFIX
+            fi      
 # Look for jobsAPIPort= beneath zos-services:
             if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
             then
@@ -331,6 +337,7 @@ fi
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
 echo "  ZOWE_USER_DIR="$ZOWE_USER_DIR >> $LOG_FILE
 echo "  ZOWE_PREFIX="$ZOWE_PREFIX >> $LOG_FILE
+echo "  ZOWE_DSN_PREFIX="$ZOWE_DSN_PREFIX >> $LOG_FILE
 echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
 echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT="$ZOWE_EXPLORER_SERVER_DATASETS_PORT >> $LOG_FILE
