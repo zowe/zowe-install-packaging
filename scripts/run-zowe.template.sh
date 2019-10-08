@@ -92,18 +92,6 @@ then
   export NODE_HOME={{node_home}}
 fi
 
-DIR=`dirname $0`
-
-if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
-then
-  cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-fi
-# Create the user configurable api-defs
-mkdir -p ${USER_DIR}/api-defs
-STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-defs
-
-# Until ui explorers componentised will copy them from the old location
-cp ${ROOT_DIR}/components/api-mediation/api-defs/* ${STATIC_DEF_CONFIG_DIR}
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
@@ -200,6 +188,8 @@ done
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 ./deploy.sh > /dev/null
+
+DIR=`dirname $0`
 
 # Start the desktop
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
