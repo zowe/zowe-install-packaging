@@ -436,10 +436,14 @@ echo ===============================================
         ])
       }
 
-      // write code-signing-key
-      writeFile file: '.release/code-signing-key', text: signing.getSigningKey()
+      // write code-signing-key-info.json
+      def signingKeyId = signing.getSigningKey()
+      sh "curl -o .release/code-signing-key-info.json https://raw.githubusercontent.com/zowe/zowe-install-packaging/master/signing_keys/${signingKeyId}.json"
+      if (!fileExists(.release/code-signing-key-info.json)) {
+        error "Failed to download code signing key info json"
+      }
       uploadArtifacts['files'].push([
-        "pattern" : '.release/code-signing-key',
+        "pattern" : '.release/code-signing-key-info.json',
         "target"  : releaseFilePath + '/'
       ])
 
