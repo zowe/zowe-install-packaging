@@ -99,6 +99,7 @@ list="\
   components/api-mediation/gateway-service.jar \
   "
 #for f in $(ls components/api-mediation/*.jar | grep -v /enabler)   #*/
+test "$debug" && echo "for f in $list"
 for f in $list
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
