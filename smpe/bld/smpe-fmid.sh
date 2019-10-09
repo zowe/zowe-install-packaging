@@ -21,7 +21,7 @@
 prefix=ZWE                     # product prefix
 parts=parts.txt                # parts known by SMP/E
 mcs=SMPMCS.txt                 # SMPMCS header
-allocScript=../pax/scripts/allocate-dataset.sh  # script to allocate data set
+allocScript=allocate-dataset.sh  # script to allocate data set
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(cd $(dirname $0);pwd)   # script location
