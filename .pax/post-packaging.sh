@@ -30,7 +30,7 @@ chmod -R 755 smpe
 INPUT_TXT=input.txt
 ZOWE_VERSION_MAJOR=$(echo "${ZOWE_VERSION}" | awk -F. '{print $1}')
 # pad ZOWE_VERSION_MAJOR to be at least 3 chars long, then keep last 3
-FMID_VERISON=$(echo "00${ZOWE_VERSION_MAJOR}" | sed 's/.*\(...\)$/\1/')
+FMID_VERSION=$(echo "00${ZOWE_VERSION_MAJOR}" | sed 's/.*\(...\)$/\1/')
 
 # create smpe.pax
 cd smpe/pax
@@ -60,22 +60,30 @@ mkdir -p zowe
 
 # ZOWEAD3 and ZOWE02 is specific parameter for packaging on Marist server.
 # To package on another server, we may need different settings.
-# Or if the server is configured properly, may just remove -h and -L options.
+# Or if the server is configured properly, may just remove -V option.
+#% required
+#% -h hlq        use the specified high level qualifier
+#% -i inputFile  reference file listing non-SMPE distribution files
+#% -r rootDir    use the specified root directory
+#% -v vrm        FMID 3-character version/release/modification
+#% optional
+#% -d            enable debug messages
+#% -V volume     allocate data sets on specified volume(s)
 ./smpe/bld/smpe.sh \
   -i "${CURR_PWD}/${INPUT_TXT}" \
   -h "ZOWEAD3" \
-  -L "ZOWE02" \
-  -v ${FMID_VERISON} \
+  -V "ZOWE02" \
+  -v ${FMID_VERSION} \
   -r "${CURR_PWD}/zowe" \
   -d
 
 # get the final build result
-ZOWE_SMPE_PAX="AZWE${FMID_VERISON}/gimzip/AZWE${FMID_VERISON}.pax.Z"
+ZOWE_SMPE_PAX="AZWE${FMID_VERSION}/gimzip/AZWE${FMID_VERSION}.pax.Z"
 if [ ! -f "${CURR_PWD}/zowe/${ZOWE_SMPE_PAX}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find build result ${ZOWE_SMPE_PAX}"
   exit 1
 fi
-ZOWE_SMPE_README="AZWE${FMID_VERISON}/gimzip/AZWE${FMID_VERISON}.readme.txt"
+ZOWE_SMPE_README="AZWE${FMID_VERSION}/gimzip/AZWE${FMID_VERSION}.readme.txt"
 if [ ! -f "${CURR_PWD}/zowe/${ZOWE_SMPE_README}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find build result ${ZOWE_SMPE_README}"
   exit 1
@@ -86,6 +94,6 @@ mv "zowe/${ZOWE_SMPE_PAX}" "zowe-smpe.pax"
 mv "zowe/${ZOWE_SMPE_README}" "readme.txt"
 
 # prepare rename to original name
-echo "mv zowe-smpe.pax AZWE${FMID_VERISON}.pax.Z" > "rename-back.sh.1047"
-echo "mv readme.txt AZWE${FMID_VERISON}.readme.txt" >> "rename-back.sh.1047"
+echo "mv zowe-smpe.pax AZWE${FMID_VERSION}.pax.Z" > "rename-back.sh.1047"
+echo "mv readme.txt AZWE${FMID_VERSION}.readme.txt" >> "rename-back.sh.1047"
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
