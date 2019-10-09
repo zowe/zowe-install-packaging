@@ -88,36 +88,43 @@ cnt=0                           # counter, part of target pax file name
 # "echo 0$cnt" will: create a counter at least 2 chars long
 # sed will: take the last 2 chars of the expanded counter
 
-# everything zlux
-# > zlux-app-server has symlinks to zlux-server-framework & zss-auth
-# > -> they must all be in the same archive
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file "find zlux-* -prune"
-_move $stage $split/$file echo zss-auth
-
-#TODO - why are these being moved - shouldn't the install dirs be deleted?
-# all miscelaneous files in root and select directories
-#let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-#_move $stage $split/$file find . -level 0 ! -type d
-#_move $stage $split/$file echo files
-#_move $stage $split/$file echo install
-#_move $stage $split/$file echo licenses
-#_move $stage $split/$file echo scripts
-_move $stage $split/$file echo manifest.json
+# ---
 
 # api-mediation has a few big jar files, give them their own pax
-for f in $(ls components/api-mediation/*.jar | grep -v /enabler)    #*/
+# path based on $ZOWE_ROOT_DIR
+list="\
+  components/api-mediation/api-catalog-services.jar \
+  components/api-mediation/discoverable-client.jar \
+  components/api-mediation/discovery-service.jar \
+  components/api-mediation/gateway-service.jar \
+  "
+#for f in $(ls components/api-mediation/*.jar | grep -v /enabler)   #*/
+for f in $list
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
   _move $stage $split/$file echo $f
 done    # for f
 
-# each remaining directory in root gets a separate pax file
-for d in $(ls -D $stage)
-do
-  let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-  _move $stage $split/$file echo $d
-done    # for d
+# ---
+
+# everything zlux
+let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+_move $stage $split/$file "find zlux-* -prune"
+_move $stage $split/$file echo zss-auth
+
+# ---
+
+# everything explorer API
+let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+_move $stage $split/$file echo components
+
+# ---
+
+# all remaining files and directories
+let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+_move $stage $split/$file ls -A $stage
+
+# ---
 
 # verify everything moved correctly
 _verify
