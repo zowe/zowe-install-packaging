@@ -98,16 +98,16 @@ export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
 mkdir -p $TEMP_DIR
 
 # Install the API Mediation Layer
-. $INSTALL_DIR/scripts/zowe-api-mediation-install.sh
+. $INSTALL_DIR/scripts/zowe-install-api-mediation.sh
 
 # Install the zLUX server
-. $INSTALL_DIR/scripts/zlux-install-script.sh
+. $INSTALL_DIR/scripts/zowe-install-zlux.sh
 
 # Install the Explorer API
-. $INSTALL_DIR/scripts/zowe-explorer-api-install.sh
+. $INSTALL_DIR/scripts/zowe-install-explorer-api.sh
 
 # Install Explorer UI plugins
-. $INSTALL_DIR/scripts/zowe-explorer-ui-install.sh
+. $INSTALL_DIR/scripts/zowe-install-explorer-ui.sh
 
 echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE
@@ -141,7 +141,7 @@ chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.template.jcl
 
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
-. $INSTALL_DIR/scripts/zowe-create-MVS-artefacts.sh 
+. $INSTALL_DIR/scripts/zowe-install-MVS.sh
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into"
 echo "  directory " $ZOWE_ROOT_DIR
