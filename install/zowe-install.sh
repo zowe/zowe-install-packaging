@@ -57,6 +57,23 @@ echo "  pipeline tasks" >> $LOG_FILE
 # TEST BEFORE TAKING ACTION
 # actions could have been done in a previous install from same source
 
+# TODO ship zss.pax extracted so all SAMPLIB can be processed together
+if test -f $INSTALL_DIR/files/zss.pax
+then
+  _cmd $INSTALL_DIR/scripts/unpax.sh \
+    "$INSTALL_DIR/files/zss.pax" \
+    "$INSTALL_DIR/files/zss" \
+    "ZSS"
+fi    #
+
+iDir=$INSTALL_DIR/files/zss/SAMPLIB
+#_cmd mv $iDir/ZWESIP00 $iDir/ZWESIP00
+_cmd mv $iDir/ZWESIS01 $iDir/ZWESISTC
+#_cmd mv $iDir/ZWESISCH $iDir/ZWESISCH
+_cmd mv $iDir/ZWESISMS $iDir/ZWESIPRG
+
+# ---
+
 # TODO rename data-sets-api-server-*.jar -> files-api-server-*.jar
 for file in $(ls $INSTALL_DIR/files/data-sets-api-server-*.jar)
 do                                           # ${#*} strips 'data-sets'
