@@ -31,7 +31,6 @@
 # creates $log/$delta      delta of current and previous manifest
 # creates $log/fileSize    product file sizes
 # creates $log/treeSize    product directory sizes
-# creates $log/symLink     product symlinks
 # creates $log/extAttr     product non-standard extattr bits
 # creates $log/dataSet     product data sets and members
 # creates $log/parts       parts known by SMP/E
@@ -44,7 +43,6 @@ delta=manifest-delta.txt       # delta of current and previous manifest
 deltaHist=$historical$delta    # history of manifest deltas
 fileSize=filesize.txt          # product file sizes
 treeSize=treesize.txt          # product directory sizes
-symLink=symlink.txt            # product symlinks
 extAttr=extattr.txt            # product non-standard extattr bits
 dataSet=dataset.txt            # product data sets and members
 parts=parts.txt                # parts known by SMP/E
@@ -108,7 +106,7 @@ _move $stage $split/$file echo zss-auth
 _move $stage $split/$file echo manifest.json
 
 # api-mediation has a few big jar files, give them their own pax
-for f in $(ls components/api-mediation/*.jar | grep -v /enabler)               #*/
+for f in $(ls components/api-mediation/*.jar | grep -v /enabler)    #*/
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
   _move $stage $split/$file echo $f
@@ -551,22 +549,6 @@ done    # for f
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-# create symlink snapshot to assist with altering split-logic
-echo "-- creating $log/$symLink"
-test -f $log/$symLink && _cmd rm -f $log/$symLink
-_cmd touch $log/$symLink
-# test "find" first as null result causes ls showing current dir
-# sed replaces everything up to $stage (incl) with ., leaving symlink info
-test "$debug" && echo
-test "$debug" && echo "ls -l \$(find $stage -type l) ..."
-test "$(find $stage -type l)" &&
-  ls -l $(find $stage -type l) | sed "s!.*$stage!.!" > $log/$symLink
-# cannot test $? as it is only of the last pipe command
-# sample output:
-# ./jes_explorer/server/node_modules/.bin/which -> ../which/bin/which
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
 # create extattr snapshot to assist with tracking special files
 #echo "-- creating $log/$extAttr"
 #test -f $log/$extAttr && _cmd rm -f $log/$extAttr
@@ -624,6 +606,46 @@ done    # for dsn
 
 test "$debug" && echo "< _snapshot"
 }    # _snapshot
+
+# ---------------------------------------------------------------------
+# --- store symbolic links in manifest and then remove them to simplify
+#     split logic, pax requires that source and target are in same file
+#     SMP/E will restore them during APPLY
+#     MUST run after _manifest()
+# ---------------------------------------------------------------------
+function _noSymLink
+{
+test "$debug" && echo && echo "> _noSymLink $@"
+
+echo "-- processing symbolic links"
+test "$debug" && echo
+test "$debug" && echo "find $stage -type l"
+for file in $(find $stage -type l)
+do
+  # 1. document symbolic links, use "ls" to also get target
+  # note: _cmd cannot handle pipe
+  # sed replaces everything up to $stage (incl) with '#LNK .',
+  #   leaving symlink info
+  cMd="ls -l $file | sed \"s!.*$stage!#LNK .!g\" 2>&1 >> $log/$manifest"
+  test "$debug" && echo
+  test "$debug" && echo $cMd
+  ls -l $file | sed "s!.*$stage!#LNK .!g" 2>&1 >> $log/$manifest
+  # sample output:
+  # #LNK ./jes_explorer/node_modules/.bin/which -> ../which/bin/which
+  status=$?  # RC of last pipe command (sed)
+
+  if test $status -ne 0
+  then
+      echo "** ERROR $me '$cMd' ended with status $sTaTuS"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+
+  # 2. remove symbolic link
+  _cmd rm -f $file
+done    # for file
+
+test "$debug" && echo "< _noSymLink"
+}    # _noSymLink
 
 # ---------------------------------------------------------------------
 # --- create list of parts known by SMP/E
@@ -1042,10 +1064,12 @@ _manifest
 _delta
 # gather data to assist with understanding product
 _snapshot
+# remove symbolic links, pax requires source and target to be together
+# MUST run after _manifest()
+_noSymLink
 
 # split $stage into smaller chunks, place the result in $split/*    #*/
 _split
-
 # TODO compare manifest #USS with split result; everything in right place?
 
 # remove data of previous run (if any) ...
