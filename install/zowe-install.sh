@@ -57,6 +57,14 @@ echo "  pipeline tasks" >> $LOG_FILE
 # TEST BEFORE TAKING ACTION
 # actions could have been done in a previous install from same source
 
+# TODO rename data-sets-api-server-*.jar -> files-api-server-*.jar
+for file in $(ls $INSTALL_DIR/files/data-sets-api-server-*.jar)
+do                                           # ${#*} strips 'data-sets'
+  _cmd mv $file $INSTALL_DIR/files/files${file#*data-sets}
+done    # for file
+
+# ---
+
 test "$debug" && echo && echo "< _pipeline"
 }    # _pipeline
 

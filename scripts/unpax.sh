@@ -87,7 +87,7 @@ test "$debug" && echo file=$file
 # Validate findings
 if test ! -f "$file" -o ! -r "$file"
 then
-  echo "** ERROR $me Cannot access $3 archive ($basename ($1))"
+  echo "** ERROR $me Cannot access $3 archive $(basename $1)"
   echo "ls -ld \"$file\""; ls -ld "$file"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #

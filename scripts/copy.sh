@@ -156,7 +156,7 @@ test "$debug" && echo file=${file}${all}
 # TODO test for access to all files in directory
 if test ! -r "$file"
 then
-  echo "** ERROR $me Cannot access $3 file(s) ($basename ($1))"
+  echo "** ERROR $me Cannot access $3 file(s) $(basename $1)"
   echo "ls -ld \"$file\""; ls -ld "$file"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
