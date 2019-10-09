@@ -151,35 +151,14 @@ done    #
 # allow caller to alter product before install                   #debug
 test "$alter" && _cmd $alter $debug PROD $extract
 
-# set up yaml
-echo "-- Updating yaml file"
-CI_ZOWE_CONFIG_FILE=$extract/install/zowe-install.yaml
-sed -e "/^install:/,\$s#rootDir=.*\$#rootDir=$stage#" \
-  "${CI_ZOWE_CONFIG_FILE}" \
-  > "${CI_ZOWE_CONFIG_FILE}.tmp"
-mv "${CI_ZOWE_CONFIG_FILE}.tmp" "${CI_ZOWE_CONFIG_FILE}"
-cat ${CI_ZOWE_CONFIG_FILE}
-
 # install product
 echo "-- installing product in $stage & $mvsI"
 opts=""
-opts="$opts -I"                                # Install only - no config
-#opts="$opts -R"                                # remove input when done
-#opts="$opts -i $stage"                         # target directory
-#opts="$opts -h $mvsI"                          # target HLQ
-#opts="$opts -f $log/$logFile"                  # install log
-# FIXME: since the installation will update .zowe_profile, to avoid affecting
-#        existing installation of Zowe, we backup .zowe_profile and restore
-#        later. - jack
-# Question, if the installation failed and exit, will the backup be restored?
-rm -fr ~/.zowe_profile_smpe_packaging_backup
-if [ -f ~/.zowe_profile ]; then
-  mv ~/.zowe_profile ~/.zowe_profile_smpe_packaging_backup
-fi
-_cmd $extract/$prodScript $opts </dev/null
-if [ -f ~/.zowe_profile_smpe_packaging_backup ]; then
-  mv ~/.zowe_profile_smpe_packaging_backup ~/.zowe_profile
-fi
+opts="$opts -R"                                # remove input when done
+opts="$opts -i $stage"                         # target directory
+opts="$opts -h $mvsI"                          # target HLQ
+opts="$opts -f $log/$logFile"                  # install log
+_cmd $extract/$prodScript $debug $opts
 
 #For debug
 ls -al $stage
