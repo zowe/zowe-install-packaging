@@ -95,9 +95,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (params.BUILD_SMPE) {
         def buildLogSpec = readJSON(text: '{"files":[]}')
         buildLogSpec['files'].push([
-          "target": ".pax/content/",
+          "target": ".pax/content/smpe/",
           "flat": "true",
-          "pattern": pipeline.getPublishTargetPath() + "smpe-build-log*.pax",
+          "pattern": pipeline.getPublishTargetPath() + "smpe-build-logs-*.pax.Z",
           "sortBy": ["created"],
           "sortOrder": "desc",
           "limit": 1
