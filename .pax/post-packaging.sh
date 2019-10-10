@@ -38,7 +38,7 @@ pax -x os390 -w -f ../../smpe.pax *
 cd ../..
 
 # extract last build log
-LAST_BUILD_LOG=$(ls -1 smpe/smpe-build-logs*)
+LAST_BUILD_LOG=$(ls -1 smpe/smpe-build-logs* || true)
 if [ -n "${LAST_BUILD_LOG}" ]; then
   mkdir -p "zowe/AZWE${FMID_VERSION}/logs"
   cd "zowe/AZWE${FMID_VERSION}/logs"
