@@ -40,8 +40,8 @@ cd ../..
 # extract last build log
 LAST_BUILD_LOG=$(ls -1 smpe/smpe-build-logs*)
 if [ -n "${LAST_BUILD_LOG}" ]; then
-  mkdir -p "zowe/AZWE${FMID_VERISON}/logs"
-  cd "zowe/AZWE${FMID_VERISON}/logs"
+  mkdir -p "zowe/AZWE${FMID_VERSION}/logs"
+  cd "zowe/AZWE${FMID_VERSION}/logs"
   pax -rf "${CURR_PWD}/${LAST_BUILD_LOG}" *
   cd "${CURR_PWD}"
 fi
@@ -111,7 +111,7 @@ mv "zowe/${ZOWE_SMPE_PAX}" "zowe-smpe.pax"
 mv "zowe/${ZOWE_SMPE_README}" "readme.txt"
 
 # check what's in logs
-cd "zowe/AZWE${FMID_VERISON}/logs"
+cd "zowe/AZWE${FMID_VERSION}/logs"
 pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
 
 # prepare rename to original name
