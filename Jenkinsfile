@@ -107,7 +107,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         sh "cat smpe-build-log-download-spec.json"
 
         pipeline.artifactory.download(
-          spec        : 'artifactory-download-spec.json'
+          spec        : 'smpe-build-log-download-spec.json'
         )
       }
     }
