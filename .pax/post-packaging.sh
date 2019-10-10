@@ -80,7 +80,7 @@ mkdir -p zowe
 #% -V volume     allocate data sets on specified volume(s)
 ./smpe/bld/smpe.sh \
   -i "${CURR_PWD}/${INPUT_TXT}" \
-  -h "ZOWEAD3.BD$(date +%H%M%S)" \
+  -h "ZOWEAD3" \
   -V "ZOWE02" \
   -v ${FMID_VERSION} \
   -r "${CURR_PWD}/zowe" \
