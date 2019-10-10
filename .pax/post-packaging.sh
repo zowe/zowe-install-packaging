@@ -37,6 +37,15 @@ cd smpe/pax
 pax -x os390 -w -f ../../smpe.pax *
 cd ../..
 
+# extract last build log
+LAST_BUILD_LOG=$(ls -1 smpe/smpe-build-logs*)
+if [ -n "${LAST_BUILD_LOG}" ]; then
+  mkdir -p "zowe/AZWE${FMID_VERISON}/logs"
+  cd "zowe/AZWE${FMID_VERISON}/logs"
+  pax -rf "${CURR_PWD}/${LAST_BUILD_LOG}" *
+  cd "${CURR_PWD}"
+fi
+
 # display extracted files
 echo "[$SCRIPT_NAME] content of $CURR_PWD...."
 find . -print
