@@ -90,6 +90,26 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         spec        : 'artifactory-download-spec.json',
         expected    : 18
       )
+
+      // we want build log pulled in for SMP/e build
+      if (params.BUILD_SMPE) {
+        def buildLogSpec = readJSON(text: '{"files":[]}')
+        buildLogSpec['files'].push([
+          "target": ".pax/content/",
+          "flat": "true",
+          "pattern": pipeline.getPublishTargetPath() + "smpe-build-log*.pax",
+          "sortBy": ["created"],
+          "sortOrder": "desc",
+          "limit": 1
+        ])
+        writeJSON file: 'smpe-build-log-download-spec.json', json: buildLogSpec, pretty: 2
+        echo "================ SMP/e build log download spec ================"
+        sh "cat smpe-build-log-download-spec.json"
+
+        pipeline.artifactory.download(
+          spec        : 'artifactory-download-spec.json'
+        )
+      }
     }
   )
 
