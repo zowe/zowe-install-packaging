@@ -49,7 +49,9 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/scripts/int
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
 FILES_API_PORT={{files_api_port}} # the port the files api service will use
 JOBS_API_PORT={{jobs_api_port}} # the port the files api service will use
-JES_EXPLORER_UI_PORT={{jobs_ui_port}} # the port the files api service will use
+JES_EXPLORER_UI_PORT={{jobs_ui_port}} # the port the jes explorer will use
+MVS_EXPLORER_UI_PORT={{mvs_ui_port}} # the port the mvs explorer will use
+USS_EXPLORER_UI_PORT={{uss_ui_port}} # the port the uss explorer will use
 DISCOVERY_PORT={{discovery_port}} # the port the discovery service will use
 CATALOG_PORT={{catalog_port}} # the port the api catalog service will use
 GATEWAY_PORT={{gateway_port}} # the port the api gateway service will use
@@ -100,7 +102,7 @@ export __UNTAGGED_READ_MODE=V6
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,jes-explorer #TODO this is WIP - component ids not finalised at the moment
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,jes-explorer,mvs-explorer,uss-explorer #TODO this is WIP - component ids not finalised at the moment
 fi
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
@@ -149,6 +151,8 @@ USER_DIR=${USER_DIR}
 FILES_API_PORT=${FILES_API_PORT}
 JOBS_API_PORT=${JOBS_API_PORT}
 JES_EXPLORER_UI_PORT=${JES_EXPLORER_UI_PORT}
+MVS_EXPLORER_UI_PORT=${MVS_EXPLORER_UI_PORT}
+USS_EXPLORER_UI_PORT=${USS_EXPLORER_UI_PORT}
 DISCOVERY_PORT=${DISCOVERY_PORT}
 CATALOG_PORT=${CATALOG_PORT}
 GATEWAY_PORT=${GATEWAY_PORT}

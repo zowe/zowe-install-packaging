@@ -19,7 +19,7 @@
 echo "<zowe-explorer-ui-install.sh>" >> $LOG_FILE
 
 # TODO add back uss and mvs
-UI_PLUGIN_LIST="jes"
+UI_PLUGIN_LIST="jes mvs uss"
 for COMPONENT_ID in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_UPPERCASE=$(echo $COMPONENT_ID | tr '[a-z]' '[A-Z]')
 
