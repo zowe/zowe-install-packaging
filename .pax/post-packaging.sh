@@ -37,6 +37,15 @@ cd smpe/pax
 pax -x os390 -w -f ../../smpe.pax *
 cd ../..
 
+# extract last build log
+LAST_BUILD_LOG=$(ls -1 smpe/smpe-build-logs* || true)
+if [ -n "${LAST_BUILD_LOG}" ]; then
+  mkdir -p "zowe/AZWE${FMID_VERSION}/logs"
+  cd "zowe/AZWE${FMID_VERSION}/logs"
+  pax -rf "${CURR_PWD}/${LAST_BUILD_LOG}" *
+  cd "${CURR_PWD}"
+fi
+
 # display extracted files
 echo "[$SCRIPT_NAME] content of $CURR_PWD...."
 find . -print
@@ -77,6 +86,14 @@ mkdir -p zowe
   -r "${CURR_PWD}/zowe" \
   -d
 
+# remove tmp folder
+UC_CURR_PWD=$(echo "${CURR_PWD}" | tr [a-z] [A-Z])
+if [ "${UC_CURR_PWD}" != "${CURR_PWD}" ]; then
+  # CURR_PWD will be removed after build automatically, we just need to delete
+  # the extra temp folder in uppercase created by GIMZIP
+  rm -fr "${UC_CURR_PWD}"
+fi
+
 # get the final build result
 ZOWE_SMPE_PAX="AZWE${FMID_VERSION}/gimzip/AZWE${FMID_VERSION}.pax.Z"
 if [ ! -f "${CURR_PWD}/zowe/${ZOWE_SMPE_PAX}" ]; then
@@ -93,7 +110,12 @@ cd "${CURR_PWD}"
 mv "zowe/${ZOWE_SMPE_PAX}" "zowe-smpe.pax"
 mv "zowe/${ZOWE_SMPE_README}" "readme.txt"
 
+# check what's in logs
+cd "zowe/AZWE${FMID_VERSION}/logs"
+pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
+
 # prepare rename to original name
+cd "${CURR_PWD}"
 echo "mv zowe-smpe.pax AZWE${FMID_VERSION}.pax.Z" > "rename-back.sh.1047"
 echo "mv readme.txt AZWE${FMID_VERSION}.readme.txt" >> "rename-back.sh.1047"
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
