@@ -1,6 +1,6 @@
 //GIMZIP   JOB
 //  EXPORT SYMLIST=(DIR)
-//  SET DIR='#dir' 
+//  SET DIR='#dir'
 //GIMZIP   EXEC PGM=GIMZIP,PARM='#gimzipParm',REGION=0M,COND=(0,LT)
 //*STEPLIB  DD DISP=SHR,DSN=SYS1.MIGLIB
 //SYSUT2   DD UNIT=SYSALLDA,SPACE=(CYL,(200,100))#volserParm
@@ -10,16 +10,16 @@
 //SYSPRINT DD DISP=MOD,DSN=#gimzipHlq.SYSPRINT
 //* package directory
 //SMPDIR   DD PATHDISP=KEEP,
-// PATH='&DIR/SMPDIR'    
+// PATH='&DIR/SMPDIR'
 //* smp classes directory
 //SMPCPATH DD PATHDISP=KEEP,
-// PATH='&DIR/SMPCPATH'  
+// PATH='&DIR/SMPCPATH'
 //* java runtime directory
 //SMPJHOME DD PATHDISP=KEEP,
-// PATH='&DIR/SMPJHOME'  
+// PATH='&DIR/SMPJHOME'
 //* optional work directory
 //SMPWKDIR DD PATH='&DIR/SMPWKDIR',
-// PATHOPTS=(OWRONLY,OCREAT,OTRUNC), 
-// PATHMODE=SIRWXU                   
+// PATHOPTS=(OWRONLY,OCREAT,OTRUNC),
+// PATHMODE=SIRWXU
 //* package control tags
-//SYSIN    DD DISP=SHR,DSN=#gimzipHlq.SYSIN       
+//SYSIN    DD DISP=SHR,DSN=#gimzipHlq.SYSIN

@@ -45,8 +45,8 @@ sysprint=gimzip.sysprint.log   # GIMZIP SYSPRINT log
 sysinGimzip=sysin.gimzip       # generated SYSIN for GIMZIP
 sysinGimunzip=sysin.gimunzip   # generated SYSIN for GIMUNZIP
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
-existScript=../pax/scripts/check-dataset-exist.sh  # script to test if data set exists
-allocScript=../pax/scripts/allocate-dataset.sh  # script to allocate data set
+existScript=check-dataset-exist.sh  # script to test if data set exists
+allocScript=allocate-dataset.sh  # script to allocate data set
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(dirname $0)             # script location
 me=$(basename $0)              # script name
@@ -70,21 +70,21 @@ echo "-- preparing GIMZIP"
 _gimzipMeta
 
 echo list before linking
-ls -al $SMPCPATH 
-ls -al $SMPJHOME 
+ls -al $SMPCPATH
+ls -al $SMPJHOME
 echo perform ls -al $1
 ls -al $1
 echo finished ls -al $1
 
-echo  SMPCPATH $SMPCPATH 
-echo  SMPJHOME $SMPJHOME 
+echo  SMPCPATH $SMPCPATH
+echo  SMPJHOME $SMPJHOME
 echo  1 $1
 
 echo ROOT $ROOT
 ls $ROOT
 
 echo scratch $scratch
-ls -al $scratch 
+ls -al $scratch
 
 _ln $SMPCPATH $scratch/SMPCPATH
 _ln $SMPJHOME $scratch/SMPJHOME
@@ -136,7 +136,7 @@ function runJob {
     # capture JOBID of submitted job
     jobid=`cat /tmp/submit.job.$$.out \
         | sed "s/.*JOB JOB\([0-9]*\) submitted.*/\1/"`
-    rm /tmp/submit.job.$$.out 2> /dev/null 
+    rm /tmp/submit.job.$$.out 2> /dev/null
 
     # echo; echo $SCRIPT JOBID=$jobid
 
@@ -150,7 +150,7 @@ function runJob {
             # $DJ gives ...
             # ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
             # ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
-        
+
         grep "$HASP890 JOB(.*) *CC=(.*)" /tmp/dj.$$.cc > /dev/null
         if [[ $? -eq 0 ]]
         then
@@ -158,12 +158,12 @@ function runJob {
             if [[ ! -n "$jobname" ]]
             then
                 jobname=empty
-            fi 
+            fi
         else
             jobname=unknown
         fi
         echo $SCRIPT INFO: Checking for completion of jobname $jobname jobid $jobid
-        
+
         grep "CC=(..*)" /tmp/dj.$$.cc > /dev/null   # ensure CC() is not empty
         if [[ $? -eq 0 ]]
         then
@@ -181,7 +181,7 @@ function runJob {
 
     # jobname=`sed -n 's/.*JOB(\([^ ]*\)).*/\1/p' /tmp/dj.$$.cc`
     # echo $SCRIPT jobname $jobname
-    
+
     $operdir/opercmd "\$DJ${jobid},CC" > /tmp/dj.$$.cc
     grep RC= /tmp/dj.$$.cc > /dev/null
     if [[ $? -ne 0 ]]
@@ -189,29 +189,29 @@ function runJob {
         echo $SCRIPT ERROR: no return code for jobid $jobid
         return 3
     fi
-    
+
     rc=`sed -n 's/.*RC=\([0-9]*\))/\1/p' /tmp/dj.$$.cc`
     # echo; echo $SCRIPT return code for JOB$jobid is $rc
-    rm /tmp/dj.$$.cc 2> /dev/null 
+    rm /tmp/dj.$$.cc 2> /dev/null
     if [[ $rc -gt 4 ]]
     then
-        echo $SCRIPT ERROR: job "$jobname(JOB$jobid)" failed, RC=$rc 
+        echo $SCRIPT ERROR: job "$jobname(JOB$jobid)" failed, RC=$rc
         return 4
     fi
     # echo; echo $SCRIPT function runJob ended
 }
 
 echo  $SCRIPT editing gimzip.jcl
-echo     gimzipParm = \"$gimzipParm\" 
-echo     gimzipHlq = \"$gimzipHlq\" 
-echo     gimzip = \"$gimzip\" 
-echo     volserParm = \"$volserParm\" 
+echo     gimzipParm = \"$gimzipParm\"
+echo     gimzipHlq = \"$gimzipHlq\"
+echo     gimzip = \"$gimzip\"
+echo     volserParm = \"$volserParm\"
 
 ln -s $scratch /tmp/gimzip.$$  # otherwise it's too long for JCL
 echo link is
 ls -l /tmp/gimzip.$$
 ls -l $gimzip/SMPDIR
-ls -l /tmp/gimzip.$$/SMPDIR 
+ls -l /tmp/gimzip.$$/SMPDIR
 
 sed "\
     s:#gimzipParm:$gimzipParm:; \
@@ -228,7 +228,7 @@ runJob $here/gimzip.sed.jcl
 gimzipRC=$?
 
 # give z/OS time to free the data sets before accessing them again
-# cp: FSUM6258 cannot open file "//'...'": EDC5061I An error occurred 
+# cp: FSUM6258 cannot open file "//'...'": EDC5061I An error occurred
 # when attempting to define a file to the system. (errno2=0xC00B0403)
 _cmd sleep 2
 
@@ -415,7 +415,12 @@ then
 fi    #
 
 # create target data set
-$here/$allocScript -h -L "$VOLSER" "$1" "$2" "$3" "$4" "$5"
+if test -z "$VOLSER"
+then
+  $here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
+else
+  $here/$allocScript -h -V "$VOLSER" "$1" "$2" "$3" "$4" "$5"
+fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -gt 0
