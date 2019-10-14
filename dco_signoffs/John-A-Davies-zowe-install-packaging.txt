@@ -1,0 +1,5 @@
+I, John-A-Davies hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: 36740892+John-A-Davies@users.noreply.github.com
+
+b8d98fb04092e9aea1b062e6de068147d715e6cf fix typo in ZOWESVR.jcl
+
+There was a typo in line 15 of the PROC.  It was a comment line but I fixed it anyway.

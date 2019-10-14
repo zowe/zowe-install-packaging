@@ -17,7 +17,7 @@
 # -h        (optional) hide the allocate command being issued
 # -p        (optional) existing partitioned data set must be PDS
 # -P dirBlk (optional) allocate data set as PDS with x directory blocks
-# -L volume (optional) allocate data set on specific volume
+# -V volume (optional) allocate data set on specified volume(s)
 # dsn       data set name
 # recFm     record format; {FB | FBA | U | VB | VBA}
 # lRecL     logical record length, use ** for RECFM(U)
@@ -32,12 +32,10 @@
 # 1: data set exists with different DCB
 # 2: existing partitioned data set does not match PDS(E) requirement
 # 8: error
-#
-# Assumes other scripts are in the same directory as this one
-# - check-dataset-dcb.sh
-# - check-dataset-exist.sh
 
-here=$(dirname $0)             # script location
+dcbScript=check-dataset-dcb.sh # script to test dcb of data set
+existScript=check-dataset-exist.sh  # script to test if data set exists
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -53,14 +51,14 @@ unset pdse hide pds dir volume
 
 # Get startup arguments
 args="$@"
-while getopts ehpP:L: opt
+while getopts ehpP:V: opt
 do case "$opt" in
   e)   pdse="-e";;
   h)   hide="-h";;
   p)   pds="-p";;
   P)   dir="$OPTARG";;
-  L)   volume="$OPTARG";;
-  [?]) echo "** ERROR $(basename $0) faulty startup argument: $@"
+  V)   volume="$OPTARG";;
+  [?]) echo "** ERROR $me faulty startup argument: $@"
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
@@ -76,14 +74,14 @@ space="$5"
 # (Some tests done by called scripts)
 if test "$dir" -a "$dsOrg" != "PO"
 then
-  echo "** ERROR $(basename $0) faulty startup argument: $args"
+  echo "** ERROR $me faulty startup argument: $args"
   echo "-P requires PO, not $dsOrg"
   rc=8
 fi    #
 
 if test "$recFm" = "U" -a "$dsOrg" != "PO"
 then
-  echo "** ERROR $(basename $0) faulty startup argument: $args"
+  echo "** ERROR $me faulty startup argument: $args"
   echo "RECFM(U) requires DSORG(PO)"
   rc=8
 fi    #
@@ -92,6 +90,7 @@ fi    #
 # TODO lRecL numeric or ** when RECFM(U)
 # TODO dsOrg in {PO | PS}
 # TODO space numeric or numeric,numeric
+# TODO volume null or 1/more 6 alphanum strings separated by comma
 
 # Exit on input error
 test "$rc" -a ! "$IgNoRe_ErRoR" && exit 8                        # EXIT
@@ -101,7 +100,7 @@ test "$rc" -a ! "$IgNoRe_ErRoR" && exit 8                        # EXIT
 # Does data set exist?
 if test -z "$rc"                             # only if no rc set so far
 then
-  $here/check-dataset-exist.sh "$dsn"
+  $here/$existScript "$dsn"
   # Returns 0 for exist, 2 for not exist, 8 for error
   rc=$?
 fi    #
@@ -112,7 +111,7 @@ then                                                  # data set exists
   test "$debug" && echo "use existing data set $dsn"
   test "$LOG_FILE" && echo "  Use existing data set $dsn" >> $LOG_FILE
 
-  $here/check-dataset-dcb.sh $pdse $pds "$dsn" "$recFm" "$lRecL" "$dsOrg"
+  $here/$dcbScript $pdse $pds "$dsn" "$recFm" "$lRecL" "$dsOrg"
   # Returns 0 for DCB match, 1 for other, 2 for not pds(e), 8 for error
   rc=$?
 elif test $rc -eq 2
@@ -142,12 +141,10 @@ then                                          # data set does not exist
   if test "$volume"
   then
     volume="volume($volume)"
-  else
-    volume=
   fi    #
 
   if test "$hide"
-  then 
+  then
     # trap stderr, do not show alloc command (&2), but show error (&1)
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
       "space($space) tracks unit(sysallda) $volume" 2> /dev/null
@@ -156,7 +153,7 @@ then                                          # data set does not exist
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
       "space($space) tracks unit(sysallda) $volume" 2>&1
   fi    #
-  
+
   if test $? -eq 0
   then
     test "$debug" && echo "data set $dsn has been allocated"
@@ -164,7 +161,7 @@ then                                          # data set does not exist
     rc=0
   else
     # Error details already reported
-    echo "** ERROR $(basename $0) data set $dsn has not been allocated"
+    echo "** ERROR $me data set $dsn has not been allocated"
     test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
     rc=8
   fi    #

@@ -1,0 +1,340 @@
+#!groovy
+
+/**
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2018, 2019
+ */
+
+node('ibm-jenkins-slave-nvm') {
+  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+
+  def SLACK_CHANNEL = '#zowe-build'
+  def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
+  def ZOWE_RELEASE_PATH = '/org/zowe/nightly'
+  def ZOWE_BUILD_NAME = 'zowe-install-packaging :: staging'
+  def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
+  def ZOWE_CLI_RELEASE_PATH = '/org/zowe/nightly/cli'
+  def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
+  def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
+
+  def isStagingBranch = env && env.BRANCH_NAME == 'staging'
+
+  def sourceRegBuildInfo
+  def sourceSmpeBuildInfo
+  def sourceSmpeReadmeInfo
+  def cliSourceBuildInfo
+
+  def testRegBuildErrorUrl
+  def testSmpeBuildErrorUrl
+
+  def targetSmpeFullPath
+  def targetSmpeReadmeFullPath
+  def targetRegFullPath
+  def cliTargetFullPath
+
+  def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
+
+  pipeline.admins.add("jackjia", "markackert")
+
+  // we have extra parameters for the pipeline
+  pipeline.addBuildParameter(
+    booleanParam(
+      name: 'TEST_RUN',
+      description: 'Test run will skip test cases and will not send out Slack message.',
+      defaultValue: isStagingBranch ? false : true
+    )
+  )
+
+  // we want to run daily on master branch
+  if (isStagingBranch) {
+    pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 23 * * *")]))
+  }
+
+  pipeline.setup(
+    packageName: 'org.zowe',
+    github: [
+      email                      : lib.Constants.DEFAULT_GITHUB_ROBOT_EMAIL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
+    ],
+    artifactory: [
+      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+    ]
+  )
+
+  pipeline.createStage(
+    name          : "Pre-Check",
+    isSkippable   : true,
+    stage         : {
+      echo "Checking last build of \"${ZOWE_BUILD_NAME}\" ..."
+
+      // check artifactory for latest build with SMP/e
+      try {
+        def latestBuild = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
+          'build-name'   : ZOWE_BUILD_NAME
+        ])
+
+        // extract build information
+        def buildNumber = latestBuild['build.number']
+        def buildTimestamp = latestBuild['build.timestamp']
+        long buildTimestampInt = buildTimestamp as Long
+        def currentTimestamp = sh(script: 'date +"%s"', returnStdout: true).trim()
+        long currentTimestampInt = currentTimestamp as Long
+        def timeElapse = (currentTimestampInt * 1000 - buildTimestampInt) / (3600 * 1000)
+        echo "Build #${buildNumber} is ${timeElapse} hours ago"
+        if (timeElapse < 22) { // how many hours we consider it's too old?
+          echo "Will skip re-build."
+          sourceSmpeBuildInfo = latestBuild
+        } else {
+          echo "Will need to re-build."
+        }
+      } catch (es) {
+        echo "getArtifact AZWE*.pax.Z failed: ${es}"
+        echo "Will need to re-build."
+      }
+
+      echo "Checking last CLI build of \"${ZOWE_CLI_BUILD_NAME}\" ..."
+
+      // check artifactory for latest CLI build
+      cliSourceBuildInfo = pipeline.artifactory.getArtifact([
+        'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*",
+        'build-name'   : ZOWE_CLI_BUILD_NAME
+      ])
+    },
+    timeout: [time: 2, unit: 'MINUTES']
+  )
+
+  pipeline.build(
+    name          : "Zowe",
+    timeout       : [time: 1, unit: 'HOURS'],
+    isSkippable   : false,
+    operation     : {
+      if (!sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']) {
+        echo "Building new driver ..."
+
+        // run build
+        def build_result = build(
+          job: '/zowe-install-packaging/staging',
+          parameters: [
+            booleanParam(name: 'BUILD_SMPE', value: true),
+          ],
+          propagate: false
+        )
+        echo "Build result: ${build_result.result}"
+        if (build_result.result != 'SUCCESS') {
+          error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
+        }
+
+        // load build info
+        sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
+          'build-name'   : ZOWE_BUILD_NAME
+        ])
+      } else {
+        echo "No need to build new driver."
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name          : "Load Build Info",
+    isSkippable   : true,
+    shouldExecute : {
+      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path']
+    },
+    stage         : {
+      sourceRegBuildInfo = pipeline.artifactory.getArtifact([
+        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
+        'build-name'   : ZOWE_BUILD_NAME,
+        'build-number' : sourceSmpeBuildInfo['build.number']
+      ])
+      sourceSmpeReadmeInfo = pipeline.artifactory.getArtifact([
+        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.txt",
+        'build-name'   : ZOWE_BUILD_NAME,
+        'build-number' : sourceSmpeBuildInfo['build.number']
+      ])
+    },
+    timeout: [time: 2, unit: 'MINUTES']
+  )
+
+  pipeline.test(
+    name              : "Zowe Regular Build",
+    shouldExecute : {
+      return sourceRegBuildInfo && sourceRegBuildInfo['path'] &&
+             cliSourceBuildInfo && cliSourceBuildInfo['path']
+    },
+    operation         : {
+      if (params.TEST_RUN) {
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "SKIP_RESET_IMAGE: true\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "IS_SMPE_PACKAGE: false\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo.path}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "TEST_CASE_DEBUG_INFORMATION: 'test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
+      } else {
+        def test_result = build(
+            job: '/zowe-install-test/staging',
+            parameters: [
+              booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+              booleanParam(name: 'SKIP_RESET_IMAGE', value: true),
+              string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+              string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+              booleanParam(name: 'IS_SMPE_PACKAGE', value: false),
+              string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path),
+              string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''),
+              string(name: 'TEST_CASE_DEBUG_INFORMATION', value: 'test:*'),
+              booleanParam(name: 'Skip Stage: Lint', value: true),
+              booleanParam(name: 'Skip Stage: Audit', value: true),
+              booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+            ],
+            propagate: false
+          )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          testRegBuildErrorUrl = test_result.absoluteUrl
+          echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 2, unit: 'HOURS']
+  )
+
+  pipeline.test(
+    name              : "Zowe SMP/e Build",
+    shouldExecute : {
+      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] &&
+             cliSourceBuildInfo && cliSourceBuildInfo['path']
+    },
+    operation         : {
+      if (params.TEST_RUN) {
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "SKIP_RESET_IMAGE: true\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "IS_SMPE_PACKAGE: true\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo.path}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "TEST_CASE_DEBUG_INFORMATION: 'test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
+      } else {
+        def test_result = build(
+            job: '/zowe-install-test/staging',
+            parameters: [
+              booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+              booleanParam(name: 'SKIP_RESET_IMAGE', value: true),
+              string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
+              string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+              booleanParam(name: 'IS_SMPE_PACKAGE', value: true),
+              string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path),
+              string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''),
+              string(name: 'TEST_CASE_DEBUG_INFORMATION', value: 'test:*'),
+              booleanParam(name: 'Skip Stage: Lint', value: true),
+              booleanParam(name: 'Skip Stage: Audit', value: true),
+              booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+            ],
+            propagate: false
+          )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          testSmpeBuildErrorUrl = test_result.absoluteUrl
+          echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 2, unit: 'HOURS']
+  )
+
+  pipeline.createStage(
+    name          : "Promote",
+    isSkippable   : true,
+    shouldExecute : {
+      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] &&
+             sourceSmpeReadmeInfo && sourceSmpeReadmeInfo['path'] &&
+             sourceRegBuildInfo && sourceRegBuildInfo['path'] &&
+             cliSourceBuildInfo && cliSourceBuildInfo['path']
+    },
+    stage         : {
+      // promote Zowe nightly build
+      targetSmpeFullPath = pipeline.artifactory.promote([
+        'source'     : sourceSmpeBuildInfo,
+        'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
+      ])
+      targetSmpeReadmeFullPath = pipeline.artifactory.promote([
+        'source'     : sourceSmpeReadmeInfo,
+        'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
+      ])
+      targetRegFullPath = pipeline.artifactory.promote([
+        'source'     : sourceRegBuildInfo,
+        'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
+      ])
+
+      // promote Zowe CLI nightly build
+      cliTargetFullPath = pipeline.artifactory.promote([
+        'source'     : cliSourceBuildInfo,
+        'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
+      ])
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
+    name          : "Message",
+    isSkippable   : true,
+    stage         : {
+      def slackColor = 'good'
+      def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetSmpeReadmeFullPath}\n\n" +
+                    "The CLI Standalone Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${cliTargetFullPath}"
+
+      if (testRegBuildErrorUrl) {
+        slackColor = 'warning'
+        message = message + "\n" +
+                  "!!WARNING!! Smoke test FAILED on the regular build! Check test result here:\n\n" +
+                  testRegBuildErrorUrl
+      }
+
+      if (testSmpeBuildErrorUrl) {
+        slackColor = 'warning'
+        message = message + "\n" +
+                  "!!WARNING!! Smoke test FAILED on the SMP/e build! Check test result here:\n\n" +
+                  testSmpeBuildErrorUrl
+      }
+
+      echo "*************************************************************************************************\n" +
+           message + "\n" +
+           "*************************************************************************************************"
+
+      def slackMessage = "${message}\nCheck pipeline detail: ${env.BUILD_URL}"
+      if (params.TEST_RUN) {
+        echo "Slack message in ${slackColor}:\n${slackMessage}"
+      } else {
+        slackSend channel: SLACK_CHANNEL,
+                  color: slackColor,
+                  message: slackMessage
+      }
+    },
+    timeout: [time: 2, unit: 'MINUTES']
+  )
+
+  pipeline.end()
+}

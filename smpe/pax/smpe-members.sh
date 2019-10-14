@@ -21,8 +21,8 @@
 #%
 #% -c & -s are required
 
-allocScript=allocate-dataset.sh  # script to allocate data set
-here="$(cd "$(dirname "$0")";pwd)"  # script location
+allocScript=scripts/allocate-dataset.sh  # script to allocate data set
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename "$0")            # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -45,7 +45,12 @@ test "$debug" && echo && echo "> _installMVS $@"
 dsn="${mvsI}.$1"
 
 # validate/create target data set
-$here/scripts/$allocScript -L "$VOLSER" $dsn "$2" "$3" "$4" "$5"
+if test -z "$VOLSER"
+then
+  $here/$allocScript $dsn "$2" "$3" "$4" "$5"
+else
+  $here/$allocScript -V "$VOLSER" $dsn "$2" "$3" "$4" "$5"
+fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -eq 0
