@@ -67,24 +67,45 @@ echo "[$SCRIPT_NAME] content of ${INPUT_TXT}:"
 cat "${INPUT_TXT}"
 mkdir -p zowe
 
-# ZOWEAD3 and ZOWE02 is specific parameter for packaging on Marist server.
+# generate random MLQ (must begin with letter, @, #, or $, max 8 char)
+RANDOM_MLQ=ZWE$RANDOM  # RANDOM gives a random number between 0 & 32767
+
+# ZOWEAD3 & ZOWE02 are specific parameters for packaging on Marist server.
 # To package on another server, we may need different settings.
-# Or if the server is configured properly, may just remove -V option.
+# Or if the server is configured properly, we may just remove -V option.
 #% required
 #% -h hlq        use the specified high level qualifier
 #% -i inputFile  reference file listing non-SMPE distribution files
 #% -r rootDir    use the specified root directory
 #% -v vrm        FMID 3-character version/release/modification
 #% optional
+#% -a alter.sh   execute script before/after install to alter setup
 #% -d            enable debug messages
 #% -V volume     allocate data sets on specified volume(s)
+
 ./smpe/bld/smpe.sh \
-  -i "${CURR_PWD}/${INPUT_TXT}" \
-  -h "ZOWEAD3" \
   -V "ZOWE02" \
-  -v ${FMID_VERSION} \
+  -a ./smpe/bld/alter.sh \
+  -d \
+  -i "${CURR_PWD}/${INPUT_TXT}" \
+  -h "ZOWEAD3.${RANDOM_MLQ}" \
   -r "${CURR_PWD}/zowe" \
-  -d
+  -v ${FMID_VERSION}
+
+# remove data sets
+# TODO keep if "keep output" is selected in Jenkins
+datasets=$(./smpe/bld/get-dsn.rex "ZOWEAD3.${RANDOM_MLQ}.**")
+# returns 0 for match, 1 for no match, 8 for error
+if test $? -gt 1
+then
+  echo "$datasets"                       # variable holds error message
+  # exit 1
+fi    #
+# delete data sets
+for dsn in $datasets
+do
+  tsocmd "DELETE '$dsn'"
+done    # for dsn
 
 # remove tmp folder
 UC_CURR_PWD=$(echo "${CURR_PWD}" | tr [a-z] [A-Z])

@@ -13,12 +13,12 @@
 #% stage Zowe product for SMP/E packaging
 #%
 #% -?                 show this help message
-#% -a alter.sh        execute script before install to alter setup
-#%                    ignored when -i is specified
+#% -a alter.sh        execute script before/after install to alter setup
+#%                    ignored when -p is specified
 #% -c smpe.yaml       use the specified config file
 #% -d                 enable debug messages
 #% -f fileCount       expected number of input (build output) files
-#%                    ignored when -i is specified
+#%                    ignored when -p is specified
 #% -i inputReference  file holding input names (build output archives)
 #%                    mutualy exclusive with -p
 #% -p inputDir        pre-installed input for this script        #debug
@@ -37,9 +37,15 @@
 # -p is intended for testing the rest of the pipeline without re-install
 # -a is intended for temporary updates to the product before install
 #    alterScript must accept these invocation arguments:
-#      -d           (optional) enable debug messages
-#      PROD | SMPE  keyword indicating which install must be updated
-#      dir          directory where product install files reside
+#      -d         (optional) enable debug messages
+#      ZOWE|SMPE  keyword indicating which action triggers the script
+#                  ZOWE: install zowe.pax
+#                  SMPE: install smpe.pax
+#      PRE|POST   keyword indicating when script is invoked
+#                  PRE: after unpax, before install script executes
+#                  POST: after install script executed
+#      dirInput   directory where unpaxed data resides, $INSTALL_DIR
+#      dirOutput  - or directory holding installed data, $ZOWE_ROOR_DIR
 #    alterScript must return RC 0 on success, non-zero on failure
 
 # creates $stage          directory with installed product
@@ -50,6 +56,7 @@
 #..Assumes that if there are multiple input pax files, they all share
 #. the same leading directory, e.g. zowe-1.1.0.
 
+removeInstall=0                # 1 if install removes installed files
 smpeFilter="/smpe"             # regex to find SMP/E archive name
 prodScript=install/zowe-install.sh  # product install script
 smpeScript=smpe-members.sh     # SMP/E-member install script
@@ -149,51 +156,33 @@ do
 done    #
 
 # allow caller to alter product before install                   #debug
-test "$alter" && _cmd $alter $debug PROD $extract
-
-# set up yaml
-echo "-- Updating yaml file"
-CI_ZOWE_CONFIG_FILE=$extract/install/zowe-install.yaml
-sed -e "/^install:/,\$s#rootDir=.*\$#rootDir=$stage#" \
-  "${CI_ZOWE_CONFIG_FILE}" \
-  > "${CI_ZOWE_CONFIG_FILE}.tmp"
-mv "${CI_ZOWE_CONFIG_FILE}.tmp" "${CI_ZOWE_CONFIG_FILE}"
-cat ${CI_ZOWE_CONFIG_FILE}
+test "$alter" && _cmd $alter $debug ZOWE PRE $extract -
 
 # install product
 echo "-- installing product in $stage & $mvsI"
 opts=""
-opts="$opts -I"                                # Install only - no config
-#opts="$opts -R"                                # remove input when done
-#opts="$opts -i $stage"                         # target directory
-#opts="$opts -h $mvsI"                          # target HLQ
-#opts="$opts -f $log/$logFile"                  # install log
-# FIXME: since the installation will update .zowe_profile, to avoid affecting
-#        existing installation of Zowe, we backup .zowe_profile and restore
-#        later. - jack
-# Question, if the installation failed and exit, will the backup be restored?
-rm -fr ~/.zowe_profile_smpe_packaging_backup
-if [ -f ~/.zowe_profile ]; then
-  mv ~/.zowe_profile ~/.zowe_profile_smpe_packaging_backup
-fi
+opts="$opts -h $mvsI"                          # target HLQ
+opts="$opts -i $stage"                         # target directory
+opts="$opts -I"                                # install only, no config
+opts="$opts -f $log/$logFile"                  # install log
+test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
 _cmd $extract/$prodScript $opts </dev/null
-if [ -f ~/.zowe_profile_smpe_packaging_backup ]; then
-  mv ~/.zowe_profile_smpe_packaging_backup ~/.zowe_profile
-fi
 
-#For debug
-ls -al $stage
+# allow caller to alter product after install                    #debug
+test "$alter" && _cmd $alter $debug ZOWE POST $extract $stage
 
-# TODO - what is the purpose of this - it doesn't check the install at all?
 # verify everything is installed
-# echo "-- verifying product install"
-# orphan=$(find $extract ! -type d)
-# if test "$orphan"
-# then
-#   echo "** ERROR $me not all files are moved to $stage or $mvsI"
-#   echo "$orphan"                          # quotes preserve line breaks
-#   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-# fi    #
+if test $removeInstall -eq 1
+then
+  echo "-- verifying product install"
+  orphan=$(find $extract ! -type d)
+  if test "$orphan"
+  then
+    echo "** ERROR $me not all files are moved to $stage or $mvsI"
+    echo "$orphan"                        # quotes preserve line breaks
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+fi    # $removeInstall
 
 # reset extract location to original and clean up
 extract=$orig
@@ -234,26 +223,32 @@ do
 done    #
 
 # allow caller to alter product before install                   #debug
-test "$alter" && _cmd $alter $debug SMPE $extract
+test "$alter" && _cmd $alter $debug SMPE PRE $extract -
 
 # install SMP/E members for product
 echo "-- installing SMP/E members in $stage & $mvsI"
 opts=""
-opts="$opts -R"                                # remove input when done
 opts="$opts -c $YAML"                          # config data
 opts="$opts -s $here/$cfgScript"               # script to read config
 opts="$opts -f $log/$logFile"                  # install log
+test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
 _cmd $extract/$smpeScript $debug $opts
 
+# allow caller to alter product after install                    #debug
+test "$alter" && _cmd $alter $debug SMPE POST $extract $stage
+
 # verify everything is installed
-echo "-- verifying SMP/E member install"
-orphan=$(find $extract ! -type d)
-if test "$orphan"
+if test $removeInstall -eq 1
 then
-  echo "** ERROR $me not all files are moved to $stage or $mvsI"
-  echo "$orphan"                          # quotes preserve line breaks
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-fi    #
+  echo "-- verifying SMP/E member install"
+  orphan=$(find $extract ! -type d)
+  if test "$orphan"
+  then
+    echo "** ERROR $me not all files are moved to $stage or $mvsI"
+    echo "$orphan"                        # quotes preserve line breaks
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+fi    # $removeInstall
 
 # reset extract location to original and clean up
 extract=$orig
@@ -485,8 +480,11 @@ echo " "
 function main { }     # dummy function to simplify program flow parsing
 
 # misc setup
-_EDC_ADD_ERRNO2=1                               # show details on error
-unset ENV             # just in case, as it can cause unexpected output
+export _EDC_ADD_ERRNO2=1                        # show details on error
+# .profile with ENV=script with echo -> echo is in stdout (begin)
+# ensure that newly created files are in EBCDIC codepage
+unset ENV _CEE_RUNOPTS _TAG_REDIR_IN _TAG_REDIR_OUT _TAG_REDIR_ERR
+export _BPXK_AUTOCVT="OFF"
 _cmd umask 0022                                  # similar to chmod 755
 
 echo; echo "-- $me - start $(date)"
@@ -614,9 +612,6 @@ then
   _installSMPE
   _installOther
   _clearLog
-
-  # allow caller to alter product after install                  #debug
-  test "$alter" && _cmd $alter $debug CONF $extract
 else
   # continue testing SMP/E tooling with broken product build     #debug
   echo "-- cloning data from $preInst to $stage"

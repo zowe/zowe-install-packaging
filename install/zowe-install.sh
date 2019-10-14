@@ -8,8 +8,20 @@
 # Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-while getopts ":I" opt; do
+while getopts "f:h:i:I" opt; do
   case $opt in
+    f) # override default value for LOG_FILE
+      # future use, issue 801, accept parm to stabilize SMPE packaging
+      #...="$OPTARG"
+      ;;
+    h)  # override default value for ZOWE_DSN_PREFIX
+      # future use, issue 796, accept parm to stabilize SMPE packaging
+      #...="$OPTARG"
+      ;;
+    i)  # override default vlaue for INSTALL_DIR
+      # future use, issue 794, accept parm to stabilize SMPE packaging
+      #...="$OPTARG"
+      ;;
     I)
       INSTALL_ONLY=1
       ;;
@@ -19,6 +31,7 @@ while getopts ":I" opt; do
       ;;
   esac
 done
+shift $OPTIND-1
 
 # Ensure that newly created files are in EBCDIC codepage
 export _CEE_RUNOPTS=""
