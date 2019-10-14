@@ -84,7 +84,7 @@
       "version": "0.0.13"
     },
     "com.ca.mfaas.sdk.mfaas-zowe-install": {
-      "version": "1.1.9",
+      "version": "1.1.11",
       "artifact": "mfaas-zowe-install-*.zip",
       "target": ".pax/mediation/",
       "explode": "true"
@@ -103,7 +103,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.1.6"
+        "tag": "v1.1.11"
       }]
     }, {
       "componentGroup": "Zowe Application Framework",
