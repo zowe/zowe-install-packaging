@@ -10,9 +10,9 @@
 # Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
-size.SZWEAUTH='space(15,15) tracks'
-size.SZWESAMP='space(15,15) tracks'
-files.templates='ZOWESVR.template.jcl ZWESECUR.jcl'
+sizeAUTH='space(15,15) tracks'
+sizeSAMP='space(15,15) tracks'
+members='ZOWESVR.template.jcl ZWESECUR.jcl'
 
 # info: construct ${variable%%.*} keeps up to first . (exclusive)
 
@@ -33,7 +33,7 @@ cd $dir
 
 # add non-ZSS members to staging area
 
-for file in $files.templates
+for file in $members
 do
   cp $INSTALL_DIR/files/templates/$file ${TEMP_DIR}/${script%%.*}/SAMPLIB/${file%%.*}
   rc=$?
@@ -78,7 +78,7 @@ tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWEAUTH' " >> ${LOG_FILE} 2>&1
 # TODO replace by allocate-dataset.sh call to resuse VOLSER support
 tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEAUTH') " \
     "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(6999)" \
-    "unit(sysallda)" $size.SZWEAUTH >> $LOG_FILE 2>&1
+    "unit(sysallda) $sizeAUTH" >> $LOG_FILE 2>&1
 rc=$?
 if test $rc -eq 0
 then
@@ -110,7 +110,7 @@ tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWESAMP' " >> ${LOG_FILE} 2>&1
 # TODO replace by allocate-dataset.sh call to resuse VOLSER support
 tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWESAMP') " \
     "dsntype(library) dsorg(po) recfm(f b) lrecl(80) " \
-    "unit(sysallda)" $size.SZWESAMP >> $LOG_FILE 2>&1
+    "unit(sysallda) $sizeSAMP" >> $LOG_FILE 2>&1
 rc=$?
 if test $rc -eq 0
 then
