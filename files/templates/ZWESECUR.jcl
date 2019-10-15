@@ -59,29 +59,7 @@
 //*    commented out, is giving the Zowe started task CONTROL access to
 //*    the UNIXPRIV SUPERUSER.FILESYS profile.
 //*
-//* 3. This job utilizes JCL variables inside inline text, which
-//*    requires z/OS 2.1 or higher. When using an older z/OS level,
-//*    - Comment out the EXPORT SYMLIST statement
-//*    - Remove ",SYMBOLS=JCLONLY" from the DD definitions that
-//*      utilize inline JCL variables
-//*    - Replace the following variables with their actual value:
-//*      - step RUN, DD RACF, variable &ZOWEUSER.
-//*      - step RUN, DD RACF, variable &ZSSUSER.
-//*      - step RUN, DD RACF, variable &STCGROUP.
-//*      - step RUN, DD RACF, variable &ZOWESTC.
-//*      - step RUN, DD RACF, variable &ZSSSTC.
-//*      - step RUN, DD ACF2, variable &ZOWEUSER.
-//*      - step RUN, DD ACF2, variable &ZSSUSER.
-//*      - step RUN, DD ACF2, variable &STCGROUP.
-//*      - step RUN, DD ACF2, variable &ZOWESTC.
-//*      - step RUN, DD ACF2, variable &ZSSSTC.
-//*      - step RUN, DD TSS, variable &ZOWEUSER.
-//*      - step RUN, DD TSS, variable &ZSSUSER.
-//*      - step RUN, DD TSS, variable &STCGROUP.
-//*      - step RUN, DD TSS, variable &ZOWESTC.
-//*      - step RUN, DD TSS, variable &ZSSSTC.
-//*
-//* 4. This job WILL complete with return code 0.
+//* 3. This job WILL complete with return code 0.
 //*    The results of each command must be verified after completion.
 //*
 //*********************************************************************
