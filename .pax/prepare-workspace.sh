@@ -22,7 +22,13 @@ set -x
 SCRIPT_NAME=$(basename "$0")
 BASEDIR=$(dirname "$0")
 PAX_WORKSPACE_DIR=.pax
-ZOWE_VERSION=$(cat manifest.json | jq -r '.version')
+
+if [ -z "$ZOWE_VERSION" ]; then
+  echo "$SCRIPT_NAME ZOWE_VERSION environment variable is missing"
+  exit 1
+else
+  echo "$SCRIPT_NAME working on Zowe v${ZOWE_VERSION} ..."
+fi
 
 cd $BASEDIR
 cd ..
@@ -56,9 +62,7 @@ rsync -rv \
 cp manifest.json "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 cp -R install/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
 cp -R scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
-
-# write a version file, so pre-packaging.sh can pick up
-echo "$ZOWE_VERSION" > "${PAX_WORKSPACE_DIR}/ascii/version"
+cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 
 # move licenses
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/licenses"
@@ -84,3 +88,10 @@ mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/jobs-api*.sh \
    ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
 mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh \
    ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files/scripts/
+
+# copy smpe scripts
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe"
+cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"
+cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/bld"
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
+cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"

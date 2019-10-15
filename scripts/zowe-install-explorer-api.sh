@@ -44,7 +44,7 @@ for COMPONENT_ID in $EXPLORER_API_LIST; do
     exit 0
   fi
 
-  echo "  Installing Explorer ${COMPONENT_ID} API into ${ZOWE_ROOT_DIR}/${COMPONENT_ID} ..."  >> $LOG_FILE
+  echo "  Installing Explorer ${COMPONENT_ID} API into ${ZOWE_ROOT_DIR}/components/${COMPONENT_ID} ..."  >> $LOG_FILE
   umask 0002
   mkdir -p "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
   # copy jar

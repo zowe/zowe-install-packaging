@@ -19,6 +19,20 @@ node('ibm-jenkins-slave-nvm') {
 
   pipeline.admins.add("jackjia", "stevenh", "joewinchester", "markackert")
 
+  // we have extra parameters for integration test
+  pipeline.addBuildParameters(
+    booleanParam(
+      name: 'BUILD_SMPE',
+      description: 'If we want to build SMP/e package.',
+      defaultValue: false
+    ),
+    booleanParam(
+      name: 'KEEP_TEMP_FOLDER',
+      description: 'If leave the temporary packaging folder on remote server.',
+      defaultValue: false
+    )
+  )
+
   pipeline.setup(
     packageName: 'org.zowe',
     github: [
@@ -76,6 +90,26 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         spec        : 'artifactory-download-spec.json',
         expected    : 18
       )
+
+      // we want build log pulled in for SMP/e build
+      if (params.BUILD_SMPE) {
+        def buildLogSpec = readJSON(text: '{"files":[]}')
+        buildLogSpec['files'].push([
+          "target": ".pax/content/smpe/",
+          "flat": "true",
+          "pattern": pipeline.getPublishTargetPath() + "smpe-build-logs-*.pax.Z",
+          "sortBy": ["created"],
+          "sortOrder": "desc",
+          "limit": 1
+        ])
+        writeJSON file: 'smpe-build-log-download-spec.json', json: buildLogSpec, pretty: 2
+        echo "================ SMP/e build log download spec ================"
+        sh "cat smpe-build-log-download-spec.json"
+
+        pipeline.artifactory.download(
+          spec        : 'smpe-build-log-download-spec.json'
+        )
+      }
     }
   )
 
@@ -88,13 +122,33 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     allowMissingJunit : true
   )
 
-  // how we packaging pax
-  pipeline.packaging(name: 'zowe')
+  pipeline.packaging(
+    name          : "zowe",
+    timeout       : [time: 90, unit: 'MINUTES'],
+    operation: {
+      pipeline.pax.pack(
+          job             : "zowe-packaging",
+          filename        : 'zowe.pax',
+          environments    : [
+            'ZOWE_VERSION': pipeline.getVersion(),
+            'BUILD_SMPE'  : (params.BUILD_SMPE ? 'yes' : '')
+          ],
+          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,smpe-build-logs.pax.Z,rename-back.sh' : ''),
+          keepTempFolder  : params.KEEP_TEMP_FOLDER
+      )
+      if (params.BUILD_SMPE) {
+        // rename SMP/e build with correct FMID name
+        sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
+      }
+    }
+  )
 
   // define we need publish stage
   pipeline.publish(
     artifacts: [
-      '.pax/zowe.pax'
+      '.pax/zowe.pax',
+      '.pax/AZWE*',
+      '.pax/smpe-build-logs.pax.Z'
     ]
   )
 
