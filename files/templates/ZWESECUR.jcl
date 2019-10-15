@@ -95,7 +95,7 @@
 //*
 //* RACF ONLY, customize to meet your system requirements
 //*
-//RACF     DD DLM=$$,SYMBOLS=JCLONLY
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* ACTIVATE REQUIRED RACF SETTINGS AND CLASSES ..................... */
 
@@ -257,7 +257,7 @@ $$
 //*
 //* ACF2 ONLY, customize to meet your system requirements
 //*
-//ACF2     DD DLM=$$,SYMBOLS=JCLONLY
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* DEFINE ADMINISTRATORS ........................................... */
 
@@ -330,7 +330,7 @@ $$
 //*
 //* Top Secret ONLY, customize to meet your system requirements
 //*
-//TSS      DD DLM=$$,SYMBOLS=JCLONLY
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* DEFINE ADMINISTRATORS ........................................... */
 
