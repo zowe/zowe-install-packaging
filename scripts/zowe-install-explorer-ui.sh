@@ -54,12 +54,15 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   fi
 
   # copy start script
-  cp ${EXPLORER_UI_START_SCRIPT} start.sh
+  mv ${EXPLORER_UI_START_SCRIPT} start.sh
 
   if [[ -f ${EXPLORER_UI_CONFIGURE_SCRIPT} ]]
   then
-    cp ${EXPLORER_UI_CONFIGURE_SCRIPT} configure.sh
+    mv ${EXPLORER_UI_CONFIGURE_SCRIPT} configure.sh
   fi
+
+  rm -rf $EXPLORER_INSTALL_FOLDER/bin/scripts
+
 
   # if [[ -f ${EXPLORER_UI_VALIDATE_SCRIPT} ]]
   # then

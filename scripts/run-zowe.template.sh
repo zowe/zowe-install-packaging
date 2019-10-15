@@ -112,7 +112,7 @@ then
   mkdir -p ${STATIC_DEF_CONFIG_DIR}
 
   # Until ui explorers componentised will copy them from the old location
-  cp ${ROOT_DIR}/components/api-mediation/api-defs/* ${STATIC_DEF_CONFIG_DIR}
+  # cp ${ROOT_DIR}/components/api-mediation/api-defs/* ${STATIC_DEF_CONFIG_DIR}
 fi
 
 # Validate component properties if script exists
@@ -192,15 +192,16 @@ do
   . ${ROOT_DIR}/components/${i}/bin/start.sh
 done
 
-# Deploy any installed plugins for the Desktop
-cd $ZOWE_ROOT_DIR/zlux-build
-chmod a+x deploy.sh
-./deploy.sh > /dev/null
 
-DIR=`dirname $0`
-
-# Start the desktop
+# Deploy plugins and start the desktop
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
+  # Deploy any installed plugins for the Desktop
+  cd $ROOT_DIR/zlux-build
+  chmod a+x deploy.sh
+  ./deploy.sh > /dev/null
+
+  DIR=`dirname $0`
+
   cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
 fi
