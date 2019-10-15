@@ -72,7 +72,7 @@
     }
   },
   "sourceDependencies": [{
-      "componentGroup": "Imperative CLI Framework",
+      "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
         "tag": "lts-incremental",
@@ -151,14 +151,14 @@
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
-      "componentGroup": "Zowe CLI Plug-in for IBM CICS",
+      "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
         "tag": "lts-incremental",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
-      "componentGroup": "Zowe CLI Plug-in for IBM Db2 Database",
+      "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
         "tag": "lts-incremental",
