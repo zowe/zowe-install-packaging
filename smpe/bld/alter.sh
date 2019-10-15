@@ -214,7 +214,7 @@ then
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-if test ! -d "$dirO" -a "$phase" = 'POST'
+if test ! -d "$dirO" -a "$phase" = "POST"
 then
   echo "** ERROR $me $dirO is not a directory"
   echo "ls -ld \"$dirO\""; ls -ld "$dirO"
