@@ -439,7 +439,7 @@ echo ===============================================
       // write code-signing-key-info.json
       def signingKeyId = signing.getSigningKey()
       sh "curl -o .release/code-signing-key-info.json https://raw.githubusercontent.com/zowe/zowe-install-packaging/master/signing_keys/${signingKeyId}.json"
-      if (!fileExists(.release/code-signing-key-info.json)) {
+      if (!fileExists('.release/code-signing-key-info.json')) {
         error "Failed to download code signing key info json"
       }
       uploadArtifacts['files'].push([
