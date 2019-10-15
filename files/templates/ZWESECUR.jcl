@@ -37,13 +37,19 @@
 //* 6) Update the SET ZSSUSER= statement to match the desired
 //*    user ID for the ZSS started task.
 //*
-//* 7) Update the SET ZOWESTC= statement to match the desired
+//* 7) Update the SET AUXUSER= statement to match the desired
+//*    user ID for the ZSS Auxilary started task.
+//*
+//* 8) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
 //*
-//* 8) Update the SET ZSSSTC= statement to match the desired
+//* 9) Update the SET ZSSSTC= statement to match the desired
 //*    ZSS started task name.
 //*
-//* 9) Customize the commands in the DD statement that matches your
+//* 10) Update the SET AUXSTC= statement to match the desired
+//*    ZSS Auxilary started task name.
+//*
+//* 11) Customize the commands in the DD statement that matches your
 //*    security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -63,7 +69,7 @@
 //*    The results of each command must be verified after completion.
 //*
 //*********************************************************************
-//  EXPORT SYMLIST=(ADMINGRP,STCGROUP,ZOWEUSER,ZSSUSER,ZOWESTC,ZSSSTC)
+//         EXPORT SYMLIST=*
 //*
 //         SET PRODUCT=RACF          * RACF, ACF2, or TSS
 //*                     12345678
@@ -71,8 +77,10 @@
 //         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZOWEUSR      * userid for Zowe started task
 //         SET  ZSSUSER=ZSSUSR       * userid for ZSS started task
+//         SET  AUXUSER=&ZSSUSER.    * userid for ZSS AUX started task
 //         SET  ZOWESTC=ZOWESVR      * Zowe started task name
 //         SET   ZSSSTC=ZOWEZSS      * ZSS started task name
+//         SET   AUXSTC=ZOWEAUX      * ZSS AUX started task name
 //*                     12345678
 //*
 //*********************************************************************
@@ -175,6 +183,15 @@ $$
    NAME('ZOWE ZSS SERVER') -
    DATA('ZOWE ZSS CROSS MEMORY SERVER')
 
+#  userid for ZSS auxilary cross memory server
+  LISTUSER &AUXUSER. OMVS
+  ADDUSER  &AUXUSER. -
+   NOPASSWORD -
+   DFLTGRP(&STCGROUP.) -
+   OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
+   NAME('ZOWE ZSS AUX SERVER') -
+   DATA('ZOWE ZSS AUX CROSS MEMORY SERVER')
+
 #  started task for ZOWE, main server
   RLIST   STARTED &ZOWESTC..* ALL STDATA
   RDEFINE STARTED &ZOWESTC..* -
@@ -187,20 +204,29 @@ $$
    STDATA(USER(&ZSSUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -
    DATA('ZOWE ZSS CROSS MEMORY SERVER')
 
+#  started task for ZSS auxilary cross memory server
+  RLIST   STARTED &AUXSTC..* ALL STDATA
+  RDEFINE STARTED &AUXSTC..* -
+   STDATA(USER(&AUXUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -
+   DATA('ZOWE ZSS AUX CROSS MEMORY SERVER')
+
   SETROPTS RACLIST(STARTED) REFRESH
 
 #  show results .......................................................
   LISTGRP  &STCGROUP. OMVS
+  LISTUSER &ZOWEUSER. OMVS
   LISTUSER &ZSSUSER.  OMVS
+  LISTUSER &AUXUSER.  OMVS
   RLIST STARTED &ZOWESTC..* ALL STDATA
   RLIST STARTED &ZSSSTC..*  ALL STDATA
+  RLIST STARTED &AUXSTC..*  ALL STDATA
 
 #  DEFINE ZOWE SERVER PERMISIONS ......................................
 #
 #  permit Zowe main server to use ZSS, cross memory server
-  RLIST   FACILITY ZWESIS ALL
-  RDEFINE FACILITY ZWESIS UACC(NONE)
-  PERMIT ZWESIS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+  RLIST   FACILITY ZWES.IS ALL
+  RDEFINE FACILITY ZWES.IS UACC(NONE)
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -214,7 +240,7 @@ $$
 #  SETROPTS RACLIST(UNIXPRIV) REFRESH
 
 #  show results .......................................................
-  RLIST   FACILITY ZWESIS            ALL
+  RLIST   FACILITY ZWES.IS           ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
 
 #  DEFINE ZSS SERVER PERMISIONS .......................................
@@ -267,6 +293,10 @@ $$
   INSERT &ZSSUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +
    DIV(OMVS) INSERT &ZSSUSER. UID(&ZSSUSER.)
 
+#  userid for ZSS auxilary cross memory server
+  INSERT &AUXUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +
+   DIV(OMVS) INSERT &AUXUSER. UID(&AUXUSER.)
+
 # operator command F ACF2,REBUILD(USR),CLASS(P)
 # operator command F ACF2,OMVS
 
@@ -277,15 +307,20 @@ $$
 
 #  started task for ZSS, cross memory server
   SET CONTROL(GSO)
-  INSERT STC.ZWESIS***** LOGONID(&ZSSUSER.) GROUP(&STCGROUP.) +
-   STCID(ZWESIS*****)
+  INSERT STC.&ZSSSTC.**** LOGONID(&ZSSUSER.) GROUP(&STCGROUP.) +
+   STCID(&ZSSSTC.****)
+
+#  started task for ZSS auxilary cross memory server
+  SET CONTROL(GSO)
+  INSERT STC.&AUXSTC.**** LOGONID(&AUXUSER.) GROUP(&STCGROUP.) +
+   STCID(&AUXSTC.****)
 
 # operator command F ACF2,REFRESH(STC)
 
 #  DEFINE ZOWE SERVER PERMISIONS ......................................
 #
 #  permit Zowe main server to use ZSS, cross memory server
-# TODO ACF2 permit Zowe server READ to FACILITY ZWESIS
+# TODO ACF2 permit Zowe server READ to FACILITY ZWES.IS
 
 ##  uncomment to use SUPERUSER.FILESYS as described in the JCL comments
 ##  permit Zowe main server to write persistent data
@@ -338,6 +373,7 @@ $$
 #  * update 109 in "GID(109)" to a GID for the STC group
 #  * update 110 in "UID(110)" to a UID for the Zowe STC user ID
 #  * update 111 in "UID(111)" to a UID for the ZSS STC user ID
+#  * update 112 in "UID(112)" to a UID for the ZSS AUX STC user ID
 
 ##  uncomment to use SUPERUSER.FILESYS as described in the JCL comments
 ##  group for started tasks
@@ -358,8 +394,15 @@ $$
   TSS LIST(&ZSSUSER.) SEGMENT(OMVS)
   TSS CREATE(&ZSSUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE ZSS') +
    DEPT(usr_dept)
-  TSS ADD(&ZOWEUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
+  TSS ADD(&ZSSUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(111)
+
+#  userid for ZSS auxilary cross memory server
+  TSS LIST(&AUXUSER.) SEGMENT(OMVS)
+  TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE ZSS AUX') +
+   DEPT(usr_dept)
+  TSS ADD(&AUXUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(112)
 
 #  started task for ZOWE, main server
   TSS LIST(STC) PROCNAME(&ZOWESTC.) PREFIX
@@ -371,15 +414,20 @@ $$
   TSS ADD(STC) PROCNAME(&ZSSSTC.) ACID(&ZSSUSER.)
   TSS ADD(&ZSSUSER.) FAC(STC)
 
+#  started task for ZSS auxilary cross memory server
+  TSS LIST(STC) PROCNAME(&AUXSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&AUXSTC.) ACID(&AUXUSER.)
+  TSS ADD(&AUXUSER.) FAC(STC)
+
 #  DEFINE ZOWE SERVER PERMISIONS ......................................
 #
 #  required updates:
 #  * change "fac_owning_acid" to the acid that owns IBMFAC
 
 #  permit Zowe main server to use ZSS, cross memory server
-  TSS ADD(fac_owning_acid) IBMFAC(ZWESIS)
-  TSS WHOHAS IBMFAC(ZWESIS)
-  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWESIS) ACCESS(READ)
+  TSS ADD(fac_owning_acid) IBMFAC(ZWES.IS)
+  TSS WHOHAS IBMFAC(ZWES.IS)
+  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
 
 ##  uncomment to use SUPERUSER.FILESYS as described in the JCL comments
 ##  permit Zowe main server to write persistent data
