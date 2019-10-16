@@ -53,7 +53,7 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "artifact": "libs-snapshot-local/org/zowe/explorer-jes/0.0.23-PR-111/explorer-jes-0.0.23-pr-111-11-20191015182958.pax"
+      "artifact": "libs-snapshot-local/org/zowe/explorer-jes/0.0.23-PR-111/explorer-jes-0.0.23-pr-111-12-20191016042154.pax"
     },
     "org.zowe.explorer-mvs": {
       "artifact":"libs-snapshot-local/org/zowe/explorer-mvs/0.0.16-PR-91/explorer-mvs-0.0.16-pr-91-3-20191015040302.pax"

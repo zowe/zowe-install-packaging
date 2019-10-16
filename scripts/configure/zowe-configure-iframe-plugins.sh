@@ -45,7 +45,7 @@ for i in $(echo $EXPLORERS | sed "s/,/ /g")
 do 
   iupper=$(echo $i | tr [:lower:] [:upper:])
   
-  EXPLORER_CONFIG="$ZOWE_ROOT_DIR/components/${i}-explorer/bin/package.json"
+  EXPLORER_CONFIG="$ZOWE_ROOT_DIR/components/${i}-explorer/bin/app/package.json"
 
   EXPLORER_PLUGIN_BASEURI=$($NODE_BIN -e "process.stdout.write(require('${EXPLORER_CONFIG}').config.baseuri)")
   EXPLORER_PLUGIN_ID=$($NODE_BIN -e "process.stdout.write(require('${EXPLORER_CONFIG}').config.pluginId)")
