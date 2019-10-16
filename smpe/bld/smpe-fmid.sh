@@ -73,11 +73,10 @@ list=$(awk '/^'$dd'/{print $2}' $log/$parts \
      | grep -v ^${prefix}[[:digit:]] | grep -v ^${prefix}MKDIR$)
 _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "PO" "5,2"
 
-#TODO - no files in here, so empty?
 # F3 - all load modules
-# dd="S${prefix}AUTH"
-# list=$(awk '/^'$dd'/{print $2}' $log/$parts)
-# _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "PO" "5,2"
+dd="S${prefix}AUTH"
+list=$(awk '/^'$dd'/{print $2}' $log/$parts)
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "PO" "5,2"
 
 # F4 - all USS files
 # half-track on 3390 DASD is 27998 bytes
@@ -203,7 +202,7 @@ then
   echo "   these files exist but there is no definition in $mcsX"
   _cmd comm -13 $mcsX.list $partsX.list
   _cmd rm -f $mcsX.list $partsX.list
-  # test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 else
   test "$debug" && echo "SMPMCS matches staged files"
 fi    #
