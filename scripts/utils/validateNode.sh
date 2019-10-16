@@ -10,10 +10,20 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-# NODE_BIN Should exist and be on path
-# TODO: add version check same as JAVA, officially we support NODE version 6
-if [ ! -z "$NODE_HOME" ]; then
-  NODE_BIN=${NODE_HOME}/bin/node
+# NODE_HOME Should contain a valid install of Node
+if [[ -n "${NODE_HOME}" ]]
+then
+  ls ${NODE_HOME}/bin | grep node$ > dev>null
+  if [[ $? -ne 0 ]]
+  then 
+    . ${ROOT_DIR}/scripts/utils/error.sh "NODE_HOM: ${NODE_HOME}/bin does not point to a valid install of Node"
+  else
+    NODE_OK=`${NODE_HOME}/bin/node -e "console.log('ok')" 2>&1`
+    if [[ ! $NODE_OK == "ok" ]]
+    then 
+      . ${ROOT_DIR}/scripts/utils/error.sh "${NODE_HOME}/bin/node is not functioning correctly"
+    fi
+  fi
 else
   . ${ROOT_DIR}/scripts/utils/error.sh "NODE_HOME is empty"
 fi
