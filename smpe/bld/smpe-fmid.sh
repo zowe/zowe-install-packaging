@@ -203,7 +203,7 @@ then
   echo "   these files exist but there is no definition in $mcsX"
   _cmd comm -13 $mcsX.list $partsX.list
   _cmd rm -f $mcsX.list $partsX.list
-  # test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 else
   test "$debug" && echo "SMPMCS matches staged files"
 fi    #

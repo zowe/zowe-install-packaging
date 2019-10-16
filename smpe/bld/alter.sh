@@ -78,7 +78,7 @@ function _zowePOST                    # executed after zowe-install.sh
 # https://github.com/zowe/zowe-install-packaging/issues/794
 # https://github.com/zowe/zowe-install-packaging/issues/796
 
-yamlI=$dirI/install/orig.zowe-install.yaml
+yamlI=$dirI/install/zowe-install.yaml
 yamlO=$dirO/scripts/configure/zowe-install.yaml
 
 # only if there is a backup of original
