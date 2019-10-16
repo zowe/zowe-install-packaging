@@ -10,8 +10,6 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-#TODO LATER - SH: once all components updated remove this old version
-
 #Make sure Java is available on the path - 
 export JAVA_HOME=$ZOWE_JAVA_HOME
 if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]];

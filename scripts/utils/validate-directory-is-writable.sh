@@ -13,7 +13,7 @@
 DIRECTORY=$1
 USERID=`whoami`
 
-$(. . ${ROOT_DIR}/scripts/utils/validateDirectoryIsAccessible.sh)
+$(. . ${ROOT_DIR}/scripts/utils/validate-directory-is-accessible.sh)
 AUTH_RETURN_CODE=$?
 if [[ $AUTH_RETURN_CODE == "0" ]];
 then	

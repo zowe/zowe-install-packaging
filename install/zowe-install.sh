@@ -42,9 +42,7 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
-PREV_DIR=`pwd`
-cd $(dirname $0)/../
-export INSTALL_DIR=`pwd`
+export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
 
 # extract Zowe version from manifest.json
 export ZOWE_VERSION=$(cat $INSTALL_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
@@ -190,8 +188,6 @@ cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR
-
-cd $PREV_DIR
 
 if [ -z $INSTALL_ONLY ]
 then

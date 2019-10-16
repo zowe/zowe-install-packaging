@@ -10,12 +10,15 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-#TODO LATER - SH: once all components updated remove this old version
-
-#Make sure Java is available on the path - 
-export JAVA_HOME=$ZOWE_JAVA_HOME
-if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]];
+# if NODE_HOME set by user, don't override
+if [[ ! -f $NODE_HOME/"./bin/node" ]]
 then
-  echo "Appending ZOWE_JAVA_HOME/bin to the PATH..."
-  export PATH=$PATH:$JAVA_HOME/bin
+  export NODE_HOME=$ZOWE_NODE_HOME
+fi
+
+#Make sure Node is available on the PATH
+if [[ ":$PATH:" != *":$NODE_HOME/bin:"* ]];
+then
+  echo "Appending NODE_HOME/bin to the PATH..."
+  export PATH=$PATH:$NODE_HOME/bin
 fi
