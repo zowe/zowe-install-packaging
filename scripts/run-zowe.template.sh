@@ -67,6 +67,7 @@ ZOWE_IP_ADDRESS={{zowe_ip_address}}
 ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
 ZOWE_JAVA_HOME={{java_home}}
 ZOWE_NODE_HOME={{node_home}}
+NODE_HOME={{node_home}} #TODO LATER - SH: once all components converted, remove - replaced by ZOSMF_NODE_HOME to avoid overwriting user profile
 
 LAUNCH_COMPONENT_GROUPS=GATEWAY,DESKTOP
 
