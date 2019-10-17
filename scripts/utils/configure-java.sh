@@ -10,8 +10,13 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-#Make sure Java is available on the path - 
-export JAVA_HOME=$ZOWE_JAVA_HOME
+# if JAVA_HOME set by user, don't override
+if [[ ! -f "$JAVA_HOME/bin/java" ]]
+then
+  export JAVA_HOME=$ZOWE_JAVA_HOME
+fi
+
+#Make sure Java is available on the PATH
 if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]];
 then
   echo "Appending ZOWE_JAVA_HOME/bin to the PATH..."

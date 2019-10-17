@@ -11,7 +11,7 @@
 ################################################################################
 
 # if NODE_HOME set by user, don't override
-if [[ ! -f $NODE_HOME/"./bin/node" ]]
+if [[ ! -f "$NODE_HOME/bin/node" ]]
 then
   export NODE_HOME=$ZOWE_NODE_HOME
 fi
