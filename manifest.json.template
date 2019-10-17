@@ -49,7 +49,7 @@
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "~0.2.5-STAGING",
+      "version": "~0.2.6-SCRIPT-NAME-CONSISTENCY",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
