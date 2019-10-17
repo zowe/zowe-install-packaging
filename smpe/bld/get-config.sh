@@ -88,8 +88,6 @@ install:
   stage=
   # HLQ holding product MVS data sets (= SMP/E input)
   outMVS=
-  # directory holding product USS files (= SMP/E input)
-  outUSS=
 split:
   # absolute maximum number of lines in a PTF
   ptfLines=
@@ -97,6 +95,8 @@ split:
   ptfPercent=
   # limit historical manifest delta log to x lines
   deltaLines=
+  # directory holding product USS files (= SMP/E input)
+  outUSS=
   # temporary directory to stage MVS members for reporting
   mvs=
   # temporary directory to split product in chunks
@@ -174,12 +174,12 @@ do
     _export install log        log           ${ROOT}/logs   # permanent
     _export install extract    extract       ${ROOT}/extract # internal
     _export install stage      stage         ${ROOT}/stage  # pass
-    _export install outMVS     mvsI          ${HLQ}.BLD     # output
-    _export install outUSS     ussI          ${ROOT}/BLD    # output
+    _export install outMVS     mvsI          ${HLQ}.BLD     # pass
 # split
     _export split   ptfLines   maxPtfLines   5000000        # permanent
     _export split   ptfPercent maxPtfPercent 90             # permanent
     _export split   deltaLines maxDeltaLines 30000          # permanent
+    _export split   outUSS     ussI          ${ROOT}/BLD    # pass
     _export split   mvs        mvs           ${ROOT}/mvs    # internal
     _export split   split      split         ${ROOT}/split  # internal
 # fmid

@@ -337,23 +337,23 @@ test "$debug" && echo
 if test "$1" = "--null"
 then                                 # stdout -> null, stderr -> null
   shift
-  test "$debug" && echo "$@ 2>/dev/null >/dev/null"
-                         $@ 2>/dev/null >/dev/null
+  test "$debug" && echo "\"$@\" 2>/dev/null >/dev/null"
+                          "$@"  2>/dev/null >/dev/null
 elif test "$1" = "--save"
 then                                 # stdout -> >>$2, stderr -> null
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>/dev/null >> $sAvE"
-                         $@ 2>/dev/null >> $sAvE
+  test "$debug" && echo "\"$@\" 2>/dev/null >> $sAvE"
+                          "$@"  2>/dev/null >> $sAvE
 elif test "$1" = "--repl"
 then                                 # stdout -> >$2, stderr -> null
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>/dev/null > $sAvE"
-                         $@ 2>/dev/null > $sAvE
+  test "$debug" && echo "\"$@\" 2>/dev/null > $sAvE"
+                          "$@"  2>/dev/null > $sAvE
 else                                 # stdout -> stdout, stderr -> null
-  test "$debug" && echo "$@ 2>/dev/null"
-                         $@ 2>/dev/null
+  test "$debug" && echo "\"$@\" 2>/dev/null"
+                          "$@"  2>/dev/null
 fi    #
 sTaTuS=$?
 if test $sTaTuS -ne 0
@@ -378,23 +378,23 @@ test "$debug" && echo
 if test "$1" = "--null"
 then         # stdout -> null, stderr -> stdout (without going to null)
   shift
-  test "$debug" && echo "$@ 2>&1 >/dev/null"
-                         $@ 2>&1 >/dev/null
+  test "$debug" && echo "\"$@\" 2>&1 >/dev/null"
+                          "$@"  2>&1 >/dev/null
 elif test "$1" = "--save"
 then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 >> $sAvE"
-                         $@ 2>&1 >> $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 >> $sAvE"
+                          "$@"  2>&1 >> $sAvE
 elif test "$1" = "--repl"
 then         # stdout -> >$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 > $sAvE"
-                         $@ 2>&1 > $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 > $sAvE"
+                          "$@"  2>&1 > $sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
-  test "$debug" && echo "$@ 2>&1"
-                         $@ 2>&1
+  test "$debug" && echo "\"$@\" 2>&1"
+                          "$@"  2>&1
 fi    #
 sTaTuS=$?
 if test $sTaTuS -ne 0
