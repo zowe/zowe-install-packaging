@@ -134,10 +134,10 @@ then                                     # make exectuable after update
 fi    #
 
 TmP=${TMPDIR:-/tmp}/$(basename $1).$$
-#_cmd --repl $TmP sed "$SED" $1                  # sed '...' $1 > $TmP
-test "$debug" && echo
-test "$debug" && echo "sed $SED 2>&1 $1 > $TmP"
-sed "$SED" $1 2>&1 > $TmP                       # sed '...' $1 > $TmP
+_cmd --repl $TmP sed "$SED" $1                  # sed '...' $1 > $TmP
+#test "$debug" && echo
+#test "$debug" && echo "sed $SED 2>&1 $1 > $TmP"
+#sed "$SED" $1 2>&1 > $TmP                       # sed '...' $1 > $TmP
 _cmd mv $TmP ${2:-$1}                           # give $TmP actual name
 test -n "$ExEc" && _cmd chmod a+x ${2:-$1}      # make executable
 }    # _sed
