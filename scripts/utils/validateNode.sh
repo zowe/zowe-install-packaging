@@ -13,7 +13,7 @@
 # NODE_HOME Should contain a valid install of Node
 if [[ -n "${NODE_HOME}" ]]
 then
-  ls ${NODE_HOME}/bin | grep node$ > dev>null
+  ls ${NODE_HOME}/bin | grep node$ > /dev/null
   if [[ $? -ne 0 ]]
   then 
     . ${ROOT_DIR}/scripts/utils/error.sh "NODE_HOM: ${NODE_HOME}/bin does not point to a valid install of Node"
