@@ -157,23 +157,23 @@ test "$debug" && echo
 if test "$1" = "--null"
 then         # stdout -> null, stderr -> stdout (without going to null)
   shift
-  test "$debug" && echo "$@ 2>&1 >/dev/null"
-                         $@ 2>&1 >/dev/null
+  test "$debug" && echo "\"$@\" 2>&1 >/dev/null"
+                          "$@"  2>&1 >/dev/null
 elif test "$1" = "--save"
 then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 >> $sAvE"
-                         $@ 2>&1 >> $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 >> $sAvE"
+                          "$@"  2>&1 >> $sAvE
 elif test "$1" = "--repl"
 then         # stdout -> >$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 > $sAvE"
-                         $@ 2>&1 > $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 > $sAvE"
+                          "$@"  2>&1 > $sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
-  test "$debug" && echo "$@ 2>&1"
-                         $@ 2>&1
+  test "$debug" && echo "\"$@\" 2>&1"
+                          "$@"  2>&1
 fi    #
 sTaTuS=$?
 if test $sTaTuS -ne 0
@@ -221,7 +221,6 @@ then
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-_cmd chmod 755 $new/*                                               #*/
 test "$action" = "ZOWE" -a "$phase" = "PRE"  && _zowePRE
 test "$action" = "ZOWE" -a "$phase" = "POST" && _zowePOST
 test "$action" = "SMPE" -a "$phase" = "PRE"  && _smpePRE
