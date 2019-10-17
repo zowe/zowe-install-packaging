@@ -22,7 +22,7 @@
 # $IgNoRe_ErRoR $debug $YAML $VRM
 #
 # Optional globals:
-# $fmid1 fmid2 $HLQ $ROOT
+# $fmid1 fmid2 $HLQ $ROOT $VOLSER
 #
 # Unconditional set:
 # all variables in $YAML, see function _parseConfiguationFile
@@ -104,7 +104,15 @@ split:
 fmid:
   # RELFILE data set name prefix, SMP/E expects #hlq.$RFDSNPFX.$FMID.Fx
   RFDSNPFX=
+  # comma-separated list of volume labels for RELFILE allocation
+  fmidVol=
 gimzip:
+  # GIMZIP JOB card, line 1
+  gimzipJob1=
+  # GIMZIP startup options - see SMP/E for z/OS Reference (SA22-7772)
+  gimzipParm=
+  # comma-separated list of volume labels for GIMZIP SYSUT2 allocation
+  gimzipVol=
   # high level qualifier for GIMZIP work files
   gimzipHlq=
   # directory holding SMP/E pax & readme (also used for staging)
@@ -176,11 +184,15 @@ do
     _export split   split      split         ${ROOT}/split  # internal
 # fmid
     _export fmid    RFDSNPFX   RFDSNPFX      ZOWE           # output
+    _export fmid    fmidVol    fmidVolser    $VOLSER        # internal
 # gimzip
+    _export gimzip  gimzipJob1 gimzipJob1                   # internal
+    _export gimzip  gimzipParm gimzipParm                   # internal
+    _export gimzip  gimzipVol  gimzipVolser  $VOLSER        # internal
     _export gimzip  gimzipHlq  gimzipHlq     ${HLQ}.GIMZIP  # internal
     _export gimzip  gimzip     gimzip        ${ROOT}/gimzip # output
     _export gimzip  scratch    scratch       \
-              $(echo ${ROOT}/work | tr [:lower:] [:upper:]) # internal
+            ${TMPDIR:-/tmp}/gimzip.$$   # max 58 chars      # internal
     _export gimzip  JAVA_HOME  JAVA_HOME     \
               ${JAVA_HOME:-$(find /usr/lpp/java -type d -level 0 \
                              | grep /J.*[^_64]$ | tail -1)} # permanent
