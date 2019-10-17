@@ -57,7 +57,7 @@
 #. the same leading directory, e.g. zowe-1.1.0.
 
 removeInstall=0                # 1 if install removes installed files
-smpeFilter="\-smpe.sh"          # regex to find SMP/E archive name
+smpeFilter="/smpe"             # regex to find SMP/E archive name
 prodScript=install/zowe-install.sh  # product install script
 smpeScript=zowe-install-smpe.sh  # SMP/E-member install script
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
