@@ -107,11 +107,11 @@ julian=$(date +%Y%j)                                          # YYYYddd
 test "$debug" && julian=$julian
 
 # validate/create target data set
-if test -z "$VOLSER"
+if test -z "$fmidVolser"
 then
   $here/$allocScript $dsn "FB" "80" "PS" "1,1"
 else
-  $here/$allocScript -V "$VOLSER" $dsn "FB" "80" "PS" "1,1"
+  $here/$allocScript -V "$fmidVolser" $dsn "FB" "80" "PS" "1,1"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
@@ -230,11 +230,11 @@ test "$debug" && echo && echo "> _copyMvsMvs $@"
 echo "-- populate $2 with $1"
 
 # create target data set
-if test -z "$VOLSER"
+if test -z "$fmidVolser"
 then
   $here/$allocScript "$2" "$3" "$4" "$5" "$6"
 else
-  $here/$allocScript -V "$VOLSER" "$2" "$3" "$4" "$5" "$6"
+  $here/$allocScript -V "$fmidVolser" "$2" "$3" "$4" "$5" "$6"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
@@ -282,11 +282,11 @@ test "$debug" && echo && echo "> _copyUssMvs $@"
 echo "-- populate $2 with $1"
 
 # validate/create target data set
-if test -z "$VOLSER"
+if test -z "$fmidVolser"
 then
   $here/$allocScript "$2" "$3" "$4" "$5" "$6"
 else
-  $here/$allocScript -V "$VOLSER" "$2" "$3" "$4" "$5" "$6"
+  $here/$allocScript -V "$fmidVolser" "$2" "$3" "$4" "$5" "$6"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
