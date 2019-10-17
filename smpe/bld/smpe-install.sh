@@ -59,7 +59,7 @@
 removeInstall=0                # 1 if install removes installed files
 smpeFilter="/smpe"             # regex to find SMP/E archive name
 prodScript=install/zowe-install.sh  # product install script
-smpeScript=smpe-members.sh     # SMP/E-member install script
+smpeScript=zowe-install-smpe.sh  # SMP/E-member install script
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(cd $(dirname $0);pwd)   # script location
@@ -95,7 +95,7 @@ do
   fi    #
 
   # remember name of referenced file (keep smpe and pax separate)
-  if test "$(echo $f | grep $smpeFilter)"
+  if test "$(echo $f | grep "$smpeFilter")"
   then
     in_smpe="$(echo $in_smpe $f | sed 's/^ //')"
   elif test "$(echo $f | grep pax$)"
