@@ -10,8 +10,12 @@
 # Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-while getopts "f:h:i:I" opt; do
+while getopts "f:h:i:dI" opt; do
   case $opt in
+    d) # enable debug mode
+      # future use, accept parm to stabilize SMPE packaging
+      #debug="-d"
+      ;;
     f) # override default value for LOG_FILE
       # future use, issue 801, accept parm to stabilize SMPE packaging
       #...="$OPTARG"
