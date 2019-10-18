@@ -193,15 +193,8 @@ do
 done
 
 
-# Deploy plugins and start the desktop
+# Start the desktop
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  # Deploy any installed plugins for the Desktop
-  cd $ROOT_DIR/zlux-build
-  chmod a+x deploy.sh
-  ./deploy.sh > /dev/null
-
-  DIR=`dirname $0`
-
-  cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
+  cd $ROOT_DIR/zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
 fi
