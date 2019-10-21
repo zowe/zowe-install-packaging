@@ -53,13 +53,13 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "artifact": "libs-snapshot-local/org/zowe/explorer-jes/0.0.23-PR-111/explorer-jes-0.0.23-pr-111-13-20191016142554.pax"
+      "artifact": "libs-snapshot-local/org/zowe/explorer-jes/0.0.23-PR-111/explorer-jes-0.0.23-pr-111-15-20191021132511.pax"
     },
     "org.zowe.explorer-mvs": {
-      "artifact":"libs-snapshot-local/org/zowe/explorer-mvs/0.0.16-PR-91/explorer-mvs-0.0.16-pr-91-8-20191017103318.pax"
+      "artifact":"libs-snapshot-local/org/zowe/explorer-mvs/0.0.16-PR-91/explorer-mvs-0.0.16-pr-91-9-20191021135230.pax"
     },
     "org.zowe.explorer-uss": {
-      "artifact": "libs-snapshot-local/org/zowe/explorer-uss/0.0.14-PR-58/explorer-uss-0.0.14-pr-58-7-20191017103528.pax"
+      "artifact": "libs-snapshot-local/org/zowe/explorer-uss/0.0.14-PR-58/explorer-uss-0.0.14-pr-58-10-20191021205608.pax"
     },
     "com.ca.mfaas.sdk.mfaas-zowe-install": {
       "version": "~1.1.11-SNAPSHOT",

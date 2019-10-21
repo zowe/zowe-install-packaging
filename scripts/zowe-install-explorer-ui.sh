@@ -32,7 +32,7 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   fi
 
   # NOTICE: zowe-install-iframe-plugin.sh will try to automatically create install folder based on plugin name
-  EXPLORER_INSTALL_FOLDER="${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}-explorer"
+  EXPLORER_INSTALL_FOLDER="${ZOWE_ROOT_DIR}/components/explorer-${COMPONENT_ID}"
   echo "  Installing Explorer UI ${EXPLORER_PLUGIN_UPPERCASE} into ${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
   umask 0002
   mkdir -p "${EXPLORER_INSTALL_FOLDER}/bin"
@@ -43,8 +43,8 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   pax -rf $EXPLORER_PLUGIN_PAX -ppx
 
   #TODO make sure scripts end up in files directory not bin.
-  EXPLORER_UI_START_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/${COMPONENT_ID}-explorer-start.sh
-  EXPLORER_UI_CONFIGURE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/${COMPONENT_ID}-explorer-configure.sh
+  EXPLORER_UI_START_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-start.sh
+  EXPLORER_UI_CONFIGURE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-configure.sh
   #EXPLORER_UI_VALIDATE_SCRIPT
 
   if [ ! -f $EXPLORER_UI_START_SCRIPT ]; then
@@ -68,7 +68,7 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   # then
   #   cp ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
   # fi
-  chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}-explorer/bin"
+  chmod -R 755 "${ZOWE_ROOT_DIR}/components/explorer-${COMPONENT_ID}/bin"
 
 done
 

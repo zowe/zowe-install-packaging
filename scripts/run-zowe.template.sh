@@ -102,7 +102,7 @@ export __UNTAGGED_READ_MODE=V6
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,jes-explorer,mvs-explorer,uss-explorer #TODO this is WIP - component ids not finalised at the moment
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
 fi
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
