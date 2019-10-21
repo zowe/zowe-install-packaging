@@ -7,7 +7,7 @@
 //            REL=&REL,                 * hlq.F1, hlq.F2, ...
 //            MVS=                      * member name Fx(<member>)
 //*
-//         SET $COPY=&HLQ..@COPYLMD.&MVS
+//         SET $COPY=&HLQ..$C.&MVS
 //*
 //PTF@LMOD EXEC PROC=PTF@,
 //*            DSP='CATLG',              * final DISP of temp files

@@ -1,4 +1,6 @@
 //*
+//* TODO route step output to dataset for display in build log
+//*
 //* PROC to stage file for SYSMOD creation, generic back-end
 //*
 //* IF (RC <= 4) THEN
@@ -30,12 +32,13 @@
 //*UNLOAD.SYSUT2 DD DDNAME=UNLOAD       * OVERRIDE IF WRITE TO OUTPUT
 //*GIMDTS.SYSUT1 DD DSN=&$UNLOAD        * OVERRIDE IF NOT FROM UNLOAD
 //*
+//* limit fixed MLQ to max 2 char to allow 32 chars for HLQ
 //* PROC output
-//         SET $OUTPUT=&HLQ..PART.&MVS
+//         SET $OUTPUT=&HLQ..@.&MVS
 //* temp file, LMOD/member -> sequential
-//         SET $UNLOAD=&HLQ..@UNLOAD.&MVS
+//         SET $UNLOAD=&HLQ..$U.&MVS
 //* temp file, template for converting LMOD, set by PTF@LMOD
-//*        SET $COPY=&HLQ..@COPYLMD.&MVS
+//*        SET $COPY=&HLQ..$C.&MVS
 //*
 //* skip whole proc if needed
 //*
