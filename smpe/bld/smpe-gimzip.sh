@@ -121,6 +121,14 @@ test "$debug" && cat $log/$jcl
 
 # run the GIMZIP job
 $here/$submitScript $debug $log/$jcl
+# returns
+# 0: job completed with RC 0
+# 1: job completed with an acceptable RC
+# 2: job completed, but not with an acceptable RC
+# 3: job ended abnormally (abend, JCL error, ...)
+# 4: job did not complete in time
+# 5: job purged before we could process
+# 8: error
 gimzipRC=$?
 
 # give z/OS time to free the data sets before accessing them again
