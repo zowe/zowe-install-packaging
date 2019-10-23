@@ -36,15 +36,7 @@
 //*    Uncomment and customize DD SMPTLIB if you want to place these
 //*    copies on a specific volume.
 //*
-//* 3. This job utilizes JCL variables inside inline text, which
-//*    requires z/OS 2.1 or higher. When using an older z/OS level,
-//*    - Comment out the EXPORT SYMLIST statement
-//*    - Remove ",SYMBOLS=JCLONLY" from the DD definitions that 
-//*      utilize inline JCL variables
-//*    - Replace the following variables with their actual value:
-//*      - step RECEIVE, DD SMPCNTL, variable &HLQ
-//*
-//* 4. This job should complete with a return code 0.
+//* 3. This job should complete with a return code 0.
 //*
 //********************************************************************
 //         EXPORT SYMLIST=(HLQ)

@@ -35,18 +35,7 @@
 //*    A sample BYPASS option is provided that bypasses the most
 //*    common reason IDs (HOLDSYS, HOLDERROR).
 //*
-//* 2. This job utilizes JCL variables inside inline text, which
-//*    requires z/OS 2.1 or higher. When using an older z/OS level,
-//*    - Comment out the EXPORT SYMLIST statement
-//*    - Remove ",SYMBOLS=JCLONLY" from the DD definitions that
-//*      utilize inline JCL variables
-//*    - Replace the following variables with their actual value:
-//*      - step APPLYCHK, DD SMPCNTL, variable &ZONE
-//*      - step APPLYCHK, DD SMPCNTL, variable &SYSMOD
-//*      - step APPLY, DD SMPCNTL, variable &ZONE
-//*      - step APPLY, DD SMPCNTL, variable &SYSMOD
-//*
-//* 3. This job should complete with a return code 0.
+//* 2. This job should complete with a return code 0.
 //*
 //********************************************************************
 //         EXPORT SYMLIST=(ZONE,SYSMOD)

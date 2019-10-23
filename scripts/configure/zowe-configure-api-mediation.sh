@@ -28,17 +28,9 @@
 
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
-API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/api-mediation"
+API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"
 
 cd $API_MEDIATION_DIR
-
-# Set a+rx for API Mediation JARs
-chmod a+rx *.jar 
-
-# Make the apiml-auth plugin readable by everyone
-chmod a+rx apiml-auth
-chmod a+rx apiml-auth/lib
-chmod -R a+r apiml-auth
 
 # Create the static api definitions folder
 STATIC_DEF_CONFIG=$API_MEDIATION_DIR"/api-defs"
@@ -63,37 +55,6 @@ sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
 # Make configured script executable
 chmod a+x setup-apiml-certificates.sh
 
-# Inject parameters into API Mediation startup scripts, which contains command-line parameters as configuration
-sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
-    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
-    -e "s/\*\*DISCOVERY_PORT\*\*/$ZOWE_APIM_DISCOVERY_PORT/g" \
-    -e "s/\*\*CATALOG_PORT\*\*/$ZOWE_APIM_CATALOG_PORT/g" \
-    -e "s/\*\*GATEWAY_PORT\*\*/$ZOWE_APIM_GATEWAY_PORT/g" \
-    -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
-    api-mediation-start-catalog-template.sh > api-mediation-start-catalog.sh
-
-# Inject parameters into API Mediation startup, which contains command-line parameters as configuration
-sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
-    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
-    -e "s/\*\*DISCOVERY_PORT\*\*/$ZOWE_APIM_DISCOVERY_PORT/g" \
-    -e "s/\*\*CATALOG_PORT\*\*/$ZOWE_APIM_CATALOG_PORT/g" \
-    -e "s/\*\*GATEWAY_PORT\*\*/$ZOWE_APIM_GATEWAY_PORT/g" \
-    -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
-    api-mediation-start-gateway-template.sh > api-mediation-start-gateway.sh
-
-# Inject parameters into API Mediation startup, which contains command-line parameters as configuration
-sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
-    -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
-    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
-    -e "s/\*\*DISCOVERY_PORT\*\*/$ZOWE_APIM_DISCOVERY_PORT/g" \
-    -e "s/\*\*CATALOG_PORT\*\*/$ZOWE_APIM_CATALOG_PORT/g" \
-    -e "s/\*\*GATEWAY_PORT\*\*/$ZOWE_APIM_GATEWAY_PORT/g" \
-    -e "s|\*\*STATIC_DEF_CONFIG\*\*|$STATIC_DEF_CONFIG|g" \
-    -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
-    api-mediation-start-discovery-template.sh > api-mediation-start-discovery.sh
-
 # Make the scripts read and executable
 chmod -R 750 "${API_MEDIATION_DIR}/scripts"
 
@@ -105,54 +66,6 @@ echo "  Setting up Zowe API Mediation Layer certificates..."
 echo "  Certificate setup done."
 
 chmod -R 750 "${API_MEDIATION_DIR}/keystore"
-
-# Get the zos version
-ZOSMF_VERSION=""
-ZOSMF_DOC_URL=""
-# Hack - if opercmd fails default to latest OS
-ZOS_RELEASE=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd 'd iplinfo'|grep RELEASE` || ZOS_RELEASE="RELEASE z/OS 02.03.00"
-ZOS_VRM=`echo $ZOS_RELEASE | sed 's+.*RELEASE z/OS \(........\).*+\1+'`
-
-if [[ $ZOS_VRM == "02.03.00" ]]
-then    
-    ZOSMF_VERSION=2.3.0
-    ZOSMF_DOC_URL="https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.izua700/IZUHPINFO_RESTServices.htm"
-elif [[ $ZOS_VRM == "02.02.00" ]]
-then    
-    ZOSMF_VERSION=2.2.0
-    ZOSMF_DOC_URL="https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.2.0/com.ibm.zos.v2r2.izua700/IZUHPINFO_RESTServices.htm"
-fi
-
-# Add static definition for zosmf	
-cat <<EOF >$TEMP_DIR/zosmf.yml
-# Static definition for z/OSMF
-#
-# Once configured you can access z/OSMF via the API gateway:
-# http --verify=no GET https://$ZOWE_ZOSMF_HOST:$ZOWE_APIM_GATEWAY_PORT/api/v1/zosmf/info 'X-CSRF-ZOSMF-HEADER;'
-#	
-services:
-    - serviceId: zosmf
-      title: IBM z/OSMF
-      description: IBM z/OS Management Facility REST API service
-      catalogUiTileId: zosmf
-      instanceBaseUrls:
-        - https://$ZOWE_ZOSMF_HOST:$ZOWE_ZOSMF_PORT/zosmf/
-      homePageRelativeUrl:  # Home page is at the same URL
-      routedServices:
-        - gatewayUrl: api/v1  # [api/ui/ws]/v{majorVersion}
-          serviceRelativeUrl:
-      apiInfo:
-        - apiId: com.ibm.zosmf
-          gatewayUrl: api/v1
-          version: $ZOSMF_VERSION
-          documentationUrl: $ZOSMF_DOC_URL
-
-catalogUiTiles:
-    zosmf:
-        title: z/OSMF services
-        description: IBM z/OS Management Facility REST services
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/zosmf.yml > $STATIC_DEF_CONFIG/zosmf.yml	
 
 # Add static definition for MVS datasets
 cat <<EOF >$TEMP_DIR/datasets_ui.yml

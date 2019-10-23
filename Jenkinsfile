@@ -90,6 +90,26 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         spec        : 'artifactory-download-spec.json',
         expected    : 18
       )
+
+      // we want build log pulled in for SMP/e build
+      if (params.BUILD_SMPE) {
+        def buildLogSpec = readJSON(text: '{"files":[]}')
+        buildLogSpec['files'].push([
+          "target": ".pax/content/smpe/",
+          "flat": "true",
+          "pattern": pipeline.getPublishTargetPath() + "smpe-build-logs-*.pax.Z",
+          "sortBy": ["created"],
+          "sortOrder": "desc",
+          "limit": 1
+        ])
+        writeJSON file: 'smpe-build-log-download-spec.json', json: buildLogSpec, pretty: 2
+        echo "================ SMP/e build log download spec ================"
+        sh "cat smpe-build-log-download-spec.json"
+
+        pipeline.artifactory.download(
+          spec        : 'smpe-build-log-download-spec.json'
+        )
+      }
     }
   )
 
@@ -113,7 +133,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'ZOWE_VERSION': pipeline.getVersion(),
             'BUILD_SMPE'  : (params.BUILD_SMPE ? 'yes' : '')
           ],
-          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,rename-back.sh' : ''),
+          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,smpe-build-logs.pax.Z,rename-back.sh' : ''),
           keepTempFolder  : params.KEEP_TEMP_FOLDER
       )
       if (params.BUILD_SMPE) {
@@ -127,7 +147,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   pipeline.publish(
     artifacts: [
       '.pax/zowe.pax',
-      '.pax/AZWE*'
+      '.pax/AZWE*',
+      '.pax/smpe-build-logs.pax.Z'
     ]
   )
 
