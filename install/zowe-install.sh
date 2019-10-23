@@ -83,9 +83,9 @@ cd $INSTALL_DIR/install
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
-if [[ ! -z "$INSTALL_DIR" ]]
+if [[ ! -z "$INSTALL_TARGET" ]]
 then
-  ZOWE_ROOT_DIR=$INSTALL_DIR
+  ZOWE_ROOT_DIR=$INSTALL_TARGET
 fi
 
 if [[ ! -z "$DSN_PREFIX" ]]
