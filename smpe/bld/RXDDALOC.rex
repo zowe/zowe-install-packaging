@@ -29,8 +29,12 @@
 
 /* system code ......................................................*/
 arg DD .                                           /* auto uppercase */
-say 'allocating DD' DD 'as marker where we are in the job'
-say 'the DD shows up at the end of the DD list in SDSF'
+say ''                  /* ensure our first 'say' is on its own line */
+say '>>'copies('-',70)
+say '>>('DD')'
+say '>> allocating DD' DD 'as marker where we are in the job'
+say '>> the DD shows up at the end of the DD list in SDSF'
+say '>>'copies('-',70)
 
 if DD == '' | length(DD) > 8 then exit 8            /* LEAVE PROGRAM */
 

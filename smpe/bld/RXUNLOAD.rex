@@ -66,6 +66,8 @@ Debug=0                                  /* assume not in debug mode */
 /* trace s */ /* trace r */
 parse source . . ExecName . . . . ExecEnv .         /* get exec info */
 
+say ''                  /* ensure our first 'say' is on its own line */
+
 if (ExecEnv == 'OMVS')
 then do
   say '>> ERROR:' ExecName 'not supported in OMVS'
@@ -148,7 +150,7 @@ if Debug then say '> _ocopy' In','Out
 Mode='BINARY'
 
 say '> from:' In
-say '> to:' Out
+say '> to:  ' Out
 say '> using' Mode 'OCOPY'
 
 "OCOPY INDD(SYSUT1) OUTDD(SYSUT2)" Mode              /* SYS1.LINKLIB */
@@ -195,24 +197,18 @@ otherwise                         /* get alias from startup argument */
   parse value _lmod(ddMCS,Mbr) with PDS Mbr .
 end    /* select */
 
-say '> from:' In Mbr Alias
-say '> to:' Out
-say '> using' word('PDS/E PDS',1+PDS) 'IEBCOPY'
-
 if Mbr == ''
-  then say '>> ERROR: a member name is required (arg, SYSUT1 or MCS)'
-
-if \_ddExist('PDSE') | \_ddExist('PDS')
-  then say '>> ERROR: DD PDSE and PDS must be allocated'
-
-if cRC > 0
 then do
-  if Debug then say '< _iebcopy' cRC
-  return cRC                                        /* LEAVE ROUTINE */
+  say '>> ERROR: a member name is required (arg, SYSUT1 or MCS)'
+  cRC=max(cRC,8)
 end    /* */
 
-do while queued() > 0; pull .; end                    /* clear stack */
-
+if \_ddExist('PDSE') | \_ddExist('PDS')
+then do
+  say '>> ERROR: DD PDSE and PDS must be allocated'
+  cRC=max(cRC,8)
+end    /* */
+  
 /* is member part of SYSUT1 allocation ? */
 parse var In DSN '(' Member .
 if Member \= ''
@@ -220,7 +216,20 @@ then do
   say '> reallocating SYSUT1 as DISP=SHR,DSN='DSN
   "FREE FI(SYSUT1)"
   "ALLOC FI(SYSUT1) REUSE SHR DSN('"DSN"')"
+  if rc > 0 then cRC=max(cRC,8)            /* error already reported */  
 end    /* */
+
+if cRC > 0
+then do
+  if Debug then say '< _iebcopy' cRC
+  return cRC                                        /* LEAVE ROUTINE */
+end    /* */
+
+say '> from:' DSN Mbr Alias
+say '> to:  ' Out
+say '> using' word('PDS/E PDS',1+PDS) 'IEBCOPY'
+
+do while queued() > 0; pull .; end                    /* clear stack */
 
 /* step 1 - copy member & aliases to PDSE to force LRECL=0 */
 

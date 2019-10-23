@@ -15,9 +15,6 @@
 //* enable a step
 //            UNLOAD=IKJEFT01,          * IEFBR14 (skip) or IKJEFT01
 //            GIMDTS=GIMDTS             * IEFBR14 (skip) or GIMDTS
-//* remove old work files if present
-//MARKER.PDSE DD DISP=(MOD,DELETE),DSORG=PS,RECFM=FB,LRECL=80,
-//            SPACE=(TRK,(1,1)),UNIT=SYSALLDA,DSN=&$COPY
 //* input
 //UNLOAD.SYSUT1 DD DISP=SHR,DSN=&REL(&MVS)
 //* work files

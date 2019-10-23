@@ -19,10 +19,10 @@
 #% -c is required
 
 
-# TODO ONNO add overview of changes doen by this script
+# TODO ONNO add overview of changes done by this script
 
-maxExec=50                     # limit number of EXEC PGM per GIMDTS job
-gimdtsTools=""                 # GIMDTS tools
+maxExec=60                     # limit EXEC statements per GIMDTS job
+gimdtsTools=""                 # tools used by GIMDTS job
 gimdtsTools="$gimdtsTools PTF@.jcl"
 gimdtsTools="$gimdtsTools PTF@FB80.jcl"
 gimdtsTools="$gimdtsTools PTF@LMOD.jcl"
@@ -30,9 +30,11 @@ gimdtsTools="$gimdtsTools PTF@MVS.jcl"
 gimdtsTools="$gimdtsTools RXDDALOC.rex"
 gimdtsTools="$gimdtsTools RXUNLOAD.rex"
 jcl=gimdts.jcl                 # GIMDTS invocation JCL
+sysprint=gimdts.sysprint.log   # GIMDTS SYSPRINT log
 mcs=SMPMCS.txt                 # SMPMCS header
 submitScript=wait-for-job.sh   # submit script
 dcbScript=check-dataset-dcb.sh # script to test dcb of data set
+existScript=check-dataset-exist.sh  # script to test if data set exists
 allocScript=allocate-dataset.sh  # script to allocate data set
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
@@ -143,13 +145,24 @@ test "$debug" && echo "< _header"
 }    # _header
 
 # ---------------------------------------------------------------------
+# --- merge header, MCS metadata, and parts
+# ---------------------------------------------------------------------
+function _merge
+{
+test "$debug" && echo && echo "> _merge $@"
+
+
+
+test "$debug" && echo "< _merge"
+}    # _merge
+
+# ---------------------------------------------------------------------
 # --- create & submit GIMDTS job
 # Assumes that all parts have metadata, and all metadata has a part
 # ---------------------------------------------------------------------
 function _gimdts
 {
 test "$debug" && echo "> _gimdts $@"
-
 echo "-- processing RELFILEs"
 
 # prime GIMDTS JCL
@@ -173,7 +186,7 @@ then
 fi    #
 
 # loop through data sets
-test "$debug" && echo "for dsn in $datasets"
+test "$debug" && echo "for dsn in \$datasets"
 for dsn in $datasets
 do
   # update GIMDTS JCL
@@ -204,7 +217,8 @@ do
 
   # process all non-ALIAS members in data set
   _getMembers "$dsn"
-  test "$debug" && echo "for member in $members"
+# echo "   $dsn ($(echo $members | wc -l | sed s'/ //g' members))"
+  test "$debug" && echo "for member in \$members"
   for member in $members
   do
     # did we reach max EXEC statements for current job ?
@@ -236,6 +250,14 @@ done    # for dsn
 # run the GIMDTS job
 _submit $log/$jcl
 
+# show job output in debug mode
+if test "$debug"
+then 
+  echo "-- $sysprint $(cat $log/$sysprint | wc -l) line(s)"
+  sed 's/^/. /' $log/$sysprint                # show prefixed with '. '
+  echo "   GIMZIP successful"
+fi    #
+
 test "$debug" && echo "< _gimdts"
 }    # _gimdts
 
@@ -247,25 +269,60 @@ function _submit
 {
 test "$debug" && echo "> _submit $@"
 
-# only interested in RC 0 so we can use _cmd for error handling
-_cmd $here/$submitScript $debug $log/$jcl
+test "$debug" && echo
+test "$debug" && echo "\"$here/$submitScript $debug -c $1\""
+$here/$submitScript $debug -c $1
+# returns
+# 0: job completed with RC 0
+# 1: job completed with an acceptable RC
+# 2: job completed, but not with an acceptable RC
+# 3: job ended abnormally (abend, JCL error, ...)
+# 4: job did not complete in time
+# 5: job purged before we could process
+# 8: error
+submitRC=$?
 
-#$here/$submitScript $debug $1
-## returns
-## 0: job completed with RC 0
-## 1: job completed with an acceptable RC
-## 2: job completed, but not with an acceptable RC
-## 3: job ended abnormally (abend, JCL error, ...)
-## 4: job did not complete in time
-## 5: job purged before we could process
-## 8: error
-#rc=$?
-#if test $rc -ne 0
-#then
-#  # error details already reported
-#  echo "** ERROR $me script RC $rc for submit of job $1"
-#  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-#fi    #
+# keep name in sync with gimdts.jcl
+SYSPRINT=${gimdtsHlq}.SYSPRINT
+
+# save output of GIMDTS job(s)
+test "$debug" && echo
+test "$debug" && echo "\"$here/$existScript $SYSPRINT\""
+$here/$existScript $SYSPRINT
+# returns 0 for exist, 2 for not exist, 8 for error
+existRC=$?
+if test $existRC -eq 0
+then
+  _cmd cp "//'$SYSPRINT'" $log/$sysprint
+else
+  # remove output from previous run, if any
+  test -f $log/$sysprint && _cmd rm -f $log/$sysprint
+  # create dummy to ensure next step can rely on the file existing
+  _cmd touch $log/$sysprint
+  echo "** INFO created dummy $log/$sysprint"
+fi    # no $SYSPRINT
+
+# test for job failure
+if test $submitRC -ne 0
+then
+  test "$debug" && echo "GIMDTS failure"
+  echo "-- $sysprint $(cat $log/$sysprint | wc -l) line(s)"
+  sed 's/^/. /' $log/$sysprint                # show prefixed with '. '
+  
+  # error details already reported
+  echo "** ERROR $me script RC $submitRC for submit of job $1"
+  case "$submitRC" in
+    0)   echo "   job completed with RC 0";;
+    1)   echo "   job completed with an acceptable RC";;
+    2)   echo "   job completed, but not with an acceptable RC";;
+    3)   echo "   job ended abnormally (abend, JCL error, ...)";;
+    4)   echo "   job did not complete in time";;
+    5)   echo "   job purged before we could process";;
+    8)   echo "   $submitScript script error";;
+    [?]) echo "   undocumented error code";;
+  esac    # $submitRC
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
 
 test "$debug" && echo "< _submit"
 }    # _submit
@@ -401,7 +458,7 @@ else
   SED="s:#volser://            VOL=SER=$gimdtsVolser,:"
 fi    #
 
-test "$debug" && echo "for file in $gimdtsTools"
+test "$debug" && echo "for file in \$gimdtsTools"
 for file in $gimdtsTools
 do
   _sedMVS $here/$file $gimdtsHlq
@@ -420,15 +477,15 @@ test "$debug" && echo "> _metaData $@"
 echo "-- stage SMP/E metadata"
 
 # create work copy of MCS
-_cmd cp $here/$mcs $ptf/$mcs
+_cmd cp "//'${mcsHlq}.SMPMCS'" $ptf/$mcs
 
 # ensure csplit output goes in $ptf
 _cmd cd $ptf
 
 # split MCS in individual '++' control statements
-#   csplit creates xx## files, each holding exactly 1 control statement
-#   "$(($(grep -c ^++ $ptf/$mcs)-1))" counts number of ++ in column 1
-#    and when wrapped in {}, it repeats the /^++/ filter x times
+# - csplit creates xx## files, each holding exactly 1 control statement
+# - "$(($(grep -c ^++ $ptf/$mcs)-1))" counts number of ++ in column 1
+#   and when wrapped in {}, it repeats the /^++/ filter x times
 _cmd csplit -s $ptf/$mcs /^++/ {$(($(grep -c ^++ $ptf/$mcs)-1))}
 
 # return to base
@@ -436,7 +493,7 @@ _cmd --null cd -
 
 # process individual '++' control statements
 unset found
-test "$debug" && echo "for file in $(ls $ptf/xx*)"
+test "$debug" && echo "for file in \$(ls $ptf/xx*)"
 for file in $(ls $ptf/xx*)
 do
   test "$debug" && echo "file=$file"
@@ -472,6 +529,33 @@ fi    #
 echo "   $(ls $ptf/ | wc -l | sed 's/ //g') MCS defintions"
 test "$debug" && echo "< _metaData"
 }    # _metaData
+
+# ---------------------------------------------------------------------
+# --- delete work data sets
+# ---------------------------------------------------------------------
+function _deleteDatasets
+{
+test "$debug" && echo && echo "> _deleteDatasets $@"
+
+# show everything in debug mode
+test "$debug" && $here/$csiScript -d "${gimdtsHlq}.**"
+# get data set list (no debug mode to avoid debug messages)
+datasets=$($here/$csiScript "${gimdtsHlq}.**")
+# returns 0 for match, 1 for no match, 8 for error
+if test $? -gt 1
+then
+  echo "$datasets"                       # variable holds error message
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+# delete data sets
+test "$debug" && echo "for dsn in \$datasets"
+for dsn in $datasets
+do
+  _cmd2 --null tsocmd "DELETE '$dsn'"
+done    # for dsn
+
+test "$debug" && echo "< _deleteDatasets"
+}    # _deleteDatasets
 
 # ---------------------------------------------------------------------
 # --- customize a file using sed, and store it as a member
@@ -631,22 +715,7 @@ echo "-- output: $ptf"
 
 # remove output of previous run
 test -d $ptf && _cmd rm -rf $ptf          # always delete ptf directory
-# show everything in debug mode
-test "$debug" && $here/$csiScript -d "${gimdtsHlq}.**"
-# get data set list (no debug mode to avoid debug messages)
-datasets=$($here/$csiScript "${gimdtsHlq}.**")
-# returns 0 for match, 1 for no match, 8 for error
-if test $? -gt 1
-then
-  echo "$datasets"                       # variable holds error message
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-fi    #
-# delete data sets
-for dsn in $datasets
-do
-  _cmd2 --null tsocmd "DELETE '$dsn'"
-done    # for dsn
-
+_deleteDatasets
 # get ready to roll
 _cmd mkdir -p $ptf
 
@@ -662,15 +731,13 @@ _gimdts
 # create sysmod header (PTF/APAR/USERMOD)
 _header
 
-#   _export service ptf        ptf           ${ROOT}/ptf    # output
-#   _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
-#   _export service gimdtsJob1 gimdtsJob1                   # internal
-#   _export service gimdtsVol  gimdtsVolser  $VOLSER        # internal
-
+# merge header, MCS metadata, and parts
+_merge
 
 # we are done with these, clean up
 _cmd cd $here                         # make sure we are somewhere else
-_cmd rm -rf $mvs
+#_cmd rm -rf $ptf
+#_deleteDatasets
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"

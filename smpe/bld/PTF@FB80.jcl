@@ -15,7 +15,7 @@
 //* input
 //UNLOAD.SYSUT1 DD DISP=SHR,DSN=&REL(&MVS)
 //* output
-//UNLOAD.SYSUT2 DD DDNAME=OUTPUT
+//UNLOAD.SYSUT2 DD DDNAME=PART
 //*
 //         PEND
 //*--------
