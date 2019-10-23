@@ -31,7 +31,6 @@ gimdtsTools="$gimdtsTools RXDDALOC.rex"
 gimdtsTools="$gimdtsTools RXUNLOAD.rex"
 jcl=gimdts.jcl                 # GIMDTS invocation JCL
 sysprint=gimdts.sysprint.log   # GIMDTS SYSPRINT log
-mcs=SMPMCS.txt                 # SMPMCS header
 submitScript=wait-for-job.sh   # submit script
 dcbScript=check-dataset-dcb.sh # script to test dcb of data set
 existScript=check-dataset-exist.sh  # script to test if data set exists
@@ -140,6 +139,30 @@ test "$debug" && echo && echo "> $me $@"
 function _header
 {
 test "$debug" && echo "> _header $@"
+echo "-- creating SYSMOD header"
+
+# TODO this is a temp test solution
+cat <<EOF 2>&1 >$ptf/$sysmod
+++PTF(UO64071)    /* 5698-ZWE00-AZWE001 */.
+++VER(Z038,C150,P115) FMID(AZWE001)
+  SUP(IO00204,IO00869,UO61806)
+ /*
+   ...
+ */.
+++HOLD(UO64071) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(19271)
+  COMMENT(
+  ****************************************************************
+  * Affected function: ...                                       *
+  ****************************************************************
+  * Description: ...                                             *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ...                                                    *
+  ****************************************************************
+  ...
+  ).
+EOF
 
 test "$debug" && echo "< _header"
 }    # _header
@@ -150,7 +173,15 @@ test "$debug" && echo "< _header"
 function _merge
 {
 test "$debug" && echo && echo "> _merge $@"
+echo "-- creating SYSMOD"
 
+# loop through all parts
+test "$debug" && echo "for part in \$allParts"
+for part in $allParts
+do
+  _cmd --save $ptf/$sysmod cat $ptf/$part
+  _cmd --save $ptf/$sysmod cat "//'${gimdtsHlq}.${MLQ}.$part'"
+done    # for part
 
 
 test "$debug" && echo "< _merge"
@@ -166,7 +197,7 @@ test "$debug" && echo "> _gimdts $@"
 echo "-- processing RELFILEs"
 
 # prime GIMDTS JCL
-_primeJCL $log/$jcl
+_primeJCL $log/$jcl "$SYSPRINT"
 
 # get data set list
 # show everything in debug mode
@@ -217,6 +248,7 @@ do
 
   # process all non-ALIAS members in data set
   _getMembers "$dsn"
+  allParts="$allParts $members"   # keep track of everything we process
 # echo "   $dsn ($(echo $members | wc -l | sed s'/ //g' members))"
   test "$debug" && echo "for member in \$members"
   for member in $members
@@ -225,14 +257,14 @@ do
     if test $cnt -eq maxExec
     then                   # yes, submit current job and create new job
       # run the GIMDTS job
-      _submit $log/$jcl
+      _submit $log/$jcl "$SYSPRINT"
 
       # archive current GIMDTS job with unique name
       cnt=$(ls $log/${jcl}* | wc -l)
       _cmd mv $log/$jcl $log/$jcl.$cnt
 
       # create new GIMDTS job
-      _primeJCL $log/$jcl
+      _primeJCL $log/$jcl "$SYSPRINT"
       _cmd --save $log/$jcl echo "//         SET REL=$dsn"
     fi    # new job
 
@@ -248,7 +280,7 @@ do
 done    # for dsn
 
 # run the GIMDTS job
-_submit $log/$jcl
+_submit $log/$jcl "$SYSPRINT"
 
 # show job output in debug mode
 if test "$debug"
@@ -264,6 +296,7 @@ test "$debug" && echo "< _gimdts"
 # ---------------------------------------------------------------------
 # --- submit job & wait on completion, with error handling
 # $1: job to submit
+# $2: SYSPRINT data set name
 # ---------------------------------------------------------------------
 function _submit
 {
@@ -282,18 +315,15 @@ $here/$submitScript $debug -c $1
 # 8: error
 submitRC=$?
 
-# keep name in sync with gimdts.jcl
-SYSPRINT=${gimdtsHlq}.SYSPRINT
-
 # save output of GIMDTS job(s)
 test "$debug" && echo
-test "$debug" && echo "\"$here/$existScript $SYSPRINT\""
-$here/$existScript $SYSPRINT
+test "$debug" && echo "\"$here/$existScript $2\""
+$here/$existScript "$2"
 # returns 0 for exist, 2 for not exist, 8 for error
 existRC=$?
 if test $existRC -eq 0
 then
-  _cmd cp "//'$SYSPRINT'" $log/$sysprint
+  _cmd cp "//'$2'" $log/$sysprint
 else
   # remove output from previous run, if any
   test -f $log/$sysprint && _cmd rm -f $log/$sysprint
@@ -326,6 +356,60 @@ fi    #
 
 test "$debug" && echo "< _submit"
 }    # _submit
+
+# ---------------------------------------------------------------------
+# --- allocate data set
+# $1: data set name
+# $2: record format; {FB | U | VB}
+# $3: logical record length, use ** for RECFM(U)
+# $4: data set organisation; {PO | PS}
+# $5: space in tracks; primary[,secondary]
+# ---------------------------------------------------------------------
+function _alloc
+{
+test "$debug" && echo && echo "> _alloc $@"
+
+# remove previous run
+test "$debug" && echo
+test "$debug" && echo "\"$here/$existScript $1\""
+$here/$existScript "$1"
+# returns 0 for exist, 2 for not exist, 8 for error
+rc=$?
+if test $rc -eq 0
+then
+  _cmd2 --null tsocmd "DELETE '$1'"
+elif test $rc -gt 2
+then
+  # error details already reported
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+# create target data set
+test "$debug" && echo
+if test -z "$VOLSER"
+then
+  test "$debug" && echo "\"$here/$allocScript -h $1 $2 $3 $4 $5\""
+  $here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
+else
+  test "$debug" && echo "\"$here/$allocScript -h -V $VOLSER $1 $2 $3 $4 $5\""
+  $here/$allocScript -h -V "$VOLSER" "$1" "$2" "$3" "$4" "$5"
+fi    #
+# returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
+rc=$?
+if test $rc -gt 0
+then
+  if test $rc -eq 1
+  then
+    echo "** ERROR $me data set $1 exists with wrong DCB"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  else
+    # error details already reported
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+fi    # rc > 0
+
+test "$debug" && echo "< _alloc"
+}    # _alloc
 
 # ---------------------------------------------------------------------
 # --- get list of members in data set, skip aliases
@@ -413,6 +497,7 @@ test "$sTaTuS" -eq 0                  # MUST be last, set rc or routine
 # ---------------------------------------------------------------------
 # --- prime GIMDTS JCL
 # $1: target file
+# $2: SYSPRINT data set name
 # ---------------------------------------------------------------------
 function _primeJCL
 {
@@ -423,6 +508,7 @@ SED=""
 SED="$SED;s:#dir:$ptf:"
 SED="$SED;s:#hlq:$gimdtsHlq:"
 SED="$SED;s:#job1:$gimdtsJob1:"
+SED="$SED;s:#sysprint:$2:"
 _cmd --repl $1 sed "$SED" $here/$jcl
 
 # current number of JCL EXEC statements
@@ -437,18 +523,16 @@ test "$debug" && echo "< _primeJCL"
 function _tools
 {
 test "$debug" && echo "> _tools $@"
-
 echo "-- staging GIMDTS support tools"
 
+# pre-allocate output data set (has to be done here in case we need
+# to submit multiple GIMDTS jobs)
+# note: GIMDTS assumes FBA121 for output and does not write \n, so
+# writing directly to a USS file results in all output on a single line
+_alloc "$SYSPRINT" "FBA" "121" "PS" "5,5"
+
 # place tools in $gimdtsHlq (no extra LLQ)
-if test -z "$gimdtsVolser"
-then
-  _cmd $here/$allocScript $gimdtsHlq "FB" "80" "PO" "5,5"
-else
-  _cmd $here/$allocScript -V "$gimdtsVolser" $gimdtsHlq "FB" "80" "PO" "5,5"
-fi    #
-# returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
-# Note: _cmd fails everything but RC 0
+_alloc "$gimdtsHlq" "FB" "80" "PO" "5,5"
 
 # store customized tools
 if test -z "$gimdtsVolser"
@@ -457,6 +541,7 @@ then
 else
   SED="s:#volser://            VOL=SER=$gimdtsVolser,:"
 fi    #
+SED="$SED;s:#mlq:$MLQ:"
 
 test "$debug" && echo "for file in \$gimdtsTools"
 for file in $gimdtsTools
@@ -473,8 +558,8 @@ test "$debug" && echo "< _tools"
 function _metaData
 {
 test "$debug" && echo "> _metaData $@"
-
 echo "-- stage SMP/E metadata"
+mcs=SMPMCS.txt
 
 # create work copy of MCS
 _cmd cp "//'${mcsHlq}.SMPMCS'" $ptf/$mcs
@@ -707,7 +792,11 @@ fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-mcsHlq=${HLQ}.${RFDSNPFX}.${FMID}
+mcsHlq=${HLQ}.${RFDSNPFX}.${FMID}                         # RELFILE HLQ
+SYSPRINT=${gimzipHlq}.SYSPRINT               # job output data set name
+MLQ='@'                       # job results in $HLQ.$MLQ.*, max 2 chars
+sysmod=sysmod.txt  # TODO must become <sysmod>.<type>
+unset allParts                        # collect names of all parts here
 
 # show input/output details
 echo "-- input:  $mcsHlq"

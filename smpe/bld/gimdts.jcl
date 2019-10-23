@@ -16,7 +16,7 @@
 // SET MCS='#dir' 
 // SET HLQ=#hlq
 //*        ----+----1----+----2----+----3--
-// SET SYSOUT=&HLQ..SYSPRINT     keep name in sync with smpe-service.sh
+// SET SYSOUT=#sysprint
 // SET TOOL=&HLQ
 // JCLLIB ORDER=&TOOL
 //*

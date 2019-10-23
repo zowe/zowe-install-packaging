@@ -33,7 +33,7 @@
 //*
 //* limit fixed MLQ to max 2 char to allow 32 chars for HLQ
 //* SMP/E part in sequential FB80 format
-//         SET $PART=&HLQ..@.&MVS
+//         SET $PART=&HLQ..#mlq.&MVS
 //* temp file, LMOD/member -> sequential
 //         SET $UNLOAD=&HLQ..$U.&MVS
 //* temp file, template for converting LMOD, set by PTF@LMOD

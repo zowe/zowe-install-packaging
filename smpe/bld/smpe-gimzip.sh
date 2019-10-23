@@ -382,6 +382,8 @@ function _alloc
 test "$debug" && echo && echo "> _alloc $@"
 
 # remove previous run
+test "$debug" && echo
+test "$debug" && echo "\"$here/$existScript $1\""
 $here/$existScript "$1"
 # returns 0 for exist, 2 for not exist, 8 for error
 rc=$?
@@ -395,10 +397,13 @@ then
 fi    #
 
 # create target data set
+test "$debug" && echo
 if test -z "$VOLSER"
 then
+  test "$debug" && echo "$here/$allocScript -h $1 $2 $3 $4 $5"
   $here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
 else
+  test "$debug" && echo "$here/$allocScript -h -V $VOLSER $1 $2 $3 $4 $5"
   $here/$allocScript -h -V "$VOLSER" "$1" "$2" "$3" "$4" "$5"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
