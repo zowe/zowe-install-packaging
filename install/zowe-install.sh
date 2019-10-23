@@ -21,7 +21,7 @@ while getopts "f:h:i:dI" opt; do
       #...="$OPTARG"
       ;;
     h) DSN_PREFIX=$OPTARG;;
-    i) INSTALL_DIR=$OPTARG;;
+    i) INSTALL_TARGET=$OPTARG;;
     I)
       INSTALL_ONLY=1
       ;;
