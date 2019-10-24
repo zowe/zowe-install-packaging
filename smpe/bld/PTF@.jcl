@@ -55,11 +55,9 @@
 //UNLOAD   DD DISP=(NEW,CATLG),SPACE=(&SIZE,RLSE),UNIT=SYSALLDA,
 #volser
 //            LIKE=&REL,DCB=(DSORG=PS),DSN=&$UNLOAD
-//* no DD PDSE/PDS only used for LMOD, created by PTF@LMOD
+//* no DD PDSE only used for LMOD, created by PTF@LMOD
 //*PDSE     DD DISP=(NEW,CATLG),SPACE=(&SIZE,RLSE),UNIT=SYSALLDA,
 //*            LIKE=&REL,DSNTYPE=LIBRARY,LRECL=0,DSN=&$PDSE
-//*PDS      DD DISP=(NEW,CATLG),UNIT=SYSALLDA,LIKE=&$PDSE,DSN=&$PDS,
-//*            SPACE=(,(,,5)),DSNTYPE=PDS,LRECL=0   * LRECL=0 mandatory
 //*
 //* unload file (LMOD, member) to sequential
 //* ALIAS info is pulled from MCS
@@ -74,9 +72,11 @@
 //UNLOAD   DD DISP=OLD,DSN=&$UNLOAD       * SYSUT2 option
 //PART     DD DISP=MOD,DSN=&$PART         * SYSUT2 option
 //MCS      DD DISP=SHR,DSN=&$PART
-//* work files for converting LMOD, added by PTF@LMOD
+//* PDSE & PDS are work files for converting LMOD, added by PTF@LMOD
 //*PDSE DD DISP=OLD,DSN=&$PDSE
-//*PDS DD DISP=OLD,DSN=&$PDS
+//* Marist requires $PDS and $PDSE are allocated in different steps
+//*PDS      DD DISP=(NEW,CATLG),UNIT=SYSALLDA,LIKE=&$PDSE,DSN=&$PDS,
+//*            SPACE=(,(,,5)),DSNTYPE=PDS,LRECL=0   * LRECL=0 mandatory
 //*
 //* convert unloaded file to FB80 & save in &$PART
 //*
