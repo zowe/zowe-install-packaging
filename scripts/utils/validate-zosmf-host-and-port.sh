@@ -11,27 +11,26 @@
 ################################################################################
 
 # - ZOSMF_PORT - The SSL port z/OSMF is listening on.
-# - ZOSMF_IP_ADDRESS - The IP Address z/OSMF can be reached
+# - ZOSMF_HOST - The IP Address z/OSMF can be reached
 
 # SH: Note - if node is not available then will continue with a warning
-if [[ -z "${ZOSMF_IP_ADDRESS}" || -z "${ZOSMF_PORT}" ]]
+if [[ -z "${ZOSMF_HOST}" || -z "${ZOSMF_PORT}" ]]
 then 
-    . ${ROOT_DIR}/scripts/utils/error.sh "ZOSMF_IP_ADDRESS and ZOSMF_PORT are not both set"
+    . ${ROOT_DIR}/scripts/utils/error.sh "ZOSMF_HOST and ZOSMF_PORT are not both set"
 else
   if [ ! -z "$NODE_HOME" ];
   then
-    NODE_BIN=${NODE_HOME}/bin/node
-    RESPONSE_CODE=`$NODE_BIN ${ROOT_DIR}/scripts/utils/zosmfHttpRequest.js ${ZOSMF_IP_ADDRESS} ${ZOSMF_PORT}`
+    RESPONSE_CODE=`node ${ROOT_DIR}/scripts/utils/zosmfHttpRequest.js ${ZOSMF_HOST} ${ZOSMF_PORT}`
     if [[ -z "${RESPONSE_CODE}" ]]
     then
-      echo "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_IP_ADDRESS}:${ZOSMF_PORT}/zosmf/info'"
+      echo "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
     else
       if [[ $RESPONSE_CODE != 200 ]]
       then
-        . ${ROOT_DIR}/scripts/utils/error.sh "Could not contact z/OS MF on 'https://${ZOSMF_IP_ADDRESS}:${ZOSMF_PORT}/zosmf/info' - $RESPONSE_CODE"
+        . ${ROOT_DIR}/scripts/utils/error.sh "Could not contact z/OS MF on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info' - $RESPONSE_CODE"
       fi
     fi
   else
-    echo "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_IP_ADDRESS}:${ZOSMF_PORT}/zosmf/info'"
+    echo "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
   fi
 fi
