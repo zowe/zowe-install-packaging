@@ -20,14 +20,8 @@ while getopts "f:h:i:dI" opt; do
       # future use, issue 801, accept parm to stabilize SMPE packaging
       #...="$OPTARG"
       ;;
-    h)  # override default value for ZOWE_DSN_PREFIX
-      # future use, issue 796, accept parm to stabilize SMPE packaging
-      #...="$OPTARG"
-      ;;
-    i)  # override default vlaue for INSTALL_DIR
-      # future use, issue 794, accept parm to stabilize SMPE packaging
-      #...="$OPTARG"
-      ;;
+    h) DSN_PREFIX=$OPTARG;;
+    i) INSTALL_TARGET=$OPTARG;;
     I)
       INSTALL_ONLY=1
       ;;
@@ -88,6 +82,16 @@ echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FIL
 cd $INSTALL_DIR/install
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
+
+if [[ ! -z "$INSTALL_TARGET" ]]
+then
+  ZOWE_ROOT_DIR=$INSTALL_TARGET
+fi
+
+if [[ ! -z "$DSN_PREFIX" ]]
+then
+  ZOWE_DSN_PREFIX=$DSN_PREFIX
+fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
