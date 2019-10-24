@@ -35,8 +35,9 @@
 //         SET $PART=&HLQ..#mlq.&MBR
 //* temp file, LMOD/member -> sequential
 //         SET $UNLOAD=&HLQ..$U.&MBR
-//* temp file, template for converting LMOD, set by PTF@LMOD
-//*        SET $COPY=&HLQ..$C.&MBR
+//* temp files, staging for converting LMOD, set by PTF@LMOD
+//*        SET $PDSE=&HLQ..$E.&MBR
+//*        SET $PDS=&HLQ..$P.&MBR
 //*
 //* skip whole proc if needed
 //*
@@ -54,7 +55,11 @@
 //UNLOAD   DD DISP=(NEW,CATLG),SPACE=(&SIZE,RLSE),UNIT=SYSALLDA,
 #volser
 //            LIKE=&REL,DCB=(DSORG=PS),DSN=&$UNLOAD
-//* no DD PDSE, only used for LMOD, created by PTF@LMOD
+//* no DD PDSE/PDS only used for LMOD, created by PTF@LMOD
+//*PDSE     DD DISP=(NEW,CATLG),SPACE=(&SIZE,RLSE),UNIT=SYSALLDA,
+//*            LIKE=&REL,DSNTYPE=LIBRARY,LRECL=0,DSN=&$PDSE
+//*PDS      DD DISP=(NEW,CATLG),UNIT=SYSALLDA,LIKE=&$PDSE,DSN=&$PDS,
+//*            SPACE=(,(,,5)),DSNTYPE=PDS,LRECL=0   * LRECL=0 mandatory
 //*
 //* unload file (LMOD, member) to sequential
 //* ALIAS info is pulled from MCS
@@ -70,10 +75,8 @@
 //PART     DD DISP=MOD,DSN=&$PART         * SYSUT2 option
 //MCS      DD DISP=SHR,DSN=&$PART
 //* work files for converting LMOD, added by PTF@LMOD
-//*PDSE     DD DISP=(NEW,CATLG),SPACE=(&SIZE,RLSE),UNIT=SYSALLDA,
-//*            LIKE=&REL,DSNTYPE=LIBRARY,LRECL=0,DSN=&$COPY
-//*PDS      DD DISP=(NEW,PASS),UNIT=SYSALLDA,LIKE=&$COPY,
-//*            SPACE=(,(,,5)),DSNTYPE=PDS,LRECL=0   * LRECL=0 mandatory
+//*PDSE DD DISP=OLD,DSN=&$PDSE
+//*PDS DD DISP=OLD,DSN=&$PDS
 //*
 //* convert unloaded file to FB80 & save in &$PART
 //*
@@ -93,10 +96,10 @@
 //* process final disposition of work files
 //*
 //DISP     EXEC PGM=IEFBR14,COND=(4,LT)
-//* process final disposition of work files
 //UNLOAD   DD DISP=(OLD,&DSP),DSN=&$UNLOAD
 //* added by PTF@LMOD
-//*PDSE     DD DISP=(OLD,&DSP),DSN=&$COPY
+//*PDSE     DD DISP=(OLD,&DSP),DSN=&$PDSE
+//*PDS      DD DISP=(OLD,&DSP),DSN=&$PDS
 //*
 //         ENDIF (RC <= 4)
 //*

@@ -176,7 +176,7 @@ function _merge
 test "$debug" && echo && echo "> _merge $@"
 echo "-- creating SYSMOD"
 
-# TODO this is a temp test solution, must suupport 2 PTF creation
+# TODO this is a temp test solution, must support 2 PTF creation
 test "$debug" && echo "for part in \$allParts"
 for part in $allParts
 do

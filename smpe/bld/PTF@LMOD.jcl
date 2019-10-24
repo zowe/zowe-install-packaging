@@ -6,7 +6,8 @@
 //            REL=&REL,                   * hlq.F1, hlq.F2, ...
 //            MBR=                        * member name Fx(<member>)
 //*
-//         SET $COPY=&HLQ..$C.&MBR
+//         SET $PDSE=&HLQ..$E.&MBR
+//         SET $PDS=&HLQ..$P.&MBR
 //*
 //PTF@LMOD EXEC PROC=PTF@,
 //*            DSP='CATLG',                * final DISP of temp files
@@ -16,15 +17,19 @@
 //            GIMDTS=GIMDTS               * IEFBR14 (skip) or GIMDTS
 //* input
 //UNLOAD.SYSUT1 DD DISP=SHR,DSN=&REL(&MBR)                 MBR optional
-//* work files
-//UNLOAD.PDSE DD DISP=(NEW,CATLG),SPACE=(&SIZE,RLSE),UNIT=SYSALLDA,
+//* allocate work files
+//MARKER.PDSE DD DISP=(NEW,CATLG),SPACE=(&SIZE,RLSE),UNIT=SYSALLDA,
 #volser
-//            LIKE=&REL,DSNTYPE=LIBRARY,LRECL=0,DSN=&$COPY
-//UNLOAD.PDS DD DISP=(NEW,PASS),UNIT=SYSALLDA,LIKE=&$COPY,
+//            LIKE=&REL,DSNTYPE=LIBRARY,LRECL=0,DSN=&$PDSE
+//MARKER.PDS DD DISP=(NEW,CATLG),UNIT=SYSALLDA,LIKE=&$PDSE,DSN=&$PDS,
 #volser
 //            SPACE=(,(,,5)),DSNTYPE=PDS,LRECL=0   * LRECL=0 mandatory
+//* use work files, must already exist (depending on system setup)
+//UNLOAD.PDSE DD DISP=OLD,DSN=&$PDSE
+//UNLOAD.PDS DD DISP=OLD,DSN=&$PDS
 //* set final disposition
-//DISP.PDSE DD DISP=(OLD,&DSP),DSN=&$COPY
+//DISP.PDSE DD DISP=(OLD,&DSP),DSN=&$PDSE
+//DISP.PDS DD DISP=(OLD,&DSP),DSN=&$PDS
 //*
 //         PEND
 //*--------
