@@ -91,6 +91,9 @@ checkForErrorsFound
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
 checkForErrorsFound
 
+# Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
+export __UNTAGGED_READ_MODE=V6
+
 DIR=`dirname $0`
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
