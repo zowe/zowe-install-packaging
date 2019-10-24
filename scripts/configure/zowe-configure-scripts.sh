@@ -31,7 +31,7 @@ sed -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{gateway_port}}#${ZOWE_APIM_GATEWAY_PORT}#" \
   -e "s#{{verify_certificates}}#${ZOWE_APIM_VERIFY_CERTIFICATES}#" \
   -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
-  -e "s#{{zosmf_ip_address}}#${ZOWE_ZOSMF_HOST}#" \
+  -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
   -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
   -e "s#{{zowe_ip_address}}#${ZOWE_IPADDRESS}#" \
   -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
