@@ -132,6 +132,8 @@ service:
   gimdtsJob1=
   # comma-separated list of volume labels for GIMDTS allocations
   gimdtsVol=
+  # primary & secondary size (in tracks) for GIMDTS part allocations
+  gimdtsTrks=
 EOF
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 if test $? -ne 0
@@ -213,6 +215,7 @@ do
     _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
     _export service gimdtsJob1 gimdtsJob1                   # internal
     _export service gimdtsVol  gimdtsVolser  $VOLSER        # internal
+    _export service gimdtsTrks gimdtsTrks    "15,750"       # internal
 
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 

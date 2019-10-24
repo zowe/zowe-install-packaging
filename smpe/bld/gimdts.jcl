@@ -9,20 +9,21 @@
 //* Copyright Contributors to the Zowe Project. 2019, 2019
 //*********************************************************************
 //* Job to create Zowe PTF/APAR/USERMOD parts in GIMDTS format
-//* Assumes submitter ensured &HLQ.** has no data sets
+//* Assumes submitter cleaned &HLQ.** and only these data sets exist:
+//* - #hlq
+//* - #hlq.#mlq.*
+//* - #sysprint
 //*********************************************************************
 //*
-//*         ----+----1----+----2----+----3----+----4----+----5----+---
-// SET MCS='#dir' 
-// SET HLQ=#hlq
 //*        ----+----1----+----2----+----3--
+// SET HLQ=#hlq
 // SET SYSOUT=#sysprint
 // SET TOOL=&HLQ
 // JCLLIB ORDER=&TOOL
 //*
 //* added by caller
 //*        SET REL=#rel
-//*#member EXEC PROC=PTF@LMOD,MVS=#member
-//*#member EXEC PROC=PTF@FB80,MVS=#member
-//*#member EXEC PROC=PTF@MVS,MVS=#member
+//*#member EXEC PROC=PTF@LMOD,MBR=#member
+//*#member EXEC PROC=PTF@FB80,MBR=#member
+//*#member EXEC PROC=PTF@MVS,MBR=#member
 //*

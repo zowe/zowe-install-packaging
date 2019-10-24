@@ -18,6 +18,7 @@
 #%
 #% -c is required
 
+# Assumes that SMPMCS and RELFILEs are in sync with each other
 
 # TODO ONNO add overview of changes done by this script
 
@@ -175,11 +176,10 @@ function _merge
 test "$debug" && echo && echo "> _merge $@"
 echo "-- creating SYSMOD"
 
-# loop through all parts
+# TODO this is a temp test solution, must suupport 2 PTF creation
 test "$debug" && echo "for part in \$allParts"
 for part in $allParts
 do
-  _cmd --save $ptf/$sysmod cat $ptf/$part
   _cmd --save $ptf/$sysmod cat "//'${gimdtsHlq}.${MLQ}.$part'"
 done    # for part
 
@@ -272,7 +272,7 @@ do
     member=$(echo "$member      " | sed 's/^\(........\).*/\1/')
 
     # update GIMDTS JCL
-    _cmd --save $log/$jcl echo "//$member EXEC PROC=$proc,MVS=$member"
+    _cmd --save $log/$jcl echo "//$member EXEC PROC=$proc,MBR=$member"
 
     # increase EXEC counter
     let cnt=$cnt+1
@@ -505,9 +505,9 @@ test "$debug" && echo "> _primeJCL $@"
 
 # prime GIMDTS job JCL
 SED=""
-SED="$SED;s:#dir:$ptf:"
-SED="$SED;s:#hlq:$gimdtsHlq:"
 SED="$SED;s:#job1:$gimdtsJob1:"
+SED="$SED;s:#hlq:$gimdtsHlq:"
+SED="$SED;s:#mlq:$MLQ:"
 SED="$SED;s:#sysprint:$2:"
 _cmd --repl $1 sed "$SED" $here/$jcl
 
@@ -541,6 +541,7 @@ then
 else
   SED="s:#volser://            VOL=SER=$gimdtsVolser,:"
 fi    #
+SED="$SED;s:#trks:$gimdtsTrks:"
 SED="$SED;s:#mlq:$MLQ:"
 
 test "$debug" && echo "for file in \$gimdtsTools"
@@ -607,11 +608,21 @@ _cmd rm -f $ptf/$mcs $ptf/xx*
 
 if test -z "$found"
 then
-  echo "** ERROR $me parsing $here/$mcs did not yield MCS data"
+  echo "** ERROR $me parsing ${mcsHlq}.SMPMCS did not yield MCS data"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-echo "   $(ls $ptf/ | wc -l | sed 's/ //g') MCS defintions"
+# move all MCS data to datasets to simplify debugging GIMDTS job issues
+allParts=$(ls $ptf)
+test "$debug" && echo "for file in \$allParts*)"
+for file in $allParts
+do
+  # KEEP DSN IN SYNC WITH $here/PTF@.jcl
+  _alloc "${gimdtsHlq}.${MLQ}.$file" "FB" "80" "PS" "$gimdtsTrks"
+  _cmd mv $ptf/$file "//'${gimdtsHlq}.${MLQ}.$file'"
+done    # for file
+
+echo "   $(echo $allParts | wc -l | sed 's/ //g') MCS defintions"
 test "$debug" && echo "< _metaData"
 }    # _metaData
 

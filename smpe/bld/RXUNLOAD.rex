@@ -26,10 +26,11 @@
  * For all other members:
  * - Binary OCOPY is used.
  *
- * >>--RXUNLOAD--+--------------------+------------------------------><
- *               +-member--+-------+--+
- *                         +-alias-+
- *                         +-<-,---+
+ * >>--RXUNLOAD--+--------------------------+------------------------><
+ *               +-member--+--+-------+--+--+
+ *                         |  +-alias-+  |
+ *                         |  +-<-,---+  |
+ *                         +------.------+
  *
  * Return code:
  * 0:  completed successfully
@@ -127,10 +128,30 @@ then do
 end    /* */
 Alias=translate(Alias,' ',',')           /* comma -> blank separated */
 
+/* get member name from MCS (also get PDS flag & do alias setup) */
+select
+when Alias == '' then do                     /* get aliases from MCS */
+  parse value _mcs(ddMCS,Mbr) with PDS Mbr Alias
+end
+when Alias == '.' then do               /* skip all alias processing */
+  parse value _mcs(ddMCS,Mbr) with PDS Mbr .
+  Alias=''
+end
+otherwise                         /* get alias from startup argument */
+  parse value _mcs(ddMCS,Mbr) with PDS Mbr .
+end    /* select */
+
+/* safety net, should never hit */
+if Mbr == ''
+then do
+  say '>> ERROR: a member name is required (arg, SYSUT1 or MCS)'
+  exit 8                                            /* LEAVE PROGRAM */
+end    /* */
+
 /* interpret DCB of SYSUT1 to decide which copy method to use */
 if pos('U',SYSRECFM) == 0
-  then cRC=_ocopy(In,Out)                                /* non-lmod */
-  else cRC=_iebcopy(In,Out,ddMCS,Mbr,Alias)           /* load module */
+  then cRC=_ocopy(In,Out,Mbr)                            /* non-lmod */
+  else cRC=_iebcopy(In,Out,Mbr,Alias,PDS)             /* load module */
 exit cRC                                            /* LEAVE PROGRAM */
 
 
@@ -138,18 +159,36 @@ exit cRC                                            /* LEAVE PROGRAM */
  * --- Copy member in SYSUT1 to SYSUT2 using OCOPY
  * Returns RC
  * Args:
- *  In   : name of data set linked to DD SYSUT1
- *  Out  : name of data set linked to DD SYSUT2
+ *  In : name of data set linked to DD SYSUT1
+ *  Out: name of data set linked to DD SYSUT2
+ *  Mbr: name of member to process
  *
  * OCOPY documentation in "UNIX System Services Command Reference
  *  (SA23-2280)"
+ * ALLOC documentation in "TSO/E Command Reference (SA22-7782)"
+ * FREE documentation in "TSO/E Command Reference (SA22-7782)"
  */
 _ocopy: PROCEDURE EXPOSE Debug ExecEnv
-parse arg In,Out
-if Debug then say '> _ocopy' In','Out
+parse arg In,Out,Mbr
+if Debug then say '> _ocopy' In','Out','Mbr
 Mode='BINARY'
 
-say '> from:' In
+/* is member part of SYSUT1 allocation ? */
+parse var In DSN '(' Member .
+if Member = ''
+then do
+  say '> reallocating SYSUT1 as DISP=SHR,DSN='DSN'('Mbr')'
+  "FREE FI(SYSUT1)"
+  "ALLOC FI(SYSUT1) REUSE SHR DSN('"DSN"("Mbr")')"
+  if rc > 0
+  then do
+    /* error details already reported */
+    say '>> ERROR: reallocating SYSUT1 ended with RC' rc
+    return 8                                        /* LEAVE ROUTINE */
+  end    /* */
+end    /* realloc with member */
+
+say '> from:' DSN Mbr
 say '> to:  ' Out
 say '> using' Mode 'OCOPY'
 
@@ -157,7 +196,7 @@ say '> using' Mode 'OCOPY'
 cRC=rc
 
 if cRC \= 0
-  then say '>> ERROR: OCOPY ended with rc' cRC
+  then say '>> ERROR: OCOPY ended with RC' cRC
 
 if Debug then say '< _ocopy' cRC
 return cRC    /* _ocopy */
@@ -169,9 +208,9 @@ return cRC    /* _ocopy */
  * Args:
  *  In   : name of data set linked to DD SYSUT1
  *  Out  : name of data set linked to DD SYSUT2
- *  ddMCS: name of DD holding MCS data
- *  Mbr  : '' or name of member to process
- *  Alias: '', '.', or list of aliases to process
+ *  Mbr  : name of member to process
+ *  Alias: '' or list of aliases to process
+ *  PDS  : 1 (PDS) or 0 (PDS/E)
  *
  * IEBCOPY changes DCB upon unload, use only for LMODs
  *
@@ -180,35 +219,16 @@ return cRC    /* _ocopy */
  * FREE documentation in "TSO/E Command Reference (SA22-7782)"
  */
 _iebcopy: PROCEDURE EXPOSE Debug ExecEnv
-parse arg In,Out,ddMCS,Mbr,Alias
-if Debug then say '> _iebcopy' In','Out','ddMCS','Mbr','Alias
+parse arg In,Out,Mbr,Alias,PDS
+if Debug then say '> _iebcopy' In','Out','Mbr','Alias','PDS
 cRC=0                                              /* assume success */
-
-/* get member name from MCS (also get PDS flag & do alias setup) */
-select
-when Alias == '' then do                     /* get aliases from MCS */
-  parse value _lmod(ddMCS,Mbr) with PDS Mbr Alias
-end
-when Alias == '.' then do               /* skip all alias processing */
-  parse value _lmod(ddMCS,Mbr) with PDS Mbr .
-  Alias=''
-end
-otherwise                         /* get alias from startup argument */
-  parse value _lmod(ddMCS,Mbr) with PDS Mbr .
-end    /* select */
-
-if Mbr == ''
-then do
-  say '>> ERROR: a member name is required (arg, SYSUT1 or MCS)'
-  cRC=max(cRC,8)
-end    /* */
 
 if \_ddExist('PDSE') | \_ddExist('PDS')
 then do
   say '>> ERROR: DD PDSE and PDS must be allocated'
   cRC=max(cRC,8)
 end    /* */
-  
+
 /* is member part of SYSUT1 allocation ? */
 parse var In DSN '(' Member .
 if Member \= ''
@@ -216,8 +236,13 @@ then do
   say '> reallocating SYSUT1 as DISP=SHR,DSN='DSN
   "FREE FI(SYSUT1)"
   "ALLOC FI(SYSUT1) REUSE SHR DSN('"DSN"')"
-  if rc > 0 then cRC=max(cRC,8)            /* error already reported */  
-end    /* */
+  if rc > 0
+  then do
+    /* error details already reported */
+    say '>> ERROR: reallocating SYSUT1 ended with RC' rc
+    cRC=max(cRC,8)
+  end    /* */
+end    /* realloc without member */
 
 if cRC > 0
 then do
@@ -397,27 +422,30 @@ return MCS.1    /* _readMCS */
  *  ddMCS: name of DD holding MCS data
  *  Mbr  : '' or member name
  */
-_lmod: PROCEDURE EXPOSE Debug ExecEnv
+_mcs: PROCEDURE EXPOSE Debug ExecEnv
 parse arg ddMCS,Mbr
-if Debug then say '> _lmod' ddMCS','Mbr
+if Debug then say '> _mcs' ddMCS','Mbr
 PDS=0  /* FALSE */                                   /* assume PDS/E */
+Alias=''
 
 MCS=translate(_readMCS(ddMCS))   /* uppercase MCS data for this part */
 /* sample output:
- * ++PROGRAM(ZWESAUX)   SYSLIB(SZWEAUTH) DISTLIB(AZWEAUTH) RELFILE(3) .
+ * ++PROGRAM(ZWESAUX )  SYSLIB(SZWEAUTH) DISTLIB(AZWEAUTH) RELFILE(3) .
  */
-parse var MCS . '++' Type '(' Part ')' .     /* is MCS a ++PROGRAM ? */
-if strip(Type) \== 'PROGRAM'
-then nop                                  /* no MCS or not ++PROGRAM */
-else do                                                 /* ++PROGRAM */
-  Part=strip(Part)
-  if (Mbr \== '') & (Mbr \== Part) & (Part \== '')
-  then do
-    say '>> ERROR: member' Mbr 'is selected but MCS data is for' Part
-    say '>>' MCS
-    exit 8                                          /* LEAVE PROGRAM */
-  end    /* */
 
+/* get ++ type & part name */
+parse var MCS . '++' Type . '(' Part . ')' .
+
+/* safety net */
+if (Mbr \== '') & (Mbr \== Part) & (Part \== '')
+then do
+  say '>> ERROR: member' Mbr 'is selected but MCS data is for' Part
+  say '>>' MCS
+  exit 8                                            /* LEAVE PROGRAM */
+end    /* */
+
+if Type == 'PROGRAM'
+then do
   /* is there an ALIAS definition ? */
   parse var MCS found 'ALIAS' . '(' Alias ')' .
   /* if ALIAS is defined then "found" holds at least '++PROGRAM' */
@@ -429,10 +457,10 @@ else do                                                 /* ++PROGRAM */
   parse var MCS found 'SYSLIB' . '(' target ')' .
   if (found \== '') & (right(strip(target),3) == 'LPA')
     then PDS=1  /* TRUE */
-end    /* */
+end    /* ++PROGRAM */
 
-if Debug then say '< _lmod' _boolean(PDS) Mbr Alias
-return PDS Mbr Alias    /* _lmod */
+if Debug then say '< _mcs' _boolean(PDS) Part Alias
+return PDS Part Alias    /* _mcs */
 
 
 /*---------------------------------------------------------------------
