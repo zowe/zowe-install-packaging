@@ -110,9 +110,6 @@ then
   # Create the user configurable api-defs
   STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-mediation/api-defs
   mkdir -p ${STATIC_DEF_CONFIG_DIR}
-
-  # Until ui explorers componentised will copy them from the old location
-  # cp ${ROOT_DIR}/components/api-mediation/api-defs/* ${STATIC_DEF_CONFIG_DIR}
 fi
 
 # Validate component properties if script exists

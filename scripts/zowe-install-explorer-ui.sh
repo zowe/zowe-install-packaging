@@ -42,10 +42,9 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   echo "  Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
   pax -rf $EXPLORER_PLUGIN_PAX -ppx
 
-  #TODO make sure scripts end up in files directory not bin.
   EXPLORER_UI_START_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-start.sh
   EXPLORER_UI_CONFIGURE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-configure.sh
-  #EXPLORER_UI_VALIDATE_SCRIPT
+  EXPLORER_UI_VALIDATE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-validate.sh
 
   if [ ! -f $EXPLORER_UI_START_SCRIPT ]; then
     echo "  Error: Explorer ${COMPONENT_ID} ui start script (start-explorer-${COMPONENT_ID}-ui-server.sh) missing"
@@ -61,13 +60,13 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
     mv ${EXPLORER_UI_CONFIGURE_SCRIPT} configure.sh
   fi
 
+  if [[ -f ${EXPLORER_UI_VALIDATE_SCRIPT} ]]
+  then
+    cp ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
+  fi
+
   rm -rf $EXPLORER_INSTALL_FOLDER/bin/scripts
 
-
-  # if [[ -f ${EXPLORER_UI_VALIDATE_SCRIPT} ]]
-  # then
-  #   cp ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
-  # fi
   chmod -R 755 "${ZOWE_ROOT_DIR}/components/explorer-${COMPONENT_ID}/bin"
 
 done
