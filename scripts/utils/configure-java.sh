@@ -10,15 +10,15 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-DIRECTORY=$1
-USERID=`whoami`
+# if JAVA_HOME set by user, don't override
+if [[ ! -f "$JAVA_HOME/bin/java" ]]
+then
+  export JAVA_HOME=$ZOWE_JAVA_HOME
+fi
 
-$(. . ${ROOT_DIR}/scripts/utils/validateDirectoryIsAccessible.sh)
-AUTH_RETURN_CODE=$?
-if [[ $AUTH_RETURN_CODE == "0" ]];
-then	
-	if [[ ! -w ${DIRECTORY} ]]
-	then	
-	  . ${ROOT_DIR}/scripts/utils/error.sh "Directory '${DIRECTORY}' does not have write access"	
-	fi
+#Make sure Java is available on the PATH
+if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]];
+then
+  echo "Appending ZOWE_JAVA_HOME/bin to the PATH..."
+  export PATH=$PATH:$JAVA_HOME/bin
 fi
