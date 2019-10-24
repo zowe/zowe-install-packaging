@@ -30,6 +30,7 @@ gimdtsTools="$gimdtsTools PTF@LMOD.jcl"
 gimdtsTools="$gimdtsTools PTF@MVS.jcl"
 gimdtsTools="$gimdtsTools RXDDALOC.rex"
 gimdtsTools="$gimdtsTools RXUNLOAD.rex"
+instructions=ptf.readme.htm    # PTF install instructions
 jcl=gimdts.jcl                 # GIMDTS invocation JCL
 sysprint=gimdts.sysprint.log   # GIMDTS SYSPRINT log
 submitScript=wait-for-job.sh   # submit script
@@ -188,6 +189,65 @@ test "$debug" && echo "< _merge"
 }    # _merge
 
 # ---------------------------------------------------------------------
+# --- create install instructions
+# ---------------------------------------------------------------------
+function _readme
+{
+test "$debug" && echo && echo "> _readme $@"
+echo "-- creating SYSMOD readme"
+
+# create <ptf>.readme.htm name
+# ${sysmod%%.*}       keep up to first . (exclusive)
+# ${instructions#*.}  keep from first . (exclusive)
+readme=${sysmod%%.*}.${instructions#*.} 
+
+# TODO  create SED to substitute all these
+_cmd cp $here/$instructions $log/$readme
+#ptf
+#8ptf
+#prod   full product name
+#fmid   $FMID
+#pfx    $RFDSNPFX
+#rework
+#pre
+#req
+#sup
+#pri    in trks
+#sec    in trks
+#bytes
+#hold   (will be multi-line)
+#dsnreq DSN of coreq (can be multi-line)
+
+test "$debug" && echo "< _readme"
+}    # _readme
+
+# ---------------------------------------------------------------------
+# --- zip up sysmod & instructions
+# ---------------------------------------------------------------------
+function _zip
+{
+test "$debug" && echo && echo "> _zip $@"
+echo "-- creating SYSMOD zip"
+
+zip={FMID}.${sysmod}.zip
+
+# convert html encoding from EBCDIC to ASCII
+_cmd --repl $ptf/$readme iconv -t ISO8859-1 -f IBM-1047 $log/$readme
+
+# go to correct path to avoid path inclusion in zip
+_cmd cd $ptf
+
+# TODO create directory that holds pax & zip
+# create zip file (c: create, M: no manifest, f: file name)
+_cmd $JAVA_HOME/bin/jar -cMf $ptf/$zip  $sysmod $readme
+
+# return to base
+_cmd --null cd -
+
+test "$debug" && echo "< _zip"
+}    # _zip
+
+# ---------------------------------------------------------------------
 # --- create & submit GIMDTS job
 # Assumes that all parts have metadata, and all metadata has a part
 # ---------------------------------------------------------------------
@@ -284,7 +344,7 @@ _submit $log/$jcl "$SYSPRINT"
 
 # show job output in debug mode
 if test "$debug"
-then 
+then
   echo "-- $sysprint $(cat $log/$sysprint | wc -l) line(s)"
   sed 's/^/. /' $log/$sysprint                # show prefixed with '. '
   echo "   GIMZIP successful"
@@ -338,7 +398,7 @@ then
   test "$debug" && echo "GIMDTS failure"
   echo "-- $sysprint $(cat $log/$sysprint | wc -l) line(s)"
   sed 's/^/. /' $log/$sysprint                # show prefixed with '. '
-  
+
   # error details already reported
   echo "** ERROR $me script RC $submitRC for submit of job $1"
   case "$submitRC" in
@@ -482,12 +542,12 @@ then
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-if test "$debug" 
-then 
+if test "$debug"
+then
   if test "$sTaTuS" -eq 0
-  then 
+  then
     echo "< _testDCB TRUE"
-  else 
+  else
     echo "< _testDCB FALSE"
   fi    #
 fi    #    debug
@@ -825,14 +885,20 @@ _metaData
 # stage GIMDTS JCL procedures & support REXX
 _tools
 
-# create & submit GIMDTS job
+# create & submit GIMDTS job (job creates parts)
 _gimdts
 
 # create sysmod header (PTF/APAR/USERMOD)
 _header
 
-# merge header, MCS metadata, and parts
+# merge header and parts
 _merge
+
+# create install instructions
+_readme
+
+# zip up sysmod & instructions
+_zip
 
 # we are done with these, clean up
 _cmd cd $here                         # make sure we are somewhere else

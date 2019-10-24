@@ -1,0 +1,196 @@
+<HTML>
+<!--
+  The following stubs are used as part of the install instructions:
+  - #hlq
+  - #volser
+  - #globalcsi
+  - #dzone
+  - #tzone
+  -->
+<HEAD>
+  <TITLE>Installation instructions for fix #ptf for
+  #prod (FMID #fmid)</TITLE>
+  <META http-equiv=Content-Type content="text/html; charset=windows-1252">
+</HEAD>
+<BODY>
+  <H2>Installation instructions for fix #ptf for
+  #prod (FMID #fmid)</H2>
+  <P>The fix is shipped as file #pfx.#fmid.#ptf</P>
+  <P>The fix has rework (build) date #rework</P>
+ 
+  <P>The following fixes are prerequisites for this fix:
+  <UL>
+  #pre
+  </UL></P>
+ 
+  <P>The following fixes are corequisites for this fix:
+  <UL>
+  #req
+  </UL></P>
+ 
+  <P>The following fixes are superseded by this fix: </P>
+  #sup
+  </P>
+ 
+  <H3><A name="Overview of the installation steps">Overview of the installation
+    steps</A></H3>
+  <P>Steps required to install the fix:
+  <OL type=1>
+    <LI><A href="#alloc">Allocate host data sets for the fix</A>.</LI>
+    <LI><A href="#upload">Upload the fix from your workstation to z/OS</A>.</LI>
+    <LI><A href="#hold">SMP/E hold information for the fix</A>.</LI>
+    <LI><A href="#acpt">Perform SMP/E ACCEPT for the prerequisites</A>.</LI>
+    <LI><A href="#smpe">Perform SMP/E RECEIVE and APPLY for the fix</A>.</LI>
+    <LI><A href="#boot">Restart started tasks to activate changes</A>.</LI>
+   </OL></P>
+ 
+  <H3><A name=alloc>Allocate host data sets for the fix</A></H3>
+  <P>A sequential data set must be allocated on the z/OS system to receive the
+    fix that you will upload from your workstation. You can do this by
+    submitting the job below. Add a job card and modify the parameters to meet
+    your site's requirements before submitting.</P>
+  <PRE>
+//*
+//* Change #hlq to the high level qualifier used to upload the fix.
+//* (optional) Uncomment and change #volser to specify a volume.
+//*
+//         SET HLQ=<STRONG>#hlq</STRONG>
+//*
+//ALLOC    EXEC PGM=IEFBR14
+//#8ptf DD DSN=&HLQ..#pfx.#fmid.#ptf,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSORG=PS,
+//            RECFM=FB,
+//            LRECL=80,
+//            UNIT=SYSALLDA,
+//*            VOL=SER=<STRONG>#volser</STRONG>,
+//*            BLKSIZE=6160,
+//            SPACE=(TRK,(#pri,#sec))
+//*
+  </PRE>
+ 
+  <H3><A name=upload>Upload the fix from your workstation to z/OS</A></H3>
+  <P>Upload the file in binary format from your workstation to the z/OS data
+set. On a Windows system, you can use FTP from a command prompt to upload the
+file. In the sample dialog shown below, commands or other information entered
+by the user are in bold, and the following values are assumed:</P>
+  <TABLE width="90%" border=1><!--  cols="25 75" --><TBODY>
+    <TR><TH align=left width="25%">User enters:</TH>
+        <TH align=left width="75%">Values</TH></TR>
+    <TR><TD vAlign=top width="25%"><TT>mvsaddr</TT></TD>
+        <TD vAlign=top width="75%">TC P/IP address of the z/OS system</TD></TR>
+    <TR><TD vAlign=top width="25%"><TT>tsouid</TT></TD>
+        <TD vAlign=top width="75%">Your TSO user ID</TD></TR>
+    <TR><TD vAlign=top width="25%"><TT>tsopw</TT></TD>
+        <TD vAlign=top width="75%">Your TSO password</TD></TR>
+    <TR><TD vAlign=top width="25%"><TT>d:</TT></TD>
+        <TD vAlign=top width="75%">Your drive containing the fix files</TD></TR>
+    <TR><TD vAlign=top width="25%"><TT>hlq</TT></TD>
+        <TD vAlign=top width="75%">High-level qualifier that you used for the
+          data set that you allocated in the job above</TD></TR>
+  </TBODY></TABLE>
+  <PRE>
+C:\&gt;<STRONG>ftp mvsaddr</STRONG>
+<I>Connected to mvsaddr.
+220-FTPD1 IBM FTP CS %version% at mvsaddr, %time% on %date%.
+220 Connection will close if idle for more than 60 minutes.
+ 
+User (mvsaddr:(none)):</I> <STRONG>tsouid</STRONG>
+<I>331 Send password please.
+ 
+Password:</I> <STRONG>tsopw</STRONG>
+<I>230 tsouid is logged on.&nbsp; Working directory is "tsouid.".
+ 
+</I>ftp&gt; <STRONG>cd ..</STRONG>
+<I>250 "" is the working directory name prefix.
+ 
+</I>ftp&gt; <STRONG>cd #hlq</STRONG>
+<I>250 "#hlq." is the working directory name prefix.
+ 
+</I>ftp&gt; <STRONG>binary</STRONG>
+<I>200 Representation type is Image
+ 
+</I>ftp&gt; <STRONG>put d:\#pfx.#fmid.#ptf</STRONG>
+<I>200 Port request OK.
+125 Storing data set #hlq.#pfx.#fmid.#ptf
+250 Transfer completed successfully
+#bytes bytes sent in 0.28 seconds
+ 
+</I>ftp&gt; <STRONG>quit</STRONG>
+<I>221 Quit command received. Goodbye.</I>
+  </PRE>
+ 
+  <H3><A name="hold">SMP/E hold information for the fix</A></H3>
+  <PRE>
+#hold
+  </PRE>
+ 
+  <H3><A name="acpt">Perform SMP/E ACCEPT for the prerequisites</A></H3>
+  <P>SMP/E ACCEPT the prerequisites to facilitate an easy backout of the
+    fix, if required. Note that once accepted, you cannot backout the
+    accepted prerequisites.</P>
+ 
+  <P>This step can be skipped if there are no prerequisites, or if
+     there is a reason to not make a prerequisite permanent.</P>
+ 
+  <P>You can accept the prerequisites by submitting the job below.
+     Add a job card and modify the parameters to meet your site's
+     requirements before submitting.</P>
+  <PRE>
+//*
+//* Change #globalcsi to the data set name of your global CSI.
+//* Change #dzone to your CSI distribution zone name.
+//*
+//ACCEPT   EXEC PGM=GIMSMP,REGION=0M
+//SMPCSI   DD DISP=OLD,DSN=<STRONG>#globalcsi</STRONG>
+//SMPCNTL  DD *
+   SET BOUNDARY(<STRONG>#dzone</STRONG>) .
+   ACCEPT SELECT(
+#pre
+   ) REDO COMPRESS(ALL) BYPASS(HOLDSYS,HOLDERROR).
+//*
+  </PRE>
+ 
+  <H3><A name="smpe">Perform SMP/E RECEIVE and APPLY for the fix</A></H3>
+  <P>SMP/E RECEIVE and APPLY the fix.</P>
+ 
+  <P>You can do this by submitting the job below. Add a job card and
+     modify the parameters to meet your site's requirements before
+     submitting.</P>
+  <PRE>
+//*
+//* Change #hlq to the high level qualifier used to upload the fix.
+//* Change #globalcsi to the data set name of your global CSI.
+//* Change #tzone to your CSI target zone name.
+//*
+//         SET HLQ=<STRONG>#hlq</STRONG>
+//         SET CSI=<STRONG>#globalcsi</STRONG>
+//*
+//RECEIVE  EXEC PGM=GIMSMP,REGION=0M
+//SMPCSI   DD DISP=OLD,DSN=&CSI
+//SMPPTFIN DD DISP=SHR,DSN=&HLQ..#pfx.#fmid.#ptf
+#dsnreq
+//SMPCNTL  DD *
+   SET BOUNDARY(GLOBAL) .
+   RECEIVE SELECT(
+     #ptf
+     #req
+   ) SYSMODS LIST .
+//*
+//APPLY    EXEC PGM=GIMSMP,REGION=0M
+//SMPCSI   DD DISP=OLD,DSN=&CSI
+//SMPCNTL  DD *
+   SET BOUNDARY(<STRONG>#tzone</STRONG>) .
+   APPLY SELECT(
+     #ptf
+     #pre
+   ) REDO COMPRESS(ALL) BYPASS(HOLDSYS,HOLDERROR).
+//*
+  </PRE>
+ 
+  <H3><A name="boot">Restart started tasks to activate changes</A></H3>
+  <P>Restart started tasks to activate changes.</P>
+ 
+</BODY></HTML>
+ 
+ 
