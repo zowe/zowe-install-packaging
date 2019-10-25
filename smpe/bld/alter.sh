@@ -34,28 +34,6 @@ test "$debug" && echo && echo "> $me $@"
 # ---------------------------------------------------------------------
 function _zowePRE                     # executed before zowe-install.sh
 {
-# >>> zowe-install.yaml
-# can be removed once these issue are closed
-# https://github.com/zowe/zowe-install-packaging/issues/794
-# https://github.com/zowe/zowe-install-packaging/issues/796
-
-yamlI=$dirI/install/zowe-install.yaml
-
-# only if there is no backup of original to avoid losing original
-if test ! -f $yamlI.orig
-then 
-  # save original file
-  _cmd mv $yamlI $yamlI.orig
-fi    #
-
-# update file to specify desired install location
-SED="/rootDir/s!.*!  rootDir=$stage!"
-SED="$SED;/datasetPrefix/s!.*!  datasetPrefix=$mvsI!"
-_sed $yamlI.orig $yamlI
-
-# show "install:" section of file, prefixed by '. '
-sed -n '/^install:/,/^$/s/^/. /p' $yamlI
-
 # >>> .zowe_profile
 # can be removed once this issue is closed
 # https://github.com/zowe/zowe-install-packaging/issues/804
@@ -73,26 +51,6 @@ fi    #
 # ---------------------------------------------------------------------
 function _zowePOST                    # executed after zowe-install.sh
 {
-# >>> zowe-install.yaml
-# can be removed once these issue are closed
-# https://github.com/zowe/zowe-install-packaging/issues/794
-# https://github.com/zowe/zowe-install-packaging/issues/796
-
-yamlI=$dirI/install/zowe-install.yaml
-yamlO=$dirO/scripts/configure/zowe-install.yaml
-
-# only if there is a backup of original
-if test -f $yamlI.orig
-then 
-  # redo what zowe-install.sh did, but without our updates
-  SED="/rootDir/d"
-  _sed $yamlI.orig $yamlO
-  _cmd mv $yamlI.orig $yamlI
-fi    #
-
-# show "install:" section of file, prefixed by '. '
-sed -n '/^install:/,/^$/s/^/. /p' $yamlO
-
 # >>> .zowe_profile
 # can be removed once this issue is closed
 # https://github.com/zowe/zowe-install-packaging/issues/804
