@@ -102,7 +102,7 @@ else
 fi    #
 
 # create GIMZIP JCL
-echo "-- creating GIMZIP"
+echo "-- creating GIMZIP job"
 echo "   job1    ='$gimzipJob1'"
 echo "   parm    ='$gimzipParm'"
 echo "   volser  ='$volser'"
@@ -121,6 +121,14 @@ test "$debug" && cat $log/$jcl
 
 # run the GIMZIP job
 $here/$submitScript $debug $log/$jcl
+# returns
+# 0: job completed with RC 0
+# 1: job completed with an acceptable RC
+# 2: job completed, but not with an acceptable RC
+# 3: job ended abnormally (abend, JCL error, ...)
+# 4: job did not complete in time
+# 5: job purged before we could process
+# 8: error
 gimzipRC=$?
 
 # give z/OS time to free the data sets before accessing them again
@@ -276,16 +284,19 @@ function _size
 {
 test "$debug" && echo && echo "> _size $@"
 
-# call script to calculate size
-test "$debug" && $here/$sizeScript -d $1     # show everything in debug
-$here/$sizeScript $1 1>/dev/null
-primary=$?
-
-if test $primary -le 0
+# show everything in debug mode
+test "$debug" && $here/$sizeScript -d "$1"
+# get size (no debug mode to avoid debug messages)
+primary=$($here/$sizeScript "$1")
+# returns 0 for OK, 8 for error
+rc=$?
+if test $rc -ne 0
 then
+  echo $primary                          # variable holds error message
   echo "** ERROR $me unable to estimate extract size"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
+echo "   $primary tracks required for unpax zFS"
   
 # save value so it can be used during program directory creation
 _cmd --repl $log/$extractSize echo $primary
@@ -374,6 +385,8 @@ function _alloc
 test "$debug" && echo && echo "> _alloc $@"
 
 # remove previous run
+test "$debug" && echo
+test "$debug" && echo "\"$here/$existScript $1\""
 $here/$existScript "$1"
 # returns 0 for exist, 2 for not exist, 8 for error
 rc=$?
@@ -387,10 +400,13 @@ then
 fi    #
 
 # create target data set
+test "$debug" && echo
 if test -z "$VOLSER"
 then
+  test "$debug" && echo "$here/$allocScript -h $1 $2 $3 $4 $5"
   $here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
 else
+  test "$debug" && echo "$here/$allocScript -h -V $VOLSER $1 $2 $3 $4 $5"
   $here/$allocScript -h -V "$VOLSER" "$1" "$2" "$3" "$4" "$5"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error

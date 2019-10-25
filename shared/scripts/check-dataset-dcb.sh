@@ -99,7 +99,6 @@ then
     echo "** ERROR $me LISTDS failed"
     echo "$cmd"
     echo "$cmdOut"
-    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
     rc=8
   fi    #
   test "$debug" && echo "$cmdOut"

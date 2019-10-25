@@ -123,6 +123,17 @@ gimzip:
   JAVA_HOME=
   # SMP/ E home directory, default uses existing SMP_HOME if set
   SMP_HOME=
+service:
+  # directory holding PTF/APAR/USERMOD & readme (also used for staging)
+  ptf=
+  # high level qualifier for GIMDTS work files
+  gimdtsHlq=
+  # GIMDTS JOB card, line 1
+  gimdtsJob1=
+  # comma-separated list of volume labels for GIMDTS allocations
+  gimdtsVol=
+  # primary & secondary size (in tracks) for GIMDTS part allocations
+  gimdtsTrks=
 EOF
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 if test $? -ne 0
@@ -200,6 +211,12 @@ do
                                   ${SMP_HOME:-/usr/lpp/smp} # permanent
 # pd
 # service
+    _export service ptf        ptf           ${ROOT}/ptf    # output
+    _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
+    _export service gimdtsJob1 gimdtsJob1                   # internal
+    _export service gimdtsVol  gimdtsVolser  $VOLSER        # internal
+    _export service gimdtsTrks gimdtsTrks    "15,750"       # internal
+
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 
   fi    # process key=value

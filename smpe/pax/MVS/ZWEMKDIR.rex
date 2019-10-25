@@ -87,10 +87,10 @@
  */
 /* user variables ...................................................*/
 DefaultMask=755                       /* default permission bit mask */
+Debug=0                                  /* assume not in debug mode */
 
 /* system variables .................................................*/
 cRC=0                                              /* assume success */
-Debug=0                                  /* assume not in Debug mode */
 Super=1                         /* assume issueing commands as UID 0 */
 RootDD=''                                 /* assume no root provided */
 FileSys=''                    /* assume no need to mount file system */

@@ -13,6 +13,7 @@
 # Submit job and wait for completion.
 #
 # Arguments:
+# -c         (optional) cancel job if not completed in time
 # -d         (optional) enable debug messages
 # -t tmpdir  (optional) directory for temporary data
 # -x maxRC   (optional) highest acceptable RC (inclusive), default 0
@@ -94,7 +95,7 @@ _cmd umask 0022                                  # similar to chmod 755
 unset rc
 
 # Clear input variables
-#unset
+unset cancel
 # do NOT unset TMPDIR
 
 # Set defaults
@@ -103,8 +104,9 @@ maxRC=0
 
 # Get startup arguments
 args="$@"
-while getopts t:x:d opt
+while getopts t:x:cd opt
 do case "$opt" in
+  c)   cancel=1;;
   d)   debug="-d";;
   t)   TMPDIR="$OPTARG";;
   x)   maxRC="$OPTARG";;
@@ -169,8 +171,7 @@ rm -f $tmpFile 2>/dev/null                    # ignore possible failure
 test "$rc" -a ! "$IgNoRe_ErRoR" && exit 8                        # EXIT
 
 # Get job name
-#_cmd --repl $tmpFile $here/$cmdScript $debug "\$D${jobId},CC"
-_cmd --repl $tmpFile $here/$cmdScript        "\$D${jobId},CC"
+_cmd --repl $tmpFile $here/$cmdScript $debug "\$D${jobId},CC"
 # sample output of $DjobId,CC
 # $HASP890 JOB(GIMZIP)    CC=(COMPLETED,RC=0)
 # $HASP890 JOB(IBMUSER)   CC=(ABENDED,ABEND=(S622,U0000))
@@ -194,8 +195,7 @@ for secs in 15 45 60 60 60 60 120 120 120 120 120   # wait up to 15 min
 do
   _cmd sleep $secs
   echo "   $(date 2>/dev/null)"                    # show time progress
-#  _cmd --repl $tmpFile $here/$cmdScript $debug "\$D${jobId},CC"
-  _cmd --repl $tmpFile $here/$cmdScript        "\$D${jobId},CC"
+  _cmd --repl $tmpFile $here/$cmdScript $debug "\$D${jobId},CC"
   # sample output of $DjobId,CC
   # $HASP890 JOB(GIMZIP)    CC=(COMPLETED,RC=0)
   # $HASP890 JOB(IBMUSER)   CC=(ABENDED,ABEND=(S622,U0000))
@@ -247,8 +247,14 @@ then
   rc=3
 elif test -z "$noJob"                                  # still active ?
 then
+  test -n "$cancel" && _cmd --null $here/$cmdScript $debug "\$C${jobId}"
   echo "** ERROR $me job $jobName ($jobId) has not yet ended"
   rc=4
+  if test -n "$cancel" 
+  then
+    _cmd --null $here/$cmdScript $debug "\$C${jobId}"
+    _cmd sleep 5     # give system time to process cancel & close files
+  fi    #
 else                                                     # already gone 
   echo "** ERROR $me job $jobName ($jobId) purged before processing"
   rc=5
