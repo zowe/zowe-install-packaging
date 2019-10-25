@@ -25,7 +25,7 @@ then
         . ${ROOT_DIR}/scripts/utils/error.sh "${NODE_HOME}/bin/node is not functioning correctly";
       fi
 
-      NODE_MIN_VERSION=6.0
+      NODE_MIN_VERSION=6.14
       NODE_VERSION=`${NODE_HOME}/bin/node --version | sed 's/^.\{1\}//' | cut -d. -f1,2 2>&1`
       if [[ `echo "$NODE_VERSION $NODE_MIN_VERSION" | awk '{print ($1 < $2)}'` == 1 ]];
       then
