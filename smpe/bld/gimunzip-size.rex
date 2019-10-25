@@ -10,17 +10,18 @@
  * Copyright Contributors to the Zowe Project. 2019, 2019
  */
 /*
+ *% Get a list of data set names that match a filter (sent to stdout).
  *% Estimate the size (in tracks) of the file system needed to
- *% extract GIMZIP output and run GIMUNZIP (result in RC).
- *% Note: stdout holds error and debug lines.
+ *% extract GIMZIP output and run GIMUNZIP (result in stdout).
+ *% Note: debug adds lines starting with >, . or <.
  *%
  *% Arguments:
  *% -d     (optional) enable debug messages
  *% path   path of GIMZIP pax file            
  *%
  *% Return code:
- *% -1: error
- *% >0: size in tracks
+ *% 0: calculated size is in stdout
+ *% 8: error
  */
 /* REXX error trap ..................................................*/
 signal JUMP_TRAP_CODE                   /* jump over error trap code */
@@ -50,7 +51,7 @@ otherwise
 end    /* select */     /* FAILURE RC (<0) can be decimal abend code */
 
 say '** ERROR' Line '+++' "SOURCELINE"(Line)
-exit -1                                             /* LEAVE PROGRAM */
+exit 8                                              /* LEAVE PROGRAM */
 JUMP_TRAP_CODE:
 
 /* user variables ...................................................*/
@@ -94,26 +95,26 @@ then do               /* unable to establish the SYSCALL environment */
   say '** ERROR' ExecName 'unable to establish the SYSCALL environment'
   say 'RC='xRC Text.xRC
   say ' '
-  exit -1                                           /* LEAVE PROGRAM */
+  exit 8                                            /* LEAVE PROGRAM */
 end    /* */
 
 /* get information on file */
 if \SyscallCmd('stat' Path 'st.')
 then do
   /* error already reported */
-  exit -1                                           /* LEAVE PROGRAM */
+  exit 8                                            /* LEAVE PROGRAM */
 end    /* */
 
 if st.1 \= 3                                 /* 1=ST_TYPE, 3=S_ISREG */
 then do
   say '** ERROR' ExecName '"'Path'" is not a file'
-  exit -1                                           /* LEAVE PROGRAM */
+  exit 8                                            /* LEAVE PROGRAM */
 end    /* */
 
 Size=st.8                                               /* 8=ST_SIZE */
 if right(Size,1) = 'M'               /* convert megabytes to bytes ? */
   then Size=left(Size,length(Size)-1) * 1024 * 1024
-if Debug then say '. Size='Size
+if Debug then say '. Size='Size '(bytes, actual)'
 
 /* . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 
@@ -160,14 +161,17 @@ otherwise
 end    /* select */
 
 Cyl=trunc(a*Size**2 + b*Size + c) + 1       /* trunc()+1 to round up */
+if Debug then say '. Cyl='Cyl '(cylinders, calculated)'
 
 if ExecEnv = 'TSO' then call syscalls 'OFF' /* ignore possible error */
 /* 
  * zFS always increments in CYL but return result in TRACKs as that
  * unit is expected in the Program Directory.
  */
-if Debug then say '<' ExecName Cyl*TracksPerCyl
-exit Cyl*TracksPerCyl                               /* LEAVE PROGRAM */
+if Debug then say '. Trk='Cyl*TracksPerCyl '(tracks, calculated)'
+say Cyl*TracksPerCyl
+if Debug then say '<' ExecName 0
+exit 0                                              /* LEAVE PROGRAM */
 
 /*-------------------------------------------------------------------*/
 SyscallCmd: /* NO procedure */  /* syscall with basic error handling */

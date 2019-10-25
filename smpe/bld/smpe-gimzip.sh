@@ -102,7 +102,7 @@ else
 fi    #
 
 # create GIMZIP JCL
-echo "-- creating GIMZIP"
+echo "-- creating GIMZIP job"
 echo "   job1    ='$gimzipJob1'"
 echo "   parm    ='$gimzipParm'"
 echo "   volser  ='$volser'"
@@ -284,16 +284,19 @@ function _size
 {
 test "$debug" && echo && echo "> _size $@"
 
-# call script to calculate size
-test "$debug" && $here/$sizeScript -d $1     # show everything in debug
-$here/$sizeScript $1 1>/dev/null
-primary=$?
-
-if test $primary -le 0
+# show everything in debug mode
+test "$debug" && $here/$sizeScript -d "$1"
+# get size (no debug mode to avoid debug messages)
+primary=$($here/$sizeScript "$1")
+# returns 0 for OK, 8 for error
+rc=$?
+if test $rc -ne 0
 then
+  echo $primary                          # variable holds error message
   echo "** ERROR $me unable to estimate extract size"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
+echo "   $primary tracks required for unpax zFS"
   
 # save value so it can be used during program directory creation
 _cmd --repl $log/$extractSize echo $primary

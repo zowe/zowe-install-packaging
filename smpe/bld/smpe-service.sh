@@ -203,6 +203,7 @@ readme=${sysmod%%.*}.${instructions#*.}
 
 # TODO  create SED to substitute all these
 _cmd cp $here/$instructions $log/$readme
+#type   PTF | APAR | USERMOD
 #ptf
 #8ptf
 #prod   full product name
@@ -619,7 +620,7 @@ test "$debug" && echo "< _tools"
 function _metaData
 {
 test "$debug" && echo "> _metaData $@"
-echo "-- stage SMP/E metadata"
+echo "-- staging SMP/E metadata"
 mcs=SMPMCS.txt
 
 # create work copy of MCS
@@ -682,7 +683,7 @@ do
   _cmd mv $ptf/$file "//'${gimdtsHlq}.${MLQ}.$file'"
 done    # for file
 
-echo "   $(echo $allParts | wc -l | sed 's/ //g') MCS defintions"
+echo "   $(echo $allParts | wc -w | sed 's/ //g') MCS defintions"
 test "$debug" && echo "< _metaData"
 }    # _metaData
 

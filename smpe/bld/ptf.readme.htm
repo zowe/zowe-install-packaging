@@ -8,50 +8,50 @@
   - #tzone
   -->
 <HEAD>
-  <TITLE>Installation instructions for fix #ptf for
+  <TITLE>Installation instructions for #type #ptf for
   #prod (FMID #fmid)</TITLE>
   <META http-equiv=Content-Type content="text/html; charset=windows-1252">
 </HEAD>
 <BODY>
-  <H2>Installation instructions for fix #ptf for
+  <H2>Installation instructions for #type #ptf for
   #prod (FMID #fmid)</H2>
-  <P>The fix is shipped as file #pfx.#fmid.#ptf</P>
-  <P>The fix has rework (build) date #rework</P>
+  <P>The #type is shipped as file #pfx.#fmid.#ptf</P>
+  <P>The #type has rework (build) date #rework</P>
  
-  <P>The following fixes are prerequisites for this fix:
+  <P>The following fixes are prerequisites for this #type:
   <UL>
   #pre
   </UL></P>
  
-  <P>The following fixes are corequisites for this fix:
+  <P>The following fixes are corequisites for this #type:
   <UL>
   #req
   </UL></P>
  
-  <P>The following fixes are superseded by this fix: </P>
+  <P>The following fixes are superseded by this #type: </P>
   #sup
   </P>
  
   <H3><A name="Overview of the installation steps">Overview of the installation
     steps</A></H3>
-  <P>Steps required to install the fix:
+  <P>Steps required to install the #type:
   <OL type=1>
-    <LI><A href="#alloc">Allocate host data sets for the fix</A>.</LI>
-    <LI><A href="#upload">Upload the fix from your workstation to z/OS</A>.</LI>
-    <LI><A href="#hold">SMP/E hold information for the fix</A>.</LI>
+    <LI><A href="#alloc">Allocate host data sets for the #type</A>.</LI>
+    <LI><A href="#upload">Upload the #type from your workstation to z/OS</A>.</LI>
+    <LI><A href="#hold">SMP/E hold information for the #type</A>.</LI>
     <LI><A href="#acpt">Perform SMP/E ACCEPT for the prerequisites</A>.</LI>
-    <LI><A href="#smpe">Perform SMP/E RECEIVE and APPLY for the fix</A>.</LI>
+    <LI><A href="#smpe">Perform SMP/E RECEIVE and APPLY for the #type</A>.</LI>
     <LI><A href="#boot">Restart started tasks to activate changes</A>.</LI>
    </OL></P>
  
-  <H3><A name=alloc>Allocate host data sets for the fix</A></H3>
+  <H3><A name=alloc>Allocate host data sets for the #type</A></H3>
   <P>A sequential data set must be allocated on the z/OS system to receive the
-    fix that you will upload from your workstation. You can do this by
+    #type that you will upload from your workstation. You can do this by
     submitting the job below. Add a job card and modify the parameters to meet
     your site's requirements before submitting.</P>
   <PRE>
 //*
-//* Change #hlq to the high level qualifier used to upload the fix.
+//* Change #hlq to the high level qualifier used to upload the #type.
 //* (optional) Uncomment and change #volser to specify a volume.
 //*
 //         SET HLQ=<STRONG>#hlq</STRONG>
@@ -69,7 +69,7 @@
 //*
   </PRE>
  
-  <H3><A name=upload>Upload the fix from your workstation to z/OS</A></H3>
+  <H3><A name=upload>Upload the #type from your workstation to z/OS</A></H3>
   <P>Upload the file in binary format from your workstation to the z/OS data
 set. On a Windows system, you can use FTP from a command prompt to upload the
 file. In the sample dialog shown below, commands or other information entered
@@ -84,7 +84,7 @@ by the user are in bold, and the following values are assumed:</P>
     <TR><TD vAlign=top width="25%"><TT>tsopw</TT></TD>
         <TD vAlign=top width="75%">Your TSO password</TD></TR>
     <TR><TD vAlign=top width="25%"><TT>d:</TT></TD>
-        <TD vAlign=top width="75%">Your drive containing the fix files</TD></TR>
+        <TD vAlign=top width="75%">Your drive containing the #type files</TD></TR>
     <TR><TD vAlign=top width="25%"><TT>hlq</TT></TD>
         <TD vAlign=top width="75%">High-level qualifier that you used for the
           data set that you allocated in the job above</TD></TR>
@@ -120,14 +120,14 @@ Password:</I> <STRONG>tsopw</STRONG>
 <I>221 Quit command received. Goodbye.</I>
   </PRE>
  
-  <H3><A name="hold">SMP/E hold information for the fix</A></H3>
+  <H3><A name="hold">SMP/E hold information for the #type</A></H3>
   <PRE>
 #hold
   </PRE>
  
   <H3><A name="acpt">Perform SMP/E ACCEPT for the prerequisites</A></H3>
   <P>SMP/E ACCEPT the prerequisites to facilitate an easy backout of the
-    fix, if required. Note that once accepted, you cannot backout the
+    #type, if required. Note that once accepted, you cannot backout the
     accepted prerequisites.</P>
  
   <P>This step can be skipped if there are no prerequisites, or if
@@ -151,15 +151,15 @@ Password:</I> <STRONG>tsopw</STRONG>
 //*
   </PRE>
  
-  <H3><A name="smpe">Perform SMP/E RECEIVE and APPLY for the fix</A></H3>
-  <P>SMP/E RECEIVE and APPLY the fix.</P>
+  <H3><A name="smpe">Perform SMP/E RECEIVE and APPLY for the #type</A></H3>
+  <P>SMP/E RECEIVE and APPLY the #type.</P>
  
   <P>You can do this by submitting the job below. Add a job card and
      modify the parameters to meet your site's requirements before
      submitting.</P>
   <PRE>
 //*
-//* Change #hlq to the high level qualifier used to upload the fix.
+//* Change #hlq to the high level qualifier used to upload the #type.
 //* Change #globalcsi to the data set name of your global CSI.
 //* Change #tzone to your CSI target zone name.
 //*
