@@ -50,33 +50,11 @@ mkdir -p $TEMP_DIR
 
 echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
-# Configure Explorer UI plugins
-. $CONFIG_DIR/zowe-configure-explorer-ui.sh
-
 # Configure the ports for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-ports.sh
 
-if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
-    # Add APIML authentication plugin to zLUX
-    . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
-
-    # Activate the plugin
-    _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
-    ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/config
-    sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json > ${TEMP_DIR}/transform1.json
-    cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json
-    rm ${TEMP_DIR}/transform1.json
-    
-    # Access API Catalog with token injector
-    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
-else
-    # Access API Catalog directly
-    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
-fi
-
-# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-# TODO - move into apiml config? run before deploy?
-. $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/components/api-mediation/api-catalog.png"
+# configure api catalog and jes explorer plugins, to be moved later to their own configure steps after zlux componentisation
+. $CONFIG_DIR/zowe-configure-iframe-plugins.sh
 
 # Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
 # this script is run after all the folders have been created and paxes expanded above
