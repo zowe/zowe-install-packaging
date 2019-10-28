@@ -56,7 +56,8 @@
 //*
 //*********************************************************************
 //         EXPORT SYMLIST=(CSIHLQ,CSIVOL,TZONE,DZONE,SREL,DSPREFIX)
-//* limit is dsprefix.fmid.Fxx 1         2         3
+//* longest DSN is dsprefix.fmid.Fxx, so CISHLQ can be up to 32 chars
+//*                            1         2         3
 //*                   12345678901234567890123456789012
 //         SET CSIHLQ=#csihlq
 //         SET TZONE=#tzone
