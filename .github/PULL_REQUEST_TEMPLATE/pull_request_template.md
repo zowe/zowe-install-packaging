@@ -15,7 +15,6 @@ What type of changes does your PR introduce to Zowe? _Put an `x` in the box that
 - [ ] Build related changes
 - [ ] CI related changes
 - [ ] Documentation changes
-- [ ] Infrastructure changes
 - [ ] Other... Please describe:
 
 #### Relevant issues
@@ -34,7 +33,11 @@ Fixes <!-- Issue number -->
 - [ ] Yes
 - [ ] No
 
-<!-- If this PR contains a breaking change, please describe the impact and migration path below. -->
+<!-- If yes, please describe the impact and migration path below.-->
+
+#### Does this PR require SMP/E HOLD data? 
+
+<!-- Is this a fix or a feature that would need to restart Zowe? If yes, please provide the HOLDDATA information below.-->
 
 #### Is there a related doc issue or Pull Request? 
 <!-- Link to a relevant documentation issue or Pull Request if any. -->
