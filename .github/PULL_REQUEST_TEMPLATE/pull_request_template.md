@@ -1,6 +1,6 @@
 <!-- Thank you for your pull request! Please provide a description of the changes in this PR in the field above and provide the following information. -->
 
-Please check if your PR fulfills the following requirements. This is simply a reminder of what we are going to look for before merging your PR.
+Please check if your PR fulfills the following requirements. This is simply a reminder of what we are going to look for before merging your PR. If you don't know all of this information when you create this PR, don't worry. You can edit this template as you're working on it.
 
 - [ ] Tests for the changes have been added (for bug fixes / features)
 - [ ] Necessary documentation (if appropriate) have been added / updated
