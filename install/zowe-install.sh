@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ################################################################################
 # This program and the accompanying materials are made available under the terms of the
 # Eclipse Public License v2.0 which accompanies this distribution, and is available at
@@ -8,8 +10,18 @@
 # Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-while getopts ":I" opt; do
+while getopts "f:h:i:dI" opt; do
   case $opt in
+    d) # enable debug mode
+      # future use, accept parm to stabilize SMPE packaging
+      #debug="-d"
+      ;;
+    f) # override default value for LOG_FILE
+      # future use, issue 801, accept parm to stabilize SMPE packaging
+      #...="$OPTARG"
+      ;;
+    h) DSN_PREFIX=$OPTARG;;
+    i) INSTALL_TARGET=$OPTARG;;
     I)
       INSTALL_ONLY=1
       ;;
@@ -19,6 +31,7 @@ while getopts ":I" opt; do
       ;;
   esac
 done
+shift $OPTIND-1
 
 # Ensure that newly created files are in EBCDIC codepage
 export _CEE_RUNOPTS=""
@@ -27,9 +40,7 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
-PREV_DIR=`pwd`
-cd $(dirname $0)/../
-export INSTALL_DIR=`pwd`
+export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
 
 # extract Zowe version from manifest.json
 export ZOWE_VERSION=$(cat $INSTALL_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
@@ -71,6 +82,16 @@ echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FIL
 cd $INSTALL_DIR/install
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
+
+if [[ ! -z "$INSTALL_TARGET" ]]
+then
+  ZOWE_ROOT_DIR=$INSTALL_TARGET
+fi
+
+if [[ ! -z "$DSN_PREFIX" ]]
+then
+  ZOWE_DSN_PREFIX=$DSN_PREFIX
+fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
@@ -175,8 +196,6 @@ cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR
-
-cd $PREV_DIR
 
 if [ -z $INSTALL_ONLY ]
 then

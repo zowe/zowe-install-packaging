@@ -16,11 +16,6 @@
 # $ZOWE_ROOT_DIR
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_IPADDRESS
-# $ZOWE_ZOSMF_HOST
-# $ZOWE_ZOSMF_PORT
-# $ZOWE_APIM_CATALOG_PORT
-# $ZOWE_APIM_DISCOVERY_PORT
-# $ZOWE_APIM_GATEWAY_PORT
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
@@ -67,55 +62,6 @@ echo "  Certificate setup done."
 
 chmod -R 750 "${API_MEDIATION_DIR}/keystore"
 
-# Add static definition for MVS datasets
-cat <<EOF >$TEMP_DIR/datasets_ui.yml
-#
-services:
-  - serviceId: explorer-mvs
-    title: IBM z/OS MVS Explorer UI
-    description: IBM z/OS MVS Explorer UI service
-    catalogUiTileId:
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_MVS_UI_PORT/
-    homePageRelativeUrl:
-    routedServices:
-      - gatewayUrl: ui/v1
-        serviceRelativeUrl: ui/v1/explorer-mvs
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/datasets_ui.yml > $STATIC_DEF_CONFIG/datasets_ui.yml	
-
-# Add static definition for Jobs
-cat <<EOF >$TEMP_DIR/jobs_ui.yml
-#
-services:
-  - serviceId: explorer-jes
-    title: IBM z/OS Jobs UI
-    description: IBM z/OS Jobs UI service
-    catalogUiTileId:
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_JES_UI_PORT/
-    homePageRelativeUrl:
-    routedServices:
-      - gatewayUrl: ui/v1
-        serviceRelativeUrl: ui/v1/explorer-jes
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/jobs_ui.yml > $STATIC_DEF_CONFIG/jobs_ui.yml	
-
-# Add static definition for USS
-cat <<EOF >$TEMP_DIR/uss.yml
-#
-services:
-  - serviceId: explorer-uss
-    title: IBM Unix System Services
-    description: IBM z/OS Unix System services UI
-    instanceBaseUrls:
-      - https://$ZOWE_EXPLORER_HOST:$ZOWE_EXPLORER_USS_UI_PORT/
-    homePageRelativeUrl:
-    routedServices:
-      - gatewayUrl: ui/v1
-        serviceRelativeUrl: ui/v1/explorer-uss
-EOF
-iconv -f IBM-1047 -t IBM-850 $TEMP_DIR/uss.yml > $STATIC_DEF_CONFIG/uss.yml	
 
 #Make the static defs read/write to owner/group (so that IZUSVR can read them)
 chmod -R 750 ${STATIC_DEF_CONFIG}
