@@ -35,11 +35,17 @@ Fixes <!-- Issue number -->
 product requirements, or other installation or configuration related area? If so, please fill out the template below. 
 There is no need to report the need to restart the servers to activate the change. Note that the provided text will be formatted in 64-character lines, and that round brackets, ( and ), must always be used in matching pairs. -->
 
-* Affected function: _general area of interest_
+---
+* Affected function: _general area of interest_ *
 
-* Description: _1 line description_
+---
+* Description: _1 line description_ *
 
-* Part: _name of customizable file involved_
+---
+* Part: _name of customizable file involved_  *
+
+---
+_multi-line description_
 
 #### Is there a related doc issue or Pull Request? 
 <!-- Link to a relevant documentation issue or Pull Request if any. -->
