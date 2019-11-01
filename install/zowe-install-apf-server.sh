@@ -21,11 +21,13 @@ OPERCMD=${SCRIPT_DIR}/../opercmd
 
 XMEM_ELEMENT_ID=ZWES
 XMEM_MODULE=${XMEM_ELEMENT_ID}IS01
+XMEM_AUX_MODULE=${XMEM_ELEMENT_ID}AUX
 XMEM_PARM=${XMEM_ELEMENT_ID}IP00
 XMEM_JCL=${XMEM_ELEMENT_ID}IS01
+XMEM_AUX_JCL=${XMEM_ELEMENT_ID}AUX
 XMEM_KEY=4
 XMEM_SCHED=${XMEM_ELEMENT_ID}ISCH
-XMEM_STC_PREFIX=${XMEM_ELEMENT_ID}IS
+XMEM_STC_PREFIX=${XMEM_ELEMENT_ID}
 XMEM_STC_GROUP=STCGROUP
 XMEM_PROFILE=${XMEM_ELEMENT_ID}.IS
 
@@ -53,13 +55,16 @@ sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
     ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
+    ${ZSS}/SAMPLIB/${XMEM_AUX_JCL} > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
 # 1. Deploy loadlib
 echo
 echo "************************ Install step 'LOADLIB' start **************************"
 echo $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh
 loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_MODULE}"
-$loadlibCmd1
+loadlibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_AUX_MODULE}"
+$loadlibCmd1 && $loadlibCmd2
 if [[ $? -eq 0 ]]
 then
   loadlibOk=true
@@ -96,7 +101,8 @@ echo "************************ Install step 'PARMLIB' end **********************
 echo
 echo "************************ Install step 'PROCLIB' start **************************"
 proclibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
-$proclibCmd1
+proclibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_AUX_JCL}.tmp ${XMEM_AUX_JCL}"
+$proclibCmd1 && $proclibCmd2
 if [[ $? -eq 0 ]]
 then
   proclibOk=true
@@ -108,7 +114,8 @@ echo "************************ Install step 'PROCLIB' end **********************
 echo
 echo "************************ Install step 'PPT-entry' start ************************"
 pptCmd1="sh $SCRIPT_DIR/zowe-xmem-ppt.sh ${OPERCMD} ${XMEM_MODULE} ${XMEM_KEY}"
-$pptCmd1
+pptCmd2="sh $SCRIPT_DIR/zowe-xmem-ppt.sh ${OPERCMD} ${XMEM_AUX_MODULE} ${XMEM_KEY}"
+$pptCmd1 && $pptCmd2
 if [[ $? -eq 0 ]]
 then
   pptOk=true
@@ -250,6 +257,7 @@ else
   echo "LOADLIB - Error"
   echo "Please correct errors and re-run the following scripts:"
   echo $loadlibCmd1
+  echo $loadlibCmd2
 fi
 
 echo
@@ -277,6 +285,7 @@ else
   echo "PROCLIB - Error"
   echo "Please correct errors and re-run the following scripts:"
   echo $proclibCmd1
+  echo $proclibCmd2
 fi
 
 echo
@@ -284,10 +293,11 @@ if $pptOk ; then
   echo "PPT-entry - Ok"
 else
   echo "PPT-entry - Error"
-  echo "Please add the provided PPT entry (zss/samplib/${XMEM_SCHED}) to your system PARMLIB"
+  echo "Please add the provided PPT entries (zss/samplib/${XMEM_SCHED}) to your system PARMLIB"
   echo "and update the configuration using 'SET SCH=xx' operator command"
   echo "Re-run the following scripts to validate the changes:"
   echo $pptCmd1
+  echo $pptCmd2
 fi
 
 echo

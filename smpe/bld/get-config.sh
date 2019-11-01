@@ -22,7 +22,7 @@
 # $IgNoRe_ErRoR $debug $YAML $VRM
 #
 # Optional globals:
-# $fmid1 fmid2 $HLQ $ROOT
+# $fmid1 fmid2 $HLQ $ROOT $VOLSER
 #
 # Unconditional set:
 # all variables in $YAML, see function _parseConfiguationFile
@@ -88,8 +88,6 @@ install:
   stage=
   # HLQ holding product MVS data sets (= SMP/E input)
   outMVS=
-  # directory holding product USS files (= SMP/E input)
-  outUSS=
 split:
   # absolute maximum number of lines in a PTF
   ptfLines=
@@ -97,6 +95,8 @@ split:
   ptfPercent=
   # limit historical manifest delta log to x lines
   deltaLines=
+  # directory holding product USS files (= SMP/E input)
+  outUSS=
   # temporary directory to stage MVS members for reporting
   mvs=
   # temporary directory to split product in chunks
@@ -104,7 +104,15 @@ split:
 fmid:
   # RELFILE data set name prefix, SMP/E expects #hlq.$RFDSNPFX.$FMID.Fx
   RFDSNPFX=
+  # comma-separated list of volume labels for RELFILE allocation
+  fmidVol=
 gimzip:
+  # GIMZIP JOB card, line 1
+  gimzipJob1=
+  # GIMZIP startup options - see SMP/E for z/OS Reference (SA22-7772)
+  gimzipParm=
+  # comma-separated list of volume labels for GIMZIP SYSUT2 allocation
+  gimzipVol=
   # high level qualifier for GIMZIP work files
   gimzipHlq=
   # directory holding SMP/E pax & readme (also used for staging)
@@ -115,6 +123,17 @@ gimzip:
   JAVA_HOME=
   # SMP/ E home directory, default uses existing SMP_HOME if set
   SMP_HOME=
+service:
+  # directory holding PTF/APAR/USERMOD & readme (also used for staging)
+  ptf=
+  # high level qualifier for GIMDTS work files
+  gimdtsHlq=
+  # GIMDTS JOB card, line 1
+  gimdtsJob1=
+  # comma-separated list of volume labels for GIMDTS allocations
+  gimdtsVol=
+  # primary & secondary size (in tracks) for GIMDTS part allocations
+  gimdtsTrks=
 EOF
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 if test $? -ne 0
@@ -166,21 +185,25 @@ do
     _export install log        log           ${ROOT}/logs   # permanent
     _export install extract    extract       ${ROOT}/extract # internal
     _export install stage      stage         ${ROOT}/stage  # pass
-    _export install outMVS     mvsI          ${HLQ}.BLD     # output
-    _export install outUSS     ussI          ${ROOT}/BLD    # output
+    _export install outMVS     mvsI          ${HLQ}.BLD     # pass
 # split
     _export split   ptfLines   maxPtfLines   5000000        # permanent
     _export split   ptfPercent maxPtfPercent 90             # permanent
     _export split   deltaLines maxDeltaLines 30000          # permanent
+    _export split   outUSS     ussI          ${ROOT}/BLD    # pass
     _export split   mvs        mvs           ${ROOT}/mvs    # internal
     _export split   split      split         ${ROOT}/split  # internal
 # fmid
     _export fmid    RFDSNPFX   RFDSNPFX      ZOWE           # output
+    _export fmid    fmidVol    fmidVolser    $VOLSER        # internal
 # gimzip
+    _export gimzip  gimzipJob1 gimzipJob1                   # internal
+    _export gimzip  gimzipParm gimzipParm                   # internal
+    _export gimzip  gimzipVol  gimzipVolser  $VOLSER        # internal
     _export gimzip  gimzipHlq  gimzipHlq     ${HLQ}.GIMZIP  # internal
     _export gimzip  gimzip     gimzip        ${ROOT}/gimzip # output
     _export gimzip  scratch    scratch       \
-              $(echo ${ROOT}/work | tr [:lower:] [:upper:]) # internal
+            ${TMPDIR:-/tmp}/gimzip.$$   # max 58 chars      # internal
     _export gimzip  JAVA_HOME  JAVA_HOME     \
               ${JAVA_HOME:-$(find /usr/lpp/java -type d -level 0 \
                              | grep /J.*[^_64]$ | tail -1)} # permanent
@@ -188,6 +211,12 @@ do
                                   ${SMP_HOME:-/usr/lpp/smp} # permanent
 # pd
 # service
+    _export service ptf        ptf           ${ROOT}/ptf    # output
+    _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
+    _export service gimdtsJob1 gimdtsJob1                   # internal
+    _export service gimdtsVol  gimdtsVolser  $VOLSER        # internal
+    _export service gimdtsTrks gimdtsTrks    "15,750"       # internal
+
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 
   fi    # process key=value

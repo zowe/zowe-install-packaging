@@ -18,6 +18,18 @@
 #
 #
 
+checkForErrorsFound() {
+  if [[ $ERRORS_FOUND > 0 ]]
+  then
+    # if -v passed in any validation failures abort
+    if [ ! -z $VALIDATE_ABORTS ]
+    then
+      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
+      exit $ERRORS_FOUND
+    fi
+  fi
+}
+
 # If -v passed in any validation failure result in the script exiting, other they are logged and continue
 while getopts ":v" opt; do
   case $opt in
@@ -31,24 +43,15 @@ while getopts ":v" opt; do
   esac
 done
 
-checkForErrorsFound() {
-  if [[ $ERRORS_FOUND > 0 ]]
-  then
-    # if -v passed in any validation failures abort
-    if [ ! -z $VALIDATE_ABORTS ]
-    then
-      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
-      exit $ERRORS_FOUND
-    fi
-  fi
-}
-
+export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/scripts/internal/run-zowe.sh
 
 # New Cupids work - once we have PARMLIB/properties files removed properly this won't be needed anymore
-ROOT_DIR={{root_dir}} # the install directory of zowe
 USER_DIR={{user_dir}} # the workspace location for this instance. TODO Should we add this as a new to the yaml, or default it?
 FILES_API_PORT={{files_api_port}} # the port the files api service will use
 JOBS_API_PORT={{jobs_api_port}} # the port the files api service will use
+JES_EXPLORER_UI_PORT={{jobs_ui_port}} # the port the jes explorer will use
+MVS_EXPLORER_UI_PORT={{mvs_ui_port}} # the port the mvs explorer will use
+USS_EXPLORER_UI_PORT={{uss_ui_port}} # the port the uss explorer will use
 DISCOVERY_PORT={{discovery_port}} # the port the discovery service will use
 CATALOG_PORT={{catalog_port}} # the port the api catalog service will use
 GATEWAY_PORT={{gateway_port}} # the port the api gateway service will use
@@ -60,11 +63,15 @@ KEY_ALIAS={{key_alias}}
 KEYSTORE={{keystore}}
 TRUSTSTORE={{truststore}}
 KEYSTORE_PASSWORD={{keystore_password}}
+KEYSTORE_KEY={{keystore_key}}
+KEYSTORE_CERTIFICATE={{keystore_certificate}}
 ZOSMF_PORT={{zosmf_port}}
-ZOSMF_IP_ADDRESS={{zosmf_ip_address}}
+ZOSMF_IP_ADDRESS={{zosmf_host}}  #TODO LATER - SH: once all components converted, remove - replaced by ZOSMF_HOST to allow hostname, or ip address
+ZOSMF_HOST={{zosmf_host}} # The hostname, or ip address where z/OS MF is running
 ZOWE_IP_ADDRESS={{zowe_ip_address}}
 ZOWE_EXPLORER_HOST={{zowe_explorer_host}}
 ZOWE_JAVA_HOME={{java_home}}
+ZOWE_NODE_HOME={{node_home}}
 
 LAUNCH_COMPONENT_GROUPS=GATEWAY,DESKTOP
 
@@ -81,27 +88,21 @@ ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}UU
 
 # Make sure ROOT DIR and USER DIR are accessible and writable to the user id running this
 mkdir -p ${USER_DIR}/
-. ${ROOT_DIR}/scripts/utils/validateDirectoryIsWritable.sh ${USER_DIR}
+. ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${USER_DIR}
 checkForErrorsFound
 
-if [[ ! -f $NODE_HOME/"./bin/node" ]]
-then
-  export NODE_HOME={{node_home}}
-fi
+# Make sure Java and Node are available on the Path
+. ${ROOT_DIR}/scripts/utils/configure-java.sh
+. ${ROOT_DIR}/scripts/utils/configure-node.sh
+checkForErrorsFound
 
-DIR=`dirname $0`
+# Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
+export __UNTAGGED_READ_MODE=V6
 
-if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
-then
-  cd $DIR/../../zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-fi
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation #TODO this is WIP - component ids not finalised at the moment
-  _BPX_JOBNAME=$ZOWE_EXPL_UI_JES $DIR/../../jes_explorer/scripts/start-explorer-jes-ui-server.sh
-  _BPX_JOBNAME=$ZOWE_EXPL_UI_MVS $DIR/../../mvs_explorer/scripts/start-explorer-mvs-ui-server.sh
-  _BPX_JOBNAME=$ZOWE_EXPL_UI_USS $DIR/../../uss_explorer/scripts/start-explorer-uss-ui-server.sh
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
 fi
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
@@ -109,9 +110,6 @@ then
   # Create the user configurable api-defs
   STATIC_DEF_CONFIG_DIR=${USER_DIR}/api-mediation/api-defs
   mkdir -p ${STATIC_DEF_CONFIG_DIR}
-
-  # Until ui explorers componentised will copy them from the old location
-  cp ${ROOT_DIR}/components/api-mediation/api-defs/* ${STATIC_DEF_CONFIG_DIR}
 fi
 
 # Validate component properties if script exists
@@ -141,15 +139,17 @@ then
 fi
 
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
-#TODO - inject VERSION variable at build time?
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 cat <<EOF >${USER_DIR}/active_configuration.cfg
-VERSION=1.5
+VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 CREATION_DATE=${NOW}
 ROOT_DIR=${ROOT_DIR}
 USER_DIR=${USER_DIR}
 FILES_API_PORT=${FILES_API_PORT}
 JOBS_API_PORT=${JOBS_API_PORT}
+JES_EXPLORER_UI_PORT=${JES_EXPLORER_UI_PORT}
+MVS_EXPLORER_UI_PORT=${MVS_EXPLORER_UI_PORT}
+USS_EXPLORER_UI_PORT=${USS_EXPLORER_UI_PORT}
 DISCOVERY_PORT=${DISCOVERY_PORT}
 CATALOG_PORT=${CATALOG_PORT}
 GATEWAY_PORT=${GATEWAY_PORT}
@@ -159,6 +159,8 @@ KEY_ALIAS=${KEY_ALIAS}
 KEYSTORE=${KEYSTORE}
 TRUSTSTORE=${TRUSTSTORE}
 KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+KEYSTORE_KEY=${KEYSTORE_KEY}
+KEYSTORE_CERTIFICATE=${KEYSTORE_CERTIFICATE}
 STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 ZOSMF_PORT=${ZOSMF_PORT}
 ZOSMF_IP_ADDRESS=${ZOSMF_IP_ADDRESS}
@@ -186,3 +188,10 @@ for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   . ${ROOT_DIR}/components/${i}/bin/start.sh
 done
+
+
+# Start the desktop
+if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+then
+  cd $ROOT_DIR/zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
+fi
