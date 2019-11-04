@@ -9,7 +9,8 @@
 # Copyright Contributors to the Zowe Project.
 
 BASEDIR=$(dirname "$0")
-ZSS=$1
+# ZSS=$1
+datasetPrefix=$1
 loadlib=$2
 loadmodule=$3
 
@@ -43,7 +44,8 @@ fi
 
 if [[ "$rc" = 0 ]] ; then
   echo "Copying load module ${loadmodule}"
-  if cp -X ${ZSS}/LOADLIB/${loadmodule} "//'${loadlib}(${loadmodule})'"
+  # if cp -X ${ZSS}/LOADLIB/${loadmodule} "//'${loadlib}(${loadmodule})'"
+  if cp -X "//'$datasetPrefix.SZWEAUTH(${loadmodule})'" "//'${loadlib}(${loadmodule})'"
   then
     echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}"
     rc=0

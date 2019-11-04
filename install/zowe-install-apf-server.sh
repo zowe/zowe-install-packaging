@@ -16,7 +16,7 @@ cd $(dirname $0)
  #Note - these are sed replaced in zowe-copy-xmem.sh, so don't change without checking that
 INSTALL_DIR=$PWD/..
 SCRIPT_DIR=${INSTALL_DIR}/scripts/zss
-ZSS=${INSTALL_DIR}/files/zss
+# ZSS=${INSTALL_DIR}/files/zss
 OPERCMD=${SCRIPT_DIR}/../opercmd
 
 XMEM_ELEMENT_ID=ZWES
@@ -43,7 +43,7 @@ xmemProfileOk=false
 xmemProfileAccessOk=false
 
 
-sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
+# sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
 chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
@@ -51,19 +51,22 @@ chmod +x ${SCRIPT_DIR}/*
 # MVS install steps
 
 # 0. Prepare STC JCL
+mkdir -p ${TEMP_DIR}/SAMPLIB
 sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
-    ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+    # ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+    "//'$datasetPrefix.SZWESAMP(${XMEM_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_JCL}.tmp
 sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
-    ${ZSS}/SAMPLIB/${XMEM_AUX_JCL} > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+    # ${ZSS}/SAMPLIB/${XMEM_AUX_JCL} > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+    "//'$datasetPrefix.SZWESAMP(${XMEM_AUX_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
 # 1. Deploy loadlib
 echo
 echo "************************ Install step 'LOADLIB' start **************************"
 echo $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh
-loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_MODULE}"
-loadlibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_AUX_MODULE}"
+loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${datasetPrefix} ${XMEM_LOADLIB} ${XMEM_MODULE}"
+loadlibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${datasetPrefix} ${XMEM_LOADLIB} ${XMEM_AUX_MODULE}"
 $loadlibCmd1 && $loadlibCmd2
 if [[ $? -eq 0 ]]
 then
@@ -88,7 +91,7 @@ echo "************************ Install step 'APF-auth' end *********************
 # 3. Deploy parmlib
 echo
 echo "************************ Install step 'PARMLIB' start **************************"
-parmlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${ZSS} ${XMEM_PARMLIB} ${XMEM_PARM}"
+parmlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${TEMP_DIR} ${XMEM_PARMLIB} ${XMEM_PARM}"
 $parmlibCmd1
 if [[ $? -eq 0 ]]
 then
@@ -100,8 +103,8 @@ echo "************************ Install step 'PARMLIB' end **********************
 # 4. Deploy PROCLIB
 echo
 echo "************************ Install step 'PROCLIB' start **************************"
-proclibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
-proclibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_AUX_JCL}.tmp ${XMEM_AUX_JCL}"
+proclibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${TEMP_DIR} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
+proclibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${TEMP_DIR} ${XMEM_PROCLIB} ${XMEM_AUX_JCL}.tmp ${XMEM_AUX_JCL}"
 $proclibCmd1 && $proclibCmd2
 if [[ $? -eq 0 ]]
 then
@@ -356,7 +359,7 @@ else
 fi
 
 
-rm  ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp 1>/dev/null 2>/dev/null
+rm  ${TEMP_DIR}/SAMPLIB/${XMEM_JCL}.tmp ${TEMP_DIR}/SAMPLIB/${XMEM_AUX_JCL}.tmp 1>/dev/null 2>/dev/null
 
 # Ensure IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
 # For zssServer to be able to operate correctly 
