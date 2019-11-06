@@ -44,6 +44,7 @@ xmemProfileAccessOk=false
 
 
 # sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
+echo "zowe-install-apf-server.sh is NOT unpaxing zss.pax"
 chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
@@ -51,6 +52,7 @@ chmod +x ${SCRIPT_DIR}/*
 # MVS install steps
 
 # 0. Prepare STC JCL
+TEMP_DIR=/tmp
 mkdir -p ${TEMP_DIR}/SAMPLIB
 sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
