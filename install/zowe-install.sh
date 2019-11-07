@@ -177,6 +177,7 @@ chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
 # Prepare utils directory 
 mkdir ${ZOWE_ROOT_DIR}/scripts/utils
+cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 

@@ -73,7 +73,6 @@ locateJavaHome() {
         then
             echo "   java version $version found at " $1 >> $LOG_FILE
             export ZOWE_JAVA_HOME=$1
-            fi
         else
             if [ "$javaVersion" = "-1" ]
             then
@@ -269,10 +268,8 @@ then
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
           ZOWE_IP_ADDRESS=`$ping_bin $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
-          if [[ -n "$ZOWE_IP_ADDRESS" ]]
+          if [[ ! -n "$ZOWE_IP_ADDRESS" ]]
           then
-               echo Info: IP address is $ZOWE_IP_ADDRESS
-          else
                echo Error: $ping_bin $hn command failed to find IP
           fi
     else
