@@ -59,6 +59,9 @@ else
   echo "** warning: temporary fix"
   ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
 fi 
+tsocmd "listds '$ZOWE_DSN_PREFIX.SZWESAMP' members"
+tsocmd "listds '$ZOWE_DSN_PREFIX.SZWEAUTH' members"
+tsocmd "listds '$ZOWE_DSN_PREFIX' level"
 
 # 0. Prepare STC JCL
 TEMP_DIR=/tmp
