@@ -74,11 +74,6 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-# Populate the environment variables for ZOWE_ZOSMF_PORT, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST, ZOWE_IPADDRESS, NODE_HOME
-. $INSTALL_DIR/scripts/zowe-init.sh
-
-echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
-
 cd $INSTALL_DIR/install
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
@@ -173,7 +168,6 @@ separator
 
 # Prepare configure directory 
 mkdir ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/scripts/zowe-init.sh ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
 # Copy all but root dir from yaml as we can derive that once there
 grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
