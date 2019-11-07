@@ -1,0 +1,1785 @@
+<?xml version="1.0" encoding="utf-8"?>
+<workflow>
+	<autoTakeOwnership>true</autoTakeOwnership>
+	<workflowSettingInfo>
+		<variablesSetting isInstanceVariableWithoutPrefix="true"/>
+	</workflowSettingInfo>
+	<workflowInfo>
+		<workflowID scope="none">zowe_smpe</workflowID>
+		<workflowDefaultName>zowe_smpe</workflowDefaultName>
+		<workflowDescription>This is the SMP/E installation of Zowe</workflowDescription>
+		<workflowVersion>0.1</workflowVersion>
+		<vendor>Broadcom</vendor>
+		<General/>
+	</workflowInfo>
+	<variable name="jobCard" scope="instance" visibility="public">
+		<label>Job Card</label>
+		<abstract>Change jobCard to 'YES' to generate a job card for the JCL, if you have a default job card you ..</abstract>
+		<description>Change jobCard to 'YES' to generate a job card for the JCL,&lt;br&gt;if you have a default job card you want to use do not change this value.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="acct" scope="instance" visibility="public">
+		<label>Account Number</label>
+		<abstract>Change acct to a valid accounting information parameter. This value is required and only used i..</abstract>
+		<description>Change acct to a valid accounting information parameter. &lt;br&gt;This value is required and only used if a new jobcard is generated. &lt;br&gt;(see jobCard)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="user" scope="instance" visibility="public">
+		<label>User ID</label>
+		<abstract>Change user to a valid user ID on the system to identify the user submitting the job. This va..</abstract>
+		<description>Change user to a valid user ID on the system to identify the user submitting the job. &lt;br&gt;This value only used if a new jobcard is generated and it is not required.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>TSOUSERID</validationType>
+		</string>
+	</variable>
+	<variable name="sysaff" scope="instance" visibility="public">
+		<label>Execution System</label>
+		<abstract>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job..</abstract>
+		<description>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job. &lt;br&gt;This value used only to generate new job card it is optional</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="csivol" scope="instance" visibility="public">
+		<label>CSI Volume Serial</label>
+		<abstract>Change csivol to the volser for the CSI and SMP/E data sets, if you choose not to use the defau..</abstract>
+		<description>Change csivol to the volser for the CSI and SMP/E data sets,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use. &lt;br&gt;if you have SMS-management, keep this with default #csivol&lt;br&gt;and set storage class (optionally management and data class)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="storclass" scope="instance" visibility="public">
+		<label>Storage Class</label>
+		<abstract>Change storclass for the SMS-managed CSI and SMP/E data sets. SMS uses the attributes in the stor..</abstract>
+		<description>Change storclass for the SMS-managed CSI and SMP/E data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dataclass" scope="instance" visibility="public">
+		<label>Data Class</label>
+		<abstract>You can change dataclass for SMS-managed CSI and SMP/E data sets. Use the DATACLAS parameter..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="mgmtclass" scope="instance" visibility="public">
+		<label>Management Class</label>
+		<abstract>You can change management class for SMS-managed CSI and SMP/E data sets. Use the MGMTCLAS par..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tzone" scope="instance" visibility="public">
+		<label>Target Zone</label>
+		<abstract>Change tzone to your CSI target zone name...</abstract>
+		<description>Change tzone to your CSI target zone name.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="csihlq" scope="instance" visibility="public">
+		<label>CSI High Level Qualifier</label>
+		<abstract>Change csihlq to the high level qualifier for the CSI and other SMP/E data sets. The maximum le..</abstract>
+		<description>Change csihlq to the high level qualifier for the CSI and&lt;br&gt;other SMP/E data sets. The maximum length is 35 characters.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dzone" scope="instance" visibility="public">
+		<label>Distribution Zone</label>
+		<abstract>Change dzone to your CSI distribution zone name...</abstract>
+		<description>Change dzone to your CSI distribution zone name.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="srel" scope="instance" visibility="public">
+		<label>SREL</label>
+		<abstract>This product can install in multiple SREL subsystems;Z038 (z/OS), P115 (IMS/DB2), and C150 (CI..</abstract>
+		<description>This product can install in multiple SREL subsystems;&lt;br&gt;Z038 (z/OS), P115 (IMS/DB2), and C150 (CICS). Update the&lt;br&gt;set srel  to select the desired SREL.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="true">
+			<choice>Z038</choice>
+			<choice>P115</choice>
+			<choice>C150</choice>
+		</string>
+	</variable>
+	<variable name="hlq" scope="instance" visibility="public">
+		<label>SMPMCS High Level Qualifier</label>
+		<abstract>Change ${hlq} to the high level qualifier(s) of the SMPMCS andREL files, as specified when upl..</abstract>
+		<description>Change ${hlq} to the high level qualifier(s) of the SMPMCS and&lt;br&gt;REL files, as specified when uploading the files to the host&lt;br&gt;(as described in the program directory).</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="thlq" scope="instance" visibility="public">
+		<label>Target High Level Qualifier</label>
+		<abstract>Change thlq to the appropriate high level qualifier(s) for the target data sets. The maximum le..</abstract>
+		<description>Change thlq to the appropriate high level qualifier(s) for&lt;br&gt;the target data sets. The maximum length is 35 characters.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dvol" scope="instance" visibility="public">
+		<label>Distribution Volume Serial</label>
+		<abstract>By default, this job relies on your Automatic Class Selection(ACS) routines to place the distr..</abstract>
+		<description>By default, this job relies on your Automatic Class Selection&lt;br&gt;(ACS) routines to place the distribution data sets. You can&lt;br&gt;place the data sets on a specific volume when you:&lt;br&gt;Change dvol to the volser for the target libraries. &lt;br&gt;if you have SMS-management, keep this with default #dvol&lt;br&gt;and set storage class (optionally management and data class)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="dsclass" scope="instance" visibility="public">
+		<label>Distribution Storage Class</label>
+		<abstract>Change storclass for the SMS-managed distribution data sets. SMS uses the attributes in the stora..</abstract>
+		<description>Change storclass for the SMS-managed distribution data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="ddclass" scope="instance" visibility="public">
+		<label>Distribution Data Class</label>
+		<abstract>You can change dataclass for the SMS-managed distribution data sets. Use the DATACLAS parameter ..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed distribution data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dmclass" scope="instance" visibility="public">
+		<label>Distribution Management Class</label>
+		<abstract>You can change management class for the SMS-managed distribution data sets. Use the MGMTCLAS para..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed distribution data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dhlq" scope="instance" visibility="public">
+		<label>Distribution High Level Qualifier</label>
+		<abstract>Change dhlq to the appropriate high level qualifier(s) for the distribution data sets. The maxim..</abstract>
+		<description>Change dhlq to the appropriate high level qualifier(s) for&lt;br&gt;the distribution data sets. The maximum length is 35 characters.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tvol" scope="instance" visibility="public">
+		<label>Target Volume</label>
+		<abstract>By default, this job relies on your Automatic Class Selection(ACS) routines to place the targe..</abstract>
+		<description>By default, this job relies on your Automatic Class Selection&lt;br&gt;(ACS) routines to place the target data sets. You can&lt;br&gt;place the data sets on a specific volume when you:&lt;br&gt;Change tvol to the volser for the target libraries. &lt;br&gt;if you have SMS-management, keep this with default #tvol&lt;br&gt;and set storage class (optionally management and data class)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="tsclass" scope="instance" visibility="public">
+		<label>Target Storage Class</label>
+		<abstract>Change storclass for the SMS-managed target data sets. SMS uses the attributes in the storage cla..</abstract>
+		<description>Change storclass for the SMS-managed target data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tdclass" scope="instance" visibility="public">
+		<label>Target Data Class</label>
+		<abstract>You can change dataclass for SMS-managed target data sets. Use the DATACLAS parameter to spe..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tmclass" scope="instance" visibility="public">
+		<label>Target Management Class</label>
+		<abstract>You can change management class for SMS-managed target data sets. Use the MGMTCLAS parameter ..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fsdsn" scope="instance" visibility="public">
+		<label>File System Data Set Name</label>
+		<abstract>Change the string fsdsn to the appropriate data set name for the file system that will be creat..</abstract>
+		<description>Change the string fsdsn to the appropriate data set name&lt;br&gt;for the file system that will be created.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dsprefix" scope="instance" visibility="public">
+		<label>Data Set Prefix</label>
+		<abstract>If you are APPLYing this function for the first time, change dsprefix to the value specified fo..</abstract>
+		<description>If you are APPLYing this function for the first time, change&lt;br&gt;dsprefix to the value specified for DSPREFIX in the OPTIONS&lt;br&gt;entry of the GLOBAL zone. &lt;br&gt;If you used the optional ZWE1SMPE job to define the CSI,&lt;br&gt;the dsprefix value will match the CSI high level qualifier. &lt;br&gt;&lt;br&gt;Otherwise keep this with default and set thlq and tvol (or tsclass)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fsvol" scope="instance" visibility="public">
+		<label>File System Volume</label>
+		<abstract>Change fsvol to the volser for the file system, if you choose not to use the default of letting..</abstract>
+		<description>Change fsvol to the volser for the file system,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use. &lt;br&gt;if you have SMS-management, keep this with default #fsvol&lt;br&gt;and set storage class (possibli management and data class)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="fsclass" scope="instance" visibility="public">
+		<label>File System Storage Class</label>
+		<abstract>Change storclass for the SMS-managed file system data sets. SMS uses the attributes in the storag..</abstract>
+		<description>Change storclass for the SMS-managed file system data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fdclass" scope="instance" visibility="public">
+		<label>File System Data Class</label>
+		<abstract>You can change dataclass for the SMS-managed file system data sets. Use the DATACLAS parameter t..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed file system data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fmclass" scope="instance" visibility="public">
+		<label>File System Management Class</label>
+		<abstract>You can change management class for SMS-managed file system data sets. Use the MGMTCLAS param..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed file system data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="pathPrefix" scope="instance" visibility="public">
+		<label>Path Prefix</label>
+		<abstract>Change the string &quot;-PathPrefix-&quot; to the appropriate high level directory name with leading and ..</abstract>
+		<description>Change the string &quot;-PathPrefix-&quot; to the appropriate&lt;br&gt;high level directory name with leading and trailing &quot;/&quot;. For&lt;br&gt;users installing in the root this would be &quot;/&quot;. For others,&lt;br&gt;the high level directory may be something like &quot;/service/&quot;,&lt;br&gt;or a more meaningful name. &lt;br&gt;Please note that the replacement string is case sensitive.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="dvol2" scope="instance" visibility="public">
+		<label>Distribution Volume 2</label>
+		<abstract>DO NOT SET THOSE, WE USE CATALOG in ZWE3ALOC (and SMS-managed is always catalogued) If you opte..</abstract>
+		<description>DO NOT SET THOSE, WE USE CATALOG in ZWE3ALOC (and SMS-managed is always catalogued)&lt;br&gt;If you opted in job ZWE3ALOC to use non-cataloged distribution&lt;br&gt;data sets;&lt;br&gt;Change dvol2 to the volser of the distribution volume,&lt;br&gt;as used in the ZWE3ALOC job.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="tvol2" scope="instance" visibility="public">
+		<label>Target Volume 2</label>
+		<abstract>If you opted in job ZWE3ALOC to use non-cataloged target data sets :Change tvol2 to the vol..</abstract>
+		<description>If you opted in job ZWE3ALOC to use non-cataloged target&lt;br&gt;data sets :&lt;br&gt;Change tvol2 to the volser of the target volume,&lt;br&gt;as used in the ZWE3ALOC job.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<step name="define_variables" optional="false">
+		<title>Define Variables</title>
+		<description>Step to define the variables</description>
+		<variableValue name="jobCard" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="acct" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="user" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="sysaff" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="csivol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="storclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dataclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="mgmtclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tzone" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="csihlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dzone" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="srel" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="hlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="thlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="ddclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dhlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tdclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsdsn" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dsprefix" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="pathPrefix" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dvol2" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tvol2" noPromptIfSet="false" required="false" scope="instance"/>
+		<instructions substitution="false">Run this step to initialize variable values</instructions>
+		<weight>1</weight>
+		<autoEnable>false</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+	</step>
+	<step name="ZWE1SMPE" optional="false">
+		<title>CSI Allocation</title>
+		<description>Allocates a CSI and data sets required by SMP/E</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Allocates a CSI and data sets required by SMP/E</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE1SMPE JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//*********************************************************************
+//*
+//* This JCL allocates and primes a CSI, allocates data sets required
+//* by SMP/E and defines DDDEFs required by SMP/E for product
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this job step, you will have to make the following
+//* modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change ${csihlq} to the high level qualifier for the CSI and
+//*    other SMP/E data sets. The maximum length is 32 characters.
+//*
+//* 3) Change ${tzone} to your CSI target zone name.
+//*
+//* 4) Change ${dzone} to your CSI distribution zone name.
+//*
+//* 5) Change ${csivol} to the volser for the CSI and SMP/E data sets,
+//*    if you choose not to use the default of letting your Automatic
+//*    Class Selection (ACS) routines decide which volume to use.
+//*    If you use ${csivol}, also uncomment all references to variable
+//*    &amp;CSIVOL:
+//*    - VOLUMES(&amp;CSIVOL) in step DEFCSI
+//*    - VOL=SER=&amp;CSIVOL in multiple DDs of step ZONING
+//*
+//*    If you are using SMS-managed system, instead of
+//*    CSIVOL set STCLAS ${storclass} and 
+//*    optionally DTCLAS ${dataclass} and MGCLAS ${mgmtclass}
+//*
+//* 6) This product can install in multiple SREL subsystems; 
+//*    Z038 (z/OS), P115 (IMS/DB2), and C150 (CICS). Update the
+//*    SET SREL= statement to select the desired SREL.
+//*
+//* Note(s):
+//*
+//* 1. JES3 configurations do not allow creation and usage of a
+//*    data set in the same JCL, and fail the job on the INITCSI
+//*    step with an invalid data set name error. If you are running
+//*    in a JES3 environment, split this job into 2 jobs at the
+//*    &quot;--SPLIT HERE IF NEEDED --&quot; marker and submit them separately.
+//*
+//* 2. This job uses PDSE data sets. If required, you can comment out
+//*    all occurances of DSNTYPE=LIBRARY to use PDS datasets instead.
+//*
+//* 3. This job should complete with a return code 0.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//* longest DSN is dsprefix.fmid.Fxx, so CISHLQ can be up to 32 chars
+//*                            1         2         3
+//*                   12345678901234567890123456789012
+//         SET CSIHLQ='${csihlq}'
+//         SET TZONE='${tzone}'
+//         SET DZONE='${dzone}'
+//         SET CSIVOL='${csivol}'
+//         SET STCLAS='${storclass}'
+//         SET DTCLAS='${dataclass}'
+//         SET MGCLAS='${mgmtclass}'
+//         SET SREL='${srel}'
+//*
+//         SET DSPREFIX='${csihlq}'
+//*
+//* ALLOCATE CSI
+//*
+//DEFCSI   EXEC PGM=IDCAMS,REGION=0M,COND=(4,LT)
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *,SYMBOLS=JCLONLY
+  DEFINE CLUSTER(             -
+    NAME(&amp;CSIHLQ..CSI)        -
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+    VOLUMES(&amp;CSIVOL)          -
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+    STORAGECLASS(&amp;STCLAS)     -
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+    DATACLASS(&amp;DTCLAS)        -
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+    MANAGEMENTCLASS(&amp;MGCLAS)  -
+#end
+    RECORDSIZE(24 143)        -
+    KEYS(24 0)                -
+    FREESPACE(10,5)           -
+    SHR(2)                    -
+    UNIQUE                    -
+    IMBED)                    -
+         DATA(                -
+    NAME(&amp;CSIHLQ..CSI.DATA)   -
+    CONTROLINTERVALSIZE(4096) -
+    CYLINDERS(10 5))          -
+         INDEX(               -
+    NAME(&amp;CSIHLQ..CSI.INDEX)  -
+    CYLINDERS(1 1))
+//*
+//* -- SPLIT HERE IF NEEDED --
+//*
+//* PRIME CSI
+//*
+//INITCSI  EXEC PGM=IDCAMS,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=&amp;CSIHLQ..CSI
+//ZPOOL    DD DISP=SHR,DSN=SYS1.MACLIB(GIMZPOOL)
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  REPRO INFILE(ZPOOL) OUTFILE(SMPCSI)
+//*
+//* ALLOCATE SMP/E WORK DATA SETS
+//* DEFINE TARGET &amp; DISTRIBUTION ZONES, OPTIONS, UTILITIES AND DDDEFS
+//*
+//ZONING   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=&amp;CSIHLQ..CSI
+//*
+//SMPLOG   DD DSN=&amp;DSPREFIX..SMPLOG,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSORG=PS,
+//            RECFM=VB,
+//            LRECL=3200,
+//            BLKSIZE=0,
+//            UNIT=SYSALLDA,
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//            VOL=SER=&amp;CSIVOL,
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//            STORCLAS=&amp;STCLAS,
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            SPACE=(TRK,(30,15))
+//*
+//SMPLOGA  DD DSN=&amp;DSPREFIX..SMPLOGA,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSORG=PS,
+//            RECFM=VB,
+//            LRECL=3200,
+//            BLKSIZE=0,
+//            UNIT=SYSALLDA,
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//            VOL=SER=&amp;CSIVOL,
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//            STORCLAS=&amp;STCLAS,
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            SPACE=(TRK,(30,15))
+//*
+//SMPLTS   DD DSN=&amp;DSPREFIX..SMPLTS,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSNTYPE=LIBRARY,
+//            RECFM=U,
+//            LRECL=0,
+//            BLKSIZE=32760,
+//            UNIT=SYSALLDA,
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//            VOL=SER=&amp;CSIVOL,
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//            STORCLAS=&amp;STCLAS,
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            SPACE=(TRK,(30,30,80))
+//*
+//SMPMTS   DD DSN=&amp;DSPREFIX..SMPMTS,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSORG=PO,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            UNIT=SYSALLDA,
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//            VOL=SER=&amp;CSIVOL,
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//            STORCLAS=&amp;STCLAS,
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            DSNTYPE=LIBRARY,
+//            SPACE=(TRK,(10,5,80))
+//*
+//SMPPTS   DD DSN=&amp;DSPREFIX..SMPPTS,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSORG=PO,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            UNIT=SYSALLDA,
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//            VOL=SER=&amp;CSIVOL,
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//            STORCLAS=&amp;STCLAS,
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            DSNTYPE=LIBRARY,
+//            SPACE=(TRK,(12000,3000,80))
+//*
+//SMPSCDS  DD DSN=&amp;DSPREFIX..SMPSCDS,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSORG=PO,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            UNIT=SYSALLDA,
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//            VOL=SER=&amp;CSIVOL,
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//            STORCLAS=&amp;STCLAS,
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            DSNTYPE=LIBRARY,
+//            SPACE=(TRK,(10,5,80))
+//*
+//SMPSTS   DD DSN=&amp;DSPREFIX..SMPSTS,
+//            DISP=(NEW,CATLG,DELETE),
+//            DSORG=PO,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            UNIT=SYSALLDA,
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//            VOL=SER=&amp;CSIVOL,
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//            STORCLAS=&amp;STCLAS,
+#end
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            DSNTYPE=LIBRARY,
+//            SPACE=(TRK,(10,5,80))
+//*
+//SMPLIST  DD SYSOUT=*
+//SYSPRINT DD SYSOUT=*
+//SMPOUT   DD SYSOUT=*
+//SMPRPT   DD SYSOUT=*
+//SMPSNAP  DD SYSOUT=*
+//SMPWRK1  DD UNIT=SYSALLDA,SPACE=(CYL,(2,1,10)),RECFM=FB,LRECL=80
+//SMPWRK2  DD UNIT=SYSALLDA,SPACE=(CYL,(2,1,10)),RECFM=FB,LRECL=80
+//SMPWRK3  DD UNIT=SYSALLDA,SPACE=(CYL,(2,1,10)),RECFM=FB,LRECL=80
+//SMPWRK4  DD UNIT=SYSALLDA,SPACE=(CYL,(2,1,10)),RECFM=FB,LRECL=80
+//SMPWRK6  DD UNIT=SYSALLDA,SPACE=(CYL,(20,200,50)),RECFM=FB,LRECL=80
+//SYSUT1   DD UNIT=SYSALLDA,SPACE=(CYL,(20,200))
+//SYSUT2   DD UNIT=SYSALLDA,SPACE=(CYL,(2,1))
+//SYSUT3   DD UNIT=SYSALLDA,SPACE=(CYL,(2,1))
+//SYSUT4   DD UNIT=SYSALLDA,SPACE=(CYL,(2,1))
+//SMPCNTL  DD *,SYMBOLS=JCLONLY
+  SET   BDY(GLOBAL) .           /* SET TO GLOBAL ZONE         */
+  UCLIN.
+    ADD GLOBALZONE              /* DEFINE GLOBAL ZONE NOW     */
+        OPTIONS(ESAOPT)         /* DEFINE AN OPTIONS ENTRY    */
+        SREL(&amp;SREL.)            /* z/OS, CICS, OR IMS/DB2     */
+        ZONEINDEX(              /* ZONES TO BE SET UP         */
+          (&amp;TZONE,&amp;CSIHLQ..CSI,TARGET),
+          (&amp;DZONE,&amp;CSIHLQ..CSI,DLIB))
+        .
+    ADD OPTIONS(ESAOPT)         /* ADD AN OPTIONS ENTRY       */
+        ASM(ASMUTIL)            /* SMP ASSEMBLER UTILITY NAME */
+        LKED(LINKEDIT)          /* SMP LINK EDIT UTILITY NAME */
+        DSPREFIX(&amp;DSPREFIX.)    /* HLQ FOR RECIEVED DATA      */
+        DSSPACE(1200,1200,1400) /* SPACE FOR TLIB DATA SETS   */
+      /*NOPURGE*/               /* KEEP SYSMOD AFTER APPLY    */
+        .
+    ADD UTILITY(ASMUTIL)        /* ASSEMBLER UTILITY ENTRY    */
+        NAME(ASMA90)            /* ASMA90 IS ASSEMBLER H      */
+        RC(4)                   /* RETURN CODE THRESHOLD      */
+        PARM(DECK,NOOBJECT,USING(WARN(2)))
+        .
+    ADD UTILITY(LINKEDIT)       /* LINK EDIT UTILITY ENTRY    */
+        NAME(IEWL)              /* NAME OF LINKAGE EDITOR     */
+        RC(4)                   /* RETURN CODE THRESHOLD      */
+        PRINT(SYSPRINT)         /* DDNAME FOR SYSPRINT OUTPUT */
+        PARM(SIZE=(1526K,100K),NCAL,LET,LIST,XREF)
+        .
+    ADD DDDEF(SMPOUT)   SYSOUT(*) .
+    ADD DDDEF(SMPRPT)   SYSOUT(*) .
+    ADD DDDEF(SMPLIST)  SYSOUT(*) .
+    ADD DDDEF(SYSPRINT) SYSOUT(*) .
+    ADD DDDEF(SMPSNAP)  SYSOUT(*) .
+    ADD DDDEF(SMPTLIB)  UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT1)   CYL SPACE(20,200) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT2)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT3)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT4)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPTLOAD) CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPLOG)   DA(&amp;DSPREFIX..SMPLOG) MOD .
+    ADD DDDEF(SMPLOGA)  DA(&amp;DSPREFIX..SMPLOGA) MOD .
+    ADD DDDEF(SMPLTS)   DA(&amp;DSPREFIX..SMPLTS) SHR .
+    ADD DDDEF(SMPMTS)   DA(&amp;DSPREFIX..SMPMTS) SHR .
+    ADD DDDEF(SMPPTS)   DA(&amp;DSPREFIX..SMPPTS) SHR .
+    ADD DDDEF(SMPSCDS)  DA(&amp;DSPREFIX..SMPSCDS) SHR .
+    ADD DDDEF(SMPSTS)   DA(&amp;DSPREFIX..SMPSTS) SHR .
+  ENDUCL .
+  SET   BDY(&amp;TZONE) .           /* SET TO TARGET ZONE         */
+  UCLIN.
+    ADD TARGETZONE(&amp;TZONE)      /* DEFINE TARGET ZONE         */
+        RELATED(&amp;DZONE)         /* DISTRIBUTION LIBRARY       */
+        OPTIONS(ESAOPT)         /* DEFINE AN OPTIONS ENTRY    */
+        SREL(&amp;SREL.)            /* z/OS, CICS, OR IMS/DB2     */
+        .                       /*                            */
+    ADD DDDEF(SMPOUT)   SYSOUT(*) .
+    ADD DDDEF(SMPRPT)   SYSOUT(*) .
+    ADD DDDEF(SMPLIST)  SYSOUT(*) .
+    ADD DDDEF(SYSPRINT) SYSOUT(*) .
+    ADD DDDEF(SMPSNAP)  SYSOUT(*) .
+    ADD DDDEF(SYSUT1)   CYL SPACE(20,200) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT2)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT3)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT4)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPLOG)   DA(&amp;DSPREFIX..SMPLOG) MOD .
+    ADD DDDEF(SMPLOGA)  DA(&amp;DSPREFIX..SMPLOGA) MOD .
+    ADD DDDEF(SMPLTS)   DA(&amp;DSPREFIX..SMPLTS) SHR .
+    ADD DDDEF(SMPMTS)   DA(&amp;DSPREFIX..SMPMTS) SHR .
+    ADD DDDEF(SMPPTS)   DA(&amp;DSPREFIX..SMPPTS) SHR .
+    ADD DDDEF(SMPSCDS)  DA(&amp;DSPREFIX..SMPSCDS) SHR .
+    ADD DDDEF(SMPSTS)   DA(&amp;DSPREFIX..SMPSTS) SHR .
+    ADD DDDEF(SYSLIB)   CONCAT(SMPMTS) .
+    ADD DDDEF(SMPTLOAD) CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK1)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK2)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK3)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK4)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK6)  CYL SPACE(20,200) DIR(50) UNIT(SYSALLDA) .
+  ENDUCL .
+  SET   BDY(&amp;DZONE) .           /* SET TO DISTRIBUTION ZONE   */
+  UCLIN.
+    ADD DLIBZONE(&amp;DZONE)        /* DEFINE DISTRIBUTION ZONE   */
+        RELATED(&amp;TZONE)         /* TARGET LIBRARY             */
+        OPTIONS(ESAOPT)         /* DEFINE AN OPTIONS ENTRY    */
+        SREL(&amp;SREL.)            /* z/OS, CICS, OR IMS/DB2     */
+        .
+    ADD DDDEF(SMPOUT)   SYSOUT(*) .
+    ADD DDDEF(SMPRPT)   SYSOUT(*) .
+    ADD DDDEF(SMPLIST)  SYSOUT(*) .
+    ADD DDDEF(SYSPRINT) SYSOUT(*) .
+    ADD DDDEF(SMPSNAP)  SYSOUT(*) .
+    ADD DDDEF(SYSUT1)   CYL SPACE(20,200) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT2)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT3)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SYSUT4)   CYL SPACE(2,1) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPLOG)   DA(&amp;DSPREFIX..SMPLOG) MOD .
+    ADD DDDEF(SMPLOGA)  DA(&amp;DSPREFIX..SMPLOGA) MOD .
+    ADD DDDEF(SMPLTS)   DA(&amp;DSPREFIX..SMPLTS) SHR .
+    ADD DDDEF(SMPMTS)   DA(&amp;DSPREFIX..SMPMTS) SHR .
+    ADD DDDEF(SMPPTS)   DA(&amp;DSPREFIX..SMPPTS) SHR .
+    ADD DDDEF(SMPSCDS)  DA(&amp;DSPREFIX..SMPSCDS) SHR .
+    ADD DDDEF(SMPSTS)   DA(&amp;DSPREFIX..SMPSTS) SHR .
+    ADD DDDEF(SYSLIB)   CONCAT(SMPMTS) .
+    ADD DDDEF(SMPTLOAD) CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK1)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK2)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK3)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK4)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
+    ADD DDDEF(SMPWRK6)  CYL SPACE(20,200) DIR(50) UNIT(SYSALLDA) .
+  ENDUCL .
+  LIST ALLZONES .                /* LIST ZONE INFORMATION      */
+//*
+</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE2RCVE" optional="false">
+		<title>Receive</title>
+		<description>SMP/E RECEIVE for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">SMP/E RECEIVE for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE2RCVE JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//********************************************************************
+//*
+//* This JCL will SMP/E RECEIVE product
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this job step, you will have to make the following
+//* modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//*    of the CSI.
+//*
+//* 3) Change ${hlq} to the high level qualifier(s) of the SMPMCS and
+//*    REL files, as specified when uploading the files to the host
+//*    (as described in the program directory).
+//*
+//* Note(s):
+//*
+//* 1. If ${hlq} is blank you must remove the RFPREFIX operand.
+//*
+//* 2. SMP/E makes copies of the relfiles and uses these as input.
+//*    Uncomment and customize DD SMPTLIB if you want to place these
+//*    copies on a specific volume.
+//*
+//* 3. This job should complete with a return code 0.
+//*
+//********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//         SET HLQ='${hlq}'
+//         SET CSIVOL='${csivol}'
+//         SET STCLAS='${storclass}'
+//         SET DTCLAS='${dataclass}'
+//         SET MGCLAS='${mgmtclass}'
+//*
+//RECEIVE  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
+#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+//SMPTLIB  DD UNIT=SYSALLDA,SPACE=(TRK,(1,1)),VOL=SER=${csivol}
+#end
+#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+//SMPTLIB  DD STORCLAS=${storclass},
+//            SPACE=(TRK,(1,1)),
+#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+//            DATACLAS=&amp;DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&amp;MGCLAS,
+#end
+//            UNIT=SYSALLDA
+#end
+//SMPHOLD  DD DUMMY
+//SMPPTFIN DD DISP=SHR,DSN=&amp;HLQ..[RFDSNPFX].[FMID].SMPMCS
+//SMPCNTL  DD *,SYMBOLS=JCLONLY
+   SET BOUNDARY(GLOBAL) .
+   RECEIVE SELECT([FMID])
+           SYSMODS
+#if( $hlq and $hlq != &quot;&quot; and $hlq != '#hlq')
+           RFPREFIX(&amp;HLQ)
+#end
+           LIST .
+//*
+</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>1024</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE3ALOC" optional="false">
+		<title>Target and Distribution Allocation</title>
+		<description>Allocates target and distribution libraries for SMP/E</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Allocates target and distribution libraries for SMP/E</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE3ALOC JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//********************************************************************
+//*                                                                   
+//* This JCL will allocate target and distribution libraries for      
+//* Zowe Open Source Project                                          
+//*                                                                   
+//*                                                                   
+//* CAUTION: This is neither a JCL procedure nor a complete job.      
+//* Before using this job step, you will have to make the following   
+//* modifications:                                                    
+//*                                                                   
+//* 1) Add the job parameters to meet your system requirements.     
+//*                                                                   
+//* 2) Change ${thlq} to the appropriate high level qualifier(s) for    
+//*    the target data sets. The maximum length is 35 characters.  
+//*                                                                   
+//* 3) Change ${dhlq} to the appropriate high level qualifier(s) for   
+//*    the distribution datasets. The maximum length is 35 characters.
+//*                                                                   
+//* 4) Change DSP=CATLG on the EXEC statements to the appropriate    
+//*    final disposition of the data sets if you choose not to use
+//*    the default.                                         
+//*                                                                   
+//* 5) By default, this job relies on your Automatic Class Selection
+//*    (ACS) routines to place the target data sets. You can
+//*    place the data sets on a specific volume when you:        
+//*    a) Change ${tvol} to the volser for the target libraries.     
+//*    b) Uncomment all references to variable &amp;TVOL:              
+//*       - VOL=SER=&amp;TVOL in multiple DDs of step ALLOCT
+//*                                                                   
+//* 6) By default, this job relies on your Automatic Class Selection 
+//*    (ACS) routines to place the distribution data sets. You can
+//*    place the data sets on a specific volume when you:      
+//*    a) Change ${dvol} to the volser for the target libraries. 
+//*    b) Uncomment all references to variable &amp;DVOL:
+//*       - VOL=SER=&amp;DVOL in multiple DDs of step ALLOCD         
+//*                                                                   
+//* Note(s):
+//*
+//* 1. If you specify a volume for any data set in this job, you
+//*    must also specify the same volume in the corresponding
+//*    DDDEF entry in the DDDEF job, ZWE6DDEF.
+//*    Also ensure that SMS routines will not change the specified
+//*    volser during allocation of the data set.
+//*
+//* 2. This job uses PDSE data sets. If required, you can comment out
+//*    all occurances of DSNTYPE=LIBRARY to use PDS data sets instead.
+//*
+//* 3. Run only the steps that are applicable to your installation.
+//*
+//* 4. This job WILL complete with a return code 0.
+//*    You must check allocation messages to verify that the
+//*    data sets are allocated and cataloged as expected.
+//*
+//********************************************************************
+//*
+//* ALLOCATE TARGET LIBRARIES
+//* longest DSN is thlq.llq, so THLQ can be up to 35 chars
+//*
+//ALLOCT   PROC THLQ=,
+//            TVOL=,
+//            DSP=
+//*
+//ALLOCT   EXEC PGM=IEFBR14,COND=(4,LT),PARM='&amp;TVOL'
+//SZWEAUTH DD SPACE=(TRK,(15,5,5)),
+//            UNIT=SYSALLDA,
+#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol')
+//            VOL=SER=&amp;TVOL,
+#end
+#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+//            STORCLAS=${tsclass},
+#end
+#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+//            DATACLAS=${tdclass},
+#end
+#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+//            MGMTCLAS=${tmclass},
+#end
+//            DISP=(NEW,&amp;DSP),
+//            DSNTYPE=LIBRARY,
+//            RECFM=U,
+//            LRECL=0,
+//            BLKSIZE=6999,
+//            DSN=&amp;THLQ..SZWEAUTH
+//*
+//SZWESAMP DD SPACE=(TRK,(15,5,5)),
+//            UNIT=SYSALLDA,
+#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol')
+//            VOL=SER=&amp;TVOL,
+#end
+#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+//            STORCLAS=${tsclass},
+#end
+#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+//            DATACLAS=${tdclass},
+#end
+#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+//            MGMTCLAS=${tmclass},
+#end
+//            DISP=(NEW,&amp;DSP),
+//            DSNTYPE=LIBRARY,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            DSN=&amp;THLQ..SZWESAMP
+//*
+//EALLOCT  PEND
+//*
+//* ALLOCATE DISTRIBUTION LIBRARIES
+//* longest DSN is dhlq.llq, so dHLQ can be up to 35 chars
+//*
+//ALLOCD   PROC DHLQ=,
+//*           DVOL=,
+//            DSP=
+//*
+//ALLOCD   EXEC PGM=IEFBR14,COND=(4,LT),PARM='&amp;DVOL'
+//AZWEAUTH DD SPACE=(TRK,(15,5,5)),
+//            UNIT=SYSALLDA,
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol')
+//            VOL=SER=&amp;DVOL,
+#end
+#if( $dsclass and $dsclass != &quot;&quot; and $dsclass != '#dsclass')
+//            STORCLAS=${dsclass},
+#end
+#if( $ddclass and $ddclass != &quot;&quot; and $ddclass != '#ddclass')
+//            DATACLAS=${ddclass},
+#end
+#if( $dmclass and $dmclass != &quot;&quot; and $dmclass != '#dmclass')
+//            MGMTCLAS=${dmclass},
+#end
+//            DISP=(NEW,&amp;DSP),
+//            DSNTYPE=LIBRARY,
+//            RECFM=U,
+//            LRECL=0,
+//            BLKSIZE=6999,
+//            DSN=&amp;DHLQ..AZWEAUTH
+//*
+//AZWESAMP DD SPACE=(TRK,(15,5,5)),
+//            UNIT=SYSALLDA,
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol')
+//            VOL=SER=&amp;DVOL,
+#end
+#if( $dsclass and $dsclass != &quot;&quot; and $dsclass != '#dsclass')
+//            STORCLAS=${dsclass},
+#end
+#if( $ddclass and $ddclass != &quot;&quot; and $ddclass != '#ddclass')
+//            DATACLAS=${ddclass},
+#end
+#if( $dmclass and $dmclass != &quot;&quot; and $dmclass != '#dmclass')
+//            MGMTCLAS=${dmclass},
+#end
+//            DISP=(NEW,&amp;DSP),
+//            DSNTYPE=LIBRARY,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            DSN=&amp;DHLQ..AZWESAMP
+//*
+//AZWEZFS  DD SPACE=(TRK,(12000,3000,30)),
+//            UNIT=SYSALLDA,
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol')
+//            VOL=SER=&amp;DVOL,
+#end
+#if( $dsclass and $dsclass != &quot;&quot; and $dsclass != '#dsclass')
+//            STORCLAS=${dsclass},
+#end
+#if( $ddclass and $ddclass != &quot;&quot; and $ddclass != '#ddclass')
+//            DATACLAS=${ddclass},
+#end
+#if( $dmclass and $dmclass != &quot;&quot; and $dmclass != '#dmclass')
+//            MGMTCLAS=${dmclass},
+#end
+//            DISP=(NEW,&amp;DSP),
+//            DSNTYPE=LIBRARY,
+//            RECFM=VB,
+//            LRECL=6995,
+//            BLKSIZE=0,
+//            DSN=&amp;DHLQ..AZWEZFS
+//*
+//EALLOCD  PEND
+//*
+//*  The following steps execute the PROCs to allocate the data sets
+//*  for this product. Remove these steps if the data sets already
+//*  exist with proper allocations.
+//*
+//ALLOCT   EXEC ALLOCT,       * Allocate Target Libraries
+//*                         1         2         3
+//*                12345678901234567890123456789012345
+//            THLQ=${thlq},
+//            TVOL=${tvol},
+//            DSP=CATLG
+//*
+//ALLOCD   EXEC ALLOCD,       * Allocate Distribution Libraries
+//*                         1         2         3
+//*                12345678901234567890123456789012345
+//            DHLQ=${dhlq},
+//            DVOL=${dvol},
+//            DSP=CATLG
+//*
+</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>1024</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE4ZFS" optional="false">
+		<title>File System Allocation</title>
+		<description>Allocates and mounts the USS File System for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Allocates and mounts the USS File System for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE4ZFS JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//********************************************************************
+//*
+//* This JCL will create a z/OS UNIX file system, create a
+//* z/OS UNIX mount point, and mount the file system for product
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTIONS:
+//* A) This job contains case sensitive path statements.
+//* B) This is neither a JCL procedure nor a complete job.
+//*    Before using this JCL, you will have to make the following
+//*    modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change the string &quot;${fsdsn}&quot; to the appropriate data set name
+//*    for the file system that will be created. 
+//*
+//* 3) Change ${fsvol} to the volser for the file system,
+//*    if you choose not to use the default of letting your Automatic
+//*    Class Selection (ACS) routines decide which volume to use.
+//*    If you use ${fsvol}, also uncomment all references to it:
+//*    - VOLUMES(${fsvol}) in step ZFSALLOC
+//*
+//* 4) Change the string &quot;${pathPrefix}&quot; to the appropriate
+//*    high level directory name with leading and trailing &quot;/&quot;. For
+//*    users installing in the root this would be &quot;/&quot;. For others,
+//*    the high level directory may be something like &quot;/service/&quot;,
+//*    or a more meaningful name.
+//*
+//*    Please note that the replacement string is case sensitive.
+//*
+//* 5a) If you are APPLYing this function for the first time, change
+//*    ${dsprefix} to the value specified for DSPREFIX in the OPTIONS
+//*    entry of the GLOBAL zone.
+//*    If you used the optional ZWE1SMPE job to define the CSI,
+//*    the ${dsprefix} value will match the CSI high level qualifier.
+//*
+//* 5b) If you are running this job to install service after the
+//*    product has been APPLYed, the ZWEMKDIR EXEC will reside in
+//*    a target library.
+//*    - Uncomment the second SYSEXEC statement and comment out the
+//*      first one.
+//*    - Change ${thlq} to the high level qualifier of the target
+//*      library, as used in the ZWE3ALOC job.
+//*    - Change ${tvol} to the volser of the target library, as used
+//*      in the ZWE3ALOC job.
+//*
+//* Note(s):
+//*
+//* 1. Ensure that -PathPrefix- is an absolute path name and begins
+//*    and ends with a slash (/).
+//*
+//* 2. The directory specified by -PathPrefix- will be created by the
+//*    job if it does not exist.
+//*
+//* 3. If your complete path name (-PathPrefix-usr/lpp/zowe) extends
+//*    beyond JCL limits, you can split it over multiple lines. The
+//*    ZWEMKDIR REXX will strip leading and trailing blanks and 
+//*    combine all lines in DD ROOT into a single path name.
+//*
+//* 4. Ensure you execute this job with a userid that is UID 0, or
+//*    that is permitted to the 'BPX.SUPERUSER' profile in the
+//*    FACILITY security class.
+//*
+//* 5. The ZFS started task needs READ access to the file system when
+//*    mounting a zFS file system. Lacking this permission will
+//*    result in errno=79 errnojr=EF096055 for the mount command.
+//*
+//* 6. You should consider updating the BPXPRMxx PARMLIB member to
+//*    mount the file system created with this job at IPL time.
+//*
+//*    MOUNT FILESYSTEM('${fsdsn}')
+//*       MOUNTPOINT('-PathPrefix-usr/lpp/zowe')
+//*       MODE(RDRW)                 /* can be MODE(READ) */
+//*       TYPE(ZFS) PARM('AGGRGROW') /* zFS, with extents */
+//*
+//* 7. This job should complete with a return code 0.
+//*    If not, check the output, consult the z/OS UNIX System
+//*    Services Messages and Codes manual to correct the problem,
+//*    and resubmit this job.
+//*
+//********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//         SET DSN='${fsdsn}'
+//         SET CSIVOL='${csivol}'
+//         SET STCLAS='${storclass}'
+//         SET DTCLAS='${dataclass}'
+//         SET MGCLAS='${mgmtclass}'
+//*
+//ZFSALLOC EXEC PGM=IDCAMS,REGION=0M,COND=(4,LT)
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *,SYMBOLS=JCLONLY
+   DEFINE CLUSTER( -
+     NAME(&amp;DSN) -
+#if( $fsvol and $fsvol != &quot;&quot; and $fsvol != '#fsvol')
+     VOLUMES(${fsvol})           -
+#end
+#if( $fsclass and $fsclass != &quot;&quot; and $fsclass != '#fsclass')
+    STORAGECLASS(${fsclass})     -
+#end
+#if( $fdlass and $fdclass != '#fdclass')
+    DATACLASS(${fdclass})        -
+#end
+#if( $fmclass and $fmclass != &quot;&quot; and $fmclass != '#fmclass')
+    MANAGEMENTCLASS(${fmclass})  -
+#end
+     LINEAR -
+     TRACKS(9000 900) -
+     SHAREOPTIONS(3) -
+   )
+//*
+//ZFSFORMT EXEC PGM=IOEAGFMT,REGION=0M,COND=(4,LT),
+//            PARM='-aggregate &amp;DSN -compat'
+//*STEPLIB  DD DISP=SHR,DSN=IOE.SIOELMOD        before z/OS 1.13
+//STEPLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE       from z/OS 1.13
+//SYSPRINT DD SYSOUT=*
+//*
+//MOUNT    EXEC PGM=IKJEFT01,REGION=0M,COND=(4,LT),
+//            PARM='%ZWEMKDIR ROOT=ROOT MOUNT=&amp;DSN AGGRGROW'
+//REPORT   DD SYSOUT=*
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DUMMY
+//ROOT     DD DATA,DLM=$$                        data can be multi-line
+  ${pathPrefix}usr/lpp/zowe
+$$ 
+#if( $dsprefix and $dsprefix != &quot;&quot; and $dsprefix != '#dsprefix' and $thlq == &quot;&quot;) 
+//SYSEXEC  DD DISP=SHR,DSN=${dsprefix}.[FMID].F1
+#end
+//*
+#if( $thlq and $thlq != &quot;&quot; and $thlq != '#thlq') 
+//SYSEXEC  DD DISP=SHR,         use when requested for service install
+//             UNIT=SYSALLDA,
+#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol') 
+//             VOL=SER=${tvol},
+#end
+#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+//            STORCLAS=${tsclass},
+#end
+#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+//            DATACLAS=${tdclass},
+#end
+#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+//            MGMTCLAS=${tmclass},
+#end  
+//             DSN=${thlq}. SZWESAMP
+//
+#end
+</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>1024</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE5MKD" optional="false">
+		<title>File Structure</title>
+		<description>Creates the file/folder structure in the allocated mount point</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Creates the file/folder structure in the allocated mount point</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE5MKD JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//********************************************************************
+//*
+//* This JCL will create directories for product
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTIONS:
+//* A) This job contains case sensitive path statements.
+//* B) This is neither a JCL procedure nor a complete job.
+//*    Before using this JCL, you will have to make the following
+//*    modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change the string &quot;-PathPrefix-&quot; to the appropriate
+//*    high level directory name with leading and trailing &quot;/&quot;. For
+//*    users installing in the root this would be &quot;/&quot;. For others,
+//*    the high level directory may be something like &quot;/service/&quot;,
+//*    or a more meaningful name.
+//*
+//*    Please note that the replacement string is case sensitive.
+//*
+//*    If you used the optional ZWE4ZFS job, &quot;-PathPrefix-&quot; must
+//*    match the value for the same variable in that job.
+//*
+//* 3a) If you are APPLYing this function for the first time, change
+//*    ${dsprefix} to the value specified for DSPREFIX in the OPTIONS
+//*    entry of the GLOBAL zone.
+//*    If you used the optional ZWE1SMPE job to define the CSI,
+//*    the ${dsprefix} value will match the CSI high level qualifier.
+//*
+//* 3b) If you are running this job to install service after the
+//*    product has been APPLYed, the ZWEMKDIR EXEC will reside in
+//*    a target library.
+//*    - Uncomment the second SYSEXEC statement and comment out the
+//*      first one.
+//*    - Change ${thlq} to the high level qualifier of the target
+//*      library, as used in the ZWE3ALOC job.
+//*    - Change ${tvol} to the volser of the target library, as used
+//*      in the ZWE3ALOC job.
+//*
+//* Note(s):
+//*
+//* 1. Ensure that -PathPrefix- is an absolute path name and begins
+//*    and ends with a slash (/).
+//*
+//* 2. The directory specified by -PathPrefix- will be created by the
+//*    job if it does not exist.
+//*
+//* 3. If your complete path name (-PathPrefix-usr/lpp/zowe) extends
+//*    beyond JCL limits, you can split it over multiple lines. The
+//*    ZWEMKDIR REXX will strip leading and trailing blanks and
+//*    combine all lines in DD ROOT into a single path name.
+//*
+//* 4. If you used the optional ZWE4ZFS job, the value in DD ROOT must
+//*    match the value for the same DD in that job.
+//*
+//* 5. Ensure you execute this job with a userid that is UID 0, or
+//*    that is permitted to the 'BPX.SUPERUSER' profile in the
+//*    FACILITY security class.
+//*
+//* 6. This job should complete with a return code 0.
+//*    If not, check the output, consult the z/OS UNIX System
+//*    Services Messages and Codes manual to correct the problem,
+//*    and resubmit this job.
+//*
+//********************************************************************
+//*
+//MKDIR    EXEC PGM=IKJEFT01,REGION=0M,COND=(4,LT),
+//            PARM='%ZWEMKDIR ROOT=ROOT DIRS=DIRS'
+//REPORT   DD SYSOUT=*
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DUMMY
+//ROOT     DD DATA,DLM=$$                        data can be multi-line
+  ${pathPrefix}usr/lpp/zowe
+$$
+//DIRS     DD *
+  # do NOT change these definitions
+  SMPE
+#if( $dsprefix and $dsprefix != &quot;&quot; and $dsprefix != '#dsprefix' and $thlq == &quot;&quot;) 
+//SYSEXEC  DD DISP=SHR,DSN=${dsprefix}.[FMID].F1
+#end
+//*
+#if( $thlq and $thlq != &quot;&quot; and $thlq != '#thlq') 
+//SYSEXEC  DD DISP=SHR,         use when requested for service install
+//             UNIT=SYSALLDA,
+#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol') 
+//             VOL=SER=${tvol},
+#end
+#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+//            STORCLAS=${tsclass},
+#end
+#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+//            DATACLAS=${tdclass},
+#end
+#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+//            MGMTCLAS=${tmclass},
+#end  
+//             DSN=${thlq}.SZWESAMP
+//
+#end
+</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>1024</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE6DDEF" optional="false">
+		<title>DDEF Creation</title>
+		<description>This step creates the DDEF entries</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">This step creates the DDEF entries</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE6DDEF JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project.2019, [YEAR]
+//*
+//********************************************************************
+//*
+//* This JCL will create DDDEF entries for product
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTIONS:
+//* A) This job contains case sensitive path statements.
+//* B) This is neither a JCL procedure nor a complete job.
+//*    Before using this JCL, you will have to make the following
+//*    modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//*    of the CSI.
+//*
+//* 3) Change ${tzone} to your CSI target zone name.
+//*
+//* 4) Change ${dzone} to your CSI distribution zone name.
+//*
+//* 5) Change ${thlq} to the appropriate high level qualifier(s) for
+//*    the target data sets, as used in the ZWE3ALOC job.
+//*
+//* 6) Change ${dhlq} to the appropriate high level qualifier(s) for
+//*    the distribution data sets, as used in the ZWE3ALOC job.
+//*
+//* 7) If you opted in job ZWE3ALOC to use non-cataloged target
+//*    data sets;
+//*    a) Uncomment all VOLUME(&amp;TVOL) statements.
+//*    b) Change ${tvol2} to the volser of the target volume,
+//*       as used in the ZWE3ALOC job.
+//*
+//* 8) If you opted in job ZWE3ALOC to use non-cataloged distribution
+//*    data sets;
+//*    a) Uncomment all VOLUME(&amp;DVOL) statements.
+//*    b) Change ${dvol2} to the volser of the distribution volume,
+//*       as used in the ZWE3ALOC job.
+//*
+//* 9) Change the string &quot;${pathPrefix}&quot; in step DEFPATH to the
+//*    high-level directory name, as used in job ZWE5MKD.
+//*
+//*    Please note that the replacement string is case sensitive.
+//*
+//* Note(s):
+//*
+//* 1. If you specify a volume for any data set in this job, you
+//*    must also specify the same volume in the corresponding
+//*    data set allocation job, ZWE3ALOC.
+//*
+//* 2. Ensure that ${pathPrefix} is an absolute path name and begins
+//*    and ends with a slash (/).
+//*
+//* 3. Run only the steps that are applicable to your installation.
+//*
+//* 4. This job should complete with a return code 0.
+//*    If some or all of these DDDEF entries already exist, then the
+//*    job will complete with a return code 8.
+//*    You will have to examine the output and determine wether or
+//*    not the existing entries should be replaced.
+//*    You can change the 'ADD' to 'REP' in this job to replace
+//*    existing entries.
+//*
+//*    You may receive the following message for the first change
+//*    command in the DEFPATH step. This message is expected and
+//*    can be ignored:
+//*      GIM26501W     THE PATH SUBENTRY WAS NOT CHANGED.
+//*    If you receive this message, a return code of 4 is expected
+//*    for the DEFPATH step.
+//*
+//********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//         SET CSIHLQ='${csihlq}'
+//         SET TZONE='${tzone}'
+//         SET DZONE='${dzone}'
+//         SET THLQ='${thlq}'
+//         SET DHLQ='${dhlq}'
+//         SET TVOL='${tvol2}'
+//         SET DVOL='${dvol2}'
+//*
+//* DDDEFs FOR TARGET ZONE
+//*
+//DDDEFTGT EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=&amp;CSIHLQ..CSI
+//SMPCNTL  DD *,SYMBOLS=JCLONLY
+  SET   BDY(&amp;TZONE) .
+  UCLIN .
+    ADD DDDEF (SZWEAUTH)
+        DATASET(&amp;THLQ..SZWEAUTH)
+        UNIT(SYSALLDA)
+#if( $tvol2 and $tvol2 != &quot;&quot; and $tvol2 != '#tvol2') 
+        VOLUME(&amp;TVOL)
+#end
+        WAITFORDSN
+        SHR .
+    ADD DDDEF (SZWESAMP)
+        DATASET(&amp;THLQ..SZWESAMP)
+        UNIT(SYSALLDA)
+#if( $tvol2 and $tvol2 != &quot;&quot; and $tvol2 != '#tvol2') 
+        VOLUME(&amp;TVOL)
+#end
+        WAITFORDSN
+        SHR .
+    ADD DDDEF (SZWEZFS)
+     /* do NOT alter PATH, correction is done in step DEFPATH */
+        PATH('/usr/lpp/zowe/SMPE/') .
+    ADD DDDEF (AZWEAUTH)
+        DATASET(&amp;DHLQ..AZWEAUTH)
+        UNIT(SYSALLDA)
+#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+        VOLUME(&amp;DVOL)
+#end
+        WAITFORDSN
+        SHR .
+    ADD DDDEF (AZWESAMP)
+        DATASET(&amp;DHLQ..AZWESAMP)
+        UNIT(SYSALLDA)
+#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+        VOLUME(&amp;DVOL)
+#end
+        WAITFORDSN
+        SHR .
+    ADD DDDEF (AZWEZFS)
+        DATASET(&amp;DHLQ..AZWEZFS)
+        UNIT(SYSALLDA)
+#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+        VOLUME(&amp;DVOL)
+#end
+        WAITFORDSN
+        SHR .
+  ENDUCL .
+//*
+//* DDDEFs FOR DISTRIBUTION ZONE
+//*
+//DDDEFDLB EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=&amp;CSIHLQ..CSI
+//SMPCNTL  DD *,SYMBOLS=JCLONLY
+  SET   BDY(&amp;DZONE) .
+  UCLIN .
+    ADD DDDEF (AZWEAUTH)
+        DATASET(&amp;DHLQ..AZWEAUTH)
+        UNIT(SYSALLDA)
+#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+        VOLUME(&amp;DVOL)
+#end
+        WAITFORDSN
+        SHR .
+    ADD DDDEF (AZWESAMP)
+        DATASET(&amp;DHLQ..AZWESAMP)
+        UNIT(SYSALLDA)
+#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+        VOLUME(&amp;DVOL)
+#end
+        WAITFORDSN
+        SHR .
+    ADD DDDEF (AZWEZFS)
+        DATASET(&amp;DHLQ..AZWEZFS)
+        UNIT(SYSALLDA)
+#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+        VOLUME(&amp;DVOL)
+#end
+        WAITFORDSN
+        SHR .
+  ENDUCL .
+//*
+//*  Change the string &quot;${pathPrefix}&quot; to the appropriate
+//*  high level directory name. For users installing in the root,
+//*  this would be &quot;/&quot;. For others, the high level directory may
+//*  be something like &quot;/service/&quot;, or a more meaningful name.
+//*
+//*  &quot;${pathPrefix}&quot; must match the value used in job ZWE5MKD.
+//*
+//*  Verify that the changed path statement does not contain
+//*  double slashes (such as //usr/lpp) prior to running this step.
+//*
+//DEFPATH  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=&amp;CSIHLQ..CSI
+//SMPCNTL  DD *,SYMBOLS=JCLONLY
+  SET BDY(&amp;TZONE) .        /* do NOT change &quot;PATH('/usr/lpp/zowe'*,&quot; */
+  ZONEEDIT DDDEF .         /* only change the 2nd (PathPrefix) line  */
+    CHANGE PATH('/usr/lpp/zowe'*,
+     '${pathPrefix}usr/lpp/zowe'*) .
+  ENDZONEEDIT .
+//*
+</inlineTemplate>
+			<submitAs maxRc="4">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE7APLY" optional="false">
+		<title>SMP/E Apply</title>
+		<description>SMP/E Apply for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">SMP/E Apply for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE7APLY JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//********************************************************************
+//*
+//* This JCL will SMP/E APPLY product
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this job step, you will have to make the following
+//* modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//*    of the CSI.
+//*
+//* 3) Change ${tzone} to your CSI target zone name.
+//*
+//* 4) Once the APPLY CHECK is successful, remove the CHECK operand
+//*    and run the job again to do the APPLY.
+//*
+//* Note(s):
+//*
+//* 1. The REDO operand must be added to the APPLY command if the
+//*    product has been APPLYed previously.
+//*
+//* 2. This job should complete with a return code 0.
+//*
+//********************************************************************
+//*
+//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}. CSI
+//SMPHOLD  DD DUMMY
+//SMPCNTL  DD *
+  SET BOUNDARY(${tzone}) .
+  APPLY  SELECT([FMID])
+         BYPASS(HOLDSYS,HOLDUSER)
+         CHECK
+         COMPRESS(ALL) .
+//*
+</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE8ACPT" optional="false">
+		<title>SMP/E Accept</title>
+		<description>SMP/E Accept for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">SMP/E Accept for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
+//ZWE8ACPT JOB ${acct},
+// NOTIFY=&amp;SYSUID,
+#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != &quot;&quot; and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, [YEAR]
+//*
+//********************************************************************
+//*
+//* This JCL will SMP/E ACCEPT product
+//* Zowe Open Source Project
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this job step, you will have to make the following
+//* modifications:
+//*
+//* 1) Add the job parameters to meet your system requirements.
+//*
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//*    of the CSI.
+//*
+//* 3) Change ${dzone} to your CSI distribution zone name.
+//*
+//* 4) Once the ACCEPT CHECK is successful, remove the CHECK operand
+//*    and run the job again to do the ACCEPT.
+//*
+//* Note(s):
+//*
+//* 1. The REDO operand must be added to the ACCEPT command if the
+//*    product has been ACCEPTed previously.
+//*
+//* 2. This job should complete with a return code 0.
+//*
+//********************************************************************
+//*
+//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}. CSI
+//SMPCNTL  DD *
+  SET BOUNDARY(${dzone}) .
+  ACCEPT SELECT([FMID])
+         BYPASS(HOLDSYS,HOLDUSER)
+         CHECK
+         COMPRESS(ALL) .
+//*
+</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+</workflow>
