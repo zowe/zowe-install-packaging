@@ -50,6 +50,15 @@ chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
 
 # MVS install steps
+# ZOWE_DSN_PREFIX is set in zowe-parse-yaml.sh 
+if [[ -n "$ZOWE_DSN_PREFIX" ]]
+then
+  echo ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX
+else
+  echo ZOWE_DSN_PREFIX=null
+  echo "** warning: temporary fix"
+  ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
+fi 
 
 # 0. Prepare STC JCL
 TEMP_DIR=/tmp
@@ -58,17 +67,17 @@ sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
     # ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
-    "//'$datasetPrefix.SZWESAMP(${XMEM_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_JCL}.tmp
+    "//'$ZOWE_DSN_PREFIX.SZWESAMP(${XMEM_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_JCL}.tmp
 sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
     # ${ZSS}/SAMPLIB/${XMEM_AUX_JCL} > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
-    "//'$datasetPrefix.SZWESAMP(${XMEM_AUX_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+    "//'$ZOWE_DSN_PREFIX.SZWESAMP(${XMEM_AUX_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
 # 1. Deploy loadlib
 echo
 echo "************************ Install step 'LOADLIB' start **************************"
 echo $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh
-loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${datasetPrefix} ${XMEM_LOADLIB} ${XMEM_MODULE}"
-loadlibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${datasetPrefix} ${XMEM_LOADLIB} ${XMEM_AUX_MODULE}"
+loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZOWE_DSN_PREFIX} ${XMEM_LOADLIB} ${XMEM_MODULE}"
+loadlibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZOWE_DSN_PREFIX} ${XMEM_LOADLIB} ${XMEM_AUX_MODULE}"
 $loadlibCmd1 && $loadlibCmd2
 if [[ $? -eq 0 ]]
 then
