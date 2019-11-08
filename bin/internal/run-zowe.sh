@@ -55,7 +55,9 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/interna
 . ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${INSTANCE_DIR}
 checkForErrorsFound
 
-# TODO create user_dir equivalent inside INSTANCE_DIR? and check that is writable and instance dir just readable?
+# TODO think of a better name?
+WORKSPACE_DIR=${INSTANCE_DIR}/workspace
+mkdir -p ${WORKSPACE_DIR}
 
 # Read in configuration
 ${INSTANCE_DIR}/bin/read-instance.sh
@@ -85,7 +87,7 @@ fi
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
   # Create the user configurable api-defs
-  STATIC_DEF_CONFIG_DIR=${INSTANCE_DIR}/api-mediation/api-defs
+  STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
   mkdir -p ${STATIC_DEF_CONFIG_DIR}
 fi
 
@@ -104,22 +106,22 @@ done
 
 checkForErrorsFound
 
-mkdir -p ${INSTANCE_DIR}/backups
+mkdir -p ${WORKSPACE_DIR}/backups
 # Make accessible to group so owning user can edit?
-chmod -R 771 ${INSTANCE_DIR}
+chmod -R 771 ${WORKSPACE_DIR}
 
 #Backup previous directory if it exists
-if [[ -f ${INSTANCE_DIR}"/active_configuration.cfg" ]]
+if [[ -f ${WORKSPACE_DIR}"/active_configuration.cfg" ]]
 then
-  PREVIOUS_DATE=$(cat ${INSTANCE_DIR}/active_configuration.cfg | grep CREATION_DATE | cut -d'=' -f2)
-  mv ${INSTANCE_DIR}/active_configuration.cfg ${INSTANCE_DIR}/backups/backup_configuration.${PREVIOUS_DATE}.cfg
+  PREVIOUS_DATE=$(cat ${WORKSPACE_DIR}/active_configuration.cfg | grep CREATION_DATE | cut -d'=' -f2)
+  mv ${WORKSPACE_DIR}/active_configuration.cfg ${WORKSPACE_DIR}/backups/backup_configuration.${PREVIOUS_DATE}.cfg
 fi
 
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
 ZOWE_VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-cp ${INSTANCE_DIR}/instance.env ${INSTANCE_DIR}/active_configuration.cfg
-cat <<EOF >> ${INSTANCE_DIR}/active_configuration.cfg
+cp ${INSTANCE_DIR}/instance.env ${WORKSPACE_DIR}/active_configuration.cfg
+cat <<EOF >> ${WORKSPACE_DIR}/active_configuration.cfg
 VERSION=${ZOWE_VERSION}
 CREATION_DATE=${NOW}
 ROOT_DIR=${ROOT_DIR}
@@ -127,8 +129,8 @@ STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}
 EOF
 
-# Copy manifest into INSTANCE_DIR so we know the version for support enquiries/migration
-cp ${ROOT_DIR}/manifest.json ${INSTANCE_DIR}
+# Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
+cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
 # Run setup/configure on components if script exists
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
