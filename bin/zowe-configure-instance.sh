@@ -91,43 +91,49 @@ create_new_instance() {
         chmod -R 750 "${INSTANCE_DIR}/instance.env"
 
 cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
-export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 # Read in properties by executing, then export all the keys so we don't need to shell share
-. ${INSTANCE_DIR}/instance.env
+. \${INSTANCE_DIR}/instance.env
 
 while read -r line
 do
     test -z "${line%%#*}" && continue      # skip line if first char is #
     key=${line%%=*}
     export $key
-done < ${INSTANCE_DIR}/instance.env
+done < \${INSTANCE_DIR}/instance.env
 EOF
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
-export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
-${INSTANCE_DIR}/bin/read-instance.sh
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
+\${INSTANCE_DIR}/bin/read-instance.sh
 
 $ZOWE_ROOT_DIR/scripts/internal/opercmd \
-    "S ${ZOWE_SERVER_PROCLIB_MEMBER},INSTANCE='"${INSTANCE_DIR}"'",JOBNAME=${ZOWE_PREFIX}${ZOWE_INSTANCE}SV
+    "S \${ZOWE_SERVER_PROCLIB_MEMBER},INSTANCE='"\${INSTANCE_DIR}"'",JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV
 echo Start command issued, check SDSF job log ...
 EOF
 
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
-export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
-${INSTANCE_DIR}/bin/read-instance.sh
-${ZOWE_ROOT_DIR}/bin/internal/run-zowe.sh -c ${INSTANCE_DIR}
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
+\${INSTANCE_DIR}/bin/read-instance.sh
+\${ZOWE_ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-stop.sh
-export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
-${INSTANCE_DIR}/bin/read-instance.sh
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
+\${INSTANCE_DIR}/bin/read-instance.sh
 
-$ZOWE_ROOT_DIR/scripts/internal/opercmd "c ${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
+\$ZOWE_ROOT_DIR/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
 
-# Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod -R 777 ${INSTANCE_DIR}
-chmod -R 751 ${INSTANCE_DIR}/bin
+  # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
+  chmod -R 777 ${INSTANCE_DIR}
+  chmod -R 751 ${INSTANCE_DIR}/bin
+
+  $(chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${INSTANCE_DIR})
+  AUTH_RETURN_CODE=$?
+  if [[ $AUTH_RETURN_CODE != "0" ]]; then
+      chmod -R 755 ${INSTANCE_DIR}/bin
+  fi
 }
 
 check_existing_instance_for_updates() {
