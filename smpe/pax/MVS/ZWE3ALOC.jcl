@@ -137,6 +137,7 @@
 //*  exist with proper allocations.
 //*
 //ALLOCT   EXEC ALLOCT,       * Allocate Target Libraries
+//* longest DSN is thlq.llq, so THLQ can be up to 35 chars
 //*                         1         2         3
 //*                12345678901234567890123456789012345
 //            THLQ=#thlq,
@@ -144,6 +145,7 @@
 //            DSP=CATLG
 //*
 //ALLOCD   EXEC ALLOCD,       * Allocate Distribution Libraries
+//* longest DSN is dhlq.llq, so dHLQ can be up to 35 chars
 //*                         1         2         3
 //*                12345678901234567890123456789012345
 //            DHLQ=#dhlq,
