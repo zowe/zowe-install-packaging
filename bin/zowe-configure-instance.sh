@@ -65,7 +65,7 @@ create_new_instance() {
         -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
         -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" \
         -e "s#ZOWE_PREFIX=ZOWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
-        -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=1${ZOWE_INSTANCE}#" \
+        -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=${ZOWE_INSTANCE}#" \
         -e "s#ZOSMF_USERID=IZUSVR#ZOSMF_USERID=${ZOWE_ZOSMF_USERID}#" \
         -e "s#ZOSMF_ADMIN_GROUP=IZUADMIN#ZOSMF_ADMIN_GROUP=${ZOWE_ZOSMF_ADMIN_GROUP}#" \
         -e "s#ZOSMF_KEYRING=IZUKeyring.IZUDFLT#ZOSMF_KEYRING=${ZOWE_ZOSMF_KEYRING}#" \
