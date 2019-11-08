@@ -91,7 +91,7 @@ create_new_instance() {
         chmod -R 750 "${INSTANCE_DIR}/instance.env"
 
 cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
-export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
+# Requires INSTANCE_DIR to be set
 # Read in properties by executing, then export all the keys so we don't need to shell share
 . \${INSTANCE_DIR}/instance.env
 
@@ -104,8 +104,7 @@ done < \${INSTANCE_DIR}/instance.env
 EOF
 
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
-cd ../
-export INSTANCE_DIR=$(cd ../;pwd)
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
