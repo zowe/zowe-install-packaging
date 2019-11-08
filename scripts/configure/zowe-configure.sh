@@ -44,7 +44,7 @@ chmod a+rw $LOG_FILE
 export TEMP_DIR=$CONFIG_DIR/temp_"`date +%Y-%m-%d`"
 mkdir -p $TEMP_DIR
 
-${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
 
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $CONFIG_DIR/zowe-parse-yaml.sh

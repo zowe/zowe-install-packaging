@@ -155,7 +155,7 @@ chmod -R 755 $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 #TODO LATER - do we need a better location rather than scripts - covered by zip #519
-cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.template.jcl
+cp $INSTALL_DIR/files/templates/ZOWESVR.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl
 
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh

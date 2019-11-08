@@ -86,9 +86,11 @@ create_new_instance() {
         -e "s#ZOWE_ZLUX_TELNET_PORT=23#ZOWE_ZLUX_TELNET_PORT=${ZOWE_ZLUX_TELNET_PORT}#" \
         -e "s#ZOWE_ZLUX_SECURITY_TYPE=#ZOWE_ZLUX_SECURITY_TYPE=${ZOWE_ZLUX_SECURITY_TYPE}#" \
         -e "s#ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR#ZOWE_SERVER_PROCLIB_MEMBER=${ZOWE_SERVER_PROCLIB_MEMBER}#" \
-        "${INSTALL_DIR}/scripts/instance.template.env" \
+        "${ZOWE_ROOT_DIR}/scripts/instance.template.env" \
         > "${INSTANCE_DIR}/instance.env"
         chmod -R 750 "${INSTANCE_DIR}/instance.env"
+
+        mkdir -p ${INSTANCE_DIR}/bin/internal
 
 cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
 export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
