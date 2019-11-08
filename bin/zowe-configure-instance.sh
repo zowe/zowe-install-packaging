@@ -41,7 +41,7 @@ fi
  # TODO NOW - Check if directory isn't writable - what happens
 create_new_instance() {
     echo "Creating new zowe instance in ${INSTANCE_DIR}..."
-    mkdir -p ${INSTANCE_DIR}
+    mkdir -p ${INSTANCE_DIR}/bin/internal
 
     # Try and work out the variables that we can
     ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
@@ -90,8 +90,6 @@ create_new_instance() {
         > "${INSTANCE_DIR}/instance.env"
         chmod -R 750 "${INSTANCE_DIR}/instance.env"
 
-        mkdir -p ${INSTANCE_DIR}/bin/internal
-
 cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
 export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
 # Read in properties by executing, then export all the keys so we don't need to shell share
@@ -127,7 +125,9 @@ ${INSTANCE_DIR}/bin/read-instance.sh
 $ZOWE_ROOT_DIR/scripts/internal/opercmd "c ${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
 EOF
 
-chmod -R 750 ${INSTANCE_DIR}/bin
+# If this step fails it is because the user running this script is not part of the IZUADMIN group
+chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${INSTANCE_DIR}
+chmod -R 751 ${INSTANCE_DIR}
 }
 
 check_existing_instance_for_updates() {
