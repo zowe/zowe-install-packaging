@@ -125,7 +125,7 @@ fi
 cd $PREV_DIR
 
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
-echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER,INSTANCE=\"${INSTANCE_DIR}\")"
+echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER,INSTANCE='${INSTANCE_DIR}')"
 echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
 echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
 
