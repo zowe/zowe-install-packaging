@@ -97,8 +97,8 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 while read -r line
 do
-    test -z "${line%%#*}" && continue      # skip line if first char is #
-    key=${line%%=*}
+    test -z "\${line%%#*}" && continue      # skip line if first char is #
+    key=\${line%%=*}
     export $key
 done < \${INSTANCE_DIR}/instance.env
 EOF
@@ -107,7 +107,7 @@ cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 \${INSTANCE_DIR}/bin/read-instance.sh
 
-$ZOWE_ROOT_DIR/scripts/internal/opercmd \
+\$ZOWE_ROOT_DIR/scripts/internal/opercmd \
     "S \${ZOWE_SERVER_PROCLIB_MEMBER},INSTANCE='"\${INSTANCE_DIR}"'",JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV
 echo Start command issued, check SDSF job log ...
 EOF
