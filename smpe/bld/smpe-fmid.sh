@@ -26,7 +26,7 @@ csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
-#debug=-d                      # -d or null, -d triggers early debug
+debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
 
@@ -194,6 +194,13 @@ fi    #
 # compare both lists
 test "$debug" && echo
 test "$debug" && echo "test -n \"$(comm -3 $mcsX.list $partsX.list)\""
+
+echo mcsX.list=$mcsX.list
+cat $mcsX.list
+
+echo partsX.list=$partsX.list
+cat $partsX.list
+
 if test -n "$(comm -3 $mcsX.list $partsX.list)"
 then
   echo "** ERROR SMPMCS does not match list of actual parts"
