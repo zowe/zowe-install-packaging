@@ -125,9 +125,9 @@ ${INSTANCE_DIR}/bin/read-instance.sh
 $ZOWE_ROOT_DIR/scripts/internal/opercmd "c ${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
 EOF
 
-# If this step fails it is because the user running this script is not part of the IZUADMIN group
-chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${INSTANCE_DIR}
-chmod -R 751 ${INSTANCE_DIR}
+# Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
+chmod -R 777 ${INSTANCE_DIR}
+chmod -R 751 ${INSTANCE_DIR}/bin
 }
 
 check_existing_instance_for_updates() {
