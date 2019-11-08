@@ -12,43 +12,10 @@
 		<vendor>Broadcom</vendor>
 		<General/>
 	</workflowInfo>
-	<variable name="jobCard" scope="instance" visibility="public">
-		<label>Job Card</label>
-		<abstract>Change jobCard to 'YES' to generate a job card for the JCL, if you have a default job card you ..</abstract>
-		<description>Change jobCard to 'YES' to generate a job card for the JCL,&lt;br&gt;if you have a default job card you want to use do not change this value.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-		</string>
-	</variable>
-	<variable name="acct" scope="instance" visibility="public">
-		<label>Account Number</label>
-		<abstract>Change acct to a valid accounting information parameter. This value is required and only used i..</abstract>
-		<description>Change acct to a valid accounting information parameter. &lt;br&gt;This value is required and only used if a new jobcard is generated. &lt;br&gt;(see jobCard)</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-		</string>
-	</variable>
-	<variable name="user" scope="instance" visibility="public">
-		<label>User ID</label>
-		<abstract>Change user to a valid user ID on the system to identify the user submitting the job. This va..</abstract>
-		<description>Change user to a valid user ID on the system to identify the user submitting the job. &lt;br&gt;This value only used if a new jobcard is generated and it is not required.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>TSOUSERID</validationType>
-		</string>
-	</variable>
-	<variable name="sysaff" scope="instance" visibility="public">
-		<label>Execution System</label>
-		<abstract>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job..</abstract>
-		<description>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job. &lt;br&gt;This value used only to generate new job card it is optional</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-		</string>
-	</variable>
 	<variable name="csivol" scope="instance" visibility="public">
 		<label>CSI Volume Serial</label>
 		<abstract>Change csivol to the volser for the CSI and SMP/E data sets, if you choose not to use the defau..</abstract>
-		<description>Change csivol to the volser for the CSI and SMP/E data sets,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use. &lt;br&gt;if you have SMS-management, keep this with default #csivol&lt;br&gt;and set storage class (optionally management and data class)</description>
+		<description>Change csivol to the volser for the CSI and SMP/E data sets,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use.</description>
 		<category>General</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>VOLSER</validationType>
@@ -56,8 +23,8 @@
 	</variable>
 	<variable name="storclass" scope="instance" visibility="public">
 		<label>Storage Class</label>
-		<abstract>Change storclass for the SMS-managed CSI and SMP/E data sets. SMS uses the attributes in the stor..</abstract>
-		<description>Change storclass for the SMS-managed CSI and SMP/E data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<abstract>If required, change storclass for the SMS-managed CSI and SMP/E data sets.</abstract>
+		<description>If required, change storclass for the SMS-managed CSI and SMP/E data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
 		<category>General</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
@@ -65,8 +32,8 @@
 	</variable>
 	<variable name="dataclass" scope="instance" visibility="public">
 		<label>Data Class</label>
-		<abstract>You can change dataclass for SMS-managed CSI and SMP/E data sets. Use the DATACLAS parameter..</abstract>
-		<description>You can change dataclass for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<abstract>If required, change dataclass for SMS-managed CSI and SMP/E data sets. Use the DATACLAS parameter..</abstract>
+		<description>If required, change dataclass for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
 		<category>General</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
@@ -135,6 +102,42 @@
 			<validationType>DSNAME</validationType>
 		</string>
 	</variable>
+	<variable name="tvol" scope="instance" visibility="public">
+		<label>Target Volume</label>
+		<abstract>By default, this job relies on your Automatic Class Selection(ACS) routines to place the targe..</abstract>
+		<description>By default, this job relies on your Automatic Class Selection&lt;br&gt;(ACS) routines to place the target data sets. You can&lt;br&gt;place the data sets on a specific volume when you:&lt;br&gt;Change tvol to the volser for the target libraries. &lt;br&gt;if you have SMS-management, keep this with default #tvol&lt;br&gt;and set storage class (optionally management and data class)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="tsclass" scope="instance" visibility="public">
+		<label>Target Storage Class</label>
+		<abstract>Change storclass for the SMS-managed target data sets. SMS uses the attributes in the storage cla..</abstract>
+		<description>Change storclass for the SMS-managed target data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tdclass" scope="instance" visibility="public">
+		<label>Target Data Class</label>
+		<abstract>You can change dataclass for SMS-managed target data sets. Use the DATACLAS parameter to spe..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tmclass" scope="instance" visibility="public">
+		<label>Target Management Class</label>
+		<abstract>You can change management class for SMS-managed target data sets. Use the MGMTCLAS parameter ..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
 	<variable name="dvol" scope="instance" visibility="public">
 		<label>Distribution Volume Serial</label>
 		<abstract>By default, this job relies on your Automatic Class Selection(ACS) routines to place the distr..</abstract>
@@ -180,42 +183,6 @@
 			<validationType>DSNAME</validationType>
 		</string>
 	</variable>
-	<variable name="tvol" scope="instance" visibility="public">
-		<label>Target Volume</label>
-		<abstract>By default, this job relies on your Automatic Class Selection(ACS) routines to place the targe..</abstract>
-		<description>By default, this job relies on your Automatic Class Selection&lt;br&gt;(ACS) routines to place the target data sets. You can&lt;br&gt;place the data sets on a specific volume when you:&lt;br&gt;Change tvol to the volser for the target libraries. &lt;br&gt;if you have SMS-management, keep this with default #tvol&lt;br&gt;and set storage class (optionally management and data class)</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>VOLSER</validationType>
-		</string>
-	</variable>
-	<variable name="tsclass" scope="instance" visibility="public">
-		<label>Target Storage Class</label>
-		<abstract>Change storclass for the SMS-managed target data sets. SMS uses the attributes in the storage cla..</abstract>
-		<description>Change storclass for the SMS-managed target data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>DSMEMBERNAME</validationType>
-		</string>
-	</variable>
-	<variable name="tdclass" scope="instance" visibility="public">
-		<label>Target Data Class</label>
-		<abstract>You can change dataclass for SMS-managed target data sets. Use the DATACLAS parameter to spe..</abstract>
-		<description>You can change dataclass for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>DSMEMBERNAME</validationType>
-		</string>
-	</variable>
-	<variable name="tmclass" scope="instance" visibility="public">
-		<label>Target Management Class</label>
-		<abstract>You can change management class for SMS-managed target data sets. Use the MGMTCLAS parameter ..</abstract>
-		<description>You can change management class for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>DSMEMBERNAME</validationType>
-		</string>
-	</variable>
 	<variable name="fsdsn" scope="instance" visibility="public">
 		<label>File System Data Set Name</label>
 		<abstract>Change the string fsdsn to the appropriate data set name for the file system that will be creat..</abstract>
@@ -223,6 +190,14 @@
 		<category>General</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="pathPrefix" scope="instance" visibility="public">
+		<label>Path Prefix</label>
+		<abstract>Change the string &quot;-PathPrefix-&quot; to the appropriate high level directory name with leading and ..</abstract>
+		<description>Change the string &quot;-PathPrefix-&quot; to the appropriate&lt;br&gt;high level directory name with leading and trailing &quot;/&quot;. For&lt;br&gt;users installing in the root this would be &quot;/&quot;. For others,&lt;br&gt;the high level directory may be something like &quot;/service/&quot;,&lt;br&gt;or a more meaningful name. &lt;br&gt;Please note that the replacement string is case sensitive.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
 		</string>
 	</variable>
 	<variable name="dsprefix" scope="instance" visibility="public">
@@ -270,39 +245,9 @@
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
 	</variable>
-	<variable name="pathPrefix" scope="instance" visibility="public">
-		<label>Path Prefix</label>
-		<abstract>Change the string &quot;-PathPrefix-&quot; to the appropriate high level directory name with leading and ..</abstract>
-		<description>Change the string &quot;-PathPrefix-&quot; to the appropriate&lt;br&gt;high level directory name with leading and trailing &quot;/&quot;. For&lt;br&gt;users installing in the root this would be &quot;/&quot;. For others,&lt;br&gt;the high level directory may be something like &quot;/service/&quot;,&lt;br&gt;or a more meaningful name. &lt;br&gt;Please note that the replacement string is case sensitive.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-		</string>
-	</variable>
-	<variable name="dvol2" scope="instance" visibility="public">
-		<label>Distribution Volume 2</label>
-		<abstract>DO NOT SET THOSE, WE USE CATALOG in ZWE3ALOC (and SMS-managed is always catalogued) If you opte..</abstract>
-		<description>DO NOT SET THOSE, WE USE CATALOG in ZWE3ALOC (and SMS-managed is always catalogued)&lt;br&gt;If you opted in job ZWE3ALOC to use non-cataloged distribution&lt;br&gt;data sets;&lt;br&gt;Change dvol2 to the volser of the distribution volume,&lt;br&gt;as used in the ZWE3ALOC job.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>VOLSER</validationType>
-		</string>
-	</variable>
-	<variable name="tvol2" scope="instance" visibility="public">
-		<label>Target Volume 2</label>
-		<abstract>If you opted in job ZWE3ALOC to use non-cataloged target data sets :Change tvol2 to the vol..</abstract>
-		<description>If you opted in job ZWE3ALOC to use non-cataloged target&lt;br&gt;data sets :&lt;br&gt;Change tvol2 to the volser of the target volume,&lt;br&gt;as used in the ZWE3ALOC job.</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>VOLSER</validationType>
-		</string>
-	</variable>
 	<step name="define_variables" optional="false">
 		<title>Define Variables</title>
 		<description>Step to define the variables</description>
-		<variableValue name="jobCard" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="acct" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="user" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="sysaff" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="csivol" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="storclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dataclass" noPromptIfSet="false" required="false" scope="instance"/>
@@ -313,24 +258,22 @@
 		<variableValue name="srel" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="hlq" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="thlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tdclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tmclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dvol" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dsclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="ddclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dmclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dhlq" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="tvol" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="tsclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="tdclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="tmclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fsdsn" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="pathPrefix" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dsprefix" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fsvol" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="pathPrefix" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="dvol2" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="tvol2" noPromptIfSet="false" required="false" scope="instance"/>
 		<instructions substitution="false">Run this step to initialize variable values</instructions>
 		<weight>1</weight>
 		<autoEnable>false</autoEnable>
@@ -345,18 +288,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE1SMPE JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -438,16 +370,16 @@
 //SYSIN    DD *,SYMBOLS=JCLONLY
   DEFINE CLUSTER(             -
     NAME(&amp;CSIHLQ..CSI)        -
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
     VOLUMES(&amp;CSIVOL)          -
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
     STORAGECLASS(&amp;STCLAS)     -
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
     DATACLASS(&amp;DTCLAS)        -
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
     MANAGEMENTCLASS(&amp;MGCLAS)  -
 #end
     RECORDSIZE(24 143)        -
@@ -488,16 +420,16 @@
 //            LRECL=3200,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //            VOL=SER=&amp;CSIVOL,
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //            STORCLAS=&amp;STCLAS,
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            SPACE=(TRK,(30,15))
@@ -509,16 +441,16 @@
 //            LRECL=3200,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //            VOL=SER=&amp;CSIVOL,
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //            STORCLAS=&amp;STCLAS,
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            SPACE=(TRK,(30,15))
@@ -530,16 +462,16 @@
 //            LRECL=0,
 //            BLKSIZE=32760,
 //            UNIT=SYSALLDA,
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //            VOL=SER=&amp;CSIVOL,
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //            STORCLAS=&amp;STCLAS,
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            SPACE=(TRK,(30,30,80))
@@ -551,16 +483,16 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //            VOL=SER=&amp;CSIVOL,
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //            STORCLAS=&amp;STCLAS,
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            DSNTYPE=LIBRARY,
@@ -573,16 +505,16 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //            VOL=SER=&amp;CSIVOL,
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //            STORCLAS=&amp;STCLAS,
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            DSNTYPE=LIBRARY,
@@ -595,16 +527,16 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //            VOL=SER=&amp;CSIVOL,
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //            STORCLAS=&amp;STCLAS,
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            DSNTYPE=LIBRARY,
@@ -617,16 +549,16 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //            VOL=SER=&amp;CSIVOL,
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //            STORCLAS=&amp;STCLAS,
 #end
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            DSNTYPE=LIBRARY,
@@ -771,18 +703,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE2RCVE JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -832,16 +753,16 @@
 //*
 //RECEIVE  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
-#if( $csivol and $csivol != &quot;&quot; and $csivol != '#csivol')
+#if( $csivol and $csivol != &quot;&quot;)
 //SMPTLIB  DD UNIT=SYSALLDA,SPACE=(TRK,(1,1)),VOL=SER=${csivol}
 #end
-#if( $storclass and $storclass != &quot;&quot; and $storclass != '#storclass')
+#if( $storclass and $storclass != &quot;&quot;)
 //SMPTLIB  DD STORCLAS=${storclass},
 //            SPACE=(TRK,(1,1)),
-#if( $dataclass and $dataclass != &quot;&quot; and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != &quot;&quot;)
 //            DATACLAS=&amp;DTCLAS,
 #end
-#if( $mgmtclass and $mgmtclass != &quot;&quot; and $mgmtclass != '#mgmtclass')
+#if( $mgmtclass and $mgmtclass != &quot;&quot;)
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            UNIT=SYSALLDA
@@ -852,14 +773,14 @@
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT([FMID])
            SYSMODS
-#if( $hlq and $hlq != &quot;&quot; and $hlq != '#hlq')
+#if( $hlq and $hlq != &quot;&quot;)
            RFPREFIX(&amp;HLQ)
 #end
            LIST .
 //*
 </inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
-			<maxLrecl>1024</maxLrecl>
+			<maxLrecl>80</maxLrecl>
 		</template>
 	</step>
 	<step name="ZWE3ALOC" optional="false">
@@ -871,18 +792,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE3ALOC JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -957,16 +867,16 @@
 //ALLOCT   EXEC PGM=IEFBR14,COND=(4,LT),PARM='&amp;TVOL'
 //SZWEAUTH DD SPACE=(TRK,(15,5,5)),
 //            UNIT=SYSALLDA,
-#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol')
+#if( $tvol and $tvol != &quot;&quot;)
 //            VOL=SER=&amp;TVOL,
 #end
-#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+#if( $tsclass and $tsclass != &quot;&quot;)
 //            STORCLAS=${tsclass},
 #end
-#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+#if( $tdclass and $tdclass != &quot;&quot;)
 //            DATACLAS=${tdclass},
 #end
-#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+#if( $tmclass and $tmclass != &quot;&quot;)
 //            MGMTCLAS=${tmclass},
 #end
 //            DISP=(NEW,&amp;DSP),
@@ -978,16 +888,16 @@
 //*
 //SZWESAMP DD SPACE=(TRK,(15,5,5)),
 //            UNIT=SYSALLDA,
-#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol')
+#if( $tvol and $tvol != &quot;&quot;)
 //            VOL=SER=&amp;TVOL,
 #end
-#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+#if( $tsclass and $tsclass != &quot;&quot;)
 //            STORCLAS=${tsclass},
 #end
-#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+#if( $tdclass and $tdclass != &quot;&quot;)
 //            DATACLAS=${tdclass},
 #end
-#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+#if( $tmclass and $tmclass != &quot;&quot;)
 //            MGMTCLAS=${tmclass},
 #end
 //            DISP=(NEW,&amp;DSP),
@@ -1009,16 +919,16 @@
 //ALLOCD   EXEC PGM=IEFBR14,COND=(4,LT),PARM='&amp;DVOL'
 //AZWEAUTH DD SPACE=(TRK,(15,5,5)),
 //            UNIT=SYSALLDA,
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol')
+#if( $dvol and $dvol != &quot;&quot;)
 //            VOL=SER=&amp;DVOL,
 #end
-#if( $dsclass and $dsclass != &quot;&quot; and $dsclass != '#dsclass')
+#if( $dsclass and $dsclass != &quot;&quot;)
 //            STORCLAS=${dsclass},
 #end
-#if( $ddclass and $ddclass != &quot;&quot; and $ddclass != '#ddclass')
+#if( $ddclass and $ddclass != &quot;&quot;)
 //            DATACLAS=${ddclass},
 #end
-#if( $dmclass and $dmclass != &quot;&quot; and $dmclass != '#dmclass')
+#if( $dmclass and $dmclass != &quot;&quot;)
 //            MGMTCLAS=${dmclass},
 #end
 //            DISP=(NEW,&amp;DSP),
@@ -1030,16 +940,16 @@
 //*
 //AZWESAMP DD SPACE=(TRK,(15,5,5)),
 //            UNIT=SYSALLDA,
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol')
+#if( $dvol and $dvol != &quot;&quot;)
 //            VOL=SER=&amp;DVOL,
 #end
-#if( $dsclass and $dsclass != &quot;&quot; and $dsclass != '#dsclass')
+#if( $dsclass and $dsclass != &quot;&quot;)
 //            STORCLAS=${dsclass},
 #end
-#if( $ddclass and $ddclass != &quot;&quot; and $ddclass != '#ddclass')
+#if( $ddclass and $ddclass != &quot;&quot;)
 //            DATACLAS=${ddclass},
 #end
-#if( $dmclass and $dmclass != &quot;&quot; and $dmclass != '#dmclass')
+#if( $dmclass and $dmclass != &quot;&quot;)
 //            MGMTCLAS=${dmclass},
 #end
 //            DISP=(NEW,&amp;DSP),
@@ -1051,16 +961,16 @@
 //*
 //AZWEZFS  DD SPACE=(TRK,(12000,3000,30)),
 //            UNIT=SYSALLDA,
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol')
+#if( $dvol and $dvol != &quot;&quot;)
 //            VOL=SER=&amp;DVOL,
 #end
-#if( $dsclass and $dsclass != &quot;&quot; and $dsclass != '#dsclass')
+#if( $dsclass and $dsclass != &quot;&quot;)
 //            STORCLAS=${dsclass},
 #end
-#if( $ddclass and $ddclass != &quot;&quot; and $ddclass != '#ddclass')
+#if( $ddclass and $ddclass != &quot;&quot;)
 //            DATACLAS=${ddclass},
 #end
-#if( $dmclass and $dmclass != &quot;&quot; and $dmclass != '#dmclass')
+#if( $dmclass and $dmclass != &quot;&quot;)
 //            MGMTCLAS=${dmclass},
 #end
 //            DISP=(NEW,&amp;DSP),
@@ -1104,18 +1014,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE4ZFS JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -1221,16 +1120,16 @@
 //SYSIN    DD *,SYMBOLS=JCLONLY
    DEFINE CLUSTER( -
      NAME(&amp;DSN) -
-#if( $fsvol and $fsvol != &quot;&quot; and $fsvol != '#fsvol')
+#if( $fsvol and $fsvol != &quot;&quot;)
      VOLUMES(${fsvol})           -
 #end
-#if( $fsclass and $fsclass != &quot;&quot; and $fsclass != '#fsclass')
+#if( $fsclass and $fsclass != &quot;&quot;)
     STORAGECLASS(${fsclass})     -
 #end
-#if( $fdlass and $fdclass != '#fdclass')
+#if( $fdlass)
     DATACLASS(${fdclass})        -
 #end
-#if( $fmclass and $fmclass != &quot;&quot; and $fmclass != '#fmclass')
+#if( $fmclass and $fmclass != &quot;&quot;)
     MANAGEMENTCLASS(${fmclass})  -
 #end
      LINEAR -
@@ -1252,26 +1151,26 @@
 //ROOT     DD DATA,DLM=$$                        data can be multi-line
   ${pathPrefix}usr/lpp/zowe
 $$ 
-#if( $dsprefix and $dsprefix != &quot;&quot; and $dsprefix != '#dsprefix' and $thlq == &quot;&quot;) 
+#if( $dsprefix and $dsprefix != &quot;&quot; and $thlq == &quot;&quot;) 
 //SYSEXEC  DD DISP=SHR,DSN=${dsprefix}.[FMID].F1
 #end
 //*
-#if( $thlq and $thlq != &quot;&quot; and $thlq != '#thlq') 
+#if( $thlq and $thlq != &quot;&quot;) 
 //SYSEXEC  DD DISP=SHR,         use when requested for service install
 //             UNIT=SYSALLDA,
-#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol') 
+#if( $tvol and $tvol != &quot;&quot;) 
 //             VOL=SER=${tvol},
 #end
-#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+#if( $tsclass and $tsclass != &quot;&quot;)
 //            STORCLAS=${tsclass},
 #end
-#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+#if( $tdclass and $tdclass != &quot;&quot;)
 //            DATACLAS=${tdclass},
 #end
-#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+#if( $tmclass and $tmclass != &quot;&quot;)
 //            MGMTCLAS=${tmclass},
 #end  
-//             DSN=${thlq}. SZWESAMP
+//             DSN=${thlq}.SZWESAMP
 //
 #end
 </inlineTemplate>
@@ -1288,18 +1187,7 @@ $$
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE5MKD JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -1388,23 +1276,23 @@ $$
 //DIRS     DD *
   # do NOT change these definitions
   SMPE
-#if( $dsprefix and $dsprefix != &quot;&quot; and $dsprefix != '#dsprefix' and $thlq == &quot;&quot;) 
+#if( $dsprefix and $dsprefix != &quot;&quot; and $thlq == &quot;&quot;) 
 //SYSEXEC  DD DISP=SHR,DSN=${dsprefix}.[FMID].F1
 #end
 //*
-#if( $thlq and $thlq != &quot;&quot; and $thlq != '#thlq') 
+#if( $thlq and $thlq != &quot;&quot;) 
 //SYSEXEC  DD DISP=SHR,         use when requested for service install
 //             UNIT=SYSALLDA,
-#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol') 
+#if( $tvol and $tvol != &quot;&quot;) 
 //             VOL=SER=${tvol},
 #end
-#if( $tsclass and $tsclass != &quot;&quot; and $tsclass != '#tsclass')
+#if( $tsclass and $tsclass != &quot;&quot;)
 //            STORCLAS=${tsclass},
 #end
-#if( $tdclass and $tdclass != &quot;&quot; and $tdclass != '#tdclass')
+#if( $tdclass and $tdclass != &quot;&quot;)
 //            DATACLAS=${tdclass},
 #end
-#if( $tmclass and $tmclass != &quot;&quot; and $tmclass != '#tmclass')
+#if( $tmclass and $tmclass != &quot;&quot;)
 //            MGMTCLAS=${tmclass},
 #end  
 //             DSN=${thlq}.SZWESAMP
@@ -1424,18 +1312,7 @@ $$
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE6DDEF JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -1481,7 +1358,7 @@ $$
 //* 8) If you opted in job ZWE3ALOC to use non-cataloged distribution
 //*    data sets;
 //*    a) Uncomment all VOLUME(&amp;DVOL) statements.
-//*    b) Change ${dvol2} to the volser of the distribution volume,
+//*    b) Change ${dvol} to the volser of the distribution volume,
 //*       as used in the ZWE3ALOC job.
 //*
 //* 9) Change the string &quot;${pathPrefix}&quot; in step DEFPATH to the
@@ -1523,8 +1400,8 @@ $$
 //         SET DZONE='${dzone}'
 //         SET THLQ='${thlq}'
 //         SET DHLQ='${dhlq}'
-//         SET TVOL='${tvol2}'
-//         SET DVOL='${dvol2}'
+//         SET TVOL='${tvol}'
+//         SET DVOL='${dvol}'
 //*
 //* DDDEFs FOR TARGET ZONE
 //*
@@ -1536,7 +1413,7 @@ $$
     ADD DDDEF (SZWEAUTH)
         DATASET(&amp;THLQ..SZWEAUTH)
         UNIT(SYSALLDA)
-#if( $tvol2 and $tvol2 != &quot;&quot; and $tvol2 != '#tvol2') 
+#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol2') 
         VOLUME(&amp;TVOL)
 #end
         WAITFORDSN
@@ -1544,7 +1421,7 @@ $$
     ADD DDDEF (SZWESAMP)
         DATASET(&amp;THLQ..SZWESAMP)
         UNIT(SYSALLDA)
-#if( $tvol2 and $tvol2 != &quot;&quot; and $tvol2 != '#tvol2') 
+#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol2') 
         VOLUME(&amp;TVOL)
 #end
         WAITFORDSN
@@ -1555,7 +1432,7 @@ $$
     ADD DDDEF (AZWEAUTH)
         DATASET(&amp;DHLQ..AZWEAUTH)
         UNIT(SYSALLDA)
-#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1563,7 +1440,7 @@ $$
     ADD DDDEF (AZWESAMP)
         DATASET(&amp;DHLQ..AZWESAMP)
         UNIT(SYSALLDA)
-#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1571,7 +1448,7 @@ $$
     ADD DDDEF (AZWEZFS)
         DATASET(&amp;DHLQ..AZWEZFS)
         UNIT(SYSALLDA)
-#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1588,7 +1465,7 @@ $$
     ADD DDDEF (AZWEAUTH)
         DATASET(&amp;DHLQ..AZWEAUTH)
         UNIT(SYSALLDA)
-#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1596,7 +1473,7 @@ $$
     ADD DDDEF (AZWESAMP)
         DATASET(&amp;DHLQ..AZWESAMP)
         UNIT(SYSALLDA)
-#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1604,7 +1481,7 @@ $$
     ADD DDDEF (AZWEZFS)
         DATASET(&amp;DHLQ..AZWEZFS)
         UNIT(SYSALLDA)
-#if( $dvol2 and $dvol2 != &quot;&quot; and $dvol2 != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1644,18 +1521,7 @@ $$
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE7APLY JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -1695,7 +1561,7 @@ $$
 //********************************************************************
 //*
 //APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
-//SMPCSI   DD DISP=OLD,DSN=${csihlq}. CSI
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
 //SMPHOLD  DD DUMMY
 //SMPCNTL  DD *
   SET BOUNDARY(${tzone}) .
@@ -1718,18 +1584,7 @@ $$
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">#if( $jobCard and $jobCard != &quot;&quot; and $jobCard != '#jobCard')
-//ZWE8ACPT JOB ${acct},
-// NOTIFY=&amp;SYSUID,
-#if( $sysaff and $sysaff != &quot;&quot; and $sysaff != '#sysaff')
-// SYSAFF=${sysaff},
-#end
-#if( $user and $user != &quot;&quot; and $user != '#user')
-// TIME=,USER=${user},
-#end
-// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
-#end
-//*
+			<inlineTemplate substitution="true">//*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -1769,7 +1624,7 @@ $$
 //********************************************************************
 //*
 //ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
-//SMPCSI   DD DISP=OLD,DSN=${csihlq}. CSI
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
 //SMPCNTL  DD *
   SET BOUNDARY(${dzone}) .
   ACCEPT SELECT([FMID])
