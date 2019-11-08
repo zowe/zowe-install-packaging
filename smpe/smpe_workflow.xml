@@ -1352,7 +1352,7 @@ $$
 //* 7) If you opted in job ZWE3ALOC to use non-cataloged target
 //*    data sets;
 //*    a) Uncomment all VOLUME(&amp;TVOL) statements.
-//*    b) Change ${tvol2} to the volser of the target volume,
+//*    b) Change ${tvol} to the volser of the target volume,
 //*       as used in the ZWE3ALOC job.
 //*
 //* 8) If you opted in job ZWE3ALOC to use non-cataloged distribution
@@ -1413,7 +1413,7 @@ $$
     ADD DDDEF (SZWEAUTH)
         DATASET(&amp;THLQ..SZWEAUTH)
         UNIT(SYSALLDA)
-#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol2') 
+#if( $tvol and $tvol != &quot;&quot;) 
         VOLUME(&amp;TVOL)
 #end
         WAITFORDSN
@@ -1421,7 +1421,7 @@ $$
     ADD DDDEF (SZWESAMP)
         DATASET(&amp;THLQ..SZWESAMP)
         UNIT(SYSALLDA)
-#if( $tvol and $tvol != &quot;&quot; and $tvol != '#tvol2') 
+#if( $tvol and $tvol != &quot;&quot;) 
         VOLUME(&amp;TVOL)
 #end
         WAITFORDSN
@@ -1432,7 +1432,7 @@ $$
     ADD DDDEF (AZWEAUTH)
         DATASET(&amp;DHLQ..AZWEAUTH)
         UNIT(SYSALLDA)
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot;) 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1440,7 +1440,7 @@ $$
     ADD DDDEF (AZWESAMP)
         DATASET(&amp;DHLQ..AZWESAMP)
         UNIT(SYSALLDA)
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot;) 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1448,7 +1448,7 @@ $$
     ADD DDDEF (AZWEZFS)
         DATASET(&amp;DHLQ..AZWEZFS)
         UNIT(SYSALLDA)
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot;) 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1465,7 +1465,7 @@ $$
     ADD DDDEF (AZWEAUTH)
         DATASET(&amp;DHLQ..AZWEAUTH)
         UNIT(SYSALLDA)
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot;) 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1473,7 +1473,7 @@ $$
     ADD DDDEF (AZWESAMP)
         DATASET(&amp;DHLQ..AZWESAMP)
         UNIT(SYSALLDA)
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot;) 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
@@ -1481,7 +1481,7 @@ $$
     ADD DDDEF (AZWEZFS)
         DATASET(&amp;DHLQ..AZWEZFS)
         UNIT(SYSALLDA)
-#if( $dvol and $dvol != &quot;&quot; and $dvol != '#dvol2') 
+#if( $dvol and $dvol != &quot;&quot;) 
         VOLUME(&amp;DVOL)
 #end
         WAITFORDSN
