@@ -21,7 +21,7 @@ if [[ $? -eq 0 ]]; then
 fi
 
 echo "Copy PROCLIB member ${member} to ${proclib}"
-if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} "${proclib}(${member})" TEXT
+# if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} "${proclib}(${member})" TEXT
 if cp -X "//'$datasetPrefix.SZWESAMP(${jclfile})'" "//'${proclib}(${member})'"
 then
   echo "Info:  PROCLIB member ${member} has been successfully copied to dataset ${proclib}"
