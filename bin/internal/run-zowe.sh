@@ -10,14 +10,6 @@
 # Copyright IBM Corporation 2018, 2019
 ################################################################################
 
-#
-# Your JCL must invoke it like this:
-#
-# //        EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-# //  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
-#
-#
-
 checkForErrorsFound() {
   if [[ $ERRORS_FOUND > 0 ]]
   then
@@ -45,7 +37,7 @@ done
 
 if [[ -z ${INSTANCE_DIR} ]]
 then
-  "-c parameter not set. Please re-launch ensuring the INSTANCE paramater is passed into the job"
+  echo "-c parameter not set. Please re-launch ensuring the INSTANCE paramater is passed into the job"
   exit 1
 fi
 
