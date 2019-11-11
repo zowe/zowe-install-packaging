@@ -64,16 +64,29 @@ tsocmd "listds '$ZOWE_DSN_PREFIX.SZWEAUTH' members"
 tsocmd "listds '$ZOWE_DSN_PREFIX' level"
 
 # 0. Prepare STC JCL
-TEMP_DIR=/tmp
-mkdir -p ${TEMP_DIR}/SAMPLIB
-sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
-    -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
-    -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
-    # ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
-    "//'$ZOWE_DSN_PREFIX.SZWESAMP(${XMEM_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_JCL}.tmp
-sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
-    # ${ZSS}/SAMPLIB/${XMEM_AUX_JCL} > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
-    "//'$ZOWE_DSN_PREFIX.SZWESAMP(${XMEM_AUX_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+if [ "$IS_SMPE_PACKAGE" = "yes" ]; then
+  echo "[$SCRIPT_NAME] installing SMP/e package."
+
+  TEMP_DIR=/tmp
+  mkdir -p ${TEMP_DIR}/SAMPLIB
+  sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
+      -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+      -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
+      "//'$ZOWE_DSN_PREFIX.SZWESAMP(${XMEM_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_JCL}.tmp
+  sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
+      "//'$ZOWE_DSN_PREFIX.SZWESAMP(${XMEM_AUX_JCL})'" > ${TEMP_DIR}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+    
+else 
+  echo "[$SCRIPT_NAME] not installing SMP/e package."
+
+  sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
+      -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+      -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
+      ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+  sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
+      ${ZSS}/SAMPLIB/${XMEM_AUX_JCL} > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+fi
+
 
 # 1. Deploy loadlib
 echo

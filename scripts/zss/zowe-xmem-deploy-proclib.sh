@@ -21,8 +21,15 @@ if [[ $? -eq 0 ]]; then
 fi
 
 echo "Copy PROCLIB member ${member} to ${proclib}"
+if [ "$IS_SMPE_PACKAGE" = "yes" ]; then
+  echo "[$SCRIPT_NAME] installing SMP/e package."
+  copyCommand="cp -X \"//'$datasetPrefix.SZWESAMP(${jclfile})'\" \"//'${proclib}(${member})'\""
+else
+  copyCommand="${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} \"${proclib}(${member})\" TEXT"
+fi
 # if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} "${proclib}(${member})" TEXT
-if cp -X "//'$datasetPrefix.SZWESAMP(${jclfile})'" "//'${proclib}(${member})'"
+# if cp -X "//'$datasetPrefix.SZWESAMP(${jclfile})'" "//'${proclib}(${member})'"
+if $copyCommand
 then
   echo "Info:  PROCLIB member ${member} has been successfully copied to dataset ${proclib}"
   exit 0

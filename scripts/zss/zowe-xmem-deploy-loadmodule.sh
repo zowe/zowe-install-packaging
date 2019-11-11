@@ -44,8 +44,15 @@ fi
 
 if [[ "$rc" = 0 ]] ; then
   echo "Copying load module ${loadmodule}"
+  if [ "$IS_SMPE_PACKAGE" = "yes" ]; then
+    copyCommand="cp -X \"//'$datasetPrefix.SZWEAUTH(${loadmodule})'\" \"//'${loadlib}(${loadmodule})'\""
+  else
+    copyCommand="cp -X ${ZSS}/LOADLIB/${loadmodule} \"//'${loadlib}(${loadmodule})'\""
+  fi
+
   # if cp -X ${ZSS}/LOADLIB/${loadmodule} "//'${loadlib}(${loadmodule})'"
-  if cp -X "//'$datasetPrefix.SZWEAUTH(${loadmodule})'" "//'${loadlib}(${loadmodule})'"
+  # if cp -X "//'$datasetPrefix.SZWEAUTH(${loadmodule})'" "//'${loadlib}(${loadmodule})'"
+  if $copyCommand
   then
     echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}"
     rc=0
