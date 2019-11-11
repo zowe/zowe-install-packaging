@@ -38,10 +38,15 @@ then
   INSTANCE_DIR="/global/zowe"
 fi
 
- # TODO NOW - Check if directory isn't writable - what happens
 create_new_instance() {
     echo "Creating new zowe instance in ${INSTANCE_DIR}..."
-    mkdir -p ${INSTANCE_DIR}/bin/internal
+    $(mkdir -p ${INSTANCE_DIR}/bin/internal)
+    DIRECTORY_CREATE_RC=$?
+    if [[ $DIRECTORY_CREATE_RC != "0" ]]
+    then
+      echo "We could not create the instance directory and sub-directories in ${INSTANCE_DIR}. Please check permissions and re-run."
+      exit 1
+    fi
 
     # Try and work out the variables that we can
     ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
@@ -130,8 +135,9 @@ EOF
 
   $(chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${INSTANCE_DIR})
   AUTH_RETURN_CODE=$?
-  if [[ $AUTH_RETURN_CODE != "0" ]]; then
-      chmod -R 755 ${INSTANCE_DIR}/bin
+  if [[ $AUTH_RETURN_CODE != "0" ]]
+  then
+    chmod -R 755 ${INSTANCE_DIR}/bin
   fi
 }
 
@@ -143,7 +149,8 @@ check_existing_instance_for_updates() {
 #Check if instance directory already exists
 if [[ -d ${INSTANCE_DIR} ]]
 then
-  check_existing_instance_for_updates
+  create_new_instance
+#  check_existing_instance_for_updates - for first drop don't support migration, just overwrite - not a regression
 else 
   create_new_instance
 fi
