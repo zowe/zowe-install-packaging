@@ -47,7 +47,7 @@ create_new_instance() {
       exit 1
     fi
 
-    LOG_DIR = ${INSTANCE_DIR}/logs
+    LOG_DIR=${INSTANCE_DIR}/logs
     mkdir -p ${LOG_DIR}
     export LOG_FILE=${LOG_DIR}/"configure-`date +%Y-%m-%d-%H-%M-%S`.log"
     echo "Created instance directory ${INSTANCE_DIR}" >> $LOG_FILE
