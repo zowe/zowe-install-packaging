@@ -145,7 +145,6 @@ getPing_bin() {
     fi
 }
 
-# TODO NOW - where are we logging to during create instance
 # Run the main shell script logic
 if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then

@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-# TODO NOW - think about how/where logging is done
+# TODO NOW - think about how/where logging is done - add logging into the instance_dir once created
 while getopts "c:" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
@@ -31,11 +31,10 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
-#TODO NOW - allow user to interactively set via prompt?
 if [[ -z ${INSTANCE_DIR} ]]
 then
-  "-c parameter not set. Defaulting instance directory to /global/zowe"
-  INSTANCE_DIR="/global/zowe"
+  echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
+  exit 1
 fi
 
 create_new_instance() {
@@ -48,8 +47,14 @@ create_new_instance() {
       exit 1
     fi
 
+    LOG_DIR = ${INSTANCE_DIR}/logs
+    mkdir -p ${LOG_DIR}
+    export LOG_FILE=${LOG_DIR}/"configure-`date +%Y-%m-%d-%H-%M-%S`.log"
+    echo "Created instance directory ${INSTANCE_DIR}" >> $LOG_FILE
+
     # Try and work out the variables that we can
     ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+    echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
 
     # TODO - remove some of these overrides once we get rid of the yaml file
     sed \
@@ -94,6 +99,7 @@ create_new_instance() {
         "${ZOWE_ROOT_DIR}/scripts/instance.template.env" \
         > "${INSTANCE_DIR}/instance.env"
         chmod -R 750 "${INSTANCE_DIR}/instance.env"
+        echo "Created ${INSTANCE_DIR}/instance.env with injected content">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
 # Requires INSTANCE_DIR to be set
@@ -107,12 +113,14 @@ do
     export \$key
 done < \${INSTANCE_DIR}/instance.env
 EOF
+echo "Created ${INSTANCE_DIR}/bin/read-instance.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
+echo "Created ${INSTANCE_DIR}/bin/internal/run-zowe.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
@@ -121,6 +129,7 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 \${ROOT_DIR}/scripts/internal/opercmd \"S \${ZOWE_SERVER_PROCLIB_MEMBER},INSTANCE='"\${INSTANCE_DIR}"',JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV\"
 echo Start command issued, check SDSF job log ...
 EOF
+echo "Created ${INSTANCE_DIR}/bin/zowe-start.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-stop.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
@@ -128,6 +137,7 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
+echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
   # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
   chmod -R 777 ${INSTANCE_DIR}
@@ -138,7 +148,10 @@ EOF
   if [[ $AUTH_RETURN_CODE != "0" ]]
   then
     chmod -R 755 ${INSTANCE_DIR}/bin
+    echo "Couldn't chgrp ${INSTANCE_DIR} to ${ZOWE_ZOSMF_ADMIN_GROUP}, so had to open permissions further">> $LOG_FILE
   fi
+
+  echo "zowe-configure-instance.sh completed">> $LOG_FILE
 }
 
 check_existing_instance_for_updates() {
