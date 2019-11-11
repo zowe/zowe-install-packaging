@@ -22,7 +22,11 @@ while getopts "c:" opt; do
 done
 shift $OPTIND-1
 
-export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+# TODO LATER - once not called from zowe-configure.sh remove if and keep the export
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+	export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
+fi
 
 # Ensure that newly created files are in EBCDIC codepage
 export _CEE_RUNOPTS=""
