@@ -155,7 +155,7 @@ echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 }
 
 check_existing_instance_for_updates() {
-    # TODO NOW
+    # TODO LATER - work on migrating/checking an existing instance directory
     echo "Going to check existing instance ${INSTANCE_DIR} for updates"
 }
 
