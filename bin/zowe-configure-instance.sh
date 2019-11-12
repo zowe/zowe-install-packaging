@@ -145,15 +145,7 @@ echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
   # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
   chmod -R 777 ${INSTANCE_DIR}
-  chmod -R 751 ${INSTANCE_DIR}/bin
-
-  $(chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${INSTANCE_DIR})
-  AUTH_RETURN_CODE=$?
-  if [[ $AUTH_RETURN_CODE != "0" ]]
-  then
-    chmod -R 755 ${INSTANCE_DIR}/bin
-    echo "Couldn't chgrp ${INSTANCE_DIR} to ${ZOWE_ZOSMF_ADMIN_GROUP}, so had to open permissions further">> $LOG_FILE
-  fi
+  chmod -R 755 ${INSTANCE_DIR}/bin
 
   echo "zowe-configure-instance.sh completed">> $LOG_FILE
 }
