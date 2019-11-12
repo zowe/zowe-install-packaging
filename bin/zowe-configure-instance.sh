@@ -10,7 +10,6 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-# TODO NOW - think about how/where logging is done - add logging into the instance_dir once created
 while getopts "c:" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
@@ -155,7 +154,7 @@ check_existing_instance_for_updates() {
     echo "Going to check existing instance ${INSTANCE_DIR} for updates"
 }
 
-#Check if instance directory already exists
+# Check if instance directory already exists
 if [[ -d ${INSTANCE_DIR} ]]
 then
   create_new_instance
