@@ -17,7 +17,7 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
-# TODO LATER - once componentisation and removal of the yaml file is done, this whole file to go and be replaced by . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c $ZOWE_USER_DIR
+# TODO LATER - once componentisation and removal of the yaml file is done, this whole file to go and be replaced by . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c $ZOWE_INSTANCE_DIR
 
 # Cache original directory, then change our directory to be here so we can rely on the script offset
 PREV_DIR=`pwd`	
