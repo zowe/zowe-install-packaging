@@ -21,7 +21,7 @@ if [[ $? -eq 0 ]]; then
 fi
 
 echo "Copy PROCLIB member ${member} to ${proclib}"
-if [ "$IS_SMPE_PACKAGE" = "yes" ]; then
+if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
   echo "[$SCRIPT_NAME] installing SMP/e package."
   copyCommand="cp -X \"//'$datasetPrefix.SZWESAMP(${jclfile})'\" \"//'${proclib}(${member})'\""
 else

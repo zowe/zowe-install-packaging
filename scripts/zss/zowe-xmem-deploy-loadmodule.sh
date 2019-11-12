@@ -44,7 +44,7 @@ fi
 
 if [[ "$rc" = 0 ]] ; then
   echo "Copying load module ${loadmodule}"
-  if [ "$IS_SMPE_PACKAGE" = "yes" ]; then
+  if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
     copyCommand="cp -X \"//'$datasetPrefix.SZWEAUTH(${loadmodule})'\" \"//'${loadlib}(${loadmodule})'\""
   else
     copyCommand="cp -X ${ZSS}/LOADLIB/${loadmodule} \"//'${loadlib}(${loadmodule})'\""

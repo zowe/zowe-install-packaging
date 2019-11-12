@@ -11,6 +11,7 @@
 ################################################################################
 
 PREV_DIR=`pwd`
+SCRIPT_NAME=$(basename "$0")
 cd $(dirname $0)
 
  #Note - these are sed replaced in zowe-copy-xmem.sh, so don't change without checking that
@@ -64,7 +65,7 @@ tsocmd "listds '$ZOWE_DSN_PREFIX.SZWEAUTH' members"
 tsocmd "listds '$ZOWE_DSN_PREFIX' level"
 
 # 0. Prepare STC JCL
-if [ "$IS_SMPE_PACKAGE" = "yes" ]; then
+if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
   echo "[$SCRIPT_NAME] installing SMP/e package."
 
   TEMP_DIR=/tmp
