@@ -37,7 +37,7 @@ fi
 
 # Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
 # TODO - move into apiml config? run before deploy?
-. $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/components/api-mediation/api-catalog.png"
+. $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/components/api-mediation/assets/api-catalog.png"
 
 # install explorers
 EXPLORERS='jes mvs uss'
