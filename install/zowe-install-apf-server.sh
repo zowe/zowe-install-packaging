@@ -49,6 +49,8 @@ echo "zowe-install-apf-server.sh is NOT unpaxing zss.pax"
 chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
+# re-gather install env vars?
+. ${SCRIPT_DIR}/../../scripts/configure/zowe-parse-yaml.sh
 
 # MVS install steps
 # ZOWE_DSN_PREFIX is set in zowe-parse-yaml.sh 
@@ -58,7 +60,7 @@ then
 else
   echo ZOWE_DSN_PREFIX=null
   echo "** warning: temporary fix"
-  ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
+  export ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
 fi 
 tsocmd "listds '$ZOWE_DSN_PREFIX.SZWESAMP' members"
 tsocmd "listds '$ZOWE_DSN_PREFIX.SZWEAUTH' members"
