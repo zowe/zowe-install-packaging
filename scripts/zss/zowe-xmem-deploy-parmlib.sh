@@ -34,6 +34,16 @@ else
   rc=0
 fi
 
+# ZOWE_DSN_PREFIX is set in zowe-parse-yaml.sh 
+if [[ -n "$ZOWE_DSN_PREFIX" ]]
+then
+  echo ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX
+else
+  echo ZOWE_DSN_PREFIX=null
+  echo "** warning: temporary fix"
+  export ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
+fi 
+
 if [[ "$rc" = 0 ]] ; then
   echo "Copying parmlib member ${parm} from $ZOWE_DSN_PREFIX.SZWESAMP to ${parmlib}"
   # if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${parm} "${parmlib}(${parm})" TEXT

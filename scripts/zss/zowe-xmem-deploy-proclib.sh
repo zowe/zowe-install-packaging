@@ -23,6 +23,17 @@ fi
 echo "Copy PROCLIB member ${member} to ${proclib}"
 if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
   echo "[$SCRIPT_NAME] installing SMP/e package."
+
+  # ZOWE_DSN_PREFIX is set in zowe-parse-yaml.sh 
+  if [[ -n "$ZOWE_DSN_PREFIX" ]]
+  then
+    echo ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX
+  else
+    echo ZOWE_DSN_PREFIX=null
+    echo "** warning: temporary fix"
+    export ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
+  fi 
+
   copyCommand="cp -X \"//'$ZOWE_DSN_PREFIX.SZWESAMP(${jclfile})'\" \"//'${proclib}(${member})'\""
   echo "  from $ZOWE_DSN_PREFIX.SZWESAMP to ${proclib}"
 else
