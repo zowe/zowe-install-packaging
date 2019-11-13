@@ -50,7 +50,8 @@ chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
 # re-gather install env vars?
-. ${SCRIPT_DIR}/../../scripts/configure/zowe-parse-yaml.sh
+# cp ${SCRIPT_DIR}/../../scripts/configure/zowe-install.yaml .
+# .  ${SCRIPT_DIR}/../../scripts/configure/zowe-parse-yaml.sh
 
 # MVS install steps
 # ZOWE_DSN_PREFIX is set in zowe-parse-yaml.sh 

@@ -90,7 +90,7 @@ fi
 
 if [[ ! -z "$DSN_PREFIX" ]]
 then
-  ZOWE_DSN_PREFIX=$DSN_PREFIX
+  export ZOWE_DSN_PREFIX=$DSN_PREFIX
 fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
