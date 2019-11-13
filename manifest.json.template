@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "1.7.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.7.0-20191108.151302.pax"
+      "artifact": "zlux-core-1.7.0-20191113.163847.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "1.7.0-RC",
