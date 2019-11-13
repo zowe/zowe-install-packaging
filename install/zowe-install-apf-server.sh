@@ -70,6 +70,8 @@ if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
 
   TEMP_DIR=/tmp
   mkdir -p ${TEMP_DIR}/SAMPLIB
+  XMEM_JCL=ZWESISTC       # that's its name in SMP/E to avoid duplicate names
+  XMEM_AUX_JCL=ZWESASTC   # that's its name in SMP/E to avoid duplicate names
   sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
       -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
       -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
