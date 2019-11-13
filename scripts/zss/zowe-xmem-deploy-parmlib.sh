@@ -35,9 +35,9 @@ else
 fi
 
 if [[ "$rc" = 0 ]] ; then
-  echo "Copying parmlib member ${parm}"
+  echo "Copying parmlib member ${parm} from $ZOWE_DSN_PREFIX.SZWESAMP to ${parmlib}"
   # if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${parm} "${parmlib}(${parm})" TEXT
-  if cp -X "//'$datasetPrefix.SZWESAMP(${parm})'" "//'${parmlib}(${parm})'"
+  if cp -X "//'$ZOWE_DSN_PREFIX.SZWESAMP(${parm})'" "//'${parmlib}(${parm})'"
   then
     echo "Info:  PARMLIB member ${parm} has been successfully copied to dataset ${parmlib}"
     rc=0

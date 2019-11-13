@@ -45,13 +45,14 @@ fi
 if [[ "$rc" = 0 ]] ; then
   echo "Copying load module ${loadmodule}"
   if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
-    copyCommand="cp -X \"//'$datasetPrefix.SZWEAUTH(${loadmodule})'\" \"//'${loadlib}(${loadmodule})'\""
+    copyCommand="cp -X \"//'$ZOWE_DSN_PREFIX.SZWEAUTH(${loadmodule})'\" \"//'${loadlib}(${loadmodule})'\""
+    echo "  from $ZOWE_DSN_PREFIX.SZWEAUTH to ${loadlib}"
   else
     copyCommand="cp -X ${ZSS}/LOADLIB/${loadmodule} \"//'${loadlib}(${loadmodule})'\""
   fi
 
   # if cp -X ${ZSS}/LOADLIB/${loadmodule} "//'${loadlib}(${loadmodule})'"
-  # if cp -X "//'$datasetPrefix.SZWEAUTH(${loadmodule})'" "//'${loadlib}(${loadmodule})'"
+  # if cp -X "//'$ZOWE_DSN_PREFIX.SZWEAUTH(${loadmodule})'" "//'${loadlib}(${loadmodule})'"
   if $copyCommand
   then
     echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}"
