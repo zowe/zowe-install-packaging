@@ -160,8 +160,6 @@ check_existing_instance_for_updates() {
     TEMPLATE=${ZOWE_ROOT_DIR}/scripts/instance.template.env
     INSTANCE=${INSTANCE_DIR}/instance.env
 
-    # TODO NOW - do we update values for the variables we derived?
-    # TODO NOW - do we read from the yaml the missing ones for now?
     while read -r line
     do
         test -z "${line%%#*}" && continue      # skip line if first char is #
