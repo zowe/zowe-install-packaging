@@ -19,7 +19,7 @@ while getopts "c:" opt; do
       ;;
   esac
 done
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # TODO LATER - once not called from zowe-configure.sh remove if and keep the export
 if [[ -z ${ZOWE_ROOT_DIR} ]]
