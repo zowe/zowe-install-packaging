@@ -31,7 +31,7 @@ while getopts "f:h:i:dI" opt; do
       ;;
   esac
 done
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # Ensure that newly created files are in EBCDIC codepage
 export _CEE_RUNOPTS=""
