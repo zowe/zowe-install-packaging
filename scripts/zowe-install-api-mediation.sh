@@ -47,7 +47,4 @@ chmod a+rx "${API_MEDIATION_DIR}/apiml-auth"
 chmod a+rx "${API_MEDIATION_DIR}/apiml-auth/lib"
 chmod -R a+r "${API_MEDIATION_DIR}/apiml-auth"
 
-# TODO - move image into apiml pax
-cp $INSTALL_DIR/files/assets/api-catalog.png ${API_MEDIATION_DIR}
-
 echo "</zowe-api-mediation-install.sh>" >> $LOG_FILE
