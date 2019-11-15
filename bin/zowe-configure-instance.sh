@@ -68,15 +68,9 @@ create_new_instance() {
         -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
         -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
         -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
-        -e "s#{{key_alias}}#localhost#" \
-        -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.p12#" \
-        -e "s#{{keystore_password}}#password#" \
-        -e "s#{{keystore_key}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.key#" \
-        -e "s#{{keystore_certificate}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.cer-ebcdic#" \
-        -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" \
-        -e "s#{{external_certificate}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
-        -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
-        -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" \
+        -e "s#ZOWE_APIM_EXTERNAL_CERTIFICATE=#ZOWE_APIM_EXTERNAL_CERTIFICATE=${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
+        -e "s#ZOWE_APIM_EXTERNAL_CERTIFICATE=#ZOWE_APIM_EXTERNAL_CERTIFICATE=${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
+        -e "s#ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES=#ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES=${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" \
         -e "s#ZOWE_PREFIX=ZOWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
         -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=${ZOWE_INSTANCE}#" \
         -e "s#ZOSMF_USERID=IZUSVR#ZOSMF_USERID=${ZOWE_ZOSMF_USERID}#" \
