@@ -152,9 +152,9 @@ fi
 set +A SCRIPTS '/components/api-mediation/bin/start.sh'\
  '/components/files-api/bin/start.sh'\
  '/components/jobs-api/bin/start.sh'\
- '/jes_explorer/scripts/start-explorer-jes-ui-server.sh'\
- '/mvs_explorer/scripts/start-explorer-mvs-ui-server.sh'\
- '/uss_explorer/scripts/start-explorer-uss-ui-server.sh'
+ '/components/explorer-jes/bin/start.sh'\
+ '/components/explorer-mvs/bin/start.sh'\
+ '/components/explorer-uss/bin/start.sh'
 
 for SCRIPT in ${SCRIPTS[*]}
 do

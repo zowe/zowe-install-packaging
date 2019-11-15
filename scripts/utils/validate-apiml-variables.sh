@@ -26,4 +26,4 @@ then
     . ${ROOT_DIR}/scripts/utils/error.sh "KEY_ALIAS is empty"
 fi
 
-. ${ROOT_DIR}/scripts/utils/validateDirectoryIsWritable.sh ${STATIC_DEF_CONFIG_DIR}
+. ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${STATIC_DEF_CONFIG_DIR}
