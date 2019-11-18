@@ -214,22 +214,14 @@ fi    #
 _cmd cp $header "//'$SYSMOD'"
 
 # get name & type of sysmod (dump both in sysmodName for now)
-sysmodName=$( \
-  sed -n '1 s/^++\([[:alpha:]]*\).*(\([[:alnum:]]*\).*/\1.\2/p' \
-  $header)
+sysmodName="$(head -1 $header | tr '+()' '   ' | awk '{print $1,$2}')"
 # sample input: (leading/trailing blanks for ( and ) are optional)
 # ++PTF (UO64071 ) ...
 # ...
-# sed will:
-# -n 1 s/.../.../p  keep only the first line and substitute text
-# ^++               skip leading ++
-# \([[:alpha:]]*\)  keep string up to first non-alphabetical as 1
-# .*(               skip up till ( (inclusive)
-# \([[:alnum:]]*\)  keep string up to first non-alpha-numerical as 2
-# .*                trash the rest
-# \1.\2             write 1.2
-sysmodType=${sysmodName%%.*}           # keep up to first . (exclusive)
-sysmodName=${sysmodName#*.}             # keep from first . (exclusive)
+# sample output:
+# PTF UO64071
+sysmodType=${sysmodName%% *}       # keep up to first space (exclusive)
+sysmodName=${sysmodName#* }         # keep from first space (exclusive)
 test "$debug" && echo "sysmodType=$sysmodType"
 test "$debug" && echo "sysmodName=$sysmodName"
 

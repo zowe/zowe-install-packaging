@@ -33,6 +33,6 @@
 // JCLLIB ORDER=&TOOL
 //*
 //* added by submitter
-//*#member EXEC PROC=PTFMERGE,MBR=#member
+//*#member EXEC PROC=PTFMERGE,PART=#part
 //*TRACKS  EXEC PROC=PTFTRKS,PTF=#name
 //*
