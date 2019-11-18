@@ -919,56 +919,6 @@ then
     fi    
 fi 
 
-# 4. zowe_profile?
-
-if [[ ! -n "$nodehome" ]]
-then 
-    ls ~/.zowe_profile 1> /dev/null
-    if [[ $? -ne 0 ]]
-    then 
-        echo Info: ~/.zowe_profile not found
-    else
-        grep " *export *NODE_HOME=.* *$" ~/.zowe_profile 1> /dev/null
-        if [[ $? -ne 0 ]]
-        then 
-            echo Info: \"export NODE_HOME\" not found in ~/.zowe_profile
-        else
-            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' ~/.zowe_profile`
-            if [[ ! -n "$node_set" ]]
-            then
-                echo Warning: NODE_HOME is empty
-            else
-                nodehome=$node_set
-                echo Info: Found in ~/.zowe_profile
-            fi 
-        fi
-    fi    
-fi 
-
-#
-# finished searching, check resultant $nodehome
-#
-
-if [[ ! -n "$nodehome" ]]
-then 
-    echo Error: Could not determine value of NODE_HOME
-    echo Warning:  node version cannot be determined
-else
-    node_version=`$nodehome/bin/node --version` # also works if it's a symlink
-    if [[ $? -ne 0 ]]
-    then 
-        echo Error: Failed to obtain version of $nodehome/bin/node
-    else 
-        if [[ $node_version < v6.14.4 ]]
-        then
-            echo Error: version $node_version is lower than required 
-        else 
-            echo OK: version is $node_version 
-        fi
-    fi 
-fi
-
-
 echo
 echo Check version of z/OS
 

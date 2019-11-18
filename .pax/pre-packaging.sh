@@ -29,6 +29,7 @@ cd ..
 rm -rf mediation
 
 echo "$SCRIPT_NAME change scripts to be executable ..."
+chmod +x content/zowe-$ZOWE_VERSION/bin/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
 chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
