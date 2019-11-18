@@ -1,4 +1,4 @@
-//GIMDTS   JOB #job1
+//GIMMERGE JOB #job1
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -8,28 +8,31 @@
 //*
 //* Copyright Contributors to the Zowe Project. 2019, 2019
 //*********************************************************************
-//* Job to create Zowe PTF/APAR/USERMOD parts in GIMDTS format
-//* Assumes submitter cleaned &HLQ.** and only these data sets exist:
+//* Job to merge Zowe parts in a PTF/APAR/USERMOD
+//* Assumes submitter ensured these data sets exist:
 //* - input, JCL procedures & REXX tools
 //*   #hlq
-//* - output, parts in FB80 format
+//* - input, parts in FB80 format
 //*   #hlq.#mlq.*
-//* - output, line count for each #hlq.#mlq.*
-//*   #lines
+//* - output, sysmod
+//*   #hlq.#mlq
+//* - output, sysmod track count
+//*   #tracks
 //* - output, job log
 //*   #sysprint
 //*********************************************************************
 //*
+//* #comment
+//*
 //*        ----+----1----+----2----+----3--
 // SET HLQ=#hlq
-// SET LINES=#lines
+// SET SYSMOD=#sysmod
+// SET TRACKS=#tracks
 // SET SYSOUT=#sysprint
 // SET TOOL=&HLQ
 // JCLLIB ORDER=&TOOL
 //*
 //* added by submitter
-//*        SET REL=#rel
-//*#member EXEC PROC=PTF@LMOD,MBR=#member
-//*#member EXEC PROC=PTF@FB80,MBR=#member
-//*#member EXEC PROC=PTF@MVS,MBR=#member
+//*#member EXEC PROC=PTFMERGE,MBR=#member
+//*TRACKS  EXEC PROC=PTFTRKS,PTF=#name
 //*
