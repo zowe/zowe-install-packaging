@@ -10,7 +10,6 @@
 ################################################################################
 
 # Function: Copy datasetPrefx.SZWESAMP(ZOWESVR) to JES concatenation
-# Edits {{root_dir}} in that PROC to be $ZOWE_ROOT_DIR
 
 # Needs $ZOWE_ROOT_DIR/scripts/configure/zowe-install.yaml to obtain datasetPrefix
 # Needs ../internal/opercmd to check JES concatenation
@@ -184,40 +183,6 @@ cat "//'${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)'" | grep //ZOWESVR 1>> $LOG_FILE 2>
 if [[ $? -ne 0 ]]
 then
   echo Did not find \"//ZOWESVR\" in "${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)" | tee -a ${LOG_FILE}
-  script_exit 1
-fi
-
-echo Check \""{{root_dir}}"\" of ZOWESVR PROC >> $LOG_FILE
-cat "//'${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)'" | grep "{{root_dir}}" 1>> $LOG_FILE 2>> $LOG_FILE
-if [[ $? -ne 0 ]]
-then
-  echo Warning: Did not find \""{{root_dir}}"\" in "${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)" | tee -a ${LOG_FILE}
-  echo Script will continue | tee -a ${LOG_FILE}
-fi
-
-ZOWE_ROOT_DIR=$(dirname $dirName)
-echo ZOWE_ROOT_DIR = ${ZOWE_ROOT_DIR} 1>> $LOG_FILE 2>> $LOG_FILE
-
-# If ZOWE_ROOT_DIR is shorter than {{root_dir}}, then the sed will drag sequence nos into cc1-72.
-# So discard cc73-80 before edit 
-# and truncate all lines at cc80 to avoid I/O errors writing to a LRECL=80 dataset
-cat "//'${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)'" | cut -c -72 | \
-  sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#"    | cut -c -80   \
-  > ~/$templib.zowesvr.$$.jcl
-if [[ $? -ne 0 ]]
-then
-	echo Failed to edit "${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)" into ~/$templib.zowesvr.$$.jcl | tee -a ${LOG_FILE}
-  script_exit 1
-fi
-
-# If ZOWE_ROOT_DIR is longer than about 45 characters, then the sed will cause the JCL statement
-# to overflow col 72.  Comment statements don't matter.
-# So check for overflow beyond col 72 in non-comments, in case root_dir's replacement is too long
-words=`grep -v "^//\*" ~/$templib.zowesvr.$$.jcl | cut -c 73- | wc -w`
-if [[ $words -gt 0 ]]
-then
-	echo Replacement of "{{root_dir}}" by ${ZOWE_ROOT_DIR} | tee -a ${LOG_FILE}
-  echo caused JCL to overflow beyond col 72 | tee -a ${LOG_FILE}
   script_exit 1
 fi
 
