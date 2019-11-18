@@ -538,6 +538,9 @@ function _zip
 test "$debug" && echo && echo "> _zip $@"
 echo "-- creating SYSMOD zip"
 
+# ensure output directory exists
+_cmd mkdir -p $ship
+
 # define name of zip
 zip=${name1}.zip
 test $debug && echo "zip=$zip"
