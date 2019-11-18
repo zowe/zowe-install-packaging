@@ -18,7 +18,6 @@ while getopts "c:" opt; do
       exit 1
       ;;
   esac
-done
 shift $(($OPTIND-1))
 
 # TODO LATER - once not called from zowe-configure.sh remove if and keep the export
