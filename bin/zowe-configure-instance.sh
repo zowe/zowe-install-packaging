@@ -127,6 +127,7 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/internal/run-zowe.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
+set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
 
@@ -136,6 +137,7 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-start.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-stop.sh
+set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
 
