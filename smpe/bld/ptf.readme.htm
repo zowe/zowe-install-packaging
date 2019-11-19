@@ -61,7 +61,7 @@
 //*
 //ALLOC    EXEC PGM=IEFBR14
 <!--cut-->
-//#8ptf DD DSN=&HLQ..#name,
+//#ptf8 DD DSN=&HLQ..#name,
 //            DISP=(NEW,CATLG,DELETE),
 //            DSORG=PS,
 //            RECFM=FB,
@@ -184,7 +184,7 @@ Password:</I> <STRONG>tsopw</STRONG>
 //SMPCNTL  DD *
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT(
-     #ptf
+     #ptf1
      #req
    ) SYSMODS LIST .
 //*
@@ -193,7 +193,7 @@ Password:</I> <STRONG>tsopw</STRONG>
 //SMPCNTL  DD *
    SET BOUNDARY(<STRONG>#tzone</STRONG>) .
    APPLY SELECT(
-     #ptf
+     #ptf1
      #req
    )
    CHECK 
