@@ -13,7 +13,7 @@
 while getopts "c:y" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
-    y) YAML_OVERRIDE=$OPTARG;;
+    y) YAML_OVERRIDE=true;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -57,13 +57,13 @@ create_new_instance() {
     echo "Created instance directory ${INSTANCE_DIR}" >> $LOG_FILE
 
     # Try and work out the variables that we can
-    ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+    . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
     echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
 
     sed \
         -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
         -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
-        -e "s#{{node_home}}#${NODE_HOME}#" \
+        -e "s#{{node_home}}#${ZOWE_NODE_HOME}#" \
         -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
         -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
         -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
