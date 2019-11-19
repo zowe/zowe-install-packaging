@@ -19,7 +19,7 @@ while getopts "c:" opt; do
       ;;
   esac
 done
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # TODO LATER - once not called from zowe-configure.sh remove if and keep the export
 if [[ -z ${ZOWE_ROOT_DIR} ]]
@@ -68,15 +68,6 @@ create_new_instance() {
         -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
         -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
         -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
-        -e "s#{{key_alias}}#localhost#" \
-        -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.p12#" \
-        -e "s#{{keystore_password}}#password#" \
-        -e "s#{{keystore_key}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.key#" \
-        -e "s#{{keystore_certificate}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.cer-ebcdic#" \
-        -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" \
-        -e "s#{{external_certificate}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
-        -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
-        -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" \
         -e "s#ZOWE_PREFIX=ZOWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
         -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=${ZOWE_INSTANCE}#" \
         -e "s#ZOSMF_USERID=IZUSVR#ZOSMF_USERID=${ZOWE_ZOSMF_USERID}#" \
@@ -150,15 +141,63 @@ echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 }
 
 check_existing_instance_for_updates() {
-    # TODO LATER - work on migrating/checking an existing instance directory
-    echo "Going to check existing instance ${INSTANCE_DIR} for updates"
+    LOG_DIR=${INSTANCE_DIR}/logs
+    mkdir -p ${LOG_DIR}
+    export LOG_FILE=${LOG_DIR}/"configure-`date +%Y-%m-%d-%H-%M-%S`.log"
+
+    echo "Checking existing instance ${INSTANCE_DIR} for updated properties" | tee -a ${LOG_FILE}
+
+    # get a list of variables, from the template instance and the existing config to see which ones are missing and add them to the instance
+    TEMPLATE=${ZOWE_ROOT_DIR}/scripts/instance.template.env
+    INSTANCE=${INSTANCE_DIR}/instance.env
+
+    while read -r line
+    do
+        test -z "${line%%#*}" && continue      # skip line if first char is #
+        key=${line%%=*}
+        PROP_VALUE=`cat $INSTANCE | grep ^$key=`
+        if [[ -z $PROP_VALUE ]]
+        then
+          LINES_TO_APPEND=${LINES_TO_APPEND}"${line}\n"
+      fi
+    done < ${TEMPLATE}
+
+    if [[ -n $LINES_TO_APPEND ]]
+    then
+      if [[ $LINES_TO_APPEND == *"{{"* ]]
+	    then
+      	. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+    
+        LINES_TO_APPEND=$(echo "$LINES_TO_APPEND" | sed \
+          -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
+          -e "s#{{node_home}}#${NODE_HOME}#" \
+          -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
+          -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
+          -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
+          -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
+          -e "s#{{key_alias}}#localhost#" \
+          -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.p12#" \
+          -e "s#{{keystore_password}}#password#" \
+          -e "s#{{keystore_key}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.key#" \
+          -e "s#{{keystore_certificate}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.cer-ebcdic#" \
+          -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" \
+          -e "s#{{external_certificate}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
+          -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
+          -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" )
+      fi
+    
+      echo "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND" | tee -a ${LOG_FILE}
+      echo "\n$LINES_TO_APPEND" >> $INSTANCE
+      echo "Properties added, please review these before starting zowe."
+    else 
+      echo "No updates required" | tee -a ${LOG_FILE}
+    fi
 }
 
 # Check if instance directory already exists
 if [[ -d ${INSTANCE_DIR} ]]
 then
-  create_new_instance
-#  check_existing_instance_for_updates - for first drop don't support migration, just overwrite - not a regression
+  check_existing_instance_for_updates
 else 
   create_new_instance
 fi

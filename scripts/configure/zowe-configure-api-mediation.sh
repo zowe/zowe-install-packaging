@@ -27,10 +27,6 @@ API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"
 
 cd $API_MEDIATION_DIR
 
-# Create the static api definitions folder
-STATIC_DEF_CONFIG=$API_MEDIATION_DIR"/api-defs"
-mkdir -p $STATIC_DEF_CONFIG
-
 echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
 
 cd scripts/
@@ -61,9 +57,4 @@ echo "  Setting up Zowe API Mediation Layer certificates..."
 echo "  Certificate setup done."
 
 chmod -R 750 "${API_MEDIATION_DIR}/keystore"
-
-
-#Make the static defs read/write to owner/group (so that IZUSVR can read them)
-chmod -R 750 ${STATIC_DEF_CONFIG}
-
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE
