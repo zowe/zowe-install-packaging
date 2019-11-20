@@ -31,7 +31,7 @@ while getopts "f:h:i:dI" opt; do
       ;;
   esac
 done
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # Ensure that newly created files are in EBCDIC codepage
 export _CEE_RUNOPTS=""
@@ -73,11 +73,6 @@ if [ -z "$ZOWE_VERSION" ]; then
 fi
 
 echo "Install started at: "`date` >> $LOG_FILE
-
-# Populate the environment variables for ZOWE_ZOSMF_PORT, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST, ZOWE_IPADDRESS, NODE_HOME
-. $INSTALL_DIR/scripts/zowe-init.sh
-
-echo "After zowe-init ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
 
 cd $INSTALL_DIR/install
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
@@ -141,8 +136,6 @@ chmod -R a+w $ZOWE_ROOT_DIR/scripts
 echo "Copying the zowe-start;stop;server-start.sh into "${ZOWE_ROOT_DIR}/scripts >> $LOG_FILE
 cd $INSTALL_DIR/scripts
 cp $INSTALL_DIR/scripts/zowe-support.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh
-cp $INSTALL_DIR/scripts/zowe-start.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-start.template.sh
-cp $INSTALL_DIR/scripts/zowe-stop.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-stop.template.sh
 
 cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
 
@@ -154,12 +147,15 @@ cp $INSTALL_DIR/scripts/opercmd $ZOWE_ROOT_DIR/scripts/internal/opercmd
 cp $INSTALL_DIR/scripts/ocopyshr.sh $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.sh
 cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.clist
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
-cp $INSTALL_DIR/scripts/run-zowe.template.sh $ZOWE_ROOT_DIR/scripts/templates/run-zowe.template.sh
+
+mkdir ${ZOWE_ROOT_DIR}/bin
+cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
+chmod -R 755 $ZOWE_ROOT_DIR/bin
 
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 #TODO LATER - do we need a better location rather than scripts - covered by zip #519
-cp $INSTALL_DIR/files/templates/ZOWESVR.template.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.template.jcl
+cp $INSTALL_DIR/files/templates/ZOWESVR.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl
 
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
@@ -172,7 +168,6 @@ separator
 
 # Prepare configure directory 
 mkdir ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/scripts/zowe-init.sh ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
 # Copy all but root dir from yaml as we can derive that once there
 grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
@@ -182,6 +177,7 @@ chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
 # Prepare utils directory 
 mkdir ${ZOWE_ROOT_DIR}/scripts/utils
+cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
