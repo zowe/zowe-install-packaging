@@ -42,3 +42,4 @@ cat <<EOF >$ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/$PLUGIN_ID.json
     "pluginLocation": "$PLUGIN_DIR"
 }
 EOF
+chtag -tc 1047 $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/$PLUGIN_ID.json

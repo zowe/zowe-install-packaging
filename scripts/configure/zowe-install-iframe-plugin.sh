@@ -73,6 +73,7 @@ cat <<EOF >$PLUGIN_FOLDER/web/index.html
     </body>
 </html>
 EOF
+chtag -tc 1047 $PLUGIN_FOLDER/web/index.html
 
 cat <<EOF >$PLUGIN_FOLDER/pluginDefinition.json
 {
@@ -98,6 +99,7 @@ cat <<EOF >$PLUGIN_FOLDER/pluginDefinition.json
   }
 }
 EOF
+chtag -tc 1047 $PLUGIN_FOLDER/pluginDefinition.json
 
 if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
   PLUGIN_LOCATION=$PLUGIN_DIR_OVERRIDE
@@ -111,5 +113,6 @@ cat <<EOF >$ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
     "pluginLocation": "$PLUGIN_LOCATION"
 }
 EOF
+chtag -tc 1047 $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
 
 chmod -R a+rx $PLUGIN_FOLDER
