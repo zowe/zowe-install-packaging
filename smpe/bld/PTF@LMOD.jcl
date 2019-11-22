@@ -1,3 +1,13 @@
+//*--------------------------------------------------------------------
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, 2019
+//*--------------------------------------------------------------------
 //*
 //* PROC to stage file for SYSMOD creation, front-end for LMOD
 //*
@@ -31,8 +41,8 @@
 //            SPACE=(,(,,5)),DSNTYPE=PDS,LRECL=0   * LRECL=0 mandatory
 //*
 //* set final disposition
-//DISP.PDSE DD DISP=(OLD,&DSP),DSN=&$PDSE
-//DISP.PDS DD DISP=(OLD,&DSP),DSN=&$PDS
+//LINES.PDSE DD DISP=(OLD,&DSP),DSN=&$PDSE
+//LINES.PDS DD DISP=(OLD,&DSP),DSN=&$PDS
 //*
 //         PEND
 //*--------

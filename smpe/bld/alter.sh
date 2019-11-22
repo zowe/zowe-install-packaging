@@ -34,35 +34,11 @@ test "$debug" && echo && echo "> $me $@"
 # ---------------------------------------------------------------------
 function _zowePRE                     # executed before zowe-install.sh
 {
-# >>> .zowe_profile
-# can be removed once this issue is closed
-# https://github.com/zowe/zowe-install-packaging/issues/804
-
-profile=~/.zowe_profile
-
-# only if there is no backup of original to avoid losing original
-if test ! -f $profile.orig
-then 
-  # save original file
-  _cmd cp $profile $profile.orig
-fi    #
 }    # _zowePRE
 
 # ---------------------------------------------------------------------
 function _zowePOST                    # executed after zowe-install.sh
 {
-# >>> .zowe_profile
-# can be removed once this issue is closed
-# https://github.com/zowe/zowe-install-packaging/issues/804
-
-profile=~/.zowe_profile
-
-# only if there is a backup of original
-if test -f $profile.orig
-then 
-  # restore original file
-  _cmd mv $profile.orig $profile
-fi    #
 }    # _zowePOST
 
 # ---------------------------------------------------------------------
@@ -154,7 +130,7 @@ do case "$opt" in
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 action=$1
 phase=$2

@@ -56,6 +56,10 @@
  * //            LIKE=&REL,SPACE=(&SIZE,RLSE),DSNTYPE=LIBRARY,LRECL=0
  * //PDS      DD DISP=(NEW,PASS),UNIT=SYSALLDA,LIKE=&COPY,
  * //            SPACE=(,(,,5)),DSNTYPE=PDS,LRECL=0  * LRECL 0 REQUIRED
+ *
+ * EXECIO  documentation in "TSO/E REXX Reference (SA22-7790)"
+ * listdsi documentation in "TSO/E REXX Reference (SA22-7790)"
+ * LISTALC documentation in "TSO/E Command Reference (SA22-7782)"
  */
 /* user variables ...................................................*/
 ddMCS='MCS'                           /* name of DD holding MCS data */

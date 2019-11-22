@@ -17,6 +17,8 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
+# TODO LATER - once componentisation and removal of the yaml file is done, this whole file to go and be replaced by . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c $ZOWE_INSTANCE_DIR
+
 # Cache original directory, then change our directory to be here so we can rely on the script offset
 PREV_DIR=`pwd`	
 cd $(dirname $0)
@@ -42,8 +44,7 @@ chmod a+rw $LOG_FILE
 export TEMP_DIR=$CONFIG_DIR/temp_"`date +%Y-%m-%d`"
 mkdir -p $TEMP_DIR
 
-# Populate the environment variables for ZOWE_ZOSMF_PORT, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST, ZOWE_IPADDRESS, NODE_HOME
-. $CONFIG_DIR/zowe-init.sh
+. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
 
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $CONFIG_DIR/zowe-parse-yaml.sh
@@ -64,6 +65,9 @@ echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 # Configure the TLS certificates for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-certificates.sh
 
+INSTANCE_DIR=${ZOWE_USER_DIR}
+. ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
+
 # Run deploy on the zLUX app server to propagate the changes made
 zluxserverdirectory='zlux-app-server'
 echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
@@ -77,9 +81,7 @@ cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 ./deploy.sh > /dev/null
 
-echo "Attempting to setup Zowe Scripts ... "
-. $CONFIG_DIR/zowe-configure-scripts.sh
-
+# TODO LATER - this need updating to not modify read-only dir, but instead use instance variables - move zowe-support.sh to INSTANCE_DIR?
 sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
@@ -91,7 +93,8 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
-. $CONFIG_DIR/zowe-configure-proclib.sh
+# Note: this calls exit code, so can't be run in 'source' mode
+$CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
 
 # Inject stc name into config-stc
 sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
@@ -121,9 +124,9 @@ fi
 
 cd $PREV_DIR
 
-echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
-echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER)"
-echo "To stop Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-stop.sh
+echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
+echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER,INSTANCE='${INSTANCE_DIR}')"
+echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
 echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
 
 # save config log in runtime directory

@@ -70,7 +70,10 @@ mkdir -p zowe
 # generate random MLQ (must begin with letter, @, #, or $, max 8 char)
 RANDOM_MLQ=ZWE$RANDOM  # RANDOM gives a random number between 0 & 32767
 
-# ZOWEAD3 & ZOWE02 are specific parameters for packaging on Marist server.
+# set temp dir (specific value for packaging on Marist server)
+TMPDIR=/ZOWE/tmp
+
+# ZOWEAD3 & ZOWE02 are specific values for packaging on Marist server.
 # To package on another server, we may need different settings.
 # Or if the server is configured properly, we may just remove -V option.
 #% required

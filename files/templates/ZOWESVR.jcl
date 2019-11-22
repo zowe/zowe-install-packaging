@@ -17,21 +17,18 @@
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,SRVRPATH='{{root_dir}}'                        *
+//*   S ZOWESVR,INSTANCE='{{instance_directory}}'                        *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
-//ZOWESVR   PROC SRVRPATH='{{root_dir}}'
+//ZOWESVR   PROC INSTANCE='{{instance_directory}}'
 //*-------------------------------------------------------------------
-//* SRVRPATH - The path to the HFS directory where the 
-//*            server was installed.
+//* INSTANCE - The path to the HFS directory where the 
+//*            zowe instance was created
 //*-------------------------------------------------------------------
 //EXPORT EXPORT SYMLIST=*
-//*---------------------------------------------------------
-//* Start the node server
-//*---------------------------------------------------------
 //ZOWESTEP EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-//  PARM='PGM /bin/sh &SRVRPATH/scripts/internal/run-zowe.sh'
+//  PARM='PGM /bin/sh &INSTANCE/bin/internal/run-zowe.sh'
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //*             PATHOPTS=ORDONLY

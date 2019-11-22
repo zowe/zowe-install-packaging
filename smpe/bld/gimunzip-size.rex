@@ -17,7 +17,7 @@
  *%
  *% Arguments:
  *% -d     (optional) enable debug messages
- *% path   path of GIMZIP pax file            
+ *% path   path of GIMZIP pax file
  *%
  *% Return code:
  *% 0: calculated size is in stdout
@@ -61,7 +61,7 @@ Debug=0                                  /* assume not in debug mode */
 TracksPerCyl=15                     /* true for all 3390 disk models */
 
 /* system code ......................................................*/
-/* trace r */                                                          
+/* trace r */
 SIGNAL ON NOVALUE NAME CONDITION_TRAP    /* activate condition traps */
 SIGNAL ON SYNTAX NAME CONDITION_TRAP     /* that will kill the exec  */
 
@@ -99,7 +99,7 @@ then do               /* unable to establish the SYSCALL environment */
 end    /* */
 
 /* get information on file */
-if \SyscallCmd('stat' Path 'st.')
+if \_syscall('stat' Path 'st.')
 then do
   /* error already reported */
   exit 8                                            /* LEAVE PROGRAM */
@@ -164,7 +164,7 @@ Cyl=trunc(a*Size**2 + b*Size + c) + 1       /* trunc()+1 to round up */
 if Debug then say '. Cyl='Cyl '(cylinders, calculated)'
 
 if ExecEnv = 'TSO' then call syscalls 'OFF' /* ignore possible error */
-/* 
+/*
  * zFS always increments in CYL but return result in TRACKs as that
  * unit is expected in the Program Directory.
  */
@@ -173,53 +173,64 @@ say Cyl*TracksPerCyl
 if Debug then say '<' ExecName 0
 exit 0                                              /* LEAVE PROGRAM */
 
-/*-------------------------------------------------------------------*/
-SyscallCmd: /* NO procedure */  /* syscall with basic error handling */
-/* do NOT call from a routine that has values for                    */
-/* _Err. _RC _RetVal _ErrNo _ErrNoJr _Success _Cmd _Verbose          */
-/*-------------------------------------------------------------------*/
-parse arg _Cmd,_Verbose
-parse value _Verbose 1 with _Verbose .           /* default: verbose */
-_Success=1  /* TRUE */
-_Err.0=0
+/*---------------------------------------------------------------------
+ * --- Execute z/OS UNIX syscall command with basic error handling
+ * Returns boolean indicating success (1) or not (0)
+ * Args:
+ *  @Cmd    : syscall command to execute
+ *  @Verbose: (optional) flag to show syscall error message
+ *  @Exit   : (optional) exit on REXX error
+ *
+ * do NOT call from a routine that has values for
+ * @Err. @RC @RetVal @ErrNo @ErrNoJr @Success @Cmd @Verbose @Exit
+ *
+ * docu in "Using REXX and z/OS UNIX System Services (SA23-2283)"
+ */
+_syscall: /* NO PROCEDURE */
+parse arg @Cmd,@Verbose,@Exit
+parse value @Verbose 1 with @Verbose .  /* default: report USS error */
+parse value @Exit 1 with @Exit .      /* default: exit on REXX error */
+@Success=1  /* TRUE */
+@Err.0=0
 
-address SYSCALL _Cmd
-parse value rc retval errno errnojr with _RC _RetVal _ErrNo _ErrNoJr
+if Debug then say '. (syscall)' @Cmd
+address SYSCALL @Cmd
+parse value rc retval errno errnojr with @RC @RetVal @ErrNo @ErrNoJr
+if Debug then say '.           rc' @RC 'retval' @RetVal ,
+                'errno' @ErrNo 'errnojr' @ErrNoJr
 
-if _RC < 0
-then do
-  _Success=0  /* FALSE */
+if @RC < 0
+then do                                                /* REXX error */
+  @Success=0  /* FALSE */
   say ''
-/* NOTE: caller must store RC if desired */
-  say '** ERROR ** syscall command failed:' _Cmd
-  select                                               /* REXX error */
-  when (_RC < -20) & (_RC > -30) then
-    say '** ERROR' ExecName 'argument' abs(_RC)-20 'is in error'
-  when _RC = -20 then
-    say '** ERROR' ExecName ,
-      'unknown SYSCALL command or improper number of arguments'
-  when _RC = -3 then
-    say '** ERROR' ExecName 'not in SYSCALL environment'
+  say '** ERROR' ExecName 'syscall command failed:' @Cmd
+  select
+  when (@RC < -20) & (@RC > -30) then
+    say 'argument' abs(@RC)-20 'is in error'
+  when @RC = -20 then
+    say 'unknown SYSCALL command or improper number of arguments'
+  when @RC = -3 then
+    say 'not in SYSCALL environment'
   otherwise
-    say '** ERROR' ExecName 'error flagged by REXX language processor'
+    say 'error flagged by REXX language processor'
   end    /* select */
+  if @Exit then exit 8                              /* LEAVE PROGRAM */
 end    /* REXX error */
-else if _RetVal == -1
+else if @RetVal == -1
   then do                                              /* UNIX error */
-    _Success=0  /* FALSE */
-    if _Verbose
+    @Success=0  /* FALSE */
+    if @Verbose
     then do                                      /* report the error */
       say ''
-/* NOTE: caller must store RC if desired */
-      say '** ERROR' ExecName 'syscall command failed:' _Cmd
-      say 'ErrNo('_ErrNo') ErrNoJr('_ErrNoJr')'
-      address SYSCALL 'strerror' _ErrNo _ErrNoJr '_Err.'
-      do T=1 for _Err.0 ; say _Err.T ; end
+      say '** ERROR' ExecName 'syscall command failed:' @Cmd
+      say 'ErrNo('@ErrNo') ErrNoJr('@ErrNoJr')'
+      address SYSCALL 'strerror' @ErrNo @ErrNoJr '@Err.'
+      do T=1 to @Err.0 ; say @Err.T ; end
     end    /* report */
   end    /* UNIX error */
 /*else nop */ /* Note: a few cmds use retval <> -1 to indicate error */
 
+/* set syscall output vars back to value after command execution */
 drop rc retval errno errnojr /* ensure that the name is used in parse*/
-parse value _RC _RetVal _ErrNo _ErrNoJr with rc retval errno errnojr
-return _Success    /* SyscallCmd */
-
+parse value @RC @RetVal @ErrNo @ErrNoJr with rc retval errno errnojr
+return @Success    /* _syscall */
