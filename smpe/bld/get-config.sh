@@ -119,6 +119,8 @@ gimzip:
   gimzip=
   # temporary directory holding config data & symlinks
   scratch=
+  # directory holding files to be shipped to customers
+  ship=
   # Java home directory, default uses existing JAVA_HOME if set
   JAVA_HOME=
   # SMP/ E home directory, default uses existing SMP_HOME if set
@@ -201,9 +203,10 @@ do
     _export gimzip  gimzipParm gimzipParm                   # internal
     _export gimzip  gimzipVol  gimzipVolser  $VOLSER        # internal
     _export gimzip  gimzipHlq  gimzipHlq     ${HLQ}.GIMZIP  # internal
-    _export gimzip  gimzip     gimzip        ${ROOT}/gimzip # output
+    _export gimzip  gimzip     gimzip        ${ROOT}/gimzip # internal
     _export gimzip  scratch    scratch       \
             ${TMPDIR:-/tmp}/gimzip.$$   # max 58 chars      # internal
+    _export gimzip  ship       ship          ${ROOT}/ship   # output
     _export gimzip  JAVA_HOME  JAVA_HOME     \
               ${JAVA_HOME:-$(find /usr/lpp/java -type d -level 0 \
                              | grep /J.*[^_64]$ | tail -1)} # permanent
@@ -211,7 +214,7 @@ do
                                   ${SMP_HOME:-/usr/lpp/smp} # permanent
 # pd
 # service
-    _export service ptf        ptf           ${ROOT}/ptf    # output
+    _export service ptf        ptf           ${ROOT}/ptf    # internal
     _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
     _export service gimdtsJob1 gimdtsJob1                   # internal
     _export service gimdtsVol  gimdtsVolser  $VOLSER        # internal
