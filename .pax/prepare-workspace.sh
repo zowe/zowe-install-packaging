@@ -36,6 +36,7 @@ ROOT_DIR=$(pwd)
 
 # prepare pax workspace
 echo "[${SCRIPT_NAME}] preparing folders ..."
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/bin"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files"
@@ -62,6 +63,8 @@ rsync -rv \
 cp manifest.json "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 cp -R install/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
 cp -R scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
+cp -R bin/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/bin"
+cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 
 # move licenses
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/licenses"
@@ -91,3 +94,6 @@ mv ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files/scripts/files-api*.sh \
 # copy smpe scripts
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe"
 cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"
+cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/bld"
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
+cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"

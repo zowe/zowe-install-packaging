@@ -4,7 +4,7 @@
 # zowe-install: The directory that zowe will be installed into
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
-  userDir=~/zowe-user-dir
+  instanceDir=~/zowe-instance-dir
   prefix=ZOWE
   instance=1
   datasetPrefix={userid}.ZWE

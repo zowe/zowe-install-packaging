@@ -1,9 +1,23 @@
+#!/bin/sh
+
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright IBM Corporation 2018, 2019
+################################################################################
+
 # Ensure that newly created files are in EBCDIC codepage
 export _CEE_RUNOPTS=""
 export _TAG_REDIR_IN=""
 export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
+
+# TODO LATER - once componentisation and removal of the yaml file is done, this whole file to go and be replaced by . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c $ZOWE_INSTANCE_DIR
 
 # Cache original directory, then change our directory to be here so we can rely on the script offset
 PREV_DIR=`pwd`	
@@ -30,41 +44,18 @@ chmod a+rw $LOG_FILE
 export TEMP_DIR=$CONFIG_DIR/temp_"`date +%Y-%m-%d`"
 mkdir -p $TEMP_DIR
 
-# Populate the environment variables for ZOWE_ZOSMF_PORT, ZOWE_JAVA_HOME, ZOWE_EXPLORER_HOST, ZOWE_IPADDRESS, NODE_HOME
-. $CONFIG_DIR/zowe-init.sh
+. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
 
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
 . $CONFIG_DIR/zowe-parse-yaml.sh
 
 echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
-# Configure Explorer UI plugins
-. $CONFIG_DIR/zowe-configure-explorer-ui.sh
-
 # Configure the ports for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-ports.sh
 
-if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
-    # Add APIML authentication plugin to zLUX
-    . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
-
-    # Activate the plugin
-    _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
-    ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/config
-    sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json > ${TEMP_DIR}/transform1.json
-    cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json
-    rm ${TEMP_DIR}/transform1.json
-    
-    # Access API Catalog with token injector
-    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
-else
-    # Access API Catalog directly
-    CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
-fi
-
-# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-# TODO - move into apiml config? run before deploy?
-. $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/components/api-mediation/api-catalog.png"
+# configure api catalog and jes explorer plugins, to be moved later to their own configure steps after zlux componentisation
+. $CONFIG_DIR/zowe-configure-iframe-plugins.sh
 
 # Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
 # this script is run after all the folders have been created and paxes expanded above
@@ -73,6 +64,9 @@ echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 
 # Configure the TLS certificates for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-certificates.sh
+
+INSTANCE_DIR=${ZOWE_USER_DIR}
+. ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
 
 # Run deploy on the zLUX app server to propagate the changes made
 zluxserverdirectory='zlux-app-server'
@@ -87,9 +81,7 @@ cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
 ./deploy.sh > /dev/null
 
-echo "Attempting to setup Zowe Scripts ... "
-. $CONFIG_DIR/zowe-configure-scripts.sh
-
+# TODO LATER - this need updating to not modify read-only dir, but instead use instance variables - move zowe-support.sh to INSTANCE_DIR?
 sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
   -e "s#{{zowe_prefix}}#${ZOWE_PREFIX}#" \
@@ -101,7 +93,8 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
-. $CONFIG_DIR/zowe-configure-proclib.sh
+# Note: this calls exit code, so can't be run in 'source' mode
+$CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
 
 # Inject stc name into config-stc
 sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
@@ -131,9 +124,9 @@ fi
 
 cd $PREV_DIR
 
-echo "To start Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-start.sh
-echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER)"
-echo "To stop Zowe run the script "$ZOWE_ROOT_DIR/scripts/zowe-stop.sh
+echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
+echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER,INSTANCE='${INSTANCE_DIR}')"
+echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
 echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
 
 # save config log in runtime directory

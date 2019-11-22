@@ -28,20 +28,12 @@
 //* 4) Change #dzone to your CSI distribution zone name.
 //*
 //* 5) Uncomment the desired SET ZONE= statement and comment out
-//*    the other ones. The name of the SET statement (ACCEPT, APPLY, 
+//*    the other ones. The name of the SET statement (ACCEPT, APPLY,
 //*    RECEIVE) indicates what type of information is in that zone.
 //*
 //* Note(s):
 //*
-//* 1. This job utilizes JCL variables inside inline text, which
-//*    requires z/OS 2.1 or higher. When using an older z/OS level,
-//*    - Comment out the EXPORT SYMLIST statement
-//*    - Remove ",SYMBOLS=JCLONLY" from the DD definitions that 
-//*      utilize inline JCL variables
-//*    - Replace the following variables with their actual value:
-//*      - step LIST, DD SMPCNTL, variable &ZONE
-//*
-//* 2. This job should complete with a return code 0.
+//* 1. This job should complete with a return code 0.
 //*
 //********************************************************************
 //         EXPORT SYMLIST=(ZONE)

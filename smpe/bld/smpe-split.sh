@@ -31,7 +31,6 @@
 # creates $log/$delta      delta of current and previous manifest
 # creates $log/fileSize    product file sizes
 # creates $log/treeSize    product directory sizes
-# creates $log/symLink     product symlinks
 # creates $log/extAttr     product non-standard extattr bits
 # creates $log/dataSet     product data sets and members
 # creates $log/parts       parts known by SMP/E
@@ -44,14 +43,13 @@ delta=manifest-delta.txt       # delta of current and previous manifest
 deltaHist=$historical$delta    # history of manifest deltas
 fileSize=filesize.txt          # product file sizes
 treeSize=treesize.txt          # product directory sizes
-symLink=symlink.txt            # product symlinks
 extAttr=extattr.txt            # product non-standard extattr bits
 dataSet=dataset.txt            # product data sets and members
 parts=parts.txt                # parts known by SMP/E
 partsDelta=parts-delta.txt     # delta of current and previous parts
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here="$( cd "$(dirname "$0")" ; pwd -P )"             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -90,36 +88,44 @@ cnt=0                           # counter, part of target pax file name
 # "echo 0$cnt" will: create a counter at least 2 chars long
 # sed will: take the last 2 chars of the expanded counter
 
-# everything zlux
-# > zlux-app-server has symlinks to zlux-server-framework & zss-auth
-# > -> they must all be in the same archive
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file "find zlux-* -prune"
-_move $stage $split/$file echo zss-auth
-
-#TODO - why are these being moved - shouldn't the install dirs be deleted?
-# all miscelaneous files in root and select directories
-#let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-#_move $stage $split/$file find . -level 0 ! -type d
-#_move $stage $split/$file echo files
-#_move $stage $split/$file echo install
-#_move $stage $split/$file echo licenses
-#_move $stage $split/$file echo scripts
-_move $stage $split/$file echo manifest.json
+# ---
 
 # api-mediation has a few big jar files, give them their own pax
-for f in $(ls components/api-mediation/*.jar | grep -v /enabler)               #*/
+# path based on $ZOWE_ROOT_DIR
+list="\
+  components/api-mediation/api-catalog-services.jar \
+  components/api-mediation/discoverable-client.jar \
+  components/api-mediation/discovery-service.jar \
+  components/api-mediation/gateway-service.jar \
+  "
+#for f in $(ls components/api-mediation/*.jar | grep -v /enabler)   #*/
+test "$debug" && echo "for f in $list"
+for f in $list
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
   _move $stage $split/$file echo $f
 done    # for f
 
-# each remaining directory in root gets a separate pax file
-for d in $(ls -D $stage)
-do
-  let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-  _move $stage $split/$file echo $d
-done    # for d
+# ---
+
+# everything zlux
+let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+_move $stage $split/$file "find zlux-* -prune"
+_move $stage $split/$file echo zss-auth
+
+# ---
+
+# everything explorer API
+let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+_move $stage $split/$file echo components
+
+# ---
+
+# all remaining files and directories
+let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+_move $stage $split/$file ls -A $stage
+
+# ---
 
 # verify everything moved correctly
 _verify
@@ -171,7 +177,7 @@ $@
 
 # can we move in bulk ? (not if there is a / in the input)
 if test -n "$($@ | grep /)"
-then 
+then
   # move data one by one as data is not all in root
   for FiLe in $($@)
   do
@@ -232,18 +238,18 @@ awk '/^#USS/ {printf("manifest %s\n",$4)}' $log/$manifest \
   2>&1 > $stage/manifest.list
 test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
 
-# 2. get removed symlinks layout from manifest                          
-# sample input:                                                         
-# #LNK ./jes_explorer/node_modules/.bin/which -> ../which/bin/which     
-# sample output:                                                        
-# symlinks ./jes_explorer/node_modules/.bin/which                       
+# 2. get removed symlinks layout from manifest
+# sample input:
+# #LNK ./jes_explorer/node_modules/.bin/which -> ../which/bin/which
+# sample output:
+# symlinks ./jes_explorer/node_modules/.bin/which
 cMd="awk '/^#LNK/ {printf(\"symlinks %s\n\",$2)}' $log/$manifest | sort"
-cMd="$cMd 2>&1 > $stage/symlink.list"                                   
-test "$debug" && echo                                                   
-test "$debug" && echo "$cMd"                                            
-awk '/^#LNK/ {printf("symlinks %s\n",$2)}' $log/$manifest | sort \      
-  2>&1 > $stage/symlink.list                                            
-test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT 
+cMd="$cMd 2>&1 > $stage/symlink.list"
+test "$debug" && echo
+test "$debug" && echo "$cMd"
+awk '/^#LNK/ {printf("symlinks %s\n",$2)}' $log/$manifest | sort \
+  2>&1 > $stage/symlink.list
+test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
 
 # 3. get actual directory layout from staging area
 # sample input:
@@ -268,7 +274,7 @@ test $? -ne 0 -a ! "$IgNoRe_ErRoR" && exit 8                     # EXIT
 # - replace first / with ' ./' and only print lines where this was done
 # -> ZWEPAX03 ./admin
 #    ZWEPAX03 ./adminzowe-configure.sh
-# awk will only keep first part of file names with blanks (manifest is 
+# awk will only keep first part of file names with blanks (manifest is
 #   positional and does this as well)
 cMd="find $split | sed -n \"s!$split!!;s!/!!;s!/! ./!p\" | sort -k 2"
 cMd="$cMd | awk '{print $1,$2}' 2>&1 > $stage/split.list"
@@ -551,22 +557,6 @@ done    # for f
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-# create symlink snapshot to assist with altering split-logic
-echo "-- creating $log/$symLink"
-test -f $log/$symLink && _cmd rm -f $log/$symLink
-_cmd touch $log/$symLink
-# test "find" first as null result causes ls showing current dir
-# sed replaces everything up to $stage (incl) with ., leaving symlink info
-test "$debug" && echo
-test "$debug" && echo "ls -l \$(find $stage -type l) ..."
-test "$(find $stage -type l)" &&
-  ls -l $(find $stage -type l) | sed "s!.*$stage!.!" > $log/$symLink
-# cannot test $? as it is only of the last pipe command
-# sample output:
-# ./jes_explorer/server/node_modules/.bin/which -> ../which/bin/which
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
 # create extattr snapshot to assist with tracking special files
 #echo "-- creating $log/$extAttr"
 #test -f $log/$extAttr && _cmd rm -f $log/$extAttr
@@ -588,7 +578,7 @@ awk '/^#USS/ {print $2,$3,$4}' $log/$manifest \
   | grep -v "^-rwxr-xr-x --s-" \
   | grep -v "^drwxr-xr-x ++++" \
   | grep -v "^lrwxrwxrwx ++++" \
-  > $log/$extAttr 
+  > $log/$extAttr
 # cannot test $? as it is only of the last pipe command
 # sample output:
 # -rwxr-xr-x -ps- ./zlux-app-server/bin/zssServer
@@ -598,8 +588,6 @@ awk '/^#USS/ {print $2,$3,$4}' $log/$manifest \
 # create data set snapshot to assist with tracking members
 echo "-- creating $log/$dataSet"
 test -f $log/$dataSet && _cmd rm -f $log/$dataSet
-pwd
-echo "I am here $here"
 
 # get data set list (no debug mode to avoid debug messages)
 datasets=$($here/$csiScript "${mvsI}.**")
@@ -626,6 +614,46 @@ done    # for dsn
 
 test "$debug" && echo "< _snapshot"
 }    # _snapshot
+
+# ---------------------------------------------------------------------
+# --- store symbolic links in manifest and then remove them to simplify
+#     split logic, pax requires that source and target are in same file
+#     SMP/E will restore them during APPLY
+#     MUST run after _manifest()
+# ---------------------------------------------------------------------
+function _noSymLink
+{
+test "$debug" && echo && echo "> _noSymLink $@"
+
+echo "-- processing symbolic links"
+test "$debug" && echo
+test "$debug" && echo "find $stage -type l"
+for file in $(find $stage -type l)
+do
+  # 1. document symbolic links, use "ls" to also get target
+  # note: _cmd cannot handle pipe
+  # sed replaces everything up to $stage (incl) with '#LNK .',
+  #   leaving symlink info
+  cMd="ls -l $file | sed \"s!.*$stage!#LNK .!g\" 2>&1 >> $log/$manifest"
+  test "$debug" && echo
+  test "$debug" && echo $cMd
+  ls -l $file | sed "s!.*$stage!#LNK .!g" 2>&1 >> $log/$manifest
+  # sample output:
+  # #LNK ./jes_explorer/node_modules/.bin/which -> ../which/bin/which
+  status=$?  # RC of last pipe command (sed)
+
+  if test $status -ne 0
+  then
+      echo "** ERROR $me '$cMd' ended with status $sTaTuS"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+
+  # 2. remove symbolic link
+  _cmd rm -f $file
+done    # for file
+
+test "$debug" && echo "< _noSymLink"
+}    # _noSymLink
 
 # ---------------------------------------------------------------------
 # --- create list of parts known by SMP/E
@@ -721,12 +749,12 @@ test "$debug" && echo "< _parts"
 # ---------------------------------------------------------------------
 # --- pax a whole staging directory
 # $1: directory to pax
-# 
+#
 # TODO interpret $log/$extAttr and determine required pax option
 # $log/$extAttr interpretation
 # Example:
 # -rwxr-xr-x -ps- ./zlux-app-server/bin/zssServer
-# 
+#
 # WORD 1 (-rwxr-xr-x)
 #
 # The first character identifies the file type:
@@ -738,38 +766,38 @@ test "$debug" && echo "< _parts"
 # l  Symbolic link
 # p  FIFO pipe
 # s  Socket file type
-# 
-# The next 9 characters are in three groups of 3; they describe the 
-# permissions on the file. 
-# The first group of 3 describes owner permissions; the second describes 
-# group permissions; the third describes other (or "world") permissions. 
+#
+# The next 9 characters are in three groups of 3; they describe the
+# permissions on the file.
+# The first group of 3 describes owner permissions; the second describes
+# group permissions; the third describes other (or "world") permissions.
 # Characters that might appear are:
 # r  Permission to read the file.
 # w  Permission to write on the file.
 # x  Permission to execute the file or search the directory.
 # -  Attribute not set.
-# 
-# The following characters appear only in the execute permission (x) 
+#
+# The following characters appear only in the execute permission (x)
 # position of the output.
 # S  Same as s, except that the execute bit is turned off.
-# s  If in owner permissions section, the set-user-ID bit is on; if in 
+# s  If in owner permissions section, the set-user-ID bit is on; if in
 #    group permissions section, the set-group-ID bit is on.
 # T  Same as t, except that the execute bit is turned off.
 # t  The sticky bit is on.
-# 
-# The following character appears after the permissions if the file 
+#
+# The following character appears after the permissions if the file
 # contains extended ACL entries:
 # +
 #
 # WORD 2 (-ps-)
-# 
+#
 # Displays extended attributes for regular files:
 # a  Program runs APF-authorized if linked AC=1.
 # p  Program is considered program-controlled.
 # s  Program is enabled to run in a shared address space.
 # l  Program is loaded from the shared library region.
 # -  Attribute not set.
-# 
+#
 # ---------------------------------------------------------------------
 function _pax
 {
@@ -941,23 +969,23 @@ test "$debug" && echo
 if test "$1" = "--null"
 then         # stdout -> null, stderr -> stdout (without going to null)
   shift
-  test "$debug" && echo "$@ 2>&1 >/dev/null"
-                         $@ 2>&1 >/dev/null
+  test "$debug" && echo "\"$@\" 2>&1 >/dev/null"
+                          "$@"  2>&1 >/dev/null
 elif test "$1" = "--save"
 then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 >> $sAvE"
-                         $@ 2>&1 >> $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 >> $sAvE"
+                          "$@"  2>&1 >> $sAvE
 elif test "$1" = "--repl"
 then         # stdout -> >$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 > $sAvE"
-                         $@ 2>&1 > $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 > $sAvE"
+                          "$@"  2>&1 > $sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
-  test "$debug" && echo "$@ 2>&1"
-                         $@ 2>&1
+  test "$debug" && echo "\"$@\" 2>&1"
+                          "$@"  2>&1
 fi    #
 sTaTuS=$?
 if test $sTaTuS -ne 0
@@ -1008,15 +1036,15 @@ do case "$opt" in
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
-if test $rc -ne 0 
-then 
+if test $rc -ne 0
+then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
-  test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -1030,7 +1058,7 @@ manifest=${mask}.${date}.${tail}                     # manifest file
 echo "-- input:  $stage"
 echo "-- output: $ussI"
 
-# if present, do not pack install log
+# if present, do not package install log
 test -e $stage/install_log && _cmd rm -rf $stage/install_log
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -1044,10 +1072,12 @@ _manifest
 _delta
 # gather data to assist with understanding product
 _snapshot
+# remove symbolic links, pax requires source and target to be together
+# MUST run after _manifest()
+_noSymLink
 
 # split $stage into smaller chunks, place the result in $split/*    #*/
 _split
-
 # TODO compare manifest #USS with split result; everything in right place?
 
 # remove data of previous run (if any) ...

@@ -19,12 +19,12 @@
 #% -c is required
 
 # B2H - Convert BookMaster, GML, Script/VS and "flat" files to HTML
-# Gary L. Richtmeyer - Copyright 2001-2002 AT&T  
+# Gary L. Richtmeyer - Copyright 2001-2002 AT&T
 # http://www.vm.ibm.com/download/packages/descript.cgi?b2h
 
 
 cfgScript=get-config.sh        # script to read smpe.yaml config data
-here=$(dirname $0)             # script location
+here=$(cd $(dirname $0);pwd)   # script location
 me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
@@ -47,23 +47,23 @@ test "$debug" && echo
 if test "$1" = "--null"
 then         # stdout -> null, stderr -> stdout (without going to null)
   shift
-  test "$debug" && echo "$@ 2>&1 >/dev/null"
-                         $@ 2>&1 >/dev/null
+  test "$debug" && echo "\"$@\" 2>&1 >/dev/null"
+                          "$@"  2>&1 >/dev/null
 elif test "$1" = "--save"
 then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 >> $sAvE"
-                         $@ 2>&1 >> $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 >> $sAvE"
+                          "$@"  2>&1 >> $sAvE
 elif test "$1" = "--repl"
 then         # stdout -> >$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 > $sAvE"
-                         $@ 2>&1 > $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 > $sAvE"
+                          "$@"  2>&1 > $sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
-  test "$debug" && echo "$@ 2>&1"
-                         $@ 2>&1
+  test "$debug" && echo "\"$@\" 2>&1"
+                          "$@"  2>&1
 fi    #
 sTaTuS=$?
 if test $sTaTuS -ne 0
@@ -113,12 +113,12 @@ do case "$opt" in
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
-if test $rc -ne 0 
-then 
+if test $rc -ne 0
+then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
