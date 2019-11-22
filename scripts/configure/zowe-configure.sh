@@ -66,7 +66,7 @@ echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 . $CONFIG_DIR/zowe-configure-zlux-certificates.sh
 
 INSTANCE_DIR=${ZOWE_USER_DIR}
-. ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR}
+. ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
 
 # Run deploy on the zLUX app server to propagate the changes made
 zluxserverdirectory='zlux-app-server'

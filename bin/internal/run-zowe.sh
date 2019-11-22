@@ -14,7 +14,7 @@ checkForErrorsFound() {
   if [[ $ERRORS_FOUND > 0 ]]
   then
     # if -v passed in any validation failures abort
-    if [ ! -z $VALIDATE_ABORTS ]
+    if [[ ! -z "$VALIDATE_ABORTS" ]]
     then
       echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
       exit $ERRORS_FOUND
