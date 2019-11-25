@@ -49,7 +49,6 @@ done
 rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS
 mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSTC
 mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXASTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG
 mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIP00 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMP00
 mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSCH
 
