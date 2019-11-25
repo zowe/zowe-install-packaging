@@ -1,0 +1,58 @@
+# Change jobCard to 'YES' to generate a job card for the JCL,
+# if you have a default job card you want to use do not change this value.
+jobCard: '#jobCard'
+
+# Change acct to a valid accounting information parameter.
+# This value is required and only used if a new jobcard is generated.
+# (see jobCard)
+acct: '#acct'
+
+# Change user to a valid user ID on the system to identify the person submitting the job.
+# This value only used if a new jobcard is generated and it is not required.
+user: '#user'
+
+# Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.
+# This value only used if a new jobcard is generated and it is not required.
+sysaff: '#sysaff'
+
+# Change tzone to your CSI target zone name.
+tzone: '#tzone'
+
+# Change dzone to your CSI distribution zone name.
+dzone: '#dzone'
+
+# Change csihlq to the high level qualifier for the global zone
+#    of the CSI.
+csihlq: '#csihlq'
+
+# Change dhlq to the appropriate high level qualifier(s) for
+#    the distribution data sets, as used in the ZWE3ALOC job.
+dhlq: '#dhlq'
+
+# Change thlq to the appropriate high level qualifier(s) for
+#    the target data sets, as used in the ZWE3ALOC job.
+thlq: '#thlq'
+
+# Change the string "-PathPrefix-" to the appropriate
+#    high level directory name with leading and trailing "/". For
+#    users installing in the root this would be "/". For others,
+#    the high level directory may be something like "/service/",
+#    or a more meaningful name.
+#    Please note that the replacement string is case sensitive.
+pathPrefix: '/service/'
+
+# DO NOT SET THOSE, WE USE CATALOG in ZWE3ALOC (and sms-managed is always catalogued)
+# If you opted in job ZWE3ALOC to use non-cataloged distribution
+#    data sets;
+#       Change dvol to the volser of the distribution volume,
+#       as used in the ZWE3ALOC job.
+dvol: '#dvol'
+
+# If you opted in job ZWE3ALOC to use non-cataloged target
+#    data sets :
+#       Change tvol to the volser of the target volume,
+#       as used in the ZWE3ALOC job.
+tvol: '#tvol'
+
+# Change ibmTemplate to NO, if you are not generating IBM complient JCL templates
+ibmTemplate: 'YES'

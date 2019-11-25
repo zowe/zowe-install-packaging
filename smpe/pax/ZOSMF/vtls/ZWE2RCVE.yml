@@ -1,0 +1,59 @@
+# Change jobCard to 'YES' to generate a job card for the JCL,
+# if you have a default job card you want to use do not change this value.
+jobCard: '#jobCard'
+
+# Change acct to a valid accounting information parameter.
+# This value is required and only used if a new jobcard is generated.
+# (see jobCard)
+acct: '#acct'
+
+# Change user to a valid user ID on the system to identify the person submitting the job.
+# This value only used if a new jobcard is generated and it is not required.
+user: '#user'
+
+# Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.
+# This value only used if a new jobcard is generated and it is not required.
+sysaff: '#sysaff'
+
+# Change csivol to the volser for the global zone 
+# CSI and SMP/E data sets,
+# if you choose not to use the default of letting your Automatic
+# Class Selection (ACS) routines decide which volume to use.
+# if you have sms-management, keep this with default #csivol
+# and set storage class (optionally management and data class)
+csivol: '#csivol'
+
+# Change storclass for sms managed global zone 
+# CSI and SMP/E data sets.
+# SMS uses the attributes in the storage class 
+# for the storage service level of the data set.
+# Note that installation-written ACS routines may select 
+# a management class and data class and can 
+# override the specified storage class.
+storclass: '#storclass'
+
+# You can change dataclass for global zone
+# sms managed CSI and SMP/E data sets.
+# Use the DATACLAS parameter to specify a data class 
+# for a new data set. The storage administrator at your 
+# installation defines the names of the data classes 
+# you can code on the DATACLAS parameter.
+dataclass: '#dataclass'
+
+# You can change managementclass for global zone
+# sms managed CSI and SMP/E data sets.
+# Use the MGMTCLAS parameter to specify a management class 
+# for a new SMS-managed data set.
+mgmtclass: '#mgmtclass'
+
+# Change ${csihlq} to the high level qualifier for the global zone
+#    of the CSI.
+csihlq: '#csihlq'
+
+# Change ${hlq} to the high level qualifier(s) of the SMPMCS and
+#    REL files, as specified when uploading the files to the host
+#    (as described in the program directory).
+hlq: '#hlq'
+
+# Change ibmTemplate to NO, if you are not generating IBM complient JCL templates
+ibmTemplate: 'YES'

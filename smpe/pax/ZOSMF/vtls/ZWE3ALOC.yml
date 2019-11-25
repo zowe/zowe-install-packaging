@@ -1,0 +1,87 @@
+# Change jobCard to 'YES' to generate a job card for the JCL,
+# if you have a default job card you want to use do not change this value.
+jobCard: '#jobCard'
+
+# Change acct to a valid accounting information parameter.
+# This value is required and only used if a new jobcard is generated.
+# (see jobCard)
+acct: '#acct'
+
+# Change user to a valid user ID on the system to identify the person submitting the job.
+# This value only used if a new jobcard is generated and it is not required.
+user: '#user'
+
+# Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.
+# This value only used if a new jobcard is generated and it is not required.
+sysaff: '#sysaff'
+
+# Change thlq to the appropriate high level qualifier(s) for    
+#    the target data sets. The maximum length is 35 characters.   
+thlq: '#thlq'
+
+# By default, this job relies on your Automatic Class Selection  
+#    (ACS) routines to place the distribution data sets. You can    
+#    place the data sets on a specific volume when you:             
+#    Change dvol to the volser for the target libraries.  
+# if you have sms-management, keep this with default #dvol
+# and set storage class (optionally management and data class)
+dvol: '#dvol'
+
+# Change storclass for sms managed distribution data sets.
+# SMS uses the attributes in the storage class 
+# for the storage service level of the data set.
+# Note that installation-written ACS routines may select 
+# a management class and data class and can 
+# override the specified storage class.
+dsclass: '#dsclass'
+
+# You can change dataclass for 
+# sms managed distribution data sets.
+# Use the DATACLAS parameter to specify a data class 
+# for a new data set. The storage administrator at your 
+# installation defines the names of the data classes 
+# you can code on the DATACLAS parameter.
+ddclass: '#ddclass'
+
+# You can change managementclass for 
+# sms managed distribution data sets.
+# Use the MGMTCLAS parameter to specify a management class 
+# for a new SMS-managed data set.
+dmclass: '#dmclass'
+
+# Change dhlq to the appropriate high level qualifier(s) for    
+#    the distribution datasets. The maximum length is 35 characters.
+dhlq: '#dhlq'
+
+# By default, this job relies on your Automatic Class Selection  
+#    (ACS) routines to place the target data sets. You can          
+#    place the data sets on a specific volume when you:             
+#    Change tvol to the volser for the target libraries.
+# if you have sms-management, keep this with default #tvol
+# and set storage class (possibli management and data class)  
+tvol: '#tvol'
+
+# Change storclass for sms managed target data sets.
+# SMS uses the attributes in the storage class 
+# for the storage service level of the data set.
+# Note that installation-written ACS routines may select 
+# a management class and data class and can 
+# override the specified storage class.
+tsclass: '#tsclass'
+
+# You can change dataclass for 
+# sms managed target data sets.
+# Use the DATACLAS parameter to specify a data class 
+# for a new data set. The storage administrator at your 
+# installation defines the names of the data classes 
+# you can code on the DATACLAS parameter.
+tdclass: '#tdclass'
+
+# You can change managementclass for 
+# sms managed target data sets.
+# Use the MGMTCLAS parameter to specify a management class 
+# for a new SMS-managed data set.
+tmclass: '#tmclass'
+
+# Change ibmTemplate to NO, if you are not generating IBM complient JCL templates
+ibmTemplate: 'YES'

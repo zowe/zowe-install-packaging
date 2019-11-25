@@ -1,0 +1,114 @@
+# Change jobCard to 'YES' to generate a job card for the JCL,
+# if you have a default job card you want to use do not change this value.
+jobCard: '#jobCard'
+
+# Change acct to a valid accounting information parameter.
+# This value is required and only used if a new jobcard is generated.
+# (see jobCard)
+acct: '#acct'
+
+# Change user to a valid user ID on the system to identify the person submitting the job.
+# This value only used if a new jobcard is generated and it is not required.
+user: '#user'
+
+# Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.
+# This value only used if a new jobcard is generated and it is not required.
+sysaff: '#sysaff'
+
+# Change the string fsdsn to the appropriate data set name
+#    for the file system that will be created. 
+fsdsn: '#fsdsn'
+
+# If you are APPLYing this function for the first time, change
+#    dsprefix to the value specified for DSPREFIX in the OPTIONS
+#    entry of the GLOBAL zone.
+#    If you used the optional ZWE1SMPE job to define the CSI,
+#    the dsprefix value will match the CSI high level qualifier.
+#
+# Otherwise keep this with default and set thlq and tvol (or tsclass)   
+dsprefix: '#dsprefix'
+
+# If you are running this job to install service after the
+#    product has been APPLYed, the ZWEMKDIR EXEC will reside in
+#    a target library.
+#    - Change thlq to the high level qualifier of the target
+#      library, as used in the ZWE3ALOC job.
+#    - Change tvol to the volser of the target library, as used
+#      in the ZWE3ALOC job.
+# if you have sms-management,
+# and if the product has been APPLYed keep this with default #tvol
+# and set storage class (optionally management and data class) 
+tvol: '#tvol'
+
+# If you are running this job to install service after the
+#    product has been APPLYed, the ZWEMKDIR EXEC will reside in
+#    a target library.
+# Change thlq to the high level qualifier of the target
+# library, as used in the ZWE3ALOC job, otherwise keep default #thlq
+thlq: '#thlq'
+
+# If you are running this job to install service after the
+# product has been APPLYed, the ZWEMKDIR EXEC will reside in
+# a target library. Otherwise keep default value #tsclass
+#
+# Change storclass for sms managed target data sets.
+# SMS uses the attributes in the storage class 
+# for the storage service level of the data set.
+# Note that installation-written ACS routines may select 
+# a management class and data class and can 
+# override the specified storage class.
+tsclass: '#tsclass'
+
+# You can change dataclass for 
+# sms managed target data sets.
+# Use the DATACLAS parameter to specify a data class 
+# for a new data set. The storage administrator at your 
+# installation defines the names of the data classes 
+# you can code on the DATACLAS parameter.
+tdclass: '#tdclass'
+
+# You can change managementclass for 
+# sms managed target data sets.
+# Use the MGMTCLAS parameter to specify a management class 
+# for a new SMS-managed data set.
+tmclass: '#tmclass'
+
+# Change fsvol to the volser for the file system,
+#    if you choose not to use the default of letting your Automatic
+#    Class Selection (ACS) routines decide which volume to use.
+# if you have sms-management, keep this with default #fsvol
+# and set storage class (possibli management and data class) 
+fsvol: '#fsvol'
+
+# Change storclass for sms managed file system data sets.
+# SMS uses the attributes in the storage class 
+# for the storage service level of the data set.
+# Note that installation-written ACS routines may select 
+# a management class and data class and can 
+# override the specified storage class.
+fsclass: '#fsclass'
+
+# You can change dataclass for 
+# sms managed file system data sets.
+# Use the DATACLAS parameter to specify a data class 
+# for a new data set. The storage administrator at your 
+# installation defines the names of the data classes 
+# you can code on the DATACLAS parameter.
+fdclass: '#fdclass'
+
+# You can change managementclass for 
+# sms managed file system data sets.
+# Use the MGMTCLAS parameter to specify a management class 
+# for a new SMS-managed data set.
+fmclass: '#fmclass'
+
+# Change the string "-PathPrefix-" to the appropriate
+#    high level directory name with leading and trailing "/". For
+#    users installing in the root this would be "/". For others,
+#    the high level directory may be something like "/service/",
+#    or a more meaningful name.
+#    Please note that the replacement string is case sensitive.
+pathPrefix: '/service/'
+
+# Change ibmTemplate to NO, if you are not generating IBM complient JCL templates
+ibmTemplate: 'YES'

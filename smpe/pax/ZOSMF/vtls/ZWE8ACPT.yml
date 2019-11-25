@@ -1,0 +1,26 @@
+# Change jobCard to 'YES' to generate a job card for the JCL,
+# if you have a default job card you want to use do not change this value.
+jobCard: '#jobCard'
+
+# Change acct to a valid accounting information parameter.
+# This value is required and only used if a new jobcard is generated.
+# (see jobCard)
+acct: '#acct'
+
+# Change user to a valid user ID on the system to identify the person submitting the job.
+# This value only used if a new jobcard is generated and it is not required.
+user: '#user'
+
+# Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.
+# This value only used if a new jobcard is generated and it is not required.
+sysaff: '#sysaff'
+
+# Change csihlq to the high level qualifier for the global zone
+#    of the CSI.
+csihlq: '#csihlq'
+
+# Change dzone to your CSI distribution zone name.
+dzone: '#dzone'
+
+# Change ibmTemplate to NO, if you are not generating IBM complient JCL templates
+ibmTemplate: 'YES'

@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<workflow>
+	<autoTakeOwnership>true</autoTakeOwnership>
+	<workflowSettingInfo>
+		<variablesSetting isInstanceVariableWithoutPrefix="true"/>
+	</workflowSettingInfo>
+	<workflowInfo>
+		<workflowID scope="none">zowe_smpe</workflowID>
+		<workflowDefaultName>zowe_smpe</workflowDefaultName>
+		<workflowDescription>This is the SMP/E installation of Zowe</workflowDescription>
+		<workflowVersion>0.1</workflowVersion>
+		<vendor>Broadcom</vendor>
+		<General/>
+	</workflowInfo>
+	<variable name="jobCard" scope="instance" visibility="public">
+		<label>jobCard</label>
+		<abstract>Change jobCard to 'YES' to generate a job card for the JCL,if you have a default job card you ..</abstract>
+		<description>Change jobCard to 'YES' to generate a job card for the JCL,&lt;br&gt;if you have a default job card you want to use do not change this value.</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#jobCard</default>
+		</string>
+	</variable>
+	<variable name="acct" scope="instance" visibility="public">
+		<label>acct</label>
+		<abstract>Change acct to a valid accounting information parameter.This value is required and only used i..</abstract>
+		<description>Change acct to a valid accounting information parameter.&lt;br&gt;This value is required and only used if a new jobcard is generated.&lt;br&gt;(see jobCard)</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#acct</default>
+		</string>
+	</variable>
+	<variable name="user" scope="instance" visibility="public">
+		<label>user</label>
+		<abstract>Change user to a valid user ID on the system to identify the person submitting the job.This va..</abstract>
+		<description>Change user to a valid user ID on the system to identify the person submitting the job.&lt;br&gt;This value only used if a new jobcard is generated and it is not required.</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#user</default>
+		</string>
+	</variable>
+	<variable name="sysaff" scope="instance" visibility="public">
+		<label>sysaff</label>
+		<abstract>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.&lt;..</abstract>
+		<description>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.&lt;br&gt;This value only used if a new jobcard is generated and it is not required.</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#sysaff</default>
+		</string>
+	</variable>
+	<variable name="csivol" scope="instance" visibility="public">
+		<label>CSI Volume Serial</label>
+		<abstract>Change csivol to the volser for the CSI and SMP/E data sets, if you choose not to use the defau..</abstract>
+		<description>Change csivol to the volser for the CSI and SMP/E data sets,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="storclass" scope="instance" visibility="public">
+		<label>Storage Class</label>
+		<abstract>If required, change storclass for the SMS-managed CSI and SMP/E data sets.</abstract>
+		<description>If required, change storclass for the SMS-managed CSI and SMP/E data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dataclass" scope="instance" visibility="public">
+		<label>Data Class</label>
+		<abstract>If required, change dataclass for SMS-managed CSI and SMP/E data sets. Use the DATACLAS parameter..</abstract>
+		<description>If required, change dataclass for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="mgmtclass" scope="instance" visibility="public">
+		<label>Management Class</label>
+		<abstract>You can change management class for SMS-managed CSI and SMP/E data sets. Use the MGMTCLAS par..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tzone" scope="instance" visibility="public">
+		<label>Target Library Zone</label>
+		<abstract>Change tzone to your CSI target zone name...</abstract>
+		<description>Change tzone to your CSI target zone name.</description>
+		<category>Target Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="csihlq" scope="instance" visibility="public">
+		<label>CSI High Level Qualifier</label>
+		<abstract>Change csihlq to the high level qualifier for the CSI and other SMP/E data sets. The maximum le..</abstract>
+		<description>Change csihlq to the high level qualifier for the CSI and&lt;br&gt;other SMP/E data sets. The maximum length is 35 characters.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dzone" scope="instance" visibility="public">
+		<label>Distribution Library Zone</label>
+		<abstract>Change dzone to your CSI distribution zone name...</abstract>
+		<description>Change dzone to your CSI distribution zone name.</description>
+		<category>Distribution Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="hlq" scope="instance" visibility="public">
+		<label>SMPMCS High Level Qualifier</label>
+		<abstract>Change ${hlq} to the high level qualifier(s) of the SMPMCS andREL files, as specified when upl..</abstract>
+		<description>Change ${hlq} to the high level qualifier(s) of the SMPMCS and&lt;br&gt;REL files, as specified when uploading the files to the host&lt;br&gt;(as described in the program directory).</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="thlq" scope="instance" visibility="public">
+		<label>Target Library High Level Qualifier</label>
+		<abstract>Change thlq to the appropriate high level qualifier(s) for the target data sets. The maximum le..</abstract>
+		<description>Change thlq to the appropriate high level qualifier(s) for&lt;br&gt;the target data sets. The maximum length is 35 characters.</description>
+		<category>Target Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tvol" scope="instance" visibility="public">
+		<label>Target Library Volume</label>
+		<abstract>By default, this job relies on your Automatic Class Selection(ACS) routines to place the targe..</abstract>
+		<description>By default, this job relies on your Automatic Class Selection&lt;br&gt;(ACS) routines to place the target data sets. You can&lt;br&gt;place the data sets on a specific volume when you:&lt;br&gt;Change tvol to the volser for the target libraries. &lt;br&gt;if you have SMS-management, keep this with default #tvol&lt;br&gt;and set storage class (optionally management and data class)</description>
+		<category>Target Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="tsclass" scope="instance" visibility="public">
+		<label>Target Library Storage Class</label>
+		<abstract>Change storclass for the SMS-managed target data sets. SMS uses the attributes in the storage cla..</abstract>
+		<description>Change storclass for the SMS-managed target data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>Target Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tdclass" scope="instance" visibility="public">
+		<label>Target Library Data Class</label>
+		<abstract>You can change dataclass for SMS-managed target data sets. Use the DATACLAS parameter to spe..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>Target Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="tmclass" scope="instance" visibility="public">
+		<label>Target Library Management Class</label>
+		<abstract>You can change management class for SMS-managed target data sets. Use the MGMTCLAS parameter ..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed target data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>Target Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dvol" scope="instance" visibility="public">
+		<label>Distribution Library Volume Serial</label>
+		<abstract>By default, this job relies on your Automatic Class Selection(ACS) routines to place the distr..</abstract>
+		<description>By default, this job relies on your Automatic Class Selection&lt;br&gt;(ACS) routines to place the distribution data sets. You can&lt;br&gt;place the data sets on a specific volume when you:&lt;br&gt;Change dvol to the volser for the target libraries. &lt;br&gt;if you have SMS-management, keep this with default #dvol&lt;br&gt;and set storage class (optionally management and data class)</description>
+		<category>Distribution Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="dsclass" scope="instance" visibility="public">
+		<label>Distribution Library Storage Class</label>
+		<abstract>Change storclass for the SMS-managed distribution data sets. SMS uses the attributes in the stora..</abstract>
+		<description>Change storclass for the SMS-managed distribution data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>Distribution Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="ddclass" scope="instance" visibility="public">
+		<label>Distribution Library Data Class</label>
+		<abstract>You can change dataclass for the SMS-managed distribution data sets. Use the DATACLAS parameter ..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed distribution data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>Distribution Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dmclass" scope="instance" visibility="public">
+		<label>Distribution Library Management Class</label>
+		<abstract>You can change management class for the SMS-managed distribution data sets. Use the MGMTCLAS para..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed distribution data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>Distribution Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="dhlq" scope="instance" visibility="public">
+		<label>Distribution Library High Level Qualifier</label>
+		<abstract>Change dhlq to the appropriate high level qualifier(s) for the distribution data sets. The maxim..</abstract>
+		<description>Change dhlq to the appropriate high level qualifier(s) for&lt;br&gt;the distribution data sets. The maximum length is 35 characters.</description>
+		<category>Distribution Library</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fsdsn" scope="instance" visibility="public">
+		<label>File System Data Set Name</label>
+		<abstract>Change the string fsdsn to the appropriate data set name for the file system that will be creat..</abstract>
+		<description>Change the string fsdsn to the appropriate data set name&lt;br&gt;for the file system that will be created.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="pathPrefix" scope="instance" visibility="public">
+		<label>Path Prefix</label>
+		<abstract>Change the string &quot;-PathPrefix-&quot; to the appropriate high level directory name with leading and ..</abstract>
+		<description>Change the string &quot;-PathPrefix-&quot; to the appropriate&lt;br&gt;high level directory name with leading and trailing &quot;/&quot;. For&lt;br&gt;users installing in the root this would be &quot;/&quot;. For others,&lt;br&gt;the high level directory may be something like &quot;/service/&quot;,&lt;br&gt;or a more meaningful name. &lt;br&gt;Please note that the replacement string is case sensitive.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+		</string>
+	</variable>
+	<variable name="dsprefix" scope="instance" visibility="public">
+		<label>Data Set Prefix</label>
+		<abstract>If you are APPLYing this function for the first time, change dsprefix to the value specified fo..</abstract>
+		<description>If you are APPLYing this function for the first time, change&lt;br&gt;dsprefix to the value specified for DSPREFIX in the OPTIONS&lt;br&gt;entry of the GLOBAL zone. &lt;br&gt;If you used the optional ZWE1SMPE job to define the CSI,&lt;br&gt;the dsprefix value will match the CSI high level qualifier. &lt;br&gt;&lt;br&gt;Otherwise keep this with default and set thlq and tvol (or tsclass)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fsvol" scope="instance" visibility="public">
+		<label>File System Volume</label>
+		<abstract>Change fsvol to the volser for the file system, if you choose not to use the default of letting..</abstract>
+		<description>Change fsvol to the volser for the file system,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use. &lt;br&gt;if you have SMS-management, keep this with default #fsvol&lt;br&gt;and set storage class (possibli management and data class)</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>VOLSER</validationType>
+		</string>
+	</variable>
+	<variable name="fsclass" scope="instance" visibility="public">
+		<label>File System Storage Class</label>
+		<abstract>Change storclass for the SMS-managed file system data sets. SMS uses the attributes in the storag..</abstract>
+		<description>Change storclass for the SMS-managed file system data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fdclass" scope="instance" visibility="public">
+		<label>File System Data Class</label>
+		<abstract>You can change dataclass for the SMS-managed file system data sets. Use the DATACLAS parameter t..</abstract>
+		<description>You can change dataclass for&lt;br&gt;SMS-managed file system data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<variable name="fmclass" scope="instance" visibility="public">
+		<label>File System Management Class</label>
+		<abstract>You can change management class for SMS-managed file system data sets. Use the MGMTCLAS param..</abstract>
+		<description>You can change management class for&lt;br&gt;SMS-managed file system data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSMEMBERNAME</validationType>
+		</string>
+	</variable>
+	<step name="define_variables" optional="false">
+		<title>Define Variables</title>
+		<description>Step to define the variables</description>
+		<variableValue name="csivol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="storclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dataclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="mgmtclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tzone" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="csihlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dzone" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="hlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="thlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tdclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="ddclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dhlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsdsn" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="pathPrefix" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dsprefix" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<instructions substitution="false">Run this step to initialize variable values</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+	</step>
+	<step name="ZWE1SMPE" optional="false">
+		<title>CSI Allocation</title>
+		<description>Allocates a CSI and data sets required by SMP/E</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Allocates a CSI and data sets required by SMP/E</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE1SMPE.vtl###</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE2RCVE" optional="false">
+		<title>Receive</title>
+		<description>SMP/E RECEIVE for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">SMP/E RECEIVE for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE2RCVE.vtl###</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE3ALOC" optional="false">
+		<title>Target and Distribution Allocation</title>
+		<description>Allocates target and distribution libraries for SMP/E</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Allocates target and distribution libraries for SMP/E</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE3ALOC.vtl###</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>1024</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE4ZFS" optional="false">
+		<title>File System Allocation</title>
+		<description>Allocates and mounts the USS File System for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Allocates and mounts the USS File System for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE4ZFS.vtl###</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>1024</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE5MKD" optional="false">
+		<title>File Structure</title>
+		<description>Creates the file/folder structure in the allocated mount point</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Creates the file/folder structure in the allocated mount point</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE5MKD.vtl###</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>1024</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE6DDEF" optional="false">
+		<title>DDEF Creation</title>
+		<description>This step creates the DDEF entries</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">This step creates the DDEF entries</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE6DDEF.vtl###</inlineTemplate>
+			<submitAs maxRc="4">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE7APLY" optional="false">
+		<title>SMP/E Apply</title>
+		<description>SMP/E Apply for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">SMP/E Apply for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE7APLY.vtl###</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+	<step name="ZWE8ACPT" optional="false">
+		<title>SMP/E Accept</title>
+		<description>SMP/E Accept for ZOWE</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">SMP/E Accept for ZOWE</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+			<inlineTemplate substitution="true">###./vtls/ZWE8ACPT.vtl###</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+</workflow>
