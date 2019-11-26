@@ -10,7 +10,7 @@
         gsub(tmp[0], cont)
         gsub(tmp[0], "\\&amp;") # required to escape the ampersand.
         gsub("<job parameters>", "\\&lt;job parameters\\&gt;")
-
     }
+    gsub("utf-8", "IBM-1047")
 }
 {print}
