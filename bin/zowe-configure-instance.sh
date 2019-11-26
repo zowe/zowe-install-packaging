@@ -96,7 +96,7 @@ create_new_instance() {
             -e "s#ZOWE_ZLUX_SSH_PORT=22#ZOWE_ZLUX_SSH_PORT=${ZOWE_ZLUX_SSH_PORT}#" \
             -e "s#ZOWE_ZLUX_TELNET_PORT=23#ZOWE_ZLUX_TELNET_PORT=${ZOWE_ZLUX_TELNET_PORT}#" \
             -e "s#ZOWE_ZLUX_SECURITY_TYPE=#ZOWE_ZLUX_SECURITY_TYPE=${ZOWE_ZLUX_SECURITY_TYPE}#" \
-            -e "s#ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR#ZOWE_SERVER_PROCLIB_MEMBER=${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+            -e "s#ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC#ZOWE_SERVER_PROCLIB_MEMBER=${ZOWE_SERVER_PROCLIB_MEMBER}#" \
             "${INSTANCE_DIR}/instance.env" \
             > "${INSTANCE_DIR}/instance.yaml.env"
             mv "${INSTANCE_DIR}/instance.yaml.env" "${INSTANCE_DIR}/instance.env"

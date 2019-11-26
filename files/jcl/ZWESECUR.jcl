@@ -76,11 +76,11 @@
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
 //         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZOWEUSR      * userid for Zowe started task
-//         SET  ZSSUSER=ZSSUSR       * userid for ZSS started task
-//         SET  AUXUSER=&ZSSUSER.    * userid for ZSS AUX started task
-//         SET  ZOWESTC=ZOWESVR      * Zowe started task name
-//         SET   ZSSSTC=ZOWEZSS      * ZSS started task name
-//         SET   AUXSTC=ZOWEAUX      * ZSS AUX started task name
+//         SET XMEMUSER=ZSSUSR       * userid for xmem started task
+//         SET  AUXUSER=&ZSSUSER.    * userid for xmem AUX started task
+//         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
+//         SET  XMEMSTC=ZWEXMSTC     * xmem started task name
+//         SET   AUXSTC=ZWEXASTC     * xmem AUX started task name
 //*                     12345678
 //*
 //*********************************************************************

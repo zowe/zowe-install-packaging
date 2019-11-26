@@ -325,8 +325,8 @@ then
 fi 
 if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
 then
-    ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR 
-    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR" | tee -a $LOG_FILE
+    ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC 
+    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZWESVSTC" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
 then
