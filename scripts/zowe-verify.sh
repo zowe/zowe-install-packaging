@@ -542,18 +542,18 @@ else
     zss_error_status=0  # no errors yet
     IZUSVR=IZUSVR   # remove this line when IZUSVR is an env variable
 
-    # Is program ZWESIS01 running?
-    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | grep -v "grep CMD=ZWESIS01" | grep CMD=ZWESIS01  > /dev/null
+    # Is program ZWEXMSTC running?
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" | grep -v "grep CMD=ZWEXMSTC" | grep CMD=ZWEXMSTC  > /dev/null
     if [[ $? -ne 0 ]]
     then
-        echo Error: Program ZWESIS01 is not running
+        echo Error: Program ZWEXMSTC is not running
         zss_error_status=1
         else
-            # Is program ZWESIS01 running under user ${IZUSVR}?
-            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,u=${IZUSVR}" | grep CMD=ZWESIS01 > /dev/null
+            # Is program ZWEXMSTC running under user ${IZUSVR}?
+            ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,u=${IZUSVR}" | grep CMD=ZWEXMSTC > /dev/null
             if [[ $? -ne 0 ]]
             then
-                echo Error: Program ZWESIS01 is not running under user ${IZUSVR}
+                echo Error: Program ZWEXMSTC is not running under user ${IZUSVR}
                 zss_error_status=1
             fi
     fi
