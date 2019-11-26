@@ -17,7 +17,7 @@
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,INSTANCE='{{instance_directory}}'                        *
+//*   S ZOWESVR,INSTANCE='{{instance_directory}}'                    *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
