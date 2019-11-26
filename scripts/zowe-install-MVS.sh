@@ -67,13 +67,6 @@ EndOfZWEXMPRG
 fi
 # <<<<
 
-# TODO remove once zowe-install-packaging/files/templates is updated
-# >>>>
-# adjust non-ZSS samples
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZOWESVR ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESTC
-# <<<<
-
-
 # 1. {datasetprefix}.SZWEAUTH
 
 tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWEAUTH' " >> ${LOG_FILE} 2>&1
