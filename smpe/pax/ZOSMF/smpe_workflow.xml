@@ -12,6 +12,17 @@
 		<vendor>Broadcom</vendor>
 		<General/>
 	</workflowInfo>
+	<variable name="ibmTemplate" scope="instance" visibility="public">
+		<label>IBM Template Generation</label>
+		<abstract>Specifies whether IBM compliant templates should be created</abstract>
+		<description>Specifies whether IBM compliant templates should be created</description>
+		<category>Internal</category>
+		<string valueMustBeChoice="true" multiLine="false">
+			<choice>YES</choice>
+			<choice>NO</choice>
+			<default>NO</default>
+		</string>
+	</variable>
 	<variable name="jobCard" scope="instance" visibility="public">
 		<label>jobCard</label>
 		<abstract>Change jobCard to 'YES' to generate a job card for the JCL,if you have a default job card you ..</abstract>
