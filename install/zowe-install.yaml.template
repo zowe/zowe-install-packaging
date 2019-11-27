@@ -5,7 +5,7 @@
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
   instanceDir=~/zowe-instance-dir
-  prefix=ZOWE
+  prefix=ZWE
   instance=1
   datasetPrefix={userid}.ZWE
 

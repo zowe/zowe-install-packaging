@@ -223,8 +223,8 @@ then
 fi
 if [[ $ZOWE_PREFIX == "" ]]
 then
-    ZOWE_PREFIX="ZOWE"
-    echo "  ZOWE_PREFIX not specified:  Defaulting to ZOWE" | tee -a $LOG_FILE
+    ZOWE_PREFIX="ZWE"
+    echo "  ZOWE_PREFIX not specified:  Defaulting to ZWE" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_INSTANCE == "" ]]
 then

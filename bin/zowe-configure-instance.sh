@@ -75,7 +75,7 @@ create_new_instance() {
         if [[ ! -z ${YAML_OVERRIDE} ]]
         then
           sed \
-            -e "s#ZOWE_PREFIX=ZOWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
+            -e "s#ZOWE_PREFIX=ZWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
             -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=${ZOWE_INSTANCE}#" \
             -e "s#ZOSMF_USERID=IZUSVR#ZOSMF_USERID=${ZOWE_ZOSMF_USERID}#" \
             -e "s#ZOSMF_ADMIN_GROUP=IZUADMIN#ZOSMF_ADMIN_GROUP=${ZOWE_ZOSMF_ADMIN_GROUP}#" \
