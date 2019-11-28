@@ -283,7 +283,7 @@ _installMVS SZWESAMP "FB" "80" "PO" "10,2"
 
 # install SZWEZFS members
 list=""     # file names include path based on $here
-list="$list USS/ZWESHPAX.sh ZOSMF/WORKFLOW.xml"
+list="$list USS/ZWESHPAX.sh ZOSMF/ZWEWRF01.xml"
 _installUSS $ussI
 
 # remove install script if requested
