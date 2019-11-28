@@ -43,7 +43,7 @@ do
   fi
 done
 
-# TODO remove once zowe/zss/samplib/zis/ is updated
+# TODO remove once https://github.com/zowe/zss/issues/94
 # >>>>
 # adjust ZSS samples
 rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS

@@ -4,8 +4,8 @@
 
 # Datasets that APF server will be installed into
 install:
-  # PROCLIB dataset name (required, no default values)
-  proclib=
+  # PROCLIB dataset name (required)
+  proclib=ZWEXMSTC
   # PARMLIB dataset name (${USER}.PARMLIB by default)
   parmlib=
   # LOADLIB dataset name (${USER}.LOADLIB by default)
