@@ -58,7 +58,7 @@ end    /* */
 if Trash \= ''
 then do
   call _displayUsage
-  say '** ERROR' ExecName 'invalid startup argument'
+  say '** ERROR' ExecName 'invalid startup argument' Trash
   cRC=8
 end    /* */
 
