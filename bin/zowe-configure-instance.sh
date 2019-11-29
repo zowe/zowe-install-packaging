@@ -10,9 +10,10 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-while getopts "c:y" opt; do
+while getopts "c:k:y" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
+    k) KEYSTORE_DIRECTORY=$OPTARG;;
     y) YAML_OVERRIDE=true;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -38,6 +39,12 @@ export _BPXK_AUTOCVT="OFF"
 if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
+  exit 1
+fi
+
+if [[ -z ${KEYSTORE_DIRECTORY} ]]
+then
+  echo "-k parameter not set. Please re-run 'zowe-configure-instance.sh -k <keystore directory>' specifying the location of the keystore to use for zowe instance you want to create"
   exit 1
 fi
 
@@ -120,11 +127,11 @@ check_existing_instance_for_updates() {
       -e "s#{{external_certificate}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
       -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
       -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" )
-  
+
     echo "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND" | tee -a ${LOG_FILE}
     echo "\n$LINES_TO_APPEND" >> $INSTANCE
     echo "Properties added, please review these before starting zowe."
-  else 
+  else
     echo "No updates required" | tee -a ${LOG_FILE}
   fi
 }
@@ -155,7 +162,7 @@ echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
 if [[ -f "${INSTANCE}" ]]
 then
   check_existing_instance_for_updates
-else 
+else
   create_new_instance
 fi
 
@@ -173,9 +180,24 @@ done < \${INSTANCE_DIR}/instance.env
 EOF
 echo "Created ${INSTANCE_DIR}/bin/read-instance.sh">> $LOG_FILE
 
+cat <<EOF >${INSTANCE_DIR}/bin/read-keystore.sh
+# Requires KEYSTORE_DIRECTORY to be set
+# Read in properties by executing, then export all the keys so we don't need to shell share
+. \${KEYSTORE_DIRECTORY}/zowe-certificates.env
+
+while read -r line
+do
+test -z "\${line%%#*}" && continue      # skip line if first char is #
+key=\${line%%=*}
+export \$key
+done < \${INSTANCE_DIR}/instance.env
+EOF
+echo "Created ${INSTANCE_DIR}/bin/read-keystore.sh">> $LOG_FILE
+
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/read-keystore.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/internal/run-zowe.sh">> $LOG_FILE
@@ -184,6 +206,7 @@ cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/read-keystore.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd \"S \${ZOWE_SERVER_PROCLIB_MEMBER},INSTANCE='"\${INSTANCE_DIR}"',JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV\"
 echo Start command issued, check SDSF job log ...
@@ -194,6 +217,7 @@ cat <<EOF >${INSTANCE_DIR}/bin/zowe-stop.sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/read-keystore.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
