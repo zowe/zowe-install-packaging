@@ -1,4 +1,8 @@
-{match($0, /###(.*)###/, tmp)}
+{check = match($0, /###(.*)###/)}
+{if(check) {
+    tmp[0] = substr($NF, 21, RLENGTH)
+    tmp[1] = substr($NF, 24, RLENGTH-6)
+    }}
 {
     if(tmp[1]) {
         join_mark = ""
