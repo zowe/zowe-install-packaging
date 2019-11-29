@@ -1,54 +1,135 @@
 #!/bin/sh
 
-# Variables to be replaced:
-# - HOSTNAME - The hostname of the system running API Mediation (defaults to localhost)
+# Variables to be supplied:
+# - HOSTNAME - The hostname of the system running API Mediation
 # - IPADDRESS - The IP Address of the system running API Mediation
-# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services
+# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services (???defaults to ???)
 # - ZOSMF_KEYRING - Name of the z/OSMF keyring
 # - ZOSMF_USER - z/OSMF server user ID
 # - EXTERNAL_CERTIFICATE - optional - Path to a PKCS12 keystore with a server certificate for APIML
 # - EXTERNAL_CERTIFICATE_ALIAS - optional - Alias of the certificate in the keystore
 # - EXTERNAL_CERTIFICATE_AUTHORITIES - optional - Public certificates of trusted CAs
 
-echo "<setup-apiml-certificates.sh>" >> $LOG_FILE
+# - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore???)
+# - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and 
+#                       that will be also used to secure newly generated keystores for API Mediation.
+# - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
-mkdir -p keystore/local_ca
-mkdir -p keystore/localhost
 
-**JAVA_SETUP**
-if [[ ":$PATH:" == *":$JAVA_HOME/bin:"* ]]; then
-  echo "ZOWE_JAVA_HOME already exists on the PATH" >> $LOG_FILE
-else
-  echo "Appending ZOWE_JAVA_HOME/bin to the PATH..." >> $LOG_FILE
-  export PATH=$PATH:$JAVA_HOME/bin
+# Set up logging
+LOG_DIR=${HOME}/zowe_certificate_setup_log
+# Make the log directory if needed - first time through - subsequent installs create new .log files
+if [[ ! -d $LOG_DIR ]]; then
+    mkdir -p $LOG_DIR
+    chmod a+rwx $LOG_DIR 
 fi
 
-SAN="SAN=dns:**HOSTNAME**,ip:**IPADDRESS**,dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
+export LOG_FILE="certificate_config_`date +%Y-%m-%d-%H-%M-%S`.log"
+LOG_FILE=$LOG_DIR/$LOG_FILE
+touch $LOG_FILE
+chmod a+rw $LOG_FILE
+
+echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
+
+# process input parameters. 
+while getopts "p:" opt; do
+  case $opt in
+    p) CERTIFICATES_CONFIG_FILE=$OPTARG;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+shift "$(($OPTIND-1))"
+
+export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
+
+# Load default values
+DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
+. ${DEFAULT_CERTIFICATES_CONFIG_FILE}
+
+if [[ -z ${CERTIFICATES_CONFIG_FILE} ]]
+then
+  echo "-p parameter not set. Using default ${DEFAULT_CERTIFICATES_CONFIG_FILE} file instead."
+else
+  if [[ -f ${CERTIFICATES_CONFIG_FILE} ]]
+  then
+    echo "Loading certificates variables from ${CERTIFICATES_CONFIG_FILE} file."
+    # Load custom values
+    . ${CERTIFICATES_CONFIG_FILE}  
+  else
+    echo "${CERTIFICATES_CONFIG_FILE} file does not exist."
+    exit 1
+  fi
+fi
+
+. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh 
+. ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
+
+# If hostname was not provided then use a default value.
+if [[ -z ${HOSTNAME} ]]
+then
+  HOSTNAME=${ZOWE_EXPLORER_HOST}
+fi
+
+# If ipaddress was not provided then use a default value.
+if [[ -z ${IPADDRESS} ]]
+then
+  IPADDRESS=${ZOWE_IP_ADDRESS}
+fi
+
+ZOWE_CERT_ENV_NAME=zowe-certificates.env
+LOCAL_KEYSTORE_SUBDIR=local_ca
+
+# create keystore directories
+if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
+  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then 
+    echo "Unable to create ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} directory."
+    exit 1;
+  fi
+fi
+
+if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
+  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}; then
+    echo "Unable to create ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} directory."
+    exit 1;
+  fi
+fi
+
+# set up parameters fot apiml_cm.sh script
+KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"
+TRUSTSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.truststore"
+EXTERNAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca
+LOCAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/localca
+SAN="SAN=dns:${HOSTNAME},ip:${IPADDRESS},dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
 # If any external certificate fields are zero [blank], do not use the external setup method.
 # If all external certificate fields are zero [blank], create everything from scratch.
 # If all external fields are not zero [valid string], use external setup method.
 
-if [[ -z "**EXTERNAL_CERTIFICATE**" ]] || [[ -z "**EXTERNAL_CERTIFICATE_ALIAS**" ]] || [[ -z "**EXTERNAL_CERTIFICATE_AUTHORITIES**" ]]; then
-  if [[ -z "**EXTERNAL_CERTIFICATE**" ]] && [[ -z "**EXTERNAL_CERTIFICATE_ALIAS**" ]] && [[ -z "**EXTERNAL_CERTIFICATE_AUTHORITIES**" ]]; then
-    scripts/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN}
+if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
+  if [[ -z "${EXTERNAL_CERTIFICATE}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
+      --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
     RC=$?
     echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
   else
-    (>&2 echo "Zowe Install setup configuration is invalid; check your zowe-install.yaml file.")
+    (>&2 echo "Zowe Install setup configuration is invalid; check your zowe-setup-certificates.env file.")
     (>&2 echo "Some external apiml certificate fields are supplied...Fields must be filled out in full or left completely blank.")
     (>&2 echo "See $LOG_FILE for more details.")
-    echo "</setup-apiml-certificates.sh>" >> $LOG_FILE
+    echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
     exit 1
   fi
 else
   EXT_CA_PARM=""
-  for CA in **EXTERNAL_CERTIFICATE_AUTHORITIES**; do
+  for CA in ${EXTERNAL_CERTIFICATE_AUTHORITIES}; do
       EXT_CA_PARM="${EXT_CA_PARM} --external-ca ${CA} "
   done
 
-  scripts/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} \
-    --external-certificate **EXTERNAL_CERTIFICATE** --external-certificate-alias **EXTERNAL_CERTIFICATE_ALIAS** ${EXT_CA_PARM}
+  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
+    --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
+    --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
   RC=$?
 
   echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
@@ -56,22 +137,43 @@ fi
 
 if [ "$RC" -ne "0" ]; then
     (>&2 echo "apiml_cm.sh --action setup has failed. See $LOG_FILE for more details")
-    echo "</setup-apiml-certificates.sh>" >> $LOG_FILE
+    echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
     exit 1
 fi
 
-if [[ "**VERIFY_CERTIFICATES**" == "true" ]]; then
-  scripts/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zosmf-keyring **ZOSMF_KEYRING** --zosmf-userid **ZOSMF_USER**
+if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
+  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USER} \
+    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX}
   RC=$?
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See $LOG_FILE for more details")
       (>&2 echo "WARNING: z/OSMF is not trusted by the API Mediation Layer. Follow instructions in Zowe documentation about manual steps to trust z/OSMF")
-      (>&2 echo "  Issue following commands as a user that has permissions to export public certificates from z/OSMF keyring:")
-      (>&2 echo "    cd **ZOWE_ROOT_DIR**/api-mediation")
-      (>&2 echo "    scripts/apiml_cm.sh --action trust-zosmf --zosmf-keyring **ZOSMF_KEYRING** --zosmf-userid **ZOSMF_USER**")
+      (>&2 echo "  Issue the following command as a user that has permissions to export public certificates from z/OSMF keyring:")
+      (>&2 echo "    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USER} \
+                      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX}")
   fi
 fi
 
-echo "</setup-apiml-certificates.sh>" >> $LOG_FILE
+# set up chmod
+chmod -R 600 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
+chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}
+
+# re-create and populate the zowe-certificates.env file. 
+ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
+
+cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
+  KEY_ALIAS=${KEYSTORE_ALIAS}
+  KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+  KEYSTORE=${KEYSTORE_PREFIX}.p12
+  TRUSTSTORE=${TRUSTSTORE_PREFIX}.p12
+  KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
+  KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
+  ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+  ZOSMF_USERID=${ZOSMF_USER}
+  ZOSMF_KEYRING=${ZOSMF_KEYRING}
+EOF
+
+echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
