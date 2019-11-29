@@ -47,6 +47,7 @@ export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
+echo "Loading default variables from ${DEFAULT_CERTIFICATES_CONFIG_FILE} file."
 . ${DEFAULT_CERTIFICATES_CONFIG_FILE}
 
 if [[ -z ${CERTIFICATES_CONFIG_FILE} ]]
@@ -55,7 +56,7 @@ then
 else
   if [[ -f ${CERTIFICATES_CONFIG_FILE} ]]
   then
-    echo "Loading certificates variables from ${CERTIFICATES_CONFIG_FILE} file."
+    echo "Loading ${CERTIFICATES_CONFIG_FILE} file and overriding default variables."
     # Load custom values
     . ${CERTIFICATES_CONFIG_FILE}  
   else
