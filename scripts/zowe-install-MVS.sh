@@ -12,7 +12,7 @@
 
 sizeAUTH='space(15,15) tracks'
 sizeSAMP='space(15,15) tracks'
-members='ZOWESVR.jcl ZWESECUR.jcl'
+members='ZWESVSTC.jcl ZWESECUR.jcl'
 
 # info: construct ${variable%%.*} keeps up to first . (exclusive)
 
@@ -35,7 +35,7 @@ cd $dir
 
 for file in $members
 do
-  cp $INSTALL_DIR/files/templates/$file ${TEMP_DIR}/${script%%.*}/SAMPLIB/${file%%.*}
+  cp $INSTALL_DIR/files/jcl/$file ${TEMP_DIR}/${script%%.*}/SAMPLIB/${file%%.*}
   rc=$?
   if test $rc -ne 0
   then
@@ -43,33 +43,29 @@ do
   fi
 done
 
-# TODO remove once zowe/zss/samplib/zis/ is updated
+# TODO remove once https://github.com/zowe/zss/issues/94
 # >>>>
 # adjust ZSS samples
 rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESASTC
-if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSTC
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXASTC
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIP00 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMP00
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSCH
+
+if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG
 then
 # Statements below must not exceed col 80
 #----------------------------------------------------------------------------80|
-cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG <<EndOfZWESIPRG
+cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG <<EndOfZWEXMPRG
 /* issue this console command to authorize the loadlib temporarily */
 SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEAUTH,VOLUME=${volume}
 /* Add this statement to SYS1.PARMLIB(PROGxx) or equivalent
    to authorize the loadlib permanently */
 APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume})
-EndOfZWESIPRG
+EndOfZWEXMPRG
 #----------------------------------------------------------------------------80|
 fi
 # <<<<
-
-# TODO remove once zowe-install-packaging/files/templates is updated
-# >>>>
-# adjust non-ZSS samples
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZOWESVR ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESTC
-# <<<<
-
 
 # 1. {datasetprefix}.SZWEAUTH
 
