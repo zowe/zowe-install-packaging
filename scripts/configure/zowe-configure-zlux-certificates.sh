@@ -10,7 +10,7 @@
 # Copyright Broadcom 2018
 ################################################################################
 
-ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/config
+ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/defaults/serverConfig
 APIML_KEYSTORE_PATH=${ZOWE_ROOT_DIR}/components/api-mediation/keystore
 SUFFIX=""
 if [ `uname` = "OS/390" ]; then
@@ -23,8 +23,8 @@ echo "<zowe-zlux-configure-certificates.sh>" >> $LOG_FILE
 chmod -R u+w ${ZLUX_SERVER_CONFIG_PATH}/
 cd ${ZLUX_SERVER_CONFIG_PATH}
 
-# Update the /zlux-app-server/deploy/instance/ZLUX/serverConfig/zluxserver.json
-echo "Updating certificates in zluxserver.json to use key store in ${APIML_KEYSTORE_PATH}" >> $LOG_FILE 
+# Update the /zlux-app-server/defaults/serverConfig/server.json
+echo "Updating certificates in app server's server.json to use key store in ${APIML_KEYSTORE_PATH}" >> $LOG_FILE 
 
 #concatenate all CA (including optional external CA) into one string separated by ","
 CA_LIST=${APIML_KEYSTORE_PATH}'/local_ca/localca.cer'${SUFFIX}
@@ -35,8 +35,8 @@ for cert_entry in $APIML_KEYSTORE_PATH/local_ca/extca*.cer${SUFFIX} ; do
     fi
 done
 
-sed 's|.*"keys".*|      "keys": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.key"]|g' zluxserver.json > ${TEMP_DIR}/transform1.json
+sed 's|.*"keys".*|      "keys": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.key"]|g' server.json > ${TEMP_DIR}/transform1.json
 sed 's|.*"certificates".*|    , "certificates": ["'${APIML_KEYSTORE_PATH}'/localhost/localhost.keystore.cer'${SUFFIX}'"]|g' ${TEMP_DIR}/transform1.json > ${TEMP_DIR}/transform2.json
-sed 's|.*"certificateAuthorities".*|    , "certificateAuthorities": ["'$CA_LIST'"]|g' ${TEMP_DIR}/transform2.json > zluxserver.json
+sed 's|.*"certificateAuthorities".*|    , "certificateAuthorities": ["'$CA_LIST'"]|g' ${TEMP_DIR}/transform2.json > server.json
 
 echo "</zowe-zlux-configure-certificates.sh>" >> $LOG_FILE
