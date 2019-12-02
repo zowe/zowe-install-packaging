@@ -51,9 +51,6 @@ mkdir -p $TEMP_DIR
 
 echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
-# Configure the ports for the zLUX server
-. $CONFIG_DIR/zowe-configure-zlux-ports.sh
-
 # configure api catalog and jes explorer plugins, to be moved later to their own configure steps after zlux componentisation
 . $CONFIG_DIR/zowe-configure-iframe-plugins.sh
 
@@ -66,15 +63,18 @@ echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 . $CONFIG_DIR/zowe-configure-zlux-certificates.sh
 
 INSTANCE_DIR=${ZOWE_USER_DIR}
+WORKSPACE_DIR=${INSTANCE_DIR}/workspace
+mkdir -p ${WORKSPACE_DIR}
+
 . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
 
 # Run deploy on the zLUX app server to propagate the changes made
 zluxserverdirectory='zlux-app-server'
 echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
+# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
+chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/defaults
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
 chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/deploy/site
-# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build

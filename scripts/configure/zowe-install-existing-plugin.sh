@@ -34,9 +34,9 @@ fi
 
 zluxserverdirectory='zlux-app-server'
 
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
+chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/defaults/plugins
 
-cat <<EOF >$ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/$PLUGIN_ID.json
+cat <<EOF >$ZOWE_ROOT_DIR/$zluxserverdirectory/defaults/plugins/$PLUGIN_ID.json
 {
     "identifier": "$PLUGIN_ID",
     "pluginLocation": "$PLUGIN_DIR"

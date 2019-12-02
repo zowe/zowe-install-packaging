@@ -39,7 +39,7 @@ fi
 
 ZLUX_SERVER_DIRECTORY='zlux-app-server'
 
-chmod -R u+w $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/
+chmod -R u+w $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/defaults/plugins/
 # switch spaces to underscores and lower case it for use as folder name
 PLUGIN_FOLDER_NAME=$(echo $PLUGIN_SHORTNAME | tr -s ' ' | tr ' ' '_' | tr '[:upper:]' '[:lower:]')
 PLUGIN_FOLDER=$ZOWE_ROOT_DIR/$PLUGIN_FOLDER_NAME
@@ -53,7 +53,7 @@ rm -rf $PLUGIN_FOLDER/web/images
 rm -f $PLUGIN_FOLDER/web/index.html
 rm -f $PLUGIN_FOLDER/pluginDefinition.json
 
-rm -f $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
+rm -f $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/defaults/plugins/$PLUGIN_ID.json
 
 mkdir -p $PLUGIN_FOLDER/web/images
 cp $TILE_IMAGE_PATH $PLUGIN_FOLDER/web/images
@@ -105,7 +105,7 @@ else
   PLUGIN_LOCATION="../../${PLUGIN_FOLDER_NAME}"
 fi
 
-cat <<EOF >$ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
+cat <<EOF >$ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/defaults/plugins/$PLUGIN_ID.json
 {
     "identifier": "$PLUGIN_ID",
     "pluginLocation": "$PLUGIN_LOCATION"
