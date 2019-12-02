@@ -18,19 +18,19 @@
 # The user of this script must be authorized to issue the necessary commands to the installed security product
 
 # If you use RACF, the following commands will be issued:
-# RDEFINE STARTED ${ZOWESVR}.* UACC(NONE) STDATA(USER(IZUSVR) GROUP(IZUADMIN)
+# RDEFINE STARTED ${ZWESVSTC}.* UACC(NONE) STDATA(USER(IZUSVR) GROUP(IZUADMIN)
 # PRIVILEGED(NO) TRUSTED(NO) TRACE(YES))
 # SETROPTS REFRESH RACLIST(STARTED)
 
 # If you use CA ACF2, the following commands will be issued:
 # SET CONTROL(GSO)
-# INSERT STC.${ZOWESVR} LOGONID(IZUSVR) GROUP(IZUADMIN) STCID(${ZOWESVR})
+# INSERT STC.${ZWESVSTC} LOGONID(IZUSVR) GROUP(IZUADMIN) STCID(${ZWESVSTC})
 # F ACF2,REFRESH(STC)
 
 # If you use CA Top Secret, the following commands will be issued:
-# TSS ADDTO(STC) PROCNAME(${ZOWESVR}) ACID(IZUSVR)
+# TSS ADDTO(STC) PROCNAME(${ZWESVSTC}) ACID(IZUSVR)
 
-ZOWESVR={{stc_name}}
+ZWESVSTC={{stc_name}}
 
 echo Script zowe-config-stc.sh started
 
@@ -67,7 +67,7 @@ then
     case $saf in
     
     RACF) 
-        tsocmd "RDEFINE STARTED ${ZOWESVR}.* UACC(NONE) STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES))" \
+        tsocmd "RDEFINE STARTED ${ZWESVSTC}.* UACC(NONE) STDATA(USER(IZUSVR) GROUP(IZUADMIN) PRIVILEGED(NO) TRUSTED(NO) TRACE(YES))" \
             1> /tmp/cmd.out 2> /tmp/cmd.err 
         if [[ $? -ne 0 ]]
         then
@@ -87,7 +87,7 @@ then
             echo Error: "SET CONTROL(GSO) failed with the following errors"
             cat /tmp/cmd.out /tmp/cmd.err
         else
-            tsocmd "INSERT STC.${ZOWESVR} LOGONID(IZUSVR) GROUP(IZUADMIN) STCID(${ZOWESVR})" \
+            tsocmd "INSERT STC.${ZWESVSTC} LOGONID(IZUSVR) GROUP(IZUADMIN) STCID(${ZWESVSTC})" \
                 1> /tmp/cmd.out 2> /tmp/cmd.err 
             if [[ $? -ne 0 ]]
             then
@@ -116,7 +116,7 @@ then
         ;;
 
     TSS)
-        tsocmd "TSS ADDTO(STC) PROCNAME(${ZOWESVR}) ACID(IZUSVR)" \
+        tsocmd "TSS ADDTO(STC) PROCNAME(${ZWESVSTC}) ACID(IZUSVR)" \
             1> /tmp/cmd.out 2> /tmp/cmd.err 
         if [[ $? -ne 0 ]]
         then
