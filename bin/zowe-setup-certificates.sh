@@ -65,20 +65,10 @@ else
   fi
 fi
 
-. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh 
+ZOWE_EXPLORER_HOST=${HOSTNAME}
+ZOWE_IP_ADDRESS=${IPADDRESS}
+. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
-
-# If hostname was not provided then use a default value.
-if [[ -z ${HOSTNAME} ]]
-then
-  HOSTNAME=${ZOWE_EXPLORER_HOST}
-fi
-
-# If ipaddress was not provided then use a default value.
-if [[ -z ${IPADDRESS} ]]
-then
-  IPADDRESS=${ZOWE_IP_ADDRESS}
-fi
 
 ZOWE_CERT_ENV_NAME=zowe-certificates.env
 LOCAL_KEYSTORE_SUBDIR=local_ca
@@ -104,7 +94,7 @@ KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keyst
 TRUSTSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.truststore"
 EXTERNAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca
 LOCAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/localca
-SAN="SAN=dns:${HOSTNAME},ip:${IPADDRESS},dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
+SAN="SAN=dns:${ZOWE_EXPLORER_HOST},ip:${ZOWE_IP_ADDRESS},dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
 # If any external certificate fields are zero [blank], do not use the external setup method.
 # If all external certificate fields are zero [blank], create everything from scratch.
