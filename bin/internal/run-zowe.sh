@@ -78,6 +78,24 @@ then
   LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
 fi
 
+#Explorers may be present, but have a prereq on gateway, not desktop
+if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+then
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},app-server,zss
+  PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+fi
+#ZSS could be included separate to app-server, and vice-versa
+#But for simplicity of this script we have app-server prereq zss in DESKTOP
+#And zss & app-server sharing WORKSPACE_DIR
+
+
+
+# Start the desktop
+#if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+#then
+#    cd $ROOT_DIR/zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
+#fi
+
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
   # Create the user configurable api-defs
@@ -140,10 +158,3 @@ for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   . ${ROOT_DIR}/components/${i}/bin/start.sh
 done
-
-
-# Start the desktop
-if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
-then
-  cd $ROOT_DIR/zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-fi
