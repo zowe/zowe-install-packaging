@@ -157,12 +157,12 @@
         },
         {
           "repository": "zss",
-          "tag": "v1.7.0",
+          "tag": "v1.7.1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v1.7.0",
+          "tag": "zss-v1.7.1",
           "destinations": ["Zowe PAX"]
         }
       ]
