@@ -3,14 +3,14 @@
 # Variables to be supplied:
 # - HOSTNAME - The hostname of the system running API Mediation
 # - IPADDRESS - The IP Address of the system running API Mediation
-# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services (???defaults to ???)
+# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services (defaults to true)
 # - ZOSMF_KEYRING - Name of the z/OSMF keyring
 # - ZOSMF_USER - z/OSMF server user ID
 # - EXTERNAL_CERTIFICATE - optional - Path to a PKCS12 keystore with a server certificate for APIML
 # - EXTERNAL_CERTIFICATE_ALIAS - optional - Alias of the certificate in the keystore
 # - EXTERNAL_CERTIFICATE_AUTHORITIES - optional - Public certificates of trusted CAs
 
-# - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore???)
+# - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore)
 # - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and 
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
@@ -47,6 +47,7 @@ export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
+echo "Loading default variables from ${DEFAULT_CERTIFICATES_CONFIG_FILE} file."
 . ${DEFAULT_CERTIFICATES_CONFIG_FILE}
 
 if [[ -z ${CERTIFICATES_CONFIG_FILE} ]]
@@ -55,7 +56,7 @@ then
 else
   if [[ -f ${CERTIFICATES_CONFIG_FILE} ]]
   then
-    echo "Loading certificates variables from ${CERTIFICATES_CONFIG_FILE} file."
+    echo "Loading ${CERTIFICATES_CONFIG_FILE} file and overriding default variables."
     # Load custom values
     . ${CERTIFICATES_CONFIG_FILE}  
   else
@@ -97,7 +98,8 @@ if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
   fi
 fi
 
-# set up parameters fot apiml_cm.sh script
+echo "Creating certificates and keystores... STARTED"
+# set up parameters for apiml_cm.sh script
 KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"
 TRUSTSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.truststore"
 EXTERNAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca
@@ -152,10 +154,11 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       (>&2 echo "WARNING: z/OSMF is not trusted by the API Mediation Layer. Follow instructions in Zowe documentation about manual steps to trust z/OSMF")
       (>&2 echo "  Issue the following command as a user that has permissions to export public certificates from z/OSMF keyring:")
       (>&2 echo "    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USER} \
-                      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX}")
+      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX}")
   fi
 fi
 
+echo "Creating certificates and keystores... DONE"
 # set up chmod
 chmod -R 600 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
 chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}
