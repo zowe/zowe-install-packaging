@@ -29,10 +29,10 @@ do
   fi
 done
 
-mkdir -p zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
-cp -f ${INSTALL_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/pluginDefaults/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
-cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/config/
-cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/plugins/
+mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
+cp -f ${INSTALL_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/serverConfig/server.json
+cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
 
 echo "Unpax zssServer " >> $LOG_FILE
 cd zlux-app-server/bin
