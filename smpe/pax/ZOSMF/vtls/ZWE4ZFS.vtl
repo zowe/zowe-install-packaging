@@ -174,24 +174,24 @@
   -PathPrefix-usr/lpp/zowe
 #end
 $$
-#if( $dsprefix and $dsprefix != "" and $dsprefix != '#dsprefix') 
+#if( $dsprefix and $dsprefix != "" and $dsprefix != '#dsprefix')
 //SYSEXEC  DD DISP=SHR,DSN=${dsprefix}.[FMID].F1
 #end
-#if( $thlq and $thlq != "" and $thlq != '#thlq') 
+#if( $thlq and $thlq != "" and $thlq != '#thlq')
 //SYSEXEC  DD DISP=SHR,         use when requested for service install
 //             UNIT=SYSALLDA,
-  #if( $tvol and $tvol != "" and $tvol != '#tvol') 
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
 //             VOL=SER=${tvol},
-  #end
-  #if( $tsclass and $tsclass != "" and $tsclass != '#tsclass')
+#end
+#if( $tsclass and $tsclass != "" and $tsclass != '#tsclass')
 //            STORCLAS=${tsclass},
-  #end
-  #if( $tdclass and $tdclass != "" and $tdclass != '#tdclass')
+#end
+#if( $tdclass and $tdclass != "" and $tdclass != '#tdclass')
 //            DATACLAS=${tdclass},
-  #end
-  #if( $tmclass and $tmclass != "" and $tmclass != '#tmclass')
+#end
+#if( $tmclass and $tmclass != "" and $tmclass != '#tmclass')
 //            MGMTCLAS=${tmclass},
-  #end  
+#end
 //             DSN=${thlq}.SZWESAMP
 //
 #end

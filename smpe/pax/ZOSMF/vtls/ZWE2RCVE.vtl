@@ -78,12 +78,12 @@
 #if( $storclass and $storclass != "" and $storclass != '#storclass')
 //SMPTLIB  DD STORCLAS=${storclass},
 //            SPACE=(TRK,(1,1)),
-        #if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
 //            DATACLAS=&DTCLAS,
-        #end
-        #if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
 //            MGMTCLAS=&MGCLAS,
-        #end
+#end
 //            UNIT=SYSALLDA
 #end
 //SMPHOLD  DD DUMMY
