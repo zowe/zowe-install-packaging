@@ -5,7 +5,7 @@
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
   instanceDir=~/zowe-instance-dir
-  prefix=ZOWE
+  prefix=ZWE
   instance=1
   datasetPrefix={userid}.ZWE
 
@@ -52,6 +52,6 @@ zowe-server-proclib:
 #  and places the JCL member in the first dataset where the installing 
 #  user has write access.  
   dsName=auto
-  memberName=ZOWESVR
+  memberName=ZWESVSTC
 
 # Do not delete this last line

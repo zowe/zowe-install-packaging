@@ -133,7 +133,6 @@ ls $ZOWE_ROOT_DIR >> $LOG_FILE
 mkdir -p $ZOWE_ROOT_DIR/scripts/templates
 chmod -R a+w $ZOWE_ROOT_DIR/scripts
 
-echo "Copying the zowe-start;stop;server-start.sh into "${ZOWE_ROOT_DIR}/scripts >> $LOG_FILE
 cd $INSTALL_DIR/scripts
 cp $INSTALL_DIR/scripts/zowe-support.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh
 
@@ -155,7 +154,7 @@ chmod -R 755 $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 #TODO LATER - do we need a better location rather than scripts - covered by zip #519
-cp $INSTALL_DIR/files/templates/ZOWESVR.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl
+cp $INSTALL_DIR/files/jcl/ZWESVSTC.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl
 
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
