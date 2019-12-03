@@ -13,7 +13,7 @@ set -e
 ZOWE_ROOT_DIR={{root_dir}}
 ZOWE_ZOSMF_ADMIN_GROUP={{zosmf_admin_group}}
 LOG_FILE={{configure_log_file}}
-
+env
 echo "<zowe-runtime-authorize.sh>" >> $LOG_FILE
 
 # This is from the zLUX install
@@ -36,15 +36,10 @@ chmod -R g+w ${ZOWE_ROOT_DIR}/zlux-app-server/log
 chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
 
 
-chmod -R 770 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy
-chmod -R 550 ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/product
+chmod -R 550 ${ZOWE_ROOT_DIR}/zlux-app-server/defaults
 # For Zowe to come up the ZOWESVR STC needs read access to ../deploy/instance/ZLUX/serverConfig/zluxServer.json
 chmod -R g-w ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/instance/ZLUX/serverConfig
-chmod -R g-w ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/site/ZLUX/serverConfig
 if [ "$(ls -A ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/instance/ZLUX/serverConfig)" ]; then
   chmod -R g-x ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/instance/ZLUX/serverConfig/*
-fi
-if [ "$(ls -A ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/site/ZLUX/serverConfig)" ]; then
-  chmod -R g-x ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/site/ZLUX/serverConfig/*
 fi
 echo "</zowe-runtime-authorize.sh>" >> $LOG_FILE

@@ -65,17 +65,15 @@ echo "Attempting to setup Zowe API Mediation Layer certificates ... "
 INSTANCE_DIR=${ZOWE_USER_DIR}
 WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 mkdir -p ${WORKSPACE_DIR}
+chmod -R 775 ${WORKSPACE_DIR}
 
 . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
 
 # Run deploy on the zLUX app server to propagate the changes made
-zluxserverdirectory='zlux-app-server'
 echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
+mkdir -p ${WORKSPACE_DIR}/app-server
 # TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
 chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/defaults
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/deploy/site
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
 
 cd $ZOWE_ROOT_DIR/zlux-build
 chmod a+x deploy.sh
