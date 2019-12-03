@@ -31,7 +31,7 @@ chmod a+rw $LOG_FILE
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
-# process input parameters. 
+# process input parameters.
 while getopts "p:" opt; do
   case $opt in
     p) CERTIFICATES_CONFIG_FILE=$OPTARG;;
@@ -43,7 +43,10 @@ while getopts "p:" opt; do
 done
 shift "$(($OPTIND-1))"
 
-export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
+fi
 
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
