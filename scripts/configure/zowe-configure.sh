@@ -69,16 +69,6 @@ chmod -R 775 ${WORKSPACE_DIR}
 
 . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
 
-# Run deploy on the zLUX app server to propagate the changes made
-echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
-mkdir -p ${WORKSPACE_DIR}/app-server
-# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/defaults
-
-cd $ZOWE_ROOT_DIR/zlux-build
-chmod a+x deploy.sh
-./deploy.sh > /dev/null
-
 # TODO LATER - this need updating to not modify read-only dir, but instead use instance variables - move zowe-support.sh to INSTANCE_DIR?
 sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   -e "s#{{node_home}}#${NODE_HOME}#" \
