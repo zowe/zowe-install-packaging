@@ -10,7 +10,8 @@
 # Copyright Broadcom 2018
 ################################################################################
 
-ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/defaults/serverConfig
+APP_SERVER_COMPONENT_DIR=$ZOWE_ROOT_DIR/components/app-server/share
+ZLUX_SERVER_CONFIG_PATH=${APP_SERVER_COMPONENT_DIR}/zlux-app-server/defaults/serverConfig
 APIML_KEYSTORE_PATH=${ZOWE_ROOT_DIR}/components/api-mediation/keystore
 SUFFIX=""
 if [ `uname` = "OS/390" ]; then

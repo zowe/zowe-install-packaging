@@ -32,11 +32,11 @@ if ! [ -d "$3" ]; then
   exit 1
 fi
 
-zluxserverdirectory='zlux-app-server'
+APP_SERVER_PLUGIN_DIR=$ZOWE_ROOT_DIR/components/app-server/share/zlux-app-server/defaults/plugins
 
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/defaults/plugins
+chmod -R u+w $APP_SERVER_PLUGIN_DIR
 
-cat <<EOF >$ZOWE_ROOT_DIR/$zluxserverdirectory/defaults/plugins/$PLUGIN_ID.json
+cat <<EOF >$APP_SERVER_PLUGIN_DIR/$PLUGIN_ID.json
 {
     "identifier": "$PLUGIN_ID",
     "pluginLocation": "$PLUGIN_DIR"

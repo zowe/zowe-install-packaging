@@ -23,7 +23,8 @@ if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
 
     # Activate the plugin
     _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
-    ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/defaults/serverConfig
+    APP_SERVER_COMPONENT_DIR=$ZOWE_ROOT_DIR/components/app-server/share
+    ZLUX_SERVER_CONFIG_PATH=${APP_SERVER_COMPONENT_DIR}/zlux-app-server/defaults/serverConfig
     sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/server.json > ${TEMP_DIR}/transform1.json
     cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/server.json
     rm ${TEMP_DIR}/transform1.json
@@ -35,8 +36,8 @@ else
     CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
 fi
 
-# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-# TODO - move into apiml config? run before deploy?
+# Add API Catalog application to zLUX
+# TODO - move into apiml config?
 . $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/components/api-mediation/assets/api-catalog.png"
 
 # install explorers
