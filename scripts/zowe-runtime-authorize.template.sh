@@ -29,17 +29,9 @@ echo "  About to run find and chmods to add o+x on directories" >> $LOG_FILE
 find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
 echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
 
-#TODO SH: temporary fix whilst logs are't in the user-dir.
-chmod -R g+w ${ZOWE_ROOT_DIR}/zlux-app-server/log
-
 # If this step fails it is because the user running this script is not part of the IZUADMIN group
 chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
 
 
 chmod -R 550 ${ZOWE_ROOT_DIR}/zlux-app-server/defaults
-# For Zowe to come up the ZOWESVR STC needs read access to ../deploy/instance/ZLUX/serverConfig/zluxServer.json
-chmod -R g-w ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/instance/ZLUX/serverConfig
-if [ "$(ls -A ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/instance/ZLUX/serverConfig)" ]; then
-  chmod -R g-x ${ZOWE_ROOT_DIR}/zlux-app-server/deploy/instance/ZLUX/serverConfig/*
-fi
 echo "</zowe-runtime-authorize.sh>" >> $LOG_FILE

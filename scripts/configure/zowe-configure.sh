@@ -91,7 +91,6 @@ sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
 mv "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new" "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
 chmod 770 "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
 
-# TODO LATER - same as the above - zss won't start with those permissions,
 sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   -e "s#{{zosmf_admin_group}}#${ZOWE_ZOSMF_ADMIN_GROUP}#" \
   -e "s#{{configure_log_file}}#${LOG_FILE}#" \
