@@ -6,29 +6,32 @@
   - #globalcsi
   - #dzone
   - #tzone
+  The following hyperlinks are used as part of the install instructions:
+  - #alloc
+  - #upload
+  - #hold
+  - #acpt
+  - #smpe
+  - #boot
   -->
 <HEAD>
-  <TITLE>Installation instructions for #type #ptf for
-  #prod (FMID #fmid)</TITLE>
+  <TITLE>Installation instructions for #type #ptf1 for FMID #fmid</TITLE>
   <META http-equiv=Content-Type content="text/html; charset=windows-1252">
 </HEAD>
 <BODY>
-  <H2>Installation instructions for #type #ptf for
-  #prod (FMID #fmid)</H2>
-  <P>The #type is shipped as file #pfx.#fmid.#ptf</P>
+  <H2>Installation instructions for #type #ptf1 for FMID #fmid</H2>
+  <P>The #type is shipped as file #name1</P>
   <P>The #type has rework (build) date #rework</P>
  
-  <P>The following fixes are prerequisites for this #type:
-  <UL>
+  <P>The following fixes are prerequisites for this #type:<br>
   #pre
-  </UL></P>
+  </P>
  
-  <P>The following fixes are corequisites for this #type:
-  <UL>
+  <P>The following fixes are corequisites for this #type:<br>
   #req
-  </UL></P>
+  </P>
  
-  <P>The following fixes are superseded by this #type: </P>
+  <P>The following fixes are superseded by this #type:<br>
   #sup
   </P>
  
@@ -57,7 +60,8 @@
 //         SET HLQ=<STRONG>#hlq</STRONG>
 //*
 //ALLOC    EXEC PGM=IEFBR14
-//#8ptf DD DSN=&HLQ..#pfx.#fmid.#ptf,
+<!--cut-->
+//#ptf8 DD DSN=&HLQ..#name,
 //            DISP=(NEW,CATLG,DELETE),
 //            DSORG=PS,
 //            RECFM=FB,
@@ -65,7 +69,8 @@
 //            UNIT=SYSALLDA,
 //*            VOL=SER=<STRONG>#volser</STRONG>,
 //*            BLKSIZE=6160,
-//            SPACE=(TRK,(#pri,#sec))
+//            SPACE=(TRK,(#pri,15))
+<!--cut-->
 //*
   </PRE>
  
@@ -110,19 +115,23 @@ Password:</I> <STRONG>tsopw</STRONG>
 </I>ftp&gt; <STRONG>binary</STRONG>
 <I>200 Representation type is Image
  
-</I>ftp&gt; <STRONG>put d:\#pfx.#fmid.#ptf</STRONG>
+<!--cut-->
+</I>ftp&gt; <STRONG>put d:\#name</STRONG>
 <I>200 Port request OK.
-125 Storing data set #hlq.#pfx.#fmid.#ptf
+125 Storing data set #hlq.#name
 250 Transfer completed successfully
 #bytes bytes sent in 0.28 seconds
- 
+
+<!--cut-->
 </I>ftp&gt; <STRONG>quit</STRONG>
 <I>221 Quit command received. Goodbye.</I>
   </PRE>
  
   <H3><A name="hold">SMP/E hold information for the #type</A></H3>
   <PRE>
-#hold
+<!--cut-->
+#holddata
+<!--cut-->
   </PRE>
  
   <H3><A name="acpt">Perform SMP/E ACCEPT for the prerequisites</A></H3>
@@ -168,12 +177,14 @@ Password:</I> <STRONG>tsopw</STRONG>
 //*
 //RECEIVE  EXEC PGM=GIMSMP,REGION=0M
 //SMPCSI   DD DISP=OLD,DSN=&CSI
-//SMPPTFIN DD DISP=SHR,DSN=&HLQ..#pfx.#fmid.#ptf
+//SMPPTFIN DD DISP=SHR,DSN=&HLQ..#name1
+<!--cut-->
 #dsnreq
+<!--cut-->
 //SMPCNTL  DD *
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT(
-     #ptf
+     #ptf1
      #req
    ) SYSMODS LIST .
 //*
@@ -182,9 +193,12 @@ Password:</I> <STRONG>tsopw</STRONG>
 //SMPCNTL  DD *
    SET BOUNDARY(<STRONG>#tzone</STRONG>) .
    APPLY SELECT(
-     #ptf
-     #pre
-   ) REDO COMPRESS(ALL) BYPASS(HOLDSYS,HOLDERROR).
+     #ptf1
+     #req
+   )
+   CHECK 
+   BYPASS(HOLDSYS,HOLDERROR) 
+   REDO COMPRESS(ALL) .
 //*
   </PRE>
  
@@ -192,5 +206,3 @@ Password:</I> <STRONG>tsopw</STRONG>
   <P>Restart started tasks to activate changes.</P>
  
 </BODY></HTML>
- 
- 

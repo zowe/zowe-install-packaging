@@ -20,8 +20,8 @@ exitone(){
   echo "Unable to create the PROCLIB member " >> $LOG_FILE
   echo "Unable to create the PROCLIB member "   
  
-  echo "  "Failed to put ZOWESVR.JCL in a PROCLIB dataset.
-  echo "  "Please add it manually from $ZOWE_ROOT_DIR/ZOWESVR.JCL to your PROCLIB
+  echo "  "Failed to put ZWESVSTC.JCL in a PROCLIB dataset.
+  echo "  "Please add it manually from $ZOWE_ROOT_DIR/ZWESVSTC.JCL to your PROCLIB
   echo "    ""To find PROCLIB datasets, issue /\$D PROCLIB in SDSF"
   echo "</zowe-copy-proc.sh>" >> $LOG_FILE
   exit 1
@@ -56,7 +56,7 @@ then
   echo Unable to list $ussfile >> $LOG_FILE
   exitone 
 fi
-cp $ussfile $ZOWE_ROOT_DIR/ZOWESVR.JCL
+cp $ussfile $ZOWE_ROOT_DIR/ZWESVSTC.JCL
 #echo "Preparing CLIST"
 
 # write user's env vars in log
@@ -146,8 +146,8 @@ if [[ `echo ${memberName} | wc -c` -gt 9 ]]        # 9 includes the string-termi
 then 
   echo Member name $memberName longer than 8 characters
   exitone
-  # echo Defaulting to ZOWESVR
-  # memberName=ZOWESVR
+  # echo Defaulting to ZWESVSTC
+  # memberName=ZWESVSTC
 fi 
 # end of check
 echo Member name $memberName was used >> $LOG_FILE

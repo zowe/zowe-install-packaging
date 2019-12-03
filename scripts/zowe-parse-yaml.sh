@@ -45,8 +45,8 @@ do
                 ZOWE_ROOT_DIR=`sh -c "echo $value"` 
                 export ZOWE_ROOT_DIR
             fi
-# Look for userDir= beneath install:
-            if [[ $key == "userDir" ]] && [[ $section == "install" ]]
+# Look for instanceDir= beneath install:
+            if [[ $key == "instanceDir" ]] && [[ $section == "install" ]]
             then
 # If the value starts with a ~ for the home variable then evaluate it
                 ZOWE_USER_DIR=`sh -c "echo $value"` 
@@ -218,13 +218,13 @@ then
 fi
 if [[ $ZOWE_USER_DIR == "" ]] 
 then
-    ZOWE_USER_DIR="~/zowe-user-dir"
-    echo "  ZOWE_USER_DIR not specified:  Defaulting to ~/zowe-user-dir"
+    ZOWE_USER_DIR="~/zowe-instance-dir"
+    echo "  ZOWE_USER_DIR not specified:  Defaulting to ~/zowe-instance-dir"
 fi
 if [[ $ZOWE_PREFIX == "" ]]
 then
-    ZOWE_PREFIX="ZOWE"
-    echo "  ZOWE_PREFIX not specified:  Defaulting to ZOWE" | tee -a $LOG_FILE
+    ZOWE_PREFIX="ZWE"
+    echo "  ZOWE_PREFIX not specified:  Defaulting to ZWE" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_INSTANCE == "" ]]
 then
@@ -325,8 +325,8 @@ then
 fi 
 if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
 then
-    ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR 
-    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR" | tee -a $LOG_FILE
+    ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC 
+    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZWESVSTC" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
 then
