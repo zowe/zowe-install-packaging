@@ -203,6 +203,11 @@ do
                 ZOWE_SERVER_PROCLIB_MEMBER=$value
                 export ZOWE_SERVER_PROCLIB_MEMBER
             fi
+            if [[ $key == "keystoreDirectory" ]] && [[ $section == "keystore" ]]
+            then
+                KEYSTORE_DIRECTORY=$value
+                export KEYSTORE_DIRECTORY
+            fi
         fi
     fi
 #    echo "--- End of loop ---"
