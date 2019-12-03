@@ -385,7 +385,7 @@ else
             then
                 echo Error: Failed to find ZOWE_PREFIX in $zowe_start
                 echo Warning: Using ZOWE instead
-                ZOWE_PREFIX=ZOWE1   # best guess, allow us to proceed                
+                ZOWE_PREFIX=ZWE1   # best guess, allow us to proceed                
             fi
 
             ZOWESVR_job_name=${ZOWE_PREFIX}SV

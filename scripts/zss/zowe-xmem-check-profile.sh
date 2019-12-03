@@ -60,9 +60,9 @@ TSS)
   tsoRC=$?
   if [[ $tsoRC -eq 0 ]]
   then
-    # This line converts the facility to an HLQ. e.g, ZWES.IS becomes ZWES.
-    # For longer HLQs, "ZWES.DUMMY.HLQ", this returns "ZWES.DUMMY.". This behavior may not be
-    #  desirable in all cases, but is not a risk to current 1.x install which only uses 'ZWES.IS'.
+    # This line converts the facility to an HLQ. e.g, ZWEX.IS becomes ZWEX.
+    # For longer HLQs, "ZWEX.DUMMY.HLQ", this returns "ZWEX.DUMMY.". This behavior may not be
+    #  desirable in all cases, but is not a risk to current 1.x install which only uses 'ZWEX.IS'.
     # This HLQ facility format is required for TSS, as there may be an HLQ facility definition
     #  with read access granted to a sub-facility.
     profileHlq=$(echo "${profile}" | sed 's/\(.*\.\).*/\1/g')

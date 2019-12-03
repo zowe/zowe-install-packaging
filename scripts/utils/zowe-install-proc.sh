@@ -9,7 +9,7 @@
 # Copyright IBM Corporation 2019, 2019
 ################################################################################
 
-# Function: Copy datasetPrefx.SZWESAMP(ZOWESVR) to JES concatenation
+# Function: Copy datasetPrefx.SZWESAMP(ZWESVSTC) to JES concatenation
 
 # Needs $ZOWE_ROOT_DIR/scripts/configure/zowe-install.yaml to obtain datasetPrefix
 # Needs ../internal/opercmd to check JES concatenation
@@ -29,7 +29,7 @@
 script_exit(){
   tsocmd delete "'$clist'"   1>> $LOG_FILE 2>> $LOG_FILE
   tsocmd delete "'$templib'" 1>> $LOG_FILE 2>> $LOG_FILE
-  rm ~/$templib.zowesvr.$$.jcl 1>> $LOG_FILE 2>> $LOG_FILE
+  rm ~/$templib.ZWESVSTC.$$.jcl 1>> $LOG_FILE 2>> $LOG_FILE
   echo exit $1 | tee -a ${LOG_FILE}
   echo "</$SCRIPT>" | tee -a ${LOG_FILE}
   exit $1
@@ -63,8 +63,8 @@ cat <<EndOfUsage
    ---------      ----------    -------
  1  proclib       USER.PROCLIB  DSN of target PROCLIB where member will be placed 
                   auto          PROCLIB will be selected from JES PROCLIB concatenation.  'auto' must be lowercase
- 2  member        ZOWESVR       member name of Zowe server JCL PROC
-                  (omitted)     if omitted, defaults to ZOWESVR
+ 2  member        ZWESVSTC      member name of Zowe server JCL PROC
+                  (omitted)     if omitted, defaults to ZWESVSTC
 EndOfUsage
 script_exit 1
 fi
@@ -85,7 +85,7 @@ if [[ $# -eq 2 ]]
 then
   procmem=$2
 else
-  procmem=ZOWESVR
+  procmem=ZWESVSTC
 fi
 
 echo    "proclib =" $proclib >> $LOG_FILE
@@ -171,25 +171,25 @@ then
   script_exit 1
 fi
 
-tsocmd listds "'${ZOWE_DSN_PREFIX}.SZWESAMP' members" 2>> $LOG_FILE | grep "  ZOWESVR$" 1>> $LOG_FILE 2>> $LOG_FILE
+tsocmd listds "'${ZOWE_DSN_PREFIX}.SZWESAMP' members" 2>> $LOG_FILE | grep "  ZWESVSTC$" 1>> $LOG_FILE 2>> $LOG_FILE
 if [[ $? -ne 0 ]]
 then
-  echo ZOWESVR not found in \"${ZOWE_DSN_PREFIX}.SZWESAMP\" | tee -a ${LOG_FILE}
+  echo ZWESVSTC not found in \"${ZOWE_DSN_PREFIX}.SZWESAMP\" | tee -a ${LOG_FILE}
   script_exit 1
 fi
 
-echo Check name of ZOWESVR PROC >> $LOG_FILE
-cat "//'${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)'" | grep //ZOWESVR 1>> $LOG_FILE 2>> $LOG_FILE
+echo Check name of ZWESVSTC PROC >> $LOG_FILE
+cat "//'${ZOWE_DSN_PREFIX}.SZWESAMP(ZWESVSTC)'" | grep //ZWESVSTC 1>> $LOG_FILE 2>> $LOG_FILE
 if [[ $? -ne 0 ]]
 then
-  echo Did not find \"//ZOWESVR\" in "${ZOWE_DSN_PREFIX}.SZWESAMP(ZOWESVR)" | tee -a ${LOG_FILE}
+  echo Did not find \"//ZWESVSTC\" in "${ZOWE_DSN_PREFIX}.SZWESAMP(ZWESVSTC)" | tee -a ${LOG_FILE}
   script_exit 1
 fi
 
-cp ~/$templib.zowesvr.$$.jcl "//'$templib(zowesvr)'"
+cp ~/$templib.ZWESVSTC.$$.jcl "//'$templib(ZWESVSTC)'"
 if [[ $? -ne 0 ]]
 then
-	echo Failed to copy ~/$templib.zowesvr.$$.jcl into "$templib(zowesvr)" | tee -a ${LOG_FILE}
+	echo Failed to copy ~/$templib.ZWESVSTC.$$.jcl into "$templib(ZWESVSTC)" | tee -a ${LOG_FILE}
   script_exit 1
 fi
 
@@ -214,18 +214,18 @@ then
     for candidate in $procs
     do
       echo "  " candidate = $candidate >> $LOG_FILE
-      tsocmd "exec '$clist(mcopyshr)' '$templib(zowesvr) $candidate($procmem)'" 1>> $LOG_FILE 2>> $LOG_FILE
+      tsocmd "exec '$clist(mcopyshr)' '$templib(ZWESVSTC) $candidate($procmem)'" 1>> $LOG_FILE 2>> $LOG_FILE
  
       if [[ $? -ne 0 ]]
       then
         echo Unable to write $procmem to PROCLIB dataset $candidate, try next PROCLIB >> $LOG_FILE
       else
-        echo "ZOWESVR was written to $candidate($procmem)" | tee -a ${LOG_FILE}
+        echo "ZWESVSTC was written to $candidate($procmem)" | tee -a ${LOG_FILE}
         tsocmd listds "'$candidate' members" 1>> $LOG_FILE 2>> $LOG_FILE
         script_exit 0
       fi
     done
-    echo "ZOWESVR was not written to any JES PROCLIB dataset" | tee -a ${LOG_FILE}
+    echo "ZWESVSTC was not written to any JES PROCLIB dataset" | tee -a ${LOG_FILE}
     script_exit 1
 else
   tsocmd listds "'$proclib' " 1>> $LOG_FILE 2>> $LOG_FILE
@@ -235,13 +235,13 @@ else
     script_exit 1
   fi 
 
-  tsocmd "exec '$clist(mcopyshr)' '$templib(zowesvr) $proclib($procmem)'" 1>> $LOG_FILE 2>> $LOG_FILE
+  tsocmd "exec '$clist(mcopyshr)' '$templib(ZWESVSTC) $proclib($procmem)'" 1>> $LOG_FILE 2>> $LOG_FILE
   if [[ $? -ne 0 ]]
   then
     echo Unable to write to PROCLIB dataset $proclib | tee -a ${LOG_FILE}
     script_exit 1
   else
-    echo "ZOWESVR was written to $proclib($procmem)" | tee -a ${LOG_FILE}
+    echo "ZWESVSTC was written to $proclib($procmem)" | tee -a ${LOG_FILE}
     tsocmd listds "'$proclib' members" 1>> $LOG_FILE 2>> $LOG_FILE
     script_exit 0
   fi
