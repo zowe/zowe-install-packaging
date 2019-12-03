@@ -11,8 +11,14 @@
 #This file is for installing the pax file of zlux. It lives here so it is covered by source control. It is not called from this location
 #!/bin/sh
 
-cd $ZOWE_ROOT_DIR
+
 umask 0002
+APP_SERVER_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/app-server
+mkdir -p ${APP_SERVER_COMPONENT_DIR}
+cd ${APP_SERVER_COMPONENT_DIR}
+mkdir bin
+mkdir share
+cd share
 echo "Unpax $INSTALL_DIR/files/zlux/zlux-core.pax " >> $LOG_FILE
 pax -r -px -f $INSTALL_DIR/files/zlux/zlux-core.pax
 
@@ -41,16 +47,11 @@ extattr +p zssServer
 cd ../..
 
 chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ 2>/dev/null
-chmod ug+w zlux-app-server/
-mkdir zlux-app-server/log
 chmod ug-w zlux-app-server/
 
 cd zlux-app-server
 chmod -R a-w bin/ build/ config/ deploy/product/ js/ plugins/ .gitattributes .gitignore README.md 2>/dev/null
-chmod ug+w bin/zssServer
+cp bin/start.sh bin/configure.sh ${APP_SERVER_COMPONENT_DIR}/bin
 
-# Open the permission so that a user other than the one who does the install can start the nodeServer
-# and create logs
-chmod a+w log
 
 cd $INSTALL_DIR
