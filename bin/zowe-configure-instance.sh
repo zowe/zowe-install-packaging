@@ -10,10 +10,9 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-while getopts "c:k:y" opt; do
+while getopts "c:y" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
-    k) KEYSTORE_DIRECTORY=$OPTARG;;
     y) YAML_OVERRIDE=true;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -42,12 +41,6 @@ then
   exit 1
 fi
 
-if [[ -z ${KEYSTORE_DIRECTORY} ]]
-then
-  echo "-k parameter not set. Please re-run 'zowe-configure-instance.sh -k <keystore directory>' specifying the location of the keystore to use for zowe instance you want to create"
-  exit 1
-fi
-
 create_new_instance() {
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
@@ -64,7 +57,7 @@ create_new_instance() {
   if [[ ! -z ${YAML_OVERRIDE} ]]
   then
     sed \
-      -e "s#ZOWE_PREFIX=ZOWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
+      -e "s#ZOWE_PREFIX=ZWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
       -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=${ZOWE_INSTANCE}#" \
       -e "s#ZOSMF_USERID=IZUSVR#ZOSMF_USERID=${ZOWE_ZOSMF_USERID}#" \
       -e "s#ZOSMF_ADMIN_GROUP=IZUADMIN#ZOSMF_ADMIN_GROUP=${ZOWE_ZOSMF_ADMIN_GROUP}#" \
@@ -85,7 +78,8 @@ create_new_instance() {
       -e "s#ZOWE_ZLUX_SSH_PORT=22#ZOWE_ZLUX_SSH_PORT=${ZOWE_ZLUX_SSH_PORT}#" \
       -e "s#ZOWE_ZLUX_TELNET_PORT=23#ZOWE_ZLUX_TELNET_PORT=${ZOWE_ZLUX_TELNET_PORT}#" \
       -e "s#ZOWE_ZLUX_SECURITY_TYPE=#ZOWE_ZLUX_SECURITY_TYPE=${ZOWE_ZLUX_SECURITY_TYPE}#" \
-      -e "s#ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR#ZOWE_SERVER_PROCLIB_MEMBER=${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+      -e "s#ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC#ZOWE_SERVER_PROCLIB_MEMBER=${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+      -e "s#KEYSTORE_DIRECTORY=/global/zowe/keystore#KEYSTORE_DIRECTORY=${KEYSTORE_DIRECTORY}#" \
       "${INSTANCE}" \
       > "${INSTANCE_DIR}/instance.yaml.env"
       mv "${INSTANCE_DIR}/instance.yaml.env" "${INSTANCE}"
@@ -190,7 +184,7 @@ do
 test -z "\${line%%#*}" && continue      # skip line if first char is #
 key=\${line%%=*}
 export \$key
-done < \${INSTANCE_DIR}/instance.env
+done < \${KEYSTORE_DIRECTORY}/zowe-certificates.env
 EOF
 echo "Created ${INSTANCE_DIR}/bin/read-keystore.sh">> $LOG_FILE
 
@@ -206,7 +200,6 @@ cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
-. \${INSTANCE_DIR}/bin/read-keystore.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd \"S \${ZOWE_SERVER_PROCLIB_MEMBER},INSTANCE='"\${INSTANCE_DIR}"',JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV\"
 echo Start command issued, check SDSF job log ...
@@ -217,7 +210,6 @@ cat <<EOF >${INSTANCE_DIR}/bin/zowe-stop.sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
-. \${INSTANCE_DIR}/bin/read-keystore.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF

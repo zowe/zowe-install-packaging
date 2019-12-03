@@ -17,11 +17,11 @@
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZOWESVR,INSTANCE='{{instance_directory}}'                        *
+//*   S ZWESVSTC,INSTANCE='{{instance_directory}}'                   *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
-//ZOWESVR   PROC INSTANCE='{{instance_directory}}'
+//ZWESVSTC   PROC INSTANCE='{{instance_directory}}'
 //*-------------------------------------------------------------------
 //* INSTANCE - The path to the HFS directory where the 
 //*            zowe instance was created

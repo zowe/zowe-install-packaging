@@ -5,7 +5,7 @@
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
   instanceDir=~/zowe-instance-dir
-  prefix=ZOWE
+  prefix=ZWE
   instance=1
   datasetPrefix={userid}.ZWE
 
@@ -44,6 +44,9 @@ terminals:
   telnetPort=23
 # security=tls
 
+keystore:
+  keystoreDirectory=/global/zowe/keystore
+
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:
 # dsName=SYS1.PROCLIB   # Example of required dataset name.  Do not enclose it in quotes.
@@ -52,6 +55,6 @@ zowe-server-proclib:
 #  and places the JCL member in the first dataset where the installing 
 #  user has write access.  
   dsName=auto
-  memberName=ZOWESVR
+  memberName=ZWESVSTC
 
 # Do not delete this last line
