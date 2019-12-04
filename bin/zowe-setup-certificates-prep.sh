@@ -12,3 +12,5 @@ sed \
   -e "s#KEYSTORE_DIRECTORY=/global/zowe/keystore#KEYSTORE_DIRECTORY=${KEYSTORE_DIRECTORY}#" \
   "${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env" \
   >"${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env.temp"
+
+  chmod -R 750 "${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env.temp"
