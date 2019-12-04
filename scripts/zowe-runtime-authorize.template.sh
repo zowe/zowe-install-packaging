@@ -13,13 +13,14 @@ set -e
 ZOWE_ROOT_DIR={{root_dir}}
 ZOWE_ZOSMF_ADMIN_GROUP={{zosmf_admin_group}}
 LOG_FILE={{configure_log_file}}
-env
 echo "<zowe-runtime-authorize.sh>" >> $LOG_FILE
 
+APP_SERVER_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/app-server
+
 # This is from the zLUX install
-if extattr ${ZOWE_ROOT_DIR}/zlux-app-server/bin/zssServer | grep "Program controlled = NO"; then
+if extattr ${APP_SERVER_COMPONENT_DIR}/zlux-app-server/bin/zssServer | grep "Program controlled = NO"; then
   echo "zssServer does not have the proper extattr values"
-  echo "   Please run extattr +p $PWD/zlux-app-server/bin/zssServer"
+  echo "   Please run extattr +p ${APP_SERVER_COMPONENT_DIR}/zlux-app-server/bin/zssServer"
   exit 1
 fi
 
@@ -33,5 +34,5 @@ echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
 chgrp -R ${ZOWE_ZOSMF_ADMIN_GROUP} ${ZOWE_ROOT_DIR}
 
 
-chmod -R 550 ${ZOWE_ROOT_DIR}/zlux-app-server/defaults
+chmod -R 550 ${APP_SERVER_COMPONENT_DIR}/zlux-app-server/defaults
 echo "</zowe-runtime-authorize.sh>" >> $LOG_FILE
