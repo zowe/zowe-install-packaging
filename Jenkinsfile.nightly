@@ -308,16 +308,16 @@ node('ibm-jenkins-slave-nvm') {
 
       if (testRegBuildErrorUrl) {
         slackColor = 'warning'
-        message = message + "\n" +
-                  "!!WARNING!! Smoke test FAILED on the regular build! Check test result here:\n\n" +
-                  testRegBuildErrorUrl
+        message = message + "\n\n" +
+                  "!!WARNING!! Smoke test FAILED on the regular build! Check test result here: " +
+                  testRegBuildErrorUrl + "\n"
       }
 
       if (testSmpeBuildErrorUrl) {
         slackColor = 'warning'
-        message = message + "\n" +
-                  "!!WARNING!! Smoke test FAILED on the SMP/e build! Check test result here:\n\n" +
-                  testSmpeBuildErrorUrl
+        message = message + "\n\n" +
+                  "!!WARNING!! Smoke test FAILED on the SMP/e build! Check test result here: " +
+                  testSmpeBuildErrorUrl + "\n"
       }
 
       echo "*************************************************************************************************\n" +
