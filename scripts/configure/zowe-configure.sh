@@ -63,8 +63,8 @@ echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 #. $CONFIG_DIR/zowe-configure-api-mediation.sh
 
 # TODO - temp solution to be removed after componentization is done
-. zowe-setup-certificates-prep.sh
-. zowe-setup-certificates.sh -p zowe-setup-certificates.env.temp
+. ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates-prep.sh
+. ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env.temp
 
 # FIXME zowe-configure-zlux-certificates.sh relies on an old (hardcoded) keystore location 
 # Configure the TLS certificates for the zLUX server
