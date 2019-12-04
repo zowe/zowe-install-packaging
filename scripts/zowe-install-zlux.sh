@@ -55,22 +55,23 @@ extattr +p zssServer
 cd ../..
 
 chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ 2>/dev/null
-chmod ug-w zlux-app-server/
-
 cd zlux-app-server
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
   chmod -R u+w defaults/
   # Add APIML authentication plugin to zLUX
-  . ${APP_SERVER_COMPONENT_DIR}/zlux-app-server/bin/install-app.sh $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth 
+  cd bin
+  ./install-app.sh $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
+  cd ..
 #  . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
   # Activate the plugin
   _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
-  ZLUX_SERVER_CONFIG_PATH=${APP_SERVER_COMPONENT_DIR}/zlux-app-server/defaults/serverConfig
-  sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/server.json > ${TEMP_DIR}/transform1.json
-  cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/server.json
+  ZLUX_SERVER_CONFIG_PATH=./defaults/serverConfig/server.json
+  sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH} > ${TEMP_DIR}/transform1.json
+  cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}
   rm ${TEMP_DIR}/transform1.json
 fi
-chmod -R a-w bin/ build/ defaults/ js/ plugins/ .gitattributes .gitignore README.md 2>/dev/null
+#chmod -R a-w bin/ build/ defaults/ js/ plugins/ .gitattributes .gitignore README.md 2>/dev/null
 cp bin/start.sh bin/configure.sh ${APP_SERVER_COMPONENT_DIR}/bin
-
+cd ..
+chmod -R a-w zlux-app-server/ 2>/dev/null
 cd $INSTALL_DIR
