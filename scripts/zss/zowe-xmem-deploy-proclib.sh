@@ -34,14 +34,14 @@ if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
     export ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
   fi 
 
-  copyCommand="cp -X \"//'$ZOWE_DSN_PREFIX.SZWESAMP(${jclfile})'\" \"//'${proclib}(${member})'\""
+  copyFrom="//'$ZOWE_DSN_PREFIX.SZWESAMP(${jclfile})'"
   echo "  from $ZOWE_DSN_PREFIX.SZWESAMP to ${proclib}"
 else
-  copyCommand="${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} \"${proclib}(${member})\" TEXT"
+  copyFrom=${ZSS}/SAMPLIB/${jclfile}
 fi
 # if ${BASEDIR}/ocopyshr.rexx ${ZSS}/SAMPLIB/${jclfile} "${proclib}(${member})" TEXT
 # if cp -X "//'$ZOWE_DSN_PREFIX.SZWESAMP(${jclfile})'" "//'${proclib}(${member})'"
-if $copyCommand
+if ${BASEDIR}/ocopyshr.rexx "$copyFrom" "${proclib}(${member})" TEXT
 then
   echo "Info:  PROCLIB member ${member} has been successfully copied to dataset ${proclib}"
   exit 0
