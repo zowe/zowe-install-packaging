@@ -61,7 +61,8 @@ cd zlux-app-server
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
   chmod -R u+w defaults/
   # Add APIML authentication plugin to zLUX
-  . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
+  . ${APP_SERVER_COMPONENT_DIR}/zlux-app-server/bin/install-app.sh $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth 
+#  . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
   # Activate the plugin
   _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
   ZLUX_SERVER_CONFIG_PATH=${APP_SERVER_COMPONENT_DIR}/zlux-app-server/defaults/serverConfig
@@ -71,6 +72,5 @@ if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
 fi
 chmod -R a-w bin/ build/ defaults/ js/ plugins/ .gitattributes .gitignore README.md 2>/dev/null
 cp bin/start.sh bin/configure.sh ${APP_SERVER_COMPONENT_DIR}/bin
-
 
 cd $INSTALL_DIR
