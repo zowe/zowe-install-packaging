@@ -30,8 +30,8 @@ if [ -d "$ZOWE_ROOT_DIR/SMPE" ]; then
     echo ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX
   else
     echo ZOWE_DSN_PREFIX=null
-    echo "** warning: temporary fix"
-    export ZOWE_DSN_PREFIX=ZOWEAD3.SMPE
+    echo "Error: ZOWE_DSN_PREFIX=null"
+    exit 8
   fi 
 
   copyFrom="//'$ZOWE_DSN_PREFIX.SZWESAMP(${jclfile})'"
