@@ -5,7 +5,6 @@
 # $ZOWE_APIM_ENABLE_SSO
 # $CONFIG_DIR
 # $ZOWE_ROOT_DIR
-# $ZLUX_SERVER_CONFIG_PATH
 # $TEMP_DIR
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_ZLUX_SERVER_HTTPS_PORT
@@ -18,17 +17,6 @@ then
 fi
 
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
-    # Add APIML authentication plugin to zLUX
-    . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
-
-    # Activate the plugin
-    _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
-    APP_SERVER_COMPONENT_DIR=$ZOWE_ROOT_DIR/components/app-server/share
-    ZLUX_SERVER_CONFIG_PATH=${APP_SERVER_COMPONENT_DIR}/zlux-app-server/defaults/serverConfig
-    sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/server.json > ${TEMP_DIR}/transform1.json
-    cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/server.json
-    rm ${TEMP_DIR}/transform1.json
-    
     # Access API Catalog with token injector
     CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
 else
