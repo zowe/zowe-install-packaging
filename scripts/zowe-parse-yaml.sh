@@ -223,8 +223,8 @@ then
 fi
 if [[ $ZOWE_PREFIX == "" ]]
 then
-    ZOWE_PREFIX="ZOWE"
-    echo "  ZOWE_PREFIX not specified:  Defaulting to ZOWE" | tee -a $LOG_FILE
+    ZOWE_PREFIX="ZWE"
+    echo "  ZOWE_PREFIX not specified:  Defaulting to ZWE" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_INSTANCE == "" ]]
 then
@@ -325,8 +325,8 @@ then
 fi 
 if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
 then
-    ZOWE_SERVER_PROCLIB_MEMBER=ZOWESVR 
-    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZOWESVR" | tee -a $LOG_FILE
+    ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC 
+    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZWESVSTC" | tee -a $LOG_FILE
 fi
 if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
 then
