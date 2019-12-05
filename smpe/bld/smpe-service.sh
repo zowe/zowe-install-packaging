@@ -22,17 +22,27 @@
 
 # TODO ONNO add overview of changes done by this script
 
-maxExec=60                     # limit EXEC statements per GIMDTS job
-gimdtsTools=""                 # tools used by GIMDTS job
+gimdtsTools=""                 # tools used by jobs
 gimdtsTools="$gimdtsTools PTF@.jcl"
 gimdtsTools="$gimdtsTools PTF@FB80.jcl"
 gimdtsTools="$gimdtsTools PTF@LMOD.jcl"
 gimdtsTools="$gimdtsTools PTF@MVS.jcl"
+gimdtsTools="$gimdtsTools PTFMERGE.jcl"
+gimdtsTools="$gimdtsTools PTFTRKS.jcl"
 gimdtsTools="$gimdtsTools RXDDALOC.rex"
+gimdtsTools="$gimdtsTools RXLINES.rex"
 gimdtsTools="$gimdtsTools RXUNLOAD.rex"
-instructions=ptf.readme.htm    # PTF install instructions
-jcl=gimdts.jcl                 # GIMDTS invocation JCL
-sysprint=gimdts.sysprint.log   # GIMDTS SYSPRINT log
+gimdtsTools="$gimdtsTools RXTRACKS.rex"
+maxExecMerge=120               # limit EXEC statements per merge job
+jclMerge=gimmerge.jcl          # merge invocation JCL
+logMerge=gimmerge.sysprint.log # merge SYSPRINT log
+tracks=gimmerge.tracks.txt     # PTF track count
+maxExecGimdts=60               # limit EXEC statements per GIMDTS job
+jclGimdts=gimdts.jcl           # GIMDTS invocation JCL
+logGimdts=gimdts.sysprint.log  # GIMDTS SYSPRINT log
+lines=gimdts.lines.txt         # GIMDTS line count
+readme=ptf.readme.htm          # PTF install instructions
+splitScript=ptf-split.rex      # script to distribute parts across PTFs
 submitScript=wait-for-job.sh   # submit script
 dcbScript=check-dataset-dcb.sh # script to test dcb of data set
 existScript=check-dataset-exist.sh  # script to test if data set exists
@@ -49,8 +59,10 @@ test "$debug" && echo && echo "> $me $@"
 
 # ---------------------------------------------------------------------
 # --- create sysmod header (PTF/APAR/USERMOD)
+# output:
+# -
 #
-# ++PTF(UO64071)    /* 5698-ZWE00-AZWE001 */.
+# ++PTF(UO64071) /* 5698-ZWE00-AZWE001 */ REWORK(19271).
 # ++VER(Z038,C150,P115) FMID(AZWE001)
 #   SUP(IO00204,IO00869,UO61806)
 #  /*
@@ -143,15 +155,37 @@ function _header
 test "$debug" && echo "> _header $@"
 echo "-- creating SYSMOD header"
 
-# TODO this is a temp test solution
-cat <<EOF 2>&1 >$ptf/$sysmod
-++PTF(UO64071)    /* 5698-ZWE00-AZWE001 */.
-++VER(Z038,C150,P115) FMID(AZWE001)
-  SUP(IO00204,IO00869,UO61806)
- /*
-   ...
- */.
-++HOLD(UO64071) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(19271)
+# TODO create sysmod headers
+
+test "$debug" && echo "< _header"
+}    # _header
+
+# ---------------------------------------------------------------------
+# --- create staging data set and populate with sysmod header
+# $1: position in sysmod list
+# output:
+# - $SYSMOD  data set holding sysmod header
+# - $sysmodType  type of sysmod (PTF/APAR/USERMOD)
+# - $sysmodName  name of sysmod
+# ---------------------------------------------------------------------
+function _stageHeader
+{
+test "$debug" && echo && echo "> _stageHeader $@"
+
+# allocate data set used to merge header and parts
+# IBM: max PTF size is 5,000,000 * 80 bytes (including SMP/E metadata)
+#      5mio FB80 lines requires 7,164 tracks
+_alloc "$SYSMOD" "FB" "80" "PS" "7164,5"
+
+# TODO create header in _header
+cat <<EOF 2>&1 > $ptf/onno
+++USERMOD(TMP000$1) /* 5698-ZWE00-AZWE001 */ REWORK($julian).
+++VER(Z038,C150,P115) FMID($FMID)
+  /*
+  ...
+  */
+  .
+++HOLD(TMP000$1) SYSTEM FMID($FMID) REASON(ACTION) DATE($julian)
   COMMENT(
   ****************************************************************
   * Affected function: ...                                       *
@@ -166,81 +200,363 @@ cat <<EOF 2>&1 >$ptf/$sysmod
   ).
 EOF
 
-test "$debug" && echo "< _header"
-}    # _header
+# select correct header
+if test $1 -eq 1
+then  # header first sysmod
+  # TODO get header for first sysmod
+  header=$ptf/onno
+else  # header overflow sysmod
+  # TODO get header for overflow sysmod(s)
+  header=$ptf/onno
+fi    #
+
+# populate staging data set with header
+_cmd cp $header "//'$SYSMOD'"
+
+# get name & type of sysmod (dump both in sysmodName for now)
+sysmodName="$(head -1 $header | tr '+()' '   ' | awk '{print $1,$2}')"
+# sample input: (leading/trailing blanks for ( and ) are optional)
+# ++PTF (UO64071 ) ...
+# ...
+# sample output:
+# PTF UO64071
+sysmodType=${sysmodName%% *}       # keep up to first space (exclusive)
+sysmodName=${sysmodName#* }         # keep from first space (exclusive)
+test "$debug" && echo "sysmodType=$sysmodType"
+test "$debug" && echo "sysmodName=$sysmodName"
+
+test "$debug" && echo "< _stageHeader"
+}    # _stageHeader
 
 # ---------------------------------------------------------------------
-# --- merge header, MCS metadata, and parts
+# --- merge PTF header, MCS metadata, and parts
+# IBM: max PTF size is 5,000,000 * 80 bytes (including SMP/E metadata)
+#      5mio lines requires 7,164 tracks
+# output:
+# - $ptf/$ptfHLQ.$sysmodName  PTF(s)
+# - $ptf/$tracks              track count per PTF
+# - $log/$jclMerge            archival of jcl(s)
+# - $log/$logMerge            archival of job output(s)
+# note: writing to data set avoids JCL issues with long path names
 # ---------------------------------------------------------------------
 function _merge
 {
 test "$debug" && echo && echo "> _merge $@"
 echo "-- creating SYSMOD"
 
-# TODO this is a temp test solution, must support 2 PTF creation
-test "$debug" && echo "for part in \$allParts"
-for part in $allParts
-do
-  _cmd --save $ptf/$sysmod cat "//'${gimdtsHlq}.${MLQ}.$part'"
-done    # for part
+# remove archived merge data, if any
+test -f $log/$jclMerge && _cmd rm -f $log/$jclMerge
+test -f $log/$logMerge && _cmd rm -f $log/$logMerge
 
+# pre-allocate output data set (has to be done here in case we
+# need to submit multiple jobs)
+_alloc "$SYSPRINT" "FBA" "121" "PS" "5,5"
+
+# pre-allocate track count data set (has to be done here in case we
+# need to submit multiple jobs)
+_alloc "$TRACKS" "FB" "80" "PS" "5,5"
+
+# loop through $distro to merge header & parts into the actual PTFs
+cntPTF=1
+test "$debug" && echo "while test \$cntPTF -le \$distroPTFs"
+while test $cntPTF -le $distroPTFs
+do
+  parts=$(echo "$distro" | sed -n "${cntPTF}p") # only parts of this PTF
+  test "$debug" && echo "cntPTF=$cntPTF"
+  test "$debug" && echo "parts=$parts"
+
+  # create staging data set and populate with PTF header
+  _stageHeader $cntPTF
+
+  # prime merge JCL
+  _primeJCL $ptf $jclMerge "$cntPTF $sysmodType $sysmodName"
+
+  # loop through parts
+  test "$debug" && echo "for part in \$parts"
+  for part in $parts
+  do
+    # did we reach max EXEC statements for current job ?
+    if test $cntExec -eq maxExecMerge
+    then                   # yes, submit current job and create new job
+      # archive job (if multiple jobs then string together)
+      _cmd --save $log/$jclMerge cat $ptf/$jclMerge
+
+      # run the job
+      _submit $ptf/$jclMerge $log/$logMerge
+
+      # create new job (append to existing $SYSPRINT & $SYSMOD)
+      _primeJCL $cntPTF $jclMerge $cntPTF
+    fi    # new job
+
+    # pad part name with blanks to 8 characters
+    part=$(echo "$part      " | sed 's/^\(........\).*/\1/')
+
+    # update JCL
+    _cmd --save $ptf/$jclMerge \
+      echo "//$part EXEC PROC=PTFMERGE,PART=$part"
+
+    # increase EXEC counter
+    let cntExec=$cntExec+1
+  done    # for part
+
+  # add track count step to JCL
+  _cmd --save $ptf/$jclMerge \
+    echo "//TRACKS   EXEC PROC=PTFTRKS,PTF=${ptfHLQ}.$sysmodName"
+
+  # archive job (if multiple jobs then string together)
+  _cmd --save $log/$jclMerge cat $ptf/$jclMerge
+
+  # run the job
+  _submit $ptf/$jclMerge $log/$logMerge
+
+  # show job output in debug mode
+  if test "$debug"
+  then
+    echo "-- $logMerge $(cat $log/$logMerge | wc -l) line(s)"
+    sed 's/^/. /' $log/$logMerge              # show prefixed with '. '
+    echo "   merge $cntPTF successful"
+  fi    #
+
+  # save sysmod created by merge job(s)
+  test "$debug" && echo
+  test "$debug" && echo "\"$here/$existScript $SYSMOD\""
+  $here/$existScript "$SYSMOD"
+  # returns 0 for exist, 2 for not exist, 8 for error
+  existRC=$?
+  if test $existRC -eq 0
+  then
+    _cmd cp "//'$SYSMOD'" "$ptf/${ptfHLQ}.$sysmodName"
+  else
+    echo "** ERROR $me merge job $cntPTF did not create //'$SYSMOD'"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    # no $SYSMOD
+
+  test "$debug" && echo "end while \$cntPTF -- $cntPTF/$distroPTFs"
+
+  # process next
+  let cntPTF=$cntPTF+1
+done    # while $cntPTF
+
+# no more need for this
+#_cmd rm -f $ptf/$jclMerge
+
+# save track count created by merge job(s)
+test "$debug" && echo
+test "$debug" && echo "\"$here/$existScript $TRACKS\""
+$here/$existScript "$TRACKS"
+# returns 0 for exist, 2 for not exist, 8 for error
+existRC=$?
+if test $existRC -eq 0
+then
+  _cmd cp "//'$TRACKS'" $ptf/$tracks
+else
+  echo "** ERROR $me merge job did not create //'$TRACKS'"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    # no $TRACKS
 
 test "$debug" && echo "< _merge"
 }    # _merge
 
 # ---------------------------------------------------------------------
 # --- create install instructions
+# output:
+# - $log/$html  install instructions (EBCDIC)
+# - $name1      name of first SYSMOD, used as base for $html name
 # ---------------------------------------------------------------------
 function _readme
 {
 test "$debug" && echo && echo "> _readme $@"
 echo "-- creating SYSMOD readme"
 
-# create <ptf>.readme.htm name
-# ${sysmod%%.*}       keep up to first . (exclusive)
-# ${instructions#*.}  keep from first . (exclusive)
-readme=${sysmod%%.*}.${instructions#*.} 
+# get file name of first PTF (awk prints second word of first line)
+# expected content:
+# 4806 ZOWE.AZWE001.TMP0001
+# 3800 ZOWE.AZWE001.TMP0002
+name1=$(awk 'BEGIN{f=1} f{f=0;print $2}' $ptf/$tracks)
+sysmod1=${name1##*.}                # keep from last period (exclusive)
+test $debug && echo "name1=$name1"
+test $debug && echo "sysmod1=$sysmod1"
 
-# TODO  create SED to substitute all these
-_cmd cp $here/$instructions $log/$readme
-#type   PTF | APAR | USERMOD
-#ptf
-#8ptf
-#prod   full product name
-#fmid   $FMID
-#pfx    $RFDSNPFX
-#rework
-#pre
-#req
-#sup
-#pri    in trks
-#sec    in trks
-#bytes
-#hold   (will be multi-line)
-#dsnreq DSN of coreq (can be multi-line)
+# define name of readme HTML
+html=${name1}.${readme#*.}       # ${#*.} keep from first . (exclusive)
+test $debug && echo "html=$html"
+
+# define name of $tracks without first sysmod (holds coreqs)
+tracksCoreq=coreq.$tracks
+test $debug && echo "tracksCoreq=$tracksCoreq"
+
+# create $tracks without first sysmod (holds coreqs)
+SED='1d'
+_sed $ptf/$tracks $ptf/$tracksCoreq
+
+# create work copy of install instructions
+_cmd cp $here/$readme $ptf/$readme
+
+# ensure csplit output goes in $ptf
+_cmd cd $ptf
+
+# split instructions at <!--cut--> markers
+# - csplit creates xx## files, each holding block up to next marker (exclusive)
+# - "$(($(grep -c ^<!--cut-->$ $ptf/$readme)-1))" counts number of markers
+#   and when wrapped in {}, it repeats the /^<!--cut-->$/ filter x times
+_cmd csplit -s $ptf/$readme "/^<!--cut-->$/" \
+  {$(($(grep -c "^<!--cut-->$" $ptf/$readme)-1))}
+
+# return to base
+_cmd --null cd -
+
+# give first csplit block the final name (rest will append)
+_cmd mv $ptf/xx00 $log/$html
+
+# remove marker line from all remaining csplit blocks
+SED='1d'
+for f in $ptf/xx*
+do
+  _sed $f
+done    # for f
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# add an allocation statement for each sysmod
+while read -r trk name
+do
+  sysmod=${name##*.}                # keep from last period (exclusive)
+  test $debug && echo "(alloc) trk=$trk, name=$name, sysmod=$sysmod"
+
+  # pad sysmod name with blanks to 8 characters
+  sysmod8=$(echo "$sysmod      " | sed 's/^\(........\).*/\1/')
+
+  # append customized data
+  # expected xx01 content:
+  # //#ptf8 DD DSN=&HLQ..#name,
+  # //            DISP=(NEW,CATLG,DELETE),
+  # //            DSORG=PS,
+  # //            RECFM=FB,
+  # //            LRECL=80,
+  # //            UNIT=SYSALLDA,
+  # //*            VOL=SER=<STRONG>#volser</STRONG>,
+  # //*            BLKSIZE=6160,
+  # //            SPACE=(TRK,(#pri,15))
+  SED=""
+  SED="$SED;s/#ptf8/$sysmod8/"
+  SED="$SED;s/#name/$name/"
+  SED="$SED;s/#pri/$trk/"
+  _cmd --save $log/$html sed "$SED" $ptf/xx01
+done < $ptf/$tracks    # while read
+
+# append next csplit block
+_cmd --save $log/$html cat $ptf/xx02
+
+# add a FTP statement for each sysmod
+while read -r trk name
+do
+  bytes=$(ls -l $ptf/$name | awk '{print $5}')
+  test $debug && echo "(ftp) name=$name, bytes=$bytes"
+
+  # append customized data
+  # expected xx03 content:
+  # </I>ftp&gt; <STRONG>put d:\#name</STRONG>
+  # <I>200 Port request OK.
+  # 125 Storing data set #hlq.#name
+  # 250 Transfer completed successfully
+  # #bytes bytes sent in 0.28 seconds
+  SED=""
+  SED="$SED;s/#name/$name/"
+  SED="$SED;s/#bytes/$bytes/"
+  _cmd --save $log/$html sed "$SED" $ptf/xx03
+done < $ptf/$tracks    # while read
+
+# append next csplit block
+_cmd --save $log/$html cat $ptf/xx04
+
+# append hold data
+# TODO add hold data if there is any
+_cmd --save $log/$html echo none
+
+# append next csplit block
+_cmd --save $log/$html cat $ptf/xx06
+
+# add a requisite data set names to RECEIVE SMPPTFIN (sysmod 2 and up)
+while read -r trk name
+do
+  test $debug && echo "(SMPPTFIN) name=$name"
+
+  # append customized data
+  _cmd --save $log/$html echo "//         DD DISP=SHR,DSN=&HLQ..$name"
+done < $ptf/$tracksCoreq    # while read         # all but first sysmod
+
+# append next csplit block
+_cmd --save $log/$html cat $ptf/xx08
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# get requisite sysmod names (sysmod 2 and up)
+unset coreq
+while read -r trk name
+do
+  sysmod=${name##*.}                # keep from last period (exclusive)
+  coreq="$coreq $sysmod"
+done < $ptf/$tracksCoreq    # while read         # all but first sysmod
+coreq=$(echo $coreq)                              # strip leading blank
+test $debug && echo "coreq=$coreq"
+
+# customize common variables
+SED=""
+SED="$SED;s/#type/$sysmodType/"
+SED="$SED;s/#name1/$name1/"
+SED="$SED;s/#ptf1/$sysmod1/"
+SED="$SED;s/#fmid/$FMID/"
+SED="$SED;s/#rework/$julian/"
+SED="$SED;s/#req/$coreq/"
+# TODO #pre
+SED="$SED;s/#pre/TODO #pre/"
+# TODO #sup
+SED="$SED;s/#sup/TODO #sup/"
+_sed $log/$html
+
+# no more need for this
+#_cmd rm -f $ptf/$tracksCoreq $ptf/$readme $ptf/xx*
 
 test "$debug" && echo "< _readme"
 }    # _readme
 
 # ---------------------------------------------------------------------
 # --- zip up sysmod & instructions
+# output:
+# - $ship/$zip  zip with sysmods & readme
 # ---------------------------------------------------------------------
 function _zip
 {
 test "$debug" && echo && echo "> _zip $@"
 echo "-- creating SYSMOD zip"
 
-zip={FMID}.${sysmod}.zip
+# ensure output directory exists
+_cmd mkdir -p $ship
+
+# define name of zip
+zip=${name1}.zip
+test $debug && echo "zip=$zip"
+
+# get names of all sysmods
+unset names
+while read -r trk name
+do
+  names="$names $name"
+done < $ptf/$tracks    # while read
+names=$(echo $names)                              # strip leading blank
+test $debug && echo "names=$names"
 
 # convert html encoding from EBCDIC to ASCII
-_cmd --repl $ptf/$readme iconv -t ISO8859-1 -f IBM-1047 $log/$readme
+_cmd --repl $ptf/$html iconv -t ISO8859-1 -f IBM-1047 $log/$html
 
 # go to correct path to avoid path inclusion in zip
 _cmd cd $ptf
 
-# TODO create directory that holds pax & zip
 # create zip file (c: create, M: no manifest, f: file name)
-_cmd $JAVA_HOME/bin/jar -cMf $ptf/$zip  $sysmod $readme
+_cmd $JAVA_HOME/bin/jar -cMf $ship/$zip $names $html
+
+# no more need for this
+#_cmd rm -f $tracks $names $html
 
 # return to base
 _cmd --null cd -
@@ -249,21 +565,112 @@ test "$debug" && echo "< _zip"
 }    # _zip
 
 # ---------------------------------------------------------------------
+# --- determine how to distribute parts across sysmods
+# output:
+# - $distroPTFs  number of sysmods
+# - $distro      each line holds parts for 1 sysmod
+# ---------------------------------------------------------------------
+function _split
+{
+test "$debug" && echo && echo "> _split $@"
+
+# get size of header for main sysmod
+headerLinesFirst=19 # TODO get actual number of header lines for PTF 1
+
+# get size of header for overflow sysmod(s)
+headerLinesOther=$headerLinesFirst # TODO get actual number of header lines for overflow PTFs
+
+PTFs=2 # TODO get this number from PTF bucket
+
+# sort part line counts
+# -r reverse (descending)
+# -n first key is numeric
+# -o output file (can be input file)
+_cmd sort -r -n -o $ptf/$lines $ptf/$lines
+# sample output:
+# 1494165 ZWEPAX05
+#  933752 ZWEPAX06
+#       6 ZWESIPRG
+
+# show $lines in debug mode
+if test "$debug"
+then
+  echo "-- $lines $(cat $ptf/$lines | wc -l) line(s)"
+  sed 's/^/. /' $ptf/$lines                   # show prefixed with '. '
+fi    #
+
+# determine how to distribute the parts across the sysmods
+args="$ptf/$lines $headerLinesFirst $headerLinesOther $PTFs"
+# show everything in debug mode
+test "$debug" && $here/$splitScript -d "$args"
+# get data (no debug mode to avoid debug messages)
+distro="$($here/$splitScript $args)"
+# returns 0 for success, 8/12 for error
+rc=$?
+# sample output:
+# ZWEPAX05 ZWESIPRG
+# ZWEPAX06
+
+if test $rc -ne 0
+then
+  echo "$distro"                        # variable holds error messages
+  echo "** ERROR $me script RC $rc for part distribution"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+# how many sysmods do we need to create?
+distroPTFs=$(echo "$distro" | wc -l)
+# TODO test ?usermod? && PTFs=$distroPTFs
+
+# does this match the number of sysmods we have for this set?
+if test $PTFs -ne $distroPTFs
+then
+  echo "** ERROR $me $distroPTFs PTFs needed, $PTFs PTFs available"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+# no more need for this
+#_cmd rm -f $ptf/$lines
+
+test "$debug" && echo "< _split"
+}    # _split
+
+# ---------------------------------------------------------------------
 # --- create & submit GIMDTS job
 # Assumes that all parts have metadata, and all metadata has a part
+# output:
+# - &HLQ..&MLQ.*     parts in FB80 format
+# - $ptf/$lines      FB80 line count per part
+# - $log/$jclGimdts  archival of jcl(s)
+# - $log/$logGimdts  archival of job output(s)
+# note: writing to data set avoids JCL issues with long path names
 # ---------------------------------------------------------------------
 function _gimdts
 {
 test "$debug" && echo "> _gimdts $@"
 echo "-- processing RELFILEs"
 
-# prime GIMDTS JCL
-_primeJCL $log/$jcl "$SYSPRINT"
+# pre-allocate output data set (has to be done here in case we need
+# to submit multiple GIMDTS jobs)
+# note: GIMDTS assumes FBA121 for output and does not write \n, so
+# writing directly to a USS file results in all output on a single line
+_alloc "$SYSPRINT" "FBA" "121" "PS" "5,5"
 
-# get data set list
+# pre-allocate line count data set (has to be done here in case we need
+# to submit multiple jobs)
+_alloc "$LINES" "FB" "80" "PS" "5,5"
+
+# remove archived GIMDTS data, if any
+test -f $log/$jclGimdts && _cmd rm -f $log/$jclGimdts
+test -f $log/$logGimdts && _cmd rm -f $log/$logGimdts
+
+# prime JCL
+_primeJCL $ptf $jclGimdts
+
+# get RELFILE data set list
 # show everything in debug mode
 test "$debug" && $here/$csiScript -d "${mcsHlq}.F*"
-# get data set list (no debug mode to avoid debug messages)
+# get RELFILE data set list (no debug mode to avoid debug messages)
 datasets=$($here/$csiScript "${mcsHlq}.F*")
 # returns 0 for match, 1 for no match, 8 for error
 rc=$?
@@ -277,12 +684,12 @@ then
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-# loop through data sets
+# loop through RELFILE data sets
 test "$debug" && echo "for dsn in \$datasets"
 for dsn in $datasets
 do
-  # update GIMDTS JCL
-  _cmd --save $log/$jcl echo "//         SET REL=$dsn"
+  # update JCL
+  _cmd --save $ptf/$jclGimdts echo "//         SET REL=$dsn"
 
   # is data set a load library ?
   _testDCB "$dsn" "U" "**" "PO"
@@ -315,41 +722,61 @@ do
   for member in $members
   do
     # did we reach max EXEC statements for current job ?
-    if test $cnt -eq maxExec
+    if test $cntExec -eq maxExecGimdts
     then                   # yes, submit current job and create new job
-      # run the GIMDTS job
-      _submit $log/$jcl "$SYSPRINT"
+      # archive job (if multiple jobs then string together)
+      _cmd --save $log/$jclGimdts cat $ptf/$jclGimdts
 
-      # archive current GIMDTS job with unique name
-      cnt=$(ls $log/${jcl}* | wc -l)
-      _cmd mv $log/$jcl $log/$jcl.$cnt
+      # run the job
+      _submit $ptf/$jclGimdts $log/$logGimdts
 
-      # create new GIMDTS job
-      _primeJCL $log/$jcl "$SYSPRINT"
-      _cmd --save $log/$jcl echo "//         SET REL=$dsn"
+      # create new job (append to existing $SYSPRINT & $LINES)
+      _primeJCL $ptf $jclGimdts
+      _cmd --save $ptf/$jclGimdts echo "//         SET REL=$dsn"
     fi    # new job
 
     # pad member name with blanks to 8 characters
     member=$(echo "$member      " | sed 's/^\(........\).*/\1/')
 
-    # update GIMDTS JCL
-    _cmd --save $log/$jcl echo "//$member EXEC PROC=$proc,MBR=$member"
+    # update JCL
+    _cmd --save $ptf/$jclGimdts \
+      echo "//$member EXEC PROC=$proc,MBR=$member"
 
     # increase EXEC counter
-    let cnt=$cnt+1
+    let cntExec=$cntExec+1
   done    # for member
 done    # for dsn
 
-# run the GIMDTS job
-_submit $log/$jcl "$SYSPRINT"
+# archive job (if multiple jobs then string together)
+_cmd --save $log/$jclGimdts cat $ptf/$jclGimdts
+
+# run the job
+_submit $ptf/$jclGimdts $log/$logGimdts
 
 # show job output in debug mode
 if test "$debug"
 then
-  echo "-- $sysprint $(cat $log/$sysprint | wc -l) line(s)"
-  sed 's/^/. /' $log/$sysprint                # show prefixed with '. '
-  echo "   GIMZIP successful"
+  echo "-- $logGimdts $(cat $log/$logGimdts | wc -l) line(s)"
+  sed 's/^/. /' $log/$logGimdts                # show prefixed with '. '
+  echo "   GIMDTS successful"
 fi    #
+
+# no more need for this
+#_cmd rm -f $ptf/$jclGimdts
+
+# save line count of GIMDTS job(s)
+test "$debug" && echo
+test "$debug" && echo "\"$here/$existScript $LINES\""
+$here/$existScript "$LINES"
+# returns 0 for exist, 2 for not exist, 8 for error
+existRC=$?
+if test $existRC -eq 0
+then
+  _cmd cp "//'$LINES'" $ptf/$lines
+else
+  echo "** ERROR $me GIMDTS job did not create //'$LINES'"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    # no $LINES
 
 test "$debug" && echo "< _gimdts"
 }    # _gimdts
@@ -357,7 +784,9 @@ test "$debug" && echo "< _gimdts"
 # ---------------------------------------------------------------------
 # --- submit job & wait on completion, with error handling
 # $1: job to submit
-# $2: SYSPRINT data set name
+# $2: file where to save job output
+# output:
+# - $2  job output
 # ---------------------------------------------------------------------
 function _submit
 {
@@ -378,27 +807,27 @@ submitRC=$?
 
 # save output of GIMDTS job(s)
 test "$debug" && echo
-test "$debug" && echo "\"$here/$existScript $2\""
-$here/$existScript "$2"
+test "$debug" && echo "\"$here/$existScript $SYSPRINT\""
+$here/$existScript "$SYSPRINT"
 # returns 0 for exist, 2 for not exist, 8 for error
 existRC=$?
 if test $existRC -eq 0
 then
-  _cmd cp "//'$2'" $log/$sysprint
+  _cmd cp "//'$SYSPRINT'" $2
 else
   # remove output from previous run, if any
-  test -f $log/$sysprint && _cmd rm -f $log/$sysprint
+  test -f $2 && _cmd rm -f $2
   # create dummy to ensure next step can rely on the file existing
-  _cmd touch $log/$sysprint
-  echo "** INFO created dummy $log/$sysprint"
+  _cmd touch $2
+  echo "** INFO created dummy $2"
 fi    # no $SYSPRINT
 
 # test for job failure
 if test $submitRC -ne 0
 then
-  test "$debug" && echo "GIMDTS failure"
-  echo "-- $sysprint $(cat $log/$sysprint | wc -l) line(s)"
-  sed 's/^/. /' $log/$sysprint                # show prefixed with '. '
+  test "$debug" && echo "job failure"
+  echo "-- $(basename $2) $(cat $2 | wc -l) line(s)"
+  sed 's/^/. /' $2                            # show prefixed with '. '
 
   # error details already reported
   echo "** ERROR $me script RC $submitRC for submit of job $1"
@@ -419,12 +848,14 @@ test "$debug" && echo "< _submit"
 }    # _submit
 
 # ---------------------------------------------------------------------
-# --- allocate data set
+# --- allocate data set (removes pre-existing one)
 # $1: data set name
 # $2: record format; {FB | U | VB}
 # $3: logical record length, use ** for RECFM(U)
 # $4: data set organisation; {PO | PS}
 # $5: space in tracks; primary[,secondary]
+# output:
+# - $1  allocated data set
 # ---------------------------------------------------------------------
 function _alloc
 {
@@ -447,13 +878,14 @@ fi    #
 
 # create target data set
 test "$debug" && echo
-if test -z "$VOLSER"
+if test -z "$gimdtsVolser"
 then
   test "$debug" && echo "\"$here/$allocScript -h $1 $2 $3 $4 $5\""
   $here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
 else
-  test "$debug" && echo "\"$here/$allocScript -h -V $VOLSER $1 $2 $3 $4 $5\""
-  $here/$allocScript -h -V "$VOLSER" "$1" "$2" "$3" "$4" "$5"
+  test "$debug" && \
+    echo "\"$here/$allocScript -h -V $gimdtsVolser $1 $2 $3 $4 $5\""
+  $here/$allocScript -h -V "$gimdtsVolser" "$1" "$2" "$3" "$4" "$5"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
@@ -475,6 +907,8 @@ test "$debug" && echo "< _alloc"
 # ---------------------------------------------------------------------
 # --- get list of members in data set, skip aliases
 # $1: data set
+# output:
+# - $members  list of part names
 # ---------------------------------------------------------------------
 function _getMembers
 {
@@ -525,6 +959,8 @@ test "$debug" && echo "< _getMembers"
 # $2: record format; {FB | U | VB}
 # $3: logical record length, use ** for RECFM(U)
 # $4: data set organisation; {PO | PS}
+# output:
+# - $?  boolean indicating DCB match
 # ---------------------------------------------------------------------
 function _testDCB
 {
@@ -557,8 +993,12 @@ test "$sTaTuS" -eq 0                  # MUST be last, set rc or routine
 
 # ---------------------------------------------------------------------
 # --- prime GIMDTS JCL
-# $1: target file
-# $2: SYSPRINT data set name
+# $1: target directory
+# $2: jcl file name
+# $3: value for #comment, cannot have semicolon (:) in it
+# output:
+# - $1/$2     jcl
+# - $cntExec  initialzed EXEC statement counter
 # ---------------------------------------------------------------------
 function _primeJCL
 {
@@ -569,28 +1009,28 @@ SED=""
 SED="$SED;s:#job1:$gimdtsJob1:"
 SED="$SED;s:#hlq:$gimdtsHlq:"
 SED="$SED;s:#mlq:$MLQ:"
-SED="$SED;s:#sysprint:$2:"
-_cmd --repl $1 sed "$SED" $here/$jcl
+SED="$SED;s:#sysprint:$SYSPRINT:"
+SED="$SED;s:#lines:$LINES:"
+SED="$SED;s:#sysmod:$SYSMOD:"
+SED="$SED;s:#tracks:$TRACKS:"
+SED="$SED;s:#comment:$3:"
+_cmd --repl $1/$2 sed "$SED" $here/$2
 
 # current number of JCL EXEC statements
-cnt=0
+cntExec=0
 
 test "$debug" && echo "< _primeJCL"
 }    # _primeJCL
 
 # ---------------------------------------------------------------------
 # --- stage GIMDTS JCL procedures & support REXX
+# output:
+# - $gimdtsHlq(*)  procs & rexx
 # ---------------------------------------------------------------------
 function _tools
 {
 test "$debug" && echo "> _tools $@"
 echo "-- staging GIMDTS support tools"
-
-# pre-allocate output data set (has to be done here in case we need
-# to submit multiple GIMDTS jobs)
-# note: GIMDTS assumes FBA121 for output and does not write \n, so
-# writing directly to a USS file results in all output on a single line
-_alloc "$SYSPRINT" "FBA" "121" "PS" "5,5"
 
 # place tools in $gimdtsHlq (no extra LLQ)
 _alloc "$gimdtsHlq" "FB" "80" "PO" "5,5"
@@ -616,6 +1056,8 @@ test "$debug" && echo "< _tools"
 
 # ---------------------------------------------------------------------
 # --- stage SMP/E metadata for parts to package
+# output:
+# - &HLQ..&MLQ.*  data set per part primed with MCS data
 # ---------------------------------------------------------------------
 function _metaData
 {
@@ -728,6 +1170,31 @@ TmP=${TMPDIR:-/tmp}/$(basename $1).$$
 _cmd --repl $TmP sed "$SED" $1                    # sed '...' $1 > $TmP
 _cmd mv $TmP "//'$2($MbR)'"                     # move $TmP to data set
 }    # _sedMVS
+
+# ---------------------------------------------------------------------
+# --- customize a file using sed, optionally creating a new output file
+#     assumes $SED is defined by caller and holds sed command string
+# $1: if -x then make result executable, parm is removed when present
+# $1: input file
+# $2: (optional) output file, default is $1
+# ---------------------------------------------------------------------
+function _sed
+{
+unset ExEc
+if test "$1" = "-x"
+then                                     # make exectuable after update
+  shift
+  ExEc=1
+fi    #
+
+TmP=${TMPDIR:-/tmp}/$(basename $1).$$
+_cmd --repl $TmP sed "$SED" $1                  # sed '...' $1 > $TmP
+#test "$debug" && echo
+#test "$debug" && echo "sed $SED 2>&1 $1 > $TmP"
+#sed "$SED" $1 2>&1 > $TmP                       # sed '...' $1 > $TmP
+_cmd mv $TmP ${2:-$1}                           # give $TmP actual name
+test -n "$ExEc" && _cmd chmod a+x ${2:-$1}      # make executable
+}    # _sed
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -851,7 +1318,7 @@ do case "$opt" in
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
@@ -864,11 +1331,16 @@ fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-mcsHlq=${HLQ}.${RFDSNPFX}.${FMID}                         # RELFILE HLQ
-SYSPRINT=${gimzipHlq}.SYSPRINT               # job output data set name
-MLQ='@'                       # job results in $HLQ.$MLQ.*, max 2 chars
-sysmod=sysmod.txt  # TODO must become <sysmod>.<type>
+mcsHlq=${HLQ}.${RFDSNPFX}.${FMID}          # RELFILE HLQ,  max 32 chars
+ptfHLQ=${RFDSNPFX}.${FMID}                        # default HLQ for PTF
+MLQ='@'                 # job results in $gimdtsHlq.$MLQ.*, max 2 chars
+# fixed LLQs max 10 chars + 1 period (=2 char MLQ + 8 char LLQ)
+SYSMOD=${gimdtsHlq}.$MLQ                    # PTF staging data set name
+LINES=${gimdtsHlq}.LINES                     # line count data set name
+TRACKS=${gimdtsHlq}.TRACKS                  # track count data set name
+SYSPRINT=${gimdtsHlq}.SYSPRINT               # job output data set name
 unset allParts                        # collect names of all parts here
+julian=$(date +%y%j)                       # 5-digit Julian date, yyddd
 
 # show input/output details
 echo "-- input:  $mcsHlq"
@@ -883,28 +1355,31 @@ _cmd mkdir -p $ptf
 # create SMP/E MCS metadata for parts to package
 _metaData
 
-# stage GIMDTS JCL procedures & support REXX
+# stage JCL procedures & support REXX
 _tools
 
-# create & submit GIMDTS job (job creates parts)
+# create parts in FB80 format (GIMDTS job)
 _gimdts
 
 # create sysmod header (PTF/APAR/USERMOD)
 _header
 
-# merge header and parts
+# determine how to distribute parts across sysmods
+_split
+
+# merge header and parts (MERGE job)
 _merge
 
 # create install instructions
 _readme
 
-# zip up sysmod & instructions
+# zip up sysmod(s) & instructions
 _zip
 
 # we are done with these, clean up
 _cmd cd $here                         # make sure we are somewhere else
-#_cmd rm -rf $ptf
-#_deleteDatasets
+_cmd rm -rf $ptf
+_deleteDatasets
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"
