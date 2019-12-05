@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -12,37 +12,37 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.zss-auth": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.zlux-workflow": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zlux.zosmf-auth": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.0-STAGING"
     },
     "org.zowe.zss": {
-      "version": "~1.6.0-STAGING"
+      "version": "~1.7.1-STAGING"
     },
     "org.zowe.explorer.jobs": {
       "version": "~0.2.8-STAGING",
