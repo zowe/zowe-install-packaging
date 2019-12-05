@@ -89,13 +89,6 @@ fi
 #And zss & app-server sharing WORKSPACE_DIR
 
 
-
-# Start the desktop
-#if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
-#then
-#    cd $ROOT_DIR/zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-#fi
-
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
   # Create the user configurable api-defs
