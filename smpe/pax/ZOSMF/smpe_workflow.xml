@@ -13,9 +13,9 @@
 		<General/>
 	</workflowInfo>
 	<variable name="ibmTemplate" scope="instance" visibility="public">
-		<label>IBM Template Generation</label>
-		<abstract>Specifies whether IBM compliant templates should be created</abstract>
-		<description>Specifies whether IBM compliant templates should be created</description>
+		<label>Original IBM JCLs in steps</label>
+		<abstract>Specifies whether steps should contain original IBM JCLs (keep NO to run properly with zosmf)</abstract>
+		<description>IBM have JCLs not ready for automatic execution. &lt;br&gt;Modifications were done to run properly automatically under zosmf workflow.&lt;br&gt; If you specify YES, you would have to update every step context manually before step execution.</description>
 		<category>Internal</category>
 		<string valueMustBeChoice="true" multiLine="false">
 			<choice>YES</choice>
@@ -309,6 +309,7 @@
 		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="ibmTemplate" noPromptIfSet="false" required="false" scope="instance"/>
 		<instructions substitution="false">Run this step to initialize variable values</instructions>
 		<weight>1</weight>
 		<autoEnable>true</autoEnable>
