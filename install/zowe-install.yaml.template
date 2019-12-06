@@ -46,6 +46,8 @@ terminals:
 
 keystore:
   keystoreDirectory=/global/zowe/keystore
+  keystoreOwner=IZUSVR
+  keystoreGroup=IZUADMIN
 
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:

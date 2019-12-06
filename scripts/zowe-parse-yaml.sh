@@ -208,6 +208,16 @@ do
                 KEYSTORE_DIRECTORY=$value
                 export KEYSTORE_DIRECTORY
             fi
+            if [[ $key == "keystoreOwner" ]] && [[ $section == "keystore" ]]
+            then
+                ZOWE_USER_ID=$value
+                export ZOWE_USER_ID
+            fi
+            if [[ $key == "keystoreGroup" ]] && [[ $section == "keystore" ]]
+            then
+                ZOWE_GROUP_ID=$value
+                export ZOWE_GROUP_ID
+            fi
         fi
     fi
 #    echo "--- End of loop ---"
