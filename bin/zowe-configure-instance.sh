@@ -177,7 +177,10 @@ echo "Created ${INSTANCE_DIR}/bin/read-instance.sh">> $LOG_FILE
 cat <<EOF >${INSTANCE_DIR}/bin/read-keystore.sh
 # Requires KEYSTORE_DIRECTORY to be set
 # Read in properties by executing, then export all the keys so we don't need to shell share
-. \${KEYSTORE_DIRECTORY}/zowe-certificates.env
+
+# exit immediately if file cannot be accessed
+. \${KEYSTORE_DIRECTORY}/zowe-certificates.env || exit 1
+
 
 while read -r line
 do
