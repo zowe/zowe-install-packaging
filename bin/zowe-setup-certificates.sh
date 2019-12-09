@@ -156,12 +156,12 @@ echo "Creating certificates and keystores... DONE"
 # set up privileges and ownership
 chmod -R 600 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
-if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} ; then
-  echo "Unable to change the current owner of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_USER_ID} owner."
+if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
+  echo "Unable to change the current owner of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_USER_ID} owner. See $LOG_FILE for more details."
   echo "Trying to change a group of the ${KEYSTORE_DIRECTORY}."
   chmod -R 660 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
-  if ! chgrp -R ${ZOWE_GROUP_ID} ${KEYSTORE_DIRECTORY} ; then
-    echo "Unable to change the group of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_GROUP_ID} group."
+  if ! chgrp -R ${ZOWE_GROUP_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
+    echo "Unable to change the group of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_GROUP_ID} group. See $LOG_FILE for more details."
     echo "Please change the owner or the group of the ${KEYSTORE_DIRECTORY} manually so that keystores are protected correctly!"
     echo "Ideally, only ${ZOWE_USER_ID} should have access to the ${KEYSTORE_DIRECTORY}."
   else
