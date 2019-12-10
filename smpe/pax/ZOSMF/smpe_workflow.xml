@@ -309,7 +309,6 @@
 		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="ibmTemplate" noPromptIfSet="false" required="false" scope="instance"/>
 		<instructions substitution="false">Run this step to initialize variable values</instructions>
 		<weight>1</weight>
 		<autoEnable>true</autoEnable>
