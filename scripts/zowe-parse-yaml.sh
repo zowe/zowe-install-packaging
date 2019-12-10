@@ -203,6 +203,21 @@ do
                 ZOWE_SERVER_PROCLIB_MEMBER=$value
                 export ZOWE_SERVER_PROCLIB_MEMBER
             fi
+            if [[ $key == "keystoreDirectory" ]] && [[ $section == "keystore" ]]
+            then
+                KEYSTORE_DIRECTORY=$value
+                export KEYSTORE_DIRECTORY
+            fi
+            if [[ $key == "keystoreOwner" ]] && [[ $section == "keystore" ]]
+            then
+                ZOWE_USER_ID=$value
+                export ZOWE_USER_ID
+            fi
+            if [[ $key == "keystoreGroup" ]] && [[ $section == "keystore" ]]
+            then
+                ZOWE_GROUP_ID=$value
+                export ZOWE_GROUP_ID
+            fi
         fi
     fi
 #    echo "--- End of loop ---"
@@ -333,6 +348,21 @@ then
     ZOWE_SERVER_PROCLIB_DSNAME=auto
     echo "  ZOWE_SERVER_PROCLIB_DSNAME not specified:  PROCLIB DSNAME will be selected automatically" | tee -a $LOG_FILE
 fi
+if [[ KEYSTORE_DIRECTORY == "" ]]
+then
+    KEYSTORE_DIRECTORY="/global/zowe/keystore"
+    echo "  KEYSTORE_DIRECTORY not specified:  Defaulting to /global/zowe/keystore" | tee -a $LOG_FILE
+fi
+if [[ ZOWE_USER_ID == "" ]]
+then
+    ZOWE_USER_ID="IZUSVR"
+    echo "  ZOWE_USER_ID not specified:  Defaulting to IZUSVR" | tee -a $LOG_FILE
+fi
+if [[ ZOWE_GROUP_ID == "" ]]
+then
+    ZOWE_GROUP_ID="IZUADMIN"
+    echo "  ZOWE_GROUP_ID not specified:  Defaulting to IZUADMIN" | tee -a $LOG_FILE
+fi
 
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
 echo "  ZOWE_USER_DIR="$ZOWE_USER_DIR >> $LOG_FILE
@@ -365,4 +395,7 @@ echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FI
 echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
 echo "  ZOWE_SERVER_PROCLIB_MEMBER="$ZOWE_SERVER_PROCLIB_MEMBER >> $LOG_FILE
 echo "  ZOWE_SERVER_PROCLIB_DSNAME="$ZOWE_SERVER_PROCLIB_DSNAME >> $LOG_FILE
+echo "  KEYSTORE_DIRECTORY="$KEYSTORE_DIRECTORY >> $LOG_FILE
+echo "  ZOWE_USER_ID="$ZOWE_USER_ID >> $LOG_FILE
+echo "  ZOWE_GROUP_ID="$ZOWE_GROUP_ID >> $LOG_FILE
 echo "</zowe-parse-yaml.sh>" >> $LOG_FILE

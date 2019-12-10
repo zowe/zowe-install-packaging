@@ -11,7 +11,7 @@
 ################################################################################
 
 ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/config
-APIML_KEYSTORE_PATH=${ZOWE_ROOT_DIR}/components/api-mediation/keystore
+APIML_KEYSTORE_PATH=${KEYSTORE_DIRECTORY}
 SUFFIX=""
 if [ `uname` = "OS/390" ]; then
   SUFFIX="-ebcdic"
