@@ -79,6 +79,7 @@ create_new_instance() {
       -e "s#ZOWE_ZLUX_TELNET_PORT=23#ZOWE_ZLUX_TELNET_PORT=${ZOWE_ZLUX_TELNET_PORT}#" \
       -e "s#ZOWE_ZLUX_SECURITY_TYPE=#ZOWE_ZLUX_SECURITY_TYPE=${ZOWE_ZLUX_SECURITY_TYPE}#" \
       -e "s#ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC#ZOWE_SERVER_PROCLIB_MEMBER=${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+      -e "s#KEYSTORE_DIRECTORY=/global/zowe/keystore#KEYSTORE_DIRECTORY=${KEYSTORE_DIRECTORY}#" \
       "${INSTANCE}" \
       > "${INSTANCE_DIR}/instance.yaml.env"
       mv "${INSTANCE_DIR}/instance.yaml.env" "${INSTANCE}"
@@ -120,11 +121,11 @@ check_existing_instance_for_updates() {
       -e "s#{{external_certificate}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
       -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
       -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" )
-  
+
     echo "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND" | tee -a ${LOG_FILE}
     echo "\n$LINES_TO_APPEND" >> $INSTANCE
     echo "Properties added, please review these before starting zowe."
-  else 
+  else
     echo "No updates required" | tee -a ${LOG_FILE}
   fi
 }
@@ -155,7 +156,7 @@ echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
 if [[ -f "${INSTANCE}" ]]
 then
   check_existing_instance_for_updates
-else 
+else
   create_new_instance
 fi
 
@@ -173,9 +174,27 @@ done < \${INSTANCE_DIR}/instance.env
 EOF
 echo "Created ${INSTANCE_DIR}/bin/read-instance.sh">> $LOG_FILE
 
+cat <<EOF >${INSTANCE_DIR}/bin/read-keystore.sh
+# Requires KEYSTORE_DIRECTORY to be set
+# Read in properties by executing, then export all the keys so we don't need to shell share
+
+# exit immediately if file cannot be accessed
+. \${KEYSTORE_DIRECTORY}/zowe-certificates.env || exit 1
+
+
+while read -r line
+do
+test -z "\${line%%#*}" && continue      # skip line if first char is #
+key=\${line%%=*}
+export \$key
+done < \${KEYSTORE_DIRECTORY}/zowe-certificates.env
+EOF
+echo "Created ${INSTANCE_DIR}/bin/read-keystore.sh">> $LOG_FILE
+
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/read-keystore.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/internal/run-zowe.sh">> $LOG_FILE
