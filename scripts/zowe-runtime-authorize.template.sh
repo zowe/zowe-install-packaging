@@ -15,7 +15,7 @@ ZOWE_ZOSMF_ADMIN_GROUP={{zosmf_admin_group}}
 LOG_FILE={{configure_log_file}}
 echo "<zowe-runtime-authorize.sh>" >> $LOG_FILE
 
-APP_SERVER_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/app-server
+APP_SERVER_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/app-server/share
 
 # This is from the zLUX install
 if extattr ${APP_SERVER_COMPONENT_DIR}/zlux-app-server/bin/zssServer | grep "Program controlled = NO"; then
