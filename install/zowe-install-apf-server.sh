@@ -51,7 +51,7 @@ chmod +x ${SCRIPT_DIR}/*
 # TODO remove once https://github.com/zowe/zss/issues/94 is resolved
 mv ${ZSS}/SAMPLIB/ZWESIS01 ${ZSS}/SAMPLIB/${XMEM_JCL}
 mv ${ZSS}/SAMPLIB/ZWESAUX ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}
-mv ${ZSS}/SAMPLIB/ZWESIP00 ${ZSS}/SAMPLIB/${XMEM_PARM}
+#mv ${ZSS}/SAMPLIB/ZWESIP00 ${ZSS}/SAMPLIB/${XMEM_PARM}
 mv ${ZSS}/SAMPLIB/ZWESISCH ${ZSS}/SAMPLIB/${XMEM_SCHED}
 
 # MVS install steps
