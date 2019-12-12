@@ -21,6 +21,12 @@
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
 # $ZOWE_APIM_VERIFY_CERTIFICATES
 
+###
+###  CONSIDER TO REMOVE THIS SCRIPT AS IS NOT CALLED FROM ANYWHERE. 
+###  This script only executes another script that generates certificates for APIML.
+###  Certificates are generated independently of installation and configuration process.  
+###
+
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
 API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"

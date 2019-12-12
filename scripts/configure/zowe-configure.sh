@@ -56,9 +56,14 @@ echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
 # Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
 # this script is run after all the folders have been created and paxes expanded above
-echo "Attempting to setup Zowe API Mediation Layer certificates ... "
-. $CONFIG_DIR/zowe-configure-api-mediation.sh
+#echo "Attempting to setup Zowe API Mediation Layer certificates ... "
+#. $CONFIG_DIR/zowe-configure-api-mediation.sh
 
+# TODO - temp solution to be removed after componentization is done
+. ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates-prep.sh
+. ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env.temp
+
+# FIXME zowe-configure-zlux-certificates.sh relies on an old (hardcoded) keystore location 
 # Configure the TLS certificates for the zLUX server
 . $CONFIG_DIR/zowe-configure-zlux-certificates.sh
 
@@ -82,7 +87,7 @@ chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 echo "Attempting to setup Zowe Proclib ... "
 # Note: this calls exit code, so can't be run in 'source' mode
-$CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZOWESVR.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
+$CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
 
 # Inject stc name into config-stc
 sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
