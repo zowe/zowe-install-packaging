@@ -42,7 +42,7 @@
       "version": "~1.7.0-STAGING"
     },
     "org.zowe.zss": {
-      "version": "~1.7.1-STAGING"
+      "version": "~1.8.0-STAGING"
     },
     "org.zowe.explorer.jobs": {
       "version": "~0.2.8-STAGING",
