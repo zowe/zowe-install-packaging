@@ -85,6 +85,12 @@ then
   mkdir -p ${STATIC_DEF_CONFIG_DIR}
 fi
 
+# If set append $ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES to $STATIC_DEF_CONFIG_DIR
+if [[ ! -z "$ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" ]]
+then
+  STATIC_DEF_CONFIG_DIR="${STATIC_DEF_CONFIG_DIR};${ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}"
+fi
+
 # Validate component properties if script exists
 ERRORS_FOUND=0
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
