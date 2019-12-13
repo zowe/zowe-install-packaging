@@ -140,17 +140,17 @@ pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
 
 # find the final build results
 cd "${SMPE_BUILD_SHIP_DIR}"
-SMPE_FMID_ZIP="${FMID}.zip || true)"
+SMPE_FMID_ZIP="${FMID}.zip || true)" # keep in sync with smpe/bld/smpe-pd.sh
 if [ ! -f "${SMPE_FMID_ZIP}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_FMID_ZIP build result '${SMPE_FMID_ZIP}'"
   exit 1
 fi
-SMPE_PTF_ZIP="$(ls -1 ${FMID}.*.zip || true)"
+SMPE_PTF_ZIP="$(ls -1 ${FMID}.*.zip || true)" # keep in sync with smpe/bld/smpe-service.sh
 if [ ! -f "${SMPE_PTF_ZIP}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PTF_ZIP build result '${SMPE_PTF_ZIP}'"
   exit 1
 fi
-SMPE_PD_HTM="${FMID}.htm || true)"
+SMPE_PD_HTM="${FMID}.htm || true)" # keep in sync with smpe/bld/smpe-pd.sh
 if [ ! -f "${SMPE_PD_HTM}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PD_HTM build result '${SMPE_PD_HTM}'"
   exit 1
