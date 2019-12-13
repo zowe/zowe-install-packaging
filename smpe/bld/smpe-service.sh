@@ -1340,7 +1340,7 @@ LINES=${gimdtsHlq}.LINES                     # line count data set name
 TRACKS=${gimdtsHlq}.TRACKS                  # track count data set name
 SYSPRINT=${gimdtsHlq}.SYSPRINT               # job output data set name
 unset allParts                        # collect names of all parts here
-julian=$(date +%y%j)                       # 5-digit Julian date, yyddd
+julian=$(date +%Y%j)                     # 7-digit Julian date, yyyyddd
 
 # show input/output details
 echo "-- input:  $mcsHlq"
