@@ -62,9 +62,9 @@
       "artifact": "zosmf-auth-1.8.0-20191210.165346.pax"
     },
     "org.zowe.zss": {
-      "version": "1.8.0-RC",
+      "version": "1.8.0-STAGINGS-CUPIDS",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-1.8.0-rc-32-20191210153419.pax"
+      "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "0.2.9",
