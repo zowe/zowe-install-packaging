@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core-cupids": {
-      "version": "~1.7.1-STAGINGS-CUPIDS",
+      "version": "~1.8.0-STAGINGS-CUPIDS",
       "repository": "libs-snapshot-local",
       "artifact": "*.pax"
     },
