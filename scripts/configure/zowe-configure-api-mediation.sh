@@ -15,11 +15,17 @@
 # $ZOWE_JAVA_HOME
 # $ZOWE_ROOT_DIR
 # $ZOWE_EXPLORER_HOST
-# $ZOWE_IPADDRESS
+# $ZOWE_IP_ADDRESS
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
 # $ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
 # $ZOWE_APIM_VERIFY_CERTIFICATES
+
+###
+###  CONSIDER TO REMOVE THIS SCRIPT AS IS NOT CALLED FROM ANYWHERE. 
+###  This script only executes another script that generates certificates for APIML.
+###  Certificates are generated independently of installation and configuration process.  
+###
 
 echo "<zowe-api-mediation-configure.sh>" >> $LOG_FILE
 
@@ -27,17 +33,13 @@ API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"
 
 cd $API_MEDIATION_DIR
 
-# Create the static api definitions folder
-STATIC_DEF_CONFIG=$API_MEDIATION_DIR"/api-defs"
-mkdir -p $STATIC_DEF_CONFIG
-
 echo "About to set JAVA_HOME to $ZOWE_JAVA_HOME in APIML script templates" >> $LOG_FILE
 
 cd scripts/
 # Add JAVA_HOME to both script templates
 sed -e "s|\*\*JAVA_SETUP\*\*|export JAVA_HOME=$ZOWE_JAVA_HOME|g" \
     -e "s/\*\*HOSTNAME\*\*/$ZOWE_EXPLORER_HOST/g" \
-    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IPADDRESS/g" \
+    -e "s/\*\*IPADDRESS\*\*/$ZOWE_IP_ADDRESS/g" \
     -e "s/\*\*VERIFY_CERTIFICATES\*\*/$ZOWE_APIM_VERIFY_CERTIFICATES/g" \
     -e "s/\*\*ZOSMF_KEYRING\*\*/$ZOWE_ZOSMF_KEYRING/g" \
     -e "s/\*\*ZOSMF_USER\*\*/$ZOWE_ZOSMF_USERID/g" \
@@ -61,9 +63,4 @@ echo "  Setting up Zowe API Mediation Layer certificates..."
 echo "  Certificate setup done."
 
 chmod -R 750 "${API_MEDIATION_DIR}/keystore"
-
-
-#Make the static defs read/write to owner/group (so that IZUSVR can read them)
-chmod -R 750 ${STATIC_DEF_CONFIG}
-
 echo "</zowe-api-mediation-configure.sh>" >> $LOG_FILE

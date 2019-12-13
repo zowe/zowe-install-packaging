@@ -98,35 +98,6 @@ node('ibm-jenkins-slave-nvm') {
       defaultValue: '',
       trim: true,
       required: true
-    ),
-    // >>>>>>>> SSH access of testing server zOSaaS layer
-    string(
-      name: 'PUBLISH_SSH_HOST',
-      description: 'Host of publishing server',
-      defaultValue: 'wash.zowe.org',
-      trim: true,
-      required: true
-    ),
-    string(
-      name: 'PUBLISH_SSH_PORT',
-      description: 'SSH port of publishing server',
-      defaultValue: '22',
-      trim: true,
-      required: true
-    ),
-    credentials(
-      name: 'PUBLISH_SSH_CREDENTIAL',
-      description: 'The SSH credential used to connect publishing server',
-      credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
-      defaultValue: 'ssh-zowe-publish',
-      required: true
-    ),
-    string(
-      name: 'PUBLISH_DIRECTORY',
-      description: 'Publishing directory',
-      defaultValue: '/var/www/projectgiza.org/builds',
-      trim: true,
-      required: true
     )
   )
 
@@ -327,22 +298,6 @@ node('ibm-jenkins-slave-nvm') {
         error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
       }
       echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
-
-      // check publish target directory
-      publishFilePath = "${params.PUBLISH_DIRECTORY}/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}".toString()
-      withCredentials([usernamePassword(credentialsId: params.PUBLISH_SSH_CREDENTIAL, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-        // move to target folder, split and generate hash
-        def versionOnPublishDir = sh(script:"""SSHPASS=${PASSWORD} sshpass -e ssh -tt -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
-[ -d '${publishFilePath}' ] && exit 1
-exit 0
-EOF""", returnStatus:true)
-        echo "Exit code: ${versionOnPublishDir}"
-        if ("${versionOnPublishDir}" == "1") {
-          error "Zowe version ${params.ZOWE_RELEASE_VERSION} already exists (${publishFilePath})"
-        } else {
-          echo ">>>> Target publish folder doesn't exist, may proceed."
-        }
-      }
     }
   )
 
@@ -494,45 +449,6 @@ echo ===============================================
   )
 
   pipeline.createStage(
-    name          : "Publish",
-    isSkippable   : true,
-    stage         : {
-      def artifacts = findFiles(glob: '.release/*')
-      echo "All files in .release: ${artifacts}"
-      def fileUploads = []
-      artifacts.each {
-        if (it != '.' && it != '..') {
-          fileUploads.push('put ' + it)
-        }
-      }
-
-      // everything should be in .release folder
-      withCredentials([
-        usernamePassword(
-          credentialsId: params.PUBLISH_SSH_CREDENTIAL,
-          passwordVariable: 'PASSWORD',
-          usernameVariable: 'USERNAME'
-        )
-      ]) {
-          sh """SSHPASS=${PASSWORD} sshpass -e ssh -tt -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
-mkdir -p ${publishFilePath}
-exit 0
-EOF"""
-
-          // upload to publish server
-          sh """SSHPASS=${PASSWORD} sshpass -e sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${params.PUBLISH_SSH_PORT} ${USERNAME}@${params.PUBLISH_SSH_HOST} << EOF
-cd ${publishFilePath}
-${fileUploads.join("\n")}
-bye
-EOF"""
-
-      }
-    },
-    timeout: [time: 10, unit: 'MINUTES']
-  )
-
-
-  pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
     stage         : {
@@ -550,12 +466,8 @@ smpeMessage = """
 
 SMP/e build:
 ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']}
-or:
-https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['smpe-pax']['target']}
-
+and:
 ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']}
-or:
-https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['smpe-readme']['target']}
 
 """
       }
@@ -566,13 +478,9 @@ https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_REL
 ${source} is promoted as Zowe v${params.ZOWE_RELEASE_VERSION}, you can download from:
 
 ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
-or:
-https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['zowe']['target']}
 ${smpeMessage}
 The CLI Standalone Package is published here:
 ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
-or:
-https://projectgiza.org/builds/${params.ZOWE_RELEASE_CATEGORY}/${params.ZOWE_RELEASE_VERSION}/${releaseArtifacts['cli']['target']}
 
 *************************************************************************************************
       """

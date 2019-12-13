@@ -75,12 +75,12 @@
 //*                     12345678
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
 //         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
-//         SET ZOWEUSER=ZOWEUSR      * userid for Zowe started task
-//         SET  ZSSUSER=ZSSUSR       * userid for ZSS started task
-//         SET  AUXUSER=&ZSSUSER.    * userid for ZSS AUX started task
-//         SET  ZOWESTC=ZOWESVR      * Zowe started task name
-//         SET   ZSSSTC=ZOWEZSS      * ZSS started task name
-//         SET   AUXSTC=ZOWEAUX      * ZSS AUX started task name
+//         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
+//         SET XMEMUSER=ZWEXMUSR     * userid for xmem started task
+//         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
+//         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
+//         SET  XMEMSTC=ZWEXMSTC     * xmem started task name
+//         SET   AUXSTC=ZWEXASTC     * xmem AUX started task name
 //*                     12345678
 //*
 //*********************************************************************
@@ -208,9 +208,9 @@
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-  RLIST   FACILITY ZWES.IS ALL
-  RDEFINE FACILITY ZWES.IS UACC(NONE)
-  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+  RLIST   FACILITY ZWEX.IS ALL
+  RDEFINE FACILITY ZWEX.IS UACC(NONE)
+  PERMIT ZWEX.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -224,7 +224,7 @@
 /* SETROPTS RACLIST(UNIXPRIV) REFRESH                                */
 
 /* show results .................................................... */
-  RLIST   FACILITY ZWES.IS           ALL
+  RLIST   FACILITY ZWEX.IS           ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
 
 /* DEFINE ZSS SERVER PERMISIONS .................................... */
@@ -305,7 +305,7 @@ $$
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-/*TODO ACF2 permit Zowe server READ to FACILITY ZWES.IS              */
+/*TODO ACF2 permit Zowe server READ to FACILITY ZWEX.IS              */
 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
 /** permit Zowe main server to write persistent data                 */
@@ -411,9 +411,9 @@ $$
 /* - change "fac_owning_acid" to the acid that owns IBMFAC           */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-  TSS ADD(fac_owning_acid) IBMFAC(ZWES.IS)
-  TSS WHOHAS IBMFAC(ZWES.IS)
-  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
+  TSS ADD(fac_owning_acid) IBMFAC(ZWEX.IS)
+  TSS WHOHAS IBMFAC(ZWEX.IS)
+  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWEX.IS) ACCESS(READ)
 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
 /** permit Zowe main server to write persistent data                 */
