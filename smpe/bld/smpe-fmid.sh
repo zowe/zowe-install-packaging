@@ -18,6 +18,10 @@
 #%
 #% -c is required
 
+# require $mvsI.*     data sets with installed product
+# require $ussI/*     directory with product pax files              #*/
+# creates $mcsHlq.*   RELFILEs & SMPMCS
+
 prefix=ZWE                     # product prefix
 parts=parts.txt                # parts known by SMP/E
 mcs=SMPMCS.txt                 # SMPMCS header
@@ -60,6 +64,9 @@ done    # for dsn
 # create RELFILEs
 
 # TODO dynamically determine required RELFILE size
+# TODO save RELFILE info for PD
+# TODO save target & DLIB info for PD (data in ZWE3ALOC)
+# TODO ensure ZWE3ALOC target allocations match community build
 
 # F1 - only SMP/E install related
 dd="S${prefix}SAMP"

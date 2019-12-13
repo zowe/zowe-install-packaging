@@ -22,6 +22,11 @@
 # Gary L. Richtmeyer - Copyright 2001-2002 AT&T
 # http://www.vm.ibm.com/download/packages/descript.cgi?b2h
 
+# require $JAVA_HOME                Java home directory
+# trashes $ship/$pax                FMID pax
+# trashes $ship/$txt                FMID readme
+# creates $ship/$htm                PD in HTML (ASCII)
+# creates $ship/$zip                zip holding pax, readme & PD (ASCII)
 
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(cd $(dirname $0);pwd)   # script location
@@ -31,6 +36,41 @@ me=$(basename $0)              # script name
 #set -x                                                          #debug
 
 test "$debug" && echo && echo "> $me $@"
+
+# ---------------------------------------------------------------------
+# --- zip up pax, readme & PD
+# output:
+# - $ship/$zip  zip with pax, readme & PD
+# ---------------------------------------------------------------------
+function _zip
+{
+test "$debug" && echo && echo "> _zip $@"
+echo "-- creating FMID zip"
+
+# define names
+zip=${FMID}.zip
+pax=${FMID}.pax.Z
+txt=${FMID}.readme.txt
+htm=${FMID}.htm  # PD in HTML format
+test $debug && echo "zip=$zip"
+test $debug && echo "pax=$pax"
+test $debug && echo "txt=$txt"
+test $debug && echo "htm=$htm"
+
+# go to correct path to avoid path inclusion in zip
+_cmd cd $ship
+
+# create zip file (c: create, M: no manifest, f: file name)
+_cmd $JAVA_HOME/bin/jar -cMf $ship/$zip $pax $txt $htm
+
+# no more need for this
+_cmd rm -f $pax $txt # do NOT delete $htm
+
+# return to base
+_cmd --null cd -
+
+test "$debug" && echo "< _zip"
+}    # _zip
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
@@ -125,6 +165,12 @@ then
 fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+#TODO create cutomized PD
+_cmd touch $ship/${FMID}.htm
+
+# zip up FMID & PD
+_zip
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"

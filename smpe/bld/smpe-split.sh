@@ -25,7 +25,8 @@
 #% TSO PE BPX.SUPERUSER        CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
 
-# trashes $stage           directory with installed product
+# require $stage/*         directory with installed product
+# trashes $stage/*         directory with installed product
 # creates $ussI/*          directory with pax files                 #*/
 # creates $log/$manifest   manifest describing pax content
 # creates $log/$delta      delta of current and previous manifest

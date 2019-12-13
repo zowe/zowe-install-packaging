@@ -212,13 +212,13 @@ _stopAt smpe-fmid.sh $debug -c $YAML $opts
 _cmd $here/smpe-fmid.sh $debug -c $YAML $opts
 # result (final): $HLQ                             # rel-files & SMPMCS
 
-# create GIMZIP
+# create downloadable archive of FMID
 opts=""
 _stopAt smpe-gimzip.sh $debug -c $YAML $opts
 _cmd $here/smpe-gimzip.sh $debug -c $YAML $opts
-# result (final): $gimzip                           # SMPE pax & readme
+# result (final): $ship                             # SMPE pax & readme
 
-# create program directory
+# create program directory (describes SMP/E install of FMID)
 opts=""
 _stopAt smpe-pd.sh $debug -c $YAML $opts
 _cmd $here/smpe-pd.sh $debug -c $YAML $opts
