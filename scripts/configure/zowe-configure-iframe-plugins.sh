@@ -13,7 +13,12 @@
 
 if [ -z "$NODE_BIN" ]
 then
-  NODE_BIN=${NODE_HOME}/bin/node
+  if [ -n "$NODE_HOME" ]
+  then
+    NODE_BIN=${NODE_HOME}/bin/node
+  else
+    NODE_BIN=node
+  fi
 fi
 
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
