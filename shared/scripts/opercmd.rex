@@ -18,6 +18,7 @@
  *%          cmd is ignored when this option is specified
  *% -c name  (optional) console name, default user ID
  *% -d       (optional) enable debug messages
+ *% -v       (optional) enable verbose SDSF messages
  *% -w time  (optional) wait time (in sec), 0 blocks output, default 1
  *% cmd      command to execute
  *%
@@ -36,6 +37,8 @@
  *% - user must be authorized to use ISFSLASH, SDSF REXX interface to
  *%   issue operator command
  *%   class SDSF, profile ISFOPER.SYSTEM
+ *% - user must be authorized to retrieve operator command output
+ *%   class SDSF, profile ISFCMD.ODSP.ULOG.jesx
  *%
  *% Additional requirements when using TSO to issue the command:
  *% - user must be allowed to access console via TSO
@@ -66,6 +69,7 @@
 /* system variables .................................................*/
 Failure=1  /* TRUE */                              /* assume failure */
 Debug=0  /* FALSE */                     /* assume not in debug mode */
+Verbose=0  /* FALSE */                 /* assume not in verbose mode */
 Dsn=''                            /* data set to make APF authorized */
 ConsoleCmd=''                                  /* command to execute */
 ConsoleName=''                           /* non-default console name */
@@ -86,6 +90,7 @@ do while Args \= ''
     when Action == '-a' then parse var Args Dsn Args
     when Action == '-c' then parse var Args ConsoleName Args
     when Action == '-d' then Debug=1  /* TRUE */
+    when Action == '-v' then Verbose=1  /* TRUE */
     when Action == '-w' then parse var Args ConsoleDelay Args
     otherwise              /* not an option, must be part of command */
       ConsoleCmd=Action Args            /* put command back together */
@@ -135,9 +140,9 @@ else if Debug then say '. isfcalls RC' cRC.isfInit ,
 /* FIXME: get TSO based console to work
  *   in USS console only stays active within _tsoCmd, so we can not
  *   prep the console or grab the output.
- * IDEA: if USS and tsoConsoleON is successful (now we know permits 
- *   seem good), create a temp dataset with minuature rexx that preps 
- *   console, executes command, traps output and uses say to get it to 
+ * IDEA: if USS and tsoConsoleON is successful (now we know permits
+ *   seem good), create a temp dataset with minuature rexx that preps
+ *   console, executes command, traps output and uses say to get it to
  *   stdout so that we can grab it, and then deactivates console.
  * OTHER IDEA: leverage Legacy ISPF Gateway to drive TSO console
  */
@@ -195,7 +200,7 @@ exit Failure                                        /* LEAVE PROGRAM */
  * S0W1      2019168  20:10:37.23            -D TN
  * S0W1      2019168  20:10:37.25  TSU04192   IEE305I D        COMMAND INVALID
  */
-_sdsfConsoleCmd: PROCEDURE EXPOSE ExecName ExecEnv Debug
+_sdsfConsoleCmd: PROCEDURE EXPOSE ExecName ExecEnv Debug Verbose
 parse arg Cmd,Name,Delay
 if Debug then say '> _sdsfConsoleCmd' Cmd','Name','Delay
 
@@ -206,7 +211,7 @@ if Delay \= '' then ISFDELAY=Delay
 Cmd.1=Cmd            /* use stem method to support blanks in command */
 Cmd.0=1
 Option='WAIT'
-/*Option=Option 'VERBOSE'*/ /* extra ISFMSG2. details */    /* trace */
+if Verbose then Option=Option 'VERBOSE'    /* extra ISFMSG2. details */
 
 address SDSF ISFSLASH "(Cmd.) ("Option")"
 cRC=rc
@@ -216,8 +221,11 @@ cRC=rc
  * functions were authorized or that commands were executed.
  */
 if Debug then say '. isfslash RC' cRC _isfslashText(cRC)
-/*say '. isfmsg' ISFMSG*/                                   /* trace */
-/*do T=1 to SFMSG2.0; say '. isfmsg2' ISFMSG2.T; end*/      /* trace */
+if Verbose
+then do
+  say '. isfmsg' ISFMSG
+  do T=1 to ISFMSG2.0; say '. isfmsg2' ISFMSG2.T; end
+end    /* */
 
 if cRC <= 4
   then do T=1 to ISFULOG.0; say ISFULOG.T; end
@@ -283,8 +291,8 @@ then do
 
   /* get current values */
   cRsn2=_tsoCmd("CONSPROF")
-/* sample output: 
-IKJ55351I SOLDISPLAY(YES) SOLNUM(1000) UNSOLDISPLAY(YES) UNSOLNUM(1000)    
+/* sample output:
+IKJ55351I SOLDISPLAY(YES) SOLNUM(1000) UNSOLDISPLAY(YES) UNSOLNUM(1000)
 */
   if cRsn2 == 0
   then do
@@ -483,7 +491,7 @@ if Debug then say '> _tsoCmd' Cmd
 
 if ExecEnv == 'OMVS'        /* cmd,stdin,stdout,stderr[,stdenv] */
 then cRC=bpxwunix('tsocmd "'Cmd'"',,Line.,Trash.)
-else do                                       
+else do
   "Cmd"
   cRC=rc
 end    /* */
