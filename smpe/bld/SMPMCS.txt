@@ -1,5 +1,5 @@
 ++FUNCTION([FMID]) FILES(4) REWORK([DATE]) RFDSNPFX([RFDSNPFX])
-  DESC(Zowe Open Source Project)
+  DESCRIPTION(Zowe Open Source Project)
 /*
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v2.0 which
