@@ -1318,7 +1318,7 @@ do case "$opt" in
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
