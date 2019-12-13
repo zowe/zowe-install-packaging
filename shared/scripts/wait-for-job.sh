@@ -228,7 +228,7 @@ if test $(echo "$jobCC" | grep ^COMPLETED,RC=)
 then                                                  # job completed ?
   jobRC=$(echo "$jobCC" | sed 's/COMPLETED,RC=//')
   test "$debug" && echo "jobRC=$jobRC"
-  
+
   if test "$jobRC" -eq 0                              # completed, RC 0
   then
     test "$debug" && echo "job $jobName ($jobId) ended with CC $jobCC"
@@ -250,12 +250,12 @@ then
   test -n "$cancel" && _cmd --null $here/$cmdScript $debug "\$C${jobId}"
   echo "** ERROR $me job $jobName ($jobId) has not yet ended"
   rc=4
-  if test -n "$cancel" 
+  if test -n "$cancel"
   then
     _cmd --null $here/$cmdScript $debug "\$C${jobId}"
     _cmd sleep 5     # give system time to process cancel & close files
   fi    #
-else                                                     # already gone 
+else                                                     # already gone
   echo "** ERROR $me job $jobName ($jobId) purged before processing"
   rc=5
 fi    # report on completion
