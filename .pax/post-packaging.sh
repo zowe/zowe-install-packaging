@@ -44,7 +44,7 @@ FMID=AZWE${FMID_VERSION}
 
 # define constants specific for Marist server
 # to package on another server, we may need different settings
-TMPDIR=/ZOWE/tmp
+export TMPDIR=/ZOWE/tmp
 SMPE_BUILD_HLQ=ZOWEAD3
 SMPE_BUILD_VOLSER=ZOWE02
 
