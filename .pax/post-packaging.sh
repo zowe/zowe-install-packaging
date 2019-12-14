@@ -108,6 +108,9 @@ ${CURR_PWD}/smpe/bld/smpe.sh \
   -r "${SMPE_BUILD_ROOT}" \
   -v ${FMID_VERSION}
 
+# display all files left behind by SMPE build
+find ${SMPE_BUILD_ROOT} -print
+
 # remove data sets, unless build option requested to keep temp stuff
 if [ "$KEEP_TEMP_FOLDER" != "yes" ]; then
   datasets=$(${CURR_PWD}/smpe/bld/get-dsn.rex "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}.**" || true)
@@ -140,7 +143,7 @@ pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
 
 # find the final build results
 cd "${SMPE_BUILD_SHIP_DIR}"
-SMPE_FMID_ZIP="${FMID}.zip || true)" # keep in sync with smpe/bld/smpe-pd.sh
+SMPE_FMID_ZIP="${FMID}.zip)" # keep in sync with smpe/bld/smpe-pd.sh
 if [ ! -f "${SMPE_FMID_ZIP}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_FMID_ZIP build result '${SMPE_FMID_ZIP}'"
   exit 1
@@ -150,7 +153,7 @@ if [ ! -f "${SMPE_PTF_ZIP}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PTF_ZIP build result '${SMPE_PTF_ZIP}'"
   exit 1
 fi
-SMPE_PD_HTM="${FMID}.htm || true)" # keep in sync with smpe/bld/smpe-pd.sh
+SMPE_PD_HTM="${FMID}.htm)" # keep in sync with smpe/bld/smpe-pd.sh
 if [ ! -f "${SMPE_PD_HTM}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PD_HTM build result '${SMPE_PD_HTM}'"
   exit 1
