@@ -88,6 +88,16 @@ cat "${INPUT_TXT}"
 
 mkdir -p ${SMPE_BUILD_ROOT}
 
+echo
+echo "+-------------------------+"
+echo "|+-----------------------+|"
+echo "||                       ||"
+echo "||  SMPE build starting  ||"
+echo "||                       ||"
+echo "|+-----------------------+|"
+echo "+-------------------------+"
+echo
+
 # start SMPE build
 #% required
 #% -h hlq        use the specified high level qualifier
@@ -108,6 +118,16 @@ ${CURR_PWD}/smpe/bld/smpe.sh \
   -r "${SMPE_BUILD_ROOT}" \
   -v ${FMID_VERSION}
 
+echo
+echo "+----------------------+"
+echo "|+--------------------+|"
+echo "||                    ||"
+echo "||  SMPE build ended  ||"
+echo "||                    ||"
+echo "|+--------------------+|"
+echo "+----------------------+"
+echo
+
 # display all files left behind by SMPE build
 find ${SMPE_BUILD_ROOT} -print
 
@@ -127,13 +147,12 @@ if [ "$KEEP_TEMP_FOLDER" != "yes" ]; then
   fi
 fi
 
-# we no longer need the uppercase tempdir, so this should be obsolete
+# TODO we no longer need the uppercase tempdir, so this should be obsolete
 # remove tmp folder
 UC_CURR_PWD=$(echo "${CURR_PWD}" | tr [a-z] [A-Z])
 if [ "${UC_CURR_PWD}" != "${CURR_PWD}" ]; then
   # CURR_PWD will be removed after build automatically, we just need to delete
   # the extra temp folder in uppercase created by GIMZIP
-  echo rm -fr "${UC_CURR_PWD}" # show in log whether this is still triggered
   rm -fr "${UC_CURR_PWD}"
 fi
 
@@ -143,7 +162,7 @@ pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
 
 # find the final build results
 cd "${SMPE_BUILD_SHIP_DIR}"
-SMPE_FMID_ZIP="${FMID}.zip)" # keep in sync with smpe/bld/smpe-pd.sh
+SMPE_FMID_ZIP="${FMID}.zip" # keep in sync with smpe/bld/smpe-pd.sh
 if [ ! -f "${SMPE_FMID_ZIP}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_FMID_ZIP build result '${SMPE_FMID_ZIP}'"
   exit 1
@@ -153,7 +172,7 @@ if [ ! -f "${SMPE_PTF_ZIP}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PTF_ZIP build result '${SMPE_PTF_ZIP}'"
   exit 1
 fi
-SMPE_PD_HTM="${FMID}.htm)" # keep in sync with smpe/bld/smpe-pd.sh
+SMPE_PD_HTM="${FMID}.htm" # keep in sync with smpe/bld/smpe-pd.sh
 if [ ! -f "${SMPE_PD_HTM}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PD_HTM build result '${SMPE_PD_HTM}'"
   exit 1
