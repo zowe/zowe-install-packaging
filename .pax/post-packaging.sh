@@ -182,9 +182,13 @@ fi
 if [ -f ${CURR_PWD}/smpe/service/ptf-bucket.txt ]; then
   TO_PUBLISH=${SMPE_PTF_ZIP}
   NO_PUBLISH=${SMPE_FMID_ZIP}
+  # do not alter existing PD in docs, wipe content of the new one
+  rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
+  touch "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
 else
   TO_PUBLISH=${SMPE_FMID_ZIP}
   NO_PUBLISH=${SMPE_PTF_ZIP}
+  # doc build pipeline must pick up PD for inclusion
 fi
 
 # stage build output for upload to artifactory
@@ -198,5 +202,5 @@ mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}" "pd.htm"
 # keep fixed name for PD to simplify automated processing by doc build
 echo "mv no-publish.zip ${NO_PUBLISH}" > "rename-back-no-publish.sh.1047"
 iconv -f IBM-1047 -t ISO8859-1 rename-back-no-publish.sh.1047 > rename-back-no-publish.sh
-echo "mv publish.zip    ${TO_PUBLISH}" > "rename-back.sh-publish.1047"
+echo "mv publish.zip    ${TO_PUBLISH}" > "rename-back-publish.1047.sh"
 iconv -f IBM-1047 -t ISO8859-1 rename-back-publish.sh.1047 > rename-back-publish.sh
