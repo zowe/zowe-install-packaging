@@ -189,9 +189,9 @@ fi
 
 # stage build output for upload to artifactory
 cd "${CURR_PWD}"
-mv "${SMPE_BUILD_SHIP_DIR}/${NO_PUBLISH}  no-publish.zip"
-mv "${SMPE_BUILD_SHIP_DIR}/${TO_PUBLISH}  publish.zip"
-mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM} pd.htm"
+mv "${SMPE_BUILD_SHIP_DIR}/${NO_PUBLISH}"  "no-publish.zip"
+mv "${SMPE_BUILD_SHIP_DIR}/${TO_PUBLISH}"  "publish.zip"
+mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}" "pd.htm"
 
 # prepare rename to original name
 # rename of no-publish and publish must be done seperately to know what is what
