@@ -330,6 +330,34 @@ test "$debug" && echo "< _copyUssMvs"
 }    # _copyUssMvs
 
 # ---------------------------------------------------------------------
+# --- delete data sets
+# $1: HLQ of data sets to delete
+# ---------------------------------------------------------------------
+function _deleteDatasets
+{
+test "$debug" && echo && echo "> _deleteDatasets $@"
+
+# show everything in debug mode
+test "$debug" && $here/$csiScript -d "$1.**"
+# get data set list (no debug mode to avoid debug messages)
+datasets=$($here/$csiScript "$1.**")
+# returns 0 for match, 1 for no match, 8 for error
+if test $? -gt 1
+then
+  echo "$datasets"                       # variable holds error message
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+# delete data sets
+test "$debug" && echo "for dsn in \$datasets"
+for dsn in $datasets
+do
+  _cmd2 --null tsocmd "DELETE '$dsn'"
+done    # for dsn
+
+test "$debug" && echo "< _deleteDatasets"
+}    # _deleteDatasets
+
+# ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
 #     stderr is always trashed
 # $1: if --null then trash stdout, parm is removed when present
@@ -471,12 +499,17 @@ echo "-- input MVS: $mvsI"
 echo "-- input USS: $ussI"
 echo "-- output:    $mcsHlq"
 
-# ensure SMPMCS matches RELFILE content
+# ensure SMPMCS matches staged content
 _verify
 # create RELFILEs
 _relFiles
 # create SMPMCS
 _smpmcs
+
+# we are done with these, clean up
+_cmd cd $here                         # make sure we are somewhere else
+_cmd rm -rf $ussI
+_deleteDatasets "$mvsI"
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"
