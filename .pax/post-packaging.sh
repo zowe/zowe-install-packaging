@@ -172,8 +172,9 @@ mv "${SMPE_BUILD_SHIP_DIR}/${TO_PUBLISH}  publish.zip"
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM} pd.htm"
 
 # prepare rename to original name
-echo "mv no-publish.zip ${NO_PUBLISH}" >  "rename-back.sh.1047"
-echo "mv publish.zip    ${TO_PUBLISH}" >> "rename-back.sh.1047"
+# rename of no-publish and publish must be done seperately to know what is what
 # keep fixed name for PD to simplify automated processing by doc build
-#echo "mv pd.htm         ${SMPE_PD_HTM}" >> "rename-back.sh.1047"
-iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
+echo "mv no-publish.zip ${NO_PUBLISH}" > "rename-back-no-publish.sh.1047"
+iconv -f IBM-1047 -t ISO8859-1 rename-back-no-publish.sh.1047 > rename-back-no-publish.sh
+echo "mv publish.zip    ${TO_PUBLISH}" > "rename-back.sh-publish.1047"
+iconv -f IBM-1047 -t ISO8859-1 rename-back-publish.sh.1047 > rename-back-publish.sh
