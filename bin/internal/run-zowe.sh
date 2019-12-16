@@ -122,6 +122,13 @@ then
   mv ${WORKSPACE_DIR}/active_configuration.cfg ${WORKSPACE_DIR}/backups/backup_configuration.${PREVIOUS_DATE}.cfg
 fi
 
+# Keep config dir for zss within permissions it accepts
+if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
+then
+  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
+  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/*
+fi
+
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
 ZOWE_VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
