@@ -156,7 +156,7 @@ if [ "${UC_CURR_PWD}" != "${CURR_PWD}" ]; then
   rm -fr "${UC_CURR_PWD}"
 fi
 
-# save current build log, will be placed in artifactory
+# save current build log directory, will be placed in artifactory
 cd "${SMPE_BUILD_LOG_DIR}"
 pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
 
@@ -179,28 +179,32 @@ if [ ! -f "${SMPE_PD_HTM}" ]; then
 fi
 
 # if ptf-bucket.txt exists then publish PTF, otherwise publish FMID
+cd "${SMPE_BUILD_SHIP_DIR}"
 if [ -f ${CURR_PWD}/smpe/service/ptf-bucket.txt ]; then
-  TO_PUBLISH=${SMPE_PTF_ZIP}
-  NO_PUBLISH=${SMPE_FMID_ZIP}
+  tar -cf ${CURR_PWD}/publish.tar ${SMPE_PTF_ZIP}
   # do not alter existing PD in docs, wipe content of the new one
   rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
   touch "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
 else
-  TO_PUBLISH=${SMPE_FMID_ZIP}
-  NO_PUBLISH=${SMPE_PTF_ZIP}
+  tar -cf ${CURR_PWD}/publish.tar ${SMPE_FMID_ZIP}
   # doc build pipeline must pick up PD for inclusion
 fi
 
 # stage build output for upload to artifactory
 cd "${CURR_PWD}"
-mv "${SMPE_BUILD_SHIP_DIR}/${NO_PUBLISH}"  no-publish.zip
-mv "${SMPE_BUILD_SHIP_DIR}/${TO_PUBLISH}"  publish.zip
+mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_FMID_ZIP}"  fmid.zip
+mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PTF_ZIP}"  ptf.zip
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}" pd.htm
 
 # prepare rename to original name
-# rename of no-publish and publish must be done seperately to know what is what
-# keep fixed name for PD to simplify automated processing by doc build
-echo "mv no-publish.zip ${NO_PUBLISH}" > rename-back-no-publish.sh.1047
-iconv -f IBM-1047 -t ISO8859-1 rename-back-no-publish.sh.1047 > rename-back-no-publish.sh
-echo "mv publish.zip    ${TO_PUBLISH}" > rename-back-publish.sh.1047
-iconv -f IBM-1047 -t ISO8859-1 rename-back-publish.sh.1047 > rename-back-publish.sh
+# leave fixed name for PD to simplify automated processing by doc build
+echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
+echo "mv ptf.zip ${SMPE_PTF_ZIP}" > rename-back.sh.1047
+iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
+
+# files to be uploaded to artifactory:
+# ${CURR_PWD}/smpe-build-logs.pax.Z
+# ${CURR_PWD}/publish.tar   -> holds zip that goes to zowe.org
+# ${CURR_PWD}/fmid.zip
+# ${CURR_PWD}/ptf.zip
+# ${CURR_PWD}/pd.htm        -> can be a null file
