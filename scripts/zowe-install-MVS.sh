@@ -47,9 +47,9 @@ done
 # >>>>
 # adjust ZSS samples
 rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXASTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSCH
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISTC
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESASTC
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH
 
 if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG
 then
