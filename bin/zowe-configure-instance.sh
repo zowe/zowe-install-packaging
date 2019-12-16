@@ -130,14 +130,20 @@ check_existing_instance_for_updates() {
   fi
 }
 
-echo "Creating zowe instance in ${INSTANCE_DIR}"
-$(mkdir -p ${INSTANCE_DIR}/bin/internal)
-DIRECTORY_CREATE_RC=$?
-if [[ $DIRECTORY_CREATE_RC != "0" ]]
+if [[ ! -d ${INSTANCE_DIR} ]]
 then
-  echo "We could not create the instance directory and sub-directories in ${INSTANCE_DIR}. Please check permissions and re-run."
-  exit 1
+  echo "Creating zowe instance in ${INSTANCE_DIR}"
+  $(mkdir -p ${INSTANCE_DIR})
+  DIRECTORY_CREATE_RC=$?
+  if [[ $DIRECTORY_CREATE_RC != "0" ]]
+  then
+    echo "We could not create the instance directory and sub-directories in ${INSTANCE_DIR}. Please check permissions and re-run."
+    exit 1
+  fi
 fi
+
+chmod 777 ${INSTANCE_DIR} # Make top level accessible to Zowe processes, sections can be locked down later
+mkdir -p ${INSTANCE_DIR}/bin/internal
 
 LOG_DIR=${INSTANCE_DIR}/logs
 mkdir -p ${LOG_DIR}
@@ -219,7 +225,6 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod -R 777 ${INSTANCE_DIR}
 chmod -R 755 ${INSTANCE_DIR}/bin
 
 echo "zowe-configure-instance.sh completed">> $LOG_FILE
