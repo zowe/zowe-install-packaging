@@ -219,7 +219,8 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod -R 777 ${INSTANCE_DIR}
+chmod 777 ${INSTANCE}
+chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 
 echo "zowe-configure-instance.sh completed">> $LOG_FILE
