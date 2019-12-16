@@ -41,6 +41,11 @@ then
   exit 1
 fi
 
+echo_and_log() {
+  echo "$1"
+  echo "$1" >> ${LOG_FILE}
+}
+
 create_new_instance() {
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
@@ -90,7 +95,7 @@ create_new_instance() {
 }
 
 check_existing_instance_for_updates() {
-  echo "Checking existing ${INSTANCE} for updated properties" | tee -a ${LOG_FILE}
+  echo_and_log "Checking existing ${INSTANCE} for updated properties"
 
   while read -r line
   do
@@ -122,11 +127,11 @@ check_existing_instance_for_updates() {
       -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
       -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" )
 
-    echo "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND" | tee -a ${LOG_FILE}
+    echo_and_log "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND"
     echo "\n$LINES_TO_APPEND" >> $INSTANCE
     echo "Properties added, please review these before starting zowe."
   else
-    echo "No updates required" | tee -a ${LOG_FILE}
+    echo_and_log "No updates required"
   fi
 }
 
@@ -219,7 +224,7 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod 777 ${INSTANCE}
+chmod 777 ${INSTANCE_DIR}
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 
