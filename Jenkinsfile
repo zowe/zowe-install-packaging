@@ -40,8 +40,8 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
     ],
     artifactory: [
-      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
-      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+      url                        : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_ROBOT_CREDENTIAL,
     ],
     pax: [
       sshHost                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_HOST,
