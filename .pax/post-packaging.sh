@@ -61,7 +61,7 @@ LAST_BUILD_LOG=$(ls -1 ${CURR_PWD}/smpe/smpe-build-logs* || true)
 if [ -n "${LAST_BUILD_LOG}" ]; then
   mkdir -p "${SMPE_BUILD_LOG_DIR}"
   cd "${SMPE_BUILD_LOG_DIR}"
-  pax -rf "${CURR_PWD}/${LAST_BUILD_LOG}" *
+  pax -rf "${LAST_BUILD_LOG}" *
   cd "${CURR_PWD}"
 fi
 
