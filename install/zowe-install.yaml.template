@@ -42,7 +42,7 @@ zlux-server:
 terminals:
   sshPort=22
   telnetPort=23
-# security=tls
+# security=tls # The security type of the tn3270 connection - valid values are blank(''), or 'tls'. Defaults to blank
 
 keystore:
   keystoreDirectory=/global/zowe/keystore
