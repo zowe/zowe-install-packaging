@@ -181,12 +181,12 @@ fi
 # if ptf-bucket.txt exists then publish PTF, otherwise publish FMID
 cd "${SMPE_BUILD_SHIP_DIR}"
 if [ -f ${CURR_PWD}/smpe/service/ptf-bucket.txt ]; then
-  tar -cf ${CURR_PWD}/publish.tar ${SMPE_PTF_ZIP}
+  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_PTF_ZIP}
   # do not alter existing PD in docs, wipe content of the new one
   rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
   touch "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
 else
-  tar -cf ${CURR_PWD}/publish.tar ${SMPE_FMID_ZIP}
+  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_FMID_ZIP}
   # doc build pipeline must pick up PD for inclusion
 fi
 
@@ -204,7 +204,7 @@ iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
 # files to be uploaded to artifactory:
 # ${CURR_PWD}/smpe-build-logs.pax.Z
-# ${CURR_PWD}/publish.tar   -> holds zip that goes to zowe.org
+# ${CURR_PWD}/zowe-smpe.tar   -> holds zip that goes to zowe.org
 # ${CURR_PWD}/fmid.zip
 # ${CURR_PWD}/ptf.zip
 # ${CURR_PWD}/pd.htm        -> can be a null file
