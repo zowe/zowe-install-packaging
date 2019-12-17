@@ -199,7 +199,7 @@ mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}" pd.htm
 # prepare rename to original name
 # leave fixed name for PD to simplify automated processing by doc build
 echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
-echo "mv ptf.zip ${SMPE_PTF_ZIP}" > rename-back.sh.1047
+echo "mv ptf.zip ${SMPE_PTF_ZIP}" >> rename-back.sh.1047
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
 # files to be uploaded to artifactory:
