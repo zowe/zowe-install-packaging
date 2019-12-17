@@ -107,12 +107,14 @@ echo
 #% optional
 #% -a alter.sh   execute script before/after install to alter setup
 #% -d            enable debug messages
+#% -E success    exit with RC 0, create file on successful completion
 #% -V volume     allocate data sets on specified volume(s)
 
 ${CURR_PWD}/smpe/bld/smpe.sh \
-  -V "${SMPE_BUILD_VOLSER}" \
   -a ${CURR_PWD}/smpe/bld/alter.sh \
   -d \
+  -E "${SMPE_BUILD_SHIP_DIR}/success" \
+  -V "${SMPE_BUILD_VOLSER}" \
   -h "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" \
   -i "${CURR_PWD}/${INPUT_TXT}" \
   -r "${SMPE_BUILD_ROOT}" \
@@ -145,6 +147,13 @@ if [ "$KEEP_TEMP_FOLDER" != "yes" ]; then
       tsocmd "DELETE '$dsn'" || true
     done    # for dsn
   fi
+fi
+
+# see if SMPE build completed successfully
+# MUST be done AFTER data set cleanup 
+if [ ! -f "${SMPE_BUILD_SHIP_DIR}/success" ]; then
+  echo "[$SCRIPT_NAME][ERROR] SMPE build did not complete successfully"
+  exit 1
 fi
 
 # TODO we no longer need the uppercase tempdir, so this should be obsolete

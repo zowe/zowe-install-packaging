@@ -17,6 +17,7 @@
 #% -a alter.sh   execute script before install to alter setup    #debug
 #% -c smpe.yaml  use the specified config file
 #% -d            enable debug messages
+#% -E success    exit with RC 0, create file on successful completion
 #% -f fileCount  expected number of input (build output) files
 #% -h hlq        use the specified high level qualifier
 #%               .$FMID is automatically added
@@ -113,7 +114,7 @@ sTaTuS=$?
 if test $sTaTuS -ne 0
 then
   echo "** ERROR $me '$@' ended with status $sTaTuS"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit $errorRC                         # EXIT
 fi    #
 }    # _cmd
 
@@ -144,15 +145,18 @@ _cmd umask 0022                                  # similar to chmod 755
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset alter YAML count HLQ input ROOT stopAt VOLSER VRM fmid1 fmid2
+unset alter YAML SuCcEsS count HLQ input ROOT stopAt VOLSER VRM fmid1 fmid2
 # do NOT unset debug
+errorRC=8  # default RC 8 on error
 
 # get startup arguments
-while getopts a:c:f:h:i:r:s:V:v:1:2:?d opt
+while getopts a:c:E:f:h:i:r:s:V:v:1:2:?d opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
   c)   export YAML="$OPTARG";;
   d)   export debug="-d";;
+  E)   export SuCcEsS="$OPTARG"
+       export errorRC="0";; 
   f)   export count="$OPTARG";;
   h)   export HLQ="$OPTARG";;
   i)   export input="$OPTARG";;
@@ -164,10 +168,13 @@ do case "$opt" in
   2)   export fmid2="$OPTARG";;
   [?]) _displayUsage
        test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
-       test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
+       test ! "$IgNoRe_ErRoR" && exit $errorRC;;                  # EXIT
   esac    # $opt
 done    # getopts
 shift $(($OPTIND-1))
+
+# avoid false signal that we ended successfully
+test -f "$SuCcEsS" && _cmd rm -f "$SuCcEsS"
 
 # set envvars
 . $here/$cfgScript -c -v                      # call with shell sharing
@@ -175,7 +182,7 @@ if test $rc -ne 0
 then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit $errorRC                         # EXIT
 fi    #
 
 # validate startup arguments
@@ -183,7 +190,7 @@ if test ! -f "$input"
 then
   _displayUsage
   echo "** ERROR $me -i $input is not a file"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit $errorRC                         # EXIT
 fi    #
 
 # skip testing stopAt
@@ -229,6 +236,9 @@ opts=""
 _stopAt smpe-service.sh $debug -c $YAML $opts
 _cmd $here/smpe-service.sh $debug -c $YAML $opts
 # result (final): $HLQ                                         # sysmod
+
+#  signal that we ended successfully
+test -n "$SuCcEsS" && _cmd touch "$SuCcEsS"
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"
