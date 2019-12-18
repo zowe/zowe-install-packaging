@@ -101,12 +101,13 @@ then
   script_exit 6
 fi
 
-echo Check name of $Imember PROC >> $LOG_FILE
-cat "//'$samplib($Imember)'" | grep -i "//$Imember *PROC " 1>> $LOG_FILE 2>> $LOG_FILE
+echo Check name of $Imember PROC | tee -a ${LOG_FILE}
+cat "//'$samplib($Imember)'" | grep -i "^//$Imember *PROC " 1>> $LOG_FILE 2>> $LOG_FILE
 if [[ $? -ne 0 ]]
 then
   echo Did not find \"//$Imember\" in "$samplib($Imember)" | tee -a ${LOG_FILE}
-  script_exit 7
+  echo PROC statement is : | tee -a ${LOG_FILE}
+  cat "//'$samplib($Imember)'" | grep "^//.* PROC " | tee -a ${LOG_FILE}
 fi
 
 cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
@@ -132,7 +133,8 @@ then
       script_exit 10
     fi 
 
-    procs=`../internal/opercmd '$d proclib'|grep DSNAME|sed -e 's/.*DSNAME=\(.*\)/\1/' -e 's/)//' -e 's/,//'`
+    # Obtain list of PROCLIBs in JES concatenation
+    procs=`../internal/opercmd '$d proclib' | sed -n 's/.*DSNAME=\([^,^)^ ]*\).*/\1/p' | sort | uniq `
     echo "  "Candidate PROCLIBs = $procs >> $LOG_FILE
     for candidate in $procs
     do

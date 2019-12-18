@@ -17,9 +17,9 @@
 #
 # ZWE.SZWESAMP:
 #
-#     ZWEXASTC  --> PROCLIB
-#     ZWEXMP00  --> PARMLIB
-#     ZWEXMSTC  --> PROCLIB
+#     ZWESASTC  --> PROCLIB
+#     ZWESIP00  --> PARMLIB
+#     ZWESISTC  --> PROCLIB
 
 # Needs ./zowe-copy-to-JES.sh for PROCLIB
 
@@ -51,12 +51,12 @@ cat <<EndOfUsage
     Parm name     Value e.g.              Meaning
     ---------     ----------              -------
  1  datasetPrefix {userid}.ZWE            Dataset prefix of source library .SZWEAUTH where members ZWESIS01,ZWESAUX are located
-                                          and of source library .SZWESAMP where members ZWEXASTC,ZWEXMSTC,ZWEXMP00 are located.
+                                          and of source library .SZWESAMP where members ZWESASTC, ZWESIP00 and ZWESISTC are located.
  2  loadlib       {hlq}.ZIS.SZISLOAD      DSN of target LOADLIB where members ZWESIS01,ZWESAUX will be placed. 
                   
- 3  parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWEXMP00 will be placed. 
+ 3  parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWESIP00 will be placed. 
  
- 4  proclib       USER.PROCLIB            DSN of target PROCLIB where members ZWEXASTC,ZWEXMSTC will be placed. 
+ 4  proclib       USER.PROCLIB            DSN of target PROCLIB where members ZWESASTC and ZWESISTC will be placed. 
                   (omitted)               PROCLIB will be selected from JES PROCLIB concatenation.
 
 EndOfUsage
@@ -127,13 +127,13 @@ do
     script_exit 5
   fi
 
-  echo "Copying load module ${loadmodule}"
+  echo "Copying load module ${loadmodule}" | tee -a ${LOG_FILE}
   if cp -X "//'${authlib}(${loadmodule})'"  "//'${loadlib}(${loadmodule})'" 
   then
-    echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}"
+    echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}" | tee -a ${LOG_FILE}
     rc=0
   else
-    echo "Error:  module ${loadmodule} has not been copied to dataset ${loadlib}"
+    echo "Error:  module ${loadmodule} has not been copied to dataset ${loadlib}" | tee -a ${LOG_FILE}
     script_exit 6
   fi
 done
@@ -141,8 +141,9 @@ done
 
 
 # PARMLIB  - - - - - - - - - - - - - - - - 
-# parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWEXMP00
-ZWEXMP00=ZWEXMP00
+# parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWEXMP00 goes
+# The suffix (last 2 digits) can be adjusted in the STC JCL, but the prefix must be ZWESIP
+ZWEXMP00=ZWESIP00  # for ZWESIS01
   tsocmd listds "'$samplib' members" 2>> $LOG_FILE | grep "  $ZWEXMP00$" 1>> $LOG_FILE 2>> $LOG_FILE
   if [[ $? -ne 0 ]]
   then
@@ -150,19 +151,20 @@ ZWEXMP00=ZWEXMP00
     script_exit 7
   fi
 
-  echo "Copying SAMPLIB member ${ZWEXMP00}"
+  echo "Copying SAMPLIB member ${ZWEXMP00}" | tee -a ${LOG_FILE}
   if cp "//'${samplib}(${ZWEXMP00})'"  "//'${parmlib}(${ZWEXMP00})'" 
   then
-    echo "Info:  member ${ZWEXMP00} has been successfully copied to dataset ${parmlib}"
+    echo "Info:  member ${ZWEXMP00} has been successfully copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
     # rc=0
   else
-    echo "Error:  member ${ZWEXMP00} has not been copied to dataset ${parmlib}"
+    echo "Error:  member ${ZWEXMP00} has not been copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
+    echo "Check if PARMLIB dataset ${parmlib} is in use by xmem server or another job or user" | tee -a ${LOG_FILE}
     script_exit 8
   fi
 
 # PROCLIB  - - - - - - - - - - - - - - - - 
-ZWEXASTC=ZWEXASTC
-ZWEXMSTC=ZWEXMSTC
+ZWEXASTC=ZWESASTC  # for ZWESAUX
+ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 ./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC
 ./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC

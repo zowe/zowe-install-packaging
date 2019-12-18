@@ -9,7 +9,7 @@
 # Copyright IBM Corporation 2019, 2019
 ################################################################################
 
-# Function: Copy datasetPrefx.SZWESAMP(member) to JES concatenation
+# Function: Copy Zowe server PROC from datasetPrefx.SZWESAMP(ZWESVSTC) to JES concatenation
 # Needs ./zowe-copy-to-JES.sh
 script_exit(){
   echo exit $1 | tee -a ${LOG_FILE}
