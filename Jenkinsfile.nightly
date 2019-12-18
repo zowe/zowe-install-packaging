@@ -26,14 +26,12 @@ node('ibm-jenkins-slave-nvm') {
 
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
-  def sourceSmpeReadmeInfo
   def cliSourceBuildInfo
 
   def testRegBuildErrorUrl
   def testSmpeBuildErrorUrl
 
   def targetSmpeFullPath
-  def targetSmpeReadmeFullPath
   def targetRegFullPath
   def cliTargetFullPath
 
@@ -76,7 +74,7 @@ node('ibm-jenkins-slave-nvm') {
       // check artifactory for latest build with SMP/e
       try {
         def latestBuild = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.tar",
           'build-name'   : ZOWE_BUILD_NAME
         ])
 
@@ -95,7 +93,7 @@ node('ibm-jenkins-slave-nvm') {
           echo "Will need to re-build."
         }
       } catch (es) {
-        echo "getArtifact AZWE*.pax.Z failed: ${es}"
+        echo "getArtifact zowe-smpe-*.tar failed: ${es}"
         echo "Will need to re-build."
       }
 
@@ -138,7 +136,7 @@ node('ibm-jenkins-slave-nvm') {
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.tar",
           'build-name'   : ZOWE_BUILD_NAME
         ])
       } else {
@@ -156,11 +154,6 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       sourceRegBuildInfo = pipeline.artifactory.getArtifact([
         'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
-        'build-name'   : ZOWE_BUILD_NAME,
-        'build-number' : sourceSmpeBuildInfo['build.number']
-      ])
-      sourceSmpeReadmeInfo = pipeline.artifactory.getArtifact([
-        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/AZWE*.txt",
         'build-name'   : ZOWE_BUILD_NAME,
         'build-number' : sourceSmpeBuildInfo['build.number']
       ])
@@ -275,17 +268,12 @@ node('ibm-jenkins-slave-nvm') {
     isSkippable   : true,
     shouldExecute : {
       return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] &&
-             sourceSmpeReadmeInfo && sourceSmpeReadmeInfo['path'] &&
              sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     stage         : {
       // promote Zowe nightly build
       targetSmpeFullPath = pipeline.artifactory.promote([
         'source'     : sourceSmpeBuildInfo,
-        'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
-      ])
-      targetSmpeReadmeFullPath = pipeline.artifactory.promote([
-        'source'     : sourceSmpeReadmeInfo,
         'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
       ])
       targetRegFullPath = pipeline.artifactory.promote([
@@ -311,8 +299,7 @@ node('ibm-jenkins-slave-nvm') {
       def slackColor = 'good'
       def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeReadmeFullPath}"
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n"
       if (cliSourceBuildInfo && cliTargetFullPath) {
         message += "\n\n" +
                     "The CLI Standalone Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
