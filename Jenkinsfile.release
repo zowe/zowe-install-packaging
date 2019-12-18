@@ -108,8 +108,8 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
     ],
     artifactory: [
-      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
-      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+      url                        : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_ROBOT_CREDENTIAL,
     ]
   )
 
@@ -465,9 +465,9 @@ echo ===============================================
 smpeMessage = """
 
 SMP/e build:
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']}
 and:
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']}
 
 """
       }
@@ -477,10 +477,10 @@ ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['
 
 ${source} is promoted as Zowe v${params.ZOWE_RELEASE_VERSION}, you can download from:
 
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
 ${smpeMessage}
 The CLI Standalone Package is published here:
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
 
 *************************************************************************************************
       """
