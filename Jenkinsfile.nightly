@@ -60,8 +60,8 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
     ],
     artifactory: [
-      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
-      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+      url                        : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_ROBOT_CREDENTIAL,
     ]
   )
 
@@ -288,10 +288,10 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       def slackColor = 'good'
       def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
-                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
-                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
                     "The CLI Standalone Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
-                    "${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${cliTargetFullPath}"
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
 
       if (testRegBuildErrorUrl) {
         slackColor = 'warning'
