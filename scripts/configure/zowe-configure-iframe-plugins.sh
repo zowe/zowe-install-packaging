@@ -12,6 +12,8 @@
 # $ZOWE_APIM_GATEWAY_PORT
 # $NODE_BIN
 
+. ${ZOWE_ROOT_DIR}/scripts/utils/configure-node.sh
+
 if [ -z "$NODE_BIN" ]
 then
   NODE_BIN=${NODE_HOME}/bin/node

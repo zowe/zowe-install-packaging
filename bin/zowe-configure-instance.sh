@@ -41,6 +41,11 @@ then
   exit 1
 fi
 
+echo_and_log() {
+  echo "$1"
+  echo "$1" >> ${LOG_FILE}
+}
+
 create_new_instance() {
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
@@ -79,6 +84,7 @@ create_new_instance() {
       -e "s#ZOWE_ZLUX_TELNET_PORT=23#ZOWE_ZLUX_TELNET_PORT=${ZOWE_ZLUX_TELNET_PORT}#" \
       -e "s#ZOWE_ZLUX_SECURITY_TYPE=#ZOWE_ZLUX_SECURITY_TYPE=${ZOWE_ZLUX_SECURITY_TYPE}#" \
       -e "s#ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC#ZOWE_SERVER_PROCLIB_MEMBER=${ZOWE_SERVER_PROCLIB_MEMBER}#" \
+      -e "s#KEYSTORE_DIRECTORY=/global/zowe/keystore#KEYSTORE_DIRECTORY=${KEYSTORE_DIRECTORY}#" \
       "${INSTANCE}" \
       > "${INSTANCE_DIR}/instance.yaml.env"
       mv "${INSTANCE_DIR}/instance.yaml.env" "${INSTANCE}"
@@ -89,7 +95,7 @@ create_new_instance() {
 }
 
 check_existing_instance_for_updates() {
-  echo "Checking existing ${INSTANCE} for updated properties" | tee -a ${LOG_FILE}
+  echo_and_log "Checking existing ${INSTANCE} for updated properties"
 
   while read -r line
   do
@@ -120,12 +126,12 @@ check_existing_instance_for_updates() {
       -e "s#{{external_certificate}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
       -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
       -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" )
-  
-    echo "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND" | tee -a ${LOG_FILE}
+
+    echo_and_log "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND"
     echo "\n$LINES_TO_APPEND" >> $INSTANCE
     echo "Properties added, please review these before starting zowe."
-  else 
-    echo "No updates required" | tee -a ${LOG_FILE}
+  else
+    echo_and_log "No updates required"
   fi
 }
 
@@ -155,7 +161,7 @@ echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
 if [[ -f "${INSTANCE}" ]]
 then
   check_existing_instance_for_updates
-else 
+else
   create_new_instance
 fi
 
@@ -173,9 +179,27 @@ done < \${INSTANCE_DIR}/instance.env
 EOF
 echo "Created ${INSTANCE_DIR}/bin/read-instance.sh">> $LOG_FILE
 
+cat <<EOF >${INSTANCE_DIR}/bin/read-keystore.sh
+# Requires KEYSTORE_DIRECTORY to be set
+# Read in properties by executing, then export all the keys so we don't need to shell share
+
+# exit immediately if file cannot be accessed
+. \${KEYSTORE_DIRECTORY}/zowe-certificates.env || exit 1
+
+
+while read -r line
+do
+test -z "\${line%%#*}" && continue      # skip line if first char is #
+key=\${line%%=*}
+export \$key
+done < \${KEYSTORE_DIRECTORY}/zowe-certificates.env
+EOF
+echo "Created ${INSTANCE_DIR}/bin/read-keystore.sh">> $LOG_FILE
+
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/read-keystore.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/internal/run-zowe.sh">> $LOG_FILE
@@ -200,7 +224,8 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod -R 777 ${INSTANCE_DIR}
+chmod 777 ${INSTANCE_DIR}
+chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 
 echo "zowe-configure-instance.sh completed">> $LOG_FILE

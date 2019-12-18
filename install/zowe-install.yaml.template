@@ -42,7 +42,12 @@ zlux-server:
 terminals:
   sshPort=22
   telnetPort=23
-# security=tls
+# security=tls # The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'. Defaults to blank
+
+keystore:
+  keystoreDirectory=/global/zowe/keystore
+  keystoreOwner=IZUSVR
+  keystoreGroup=IZUADMIN
 
 # started task JCL member for Zowe job - these entries are not case-sensitive
 zowe-server-proclib:
