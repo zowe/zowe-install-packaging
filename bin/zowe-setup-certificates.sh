@@ -151,13 +151,12 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX}")
   fi
 fi
+echo "Creating certificates and keystores... DONE"
 
-# re-create and populate the zowe-certificates.env file. 
+# re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
-echo "<DEBUG CODE FOR PERMISSION OF ls -lR ${KEYSTORE_DIRECTORY}>"
-ls -lR ${KEYSTORE_DIRECTORY} 
-echo "</DEBUG CODE FOR PERMISSION OF ls -lR ${KEYSTORE_DIRECTORY}>"
+
 cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   KEY_ALIAS=${KEYSTORE_ALIAS}
   KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
@@ -170,7 +169,6 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   ZOSMF_KEYRING=${ZOSMF_KEYRING}
 EOF
 
-echo "Creating certificates and keystores... DONE"
 # set up privileges and ownership
 chmod -R 600 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
@@ -188,6 +186,5 @@ if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
 else
   echo "Owner of the ${KEYSTORE_DIRECTORY} changed successfully to the ${ZOWE_USER_ID} owner."
 fi
-
 
 echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
