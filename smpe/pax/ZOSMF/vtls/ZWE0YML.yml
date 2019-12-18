@@ -20,7 +20,7 @@ sysaff: '#sysaff'
 # Class Selection (ACS) routines decide which volume to use.
 # if you have sms-management, keep this with default #csivol
 # and set storage class (optionally management and data class)
-csivol: '#csivol'
+# csivol: '#csivol'
 
 # Change storclass for sms managed CSI and SMP/E data sets.
 # SMS uses the attributes in the storage class 
@@ -28,7 +28,7 @@ csivol: '#csivol'
 # Note that installation-written ACS routines may select 
 # a management class and data class and can 
 # override the specified storage class.
-storclass: '#storclass'
+# storclass: '#storclass'
 
 # You can change dataclass for 
 # sms managed CSI and SMP/E data sets.
@@ -36,20 +36,20 @@ storclass: '#storclass'
 # for a new data set. The storage administrator at your 
 # installation defines the names of the data classes 
 # you can code on the DATACLAS parameter.
-dataclass: '#dataclass'
+# dataclass: '#dataclass'
 
 # You can change managementclass for 
 # sms managed CSI and SMP/E data sets.
 # Use the MGMTCLAS parameter to specify a management class 
 # for a new SMS-managed data set.
-mgmtclass: '#mgmtclass' 
+# mgmtclass: '#mgmtclass' 
 
 # Change tzone to your CSI target zone name.
 tzone: '#tzone'
 
 # Change csihlq to the high level qualifier for the CSI and
 # other SMP/E data sets. The maximum length is 35 characters.
-csihlq: '#csihlq'
+# csihlq: '#csihlq'
 
 # Change dzone to your CSI distribution zone name.
 dzone: '#dzone'
@@ -62,11 +62,11 @@ srel: 'Z038'
 # Change ${hlq} to the high level qualifier(s) of the SMPMCS and
 # REL files, as specified when uploading the files to the host
 # (as described in the program directory).
-hlq: '#hlq'
+# hlq: '#hlq'
 
 # Change thlq to the appropriate high level qualifier(s) for    
 # the target data sets. The maximum length is 35 characters.   
-thlq: '#thlq'
+# thlq: '#thlq'
 
 # By default, this job relies on your Automatic Class Selection  
 # (ACS) routines to place the distribution data sets. You can    
@@ -74,7 +74,7 @@ thlq: '#thlq'
 # Change dvol to the volser for the target libraries.  
 # if you have sms-management, keep this with default #dvol
 # and set storage class (optionally management and data class)
-dvol: '#dvol'
+# dvol: '#dvol'
 
 # Change storclass for sms managed distribution data sets.
 # SMS uses the attributes in the storage class 
@@ -82,7 +82,7 @@ dvol: '#dvol'
 # Note that installation-written ACS routines may select 
 # a management class and data class and can 
 # override the specified storage class.
-dsclass: '#dsclass'
+# dsclass: '#dsclass'
 
 # You can change dataclass for 
 # sms managed distribution data sets.
@@ -90,17 +90,17 @@ dsclass: '#dsclass'
 # for a new data set. The storage administrator at your 
 # installation defines the names of the data classes 
 # you can code on the DATACLAS parameter.
-ddclass: '#ddclass'
+# ddclass: '#ddclass'
 
 # You can change managementclass for 
 # sms managed distribution data sets.
 # Use the MGMTCLAS parameter to specify a management class 
 # for a new SMS-managed data set.
-dmclass: '#dmclass'
+# dmclass: '#dmclass'
 
 # Change dhlq to the appropriate high level qualifier(s) for    
 #    the distribution datasets. The maximum length is 35 characters.
-dhlq: '#dhlq'
+# dhlq: '#dhlq'
 
 # By default, this job relies on your Automatic Class Selection  
 # (ACS) routines to place the target data sets. You can          
@@ -108,7 +108,7 @@ dhlq: '#dhlq'
 # Change tvol to the volser for the target libraries.
 # if you have sms-management, keep this with default #tvol
 # and set storage class (optionally management and data class)  
-tvol: '#tvol'
+# tvol: '#tvol'
 
 # Change storclass for sms managed target data sets.
 # SMS uses the attributes in the storage class 
@@ -116,7 +116,7 @@ tvol: '#tvol'
 # Note that installation-written ACS routines may select 
 # a management class and data class and can 
 # override the specified storage class.
-tsclass: '#tsclass'
+# tsclass: '#tsclass'
 
 # You can change dataclass for 
 # sms managed target data sets.
@@ -124,17 +124,17 @@ tsclass: '#tsclass'
 # for a new data set. The storage administrator at your 
 # installation defines the names of the data classes 
 # you can code on the DATACLAS parameter.
-tdclass: '#tdclass'
+# tdclass: '#tdclass'
 
 # You can change managementclass for 
 # sms managed target data sets.
 # Use the MGMTCLAS parameter to specify a management class 
 # for a new SMS-managed data set.
-tmclass: '#tmclass'
+# tmclass: '#tmclass'
 
 # Change the string fsdsn to the appropriate data set name
 # for the file system that will be created. 
-fsdsn: '#fsdsn'
+# fsdsn: '#fsdsn'
 
 # If you are APPLYing this function for the first time, change
 #    dsprefix to the value specified for DSPREFIX in the OPTIONS
@@ -143,14 +143,14 @@ fsdsn: '#fsdsn'
 #    the dsprefix value will match the CSI high level qualifier.
 #
 # Otherwise keep this with default and set thlq and tvol (or tsclass)   
-dsprefix: '#dsprefix'
+# dsprefix: '#dsprefix'
 
 # Change fsvol to the volser for the file system,
 # if you choose not to use the default of letting your Automatic
 # Class Selection (ACS) routines decide which volume to use.
 # if you have sms-management, keep this with default #fsvol
 # and set storage class (possibli management and data class) 
-fsvol: '#fsvol'
+# fsvol: '#fsvol'
 
 # Change storclass for sms managed file system data sets.
 # SMS uses the attributes in the storage class 
@@ -158,7 +158,7 @@ fsvol: '#fsvol'
 # Note that installation-written ACS routines may select 
 # a management class and data class and can 
 # override the specified storage class.
-fsclass: '#fsclass'
+# fsclass: '#fsclass'
 
 # You can change dataclass for 
 # sms managed file system data sets.
@@ -166,13 +166,13 @@ fsclass: '#fsclass'
 # for a new data set. The storage administrator at your 
 # installation defines the names of the data classes 
 # you can code on the DATACLAS parameter.
-fdclass: '#fdclass'
+# fdclass: '#fdclass'
 
 # You can change managementclass for 
 # sms managed file system data sets.
 # Use the MGMTCLAS parameter to specify a management class 
 # for a new SMS-managed data set.
-fmclass: '#fmclass'
+# fmclass: '#fmclass'
 
 # Change the string "-PathPrefix-" to the appropriate
 #    high level directory name with leading and trailing "/". For
