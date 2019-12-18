@@ -47,21 +47,21 @@ done
 # >>>>
 # adjust ZSS samples
 rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXASTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSCH
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISTC
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESASTC
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH
 
-if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG
+if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG
 then
 # Statements below must not exceed col 80
 #----------------------------------------------------------------------------80|
-cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG <<EndOfZWEXMPRG
+cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG <<EndOfZWESIPRG
 /* issue this console command to authorize the loadlib temporarily */
 SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEAUTH,VOLUME=${volume}
 /* Add this statement to SYS1.PARMLIB(PROGxx) or equivalent
    to authorize the loadlib permanently */
 APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume})
-EndOfZWEXMPRG
+EndOfZWESIPRG
 #----------------------------------------------------------------------------80|
 fi
 # <<<<
