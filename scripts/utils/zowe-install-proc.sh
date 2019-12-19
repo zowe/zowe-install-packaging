@@ -80,6 +80,10 @@ do
   fi
 done
 
+echo "./zowe-copy-to-JES.sh"
+ls -l ./zowe-copy-to-JES.sh
+chmod a+x ./zowe-copy-to-JES.sh
+echo "./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember"
 ./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
 echo "rc from zowe-copy-to-JES.sh is $?"
 
