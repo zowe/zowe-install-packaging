@@ -80,11 +80,14 @@ do
   fi
 done
 
-echo "./zowe-copy-to-JES.sh"
-ls -l ./zowe-copy-to-JES.sh
-chmod a+x ./zowe-copy-to-JES.sh
-echo "./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember"
-./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
+echo "../utils/zowe-copy-to-JES.sh"
+ls -l ../utils
+chmod a+x ../utils/zowe-copy-to-JES.sh
+echo "../utils/zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember"
+echo "proc contents"
+cat "//'$samplib($Imember)'"
+echo "proc contents end"
+../utils/zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
 echo "rc from zowe-copy-to-JES.sh is $?"
 
 script_exit 0
