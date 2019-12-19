@@ -102,13 +102,14 @@ chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 # # Note: this calls exit code, so can't be run in 'source' mode
 # # $CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
 echo "CONFIG_DIR=$CONFIG_DIR"
-ls -l $CONFIG_DIR/../utils/zowe-install-proc.sh
-chmod +x $CONFIG_DIR/../utils/zowe-install-proc.sh
+cd $CONFIG_DIR/../utils
+ls -l 
+ls -l ./zowe-install-proc.sh
+chmod +x ./zowe-install-proc.sh
 echo "calling zowe-install-proc.sh with"
 echo "    ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX"
 echo "    ZOWE_SERVER_PROCLIB_DSNAME=$ZOWE_SERVER_PROCLIB_DSNAME"
-export CONFIG_DIR
-$CONFIG_DIR/../utils/zowe-install-proc.sh $ZOWE_DSN_PREFIX $ZOWE_SERVER_PROCLIB_DSNAME
+./zowe-install-proc.sh $ZOWE_DSN_PREFIX $ZOWE_SERVER_PROCLIB_DSNAME
 echo "rc=$?"
 # ----
 
