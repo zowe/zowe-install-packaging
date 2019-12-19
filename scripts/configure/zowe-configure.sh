@@ -103,6 +103,8 @@ chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 # # $CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
 echo "CONFIG_DIR=$CONFIG_DIR"
 cd $CONFIG_DIR/../utils
+echo "directory is now ..."
+pwd
 ls -l 
 ls -l ./zowe-install-proc.sh
 chmod +x ./zowe-install-proc.sh

@@ -80,14 +80,16 @@ do
   fi
 done
 
-echo "$CONFIG_DIR/../utils/zowe-copy-to-JES.sh"
-ls -l $CONFIG_DIR/../utils
-chmod a+x $CONFIG_DIR/../utils/zowe-copy-to-JES.sh
-echo "$CONFIG_DIR/../utils/zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember"
-echo "proc contents"
-cat "//'$samplib($Imember)'"
-echo "proc contents end"
-$CONFIG_DIR/../utils/zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
+echo "zowe-copy-to-JES.sh"
+echo "directory is ..."
+pwd
+ls -l 
+chmod a+x ./zowe-copy-to-JES.sh
+echo "./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember"
+# echo "proc contents"
+# cat "//'$samplib($Imember)'"
+# echo "proc contents end"
+./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
 echo "rc from zowe-copy-to-JES.sh is $?"
 
 script_exit 0
