@@ -63,10 +63,6 @@ echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 . ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates-prep.sh
 . ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env.temp
 
-# FIXME zowe-configure-zlux-certificates.sh relies on an old (hardcoded) keystore location 
-# Configure the TLS certificates for the zLUX server
-. $CONFIG_DIR/zowe-configure-zlux-certificates.sh
-
 INSTANCE_DIR=${ZOWE_USER_DIR}
 WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 mkdir -p ${WORKSPACE_DIR}
