@@ -50,8 +50,9 @@ cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/
 cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
 
 echo "Unpax zssServer " >> $LOG_FILE
-cd zlux-app-server/bin
-pax -r -px -f $INSTALL_DIR/files/zss.pax zssServer
+cd zlux-app-server
+pax -r -px -f $INSTALL_DIR/files/zss.pax bin
+cd bin
 extattr +p zssServer
 cd ../..
 
