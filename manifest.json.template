@@ -11,8 +11,8 @@
     "timestamp": "{BUILD_TIMESTAMP}"
   },
   "binaryDependencies": {
-    "org.zowe.zlux.zlux-core-cupids": {
-      "version": "~1.8.0-STAGINGS-CUPIDS",
+    "org.zowe.zlux.zlux-core": {
+      "version": "~1.8.0-STAGING",
       "repository": "libs-snapshot-local",
       "artifact": "*.pax"
     },
@@ -62,7 +62,7 @@
       "artifact": "zosmf-auth-1.8.0-20191210.165346.pax"
     },
     "org.zowe.zss": {
-      "version": "~1.8.0-STAGINGS-CUPIDS",
+      "version": "~1.8.0-STAGING",
       "repository": "libs-snapshot-local",
       "artifact": "*.pax"
     },
