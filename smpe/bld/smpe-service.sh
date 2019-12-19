@@ -20,7 +20,14 @@
 
 # Assumes that SMPMCS and RELFILEs are in sync with each other
 
-# TODO ONNO add overview of changes done by this script
+# require $JAVA_HOME                Java home directory
+# require $mcsHlq.*                 RELFILEs & SMPMCS
+# creates $ship/$zip                zip holding SYSMODs & readme (ASCII)
+# creates $log/$jclGimdts           gimdts JCL
+# creates $log/$logGimdts           gimdts sysprint output
+# creates $log/$jclMerge            merge ++ & part JCL
+# creates $log/$logMerge            merge ++ & part sysprint output
+# creates $log/$sysmod1.readme.htm  readme (EBCDIC)
 
 gimdtsTools=""                 # tools used by jobs
 gimdtsTools="$gimdtsTools PTF@.jcl"
@@ -533,8 +540,8 @@ echo "-- creating SYSMOD zip"
 # ensure output directory exists
 _cmd mkdir -p $ship
 
-# define name of zip
-zip=${name1}.zip
+# define name of zip            # example: $name1=ZOWE.AZWE0001.TMP0001
+zip=${name1#*.}.zip                     # keep from first . (exclusive)
 test $debug && echo "zip=$zip"
 
 # get names of all sysmods
@@ -1344,7 +1351,7 @@ julian=$(date +%Y%j)                     # 7-digit Julian date, yyyyddd
 
 # show input/output details
 echo "-- input:  $mcsHlq"
-echo "-- output: $ptf"
+echo "-- output: $ship"
 
 # remove output of previous run
 test -d $ptf && _cmd rm -rf $ptf          # always delete ptf directory
