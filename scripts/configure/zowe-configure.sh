@@ -107,6 +107,7 @@ chmod +x $CONFIG_DIR/../utils/zowe-install-proc.sh
 echo "calling zowe-install-proc.sh with"
 echo "    ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX"
 echo "    ZOWE_SERVER_PROCLIB_DSNAME=$ZOWE_SERVER_PROCLIB_DSNAME"
+export CONFIG_DIR
 $CONFIG_DIR/../utils/zowe-install-proc.sh $ZOWE_DSN_PREFIX $ZOWE_SERVER_PROCLIB_DSNAME
 echo "rc=$?"
 # ----
