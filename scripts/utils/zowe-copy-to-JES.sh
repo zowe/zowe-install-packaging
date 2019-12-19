@@ -20,6 +20,7 @@
 #   $userid.zowetemp.instproc.SZWESAMP.clist 
 # Creates log file in user's home directory
 
+echo "Entering zowe-copy-to-JES.sh"
 
 script_exit(){
   tsocmd delete "'$clist'"   1>> $LOG_FILE 2>> $LOG_FILE
@@ -168,6 +169,10 @@ else
   else
     echo "$Imember was written to $proclib($Omember)" | tee -a ${LOG_FILE}
     tsocmd listds "'$proclib' members" 1>> $LOG_FILE 2>> $LOG_FILE
+
+    echo "$Imember was written to $proclib($Omember)"
+    tsocmd listds "'$proclib' members"
+    
     script_exit 0
   fi
 

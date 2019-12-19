@@ -81,5 +81,6 @@ do
 done
 
 ./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
+echo "rc from zowe-copy-to-JES.sh is $?"
 
 script_exit 0
