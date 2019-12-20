@@ -48,8 +48,8 @@
 #      dirOutput  - or directory holding installed data, $ZOWE_ROOR_DIR
 #    alterScript must return RC 0 on success, non-zero on failure
 
-# creates $stage          directory with installed product
-# creates $mvsI.*         hlq with installed product
+# creates $stage/*        directory with installed product
+# creates $mvsI.*         data sets with installed product
 # creates $log/*.log      product install log                       #*/
 # removes old install.log files
 
