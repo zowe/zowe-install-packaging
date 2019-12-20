@@ -98,21 +98,23 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
 # ---- this section moved to install-zowe.sh
-# echo "Attempting to setup Zowe Proclib ... "
-# # Note: this calls exit code, so can't be run in 'source' mode
-# # $CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
-echo "CONFIG_DIR=$CONFIG_DIR"
-cd $CONFIG_DIR/../utils
-echo "directory is now ..."
-pwd
-ls -l 
-ls -l ./zowe-install-proc.sh
-chmod +x ./zowe-install-proc.sh
-echo "calling zowe-install-proc.sh with"
-echo "    ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX"
-echo "    ZOWE_SERVER_PROCLIB_DSNAME=$ZOWE_SERVER_PROCLIB_DSNAME"
-./zowe-install-proc.sh $ZOWE_DSN_PREFIX $ZOWE_SERVER_PROCLIB_DSNAME
-echo "rc=$?"
+# # echo "Attempting to setup Zowe Proclib ... "
+# # # Note: this calls exit code, so can't be run in 'source' mode
+# # # $CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
+# echo "CONFIG_DIR=$CONFIG_DIR"
+# cd $CONFIG_DIR/../utils
+# echo "directory is now ..."
+# pwd
+# ls -l 
+# ls -l ./zowe-install-proc.sh
+# chmod +x ./zowe-install-proc.sh
+# echo "calling zowe-install-proc.sh with"
+# echo "    ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX"
+# echo "    ZOWE_SERVER_PROCLIB_DSNAME=$ZOWE_SERVER_PROCLIB_DSNAME"
+# ./zowe-install-proc.sh $ZOWE_DSN_PREFIX $ZOWE_SERVER_PROCLIB_DSNAME
+# echo "rc=$?"
+# ----
+echo "zowe-configure.sh line 117: NOT calling zowe-install-proc.sh"
 # ----
 
 # Inject stc name into config-stc
