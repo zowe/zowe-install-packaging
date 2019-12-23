@@ -80,16 +80,7 @@ do
   fi
 done
 
-echo "zowe-copy-to-JES.sh"
-echo "directory is ..."
-pwd
-ls -l 
-chmod a+x ./zowe-copy-to-JES.sh
-echo "./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember"
-# echo "proc contents"
-# cat "//'$samplib($Imember)'"
-# echo "proc contents end"
 ./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
-echo "rc from zowe-copy-to-JES.sh is $?"
+echo "rc from zowe-copy-to-JES.sh is $?"  >> $LOG_FILE
 
 script_exit 0
