@@ -13,6 +13,11 @@
 
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-node.sh
 
+if [ -z "$NODE_BIN" ]	
+then	
+  NODE_BIN=${NODE_HOME}/bin/node	
+fi
+
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
     # Access API Catalog with token injector
     CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
