@@ -64,9 +64,6 @@ echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 . ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env.temp
 
 INSTANCE_DIR=${ZOWE_USER_DIR}
-WORKSPACE_DIR=${INSTANCE_DIR}/workspace
-mkdir -p ${WORKSPACE_DIR}
-chmod -R 775 ${WORKSPACE_DIR}
 
 . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
 
