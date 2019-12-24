@@ -79,9 +79,10 @@ then
 fi
 
 #Explorers may be present, but have a prereq on gateway, not desktop
+#ZSS exists within app-server, may desire a distinct component later on
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},app-server,zss
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},app-server
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
 #ZSS could be included separate to app-server, and vice-versa
