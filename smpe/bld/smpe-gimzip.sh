@@ -33,6 +33,7 @@
 # creates $log/$extractSize       required zFS size (for usage in PD)
 # creates $log/$FMID.readme.txt   readme (EBCDIC)
 
+# more definitions in main()
 product='Zowe Open Source Project'  # product name (max. 67 chars)
 #        ----+----1----+----2----+----3----+----4----+----5----+----6----+--
 jcl=gimzip.jcl                 # GIMZIP invocation JCL
