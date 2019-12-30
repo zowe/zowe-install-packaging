@@ -1,5 +1,4 @@
 #!/bin/sh -e
-#TODO -e is not documented as valid option, what is this supposed to do?
 set -x
 
 ################################################################################
@@ -106,9 +105,18 @@ echo
 #% -v vrm        FMID 3-character version/release/modification
 #% optional
 #% -a alter.sh   execute script before/after install to alter setup
+#% -b branch     GitHub branch used for this build
 #% -d            enable debug messages
 #% -E success    exit with RC 0, create file on successful completion
+#% -p version    product version
+#% -P            fail build if APAR/USERMOD is created instead of PTF
 #% -V volume     allocate data sets on specified volume(s)
+
+unset external
+echo "BRANCH_NAME=$BRANCH_NAME"
+test -n "$BRANCH_NAME" && external="$external -b $BRANCH_NAME"
+echo "ZOWE_VERSION=$ZOWE_VERSION"
+test -n "$ZOWE_VERSION" && external="$external -p $ZOWE_VERSION"
 
 ${CURR_PWD}/smpe/bld/smpe.sh \
   -a ${CURR_PWD}/smpe/bld/alter.sh \
@@ -118,7 +126,8 @@ ${CURR_PWD}/smpe/bld/smpe.sh \
   -h "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" \
   -i "${CURR_PWD}/${INPUT_TXT}" \
   -r "${SMPE_BUILD_ROOT}" \
-  -v ${FMID_VERSION}
+  -v ${FMID_VERSION} \
+  $external
 
 echo
 echo "+----------------------+"
@@ -186,10 +195,15 @@ if [ ! -f "${SMPE_PD_HTM}" ]; then
   echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PD_HTM build result '${SMPE_PD_HTM}'"
   exit 1
 fi
+SMPE_PROMOTE_TAR="smpe-promote.tar" # keep in sync with smpe/bld/smpe-service.sh
+if [ ! -f "${SMPE_PROMOTE_TAR}" ]; then
+  echo "[$SCRIPT_NAME][ERROR] cannot find SMPE_PROMOTE_TAR build result '${SMPE_PROMOTE_TAR}'"
+  exit 1
+fi
 
 # if ptf-bucket.txt exists then publish PTF, otherwise publish FMID
 cd "${SMPE_BUILD_SHIP_DIR}"
-if [ -f ${CURR_PWD}/smpe/service/ptf-bucket.txt ]; then
+if [ -f ${CURR_PWD}/smpe/bld/service/ptf-bucket.txt ]; then
   tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_PTF_ZIP}
   # do not alter existing PD in docs, wipe content of the new one
   rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
@@ -204,16 +218,19 @@ cd "${CURR_PWD}"
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_FMID_ZIP}"  fmid.zip
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PTF_ZIP}"  ptf.zip
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}" pd.htm
+mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PROMOTE_TAR}" ${SMPE_PROMOTE_TAR}
 
 # prepare rename to original name
 # leave fixed name for PD to simplify automated processing by doc build
+# leave fixed name for promote.tar to simplify automated processing during promote
 echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
 echo "mv ptf.zip ${SMPE_PTF_ZIP}" >> rename-back.sh.1047
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
 # files to be uploaded to artifactory:
 # ${CURR_PWD}/smpe-build-logs.pax.Z
-# ${CURR_PWD}/zowe-smpe.tar   -> holds zip that goes to zowe.org
+# ${CURR_PWD}/zowe-smpe.tar          -> holds zip that goes to zowe.org
 # ${CURR_PWD}/fmid.zip
 # ${CURR_PWD}/ptf.zip
-# ${CURR_PWD}/pd.htm        -> can be a null file
+# ${CURR_PWD}/pd.htm                 -> can be a null file
+# ${CURR_PWD}/smpe-promote.tar       -> can be a null file
