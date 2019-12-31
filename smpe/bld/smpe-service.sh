@@ -1888,11 +1888,11 @@ function _stagePromote
 test "$debug" && echo && echo "> _stagePromote $@"
 
 # clear the stage
-test -f $tarPromote && _cmd rm -f $tarPromote
+test -f $ship/$tarPromote && _cmd rm -f $ship/$tarPromote
 
 if test "$sysmodType" != "++PTF"
 then  # ++APAR/++USERMOD
-  _cmd touch $tarPromote              # ensure file exists as null-file
+  _cmd touch $ship/$tarPromote        # ensure file exists as null-file
 else  # ++PTF
   _iconv -d $ptf/$thisApar     $ship/$nextApar       # only has current
   _iconv    $service/$prevApar $ship/$nextApar           # add promoted
