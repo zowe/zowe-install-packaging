@@ -112,7 +112,7 @@ echo
 #% -P            fail build if APAR/USERMOD is created instead of PTF
 #% -V volume     allocate data sets on specified volume(s)
 
-unset external
+external=""
 echo "BRANCH_NAME=$BRANCH_NAME"
 test -n "$BRANCH_NAME" && external="$external -b $BRANCH_NAME"
 echo "ZOWE_VERSION=$ZOWE_VERSION"
