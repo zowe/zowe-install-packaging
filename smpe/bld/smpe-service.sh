@@ -13,8 +13,11 @@
 #% package prepared product as service (++USERMOD, ++APAR, ++PTF)
 #%
 #% -?            show this help message
+#% -b branch     GitHub branch used for this build
 #% -c smpe.yaml  use the specified config file
 #% -d            enable debug messages
+#% -P            fail build if APAR/USERMOD is created instead of PTF
+#% -p version    product version
 #%
 #% -c is required
 
@@ -23,6 +26,7 @@
 # require $JAVA_HOME                Java home directory
 # require $mcsHlq.*                 RELFILEs & SMPMCS
 # creates $ship/$zip                zip holding SYSMODs & readme (ASCII)
+# creates $ship/$tarPromote         tar holding promote info (ASCII)
 # creates $log/$jclGimdts           gimdts JCL
 # creates $log/$logGimdts           gimdts sysprint output
 # creates $log/$jclMerge            merge ++ & part JCL
@@ -46,6 +50,7 @@
 #            PRE <prevApar>
 #            PRE <prevPtf>
 
+# more definitions in main()
 gimdtsTools=""                 # tools used by jobs
 gimdtsTools="$gimdtsTools PTF@.jcl"
 gimdtsTools="$gimdtsTools PTF@FB80.jcl"
@@ -66,6 +71,28 @@ jclGimdts=gimdts.jcl           # GIMDTS invocation JCL
 logGimdts=gimdts.sysprint.log  # GIMDTS SYSPRINT log
 lines=gimdts.lines.txt         # GIMDTS line count
 readme=ptf.readme.htm          # PTF install instructions
+mcs=SMPMCS.txt                 # SMPMCS (install metadata)
+# >> next block of files is in the $service directory
+ptfBucket=ptf-bucket.txt       # list of available PTFs
+curApar=current-apar.txt       # list of additional APARs to supersede
+curClose=current-close.txt     # closing info for this PTF
+curHold='current-hold-*.txt'   # hold info for this PTF
+fixHold='fixed-hold-*.txt'     # hold info added to all PTFs
+# <<
+thisApar=current-apar.txt      # formatted list of APARs to supersede
+thisClose=current-close.txt    # formatted closing info for this PTF
+thisHold=current-hold.txt      # formatted hold info for this sysmod
+thisHold2=current-hold2.txt    # formatted commented hold info for PTF
+thisPtf=current-ptf.txt        # formatted list of current PTFs
+prevApar=promoted-apar.txt     # list of all previous APARs
+prevClose=promoted-close.txt   # closing info of previous PTFs
+prevHold=promoted-hold.txt     # hold info of previous PTFs
+prevPtf=promoted-ptf.txt       # list of all previous PTFs
+nextApar=$prevApar             # list of APARs to be promoted
+nextClose=$prevClose           # closing info to be promoted
+nextHold=$prevHold             # hold info to be promoted
+nextPtf=$prevPtf               # list of  PTFs to be promoted
+tarPromote=smpe-promote.tar    # tar-file holding $next* files
 splitScript=ptf-split.rex      # script to distribute parts across PTFs
 submitScript=wait-for-job.sh   # submit script
 dcbScript=check-dataset-dcb.sh # script to test dcb of data set
@@ -473,77 +500,9 @@ test "$debug" && echo "< _headers"
 }    # _headers
 
 # ---------------------------------------------------------------------
-# --- create staging data set and populate with sysmod header
-# $1: position in sysmod list
-# output:
-# - $SYSMOD  data set holding sysmod header
-# - $sysmodType  type of sysmod (PTF/APAR/USERMOD)
-# - $sysmodName  name of sysmod
-# ---------------------------------------------------------------------
-function _stageHeader
-{
-test "$debug" && echo && echo "> _stageHeader $@"
-
-# allocate data set used to merge header and parts
-# IBM: max PTF size is 5,000,000 * 80 bytes (including SMP/E metadata)
-#      5mio FB80 lines requires 7,164 tracks
-_alloc "$SYSMOD" "FB" "80" "PS" "7164,5"
-
-# TODO create header in _header
-cat <<EOF 2>&1 > $ptf/onno
-++USERMOD(TMP000$1) /* 5698-ZWE00-AZWE001 */ REWORK($julian).
-++VER(Z038,C150,P115) FMID($FMID)
-  /*
-  ...
-  */
-  .
-++HOLD(TMP000$1) SYSTEM FMID($FMID) REASON(ACTION) DATE($julian)
-  COMMENT(
-  ****************************************************************
-  * Affected function: ...                                       *
-  ****************************************************************
-  * Description: ...                                             *
-  ****************************************************************
-  * Timing: post-APPLY                                           *
-  ****************************************************************
-  * Part: ...                                                    *
-  ****************************************************************
-  ...
-  ).
-EOF
-
-# select correct header
-if test $1 -eq 1
-then  # header first sysmod
-  # TODO get header for first sysmod
-  header=$ptf/onno
-else  # header overflow sysmod
-  # TODO get header for overflow sysmod(s)
-  header=$ptf/onno
-fi    #
-
-# populate staging data set with header
-_cmd cp $header "//'$SYSMOD'"
-
-# get name & type of sysmod (dump both in sysmodName for now)
-sysmodName="$(head -1 $header | tr '+()' '   ' | awk '{print $1,$2}')"
-# sample input: (leading/trailing blanks for ( and ) are optional)
-# ++PTF (UO64071 ) ...
-# ...
-# sample output:
-# PTF UO64071
-sysmodType=${sysmodName%% *}       # keep up to first space (exclusive)
-sysmodName=${sysmodName#* }         # keep from first space (exclusive)
-test "$debug" && echo "sysmodType=$sysmodType"
-test "$debug" && echo "sysmodName=$sysmodName"
-
-test "$debug" && echo "< _stageHeader"
-}    # _stageHeader
-
-# ---------------------------------------------------------------------
 # --- merge PTF header, MCS metadata, and parts
 # IBM: max PTF size is 5,000,000 * 80 bytes (including SMP/E metadata)
-#      5mio lines requires 7,164 tracks
+#      5mio FB80 lines requires 7,164 tracks
 # output:
 # - $ptf/$ptfHLQ.$sysmodName  PTF(s)
 # - $ptf/$tracks              track count per PTF
@@ -554,7 +513,7 @@ test "$debug" && echo "< _stageHeader"
 function _merge
 {
 test "$debug" && echo && echo "> _merge $@"
-echo "-- creating SYSMOD"
+echo "-- creating $(echo $sysmodType | sed 's/^..//')s"
 
 # remove archived merge data, if any
 test -f $log/$jclMerge && _cmd rm -f $log/$jclMerge
@@ -568,20 +527,90 @@ _alloc "$SYSPRINT" "FBA" "121" "PS" "5,5"
 # need to submit multiple jobs)
 _alloc "$TRACKS" "FB" "80" "PS" "5,5"
 
-# loop through $distro to merge header & parts into the actual PTFs
-cntPTF=1
-test "$debug" && echo "while test \$cntPTF -le \$distroPTFs"
-while test $cntPTF -le $distroPTFs
+# build list of sysmods to create
+if test "$sysmodType" = "++PTF"
+then
+  sysmods="$ptfNames"
+elif test "$sysmodType" = "++APAR"
+then
+  sysmods="$aparNames"
+else  # ++USERMOD
+  # build list of USERMOD names (TMPxxxx)
+  # USERMOD numbering starts at number of $sysmod1
+  prefix=$(echo $sysmod1 | sed 's/....$//')              # keep first 3
+  number=$(echo $sysmod1 | sed 's/^...//')                # keep last 4
+  sysmods=$sysmod1
+  cnt=1
+  while test $cnt -ne $distroCnt
+  do
+    let cnt=$cnt+1
+    let number=$number+1
+    # make number at least 4 chars long & keep last 4 chars
+    number=$(echo 000$number | sed 's/.*\(....\)$/\1/')
+    sysmods="$sysmods $prefix$number"
+  done    # while $cnt
+fi    # create $sysmods
+test "$debug" && echo "sysmods=$sysmods"
+
+# loop through $distro to merge header & parts into the actual sysmod
+cnt=1
+test "$debug" && echo "while test \$cnt -le \$distroCnt"
+while test $cnt -le $distroCnt
 do
-  parts=$(echo "$distro" | sed -n "${cntPTF}p") # only parts of this PTF
-  test "$debug" && echo "cntPTF=$cntPTF"
+  test "$debug" && echo "cnt=$cnt"
+
+  # get sysmod name from sysmods list (assumes $sysmods is formatted)
+  # 1. tr   replace all blanks with new-lines        -> 1 word per line
+  # 2. sed  only keep line $cnt
+  sysmodName=$(echo $sysmods | tr ' ' '\n' | sed -n "${cnt}p")
+  test "$debug" && echo "sysmodName=$sysmodName"
+
+  # create REQ() for this sysmod
+  # TODO rework using _formatPreSupReq() when +8 REQ sysmods
+  # 1. strip this sysmod name
+  # 2. strip leading blanks
+  # 3. strip trailing blanks
+  # 4. reduce multiple blanks to 1 blank
+  # 5. replace all blanks with commas
+  req=$(echo $sysmods \
+        | sed "s/$sysmodName//;s/^ *//;s/ *$//;s/[ ]\{2,\}/ /;s/ /,/")
+  if test -z "$req"
+  then  # only 1 sysmod, no REQ
+    req='  /* REQ() */'
+  else
+    req="  REQ($req)"
+  fi    #
+  test "$debug" && echo "req=$req"
+
+  # get (line with) list of parts for this sysmod
+  parts=$(echo "$distro" | sed -n "${cnt}p")
   test "$debug" && echo "parts=$parts"
 
-  # create staging data set and populate with PTF header
-  _stageHeader $cntPTF
+  # report
+  echo "   $sysmodType($sysmodName)"
+
+  # allocate data set used to merge header and parts
+  # IBM: max PTF size is 5,000,000 * 80 bytes (including SMP/E metadata)
+  #      5mio FB80 lines requires 7,164 tracks
+  _alloc "$SYSMOD" "FB" "80" "PS" "7164,5"
+
+  # select correct header
+  if test $cnt -eq 1
+  then  # header first sysmod (has hold data)
+    header=$ptf/header1
+  else  # header overflow sysmod (no hold data)
+    header=$ptf/header2
+  fi    #
+
+  # populate staging data set with header
+  # TODO rework when +8 REQ sysmods
+  SED=""
+  SED="$SED;s/#SySmOdNaMe/$sysmodName/"
+  SED="$SED;s/^#req$/$req/"
+  _sedMVS -s $header "$SYSMOD"
 
   # prime merge JCL
-  _primeJCL $ptf $jclMerge "$cntPTF $sysmodType $sysmodName"
+  _primeJCL $ptf $jclMerge "$cnt $sysmodType $sysmodName"
 
   # loop through parts
   test "$debug" && echo "for part in \$parts"
@@ -597,7 +626,7 @@ do
       _submit $ptf/$jclMerge $log/$logMerge
 
       # create new job (append to existing $SYSPRINT & $SYSMOD)
-      _primeJCL $cntPTF $jclMerge $cntPTF
+      _primeJCL $cnt $jclMerge $cnt
     fi    # new job
 
     # pad part name with blanks to 8 characters
@@ -626,7 +655,7 @@ do
   then
     echo "-- $logMerge $(cat $log/$logMerge | wc -l) line(s)"
     sed 's/^/. /' $log/$logMerge              # show prefixed with '. '
-    echo "   merge $cntPTF successful"
+    echo "   merge $cnt successful"
   fi    #
 
   # save sysmod created by merge job(s)
@@ -639,18 +668,18 @@ do
   then
     _cmd cp "//'$SYSMOD'" "$ptf/${ptfHLQ}.$sysmodName"
   else
-    echo "** ERROR $me merge job $cntPTF did not create //'$SYSMOD'"
+    echo "** ERROR $me merge job $cnt did not create //'$SYSMOD'"
     test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
   fi    # no $SYSMOD
 
-  test "$debug" && echo "end while \$cntPTF -- $cntPTF/$distroPTFs"
+  test "$debug" && echo "end while \$cnt -- $cnt/$distroCnt"
 
-  # process next
-  let cntPTF=$cntPTF+1
-done    # while $cntPTF
+  # process next sysmod
+  let cnt=$cnt+1
+done    # while $cnt
 
-# no more need for this
-#_cmd rm -f $ptf/$jclMerge
+# no longer needed
+_cmd rm -f $ptf/$jclMerge
 
 # save track count created by merge job(s)
 test "$debug" && echo
@@ -678,7 +707,7 @@ test "$debug" && echo "< _merge"
 function _readme
 {
 test "$debug" && echo && echo "> _readme $@"
-echo "-- creating SYSMOD readme"
+echo "-- creating readme"
 
 # get file name of first PTF (awk prints second word of first line)
 # expected content:
@@ -722,7 +751,8 @@ _cmd mv $ptf/xx00 $log/$html
 
 # remove marker line from all remaining csplit blocks
 SED='1d'
-for f in $ptf/xx*
+test "$debug" && echo "for f in \$(ls $ptf/xx*)"
+for f in $(ls $ptf/xx*)
 do
   _sed $f
 done    # for f
@@ -730,6 +760,7 @@ done    # for f
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # add an allocation statement for each sysmod
+test "$debug" && echo "while read -r trk name"
 while read -r trk name
 do
   sysmod=${name##*.}                # keep from last period (exclusive)
@@ -760,6 +791,7 @@ done < $ptf/$tracks    # while read
 _cmd --save $log/$html cat $ptf/xx02
 
 # add a FTP statement for each sysmod
+test "$debug" && echo "while read -r trk name"
 while read -r trk name
 do
   bytes=$(ls -l $ptf/$name | awk '{print $5}')
@@ -789,6 +821,7 @@ _cmd --save $log/$html echo none
 _cmd --save $log/$html cat $ptf/xx06
 
 # add a requisite data set names to RECEIVE SMPPTFIN (sysmod 2 and up)
+test "$debug" && echo "while read -r trk name"
 while read -r trk name
 do
   test $debug && echo "(SMPPTFIN) name=$name"
@@ -804,6 +837,7 @@ _cmd --save $log/$html cat $ptf/xx08
 
 # get requisite sysmod names (sysmod 2 and up)
 unset coreq
+test "$debug" && echo "while read -r trk name"
 while read -r trk name
 do
   sysmod=${name##*.}                # keep from last period (exclusive)
@@ -818,7 +852,8 @@ SED="$SED;s/#type/$sysmodType/"
 SED="$SED;s/#name1/$name1/"
 SED="$SED;s/#ptf1/$sysmod1/"
 SED="$SED;s/#fmid/$FMID/"
-SED="$SED;s/#rework/$julian/"
+SED="$SED;s/#rework/$julian5/"
+SED="$SED;s/#rework/$julian7/"
 SED="$SED;s/#req/$coreq/"
 # TODO #pre
 SED="$SED;s/#pre/TODO #pre/"
@@ -826,21 +861,21 @@ SED="$SED;s/#pre/TODO #pre/"
 SED="$SED;s/#sup/TODO #sup/"
 _sed $log/$html
 
-# no more need for this
-#_cmd rm -f $ptf/$tracksCoreq $ptf/$readme $ptf/xx*
+# no longer needed
+_cmd rm -f $ptf/$tracksCoreq $ptf/$readme $ptf/xx*
 
 test "$debug" && echo "< _readme"
 }    # _readme
 
 # ---------------------------------------------------------------------
-# --- zip up sysmod & instructions
+# --- zip up sysmods & instructions
 # output:
 # - $ship/$zip  zip with sysmods & readme
 # ---------------------------------------------------------------------
 function _zip
 {
 test "$debug" && echo && echo "> _zip $@"
-echo "-- creating SYSMOD zip"
+echo "-- creating zip"
 
 # ensure output directory exists
 _cmd mkdir -p $ship
@@ -851,6 +886,7 @@ test $debug && echo "zip=$zip"
 
 # get names of all sysmods
 unset names
+test "$debug" && echo "while read -r trk name"
 while read -r trk name
 do
   names="$names $name"
@@ -867,8 +903,8 @@ _cmd cd $ptf
 # create zip file (c: create, M: no manifest, f: file name)
 _cmd $JAVA_HOME/bin/jar -cMf $ship/$zip $names $html
 
-# no more need for this
-#_cmd rm -f $tracks $names $html
+# no longer needed
+_cmd rm -f $tracks $names $html
 
 # return to base
 _cmd --null cd -
@@ -879,7 +915,7 @@ test "$debug" && echo "< _zip"
 # ---------------------------------------------------------------------
 # --- determine how to distribute parts across sysmods
 # output:
-# - $distroPTFs  number of sysmods
+# - $distroCnt  number of sysmods
 # - $distro      each line holds parts for 1 sysmod
 # ---------------------------------------------------------------------
 function _split
@@ -887,12 +923,19 @@ function _split
 test "$debug" && echo && echo "> _split $@"
 
 # get size of header for main sysmod
-headerLinesFirst=19 # TODO get actual number of header lines for PTF 1
-
+headerLinesFirst=$(cat $ptf/header1 | wc -l)
 # get size of header for overflow sysmod(s)
-headerLinesOther=$headerLinesFirst # TODO get actual number of header lines for overflow PTFs
+headerLinesOther=$(cat $ptf/header2 | wc -l)
 
-PTFs=2 # TODO get this number from PTF bucket
+if test "$sysmodType" = "++PTF"
+then
+  cnt=$(echo $ptfNames | wc -w)
+elif test "$sysmodType" = "++APAR"
+then
+  cnt=$(echo $aparNames | wc -w)
+else
+  cnt=""
+fi    #
 
 # sort part line counts
 # -r reverse (descending)
@@ -912,7 +955,7 @@ then
 fi    #
 
 # determine how to distribute the parts across the sysmods
-args="$ptf/$lines $headerLinesFirst $headerLinesOther $PTFs"
+args="$ptf/$lines $headerLinesFirst $headerLinesOther $cnt"
 # show everything in debug mode
 test "$debug" && $here/$splitScript -d "$args"
 # get data (no debug mode to avoid debug messages)
@@ -931,18 +974,20 @@ then
 fi    #
 
 # how many sysmods do we need to create?
-distroPTFs=$(echo "$distro" | wc -l)
-# TODO test ?usermod? && PTFs=$distroPTFs
+distroCnt=$(echo "$distro" | wc -l)
+
+# we don't have an expected count for USERMOD, use actual count
+test "$sysmodType" = "++USERMOD" && cnt=$distroCnt
 
 # does this match the number of sysmods we have for this set?
-if test $PTFs -ne $distroPTFs
+if test $cnt -ne $distroCnt
 then
-  echo "** ERROR $me $distroPTFs PTFs needed, $PTFs PTFs available"
+  echo "** ERROR $me $distroCnt sysmods needed, $cnt available"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
-# no more need for this
-#_cmd rm -f $ptf/$lines
+# no longer needed
+_cmd rm -f $ptf/$lines
 
 test "$debug" && echo "< _split"
 }    # _split
@@ -1073,8 +1118,8 @@ then
   echo "   GIMDTS successful"
 fi    #
 
-# no more need for this
-#_cmd rm -f $ptf/$jclGimdts
+# no longer needed
+_cmd rm -f $ptf/$jclGimdts
 
 # save line count of GIMDTS job(s)
 test "$debug" && echo
@@ -1392,6 +1437,9 @@ _cmd csplit -s $ptf/$mcs /^++/ {$(($(grep -c ^++ $ptf/$mcs)-1))}
 # return to base
 _cmd --null cd -
 
+# create directory to stage processed '++' control statements
+_cmd mkdir -p $ptf/meta
+
 # process individual '++' control statements
 unset found
 test "$debug" && echo "for file in \$(ls $ptf/xx*)"
@@ -1414,7 +1462,7 @@ do
   then
     found=1
     # remove RELFILE keyword & save with part name as file name
-    _cmd --repl $ptf/$name sed 's/ RELFILE([[:digit:]]*)//' $file
+    _cmd --repl $ptf/meta/$name sed 's/ RELFILE([[:digit:]]*)//' $file
   fi    #
 done    # for file
 
@@ -1428,16 +1476,19 @@ then
 fi    #
 
 # move all MCS data to datasets to simplify debugging GIMDTS job issues
-allParts=$(ls $ptf)
+allParts=$(ls $ptf/meta)
 test "$debug" && echo "for file in \$allParts*)"
 for file in $allParts
 do
-  # KEEP DSN IN SYNC WITH $here/PTF@.jcl
+  # TODO KEEP DSN IN SYNC WITH $here/PTF@.jcl
   _alloc "${gimdtsHlq}.${MLQ}.$file" "FB" "80" "PS" "$gimdtsTrks"
-  _cmd mv $ptf/$file "//'${gimdtsHlq}.${MLQ}.$file'"
+  _cmd mv $ptf/meta/$file "//'${gimdtsHlq}.${MLQ}.$file'"
 done    # for file
 
-echo "   $(echo $allParts | wc -w | sed 's/ //g') MCS defintions"
+# no longer needed
+_cmd rmdir $ptf/meta
+
+echo "   $(echo $allParts | wc -w | sed 's/ *//g') MCS defintions"
 test "$debug" && echo "< _metaData"
 }    # _metaData
 
@@ -1957,16 +2008,17 @@ test "$debug" && echo "< _type"
 }    # _type
 
 # ---------------------------------------------------------------------
-# --- delete work data sets
+# --- delete data sets
+# $1: HLQ of data sets to delete
 # ---------------------------------------------------------------------
 function _deleteDatasets
 {
 test "$debug" && echo && echo "> _deleteDatasets $@"
 
 # show everything in debug mode
-test "$debug" && $here/$csiScript -d "${gimdtsHlq}.**"
+test "$debug" && $here/$csiScript -d "$1.**"
 # get data set list (no debug mode to avoid debug messages)
-datasets=$($here/$csiScript "${gimdtsHlq}.**")
+datasets=$($here/$csiScript "$1.**")
 # returns 0 for match, 1 for no match, 8 for error
 if test $? -gt 1
 then
@@ -1984,18 +2036,47 @@ test "$debug" && echo "< _deleteDatasets"
 }    # _deleteDatasets
 
 # ---------------------------------------------------------------------
+# --- convert EBCDIC file to ASCII
+# $1: if -d then delete $2 before iconv, parm is removed when present
+# $1: EBCDIC source file
+# $2: ASCII target file
+# output:
+# - $2 is created if $1 exists
+# ---------------------------------------------------------------------
+function _iconv
+{
+if test "$1" = "-d"                            # delete $2 if it exists
+then
+  shift
+  test -f "$2" && _cmd rm -f "$2"
+fi    #
+
+test -f "$1" && _cmd --save "$2" iconv -t ISO8859-1 -f IBM-1047 "$1"
+}    # _iconv
+
+# ---------------------------------------------------------------------
 # --- customize a file using sed, and store it as a member
 #     assumes $SED is defined by caller and holds sed command string
+# $1: if -s then make sequential dataset, parm is removed when present
 # $1: input file
 # $2: output data set
 # ---------------------------------------------------------------------
 function _sedMVS
 {
-MbR=$(basename $1)                               # strip directory name
-MbR=${MbR%%.*}                         # keep up to first . (exclusive)
+if test "$1" = "-s"
+then  # sequential
+  shift
+  DsN="$2"
+else  # PDS member
+  # create member name
+  DsN="$(basename $1)"                           # strip directory name
+  DsN="${DsN%%.*}"                     # keep up to first . (exclusive)
+  # add data set name
+  DsN="$2($DsN)"
+fi    #
 TmP=${TMPDIR:-/tmp}/$(basename $1).$$
 _cmd --repl $TmP sed "$SED" $1                    # sed '...' $1 > $TmP
-_cmd mv $TmP "//'$2($MbR)'"                     # move $TmP to data set
+_cmd mv $TmP "//'$DsN'"                         # move $TmP to data set
 }    # _sedMVS
 
 # ---------------------------------------------------------------------
@@ -2132,14 +2213,17 @@ echo "-- startup arguments: $@"
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset YAML in
+unset BRANCH YAML reqPTF VERSION
 # do NOT unset debug
 
 # get startup arguments
-while getopts c:i:?d opt
+while getopts b:c:p:?dP opt
 do case "$opt" in
+  b)   BRANCH="$OPTARG";;
   c)   YAML="$OPTARG";;
   d)   debug="-d";;
+  P)   reqPTF="-P";;
+  p)   VERSION="$OPTARG";;
   [?]) _displayUsage
        test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
@@ -2158,6 +2242,7 @@ fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
+service="$(cd $here/$service;pwd)"         # make this an absolute path
 mcsHlq=${HLQ}.${RFDSNPFX}.${FMID}          # RELFILE HLQ,  max 32 chars
 ptfHLQ=${RFDSNPFX}.${FMID}                        # default HLQ for PTF
 MLQ='@'                 # job results in $gimdtsHlq.$MLQ.*, max 2 chars
@@ -2167,17 +2252,34 @@ LINES=${gimdtsHlq}.LINES                     # line count data set name
 TRACKS=${gimdtsHlq}.TRACKS                  # track count data set name
 SYSPRINT=${gimdtsHlq}.SYSPRINT               # job output data set name
 unset allParts                        # collect names of all parts here
-julian=$(date +%Y%j)                     # 7-digit Julian date, yyyyddd
+julian7=$(date +%Y%j)                    # 7-digit Julian date, yyyyddd
+julian5=$(echo $julian7 | sed 's/^..//')   # 5-digit Julian date, yyddd
+year=$(echo $julian7 | sed 's/...$//')             # 4-digit year, yyyy
+copyright="Contributors to the Zowe Project. $year"         # copyright
+#          ----+----1----+----2----+----3----+----4--      max 42 chars
 
 # show input/output details
-echo "-- input:  $mcsHlq"
-echo "-- output: $ship"
+echo "-- input (relfile): $mcsHlq"
+echo "-- input (service): $service"
+echo "-- output:          $ship"
 
 # remove output of previous run
 test -d $ptf && _cmd rm -rf $ptf          # always delete ptf directory
-_deleteDatasets
+_deleteDatasets "$gimdtsHlq"
 # get ready to roll
 _cmd mkdir -p $ptf
+
+# determine what sysmod type to create (PTF/APAR/USERMOD)
+_type
+
+# clean up external input
+_prepInput
+
+# stage data of this PTF to be added to data of promoted PTFs
+_stagePromote
+
+# create headers for first and overflow sysmods
+_headers
 
 # create SMP/E MCS metadata for parts to package
 _metaData
@@ -2187,9 +2289,6 @@ _tools
 
 # create parts in FB80 format (GIMDTS job)
 _gimdts
-
-# create sysmod header (PTF/APAR/USERMOD)
-_header
 
 # determine how to distribute parts across sysmods
 _split
@@ -2206,7 +2305,7 @@ _zip
 # we are done with these, clean up
 _cmd cd $here                         # make sure we are somewhere else
 _cmd rm -rf $ptf
-_deleteDatasets
+_deleteDatasets "$gimdtsHlq"
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"
