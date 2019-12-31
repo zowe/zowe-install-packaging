@@ -12,9 +12,9 @@
 
 #% package prepared product as service (++USERMOD, ++APAR, ++PTF)
 #%
-#% -?                 show this help message
-#% -c smpe.yaml       use the specified config file
-#% -d                 enable debug messages
+#% -?            show this help message
+#% -c smpe.yaml  use the specified config file
+#% -d            enable debug messages
 #%
 #% -c is required
 
@@ -28,6 +28,23 @@
 # creates $log/$jclMerge            merge ++ & part JCL
 # creates $log/$logMerge            merge ++ & part sysprint output
 # creates $log/$sysmod1.readme.htm  readme (EBCDIC)
+
+# relationship between this sysmod and other sysmods
+# ++PTF      REQ ptfNames
+#            SUP aparNames
+#            SUP <curApar>
+#            SUP <prevApar>
+#            SUP <prevPtf>
+# ++APAR     /   ptfNames
+#            REQ aparNames
+#            SUP <curApar>
+#            PRE <prevApar>
+#            PRE <prevPtf>
+# ++USERMOD  /   ptfNames
+#            REQ aparNames (holding list of related USERMODs)
+#            SUP <curApar>
+#            PRE <prevApar>
+#            PRE <prevPtf>
 
 gimdtsTools=""                 # tools used by jobs
 gimdtsTools="$gimdtsTools PTF@.jcl"
@@ -65,70 +82,237 @@ me=$(basename $0)              # script name
 test "$debug" && echo && echo "> $me $@"
 
 # ---------------------------------------------------------------------
-# --- create sysmod header (PTF/APAR/USERMOD)
+# --- return PRE/SUP/REQ formatted list of sysmods
+# $1: PRE | SUP | REQ
+# $2: file with list of sysmods
 # output:
-# -
+# - $2 is updated
+# ---------------------------------------------------------------------
+function _formatPreSupReq
+{
+test "$debug" && echo && echo "> _formatPreSupReq $@"
+
+test -s $ptf/err && _cmd rm -f $ptf/err
+
+# reformat list of sysmods, result saved in temp file
+# input: lines with x number of blank delimited sysmod names per line
+# sample output:
+#       AH02861,AH02907,AH02908,AH06007,AH06132,AH06136,AH06139,AH09610
+#       AI91621,AI91622,AI95415,AI95536,AI95543,AI98069,AI99136,AI99137
+#       UI52748,UI52749,UI52750,UI54690,UI54691,UI54692,UI56525,UI56526
+#       UI61814,UI61815,UI63579,UI63580,UI63581)
+# 1. tr    replace all blanks with new-lines    -> 0 or 1 word per line
+# 2. sed   strip null lines                          -> 1 word per line
+# 3. sort  sort sysmod names
+# 4. awk   merge blocks of 8 lines in single line,
+#          words are separated by comma,
+#          last line ends with comma if not 8th word
+# 5. sed   strip possible trailing comma
+# 6. sed   add ) to end of last line
+# 7. sed   prefix all lines with 6 blanks
+test "$debug" && echo "cat $2 | ..."
+cat $2                2>> $ptf/err \
+  | tr ' ' '\n'       2>> $ptf/err \
+  | sed '/^$/d'       2>> $ptf/err \
+  | sort              2>> $ptf/err \
+  | awk 'NR%8 {printf("%s,",$0); next} {print $0}' 2>> $ptf/err \
+  | sed 's/,$//'      2>> $ptf/err \
+  | sed '$ s/$/)/'    2>> $ptf/err \
+  | sed 's/^/      /' 2>> $ptf/err \
+  1> $ptf/tmp         2>> $ptf/err
+
+if test -s $ptf/err
+then
+  echo "** ERROR $me problem formatting $1 $2"
+  cat $ptf/err
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+# add REQ/PRE/SUP to first line, replace original input
+# sample output:
+#   SUP(AH02861,AH02907,AH02908,AH06007,AH06132,AH06136,AH06139,AH09610
+#       AH09614,AH13239,AH13307,AH13308,AH19771,AH19939,AH19940,AI91486
+#       UI52748,UI52749,UI52750,UI54690,UI54691,UI54692,UI56525,UI56526
+#       UI61814,UI61815,UI63579,UI63580,UI63581)
+_cmd --repl $2 sed "1 s/      /  $1(/" $ptf/tmp
+
+_cmd rm -f $ptf/tmp
+test "$debug" && echo "< _formatPreSupReq"
+}    # _formatPreSupReq
+
+# ---------------------------------------------------------------------
+# --- create PRE (prerequisite) and SUP (supersede) statements
+# $1: header file name
+# output:
+# - $1  is updated if needed
+# ---------------------------------------------------------------------
+function _sup
+{
+test "$debug" && echo && echo "> _sup $@"
+
+sup=$ptf/sup
+test -f $sup && _cmd rm -f $sup
+_cmd touch $sup                             # ensure output file exists
+
+if test "$sysmodType" = "++PTF"
+then                                      # PTF SUPs everything, no PRE
+  # group everything that must go in SUP()
+  # APAR number starts with I, matching APAR-fix number starts with A
+  test -f $ptf/$thisApar && \
+    _cmd --save $sup sed 's/^./A/' $ptf/$thisApar
+  test -f $service/$prevApar && \
+    _cmd --save $sup sed 's/^./A/' $service/$prevApar
+  test -f $service/$prevPtf && \
+    _cmd --save $sup cat $service/$prevPtf
+
+  test -f $sup && _formatPreSupReq SUP $sup
+else      # APAR & USERMOD PRE previous sysmods, and SUP interim builds
+  if test -f $ptf/$thisApar                                      #  SUP
+  then
+    # APAR number starts with I, matching APAR-fix number starts with A
+    _cmd --save $sup sed 's/^./A/' $ptf/$thisApar
+    _formatPreSupReq SUP $sup
+  fi    # SUP
+
+  if test -f $service/$prevApar -o -f $service/$prevPtf           # PRE
+  then
+    test -f $ptf/pre && _cmd rm -f $ptf/pre
+
+    # APAR number starts with I, matching APAR-fix number starts with A
+    test -f $service/$prevApar && \
+      _cmd --save $ptf/pre sed 's/^./A/' $service/$prevApar
+    test -f $service/$prevPTF && \
+      _cmd --save $ptf/pre cat $service/$prevPtf
+
+    _formatPreSupReq PRE $ptf/pre
+    _cmd --save $sup cat $ptf/pre               # append result to $sup
+    _cmd rm -f $ptf/pre
+  fi    # PRE
+fi    # APAR/USERMOD
+
+test "$debug" && sed 's/^/. /' $sup           # show prefixed with '. '
+_cmd --save $1 cat $sup
+
+# no longer needed
+_cmd rm -f $ptf/sup
+
+test "$debug" && echo "< _sup"
+}    # _sup
+
+# ---------------------------------------------------------------------
+# --- add PTF-specific comments to header
+# $1: header file name
+# output:
+# - $1  is updated
 #
-# ++PTF(UO64071) /* 5698-ZWE00-AZWE001 */ REWORK(19271).
-# ++VER(Z038,C150,P115) FMID(AZWE001)
-#   SUP(IO00204,IO00869,UO61806)
-#  /*
 #   PROBLEM DESCRIPTION(S):
-#     IO00204 -
+#     AO00204 -
 #       PROBLEM SUMMARY:
-#       ****************************************************************
-#       * USERS AFFECTED: ...                                          *
-#       ****************************************************************
-#       * PROBLEM DESCRIPTION: ...                                     *
-#       ****************************************************************
-#       ...
+#       <current-close.txt>
 #
-#     IO00869 -
+#     AO00205 -
 #       PROBLEM SUMMARY:
-#       ****************************************************************
-#       * USERS AFFECTED: ...                                          *
-#       ****************************************************************
-#       * PROBLEM DESCRIPTION: ...                                     *
-#       ****************************************************************
-#       ...
+#       <current-close.txt>
+#
+#     <promoted-close.txt>
 #
 #   COMPONENT:
 #     5698-ZWE00-AZWE001
 #
 #   APARS FIXED:
 #     IO00204
-#     IO00869
+#     IO00205
+#     <current-apar.txt>
+#     <promoted-apar.txt>
+#
+# ---------------------------------------------------------------------
+function _ptfComments
+{
+test "$debug" && echo && echo "> _ptfComments $@"
+
+#   PROBLEM DESCRIPTION(S):
+_cmd --save $1 echo "  PROBLEM DESCRIPTION(S):"
+
+#     IO00204 -
+#       PROBLEM SUMMARY:
+#       <current-close.txt>
+#
+#     ...
+_cmd --save $1 cat $ptf/$thisClose
+
+#   COMPONENT:
+#     5698-ZWE00-AZWE001
+#
+_cmd --save $1 echo "  COMPONENT:"
+_cmd --save $1 echo "    ${compID}-$FMID"
+_cmd --save $1 echo ""
+
+#   APARS FIXED:
+#     IO00204
+#     IO00205
+#     <current-apar.txt>
+#     <promoted-apar.txt>
+#
+_cmd --save $1 echo "  APARS FIXED:"
+_cmd --save $1 sed 's/^/    /' $ptf/$thisApar         # indent 4 spaces
+test -f $service/$prevApar && \
+  _cmd --save $1 sed 's/^/    /' $service/$prevApar   # indent 4 spaces
+_cmd --save $1 echo ""
+
+test "$debug" && echo "< _ptfComments"
+}    # _ptfComments
+
+# ---------------------------------------------------------------------
+# --- create header for sysmod (PTF/APAR/USERMOD)
+# $1: header file name
+# $2: sysmod name, use "#SySmOdNaMe" for sysmod 2 and up
+#     (sysmod 2 and up does not get hold info)
+# output:
+# - $1  file with sysmod header (#req used as placeholder for REQ)
+#
+# ++PTF(UO64071) /* 5698-ZWE00-AZWE001 */ REWORK(2019271).
+# ++VER(Z038,C150,P115) FMID(AZWE001)
+#   REQ(UO64072)
+#   SUP(AO00204,AO00205,UO61806)
+#  /*
+#   PROBLEM DESCRIPTION(S):
+#     AO00204 -
+#       PROBLEM SUMMARY:
+#       <current-close.txt>
+#
+#     AO00205 -
+#       PROBLEM SUMMARY:
+#       <current-close.txt>
+#
+#     <promoted-close.txt>
+#
+#   COMPONENT:
+#     5698-ZWE00-AZWE001
+#
+#   APARS FIXED:
+#     IO00204
+#     IO00205
+#     <current-apar.txt>
+#     <promoted-apar.txt>
 #
 #   SPECIAL CONDITIONS:
 #     ACTION:
-#       ****************************************************************
-#       * Affected function: ...                                       *
-#       ****************************************************************
-#       * Description: ...                                             *
-#       ****************************************************************
-#       * Timing: post-APPLY                                           *
-#       ****************************************************************
-#       * Part: ...                                                    *
-#       ****************************************************************
-#       ...
+#       <current-hold-ACTION.txt>
+#       <fixed-hold-ACTION.txt>
+#       <promoted-hold-ACTION.txt>
 #
-#     ACTION:
-#       ****************************************************************
-#       * Affected function: ...                                       *
-#       ****************************************************************
-#       * Description: ...                                             *
-#       ****************************************************************
-#       * Timing: post-APPLY                                           *
-#       ****************************************************************
-#       * Part: ...                                                    *
-#       ****************************************************************
-#       ...
+#     ...:
+#       <...>
 #
 #     COPYRIGHT:
 #       5698-ZWE00 COPYRIGHT Contributors to the Zowe Project. 2019
 #
 #   COMMENTS:
-#       NONE
+#     COMMUNITY VERSION:
+#       1.8.0
+#
+#     GITHUB BRANCH:
+#       master
 #  */.
 # ++HOLD(UO64071) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(19271)
 #   COMMENT(
@@ -143,29 +327,150 @@ test "$debug" && echo && echo "> $me $@"
 #   ****************************************************************
 #   ...
 #   ).
-# ++HOLD(UO61806) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(19137)
-#   COMMENT(
-#   ****************************************************************
-#   * Affected function: ...                                       *
-#   ****************************************************************
-#   * Description: ...                                             *
-#   ****************************************************************
-#   * Timing: post-APPLY                                           *
-#   ****************************************************************
-#   * Part: ...                                                    *
-#   ****************************************************************
-#   ...
-#   ).
+# ...
 # ---------------------------------------------------------------------
 function _header
 {
 test "$debug" && echo "> _header $@"
-echo "-- creating SYSMOD header"
+echo "-- creating header $sysmodType($2)"
 
-# TODO create sysmod headers
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
+# ++PTF(UO64071) /* 5698-ZWE00-AZWE001 */ REWORK(2019271).
+_cmd --repl $1 \
+  echo "$sysmodType($2) /* $compID-$FMID */ REWORK($julian7)."
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# ++VER(Z038,C150,P115) FMID(AZWE001)
+# get value from SMPMCS
+environment=$(sed -n '/^++VER/ s/++VER(\(.*\)).*/\1/p' $here/$mcs)
+_cmd --save $1 echo "++VER($environment) FMID($FMID)"
+
+#   REQ(UO64072)
+# use placeholder for "REQ(...)", added later
+_cmd --save $1 echo "#req"
+
+#   SUP(AO00204,AO00205,UO61806)
+#   PRE(UO61808)
+_sup $1
+
+#  /*
+_cmd --save $1 echo ' /*'
+
+# extended comment block for PTF only
+#   PROBLEM DESCRIPTION(S):
+#     AO00204 -
+#       PROBLEM SUMMARY:
+#       <current-close.txt>
+#
+#     AO00205 -
+#       PROBLEM SUMMARY:
+#       <current-close.txt>
+#
+#     <promoted-close.txt>
+#
+#   COMPONENT:
+#     5698-ZWE00-AZWE001
+#
+#   APARS FIXED:
+#     IO00204
+#     IO00205
+#     <current-apar.txt>
+#     <promoted-apar.txt>
+#
+test "$sysmodType" = "++PTF" &&  _ptfComments $1
+
+#   SPECIAL CONDITIONS:
+_cmd --save $1 echo "  SPECIAL CONDITIONS:"
+
+# hold as comment for first PTF only
+#     ACTION:
+#       <current-hold-ACTION.txt>
+#       <fixed-hold-ACTION.txt>
+#       <promoted-hold-ACTION.txt>
+#
+#     ...:
+#       <...>
+#
+test "$sysmodType" = "++PTF" \
+  -a $2 != "#SySmOdNaMe" \
+  -a -f $ptf/$thisHold2 && \
+  _cmd --save $1 cat $ptf/$thisHold2
+
+# note: COPYRIGHT is part of SPECIAL CONDITIONS, so extra indentation
+#     COPYRIGHT:
+#       5698-ZWE00 COPYRIGHT Contributors to the Zowe Project. 2019
+#
+_cmd --save $1 echo "    COPYRIGHT:"
+_cmd --save $1 echo "      ${compID} COPYRIGHT $copyright"
+_cmd --save $1 echo ""
+
+#   COMMENTS:
+#     COMMUNITY BUILD:
+#       1.8.0
+#
+#     GITHUB BRANCH:
+#       master
+_cmd --save $1 echo "  COMMENTS:"
+_cmd --save $1 echo "    COMMUNITY VERSION:"
+line2=${VERSION:-?}                                        # default: ?
+test "$debug" && echo "while test -n \"\$line2\""
+while test -n "$line2"           # write branch name in 63-char chuncks
+do
+  line1=$(echo $line2 | cut -c 1-63)
+  line2=$(echo $line2 | sed 's/^.\{1,63\}//')
+  test "$debug" && echo "line1='$line1'"
+  test "$debug" && echo "line2='$line2'"
+  _cmd --save $1 echo "      $line1"
+done    # while $line2
+_cmd --save $1 echo ""
+_cmd --save $1 echo "    GITHUB BRANCH:"
+line2=${BRANCH:-unknown}                             # default: unknown
+test "$debug" && echo "while test -n \"\$line2\""
+while test -n "$line2"           # write branch name in 63-char chuncks
+do
+  line1=$(echo $line2 | cut -c 1-63)
+  line2=$(echo $line2 | sed 's/^.\{1,63\}//')
+  test "$debug" && echo "line1='$line1'"
+  test "$debug" && echo "line2='$line2'"
+  _cmd --save $1 echo "      $line1"
+done    # while $line2
+
+#  */.
+_cmd --save $1 echo ' */.'
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# hold as ++HOLD for first sysmod
+if test $2 != "#SySmOdNaMe"
+then
+  test -f $ptf/$thisHold && _cmd --save $1 cat $ptf/$thisHold
+
+  # ++PTF SUPs promoted PTFs, and thus includes their hold info
+  test "$sysmodType" = "++PTF" -a -f $service/$prevHold && \
+    _cmd --save $1 cat $service/$prevHold
+fi    # add ++HOLD
+
+test "$debug" && sed 's/^/. /' $1             # show prefixed with '. '
 test "$debug" && echo "< _header"
 }    # _header
+
+# ---------------------------------------------------------------------
+# --- create headers for first and overflow sysmods
+# output:
+# - $ptf/header1  file holding header for first sysmod (with hold)
+# - $ptf/header2  file holding header for overflow sysmods (no hold)
+# ---------------------------------------------------------------------
+function _headers
+{
+test "$debug" && echo && echo "> _headers $@"
+
+_header $ptf/header1 $sysmod1
+_header $ptf/header2 '#SySmOdNaMe'
+
+test "$debug" && echo "< _headers"
+}    # _headers
 
 # ---------------------------------------------------------------------
 # --- create staging data set and populate with sysmod header
@@ -1135,6 +1440,521 @@ done    # for file
 echo "   $(echo $allParts | wc -w | sed 's/ //g') MCS defintions"
 test "$debug" && echo "< _metaData"
 }    # _metaData
+
+# ---------------------------------------------------------------------
+# --- clean up external input - PTF
+# output:
+# - $ptf/$thisPtf is created if there is data (current as list)
+# ---------------------------------------------------------------------
+function _prepPtf
+{
+test "$debug" && echo && echo "> _prepPtf $@"
+
+if test "$sysmodType" != "++PTF"
+then
+  test "$debug" && echo "no action, not ++PTF"
+else
+  # save list of PTFs
+  # input: line with x number of blank delimited sysmod names
+  # sample output:
+  # UO64071
+  # UO64072
+  # 1. tr    replace all blanks with new-lines  -> 0 or 1 word per line
+  # 2. sed   strip null lines                        -> 1 word per line
+  # 3. sort  sort sysmod names & strip duplicates
+  test "$debug" && echo "echo \$ptfNames | ..."
+  echo $ptfNames     2>> $ptf/err \
+    | tr ' ' '\n'    2>> $ptf/err \
+    | sed '/^$/d'    2>> $ptf/err \
+    | sort -u        2>> $ptf/err \
+    1> $ptf/$thisPtf 2>> $ptf/err
+
+  if test -s $ptf/err
+  then
+    echo "** ERROR $me problem formatting ++PTF $ptfNames"
+    cat $ptf/err
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+    _cmd rm $ptf/err
+  fi    #
+
+  test "$debug" && sed 's/^/. /' $ptf/$thisPtf #show prefixed with '. '
+fi    # ++PTF
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# ensure there are no duplicates in current and promoted PTF lists
+if test -f $ptf/$thisPtf -a -f $service/$prevPtf
+then
+  # assumes both files are formatted
+  duplicates="$(comm -12 $ptf/$thisPtf $service/$prevPtf 2>&1)"
+
+  if test -n "$duplicates"
+  then
+    echo "** ERROR $me duplicate PTFs in $thisPtf and $prevPtf"
+    echo $duplicates
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+fi    # test for duplicate PTF numbers
+
+# ensure there are no duplicates in $ptfNames
+if test -f $ptf/$thisPtf -a \
+  "$(echo $ptfNames | wc -w)" -ne "$(cat $ptf/$thisPtf | wc -l)"
+then
+  echo "** ERROR $me duplicate PTF numbers in $service/$ptfBucket"
+  echo "$(echo $ptfNames | wc -w) -ne $(cat $ptf/$thisPTf | wc -l)"
+  echo $ptfNames
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+test "$debug" && echo "< _prepPtf"
+}    # _prepPtf
+
+# ---------------------------------------------------------------------
+# --- clean up external input - hold info
+# output:
+# - $ptf/$thisHold is created if there is data (current as ++HOLD)
+# - $ptf/$thisHold2 is created if there is data (all as comment)
+# ---------------------------------------------------------------------
+function _prepHold
+{
+test "$debug" && echo && echo "> _prepHold $@"
+
+test "$debug" && echo "+ merge current & fixed HOLD info, grouped by type"
+
+# merge current & fixed HOLD info, grouped by type
+test "$debug" && \
+  echo "for file in \$(ls $service/\$curHold $service/\$fixHold)"
+for file in $(ls $service/$curHold $service/$fixHold 2> /dev/null)
+do
+  test "$debug" && echo "file=$file"
+
+  # check for line-length errors (max 64 chars)
+  if test -n "$(sed -n 's/^.\{1,64\}//p' $file | sed '/^$/d')"
+  then
+    echo "** ERROR $me more than 64 chars per line in $file"
+    echo "'----+----1----+----2----+----3----+----4----+----5----+----6----'"
+    sed "s/^/'/;s/$/'/" $file                  # show surrounded by ' '
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+
+  # e.g. /bld/zowe/service/fixed-hold-ACTION.txt -> ACTION
+  holdType=$(echo $file | sed 's:.*-\(.*\)\.txt$:\1:')
+  test "$debug" && echo "holdType=$holdType"
+
+  _cmd --save $ptf/${holdType}.hold cat $file
+  # ensure trailing blank line
+  test -n "$(tail -1 $ptf/${holdType}.hold)" &&
+    _cmd --save $ptf/${holdType}.hold echo ""
+done    # for file
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+test "$debug" && echo "+ format grouped hold info in ++HOLD layout"
+
+# format grouped hold info in ++HOLD layout
+# ++HOLD(UO64071) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(19271)
+#   COMMENT(
+#   ****************************************************************
+#   * Affected function: ...                                       *
+#   ****************************************************************
+#   * Description: ...                                             *
+#   ****************************************************************
+#   * Timing: post-APPLY                                           *
+#   ****************************************************************
+#   * Part: ...                                                    *
+#   ****************************************************************
+#   ...
+#   ).
+# ...
+test "$debug" && echo "for file in \$(ls $ptf/*.hold)"
+for file in $(ls $ptf/*.hold 2> /dev/null)
+do
+  test "$debug" && echo "file=$file"
+
+  # e.g. /bld/zowe/ptf/ACTION.hold -> ACTION
+  holdType=$(echo $(basename $file) | sed 's/[.].*//')
+  test "$debug" && echo "holdType=$holdType"
+
+   _cmd --save $ptf/$thisHold echo \
+ "++HOLD($sysmod1) SYSTEM FMID($FMID) REASON($holdType) DATE($julian5)"
+   _cmd --save $ptf/$thisHold echo "  COMMENT("
+   _cmd --save $ptf/$thisHold sed 's/^/  /' $file     # indent 2 spaces
+   _cmd --save $ptf/$thisHold echo "  )."
+done    # for file
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# ++PTF SUPs promoted PTFs, and includes their hold info
+# -> merge promoted hold with current hold and group by type
+# MUST be done AFTER creating current ++HOLD (also used by APAR/USERMOD)
+if test "$sysmodType" = "++PTF" -a -f $service/$prevHold
+then
+  test "$debug" && echo "+ merge promoted hold with current hold and group by type"
+
+  # ensure csplit output goes in $ptf
+  _cmd cd $ptf
+
+  # split at ++HOLD markers
+  # - csplit creates xx## files, each holding block up to next marker (exclusive)
+  # - "$(($(grep -c ^++HOLD $service/$prevHold)-1))" counts number of markers
+  #   and when wrapped in {}, it repeats the /^++HOLD/ filter x times
+  _cmd csplit -s $service/$prevHold "/^++HOLD/" \
+    {$(($(grep -c "^++HOLD" $service/$prevHold)-1))}
+
+  # return to base
+  _cmd --null cd -
+
+  # group actual data (no SMPE metadata) by type
+  test "$debug" && echo "for file in \$(ls $ptf/xx*)"
+  for file in $(ls $ptf/xx* 2> /dev/null)
+  do
+    test "$debug" && echo "file=$file"
+
+    # e.g. ++HOLD(UO61806) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(19071)
+    #      -> ACTION
+    holdType=$(head -1 $file | sed 's/.*REASON(\([^)]*\).*/\1/')
+    test "$debug" && echo "holdType=$holdType"
+
+    # save content by type
+    if test -n "$holdType" 
+    then
+      # strip first 2 and last line (SMP/E metadata lines)
+      # remove leading 2 blanks
+      _cmd --save $ptf/${holdType}.hold sed '1,2d;$d;s/^..//' $file
+    fi    #
+  done    # for file
+
+  # no longer needed
+  _cmd rm -f $ptf/xx*
+fi    # merge hold of previous PTFs
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+if test "$sysmodType" = "++PTF"
+then
+  test "$debug" && echo "+ HOLD info in comment format, grouped by type"
+
+  # TODO chop $ptf/*.hold in individual hold statements and remove
+  #      duplicates before formatting
+
+  # PTFs list HOLD info in comments as well, format by type
+  #     ACTION:
+  #       <ACTION.hold>
+  #
+  #     ...:
+  #       <...>
+  #
+  test "$debug" && echo "for file in \$(ls $ptf/*.hold)"
+  for file in $(ls $ptf/*.hold 2> /dev/null)
+  do
+    test "$debug" && echo "file=$file"
+
+    # e.g. /bld/zowe/ptf/ACTION.hold -> ACTION
+    holdType=$(echo $(basename $file) | sed 's/[.].*//')
+    test "$debug" && echo "holdType=$holdType"
+
+    _cmd --save $ptf/$thisHold2 echo "    $holdType:"
+    _cmd --save $ptf/$thisHold2 sed 's/^/      /' $file      # indent 6
+    test "$(tail -1 $ptf/$thisHold2)" != "      " &&
+      _cmd --save $ptf/$thisHold2 echo ""  # ensure trailing blank line
+  done    # for file
+fi    # ++PTF
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# no longer needed
+_cmd rm -f $ptf/*.hold
+
+if test "$debug"
+then                                          # show prefixed with '. '
+  echo "++HOLD format"
+  test -f $ptf/$thisHold && sed 's/^/. /' $ptf/$thisHold
+  echo "comment format"
+  test -f $ptf/$thisHold2 && sed 's/^/. /' $ptf/$thisHold2
+fi    #
+
+test "$debug" && echo "< _prepHold"
+}    # _prepHold
+
+# ---------------------------------------------------------------------
+# --- clean up external input - closing info
+# output:
+# - $ptf/$thisClose is created if there is data (all as comment)
+# ---------------------------------------------------------------------
+function _prepClose
+{
+test "$debug" && echo && echo "> _prepClose $@"
+
+# PTF has closing information, format it
+if test "$sysmodType" != "++PTF"
+then
+  test "$debug" && echo "no action, not ++PTF"
+else
+  # check for line-length errors (max 64 chars)
+  if test -n "$(sed -n 's/^.\{1,64\}//p' $service/$curClose | sed '/^$/d')"
+  then
+    echo "** ERROR $me more than 64 chars per line in $service/$curClose"
+    echo "'----+----1----+----2----+----3----+----4----+----5----+----6----'"
+    sed "s/^/'/;s/$/'/" $service/$curClose     # show surrounded by ' '
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+
+  #     IO00204 -
+  #       PROBLEM SUMMARY:
+  #       <current-close.txt>
+  #
+  test "$debug" && echo "for sysmod in \$(cat $ptf/$thisApar)"
+  for sysmod in $(cat $ptf/$thisApar)
+  do
+    _cmd --save $ptf/tmp echo "    $sysmod -"
+    _cmd --save $ptf/tmp echo "      PROBLEM SUMMARY:"
+    # indent 6 spaces
+    _cmd --save $ptf/tmp sed 's/^/      /' $service/$curClose
+    test "$(tail -1 $ptf/tmp)" != "      " && \
+      _cmd --save $ptf/tmp echo ""         # ensure trailing blank line
+  done    # for sysmod
+
+  # substitute placeholders that came in with <curClose>
+  SED=""
+  SED="$SED; s/#fmid/$FMID/"
+  SED="$SED; s/#version/${VERSION:-unknown}/"        # default: unknown
+  SED="$SED; s,#link,$ptfHttp,"              # $ptfHttp has '/' and ':'
+  _sed $ptf/tmp
+
+  # enusre subtitutions did not bring us past 64 chars (+6 offset)
+  _cmd --repl $ptf/$thisClose cut -c 1-70 $ptf/tmp
+
+  test "$debug" && sed 's/^/. /' $ptf/$thisClose #show prefixed with'. '
+
+  # ++PTF SUPs promoted PTFs, and includes their closing info
+  test -f $service/$prevClose && \
+    _cmd --save $ptf/$thisClose cat $service/$prevClose
+
+  # no longer needed
+  _cmd rm -f $ptf/tmp
+fi    # ++PTF
+
+test "$debug" && echo "< _prepClose"
+}    # _prepClose
+
+# ---------------------------------------------------------------------
+# --- clean up external input - APAR
+# output:
+# - $ptf/$thisApar is created if there is data (current as list)
+# ---------------------------------------------------------------------
+function _prepApar
+{
+test "$debug" && echo && echo "> _prepApar $@"
+
+# create work copy
+test -f $service/$curApar && _cmd cp $service/$curApar $ptf/$thisApar
+
+# ++PTF will SUP aparNames & <thisApar>, so put them together
+test "$sysmodType" = "++PTF" && \
+  _cmd --save $ptf/$thisApar echo $aparNames
+
+# create known format for <thisApar> input
+if test ! -f $ptf/$thisApar
+then
+  test "$debug" && echo "no action, missing $ptf/$thisApar"
+else
+  # reformat list of sysmods, result saved in temp file
+  # input: lines with x number of blank delimited sysmod names per line
+  # sample output:
+  # IO00204
+  # IO00205
+  # 1. tr    replace all blanks with new-lines  -> 0 or 1 word per line
+  # 2. sed   strip null lines                        -> 1 word per line
+  # 3. sort  sort sysmod names & strip duplicates
+  test "$debug" && echo "cat $ptf/$thisApar | ..."
+  cat $ptf/$thisApar 2>> $ptf/err \
+    | tr ' ' '\n'    2>> $ptf/err \
+    | sed '/^$/d'    2>> $ptf/err \
+    | sort -u        2>> $ptf/err \
+    1> $ptf/tmp      2>> $ptf/err
+
+  if test -s $ptf/err
+  then
+    echo "** ERROR $me problem formatting ++APAR $ptf/$thisApar"
+    cat $ptf/err
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+    _cmd rm $ptf/err
+  fi    #
+
+  # replace unformatted <thisApar> with formatted version
+  _cmd mv $ptf/tmp $ptf/$thisApar
+
+  test "$debug" && sed 's/^/. /' $ptf/$thisApar #show prefixed with '. '
+fi    # $ptf/$thisApar exists
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# ensure there are no duplicates in current and promoted APAR lists
+if test -f $ptf/$thisApar -a -f $service/$prevApar
+then
+  # assumes both files are formatted
+  duplicates="$(comm -12 $ptf/$thisApar $service/$prevApar 2>&1)"
+
+  if test -n "$duplicates"
+  then
+    echo "** ERROR $me duplicate APARs in $thisApar and $prevApar"
+    echo $duplicates
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+fi    # test for duplicate APAR numbers
+
+test "$debug" && echo "< _prepApar"
+}    # _prepApar
+
+# ---------------------------------------------------------------------
+# --- clean up external input
+# output:
+# - $ptf/$thisApar is created if there is data (current as list)
+# - $ptf/$thisClose is created if there is data (all as comment)
+# - $ptf/$thisHold is created if there is data (current as ++HOLD)
+# - $ptf/$thisHold2 is created if there is data (all as comment)
+# - $ptf/$thisPtf is created if there is data (current as list)
+# ---------------------------------------------------------------------
+function _prepInput
+{
+test "$debug" && echo && echo "> _prepInput $@"
+
+_prepApar
+_prepClose
+_prepHold
+_prepPtf
+
+test "$debug" && echo "< _prepInput"
+}    # _prepInput
+
+# ---------------------------------------------------------------------
+# --- stage ASCII data to be used as historical data after promote
+# output:
+# - $ship/$tarPromote is created when packaging a PTF
+# ---------------------------------------------------------------------
+function _stagePromote
+{
+test "$debug" && echo && echo "> _stagePromote $@"
+
+# clear the stage
+test -f $tarPromote && _cmd rm -f $tarPromote
+
+if test "$sysmodType" != "++PTF"
+then  # ++APAR/++USERMOD
+  _cmd touch $tarPromote              # ensure file exists as null-file
+else  # ++PTF
+  _iconv -d $ptf/$thisApar     $ship/$nextApar       # only has current
+  _iconv    $service/$prevApar $ship/$nextApar           # add promoted
+
+  _iconv -d $ptf/$thisClose $ship/$nextClose   # has current & promoted
+
+  _iconv -d $ptf/$thisHold     $ship/$nextHold       # only has current
+  _iconv    $service/$prevHold $ship/$nextHold           # add promoted
+
+  _iconv -d $ptf/$thisPtf      $ship/$nextPtf        # only has current
+  _iconv    $service/$prevPtf  $ship/$nextPtf            # add promoted
+
+  # create tar-file for usage by external process smpe-promote.sh
+  # use tar as smpe-promote.sh does not run on z/OS
+  _cmd cd $ship
+  files="$(ls $nextApar $nextClose $nextHold $nextPtf 2> /dev/null)"
+  if test -n "$files"
+  then
+    _cmd tar -cf $tarPromote $files
+    _cmd rm -f $files
+  fi    #
+  _cmd --null cd -
+fi    # ++PTF
+
+test "$debug" && echo "< _stagePromote"
+}    # _stagePromote
+
+# ---------------------------------------------------------------------
+# --- determine whether to create PTF, APAR, or USERMOD
+# output:
+# - sysmodType  ++PTF | ++APAR | ++USERMOD
+# - sysmod1     UOxxxxx | AOxxxxx | TMPxxxx
+# - aparNames   list of APAR numbers to use (as ++APAR or SUP)
+# - ptfNames    list of PTF numbers to use (as ++PTF)
+# ---------------------------------------------------------------------
+function _type
+{
+test "$debug" && echo && echo "> _type $@"
+
+unset aparNames ptfNames
+if test ! -f $service/$ptfBucket
+then                                        # $ptfBucket does not exist
+  sysmodType="++USERMOD"
+  test "$debug" && echo "$sysmodType - no $service/$ptfBucket"
+else                                              # file exists
+  # get first non-comment line, can be null
+  line="$(sed '/^#/d' $service/$ptfBucket | head -1)"
+  # output: "<ptfs> - <apars>"  or  "<apars>"
+  test "$debug" && echo "line=$line"
+
+  # get APAR names, trim leading & trailing blanks, reduce +1 blanks
+  aparNames="$(echo $line \
+             | sed 's/.*-//;s/^ *//;s/ *$//;s/[ ]\{2,\}/ /g' )"
+  test "$debug" && echo "aparNames='$aparNames'"
+
+  if test "$(echo $line | grep -)"
+  then                            # ++PTF if there is a '-' in the data
+    sysmodType="++PTF"
+    test "$debug" && echo "$sysmodType - PTFs in $service/$ptfBucket"
+
+    # get PTF names, trim leading & trailing blanks, reduce +1 blanks
+    ptfNames="$(echo $line \
+              | sed 's/-.*//;s/^ *//;s/ *$//;s/[ ]\{2,\}/ /g')"
+    test "$debug" && echo "ptfNames='$ptfNames'"
+
+    if test -z "$ptfNames"
+    then                    # no PTF numbers found while we should have
+      echo "** ERROR $me $service/$ptfBucket format error (PTF)"
+      echo "line: '$line'"
+      test ! "$IgNoRe_ErRoR" && exit 8                           # EXIT
+    fi    #
+
+    if test -z "$aparNames"
+    then                   # no APAR numbers found while we should have
+      echo "** ERROR $me $service/$ptfBucket format error (APAR)"
+      echo "line: '$line'"
+      test ! "$IgNoRe_ErRoR" && exit 8                           # EXIT
+    fi    #
+  # not a ++PTF
+  elif test -n "$aparNames"
+  then                                # ++APAR if aparNames is non-null
+    sysmodType="++APAR"
+    test "$debug" && echo "$sysmodType - APARs in $service/$ptfBucket"
+  else                             # ++USERMOD if no data in $ptfBucket
+    sysmodType="++USERMOD"
+    test "$debug" && echo "$sysmodType - $service/$ptfBucket empty"
+  fi    #
+fi    # $ptfBucket exists
+
+# PTF required ?
+if test -n "$reqPTF" -a "$sysmodType" != "++PTF"
+then
+  echo "** ERROR $me ++PTF build required, but $sysmodType selected"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+# determine name of first sysmod
+if test "$sysmodType" = "++PTF"
+then
+  sysmod1=${ptfNames%% *}          # keep up to first blank (exclusive)
+elif test "$sysmodType" = "++APAR"
+then
+  # keep up to first blank (exclusive)
+  # APAR number starts with I, matching APAR-fix number starts with A
+  sysmod1=$(echo ${aparNames%% *} | sed 's/^./A/')
+else  # ++USERMOD
+  # TODO update here to increase USERMOD number on consecutive builds
+  sysmod1=TMP0001
+fi    #
+
+echo "-- packaging $sysmodType($sysmod1) & family"
+test "$debug" && echo "< _type"
+}    # _type
 
 # ---------------------------------------------------------------------
 # --- delete work data sets
