@@ -131,7 +131,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           filename            : 'zowe.pax',
           environments        : [
             'ZOWE_VERSION'    : pipeline.getVersion(),
-            'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : '')
+            'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : ''),
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
           extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.tar,fmid.zip,ptf.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
