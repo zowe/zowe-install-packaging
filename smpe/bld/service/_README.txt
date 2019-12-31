@@ -47,9 +47,9 @@ a PTF, APAR, or USERMOD must be created.
 
 The file will be updated during promote (promoted PTF is commented out).
 
-+---------------------+
-| current-closing.txt |
-+---------------------+
++-------------------+
+| current-close.txt |
++-------------------+
 
 Generic text block that is used to create the closing information 
 comments inside a PTF. There are multiple syntax/content rules in play 
@@ -126,9 +126,9 @@ DO NOT ALTER - created & maintained by smpe-promote.sh
 List of all APARs that have already shipped, and therefore
 must be superseded by the current sysmod build.
 
-+----------------------+
-| promoted-closing.txt |
-+----------------------+
++--------------------+
+| promoted-close.txt |
++--------------------+
 
 DO NOT ALTER - created & maintained by smpe-promote.sh
 Closing information of promoted PTFs. This data is included as-is
