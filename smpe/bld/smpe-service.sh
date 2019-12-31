@@ -14,6 +14,7 @@
 #%
 #% -?            show this help message
 #% -b branch     GitHub branch used for this build
+#% -B build      GitHub build number for this branch
 #% -c smpe.yaml  use the specified config file
 #% -d            enable debug messages
 #% -P            fail build if APAR/USERMOD is created instead of PTF
@@ -339,7 +340,7 @@ test "$debug" && echo "< _ptfComments"
 #       1.8.0
 #
 #     GITHUB BRANCH:
-#       master
+#       master (build 15)
 #  */.
 # ++HOLD(UO64071) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(19271)
 #   COMMENT(
@@ -438,10 +439,10 @@ _cmd --save $1 echo ""
 #       1.8.0
 #
 #     GITHUB BRANCH:
-#       master
+#       master (build 15)
 _cmd --save $1 echo "  COMMENTS:"
 _cmd --save $1 echo "    COMMUNITY VERSION:"
-line2=${VERSION:-unknown}                            # default: unknown
+line2="$VERSION"
 test "$debug" && echo "while test -n \"\$line2\""
 while test -n "$line2"               # write version in 63-char chuncks
 do
@@ -453,7 +454,7 @@ do
 done    # while $line2
 _cmd --save $1 echo ""
 _cmd --save $1 echo "    GITHUB BRANCH:"
-line2=${BRANCH:-unknown}                             # default: unknown
+line2="$BRANCH (build $BUILD)"
 test "$debug" && echo "while test -n \"\$line2\""
 while test -n "$line2"           # write branch name in 63-char chuncks
 do
@@ -1768,7 +1769,7 @@ else
   # substitute placeholders that came in with <curClose>
   SED=""
   SED="$SED; s/#fmid/$FMID/"
-  SED="$SED; s/#version/${VERSION:-unknown}/"        # default: unknown
+  SED="$SED; s/#version/$VERSION/"
   SED="$SED; s,#link,$ptfHttp,"              # $ptfHttp has '/' and ':'
   _sed $ptf/tmp
 
@@ -2214,12 +2215,13 @@ echo "-- startup arguments: $@"
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset BRANCH YAML reqPTF VERSION
+unset BUILD BRANCH YAML reqPTF VERSION
 # do NOT unset debug
 
 # get startup arguments
-while getopts b:c:p:?dP opt
+while getopts B:b:c:p:?dP opt
 do case "$opt" in
+  B)   BUILD="$OPTARG";;
   b)   BRANCH="$OPTARG";;
   c)   YAML="$OPTARG";;
   d)   debug="-d";;
@@ -2231,6 +2233,11 @@ do case "$opt" in
   esac    # $opt
 done    # getopts
 shift $(($OPTIND-1))
+
+# set default values
+BUILD=${BUILD:-unknown}
+BRANCH=${BRANCH:-unknown}
+VERSION=${VERSION:-unknown}
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing

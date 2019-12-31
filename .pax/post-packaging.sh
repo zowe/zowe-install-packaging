@@ -78,6 +78,47 @@ if [ ! -f smpe.pax ]; then
   exit 1
 fi
 
+# get build info from manifest.json
+# input:
+# {
+#   "name": "Zowe",
+#   "version": "1.7.1",
+#   "description": "Zowe is an open source project created to host technol
+#   "license": "EPL-2.0",
+#   "homepage": "https://zowe.org",
+#   "build": {
+#     "branch": "PR-930",
+#     "number": "32",
+#     "commitHash": "83facefb49826b103d649021ffa51ffca0ac9061",
+#     "timestamp": "1576619639516"
+#   },
+#   ...
+# output:
+# PR-930 build 32
+# 1. sed limits data to build { ... } block
+#   "build": {
+#     "branch": "PR-930",
+#     "number": "32",
+#     "commitHash": "83facefb49826b103d649021ffa51ffca0ac9061",
+#     "timestamp": "1576619639516"
+#   },
+# 2a. sed strips branch label, 
+#   "build": {
+# PR-930",
+#     "number": "32",
+#     "commitHash": "83facefb49826b103d649021ffa51ffca0ac9061",
+#     "timestamp": "1576619639516"
+#   },
+# 2b. sed removes all lines starting with a blank
+# PR-930",
+# 2c. sed strips trailing ",
+# PR-930
+manifest=$(find . -print | grep manifest.json)
+BRANCH_NAME=$(sed -n '/ "build": {/,/ },/p' $manifest \
+         | sed 's/ *"branch": "//;/^ /d;s/",$//')
+BUILD_NUMBER=$(sed -n '/ "build": {/,/ },/p' $manifest \
+         | sed 's/ *"number": "//;/^ /d;s/",$//')
+
 # SMPE build expects a text file specifying the files it must process
 echo "[$SCRIPT_NAME] preparing ${INPUT_TXT} ..."
 echo "${SMPE_BUILD_ROOT}.pax" > "${INPUT_TXT}"
@@ -106,6 +147,7 @@ echo
 #% optional
 #% -a alter.sh   execute script before/after install to alter setup
 #% -b branch     GitHub branch used for this build
+#% -B build      GitHub build number for this branch
 #% -d            enable debug messages
 #% -E success    exit with RC 0, create file on successful completion
 #% -p version    product version
@@ -115,6 +157,8 @@ echo
 external=""
 echo "BRANCH_NAME=$BRANCH_NAME"
 test -n "$BRANCH_NAME" && external="$external -b $BRANCH_NAME"
+echo "BUILD_NUMBER=$BUILD_NUMBER"
+test -n "$BUILD_NUMBER" && external="$external -B $BUILD_NUMBER"
 echo "ZOWE_VERSION=$ZOWE_VERSION"
 test -n "$ZOWE_VERSION" && external="$external -p $ZOWE_VERSION"
 

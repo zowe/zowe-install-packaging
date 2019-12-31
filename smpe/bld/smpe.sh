@@ -16,6 +16,7 @@
 #% -?            show this help message
 #% -a alter.sh   execute script before install to alter setup    #debug
 #% -b branch     GitHub branch used for this build
+#% -B build      GitHub build number for this branch
 #% -c smpe.yaml  use the specified config file
 #% -d            enable debug messages
 #% -E success    exit with RC 0, create file on successful completion
@@ -148,15 +149,16 @@ _cmd umask 0022                                  # similar to chmod 755
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset alter BRANCH YAML SuCcEsS count HLQ input reqPTF VERSION ROOT \
-      stopAt VOLSER VRM fmid1 fmid2
+unset alter BUILD BRANCH YAML SuCcEsS count HLQ input reqPTF VERSION \
+      ROOT stopAt VOLSER VRM fmid1 fmid2
 # do NOT unset debug errorRC
 errorRC=8  # default RC 8 on error
 
 # get startup arguments
-while getopts a:b:c:E:f:h:i:p:r:s:V:v:1:2:?dP opt
+while getopts a:B:b:c:E:f:h:i:p:r:s:V:v:1:2:?dP opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
+  B)   export BUILD="-B $OPTARG";;
   b)   export BRANCH="-b $OPTARG";;
   c)   export YAML="$OPTARG";;
   d)   export debug="-d";;
@@ -238,7 +240,7 @@ _cmd $here/smpe-pd.sh $debug -c $YAML $opts
 # result (final): $ship               # zip with SMPE pax, readme, & PD
 
 # create service (++PTF/++APAR/++USERMOD)
-opts="$reqPTF $BRANCH $VERSION"
+opts="$reqPTF $BRANCH $BUILD $VERSION"
 _stopAt smpe-service.sh $debug -c $YAML $opts
 _cmd $here/smpe-service.sh $debug -c $YAML $opts
 # result (final): $ship                      # zip with sysmod & readme
