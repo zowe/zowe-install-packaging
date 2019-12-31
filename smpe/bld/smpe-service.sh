@@ -441,9 +441,9 @@ _cmd --save $1 echo ""
 #       master
 _cmd --save $1 echo "  COMMENTS:"
 _cmd --save $1 echo "    COMMUNITY VERSION:"
-line2=${VERSION:-?}                                        # default: ?
+line2=${VERSION:-unknown}                            # default: unknown
 test "$debug" && echo "while test -n \"\$line2\""
-while test -n "$line2"           # write branch name in 63-char chuncks
+while test -n "$line2"               # write version in 63-char chuncks
 do
   line1=$(echo $line2 | cut -c 1-63)
   line2=$(echo $line2 | sed 's/^.\{1,63\}//')
@@ -1909,6 +1909,7 @@ else  # ++PTF
   # use tar as smpe-promote.sh does not run on z/OS
   _cmd cd $ship
   files="$(ls $nextApar $nextClose $nextHold $nextPtf 2> /dev/null)"
+  test "$debug" && echo "files=$files"
   if test -n "$files"
   then
     _cmd tar -cf $tarPromote $files
