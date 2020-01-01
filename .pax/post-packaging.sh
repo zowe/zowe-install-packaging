@@ -102,7 +102,7 @@ fi
 #     "commitHash": "83facefb49826b103d649021ffa51ffca0ac9061",
 #     "timestamp": "1576619639516"
 #   },
-# 2a. sed strips branch label, 
+# 2a. sed strips branch label
 #   "build": {
 # PR-930",
 #     "number": "32",
@@ -115,9 +115,9 @@ fi
 # PR-930
 manifest=$(find . -print | grep manifest.json)
 BRANCH_NAME=$(sed -n '/ "build": {/,/ },/p' $manifest \
-         | sed 's/ *"branch": "//;/^ /d;s/",$//')
+              | sed 's/ *"branch": "//;/^ /d;s/",$//')
 BUILD_NUMBER=$(sed -n '/ "build": {/,/ },/p' $manifest \
-         | sed 's/ *"number": "//;/^ /d;s/",$//')
+              | sed 's/ *"number": "//;/^ /d;s/",$//')
 
 # SMPE build expects a text file specifying the files it must process
 echo "[$SCRIPT_NAME] preparing ${INPUT_TXT} ..."
@@ -203,7 +203,7 @@ if [ "$KEEP_TEMP_FOLDER" != "yes" ]; then
 fi
 
 # see if SMPE build completed successfully
-# MUST be done AFTER data set cleanup 
+# MUST be done AFTER data set cleanup
 if [ ! -f "${SMPE_BUILD_SHIP_DIR}/success" ]; then
   echo "[$SCRIPT_NAME][ERROR] SMPE build did not complete successfully"
   exit 1

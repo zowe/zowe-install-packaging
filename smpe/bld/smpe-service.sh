@@ -33,6 +33,9 @@
 # creates $log/$jclMerge            merge ++ & part JCL
 # creates $log/$logMerge            merge ++ & part sysprint output
 # creates $log/$sysmod1.readme.htm  readme (EBCDIC)
+# creates $log/$curClose            customized sample closing info
+# creates $log/$thisApar            list of APAR(s) in this PTF
+# creates $log/$thisHold            hold info new to this PTF
 
 # relationship between this sysmod and other sysmods
 # ++PTF      REQ ptfNames
@@ -89,11 +92,7 @@ prevApar=promoted-apar.txt     # list of all previous APARs
 prevClose=promoted-close.txt   # closing info of previous PTFs
 prevHold=promoted-hold.txt     # hold info of previous PTFs
 prevPtf=promoted-ptf.txt       # list of all previous PTFs
-nextApar=$prevApar             # list of APARs to be promoted
-nextClose=$prevClose           # closing info to be promoted
-nextHold=$prevHold             # hold info to be promoted
-nextPtf=$prevPtf               # list of  PTFs to be promoted
-tarPromote=smpe-promote.tar    # tar-file holding $next* files
+tarPromote=smpe-promote.tar    # tar-file holding $prev* files
 splitScript=ptf-split.rex      # script to distribute parts across PTFs
 submitScript=wait-for-job.sh   # submit script
 dcbScript=check-dataset-dcb.sh # script to test dcb of data set
@@ -1668,7 +1667,7 @@ then
     test "$debug" && echo "holdType=$holdType"
 
     # save content by type
-    if test -n "$holdType" 
+    if test -n "$holdType"
     then
       # strip first 2 and last line (SMP/E metadata lines)
       # remove leading 2 blanks
@@ -1767,6 +1766,7 @@ else
   done    # for sysmod
 
   # substitute placeholders that came in with <curClose>
+  # TODO KEEP IN SYNC with stageShopz()
   SED=""
   SED="$SED; s/#fmid/$FMID/"
   SED="$SED; s/#version/$VERSION/"
@@ -1881,6 +1881,8 @@ test "$debug" && echo "< _prepInput"
 
 # ---------------------------------------------------------------------
 # --- stage ASCII data to be used as historical data after promote
+#     The files will hold the current and previous info so we can
+#     just replace the previous historical files ($prev*) on promote.
 # output:
 # - $ship/$tarPromote is created when packaging a PTF
 # ---------------------------------------------------------------------
@@ -1895,21 +1897,25 @@ if test "$sysmodType" != "++PTF"
 then  # ++APAR/++USERMOD
   _cmd touch $ship/$tarPromote        # ensure file exists as null-file
 else  # ++PTF
-  _iconv -d $ptf/$thisApar     $ship/$nextApar       # only has current
-  _iconv    $service/$prevApar $ship/$nextApar           # add promoted
+  # these will replace the current $prev* files on promote
+  _iconv -d $ptf/$thisApar     $ship/$prevApar       # only has current
+  _iconv    $service/$prevApar $ship/$prevApar           # add promoted
 
-  _iconv -d $ptf/$thisClose $ship/$nextClose   # has current & promoted
+  _iconv -d $ptf/$thisClose $ship/$prevClose   # has current & promoted
 
-  _iconv -d $ptf/$thisHold     $ship/$nextHold       # only has current
-  _iconv    $service/$prevHold $ship/$nextHold           # add promoted
+  _iconv -d $ptf/$thisHold     $ship/$prevHold       # only has current
+  _iconv    $service/$prevHold $ship/$prevHold           # add promoted
 
-  _iconv -d $ptf/$thisPtf      $ship/$nextPtf        # only has current
-  _iconv    $service/$prevPtf  $ship/$nextPtf            # add promoted
+  _iconv -d $ptf/$thisPtf      $ship/$prevPtf        # only has current
+  _iconv    $service/$prevPtf  $ship/$prevPtf            # add promoted
+
+  # current PTF(s) to know how to update $ptfBucket on promote
+  _iconv -d $ptf/$thisPtf      $ship/$thisvPtf       # only has current
 
   # create tar-file for usage by external process smpe-promote.sh
   # use tar as smpe-promote.sh does not run on z/OS
   _cmd cd $ship
-  files="$(ls $nextApar $nextClose $nextHold $nextPtf 2> /dev/null)"
+  files="$(ls $prevApar $prevClose $prevHold $prevPtf 2> /dev/null)"
   test "$debug" && echo "files=$files"
   if test -n "$files"
   then
@@ -1921,6 +1927,47 @@ fi    # ++PTF
 
 test "$debug" && echo "< _stagePromote"
 }    # _stagePromote
+
+# ---------------------------------------------------------------------
+# --- stage data to simplify redistribution of PTFs via IBM's Shopz
+# output:
+# - $log/$curClose  is created when packaging a PTF
+# - $log/$thisApar  is created when packaging a PTF
+# - $log/$thisHold  is created when packaging a PTF & there is data
+# ---------------------------------------------------------------------
+function _stageShopz
+{
+test "$debug" && echo && echo "> _stageShopz $@"
+
+test -f $log/$curClose && _cmd rm -f $log/$curClose
+test -f $log/$thisApar && _cmd rm -f $log/$thisApar
+test -f $log/$thisHold && _cmd rm -f $log/$thisHold
+
+if test "$sysmodType" != "++PTF"
+then  # ++APAR/++USERMOD
+  test "$debug" && echo "no action, not ++PTF"
+else  # ++PTF
+  # straight copy for these, no changes required
+  test -f $ptf/$thisApar && _cmd cp $ptf/$thisApar $log/$thisApar
+  test -f $ptf/$thisHold && _cmd cp $ptf/$thisHold $log/$thisHold
+
+  # substitute placeholders that are in  <curClose>
+  # TODO KEEP IN SYNC with prepClose()
+  SED=""
+  SED="$SED; s/#fmid/$FMID/"
+  SED="$SED; s/#version/$VERSION/"
+  SED="$SED; s,#link,$ptfHttp,"              # $ptfHttp has '/' and ':'
+  _sed $service/$curClose $ptf/tmp
+
+  # enusre subtitutions did not bring us past 64 chars
+  _cmd --repl $log/$curClose cut -c 1-64 $ptf/tmp
+
+  test "$debug" && sed 's/^/. /' $log/$curClose #show prefixed with '. '
+  _cmd rm -f $ptf/tmp
+fi    # ++PTF
+
+test "$debug" && echo "< _stageShopz"
+}    # _stageShopz
 
 # ---------------------------------------------------------------------
 # --- determine whether to create PTF, APAR, or USERMOD
@@ -2285,6 +2332,9 @@ _prepInput
 
 # stage data of this PTF to be added to data of promoted PTFs
 _stagePromote
+
+# stage data to simplify redistribution of PTFs via IBM's Shopz
+_stageShopz
 
 # create headers for first and overflow sysmods
 _headers
