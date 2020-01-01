@@ -94,7 +94,7 @@ fi
 #   },
 #   ...
 # output:
-# PR-930 build 32
+# PR-930
 # 1. sed limits data to build { ... } block
 #   "build": {
 #     "branch": "PR-930",
