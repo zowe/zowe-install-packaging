@@ -149,6 +149,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     artifacts: [
       '.pax/zowe.pax',
       '.pax/zowe-smpe.tar',
+      '.pax/smpe-promote.tar',
       '.pax/AZWE*',
       '.pax/pd.htm',
       '.pax/smpe-build-logs.pax.Z'
