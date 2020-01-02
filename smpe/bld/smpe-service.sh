@@ -76,6 +76,7 @@ logGimdts=gimdts.sysprint.log  # GIMDTS SYSPRINT log
 lines=gimdts.lines.txt         # GIMDTS line count
 readme=ptf.readme.htm          # PTF install instructions
 mcs=SMPMCS.txt                 # SMPMCS (install metadata)
+service=./service              # directory with service-specific files
 # >> next block of files is in the $service directory
 ptfBucket=ptf-bucket.txt       # list of available PTFs
 curApar=current-apar.txt       # list of additional APARs to supersede
@@ -1910,12 +1911,13 @@ else  # ++PTF
   _iconv    $service/$prevPtf  $ship/$prevPtf            # add promoted
 
   # current PTF(s) to know how to update $ptfBucket on promote
-  _iconv -d $ptf/$thisPtf      $ship/$thisvPtf       # only has current
+  _iconv -d $ptf/$thisPtf      $ship/$thisPtf        # only has current
 
   # create tar-file for usage by external process smpe-promote.sh
   # use tar as smpe-promote.sh does not run on z/OS
   _cmd cd $ship
-  files="$(ls $prevApar $prevClose $prevHold $prevPtf 2> /dev/null)"
+  files="$(ls $prevApar $prevClose $prevHold $prevPtf $thisPtf \
+    2> /dev/null)"
   test "$debug" && echo "files=$files"
   if test -n "$files"
   then
@@ -2297,7 +2299,7 @@ fi    #
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-service="$(cd $here/$service;pwd)"         # make this an absolute path
+service="$(cd $here/$service 2>&1;pwd)"    # make this an absolute path
 mcsHlq=${HLQ}.${RFDSNPFX}.${FMID}          # RELFILE HLQ,  max 32 chars
 ptfHLQ=${RFDSNPFX}.${FMID}                        # default HLQ for PTF
 MLQ='@'                 # job results in $gimdtsHlq.$MLQ.*, max 2 chars
