@@ -164,6 +164,15 @@ TMPFILE=$TMPDIR/$me.$$
 # show input/output details
 echo "-- updating: $service"
 
+# FMID promotion will have a null-sized file, no action required here
+if test ! -s "$promoted"
+then
+  echo "-- no action, '$promoted' is a null file"
+  echo "-- completed $me 0"
+  test "$debug" && echo "< $me 0"
+  exit 0                                                         # EXIT
+fi    #
+
 # go to service directory
 _cmd cd $service
 
@@ -176,7 +185,7 @@ _cmd tar -xvf $promoted
 
 # file is ASCII, if it looks like garbage we are on z/OS -> convert
 if test -n "$(head -1 $thisPtf | cut -c 1-7 | grep [[:cntrl:]])"
-then 
+then
   for file in $(tar -tf $promoted)              # -t: table of contents
   do
     _iconv -d $file $TMPFILE
