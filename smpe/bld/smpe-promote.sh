@@ -14,6 +14,7 @@
 #%
 #% -?       show this help message
 #% -d       enable debug messages
+#% -g       use git command for remove of files
 #% -p file  archive file with new data on promoted PTFs
 #%
 #% -p is required
@@ -119,13 +120,14 @@ echo "-- startup arguments: $@"
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset promoted in
+unset promoted git in
 # do NOT unset debug
 
 # get startup arguments
 while getopts p:?d opt
 do case "$opt" in
   d)   debug="-d";;
+  g)   git="git";;
   p)   promoted="$OPTARG";;
   [?]) _displayUsage
        test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
@@ -203,7 +205,7 @@ _cmd mv $TMPFILE $service/$ptfBucket
 
 # clean up, these files may not exist after promote
 files=$(ls $thisPtf $curApar $curHold 2> /dev/null)
-test -n "$files" && _cmd rm -f $files
+test -n "$files" && _cmd $git rm -f $files
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"
