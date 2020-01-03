@@ -105,7 +105,7 @@ test "$debug" && echo "for f in $list"
 for f in $list
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-  f = 'components/'$f
+  f='components/'$f
   _move $stage $split/$file echo $f
 done    # for f
 
