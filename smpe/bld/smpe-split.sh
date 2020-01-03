@@ -93,7 +93,7 @@ cnt=0                           # counter, part of target pax file name
 
 # Split all components into their own pax, plus api-mediation has a few big jar files
 # path based on $ZOWE_ROOT_DIR
-list=$(ls -1 components/ | grep -v api-mediation)
+list=$(ls -1 components/ | grep -v -E -- 'api-mediation|enabler')
 list=$list"\
   api-mediation/api-catalog-services.jar \
   api-mediation/discoverable-client.jar \
