@@ -137,7 +137,7 @@ echo
 find ${SMPE_BUILD_ROOT} -print
 
 # see if SMPE build completed successfully
-# MUST be done AFTER data set cleanup 
+# MUST be done AFTER tasks that must always run after SMPE build
 if [ ! -f "${SMPE_BUILD_SHIP_DIR}/success" ]; then
   echo "[$SCRIPT_NAME][ERROR] SMPE build did not complete successfully"
   exit 1
