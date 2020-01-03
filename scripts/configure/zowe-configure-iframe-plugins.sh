@@ -5,7 +5,6 @@
 # $ZOWE_APIM_ENABLE_SSO
 # $CONFIG_DIR
 # $ZOWE_ROOT_DIR
-# $ZLUX_SERVER_CONFIG_PATH
 # $TEMP_DIR
 # $ZOWE_EXPLORER_HOST
 # $ZOWE_ZLUX_SERVER_HTTPS_PORT
@@ -14,22 +13,12 @@
 
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-node.sh
 
-if [ -z "$NODE_BIN" ]
-then
-  NODE_BIN=${NODE_HOME}/bin/node
+if [ -z "$NODE_BIN" ]	
+then	
+  NODE_BIN=${NODE_HOME}/bin/node	
 fi
 
 if [[ $ZOWE_APIM_ENABLE_SSO == "true" ]]; then
-    # Add APIML authentication plugin to zLUX
-    . $CONFIG_DIR/zowe-install-existing-plugin.sh $ZOWE_ROOT_DIR "org.zowe.zlux.auth.apiml" $ZOWE_ROOT_DIR/components/api-mediation/apiml-auth
-
-    # Activate the plugin
-    _JSON='"apiml": { "plugins": ["org.zowe.zlux.auth.apiml"] }'
-    ZLUX_SERVER_CONFIG_PATH=${ZOWE_ROOT_DIR}/zlux-app-server/config
-    sed 's/"zss": {/'"${_JSON}"', "zss": {/g' ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json > ${TEMP_DIR}/transform1.json
-    cp ${TEMP_DIR}/transform1.json ${ZLUX_SERVER_CONFIG_PATH}/zluxserver.json
-    rm ${TEMP_DIR}/transform1.json
-    
     # Access API Catalog with token injector
     CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_ZLUX_SERVER_HTTPS_PORT/ZLUX/plugins/org.zowe.zlux.auth.apiml/services/tokenInjector/1.0.0/ui/v1/apicatalog/
 else
@@ -37,8 +26,8 @@ else
     CATALOG_GATEWAY_URL=https://$ZOWE_EXPLORER_HOST:$ZOWE_APIM_GATEWAY_PORT/ui/v1/apicatalog
 fi
 
-# Add API Catalog application to zLUX - required before we issue ZLUX deploy.sh
-# TODO - move into apiml config? run before deploy?
+# Add API Catalog application to zLUX
+# TODO - move into apiml config?
 . $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/components/api-mediation/assets/api-catalog.png"
 
 # install explorers
