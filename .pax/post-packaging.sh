@@ -48,6 +48,9 @@ export TMPDIR=/ZOWE/tmp
 SMPE_BUILD_HLQ=ZOWEAD3
 SMPE_BUILD_VOLSER=ZOWE02
 
+# write data sets list we want to clean up
+echo "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" > ${CURR_PWD}/cleanup-smpe-packaging-datasets.txt
+
 # add x permission to all smpe files
 chmod -R 755 smpe
 
@@ -132,22 +135,6 @@ echo
 
 # display all files left behind by SMPE build
 find ${SMPE_BUILD_ROOT} -print
-
-# remove data sets, unless build option requested to keep temp stuff
-if [ "$KEEP_TEMP_FOLDER" != "yes" ]; then
-  datasets=$(${CURR_PWD}/smpe/bld/get-dsn.rex "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}.**" || true)
-  # rc is always 0, but error message has blanks while DSN list does not
-  if [ -n "$(echo $datasets | grep ' ')" ]; then
-    echo "$datasets"                     # variable holds error message
-    # exit 1
-  else
-    # delete data sets
-    for dsn in $datasets
-    do
-      tsocmd "DELETE '$dsn'" || true
-    done    # for dsn
-  fi
-fi
 
 # see if SMPE build completed successfully
 # MUST be done AFTER data set cleanup 
