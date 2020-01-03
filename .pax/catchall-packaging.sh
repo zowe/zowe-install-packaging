@@ -23,16 +23,16 @@ if [ -f cleanup-smpe-packaging-datasets.txt ]; then
       echo "[${SCRIPT_NAME}] deleting ${dsprefix}.** ..."
       datasets=$(${CURR_PWD}/smpe/bld/get-dsn.rex "${dsprefix}.**" || true)
       # rc is always 0, but error message has blanks while DSN list does not
-      if [ -n "$(echo $datasets | grep ' ')" ]; then
-        echo "$datasets"                     # variable holds error message
-        # exit 1
-      else
-        # delete data sets
-        for dsn in $datasets
-        do
+      for dsn in $datasets
+      do
+        if [ -n "$(echo $dsn | grep ' ')" ]; then
+          echo "[${SCRIPT_NAME}][error] $dsn"                     # variable holds error message
+          # exit 1
+        elif [ -n "${dsn}" ]; then
+          # delete data sets
           tsocmd "DELETE '$dsn'" || true
-        done    # for dsn
-      fi
+        fi
+      done    # for dsn
       echo "[${SCRIPT_NAME}] - done"
     fi
   done
