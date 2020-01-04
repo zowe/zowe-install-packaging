@@ -27,7 +27,7 @@ Additional tools
 FMID (base) build
 -----------------
 The SMP/E packaging build always creates an FMID package (++FUNCTION)
-that matches the current zowe.pax build. The result is placed in 
+that matches the current zowe.pax build. The result is placed in
 Artifactory as [FMID].zip.
 If smpe/bld/service/ptf-bucket.txt does NOT exist in this branch,
 then the FMID package will be staged for promotion. If this build is
@@ -88,13 +88,13 @@ Zowe build engineer.
    line. This will tell the SMP/E packaging build to SUP the APAR in
    future PTF and USERMOD builds.
 6. The updated smpe/bld/service/current-apar.txt must be part of the
-   final pull request and trickle up to the main branch so that it
+   final pull request and trickle up to the staging branch so that it
    becomes part of the 'official' PTF build published on zowe.org.
 During promote, smpe/bld/service/current-apar.txt will be erased from
-the main branch, as the APAR(s) listed here are now part of the PTF
+the staging branch, as the APAR(s) listed here are now part of the PTF
 and no longer need special handling. The promote process keeps track
 of all APARs and PTFs that have been promoted (see the description of
-promoted-*.txt in mpe/bld/service/_README.txt for details). 
+promoted-*.txt in smpe/bld/service/_README.txt for details).
 
 SMP/E terminology
 -----------------
@@ -107,7 +107,8 @@ sysmod        (SYStem MODification)
               This can be a ++FUNCTION, ++PTF, ++APAR, or ++USERMOD.
 FMID          (Function Modification IDentifier)
               SMP/E keyword: ++FUNCTION
-              Comparable to the build result of the master GitHub branch.
+              Comparable to the build result of the RC (release candidate)
+              GitHub branch.
               Base version of a software product. Once installed and
               configured, this product can be used. All future updates
               must be applied on top of this base, even if the update is
@@ -136,7 +137,8 @@ APAR-fix      SMP/E keyword: ++APAR
               installed without first removing the APAR-fix.
 PTF           (Program Temporary Fix)
               SMP/E keyword: ++PTF
-              Comparable to the build result of the master GitHub branch.
+              Comparable to the build result of the RC (release candidate)
+              GitHub branch.
               Once an APAR-fix passes all testing, it is made available
               to all customers as PTF, which is the official solution
               for the issue described in the related APAR. A PTF can
@@ -208,4 +210,4 @@ hold info     There is no traditional GitHub equivalent, but the Zowe
               must be provided to the person installing the sysmod at
               install time. Some examples: "restart the server after
               installing this sysmod", "this sysmod introduces new
-              configuration option abc to control xyz.", etc.
+              configuration option abc to control xyz", etc.
