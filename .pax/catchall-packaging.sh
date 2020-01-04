@@ -21,8 +21,9 @@ if [ -f cleanup-smpe-packaging-datasets.txt ]; then
   for dsprefix in $(cat cleanup-smpe-packaging-datasets.txt); do
     if [ -n "${dsprefix}" ]; then
       echo "[${SCRIPT_NAME}] deleting ${dsprefix}.** ..."
-      datasets=$(${CURR_PWD}/smpe/bld/get-dsn.rex "${dsprefix}.**" || true)
-      # rc is always 0, but error message has blanks while DSN list does not
+      tsocmd listds "'${dsprefix}'" level 2>&1 > .tmp-datasets-list &
+      sleep 2
+      datasets=$(cat .tmp-datasets-list | grep "${dsprefix}" | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1')
       for dsn in $datasets
       do
         if [ -n "$(echo $dsn | grep ' ')" ]; then
@@ -30,10 +31,12 @@ if [ -f cleanup-smpe-packaging-datasets.txt ]; then
           # exit 1
         elif [ -n "${dsn}" ]; then
           # delete data sets
-          tsocmd "DELETE '$dsn'" || true
+          tsocmd "DELETE '$dsn'" &
+          sleep 2
         fi
       done    # for dsn
-      echo "[${SCRIPT_NAME}] - done"
     fi
   done
 fi
+
+echo "[${SCRIPT_NAME}] - done"
