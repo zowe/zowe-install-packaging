@@ -120,7 +120,7 @@ echo "-- startup arguments: $@"
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset promoted git in
+unset promoted git
 # do NOT unset debug
 
 # get startup arguments
