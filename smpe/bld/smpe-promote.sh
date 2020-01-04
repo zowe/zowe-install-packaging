@@ -124,7 +124,7 @@ unset promoted git
 # do NOT unset debug
 
 # get startup arguments
-while getopts p:?d opt
+while getopts p:?dg opt
 do case "$opt" in
   d)   debug="-d";;
   g)   git="git";;
