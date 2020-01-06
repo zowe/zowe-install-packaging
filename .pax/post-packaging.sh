@@ -164,8 +164,6 @@ echo "BUILD_NUMBER=$BUILD_NUMBER"
 test -n "$BUILD_NUMBER" && external="$external -B $BUILD_NUMBER"
 echo "ZOWE_VERSION=$ZOWE_VERSION"
 test -n "$ZOWE_VERSION" && external="$external -p $ZOWE_VERSION"
-echo "BUILD_SMPE_PTF=$BUILD_SMPE_PTF"
-test -n "$BUILD_SMPE_PTF" && external="$external -P"
 
 ${CURR_PWD}/smpe/bld/smpe.sh \
   -a ${CURR_PWD}/smpe/bld/alter.sh \
