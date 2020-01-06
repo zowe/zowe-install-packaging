@@ -91,34 +91,23 @@ cnt=0                           # counter, part of target pax file name
 
 # ---
 
-# api-mediation has a few big jar files, give them their own pax
+# Split all components into their own pax, plus api-mediation has a few big jar files
 # path based on $ZOWE_ROOT_DIR
-list="\
-  components/api-mediation/api-catalog-services.jar \
-  components/api-mediation/discoverable-client.jar \
-  components/api-mediation/discovery-service.jar \
-  components/api-mediation/gateway-service.jar \
+list=$(ls -1 components/ | grep -v -E -- 'api-mediation|enabler')
+list=$list"\
+  api-mediation/api-catalog-services.jar \
+  api-mediation/discoverable-client.jar \
+  api-mediation/discovery-service.jar \
+  api-mediation/gateway-service.jar \
   "
 #for f in $(ls components/api-mediation/*.jar | grep -v /enabler)   #*/
 test "$debug" && echo "for f in $list"
 for f in $list
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+  f='components/'$f
   _move $stage $split/$file echo $f
 done    # for f
-
-# ---
-
-# everything zlux
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file "find zlux-* -prune"
-_move $stage $split/$file echo zss-auth
-
-# ---
-
-# everything explorer API
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file echo components
 
 # ---
 
