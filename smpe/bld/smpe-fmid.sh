@@ -20,8 +20,11 @@
 
 # require $mvsI.*     data sets with installed product
 # require $ussI/*     directory with product pax files              #*/
+# removes $mvsI.*     data sets with installed product
+# removes $ussI/*     directory with product pax files              #*/
 # creates $mcsHlq.*   RELFILEs & SMPMCS
 
+# more definitions in main()
 prefix=ZWE                     # product prefix
 parts=parts.txt                # parts known by SMP/E
 mcs=SMPMCS.txt                 # SMPMCS header

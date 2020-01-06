@@ -20,7 +20,6 @@
 #   $userid.zowetemp.instproc.SZWESAMP.clist 
 # Creates log file in user's home directory
 
-
 script_exit(){
   tsocmd delete "'$clist'"   1>> $LOG_FILE 2>> $LOG_FILE
   tsocmd delete "'$templib'" 1>> $LOG_FILE 2>> $LOG_FILE

@@ -78,6 +78,18 @@ then
   LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
 fi
 
+#Explorers may be present, but have a prereq on gateway, not desktop
+#ZSS exists within app-server, may desire a distinct component later on
+if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+then
+  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},app-server
+  PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+fi
+#ZSS could be included separate to app-server, and vice-versa
+#But for simplicity of this script we have app-server prereq zss in DESKTOP
+#And zss & app-server sharing WORKSPACE_DIR
+
+
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
   # Create the user configurable api-defs
@@ -111,6 +123,13 @@ then
   mv ${WORKSPACE_DIR}/active_configuration.cfg ${WORKSPACE_DIR}/backups/backup_configuration.${PREVIOUS_DATE}.cfg
 fi
 
+# Keep config dir for zss within permissions it accepts
+if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
+then
+  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
+  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/*
+fi
+
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
 ZOWE_VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
@@ -140,10 +159,3 @@ for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   . ${ROOT_DIR}/components/${i}/bin/start.sh
 done
-
-
-# Start the desktop
-if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
-then
-  cd $ROOT_DIR/zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-fi

@@ -37,12 +37,14 @@ if ! [ -f "$5" ]; then
   exit 1
 fi
 
+APP_SERVER_COMPONENT_DIR=$ZOWE_ROOT_DIR/components/app-server/share
+APP_SERVER_PLUGIN_DIR=$ZOWE_ROOT_DIR/components/app-server/share/zlux-app-server/defaults/plugins
 ZLUX_SERVER_DIRECTORY='zlux-app-server'
 
-chmod -R u+w $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/
+chmod -R u+w $APP_SERVER_PLUGIN_DIR
 # switch spaces to underscores and lower case it for use as folder name
 PLUGIN_FOLDER_NAME=$(echo $PLUGIN_SHORTNAME | tr -s ' ' | tr ' ' '_' | tr '[:upper:]' '[:lower:]')
-PLUGIN_FOLDER=$ZOWE_ROOT_DIR/$PLUGIN_FOLDER_NAME
+PLUGIN_FOLDER=$APP_SERVER_COMPONENT_DIR/$PLUGIN_FOLDER_NAME
 
 if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
   PLUGIN_FOLDER=$PLUGIN_DIR_OVERRIDE
@@ -53,7 +55,7 @@ rm -rf $PLUGIN_FOLDER/web/images
 rm -f $PLUGIN_FOLDER/web/index.html
 rm -f $PLUGIN_FOLDER/pluginDefinition.json
 
-rm -f $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
+rm -f $APP_SERVER_PLUGIN_DIR/$PLUGIN_ID.json
 
 mkdir -p $PLUGIN_FOLDER/web/images
 cp $TILE_IMAGE_PATH $PLUGIN_FOLDER/web/images
@@ -105,7 +107,7 @@ else
   PLUGIN_LOCATION="../../${PLUGIN_FOLDER_NAME}"
 fi
 
-cat <<EOF >$ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
+cat <<EOF >$APP_SERVER_PLUGIN_DIR/$PLUGIN_ID.json
 {
     "identifier": "$PLUGIN_ID",
     "pluginLocation": "$PLUGIN_LOCATION"
