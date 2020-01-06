@@ -63,16 +63,16 @@ EndOfUsage
 script_exit 1
 fi
 
-# check invocation path
-dirName=$(dirname `pwd`)
-parentDir=$(basename $dirName)
-baseDir=$(basename `pwd`)
+# # check invocation path
+# dirName=$(dirname `pwd`)
+# parentDir=$(basename $dirName)
+# baseDir=$(basename `pwd`)
 
-if [[ $baseDir != utils || $parentDir != scripts ]]
-then
-  echo Wrong directory `pwd`, you must be in scripts/utils to run this script | tee -a ${LOG_FILE}
-  script_exit 2
-fi 
+# if [[ $baseDir != utils || $parentDir != scripts ]]
+# then
+#   echo Wrong directory `pwd`, you must be in scripts/utils to run this script | tee -a ${LOG_FILE}
+#   script_exit 2
+# fi 
 
 authlib=$1.SZWEAUTH
 loadlib=$2
