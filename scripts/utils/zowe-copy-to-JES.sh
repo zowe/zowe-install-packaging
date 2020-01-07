@@ -20,6 +20,15 @@
 #   $userid.zowetemp.instproc.SZWESAMP.clist 
 # Creates log file in user's home directory
 
+# Edits members during copy
+# sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
+#     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+#     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
+#     ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+# sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
+#     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+
+
 script_exit(){
   tsocmd delete "'$clist'"   1>> $LOG_FILE 2>> $LOG_FILE
   tsocmd delete "'$templib'" 1>> $LOG_FILE 2>> $LOG_FILE
@@ -44,6 +53,8 @@ samplib=$1
 Imember=$2
 proclib=$3
 Omember=$4
+loadlib=$5
+parmlib=$6
 
 userid=${USER:-${USERNAME:-${LOGNAME}}}
 templib=$userid.zowetemp.instproc.SZWESAMP.proclib
@@ -109,11 +120,27 @@ then
   cat "//'$samplib($Imember)'" | grep "^//.* PROC " | tee -a ${LOG_FILE}
 fi
 
-cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
+# We used to perform a straight copy ...
+#    cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
+# But now we edit the JCL in flight ...
+sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
+    -e "s/ZWES.SISSAMP/${samplib}/g" \
+    -e "s/zis-loadlib/${loadlib}/g" \
+    "//'$samplib($Imember)'" > /tmp/$samplib.$Imember.jcl
 if [[ $? -ne 0 ]]
 then
-	echo Failed to copy "//'$samplib($Imember)'" into "$templib($Imember)" | tee -a ${LOG_FILE}
+	echo Failed to edit "//'$samplib($Imember)'" into /tmp/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
   script_exit 8
+else
+  echo Edited "//'$samplib($Imember)'" 
+fi
+cp /tmp/$samplib.$Imember.jcl "//'$templib($Imember)'"
+if [[ $? -ne 0 ]]
+then
+	echo Failed to copy /tmp/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
+  script_exit 8
+else
+  echo Copied into "//'$templib($Imember)'"   
 fi
 
 if [[ $proclib = auto ]]

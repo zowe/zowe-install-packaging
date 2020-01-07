@@ -43,7 +43,7 @@ xmemProfileOk=false
 xmemProfileAccessOk=false
 
 
-sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
+sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} # && pax -ppx -rf ../zss.pax"
 chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
@@ -51,25 +51,26 @@ chmod +x ${SCRIPT_DIR}/*
 # MVS install steps
 
 # 0. Prepare STC JCL
-sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
-    -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
-    -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
-    ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
-sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
-    ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+echo zowe-install-apf-server.sh is NOT editing STC JCL here
+# sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
+#     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+#     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
+#     ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+# sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
+#     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
-# 1. Deploy loadlib
-echo
-echo "************************ Install step 'LOADLIB' start **************************"
-echo $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh
-loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_MODULE}"
-loadlibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_AUX_MODULE}"
-$loadlibCmd1 && $loadlibCmd2
-if [[ $? -eq 0 ]]
-then
-  loadlibOk=true
-fi
-echo "************************ Install step 'LOADLIB' end ****************************"
+# # 1. Deploy loadlib
+# echo
+# echo "************************ Install step 'LOADLIB' start **************************"
+# echo $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh
+# loadlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_MODULE}"
+# loadlibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-loadmodule.sh ${ZSS} ${XMEM_LOADLIB} ${XMEM_AUX_MODULE}"
+# $loadlibCmd1 && $loadlibCmd2
+# if [[ $? -eq 0 ]]
+# then
+#   loadlibOk=true
+# fi
+# echo "************************ Install step 'LOADLIB' end ****************************"
 
 # 2. APF-authorize loadlib
 echo
@@ -85,29 +86,29 @@ else
 fi
 echo "************************ Install step 'APF-auth' end ***************************"
 
-# 3. Deploy parmlib
-echo
-echo "************************ Install step 'PARMLIB' start **************************"
-parmlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${ZSS} ${XMEM_PARMLIB} ${XMEM_PARM}"
-$parmlibCmd1
-if [[ $? -eq 0 ]]
-then
-  parmlibOk=true
-fi
-echo "************************ Install step 'PARMLIB' end ****************************"
+# # 3. Deploy parmlib
+# echo
+# echo "************************ Install step 'PARMLIB' start **************************"
+# parmlibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-parmlib.sh ${ZSS} ${XMEM_PARMLIB} ${XMEM_PARM}"
+# $parmlibCmd1
+# if [[ $? -eq 0 ]]
+# then
+#   parmlibOk=true
+# fi
+# echo "************************ Install step 'PARMLIB' end ****************************"
 
 
-# 4. Deploy PROCLIB
-echo
-echo "************************ Install step 'PROCLIB' start **************************"
-proclibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
-proclibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_AUX_JCL}.tmp ${XMEM_AUX_JCL}"
-$proclibCmd1 && $proclibCmd2
-if [[ $? -eq 0 ]]
-then
-  proclibOk=true
-fi
-echo "************************ Install step 'PROCLIB' end ****************************"
+# # 4. Deploy PROCLIB
+# echo
+# echo "************************ Install step 'PROCLIB' start **************************"
+# proclibCmd1="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_JCL}.tmp ${XMEM_JCL}"
+# proclibCmd2="sh $SCRIPT_DIR/zowe-xmem-deploy-proclib.sh ${ZSS} ${XMEM_PROCLIB} ${XMEM_AUX_JCL}.tmp ${XMEM_AUX_JCL}"
+# $proclibCmd1 && $proclibCmd2
+# if [[ $? -eq 0 ]]
+# then
+#   proclibOk=true
+# fi
+# echo "************************ Install step 'PROCLIB' end ****************************"
 
 
 # 5. PPT-entry
@@ -250,15 +251,15 @@ echo "**************************************************************************
 echo "************************************ Report ************************************"
 echo "********************************************************************************"
 
-echo
-if $loadlibOk ; then
-  echo "LOADLIB - Ok"
-else
-  echo "LOADLIB - Error"
-  echo "Please correct errors and re-run the following scripts:"
-  echo $loadlibCmd1
-  echo $loadlibCmd2
-fi
+# echo
+# if $loadlibOk ; then
+#   echo "LOADLIB - Ok"
+# else
+#   echo "LOADLIB - Error"
+#   echo "Please correct errors and re-run the following scripts:"
+#   echo $loadlibCmd1
+#   echo $loadlibCmd2
+# fi
 
 echo
 if $apfOk ; then
@@ -269,24 +270,24 @@ else
   echo $apfCmd1
 fi
 
-echo
-if $parmlibOk ; then
-  echo "PARMLIB - Ok"
-else
-  echo "PARMLIB - Error"
-  echo "Please correct errors and re-run the following scripts:"
-  echo $parmlibCmd1
-fi
+# echo
+# if $parmlibOk ; then
+#   echo "PARMLIB - Ok"
+# else
+#   echo "PARMLIB - Error"
+#   echo "Please correct errors and re-run the following scripts:"
+#   echo $parmlibCmd1
+# fi
 
-echo
-if $proclibOk ; then
-  echo "PROCLIB - Ok"
-else
-  echo "PROCLIB - Error"
-  echo "Please correct errors and re-run the following scripts:"
-  echo $proclibCmd1
-  echo $proclibCmd2
-fi
+# echo
+# if $proclibOk ; then
+#   echo "PROCLIB - Ok"
+# else
+#   echo "PROCLIB - Error"
+#   echo "Please correct errors and re-run the following scripts:"
+#   echo $proclibCmd1
+#   echo $proclibCmd2
+# fi
 
 echo
 if $pptOk ; then
@@ -356,7 +357,7 @@ else
 fi
 
 
-rm  ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp 1>/dev/null 2>/dev/null
+# rm  ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp 1>/dev/null 2>/dev/null
 
 # Ensure IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
 # For zssServer to be able to operate correctly 
