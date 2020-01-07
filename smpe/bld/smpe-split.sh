@@ -26,7 +26,7 @@
 #% TSO SETR RACLIST(FACILITY) REFRESH
 
 # require $stage/*         directory with installed product
-# trashes $stage/*         directory with installed product
+# removes $stage/*         directory with installed product
 # creates $ussI/*          directory with pax files                 #*/
 # creates $log/$manifest   manifest describing pax content
 # creates $log/$delta      delta of current and previous manifest
@@ -39,6 +39,7 @@
 # updates $log/$deltaHist  history of manifest deltas
 # removes old manifest files
 
+# more definitions in main()
 historical=history-            # prefix for historical data
 delta=manifest-delta.txt       # delta of current and previous manifest
 deltaHist=$historical$delta    # history of manifest deltas
@@ -55,7 +56,6 @@ me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
-# more defaults defined later, search for "date="
 
 test "$debug" && echo && echo "> $me $@"
 
@@ -75,7 +75,7 @@ test "$debug" && echo && echo "> _split $@"
 
 # count how many pax directories we created during previous run
 prevCnt=0
-test -e $split && prevCnt=$(ls -D $split/ | wc -w | sed 's/ //g')
+test -e $split && prevCnt=$(ls -D $split/ | wc -w | sed 's/ //g')    #'
 test "$debug" && echo prevCnt=$prevCnt
 
 # start with a clean slate
@@ -91,34 +91,23 @@ cnt=0                           # counter, part of target pax file name
 
 # ---
 
-# api-mediation has a few big jar files, give them their own pax
+# Split all components into their own pax, plus api-mediation has a few big jar files
 # path based on $ZOWE_ROOT_DIR
-list="\
-  components/api-mediation/api-catalog-services.jar \
-  components/api-mediation/discoverable-client.jar \
-  components/api-mediation/discovery-service.jar \
-  components/api-mediation/gateway-service.jar \
+list=$(ls -1 components/ | grep -v -E -- 'api-mediation|enabler')
+list=$list"\
+  api-mediation/api-catalog-services.jar \
+  api-mediation/discoverable-client.jar \
+  api-mediation/discovery-service.jar \
+  api-mediation/gateway-service.jar \
   "
 #for f in $(ls components/api-mediation/*.jar | grep -v /enabler)   #*/
 test "$debug" && echo "for f in $list"
 for f in $list
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
+  f='components/'$f
   _move $stage $split/$file echo $f
 done    # for f
-
-# ---
-
-# everything zlux
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file "find zlux-* -prune"
-_move $stage $split/$file echo zss-auth
-
-# ---
-
-# everything explorer API
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file echo components
 
 # ---
 

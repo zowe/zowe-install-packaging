@@ -29,7 +29,7 @@ XMEM_KEY=4
 XMEM_SCHED=${XMEM_ELEMENT_ID}ISCH
 XMEM_STC_PREFIX=${XMEM_ELEMENT_ID}
 XMEM_STC_GROUP=STCGROUP
-XMEM_PROFILE={XMEM_ELEMENT_ID}.IS
+XMEM_PROFILE=${XMEM_ELEMENT_ID}.IS
 
 loadlibOk=false
 apfOk=false
@@ -48,21 +48,15 @@ chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
 
-# TODO remove once https://github.com/zowe/zss/issues/94 is resolved
-mv ${ZSS}/SAMPLIB/ZWESIS01 ${ZSS}/SAMPLIB/${XMEM_JCL}
-mv ${ZSS}/SAMPLIB/ZWESAUX ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}
-#mv ${ZSS}/SAMPLIB/ZWESIP00 ${ZSS}/SAMPLIB/${XMEM_PARM}
-mv ${ZSS}/SAMPLIB/ZWESISCH ${ZSS}/SAMPLIB/${XMEM_SCHED}
-
 # MVS install steps
 
 # 0. Prepare STC JCL
 sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
-    ${ZSS}/SAMPLIB/${XMEM_JCL} > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+    ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
 sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
-    ${ZSS}/SAMPLIB/${XMEM_AUX_JCL} > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+    ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
 # 1. Deploy loadlib
 echo

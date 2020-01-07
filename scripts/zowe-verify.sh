@@ -629,7 +629,7 @@ fi
 #  "api-mediation/scripts/api-mediation-start-gateway.sh" \
 #  "explorer-jobs-api/scripts/jobs-api-server-start.sh" \
 #  "explorer-data-sets-api/scripts/data-sets-api-server-start.sh" \
-#  "zlux-app-server/config/zluxserver.json" \
+#  "zlux-app-server/defaults/serverConfig/server.json" \
 #  "vt-ng2/_defaultVT.json" \
 #  "tn3270-ng2/_defaultTN3270.json" \
 #  "jes_explorer/server/configs/config.json" \

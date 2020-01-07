@@ -4,9 +4,9 @@
       "ipAddresses": ["0.0.0.0"],
       "port": 8544,
       //pfx (string), keys, certificates, certificateAuthorities, and certificateRevocationLists are all valid here.
-      "keys": ["../deploy/product/ZLUX/serverConfig/zlux.keystore.key"],
-      "certificates": ["../deploy/product/ZLUX/serverConfig/zlux.keystore.cer"],
-      "certificateAuthorities": ["../deploy/product/ZLUX/serverConfig/apiml-localca.cer"]
+      "keys": ["../defaults/serverConfig/zlux.keystore.key"],
+      "certificates": ["../defaults/serverConfig/zlux.keystore.cer"],
+      "certificateAuthorities": ["../defaults/serverConfig/apiml-localca.cer"]
     },
     "mediationLayer": {
       "server": {
@@ -37,13 +37,12 @@
 
 // All paths relative to ZLUX/node or ZLUX/bin
 // In real installations, these values will be configured during the install.
-  "rootDir":"../deploy",
-  "productDir":"../deploy/product",
+  "productDir":"../defaults",
   "siteDir":"../deploy/site",
   "instanceDir":"../deploy/instance",
   "groupsDir":"../deploy/instance/groups",
   "usersDir":"../deploy/instance/users",
-  "pluginsDir":"../deploy/instance/ZLUX/plugins",
+  "pluginsDir":"../defaults/plugins",
 
   "dataserviceAuthentication": {
     //this specifies the default authentication type for dataservices that didn't specify which type to use. These dataservices therefore should not expect a particular type of authentication to be used.
@@ -66,7 +65,5 @@
       } 
       
     }
-  },
-  // internal port, do not connect browser to this port
-  "zssPort":8542
+  }
 }

@@ -324,11 +324,9 @@ do until OK                   /* repeat until we can place all parts */
 end    /* until OK */
 
 /* write result to stdout, line 1 has parts for PTF 1, line 2 ... */
-if Debug
-then do T=1 to PTFs
-  say '. PTF' T':' words(!ptfParts.T) 'parts,' !ptfLines.T 'lines'
-end    /* Debug, loop T */
 do T=1 to PTFs
+  if Debug then
+    say '. sysmod' T':' words(!ptfParts.T) 'parts,' !ptfLines.T 'lines'
   say !ptfParts.T
 end    /* loop T */
 
