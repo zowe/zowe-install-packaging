@@ -76,14 +76,14 @@ echo zowe-install-apf-server.sh is NOT editing STC JCL here
 echo
 echo "************************ Install step 'APF-auth' start *************************"
 apfCmd1="sh $SCRIPT_DIR/zowe-xmem-apf.sh ${OPERCMD} ${XMEM_LOADLIB}"
-if $loadlibOk ; then
+# if $loadlibOk ; then
   $apfCmd1
   if [[ $? -eq 0 ]]; then
     apfOk=true
   fi
-else
-  echo "Error: skip this step due to previous errors"
-fi
+# else
+#   echo "Error: skip this step due to previous errors"
+# fi
 echo "************************ Install step 'APF-auth' end ***************************"
 
 # # 3. Deploy parmlib
