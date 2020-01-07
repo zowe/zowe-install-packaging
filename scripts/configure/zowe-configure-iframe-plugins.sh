@@ -31,7 +31,7 @@ fi
 . $CONFIG_DIR/zowe-install-iframe-plugin.sh $ZOWE_ROOT_DIR "org.zowe.api.catalog" "API Catalog" $CATALOG_GATEWAY_URL $ZOWE_ROOT_DIR"/components/api-mediation/assets/api-catalog.png"
 
 # install explorers
-EXPLORERS='jes mvs uss'
+EXPLORERS='mvs uss'
 for i in $(echo $EXPLORERS | sed "s/,/ /g")
 do 
   iupper=$(echo $i | tr [:lower:] [:upper:])
