@@ -121,27 +121,35 @@ then
 fi
 
 # We used to perform a straight copy ...
-#    cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
+cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
+if [[ $? -ne 0 ]]
+then
+	echo Failed to copy "//'$samplib($Imember)'" into "//'$templib($Imember)'" | tee -a ${LOG_FILE}
+  script_exit 8
+else
+  echo Copied "//'$samplib($Imember)'" into "//'$templib($Imember)'"   
+fi
+
 # But now we edit the JCL in flight ...
-sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
-    -e "s/ZWES.SISSAMP/${samplib}/g" \
-    -e "s/zis-loadlib/${loadlib}/g" \
-    "//'$samplib($Imember)'" > /tmp/$samplib.$Imember.jcl
-if [[ $? -ne 0 ]]
-then
-	echo Failed to edit "//'$samplib($Imember)'" into /tmp/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
-  script_exit 8
-else
-  echo Edited "//'$samplib($Imember)'" 
-fi
-cp /tmp/$samplib.$Imember.jcl "//'$templib($Imember)'"
-if [[ $? -ne 0 ]]
-then
-	echo Failed to copy /tmp/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
-  script_exit 8
-else
-  echo Copied into "//'$templib($Imember)'"   
-fi
+# sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
+#     -e "s/ZWES.SISSAMP/${samplib}/g" \
+#     -e "s/zis-loadlib/${loadlib}/g" \
+#     "//'$samplib($Imember)'" > /tmp/$samplib.$Imember.jcl
+# if [[ $? -ne 0 ]]
+# then
+# 	echo Failed to edit "//'$samplib($Imember)'" into /tmp/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
+#   script_exit 8
+# else
+#   echo Edited "//'$samplib($Imember)'" 
+# fi
+# cp /tmp/$samplib.$Imember.jcl "//'$templib($Imember)'"
+# if [[ $? -ne 0 ]]
+# then
+# 	echo Failed to copy /tmp/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
+#   script_exit 8
+# else
+#   echo Copied into "//'$templib($Imember)'"   
+# fi
 
 if [[ $proclib = auto ]]
 then
