@@ -43,7 +43,7 @@ xmemProfileOk=false
 xmemProfileAccessOk=false
 
 
-sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
+# sh -c "rm -rf ${ZSS} && mkdir -p ${ZSS} && cd ${ZSS} && pax -ppx -rf ../zss.pax"
 chmod +x ${OPERCMD}
 chmod +x ${SCRIPT_DIR}/*
 . ${SCRIPT_DIR}/zowe-xmem-parse-yaml.sh
@@ -51,15 +51,15 @@ chmod +x ${SCRIPT_DIR}/*
 # MVS install steps
 
 # 0. Prepare STC JCL
-echo zowe-install-apf-server.sh is NOW editing STC JCL here in place
-sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
-    -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
-    -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
-    ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
-cp ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp ${ZSS}/SAMPLIB/ZWESIS01 
-sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
-    ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
-cp ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp ${ZSS}/SAMPLIB/ZWESAUX 
+# echo zowe-install-apf-server.sh is NOT editing STC JCL here in place
+# sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
+#     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+#     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
+#     ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
+# cp ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp ${ZSS}/SAMPLIB/ZWESIS01 
+# sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
+#     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
+# cp ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp ${ZSS}/SAMPLIB/ZWESAUX 
 
 # # 1. Deploy loadlib
 # echo
