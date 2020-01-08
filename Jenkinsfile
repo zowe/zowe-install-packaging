@@ -27,6 +27,11 @@ node('ibm-jenkins-slave-nvm') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_SMPE_PTF',
+      description: 'When building SMP/e package, require PTF creation.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -127,14 +132,16 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 90, unit: 'MINUTES'],
     operation: {
       pipeline.pax.pack(
-          job             : "zowe-packaging",
-          filename        : 'zowe.pax',
-          environments    : [
-            'ZOWE_VERSION': pipeline.getVersion(),
-            'BUILD_SMPE'  : (params.BUILD_SMPE ? 'yes' : '')
+          job                 : "zowe-packaging",
+          filename            : 'zowe.pax',
+          environments        : [
+            'ZOWE_VERSION'    : pipeline.getVersion(),
+            'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : ''),
+            'BUILD_SMPE_PTF'  : (params.BUILD_SMPE_PTF ? 'yes' : ''),
+            'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
-          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,smpe-build-logs.pax.Z,rename-back.sh' : ''),
-          keepTempFolder  : params.KEEP_TEMP_FOLDER
+          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.tar,fmid.zip,ptf.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
+          keepTempFolder      : params.KEEP_TEMP_FOLDER
       )
       if (params.BUILD_SMPE) {
         // rename SMP/e build with correct FMID name
@@ -147,7 +154,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   pipeline.publish(
     artifacts: [
       '.pax/zowe.pax',
+      '.pax/zowe-smpe.tar',
+      '.pax/smpe-promote.tar',
       '.pax/AZWE*',
+      '.pax/pd.htm',
       '.pax/smpe-build-logs.pax.Z'
     ]
   )

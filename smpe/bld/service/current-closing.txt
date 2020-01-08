@@ -1,0 +1,12 @@
+****************************************************************
+* USERS AFFECTED: All Zowe users                               *
+****************************************************************
+* PROBLEM DESCRIPTION: Update Zowe FMID #fmid to match the   *
+*                      community release                       *
+****************************************************************
+* RECOMMENDATION: Apply provided service                       *
+****************************************************************
+The Zowe community version was updated to #version.
+This PTF provides the community changes in SMP/E format.
+Follow this link for more details on the community changes:
+#link

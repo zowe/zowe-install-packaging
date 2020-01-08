@@ -192,17 +192,6 @@ do
                 ZOWE_ZOSMF_ADMIN_GROUP=$value
                 export ZOWE_ZOSMF_ADMIN_GROUP
             fi
-
-            if [[ $key == "dsName" ]] && [[ $section == "zowe-server-proclib" ]]
-            then
-                ZOWE_SERVER_PROCLIB_DSNAME=$value
-                export ZOWE_SERVER_PROCLIB_DSNAME
-            fi
-            if [[ $key == "memberName" ]] && [[ $section == "zowe-server-proclib" ]]
-            then
-                ZOWE_SERVER_PROCLIB_MEMBER=$value
-                export ZOWE_SERVER_PROCLIB_MEMBER
-            fi
             if [[ $key == "keystoreDirectory" ]] && [[ $section == "keystore" ]]
             then
                 KEYSTORE_DIRECTORY=$value
@@ -337,16 +326,6 @@ fi
 if [[ $ZOWE_ZLUX_TELNET_PORT == "" ]]
 then
     ZOWE_ZLUX_TELNET_PORT=23
-fi 
-if [[ $ZOWE_SERVER_PROCLIB_MEMBER == "" ]]
-then
-    ZOWE_SERVER_PROCLIB_MEMBER=ZWESVSTC 
-    echo "  ZOWE_SERVER_PROCLIB_MEMBER not specified:  Defaulting to ZWESVSTC" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_SERVER_PROCLIB_DSNAME == "" ]]
-then
-    ZOWE_SERVER_PROCLIB_DSNAME=auto
-    echo "  ZOWE_SERVER_PROCLIB_DSNAME not specified:  PROCLIB DSNAME will be selected automatically" | tee -a $LOG_FILE
 fi
 if [[ KEYSTORE_DIRECTORY == "" ]]
 then
@@ -393,8 +372,6 @@ echo "  ZOWE_ZOSMF_ADMIN_GROUP="$ZOWE_ZOSMF_ADMIN_GROUP >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
-echo "  ZOWE_SERVER_PROCLIB_MEMBER="$ZOWE_SERVER_PROCLIB_MEMBER >> $LOG_FILE
-echo "  ZOWE_SERVER_PROCLIB_DSNAME="$ZOWE_SERVER_PROCLIB_DSNAME >> $LOG_FILE
 echo "  KEYSTORE_DIRECTORY="$KEYSTORE_DIRECTORY >> $LOG_FILE
 echo "  ZOWE_USER_ID="$ZOWE_USER_ID >> $LOG_FILE
 echo "  ZOWE_GROUP_ID="$ZOWE_GROUP_ID >> $LOG_FILE

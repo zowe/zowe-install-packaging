@@ -51,40 +51,13 @@ mkdir -p $TEMP_DIR
 
 echo "Beginning to configure zowe installed in ${ZOWE_ROOT_DIR}"
 
-# Configure the ports for the zLUX server
-. $CONFIG_DIR/zowe-configure-zlux-ports.sh
-
-# configure api catalog and jes explorer plugins, to be moved later to their own configure steps after zlux componentisation
-. $CONFIG_DIR/zowe-configure-iframe-plugins.sh
-
-# Configure API Mediation layer.  Because this script may fail because of priviledge issues with the user ID
-# this script is run after all the folders have been created and paxes expanded above
-#echo "Attempting to setup Zowe API Mediation Layer certificates ... "
-#. $CONFIG_DIR/zowe-configure-api-mediation.sh
-
 # TODO - temp solution to be removed after componentization is done
 . ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates-prep.sh
 . ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p ${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env.temp
 
-# FIXME zowe-configure-zlux-certificates.sh relies on an old (hardcoded) keystore location 
-# Configure the TLS certificates for the zLUX server
-. $CONFIG_DIR/zowe-configure-zlux-certificates.sh
-
 INSTANCE_DIR=${ZOWE_USER_DIR}
+
 . ${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c ${INSTANCE_DIR} -y
-
-# Run deploy on the zLUX app server to propagate the changes made
-zluxserverdirectory='zlux-app-server'
-echo "Preparing folder permission for zLux plugins foder..." >> $LOG_FILE
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/plugins/
-chmod -R u+w $ZOWE_ROOT_DIR/$zluxserverdirectory/deploy/site
-# TODO LATER - revisit to work out the best permissions, but currently needed so deploy.sh can run	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/product	
-chmod -R 775 $ZOWE_ROOT_DIR/zlux-app-server/deploy/instance
-
-cd $ZOWE_ROOT_DIR/zlux-build
-chmod a+x deploy.sh
-./deploy.sh > /dev/null
 
 # TODO LATER - this need updating to not modify read-only dir, but instead use instance variables - move zowe-support.sh to INSTANCE_DIR?
 sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
@@ -97,10 +70,6 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   > "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
-echo "Attempting to setup Zowe Proclib ... "
-# Note: this calls exit code, so can't be run in 'source' mode
-$CONFIG_DIR/zowe-copy-proc.sh ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl $ZOWE_SERVER_PROCLIB_MEMBER $ZOWE_SERVER_PROCLIB_DSNAME
-
 # Inject stc name into config-stc
 sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
    "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh" \
@@ -108,7 +77,6 @@ sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
 mv "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new" "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
 chmod 770 "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
 
-# TODO LATER - same as the above - zss won't start with those permissions,
 sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   -e "s#{{zosmf_admin_group}}#${ZOWE_ZOSMF_ADMIN_GROUP}#" \
   -e "s#{{configure_log_file}}#${LOG_FILE}#" \
