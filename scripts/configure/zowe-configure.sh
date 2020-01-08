@@ -70,13 +70,6 @@ sed -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
   > "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 chmod a+x "${ZOWE_ROOT_DIR}/scripts/zowe-support.sh"
 
-# Inject stc name into config-stc
-sed -e "s#{{stc_name}}#${ZOWE_SERVER_PROCLIB_MEMBER}#" \
-   "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh" \
-  > "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new"
-mv "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh.new" "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
-chmod 770 "${ZOWE_ROOT_DIR}/scripts/configure/zowe-config-stc.sh"
-
 sed -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
   -e "s#{{zosmf_admin_group}}#${ZOWE_ZOSMF_ADMIN_GROUP}#" \
   -e "s#{{configure_log_file}}#${LOG_FILE}#" \
