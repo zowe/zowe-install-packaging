@@ -82,7 +82,7 @@ fi
 #ZSS exists within app-server, may desire a distinct component later on
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},app-server
+  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use it's config
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
 #ZSS could be included separate to app-server, and vice-versa
