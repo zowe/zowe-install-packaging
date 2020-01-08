@@ -166,8 +166,8 @@ ZWEXMP00=ZWESIP00  # for ZWESIS01
 ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
-# the extra parms ${loadlib} ${parmlib} were used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC # ${loadlib} ${parmlib}
-./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC # ${loadlib} ${parmlib}
+# the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
+./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC  ${loadlib} ${parmlib}
+./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC  ${loadlib} ${parmlib}
 
 script_exit 0
