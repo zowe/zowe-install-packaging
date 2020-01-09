@@ -10,7 +10,7 @@
 ################################################################################
 
 # Function: Copy SAMPLIB member into JES PROCLIB concatenation
-# Usage:  ./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
+# Usage:  ./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember [$loadlib $parmlib]
 
 # Needs ../internal/opercmd to check JES concatenation
 # Needs ./mcopyshr.clist to write to the target PDS
@@ -20,10 +20,11 @@
 #   $userid.zowetemp.instproc.SZWESAMP.clist 
 # Creates log file in user's home directory
 
-# Edits members during copy
+# Edits member during copy if $loadlib and $parmlib were specified
+# The changes made are equivalent to this:
 # sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
 #     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
-#     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \
+#     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \ (this default is not edited)
 #     ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
 # sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
 #     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
@@ -112,43 +113,52 @@ then
 fi
 
 echo Check name of $Imember PROC | tee -a ${LOG_FILE}
-cat "//'$samplib($Imember)'" | grep -i "^//$Imember *PROC " 1>> $LOG_FILE 2>> $LOG_FILE
+cat "//'$samplib($Imember)'" | grep -i "^//$Imember *PROC" 1>> $LOG_FILE 2>> $LOG_FILE
 if [[ $? -ne 0 ]]
 then
-  echo Did not find \"//$Imember\" in "$samplib($Imember)" | tee -a ${LOG_FILE}
+  echo Did not find PROC name \"$Imember\" in "$samplib($Imember)" | tee -a ${LOG_FILE}
   echo PROC statement is : | tee -a ${LOG_FILE}
-  cat "//'$samplib($Imember)'" | grep "^//.* PROC " | tee -a ${LOG_FILE}
+  cat "//'$samplib($Imember)'" | grep "^//[^ *][^ ]*  *PROC" | tee -a ${LOG_FILE}
 fi
 
-# We used to perform a straight copy ...
-# cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
-# if [[ $? -ne 0 ]]
-# then
-# 	echo Failed to copy "//'$samplib($Imember)'" into "//'$templib($Imember)'" | tee -a ${LOG_FILE}
-#   script_exit 8
-# else
-#   echo Copied "//'$samplib($Imember)'" into "//'$templib($Imember)'"   
-# fi
-
-# But now we edit the JCL in flight ...
-sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
-    -e "s/ZWES.SISSAMP/${samplib}/g" \
-    -e "s/zis-loadlib/${loadlib}/g" \
-    "//'$samplib($Imember)'" > /tmp/$samplib.$Imember.jcl
-if [[ $? -ne 0 ]]
+if [[ $# -eq 4 ]]
 then
-	echo Failed to edit "//'$samplib($Imember)'" into /tmp/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
-  script_exit 8
+  # Perform a straight copy ...
+  cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
+  if [[ $? -ne 0 ]]
+  then
+    echo Failed to copy "$samplib($Imember)" into "$templib($Imember)" | tee -a ${LOG_FILE}
+    script_exit 8
+  else
+    echo Copied "$samplib($Imember)" into "$templib($Imember)"   
+  fi
 else
-  echo Edited "//'$samplib($Imember)'" 
-fi
-cp /tmp/$samplib.$Imember.jcl "//'$templib($Imember)'"
-if [[ $? -ne 0 ]]
-then
-	echo Failed to copy /tmp/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
-  script_exit 8
-else
-  echo Copied into "//'$templib($Imember)'"   
+  # Edit the JCL in flight using parms 5 and 6 ...
+  # These strings are in ZWESISTC
+      # ZWES.SISLOAD
+      # ZWES.SISSAMP
+  # These strings are in ZWESASTC
+      # zis-loadlib
+  #
+  sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
+      -e "s/ZWES.SISSAMP/${samplib}/g" \
+      -e "s/zis-loadlib/${loadlib}/g" \
+      "//'$samplib($Imember)'" > /tmp/$samplib.$Imember.jcl
+  if [[ $? -ne 0 ]]
+  then
+    echo Failed to edit "$samplib($Imember)" into /tmp/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
+    script_exit 8
+  else
+    echo Edited "$samplib($Imember)" 
+  fi
+  cp /tmp/$samplib.$Imember.jcl "//'$templib($Imember)'"
+  if [[ $? -ne 0 ]]
+  then
+    echo Failed to copy /tmp/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
+    script_exit 8
+  else
+    echo Copied into "$templib($Imember)"   
+  fi
 fi
 
 if [[ $proclib = auto ]]
