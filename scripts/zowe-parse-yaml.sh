@@ -192,21 +192,6 @@ do
                 ZOWE_ZOSMF_ADMIN_GROUP=$value
                 export ZOWE_ZOSMF_ADMIN_GROUP
             fi
-            if [[ $key == "keystoreDirectory" ]] && [[ $section == "keystore" ]]
-            then
-                KEYSTORE_DIRECTORY=$value
-                export KEYSTORE_DIRECTORY
-            fi
-            if [[ $key == "keystoreOwner" ]] && [[ $section == "keystore" ]]
-            then
-                ZOWE_USER_ID=$value
-                export ZOWE_USER_ID
-            fi
-            if [[ $key == "keystoreGroup" ]] && [[ $section == "keystore" ]]
-            then
-                ZOWE_GROUP_ID=$value
-                export ZOWE_GROUP_ID
-            fi
         fi
     fi
 #    echo "--- End of loop ---"
@@ -327,11 +312,6 @@ if [[ $ZOWE_ZLUX_TELNET_PORT == "" ]]
 then
     ZOWE_ZLUX_TELNET_PORT=23
 fi
-if [[ KEYSTORE_DIRECTORY == "" ]]
-then
-    KEYSTORE_DIRECTORY="/global/zowe/keystore"
-    echo "  KEYSTORE_DIRECTORY not specified:  Defaulting to /global/zowe/keystore" | tee -a $LOG_FILE
-fi
 if [[ ZOWE_USER_ID == "" ]]
 then
     ZOWE_USER_ID="IZUSVR"
@@ -372,7 +352,4 @@ echo "  ZOWE_ZOSMF_ADMIN_GROUP="$ZOWE_ZOSMF_ADMIN_GROUP >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
-echo "  KEYSTORE_DIRECTORY="$KEYSTORE_DIRECTORY >> $LOG_FILE
-echo "  ZOWE_USER_ID="$ZOWE_USER_ID >> $LOG_FILE
-echo "  ZOWE_GROUP_ID="$ZOWE_GROUP_ID >> $LOG_FILE
 echo "</zowe-parse-yaml.sh>" >> $LOG_FILE
