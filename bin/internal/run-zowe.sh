@@ -72,7 +72,6 @@ checkForErrorsFound
 # Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
-
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
   LAUNCH_COMPONENTS=api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
