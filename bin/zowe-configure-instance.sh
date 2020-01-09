@@ -110,13 +110,7 @@ check_existing_instance_for_updates() {
       -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
       -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
       -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
-      -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
-      -e "s#{{key_alias}}#localhost#" \
-      -e "s#{{keystore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.p12#" \
-      -e "s#{{keystore_password}}#password#" \
-      -e "s#{{keystore_key}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.key#" \
-      -e "s#{{keystore_certificate}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.cer-ebcdic#" \
-      -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" )
+      -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#")
 
     echo_and_log "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND"
     echo "\n$LINES_TO_APPEND" >> $INSTANCE
