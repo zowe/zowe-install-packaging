@@ -79,8 +79,8 @@
 //         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
-//         SET  XMEMSTC=ZWEXMSTC     * xmem started task name
-//         SET   AUXSTC=ZWEXASTC     * xmem AUX started task name
+//         SET  XMEMSTC=ZWESISTC     * xmem started task name
+//         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
 //*                     12345678
 //*
 //*********************************************************************
