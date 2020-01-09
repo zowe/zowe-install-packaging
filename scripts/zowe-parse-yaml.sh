@@ -152,21 +152,6 @@ do
                 ZOWE_APIM_GATEWAY_PORT=$value
                 export ZOWE_APIM_GATEWAY_PORT
             fi
-            if [[ $key == "externalCertificate" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_EXTERNAL_CERTIFICATE=$value
-                export ZOWE_APIM_EXTERNAL_CERTIFICATE
-            fi
-            if [[ $key == "externalCertificateAlias" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS=$value
-                export ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS
-            fi
-            if [[ $key == "externalCertificateAuthorities" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES=$value
-                export ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES
-            fi
             if [[ $key == "verifyCertificatesOfServices" ]] && [[ $section == "api-mediation" ]]
             then
                 ZOWE_APIM_VERIFY_CERTIFICATES=$value
@@ -176,16 +161,6 @@ do
             then
                 ZOWE_APIM_ENABLE_SSO=$value
                 export ZOWE_APIM_ENABLE_SSO
-            fi
-            if [[ $key == "zosmfKeyring" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_ZOSMF_KEYRING=$value
-                export ZOWE_ZOSMF_KEYRING
-            fi
-            if [[ $key == "zosmfUserid" ]] && [[ $section == "zosmf" ]]
-            then
-                ZOWE_ZOSMF_USERID=$value
-                export ZOWE_ZOSMF_USERID
             fi
             if [[ $key == "zosmfAdminGroup" ]] && [[ $section == "zosmf" ]]
             then
@@ -285,16 +260,6 @@ then
     ZOWE_APIM_ENABLE_SSO="false"
     echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false" | tee -a $LOG_FILE
 fi
-if [[ $ZOWE_ZOSMF_KEYRING == "" ]]
-then
-    ZOWE_ZOSMF_KEYRING="IZUKeyring.IZUDFLT"
-    echo "  ZOWE_ZOSMF_KEYRING not specified:  Defaulting to IZUKeyring.IZUDFLT" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_ZOSMF_USERID == "" ]]
-then
-    ZOWE_ZOSMF_USERID="IZUSVR"
-    echo "  ZOWE_ZOSMF_USERID not specified:  Defaulting to IZUSVR" | tee -a $LOG_FILE
-fi
 if [[ $ZOWE_ZOSMF_ADMIN_GROUP == "" ]]
 then
     ZOWE_ZOSMF_ADMIN_GROUP="IZUADMIN"
@@ -342,12 +307,8 @@ echo "  ZOWE_APIM_CATALOG_PORT="$ZOWE_APIM_CATALOG_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_PORT="$ZOWE_APIM_DISCOVERY_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_GATEWAY_PORT="$ZOWE_APIM_GATEWAY_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE="$ZOWE_APIM_EXTERNAL_CERTIFICATE >> $LOG_FILE
-echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS="$ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS >> $LOG_FILE
-echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES="$ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES >> $LOG_FILE
 echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FILE
 echo "  ZOWE_APIM_ENABLE_SSO="$ZOWE_APIM_ENABLE_SSO >> $LOG_FILE
-echo "  ZOWE_ZOSMF_KEYRING="$ZOWE_ZOSMF_KEYRING >> $LOG_FILE
-echo "  ZOWE_ZOSMF_USERID="$ZOWE_ZOSMF_USERID >> $LOG_FILE
 echo "  ZOWE_ZOSMF_ADMIN_GROUP="$ZOWE_ZOSMF_ADMIN_GROUP >> $LOG_FILE
 echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
 echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE

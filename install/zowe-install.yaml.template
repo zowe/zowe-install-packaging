@@ -10,17 +10,12 @@ install:
   datasetPrefix={userid}.ZWE
 
 zosmf:
-  zosmfUserid=IZUSVR
   zosmfAdminGroup=IZUADMIN
 
 api-mediation:
   catalogPort=7552
   discoveryPort=7553
   gatewayPort=7554
-  externalCertificate=
-  externalCertificateAlias=
-  externalCertificateAuthorities=
-  verifyCertificatesOfServices=true
   enableSso=false
   zosmfKeyring=IZUKeyring.IZUDFLT
 

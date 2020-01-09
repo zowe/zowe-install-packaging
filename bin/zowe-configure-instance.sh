@@ -64,9 +64,6 @@ create_new_instance() {
     sed \
       -e "s#ZOWE_PREFIX=ZWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
       -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=${ZOWE_INSTANCE}#" \
-      -e "s#ZOSMF_USERID=IZUSVR#ZOSMF_USERID=${ZOWE_ZOSMF_USERID}#" \
-      -e "s#ZOSMF_ADMIN_GROUP=IZUADMIN#ZOSMF_ADMIN_GROUP=${ZOWE_ZOSMF_ADMIN_GROUP}#" \
-      -e "s#ZOSMF_KEYRING=IZUKeyring.IZUDFLT#ZOSMF_KEYRING=${ZOWE_ZOSMF_KEYRING}#" \
       -e "s#CATALOG_PORT=7552#CATALOG_PORT=${ZOWE_APIM_CATALOG_PORT}#" \
       -e "s#DISCOVERY_PORT=7553#DISCOVERY_PORT=${ZOWE_APIM_DISCOVERY_PORT}#" \
       -e "s#GATEWAY_PORT=7554#GATEWAY_PORT=${ZOWE_APIM_GATEWAY_PORT}#" \
@@ -121,10 +118,7 @@ check_existing_instance_for_updates() {
       -e "s#{{keystore_password}}#password#" \
       -e "s#{{keystore_key}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.key#" \
       -e "s#{{keystore_certificate}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.keystore.cer-ebcdic#" \
-      -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" \
-      -e "s#{{external_certificate}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE}#" \
-      -e "s#{{external_certificate_alias}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_ALIAS}#" \
-      -e "s#{{external_certificate_authorities}}#${ZOWE_APIM_EXTERNAL_CERTIFICATE_AUTHORITIES}#" )
+      -e "s#{{truststore}}#${ZOWE_ROOT_DIR}/components/api-mediation/keystore/localhost/localhost.truststore.p12#" )
 
     echo_and_log "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND"
     echo "\n$LINES_TO_APPEND" >> $INSTANCE
