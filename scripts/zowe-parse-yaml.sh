@@ -44,128 +44,17 @@ do
 # If the value starts with a ~ for the home variable then evaluate it
                 ZOWE_ROOT_DIR=`sh -c "echo $value"` 
                 export ZOWE_ROOT_DIR
-            fi
-# Look for instanceDir= beneath install:
-            if [[ $key == "instanceDir" ]] && [[ $section == "install" ]]
-            then
-# If the value starts with a ~ for the home variable then evaluate it
-                ZOWE_USER_DIR=`sh -c "echo $value"` 
-                export ZOWE_USER_DIR
-            fi
-# Look for prefix= beneath install:
-            if [[ $key == "prefix" ]] && [[ $section == "install" ]]
-            then
-                ZOWE_PREFIX=$value
-                export ZOWE_PREFIX
-            fi
-# Look for instance= beneath install:
-            if [[ $key == "instance" ]] && [[ $section == "install" ]]
-            then
-                ZOWE_INSTANCE=$value
-                export ZOWE_INSTANCE
-            fi      
+            fi    
 # Look for datasetPrefix= beneath install:
             if [[ $key == "datasetPrefix" ]] && [[ $section == "install" ]]
             then
                 ZOWE_DSN_PREFIX=`echo "$value" | sed "s/{userid}/${USER:-${USERNAME:-${LOGNAME}}}/"`
                 export ZOWE_DSN_PREFIX
             fi      
-# Look for jobsAPIPort= beneath zos-services:
-            if [[ $key == "jobsAPIPort" ]] && [[ $section == "zos-services" ]] 
+            if [[ $key == "zoweAdminGroup" ]] && [[ $section == "install" ]]
             then
-                ZOWE_EXPLORER_SERVER_JOBS_PORT=$value
-                export ZOWE_EXPLORER_SERVER_JOBS_PORT
-            fi
-# Look for mvsAPIPort= beneath zos-services:
-            if [[ $key == "mvsAPIPort" ]] && [[ $section == "zos-services" ]] 
-            then
-                ZOWE_EXPLORER_SERVER_DATASETS_PORT=$value
-                export ZOWE_EXPLORER_SERVER_DATASETS_PORT
-            fi
-# Look for httpsPort= beneath zlux-server:
-            if [[ $key == "httpsPort" ]] && [[ $section == "zlux-server" ]] 
-            then
-                ZOWE_ZLUX_SERVER_HTTPS_PORT=$value
-                export ZOWE_ZLUX_SERVER_HTTPS_PORT
-            fi
-# Look for zssPort= beneath zlux-server:
-            if [[ $key == "zssPort" ]] && [[ $section == "zlux-server" ]] 
-            then
-                ZOWE_ZSS_SERVER_PORT=$value
-                export ZOWE_ZSS_SERVER_PORT
-            fi
-# Look for privilegedServerName= beneath zlux-server:
-            if [[ $key == "zssCrossMemoryServerName" ]] && [[ $section == "zlux-server" ]] 
-            then
-                ZOWE_ZSS_XMEM_SERVER_NAME=$value
-                export ZOWE_ZSS_XMEM_SERVER_NAME
-            fi            
-# Look for sshPort= beneath terminals:
-            if [[ $key == "sshPort" ]] && [[ $section == "terminals" ]] 
-            then
-                ZOWE_ZLUX_SSH_PORT=$value
-                export ZOWE_ZLUX_SSH_PORT
-            fi
-# Look for telnetPort= beneath terminals:
-            if [[ $key == "telnetPort" ]] && [[ $section == "terminals" ]] 
-            then
-                ZOWE_ZLUX_TELNET_PORT=$value
-                export ZOWE_ZLUX_TELNET_PORT
-            fi
-# Look for jobsExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "jobsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
-            then
-                ZOWE_EXPLORER_JES_UI_PORT=$value
-                export ZOWE_EXPLORER_JES_UI_PORT
-            fi
-# Look for mvsExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "mvsExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
-            then
-                ZOWE_EXPLORER_MVS_UI_PORT=$value
-                export ZOWE_EXPLORER_MVS_UI_PORT
-            fi
-# Look for ussExplorerPort= beneath zowe-desktop-apps:
-            if [[ $key == "ussExplorerPort" ]] && [[ $section == "zowe-desktop-apps" ]] 
-            then
-                ZOWE_EXPLORER_USS_UI_PORT=$value
-                export ZOWE_EXPLORER_USS_UI_PORT
-            fi
-# Look for security= beneath terminals:
-            if [[ $key == "security" ]] && [[ $section == "terminals" ]] 
-            then
-                ZOWE_ZLUX_SECURITY_TYPE=$value
-                export ZOWE_ZLUX_SECURITY_TYPE
-            fi
-# api-mediation settings:
-            if [[ $key == "catalogPort" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_CATALOG_PORT=$value
-                export ZOWE_APIM_CATALOG_HTTP_PORT
-            fi
-            if [[ $key == "discoveryPort" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_DISCOVERY_PORT=$value
-                export ZOWE_APIM_DISCOVERY_PORT
-            fi
-            if [[ $key == "gatewayPort" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_GATEWAY_PORT=$value
-                export ZOWE_APIM_GATEWAY_PORT
-            fi
-            if [[ $key == "verifyCertificatesOfServices" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_VERIFY_CERTIFICATES=$value
-                export ZOWE_APIM_VERIFY_CERTIFICATES
-            fi
-            if [[ $key == "enableSso" ]] && [[ $section == "api-mediation" ]]
-            then
-                ZOWE_APIM_ENABLE_SSO=$value
-                export ZOWE_APIM_ENABLE_SSO
-            fi
-            if [[ $key == "zosmfAdminGroup" ]] && [[ $section == "zosmf" ]]
-            then
-                ZOWE_ZOSMF_ADMIN_GROUP=$value
-                export ZOWE_ZOSMF_ADMIN_GROUP
+                ZOWE_GROUP=$value
+                export ZOWE_GROUP
             fi
         fi
     fi
@@ -180,137 +69,13 @@ then
     ZOWE_ROOT_DIR="~/zowe/$ZOWE_VERSION"
     echo "  ZOWE_ROOT_DIR not specified:  Defaulting to ~/zowe/$ZOWE_VERSION" | tee -a $LOG_FILE
 fi
-if [[ $ZOWE_USER_DIR == "" ]] 
+if [[ $ZOWE_GROUP == "" ]]
 then
-    ZOWE_USER_DIR="~/zowe-instance-dir"
-    echo "  ZOWE_USER_DIR not specified:  Defaulting to ~/zowe-instance-dir"
-fi
-if [[ $ZOWE_PREFIX == "" ]]
-then
-    ZOWE_PREFIX="ZWE"
-    echo "  ZOWE_PREFIX not specified:  Defaulting to ZWE" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_INSTANCE == "" ]]
-then
-    ZOWE_INSTANCE="1"
-    echo "  ZOWE_INSTANCE not specified:  Defaulting to 1" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_EXPLORER_SERVER_JOBS_PORT == "" ]]
-then
-    ZOWE_EXPLORER_SERVER_JOBS_PORT=7080
-    echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT not specified:  Defaulting to 7080" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_EXPLORER_SERVER_DATASETS_PORT == "" ]]
-then
-    ZOWE_EXPLORER_SERVER_DATASETS_PORT=8547
-    echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT not specified:  Defaulting to 8547" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_ZLUX_SERVER_HTTPS_PORT == "" ]]
-then
-    ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
-    echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT not specified:  Defaulting to 8544" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_ZSS_SERVER_PORT == "" ]]
-then
-    ZOWE_ZSS_SERVER_PORT=8542
-    echo "  ZOWE_ZSS_SERVER_PORT not specified:  Defaulting to 8542" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_ZSS_XMEM_SERVER_NAME == "" ]]
-then
-    ZOWE_ZSS_XMEM_SERVER_NAME=ZWESIS_STD
-    echo "  ZOWE_ZSS_XMEM_SERVER_NAME not specified:  Defaulting to ZWESIS_STD" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_EXPLORER_JES_UI_PORT == "" ]]
-then
-    ZOWE_EXPLORER_JES_UI_PORT=8546
-    echo "  ZOWE_EXPLORER_JES_UI_PORT not specified:  Defaulting to 8546" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_EXPLORER_MVS_UI_PORT == "" ]]
-then
-    ZOWE_EXPLORER_MVS_UI_PORT=8548
-    echo "  ZOWE_EXPLORER_MVS_UI_PORT not specified:  Defaulting to 8548" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_EXPLORER_USS_UI_PORT == "" ]]
-then
-    ZOWE_EXPLORER_USS_UI_PORT=8550
-    echo "  ZOWE_EXPLORER_USS_UI_PORT not specified:  Defaulting to 8550" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_APIM_CATALOG_PORT == "" ]]
-then
-    ZOWE_APIM_CATALOG_PORT=7552
-    echo "  ZOWE_APIM_CATALOG_PORT not specified:  Defaulting to 7552" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_APIM_DISCOVERY_PORT == "" ]]
-then
-    ZOWE_APIM_DISCOVERY_PORT=7553
-    echo "  ZOWE_APIM_DISCOVERY_PORT not specified:  Defaulting to 7553" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_APIM_GATEWAY_PORT == "" ]]
-then
-    ZOWE_APIM_GATEWAY_PORT=7554
-    echo "  ZOWE_APIM_GATEWAY_PORT not specified:  Defaulting to 7554" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_APIM_VERIFY_CERTIFICATES == "" ]]
-then
-    ZOWE_APIM_VERIFY_CERTIFICATES="true"
-    echo "  ZOWE_APIM_VERIFY_CERTIFICATES not specified:  Defaulting to true" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_APIM_ENABLE_SSO == "" ]]
-then
-    ZOWE_APIM_ENABLE_SSO="false"
-    echo "  ZOWE_APIM_ENABLE_SSO not specified:  Defaulting to false" | tee -a $LOG_FILE
-fi
-if [[ $ZOWE_ZOSMF_ADMIN_GROUP == "" ]]
-then
-    ZOWE_ZOSMF_ADMIN_GROUP="IZUADMIN"
-    echo "  ZOWE_ZOSMF_ADMIN_GROUP not specified:  Defaulting to IZUADMIN" | tee -a $LOG_FILE
+    ZOWE_GROUP="IZUADMIN"
+    echo "  ZOWE_GROUP not specified:  Defaulting to IZUADMIN" | tee -a $LOG_FILE
 fi 
 
-# Do not echo the ssh and terminal ports because unlike the others, that Zowe needs free to alllocate and use
-# The ssh and telnet ports are there and already being used and exploited by the apps
-# and echoing them may create confusion
-if [[ $ZOWE_ZLUX_SSH_PORT == "" ]]
-then
-    ZOWE_ZLUX_SSH_PORT=22
-fi
-if [[ $ZOWE_ZLUX_TELNET_PORT == "" ]]
-then
-    ZOWE_ZLUX_TELNET_PORT=23
-fi
-if [[ ZOWE_USER_ID == "" ]]
-then
-    ZOWE_USER_ID="IZUSVR"
-    echo "  ZOWE_USER_ID not specified:  Defaulting to IZUSVR" | tee -a $LOG_FILE
-fi
-if [[ ZOWE_GROUP_ID == "" ]]
-then
-    ZOWE_GROUP_ID="IZUADMIN"
-    echo "  ZOWE_GROUP_ID not specified:  Defaulting to IZUADMIN" | tee -a $LOG_FILE
-fi
-
 echo "  ZOWE_ROOT_DIR="$ZOWE_ROOT_DIR >> $LOG_FILE
-echo "  ZOWE_USER_DIR="$ZOWE_USER_DIR >> $LOG_FILE
-echo "  ZOWE_PREFIX="$ZOWE_PREFIX >> $LOG_FILE
 echo "  ZOWE_DSN_PREFIX="$ZOWE_DSN_PREFIX >> $LOG_FILE
-echo "  ZOWE_ZLUX_SERVER_HTTPS_PORT="$ZOWE_ZLUX_SERVER_HTTPS_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_JOBS_PORT="$ZOWE_EXPLORER_SERVER_JOBS_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_SERVER_DATASETS_PORT="$ZOWE_EXPLORER_SERVER_DATASETS_PORT >> $LOG_FILE
-echo "  ZOWE_ZSS_SERVER_PORT="$ZOWE_ZSS_SERVER_PORT >> $LOG_FILE
-echo "  ZOWE_ZSS_XMEM_SERVER_NAME="$ZOWE_ZSS_XMEM_SERVER_NAME >> $LOG_FILE
-echo "  ZOWE_ZLUX_SSH_PORT="$ZOWE_ZLUX_SSH_PORT >> $LOG_FILE
-echo "  ZOWE_ZLUX_TELNET_PORT="$ZOWE_ZLUX_TELNET_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_JES_UI_PORT="$ZOWE_EXPLORER_JES_UI_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_MVS_UI_PORT="$ZOWE_EXPLORER_MVS_UI_PORT >> $LOG_FILE
-echo "  ZOWE_EXPLORER_USS_UI_PORT="$ZOWE_EXPLORER_USS_UI_PORT >> $LOG_FILE
-echo "  ZOWE_ZLUX_SECURITY_TYPE="$ZOWE_ZLUX_SECURITY_TYPE >> $LOG_FILE
-echo "  ZOWE_APIM_CATALOG_PORT="$ZOWE_APIM_CATALOG_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_DISCOVERY_PORT="$ZOWE_APIM_DISCOVERY_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_GATEWAY_PORT="$ZOWE_APIM_GATEWAY_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_EXTERNAL_CERTIFICATE="$ZOWE_APIM_EXTERNAL_CERTIFICATE >> $LOG_FILE
-echo "  ZOWE_APIM_VERIFY_CERTIFICATES="$ZOWE_APIM_VERIFY_CERTIFICATES >> $LOG_FILE
-echo "  ZOWE_APIM_ENABLE_SSO="$ZOWE_APIM_ENABLE_SSO >> $LOG_FILE
-echo "  ZOWE_ZOSMF_ADMIN_GROUP="$ZOWE_ZOSMF_ADMIN_GROUP >> $LOG_FILE
-echo "  ZOWE_APIM_CATALOG_HTTP_PORT="$ZOWE_APIM_CATALOG_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_DISCOVERY_HTTP_PORT="$ZOWE_APIM_DISCOVERY_HTTP_PORT >> $LOG_FILE
-echo "  ZOWE_APIM_GATEWAY_HTTPS_PORT="$ZOWE_APIM_GATEWAY_HTTPS_PORT >> $LOG_FILE
+echo "  ZOWE_GROUP="$ZOWE_GROUP >> $LOG_FILE
 echo "</zowe-parse-yaml.sh>" >> $LOG_FILE

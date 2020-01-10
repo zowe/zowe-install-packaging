@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-ZOWE_GROUP=${ZOWE_ZOSMF_ADMIN_GROUP} # Replace when zowe has it's own group: https://github.com/zowe/zowe-install-packaging/issues/518
+ZOWE_GROUP=${ZOWE_GROUP} # Replace when zowe has it's own group: https://github.com/zowe/zowe-install-packaging/issues/518
 
 while getopts "f:h:i:dI" opt; do
   case $opt in
