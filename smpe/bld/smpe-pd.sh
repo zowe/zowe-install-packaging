@@ -23,10 +23,11 @@
 # http://www.vm.ibm.com/download/packages/descript.cgi?b2h
 
 # require $JAVA_HOME                Java home directory
-# trashes $ship/$pax                FMID pax
-# trashes $ship/$txt                FMID readme
-# creates $ship/$htm                PD in HTML (ASCII)
+# removes $ship/$pax                FMID pax
+# removes $ship/$txt                FMID readme
 # creates $ship/$zip                zip holding pax, readme & PD (ASCII)
+# creates $ship/$htm                PD in HTML (ASCII)
+#TODO creates $log/$pd                  PD in script (EBCDIC)
 
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(cd $(dirname $0);pwd)   # script location

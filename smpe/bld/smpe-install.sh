@@ -56,6 +56,7 @@
 #..Assumes that if there are multiple input pax files, they all share
 #. the same leading directory, e.g. zowe-1.1.0.
 
+# more definitions in main()
 removeInstall=0                # 1 if install removes installed files
 smpeFilter="/smpe"             # regex to find SMP/E archive name
 prodScript=install/zowe-install.sh  # product install script
