@@ -4,10 +4,10 @@ echo "Warning this script is not complete - see https://github.com/zowe/zowe-ins
 
 # Variable Definition
 VAR=`dirname $0`			# Obtain the scripts directory name
-cd $VAR/..				    # Change to its parent which should be ZOWE_ROOT_DIR
-ZOWE_INSTALL_LOG_DIR=${ZOWE_ROOT_DIR}/install_log/
-ZOWE_CONFIGURE_LOG_DIR=${ZOWE_ROOT_DIR}/configure_log/
-ZOWE_INSTALL_ZLUX_SERVER_LOG=${ZOWE_ROOT_DIR}/zlux-app-server/log/
+cd $VAR/..				    # Change to its parent which should be ROOT_DIR
+ZOWE_INSTALL_LOG_DIR=${ROOT_DIR}/install_log/
+ZOWE_CONFIGURE_LOG_DIR=${ROOT_DIR}/configure_log/
+ZOWE_INSTALL_ZLUX_SERVER_LOG=${ROOT_DIR}/zlux-app-server/log/
 
 DATE=`date +%Y-%m-%d-%H-%M-%S`
 SUPPORT_ARCHIVE_LOCATION=$ZOWE_INSTALL_LOG_DIR
@@ -90,7 +90,7 @@ function add_to_pax {
 
 # Collecting software versions
 write_to_log "Collecting version of z/OS, Java, NodeJS"
-ZOS_VERSION=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd "D IPLINFO" | grep -i release | xargs`
+ZOS_VERSION=`${ROOT_DIR}/scripts/internal/opercmd "D IPLINFO" | grep -i release | xargs`
 write_to_log "  - z/OS "$ZOS_VERSION
 JAVA_VERSION=`$ZOWE_JAVA_HOME/bin/java -version 2>&1 | head -n 1`
 write_to_log "  - Java "$JAVA_VERSION
@@ -104,7 +104,7 @@ rm $VERSION_FILE
 
 # Collect the manifest file
 write_to_log "Collecting manifest.json"
-add_to_pax $ZOWE_ROOT_DIR/manifest.json
+add_to_pax $ROOT_DIR/manifest.json
 
 # Collect process information
 write_to_log "Collecting current process information based on the following prefix: ${ZOWE_PREFIX}$ZOWE_INSTANCE"
@@ -151,7 +151,7 @@ set +A SCRIPTS '/components/api-mediation/bin/start.sh'\
 for SCRIPT in ${SCRIPTS[*]}
 do
     write_to_log "Collecting launch script ${SCRIPT}"
-    add_to_pax ${ZOWE_ROOT_DIR}/${SCRIPT}
+    add_to_pax ${ROOT_DIR}/${SCRIPT}
 done
 
 # Getting zlux-server log
