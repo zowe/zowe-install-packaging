@@ -225,4 +225,10 @@ chmod 777 ${INSTANCE_DIR}
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 
+echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
+echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
+echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER,INSTANCE='${INSTANCE_DIR}')"
+echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
+echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
+
 echo "zowe-configure-instance.sh completed">> $LOG_FILE
