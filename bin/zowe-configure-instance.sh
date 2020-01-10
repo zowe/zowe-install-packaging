@@ -165,6 +165,9 @@ else
   create_new_instance
 fi
 
+#Make install-app.sh present per-instance for convenience
+cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
+
 cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
 # Requires INSTANCE_DIR to be set
 # Read in properties by executing, then export all the keys so we don't need to shell share
