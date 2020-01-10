@@ -76,12 +76,30 @@
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
 //         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
-//         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
+//         SET  ZSSUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
-//         SET  XMEMSTC=ZWESISTC     * xmem started task name
+//         SET   ZSSSTC=ZWESISTC     * xmem started task name
 //         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
 //*                     12345678
+//*  For ACF2 ONLY
+//*
+//*  If using AUTOUID and AUTOGID, an AUTOIDOM GSO Record must exist or
+//*  be created.  If using AUTOUID and AUTOGID, the following should be
+//*  commented out and the UID( ) and GID( ) fields should be removed
+//*  and replaced with AUTOUID and AUTOGID in the appropriate ACF2
+//*  record definitions within the ACF2 SYSIN section.
+//*
+//*  If using UID and GID, an appropriate numeric value must be
+//*  specified for the following SET fields.
+//*
+//         SET ADMINGID=             * Group ID for ZOWE Administrators
+//         SET   STCGID=             * Group ID for ZOWE Started Task
+//         SET ADMINUID=             * UID for ZOWE Administrators User
+//         SET   STCUID=             * UID for ZOWE Started Task User
+//         SET   AUXUID=             * UID for ZSS Started Task User
+//*
+//*  End of ACF2 Only section
 //*
 //*********************************************************************
 //*
@@ -258,70 +276,120 @@ $$
 //* ACF2 ONLY, customize to meet your system requirements
 //*
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
-
-/* DEFINE ADMINISTRATORS ........................................... */
-
-/* group for administrators                                          */
-/*TODO ACF2 group for administrators                                 */
-
-/* DEFINE STARTED TASK ............................................. */
-
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
-/** group for started tasks                                          */
-/*TODO ACF2 group for started tasks                                  */
-
-/* userid for ZOWE, main server                                      */
-  INSERT &ZOWEUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +
-   DIV(OMVS) INSERT &ZOWEUSER. UID(&ZOWEUSER.)
-
-/* userid for ZSS, cross memory server                               */
-  INSERT &ZSSUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +
-   DIV(OMVS) INSERT &ZSSUSER. UID(&ZSSUSER.)
-
-/* userid for ZSS auxilary cross memory server                       */
-  INSERT &AUXUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +
-   DIV(OMVS) INSERT &AUXUSER. UID(&AUXUSER.)
-
-/*operator command F ACF2,REBUILD(USR),CLASS(P)                      */
-/*operator command F ACF2,OMVS                                       */
-
-/* started task for ZOWE, main server                                */
-  SET CONTROL(GSO)
-  INSERT STC.&ZOWESTC.**** LOGONID(&ZOWEUSER.) GROUP(&STCGROUP.) +
-   STCID(&ZOWESTC.****)
-
-/* started task for ZSS, cross memory server                         */
-  SET CONTROL(GSO)
-  INSERT STC.&ZSSSTC.**** LOGONID(&ZSSUSER.) GROUP(&STCGROUP.) +
-   STCID(&ZSSSTC.****)
-
-/* started task for ZSS auxilary cross memory server                 */
-  SET CONTROL(GSO)
-  INSERT STC.&AUXSTC.**** LOGONID(&AUXUSER.) GROUP(&STCGROUP.) +
-   STCID(&AUXSTC.****)
-
-/*operator command F ACF2,REFRESH(STC)                               */
-
-/* DEFINE ZOWE SERVER PERMISIONS ................................... */
-
-/* permit Zowe main server to use ZSS, cross memory server           */
-/*TODO ACF2 permit Zowe server READ to FACILITY ZWEX.IS              */
-
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
-/** permit Zowe main server to write persistent data                 */
-/*TODO ACF2 permit Zowe server CONTROL to UNIXPRIV SUPERUSER.FILESYS */
-
-/* DEFINE ZSS SERVER PERMISIONS .................................... */
-
-/* permit ZSS to create a user's security environment                */
-/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
-/*            z/OS UNIX switch to z/OS UNIX level security, which is */
-/*            more secure, but it can impact operation of existing   */
-/*            applications. Test this thoroughly before activating   */
-/*            it on a production system.                             */
-
-/*TODO ACF2 permit zss UPDATE to FACILITY BPX.DAEMON & BPX.SERVER    */
-
+ACF
+*
+* DEFINE ADMINISTRATORS ........................................... *
+*
+* group for administrators                                          *
+*
+SET PROFILE(GROUP) DIV(OMVS)
+INSERT &ADMINGRP. GID(&ADMINGID.)
+F ACF2,REBUILD(GRP),CLASS(P)
+*
+*****   Added ROLEs to be consistent as z/OSMF for ACF2
+*
+SET X(ROL)
+INSERT &ADMINGRP. INCLUDE(&ZOWEUSER.) ROLE
+F ACF2,NEWXREF,TYPE(ROL)
+*
+*
+* DEFINE STARTED TASK ............................................. *
+*
+** uncomment to use SUPERUSER.FILESYS, see JCL comments             *
+** group for started tasks                                          *
+*
+* **** Commented since STCGROUP was set to $ADMINGRP.  ****
+*
+* SET PROFILE(GROUP) DIV(OMVS)
+* INSERT &STCGROUP. GID(&STCGID.)
+* F ACF2,REBUILD(GRP),CLASS(P)
+*
+* SET X(ROL)
+* INSERT &STCGROUP. INCLUDE(&ZOWEUSER.) ROLE
+* F ACF2,NEWXREF,TYPE(ROL)
+*
+*
+* userid for ZOWE, main server                                      *
+*
+SET LID
+INSERT &ZOWEUSER. GROUP(&STCGROUP.)
+SET PROFILE(USER) DIV(OMVS)
+INSERT &ZOWEUSER. UID(&ADMINUID.) HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+* userid for ZSS, cross memory server                               *
+*
+SET LID
+INSERT &ZSSUSER. GROUP(&STCGROUP.)
+SET PROFILE(USER) DIV(OMVS)
+INSERT &ZSSUSER. UID(&STCUID.) HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+* userid for ZSS auxilary cross memory server                       *
+*
+* **** Commented since AUXUSER was set to $ZSSUSER.  ****
+*
+* SET LID
+* INSERT &AUXUSER. GROUP(&STCGROUP.)
+* SET PROFILE(USER) DIV(OMVS)
+* INSERT &AUXUSER. UID(&AUXUID.) HOME(/tmp) OMVSPGM(/bin/sh)
+* F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+* operator command F ACF2,REBUILD(USR),CLASS(P)                     *
+* operator command F ACF2,OMVS                                      *
+*
+* started task for ZOWE, main server                                *
+*
+SET CONTROL(GSO)
+INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) GROUP(&STCGROUP.) +
+STCID(&ZOWESTC.-)
+F ACF2,REFRESH(STC)
+*
+* started task for ZSS, cross memory server                         *
+*
+SET CONTROL(GSO)
+INSERT STC.&ZSSSTC. LOGONID(&ZSSUSER.) GROUP(&STCGROUP.) +
+STCID(&ZSSSTC.-)
+F ACF2,REFRESH(STC)
+*
+* started task for ZSS auxilary cross memory server                 *
+*
+SET CONTROL(GSO)
+INSERT STC.&AUXSTC. LOGONID(&AUXUSER.) GROUP(&STCGROUP.) +
+STCID(&AUXSTC.-)
+F ACF2,REFRESH(STC)
+*
+* operator command F ACF2,REFRESH(STC)                              *
+*
+* DEFINE ZOWE SERVER PERMISIONS ................................... *
+*
+* permit Zowe main server to use ZSS, cross memory server           *
+*
+SET RESOURCE(FAC)
+RECKEY ZWES ADD(IS SERVICE(READ) ROLE(&ADMINGRP.) ALLOW)
+F ACF2,REBUILD(FAC)
+*
+** uncomment to use SUPERUSER.FILESYS, see JCL comments             *
+** permit Zowe main server to write persistent data                 *
+*
+* SET RESOURCE(UNI)
+* RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE(&ADMINGRP.) ALLOW)
+* F ACF2,REBUILD(UNI)
+*
+* DEFINE ZSS SERVER PERMISIONS .................................... *
+*
+* permit ZSS to create a user's security environment                *
+* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    *
+*            z/OS UNIX switch to z/OS UNIX level security, which is *
+*            more secure, but it can impact operation of existing   *
+*            applications. Test this thoroughly before activating   *
+*            it on a production system.                             *
+*
+SET RESOURCE(FAC)
+RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&ADMINGRP.) ALLOW)
+RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&ADMINGRP.) ALLOW)
+F ACF2,REBUILD(FAC)
+*
 /* ................................................................. */
 /* only the last RC is returned, this comment ensures it is a 0      */
 $$
@@ -344,7 +412,7 @@ $$
   TSS LIST(&ADMINGRP.) SEGMENT(OMVS)
   TSS CREATE(&ADMINGRP.) TYPE(GROUP) +
    NAME('ZOWE ADMINISTRATORS') +
-   DEPT(admin_grp_dept)
+   DEPT(admin_grp_dpt)
   TSS ADD(&ADMINGRP.) GID(108)
 
 
@@ -366,27 +434,27 @@ $$
 /* TSS LIST(&STCGROUP.) SEGMENT(OMVS)                                */
 /* TSS CREATE(&STCGROUP.) TYPE(GROUP) +                              */
 /*  NAME('STC GROUP WITH OMVS SEGEMENT') +                           */
-/*  DEPT(stc_grp_dept)                                               */
+/*  DEPT(stc_grp_dpt)                                               */
 /* TSS ADD(&STCGROUP.) GID(109)                                      */
 
 /* userid for ZOWE, main server                                      */
   TSS LIST(&ZOWEUSER.) SEGMENT(OMVS)
   TSS CREATE(&ZOWEUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE') +
-   DEPT(usr_dept)
+   DEPT(usr_dpt)
   TSS ADD(&ZOWEUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(110)
 
 /* userid for ZSS, cross memory server                               */
   TSS LIST(&ZSSUSER.) SEGMENT(OMVS)
   TSS CREATE(&ZSSUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE ZSS') +
-   DEPT(usr_dept)
+   DEPT(usr_dpt)
   TSS ADD(&ZSSUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(111)
 
 /* userid for ZSS auxilary cross memory server                       */
   TSS LIST(&AUXUSER.) SEGMENT(OMVS)
   TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE ZSS AUX') +
-   DEPT(usr_dept)
+   DEPT(usr_dpt)
   TSS ADD(&AUXUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(112)
 
@@ -417,7 +485,7 @@ $$
 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
 /** permit Zowe main server to write persistent data                 */
-/*TODO TSS permit Zowe server CONTROL to UNIXPRIV SUPERUSER.FILESYS  */
+/*  TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)  */
 
 /* DEFINE ZSS SERVER PERMISIONS .................................... */
 
@@ -432,10 +500,33 @@ $$
 /*            it on a production system.                             */
   TSS ADD(fac_owning_acid) IBMFAC(BPX.)
   TSS WHOHAS IBMFAC(BPX.DAEMON)
-  TSS PER(&ZSSUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)
+  TSS PER(&ZSSUSER.) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
   TSS WHOHAS IBMFAC(BPX.SERVER)
-  TSS PER(&ZSSUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)
+  TSS PER(&ZSSUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
 
+/* If any of these started tasks are multiusers address spaces       */
+/* a TSS FACILITY needs to be defined and assigned to the started    */
+/* and should not be using the STC FACILITY . The all acids signing  */
+/* on to the started tasks will need to be authorized to the         */
+/* FACILITY.                                                         */
+/*                                                                   */
+/* Create FACILITY example:                                          */
+/* In the TSSPARMS add the following lines to create                 */
+/* the new FACILITY.                                                 */
+/*                                                                   */
+/* FACILITY(USER11=NAME=ZOWE)                                        */
+/* FACILITY(ZOWE=MODE=FAIL)                                          */
+/* FACILITY(ZOWE=RES)                                                */
+/*                                                                   */
+/* To assign the FACILITY to the started task issue the following    */
+/* command:                                                          */
+/*                                                                   */
+/* TSS ADD(started_task_acid) MASTFAC(ZOWE)                          */
+/*                                                                   */
+/* To authorize a user to signon to the FACILITY, issues the         */
+/* following command.                                                */
+/*                                                                   */
+/* TSS ADD(user_acid) FAC(ZOWE)                                      */
 /* ................................................................. */
 /* only the last RC is returned, this comment ensures it is a 0      */
 $$
