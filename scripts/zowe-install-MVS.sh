@@ -49,6 +49,7 @@ done
 rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS
 mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISTC
 mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESASTC
+# <<<<
 
 if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG
 then
