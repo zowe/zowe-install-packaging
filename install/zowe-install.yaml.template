@@ -10,17 +10,12 @@ install:
   datasetPrefix={userid}.ZWE
 
 zosmf:
-  zosmfUserid=IZUSVR
   zosmfAdminGroup=IZUADMIN
 
 api-mediation:
   catalogPort=7552
   discoveryPort=7553
   gatewayPort=7554
-  externalCertificate=
-  externalCertificateAlias=
-  externalCertificateAuthorities=
-  verifyCertificatesOfServices=true
   enableSso=false
   zosmfKeyring=IZUKeyring.IZUDFLT
 
@@ -43,10 +38,5 @@ terminals:
   sshPort=22
   telnetPort=23
 # security=tls # The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'. Defaults to blank
-
-keystore:
-  keystoreDirectory=/global/zowe/keystore
-  keystoreOwner=IZUSVR
-  keystoreGroup=IZUADMIN
 
 # Do not delete this last line
