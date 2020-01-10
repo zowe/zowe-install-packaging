@@ -210,6 +210,14 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
+
+cat <<EOF >${INSTANCE_DIR}/bin/zowe-support.sh
+set -e
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
+. \${INSTANCE_DIR}/bin/read-instance.sh
+
+. \${ROOT_DIR}/bin/zowe-support.sh
+EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
