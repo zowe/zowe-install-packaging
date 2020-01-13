@@ -133,8 +133,6 @@ mkdir -p $ZOWE_ROOT_DIR/scripts/templates
 chmod -R a+w $ZOWE_ROOT_DIR/scripts
 
 cd $INSTALL_DIR/scripts
-cp $INSTALL_DIR/scripts/zowe-support.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh
-
 cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
 
 mkdir $ZOWE_ROOT_DIR/scripts/internal
@@ -187,14 +185,13 @@ echo "  About to run find and chmods to add o+x on directories" >> $LOG_FILE
 find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
 echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
 
-# If this step fails it is because the user running this script is not part of the IZUADMIN group
-CHGRP="chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}"
-$(. ${CHGRP})
+# If this step fails it is likely because the user running this script is not part of the IZUADMIN group
+chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}
 RETURN_CODE=$?
 if [[ $RETURN_CODE != "0" ]]; then
   echo "  The current user does not have sufficient authority to change the group of ${ZOWE_ROOT_DIR}."
-  echo "  A user who is part of group ${ZOWE_GROUP} must run `${CHGRP}`."
-  echo "  ${CHGRP} failed to run successfully" >> $LOG_FILE
+  echo "  A user who is part of group ${ZOWE_GROUP} must run 'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}'."
+  echo "  'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}' failed to run successfully" >> $LOG_FILE
 fi
 
 chmod -R 550 ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/defaults
@@ -206,4 +203,4 @@ cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 # remove the working directory
 rm -rf $TEMP_DIR
 
-echo "zowe-install.sh completed. In order to use Zowe, you must choose an instance directory and create it by running `${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>`"
+echo "zowe-install.sh completed. In order to use Zowe, you must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>'"
