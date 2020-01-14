@@ -7,8 +7,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2018, 2020
 ################################################################################
+
+ZOWE_GROUP=${ZOWE_GROUP} # Replace when zowe has it's own group: https://github.com/zowe/zowe-install-packaging/issues/518
 
 while getopts "f:h:i:dI" opt; do
   case $opt in
@@ -22,9 +24,6 @@ while getopts "f:h:i:dI" opt; do
       ;;
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
-    I)
-      INSTALL_ONLY=1
-      ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -134,8 +133,6 @@ mkdir -p $ZOWE_ROOT_DIR/scripts/templates
 chmod -R a+w $ZOWE_ROOT_DIR/scripts
 
 cd $INSTALL_DIR/scripts
-cp $INSTALL_DIR/scripts/zowe-support.template.sh ${ZOWE_ROOT_DIR}/scripts/templates/zowe-support.template.sh
-
 cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
 
 mkdir $ZOWE_ROOT_DIR/scripts/internal
@@ -180,10 +177,24 @@ cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-echo "Copying zowe-runtime-authorize.template.sh to "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh >> $LOG_FILE
-cp "$INSTALL_DIR/scripts/zowe-runtime-authorize.template.sh" "$ZOWE_ROOT_DIR/scripts/templates/zowe-runtime-authorize.template.sh"
-
 . $INSTALL_DIR/scripts/zowe-copy-xmem.sh
+
+#Give all directories -rw+x permission so they can be listed, but files -rwx
+chmod -R o-rwx ${ZOWE_ROOT_DIR}
+echo "  About to run find and chmods to add o+x on directories" >> $LOG_FILE
+find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
+echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
+
+# If this step fails it is likely because the user running this script is not part of the IZUADMIN group
+chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  echo "  The current user does not have sufficient authority to change the group of ${ZOWE_ROOT_DIR}."
+  echo "  A user who is part of group ${ZOWE_GROUP} must run 'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}'."
+  echo "  'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}' failed to run successfully" >> $LOG_FILE
+fi
+
+chmod -R 550 ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/defaults
 
 # save install log in runtime directory
 mkdir  $ZOWE_ROOT_DIR/install_log
@@ -192,11 +203,4 @@ cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 # remove the working directory
 rm -rf $TEMP_DIR
 
-if [ -z $INSTALL_ONLY ]
-then
-  # Run configure - note not in source mode
-  ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh
-else
-    echo "zowe-install.sh -I was specified, so just installation ran. In order to use Zowe, you must configure it by running ${ZOWE_ROOT_DIR}/scripts/configure/zowe-configure.sh"
-fi
-
+echo "zowe-install.sh completed. In order to use Zowe, you must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>'"

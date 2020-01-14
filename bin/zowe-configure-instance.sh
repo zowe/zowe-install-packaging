@@ -13,7 +13,6 @@
 while getopts "c:y" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
-    y) YAML_OVERRIDE=true;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -57,32 +56,6 @@ create_new_instance() {
     -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
     "${TEMPLATE}" \
     > "${INSTANCE}"
-
-  # TODO - remove overrides once we get rid of the yaml file
-  if [[ ! -z ${YAML_OVERRIDE} ]]
-  then
-    sed \
-      -e "s#ZOWE_PREFIX=ZWE#ZOWE_PREFIX=${ZOWE_PREFIX}#" \
-      -e "s#ZOWE_INSTANCE=1#ZOWE_INSTANCE=${ZOWE_INSTANCE}#" \
-      -e "s#CATALOG_PORT=7552#CATALOG_PORT=${ZOWE_APIM_CATALOG_PORT}#" \
-      -e "s#DISCOVERY_PORT=7553#DISCOVERY_PORT=${ZOWE_APIM_DISCOVERY_PORT}#" \
-      -e "s#GATEWAY_PORT=7554#GATEWAY_PORT=${ZOWE_APIM_GATEWAY_PORT}#" \
-      -e "s#APIML_ENABLE_SSO=false#APIML_ENABLE_SSO=${ZOWE_APIM_ENABLE_SSO}#" \
-      -e "s#JOBS_API_PORT=8545#JOBS_API_PORT=${ZOWE_EXPLORER_SERVER_JOBS_PORT}#" \
-      -e "s#FILES_API_PORT=8547#FILES_API_PORT=${ZOWE_EXPLORER_SERVER_DATASETS_PORT}#" \
-      -e "s#JES_EXPLORER_UI_PORT=8546#JES_EXPLORER_UI_PORT=${ZOWE_EXPLORER_JES_UI_PORT}#" \
-      -e "s#MVS_EXPLORER_UI_PORT=8548#MVS_EXPLORER_UI_PORT=${ZOWE_EXPLORER_MVS_UI_PORT}#" \
-      -e "s#USS_EXPLORER_UI_PORT=8550#USS_EXPLORER_UI_PORT=${ZOWE_EXPLORER_USS_UI_PORT}#" \
-      -e "s#ZOWE_ZLUX_SERVER_HTTPS_PORT=8544#ZOWE_ZLUX_SERVER_HTTPS_PORT=${ZOWE_ZLUX_SERVER_HTTPS_PORT}#" \
-      -e "s#ZOWE_ZSS_SERVER_PORT=8542#ZOWE_ZSS_SERVER_PORT=${ZOWE_ZSS_SERVER_PORT}#" \
-      -e "s#ZOWE_ZSS_XMEM_SERVER_NAME=ZWESIS_STD#ZOWE_ZSS_XMEM_SERVER_NAME=${ZOWE_ZSS_XMEM_SERVER_NAME}#" \
-      -e "s#ZOWE_ZLUX_SSH_PORT=22#ZOWE_ZLUX_SSH_PORT=${ZOWE_ZLUX_SSH_PORT}#" \
-      -e "s#ZOWE_ZLUX_TELNET_PORT=23#ZOWE_ZLUX_TELNET_PORT=${ZOWE_ZLUX_TELNET_PORT}#" \
-      -e "s%ZOWE_ZLUX_SECURITY_TYPE=%ZOWE_ZLUX_SECURITY_TYPE=${ZOWE_ZLUX_SECURITY_TYPE}%" \
-      "${INSTANCE}" \
-      > "${INSTANCE_DIR}/instance.yaml.env"
-      mv "${INSTANCE_DIR}/instance.yaml.env" "${INSTANCE}"
-  fi
 
   chmod -R 750 "${INSTANCE}"
   echo "Created ${INSTANCE} with injected content">> $LOG_FILE
@@ -210,11 +183,25 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
+
+cat <<EOF >${INSTANCE_DIR}/bin/zowe-support.sh
+set -e
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
+. \${INSTANCE_DIR}/bin/read-instance.sh
+
+. \${ROOT_DIR}/bin/zowe-support.sh
+EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 # Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
 chmod 777 ${INSTANCE_DIR}
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
+
+echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
+echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
+echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER,INSTANCE='${INSTANCE_DIR}')"
+echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
+echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
 
 echo "zowe-configure-instance.sh completed">> $LOG_FILE
