@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2020
 ################################################################################
 
 $(. ${ROOT_DIR}/scripts/utils/validate-directory-is-accessible.sh ${KEYSTORE_DIRECTORY})
