@@ -171,7 +171,7 @@ set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
 
-\${ROOT_DIR}/scripts/internal/opercmd \"S \${ZOWE_SERVER_PROCLIB_MEMBER},INSTANCE='"\${INSTANCE_DIR}"',JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV\"
+\${ROOT_DIR}/scripts/internal/opercmd \"S ZWESVSTC,INSTANCE='"\${INSTANCE_DIR}"',JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV\"
 echo Start command issued, check SDSF job log ...
 EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-start.sh">> $LOG_FILE
@@ -200,8 +200,8 @@ chmod -R 755 ${INSTANCE_DIR}/bin
 
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
-echo "   (or in SDSF directly issue the command /S $ZOWE_SERVER_PROCLIB_MEMBER,INSTANCE='${INSTANCE_DIR}')"
+echo "   (or in SDSF directly issue the command /S ZWESVSTC,INSTANCE='${INSTANCE_DIR}')"
 echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
-echo "  (or in SDSF directly the command /C $ZOWE_SERVER_PROCLIB_MEMBER)"
+echo "  (or in SDSF directly the command /C ZWESVSTC)"
 
 echo "zowe-configure-instance.sh completed">> $LOG_FILE
