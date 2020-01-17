@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2018, 2020
 ################################################################################
 
 checkForErrorsFound() {
@@ -72,17 +72,16 @@ checkForErrorsFound
 # Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
-
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
+  LAUNCH_COMPONENTS=api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
 fi
 
 #Explorers may be present, but have a prereq on gateway, not desktop
 #ZSS exists within app-server, may desire a distinct component later on
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},app-server
+  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use it's config
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
 #ZSS could be included separate to app-server, and vice-versa
@@ -157,5 +156,5 @@ done
 
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  . ${ROOT_DIR}/components/${i}/bin/start.sh
+  . ${ROOT_DIR}/components/${i}/bin/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
 done

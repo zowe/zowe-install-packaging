@@ -30,7 +30,7 @@
 # If you use CA Top Secret, the following commands will be issued:
 # TSS ADDTO(STC) PROCNAME(${ZWESVSTC}) ACID(IZUSVR)
 
-ZWESVSTC={{stc_name}}
+ZWESVSTC=ZWESVSTC
 
 echo Script zowe-config-stc.sh started
 

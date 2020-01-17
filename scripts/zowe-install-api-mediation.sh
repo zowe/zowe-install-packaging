@@ -41,6 +41,7 @@ pax -rf $API_MEDIATION_PAX -ppx
 # Set a+rx for API Mediation JARs
 chmod a+rx "${API_MEDIATION_DIR}"/*.jar 
 chmod -R 751 "${API_MEDIATION_DIR}/bin"
+chmod -R 751 "${API_MEDIATION_DIR}/assets"
 
 # Make the apiml-auth plugin readable by everyone
 chmod a+rx "${API_MEDIATION_DIR}/apiml-auth"
