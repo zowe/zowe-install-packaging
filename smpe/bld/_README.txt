@@ -1,5 +1,6 @@
 Table of contents
 -----------------
+* Add dataset member to build
 * Flow for SMP/E packaging build
 * Additional tools
 * FMID (base) build
@@ -8,6 +9,13 @@ Table of contents
 * APAR (service) build
 * SMP/E terminology
 
+Add dataset member to build
+---------------------------
+1. Add member to files/..., e.g. files/jcl/ZWENOSEC.jcl
+2. Add member definition to SMPE/bld/SMPMCS.txt, e.g.
+++SAMP(ZWENOSEC)     SYSLIB(SZWESAMP) DISTLIB(AZWESAMP) RELFILE(2) .
+3. update scripts/zowe-install-MVS.sh, e.g.
+members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl'
 
 Flow for SMP/E packaging build
 ------------------------------
