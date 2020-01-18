@@ -266,12 +266,11 @@
 /*   of qualifiers in the DATASET class. Substitute ** with * if EGN */
 /*   is not active on your system.                                   */
 
-#  HLQ stub
+/* HLQ stub                                                          */
   LISTGRP  &HLQ. ALL
-  ADDGROUP &HLQ. OWNER(IBMUSER) SUPGROUP(SYS1) -
-   DATA('Zowe - HLQ STUB')
+  ADDGROUP &HLQ. DATA('Zowe - HLQ STUB')
 
-#  general data set protection
+/* general data set protection                                       */
   LISTDSD PREFIX(&HLQ.) ALL
   ADDSD  '&HLQ..*.**' UACC(READ) DATA('Zowe')
   PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
