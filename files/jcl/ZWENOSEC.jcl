@@ -12,7 +12,7 @@
 //*********************************************************************
 //*
 //* Zowe Open Source Project
-//* This JCL can be used to define security permits for Zowe
+//* This JCL can be used to remove security permits for Zowe
 //*
 //*
 //* CAUTION: This is neither a JCL procedure nor a complete job.
