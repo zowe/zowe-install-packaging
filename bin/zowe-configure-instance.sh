@@ -161,6 +161,8 @@ echo "Created ${INSTANCE_DIR}/bin/read-keystore.sh">> $LOG_FILE
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
+# Validate keystore directory accessible before we try and use it
+. \${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
 . \${INSTANCE_DIR}/bin/read-keystore.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
