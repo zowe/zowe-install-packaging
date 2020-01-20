@@ -108,91 +108,91 @@ echo "************************ Install step 'SAF-type' end *********************
 if $safOk ; then
 
 
-  # 7. Handle STC user
-  echo
-  echo "************************ Install step 'STC user' start *************************"
-  stcUserCmd1="sh $SCRIPT_DIR/zowe-xmem-check-user.sh ${saf} ${XMEM_STC_USER}"
-  stcUserCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${OPERCMD} ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
-  $stcUserCmd1
-  rc=$?
-  if [[ $rc -eq 1 ]]; then
-    if [[ ${XMEM_STC_USER_UID} == "" ]] || [[ ${XMEM_STC_GROUP} == "" ]]; then
-      echo "Error:  APF server STC user UID and STC user group must be specified to define STC user"
-    else
-      $stcUserCmd2
-      if [[ $? -eq 0 ]]; then
-        stcUserOk=true
-      fi
-    fi
-  elif [[ $rc -eq 0 ]]; then
-    stcUserOk=true
-  fi
-  echo "************************ Install step 'STC user' end ***************************"
+#   # 7. Handle STC user
+#   echo
+#   echo "************************ Install step 'STC user' start *************************"
+#   stcUserCmd1="sh $SCRIPT_DIR/zowe-xmem-check-user.sh ${saf} ${XMEM_STC_USER}"
+#   stcUserCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-user.sh ${OPERCMD} ${saf} ${XMEM_STC_USER} ${XMEM_STC_USER_UID} ${XMEM_STC_GROUP}"
+#   $stcUserCmd1
+#   rc=$?
+#   if [[ $rc -eq 1 ]]; then
+#     if [[ ${XMEM_STC_USER_UID} == "" ]] || [[ ${XMEM_STC_GROUP} == "" ]]; then
+#       echo "Error:  APF server STC user UID and STC user group must be specified to define STC user"
+#     else
+#       $stcUserCmd2
+#       if [[ $? -eq 0 ]]; then
+#         stcUserOk=true
+#       fi
+#     fi
+#   elif [[ $rc -eq 0 ]]; then
+#     stcUserOk=true
+#   fi
+#   echo "************************ Install step 'STC user' end ***************************"
 
 
-  # 8. Handle STC profile
-  echo
-  echo "************************ Install step 'STC profile' start **********************"
-  stcProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-stc-profile.sh ${saf} ${XMEM_STC_PREFIX}"
-  stcProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${OPERCMD} ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
-  $stcProfileCmd1
-  rc=$?
-  if [[ $rc -eq 1 ]]; then
-    if [[ ${XMEM_STC_GROUP} == "" ]]; then
-      echo "Error:  STC user group must be specified to define STC profile"
-    else
-      $stcProfileCmd2
-      if [[ $? -eq 0 ]]; then
-        stcProfileOk=true
-      fi
-    fi
-  elif [[ $rc -eq 0 ]]; then
-    stcProfileOk=true
-  fi
-  echo "************************ Install step 'STC profile' end ************************"
+#   # 8. Handle STC profile
+#   echo
+#   echo "************************ Install step 'STC profile' start **********************"
+#   stcProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-stc-profile.sh ${saf} ${XMEM_STC_PREFIX}"
+#   stcProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-stc-profile.sh ${OPERCMD} ${saf} ${XMEM_STC_PREFIX} ${XMEM_STC_USER} ${XMEM_STC_GROUP}"
+#   $stcProfileCmd1
+#   rc=$?
+#   if [[ $rc -eq 1 ]]; then
+#     if [[ ${XMEM_STC_GROUP} == "" ]]; then
+#       echo "Error:  STC user group must be specified to define STC profile"
+#     else
+#       $stcProfileCmd2
+#       if [[ $? -eq 0 ]]; then
+#         stcProfileOk=true
+#       fi
+#     fi
+#   elif [[ $rc -eq 0 ]]; then
+#     stcProfileOk=true
+#   fi
+#   echo "************************ Install step 'STC profile' end ************************"
 
 
-  # 9. Handle security profile
-  echo
-  echo "************************ Install step 'Security profile' start *****************"
-  xmemProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-profile.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
-  xmemProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE} ${ZOWE_TSS_FAC_OWNER}"
-  $xmemProfileCmd1
-  rc=$?
-  if [[ $rc -eq 1 ]]; then
-    $xmemProfileCmd2
-    if [[ $? -eq 0 ]]; then
-      xmemProfileOk=true
-    fi
-  elif [[ $rc -eq 0 ]]; then
-    xmemProfileOk=true
-  fi
-  echo "************************ Install step 'Security profile' end *******************"
+#   # 9. Handle security profile
+#   echo
+#   echo "************************ Install step 'Security profile' start *****************"
+#   xmemProfileCmd1="sh $SCRIPT_DIR/zowe-xmem-check-profile.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
+#   xmemProfileCmd2="sh $SCRIPT_DIR/zowe-xmem-define-xmem-profile.sh ${saf} ${XMEM_PROFILE} ${ZOWE_TSS_FAC_OWNER}"
+#   $xmemProfileCmd1
+#   rc=$?
+#   if [[ $rc -eq 1 ]]; then
+#     $xmemProfileCmd2
+#     if [[ $? -eq 0 ]]; then
+#       xmemProfileOk=true
+#     fi
+#   elif [[ $rc -eq 0 ]]; then
+#     xmemProfileOk=true
+#   fi
+#   echo "************************ Install step 'Security profile' end *******************"
 
 
-  # 10. Check access
-  echo
-  echo "************************ Install step 'Security profile access' start **********"
-  xmemAccessCmd1="sh $SCRIPT_DIR/zowe-xmem-check-access.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
-  xmemAccessCmd2="sh $SCRIPT_DIR/zowe-xmem-permit.sh ${saf} ${XMEM_PROFILE} ${ZOWE_USER}"
-  if [[ "$xmemProfileOk" = "true" ]]; then
-    $xmemAccessCmd1
-    rc=$?
-    if [[ $rc -eq 1 ]]; then
-      $xmemAccessCmd2
-      if [[ $? -eq 0 ]]; then
-        xmemProfileAccessOk=true
-      fi
-    elif [[ $rc -eq 0 ]]; then
-      xmemProfileAccessOk=true
-    fi
-  fi
-  echo "************************ Install step 'Security profile access' end ************"
+#   # 10. Check access
+#   echo
+#   echo "************************ Install step 'Security profile access' start **********"
+#   xmemAccessCmd1="sh $SCRIPT_DIR/zowe-xmem-check-access.sh ${saf} FACILITY ${XMEM_PROFILE} ${ZOWE_USER}"
+#   xmemAccessCmd2="sh $SCRIPT_DIR/zowe-xmem-permit.sh ${saf} ${XMEM_PROFILE} ${ZOWE_USER}"
+#   if [[ "$xmemProfileOk" = "true" ]]; then
+#     $xmemAccessCmd1
+#     rc=$?
+#     if [[ $rc -eq 1 ]]; then
+#       $xmemAccessCmd2
+#       if [[ $? -eq 0 ]]; then
+#         xmemProfileAccessOk=true
+#       fi
+#     elif [[ $rc -eq 0 ]]; then
+#       xmemProfileAccessOk=true
+#     fi
+#   fi
+#   echo "************************ Install step 'Security profile access' end ************"
 
-else
-  echo
-  echo "Error: skip the security installation steps due to previous errors"
-fi
+# else
+#   echo
+#   echo "Error: skip the security installation steps due to previous errors"
+# fi
 
 echo
 echo "********************************************************************************"
@@ -227,109 +227,109 @@ else
   echo "SAF type - Error"
 fi
 
-echo
-if $stcUserOk ; then
-  echo "STC user - Ok"
-elif ! $safOk ; then
-  echo "STC user - N/A"
-else
-  echo "STC user - Error"
-  echo "Please correct errors and re-run the following scripts:"
-  echo $stcUserCmd1
-  echo $stcUserCmd2
-fi
+# echo
+# if $stcUserOk ; then
+#   echo "STC user - Ok"
+# elif ! $safOk ; then
+#   echo "STC user - N/A"
+# else
+#   echo "STC user - Error"
+#   echo "Please correct errors and re-run the following scripts:"
+#   echo $stcUserCmd1
+#   echo $stcUserCmd2
+# fi
 
-echo
-if $stcProfileOk ; then
-  echo "STC profile - Ok"
-elif ! $safOk ; then
-  echo "STC profile - N/A"
-else
-  echo "STC profile - Error"
-  echo "Please correct errors and re-run the following scripts:"
-  echo $stcProfileCmd1
-  echo $stcProfileCmd2
-fi
+# echo
+# if $stcProfileOk ; then
+#   echo "STC profile - Ok"
+# elif ! $safOk ; then
+#   echo "STC profile - N/A"
+# else
+#   echo "STC profile - Error"
+#   echo "Please correct errors and re-run the following scripts:"
+#   echo $stcProfileCmd1
+#   echo $stcProfileCmd2
+# fi
 
-echo
-if $xmemProfileOk ; then
-  echo "Security profile - Ok"
-elif ! $safOk ; then
-  echo "Security profile - N/A"
-else
-  echo "Security profile - Error"
-  echo "Please correct errors and re-run the following scripts:"
-  echo $xmemProfileCmd1
-  echo $xmemProfileCmd2
-fi
+# echo
+# if $xmemProfileOk ; then
+#   echo "Security profile - Ok"
+# elif ! $safOk ; then
+#   echo "Security profile - N/A"
+# else
+#   echo "Security profile - Error"
+#   echo "Please correct errors and re-run the following scripts:"
+#   echo $xmemProfileCmd1
+#   echo $xmemProfileCmd2
+# fi
 
-echo
-if $xmemProfileAccessOk ; then
-  echo "Security profile access - Ok"
-elif ! $safOk ; then
-  echo "Security profile access - N/A"
-else
-  echo "Security profile access - Error"
-  echo "Please correct errors and re-run the following scripts:"
-  echo $xmemAccessCmd1
-  echo $xmemAccessCmd2
-fi
+# echo
+# if $xmemProfileAccessOk ; then
+#   echo "Security profile access - Ok"
+# elif ! $safOk ; then
+#   echo "Security profile access - N/A"
+# else
+#   echo "Security profile access - Error"
+#   echo "Please correct errors and re-run the following scripts:"
+#   echo $xmemAccessCmd1
+#   echo $xmemAccessCmd2
+# fi
 
 
-# Ensure IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
-# For zssServer to be able to operate correctly 
-# and READ access to BPX.JOBNAME to allow Zowe START to set job names
-profile_refresh=0
-for profile in SERVER DAEMON JOBNAME
-do
-    tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
-    if [[ $? -ne 0 ]]
-    then
-        # profile BPX\.$profile is not defined
-        # Define the BPX facility
-        tsocmd "RDEFINE FACILITY BPX.$profile UACC(NONE)" 2>/dev/null  1>/dev/null
-        if [[ $? -ne 0 ]]
-        then
-          echo RDEFINE failed for BPX.$profile, please issue this command
-          echo as a user with the required RACF privilege
-          echo "    " "RDEFINE FACILITY BPX.$profile UACC(NONE)"
-        fi 
-        profile_refresh=1
-    fi
+# # Ensure IZUSVR has UPDATE access to BPX.SERVER and BPX.DAEMON
+# # For zssServer to be able to operate correctly 
+# # and READ access to BPX.JOBNAME to allow Zowe START to set job names
+# profile_refresh=0
+# for profile in SERVER DAEMON JOBNAME
+# do
+#     tsocmd rl facility "*" 2>/dev/null | grep BPX\.$profile >/dev/null
+#     if [[ $? -ne 0 ]]
+#     then
+#         # profile BPX\.$profile is not defined
+#         # Define the BPX facility
+#         tsocmd "RDEFINE FACILITY BPX.$profile UACC(NONE)" 2>/dev/null  1>/dev/null
+#         if [[ $? -ne 0 ]]
+#         then
+#           echo RDEFINE failed for BPX.$profile, please issue this command
+#           echo as a user with the required RACF privilege
+#           echo "    " "RDEFINE FACILITY BPX.$profile UACC(NONE)"
+#         fi 
+#         profile_refresh=1
+#     fi
 
-    if [[ $profile = JOBNAME ]]
-    then
-      access=READ
-    else
-      access=UPDATE
-    fi
+#     if [[ $profile = JOBNAME ]]
+#     then
+#       access=READ
+#     else
+#       access=UPDATE
+#     fi
 
-    tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *$access" >/dev/null
-    if [[ $? -ne 0 ]]
-    then
-        # User IZUSVR does not have $access access to profile BPX\.$profile
-        # Permit IZUSVR to update the BPX facilties 
-        tsocmd "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)" 2>/dev/null  1>/dev/null
-        if [[ $? -ne 0 ]]
-        then
-          echo PERMIT failed for BPX.$profile, please issue this command
-          echo as a user with the required RACF privilege
-          echo "    " "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)"
-        fi 
-        profile_refresh=1
-    fi
-done
-if [[ profile_refresh -eq 1 ]]
-then
-     # Activate these changes 
-    tsocmd "SETROPTS RACLIST(FACILITY) REFRESH " 2>/dev/null
-    if [[ $? -ne 0 ]]
-    then
-          echo SETROPTS failed for class FACILITY, please issue this command
-          echo as a user with the required RACF privilege
-          echo "    " "SETROPTS RACLIST(FACILITY) REFRESH "
-    fi 
-fi
+#     tsocmd rl facility bpx.$profile authuser 2>/dev/null |grep "IZUSVR *$access" >/dev/null
+#     if [[ $? -ne 0 ]]
+#     then
+#         # User IZUSVR does not have $access access to profile BPX\.$profile
+#         # Permit IZUSVR to update the BPX facilties 
+#         tsocmd "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)" 2>/dev/null  1>/dev/null
+#         if [[ $? -ne 0 ]]
+#         then
+#           echo PERMIT failed for BPX.$profile, please issue this command
+#           echo as a user with the required RACF privilege
+#           echo "    " "PERMIT BPX.$profile CLASS(FACILITY) ID(IZUSVR) ACCESS($access)"
+#         fi 
+#         profile_refresh=1
+#     fi
+# done
+# if [[ profile_refresh -eq 1 ]]
+# then
+#      # Activate these changes 
+#     tsocmd "SETROPTS RACLIST(FACILITY) REFRESH " 2>/dev/null
+#     if [[ $? -ne 0 ]]
+#     then
+#           echo SETROPTS failed for class FACILITY, please issue this command
+#           echo as a user with the required RACF privilege
+#           echo "    " "SETROPTS RACLIST(FACILITY) REFRESH "
+#     fi 
+# fi
 
 echo
 echo "********************************************************************************"
