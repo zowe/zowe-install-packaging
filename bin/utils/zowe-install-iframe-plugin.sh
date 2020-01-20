@@ -88,5 +88,4 @@ cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
 EOF
 
 chmod -R a+rx $PLUGIN_DIR
-
 ${INSTANCE_DIR}/bin/install-app.sh $PLUGIN_DIR
