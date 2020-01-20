@@ -105,7 +105,7 @@ if ! $safOk ; then
 fi
 echo "************************ Install step 'SAF-type' end ***************************"
 
-if $safOk ; then
+# if $safOk ; then
 
 
 #   # 7. Handle STC user
