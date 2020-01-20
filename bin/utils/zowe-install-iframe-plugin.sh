@@ -88,4 +88,4 @@ cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
 EOF
 
 chmod -R a+rx $PLUGIN_DIR
-${ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh $PLUGIN_DIR
+${INSTANCE_DIR}/bin/install-app.sh $PLUGIN_DIR
