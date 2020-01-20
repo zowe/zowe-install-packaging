@@ -17,5 +17,7 @@ then
   ERRORS_FOUND=0
 fi
 
-echo "Error $ERRORS_FOUND: $1" | tee >(cat >&2)
+# echo error to standard out and err
+echo "Error $ERRORS_FOUND: $1"
+echo "Error $ERRORS_FOUND: $1" 1>&2
 let "ERRORS_FOUND=$ERRORS_FOUND+1"
