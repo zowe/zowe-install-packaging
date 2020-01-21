@@ -16,7 +16,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
   def ZOWE_RELEASE_PATH = '/org/zowe'
   def ZOWE_RELEASE_FILEPATTERN = "zowe-*.pax"
-  def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.tar"
+  def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.zip"
   def ZOWE_RELEASE_CLI_FILEPATTERN = "zowe-cli-package-*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
 
@@ -225,19 +225,19 @@ node('ibm-jenkins-slave-nvm') {
       // get SMP/e build
       try {
         def smpeTarSource = pipeline.artifactory.getArtifact([
-          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.tar",
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : releaseArtifacts['zowe']['buildName'],
           'build-number' : releaseArtifacts['zowe']['buildNumber']
         ])
         if (smpeTarSource['path']) {
           echo ">>> Found SMP/e build ${smpeTarSource['path']}."
           def FMID = smpeTarSource['path'].split('/').last().split('-').first()
-          releaseArtifacts['smpe-tar'] = [:]
-          releaseArtifacts['smpe-tar']['source'] = smpeTarSource
-          releaseArtifacts['smpe-tar']['target'] = "zowe-smpe-${params.ZOWE_RELEASE_VERSION}.tar".toString()
+          releaseArtifacts['smpe-zip'] = [:]
+          releaseArtifacts['smpe-zip']['source'] = smpeTarSource
+          releaseArtifacts['smpe-zip']['target'] = "zowe-smpe-${params.ZOWE_RELEASE_VERSION}.zip".toString()
         }
       } catch (e1) {
-        echo ">>> no SMP/e tar found in the build."
+        echo ">>> no SMP/e zip found in the build."
       }
 
       // find the Zowe CLI build number will be promoted
@@ -441,11 +441,11 @@ echo ===============================================
       }
 
       def smpeMessage = ''
-      if (releaseArtifacts['smpe-tar'] && releaseArtifacts['smpe-tar']['target']) {
+      if (releaseArtifacts['smpe-zip'] && releaseArtifacts['smpe-zip']['target']) {
 smpeMessage = """
 
 SMP/e build:
-${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-tar']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-zip']['target']}
 
 """
       }
