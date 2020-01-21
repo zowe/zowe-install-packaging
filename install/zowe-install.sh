@@ -216,8 +216,7 @@ then
   echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}/SZWESAMP/ZWESECUR'"
   echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
 else
-  echo "zowe-install.sh completed. Before you run Zowe:"
-  echo " - In order to check your instance is up to date, please run '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
+  echo " - Check your instance is up to date, by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
   echo " - Check that Zowe Proclibs are up-to-date in your JES2 concatenation"
 fi
 echo "Please review the documentation for more information about these steps"
