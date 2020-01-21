@@ -1,14 +1,13 @@
 #!/bin/sh
 
+echo "Warning this script is not complete - see https://github.com/zowe/zowe-install-packaging/issues/652"
+
 # Variable Definition
 VAR=`dirname $0`			# Obtain the scripts directory name
-cd $VAR/..				    # Change to its parent which should be ZOWE_ROOT_DIR
-ZOWE_ROOT_DIR={{root_dir}}		# Set our environment variable
-ZOWE_PREFIX={{zowe_prefix}}
-ZOWE_INSTANCE={{zowe_instance}}
-ZOWE_INSTALL_LOG_DIR=${ZOWE_ROOT_DIR}/install_log/
-ZOWE_CONFIGURE_LOG_DIR=${ZOWE_ROOT_DIR}/configure_log/
-ZOWE_INSTALL_ZLUX_SERVER_LOG=${ZOWE_ROOT_DIR}/zlux-app-server/log/
+cd $VAR/..				    # Change to its parent which should be ROOT_DIR
+ZOWE_INSTALL_LOG_DIR=${ROOT_DIR}/install_log/
+ZOWE_CONFIGURE_LOG_DIR=${ROOT_DIR}/configure_log/
+ZOWE_INSTALL_ZLUX_SERVER_LOG=${ROOT_DIR}/zlux-app-server/log/
 
 DATE=`date +%Y-%m-%d-%H-%M-%S`
 SUPPORT_ARCHIVE_LOCATION=$ZOWE_INSTALL_LOG_DIR
@@ -18,23 +17,16 @@ SUPPORT_ARCHIVE_LOG="${SUPPORT_ARCHIVE_LOCATION}zowe_support_${DATE}.log"
 PS_OUTPUT_FILE=${SUPPORT_ARCHIVE_LOCATION}"ps_output"
 VERSION_FILE=${SUPPORT_ARCHIVE_LOCATION}"version_output"
 
-# These variables should be populated during installation process
-NODE_HOME={{node_home}}
-ZOWE_JAVA_HOME={{java_home}}
-ZOWE_STC={{stc_name}}
+ZOWE_STC=ZWESVSTC # Should this be ${ZOWE_PREFIX}${ZOWE_INSTANCE}SV?
 
 # In case NODE_HOME, JAVA_HOME, ZOWE_STC and ZOWE_PREFIX are empty
 # this script sould exit with a warning message
-if [[ -z "${NODE_HOME}" ]];then
+if [[ -z "${ZOWE_NODE_HOME}" ]];then
     echo "The NODE_HOME environment variable wasn't properly populated during install. Exiting."
     exit
 fi
 if [[ -z "${ZOWE_JAVA_HOME}" ]];then
     echo "The JAVA_HOME environment variable wasn't properly populated during install. Exiting."
-    exit
-fi
-if [[ -z "${ZOWE_STC}" ]];then
-    echo "The ZOWE_STC environment variable wasn't properly populated during install. Exiting."
     exit
 fi
 if [[ -z "${ZOWE_PREFIX}" ]];then
@@ -98,7 +90,7 @@ function add_to_pax {
 
 # Collecting software versions
 write_to_log "Collecting version of z/OS, Java, NodeJS"
-ZOS_VERSION=`${ZOWE_ROOT_DIR}/scripts/internal/opercmd "D IPLINFO" | grep -i release | xargs`
+ZOS_VERSION=`${ROOT_DIR}/scripts/internal/opercmd "D IPLINFO" | grep -i release | xargs`
 write_to_log "  - z/OS "$ZOS_VERSION
 JAVA_VERSION=`$ZOWE_JAVA_HOME/bin/java -version 2>&1 | head -n 1`
 write_to_log "  - Java "$JAVA_VERSION
@@ -112,7 +104,7 @@ rm $VERSION_FILE
 
 # Collect the manifest file
 write_to_log "Collecting manifest.json"
-add_to_pax $ZOWE_ROOT_DIR/manifest.json
+add_to_pax $ROOT_DIR/manifest.json
 
 # Collect process information
 write_to_log "Collecting current process information based on the following prefix: ${ZOWE_PREFIX}$ZOWE_INSTANCE"
@@ -159,7 +151,7 @@ set +A SCRIPTS '/components/api-mediation/bin/start.sh'\
 for SCRIPT in ${SCRIPTS[*]}
 do
     write_to_log "Collecting launch script ${SCRIPT}"
-    add_to_pax ${ZOWE_ROOT_DIR}/${SCRIPT}
+    add_to_pax ${ROOT_DIR}/${SCRIPT}
 done
 
 # Getting zlux-server log

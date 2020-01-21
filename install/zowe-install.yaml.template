@@ -4,49 +4,7 @@
 # zowe-install: The directory that zowe will be installed into
 install:
   rootDir=~/zowe/{ZOWE_VERSION}
-  instanceDir=~/zowe-instance-dir
-  prefix=ZWE
-  instance=1
   datasetPrefix={userid}.ZWE
-
-zosmf:
-  zosmfUserid=IZUSVR
-  zosmfAdminGroup=IZUADMIN
-
-api-mediation:
-  catalogPort=7552
-  discoveryPort=7553
-  gatewayPort=7554
-  externalCertificate=
-  externalCertificateAlias=
-  externalCertificateAuthorities=
-  verifyCertificatesOfServices=true
-  enableSso=false
-  zosmfKeyring=IZUKeyring.IZUDFLT
-
-zos-services:
-  jobsAPIPort=8545
-  mvsAPIPort=8547
-
-zowe-desktop-apps:
-  jobsExplorerPort=8546
-  mvsExplorerPort=8548
-  ussExplorerPort=8550
-
-zlux-server:
-  httpsPort=8544
-  zssPort=8542
-  # make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
-  zssCrossMemoryServerName=ZWESIS_STD
-
-terminals:
-  sshPort=22
-  telnetPort=23
-# security=tls # The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'. Defaults to blank
-
-keystore:
-  keystoreDirectory=/global/zowe/keystore
-  keystoreOwner=IZUSVR
-  keystoreGroup=IZUADMIN
+  zoweAdminGroup=IZUADMIN
 
 # Do not delete this last line
