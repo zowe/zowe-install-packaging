@@ -236,13 +236,11 @@ fi
 # if ptf-bucket.txt exists then publish PTF, otherwise publish FMID
 cd "${SMPE_BUILD_SHIP_DIR}"
 if [ -f ${CURR_PWD}/smpe/bld/service/ptf-bucket.txt ]; then       # PTF
-#  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_PTF_ZIP}
   cp  ${SMPE_PTF_ZIP} ${CURR_PWD}/zowe-smpe.zip
   # do not alter existing PD in docs, wipe content of the new one
   rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
   touch "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
 else                                                             # FMID
-#  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_FMID_ZIP}
   cp ${SMPE_FMID_ZIP} ${CURR_PWD}/zowe-smpe.zip
   # doc build pipeline must pick up PD for inclusion
 fi
