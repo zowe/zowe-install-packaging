@@ -34,20 +34,20 @@
 //* 5) Update the SET ZOWEUSER= statement to match the desired                  
 //*    user ID for the ZOWE started task.                                       
 //*                                                                             
-//* 6) Update the SET ZSSUSER= statement to match the desired                   
-//*    user ID for the ZSS started task.                                        
+//* 6) Update the SET XMEMUSER= statement to match the desired                   
+//*    user ID for the XMEM started task.                                        
 //*                                                                             
 //* 7) Update the SET AUXUSER= statement to match the desired                   
-//*    user ID for the ZSS Auxilary started task.                               
+//*    user ID for the XMEM Auxilary started task.                               
 //*                                                                             
 //* 8) Update the SET ZOWESTC= statement to match the desired                   
 //*    Zowe started task name.                                                  
 //*                                                                             
-//* 9) Update the SET ZSSSTC= statement to match the desired                    
-//*    ZSS started task name.                                                   
+//* 9) Update the SET XMEMSTC= statement to match the desired                    
+//*    XMEM started task name.                                                   
 //*                                                                             
 //* 10) Update the SET AUXSTC= statement to match the desired                   
-//*    ZSS Auxilary started task name.                                          
+//*    XMEM Auxilary started task name.                                          
 //*                                                                             
 //* 11) Customize the commands in the DD statement that matches your            
 //*    security product so that they meet your system requirements.             
@@ -76,10 +76,10 @@
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators            
 //         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks             
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task             
-//         SET ZSSUSER=ZWESIUSR      * userid for xmem started task             
-//         SET  AUXUSER=&ZSSUSER.    * userid for xmem AUX started task         
+//         SET XMEMUSER=ZWESIUSR     * userid for xmem started task             
+//         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task         
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name                   
-//         SET  ZSSSTC=ZWESISTC      * xmem started task name                   
+//         SET  XMEMSTC=ZWESISTC     * xmem started task name                   
 //         SET   AUXSTC=ZWESASTC     * xmem AUX started task name               
 //*                     12345678                                                
 //*                                                                             
@@ -105,7 +105,7 @@
 /* display current settings                                          */         
 /*SETROPTS LIST                                                      */         
                                                                                 
-/* activate FACILITY class for z/OS UNIX & Zowe ZSS profiles         */         
+/* activate FACILITY class for z/OS UNIX & Zowe XMEM profiles        */         
   SETROPTS GENERIC(FACILITY)                                                    
   SETROPTS CLASSACT(FACILITY) RACLIST(FACILITY)                                 
                                                                                 
@@ -158,23 +158,23 @@
    NAME('ZOWE SERVER') -                                                        
    DATA('ZOWE MAIN SERVER')                                                     
                                                                                 
-/* userid for ZSS, cross memory server                               */         
-  LISTUSER &ZSSUSER. OMVS                                                       
-  ADDUSER  &ZSSUSER. -                                                          
+/* userid for XMEM, cross memory server                              */         
+  LISTUSER &XMEMUSER. OMVS                                                       
+  ADDUSER  &XMEMUSER. -                                                          
    NOPASSWORD -                                                                 
    DFLTGRP(&STCGROUP.) -                                                        
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -                                  
-   NAME('ZOWE ZSS SERVER') -                                                    
-   DATA('ZOWE ZSS CROSS MEMORY SERVER')                                         
+   NAME('ZOWE XMEM SERVER') -                                                    
+   DATA('ZOWE XMEM CROSS MEMORY SERVER')                                         
                                                                                 
-/* userid for ZSS auxilary cross memory server                       */         
+/* userid for XMEM auxilary cross memory server                      */         
   LISTUSER &AUXUSER. OMVS                                                       
   ADDUSER  &AUXUSER. -                                                          
    NOPASSWORD -                                                                 
    DFLTGRP(&STCGROUP.) -                                                        
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -                                  
-   NAME('ZOWE ZSS AUX SERVER') -                                                
-   DATA('ZOWE ZSS AUX CROSS MEMORY SERVER')                                     
+   NAME('ZOWE XMEM AUX SERVER') -                                                
+   DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')                                     
                                                                                 
 /* started task for ZOWE, main server                                */         
   RLIST   STARTED &ZOWESTC..* ALL STDATA                                        
@@ -182,32 +182,32 @@
    STDATA(USER(&ZOWEUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -                     
    DATA('ZOWE MAIN SERVER')                                                     
                                                                                 
-/* started task for ZSS, cross memory server                         */         
-  RLIST   STARTED &ZSSSTC..* ALL STDATA                                         
-  RDEFINE STARTED &ZSSSTC..* -                                                  
-   STDATA(USER(&ZSSUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -                      
-   DATA('ZOWE ZSS CROSS MEMORY SERVER')                                         
+/* started task for XMEM, cross memory server                        */         
+  RLIST   STARTED &XMEMSTC..* ALL STDATA                                         
+  RDEFINE STARTED &XMEMSTC..* -                                                  
+   STDATA(USER(&XMEMUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -                      
+   DATA('ZOWE XMEM CROSS MEMORY SERVER')                                         
                                                                                 
-/* started task for ZSS auxilary cross memory server                 */         
+/* started task for XMEM auxilary cross memory server                */         
   RLIST   STARTED &AUXSTC..* ALL STDATA                                         
   RDEFINE STARTED &AUXSTC..* -                                                  
    STDATA(USER(&AUXUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -                      
-   DATA('ZOWE ZSS AUX CROSS MEMORY SERVER')                                     
+   DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')                                     
                                                                                 
   SETROPTS RACLIST(STARTED) REFRESH                                             
                                                                                 
 /* show results .................................................... */         
   LISTGRP  &STCGROUP. OMVS                                                      
   LISTUSER &ZOWEUSER. OMVS                                                      
-  LISTUSER &ZSSUSER.  OMVS                                                      
+  LISTUSER &XMEMUSER.  OMVS                                                      
   LISTUSER &AUXUSER.  OMVS                                                      
   RLIST STARTED &ZOWESTC..* ALL STDATA                                          
-  RLIST STARTED &ZSSSTC..*  ALL STDATA                                          
+  RLIST STARTED &XMEMSTC..*  ALL STDATA                                          
   RLIST STARTED &AUXSTC..*  ALL STDATA                                          
                                                                                 
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */         
                                                                                 
-/* permit Zowe main server to use ZSS, cross memory server           */         
+/* permit Zowe main server to use XMEM, cross memory server          */         
   RLIST   FACILITY ZWES.IS ALL                                                  
   RDEFINE FACILITY ZWES.IS UACC(NONE)                                           
   PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)                    
@@ -227,9 +227,9 @@
   RLIST   FACILITY ZWES.IS           ALL                                        
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL                                        
                                                                                 
-/* DEFINE ZSS SERVER PERMISIONS .................................... */         
+/* DEFINE XMEM SERVER PERMISIONS ................................... */         
                                                                                 
-/* permit ZSS to create a user's security environment                */         
+/* permit XMEM to create a user's security environment               */         
 /* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */         
 /*            z/OS UNIX switch to z/OS UNIX level security, which is */         
 /*            more secure, but it can impact operation of existing   */         
@@ -237,11 +237,11 @@
 /*            it on a production system.                             */         
   RLIST   FACILITY BPX.DAEMON ALL                                               
   RDEFINE FACILITY BPX.DAEMON UACC(NONE)                                        
-  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) ID(&ZSSUSER.)                
+  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) ID(&XMEMUSER.)                
                                                                                 
   RLIST   FACILITY BPX.SERVER ALL                                               
   RDEFINE FACILITY BPX.SERVER UACC(NONE)                                        
-  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&ZSSUSER.)                
+  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&XMEMUSER.)                
                                                                                 
   SETROPTS RACLIST(FACILITY) REFRESH                                            
                                                                                 
@@ -274,11 +274,11 @@ $$
   INSERT &ZOWEUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +                       
    DIV(OMVS) INSERT &ZOWEUSER. UID(&ZOWEUSER.)                                  
                                                                                 
-/* userid for ZSS, cross memory server                               */         
-  INSERT &ZSSUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +                        
-   DIV(OMVS) INSERT &ZSSUSER. UID(&ZSSUSER.)                                    
+/* userid for XMEM, cross memory server                              */         
+  INSERT &XMEMUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +                        
+   DIV(OMVS) INSERT &XMEMUSER. UID(&XMEMUSER.) 
                                                                                 
-/* userid for ZSS auxilary cross memory server                       */         
+/* userid for XMEM auxilary cross memory server                      */         
   INSERT &AUXUSER. GROUP(&STCGROUP.) SET PROFILE(USER) +                        
    DIV(OMVS) INSERT &AUXUSER. UID(&AUXUSER.)                                    
                                                                                 
@@ -290,12 +290,12 @@ $$
   INSERT STC.&ZOWESTC.**** LOGONID(&ZOWEUSER.) GROUP(&STCGROUP.) +              
    STCID(&ZOWESTC.****)                                                         
                                                                                 
-/* started task for ZSS, cross memory server                         */         
+/* started task for XMEM, cross memory server                        */         
   SET CONTROL(GSO)                                                              
-  INSERT STC.&ZSSSTC.**** LOGONID(&ZSSUSER.) GROUP(&STCGROUP.) +                
-   STCID(&ZSSSTC.****)                                                          
+  INSERT STC.&XMEMSTC.**** LOGONID(&XMEMUSER.) GROUP(&STCGROUP.) +              
+   STCID(&XMEMSTC.****)                                                          
                                                                                 
-/* started task for ZSS auxilary cross memory server                 */         
+/* started task for XMEM auxilary cross memory server                */         
   SET CONTROL(GSO)                                                              
   INSERT STC.&AUXSTC.**** LOGONID(&AUXUSER.) GROUP(&STCGROUP.) +                
    STCID(&AUXSTC.****)                                                          
@@ -304,16 +304,16 @@ $$
                                                                                 
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */         
                                                                                 
-/* permit Zowe main server to use ZSS, cross memory server           */         
+/* permit Zowe main server to use XMEM, cross memory server          */         
 /*TODO ACF2 permit Zowe server READ to FACILITY ZWES.IS              */         
                                                                                 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
 /** permit Zowe main server to write persistent data                 */         
 /*TODO ACF2 permit Zowe server CONTROL to UNIXPRIV SUPERUSER.FILESYS */         
                                                                                 
-/* DEFINE ZSS SERVER PERMISIONS .................................... */         
+/* DEFINE XMEM SERVER PERMISIONS ................................... */         
                                                                                 
-/* permit ZSS to create a user's security environment                */         
+/* permit XMEM to create a user's security environment               */         
 /* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */         
 /*            z/OS UNIX switch to z/OS UNIX level security, which is */         
 /*            more secure, but it can impact operation of existing   */         
@@ -358,8 +358,8 @@ $$
 /* optional updates:                                                 */         
 /* - update 109 in "GID(109)" to a GID for the STC group             */         
 /* - update 110 in "UID(110)" to a UID for the Zowe STC user ID      */         
-/* - update 111 in "UID(111)" to a UID for the ZSS STC user ID       */         
-/* - update 112 in "UID(112)" to a UID for the ZSS AUX STC user ID   */         
+/* - update 111 in "UID(111)" to a UID for the XMEM STC user ID      */         
+/* - update 112 in "UID(112)" to a UID for the XMEM AUX STC user ID  */         
                                                                                 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
 /** group for started tasks                                          */         
@@ -376,16 +376,16 @@ $$
   TSS ADD(&ZOWEUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +                   
    HOME(/tmp) OMVSPGM(/bin/sh) UID(110)                                         
                                                                                 
-/* userid for ZSS, cross memory server                               */         
-  TSS LIST(&ZSSUSER.) SEGMENT(OMVS)                                             
-  TSS CREATE(&ZSSUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE ZSS') +              
+/* userid for XMEM, cross memory server                              */         
+  TSS LIST(&XMEMUSER.) SEGMENT(OMVS)                                             
+  TSS CREATE(&XMEMUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE XMEM') +        
    DEPT(usr_dept)                                                               
-  TSS ADD(&ZSSUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +                    
+  TSS ADD(&XMEMUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +                    
    HOME(/tmp) OMVSPGM(/bin/sh) UID(111)                                         
                                                                                 
-/* userid for ZSS auxilary cross memory server                       */         
+/* userid for XMEM auxilary cross memory server                      */         
   TSS LIST(&AUXUSER.) SEGMENT(OMVS)                                             
-  TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE ZSS AUX') +          
+  TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE XMEM AUX') +          
    DEPT(usr_dept)                                                               
   TSS ADD(&AUXUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +                    
    HOME(/tmp) OMVSPGM(/bin/sh) UID(112)                                         
@@ -395,12 +395,12 @@ $$
   TSS ADD(STC) PROCNAME(&ZOWESTC.) ACID(&ZOWEUSER.)                             
   TSS ADD(&ZOWEUSER.) FAC(STC)                                                  
                                                                                 
-/* started task for ZSS, cross memory server                         */         
-  TSS LIST(STC) PROCNAME(&ZSSSTC.) PREFIX                                       
-  TSS ADD(STC) PROCNAME(&ZSSSTC.) ACID(&ZSSUSER.)                               
-  TSS ADD(&ZSSUSER.) FAC(STC)                                                   
+/* started task for XMEM, cross memory server                        */         
+  TSS LIST(STC) PROCNAME(&XMEMSTC.) PREFIX                                       
+  TSS ADD(STC) PROCNAME(&XMEMSTC.) ACID(&XMEMUSER.)                         
+  TSS ADD(&XMEMUSER.) FAC(STC)                                                   
                                                                                 
-/* started task for ZSS auxilary cross memory server                 */         
+/* started task for XMEM auxilary cross memory server                */         
   TSS LIST(STC) PROCNAME(&AUXSTC.) PREFIX                                       
   TSS ADD(STC) PROCNAME(&AUXSTC.) ACID(&AUXUSER.)                               
   TSS ADD(&AUXUSER.) FAC(STC)                                                   
@@ -410,7 +410,7 @@ $$
 /* required updates:                                                 */         
 /* - change "fac_owning_acid" to the acid that owns IBMFAC           */         
                                                                                 
-/* permit Zowe main server to use ZSS, cross memory server           */         
+/* permit Zowe main server to use XMEM, cross memory server          */         
   TSS ADD(fac_owning_acid) IBMFAC(ZWES.IS)                                      
   TSS WHOHAS IBMFAC(ZWES.IS)                                                    
   TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)                           
@@ -419,12 +419,12 @@ $$
 /** permit Zowe main server to write persistent data                 */         
 /*TODO TSS permit Zowe server CONTROL to UNIXPRIV SUPERUSER.FILESYS  */         
                                                                                 
-/* DEFINE ZSS SERVER PERMISIONS .................................... */         
+/* DEFINE XMEM SERVER PERMISIONS ................................... */         
                                                                                 
 /* required updates:                                                 */         
 /* - change "fac_owning_acid" to the acid that owns IBMFAC           */         
                                                                                 
-/* permit ZSS to create a user's security environment                */         
+/* permit XMEM to create a user's security environment               */         
 /* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */         
 /*            z/OS UNIX switch to z/OS UNIX level security, which is */         
 /*            more secure, but it can impact operation of existing   */         
@@ -432,12 +432,11 @@ $$
 /*            it on a production system.                             */         
   TSS ADD(fac_owning_acid) IBMFAC(BPX.)                                         
   TSS WHOHAS IBMFAC(BPX.DAEMON)                                                 
-  TSS PER(&ZSSUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)                             
+  TSS PER(&XMEMUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)                             
   TSS WHOHAS IBMFAC(BPX.SERVER)                                                 
-  TSS PER(&ZSSUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)                             
+  TSS PER(&XMEMUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)                             
                                                                                 
 /* ................................................................. */         
 /* only the last RC is returned, this comment ensures it is a 0      */         
 $$                                                                              
-//*                                                                             
-                                                                                
+//*
