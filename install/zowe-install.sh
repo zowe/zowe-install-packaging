@@ -89,15 +89,19 @@ fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
+NEW_INSTALL="true"
+
 # warn about any prior installation
 if [[ -d $ZOWE_ROOT_DIR ]]; then
     directoryListLines=`ls -al $ZOWE_ROOT_DIR | wc -l`
     # Has total line, parent and self ref
     if [[ $directoryListLines -gt 3 ]]; then
-        echo "    $ZOWE_ROOT_DIR is not empty"
-        echo "    Please clear the contents of this directory, or edit zowe-install.yaml's root directory location before attempting the install."
-        echo "Exiting non emptry install directory $ZOWE_ROOT_DIR has `expr $directoryListLines - 3` directory entries" >> $LOG_FILE
-        exit 2
+        if [[ -f "${ZOWE_ROOT_DIR}/manifest.json" ]]
+        then
+            OLD_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+            NEW_INSTALL="false"
+            echo "  $ZOWE_ROOT_DIR contains version ${OLD_VERSION}. Updating this install to version ${ZOWE_VERSION}"
+        fi
     fi
 else
     mkdir -p $ZOWE_ROOT_DIR
@@ -177,7 +181,7 @@ cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-. $INSTALL_DIR/scripts/zowe-copy-xmem.sh
+. $INSTALL_DIR/scripts/zowe-copy-xmem.sh # TODO - remove and file once zowe-apf-server removed.
 
 #Give all directories -rw+x permission so they can be listed, but files -rwx
 chmod -R o-rwx ${ZOWE_ROOT_DIR}
@@ -203,4 +207,16 @@ cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 # remove the working directory
 rm -rf $TEMP_DIR
 
-echo "zowe-install.sh completed. In order to use Zowe, you must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>'"
+echo "zowe-install.sh completed. In order to use Zowe:"
+if [[ ${NEW_INSTALL} == "true" ]]
+then
+  echo " - You must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>'"
+  echo " - You must ensure that the Zowe Proclibs are added to your JES2 concatenation"
+  echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}/SZWESAMP/ZWESECUR'"
+  echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
+else
+  echo "zowe-install.sh completed. Before you run Zowe:"
+  echo " - In order to check your instance is up to date, please run '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>'"
+  echo " - Check that Zowe Proclibs are up-to-date in your JES2 concatenation"
+fi
+echo "Please review the documentation for more information about these steps"
