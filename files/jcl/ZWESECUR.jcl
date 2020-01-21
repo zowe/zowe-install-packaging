@@ -49,9 +49,15 @@
 //* 10) Update the SET AUXSTC= statement to match the desired                   
 //*    XMEM Auxilary started task name.                                          
 //*                                                                             
-//* 11) Customize the commands in the DD statement that matches your            
-//*    security product so that they meet your system requirements.             
-//*                                                                             
+//* 11) Update the SET HLQ= statement to match the desired
+//*     Zowe data set high level qualifier.
+//*
+//* 12) Update the SET SYSPROG= statement to match the existing
+//*     user ID or group used by z/OS system programmers.
+//*
+//* 13) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*                                                                           
 //* Note(s):                                                                    
 //*                                                                             
 //* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY            
@@ -80,7 +86,9 @@
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task         
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name                   
 //         SET  XMEMSTC=ZWESISTC     * xmem started task name                   
-//         SET   AUXSTC=ZWESASTC     * xmem AUX started task name               
+//         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
+//         SET      HLQ=ZWE          * data set high level qualifier
+//         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group         
 //*                     12345678                                                
 //*                                                                             
 //*********************************************************************         
@@ -248,6 +256,29 @@
 /* show results .................................................... */         
   RLIST   FACILITY BPX.DAEMON ALL                                               
   RLIST   FACILITY BPX.SERVER ALL                                               
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+/* - The sample commands assume that EGN (Enhanced Generic Naming)   */
+/*   is active, which allows the usage of ** to represent any number */
+/*   of qualifiers in the DATASET class. Substitute ** with * if EGN */
+/*   is not active on your system.                                   */
+
+/* HLQ stub                                                          */
+  LISTGRP  &HLQ. ALL
+  ADDGROUP &HLQ. DATA('Zowe - HLQ STUB')
+
+/* general data set protection                                       */
+  LISTDSD PREFIX(&HLQ.) ALL
+  ADDSD  '&HLQ..*.**' UACC(READ) DATA('Zowe')
+  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
+
+  SETROPTS GENERIC(DATASET) REFRESH
+
+/* show results .................................................... */
+  LISTGRP &HLQ.         ALL
+  LISTDSD PREFIX(&HLQ.) ALL
                                                                                 
 /* ................................................................. */         
 /* only the last RC is returned, this comment ensures it is a 0      */         
@@ -320,7 +351,14 @@ $$
 /*            applications. Test this thoroughly before activating   */         
 /*            it on a production system.                             */         
                                                                                 
-/*TODO ACF2 permit xmem UPDATE to FACILITY BPX.DAEMON & BPX.SERVER   */         
+/*TODO ACF2 permit zss UPDATE to FACILITY BPX.DAEMON & BPX.SERVER    */
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+
+/*TODO ACF2 dataset protection, permit sysprog ALTER                 */         
                                                                                 
 /* ................................................................. */         
 /* only the last RC is returned, this comment ensures it is a 0      */         
@@ -435,7 +473,12 @@ $$
   TSS PER(&XMEMUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)                             
   TSS WHOHAS IBMFAC(BPX.SERVER)                                                 
   TSS PER(&XMEMUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)                             
-                                                                                
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+
+/*TODO TSS dataset protection, permit sysprog ALTER                  */
 /* ................................................................. */         
 /* only the last RC is returned, this comment ensures it is a 0      */         
 $$                                                                              
