@@ -108,7 +108,7 @@
   DELDSD '&HLQ..*.**'
 
 /* HLQ stub                                                          */
-  LISTGRP  &HLQ. ALL
+  LISTGRP  &HLQ.
   DELGROUP &HLQ.
 
   SETROPTS GENERIC(DATASET) REFRESH
