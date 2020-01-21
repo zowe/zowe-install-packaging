@@ -212,11 +212,11 @@ echo "zowe-install.sh completed. In order to use Zowe:"
 if [[ ${NEW_INSTALL} == "true" ]]
 then
   echo " - You must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
-  echo " - You must ensure that the Zowe Proclibs are added to your JES2 concatenation"
+  echo " - You must ensure that the Zowe Proclibs are added to your PROCLIB JES concatenation path"
   echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}/SZWESAMP/ZWESECUR'"
   echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
 else
-  echo " - Check your instance is up to date, by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
-  echo " - Check that Zowe Proclibs are up-to-date in your JES2 concatenation"
+  echo " - Check your instance directory is up to date, by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
+  echo " - Check that Zowe Proclibs are up-to-date in your PROCLIB JES concatenation path"
 fi
-echo "Please review the documentation for more information about these steps"
+echo "Please review the 'Configuring the Zowe runtime' chapter of the documentation for more information about these steps"
