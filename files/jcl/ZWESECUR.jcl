@@ -61,8 +61,8 @@
 //*    to write persistent data in the zlux-app-server/deploy directory         
 //*    structure. This sample JCL makes the Zowe started task part of           
 //*    the ZOwe administrator group (SET STCGROUP=&ADMINGRP. statement)         
-//*    to achieve this goal. Another solution, which is provided                
-//*    commented out, is giving the Zowe started task CONTROL access to         
+//*    to achieve this goal. Another solution, also below, which you can
+//*    comment out, is giving the Zowe started task CONTROL access to         
 //*    the UNIXPRIV SUPERUSER.FILESYS profile.                                  
 //*                                                                             
 //* 3. This job WILL complete with return code 0.                               
@@ -99,8 +99,8 @@
                                                                                 
 /* ACTIVATE REQUIRED RACF SETTINGS AND CLASSES ..................... */         
                                                                                 
-/* - uncomment the activation statements for the classes that are    */         
-/*   not active yet                                                  */         
+/* - comment out the activation statements for the classes that are  */         
+/*   already active                                                  */         
                                                                                 
 /* display current settings                                          */         
 /*SETROPTS LIST                                                      */         
@@ -109,7 +109,7 @@
   SETROPTS GENERIC(FACILITY)                                                    
   SETROPTS CLASSACT(FACILITY) RACLIST(FACILITY)                                 
                                                                                 
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */         
 /** activate UNIXPRIV class for z/OS UNIX profiles                   */         
   SETROPTS GENERIC(UNIXPRIV)                                                    
   SETROPTS CLASSACT(UNIXPRIV) RACLIST(UNIXPRIV)                                 
@@ -142,7 +142,7 @@
 /*   with UID(uid), where "gid" and "uid" are a valid z/OS UNIX      */         
 /*   group and user ID respectively.                                 */         
                                                                                 
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */         
 /** group for started tasks                                          */         
    LISTGRP  &STCGROUP. OMVS                                                     
    ADDGROUP &STCGROUP.                                                          
@@ -214,7 +214,7 @@
                                                                                 
   SETROPTS RACLIST(FACILITY) REFRESH                                            
                                                                                 
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */         
 /** permit Zowe main server to write persistent data                 */         
    RLIST   UNIXPRIV SUPERUSER.FILESYS ALL                                       
    RDEFINE UNIXPRIV SUPERUSER.FILESYS UACC(NONE)                                
@@ -266,7 +266,7 @@ $$
                                                                                 
 /* DEFINE STARTED TASK ............................................. */         
                                                                                 
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */         
 /** group for started tasks                                          */         
 /*TODO ACF2 group for started tasks                                  */         
                                                                                 
@@ -307,7 +307,7 @@ $$
 /* permit Zowe main server to use XMEM, cross memory server          */         
 /*TODO ACF2 permit Zowe server READ to FACILITY ZWES.IS              */         
                                                                                 
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */         
 /** permit Zowe main server to write persistent data                 */         
 /*TODO ACF2 permit Zowe server CONTROL to UNIXPRIV SUPERUSER.FILESYS */         
                                                                                 
@@ -320,7 +320,7 @@ $$
 /*            applications. Test this thoroughly before activating   */         
 /*            it on a production system.                             */         
                                                                                 
-/*TODO ACF2 permit zss UPDATE to FACILITY BPX.DAEMON & BPX.SERVER    */         
+/*TODO ACF2 permit xmem UPDATE to FACILITY BPX.DAEMON & BPX.SERVER   */         
                                                                                 
 /* ................................................................. */         
 /* only the last RC is returned, this comment ensures it is a 0      */         
@@ -361,13 +361,13 @@ $$
 /* - update 111 in "UID(111)" to a UID for the XMEM STC user ID      */         
 /* - update 112 in "UID(112)" to a UID for the XMEM AUX STC user ID  */         
                                                                                 
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */         
 /** group for started tasks                                          */         
-/* TSS LIST(&STCGROUP.) SEGMENT(OMVS)                                */         
-/* TSS CREATE(&STCGROUP.) TYPE(GROUP) +                              */         
-/*  NAME('STC GROUP WITH OMVS SEGEMENT') +                           */         
-/*  DEPT(stc_grp_dept)                                               */         
-/* TSS ADD(&STCGROUP.) GID(109)                                      */         
+   TSS LIST(&STCGROUP.) SEGMENT(OMVS)   
+   TSS CREATE(&STCGROUP.) TYPE(GROUP) +             
+    NAME('STC GROUP WITH OMVS SEGEMENT') +                         
+    DEPT(stc_grp_dept)                                                          
+   TSS ADD(&STCGROUP.) GID(109)                                                 
                                                                                 
 /* userid for ZOWE, main server                                      */         
   TSS LIST(&ZOWEUSER.) SEGMENT(OMVS)                                            
@@ -415,7 +415,7 @@ $$
   TSS WHOHAS IBMFAC(ZWES.IS)                                                    
   TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)                           
                                                                                 
-/** uncomment to use SUPERUSER.FILESYS, see JCL comments             */         
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */         
 /** permit Zowe main server to write persistent data                 */         
 /*TODO TSS permit Zowe server CONTROL to UNIXPRIV SUPERUSER.FILESYS  */         
                                                                                 
@@ -440,4 +440,3 @@ $$
 /* only the last RC is returned, this comment ensures it is a 0      */         
 $$                                                                              
 //*                                                                             
-                                                                                
