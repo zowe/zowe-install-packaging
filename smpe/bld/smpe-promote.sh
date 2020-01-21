@@ -10,6 +10,11 @@
 # Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
+
+#######################################################################
+# FIXME: verify how this works after a formal release.
+#######################################################################
+
 #% Update service data upon promote.
 #%
 #% -?       show this help message
