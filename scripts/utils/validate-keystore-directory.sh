@@ -7,17 +7,12 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2020
 ################################################################################
 
-#output an error and add to the count
-
-if [ -z "$ERRORS_FOUND" ];
+$(. ${ROOT_DIR}/scripts/utils/validate-directory-is-accessible.sh ${KEYSTORE_DIRECTORY})
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]];
 then
-  ERRORS_FOUND=0
+  . ${ROOT_DIR}/scripts/utils/error.sh "Was <root-dir>/bin/zowe-setup-certificates.sh run, or KEYSTORE_DIRECTORY property updated in instance.env? See docs for more details"
 fi
-
-# echo error to standard out and err
-echo "Error $ERRORS_FOUND: $1"
-echo "Error $ERRORS_FOUND: $1" 1>&2
-let "ERRORS_FOUND=$ERRORS_FOUND+1"

@@ -7,7 +7,7 @@
 //*
 //* SPDX-License-Identifier: EPL-2.0
 //*
-//* Copyright Contributors to the Zowe Project. 2018, 2019
+//* Copyright Contributors to the Zowe Project. 2018, 2020
 //*
 //*********************************************************************
 //*
@@ -47,10 +47,16 @@
 //*    ZSS started task name.
 //*
 //* 10) Update the SET AUXSTC= statement to match the desired
-//*    ZSS Auxilary started task name.
+//*     ZSS Auxilary started task name.
 //*
-//* 11) Customize the commands in the DD statement that matches your
-//*    security product so that they meet your system requirements.
+//* 11) Update the SET HLQ= statement to match the desired
+//*     Zowe data set high level qualifier.
+//*
+//* 12) Update the SET SYSPROG= statement to match the existing
+//*     user ID or group used by z/OS system programmers.
+//*
+//* 13) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
 //*
 //* Note(s):
 //*
@@ -81,6 +87,8 @@
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
 //         SET   ZSSSTC=ZWESISTC     * xmem started task name
 //         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
+//         SET      HLQ=ZWE          * data set high level qualifier
+//         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
 //*                     12345678
 //*  For ACF2 ONLY
 //*
@@ -267,6 +275,30 @@
   RLIST   FACILITY BPX.DAEMON ALL
   RLIST   FACILITY BPX.SERVER ALL
 
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+/* - The sample commands assume that EGN (Enhanced Generic Naming)   */
+/*   is active, which allows the usage of ** to represent any number */
+/*   of qualifiers in the DATASET class. Substitute ** with * if EGN */
+/*   is not active on your system.                                   */
+
+/* HLQ stub                                                          */
+  LISTGRP  &HLQ. ALL
+  ADDGROUP &HLQ. DATA('Zowe - HLQ STUB')
+
+/* general data set protection                                       */
+  LISTDSD PREFIX(&HLQ.) ALL
+  ADDSD  '&HLQ..*.**' UACC(READ) DATA('Zowe')
+  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
+
+  SETROPTS GENERIC(DATASET) REFRESH
+
+/* show results .................................................... */
+  LISTGRP &HLQ.         ALL
+  LISTDSD PREFIX(&HLQ.) ALL
+
 /* ................................................................. */
 /* only the last RC is returned, this comment ensures it is a 0      */
 $$
@@ -390,6 +422,13 @@ RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&ADMINGRP.) ALLOW)
 RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&ADMINGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
+* DEFINE ZOWE DATA SET PROTECTION ................................. *
+*
+* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    *
+*   advised to protect it against updates.                          *
+*
+*TODO ACF2 dataset protection, permit sysprog ALTER                 *
+*
 * ................................................................. *
 * only the last RC is returned, this comment ensures it is a 0      *
 $$
@@ -504,7 +543,14 @@ $$
   TSS WHOHAS IBMFAC(BPX.SERVER)
   TSS PER(&ZSSUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
 
-/* If any of these started tasks are multiusers address spaces       */
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+
+/*TODO TSS dataset protection, permit sysprog ALTER                  */
+
+* If any of these started tasks are multiusers address spaces       */
 /* a TSS FACILITY needs to be defined and assigned to the started    */
 /* and should not be using the STC FACILITY . The all acids signing  */
 /* on to the started tasks will need to be authorized to the         */

@@ -69,6 +69,10 @@ ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
 checkForErrorsFound
 
+# Validate keystore directory accessible
+${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
+checkForErrorsFound
+
 # Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
