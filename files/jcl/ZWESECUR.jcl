@@ -7,7 +7,7 @@
 //*
 //* SPDX-License-Identifier: EPL-2.0
 //*
-//* Copyright Contributors to the Zowe Project. 2018, 2019
+//* Copyright Contributors to the Zowe Project. 2018, 2020
 //*
 //*********************************************************************
 //*
@@ -47,10 +47,16 @@
 //*    ZSS started task name.
 //*
 //* 10) Update the SET AUXSTC= statement to match the desired
-//*    ZSS Auxilary started task name.
+//*     ZSS Auxilary started task name.
 //*
-//* 11) Customize the commands in the DD statement that matches your
-//*    security product so that they meet your system requirements.
+//* 11) Update the SET HLQ= statement to match the desired
+//*     Zowe data set high level qualifier.
+//*
+//* 12) Update the SET SYSPROG= statement to match the existing
+//*     user ID or group used by z/OS system programmers.
+//*
+//* 13) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
 //*
 //* Note(s):
 //*
@@ -75,12 +81,14 @@
 //*                     12345678
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
 //         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
-//         SET ZOWEUSER=ZOWEUSR      * userid for Zowe started task
-//         SET  ZSSUSER=ZSSUSR       * userid for ZSS started task
-//         SET  AUXUSER=&ZSSUSER.    * userid for ZSS AUX started task
-//         SET  ZOWESTC=ZOWESVR      * Zowe started task name
-//         SET   ZSSSTC=ZOWEZSS      * ZSS started task name
-//         SET   AUXSTC=ZOWEAUX      * ZSS AUX started task name
+//         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
+//         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
+//         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
+//         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
+//         SET  XMEMSTC=ZWESISTC     * xmem started task name
+//         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
+//         SET      HLQ=ZWE          * data set high level qualifier
+//         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
 //*                     12345678
 //*
 //*********************************************************************
@@ -208,9 +216,9 @@
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-  RLIST   FACILITY ZWES.IS ALL
-  RDEFINE FACILITY ZWES.IS UACC(NONE)
-  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+  RLIST   FACILITY ZWEX.IS ALL
+  RDEFINE FACILITY ZWEX.IS UACC(NONE)
+  PERMIT ZWEX.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -224,7 +232,7 @@
 /* SETROPTS RACLIST(UNIXPRIV) REFRESH                                */
 
 /* show results .................................................... */
-  RLIST   FACILITY ZWES.IS           ALL
+  RLIST   FACILITY ZWEX.IS           ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
 
 /* DEFINE ZSS SERVER PERMISIONS .................................... */
@@ -248,6 +256,30 @@
 /* show results .................................................... */
   RLIST   FACILITY BPX.DAEMON ALL
   RLIST   FACILITY BPX.SERVER ALL
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+/* - The sample commands assume that EGN (Enhanced Generic Naming)   */
+/*   is active, which allows the usage of ** to represent any number */
+/*   of qualifiers in the DATASET class. Substitute ** with * if EGN */
+/*   is not active on your system.                                   */
+
+/* HLQ stub                                                          */
+  LISTGRP  &HLQ. ALL
+  ADDGROUP &HLQ. DATA('Zowe - HLQ STUB')
+
+/* general data set protection                                       */
+  LISTDSD PREFIX(&HLQ.) ALL
+  ADDSD  '&HLQ..*.**' UACC(READ) DATA('Zowe')
+  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
+
+  SETROPTS GENERIC(DATASET) REFRESH
+
+/* show results .................................................... */
+  LISTGRP &HLQ.         ALL
+  LISTDSD PREFIX(&HLQ.) ALL
 
 /* ................................................................. */
 /* only the last RC is returned, this comment ensures it is a 0      */
@@ -305,7 +337,7 @@ $$
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-/*TODO ACF2 permit Zowe server READ to FACILITY ZWES.IS              */
+/*TODO ACF2 permit Zowe server READ to FACILITY ZWEX.IS              */
 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
 /** permit Zowe main server to write persistent data                 */
@@ -321,6 +353,13 @@ $$
 /*            it on a production system.                             */
 
 /*TODO ACF2 permit zss UPDATE to FACILITY BPX.DAEMON & BPX.SERVER    */
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+
+/*TODO ACF2 dataset protection, permit sysprog ALTER                 */
 
 /* ................................................................. */
 /* only the last RC is returned, this comment ensures it is a 0      */
@@ -411,9 +450,9 @@ $$
 /* - change "fac_owning_acid" to the acid that owns IBMFAC           */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-  TSS ADD(fac_owning_acid) IBMFAC(ZWES.IS)
-  TSS WHOHAS IBMFAC(ZWES.IS)
-  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
+  TSS ADD(fac_owning_acid) IBMFAC(ZWEX.IS)
+  TSS WHOHAS IBMFAC(ZWEX.IS)
+  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWEX.IS) ACCESS(READ)
 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
 /** permit Zowe main server to write persistent data                 */
@@ -435,6 +474,13 @@ $$
   TSS PER(&ZSSUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)
   TSS WHOHAS IBMFAC(BPX.SERVER)
   TSS PER(&ZSSUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+
+/*TODO TSS dataset protection, permit sysprog ALTER                  */
 
 /* ................................................................. */
 /* only the last RC is returned, this comment ensures it is a 0      */

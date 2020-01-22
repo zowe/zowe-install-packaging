@@ -1,3 +1,13 @@
+//*--------------------------------------------------------------------
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2019, 2019
+//*--------------------------------------------------------------------
 //*
 //* PROC to stage file for SYSMOD creation, generic back-end
 //*
@@ -6,7 +16,7 @@
 //*   MARKER   - create marker to simplify job output review
 //*   UNLOAD   - (conditional) copy to sequential data set
 //*   GIMDTS   - (conditional) convert to FB80
-//*   DISP     - set final disposition
+//*   LINES    - count lines
 //* ENDIF
 //*   
 //* limit to 63 calls per JCL to avoid hitting JCL EXEC PGM limit (255)
@@ -16,6 +26,7 @@
 //            REL=&REL,                   * hlq.F1, hlq.F2, ...
 //            MBR=&MBR,                   * member name Fx(<member>)
 //            SYSOUT=&SYSOUT,             * dataset collecting SYSPRINT
+//            LINES=&LINES,               * dataset collecting line cnt
 //            DSP='DELETE',               * final DISP of temp files
 //            SIZE='TRK,(#trks)',        * temp file size
 //* enable/disable a step
@@ -24,6 +35,7 @@
 //* tools invoked in steps (override possible for debug purposes)
 //            XMRK=RXDDALOC,              * REXX to allocate marker DD
 //            XSEQ=RXUNLOAD,              * REXX to create SEQ
+//            XCNT=RXLINES,               * REXX to count lines
 //            TOOL=&TOOL                  * DSN holding REXX
 //* DDs altered by caller
 //*UNLOAD.SYSUT1 DD DUMMY                 * PROVIDED BY CALLER
@@ -93,10 +105,17 @@
 //*           data, RECFM = FB, LRECL = 80, BLKSIZE = (multiple of 80)
 //*    SYSPRINT must be RECFM = FBA, LRECL = 121
 //*
-//* process final disposition of work files
+//* count lines & process final disposition of work files
 //*
-//DISP     EXEC PGM=IEFBR14,COND=(4,LT)
+//LINES    EXEC PGM=IKJEFT01,REGION=0M,COND=(4,LT),
+//            PARM='%&XCNT &MBR'
+//SYSPROC  DD DISP=SHR,DSN=&TOOL
+//SYSTSPRT DD DISP=MOD,DSN=&SYSOUT
+//SYSTSIN  DD DUMMY
+//SYSUT1   DD DISP=SHR,DSN=&$PART
+//* set disposition ow work data sets
 //UNLOAD   DD DISP=(OLD,&DSP),DSN=&$UNLOAD
+//SYSPRINT DD DISP=MOD,DSN=&LINES
 //* added by PTF@LMOD
 //*PDSE     DD DISP=(OLD,&DSP),DSN=&$PDSE
 //*PDS      DD DISP=(OLD,&DSP),DSN=&$PDS

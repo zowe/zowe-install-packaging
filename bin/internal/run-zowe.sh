@@ -7,14 +7,14 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2018, 2020
 ################################################################################
 
 checkForErrorsFound() {
   if [[ $ERRORS_FOUND > 0 ]]
   then
     # if -v passed in any validation failures abort
-    if [ ! -z $VALIDATE_ABORTS ]
+    if [[ ! -z "$VALIDATE_ABORTS" ]]
     then
       echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
       exit $ERRORS_FOUND
@@ -53,7 +53,7 @@ mkdir -p ${WORKSPACE_DIR}
 
 # Read in configuration
 . ${INSTANCE_DIR}/bin/read-instance.sh
-# TODO - in for backwards compatibility, remove once naming conventions finalised and sorted
+# TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 ZOWE_APIM_GATEWAY_PORT=$GATEWAY_PORT
 ZOWE_IPADDRESS=$ZOWE_IP_ADDRESS
 ZOSMF_IP_ADDRESS=$ZOSMF_HOST
@@ -69,14 +69,29 @@ ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
 checkForErrorsFound
 
+# Validate keystore directory accessible
+${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
+checkForErrorsFound
+
 # Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
-
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
-  LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},files-api,jobs-api,api-mediation,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
+  LAUNCH_COMPONENTS=api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
 fi
+
+#Explorers may be present, but have a prereq on gateway, not desktop
+#ZSS exists within app-server, may desire a distinct component later on
+if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+then
+  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use it's config
+  PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+fi
+#ZSS could be included separate to app-server, and vice-versa
+#But for simplicity of this script we have app-server prereq zss in DESKTOP
+#And zss & app-server sharing WORKSPACE_DIR
+
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
@@ -111,6 +126,13 @@ then
   mv ${WORKSPACE_DIR}/active_configuration.cfg ${WORKSPACE_DIR}/backups/backup_configuration.${PREVIOUS_DATE}.cfg
 fi
 
+# Keep config dir for zss within permissions it accepts
+if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
+then
+  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
+  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/*
+fi
+
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
 ZOWE_VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
@@ -138,12 +160,5 @@ done
 
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  . ${ROOT_DIR}/components/${i}/bin/start.sh
+  . ${ROOT_DIR}/components/${i}/bin/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
 done
-
-
-# Start the desktop
-if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
-then
-  cd $ROOT_DIR/zlux-app-server/bin && _BPX_JOBNAME=$ZOWE_DESKTOP ./nodeCluster.sh --allowInvalidTLSProxy=true &
-fi

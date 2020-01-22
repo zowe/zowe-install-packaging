@@ -7,29 +7,26 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2018, 2020
 ################################################################################
 
 # Requires passed in:
-# ZOWE_ROOT_DIR - install root directory
 # PLUGIN_ID - id of the plugin eg org.zowe.explorer-jes
 # PLUGIN_SHORTNAME - short name of the plugin eg JES Explorer
 # URL - the full url of the page being embedded
+# PLUGIN_DIR - the directory to create the plugin in
 # TILE_IMAGE_PATH - full path link to the file location of the image to be used as the mvd tile
 
-ZOWE_ROOT_DIR=$1
-PLUGIN_ID=$2
-PLUGIN_SHORTNAME=$3
-URL=$4
+PLUGIN_ID=$1
+PLUGIN_SHORTNAME=$2
+URL=$3
+PLUGIN_DIR=$4
 TILE_IMAGE_PATH=$5
-PLUGIN_DIR_OVERRIDE=$6
 
-if [ "$#" -lt 5 ]; then
-  echo "Usage: $0 ZOWE_INSTALL_ROOT_DIRECTORY PLUGIN_ID PLUGIN_SHORTNAME URL TILE_IMAGE_PATH PLUGIN_DIR_OVERRIDE \neg. install-iframe-plugin.sh \"~/zowe\" \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe_plugin/artifacts/tile_image.png\" /zowe/component/plugin" >&2
-  exit 1
-fi
-if ! [ -d "$1" ]; then
-  echo "$1 not a directory, please provide the full path to the root installation directory of zowe" >&2
+export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/utils/
+
+if [ "$#" -ne 5 ]; then
+  echo "Usage: $0 PLUGIN_ID PLUGIN_SHORTNAME PLUGIN_DIRECTORY URL TILE_IMAGE_PATH \neg. install-iframe-plugin.sh \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe/component/plugin\" \"/zowe_plugin/artifacts/tile_image.png\"" >&2
   exit 1
 fi
 if ! [ -f "$5" ]; then
@@ -37,30 +34,21 @@ if ! [ -f "$5" ]; then
   exit 1
 fi
 
-ZLUX_SERVER_DIRECTORY='zlux-app-server'
-
-chmod -R u+w $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/
-# switch spaces to underscores and lower case it for use as folder name
-PLUGIN_FOLDER_NAME=$(echo $PLUGIN_SHORTNAME | tr -s ' ' | tr ' ' '_' | tr '[:upper:]' '[:lower:]')
-PLUGIN_FOLDER=$ZOWE_ROOT_DIR/$PLUGIN_FOLDER_NAME
-
 if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
   PLUGIN_FOLDER=$PLUGIN_DIR_OVERRIDE
 fi
 
 # remove any previous plugin files
-rm -rf $PLUGIN_FOLDER/web/images
-rm -f $PLUGIN_FOLDER/web/index.html
-rm -f $PLUGIN_FOLDER/pluginDefinition.json
+rm -rf $PLUGIN_DIR/web/images
+rm -f $PLUGIN_DIR/web/index.html
+rm -f $PLUGIN_DIR/pluginDefinition.json
 
-rm -f $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
-
-mkdir -p $PLUGIN_FOLDER/web/images
-cp $TILE_IMAGE_PATH $PLUGIN_FOLDER/web/images
+mkdir -p $PLUGIN_DIR/web/images
+cp $TILE_IMAGE_PATH $PLUGIN_DIR/web/images
 # Tag the graphic as binary.
-chtag -b $PLUGIN_FOLDER/web/images/$(basename $TILE_IMAGE_PATH)
+chtag -b $PLUGIN_DIR/web/images/$(basename $TILE_IMAGE_PATH)
 
-cat <<EOF >$PLUGIN_FOLDER/web/index.html
+cat <<EOF >$PLUGIN_DIR/web/index.html
 <!DOCTYPE html>
 <html>
     <body>
@@ -75,7 +63,7 @@ cat <<EOF >$PLUGIN_FOLDER/web/index.html
 EOF
 chtag -tc 1047 $PLUGIN_FOLDER/web/index.html
 
-cat <<EOF >$PLUGIN_FOLDER/pluginDefinition.json
+cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
 {
   "identifier": "$PLUGIN_ID",
   "apiVersion": "1.0.0",
@@ -101,18 +89,5 @@ cat <<EOF >$PLUGIN_FOLDER/pluginDefinition.json
 EOF
 chtag -tc 1047 $PLUGIN_FOLDER/pluginDefinition.json
 
-if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
-  PLUGIN_LOCATION=$PLUGIN_DIR_OVERRIDE
-else
-  PLUGIN_LOCATION="../../${PLUGIN_FOLDER_NAME}"
-fi
-
-cat <<EOF >$ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
-{
-    "identifier": "$PLUGIN_ID",
-    "pluginLocation": "$PLUGIN_LOCATION"
-}
-EOF
-chtag -tc 1047 $ZOWE_ROOT_DIR/$ZLUX_SERVER_DIRECTORY/plugins/$PLUGIN_ID.json
-
-chmod -R a+rx $PLUGIN_FOLDER
+chmod -R a+rx $PLUGIN_DIR
+${INSTANCE_DIR}/bin/install-app.sh $PLUGIN_DIR
