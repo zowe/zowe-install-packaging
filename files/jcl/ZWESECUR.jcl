@@ -77,7 +77,7 @@
 //         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //         SET  ZSSUSER=ZWESIUSR     * userid for xmem started task
-//         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
+//         SET  AUXUSER=&ZSSUSER.    * userid for xmem AUX started task
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
 //         SET   ZSSSTC=ZWESISTC     * xmem started task name
 //         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
@@ -95,9 +95,9 @@
 //*
 //         SET ADMINGID=             * Group ID for ZOWE Administrators
 //         SET   STCGID=             * Group ID for ZOWE Started Task
-//         SET ADMINUID=             * UID for ZOWE Administrators User
-//         SET   STCUID=             * UID for ZOWE Started Task User
-//         SET   AUXUID=             * UID for ZSS Started Task User
+//         SET  ZOWEUID=             * UID for ZOWE started task User
+//         SET   ZSSUID=             * UID for xmem started task User
+//         SET   AUXUID=             * UID for xm AUX started task User
 //*
 //*  End of ACF2 Only section
 //*
@@ -226,9 +226,9 @@
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-  RLIST   FACILITY ZWEX.IS ALL
-  RDEFINE FACILITY ZWEX.IS UACC(NONE)
-  PERMIT ZWEX.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+  RLIST   FACILITY ZWES.IS ALL
+  RDEFINE FACILITY ZWES.IS UACC(NONE)
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -242,7 +242,7 @@
 /* SETROPTS RACLIST(UNIXPRIV) REFRESH                                */
 
 /* show results .................................................... */
-  RLIST   FACILITY ZWEX.IS           ALL
+  RLIST   FACILITY ZWES.IS           ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
 
 /* DEFINE ZSS SERVER PERMISIONS .................................... */
@@ -314,7 +314,7 @@ F ACF2,NEWXREF,TYPE(ROL)
 SET LID
 INSERT &ZOWEUSER. GROUP(&STCGROUP.)
 SET PROFILE(USER) DIV(OMVS)
-INSERT &ZOWEUSER. UID(&ADMINUID.) HOME(/tmp) OMVSPGM(/bin/sh)
+INSERT &ZOWEUSER. UID(&ZOWEUID.) HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 * userid for ZSS, cross memory server                               *
@@ -322,7 +322,7 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 SET LID
 INSERT &ZSSUSER. GROUP(&STCGROUP.)
 SET PROFILE(USER) DIV(OMVS)
-INSERT &ZSSUSER. UID(&STCUID.) HOME(/tmp) OMVSPGM(/bin/sh)
+INSERT &ZSSUSER. UID(&ZSSUID.) HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 * userid for ZSS auxilary cross memory server                       *
@@ -342,21 +342,21 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 SET CONTROL(GSO)
 INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) GROUP(&STCGROUP.) +
-STCID(&ZOWESTC.-)
+STCID(&ZOWESTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for ZSS, cross memory server                         *
 *
 SET CONTROL(GSO)
 INSERT STC.&ZSSSTC. LOGONID(&ZSSUSER.) GROUP(&STCGROUP.) +
-STCID(&ZSSSTC.-)
+STCID(&ZSSSTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for ZSS auxilary cross memory server                 *
 *
 SET CONTROL(GSO)
 INSERT STC.&AUXSTC. LOGONID(&AUXUSER.) GROUP(&STCGROUP.) +
-STCID(&AUXSTC.-)
+STCID(&AUXSTC.)
 F ACF2,REFRESH(STC)
 *
 * operator command F ACF2,REFRESH(STC)                              *
@@ -390,8 +390,8 @@ RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&ADMINGRP.) ALLOW)
 RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&ADMINGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
-/* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+* ................................................................. *
+* only the last RC is returned, this comment ensures it is a 0      *
 $$
 //*
 //*********************************************************************
@@ -479,9 +479,9 @@ $$
 /* - change "fac_owning_acid" to the acid that owns IBMFAC           */
 
 /* permit Zowe main server to use ZSS, cross memory server           */
-  TSS ADD(fac_owning_acid) IBMFAC(ZWEX.IS)
-  TSS WHOHAS IBMFAC(ZWEX.IS)
-  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWEX.IS) ACCESS(READ)
+  TSS ADD(fac_owning_acid) IBMFAC(ZWES.IS)
+  TSS WHOHAS IBMFAC(ZWES.IS)
+  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
 
 /** uncomment to use SUPERUSER.FILESYS, see JCL comments             */
 /** permit Zowe main server to write persistent data                 */
