@@ -524,6 +524,8 @@ $$
 
 /** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
 /** permit Zowe main server to write persistent data                 */
+    TSS ADD(fac_owning_acid) UNIXPRIV(SUPERUSE)
+    TSS WHOHAS IBMFAC(SUPERUSER.FILESYS)
     TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
 
 /* DEFINE XMEM SERVER PERMISIONS ................................... */
