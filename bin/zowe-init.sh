@@ -49,7 +49,7 @@ do
     fi
     if [[ -f $NODE_HOME/"./bin/node" ]] 
     then
-        export NODE_HOME=NODE_HOME
+        export NODE_HOME=$NODE_HOME
         loop=0
     else
         echo "        No /bin/node found in directory "$NODE_HOME
