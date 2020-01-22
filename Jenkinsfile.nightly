@@ -74,7 +74,7 @@ node('ibm-jenkins-slave-nvm') {
       // check artifactory for latest build with SMP/e
       try {
         def latestBuild = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.tar",
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME
         ])
 
@@ -93,7 +93,7 @@ node('ibm-jenkins-slave-nvm') {
           echo "Will need to re-build."
         }
       } catch (es) {
-        echo "getArtifact zowe-smpe-*.tar failed: ${es}"
+        echo "getArtifact zowe-smpe-*.zip failed: ${es}"
         echo "Will need to re-build."
       }
 
@@ -136,7 +136,7 @@ node('ibm-jenkins-slave-nvm') {
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.tar",
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME
         ])
       } else {
