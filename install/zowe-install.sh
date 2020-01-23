@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-ZOWE_GROUP=${ZOWE_GROUP} # Replace when zowe has it's own group: https://github.com/zowe/zowe-install-packaging/issues/518
+ZOWE_GROUP=ZWEADMIN # Replace with Zowe group in your environment
 
 while getopts "f:h:i:dI" opt; do
   case $opt in
@@ -75,7 +75,7 @@ echo "Install started at: "`date` >> $LOG_FILE
 
 cd $INSTALL_DIR/install
 # zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
-. $INSTALL_DIR/scripts/zowe-parse-yaml.sh
+# . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 if [[ ! -z "$INSTALL_TARGET" ]]
 then
@@ -177,7 +177,7 @@ cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-. $INSTALL_DIR/scripts/zowe-copy-xmem.sh
+# . $INSTALL_DIR/scripts/zowe-copy-xmem.sh
 
 #Give all directories -rw+x permission so they can be listed, but files -rwx
 chmod -R o-rwx ${ZOWE_ROOT_DIR}
