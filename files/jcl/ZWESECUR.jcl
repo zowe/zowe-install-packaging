@@ -427,8 +427,14 @@ F ACF2,REBUILD(FAC)
 * - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    *
 *   advised to protect it against updates.                          *
 *
-*TODO ACF2 dataset protection, permit sysprog ALTER                 *
-*
+*  HLQ stub                                                         *
+SET RULE
+*  general data set protection                                      *
+LIST &HLQ.
+RECKEY $&HLQ. ADD(- UID(-) READ(A) EXEC(P))
+RECKEY $&HLQ. ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
+*  show results                                                     *
+LIST &HLQ.
 * ................................................................. *
 * only the last RC is returned, this comment ensures it is a 0      *
 $$
@@ -550,9 +556,18 @@ $$
 /* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
 /*   advised to protect it against updates.                          */
 
-/*TODO TSS dataset protection, permit sysprog ALTER                  */
+/* HLQ stub                                                          */
+     TSS ADD DEPT(admin_grp_dpt) DATASET(&HLQ.)
 
-* If any of these started tasks are multiusers address spaces        */
+/* general data set protection                                       */
+      TSS WHOHAS DATASET(&HLQ.)
+      TSS PER(ALL) DATASET(&HLQ..) ACCESS(READ)
+      TSS PER(&SYSPROG.) DATASET(&HLQ..) ACCESS(ALL)
+
+/* show results                                                      */
+      TSS WHOHAS DATASET(&HLQ.)
+
+/* If any of these started tasks are multiusers address spaces       */
 /* a TSS FACILITY needs to be defined and assigned to the started    */
 /* and should not be using the STC FACILITY . The all acids signing  */
 /* on to the started tasks will need to be authorized to the         */
