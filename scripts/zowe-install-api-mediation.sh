@@ -12,7 +12,7 @@
 
 #********************************************************************
 # Expected globals:
-# $ZOWE_JAVA_HOME
+# $JAVA_HOME
 # $ZOWE_ROOT_DIR
 
 API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"
