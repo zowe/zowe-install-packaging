@@ -10,20 +10,20 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-# ZOWE_JAVA_HOME Should exist, be version 8+ and be on path
-if [[ -n "${ZOWE_JAVA_HOME}" ]]
+# JAVA_HOME Should exist, be version 8+ and be on path
+if [[ -n "${JAVA_HOME}" ]]
 then 
-    ls ${ZOWE_JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
+    ls ${JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
     if [[ $? -ne 0 ]]
     then
-        . ${ROOT_DIR}/scripts/utils/error.sh "ZOWE_JAVA_HOME does not point to a valid install of Java"
+        . ${ROOT_DIR}/scripts/utils/error.sh "JAVA_HOME does not point to a valid install of Java"
     else
-      JAVA_VERSION=`${ZOWE_JAVA_HOME}/bin/java -version 2>&1 | grep ^"java version"`
+      JAVA_VERSION=`${AVA_HOME}/bin/java -version 2>&1 | grep ^"java version"`
       if [[ "$JAVA_VERSION" < "java version \"1.8" ]]
       then 
         . ${ROOT_DIR}/scripts/utils/error.sh "$JAVA_VERSION is less than minimum level required of 1.8"
       fi
     fi
 else 
-    . ${ROOT_DIR}/scripts/utils/error.sh "ZOWE_JAVA_HOME is empty"
+    . ${ROOT_DIR}/scripts/utils/error.sh "JAVA_HOME is empty"
 fi

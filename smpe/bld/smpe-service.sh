@@ -209,7 +209,7 @@ else      # APAR & USERMOD PRE previous sysmods, and SUP interim builds
     # APAR number starts with I, matching APAR-fix number starts with A
     test -f $service/$prevApar && \
       _cmd --save $ptf/pre sed 's/^./A/' $service/$prevApar
-    test -f $service/$prevPTF && \
+    test -f $service/$prevPtf && \
       _cmd --save $ptf/pre cat $service/$prevPtf
 
     _formatPreSupReq PRE $ptf/pre

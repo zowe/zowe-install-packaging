@@ -17,15 +17,15 @@ SUPPORT_ARCHIVE_LOG="${SUPPORT_ARCHIVE_LOCATION}zowe_support_${DATE}.log"
 PS_OUTPUT_FILE=${SUPPORT_ARCHIVE_LOCATION}"ps_output"
 VERSION_FILE=${SUPPORT_ARCHIVE_LOCATION}"version_output"
 
-ZOWE_STC=ZOWE_SERVER_PROCLIB_MEMBER # Should this be ${ZOWE_PREFIX}${ZOWE_INSTANCE}SV?
+ZOWE_STC=ZWESVSTC # Should this be ${ZOWE_PREFIX}${ZOWE_INSTANCE}SV?
 
 # In case NODE_HOME, JAVA_HOME, ZOWE_STC and ZOWE_PREFIX are empty
 # this script sould exit with a warning message
-if [[ -z "${ZOWE_NODE_HOME}" ]];then
+if [[ -z "${NODE_HOME}" ]];then
     echo "The NODE_HOME environment variable wasn't properly populated during install. Exiting."
     exit
 fi
-if [[ -z "${ZOWE_JAVA_HOME}" ]];then
+if [[ -z "${JAVA_HOME}" ]];then
     echo "The JAVA_HOME environment variable wasn't properly populated during install. Exiting."
     exit
 fi
@@ -92,7 +92,7 @@ function add_to_pax {
 write_to_log "Collecting version of z/OS, Java, NodeJS"
 ZOS_VERSION=`${ROOT_DIR}/scripts/internal/opercmd "D IPLINFO" | grep -i release | xargs`
 write_to_log "  - z/OS "$ZOS_VERSION
-JAVA_VERSION=`$ZOWE_JAVA_HOME/bin/java -version 2>&1 | head -n 1`
+JAVA_VERSION=`$JAVA_HOME/bin/java -version 2>&1 | head -n 1`
 write_to_log "  - Java "$JAVA_VERSION
 NODE_VERSION=`$NODE_HOME/bin/node --version`
 write_to_log "  - NodeJS "$NODE_VERSION

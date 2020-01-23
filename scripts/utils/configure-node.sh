@@ -10,12 +10,6 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-# if NODE_HOME set by user, don't override
-if [[ ! -f "$NODE_HOME/bin/node" ]]
-then
-  export NODE_HOME=$ZOWE_NODE_HOME
-fi
-
 #Make sure Node is available on the PATH
 if [[ ":$PATH:" != *":$NODE_HOME/bin:"* ]];
 then
