@@ -75,8 +75,6 @@ fi
 echo "Install started at: "`date` >> $LOG_FILE
 
 cd $INSTALL_DIR/install
-# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
-# . $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 if [[ ! -z "$INSTALL_TARGET" ]]
 then
