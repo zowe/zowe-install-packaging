@@ -48,8 +48,8 @@ echo_and_log() {
 create_new_instance() {
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
-    -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
-    -e "s#{{node_home}}#${ZOWE_NODE_HOME}#" \
+    -e "s#{{java_home}}#${JAVA_HOME}#" \
+    -e "s#{{node_home}}#${NODE_HOME}#" \
     -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
     -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
     -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
@@ -78,7 +78,7 @@ check_existing_instance_for_updates() {
   if [[ -n $LINES_TO_APPEND ]]
   then
     LINES_TO_APPEND=$(echo "$LINES_TO_APPEND" | sed \
-      -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
+      -e "s#{{java_home}}#${JAVA_HOME}#" \
       -e "s#{{node_home}}#${NODE_HOME}#" \
       -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
       -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
