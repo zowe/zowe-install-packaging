@@ -11,6 +11,7 @@
 ################################################################################
 
 ZOWE_GROUP=ZWEADMIN # Replace with Zowe group in your environment
+ZOWE_USER=ZWESVUSR  # Replace with Zowe user  in your environment
 
 while getopts "f:h:i:dI" opt; do
   case $opt in
@@ -177,7 +178,22 @@ cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-# . $INSTALL_DIR/scripts/zowe-copy-xmem.sh
+# Verify that zowe userid and group exist
+id -Gn ${ZOWE_USER} 
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  echo "  Unable to display the group of userid ${ZOWE_USER}"
+  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER}."
+  echo "  'id -Gn ${ZOWE_USER}' failed to run successfully" >> $LOG_FILE
+fi
+
+echo `id -Gn ${ZOWE_USER}` | grep ${ZOWE_GROUP}
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  echo "  userid ${ZOWE_USER} is not a member of group ${ZOWE_GROUP}"
+  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER} in group ${ZOWE_GROUP}."
+  echo "  'id -Gn ${ZOWE_USER}' did not find zowe group ${ZOWE_GROUP}" >> $LOG_FILE
+fi
 
 #Give all directories -rw+x permission so they can be listed, but files -rwx
 chmod -R o-rwx ${ZOWE_ROOT_DIR}
