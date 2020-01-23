@@ -170,12 +170,12 @@ if [[ $ZOWE_NODE_HOME == "" ]]
 then
     if [[ -z ${NODE_HOME} ]]
     then
-        ZOWE_NODE_HOME=/usr/lpp/java/J8.0_64
+        ZOWE_NODE_HOME="/usr/lpp/IBM/cnj/IBM/node-latest-os390-s390x"
     else
         ZOWE_NODE_HOME=${NODE_HOME}
     fi
 else    
-    echo "  ZOWE_NODE_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
+    echo "  ZOWE_NODE_HOME variable value="$ZOWE_NODE_HOME >> $LOG_FILE
 fi
 promptNodeHome
 
