@@ -1,0 +1,92 @@
+{
+  "allowedPlugins": [
+    {
+      "identifier": "org.zowe.configjs",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.editor",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.terminal.proxy",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.terminal.tn3270",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.terminal.vt",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.appmanager.app.propview",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.auth.trivial",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.auth.zosmf",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.auth.zss",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.bootstrap",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.logger",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.ng2desktop",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.ng2desktop.settings",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.proxy.zosmf",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.sample.angular",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.sample.react",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zlux.sample.iframe",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.zosmf.workflows",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.openmainframe.zowe.workshop-starter",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.explorer-jes",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.explorer-uss",
+      "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.explorer-mvs",
+      "versions": ["*"]
+    }
+  ]
+}
