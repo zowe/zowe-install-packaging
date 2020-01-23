@@ -7,15 +7,12 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2020
 ################################################################################
 
-#TODO LATER - SH: once all components updated remove this old version
-
-#Make sure Java is available on the path - 
-export JAVA_HOME=$ZOWE_JAVA_HOME
-if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]];
+$(. ${ROOT_DIR}/scripts/utils/validate-directory-is-accessible.sh ${KEYSTORE_DIRECTORY})
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]];
 then
-  echo "Appending ZOWE_JAVA_HOME/bin to the PATH..."
-  export PATH=$PATH:$JAVA_HOME/bin
+  . ${ROOT_DIR}/scripts/utils/error.sh "Was <root-dir>/bin/zowe-setup-certificates.sh run, or KEYSTORE_DIRECTORY property updated in instance.env? See docs for more details"
 fi

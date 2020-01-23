@@ -179,8 +179,6 @@ echo "BUILD_NUMBER=$BUILD_NUMBER"
 test -n "$BUILD_NUMBER" && external="$external -B $BUILD_NUMBER"
 echo "ZOWE_VERSION=$ZOWE_VERSION"
 test -n "$ZOWE_VERSION" && external="$external -p $ZOWE_VERSION"
-echo "BUILD_SMPE_PTF=$BUILD_SMPE_PTF"
-test -n "$BUILD_SMPE_PTF" && external="$external -P"
 
 ${CURR_PWD}/smpe/bld/smpe.sh \
   -a ${CURR_PWD}/smpe/bld/alter.sh \
@@ -204,6 +202,7 @@ echo "+----------------------+"
 echo
 
 # display all files left behind by SMPE build
+echo "[$SCRIPT_NAME] content of ${SMPE_BUILD_ROOT}...."
 find ${SMPE_BUILD_ROOT} -print
 
 # see if SMPE build completed successfully
@@ -251,13 +250,13 @@ fi
 
 # if ptf-bucket.txt exists then publish PTF, otherwise publish FMID
 cd "${SMPE_BUILD_SHIP_DIR}"
-if [ -f ${CURR_PWD}/smpe/bld/service/ptf-bucket.txt ]; then
-  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_PTF_ZIP}
+if [ -f ${CURR_PWD}/smpe/bld/service/ptf-bucket.txt ]; then       # PTF
+  cp  ${SMPE_PTF_ZIP} ${CURR_PWD}/zowe-smpe.zip
   # do not alter existing PD in docs, wipe content of the new one
   rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
   touch "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
-else
-  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_FMID_ZIP}
+else                                                             # FMID
+  cp ${SMPE_FMID_ZIP} ${CURR_PWD}/zowe-smpe.zip
   # doc build pipeline must pick up PD for inclusion
 fi
 
@@ -277,7 +276,7 @@ iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
 # files to be uploaded to artifactory:
 # ${CURR_PWD}/smpe-build-logs.pax.Z
-# ${CURR_PWD}/zowe-smpe.tar          -> holds zip that goes to zowe.org
+# ${CURR_PWD}/zowe-smpe.zip          -> goes to zowe.org
 # ${CURR_PWD}/fmid.zip
 # ${CURR_PWD}/ptf.zip
 # ${CURR_PWD}/pd.htm                 -> can be a null file
