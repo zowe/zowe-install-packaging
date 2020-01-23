@@ -46,6 +46,8 @@ done
 chmod -R u+w zlux-app-server 2>/dev/null
 mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
 cp -f ${INSTALL_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins
+cp -f ${INSTALL_DIR}/files/zlux/config/allowedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins/
 cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/serverConfig/server.json
 cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
 
