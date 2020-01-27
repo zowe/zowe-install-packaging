@@ -308,8 +308,8 @@ UO67890 UO98765 - IO67890 IO98765
 ```
 ### Remove current-apar.txt
 
-\&lt;the APARs are now embedded in the PTF, so this file may no longer exist\&gt;
-\&lt;Note: the same is true for current-hold-\*.txt, which is not used in this sample\&gt;
+&lt;the APARs are now embedded in the PTF, so this file may no longer exist&gt;
+&lt;Note: the same is true for current-hold-\*.txt, which is not used in this sample&gt;
 
 ### Create/update promoted-apar.txt
 ```
