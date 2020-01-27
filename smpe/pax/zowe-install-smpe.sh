@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
 #% Create SMP/E members.
@@ -244,14 +244,6 @@ test "$LOG_FILE" && echo "  $(date)" >> $LOG_FILE
 
 _cmd cd $here
 
-# Generate the SMP/E Workflow
-
-_cmd cd $here/ZOSMF
-chmod u+x ./build_smpe_wf.sh
-./build_smpe_wf.sh
-
-_cmd cd $here
-
 year=$(date '+%Y')                                               # yyyy
 test "$debug" && year=$year
 
@@ -262,7 +254,8 @@ echo "-- output USS: $ussI"
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-# install SZWESAMP members
+# install SZWESAMP members 
+# (explicitly list all members to support $ReMoVe)
 list=""     # file names include path based on $here
 list="$list MVS/ZWE1SMPE.jcl"
 list="$list MVS/ZWE2RCVE.jcl"
@@ -282,9 +275,11 @@ list="$list MVS/ZWES5RST.jcl"
 _installMVS SZWESAMP "FB" "80" "PO" "10,2"
 
 # install SZWEZFS members
+# (explicitly list all members to support $ReMoVe)
 list=""     # file names include path based on $here
-list="$list USS/ZWESHPAX.sh ZOSMF/ZWEWRF01.xml"
-list="$list USS/ZWESHPAX.sh ZOSMF/vtls/ZWEYML01.yml"
+list="$list USS/ZWESHPAX.sh"
+list="$list USS/ZWEWRF01.xml"
+list="$list USS/ZWEYML01.yml"
 _installUSS $ussI
 
 # remove install script if requested

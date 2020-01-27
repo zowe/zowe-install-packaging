@@ -1,22 +1,21 @@
 #!/bin/sh -e
-set -x
-
-################################################################################
-# This program and the accompanying materials are made available under the terms of the
-# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+#
+# SCRIPT ENDS ON FIRST NON-ZERO RC
+#
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
 # https://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
-################################################################################
+# Copyright Contributors to the Zowe Project. 2019, 2020
+#######################################################################
+set -x
 
 SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
-
-#
-# SCRIPT ENDS ON FIRST NON-ZERO RC
-#
 
 if [ "$BUILD_SMPE" != "yes" ]; then
   echo "[$SCRIPT_NAME] not building SMP/e package, skipping."
@@ -53,25 +52,40 @@ echo "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" > ${CURR_PWD}/cleanup-smpe-packaging-data
 # add x permission to all smpe files
 chmod -R 755 smpe
 
-#Generate JCL boilerplates
-for entry in $(ls "./smpe/pax/ZOSMF/vtls/")
+# smpe.pax ------------------------------------------------------------
+
+PAX_PATH="${CURR_PWD}/smpe/pax"
+ZOSMF_PATH="${CURR_PWD}/smpe/ZOSMF"
+
+# generate boilerplate SMPE JCL
+MVS_PATH="${PAX_PATH}/MVS"        # output
+LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
+VTLCLI_PATH="/ZOWE/vtl-cli"       # tool
+for entry in $(ls ${LOCAL_PATH}/)
 do
-  if [ "${entry##*.}" = "vtl" ]
+  if [ "${entry##*.}" = "vtl" ]          # keep from last . (exclusive)
   then
-    MVS_PATH="./smpe/pax/MVS/"
-    LOCAL_PATH="./smpe/pax/ZOSMF/vtls/"
-    VTL=${LOCAL_PATH}${entry} 
-    BASE=${VTL%.*}
-    YAML=${BASE}".yml"
-    JCL=${MVS_PATH}"$(basename $BASE).jcl"
-    java -jar /ZOWE/vtl-cli/vtl-cli.jar -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
+    BASE=${entry%.*}                    # keep up to last . (exclusive)
+    VTL="${LOCAL_PATH}/${entry}"
+    YAML="${LOCAL_PATH}/${BASE}.yml"
+    JCL="${MVS_PATH}/${BASE}.jcl"
+    # assumes java is in $PATH
+    java -jar ${VTLCLI_PATH}/vtl-cli.jar -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
   fi
 done
+
+# generate SMPE workflow
+USS_PATH="${PAX_PATH}/USS"        # output
+LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
+cp ${LOCAL_PATH}/ZWEYML01.yml ${USS_PATH}/ZWEYML01.yml
+${ZOSMF_PATH}/build_workflow.rex -d -i ${ZOSMF_PATH}/smpe_workflow.xml -o ${USS_PATH}/ZWEWRF01.xml
 
 # create smpe.pax
 cd ${CURR_PWD}/smpe/pax
 pax -x os390 -w -f ../../smpe.pax *
 cd ${CURR_PWD}
+
+# ---------------------------------------------------------------------
 
 # extract last build log
 LAST_BUILD_LOG=$(ls -1 ${CURR_PWD}/smpe/smpe-build-logs* || true)
