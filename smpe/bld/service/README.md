@@ -1,6 +1,43 @@
 # Zowe SMP/E service build – sample output
 
-## Contents
+Table of Contents
+=================
+
+   * [USERMOD build (GA)](#usermod-build-ga)
+        * [Header SYSMOD 1](#header-sysmod-1)
+   * [1st PTF build](#1st-ptf-build)
+        * [Create ptf-bucket.txt](#create-ptf-buckettxt)
+        * [Create apar-bucket.txt](#create-apar-buckettxt)
+        * [Header SYSMOD 1](#header-sysmod-1-1)
+   * [Force APAR build](#force-apar-build)
+        * [Update ptf-bucket.txt](#update-ptf-buckettxt)
+        * [Update apar-bucket.txt](#update-apar-buckettxt)
+        * [Header SYSMOD 1](#header-sysmod-1-2)
+        * [Final ptf-bucket.txt](#final-ptf-buckettxt)
+        * [Final current-apar.txt](#final-current-apartxt)
+   * [Rebuild 1st PTF with additional APAR](#rebuild-1st-ptf-with-additional-apar)
+        * [Header SYSMOD 1](#header-sysmod-1-3)
+   * [Promote PTF](#promote-ptf)
+        * [Update ptf-bucket.txt](#update-ptf-buckettxt-1)
+        * [Remove current-apar.txt](#remove-current-apartxt)
+        * [Create/update promoted-apar.txt](#createupdate-promoted-apartxt)
+        * [Create/update promoted-close.txt](#createupdate-promoted-closetxt)
+        * [Create/update promoted-hold.txt](#createupdate-promoted-holdtxt)
+        * [Create/update promoted-ptf.txt](#createupdate-promoted-ptftxt)
+   * [2nd PTF build](#2nd-ptf-build)
+        * [Header SYSMOD 1](#header-sysmod-1-4)
+   * [2nd force APAR build](#2nd-force-apar-build)
+        * [Update ptf-bucket.txt](#update-ptf-buckettxt-2)
+        * [Update apar-bucket.txt](#update-apar-buckettxt-1)
+        * [Create current-hold-AO.txt](#create-current-hold-aotxt)
+        * [Header SYSMOD 1](#header-sysmod-1-5)
+        * [Final ptf-bucket.txt](#final-ptf-buckettxt-1)
+        * [Final current-apar.txt](#final-current-apartxt-1)
+   * [Force USERMOD build](#force-usermod-build)
+        * [Remove or update ptf-bucket.txt](#remove-or-update-ptf-buckettxt)
+        * [Header SYSMOD 1](#header-sysmod-1-6)
+        * [Final ptf-bucket.txt](#final-ptf-buckettxt-2)
+
 
 
 ## **USERMOD build (GA)**
