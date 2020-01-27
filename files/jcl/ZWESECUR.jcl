@@ -47,7 +47,7 @@
 //*    XMEM started task name.
 //*
 //* 10) Update the SET AUXSTC= statement to match the desired
-//*     XMEM Auxilary started task name.
+//*    XMEM Auxilary started task name.
 //*
 //* 11) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
@@ -479,7 +479,7 @@ $$
    TSS LIST(&STCGROUP.) SEGMENT(OMVS)
    TSS CREATE(&STCGROUP.) TYPE(GROUP) +
     NAME('STC GROUP WITH OMVS SEGEMENT') +
-    DEPT(stc_grp_dpt)
+    DEPT(stc_grp_dept)
    TSS ADD(&STCGROUP.) GID(109)
 
 /* userid for ZOWE, main server                                      */
@@ -492,14 +492,14 @@ $$
 /* userid for XMEM, cross memory server                              */
   TSS LIST(&XMEMUSER.) SEGMENT(OMVS)
   TSS CREATE(&XMEMUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE XMEM') +
-   DEPT(usr_dpt)
+   DEPT(usr_dept)
   TSS ADD(&XMEMUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(111)
 
 /* userid for XMEM auxilary cross memory server                      */
   TSS LIST(&AUXUSER.) SEGMENT(OMVS)
   TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE XMEM AUX') +
-   DEPT(usr_dpt)
+   DEPT(usr_dept)
   TSS ADD(&AUXUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(112)
 
@@ -547,9 +547,9 @@ $$
 /*            it on a production system.                             */
   TSS ADD(fac_owning_acid) IBMFAC(BPX.)
   TSS WHOHAS IBMFAC(BPX.DAEMON)
-  TSS PER(&XMEMUSER.) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
+  TSS PER(&XMEMUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)
   TSS WHOHAS IBMFAC(BPX.SERVER)
-  TSS PER(&XMEMUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+  TSS PER(&XMEMUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
