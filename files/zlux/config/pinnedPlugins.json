@@ -2,8 +2,7 @@
   "plugins": [
     "org.zowe.terminal.tn3270",
     "org.zowe.terminal.vt",
-    "org.zowe.zlux.sample.angular",
-    "org.zowe.zlux.sample.react",
-    "org.zowe.zlux.sample.iframe"
+    "org.zowe.explorer-jes",
+    "org.zowe.editor"
   ]
 }
