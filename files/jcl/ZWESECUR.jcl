@@ -448,7 +448,7 @@ $$
 /* DEFINE ADMINISTRATORS ........................................... */
 
 /* required updates:                                                 */
-/* - change "admin_grp_dpt" to the department owning the STC group   */
+/* - change "admin_grp_dept" to the department owning the STC group   */
 
 /* optional updates:                                                 */
 /* - update 108 in "GID(108)" to a GID for the administrator group   */
@@ -457,15 +457,15 @@ $$
   TSS LIST(&ADMINGRP.) SEGMENT(OMVS)
   TSS CREATE(&ADMINGRP.) TYPE(GROUP) +
    NAME('ZOWE ADMINISTRATORS') +
-   DEPT(admin_grp_dpt)
+   DEPT(admin_grp_dept)
   TSS ADD(&ADMINGRP.) GID(108)
 
 
 /* DEFINE STARTED TASK ............................................. */
 
 /* required updates:                                                 */
-/* - change "stc_grp_dpt" to the department owning the STC group     */
-/* - change "usr_dpt" to the department owning the Zowe STC user IDs */
+/* - change "stc_grp_dept" to the department owning the STC group     */
+/* - change "usr_dept" to the department owning the Zowe STC user IDs */
 /* - change "fac_owning_acid" to the acid that owns IBMFAC           */
 
 /* optional updates:                                                 */
@@ -485,7 +485,7 @@ $$
 /* userid for ZOWE, main server                                      */
   TSS LIST(&ZOWEUSER.) SEGMENT(OMVS)
   TSS CREATE(&ZOWEUSER.) TYPE(USER) PASS(NOPW,0) NAME('ZOWE') +
-   DEPT(usr_dpt)
+   DEPT(usr_dept)
   TSS ADD(&ZOWEUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(110)
 
@@ -557,7 +557,7 @@ $$
 /*   advised to protect it against updates.                          */
 
 /* HLQ stub                                                          */
-     TSS ADD DEPT(admin_grp_dpt) DATASET(&HLQ.)
+     TSS ADD DEPT(admin_grp_dept) DATASET(&HLQ.)
 
 /* general data set protection                                       */
       TSS WHOHAS DATASET(&HLQ.)
