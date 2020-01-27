@@ -128,12 +128,12 @@ FMID          (Function Modification IDentifier)
               SMP/E keyword: ++FUNCTION
               Comparable to the build result of the RC (release candidate)
               GitHub branch.
-              Base version of a software product. Once installed and
+              Base level of a software product. Once installed and
               configured, this product can be used. All future updates
               must be applied on top of this base, even if the update is
               a full product replacement.
               With Zowe, each official convenience build with a version
-              change will have a matching FMID.
+              change (V in VRM) will have a matching FMID.
 APAR          (Authorized Program Analysis Report)
               Comparable to a GitHub issue.
               Describes a bug in / enhancement for the code/documentation.
@@ -166,7 +166,7 @@ PTF           (Program Temporary Fix)
               naming convention UOxxxxx to ensure uniqueness, where
               xxxxx is a 5-digit number. This might change in the future.
               With Zowe, each official convenience build that does not
-              have a version change will have a matching PTF.
+              have a version change (V in VRM) will have a matching PTF.
               With Zowe, a PTF will always SUP all APAR-fixes that are
               embedded in this PTF, and all previous PTFs. This implies
               that by installing a PTF, you automatically get all
