@@ -78,7 +78,7 @@ done
 USS_PATH="${PAX_PATH}/USS"        # output
 LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
 cp ${LOCAL_PATH}/ZWEYML01.yml ${USS_PATH}/ZWEYML01.yml
-${ZOSMF_PATH}/build_workflow.rex -d -i ${ZOSMF_PATH}/smpe_workflow.xml -o ${USS_PATH}/ZWEWRF01.xml
+${ZOSMF_PATH}/build-workflow.rex -d -i ${ZOSMF_PATH}/smpe_workflow.xml -o ${USS_PATH}/ZWEWRF01.xml
 
 # create smpe.pax
 cd ${CURR_PWD}/smpe/pax
