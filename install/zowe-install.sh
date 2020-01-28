@@ -10,8 +10,8 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-if [ $# -ne 4 ]; then
-  echo "Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+if [ $# -lt 4 ]; then
+  echo "Usage: $0 -i zowe_install_path -h zowe_dsn_prefix [-g zowe_group] [-u zowe_user]"
   exit 1
 fi
 
@@ -28,8 +28,10 @@ while getopts "f:h:i:dI" opt; do
       # future use, issue 801, accept parm to stabilize SMPE packaging
       #...="$OPTARG"
       ;;
+    g) ZOWE_GROUP=$OPTARG;;
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
+    u) ZOWE_USER=$OPTARG;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
