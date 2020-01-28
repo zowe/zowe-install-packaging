@@ -15,7 +15,7 @@ Add product member to build
 1. Add member to files/..., e.g. files/jcl/ZWENOSEC.jcl
 2. Add member definition to smpe/bld/SMPMCS.txt, e.g.
 ++SAMP(ZWENOSEC)     SYSLIB(SZWESAMP) DISTLIB(AZWESAMP) RELFILE(2) .
-3. update scripts/zowe-install-MVS.sh, e.g.
+3. Update scripts/zowe-install-MVS.sh, e.g.
 members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl'
 
 Add SMPE member to build
@@ -23,10 +23,13 @@ Add SMPE member to build
 1. Add member to smpe/pax/..., e.g. smpe/pax/USS/ZWEYML01.yml
 2. Add member definition to smpe/bld/SMPMCS.txt, e.g.
 ++HFS(ZWEYML01)      SYSLIB(SZWEZFS ) DISTLIB(AZWEZFS ) RELFILE(4)
+   SHSCRIPT(ZWESHMKD,PRE)
    LINK('../workflow/install.yaml')
    TEXT              PARM(PATHMODE(0,7,5,5)) .
-3. update smpe/pax/zowe-install-smpe.sh, e.g.
+3. Update smpe/pax/zowe-install-smpe.sh, e.g.
 list="$list USS/ZWEYML01.yml"
+4. Ensure the directory is listed in smpe/pax/USS/ZWESHMKD.sh, e.g.
+_dirs='../workflow'
 
 Flow for SMP/E packaging build
 ------------------------------
