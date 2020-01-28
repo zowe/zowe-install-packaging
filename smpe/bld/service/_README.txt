@@ -18,6 +18,11 @@ to the top of ptf-bucket.txt before requesting a build.
 | ptf-bucket.txt |
 +----------------+
 
+NOTE FOR PULL REQUEST APPROVER: 
+This file may only be updated when IBM provides more PTF numbers, or
+when a Release Candidate PTF is promoted. Reject ALL other updates.
+
+
 The absence or presence of ptf-bucket.txt is used by the SMP/E build
 process to determine whether the FMID or a PTF must be shipped.
 If not present, we are in FMID mode, otherwise in PTF mode.

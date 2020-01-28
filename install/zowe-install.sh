@@ -10,7 +10,8 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-ZOWE_GROUP=${ZOWE_GROUP} # Replace when zowe has it's own group: https://github.com/zowe/zowe-install-packaging/issues/518
+ZOWE_GROUP=ZWEADMIN # Replace with Zowe group in your environment
+ZOWE_USER=ZWESVUSR  # Replace with Zowe user  in your environment
 
 while getopts "f:h:i:dI" opt; do
   case $opt in
@@ -74,8 +75,6 @@ fi
 echo "Install started at: "`date` >> $LOG_FILE
 
 cd $INSTALL_DIR/install
-# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
-. $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 if [[ ! -z "$INSTALL_TARGET" ]]
 then
@@ -182,7 +181,22 @@ cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-. $INSTALL_DIR/scripts/zowe-copy-xmem.sh # TODO - remove and file once zowe-apf-server removed.
+# Verify that zowe userid and group exist
+id -Gn ${ZOWE_USER} 
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  echo "  Unable to display the group of userid ${ZOWE_USER}"
+  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER}."
+  echo "  'id -Gn ${ZOWE_USER}' failed to run successfully" >> $LOG_FILE
+fi
+
+echo `id -Gn ${ZOWE_USER}` | grep ${ZOWE_GROUP}
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  echo "  userid ${ZOWE_USER} is not a member of group ${ZOWE_GROUP}"
+  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER} in group ${ZOWE_GROUP}."
+  echo "  'id -Gn ${ZOWE_USER}' did not find zowe group ${ZOWE_GROUP}" >> $LOG_FILE
+fi
 
 #Give all directories -rw+x permission so they can be listed, but files -rwx
 chmod -R o-rwx ${ZOWE_ROOT_DIR}
