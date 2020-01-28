@@ -67,24 +67,24 @@
       "artifact": "zss-1.8.0-rc-32-20191210153419.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "0.2.9",
+      "version": "0.2.11",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "0.2.6",
+      "version": "0.2.7",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "0.0.23"
+      "version": "0.0.25"
     },
     "org.zowe.explorer-mvs": {
-      "version": "0.0.16"
+      "version": "0.0.18"
     },
     "org.zowe.explorer-uss": {
-      "version": "0.0.14"
+      "version": "0.0.16"
     },
     "com.ca.mfaas.sdk.mfaas-zowe-install": {
-      "version": "1.1.12",
+      "version": "1.2.0",
       "artifact": "mfaas-zowe-install-*.zip",
       "target": ".pax/mediation/",
       "explode": "true",
@@ -105,7 +105,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.1.12",
+        "tag": "v1.2.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -191,7 +191,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v0.0.16",
+        "tag": "v0.0.18",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -205,21 +205,21 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v0.0.23",
+        "tag": "v0.0.25",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-        "tag": "v0.2.10",
+        "tag": "v0.2.11",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v0.0.14",
+        "tag": "v0.0.16",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -233,14 +233,14 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v0.2.6",
+        "tag": "v0.2.7",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v0.2.9",
+        "tag": "v0.2.11",
         "destinations": ["Zowe PAX"]
       }]
     }, {
