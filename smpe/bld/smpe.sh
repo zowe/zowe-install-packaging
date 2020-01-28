@@ -15,21 +15,24 @@
 #% Invocation arguments:
 #% -?            show this help message
 #% -a alter.sh   execute script before install to alter setup    #debug
+#% -b branch     GitHub branch used for this build
+#% -B build      GitHub build number for this branch
 #% -c smpe.yaml  use the specified config file
 #% -d            enable debug messages
+#% -E success    exit with RC 0, create file on successful completion
 #% -f fileCount  expected number of input (build output) files
 #% -h hlq        use the specified high level qualifier
-#%               .$FMID is automatically added
 #%               ignored when -c is specified
 #% -i inputFile  reference file listing non-SMPE distribution files
+#% -P            fail build if APAR/USERMOD is created instead of PTF
+#% -p version    product version
 #% -r rootDir    use the specified root directory
-#%               /$FMID is automatically added
 #%               ignored when -c is specified
 #% -s stopAt.sh  stop before this sub-script is invoked          #debug
 #% -V volume     allocate data sets on specified volume(s)
-#% -v vrm        FMID 3-character version/release/modification
+#% -v vrm        FMID 3-char version/release/modification (position 5-7)
 #%               ignored when -c is specified
-#% -1 fmidChar1  first FMID character
+#% -1 fmidChar1  first FMID character (position 1)
 #%               ignored when -c is specified
 #% -2 fmidId     FMID 3-character ID code (position 2-4)
 #%               ignored when -c is specified
@@ -40,11 +43,13 @@
 #% caller needs these RACF permits:
 #% (smpe-install.sh smpe-split.sh smpe-gimzip.sh)
 #% TSO PE BPX.SUPERUSER        CL(FACILITY) ACCESS(READ) ID(userid)
-#% (zowe-install-zlux.sh)
-#% TSO PE BPX.FILEATTR.PROGCTL CL(FACILITY) ACCESS(READ) ID(userid)
 #% (smpe-gimzip.sh)
 #% TSO PE GIM.PGM.GIMZIP       CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
+
+# TODO verify this permit requirement
+# (zowe-install-zlux.sh)
+# TSO PE BPX.FILEATTR.PROGCTL CL(FACILITY) ACCESS(READ) ID(userid)
 
 # see smpe-install.sh for info on -a, -f, -i
 
@@ -113,7 +118,7 @@ sTaTuS=$?
 if test $sTaTuS -ne 0
 then
   echo "** ERROR $me '$@' ended with status $sTaTuS"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit $errorRC                        # EXIT
 fi    #
 }    # _cmd
 
@@ -144,18 +149,25 @@ _cmd umask 0022                                  # similar to chmod 755
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset alter YAML count HLQ input ROOT stopAt VOLSER VRM fmid1 fmid2
-# do NOT unset debug
+unset alter BUILD BRANCH YAML SuCcEsS count HLQ input reqPTF VERSION \
+      ROOT stopAt VOLSER VRM fmid1 fmid2
+# do NOT unset debug errorRC
+errorRC=8  # default RC 8 on error
 
 # get startup arguments
-while getopts a:c:f:h:i:r:s:V:v:1:2:?d opt
+while getopts a:B:b:c:E:f:h:i:p:r:s:V:v:1:2:?dP opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
+  B)   export BUILD="-B $OPTARG";;
+  b)   export BRANCH="-b $OPTARG";;
   c)   export YAML="$OPTARG";;
   d)   export debug="-d";;
+  E)   export SuCcEsS="$OPTARG"; export errorRC="0";; 
   f)   export count="$OPTARG";;
   h)   export HLQ="$OPTARG";;
   i)   export input="$OPTARG";;
+  P)   export reqPTF="-P";;
+  p)   export VERSION="-p $OPTARG";;
   r)   export ROOT="$OPTARG";;
   s)   export stopAt="$OPTARG";;
   V)   export VOLSER="$OPTARG";;
@@ -164,10 +176,13 @@ do case "$opt" in
   2)   export fmid2="$OPTARG";;
   [?]) _displayUsage
        test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
-       test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
+       test ! "$IgNoRe_ErRoR" && exit $errorRC;;                 # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
+
+# avoid false signal that we ended successfully
+test -f "$SuCcEsS" && _cmd rm -f "$SuCcEsS"
 
 # set envvars
 . $here/$cfgScript -c -v                      # call with shell sharing
@@ -175,7 +190,7 @@ if test $rc -ne 0
 then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit $errorRC                        # EXIT
 fi    #
 
 # validate startup arguments
@@ -183,7 +198,7 @@ if test ! -f "$input"
 then
   _displayUsage
   echo "** ERROR $me -i $input is not a file"
-  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+  test ! "$IgNoRe_ErRoR" && exit $errorRC                        # EXIT
 fi    #
 
 # skip testing stopAt
@@ -212,23 +227,26 @@ _stopAt smpe-fmid.sh $debug -c $YAML $opts
 _cmd $here/smpe-fmid.sh $debug -c $YAML $opts
 # result (final): $HLQ                             # rel-files & SMPMCS
 
-# create GIMZIP
+# create downloadable archive of FMID
 opts=""
 _stopAt smpe-gimzip.sh $debug -c $YAML $opts
 _cmd $here/smpe-gimzip.sh $debug -c $YAML $opts
 # result (final): $gimzip                           # SMPE pax & readme
 
-# create program directory
+# create program directory (describes SMP/E install of FMID)
 opts=""
 _stopAt smpe-pd.sh $debug -c $YAML $opts
 _cmd $here/smpe-pd.sh $debug -c $YAML $opts
-# result (final): $                                          #
+# result (final): $ship               # zip with SMPE pax, readme, & PD
 
-# create service (++PTF)
-opts=""
+# create service (++PTF/++APAR/++USERMOD)
+opts="$reqPTF $BRANCH $BUILD $VERSION"
 _stopAt smpe-service.sh $debug -c $YAML $opts
 _cmd $here/smpe-service.sh $debug -c $YAML $opts
-# result (final): $HLQ                                         # sysmod
+# result (final): $ship                      # zip with sysmod & readme
+
+#  signal that we ended successfully
+test -n "$SuCcEsS" && _cmd touch "$SuCcEsS"
 
 echo "-- completed $me 0"
 test "$debug" && echo "< $me 0"

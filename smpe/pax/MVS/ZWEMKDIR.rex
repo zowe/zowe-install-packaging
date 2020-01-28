@@ -710,63 +710,63 @@ return cRC','RealDir','Dir','NoExist    /* _existPath */
  * --- Execute z/OS UNIX syscall command with basic error handling
  * Returns boolean indicating success (1) or not (0)
  * Args:
- *  _Cmd    : syscall command to execute
- *  _Verbose: (optional) flag to show syscall error message
- *  _Exit   : (optional) exit on REXX error
+ *  @Cmd    : syscall command to execute
+ *  @Verbose: (optional) flag to show syscall error message
+ *  @Exit   : (optional) exit on REXX error
  *
  * do NOT call from a routine that has values for
- * _Err. _RC _RetVal _ErrNo _ErrNoJr _Success _Cmd _Verbose _Exit
+ * @Err. @RC @RetVal @ErrNo @ErrNoJr @Success @Cmd @Verbose @Exit
  *
  * docu in "Using REXX and z/OS UNIX System Services (SA23-2283)"
  */
 _syscall: /* NO PROCEDURE */
-parse arg _Cmd,_Verbose,_Exit
-parse value _Verbose 1 with _Verbose .  /* default: report USS error */
-parse value _Exit 1 with _Exit .      /* default: exit on REXX error */
-_Success=1  /* TRUE */
-_Err.0=0
+parse arg @Cmd,@Verbose,@Exit
+parse value @Verbose 1 with @Verbose .  /* default: report USS error */
+parse value @Exit 1 with @Exit .      /* default: exit on REXX error */
+@Success=1  /* TRUE */
+@Err.0=0
 
-if Debug then say '. (syscall)' _Cmd
-address SYSCALL _Cmd
-parse value rc retval errno errnojr with _RC _RetVal _ErrNo _ErrNoJr
-if Debug then say '.           rc' _RC 'retval' _RetVal ,
-                'errno' _ErrNo 'errnojr' _ErrNoJr
+if Debug then say '. (syscall)' @Cmd
+address SYSCALL @Cmd
+parse value rc retval errno errnojr with @RC @RetVal @ErrNo @ErrNoJr
+if Debug then say '.           rc' @RC 'retval' @RetVal ,
+                'errno' @ErrNo 'errnojr' @ErrNoJr
 
-if _RC < 0
+if @RC < 0
 then do                                                /* REXX error */
-  _Success=0  /* FALSE */
+  @Success=0  /* FALSE */
   say ''
-  say '** ERROR syscall command failed:' _Cmd
+  say '** ERROR syscall command failed:' @Cmd
   select
-  when (_RC < -20) & (_RC > -30) then
-    say 'argument' abs(_RC)-20 'is in error'
-  when _RC = -20 then
+  when (@RC < -20) & (@RC > -30) then
+    say 'argument' abs(@RC)-20 'is in error'
+  when @RC = -20 then
     say 'unknown SYSCALL command or improper number of arguments'
-  when _RC = -3 then
+  when @RC = -3 then
     say 'not in SYSCALL environment'
   otherwise
     say 'error flagged by REXX language processor'
   end    /* select */
-  if _Exit then exit 12                             /* LEAVE PROGRAM */
+  if @Exit then exit 12                             /* LEAVE PROGRAM */
 end    /* REXX error */
-else if _RetVal == -1
+else if @RetVal == -1
   then do                                              /* UNIX error */
-    _Success=0  /* FALSE */
-    if _Verbose
+    @Success=0  /* FALSE */
+    if @Verbose
     then do                                      /* report the error */
       say ''
-      say '** ERROR syscall command failed:' _Cmd
-      say 'ErrNo('_ErrNo') ErrNoJr('_ErrNoJr')'
-      address SYSCALL 'strerror' _ErrNo _ErrNoJr '_Err.'
-      do T=1 to _Err.0 ; say _Err.T ; end
+      say '** ERROR syscall command failed:' @Cmd
+      say 'ErrNo('@ErrNo') ErrNoJr('@ErrNoJr')'
+      address SYSCALL 'strerror' @ErrNo @ErrNoJr '@Err.'
+      do T=1 to @Err.0 ; say @Err.T ; end
     end    /* report */
   end    /* UNIX error */
 /*else nop */ /* Note: a few cmds use retval <> -1 to indicate error */
 
 /* set syscall output vars back to value after command execution */
 drop rc retval errno errnojr /* ensure that the name is used in parse*/
-parse value _RC _RetVal _ErrNo _ErrNoJr with rc retval errno errnojr
-return _Success    /* _syscall */
+parse value @RC @RetVal @ErrNo @ErrNoJr with rc retval errno errnojr
+return @Success    /* _syscall */
 
 /*---------------------------------------------------------------------
  * --- Convert boolean value to text

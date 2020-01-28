@@ -48,14 +48,15 @@
 #      dirOutput  - or directory holding installed data, $ZOWE_ROOR_DIR
 #    alterScript must return RC 0 on success, non-zero on failure
 
-# creates $stage          directory with installed product
-# creates $mvsI.*         hlq with installed product
+# creates $stage/*        directory with installed product
+# creates $mvsI.*         data sets with installed product
 # creates $log/*.log      product install log                       #*/
 # removes old install.log files
 
 #..Assumes that if there are multiple input pax files, they all share
 #. the same leading directory, e.g. zowe-1.1.0.
 
+# more definitions in main()
 removeInstall=0                # 1 if install removes installed files
 smpeFilter="/smpe"             # regex to find SMP/E archive name
 prodScript=install/zowe-install.sh  # product install script
@@ -510,7 +511,7 @@ do case "$opt" in
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 # set envvars
 . $here/$cfgScript -c                         # call with shell sharing
