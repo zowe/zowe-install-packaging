@@ -1,4 +1,17 @@
-//ZWES0LST JOB <job parameters>
+#if( $jobCard and $jobCard != "" and $jobCard != '#jobCard')
+//ZWES1REJ JOB ${acct},
+// NOTIFY=&SYSUID,
+#if( $sysaff and $sysaff != "" and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != "" and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+#if($ibmTemplate == 'YES')
+//ZWES1REJ JOB <job parameters>
+#end
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -11,7 +24,7 @@
 //*
 //********************************************************************
 //*
-//* This JCL will list all SYSMODs for a given zone.
+//* This JCL will remove a SYSMOD (PTF, APAR, USERMOD) from SMPPTS.
 //*
 //*
 //* CAUTION: This is neither a JCL procedure nor a complete job.
@@ -20,32 +33,23 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change #csihlq to the high level qualifier for the global zone
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change #tzone to your CSI target zone name.
-//*
-//* 4) Change #dzone to your CSI distribution zone name.
-//*
-//* 5) Uncomment the desired SET ZONE= statement and comment out
-//*    the other ones. The name of the SET statement (ACCEPT, APPLY,
-//*    RECEIVE) indicates what type of information is in that zone.
+//* 3) Change ${sysmod} to the name of the SYSMOD to be received.
 //*
 //* Note(s):
 //*
 //* 1. This job should complete with a return code 0.
 //*
 //********************************************************************
-//         EXPORT SYMLIST=(ZONE)
 //*
-//*ACCEPT   SET ZONE=#dzone
-//*APPLY    SET ZONE=#tzone
-//RECEIVE  SET ZONE=GLOBAL
-//*
-//LIST     EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
-//SMPCSI   DD DISP=OLD,DSN=#csihlq.CSI
-//SMPCNTL  DD *,SYMBOLS=JCLONLY
-   SET BOUNDARY(&ZONE) .
-   LIST FUNCTIONS PTF APAR USERMOD
-   .
+//REJECT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
+//SMPCNTL  DD *
+   SET BOUNDARY(GLOBAL) .
+   REJECT BYPASS(APPLYCHECK)
+          SELECT(
+   ${sysmod}
+   ) .
 //*

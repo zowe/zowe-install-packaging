@@ -1,4 +1,17 @@
+#if( $jobCard and $jobCard != "" and $jobCard != '#jobCard')
+//ZWES5RST JOB ${acct},
+// NOTIFY=&SYSUID,
+#if( $sysaff and $sysaff != "" and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != "" and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+#if($ibmTemplate == 'YES')
 //ZWES5RST JOB <job parameters>
+#end
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -20,12 +33,12 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change #csihlq to the high level qualifier for the global zone
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change #tzone to your CSI target zone name.
+//* 3) Change ${tzone} to your CSI target zone name.
 //*
-//* 4) Change #sysmod to the name of the SYSMOD to be restored.
+//* 4) Change ${sysmod} to the name of the SYSMOD to be restored.
 //*
 //* Note(s):
 //*
@@ -40,10 +53,10 @@
 //********************************************************************
 //*
 //ACEPTCHK EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
-//SMPCSI   DD DISP=OLD,DSN=#csihlq.CSI
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
 //SMPCNTL  DD *
-   SET BOUNDARY(#tzone) .
+   SET BOUNDARY(${tzone}) .
    RESTORE SELECT(
-   #sysmod
+   ${sysmod}
    ) .
 //*

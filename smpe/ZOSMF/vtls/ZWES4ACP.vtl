@@ -1,4 +1,17 @@
+#if( $jobCard and $jobCard != "" and $jobCard != '#jobCard')
+//ZWES4ACP JOB ${acct},
+// NOTIFY=&SYSUID,
+#if( $sysaff and $sysaff != "" and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != "" and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+#if($ibmTemplate == 'YES')
 //ZWES4ACP JOB <job parameters>
+#end
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -20,12 +33,12 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change #csihlq to the high level qualifier for the global zone
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change #dzone to your CSI distribution zone name.
+//* 3) Change ${dzone} to your CSI distribution zone name.
 //*
-//* 4) Change #sysmod to the name of the SYSMOD to be accepted.
+//* 4) Change ${sysmod} to the name of the SYSMOD to be accepted.
 //*
 //* Note(s):
 //*
@@ -40,9 +53,16 @@
 //********************************************************************
 //         EXPORT SYMLIST=(ZONE,SYSMOD)
 //*
-//         SET SYSMOD=#sysmod
-//         SET ZONE=#dzone
-//         SET CSIHLQ=#csihlq
+#if($ibmTemplate == 'NO')
+//         SET SYSMOD='${sysmod}'
+//         SET ZONE='${dzone}'
+//         SET CSIHLQ='${csihlq}'
+#end
+#if($ibmTemplate == 'YES')
+//         SET SYSMOD=${sysmod}
+//         SET ZONE=${dzone}
+//         SET CSIHLQ=${csihlq}
+#end
 //*
 //ACEPTCHK EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=&CSIHLQ..CSI
@@ -59,7 +79,12 @@
 //SMPCNTL  DD *,SYMBOLS=JCLONLY
    SET BOUNDARY(&ZONE) .
    ACCEPT REDO COMPRESS(ALL)
+#if( $holddata != 'no')
+         BYPASS(HOLDSYS,HOLDERROR)
+#end
+#if($ibmTemplate == 'YES')
         /*BYPASS(HOLDSYS,HOLDERROR)*/
+#end
           SELECT(
    &SYSMOD
    ) .

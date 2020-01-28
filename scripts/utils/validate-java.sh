@@ -18,7 +18,7 @@ then
     then
         . ${ROOT_DIR}/scripts/utils/error.sh "JAVA_HOME does not point to a valid install of Java"
     else
-      JAVA_VERSION=`${AVA_HOME}/bin/java -version 2>&1 | grep ^"java version"`
+      JAVA_VERSION=`${JAVA_HOME}/bin/java -version 2>&1 | grep ^"java version"`
       if [[ "$JAVA_VERSION" < "java version \"1.8" ]]
       then 
         . ${ROOT_DIR}/scripts/utils/error.sh "$JAVA_VERSION is less than minimum level required of 1.8"
