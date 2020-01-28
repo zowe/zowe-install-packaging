@@ -1,22 +1,21 @@
 #!/bin/sh -e
-set -x
-
-################################################################################
-# This program and the accompanying materials are made available under the terms of the
-# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+#
+# SCRIPT ENDS ON FIRST NON-ZERO RC
+#
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
 # https://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
-################################################################################
+# Copyright Contributors to the Zowe Project. 2019, 2020
+#######################################################################
+set -x
 
 SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
-
-#
-# SCRIPT ENDS ON FIRST NON-ZERO RC
-#
 
 if [ "$BUILD_SMPE" != "yes" ]; then
   echo "[$SCRIPT_NAME] not building SMP/e package, skipping."
@@ -53,10 +52,44 @@ echo "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" > ${CURR_PWD}/cleanup-smpe-packaging-data
 # add x permission to all smpe files
 chmod -R 755 smpe
 
+# smpe.pax ------------------------------------------------------------
+
+PAX_PATH="${CURR_PWD}/smpe/pax"
+ZOSMF_PATH="${CURR_PWD}/smpe/ZOSMF"
+
+# generate boilerplate SMPE JCL
+MVS_PATH="${PAX_PATH}/MVS"        # output
+LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
+VTLCLI_PATH="/ZOWE/vtl-cli"       # tool
+for entry in $(ls ${LOCAL_PATH}/)
+do
+  if [ "${entry##*.}" = "vtl" ]          # keep from last . (exclusive)
+  then
+    BASE=${entry%.*}                    # keep up to last . (exclusive)
+    VTL="${LOCAL_PATH}/${entry}"
+    YAML="${LOCAL_PATH}/${BASE}.yml"
+    JCL="${MVS_PATH}/${BASE}.jcl"
+    # assumes java is in $PATH
+    java -jar ${VTLCLI_PATH}/vtl-cli.jar -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
+  fi
+done
+
+# generate SMPE workflow
+USS_PATH="${PAX_PATH}/USS"        # output
+LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
+cp ${LOCAL_PATH}/ZWEYML01.yml ${USS_PATH}/ZWEYML01.yml
+cd ${ZOSMF_PATH}   # required, smpe_workflow.xml has ./vtls references
+./build-workflow.rex -d -i ./smpe_workflow.xml -o ${USS_PATH}/ZWEWRF01.xml
+cd ${CURR_PWD}
+
 # create smpe.pax
 cd ${CURR_PWD}/smpe/pax
+echo "files to be pax'd"
+ls -lER .
 pax -x os390 -w -f ../../smpe.pax *
 cd ${CURR_PWD}
+
+# ---------------------------------------------------------------------
 
 # extract last build log
 LAST_BUILD_LOG=$(ls -1 ${CURR_PWD}/smpe/smpe-build-logs* || true)
@@ -164,8 +197,6 @@ echo "BUILD_NUMBER=$BUILD_NUMBER"
 test -n "$BUILD_NUMBER" && external="$external -B $BUILD_NUMBER"
 echo "ZOWE_VERSION=$ZOWE_VERSION"
 test -n "$ZOWE_VERSION" && external="$external -p $ZOWE_VERSION"
-echo "BUILD_SMPE_PTF=$BUILD_SMPE_PTF"
-test -n "$BUILD_SMPE_PTF" && external="$external -P"
 
 ${CURR_PWD}/smpe/bld/smpe.sh \
   -a ${CURR_PWD}/smpe/bld/alter.sh \
@@ -189,6 +220,7 @@ echo "+----------------------+"
 echo
 
 # display all files left behind by SMPE build
+echo "[$SCRIPT_NAME] content of ${SMPE_BUILD_ROOT}...."
 find ${SMPE_BUILD_ROOT} -print
 
 # see if SMPE build completed successfully
@@ -236,13 +268,13 @@ fi
 
 # if ptf-bucket.txt exists then publish PTF, otherwise publish FMID
 cd "${SMPE_BUILD_SHIP_DIR}"
-if [ -f ${CURR_PWD}/smpe/bld/service/ptf-bucket.txt ]; then
-  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_PTF_ZIP}
+if [ -f ${CURR_PWD}/smpe/bld/service/ptf-bucket.txt ]; then       # PTF
+  cp  ${SMPE_PTF_ZIP} ${CURR_PWD}/zowe-smpe.zip
   # do not alter existing PD in docs, wipe content of the new one
   rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
   touch "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
-else
-  tar -cf ${CURR_PWD}/zowe-smpe.tar ${SMPE_FMID_ZIP}
+else                                                             # FMID
+  cp ${SMPE_FMID_ZIP} ${CURR_PWD}/zowe-smpe.zip
   # doc build pipeline must pick up PD for inclusion
 fi
 
@@ -262,7 +294,7 @@ iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
 # files to be uploaded to artifactory:
 # ${CURR_PWD}/smpe-build-logs.pax.Z
-# ${CURR_PWD}/zowe-smpe.tar          -> holds zip that goes to zowe.org
+# ${CURR_PWD}/zowe-smpe.zip          -> goes to zowe.org
 # ${CURR_PWD}/fmid.zip
 # ${CURR_PWD}/ptf.zip
 # ${CURR_PWD}/pd.htm                 -> can be a null file

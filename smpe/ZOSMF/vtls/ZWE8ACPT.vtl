@@ -1,4 +1,17 @@
-//ZWE7APLY JOB <job parameters>
+#if( $jobCard and $jobCard != "" and $jobCard != '#jobCard')
+//ZWE8ACPT JOB ${acct},
+// NOTIFY=&SYSUID,
+#if( $sysaff and $sysaff != "" and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != "" and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+#if($ibmTemplate == 'YES')
+//ZWE8ACPT JOB <job parameters>
+#end
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -11,7 +24,7 @@
 //*
 //********************************************************************
 //*
-//* This JCL will SMP/E APPLY product
+//* This JCL will SMP/E ACCEPT product
 //* Zowe Open Source Project
 //*
 //*
@@ -21,29 +34,28 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change #csihlq to the high level qualifier for the global zone
+//* 2) Change ${csihlq} to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change #tzone to your CSI target zone name.
+//* 3) Change ${dzone} to your CSI distribution zone name.
 //*
-//* 4) Once the APPLY CHECK is successful, remove the CHECK operand
-//*    and run the job again to do the APPLY.
+//* 4) Once the ACCEPT CHECK is successful, remove the CHECK operand
+//*    and run the job again to do the ACCEPT.
 //*
 //* Note(s):
 //*
-//* 1. The REDO operand must be added to the APPLY command if the
-//*    product has been APPLYed previously.
+//* 1. The REDO operand must be added to the ACCEPT command if the
+//*    product has been ACCEPTed previously.
 //*
 //* 2. This job should complete with a return code 0.
 //*
 //********************************************************************
 //*
-//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
-//SMPCSI   DD DISP=OLD,DSN=#csihlq.CSI
-//SMPHOLD  DD DUMMY
+//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
 //SMPCNTL  DD *
-  SET BOUNDARY(#tzone) .
-  APPLY  SELECT([FMID])
+  SET BOUNDARY(${dzone}) .
+  ACCEPT SELECT([FMID])
          BYPASS(HOLDSYS,HOLDUSER)
          CHECK
          COMPRESS(ALL) .

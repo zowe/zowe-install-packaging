@@ -1,4 +1,17 @@
+#if( $jobCard and $jobCard != "" and $jobCard != '#jobCard')
+//ZWE1SMPE JOB ${acct},
+// NOTIFY=&SYSUID,
+#if( $sysaff and $sysaff != "" and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != "" and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+#if($ibmTemplate == 'YES')
 //ZWE1SMPE JOB <job parameters>
+#end
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -22,21 +35,32 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change #csihlq to the high level qualifier for the CSI and
+//* 2) Change ${csihlq} to the high level qualifier for the CSI and
+#if($ibmTemplate == 'NO')
+//*    other SMP/E data sets. The maximum length is 35 characters.
+#end
+#if($ibmTemplate == 'YES')
 //*    other SMP/E data sets. The maximum length is 32 characters.
+#end
 //*
-//* 3) Change #tzone to your CSI target zone name.
+//* 3) Change ${tzone} to your CSI target zone name.
 //*
-//* 4) Change #dzone to your CSI distribution zone name.
+//* 4) Change ${dzone} to your CSI distribution zone name.
 //*
-//* 5) Change #csivol to the volser for the CSI and SMP/E data sets,
+//* 5) Change ${csivol} to the volser for the CSI and SMP/E data sets,
 //*    if you choose not to use the default of letting your Automatic
 //*    Class Selection (ACS) routines decide which volume to use.
-//*    If you use #csivol, also uncomment all references to variable
+//*    If you use ${csivol}, also uncomment all references to variable
 //*    &CSIVOL:
 //*    - VOLUMES(&CSIVOL) in step DEFCSI
 //*    - VOL=SER=&CSIVOL in multiple DDs of step ZONING
 //*
+#if($ibmTemplate == 'NO')
+//*    If you are using sms managed system, instead of
+//*    CSIVOL set STCLAS ${storclass} and 
+//*    optionally DTCLAS ${dataclass} and MGCLAS ${mgmtclass}
+//*
+#end
 //* 6) This product can install in multiple SREL subsystems;
 //*    Z038 (z/OS), P115 (IMS/DB2), and C150 (CICS). Update the
 //*    SET SREL= statement to select the desired SREL.
@@ -55,15 +79,31 @@
 //* 3. This job should complete with a return code 0.
 //*
 //*********************************************************************
+#if($ibmTemplate == 'NO')
+//         EXPORT SYMLIST=*
+//* longest DSN is dsprefix.fmid.Fxx, so CISHLQ can be up to 32 chars
+//*                            1         2         3
+//*                    12345678901234567890123456   DSPREFIX limit
+//         SET CSIHLQ='${csihlq}'
+//         SET TZONE='${tzone}'
+//         SET DZONE='${dzone}'
+//         SET CSIVOL='${csivol}'
+//         SET STCLAS='${storclass}'
+//         SET DTCLAS='${dataclass}'
+//         SET MGCLAS='${mgmtclass}'
+//         SET SREL=Z038 # Z038 (z/OS), P115 (IMS/DB2), C150 (CICS)
+#end
+#if($ibmTemplate == 'YES')
 //         EXPORT SYMLIST=(CSIHLQ,CSIVOL,TZONE,DZONE,SREL,DSPREFIX)
 //* longest DSN is dsprefix.fmid.Fxx, so CISHLQ can be up to 32 chars
 //*                            1         2         3
 //*                   12345678901234567890123456789012
-//         SET CSIHLQ=#csihlq
-//         SET TZONE=#tzone
-//         SET DZONE=#dzone
-//         SET CSIVOL=#csivol
+//         SET CSIHLQ=${csihlq}
+//         SET TZONE=${tzone}
+//         SET DZONE=${dzone}
+//         SET CSIVOL=${csivol}
 //         SET SREL=Z038     # Z038 (z/OS), P115 (IMS/DB2), C150 (CICS)
+#end
 //*
 //         SET DSPREFIX=&CSIHLQ          # HLQ for SMP/E work data sets
 //*
@@ -74,7 +114,21 @@
 //SYSIN    DD *,SYMBOLS=JCLONLY
   DEFINE CLUSTER(             -
     NAME(&CSIHLQ..CSI)        -
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+    VOLUMES(&CSIVOL)          -
+#end
+#if($ibmTemplate == 'YES')
   /*VOLUMES(&CSIVOL)*/        -
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+    STORAGECLASS(&STCLAS)     -
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+    DATACLASS(&DTCLAS)        -
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+    MANAGEMENTCLASS(&MGCLAS)  -
+#end
     RECORDSIZE(24 143)        -
     KEYS(24 0)                -
     FREESPACE(10,5)           -
@@ -113,7 +167,21 @@
 //            LRECL=3200,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+//            VOL=SER=&CSIVOL,
+#end
+#if($ibmTemplate == 'YES')
 //*           VOL=SER=&CSIVOL,
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+//            STORCLAS=&STCLAS,
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+//            DATACLAS=&DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&MGCLAS,
+#end
 //            SPACE=(TRK,(30,15))
 //*
 //SMPLOGA  DD DSN=&DSPREFIX..SMPLOGA,
@@ -123,7 +191,21 @@
 //            LRECL=3200,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+//            VOL=SER=&CSIVOL,
+#end
+#if($ibmTemplate == 'YES')
 //*           VOL=SER=&CSIVOL,
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+//            STORCLAS=&STCLAS,
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+//            DATACLAS=&DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&MGCLAS,
+#end
 //            SPACE=(TRK,(30,15))
 //*
 //SMPLTS   DD DSN=&DSPREFIX..SMPLTS,
@@ -133,7 +215,21 @@
 //            LRECL=0,
 //            BLKSIZE=32760,
 //            UNIT=SYSALLDA,
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+//            VOL=SER=&CSIVOL,
+#end
+#if($ibmTemplate == 'YES')
 //*           VOL=SER=&CSIVOL,
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+//            STORCLAS=&STCLAS,
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+//            DATACLAS=&DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&MGCLAS,
+#end
 //            SPACE=(TRK,(30,30,80))
 //*
 //SMPMTS   DD DSN=&DSPREFIX..SMPMTS,
@@ -143,7 +239,21 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+//            VOL=SER=&CSIVOL,
+#end
+#if($ibmTemplate == 'YES')
 //*           VOL=SER=&CSIVOL,
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+//            STORCLAS=&STCLAS,
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+//            DATACLAS=&DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&MGCLAS,
+#end
 //            DSNTYPE=LIBRARY,
 //            SPACE=(TRK,(10,5,80))
 //*
@@ -154,7 +264,21 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+//            VOL=SER=&CSIVOL,
+#end
+#if($ibmTemplate == 'YES')
 //*           VOL=SER=&CSIVOL,
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+//            STORCLAS=&STCLAS,
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+//            DATACLAS=&DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&MGCLAS,
+#end
 //            DSNTYPE=LIBRARY,
 //            SPACE=(TRK,(12000,3000,80))
 //*
@@ -165,7 +289,21 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+//            VOL=SER=&CSIVOL,
+#end
+#if($ibmTemplate == 'YES')
 //*           VOL=SER=&CSIVOL,
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+//            STORCLAS=&STCLAS,
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+//            DATACLAS=&DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&MGCLAS,
+#end
 //            DSNTYPE=LIBRARY,
 //            SPACE=(TRK,(10,5,80))
 //*
@@ -176,7 +314,21 @@
 //            LRECL=80,
 //            BLKSIZE=0,
 //            UNIT=SYSALLDA,
+#if( $csivol and $csivol != "" and $csivol != '#csivol')
+//            VOL=SER=&CSIVOL,
+#end
+#if($ibmTemplate == 'YES')
 //*           VOL=SER=&CSIVOL,
+#end
+#if( $storclass and $storclass != "" and $storclass != '#storclass')
+//            STORCLAS=&STCLAS,
+#end
+#if( $dataclass and $dataclass != "" and $dataclass != '#dataclass')
+//            DATACLAS=&DTCLAS,
+#end
+#if( $mgmtclass and $mgmtclass != "" and $mgmtclass != '#mgmtclass')
+//            MGMTCLAS=&MGCLAS,
+#end
 //            DSNTYPE=LIBRARY,
 //            SPACE=(TRK,(10,5,80))
 //*

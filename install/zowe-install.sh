@@ -10,7 +10,8 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-ZOWE_GROUP=${ZOWE_GROUP} # Replace when zowe has it's own group: https://github.com/zowe/zowe-install-packaging/issues/518
+ZOWE_GROUP=ZWEADMIN # Replace with Zowe group in your environment
+ZOWE_USER=ZWESVUSR  # Replace with Zowe user  in your environment
 
 while getopts "f:h:i:dI" opt; do
   case $opt in
@@ -74,8 +75,6 @@ fi
 echo "Install started at: "`date` >> $LOG_FILE
 
 cd $INSTALL_DIR/install
-# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
-. $INSTALL_DIR/scripts/zowe-parse-yaml.sh
 
 if [[ ! -z "$INSTALL_TARGET" ]]
 then
@@ -89,19 +88,24 @@ fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
+NEW_INSTALL="true"
+
 # warn about any prior installation
 if [[ -d $ZOWE_ROOT_DIR ]]; then
     directoryListLines=`ls -al $ZOWE_ROOT_DIR | wc -l`
     # Has total line, parent and self ref
     if [[ $directoryListLines -gt 3 ]]; then
-        echo "    $ZOWE_ROOT_DIR is not empty"
-        echo "    Please clear the contents of this directory, or edit zowe-install.yaml's root directory location before attempting the install."
-        echo "Exiting non emptry install directory $ZOWE_ROOT_DIR has `expr $directoryListLines - 3` directory entries" >> $LOG_FILE
-        exit 2
+        if [[ -f "${ZOWE_ROOT_DIR}/manifest.json" ]]
+        then
+            OLD_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+            NEW_INSTALL="false"
+            echo "  $ZOWE_ROOT_DIR contains version ${OLD_VERSION}. Updating this install to version ${ZOWE_VERSION}."
+            echo "  Backing up previous Zowe runtime files to ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak."
+            mv ${ZOWE_ROOT_DIR} ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak
+        fi
     fi
-else
-    mkdir -p $ZOWE_ROOT_DIR
 fi
+mkdir -p $ZOWE_ROOT_DIR
 chmod a+rx $ZOWE_ROOT_DIR
 
 # copy manifest.json to root folder
@@ -135,7 +139,7 @@ chmod -R a+w $ZOWE_ROOT_DIR/scripts
 cd $INSTALL_DIR/scripts
 cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
 
-mkdir $ZOWE_ROOT_DIR/scripts/internal
+mkdir -p $ZOWE_ROOT_DIR/scripts/internal
 chmod a+x $ZOWE_ROOT_DIR/scripts/internal
 
 echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
@@ -144,7 +148,7 @@ cp $INSTALL_DIR/scripts/ocopyshr.sh $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.sh
 cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.clist
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 
-mkdir ${ZOWE_ROOT_DIR}/bin
+mkdir -p ${ZOWE_ROOT_DIR}/bin
 cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/bin
 
@@ -163,7 +167,7 @@ echo "The install script zowe-install.sh does not need to be re-run as it comple
 separator
 
 # Prepare configure directory 
-mkdir ${ZOWE_ROOT_DIR}/scripts/configure
+mkdir -p ${ZOWE_ROOT_DIR}/scripts/configure
 cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
 # Copy all but root dir from yaml as we can derive that once there
 grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
@@ -172,12 +176,27 @@ cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
 # Prepare utils directory 
-mkdir ${ZOWE_ROOT_DIR}/scripts/utils
+mkdir -p ${ZOWE_ROOT_DIR}/scripts/utils
 cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-. $INSTALL_DIR/scripts/zowe-copy-xmem.sh
+# Verify that zowe userid and group exist
+id -Gn ${ZOWE_USER} 
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  echo "  Unable to display the group of userid ${ZOWE_USER}"
+  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER}."
+  echo "  'id -Gn ${ZOWE_USER}' failed to run successfully" >> $LOG_FILE
+fi
+
+echo `id -Gn ${ZOWE_USER}` | grep ${ZOWE_GROUP}
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  echo "  userid ${ZOWE_USER} is not a member of group ${ZOWE_GROUP}"
+  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER} in group ${ZOWE_GROUP}."
+  echo "  'id -Gn ${ZOWE_USER}' did not find zowe group ${ZOWE_GROUP}" >> $LOG_FILE
+fi
 
 #Give all directories -rw+x permission so they can be listed, but files -rwx
 chmod -R o-rwx ${ZOWE_ROOT_DIR}
@@ -197,10 +216,21 @@ fi
 chmod -R 550 ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/defaults
 
 # save install log in runtime directory
-mkdir  $ZOWE_ROOT_DIR/install_log
+mkdir -p $ZOWE_ROOT_DIR/install_log
 cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR
 
-echo "zowe-install.sh completed. In order to use Zowe, you must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>'"
+echo "zowe-install.sh completed. In order to use Zowe:"
+if [[ ${NEW_INSTALL} == "true" ]]
+then
+  echo " - You must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
+  echo " - You must ensure that the Zowe Proclibs are added to your PROCLIB JES concatenation path"
+  echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}/SZWESAMP/ZWESECUR'"
+  echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
+else
+  echo " - Check your instance directory is up to date, by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
+  echo " - Check that Zowe Proclibs are up-to-date in your PROCLIB JES concatenation path"
+fi
+echo "Please review the 'Configuring the Zowe runtime' chapter of the documentation for more information about these steps"
