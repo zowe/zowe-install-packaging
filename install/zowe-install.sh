@@ -18,7 +18,7 @@ fi
 ZOWE_GROUP=ZWEADMIN # Replace with Zowe group in your environment
 ZOWE_USER=ZWESVUSR  # Replace with Zowe user  in your environment
 
-while getopts "f:h:i:dI" opt; do
+while getopts "f:g:h:i:u:d" opt; do
   case $opt in
     d) # enable debug mode
       # future use, accept parm to stabilize SMPE packaging
