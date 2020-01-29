@@ -7,8 +7,14 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
+
+
+#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#
+# change "function _split" to update the pax creation logic #
+#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#
+
 
 #% cut installed product in smaller chunks and pax them
 #%
@@ -91,29 +97,31 @@ cnt=0                           # counter, part of target pax file name
 
 # ---
 
-# Split all components into their own pax, plus api-mediation has a few big jar files
-# path based on $ZOWE_ROOT_DIR
-list=$(ls -1 components/ | grep -v -E -- 'api-mediation|enabler')
-list=$list"\
-  api-mediation/api-catalog-services.jar \
-  api-mediation/discoverable-client.jar \
-  api-mediation/discovery-service.jar \
-  api-mediation/gateway-service.jar \
-  "
+# split large components/files into their own pax
+# ACTION: update SMPMCS.txt when altering this logic
+list=""                                  # path based on $ZOWE_ROOT_DIR
+list="$list components/api-mediation/api-catalog-services.jar"  # pax01
+list="$list components/api-mediation/discoverable-client.jar"   # pax02
+list="$list components/api-mediation/discovery-service.jar"     # pax03
+list="$list components/api-mediation/gateway-service.jar"       # pax04
+list="$list components/app-server"                              # pax05
+list="$list components/files-api"                               # pax06
+list="$list components/jobs-api"                                # pax07
+
 #for f in $(ls components/api-mediation/*.jar | grep -v /enabler)   #*/
 test "$debug" && echo "for f in $list"
 for f in $list
 do
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-  f='components/'$f
   _move $stage $split/$file echo $f
 done    # for f
 
 # ---
 
 # all remaining files and directories
+# ACTION: update SMPMCS.txt when altering this logic
 let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file ls -A $stage
+_move $stage $split/$file ls -A $stage                          # pax08
 
 # ---
 
