@@ -28,7 +28,8 @@ Add SMPE member to build
    TEXT              PARM(PATHMODE(0,7,5,5)) .
 3. Update smpe/pax/zowe-install-smpe.sh, e.g.
 list="$list USS/ZWEYML01.yml"
-4. Ensure the directory is listed in smpe/pax/USS/ZWESHMKD.sh, e.g.
+4. If this a USS file, ensure the directory is listed in 
+   smpe/pax/USS/ZWESHMKD.sh, e.g.
 _dirs='../workflow'
 
 Flow for SMP/E packaging build
