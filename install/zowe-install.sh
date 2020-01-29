@@ -173,12 +173,6 @@ echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP " and " ${ZOWE_DSN_PREFIX}.SZWEA
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 
-# Prepare configure directory 
-mkdir -p ${ZOWE_ROOT_DIR}/scripts/configure
-
-cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
-
 # Prepare utils directory 
 mkdir -p ${ZOWE_ROOT_DIR}/scripts/utils
 cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
