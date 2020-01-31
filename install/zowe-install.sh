@@ -10,10 +10,15 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
+if [ $# -lt 4 ]; then
+  echo "Usage: $0 -i zowe_install_path -h zowe_dsn_prefix [-g zowe_group] [-u zowe_user]"
+  exit 1
+fi
+
 ZOWE_GROUP=ZWEADMIN # Replace with Zowe group in your environment
 ZOWE_USER=ZWESVUSR  # Replace with Zowe user  in your environment
 
-while getopts "f:h:i:dI" opt; do
+while getopts "f:g:h:i:u:d" opt; do
   case $opt in
     d) # enable debug mode
       # future use, accept parm to stabilize SMPE packaging
@@ -23,8 +28,10 @@ while getopts "f:h:i:dI" opt; do
       # future use, issue 801, accept parm to stabilize SMPE packaging
       #...="$OPTARG"
       ;;
+    g) ZOWE_GROUP=$OPTARG;;
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
+    u) ZOWE_USER=$OPTARG;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -165,15 +172,6 @@ echo "  directory " $ZOWE_ROOT_DIR
 echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP " and " ${ZOWE_DSN_PREFIX}.SZWEAUTH
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
-
-# Prepare configure directory 
-mkdir -p ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
-# Copy all but root dir from yaml as we can derive that once there
-grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
-
-cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
 
 # Prepare utils directory 
 mkdir -p ${ZOWE_ROOT_DIR}/scripts/utils
