@@ -73,7 +73,7 @@ tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWEAUTH' " >> ${LOG_FILE} 2>&1
 # SZWEAUTH must be PDSE
 # TODO replace by allocate-dataset.sh call to resuse VOLSER support
 tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEAUTH') " \
-    "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(6999)" \
+    "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760)" \
     "unit(sysallda) $sizeAUTH" >> $LOG_FILE 2>&1
 rc=$?
 if test $rc -eq 0
