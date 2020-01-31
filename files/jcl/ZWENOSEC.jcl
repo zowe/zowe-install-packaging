@@ -35,19 +35,19 @@
 //*    user ID for the ZOWE started task.
 //*
 //* 6) Update the SET XMEMUSER= statement to match the desired
-//*    user ID for the ZSS Cross Memory started task.
+//*    user ID for the XMEM Cross Memory started task.
 //*
 //* 7) Update the SET AUXUSER= statement to match the desired
-//*    user ID for the ZSS Auxilary Cross Memory started task.
+//*    user ID for the XMEM Auxilary Cross Memory started task.
 //*
 //* 8) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
 //*
 //* 9) Update the SET XMEMSTC= statement to match the desired
-//*    ZSS Cross Memory started task name.
+//*    XMEM Cross Memory started task name.
 //*
 //* 10) Update the SET AUXSTC= statement to match the desired
-//*     ZSS Auxilary Cross Memory started task name.
+//*     XMEM Auxilary Cross Memory started task name.
 //*
 //* 11) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
@@ -102,6 +102,11 @@
 
 /* REMOVE ZOWE DATA SET PROTECTION ................................. */
 
+/* - The sample commands assume that EGN (Enhanced Generic Naming)   */
+/*   is active, which allows the usage of ** to represent any number */
+/*   of qualifiers in the DATASET class. Substitute *.** with * if   */
+/*   EGN is not active on your system.                               */
+
 /* general data set protection                                       */
   LISTDSD PREFIX(&HLQ.) ALL
   PERMIT '&HLQ..*.**' CLASS(DATASET) DELETE ID(&SYSPROG.)
@@ -113,9 +118,9 @@
 
   SETROPTS GENERIC(DATASET) REFRESH
 
-/* REMOVE ZSS SERVER PERMISIONS .................................... */
+/* REMOVE XMEM SERVER PERMISIONS ................................... */
 
-/* permit ZSS to create a user's security environment                */
+/* permit XMEM to create a user's security environment               */
   RLIST  FACILITY BPX.DAEMON ALL
   PERMIT BPX.DAEMON CLASS(FACILITY) DELETE ID(&XMEMUSER.)
 
@@ -126,37 +131,48 @@
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
 
-/* permit Zowe main server to use ZSS Cross Memory server            */
+/* permit Zowe main server to use XMEM Cross Memory server           */
   RLIST  FACILITY ZWES.IS ALL
   PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
+/* permit Zowe main server to create a user's security environment   */
+  RLIST  FACILITY BPX.SERVER ALL
+  PERMIT BPX.SERVER CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+
+/* permit Zowe main server to write persistent data                  */
+  RLIST  UNIXPRIV SUPERUSER.FILESYS ALL
+  PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE ID(&ZOWEUSER.)
+
   SETROPTS RACLIST(FACILITY) REFRESH
+  SETROPTS RACLIST(UNIXPRIV) REFRESH
 
 /* REMOVE STARTED TASKS ............................................ */
 
-/* started task for ZOWE, main server                                */
+/* started task for ZOWE main server                                 */
   RLIST   STARTED &ZOWESTC..* ALL STDATA
   RDELETE STARTED &ZOWESTC..*
 
-/* started task for ZSS Cross Memory server                          */
+/* started task for XMEM Cross Memory server                         */
   RLIST   STARTED &XMEMSTC..* ALL STDATA
   RDELETE STARTED &XMEMSTC..*
 
-/* started task for ZSS Auxilary Cross Memory server                 */
+/* started task for XMEM Auxilary Cross Memory server                */
   RLIST   STARTED &AUXSTC..* ALL STDATA
   RDELETE STARTED &AUXSTC..*
 
-/* userid for ZOWE, main server                                      */
+/* userid for ZOWE main server                                       */
   LISTUSER &ZOWEUSER. OMVS
-  DELUSER  &ZOWEUSER.  
+  DELUSER  &ZOWEUSER.
 
-/* userid for ZSS Cross Memory server                                */
+/* userid for XMEM Cross Memory server                               */
   LISTUSER &XMEMUSER. OMVS
-  DELUSER  &XMEMUSER. 
+  DELUSER  &XMEMUSER.
 
-/* userid for ZSS Auxilary Cross Memory server                       */
+/* userid for XMEM Auxilary Cross Memory server                      */
+/* expect RC4 if AUXUSER=&XMEMUSER. (default) as XMEMUSER is already */
+/* removed                                                           */
   LISTUSER &AUXUSER. OMVS
-  DELUSER  &AUXUSER. 
+  DELUSER  &AUXUSER.
 
   SETROPTS RACLIST(STARTED) REFRESH
 
