@@ -148,6 +148,28 @@
 
 /* REMOVE STARTED TASKS ............................................ */
 
+
+/* userid for ZOWE main server                                       */
+  LISTUSER &ZOWEUSER. OMVS
+  REMOVE   &ZOWEUSER. GROUP(&STCGROUP.)
+  DELUSER  &ZOWEUSER.
+
+/* userid for XMEM Cross Memory server                               */
+  LISTUSER &XMEMUSER. OMVS
+  REMOVE   &XMEMUSER. GROUP(&STCGROUP.)
+  DELUSER  &XMEMUSER.
+
+/** uncomment if &AUXUSER is changed to not match &XMEMUSER          */
+/** userid for XMEM auxilary cross memory server                     */
+/*LISTUSER &AUXUSER. OMVS                                            */
+/*REMOVE   &AUXUSER. GROUP(&STCGROUP.)                               */
+/*DELUSER  &AUXUSER.                                                 */
+
+/** uncomment if &STCGROUP is changed to not match &ADMINGRP         */
+/** group for started tasks                                          */
+/*LISTGRP  &STCGROUP. OMVS                                           */
+/*DELGROUP &STCGROUP.                                                */
+
 /* started task for ZOWE main server                                 */
   RLIST   STARTED &ZOWESTC..* ALL STDATA
   RDELETE STARTED &ZOWESTC..*
@@ -160,27 +182,15 @@
   RLIST   STARTED &AUXSTC..* ALL STDATA
   RDELETE STARTED &AUXSTC..*
 
-/* userid for ZOWE main server                                       */
-  LISTUSER &ZOWEUSER. OMVS
-  DELUSER  &ZOWEUSER.
-
-/* userid for XMEM Cross Memory server                               */
-  LISTUSER &XMEMUSER. OMVS
-  DELUSER  &XMEMUSER.
-
-/* userid for XMEM Auxilary Cross Memory server                      */
-/* expect RC4 if AUXUSER=&XMEMUSER. (default) as XMEMUSER is already */
-/* removed                                                           */
-  LISTUSER &AUXUSER. OMVS
-  DELUSER  &AUXUSER.
-
   SETROPTS RACLIST(STARTED) REFRESH
 
 /* REMOVE ADMINISTRATORS ........................................... */
 
+/* uncomment to remove user IDs from the &ADMINGRP group             */
+/* REMOVE (userid,userid,...) GROUP(&ADMINGRP.)                      */
+
 /* group for administrators                                          */
   LISTGRP  &ADMINGRP. OMVS
-  /* REMOVE (userid,userid,...) GROUP(&ADMINGRP.) */
   DELGROUP &ADMINGRP.
 
 /* ................................................................. */
