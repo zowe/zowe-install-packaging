@@ -175,7 +175,7 @@
   ADDGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
 
-/* Uncomment to add existing user IDs to the &ADMINGRP group         */
+/* uncomment to add existing user IDs to the &ADMINGRP group         */
 /* CONNECT (userid,userid,...) GROUP(&ADMINGRP.) AUTH(USE)           */
 
 /* DEFINE STARTED TASK ............................................. */
