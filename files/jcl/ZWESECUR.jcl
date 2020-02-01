@@ -66,7 +66,7 @@
 //* 2. The Zowe started task user ID (variable ZOWEUSER) must be able
 //*    to write persistent data in the zlux-app-server/deploy directory
 //*    structure. This sample JCL makes the Zowe started task part of
-//*    the ZOwe administrator group (SET STCGROUP=&ADMINGRP. statement)
+//*    the Zowe administrator group (SET STCGROUP=&ADMINGRP. statement)
 //*    to achieve this goal. Another solution, also below, which you can
 //*    comment out, is giving the Zowe started task CONTROL access to
 //*    the UNIXPRIV SUPERUSER.FILESYS profile.
@@ -160,6 +160,8 @@
   ALTGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
 
+  /* CONNECT (userid,userid,...) GROUP(&ADMINGRP.) AUTH(USE) */
+
 /* DEFINE STARTED TASK ............................................. */
 
 /* - ensure that user IDs are protected with the NOPASSWORD keyword  */
@@ -240,6 +242,18 @@
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
+/* permit Zowe main server to create a user's security environment   */
+/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
+/*            z/OS UNIX switch to z/OS UNIX level security, which is */
+/*            more secure, but it can impact operation of existing   */
+/*            applications. Test this thoroughly before activating   */
+/*            it on a production system.                             */
+  RLIST   FACILITY BPX.SERVER ALL
+  RDEFINE FACILITY BPX.SERVER UACC(NONE)
+  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&ZOWEUSER.)
+
+  SETROPTS RACLIST(FACILITY) REFRESH
+
 /** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
 /** permit Zowe main server to write persistent data                 */
    RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
@@ -251,6 +265,7 @@
 
 /* show results .................................................... */
   RLIST   FACILITY ZWES.IS           ALL
+  RLIST   FACILITY BPX.SERVER        ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
 
 /* DEFINE XMEM SERVER PERMISIONS ................................... */
@@ -281,8 +296,8 @@
 /*   advised to protect it against updates.                          */
 /* - The sample commands assume that EGN (Enhanced Generic Naming)   */
 /*   is active, which allows the usage of ** to represent any number */
-/*   of qualifiers in the DATASET class. Substitute ** with * if EGN */
-/*   is not active on your system.                                   */
+/*   of qualifiers in the DATASET class. Substitute *.** with * if   */
+/*   EGN is not active on your system.                               */
 
 /* HLQ stub                                                          */
   LISTGRP  &HLQ. 
