@@ -90,14 +90,16 @@
 //*
 //********************************************************************
 //*
-//MKDIR    EXEC PGM=IKJEFT01,REGION=0M,COND=(4,LT),
-//            PARM='%ZWEMKDIR ROOT=ROOT DIRS=DIRS'
+//MKDIR    EXEC PGM=IKJEFT01,REGION=0M,COND=(4,LT)
 //REPORT   DD SYSOUT=*
 //SYSTSPRT DD SYSOUT=*
-//SYSTSIN  DD DUMMY
+//SYSTSIN  DD *
+PROFILE MSGID
+ZWEMKDIR
 //ROOT     DD DATA,DLM=$$                        data can be multi-line
 #if($ibmTemplate == 'NO')
-  ${pathPrefix}usr/lpp/zowe
+  ${pathPrefix}
+  usr/lpp/zowe
 #end
 #if($ibmTemplate == 'YES')
   -PathPrefix-usr/lpp/zowe
