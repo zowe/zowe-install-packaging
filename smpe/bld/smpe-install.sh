@@ -164,7 +164,6 @@ echo "-- installing product in $stage & $mvsI"
 opts=""
 opts="$opts -h $mvsI"                          # target HLQ
 opts="$opts -i $stage"                         # target directory
-opts="$opts -I"                                # install only, no config
 opts="$opts -f $log/$logFile"                  # install log
 test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
 _cmd $extract/$prodScript $debug $opts </dev/null
@@ -624,7 +623,7 @@ fi    #
 # ensure we can access everything
 _super chown -R $(id -u) $stage
 
-# set permissions to ensure consistency
+# set permissions to ensure consistency & ability to move during split
 _cmd chmod -R 755 $stage
 
 # log dir exists if somebody used our input for install, trash it
