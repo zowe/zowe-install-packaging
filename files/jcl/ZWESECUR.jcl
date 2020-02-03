@@ -70,7 +70,11 @@
 //* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
 //*    TO ALTER SECURITY DEFINITONS
 //*
-//* 2. The Zowe started task user ID (variable ZOWEUSER) must be able
+//* 2. The sample ACF2 commands create ROLEs that match the group
+//*    names. Due to permits assigned to the &STCGROUP ROLE, it is
+//*    advised to ensure this ROLE has a unique identifier.
+//*
+//* 3. The Zowe started task user ID (variable ZOWEUSER) must be able
 //*    to write persistent data in the zlux-app-server/deploy directory
 //*    structure. This sample JCL makes the Zowe started task part of
 //*    the Zowe administrator group (SET STCGROUP=&ADMINGRP. statement)
@@ -78,7 +82,7 @@
 //*    comment out, is giving the Zowe started task CONTROL access to
 //*    the UNIXPRIV SUPERUSER.FILESYS profile.
 //*
-//* 3. This job WILL complete with return code 0.
+//* 4. This job WILL complete with return code 0.
 //*    The results of each command must be verified after completion.
 //*
 //*********************************************************************
@@ -184,12 +188,13 @@
 /* - The sample commands assume automatic generation of UID and GID  */
 /*   is enabled.                                                     */
 
-/** uncomment if &STCGROUP is changed to not match &ADMINGRP         */
-/** group for started tasks                                          */
-/** replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled     */
-/*LISTGRP  &STCGROUP. OMVS                                           */
-/*ADDGROUP &STCGROUP. OMVS(AUTOGID) -                                */
-/* DATA('STARTED TASK GROUP WITH OMVS SEGEMENT')                     */
+/* comment out if &STCGROUP matches &ADMINGRP (default), expect      */
+/*   warning messages otherwise                                      */
+/* group for started tasks                                           */
+/* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled      */
+  LISTGRP  &STCGROUP. OMVS
+  ADDGROUP &STCGROUP. OMVS(AUTOGID) -
+   DATA('STARTED TASK GROUP WITH OMVS SEGEMENT')
 
 /* */
 
@@ -213,16 +218,17 @@
    NAME('ZOWE XMEM SERVER') -
    DATA('ZOWE XMEM CROSS MEMORY SERVER')
 
-/** uncomment if &AUXUSER is changed to not match &XMEMUSER          */
-/** userid for XMEM auxilary cross memory server                     */
-/** replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled     */
-/*LISTUSER &AUXUSER. OMVS                                            */
-/*ADDUSER  &AUXUSER. -                                               */
-/* NOPASSWORD -                                                      */
-/* DFLTGRP(&STCGROUP.) -                                             */
-/* OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -                       */
-/* NAME('ZOWE XMEM AUX SERVER') -                                    */
-/* DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')                         */
+/* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
+/*   warning messages otherwise                                      */
+/* userid for XMEM auxilary cross memory server                      */
+/* replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled      */
+  LISTUSER &AUXUSER. OMVS
+  ADDUSER  &AUXUSER. -
+   NOPASSWORD -
+   DFLTGRP(&STCGROUP.) -
+   OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
+   NAME('ZOWE XMEM AUX SERVER') -
+   DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')
 
 /* */
 
@@ -270,6 +276,10 @@
 /*            more secure, but it can impact operation of existing   */
 /*            applications. Test this thoroughly before activating   */
 /*            it on a production system.                             */
+  RLIST   FACILITY BPX.DAEMON ALL
+  RDEFINE FACILITY BPX.DAEMON UACC(NONE)
+  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) ID(&ZOWEUSER.)
+
   RLIST   FACILITY BPX.SERVER ALL
   RDEFINE FACILITY BPX.SERVER UACC(NONE)
   PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&ZOWEUSER.)
@@ -287,30 +297,9 @@
 
 /* show results .................................................... */
   RLIST   FACILITY ZWES.IS           ALL
+  RLIST   FACILITY BPX.DAEMON        ALL
   RLIST   FACILITY BPX.SERVER        ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
-
-/* DEFINE XMEM SERVER PERMISIONS ................................... */
-
-/* permit XMEM to create a user's security environment               */
-/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
-/*            z/OS UNIX switch to z/OS UNIX level security. This is  */
-/*            more secure, but it can impact operation of existing   */
-/*            applications. Test this thoroughly before activating   */
-/*            it on a production system.                             */
-  RLIST   FACILITY BPX.DAEMON ALL
-  RDEFINE FACILITY BPX.DAEMON UACC(NONE)
-  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) ID(&XMEMUSER.)
-
-  RLIST   FACILITY BPX.SERVER ALL
-  RDEFINE FACILITY BPX.SERVER UACC(NONE)
-  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&XMEMUSER.)
-
-  SETROPTS RACLIST(FACILITY) REFRESH
-
-/* show results .................................................... */
-  RLIST   FACILITY BPX.DAEMON ALL
-  RLIST   FACILITY BPX.SERVER ALL
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
@@ -356,24 +345,23 @@ SET PROFILE(GROUP) DIV(OMVS)
 INSERT &ADMINGRP. AUTOGID
 F ACF2,REBUILD(GRP),CLASS(P)
 *
-SET X(ROL)
-INSERT &ADMINGRP. INCLUDE(&ZOWEUSER.) ROLE
-F ACF2,NEWXREF,TYPE(ROL)
+* uncomment and customize to add an existing userid as administrator
+*
+* SET X(ROL)
+* INSERT &ADMINGRP. INCLUDE(userid) ROLE
+* F ACF2,NEWXREF,TYPE(ROL)
 *
 * DEFINE STARTED TASK .............................................
 *
-** uncomment if &STCGROUP is changed to not match &ADMINGRP
-** group for started tasks
-** replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
-**
-* SET PROFILE(GROUP) DIV(OMVS)
-* INSERT &STCGROUP. AUTOGID
-* F ACF2,REBUILD(GRP),CLASS(P)
-**
-* SET X(ROL)
-* INSERT &STCGROUP. INCLUDE(&ZOWEUSER.) ROLE
-* F ACF2,NEWXREF,TYPE(ROL)
-**
+* comment out if &STCGROUP matches &ADMINGRP (default), expect
+*   warning messages otherwise
+* group for started tasks
+* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
+*
+SET PROFILE(GROUP) DIV(OMVS)
+INSERT &STCGROUP. AUTOGID
+F ACF2,REBUILD(GRP),CLASS(P)
+*
 *****
 *
 * userid for ZOWE main server
@@ -394,16 +382,17 @@ SET PROFILE(USER) DIV(OMVS)
 INSERT &XMEMUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
-** uncomment if &AUXUSER is changed to not match &XMEMUSER
-** userid for XMEM auxilary cross memory server
-** replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled
-**
-* SET LID
-* INSERT &AUXUSER. GROUP(&STCGROUP.)
-* SET PROFILE(USER) DIV(OMVS)
-* INSERT &AUXUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
-* F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
-**
+* comment out if &AUXUSER matches &XMEMUSER (default), expect
+*   warning messages otherwise
+* userid for XMEM auxilary cross memory server
+* replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled
+*
+SET LID
+INSERT &AUXUSER. GROUP(&STCGROUP.)
+SET PROFILE(USER) DIV(OMVS)
+INSERT &AUXUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
 *****
 *
 * started task for ZOWE main server
@@ -429,6 +418,12 @@ F ACF2,REFRESH(STC)
 *
 * DEFINE ZOWE SERVER PERMISIONS ...................................
 *
+* define a role holding the permissions and add &ZOWEUSER to it
+*
+SET X(ROL)
+INSERT &STCGROUP. INCLUDE(&ZOWEUSER.) ROLE
+F ACF2,NEWXREF,TYPE(ROL)
+*
 * permit Zowe main server to use XMEM cross memory server
 *
 SET RESOURCE(FAC)
@@ -443,6 +438,7 @@ F ACF2,REBUILD(FAC)
 *            it on a production system.
 *
 SET RESOURCE(FAC)
+RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
 RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
@@ -452,20 +448,6 @@ F ACF2,REBUILD(FAC)
   SET RESOURCE(UNI)
   RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE(&STCGROUP.) ALLOW)
   F ACF2,REBUILD(UNI)
-*
-* DEFINE XMEM SERVER PERMISIONS ...................................
-*
-* permit XMEM to create a user's security environment
-* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes
-*            z/OS UNIX switch to z/OS UNIX level security. This is
-*            more secure, but it can impact operation of existing
-*            applications. Test this thoroughly before activating
-*            it on a production system.
-*
-SET RESOURCE(FAC)
-RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
-RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
-F ACF2,REBUILD(FAC)
 *
 * DEFINE ZOWE DATA SET PROTECTION .................................
 *
@@ -501,15 +483,18 @@ $$
    DEPT(&ADMINDEP.)
   TSS ADD(&ADMINGRP.) GID(&ADMINGID.)
 
+/* TODO add sample command to add admin to &ADMINGRP */
+
 /* DEFINE STARTED TASK ............................................. */
 
-/** uncomment if &STCGROUP is changed to not match &ADMINGRP         */
-/** group for started tasks                                          */
-/*TSS LIST(&STCGROUP.) SEGMENT(OMVS)                                 */
-/*TSS CREATE(&STCGROUP.) TYPE(GROUP) +                               */
-/* NAME('STC GROUP WITH OMVS SEGEMENT') +                            */
-/* DEPT(&STCGDEP.)                                                   */
-/*TSS ADD(&STCGROUP.) GID(&STCGID.)                                  */
+/* comment out if &STCGROUP matches &ADMINGRP (default), expect      */
+/*   warning messages otherwise                                      */
+/* group for started tasks                                           */
+  TSS LIST(&STCGROUP.) SEGMENT(OMVS)
+  TSS CREATE(&STCGROUP.) TYPE(GROUP) +
+   NAME('STC GROUP WITH OMVS SEGEMENT') +
+   DEPT(&STCGDEP.)
+  TSS ADD(&STCGROUP.) GID(&STCGID.)
 
 /* */
 
@@ -529,14 +514,15 @@ $$
   TSS ADD(&XMEMUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&XMEMUID.)
 
-/** uncomment if &AUXUSER is changed to not match &XMEMUSER          */
-/** userid for XMEM auxilary cross memory server                     */
-/*TSS LIST(&AUXUSER.) SEGMENT(OMVS)                                  */
-/*TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) +                    */
-/* NAME('ZOWE XMEM AUX SERVER') +                                    */
-/* DEPT(&STCUDEP.)                                                   */
-/*TSS ADD(&AUXUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +         */
-/* HOME(/tmp) OMVSPGM(/bin/sh) UID(&AUXUID.)                         */
+/* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
+/*   warning messages otherwise                                      */
+/* userid for XMEM auxilary cross memory server                      */
+  TSS LIST(&AUXUSER.) SEGMENT(OMVS)
+  TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) +
+   NAME('ZOWE XMEM AUX SERVER') +
+   DEPT(&STCUDEP.)
+  TSS ADD(&AUXUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(&AUXUID.)
 
 /* */
 
@@ -569,28 +555,16 @@ $$
 /*            applications. Test this thoroughly before activating   */
 /*            it on a production system.                             */
   TSS ADD(&FACACID.) IBMFAC(BPX.)
+  TSS WHOHAS IBMFAC(BPX.DAEMON)
+  TSS PER(&ZOWEUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)
   TSS WHOHAS IBMFAC(BPX.SERVER)
   TSS PER(&ZOWEUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)
 
 /** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
 /** permit Zowe main server to write persistent data                 */
-    TSS ADD(&FACACID.) UNIXPRIV(SUPERUSE)
-    TSS WHOHAS IBMFAC(SUPERUSER.FILESYS)
-    TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
-
-/* DEFINE XMEM SERVER PERMISIONS ................................... */
-
-/* permit XMEM to create a user's security environment               */
-/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
-/*            z/OS UNIX switch to z/OS UNIX level security. This is  */
-/*            more secure, but it can impact operation of existing   */
-/*            applications. Test this thoroughly before activating   */
-/*            it on a production system.                             */
-  TSS ADD(&FACACID.) IBMFAC(BPX.)
-  TSS WHOHAS IBMFAC(BPX.DAEMON)
-  TSS PER(&XMEMUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)
-  TSS WHOHAS IBMFAC(BPX.SERVER)
-  TSS PER(&XMEMUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)
+  TSS ADD(&FACACID.) UNIXPRIV(SUPERUSE)
+  TSS WHOHAS IBMFAC(SUPERUSER.FILESYS)
+  TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
