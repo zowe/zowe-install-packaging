@@ -107,12 +107,12 @@
 /*   of qualifiers in the DATASET class. Substitute *.** with * if   */
 /*   EGN is not active on your system.                               */
 
-/* general data set protection                                       */
+/* remove general data set protection                                */
   LISTDSD PREFIX(&HLQ.) ALL
   PERMIT '&HLQ..*.**' CLASS(DATASET) DELETE ID(&SYSPROG.)
   DELDSD '&HLQ..*.**'
 
-/* HLQ stub                                                          */
+/* remove HLQ stub                                                   */
   LISTGRP  &HLQ.
   DELGROUP &HLQ.
 
@@ -120,18 +120,18 @@
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
 
-/* permit Zowe main server to use XMEM Cross Memory server           */
+/* remove permit to use XMEM Cross Memory server                     */
   RLIST  FACILITY ZWES.IS ALL
   PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
-/* permit Zowe main server to create a user's security environment   */
+/* remove permit to create a user's security environment             */
   RLIST  FACILITY BPX.DAEMON ALL
   PERMIT BPX.DAEMON CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
   RLIST  FACILITY BPX.SERVER ALL
   PERMIT BPX.SERVER CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
-/* permit Zowe main server to write persistent data                  */
+/* remove permit to write persistent data                            */
   RLIST  UNIXPRIV SUPERUSER.FILESYS ALL
   PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE ID(&ZOWEUSER.)
 
@@ -140,38 +140,38 @@
 
 /* REMOVE STARTED TASKS ............................................ */
 
-/* userid for ZOWE main server                                       */
+/* remove userid for ZOWE main server                                */
   LISTUSER &ZOWEUSER. OMVS
   REMOVE   &ZOWEUSER. GROUP(&STCGROUP.)
   DELUSER  &ZOWEUSER.
 
-/* userid for XMEM Cross Memory server                               */
+/* remove userid for XMEM Cross Memory server                        */
   LISTUSER &XMEMUSER. OMVS
   REMOVE   &XMEMUSER. GROUP(&STCGROUP.)
   DELUSER  &XMEMUSER.
 
 /* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
 /*   warning messages otherwise                                      */
-/* userid for XMEM auxilary cross memory server                      */
+/* remove userid for XMEM auxilary cross memory server               */
   LISTUSER &AUXUSER. OMVS
   REMOVE   &AUXUSER. GROUP(&STCGROUP.)
   DELUSER  &AUXUSER.
 
 /* comment out if &STCGROUP matches &ADMINGRP (default), expect      */
 /*   warning messages otherwise                                      */
-/* group for started tasks                                           */
+/* remove group for started tasks                                    */
   LISTGRP  &STCGROUP. OMVS
   DELGROUP &STCGROUP.
 
-/* started task for ZOWE main server                                 */
+/* remove started task for ZOWE main server                          */
   RLIST   STARTED &ZOWESTC..* ALL STDATA
   RDELETE STARTED &ZOWESTC..*
 
-/* started task for XMEM Cross Memory server                         */
+/* remove started task for XMEM Cross Memory server                  */
   RLIST   STARTED &XMEMSTC..* ALL STDATA
   RDELETE STARTED &XMEMSTC..*
 
-/* started task for XMEM Auxilary Cross Memory server                */
+/* remove started task for XMEM Auxilary Cross Memory server         */
   RLIST   STARTED &AUXSTC..* ALL STDATA
   RDELETE STARTED &AUXSTC..*
 
@@ -182,7 +182,7 @@
 /* uncomment to remove user IDs from the &ADMINGRP group             */
 /* REMOVE (userid,userid,...) GROUP(&ADMINGRP.)                      */
 
-/* group for administrators                                          */
+/* remove group for administrators                                   */
   LISTGRP  &ADMINGRP. OMVS
   DELGROUP &ADMINGRP.
 
