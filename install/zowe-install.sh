@@ -28,7 +28,7 @@ while getopts "f:h:i:d" opt; do
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$opt" >&2
       exit 1
       ;;
   esac
