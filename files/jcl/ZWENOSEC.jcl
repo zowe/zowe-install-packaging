@@ -1,4 +1,4 @@
-//ZWENOSEC JOB <job parameters>
+//ZWENOSEC JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -142,19 +142,16 @@
 
 /* remove userid for ZOWE main server                                */
   LISTUSER &ZOWEUSER. OMVS
-  REMOVE   &ZOWEUSER. GROUP(&STCGROUP.)
   DELUSER  &ZOWEUSER.
 
 /* remove userid for XMEM Cross Memory server                        */
   LISTUSER &XMEMUSER. OMVS
-  REMOVE   &XMEMUSER. GROUP(&STCGROUP.)
   DELUSER  &XMEMUSER.
 
 /* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
 /*   warning messages otherwise                                      */
 /* remove userid for XMEM auxilary cross memory server               */
   LISTUSER &AUXUSER. OMVS
-  REMOVE   &AUXUSER. GROUP(&STCGROUP.)
   DELUSER  &AUXUSER.
 
 /* comment out if &STCGROUP matches &ADMINGRP (default), expect      */
