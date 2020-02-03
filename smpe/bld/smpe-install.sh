@@ -623,7 +623,7 @@ fi    #
 # ensure we can access everything
 _super chown -R $(id -u) $stage
 
-# set permissions to ensure consistency
+# set permissions to ensure consistency & ability to move during split
 _cmd chmod -R 755 $stage
 
 # log dir exists if somebody used our input for install, trash it

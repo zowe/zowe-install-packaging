@@ -285,7 +285,7 @@
 /*   is not active on your system.                                   */
 
 /* HLQ stub                                                          */
-  LISTGRP  &HLQ. ALL
+  LISTGRP  &HLQ. 
   ADDGROUP &HLQ. DATA('Zowe - HLQ STUB')
 
 /* general data set protection                                       */
@@ -296,7 +296,7 @@
   SETROPTS GENERIC(DATASET) REFRESH
 
 /* show results .................................................... */
-  LISTGRP &HLQ.         ALL
+  LISTGRP &HLQ.         
   LISTDSD PREFIX(&HLQ.) ALL
 
 /* ................................................................. */
