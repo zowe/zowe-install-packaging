@@ -136,12 +136,12 @@ else
   # Edit the JCL in flight using parms 5 and 6 ...
   # These strings are in ZWESISTC
       # ZWES.SISLOAD
-      # ZWES.SISSAMP
+      # ZWES.SISSAMP 
   # These strings are in ZWESASTC
       # zis-loadlib
   #
   sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
-      -e "s/ZWES.SISSAMP/${samplib}/g" \
+      -e "s/ZWES.SISSAMP/${parmlib}/g" \
       -e "s/zis-loadlib/${loadlib}/g" \
       "//'$samplib($Imember)'" > /tmp/$samplib.$Imember.jcl
   if [[ $? -ne 0 ]]
