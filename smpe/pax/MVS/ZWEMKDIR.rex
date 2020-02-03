@@ -18,10 +18,10 @@
  *% -Debug    (optional) enable debug messages
  *% -Me       (optional) do not issue commands as superuser (UID 0)
  *% ROot=dd   referenced DD name holds the directory which is the base
- *%           for MOUNT and DIRS
+ *%           for MOUNT and DIRS, default is ROOT
  *%           (required when MOUNT is specified, optional otherwise)
  *% DIrs=dd   (optional) referenced DD name holds a list of
- *%           directories to be created
+ *%           directories to be created, default is DIRS
  *%           these directories will be prefixed by the path specified
  *%           in ROOT
  *% MOunt=dsn (optional) mount the specified file system on the path
@@ -102,9 +102,10 @@ dirs='usr/lpp/zowe/SMPE 755'                  /* Shopz compatibility */
 cRC=0                                              /* assume success */
 Super=1  /* TRUE */             /* assume issueing commands as UID 0 */
 Shopz=0  /* FALSE */                          /* Shopz compatibility */
+PathPrefix=''                                 /* Shopz compatibility */
 RootDD=''                                 /* assume no root provided */
-FileSys=''                    /* assume no need to mount file system */
 DirsDD=''                /* assume no need to create sub-directories */
+FileSys=''                    /* assume no need to mount file system */
 Grow=''                       /* assume no automatic extents for zFS */
 Root=''                                           /* no default root */
 Dirs.0=0                               /* no default sub-directories */
@@ -134,12 +135,21 @@ do while Args <> ''
   when abbrev('-DEBUG',xKey,2)   then Debug=1  /* TRUE */
   when abbrev('-ME',xKey,2)      then Super=0  /* FALSE */
   otherwise
-    call _displayUsage
-    say '** ERROR invalid startup argument "'Action'"'
-    cRC=12                 /* do not exit yet, show all errors first */
+    if arg() == 1
+    then parse arg PathPrefix /* no upper */  /* Shopz compatibility */
+    else do
+      call _displayUsage
+      say '** ERROR invalid startup argument "'Action'"'
+      cRC=12               /* do not exit yet, show all errors first */
+    end    /* */
   end    /* select */
 end    /* while Args */
 
+/* set DD defaults */ 
+if (RootDD == '') & _ddExist('ROOT') then RootDD='ROOT'
+if (DirsDD == '') & _ddExist('DIRS') then DirsDD='DIRS'
+
+/* validate input */
 if (FileSys <> '') & (RootDD == '')
 then do
   call _displayUsage
@@ -165,7 +175,7 @@ then do
   Shopz=1  /* TRUE */
   Dirs.0=words(dirs)/2     /* Shopz mode always has 'dir mode' pairs */
   do T=1 to Dirs.0
-    Dirs.T=word(dirs,T*2-1) word(dirs,T*2)
+    Dirs.T=PathPrefix || word(dirs,T*2-1) word(dirs,T*2)
   end    /* loop T */
   
   if Dirs.0 > 0 then say '-- will create' Dirs.0 'sub-directory path(s)'
