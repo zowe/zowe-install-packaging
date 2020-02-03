@@ -33,7 +33,7 @@ while getopts "f:g:h:i:u:d" opt; do
     i) INSTALL_TARGET=$OPTARG;;
     u) ZOWE_USER=$OPTARG;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$opt" >&2
       exit 1
       ;;
   esac
