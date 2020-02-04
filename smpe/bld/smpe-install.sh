@@ -48,14 +48,15 @@
 #      dirOutput  - or directory holding installed data, $ZOWE_ROOR_DIR
 #    alterScript must return RC 0 on success, non-zero on failure
 
-# creates $stage          directory with installed product
-# creates $mvsI.*         hlq with installed product
+# creates $stage/*        directory with installed product
+# creates $mvsI.*         data sets with installed product
 # creates $log/*.log      product install log                       #*/
 # removes old install.log files
 
 #..Assumes that if there are multiple input pax files, they all share
 #. the same leading directory, e.g. zowe-1.1.0.
 
+# more definitions in main()
 removeInstall=0                # 1 if install removes installed files
 smpeFilter="/smpe"             # regex to find SMP/E archive name
 prodScript=install/zowe-install.sh  # product install script
@@ -163,7 +164,6 @@ echo "-- installing product in $stage & $mvsI"
 opts=""
 opts="$opts -h $mvsI"                          # target HLQ
 opts="$opts -i $stage"                         # target directory
-opts="$opts -I"                                # install only, no config
 opts="$opts -f $log/$logFile"                  # install log
 test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
 _cmd $extract/$prodScript $debug $opts </dev/null
@@ -623,7 +623,7 @@ fi    #
 # ensure we can access everything
 _super chown -R $(id -u) $stage
 
-# set permissions to ensure consistency
+# set permissions to ensure consistency & ability to move during split
 _cmd chmod -R 755 $stage
 
 # log dir exists if somebody used our input for install, trash it

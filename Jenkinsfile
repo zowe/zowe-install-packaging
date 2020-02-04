@@ -40,8 +40,8 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
     ],
     artifactory: [
-      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
-      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+      url                        : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_ROBOT_CREDENTIAL,
     ],
     pax: [
       sshHost                    : lib.Constants.DEFAULT_PAX_PACKAGING_SSH_HOST,
@@ -74,10 +74,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 5, unit: 'MINUTES'],
     isSkippable   : false,
     operation     : {
-      // replace templates
-      echo 'replacing templates...'
-      sh "sed -e 's/{ZOWE_VERSION}/${manifest['version']}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
-
       // prepareing download spec
       echo 'prepareing download spec ...'
       def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
@@ -127,14 +123,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 90, unit: 'MINUTES'],
     operation: {
       pipeline.pax.pack(
-          job             : "zowe-packaging",
-          filename        : 'zowe.pax',
-          environments    : [
-            'ZOWE_VERSION': pipeline.getVersion(),
-            'BUILD_SMPE'  : (params.BUILD_SMPE ? 'yes' : '')
+          job                 : "zowe-packaging",
+          filename            : 'zowe.pax',
+          environments        : [
+            'ZOWE_VERSION'    : pipeline.getVersion(),
+            'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : ''),
+            'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
-          extraFiles      : (params.BUILD_SMPE ? 'zowe-smpe.pax,readme.txt,smpe-build-logs.pax.Z,rename-back.sh' : ''),
-          keepTempFolder  : params.KEEP_TEMP_FOLDER
+          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,ptf.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
+          keepTempFolder      : params.KEEP_TEMP_FOLDER
       )
       if (params.BUILD_SMPE) {
         // rename SMP/e build with correct FMID name
@@ -147,7 +144,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   pipeline.publish(
     artifacts: [
       '.pax/zowe.pax',
-      '.pax/AZWE*',
+      '.pax/zowe-smpe.zip',
+      '.pax/smpe-promote.tar',
+      '.pax/pd.htm',
       '.pax/smpe-build-logs.pax.Z'
     ]
   )

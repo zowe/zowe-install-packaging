@@ -16,8 +16,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
   def ZOWE_RELEASE_PATH = '/org/zowe'
   def ZOWE_RELEASE_FILEPATTERN = "zowe-*.pax"
-  def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "AZWE*.pax.Z"
-  def ZOWE_RELEASE_SMPE_README_FILEPATTERN = "AZWE*.txt"
+  def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.zip"
   def ZOWE_RELEASE_CLI_FILEPATTERN = "zowe-cli-package-*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
 
@@ -108,8 +107,8 @@ node('ibm-jenkins-slave-nvm') {
       usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
     ],
     artifactory: [
-      url                        : lib.Constants.DEFAULT_ARTIFACTORY_URL,
-      usernamePasswordCredential : lib.Constants.DEFAULT_ARTIFACTORY_ROBOT_CREDENTIAL,
+      url                        : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL,
+      usernamePasswordCredential : lib.Constants.DEFAULT_LFJ_ARTIFACTORY_ROBOT_CREDENTIAL,
     ]
   )
 
@@ -225,38 +224,20 @@ node('ibm-jenkins-slave-nvm') {
 
       // get SMP/e build
       try {
-        def smpePaxSource = pipeline.artifactory.getArtifact([
-          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/AZWE*.pax.Z",
+        def smpeTarSource = pipeline.artifactory.getArtifact([
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : releaseArtifacts['zowe']['buildName'],
           'build-number' : releaseArtifacts['zowe']['buildNumber']
         ])
-        if (smpePaxSource['path']) {
-          echo ">>> Found SMP/e build ${smpePaxSource['path']}."
-          def FMID = smpePaxSource['path'].split('/').last().split('-').first()
-          releaseArtifacts['smpe-pax'] = [:]
-          releaseArtifacts['smpe-pax']['source'] = smpePaxSource
-          releaseArtifacts['smpe-pax']['target'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.pax.Z".toString()
+        if (smpeTarSource['path']) {
+          echo ">>> Found SMP/e build ${smpeTarSource['path']}."
+          def FMID = smpeTarSource['path'].split('/').last().split('-').first()
+          releaseArtifacts['smpe-zip'] = [:]
+          releaseArtifacts['smpe-zip']['source'] = smpeTarSource
+          releaseArtifacts['smpe-zip']['target'] = "zowe-smpe-${params.ZOWE_RELEASE_VERSION}.zip".toString()
         }
       } catch (e1) {
-        echo ">>> no SMP/e pax.Z found in the build."
-      }
-
-      // get SMP/e readme
-      try {
-        def smpeReadmeSource = pipeline.artifactory.getArtifact([
-          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/AZWE*.txt",
-          'build-name'   : releaseArtifacts['zowe']['buildName'],
-          'build-number' : releaseArtifacts['zowe']['buildNumber']
-        ])
-        if (smpeReadmeSource['path']) {
-          echo ">>> Found SMP/e readme ${smpeReadmeSource['path']}."
-          def FMID = smpeReadmeSource['path'].split('/').last().split('-').first()
-          releaseArtifacts['smpe-readme'] = [:]
-          releaseArtifacts['smpe-readme']['source'] = smpeReadmeSource
-          releaseArtifacts['smpe-readme']['target'] = "${FMID}-${params.ZOWE_RELEASE_VERSION}.txt".toString()
-        }
-      } catch (e1) {
-        echo ">>> no SMP/e readme found in the build."
+        echo ">>> no SMP/e zip found in the build."
       }
 
       // find the Zowe CLI build number will be promoted
@@ -460,14 +441,11 @@ echo ===============================================
       }
 
       def smpeMessage = ''
-      if (releaseArtifacts['smpe-pax'] && releaseArtifacts['smpe-pax']['target'] &&
-        releaseArtifacts['smpe-readme'] && releaseArtifacts['smpe-readme']['target']) {
+      if (releaseArtifacts['smpe-zip'] && releaseArtifacts['smpe-zip']['target']) {
 smpeMessage = """
 
 SMP/e build:
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-pax']['target']}
-and:
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-readme']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-zip']['target']}
 
 """
       }
@@ -477,10 +455,10 @@ ${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['
 
 ${source} is promoted as Zowe v${params.ZOWE_RELEASE_VERSION}, you can download from:
 
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
 ${smpeMessage}
 The CLI Standalone Package is published here:
-${lib.Constants.DEFAULT_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
 
 *************************************************************************************************
       """

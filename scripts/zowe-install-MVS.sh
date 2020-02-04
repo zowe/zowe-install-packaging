@@ -12,7 +12,7 @@
 
 sizeAUTH='space(15,15) tracks'
 sizeSAMP='space(15,15) tracks'
-members='ZWESVSTC.jcl ZWESECUR.jcl'
+members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl'
 
 # info: construct ${variable%%.*} keeps up to first . (exclusive)
 
@@ -43,26 +43,25 @@ do
   fi
 done
 
-# TODO remove once https://github.com/zowe/zss/issues/94
-# >>>>
-# adjust ZSS samples
-rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXASTC
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIP00 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMP00
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISCH ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMSCH
+# TODO remove once https://github.com/zowe/zss/issues/94	
+# >>>>	
+# adjust ZSS samples	
+rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS	
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISTC	
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESASTC
+# <<<<
 
-if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG
+if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG
 then
 # Statements below must not exceed col 80
 #----------------------------------------------------------------------------80|
-cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWEXMPRG <<EndOfZWEXMPRG
+cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG <<EndOfZWESIPRG
 /* issue this console command to authorize the loadlib temporarily */
 SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEAUTH,VOLUME=${volume}
 /* Add this statement to SYS1.PARMLIB(PROGxx) or equivalent
    to authorize the loadlib permanently */
 APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume})
-EndOfZWEXMPRG
+EndOfZWESIPRG
 #----------------------------------------------------------------------------80|
 fi
 # <<<<
@@ -74,7 +73,7 @@ tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWEAUTH' " >> ${LOG_FILE} 2>&1
 # SZWEAUTH must be PDSE
 # TODO replace by allocate-dataset.sh call to resuse VOLSER support
 tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEAUTH') " \
-    "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(6999)" \
+    "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760)" \
     "unit(sysallda) $sizeAUTH" >> $LOG_FILE 2>&1
 rc=$?
 if test $rc -eq 0

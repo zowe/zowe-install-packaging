@@ -7,8 +7,14 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
+
+
+#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#
+# change "function _split" to update the pax creation logic #
+#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#
+
 
 #% cut installed product in smaller chunks and pax them
 #%
@@ -25,7 +31,8 @@
 #% TSO PE BPX.SUPERUSER        CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
 
-# trashes $stage           directory with installed product
+# require $stage/*         directory with installed product
+# removes $stage/*         directory with installed product
 # creates $ussI/*          directory with pax files                 #*/
 # creates $log/$manifest   manifest describing pax content
 # creates $log/$delta      delta of current and previous manifest
@@ -38,6 +45,7 @@
 # updates $log/$deltaHist  history of manifest deltas
 # removes old manifest files
 
+# more definitions in main()
 historical=history-            # prefix for historical data
 delta=manifest-delta.txt       # delta of current and previous manifest
 deltaHist=$historical$delta    # history of manifest deltas
@@ -54,7 +62,6 @@ me=$(basename $0)              # script name
 #debug=-d                      # -d or null, -d triggers early debug
 #IgNoRe_ErRoR=1                # no exit on error when not null  #debug
 #set -x                                                          #debug
-# more defaults defined later, search for "date="
 
 test "$debug" && echo && echo "> $me $@"
 
@@ -74,7 +81,7 @@ test "$debug" && echo && echo "> _split $@"
 
 # count how many pax directories we created during previous run
 prevCnt=0
-test -e $split && prevCnt=$(ls -D $split/ | wc -w | sed 's/ //g')
+test -e $split && prevCnt=$(ls -D $split/ | wc -w | sed 's/ //g')    #'
 test "$debug" && echo prevCnt=$prevCnt
 
 # start with a clean slate
@@ -90,14 +97,17 @@ cnt=0                           # counter, part of target pax file name
 
 # ---
 
-# api-mediation has a few big jar files, give them their own pax
-# path based on $ZOWE_ROOT_DIR
-list="\
-  components/api-mediation/api-catalog-services.jar \
-  components/api-mediation/discoverable-client.jar \
-  components/api-mediation/discovery-service.jar \
-  components/api-mediation/gateway-service.jar \
-  "
+# split large components/files into their own pax
+# ACTION: update SMPMCS.txt when altering this logic
+list=""                                  # path based on $ZOWE_ROOT_DIR
+list="$list components/api-mediation/api-catalog-services.jar"  # pax01
+list="$list components/api-mediation/discoverable-client.jar"   # pax02
+list="$list components/api-mediation/discovery-service.jar"     # pax03
+list="$list components/api-mediation/gateway-service.jar"       # pax04
+list="$list components/app-server"                              # pax05
+list="$list components/files-api"                               # pax06
+list="$list components/jobs-api"                                # pax07
+
 #for f in $(ls components/api-mediation/*.jar | grep -v /enabler)   #*/
 test "$debug" && echo "for f in $list"
 for f in $list
@@ -108,22 +118,10 @@ done    # for f
 
 # ---
 
-# everything zlux
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file "find zlux-* -prune"
-_move $stage $split/$file echo zss-auth
-
-# ---
-
-# everything explorer API
-let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file echo components
-
-# ---
-
 # all remaining files and directories
+# ACTION: update SMPMCS.txt when altering this logic
 let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
-_move $stage $split/$file ls -A $stage
+_move $stage $split/$file ls -A $stage                          # pax08
 
 # ---
 

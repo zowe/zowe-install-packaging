@@ -24,13 +24,16 @@
 #% TSO PE GIM.PGM.GIMZIP       CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
 
-# creates $gimzip                directory with pax & readme (ASCII)
-# creates $log/$jcl              gimzip JCL
-# creates $log/$smpout           gimzip DD smpout output
-# creates $log/$sysprint         gimzip DD sysprint output
-# creates $log/$extractSize      required zFS size saved for usage in PD
-# creates $log/$FMID.readme.txt  readme (EBCDIC)
+# require $mcsHlq.*               RELFILEs & SMPMCS
+# creates $ship/$FMID.pax.Z       pax holding FMID in GIMZIP format
+# creates $ship/$FMID.readme.txt  readme (ASCII) for extracting pax
+# creates $log/$jcl               gimzip JCL
+# creates $log/$smpout            gimzip DD smpout output
+# creates $log/$sysprint          gimzip DD sysprint output
+# creates $log/$extractSize       required zFS size (for usage in PD)
+# creates $log/$FMID.readme.txt   readme (EBCDIC)
 
+# more definitions in main()
 product='Zowe Open Source Project'  # product name (max. 67 chars)
 #        ----+----1----+----2----+----3----+----4----+----5----+----6----+--
 jcl=gimzip.jcl                 # GIMZIP invocation JCL
@@ -58,7 +61,7 @@ test "$debug" && echo && echo "> $me $@"
 # --- invoke GIMZIP to create pax files & metadata for SMPMCS & RELFILEs
 # $1: GIMZIP output directory
 #
-# GIMZIP is created for MVS batch invocation. We are using JCL to 
+# GIMZIP is created for MVS batch invocation. We are using JCL to
 # create this environment.
 #
 # documentation in "SMP/E for z/OS Reference (SA23-2276)" and
@@ -78,10 +81,10 @@ _gimzipMeta
 
 # simplify JCL customization by using 1 root path for all directories
 # KEEP IN SYNC WITH $here/$jcl
-_ln $SMPCPATH $scratch/SMPCPATH
-_ln $SMPJHOME $scratch/SMPJHOME
-_ln $1        $scratch/SMPDIR
-_cmd mkdir -p $scratch/SMPWKDIR
+_ln $SMPCPATH $gimzip/SMPCPATH
+_ln $SMPJHOME $gimzip/SMPJHOME
+_ln $1        $gimzip/SMPDIR
+_cmd mkdir -p $gimzip/SMPWKDIR
 
 # allocate & populate data sets used by GIMZIP
 # note: GIMZIP assumes FB80 for SYSIN and will abend if this is not so
@@ -91,13 +94,13 @@ _cmd mkdir -p $scratch/SMPWKDIR
 _alloc "${gimzipHlq}.SMPOUT"   "FBA" "121" "PS" "1,1"
 _alloc "${gimzipHlq}.SYSPRINT" "FBA" "121" "PS" "1,1"
 _alloc "${gimzipHlq}.SYSIN"    "FB"   "80" "PS" "1,1"
-_cmd cp $scratch/$sysinGimzip "//'${gimzipHlq}.SYSIN'"
+_cmd cp $gimzip/$sysinGimzip "//'${gimzipHlq}.SYSIN'"
 
 # do we have volser defined?
-if test -z "$gimzipVolser" 
+if test -z "$gimzipVolser"
 then
   volser='//*'                                           # comment line
-else  
+else
   volser="// VOL=SER=($gimzipVolser),"    # () for multi-volume support
 fi    #
 
@@ -107,7 +110,7 @@ echo "   job1    ='$gimzipJob1'"
 echo "   parm    ='$gimzipParm'"
 echo "   volser  ='$volser'"
 echo "   HLQ     ='$gimzipHlq'"
-echo "   DIR     ='$scratch'"
+echo "   DIR     ='$gimzip'"
 echo "   SMPJHOME='$JAVA_HOME'"
 echo "   SMPCPATH='$SMP_HOME/classes'"
 
@@ -115,7 +118,7 @@ SED="s:#job1:$gimzipJob1:"
 SED="$SED;s:#parm:$gimzipParm:"
 SED="$SED;s:#hlq:$gimzipHlq:"
 SED="$SED;s:#volser:$volser:"
-SED="$SED;s:#dir:$scratch:"
+SED="$SED;s:#dir:$gimzip:"
 _sed $here/$jcl $log/$jcl
 test "$debug" && cat $log/$jcl
 
@@ -132,7 +135,7 @@ $here/$submitScript $debug $log/$jcl
 gimzipRC=$?
 
 # give z/OS time to free the data sets before accessing them again
-# cp: FSUM6258 cannot open file "//'...'": EDC5061I An error occurred 
+# cp: FSUM6258 cannot open file "//'...'": EDC5061I An error occurred
 # when attempting to define a file to the system. (errno2=0xC00B0403)
 _cmd sleep 1
 
@@ -229,19 +232,19 @@ then
 fi    #
 
 # GIMZIP SYSIN header
-_cmd --repl $scratch/$sysinGimzip \
+_cmd --repl $gimzip/$sysinGimzip \
   echo "<GIMZIP description=\"$product\">"
-_cmd --save $scratch/$sysinGimzip \
+_cmd --save $gimzip/$sysinGimzip \
   echo "<FILEDEF type=\"SMPPTFIN\" archid=\"${FMID}.SMPMCS\""
-_cmd --save $scratch/$sysinGimzip \
+_cmd --save $gimzip/$sysinGimzip \
   echo "         name=\"$mcs\"/>"
 
 # GIMUNZIP SYSIN header
-_cmd --repl $scratch/$sysinGimunzip \
+_cmd --repl $gimzip/$sysinGimunzip \
   echo "<GIMUNZIP>"
-_cmd --save $scratch/$sysinGimunzip \
+_cmd --save $gimzip/$sysinGimunzip \
   echo "<ARCHDEF archid=\"${FMID}.SMPMCS\""
-_cmd --save $scratch/$sysinGimunzip \
+_cmd --save $gimzip/$sysinGimunzip \
   echo "         newname=\"@PREFIX@.${RFDSNPFX}.${FMID}.SMPMCS\"/>"
 
 # add RELFILEs to SYSIN
@@ -251,26 +254,26 @@ do
 
   # ${dsn##*.} -> keep from last . (exclusive) = low level qualifier
   #GIMZIP
-  _cmd --save $scratch/$sysinGimzip \
+  _cmd --save $gimzip/$sysinGimzip \
     echo "<FILEDEF type=\"SMPRELF\"  archid=\"${FMID}.${dsn##*.}\""
-  _cmd --save $scratch/$sysinGimzip \
+  _cmd --save $gimzip/$sysinGimzip \
     echo "         name=\"$dsn\"/>"
 
   #GIMUNZIP
-  _cmd --save $scratch/$sysinGimunzip \
+  _cmd --save $gimzip/$sysinGimunzip \
   echo "<ARCHDEF archid=\"${FMID}.${dsn##*.}\""
-  _cmd --save $scratch/$sysinGimunzip \
+  _cmd --save $gimzip/$sysinGimunzip \
   echo "         newname=\"@PREFIX@.${RFDSNPFX}.${FMID}.${dsn##*.}\"/>"
 done    # for f
 
 # GIMZIP SYSIN footer
-_cmd --save $scratch/$sysinGimzip echo "</GIMZIP>"
+_cmd --save $gimzip/$sysinGimzip echo "</GIMZIP>"
 
 # GIMUNZIP SYSIN footer
-_cmd --save $scratch/$sysinGimunzip echo "</GIMUNZIP>"
+_cmd --save $gimzip/$sysinGimunzip echo "</GIMUNZIP>"
 
-sed 's/^/. /' $scratch/$sysinGimzip           # show prefixed with '. '
-test "$debug" && sed 's/^/. /' $scratch/$sysinGimunzip
+sed 's/^/. /' $gimzip/$sysinGimzip            # show prefixed with '. '
+test "$debug" && sed 's/^/. /' $gimzip/$sysinGimunzip
 
 test "$debug" && echo "< _gimzipMeta"
 }    # _gimzipMeta
@@ -297,13 +300,13 @@ then
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 echo "   $primary tracks required for unpax zFS"
-  
+
 # save value so it can be used during program directory creation
 _cmd --repl $log/$extractSize echo $primary
 
 # calculate secondary allocation size for extract zFS
 if test $primary -ge 10
-then 
+then
   let secondary=$primary/10       # size of extent is 1/10th of primary
 else
   secondary=1
@@ -331,7 +334,7 @@ SED="$SED;s/#pax/$(basename $paxFile)/g"
 _sed $here/$readme $log/$readme
 
 # add GIMUNZIP SYSIN data
-_cmd --save $log/$readme cat $scratch/$sysinGimunzip
+_cmd --save $log/$readme cat $gimzip/$sysinGimunzip
 
 # add footer, no _cmd to avoid expanding '*'
 echo '//*' >> $log/$readme
@@ -356,7 +359,7 @@ test "$debug" && echo && echo "> _pax $@"
 
 echo "-- creating FMID pax"
 
-paxFile="$gimzip/${FMID}.pax.Z"
+paxFile="$ship/${FMID}.pax.Z"
 _cmd cd $1
 # pax
 #  -w                  write
@@ -406,8 +409,9 @@ then
   test "$debug" && echo "$here/$allocScript -h $1 $2 $3 $4 $5"
   $here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
 else
-  test "$debug" && echo "$here/$allocScript -h -V $VOLSER $1 $2 $3 $4 $5"
-  $here/$allocScript -h -V "$VOLSER" "$1" "$2" "$3" "$4" "$5"
+  test "$debug" && echo \
+    "$here/$allocScript -h -V $gimzipVolser $1 $2 $3 $4 $5"
+  $here/$allocScript -h -V "$gimzipVolser" "$1" "$2" "$3" "$4" "$5"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
@@ -644,7 +648,7 @@ fi    #
 mcsHlq=${HLQ}.${RFDSNPFX}.${FMID}
 
 echo "-- input:  $mcsHlq"
-echo "-- output: $gimzip"
+echo "-- output: $ship"
 
 SMPJHOME=$JAVA_HOME                                         # Java home
 test "$debug" && echo "SMPJHOME=$JAVA_HOME"
@@ -658,12 +662,10 @@ base=$gimzip/$FMID        # pax, readme & work dir all start with $FMID
 
 # clean up output of previous run
 # note: GIMZIP creates data owned by UID 0
-test -x "$scratch" && _cmd rm -rf $scratch  # remove temporary work dir
-_cmd mkdir -p $scratch                      # create temporary work dir
-_cmd mkdir -p $gimzip                               # create output dir
-_cmd touch $base                           # make sure something exists
-_super rm -rf $base*            # remove pax, readme, & GIMZIP work dir
+test -x "$gimzip" && _super rm -rf $gimzip  # remove temporary work dir
+_cmd mkdir -p $gimzip                       # create temporary work dir
 _cmd mkdir -p $base                            # create GIMZIP work dir
+_cmd mkdir -p $ship                                 # create output dir
 
 # stage SMPMCS, RELFILEs, and GIMZIP metadata
 _gimzip $base
@@ -678,8 +680,7 @@ _size $paxFile
 _readme
 
 # cleanup
-_super rm -rf $base                            # remove GIMZIP work dir
-_cmd rm -rf $scratch                        # remove temporary work dir
+_cmd rm -rf $gimzip                         # remove temporary work dir
 # show everything in debug mode            # remove temporary data sets
 test "$debug" && $here/$csiScript -d "${gimzipHlq}.*"
 # get data set list (no debug mode to avoid debug messages)

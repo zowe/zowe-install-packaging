@@ -107,6 +107,8 @@ fmid:
   # comma-separated list of volume labels for RELFILE allocation
   fmidVol=
 gimzip:
+  # directory holding pax & readme files to be shipped to customers
+  ship=
   # GIMZIP JOB card, line 1
   gimzipJob1=
   # GIMZIP startup options - see SMP/E for z/OS Reference (SA22-7772)
@@ -115,17 +117,15 @@ gimzip:
   gimzipVol=
   # high level qualifier for GIMZIP work files
   gimzipHlq=
-  # directory holding SMP/E pax & readme (also used for staging)
+  # temporary directory holding config data & symlinks & GIMZIP workarea
   gimzip=
-  # temporary directory holding config data & symlinks
-  scratch=
-  # directory holding files to be shipped to customers
-  ship=
   # Java home directory, default uses existing JAVA_HOME if set
   JAVA_HOME=
   # SMP/ E home directory, default uses existing SMP_HOME if set
   SMP_HOME=
 service:
+  # directory, relative to $here, holding GitHub-managed service input
+  service=
   # directory holding PTF/APAR/USERMOD & readme (also used for staging)
   ptf=
   # high level qualifier for GIMDTS work files
@@ -136,6 +136,10 @@ service:
   gimdtsVol=
   # primary & secondary size (in tracks) for GIMDTS part allocations
   gimdtsTrks=
+  # FMID component ID
+  compID=
+  # link to landing page for PTF closing information
+  ptfHttp=
 EOF
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 if test $? -ne 0
@@ -199,26 +203,31 @@ do
     _export fmid    RFDSNPFX   RFDSNPFX      ZOWE           # output
     _export fmid    fmidVol    fmidVolser    $VOLSER        # internal
 # gimzip
+    _export gimzip  ship       ship          ${ROOT}/ship   # output
     _export gimzip  gimzipJob1 gimzipJob1                   # internal
     _export gimzip  gimzipParm gimzipParm                   # internal
     _export gimzip  gimzipVol  gimzipVolser  $VOLSER        # internal
     _export gimzip  gimzipHlq  gimzipHlq     ${HLQ}.GIMZIP  # internal
-    _export gimzip  gimzip     gimzip        ${ROOT}/gimzip # internal
-    _export gimzip  scratch    scratch       \
-            ${TMPDIR:-/tmp}/gimzip.$$   # max 58 chars      # internal
-    _export gimzip  ship       ship          ${ROOT}/ship   # output
+    _export gimzip  gimzip     gimzip        \
+            ${TMPDIR:-/tmp}/gimzip.$$        # max 58 chars # internal
+# ----+----1----+----2----+----3----+----4----+----5----+---
     _export gimzip  JAVA_HOME  JAVA_HOME     \
-              ${JAVA_HOME:-$(find /usr/lpp/java -type d -level 0 \
-                             | grep /J.*[^_64]$ | tail -1)} # permanent
+            ${JAVA_HOME:-$(find /usr/lpp/java -type d -level 0 \
+            | grep /J.*[^_64]$ | tail -1)}                  # permanent
     _export gimzip  SMP_HOME   SMP_HOME      \
-                                  ${SMP_HOME:-/usr/lpp/smp} # permanent
+            ${SMP_HOME:-/usr/lpp/smp}                       # permanent
 # pd
 # service
+    _export service service    service       ./service      # internal
     _export service ptf        ptf           ${ROOT}/ptf    # internal
-    _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
     _export service gimdtsJob1 gimdtsJob1                   # internal
+    _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
     _export service gimdtsVol  gimdtsVolser  $VOLSER        # internal
     _export service gimdtsTrks gimdtsTrks    "15,750"       # internal
+    _export service compID     compID        5698-ZWE00     # internal
+    _export service ptfHttp    ptfHttp       \
+            https://docs.zowe.org/stable/    # max 64 chars # internal
+# ----+----1----+----2----+----3----+----4----+----5----+----6----
 
 # - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * -
 
@@ -320,29 +329,27 @@ then
   fi    #
 fi    #
 
-# no point validating $HLQ, will be created if needed
-# no point validating $ROOT, will be created if needed
-# no point validating $YAML, will be created if needed
+# No point validating $HLQ, will be created if needed
+# No point validating $ROOT, will be created if needed
+# No point validating $YAML, will be created if needed
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-# uppercase where needed
+# Uppercase where needed
 test "$VRM" && VRM=$(echo $VRM | tr [:lower:] [:upper:])
 test "$fmid1" && fmid1=$(echo $fmid1 | tr [:lower:] [:upper:])
 test "$fmid2" && fmid2=$(echo $fmid2 | tr [:lower:] [:upper:])
 test "$HLQ" && HLQ=$(echo $HLQ | tr [:lower:] [:upper:])
 
-# create FMID name
+# Create FMID name
 # (will be faulty if $VRM is not set, fixed once we read $YAML)
 export FMID=${fmid1:-$dfltFmid1}${fmid2:-$dfltFmid2}$VRM
 test "$debug" && echo FMID=$FMID
 
-# update base to support multiple FMIDs simultaneously
-ROOT=${ROOT:-$dfltROOT}
-ROOT=${ROOT%/$FMID}/$FMID     # ${}: keep up to last /$FMID (exclusive)
+# Use defaults if needed
+export ROOT=${ROOT:-$dfltROOT}
 test "$debug" && echo ROOT=$ROOT
-HLQ=${HLQ:-$dfltHLQ}
-HLQ=${HLQ%.$FMID}.$FMID       # ${}: keep up to last .$FMID (exclusive)
+export HLQ=${HLQ:-$dfltHLQ}
 test "$debug" && echo HLQ=$HLQ
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

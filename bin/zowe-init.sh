@@ -14,10 +14,10 @@
 
 # The environment variables
 # ZOWE_ZOSMF_PORT https port of the zOSMF server
-# ZOWE_JAVA_HOME points to Java to be used
+# JAVA_HOME points to Java to be used
 # ZOWE_EXPLORER_HOST points to the current host name
 # ZOWE_IP_ADDRESS is the external IP address of the host ZOWE_EXPLORER_HOST where Zowe is installed 
-# ZOWE_NODE_HOME points to the node directory
+# NODE_HOME points to the node directory
 
 # This script checks to see whether they are set, and if not tries to locate them, 
 # and if they can't be found prompt for them before setting them
@@ -41,26 +41,26 @@ promptNodeHome(){
 loop=1
 while [ $loop -eq 1 ]
 do
-    if [[ "$ZOWE_NODE_HOME" == "" ]]
+    if [[ "$NODE_HOME" == "" ]]
     then
-        echo "    ZOWE_NODE_HOME was not set "
+        echo "    NODE_HOME was not set "
         echo "    Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
-        read ZOWE_NODE_HOME
+        read NODE_HOME
     fi
-    if [[ -f $ZOWE_NODE_HOME/"./bin/node" ]] 
+    if [[ -f $NODE_HOME/"./bin/node" ]] 
     then
-        export ZOWE_NODE_HOME=$ZOWE_NODE_HOME
+        export NODE_HOME=$NODE_HOME
         loop=0
     else
-        echo "        No /bin/node found in directory "$ZOWE_NODE_HOME
+        echo "        No /bin/node found in directory "$NODE_HOME
         echo "        Press Y or y to accept location, or Enter to choose another location"
         read rep
         if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
         then
-            export ZOWE_NODE_HOME=$ZOWE_NODE_HOME
+            export NODE_HOME=$NODE_HOME
             loop=0
         else
-            ZOWE_NODE_HOME=
+            NODE_HOME=
         fi
     fi
 done
@@ -72,7 +72,7 @@ locateJavaHome() {
     if [ "$javaVersion" -ge "18" ]
         then
             echo "   java version $version found at " $1 >> $LOG_FILE
-            export ZOWE_JAVA_HOME=$1
+            export JAVA_HOME=$1
         else
             if [ "$javaVersion" = "-1" ]
             then
@@ -84,31 +84,31 @@ locateJavaHome() {
             while [ $loop -eq 1 ]
             do
                 echo "    Please enter home directory where Java 8, or newer is installed.  This is the a directory that contains /bin/java"
-                read ZOWE_JAVA_HOME
-                getJavaVersion $ZOWE_JAVA_HOME
+                read JAVA_HOME
+                getJavaVersion $JAVA_HOME
                 if [ "$javaVersion" = "-1" ]
                     then
-                        echo "        No executable file found in $ZOWE_JAVA_HOME/bin/java"
+                        echo "        No executable file found in $JAVA_HOME/bin/java"
                         echo "        Press Y or y to accept location, or Enter to choose another location"
                         read rep
                         if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
                             then
-                                export ZOWE_JAVA_HOME
+                                export JAVA_HOME
                                 loop=0
                         fi
                     else
                         if [ "$javaVersion" -lt "18" ]
                             then
-                                echo "        The version of java at $ZOWE_JAVA_HOME is $version, and must be Java 8, or newer"
+                                echo "        The version of java at $JAVA_HOME is $version, and must be Java 8, or newer"
                                 echo "        Press Y or y to accept location, or Enter to choose another location"
                                 read rep
                                 if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
                                     then
-                                        export ZOWE_JAVA_HOME
+                                        export JAVA_HOME
                                         loop=0
                                 fi
                             else
-                                export ZOWE_JAVA_HOME
+                                export JAVA_HOME
                                 loop=0
                         fi
                 fi
@@ -153,31 +153,21 @@ else
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
-if [[ $ZOWE_JAVA_HOME == "" ]]
+if [[ -z ${JAVA_HOME} ]]
 then
-    if [[ -z ${JAVA_HOME} ]]
-    then
-        ZOWE_JAVA_HOME=/usr/lpp/java/J8.0_64
-    else
-        ZOWE_JAVA_HOME=${JAVA_HOME}
-    fi
-else    
-    echo "  ZOWE_JAVA_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
+    JAVA_HOME=/usr/lpp/java/J8.0_64
+else
+    echo "  JAVA_HOME variable value="${JAVA_HOME} >> $LOG_FILE
 fi
-locateJavaHome $ZOWE_JAVA_HOME
+locateJavaHome ${JAVA_HOME}
 
-if [[ $ZOWE_NODE_HOME == "" ]]
+if [[ -z ${NODE_HOME} ]]
 then
-    if [[ -z ${NODE_HOME} ]]
-    then
-        ZOWE_NODE_HOME=/usr/lpp/java/J8.0_64
-    else
-        ZOWE_NODE_HOME=${NODE_HOME}
-    fi
-else    
-    echo "  ZOWE_NODE_HOME variable value="$ZOWE_JAVA_HOME >> $LOG_FILE
+    NODE_HOME="/usr/lpp/IBM/cnj/IBM/node-latest-os390-s390x"
+else
+    echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
 fi
-promptNodeHome
+promptNodeHome ${NODE_HOME}
 
 ###identify ping
 getPing_bin
