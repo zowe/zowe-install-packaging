@@ -129,14 +129,20 @@ do I=1 to iFile.0
       exit 8                                        /* LEAVE PROGRAM */
     end    /* */
     when File.0 = 1 then do
+      File.1=_substitute('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1 || After
     end    /* */
     otherwise
+      File.1=_substitute('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1
+      
       do F=2 to File.0-1
+        File.F=_substitute('&','&amp;',File.F)
         T=T+1 ; oFile.T=File.F
       end    /* loop F */
+      
       /* F=File.0 */  /* already so after loop */
+      File.F=_substitute('&','&amp;',File.F)
       T=T+1 ; oFile.T=File.F || After
     end    /* select */
   end    /* add include */
@@ -198,7 +204,7 @@ else do
   say '** ERROR' ExecName 'output path cannot be null'
   OK=0  /* FALSE */
 end    /* */
-return OK    /* _writeUSS */
+return OK    /* _writeFile */
 
 /*---------------------------------------------------------------------
  * -- Read z/OS UNIX file
