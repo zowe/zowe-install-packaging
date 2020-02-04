@@ -10,10 +10,12 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-ZOWE_GROUP=ZWEADMIN # Replace with Zowe group in your environment
-ZOWE_USER=ZWESVUSR  # Replace with Zowe user  in your environment
+if [ $# -lt 4 ]; then
+  echo "Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+fi
 
-while getopts "f:h:i:dI" opt; do
+while getopts "f:h:i:d" opt; do
   case $opt in
     d) # enable debug mode
       # future use, accept parm to stabilize SMPE packaging
@@ -26,7 +28,7 @@ while getopts "f:h:i:dI" opt; do
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$opt" >&2
       exit 1
       ;;
   esac
@@ -166,54 +168,13 @@ echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP " and " ${ZOWE_DSN_PREFIX}.SZWEA
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 
-# Prepare configure directory 
-mkdir -p ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
-# Copy all but root dir from yaml as we can derive that once there
-grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
-
-cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
-
 # Prepare utils directory 
 mkdir -p ${ZOWE_ROOT_DIR}/scripts/utils
 cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-# Verify that zowe userid and group exist
-id -Gn ${ZOWE_USER} 
-RETURN_CODE=$?
-if [[ $RETURN_CODE != "0" ]]; then
-  echo "  Unable to display the group of userid ${ZOWE_USER}"
-  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER}."
-  echo "  'id -Gn ${ZOWE_USER}' failed to run successfully" >> $LOG_FILE
-fi
-
-echo `id -Gn ${ZOWE_USER}` | grep ${ZOWE_GROUP}
-RETURN_CODE=$?
-if [[ $RETURN_CODE != "0" ]]; then
-  echo "  userid ${ZOWE_USER} is not a member of group ${ZOWE_GROUP}"
-  echo "  Run ZWESECUR jcl job to create the zowe userid ${ZOWE_USER} in group ${ZOWE_GROUP}."
-  echo "  'id -Gn ${ZOWE_USER}' did not find zowe group ${ZOWE_GROUP}" >> $LOG_FILE
-fi
-
-#Give all directories -rw+x permission so they can be listed, but files -rwx
-chmod -R o-rwx ${ZOWE_ROOT_DIR}
-echo "  About to run find and chmods to add o+x on directories" >> $LOG_FILE
-find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
-echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
-
-# If this step fails it is likely because the user running this script is not part of the IZUADMIN group
-chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}
-RETURN_CODE=$?
-if [[ $RETURN_CODE != "0" ]]; then
-  echo "  The current user does not have sufficient authority to change the group of ${ZOWE_ROOT_DIR}."
-  echo "  A user who is part of group ${ZOWE_GROUP} must run 'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}'."
-  echo "  'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}' failed to run successfully" >> $LOG_FILE
-fi
-
-chmod -R 550 ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/defaults
+# Based on zowe-install-packaging/issues/1014 we should set everything to 755
+chmod -R 755 ${ZOWE_ROOT_DIR}
 
 # save install log in runtime directory
 mkdir -p $ZOWE_ROOT_DIR/install_log
