@@ -74,10 +74,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 5, unit: 'MINUTES'],
     isSkippable   : false,
     operation     : {
-      // replace templates
-      echo 'replacing templates...'
-      sh "sed -e 's/{ZOWE_VERSION}/${manifest['version']}/g' install/zowe-install.yaml.template > install/zowe-install.yaml && rm install/zowe-install.yaml.template"
-
       // prepareing download spec
       echo 'prepareing download spec ...'
       def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
