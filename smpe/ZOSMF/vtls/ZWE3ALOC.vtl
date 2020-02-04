@@ -87,7 +87,7 @@
 //            DSP=
 //*
 //ALLOCT   EXEC PGM=IEFBR14,COND=(4,LT),PARM='&TVOL'
-//SZWEAUTH DD SPACE=(TRK,(15,5,5)),
+//SZWEAUTH DD SPACE=(TRK,(30,15,5)),
 //            UNIT=SYSALLDA,
 #if( $tvol and $tvol != "" and $tvol != '#tvol')
 //            VOL=SER=&TVOL,
@@ -111,7 +111,7 @@
 //            BLKSIZE=32760,
 //            DSN=&THLQ..SZWEAUTH
 //*
-//SZWESAMP DD SPACE=(TRK,(15,5,5)),
+//SZWESAMP DD SPACE=(TRK,(15,5,30)),
 //            UNIT=SYSALLDA,
 #if( $tvol and $tvol != "" and $tvol != '#tvol')
 //            VOL=SER=&TVOL,
@@ -147,7 +147,7 @@
 //            DSP=
 //*
 //ALLOCD   EXEC PGM=IEFBR14,COND=(4,LT),PARM='&DVOL'
-//AZWEAUTH DD SPACE=(TRK,(15,5,5)),
+//AZWEAUTH DD SPACE=(TRK,(30,15,5)),
 //            UNIT=SYSALLDA,
 #if( $dvol and $dvol != "" and $dvol != '#dvol')
 //            VOL=SER=&DVOL,
@@ -171,7 +171,7 @@
 //            BLKSIZE=32760,
 //            DSN=&DHLQ..AZWEAUTH
 //*
-//AZWESAMP DD SPACE=(TRK,(15,5,5)),
+//AZWESAMP DD SPACE=(TRK,(15,5,30)),
 //            UNIT=SYSALLDA,
 #if( $dvol and $dvol != "" and $dvol != '#dvol')
 //            VOL=SER=&DVOL,

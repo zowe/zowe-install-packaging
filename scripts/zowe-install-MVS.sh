@@ -10,7 +10,7 @@
 # Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
-sizeAUTH='space(15,15) tracks'
+sizeAUTH='space(30,15) tracks'
 sizeSAMP='space(15,15) tracks'
 members='ZWESVSTC.jcl ZWESECUR.jcl'
 
