@@ -129,20 +129,20 @@ do I=1 to iFile.0
       exit 8                                        /* LEAVE PROGRAM */
     end    /* */
     when File.0 = 1 then do
-      File.1=_substituteJCL('&','&amp;',File.1)
+      File.1=_substitute71('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1 || After
     end    /* */
     otherwise
-      File.1=_substituteJCL('&','&amp;',File.1)
+      File.1=_substitute71('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1
 
       do F=2 to File.0-1
-        File.F=_substituteJCL('&','&amp;',File.F)
+        File.F=_substitute71('&','&amp;',File.F)
         T=T+1 ; oFile.T=File.F
       end    /* loop F */
 
       /* F=File.0 */  /* already so after loop */
-      File.F=_substituteJCL('&','&amp;',File.F)
+      File.F=_substitute71('&','&amp;',File.F)
       T=T+1 ; oFile.T=File.F || After
     end    /* select */
   end    /* add include */
@@ -163,18 +163,14 @@ exit 0                                              /* LEAVE PROGRAM */
 
 /*---------------------------------------------------------------------
  * -- substitute one string with another and keep line within 71 chars
- * Returns input Line (string) with Old replaced by New, no updates are
- *  done for a comment line
+ * Returns input Line (string) with Old replaced by New
  * Args:
  *  Old : word/string to replace
  *  New : replacement word/string
  *  Line: string to process
  */
-_substituteJCL: PROCEDURE EXPOSE Debug ExecName
+_substitute71: PROCEDURE EXPOSE Debug ExecName
 parse arg Old,New,Line
-
-/* do not alter comment */
-if left(Line,3) == '//*' then return Line           /* LEAVE ROUTINE */
 
 Line=_substitute(Old,New,Line)
 do while length(Line) > 71
@@ -186,7 +182,7 @@ do while length(Line) > 71
     exit 8                                          /* LEAVE PROGRAM */
   end    /* */
 end    /* while */
-return Line    /* _substituteJCL */
+return Line    /* _substitute71 */
 
 /*---------------------------------------------------------------------
  * -- substitute one string with another
@@ -204,11 +200,10 @@ parse value Start '1' with Start .               /* default: Start=1 */
 Start=pos(Old,Line,Start)
 do while Start > 0
   /* substitute Old with New */
-  Line=insert(New,,
-         delstr(Line,Start,length(Old)),,
-         Start-1)
+  Line=insert(New,delstr(Line,Start,length(Old)),Start-1)
   if Debug then say '. (substitute) (length' length(Line)')' Line
-  /* start after New on next loop */
+
+  /* start after New for next test */
   Start=pos(Old,Line,Start + length(New))
 end    /* while */
 return Line    /* _substitute */
