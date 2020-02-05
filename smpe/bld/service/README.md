@@ -109,12 +109,12 @@ AO00001 AO00002
 </pre>
 ### Header SYSMOD 1
 <pre>
-<strong><font color='red'>++PTF(UO12345)</font></strong></font color='red'> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
+<strong><mark><font color='red'>++PTF(UO12345)</font></mark></strong></font color='red'> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(UO43210)
-  <strong><font color='red'>SUP(AO12345,AO43210)</font></strong>
+  <strong><mark><font color='red'>SUP(AO12345,AO43210)</font></mark></strong>
  /*
-  <strong><font color='red'>PROBLEM DESCRIPTION(S):
+  <strong><mark><font color='red'>PROBLEM DESCRIPTION(S):
     IO12345 -
       PROBLEM SUMMARY:
       ****************************************************************
@@ -153,7 +153,7 @@ AO00001 AO00002
       ****************************************************************
       Stop the Zowe servers before installing this update.
        
-      ...</font></strong>
+      ...</font></mark></strong>
 
     COPYRIGHT:
       5698-ZWE00 COPYRIGHT Contributors to the Zowe Project. 2020
@@ -178,7 +178,7 @@ If a customer requires it, a Zowe build engineer can trigger an APAR build by up
 
 ### Update ptf-bucket.txt
 <pre>
-<strong><font color='red'>IO19283 IO74650</font></strong>
+<strong><mark><font color='red'>IO19283 IO74650</font></mark></strong>
 # format: PTF(s) – matching APAR(s)
 UO12345 UO43210 - IO12345 IO43210
 UO67890 UO98765 - IO67890 IO98765
@@ -187,12 +187,12 @@ UO67890 UO98765 - IO67890 IO98765
 ### Update apar-bucket.txt
 <pre>
 # format: APAR(s)
-<strong><font color='red'># IO19283 IO74650 - issue 123 - Jan 13, 2020</font></strong>
+<strong><mark><font color='red'># IO19283 IO74650 - issue 123 - Jan 13, 2020</font></mark></strong>
 AO00001 AO00002
 </pre>
 ### Header SYSMOD 1
 <pre>
-<strong><font color='red'>++APAR(AO19283)</font></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
+<strong><mark><font color='red'>++APAR(AO19283)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(AO74650)
  /*
@@ -235,7 +235,7 @@ The presence of current-apar.txt will cause all future builds to supersede the A
 ++PTF(UO12345) /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(UO43210)
-  SUP(AO12345,<strong><font color='red'>AO19283</font></strong>,AO43210,<strong><font color='red'>AO74650</font></strong>)
+  SUP(AO12345,<strong><mark><font color='red'>AO19283</font></mark></strong>,AO43210,<strong><mark><font color='red'>AO74650</font></mark></strong>)
  /*
   PROBLEM DESCRIPTION(S):
     IO12345 -
@@ -253,7 +253,7 @@ The presence of current-apar.txt will cause all future builds to supersede the A
       Follow this link for more details on the community changes:
       https://docs.zowe.org/stable/
 
-    <strong><font color='red'>IO19283</font></strong> -
+    <strong><mark><font color='red'>IO19283</font></mark></strong> -
       ...
 
   COMPONENT:
@@ -261,9 +261,9 @@ The presence of current-apar.txt will cause all future builds to supersede the A
 
   APARS FIXED:
     IO12345
-    <strong><font color='red'>IO19283</font></strong>
+    <strong><mark><font color='red'>IO19283</font></mark></strong>
     IO43210
-    <strong><font color='red'>IO74650</font></strong>
+    <strong><mark><font color='red'>IO74650</font></mark></strong>
 
   SPECIAL CONDITIONS:
     ACTION:
@@ -303,7 +303,7 @@ The staging branch is updated (using smpe.promote.sh) during the promote of a PT
 
 ### Update ptf-bucket.txt
 <pre>
-<strong><font color='red'>#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020</font></strong>
+<strong><mark><font color='red'>#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020</font></mark></strong>
 UO67890 UO98765 - IO67890 IO98765
 </pre>
 ### Remove current-apar.txt
@@ -382,10 +382,10 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
 
 ### Header SYSMOD 1
 <pre>
-<strong><font color='red'>++PTF(UO67890)</font></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
+<strong><mark><font color='red'>++PTF(UO67890)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(UO98765)
-  <strong><font color='red'>SUP(AO12345,AO19283,AO43210,</font></strong>AO67890,<strong><font color='red'>AO74650,</font></strong>AO98765,<strong><font color='red'>UO12345,UO43210)</font></strong>
+  <strong><mark><font color='red'>SUP(AO12345,AO19283,AO43210,</font></mark></strong>AO67890,<strong><mark><font color='red'>AO74650,</font></mark></strong>AO98765,<strong><mark><font color='red'>UO12345,UO43210)</font></mark></strong>
  /*
   PROBLEM DESCRIPTION(S):
     IO67890 -
@@ -406,10 +406,10 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
     IO98765 -
       ...
 
-    <strong><font color='red'>IO12345 -
+    <strong><mark><font color='red'>IO12345 -
       ...
 
-    ...</font></strong>
+    ...</font></mark></strong>
 
   COMPONENT:
     5698-ZWE00-AZWE001
@@ -417,10 +417,10 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
   APARS FIXED:
     IO67890
     IO98765
-    <strong><font color='red'>IO12345
+    <strong><mark><font color='red'>IO12345
     IO19283
     IO43210
-    IO74650</font></strong>
+    IO74650</font></mark></strong>
 
   SPECIAL CONDITIONS:
     ACTION:
@@ -446,7 +446,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
       ****************************************************************
       Start the Zowe servers after installing this update.
 
-      <strong><font color='red'>****************************************************************
+      <strong><mark><font color='red'>****************************************************************
       * Affected function: Zowe servers                              *
       ****************************************************************
       * Description: stop servers                                    *
@@ -466,7 +466,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
       ****************************************************************
       * Part: ZOWESVR & ZWESISVR                                     *
       ****************************************************************
-      Start the Zowe servers after installing this update.</font></strong>
+      Start the Zowe servers after installing this update.</font></mark></strong>
       
     COPYRIGHT:
       5698-ZWE00 COPYRIGHT Contributors to the Zowe Project. 2020
@@ -502,7 +502,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
   ****************************************************************
   Start the Zowe servers after installing this update.
   ).
-<strong><font color='red'>++HOLD(UO12345) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(20013)
+<strong><mark><font color='red'>++HOLD(UO12345) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(20013)
   COMMENT(
   ****************************************************************
   * Affected function: Zowe servers                              *
@@ -526,7 +526,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
   ****************************************************************
   Start the Zowe servers after installing this update.
   
-  ).</font></strong>
+  ).</font></mark></strong>
 </pre>
 The second PTF (UO98765) of the set does not have the ++HOLD info.
 
@@ -536,7 +536,7 @@ This build is to show how APAR builds pick up the data of promoted PTFs in promo
 
 ### Update ptf-bucket.txt
 <pre>
-<strong><font color='red'>AO00001 AO00002</font></strong>
+<strong><mark><font color='red'>AO00001 AO00002</font></mark></strong>
 # format: PTF(s) – matching APAR(s)
 #UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
 UO67890 UO98765 - IO67890 IO98765
@@ -545,7 +545,7 @@ UO67890 UO98765 - IO67890 IO98765
 <pre>
 # format: APAR(s)
 # IO19283 IO74650 - issue 123 - Jan 13, 2020
-<strong><font color='red'># IO00001 IO00002 - issue 456 - Jan 20, 2020</font></strong>
+<strong><mark><font color='red'># IO00001 IO00002 - issue 456 - Jan 20, 2020</font></mark></strong>
 </pre>
 ### Create current-hold-AO.txt
 <pre>
@@ -563,10 +563,10 @@ before attempting to start the servers.
 </pre>
 ### Header SYSMOD 1
 <pre>
-<strong><font color='red'>++APAR(AO00001)</font></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020). 
+<strong><mark><font color='red'>++APAR(AO00001)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020). 
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(AO00002)
-  <strong><font color='red'>PRE(AO12345,AO19283,AO43210,AO74650,UO12345,UO43210)</font></strong>
+  <strong><mark><font color='red'>PRE(AO12345,AO19283,AO43210,AO74650,UO12345,UO43210)</font></mark></strong>
 /*
   SPECIAL CONDITIONS:
     COPYRIGHT:
@@ -604,7 +604,7 @@ before attempting to start the servers.
   Start the Zowe servers after installing this update.
 
   ).
-<strong><font color='red'>++HOLD(AO00001) SYSTEM FMID(AZWE001) REASON(AO) DATE(20020)
+<strong><mark><font color='red'>++HOLD(AO00001) SYSTEM FMID(AZWE001) REASON(AO) DATE(20020)
   COMMENT(
   ****************************************************************
   * Affected function: Zowe servers                              *
@@ -618,7 +618,7 @@ before attempting to start the servers.
   ZOWESVR becomes ZWESVSTC. Adjust your automation accordingly
   before attempting to start the servers.
 
-  ).</font></strong>
+  ).</mark></font></mark></strong>
 </pre>
 The second APAR (AO00002) of the set does not have the ++HOLD info.
 
@@ -643,14 +643,14 @@ If required, a Zowe build engineer can trigger a USERMOD build instead of a PTF 
 <pre>
 # format: PTF(s) – matching APAR(s)
 #UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
-<strong><font color='red'>#UO67890 UO98765 - IO67890 IO98765 – temporary for usermod</font></strong>
+<strong><mark><font color='red'>#UO67890 UO98765 - IO67890 IO98765 – temporary for usermod</font></mark></strong>
 </pre>
 ### Header SYSMOD 1
 <pre>
-<strong><font color='red'>++USERMOD(TMP0001)</font></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020).
+<strong><mark><font color='red'>++USERMOD(TMP0001)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(TMP0002)
-  <strong><font color='red'>SUP(AO00001,AO00002)</font></strong>
+  <strong><mark><font color='red'>SUP(AO00001,AO00002)</font></mark></strong>
   PRE(AO12345,AO19283,AO43210,AO74650,UO12345,UO43210)
  /*
   SPECIAL CONDITIONS:
