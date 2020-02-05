@@ -1,5 +1,7 @@
 Table of contents
 -----------------
+* Add product member to build
+* Add SMPE member to build
 * Flow for SMP/E packaging build
 * Additional tools
 * FMID (base) build
@@ -8,6 +10,27 @@ Table of contents
 * APAR (service) build
 * SMP/E terminology
 
+Add product member to build
+---------------------------
+1. Add member to files/..., e.g. files/jcl/ZWENOSEC.jcl
+2. Add member definition to smpe/bld/SMPMCS.txt, e.g.
+++SAMP(ZWENOSEC)     SYSLIB(SZWESAMP) DISTLIB(AZWESAMP) RELFILE(2) .
+3. Update scripts/zowe-install-MVS.sh, e.g.
+members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl'
+
+Add SMPE member to build
+------------------------
+1. Add member to smpe/pax/..., e.g. smpe/pax/USS/ZWEYML01.yml
+2. Add member definition to smpe/bld/SMPMCS.txt, e.g.
+++HFS(ZWEYML01)      SYSLIB(SZWEZFS ) DISTLIB(AZWEZFS ) RELFILE(4)
+   SHSCRIPT(ZWESHMKD,PRE)
+   LINK('../workflow/install.yaml')
+   TEXT              PARM(PATHMODE(0,7,5,5)) .
+3. Update smpe/pax/zowe-install-smpe.sh, e.g.
+list="$list USS/ZWEYML01.yml"
+4. If this a USS file, ensure the directory is listed in 
+   smpe/pax/USS/ZWESHMKD.sh, e.g.
+_dirs='../workflow'
 
 Flow for SMP/E packaging build
 ------------------------------
@@ -109,12 +132,12 @@ FMID          (Function Modification IDentifier)
               SMP/E keyword: ++FUNCTION
               Comparable to the build result of the RC (release candidate)
               GitHub branch.
-              Base version of a software product. Once installed and
+              Base level of a software product. Once installed and
               configured, this product can be used. All future updates
               must be applied on top of this base, even if the update is
               a full product replacement.
               With Zowe, each official convenience build with a version
-              change will have a matching FMID.
+              change (V in VRM) will have a matching FMID.
 APAR          (Authorized Program Analysis Report)
               Comparable to a GitHub issue.
               Describes a bug in / enhancement for the code/documentation.
@@ -147,7 +170,7 @@ PTF           (Program Temporary Fix)
               naming convention UOxxxxx to ensure uniqueness, where
               xxxxx is a 5-digit number. This might change in the future.
               With Zowe, each official convenience build that does not
-              have a version change will have a matching PTF.
+              have a version change (V in VRM) will have a matching PTF.
               With Zowe, a PTF will always SUP all APAR-fixes that are
               embedded in this PTF, and all previous PTFs. This implies
               that by installing a PTF, you automatically get all
