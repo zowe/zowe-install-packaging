@@ -129,20 +129,20 @@ do I=1 to iFile.0
       exit 8                                        /* LEAVE PROGRAM */
     end    /* */
     when File.0 = 1 then do
-      File.1=_substitute('&','&amp;',File.1)
+      File.1=_substituteJCL('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1 || After
     end    /* */
     otherwise
-      File.1=_substitute('&','&amp;',File.1)
+      File.1=_substituteJCL('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1
-      
+
       do F=2 to File.0-1
-        File.F=_substitute('&','&amp;',File.F)
+        File.F=_substituteJCL('&','&amp;',File.F)
         T=T+1 ; oFile.T=File.F
       end    /* loop F */
-      
+
       /* F=File.0 */  /* already so after loop */
-      File.F=_substitute('&','&amp;',File.F)
+      File.F=_substituteJCL('&','&amp;',File.F)
       T=T+1 ; oFile.T=File.F || After
     end    /* select */
   end    /* add include */
@@ -162,21 +162,54 @@ if Debug then say '<' ExecName '0'
 exit 0                                              /* LEAVE PROGRAM */
 
 /*---------------------------------------------------------------------
- * -- substitute one string with another
- * Returns input Line (string) with Old replaced by New
+ * -- substitute one string with another and keep line within 71 chars
+ * Returns input Line (string) with Old replaced by New, no updates are
+ *  done for a comment line
  * Args:
  *  Old : word/string to replace
  *  New : replacement word/string
  *  Line: string to process
  */
-_substitute: PROCEDURE EXPOSE Debug
+_substituteJCL: PROCEDURE EXPOSE Debug ExecName
 parse arg Old,New,Line
 
-do while pos(Old,Line) > 0
+/* do not alter comment */
+if left(Line,3) == '//*' then return Line           /* LEAVE ROUTINE */
+
+Line=_substitute(Old,New,Line)
+do while length(Line) > 71
+  if lastpos('  ',Line) > 0
+  then Line=_substitute('  ',' ',Line,lastpos('  ',Line))
+  else do
+    say '** ERROR' ExecName 'cannot trim line after substitution'
+    say '(length' length(Line)')' Line
+    exit 8                                          /* LEAVE PROGRAM */
+  end    /* */
+end    /* while */
+return Line    /* _substituteJCL */
+
+/*---------------------------------------------------------------------
+ * -- substitute one string with another
+ * Returns input Line (string) with Old replaced by New
+ * Args:
+ *  Old  : word/string to replace
+ *  New  : replacement word/string
+ *  Line : string to process
+ *  Start: (optional) starting position, default 1
+ */
+_substitute: PROCEDURE EXPOSE Debug
+parse arg Old,New,Line,Start
+parse value Start '1' with Start .               /* default: Start=1 */
+
+Start=pos(Old,Line,Start)
+do while Start > 0
+  /* substitute Old with New */
   Line=insert(New,,
-         delstr(Line,pos(Old,Line),length(Old)),,
-         pos(Old,Line)-1)
+         delstr(Line,Start,length(Old)),,
+         Start-1)
   if Debug then say '. (substitute) (length' length(Line)')' Line
+  /* start after New on next loop */
+  Start=pos(Old,Line,Start + length(New))
 end    /* while */
 return Line    /* _substitute */
 
