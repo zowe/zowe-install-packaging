@@ -117,7 +117,7 @@ do
   VALIDATE_SCRIPT=${i}/validate.sh
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
-    . ${VALIDATE_SCRIPT}
+    $(. ${VALIDATE_SCRIPT})
     retval=$?
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
