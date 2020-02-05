@@ -105,7 +105,7 @@ fi
 INTERNAL_COMPONENTS=""
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  INTERNAL_COMPONENTS=${INTERNAL_COMPONENTS}",${ROOT_DIR}/components/${i}"
+  INTERNAL_COMPONENTS=${INTERNAL_COMPONENTS}",${ROOT_DIR}/components/${i}/bin"
 done
 
 LAUNCH_COMPONENTS=${INTERNAL_COMPONENTS}",${EXTERNAL_COMPONENTS}"
@@ -114,7 +114,7 @@ LAUNCH_COMPONENTS=${INTERNAL_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 ERRORS_FOUND=0
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  VALIDATE_SCRIPT=${i}/bin/validate.sh
+  VALIDATE_SCRIPT=${i}/validate.sh
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
     . ${VALIDATE_SCRIPT}
@@ -161,7 +161,7 @@ cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 # Run setup/configure on components if script exists
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  CONFIGURE_SCRIPT=${i}/bin/configure.sh
+  CONFIGURE_SCRIPT=${i}/configure.sh
   if [[ -f ${CONFIGURE_SCRIPT} ]]
   then
     . ${CONFIGURE_SCRIPT}
@@ -170,5 +170,5 @@ done
 
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  . ${i}/bin/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
+  . ${i}/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
 done
