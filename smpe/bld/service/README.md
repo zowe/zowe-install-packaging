@@ -44,7 +44,7 @@
 While the FMID has not GA'd, smpe-service.sh will create a USERMOD that matches the FMID.
 
 ### Header SYSMOD 1
-<code>
+<pre>
 ++USERMOD(TMP0001) /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(TMP0002)
@@ -85,7 +85,7 @@ While the FMID has not GA'd, smpe-service.sh will create a USERMOD that matches 
   Start the Zowe servers after installing this update.
 
   ).
-</code>
+</pre>
 
 The second USERMOD (TMP0002) of the set does not have the ++HOLD info.
 
@@ -96,19 +96,19 @@ The second USERMOD (TMP0002) of the set does not have the ++HOLD info.
 Once the FMID GA'd, ptf-bucket.txt is created and filled with PTF references. The presence of this file triggers PTF builds. apar-bucket.txt is also created and holds APARs for non-PTF builds.
 
 ### Create ptf-bucket.txt
-<code>
+<pre>
 # format: PTF(s) – matching APAR(s)
 UO12345 UO43210 - IO12345 IO43210
 UO67890 UO98765 - IO67890 IO98765
-</code>
+</pre>
 ### Create apar-bucket.txt
-<code>
+<pre>
 # format: APAR(s)
 IO19283 IO74650
 AO00001 AO00002
-</code>
+</pre>
 ### Header SYSMOD 1
-<code>
+<pre>
 <strong>++PTF(UO12345)</strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(UO43210)
@@ -169,7 +169,7 @@ AO00001 AO00002
   COMMENT(
   <hold info>
   ).
-</code>
+</pre>
 The second PTF (UO43210) of the set does not have the ++HOLD info.
 
 ## **Force APAR build**
@@ -177,21 +177,21 @@ The second PTF (UO43210) of the set does not have the ++HOLD info.
 If a customer requires it, a Zowe build engineer can trigger an APAR build by updating ptf-bucket.txt. Usable APAR numbers can be found in apar-bucket.txt and must be removed here when used.
 
 ### Update ptf-bucket.txt
-<code>
+<pre>
 <strong>IO19283 IO74650</strong>
 # format: PTF(s) – matching APAR(s)
 UO12345 UO43210 - IO12345 IO43210
 UO67890 UO98765 - IO67890 IO98765
-</code>
+</pre>
 
 ### Update apar-bucket.txt
-<code>
+<pre>
 # format: APAR(s)
 <strong># IO19283 IO74650 - issue 123 - Jan 13, 2020</strong>
 AO00001 AO00002
-</code>
+</pre>
 ### Header SYSMOD 1
-<code>
+<pre>
 <strong>++APAR(AO19283)</strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(AO74650)
@@ -211,27 +211,27 @@ AO00001 AO00002
   COMMENT(
   <hold info>
   ).
-</code>
+</pre>
 The second APAR (AO43210) of the set does not have the ++HOLD info.
 
 After the build, ptf-bucket.txt must be restored (no more APAR reference), and current-apar.txt must be created/updated with APAR. The updated current-apar.txt file must move up to the staging branch.
 
 ### Final ptf-bucket.txt
-<code>
+<pre>
 # format: PTF(s) – matching APAR(s)
 UO12345 UO43210 - IO12345 IO43210
 UO67890 UO98765 - IO67890 IO98765
-</code>
+</pre>
 ### Final current-apar.txt
-<code>
+<pre>
 IO19283 IO74650
-</code>
+</pre>
 
 ## **Rebuild 1st PTF with additional APAR**
 The presence of current-apar.txt will cause all future builds to supersede the APARs listed within (for any type of build, PTF, APAR, or USERMOD).
 
 ### Header SYSMOD 1
-<code>
+<pre>
 ++PTF(UO12345) /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(UO43210)
@@ -294,7 +294,7 @@ The presence of current-apar.txt will cause all future builds to supersede the A
   COMMENT(
   <hold info>
   ).
-</code>
+</pre>
 The second PTF (UO43210) of the set does not have the ++HOLD info.
 
 ## **Promote PTF**
@@ -302,24 +302,24 @@ The second PTF (UO43210) of the set does not have the ++HOLD info.
 The staging branch is updated (using smpe.promote.sh) during the promote of a PTF so that future builds know that this PTF, and everything in it, shipped.
 
 ### Update ptf-bucket.txt
-<code>
+<pre>
 <strong>#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020</strong>
 UO67890 UO98765 - IO67890 IO98765
-</code>
+</pre>
 ### Remove current-apar.txt
 
 &lt;the APARs are now embedded in the PTF, so this file may no longer exist&gt;
 &lt;Note: the same is true for current-hold-\*.txt, which is not used in this sample&gt;
 
 ### Create/update promoted-apar.txt
-<code>
+<pre>
 IO12345
 IO19283
 IO43210
 IO74650
-</code>
+</pre>
 ### Create/update promoted-close.txt
-<code>
+<pre>
     IO12345 -
       PROBLEM SUMMARY:
       ****************************************************************
@@ -340,9 +340,9 @@ IO74650
 
     ...
 
-</code>
+</pre>
 ### Create/update promoted-hold.txt
-<code>
+<pre>
 ++HOLD(UO12345) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(20013)
   COMMENT(
   ****************************************************************
@@ -369,19 +369,19 @@ IO74650
 
   ).
 
-</code>
+</pre>
 ### Create/update promoted-ptf.txt
-<code>
+<pre>
 UO12345
 UO43210
-</code>
+</pre>
 
 ## **2nd PTF build**
 
 The presence of promoted-\*.txt will cause all future builds to pick up the info within as needed (for any type of build, PTF, APAR, or USERMOD). Note that PTFs supersede previous PTFs, so the closing and hold info of the previous PTFs is embedded in this PTF.
 
 ### Header SYSMOD 1
-<code>
+<pre>
 <strong>++PTF(UO67890)</strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(UO98765)
@@ -527,7 +527,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
   Start the Zowe servers after installing this update.
   
   ).</strong>
-</code>
+</pre>
 The second PTF (UO98765) of the set does not have the ++HOLD info.
 
 ## **2nd force APAR build**
@@ -535,20 +535,20 @@ The second PTF (UO98765) of the set does not have the ++HOLD info.
 This build is to show how APAR builds pick up the data of promoted PTFs in promoted-\*.txt. A USERMOD build has similar results. This build also shows how to add additional hold information. We&#39;re adding AO (automation) type hold information to show how it mixes with the always present ACTION type hold information of fixed-hold-ACTION.txt.
 
 ### Update ptf-bucket.txt
-<code>
+<pre>
 <strong>AO00001 AO00002</strong>
 # format: PTF(s) – matching APAR(s)
 #UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
 UO67890 UO98765 - IO67890 IO98765
-</code>
+</pre>
 ### Update apar-bucket.txt
-<code>
+<pre>
 # format: APAR(s)
 # IO19283 IO74650 - issue 123 - Jan 13, 2020
 <strong># IO00001 IO00002 - issue 456 - Jan 20, 2020</strong>
-</code>
+</pre>
 ### Create current-hold-AO.txt
-<code>
+<pre>
 ****************************************************************
 * Affected function: Zowe servers                              *
 ****************************************************************
@@ -560,9 +560,9 @@ UO67890 UO98765 - IO67890 IO98765
 ****************************************************************
 ZOWESVR becomes ZWESVSTC. Adjust your automation accordingly
 before attempting to start the servers. 
-</code>
+</pre>
 ### Header SYSMOD 1
-<code>
+<pre>
 <strong>++APAR(AO00001)</strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020). 
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(AO00002)
@@ -619,34 +619,34 @@ before attempting to start the servers.
   before attempting to start the servers.
 
   ).</strong>
-</code>
+</pre>
 The second APAR (AO00002) of the set does not have the ++HOLD info.
 
 After the build, ptf-bucket.txt must be restored (no more APAR reference), and current-apar.txt must be created/updated with APAR. The updated current-apar.txt file must move up to the staging branch.
 
 ### Final ptf-bucket.txt
-<code>
+<pre>
 # format: PTF(s) – matching APAR(s)
 #UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
 UO67890 UO98765 - IO67890 IO98765
-</code>
+</pre>
 ### Final current-apar.txt
-<code>
+<pre>
 AO00001 AO00002
-</code>
+</pre>
 
 ## **Force USERMOD build**
 
 If required, a Zowe build engineer can trigger a USERMOD build instead of a PTF build by removing ptf-bucket.txt, or commenting out all its content. This also shows that APAR and USERMOD build will supersede APAR builds listed in current-apar.txt.
 
 ### Remove or update ptf-bucket.txt
-<code>
+<pre>
 # format: PTF(s) – matching APAR(s)
 #UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
 <strong>#UO67890 UO98765 - IO67890 IO98765 – temporary for usermod</strong>
-</code>
+</pre>
 ### Header SYSMOD 1
-<code>
+<pre>
 <strong>++USERMOD(TMP0001)</strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020).
 ++VER(Z038,C150,P115) FMID(AZWE001)
   REQ(TMP0002)
@@ -704,14 +704,14 @@ If required, a Zowe build engineer can trigger a USERMOD build instead of a PTF 
   before attempting to start the servers.
 
   ).
-</code>
+</pre>
 The second USERMOD (TMP0002) of the set does not have the ++HOLD info.
 
 After the build, ptf-bucket.txt must be restored.
 
 ### Final ptf-bucket.txt
-<code>
+<pre>
 # format: PTF(s) – matching APAR(s)
 #UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
 UO67890 UO98765 - IO67890 IO98765
-</code>
+</pre>
