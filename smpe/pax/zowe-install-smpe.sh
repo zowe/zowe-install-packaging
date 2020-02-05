@@ -277,6 +277,7 @@ _installMVS SZWESAMP "FB" "80" "PO" "10,2"
 # install SZWEZFS members
 # (explicitly list all members to support $ReMoVe)
 list=""     # file names include path based on $here
+list="$list USS/ZWESHMKD.sh"
 list="$list USS/ZWESHPAX.sh"
 list="$list USS/ZWEWRF01.xml"
 list="$list USS/ZWEYML01.yml"

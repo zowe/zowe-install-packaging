@@ -272,38 +272,6 @@ then
   echo OK
 fi 
 
-# 3. Ports are available
-echo
-echo Check the ports in the yaml file are not already in use
-portList=`sed -n 's/.*\([^ssh|telnet]Port=\)\([0-9]*\)/\2/p' ${INSTALL_DIR}/zowe-install.yaml`
-portsOK=1
-for port in $portList 
-do
-  tsocmd netstat 2>/dev/null | grep "Local Socket:   ::\.\.${port} *$" >/dev/null
-  if [[ $? -eq 0 ]]
-  then
-    echo Error: port $port is already in use
-    portsOK=0
-  else  
-    : # echo OK: port $port is not in use
-  fi
-done
-if [[ $portsOK -eq 1 ]]
-then 
-  echo OK
-fi
-
-# 4. z/OSMF 
-    # 4.1 servers are up 
-    # checkJob  IZUANG1
-    # checkJob  IZUSVR1
-    # checkJob  AXR
-    # checkJob  CEA       # the CIM server
-    # checkJob  ICSF      # it might be this name on a real system
-    # checkJob  CSF       # OR it might be this name on a zD&T system
-    # checkJob  RACF      # OR another security product
-
-
     # 4.2 Jobs with JCT
 echo
 echo Check z/OSMF servers are up
@@ -346,72 +314,6 @@ fi
 
 echo
 echo Check enough free space is available in target z/OS USS HFS install folder
-
-# extract the target install directory from the yaml file
-rootDir=`sed -n 's/ *rootDir=\(.*\)/\1/p' ${INSTALL_DIR}/zowe-install.yaml`
-
-if [[ -n "$rootDir" ]]
-then 
-  : # root dir was extracted from yaml
-else
-  echo Warning: rootDir not set in zowe-install.yaml file
-  rootDir=~/zowe
-  echo defaulting to $rootDir
-fi 
-
-yamlDir=`eval echo $rootDir`    # may contain shell expansion chars e.g. '~'
-
-# We can only check space in a directory that exists.
-# Find the first target install directory that exists, starting from the full 
-# pathname and working back up the path to root.
-while [[ "$yamlDir" != "/" ]]
-do 
-  if [[ -d $yamlDir ]]
-  then 
-    break
-  fi 
-  yamlDir=`dirname $yamlDir`
-done 
-echo Info: Existing directory to be checked is $yamlDir
-
-#du -sk $yamlDir                 # what we use now, for interest - this won't be populated until after install and config.
-# echo Size of $rootDir is `du -sk $yamlDir | sed 's/ *\([0-9]*\) .*/\1/'` KB
-
-if [[ -r $yamlDir ]]
-then 
-
-  #  $yamlDir exists
-
-  sizes=`df -k ${yamlDir} | grep -v ^Mounted |  sed 's+.*(.*) *\([0-9]*\)/.*+\1+'`     # extract the 'Avail' byte count in kibibytes
-  adequate=0    # no adequate-sized areas yet
-  largest=0     # no largest yet
-  minspace=450  # in units of MB (1.0.0 uses 438 MB)
-
-  for s in $sizes
-  do
-          if [[ $s -gt ${minspace}000 ]]  # compare MB with (KB x 1000)
-          then 
-            # echo $s is big enough
-            adequate=$((adequate+1))
-          fi
-          if [[ $s -gt $largest  ]]
-          then 
-            largest=$s
-          fi
-  done
-  if [[ $adequate -gt 0 ]]
-  then
-    # echo "$adequate adequate-sized area(s) found"
-    echo OK
-  else
-    echo Error: "NO adequate-sized area(s) found"
-    echo size of largest free area in $yamlDir is $largest KB
-    echo minimum required is ${minspace} MB
-  fi
-
-else 
-  echo Error: rootDir $rootDir from yaml file does not exist
-fi
 
 # 7. Check interface name specified in /zaas1/scripts/ipupdate.sh ?
 # 8. /u/tstradm/.profile file exists
