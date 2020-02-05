@@ -58,7 +58,7 @@ Input='./smpe_workflow.xml'                    /* default input file */
 Output='./ZWEWRF01.xml'                       /* default output file */
 
 /* system variables .................................................*/
-Debug=0                                  /* assume not in debug mode */
+Debug=0  /* FALSE */                     /* assume not in debug mode */
 
 /* system code ......................................................*/
 /* trace r */
@@ -162,7 +162,7 @@ if Debug then say '<' ExecName '0'
 exit 0                                              /* LEAVE PROGRAM */
 
 /*---------------------------------------------------------------------
- * -- substitute one string with another and keep line within 71 chars
+ * -- Substitute one string with another and keep line within 71 chars
  * Returns input Line (string) with Old replaced by New
  * Args:
  *  Old : word/string to replace
@@ -185,7 +185,7 @@ end    /* while */
 return Line    /* _substitute71 */
 
 /*---------------------------------------------------------------------
- * -- substitute one string with another
+ * -- Substitute one string with another
  * Returns input Line (string) with Old replaced by New
  * Args:
  *  Old  : word/string to replace
@@ -248,7 +248,7 @@ return OK    /* _writeFile */
 _readFile: PROCEDURE EXPOSE Debug ExecName File.
 parse arg Path,Verbose
 if Path = '' then do; File.0=0; return 0; end       /* LEAVE ROUTINE */
-return _syscall('readfile "'Path'" File.',Verbose)    /* _readUSS */
+return _syscall('readfile "'Path'" File.',Verbose)    /* _readFile */
 
 /*---------------------------------------------------------------------
  * --- Execute z/OS UNIX syscall command with basic error handling
