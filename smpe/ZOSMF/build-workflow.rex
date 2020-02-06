@@ -58,7 +58,7 @@ Input='./smpe_workflow.xml'                    /* default input file */
 Output='./ZWEWRF01.xml'                       /* default output file */
 
 /* system variables .................................................*/
-Debug=0                                  /* assume not in debug mode */
+Debug=0  /* FALSE */                     /* assume not in debug mode */
 
 /* system code ......................................................*/
 /* trace r */
@@ -129,14 +129,20 @@ do I=1 to iFile.0
       exit 8                                        /* LEAVE PROGRAM */
     end    /* */
     when File.0 = 1 then do
+      File.1=_substitute71('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1 || After
     end    /* */
     otherwise
+      File.1=_substitute71('&','&amp;',File.1)
       T=T+1 ; oFile.T=Before || File.1
+
       do F=2 to File.0-1
+        File.F=_substitute71('&','&amp;',File.F)
         T=T+1 ; oFile.T=File.F
       end    /* loop F */
+
       /* F=File.0 */  /* already so after loop */
+      File.F=_substitute71('&','&amp;',File.F)
       T=T+1 ; oFile.T=File.F || After
     end    /* select */
   end    /* add include */
@@ -156,21 +162,49 @@ if Debug then say '<' ExecName '0'
 exit 0                                              /* LEAVE PROGRAM */
 
 /*---------------------------------------------------------------------
- * -- substitute one string with another
+ * -- Substitute one string with another and keep line within 71 chars
  * Returns input Line (string) with Old replaced by New
  * Args:
  *  Old : word/string to replace
  *  New : replacement word/string
  *  Line: string to process
  */
-_substitute: PROCEDURE EXPOSE Debug
+_substitute71: PROCEDURE EXPOSE Debug ExecName
 parse arg Old,New,Line
 
-do while pos(Old,Line) > 0
-  Line=insert(New,,
-         delstr(Line,pos(Old,Line),length(Old)),,
-         pos(Old,Line)-1)
+Line=_substitute(Old,New,Line)
+do while length(Line) > 71
+  if lastpos('  ',Line) > 0
+  then Line=_substitute('  ',' ',Line,lastpos('  ',Line))
+  else do
+    say '** ERROR' ExecName 'cannot trim line after substitution'
+    say '(length' length(Line)')' Line
+    exit 8                                          /* LEAVE PROGRAM */
+  end    /* */
+end    /* while */
+return Line    /* _substitute71 */
+
+/*---------------------------------------------------------------------
+ * -- Substitute one string with another
+ * Returns input Line (string) with Old replaced by New
+ * Args:
+ *  Old  : word/string to replace
+ *  New  : replacement word/string
+ *  Line : string to process
+ *  Start: (optional) starting position, default 1
+ */
+_substitute: PROCEDURE EXPOSE Debug
+parse arg Old,New,Line,Start
+parse value Start '1' with Start .               /* default: Start=1 */
+
+Start=pos(Old,Line,Start)
+do while Start > 0
+  /* substitute Old with New */
+  Line=insert(New,delstr(Line,Start,length(Old)),Start-1)
   if Debug then say '. (substitute) (length' length(Line)')' Line
+
+  /* start after New for next test */
+  Start=pos(Old,Line,Start + length(New))
 end    /* while */
 return Line    /* _substitute */
 
@@ -198,7 +232,7 @@ else do
   say '** ERROR' ExecName 'output path cannot be null'
   OK=0  /* FALSE */
 end    /* */
-return OK    /* _writeUSS */
+return OK    /* _writeFile */
 
 /*---------------------------------------------------------------------
  * -- Read z/OS UNIX file
@@ -214,7 +248,7 @@ return OK    /* _writeUSS */
 _readFile: PROCEDURE EXPOSE Debug ExecName File.
 parse arg Path,Verbose
 if Path = '' then do; File.0=0; return 0; end       /* LEAVE ROUTINE */
-return _syscall('readfile "'Path'" File.',Verbose)    /* _readUSS */
+return _syscall('readfile "'Path'" File.',Verbose)    /* _readFile */
 
 /*---------------------------------------------------------------------
  * --- Execute z/OS UNIX syscall command with basic error handling
