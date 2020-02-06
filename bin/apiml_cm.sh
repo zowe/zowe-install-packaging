@@ -27,7 +27,7 @@ function usage {
     echo "     - new-service-csr - creates CSR for new service to be signed by external CA"
     echo "     - new-service - adds new service signed by local CA or external CA"
     echo "     - trust - adds a public certificate of a service to APIML truststore"
-    echo "     - trust-zosmf - adds public certificates from z/OSMF keyring to APIML truststore"
+    echo "     - trust-zosmf - adds public certificates from z/OSMF to APIML truststore"
     echo "     - clean - removes files created by setup"
     echo "     - jwt-keygen - generates and exports JWT key pair"
     echo ""
@@ -58,9 +58,6 @@ SERVICE_STORETYPE="PKCS12"
 EXTERNAL_CERTIFICATE=
 EXTERNAL_CERTIFICATE_ALIAS=
 ZOSMF_CERTIFICATE=
-
-ZOSMF_KEYRING="IZUKeyring.IZUDFLT"
-ZOSMF_USERID="IZUSVR"
 
 ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
@@ -406,10 +403,9 @@ function jwt_key_gen_and_export {
 #}
 
 function trust_zosmf {
-  echo "trust_zosmf:"
   echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
-    echo "Getting zosmf certificates from host"
+    echo "Getting certificates from z/OSMF host"
     CER_DIR=$(pwd)/temp/zosmf_certs
     mkdir -p $CER_DIR
     ALIAS="zosmf"
@@ -504,12 +500,6 @@ while [ "$1" != "" ]; do
                                 ;;
         --zosmf-certificate )   shift
                                 ZOSMF_CERTIFICATE=$1
-                                ;;
-        --zosmf-keyring )       shift
-                                ZOSMF_KEYRING=$1
-                                ;;
-        --zosmf-userid )        shift
-                                ZOSMF_USERID=$1
                                 ;;
         --certificate )         shift
                                 CERTIFICATE=$1
