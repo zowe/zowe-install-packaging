@@ -43,6 +43,8 @@ fi
 
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/internal/run-zowe.sh
 
+. ${ROOT_DIR}/bin/internal/environment-setup.sh
+
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 . ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${INSTANCE_DIR}
 checkForErrorsFound
@@ -64,7 +66,6 @@ ZOWE_JAVA_HOME=$JAVA_HOME
 LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 ZOWE_DESKTOP=${ZOWE_PREFIX}DT
-
 
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh

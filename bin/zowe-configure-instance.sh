@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
 if [ $# -lt 2 ]; then
@@ -35,12 +35,7 @@ then
 	export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
-# Ensure that newly created files are in EBCDIC codepage
-export _CEE_RUNOPTS=""
-export _TAG_REDIR_IN=""
-export _TAG_REDIR_OUT=""
-export _TAG_REDIR_ERR=""
-export _BPXK_AUTOCVT="OFF"
+. ${ZOWE_ROOT_DIR}/bin/internal/environment-setup.sh
 
 if [[ -z ${INSTANCE_DIR} ]]
 then
