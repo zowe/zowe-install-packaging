@@ -87,13 +87,12 @@ fi
 #ZSS exists within app-server, may desire a distinct component later on
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use it's config
+  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
 #ZSS could be included separate to app-server, and vice-versa
 #But for simplicity of this script we have app-server prereq zss in DESKTOP
 #And zss & app-server sharing WORKSPACE_DIR
-
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
@@ -102,14 +101,23 @@ then
   mkdir -p ${STATIC_DEF_CONFIG_DIR}
 fi
 
+# Prepend directory path to all internal components
+INTERNAL_COMPONENTS=""
+for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+do
+  INTERNAL_COMPONENTS=${INTERNAL_COMPONENTS}",${ROOT_DIR}/components/${i}/bin"
+done
+
+LAUNCH_COMPONENTS=${INTERNAL_COMPONENTS}",${EXTERNAL_COMPONENTS}"
+
 # Validate component properties if script exists
 ERRORS_FOUND=0
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  VALIDATE_SCRIPT=${ROOT_DIR}/components/${i}/bin/validate.sh
+  VALIDATE_SCRIPT=${i}/validate.sh
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
-    . ${VALIDATE_SCRIPT}
+    $(. ${VALIDATE_SCRIPT})
     retval=$?
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
@@ -153,7 +161,7 @@ cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 # Run setup/configure on components if script exists
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  CONFIGURE_SCRIPT=${ROOT_DIR}/components/${i}/bin/configure.sh
+  CONFIGURE_SCRIPT=${i}/configure.sh
   if [[ -f ${CONFIGURE_SCRIPT} ]]
   then
     . ${CONFIGURE_SCRIPT}
@@ -162,5 +170,5 @@ done
 
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  . ${ROOT_DIR}/components/${i}/bin/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
+  . ${i}/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
 done
