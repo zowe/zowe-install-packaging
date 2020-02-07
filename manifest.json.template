@@ -226,7 +226,7 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "0.3.10",
+        "tag": "v0.3.10",
         "destinations": ["Zowe PAX"]
       }]
     }, {
