@@ -43,6 +43,8 @@ fi
 
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/internal/run-zowe.sh
 
+export _EDC_ADD_ERRNO2=1                        # show details on error
+
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 . ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${INSTANCE_DIR}
 checkForErrorsFound
