@@ -98,7 +98,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v2.6.0",
+        "tag": "v2.7.5",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -170,21 +170,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v2.31.2",
+        "tag": "v2.36.3",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "v1.1.2",
+        "tag": "v1.1.3",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v2.1.1",
+        "tag": "v2.1.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -226,7 +226,7 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "0.3.6",
+        "tag": "0.3.10",
         "destinations": ["Zowe PAX"]
       }]
     }, {
