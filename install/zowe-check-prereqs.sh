@@ -66,14 +66,15 @@ else
       break
     fi
   done
+  if [[ $ICSF -eq 1 ]]
+  then 
+    echo OK: jobname ICSF or CSF is not running
+  else
+    echo Error: jobname ICSF or CSF is not running
+  fi
 fi
 
-if [[ $ICSF -eq 1 ]]
-then 
-  echo OK: jobname ICSF or CSF is not running
-else
-  echo Error: jobname ICSF or CSF is not running
-fi
+
 
 # Check Node is installed and working
 # IBM SDK for Node.js z/OS Version 6.14.4 or later.
