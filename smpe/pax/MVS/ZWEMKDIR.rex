@@ -18,10 +18,10 @@
  *% -Debug    (optional) enable debug messages
  *% -Me       (optional) do not issue commands as superuser (UID 0)
  *% ROot=dd   referenced DD name holds the directory which is the base
- *%           for MOUNT and DIRS
+ *%           for MOUNT and DIRS, default is ROOT
  *%           (required when MOUNT is specified, optional otherwise)
  *% DIrs=dd   (optional) referenced DD name holds a list of
- *%           directories to be created
+ *%           directories to be created, default is DIRS
  *%           these directories will be prefixed by the path specified
  *%           in ROOT
  *% MOunt=dsn (optional) mount the specified file system on the path
@@ -60,7 +60,7 @@
  *%        - the access permission bits for the last directory in the
  *%          path can be specified as second keyword on the line, thus
  *%          altering the 755 default
- *%        - comment lines start with #, data lines my not hold comments
+ *%        - comment lines start with #, data lines do not hold comments
  *%
  *% Return code:
  *% 0:  completed successfully
@@ -85,16 +85,27 @@
  *   sub/directory
  *   subdir/with/non-default-permits 777
  */
+/*
+ * Shopz compatibility:
+ * - The Shopz back-end calls the MKDIR rexx directly, it does not use 
+ *   a front-end JCL that defines input/output DDs. 
+ * - Shopz product validation looks for variables idir and dirs.
+ */ 
 /* user variables ...................................................*/
 DefaultMask=755                       /* default permission bit mask */
 Debug=0                                  /* assume not in debug mode */
+idir='' /* not used */                        /* Shopz compatibility */
+dirs='usr/lpp/zowe/SMPE 755'                  /* Shopz compatibility */
+/* variable dirs has 1 or more 'directory mode' pairs */
 
 /* system variables .................................................*/
 cRC=0                                              /* assume success */
-Super=1                         /* assume issueing commands as UID 0 */
+Super=1  /* TRUE */             /* assume issueing commands as UID 0 */
+Shopz=0  /* FALSE */                          /* Shopz compatibility */
+PathPrefix=''                                 /* Shopz compatibility */
 RootDD=''                                 /* assume no root provided */
-FileSys=''                    /* assume no need to mount file system */
 DirsDD=''                /* assume no need to create sub-directories */
+FileSys=''                    /* assume no need to mount file system */
 Grow=''                       /* assume no automatic extents for zFS */
 Root=''                                           /* no default root */
 Dirs.0=0                               /* no default sub-directories */
@@ -124,12 +135,21 @@ do while Args <> ''
   when abbrev('-DEBUG',xKey,2)   then Debug=1  /* TRUE */
   when abbrev('-ME',xKey,2)      then Super=0  /* FALSE */
   otherwise
-    call _displayUsage
-    say '** ERROR invalid startup argument "'Action'"'
-    cRC=12                 /* do not exit yet, show all errors first */
+    if arg() == 1
+    then parse arg PathPrefix /* no upper */  /* Shopz compatibility */
+    else do
+      call _displayUsage
+      say '** ERROR invalid startup argument "'Action'"'
+      cRC=12               /* do not exit yet, show all errors first */
+    end    /* */
   end    /* select */
 end    /* while Args */
 
+/* set DD defaults */ 
+if (RootDD == '') & _ddExist('ROOT') then RootDD='ROOT'
+if (DirsDD == '') & _ddExist('DIRS') then DirsDD='DIRS'
+
+/* validate input */
 if (FileSys <> '') & (RootDD == '')
 then do
   call _displayUsage
@@ -146,10 +166,21 @@ end   /* */
 
 if (RootDD == '') & (FileSys == '') & (DirsDD == '')
 then do
+/*
   call _displayUsage
   say '** ERROR ROOT, MOUNT, or DIRS keyword is required'
   cRC=12                   /* do not exit yet, show all errors first */
-end   /* */
+*/
+  say '** INFO running in Shopz compatibility mode'
+  Shopz=1  /* TRUE */
+  Dirs.0=words(dirs)/2     /* Shopz mode always has 'dir mode' pairs */
+  do T=1 to Dirs.0
+    Dirs.T=PathPrefix || word(dirs,T*2-1) word(dirs,T*2)
+  end    /* loop T */
+  
+  if Dirs.0 > 0 then say '-- will create' Dirs.0 'sub-directory path(s)'
+  if Debug then do T=0 to Dirs.0; say '. Dirs.'T'="'Dirs.T'"'; end
+end   /* no input provided */
 
 /* process input */
 if RootDD <> '' then cRC=max(cRC,_rootDD(RootDD))
@@ -217,7 +248,7 @@ else do
       then cRC=max(cRC,_mkdir(Root,word(Dirs.T,1),word(Dirs.T,2)))
   end    /* loop T */
 
-  if _ddExist('REPORT')
+  if _ddExist('REPORT') | Shopz
   then do
     cRC=max(cRC,_report('REPORT','keep','Following directories' ,
                         'already exist with proper permissions:'))
@@ -710,63 +741,63 @@ return cRC','RealDir','Dir','NoExist    /* _existPath */
  * --- Execute z/OS UNIX syscall command with basic error handling
  * Returns boolean indicating success (1) or not (0)
  * Args:
- *  _Cmd    : syscall command to execute
- *  _Verbose: (optional) flag to show syscall error message
- *  _Exit   : (optional) exit on REXX error
+ *  @Cmd    : syscall command to execute
+ *  @Verbose: (optional) flag to show syscall error message
+ *  @Exit   : (optional) exit on REXX error
  *
  * do NOT call from a routine that has values for
- * _Err. _RC _RetVal _ErrNo _ErrNoJr _Success _Cmd _Verbose _Exit
+ * @Err. @RC @RetVal @ErrNo @ErrNoJr @Success @Cmd @Verbose @Exit
  *
  * docu in "Using REXX and z/OS UNIX System Services (SA23-2283)"
  */
 _syscall: /* NO PROCEDURE */
-parse arg _Cmd,_Verbose,_Exit
-parse value _Verbose 1 with _Verbose .  /* default: report USS error */
-parse value _Exit 1 with _Exit .      /* default: exit on REXX error */
-_Success=1  /* TRUE */
-_Err.0=0
+parse arg @Cmd,@Verbose,@Exit
+parse value @Verbose 1 with @Verbose .  /* default: report USS error */
+parse value @Exit 1 with @Exit .      /* default: exit on REXX error */
+@Success=1  /* TRUE */
+@Err.0=0
 
-if Debug then say '. (syscall)' _Cmd
-address SYSCALL _Cmd
-parse value rc retval errno errnojr with _RC _RetVal _ErrNo _ErrNoJr
-if Debug then say '.           rc' _RC 'retval' _RetVal ,
-                'errno' _ErrNo 'errnojr' _ErrNoJr
+if Debug then say '. (syscall)' @Cmd
+address SYSCALL @Cmd
+parse value rc retval errno errnojr with @RC @RetVal @ErrNo @ErrNoJr
+if Debug then say '.           rc' @RC 'retval' @RetVal ,
+                'errno' @ErrNo 'errnojr' @ErrNoJr
 
-if _RC < 0
+if @RC < 0
 then do                                                /* REXX error */
-  _Success=0  /* FALSE */
+  @Success=0  /* FALSE */
   say ''
-  say '** ERROR syscall command failed:' _Cmd
+  say '** ERROR syscall command failed:' @Cmd
   select
-  when (_RC < -20) & (_RC > -30) then
-    say 'argument' abs(_RC)-20 'is in error'
-  when _RC = -20 then
+  when (@RC < -20) & (@RC > -30) then
+    say 'argument' abs(@RC)-20 'is in error'
+  when @RC = -20 then
     say 'unknown SYSCALL command or improper number of arguments'
-  when _RC = -3 then
+  when @RC = -3 then
     say 'not in SYSCALL environment'
   otherwise
     say 'error flagged by REXX language processor'
   end    /* select */
-  if _Exit then exit 12                             /* LEAVE PROGRAM */
+  if @Exit then exit 12                             /* LEAVE PROGRAM */
 end    /* REXX error */
-else if _RetVal == -1
+else if @RetVal == -1
   then do                                              /* UNIX error */
-    _Success=0  /* FALSE */
-    if _Verbose
+    @Success=0  /* FALSE */
+    if @Verbose
     then do                                      /* report the error */
       say ''
-      say '** ERROR syscall command failed:' _Cmd
-      say 'ErrNo('_ErrNo') ErrNoJr('_ErrNoJr')'
-      address SYSCALL 'strerror' _ErrNo _ErrNoJr '_Err.'
-      do T=1 to _Err.0 ; say _Err.T ; end
+      say '** ERROR syscall command failed:' @Cmd
+      say 'ErrNo('@ErrNo') ErrNoJr('@ErrNoJr')'
+      address SYSCALL 'strerror' @ErrNo @ErrNoJr '@Err.'
+      do T=1 to @Err.0 ; say @Err.T ; end
     end    /* report */
   end    /* UNIX error */
 /*else nop */ /* Note: a few cmds use retval <> -1 to indicate error */
 
 /* set syscall output vars back to value after command execution */
 drop rc retval errno errnojr /* ensure that the name is used in parse*/
-parse value _RC _RetVal _ErrNo _ErrNoJr with rc retval errno errnojr
-return _Success    /* _syscall */
+parse value @RC @RetVal @ErrNo @ErrNoJr with rc retval errno errnojr
+return @Success    /* _syscall */
 
 /*---------------------------------------------------------------------
  * --- Convert boolean value to text
@@ -820,7 +851,7 @@ return value('Report.'arg(1)'.'value('Report.'arg(1) ||,
  *  Key  : identifier for which report to write (Report.key.*)
  *  Title: report title
  */
-_report: PROCEDURE EXPOSE Debug Report.
+_report: PROCEDURE EXPOSE Debug Report. Shopz
 parse arg DD,Key,Title
 if Debug then say '> _report' DD','Key','Title
 cRC=0                                              /* assume success */
@@ -861,12 +892,22 @@ return cRC    /* _report */
  *
  * EXECIO documentation in "TSO/E REXX Reference (SA22-7790)"
  */
-_ddWrite: PROCEDURE EXPOSE Debug
+_ddWrite: PROCEDURE EXPOSE Debug Shopz
 parse arg DD,Count,Parms
 if Debug then say '> _ddWrite' DD','Count','Parms
 cRC=0                                              /* assume success */
 
-"EXECIO" Count "DISKW" DD Parms
+if \Shopz
+then "EXECIO" Count "DISKW" DD Parms
+else do  /* Shopz compatibility */
+  if Count == '*' then Count=queued()
+  do T=1 to Count
+    parse pull Line
+    say Line
+  end    /* loop T */
+  rc=0
+end    /* Shopz compatibility */
+
 select
 when rc == 0 then nop
 when rc == 1 then do

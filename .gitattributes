@@ -1,32 +1,69 @@
+# This .gitattributes file will cause all text files EXCEPT for
+# git's .gitattributes and .gitignore files to be encoded as EBCDIC.
+# Selected binary files will not be translated at all.
+# The default for text files
 # https://help.github.com/articles/dealing-with-line-endings/
 # .gitattributes snippet to force users to use same line endings for project.
 # Set the default behavior, in case people don't have core.autocrlf set.
-* text=auto
 
-# Explicitly declare text files you want to always be normalized and converted
-# to native line endings on checkout.
-*.sh text eol=lf
-*.rexx text eol=lf
-*.clist text eol=lf
-*.jcl text eol=lf
-*.template text eol=lf
-*.json text eol=lf
-*.yaml text eol=lf
-*.py text eol=lf
-*.txt text eol=lf
-*.md text eol=lf
-ZWES* text eol=lf
-Jenkinsfile* text eol=lf
-*.bat text eol=crlf
+*     git-encoding=iso8859-1 zos-working-tree-encoding=ibm-1047 eol=lf
+*.bat git-encoding=iso8859-1 zos-working-tree-encoding=ibm-1047 eol=crlf
 
-# Denote all files that are truly binary and should not be modified.
-*.xlsx binary
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.ico binary
-*.gz binary
-*.zip binary
-*.pax binary
-*.Z binary
+# git's files (which MUST be ASCII)
+
+.gitattributes   git-encoding=iso8859-1 zos-working-tree-encoding=iso8859-1
+.gitignore       git-encoding=iso8859-1 zos-working-tree-encoding=iso8859-1
+
+# Binary files, selected by file extension.
+#
+# Note that "Binary" really just means "Not touched when moved
+# between the git repository and the working tree." In some cases
+# these are actually UTF-8 or CP1251 (the usual Windows code page).
+#
+# If you don't have these in your tree, removing these from the
+# .gitattributes file will speed up git's processing a bit.
+#
+# While it would make sense to have BINARY be BINARY on all platforms,
+# Other platforms don't use the BINARY term, But do recognize "binary" macro
+
+*.jpg   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.crx   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.eot   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.fdt   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.fdx   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.gen   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.gif   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.gz    git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.ico   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.jar   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.jpeg  git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.jpg   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.node  git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.otf   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.pax   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.png   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.PNG   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.resources   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.scss  git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.segments_1   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.so    git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.svg   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.swp   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.tar   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.tgz   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.tii   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.tis   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.tree  git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.ttf   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.woff  git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.woff2 git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.xlsx  git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.zip   git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+*.Z     git-encoding=BINARY    zos-working-tree-encoding=BINARY binary
+
+
+
+
+
+
+

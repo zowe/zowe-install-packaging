@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
 #% Create SMP/E members.
@@ -216,7 +216,7 @@ do case "$opt" in
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
   esac    # $opt
 done    # getopts
-shift $OPTIND-1
+shift $(($OPTIND-1))
 
 if test ! -x "$cfgScript"
 then
@@ -254,7 +254,8 @@ echo "-- output USS: $ussI"
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-# install SZWESAMP members
+# install SZWESAMP members 
+# (explicitly list all members to support $ReMoVe)
 list=""     # file names include path based on $here
 list="$list MVS/ZWE1SMPE.jcl"
 list="$list MVS/ZWE2RCVE.jcl"
@@ -274,8 +275,12 @@ list="$list MVS/ZWES5RST.jcl"
 _installMVS SZWESAMP "FB" "80" "PO" "10,2"
 
 # install SZWEZFS members
+# (explicitly list all members to support $ReMoVe)
 list=""     # file names include path based on $here
+list="$list USS/ZWESHMKD.sh"
 list="$list USS/ZWESHPAX.sh"
+list="$list USS/ZWEWRF01.xml"
+list="$list USS/ZWEYML01.yml"
 _installUSS $ussI
 
 # remove install script if requested

@@ -10,9 +10,9 @@
 # Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
-sizeAUTH='space(15,15) tracks'
+sizeAUTH='space(30,15) tracks'
 sizeSAMP='space(15,15) tracks'
-members='ZOWESVR.template.jcl ZWESECUR.jcl'
+members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl'
 
 # info: construct ${variable%%.*} keeps up to first . (exclusive)
 
@@ -35,7 +35,7 @@ cd $dir
 
 for file in $members
 do
-  cp $INSTALL_DIR/files/templates/$file ${TEMP_DIR}/${script%%.*}/SAMPLIB/${file%%.*}
+  cp $INSTALL_DIR/files/jcl/$file ${TEMP_DIR}/${script%%.*}/SAMPLIB/${file%%.*}
   rc=$?
   if test $rc -ne 0
   then
@@ -43,12 +43,14 @@ do
   fi
 done
 
-# TODO remove once zowe/zss/samplib/zis/ is updated
-# >>>>
-# adjust ZSS samples
-rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISTC
+# TODO remove once https://github.com/zowe/zss/issues/94	
+# >>>>	
+# adjust ZSS samples	
+rm -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISMS	
+mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIS01 ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESISTC	
 mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESAUX ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESASTC
+# <<<<
+
 if test ! -f ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG
 then
 # Statements below must not exceed col 80
@@ -64,13 +66,6 @@ EndOfZWESIPRG
 fi
 # <<<<
 
-# TODO remove once zowe-install-packaging/files/templates is updated
-# >>>>
-# adjust non-ZSS samples
-mv ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZOWESVR ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESTC
-# <<<<
-
-
 # 1. {datasetprefix}.SZWEAUTH
 
 tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWEAUTH' " >> ${LOG_FILE} 2>&1
@@ -78,7 +73,7 @@ tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWEAUTH' " >> ${LOG_FILE} 2>&1
 # SZWEAUTH must be PDSE
 # TODO replace by allocate-dataset.sh call to resuse VOLSER support
 tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEAUTH') " \
-    "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(6999)" \
+    "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760)" \
     "unit(sysallda) $sizeAUTH" >> $LOG_FILE 2>&1
 rc=$?
 if test $rc -eq 0

@@ -12,7 +12,7 @@
 
 #********************************************************************
 # Expected globals:
-# $ZOWE_JAVA_HOME
+# $JAVA_HOME
 # $ZOWE_ROOT_DIR
 
 API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"
@@ -41,13 +41,11 @@ pax -rf $API_MEDIATION_PAX -ppx
 # Set a+rx for API Mediation JARs
 chmod a+rx "${API_MEDIATION_DIR}"/*.jar 
 chmod -R 751 "${API_MEDIATION_DIR}/bin"
+chmod -R 751 "${API_MEDIATION_DIR}/assets"
 
 # Make the apiml-auth plugin readable by everyone
 chmod a+rx "${API_MEDIATION_DIR}/apiml-auth"
 chmod a+rx "${API_MEDIATION_DIR}/apiml-auth/lib"
 chmod -R a+r "${API_MEDIATION_DIR}/apiml-auth"
-
-# TODO - move image into apiml pax
-cp $INSTALL_DIR/files/assets/api-catalog.png ${API_MEDIATION_DIR}
 
 echo "</zowe-api-mediation-install.sh>" >> $LOG_FILE

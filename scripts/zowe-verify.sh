@@ -72,7 +72,7 @@ then
 fi
 
 echo Check IZUSVR/IZUADMIN has at least READ access to BPX.JOBNAME
-tsocmd "rl facility bpx.jobname authuser" 2>/dev/null | grep "IZUADMIN" | grep -E "READ|UPDATE|ALTER" > /dev/null
+tsocmd "rl facility bpx.jobname authuser" 2>/dev/null | grep -e "IZUADMIN" -e "IZUSVR" | grep -E "READ|UPDATE|ALTER" > /dev/null
 if [[ $? -ne 0 ]]
 then
     echo Warning: User IZUSVR does not have access to profile BPX\.JOBNAME
@@ -385,10 +385,12 @@ else
             then
                 echo Error: Failed to find ZOWE_PREFIX in $zowe_start
                 echo Warning: Using ZOWE instead
-                ZOWE_PREFIX=ZOWE1   # best guess, allow us to proceed                
+                ZOWE_PREFIX=ZWE1   # best guess, allow us to proceed                
             fi
 
             ZOWESVR_job_name=${ZOWE_PREFIX}SV
+            ZOWE_ZLUX_SVR=${ZOWE_PREFIX}SZ1
+            ZOWE_NODE_SVR=${ZOWE_PREFIX}DS1
 
             # must be same list as in run-zowe.template.sh
             ZOWE_API_GW=${ZOWE_PREFIX}AG
@@ -396,7 +398,7 @@ else
             ZOWE_API_CT=${ZOWE_PREFIX}AC
             ZOWE_DESKTOP=${ZOWE_PREFIX}DT
             ZOWE_EXPL_JOBS=${ZOWE_PREFIX}EJ
-            ZOWE_EXPL_DATA=${ZOWE_PREFIX}ED
+            ZOWE_EXPL_DATA=${ZOWE_PREFIX}EF
             ZOWE_EXPL_UI_JES=${ZOWE_PREFIX}UJ
             ZOWE_EXPL_UI_MVS=${ZOWE_PREFIX}UD
             ZOWE_EXPL_UI_USS=${ZOWE_PREFIX}UU
@@ -405,15 +407,19 @@ else
             zoweJobErrors=0
             check_jobs    $ZOWESVR_job_name     1
             zoweJobErrors=$((zoweJobErrors+$?))
-            check_jobs    ${ZOWESVR_job_name}2  1
-            zoweJobErrors=$((zoweJobErrors+$?))
+            # check_jobs    ${ZOWESVR_job_name}2  1
+            # zoweJobErrors=$((zoweJobErrors+$?))
             check_jobs    $ZOWE_API_GW          1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_ZLUX_SVR        1
+            zoweJobErrors=$((zoweJobErrors+$?))
+            check_jobs    $ZOWE_NODE_SVR        5
             zoweJobErrors=$((zoweJobErrors+$?))
             check_jobs    $ZOWE_API_DS          1      
             zoweJobErrors=$((zoweJobErrors+$?))
             check_jobs    $ZOWE_API_CT          1
             zoweJobErrors=$((zoweJobErrors+$?))
-            check_jobs    $ZOWE_DESKTOP         8
+            check_jobs    $ZOWE_DESKTOP         2
             zoweJobErrors=$((zoweJobErrors+$?))
             check_jobs    $ZOWE_EXPL_JOBS       1
             zoweJobErrors=$((zoweJobErrors+$?))
@@ -455,7 +461,7 @@ else
                 do
                     port=$1
                     # check port
-                    netstat -b -E $jobname \
+                    netstat -b -E $jobname 2>/dev/null \
                         | grep Listen | awk '{printf("%d\n", $4)}' \
                         | grep ^${port}$ > /dev/null
                     if [[ $? -ne 0 ]]
@@ -471,58 +477,7 @@ else
                 # echo ports assigned = $portsAssigned
                 return $portsAssigned
             }
-            #                           
-
-            # yaml
-            yaml=${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
-
-            if [[ ! -r $yaml ]]
-            then
-                echo Error: Unable to read $yaml
-                echo Warning: Ports will not be checked
-            else  
-                # obtain ports from yaml file
-
-                api_mediation_catalog_http_port=`sed -n 's/ *catalogPort=\(.*\)/\1/p' $yaml` # 7552      
-                api_mediation_discovery_http_port=`sed -n 's/ *discoveryPort=\(.*\)/\1/p' $yaml` # 7553  
-                api_mediation_gateway_https_port=`sed -n 's/ *gatewayPort=\(.*\)/\1/p' $yaml` # 7554     
-                explorer_server_jobsPort=`sed -n 's/ *jobsAPIPort=\(.*\)/\1/p' $yaml` # 8545             
-                explorer_server_dataSets_port=`sed -n 's/ *mvsAPIPort=\(.*\)/\1/p' $yaml` # 8547        
-                zlux_server_https_port=`sed -n 's/ *httpsPort=\(.*\)/\1/p' $yaml` # 8544               
-                zss_server_http_port=`sed -n 's/ *zssPort=\(.*\)/\1/p' $yaml` # 8542                 
-                jes_explorer_server_port=`sed -n 's/ *jobsExplorerPort=\(.*\)/\1/p' $yaml` # 8546            
-                mvs_explorer_server_port=`sed -n 's/ *mvsExplorerPort=\(.*\)/\1/p' $yaml` # 8548            
-                uss_explorer_server_port=`sed -n 's/ *ussExplorerPort=\(.*\)/\1/p' $yaml` # 8550            
-            #                                                                                   here are the defaults:
-                totPortsAssigned=0
-                check_ports    $ZOWE_API_GW         $api_mediation_gateway_https_port               # 7554
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_API_DS         $api_mediation_discovery_http_port              # 7553
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_API_CT         $api_mediation_catalog_http_port                # 7552
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_DESKTOP        $zlux_server_https_port $zss_server_http_port   # 8544 8542
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_EXPL_JOBS      $explorer_server_jobsPort                       # 8545
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_EXPL_DATA      $explorer_server_dataSets_port                  # 8547
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_EXPL_UI_JES    $jes_explorer_server_port                       # 8546
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_EXPL_UI_MVS    $mvs_explorer_server_port                       # 8548
-                totPortsAssigned=$((totPortsAssigned+$?))
-                check_ports    $ZOWE_EXPL_UI_USS    $uss_explorer_server_port                       # 8550
-                totPortsAssigned=$((totPortsAssigned+$?))
-
-                zowenports=10       # how many ports Zowe uses
-                if [[ $totPortsAssigned -ne $zowenports ]]  
-                then
-                    echo Error: Found $totPortsAssigned ports assigned, expecting $zowenports
-                else
-                    echo OK
-                fi
-            fi  
-
+            #
         fi 
     fi 
 
@@ -621,7 +576,7 @@ fi
 #  "api-mediation/scripts/api-mediation-start-gateway.sh" \
 #  "explorer-jobs-api/scripts/jobs-api-server-start.sh" \
 #  "explorer-data-sets-api/scripts/data-sets-api-server-start.sh" \
-#  "zlux-app-server/config/zluxserver.json" \
+#  "zlux-app-server/defaults/serverConfig/server.json" \
 #  "vt-ng2/_defaultVT.json" \
 #  "tn3270-ng2/_defaultTN3270.json" \
 #  "jes_explorer/server/configs/config.json" \
@@ -858,7 +813,7 @@ then
         grep " *export *NODE_HOME=.* *$" $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh 1> /dev/null
         if [[ $? -ne 0 ]]
         then 
-            echo Error: \"export NODE_HOME\" not found in run-zowe.sh
+            echo Info: \"export NODE_HOME\" not found in run-zowe.sh
         else
             node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' $ZOWE_ROOT_DIR/scripts/internal/run-zowe.sh`
             if [[ ! -n "$node_set" ]]
@@ -918,56 +873,6 @@ then
         fi
     fi    
 fi 
-
-# 4. zowe_profile?
-
-if [[ ! -n "$nodehome" ]]
-then 
-    ls ~/.zowe_profile 1> /dev/null
-    if [[ $? -ne 0 ]]
-    then 
-        echo Info: ~/.zowe_profile not found
-    else
-        grep " *export *NODE_HOME=.* *$" ~/.zowe_profile 1> /dev/null
-        if [[ $? -ne 0 ]]
-        then 
-            echo Info: \"export NODE_HOME\" not found in ~/.zowe_profile
-        else
-            node_set=`sed -n 's/^ *export *NODE_HOME=\(.*\) *$/\1/p' ~/.zowe_profile`
-            if [[ ! -n "$node_set" ]]
-            then
-                echo Warning: NODE_HOME is empty
-            else
-                nodehome=$node_set
-                echo Info: Found in ~/.zowe_profile
-            fi 
-        fi
-    fi    
-fi 
-
-#
-# finished searching, check resultant $nodehome
-#
-
-if [[ ! -n "$nodehome" ]]
-then 
-    echo Error: Could not determine value of NODE_HOME
-    echo Warning:  node version cannot be determined
-else
-    node_version=`$nodehome/bin/node --version` # also works if it's a symlink
-    if [[ $? -ne 0 ]]
-    then 
-        echo Error: Failed to obtain version of $nodehome/bin/node
-    else 
-        if [[ $node_version < v6.14.4 ]]
-        then
-            echo Error: version $node_version is lower than required 
-        else 
-            echo OK: version is $node_version 
-        fi
-    fi 
-fi
-
 
 echo
 echo Check version of z/OS
@@ -1309,7 +1214,9 @@ rm /tmp/extattr.*.list
 echo
 echo Check files are executable 
 filesxeq=1
-find ${ZOWE_ROOT_DIR} -name bin -exec ls -l {} \; | grep ^- | grep -v \.bat$ | grep -v "^-r.xr.xr.x " 2> /dev/null
+find ${ZOWE_ROOT_DIR} -name bin -exec ls -l {} \; \
+    | grep ^- | grep -v \.bat$ | grep -v \.txt$ \
+    | grep -v "^-r.xr.xr.x " | grep -v "^-r.xr.x... .* IZUADMIN " 2> /dev/null
 if [[ $? -ne 0 ]]
 then    
     : # echo OK: 
@@ -1330,6 +1237,7 @@ do
         : # echo OK: ${PWD} is executable
     else 
         echo Error: ${PWD} is not executable
+        filesxeq=0
     fi 
     if  [[ $PWD = "/" ]]
     then
