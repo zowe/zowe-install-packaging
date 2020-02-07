@@ -42,6 +42,10 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
+export _EDC_ADD_ERRNO2=1                        # show details on error
+unset ENV             # just in case, as it can cause unexpected output
+umask 0022                                       # similar to chmod 755
+
 if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"

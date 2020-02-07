@@ -42,6 +42,10 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
+export _EDC_ADD_ERRNO2=1                        # show details on error
+unset ENV             # just in case, as it can cause unexpected output
+umask 0022                                       # similar to chmod 755
+
 export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
 
 # extract Zowe version from manifest.json
