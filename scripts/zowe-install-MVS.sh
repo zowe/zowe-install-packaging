@@ -79,6 +79,7 @@ rc=$?
 if test $rc -eq 0
 then
     echo "  ${ZOWE_DSN_PREFIX}.SZWEAUTH successfully created" >> $LOG_FILE
+    sleep 2     # allow time for dataset to be de-queued before attempting to copy members into it.  
 
     # copy LOADLIB to PDS
     echo "Copy LOADLIB to PDS:" >> ${LOG_FILE}
@@ -111,6 +112,7 @@ rc=$?
 if test $rc -eq 0
 then
     echo "  ${ZOWE_DSN_PREFIX}.SZWESAMP successfully created" >> $LOG_FILE
+    sleep 2     # allow time for dataset to be de-queued before attempting to copy members into it.  
 
     # copy SAMPLIB files to PDS
     echo "Copy SAMPLIB files to PDS:" >> ${LOG_FILE}
