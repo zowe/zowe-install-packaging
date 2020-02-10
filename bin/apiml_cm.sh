@@ -406,7 +406,7 @@ function trust_zosmf {
   echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
     echo "Getting certificates from z/OSMF host"
-    CER_DIR=$(pwd)/temp/zosmf_certs
+    CER_DIR=`dirname ${SERVICE_TRUSTSTORE}/temp`
     mkdir -p $CER_DIR
     ALIAS="zosmf"
     get_service_certificate_form_url
