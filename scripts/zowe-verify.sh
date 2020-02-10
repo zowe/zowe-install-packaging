@@ -290,6 +290,10 @@ set +f
 #     echo Info: Some parts of this script will not work as a result
 # fi 
 
+if [ -z ${TEMP_DIR+x} ]; then
+    TEMP_DIR=${TMPDIR:-/tmp}
+fi
+
 ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d t" 1> /dev/null 2> /dev/null  # is 'opercmd' available and working?
 if [[ $? -ne 0 ]]
 then
@@ -347,9 +351,9 @@ else
         jobname=$1
 
         enj=$2  # expected number of jobs with this jobname
-        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >/tmp/${jobname}.dj
-        nj=`cat /tmp/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
-        rm /tmp/${jobname}.dj >/dev/null
+        ${ZOWE_ROOT_DIR}/scripts/internal/opercmd d j,${jobname}|grep " ${jobname} .* A=[0-9,A-F][0-9,A-F][0-9,A-F][0-9,A-F] " >$TEMP_DIR/${jobname}.dj
+        nj=`cat $TEMP_DIR/${jobname}.dj | wc -l`     # set nj to actual number of jobs found
+        rm $TEMP_DIR/${jobname}.dj >/dev/null
 
         # check we found the expected number of jobs
         if [[ $nj -ne $enj ]]
@@ -506,9 +510,9 @@ else
     fi
 
     # Try to determine ZSS server job name
-    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > /tmp/d.omvs.all.$$.txt
-    ZSSSVR=`sed -n '/LATCHWAITPID/!h;/CMD=ZWESIS01/{x;p;}' /tmp/d.omvs.all.$$.txt | awk '{ print $2 }'`
-    rm /tmp/d.omvs.all.$$.txt > /dev/null
+    ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > $TEMP_DIR/d.omvs.all.$$.txt
+    ZSSSVR=`sed -n '/LATCHWAITPID/!h;/CMD=ZWESIS01/{x;p;}' $TEMP_DIR/d.omvs.all.$$.txt | awk '{ print $2 }'`
+    rm $TEMP_DIR/d.omvs.all.$$.txt > /dev/null
     if [[ -n "$ZSSSVR" ]] then
         echo ZSS server job name is $ZSSSVR
         ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${ZSSSVR}" | grep WUID=STC > /dev/null
@@ -996,7 +1000,7 @@ fi
 IZUFPROC_found=0        # set initial condition
 
 # fetch a list of PROCLIBs
-${ZOWE_ROOT_DIR}/scripts/internal/opercmd '$d proclib'| sed -n 's/.*DSNAME=\(.*[A-Z0-9]\).*/\1/p' > /tmp/proclib.list
+${ZOWE_ROOT_DIR}/scripts/internal/opercmd '$d proclib'| sed -n 's/.*DSNAME=\(.*[A-Z0-9]\).*/\1/p' > $TEMP_DIR/proclib.list
 while read dsn 
 do
     tsocmd listd "('$dsn')" mem 2> /dev/null | grep IZUFPROC 1> /dev/null 2> /dev/null
@@ -1008,8 +1012,8 @@ do
         IZUFPROC_found=1
         break
     fi
-done <      /tmp/proclib.list
-rm          /tmp/proclib.list
+done <      $TEMP_DIR/proclib.list
+rm          $TEMP_DIR/proclib.list
 
 if [[ IZUFPROC_found -eq 0 ]]
 then
@@ -1017,8 +1021,8 @@ then
     fPROC=0
 else
     : # echo Check contents of IZUFPROC
-    tsocmd "oput '$dsn(izufproc)' '/tmp/izufproc.txt'" 1> /dev/null 2> /dev/null
-    SIEALNKE_DSN=`sed -n 's/.*DS.*=\(.*SIEALNKE\).*/\1/p' /tmp/izufproc.txt`    # check for DSN (but not ISPLLIB DD)
+    tsocmd "oput '$dsn(izufproc)' '$TEMP_DIR/izufproc.txt'" 1> /dev/null 2> /dev/null
+    SIEALNKE_DSN=`sed -n 's/.*DS.*=\(.*SIEALNKE\).*/\1/p' $TEMP_DIR/izufproc.txt`    # check for DSN (but not ISPLLIB DD)
 
     if [[ $? -ne 0 ]]
     then
@@ -1034,14 +1038,14 @@ else
         fi
 
         : # echo check that ISPLLIB is present # ... 
-        grep "\/\/ISPLLIB *DD *" /tmp/izufproc.txt > /dev/null
+        grep "\/\/ISPLLIB *DD *" $TEMP_DIR/izufproc.txt > /dev/null
         if [[ $? -ne 0 ]]
         then
             echo Error : No ISPLLIB DD statement found in IZUFPROC
             fPROC=0
         else
             : # echo OK: ISPLLIB DD statement found in IZUFPROC
-            grep "\/\/ISPLLIB *DD *.*DS.*=.*SIEALNKE" /tmp/izufproc.txt > /dev/null
+            grep "\/\/ISPLLIB *DD *.*DS.*=.*SIEALNKE" $TEMP_DIR/izufproc.txt > /dev/null
             if [[ $? -eq 0 ]]
             then
                 : # echo OK: SIEALNKE dataset is allocated to ISPLLIB
@@ -1051,7 +1055,7 @@ else
 
     fi
 fi
-rm /tmp/izufproc.txt 2> /dev/null
+rm $TEMP_DIR/izufproc.txt 2> /dev/null
 
 if [[ $fPROC -eq 1 ]]
 then    
@@ -1146,9 +1150,9 @@ echo Check CIM server is running
 cim_error_status=0  # no errors yet
 
 # Try to determine CIM server job name
-${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > /tmp/d.omvs.all.$$.txt
-CIMSVR=`sed -n '/LATCHWAITPID/!h;/CMD=.*\/cimserver /{x;p;}' /tmp/d.omvs.all.$$.txt | awk '{ print $2 }'`
-rm /tmp/d.omvs.all.$$.txt > /dev/null
+${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d omvs,a=all" > $TEMP_DIR/d.omvs.all.$$.txt
+CIMSVR=`sed -n '/LATCHWAITPID/!h;/CMD=.*\/cimserver /{x;p;}' $TEMP_DIR/d.omvs.all.$$.txt | awk '{ print $2 }'`
+rm $TEMP_DIR/d.omvs.all.$$.txt > /dev/null
 if [[ -n "$CIMSVR" ]] then
     # echo CIM server job name is $CIMSVR
     ${ZOWE_ROOT_DIR}/scripts/internal/opercmd "d j,${CIMSVR}" | grep WUID=STC > /dev/null
@@ -1168,13 +1172,13 @@ fi
 
 echo
 echo Check relevant -s extattr bits 
-ls -RE ${ZOWE_ROOT_DIR} |grep " [-a][-p]s[^ ] " > /tmp/extattr.s.list
+ls -RE ${ZOWE_ROOT_DIR} |grep " [-a][-p]s[^ ] " > $TEMP_DIR/extattr.s.list
 bitsOK=1
 
 for file in \
     zssServer 
 do
-    grep " ${file}$" /tmp/extattr.s.list 1>/dev/null 2>/dev/null
+    grep " ${file}$" $TEMP_DIR/extattr.s.list 1>/dev/null 2>/dev/null
     if [[ $? -ne 0 ]]
     then
         echo Error: File $file does not have the -s extattr bit set
@@ -1190,12 +1194,12 @@ fi
 
 echo
 echo Check relevant -p extattr bits 
-ls -RE ${ZOWE_ROOT_DIR} |grep " [-a]p[-s][^ ] " > /tmp/extattr.p.list
+ls -RE ${ZOWE_ROOT_DIR} |grep " [-a]p[-s][^ ] " > $TEMP_DIR/extattr.p.list
 bitsOK=1
 for file in \
     zssServer 
 do
-    grep " ${file}$" /tmp/extattr.p.list 1>/dev/null 2>/dev/null
+    grep " ${file}$" $TEMP_DIR/extattr.p.list 1>/dev/null 2>/dev/null
     if [[ $? -ne 0 ]]
     then
         echo Error: File $file does not have the -p extattr bit set
@@ -1209,7 +1213,7 @@ then
     echo OK
 fi
 
-rm /tmp/extattr.*.list
+rm $TEMP_DIR/extattr.*.list
 
 echo
 echo Check files are executable 

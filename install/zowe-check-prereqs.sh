@@ -178,6 +178,9 @@ else
   echo OK
 fi
 
+if [ -z ${TEMP_DIR+x} ]; then
+    TEMP_DIR=${TMPDIR:-/tmp}
+fi
 
 
 # 1- RDEFINE OPERCMDS MVS.START.** UACC(NONE)
@@ -189,7 +192,7 @@ match_profile ()
 {
   className=$1    # the CLASS containing all the profiles that user can access
   profileName=$2  # the profile that we want to match in that list
-  tsocmd "search class($className) user($userid)" 2> /dev/null |sed 's/\(.*\) .*/\1/' > /tmp/find_profile.out
+  tsocmd "search class($className) user($userid)" 2> /dev/null |sed 's/\(.*\) .*/\1/' > $TEMP_DIR/find_profile.out
   while read string 
   do
     
@@ -202,7 +205,7 @@ match_profile ()
 
         if [[ $r = '*' ]]
         then
-          rm        /tmp/find_profile.out
+          rm        $TEMP_DIR/find_profile.out
           return 0  # asterisk matches rest of string
         fi
 
@@ -216,13 +219,13 @@ match_profile ()
 
     if [[ $i -eq $l ]]
     then
-      rm        /tmp/find_profile.out
+      rm        $TEMP_DIR/find_profile.out
       return 0  # whole string matched
     fi
 
 
-  done <    /tmp/find_profile.out
-  rm        /tmp/find_profile.out
+  done <    $TEMP_DIR/find_profile.out
+  rm        $TEMP_DIR/find_profile.out
   return 1    # no strings matched
 }
 
