@@ -131,6 +131,10 @@
   RLIST  FACILITY BPX.SERVER ALL
   PERMIT BPX.SERVER CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
+/* remove permit to set jobname                                      */
+  RLIST  FACILITY BPX.JOBNAME ALL
+  PERMIT BPX.JOBNAME CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+
 /* remove permit to write persistent data                            */
   RLIST  UNIXPRIV SUPERUSER.FILESYS ALL
   PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE ID(&ZOWEUSER.)

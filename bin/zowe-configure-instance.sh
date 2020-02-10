@@ -10,9 +10,17 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-while getopts "c:y" opt; do
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 -c zowe_install_directory [-g zowe_group]"
+  exit 1
+fi
+
+ZOWE_GROUP=ZWEADMIN
+
+while getopts "c:g:" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
+    g) ZOWE_GROUP=$OPTARG;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -33,6 +41,10 @@ export _TAG_REDIR_IN=""
 export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
+
+export _EDC_ADD_ERRNO2=1                        # show details on error
+unset ENV             # just in case, as it can cause unexpected output
+umask 0022                                       # similar to chmod 755
 
 if [[ -z ${INSTANCE_DIR} ]]
 then
@@ -195,8 +207,14 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
-# Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod 777 ${INSTANCE_DIR}
+# Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
+# If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
+chmod 775 ${INSTANCE_DIR}
+chgrp -R ${ZOWE_GROUP} ${INSTANCE_DIR}
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  chmod 777 ${INSTANCE_DIR}
+fi
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 
