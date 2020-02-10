@@ -411,8 +411,8 @@ function trust_zosmf {
     ALIAS="zosmf"
     get_service_certificate_form_url
     for entry in "${CER_DIR}"/*; do
-      echo "z/OSMF certificate fingerprint:"
-      cat ${entry} | openssl x509 -sha1 -fingerprint
+      echo "z/OSMF certificate fingerprint:" >/dev/tty
+      cat ${entry} | openssl x509 -sha1 -noout -fingerprint >/dev/tty
       CERTIFICATE=${entry}
       entry=${entry##*/}
       ALIAS=${entry%.cer}
