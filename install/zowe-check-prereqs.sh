@@ -114,9 +114,8 @@ echo Checking Node version...
 
 if [[ -z ${NODE_HOME} ]]
 then
-    NODE_HOME="/usr/lpp/IBM/cnj/IBM/node-latest-os390-s390x"
+  promptNodeHome
 fi
-promptNodeHome ${NODE_HOME}
 
 export ROOT_DIR=${UNPAX_DIR} #Set root so the validate scripts can work
 . ${UNPAX_DIR}/scripts/utils/configure-node.sh 1> /dev/null
