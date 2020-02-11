@@ -50,6 +50,15 @@ if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
   exit 1
+else
+  # If the value starts with a ~ for the home variable then evaluate it
+  INSTANCE_DIR=`sh -c "echo ${INSTANCE_DIR}"` 
+  # If the path is relative, then expand it
+  if [[ "$INSTANCE_DIR" != '/*' ]]
+  then
+    # Relative path
+    INSTANCE_DIR=$PWD/$INSTANCE_DIR
+  fi
 fi
 
 echo_and_log() {
