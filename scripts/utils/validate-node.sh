@@ -20,11 +20,11 @@ then
     else
 
       NODE_OK=`${NODE_HOME}/bin/node -e "console.log('ok')" 2>&1`
-      if [[ $NODE_OK == "ok" ]]
+      if [[ ${NODE_OK} == "ok" ]]
       then
         echo "OK: Node is working"
       else 
-        . ${ROOT_DIR}/scripts/utils/error.sh "${NODE_HOME}/bin/node is not functioning correctly";
+        . ${ROOT_DIR}/scripts/utils/error.sh "${NODE_HOME}/bin/node is not functioning correctly: ${NODE_OK}";
       fi
 
       NODE_MIN_VERSION=6.14
