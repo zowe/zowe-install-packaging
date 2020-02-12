@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-# - FILES_API_PORT - should not be bound to a port currently
+# $1 - should not be bound to a port currently
 MATCHES=`onetstat -a | grep -c $1`
 if [[ $MATCHES > 0 ]]
 then
