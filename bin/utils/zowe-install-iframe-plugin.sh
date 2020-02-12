@@ -22,9 +22,14 @@ PLUGIN_SHORTNAME=$2
 URL=$3
 PLUGIN_DIR=$4
 TILE_IMAGE_PATH=$5
-INSTANCE_DIR=$6
 
-if [ "$#" -ne 6 ]; then
+#TODO LATER - if block provided backwards compatibility until all components are updated
+if [[ ! -z $6]]
+then
+  INSTANCE_DIR=$6
+fi
+
+if [ "$#" -ne 5 ]; then
   echo "Usage: $0 PLUGIN_ID PLUGIN_SHORTNAME PLUGIN_DIRECTORY URL TILE_IMAGE_PATH INSTANCE_DIRECTORY \neg. install-iframe-plugin.sh \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe/component/plugin\" \"/zowe_plugin/artifacts/tile_image.png\" \"/u/zowe_user/instance-dir\"" >&2
   exit 1
 fi
