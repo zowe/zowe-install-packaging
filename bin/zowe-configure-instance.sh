@@ -210,7 +210,7 @@ echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 # Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
 # If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
 chmod 775 ${INSTANCE_DIR}
-chgrp -R ${ZOWE_GROUP} ${INSTANCE_DIR}
+chgrp -R ${ZOWE_GROUP} ${INSTANCE_DIR} 1> /dev/null 2> /dev/null
 RETURN_CODE=$?
 if [[ $RETURN_CODE != "0" ]]; then
   chmod 777 ${INSTANCE_DIR}
