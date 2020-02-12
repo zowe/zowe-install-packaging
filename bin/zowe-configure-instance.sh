@@ -205,6 +205,14 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 . \${ROOT_DIR}/bin/zowe-support.sh
 EOF
+
+cat <<EOF >${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh
+set -e
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
+. \${INSTANCE_DIR}/bin/read-instance.sh
+
+. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh
+EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 # Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
