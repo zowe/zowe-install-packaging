@@ -24,7 +24,7 @@ PLUGIN_DIR=$4
 TILE_IMAGE_PATH=$5
 
 #TODO LATER - if block provided backwards compatibility until all components are updated
-if [[ ! -z $6]]
+if [[ ! -z "$6" ]]
 then
   INSTANCE_DIR=$6
 fi
