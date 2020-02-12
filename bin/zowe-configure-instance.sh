@@ -54,7 +54,7 @@ else
   # If the value starts with a ~ for the home variable then evaluate it
   INSTANCE_DIR=`sh -c "echo ${INSTANCE_DIR}"` 
   # If the path is relative, then expand it
-  if [[ "$INSTANCE_DIR" != '/*' ]]
+  if [[ "$INSTANCE_DIR" != /* ]]
   then
     # Relative path
     INSTANCE_DIR=$PWD/$INSTANCE_DIR
