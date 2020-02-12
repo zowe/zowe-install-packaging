@@ -211,7 +211,7 @@ set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/read-instance.sh
 
-. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh
+. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh $@ ${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
