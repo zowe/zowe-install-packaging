@@ -142,9 +142,6 @@ ls $ZOWE_ROOT_DIR >> $LOG_FILE
 mkdir -p $ZOWE_ROOT_DIR/scripts/templates
 chmod -R a+w $ZOWE_ROOT_DIR/scripts
 
-cd $INSTALL_DIR/scripts
-cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
-
 mkdir -p $ZOWE_ROOT_DIR/scripts/internal
 chmod a+x $ZOWE_ROOT_DIR/scripts/internal
 
