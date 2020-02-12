@@ -20,9 +20,11 @@ then
     else
 
       NODE_OK=`${NODE_HOME}/bin/node -e "console.log('ok')" 2>&1`
-      if [[ ! $NODE_OK == "ok" ]];
-      then 
-        . ${ROOT_DIR}/scripts/utils/error.sh "${NODE_HOME}/bin/node is not functioning correctly";
+      if [[ ${NODE_OK} == "ok" ]]
+      then
+        echo "OK: Node is working"
+      else 
+        . ${ROOT_DIR}/scripts/utils/error.sh "${NODE_HOME}/bin/node is not functioning correctly: ${NODE_OK}";
       fi
 
       NODE_MIN_VERSION=6.14
@@ -30,6 +32,8 @@ then
       if [[ `echo "$NODE_VERSION $NODE_MIN_VERSION" | awk '{print ($1 < $2)}'` == 1 ]];
       then
         . ${ROOT_DIR}/scripts/utils/error.sh "NODE Version ${NODE_VERSION} is less than minimum level required of ${NODE_MIN_VERSION}";
+      else
+        echo "OK: Node is at a supported version"
       fi
 
     fi
