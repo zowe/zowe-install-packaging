@@ -139,7 +139,8 @@ fi
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 
-cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
+cat <<EOF >${INSTANCE_DIR}/bin/internal/read-instance.sh
+#!/bin/sh
 # Requires INSTANCE_DIR to be set
 # Read in properties by executing, then export all the keys so we don't need to shell share
 . \${INSTANCE_DIR}/instance.env
@@ -151,15 +152,15 @@ key=\${line%%=*}
 export \$key
 done < \${INSTANCE_DIR}/instance.env
 EOF
-echo "Created ${INSTANCE_DIR}/bin/read-instance.sh">> $LOG_FILE
+echo "Created ${INSTANCE_DIR}/bin/internal/read-instance.sh">> $LOG_FILE
 
-cat <<EOF >${INSTANCE_DIR}/bin/read-keystore.sh
+cat <<EOF >${INSTANCE_DIR}/bin/internal/read-keystore.sh
+#!/bin/sh
 # Requires KEYSTORE_DIRECTORY to be set
 # Read in properties by executing, then export all the keys so we don't need to shell share
 
 # exit immediately if file cannot be accessed
 . \${KEYSTORE_DIRECTORY}/zowe-certificates.env || exit 1
-
 
 while read -r line
 do
@@ -168,22 +169,24 @@ key=\${line%%=*}
 export \$key
 done < \${KEYSTORE_DIRECTORY}/zowe-certificates.env
 EOF
-echo "Created ${INSTANCE_DIR}/bin/read-keystore.sh">> $LOG_FILE
+echo "Created ${INSTANCE_DIR}/bin/internal/read-keystore.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
+#!/bin/sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 # Validate keystore directory accessible before we try and use it
 . \${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
-. \${INSTANCE_DIR}/bin/read-keystore.sh
+. \${INSTANCE_DIR}/bin/internal/read-keystore.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/internal/run-zowe.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
+#!/bin/sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd \"S ZWESVSTC,INSTANCE='"\${INSTANCE_DIR}"',JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV\"
 echo Start command issued, check SDSF job log ...
@@ -191,18 +194,19 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-start.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-stop.sh
+#!/bin/sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-support.sh
-set -e
+#!/bin/sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 
 . \${ROOT_DIR}/bin/zowe-support.sh
 EOF
@@ -211,7 +215,6 @@ echo "Created ${INSTANCE_DIR}/bin/zowe-support.sh">> $LOG_FILE
 mkdir -p ${INSTANCE_DIR}/bin/utils
 cat <<EOF >${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh
 #!/bin/sh
-set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/internal/read-instance.sh
 . \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@ ${INSTANCE_DIR}
