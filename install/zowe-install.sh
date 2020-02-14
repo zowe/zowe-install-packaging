@@ -64,18 +64,13 @@ else
   export TEMP_DIR=${TMPDIR:-/tmp}/zowe_"`date +%Y-%m-%d`"
 fi
 mkdir -p $TEMP_DIR
+chmod a+rwx $TEMP_DIR 
 
 # Create a log file with the year and time.log in a log folder 
 # that scripts can echo to and can be written to by scripts to diagnose any install problems.  
-export LOG_DIR=$TEMP_DIR/log
-# Make the log directory if needed - first time through - subsequent installs create new .log files
-if [[ ! -d $LOG_DIR ]]; then
-    mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
-fi
 # Make the log file (unique assuming there is only one install per second)
 export LOG_FILE="`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$LOG_DIR/$LOG_FILE
+LOG_FILE=$TEMP_DIR/$LOG_FILE
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
