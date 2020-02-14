@@ -57,9 +57,9 @@ separator() {
 separator
 
 # Create a temp directory to be a working directory for sed replacements and logs, if install_dir is read-only then put it in ${TMPDIR}/'/tmp\'
-if [[ -w "${$INSTALL_DIR}" ]]
+if [[ -w "${INSTALL_DIR}" ]]
 then
-  export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
+  export TEMP_DIR=${INSTALL_DIR}/temp_"`date +%Y-%m-%d`"
 else
   export TEMP_DIR=${TMPDIR:-/tmp}/zowe_"`date +%Y-%m-%d`"
 fi
