@@ -26,16 +26,13 @@ function write_to_log {
 function add_to_pax {
     case $2 in
         process_info)
-            SUBSTITUTION="-s#${SUPPORT_ARCHIVE_LOCATION}#PS_OUTPUT_FILE-#"
+            SUBSTITUTION="-s#${SUPPORT_ARCHIVE_LOCATION}#PS_OUTPUT_FILE#"
         ;;
         version_file)
-            SUBSTITUTION="-s#${SUPPORT_ARCHIVE_LOCATION}#VERSION_FILE-#"
-        ;;
-        installation_log)
-            SUBSTITUTION="-s#${ZOWE_INSTALL_LOG_DIR}#INSTALL_LOG-#"
+            SUBSTITUTION="-s#${SUPPORT_ARCHIVE_LOCATION}#VERSION_FILE#"
         ;;
         support_archive_log)
-            SUBSTITUTION="-s#${SUPPORT_ARCHIVE_LOCATION}#SUPPORT_LOG-#"
+            SUBSTITUTION="-s#${SUPPORT_ARCHIVE_LOCATION}#SUPPORT_LOG#"
         ;;
         zlux_server_log)
             SUBSTITUTION="-s#${ZOWE_INSTALL_ZLUX_SERVER_LOG}#ZLUX_SERVER_LOG-#"
@@ -44,8 +41,7 @@ function add_to_pax {
             SUBSTITUTION=""
         ;;
     esac
-    # TODO need to work out how to get rid of the hard-coded path - maybe move to a directory then pax once at the end?
-    pax -wva -o saveext ${SUBSTITUTION} -s#${ROOT_DIR}/#ROOT_DIR# -s#${INSTANCE_DIR}/#INSTANCE_DIR# -f ${SUPPORT_ARCHIVE}  $1 2>&1 | tee -a ${SUPPORT_ARCHIVE_LOG}
+    pax -wva -o saveext ${SUBSTITUTION} -s#${ROOT_DIR}#ROOT_DIR# -s#${INSTANCE_DIR}#INSTANCE_DIR# -s#${KEYSTORE_DIRECTORY}#KEYSTORE_DIRECTORY# -f ${SUPPORT_ARCHIVE}  $1 2>&1 | tee -a ${SUPPORT_ARCHIVE_LOG}
 }
 
 function add_file_to_pax_if_found {
@@ -85,6 +81,7 @@ for STC in ${STC_JOBS}
 do
     write_to_log "Collecting output for Zowe started task ${STC}"
     STC_FILE=`echo ${STC} | tr '()' '-.'`log
+    # TODO tsocmd output doesn't produce anything?
     tsocmd "output ${STC}" > $STC_FILE
     add_to_pax $STC_FILE
     rm $STC_FILE
@@ -125,9 +122,8 @@ write_to_log "Adding ${SUPPORT_ARCHIVE_LOG}"
 add_to_pax ${SUPPORT_ARCHIVE_LOG} support_archive_log
 rm ${SUPPORT_ARCHIVE_LOG}
 
-# Compress pax file and delete the uncompressed one
-pax -wzf ${SUPPORT_ARCHIVE}.Z ${SUPPORT_ARCHIVE}
-rm ${SUPPORT_ARCHIVE}
+# Compress pax file
+compress ${SUPPORT_ARCHIVE}
 
 # Print final message
 echo "The support file was created, pass it to support guys. Thanks."
