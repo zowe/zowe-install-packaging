@@ -372,36 +372,6 @@ function jwt_key_gen_and_export {
     -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
 
-#function trust_zosmf {
-#    ALIASES_FILE=${TEMP_DIR}/aliases.txt
-#    rm -f ${ALIASES_FILE}
-#    echo "Listing entries in the z/OSMF keyring (${ZOSMF_KEYRING}):"
-#    if [ "$LOG" != "" ]; then
-#        keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider >> $LOG 2>&1
-#    else
-#        keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-#    fi
-#    RC=$?
-#    if [ "$RC" -ne "0" ]; then
-#        USERID=`whoami`
-#        echo "It is not possible to read z/OSMF keyring ${ZOSMF_USERID}/${ZOSMF_KEYRING}. The effective user ID was: ${USERID}. You need to run this command as user that has access to the z/OSMF keyring:"
-#        echo "  cd ${PWD}"
-#        echo "  scripts/apiml_cm.sh --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USERID}"
-#        exit 1
-#    fi
-#    keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider | grep "Entry," | cut -f 1 -d , > ${ALIASES_FILE}
-#    CERT_PREFIX=${TEMP_DIR}/zosmf_cert_
-#    I=0
-#    while read ALIAS; do
-#        I=$((I + 1))
-#        echo "Exporting certificate '${ALIAS}' from z/OSMF:"
-#        CERTIFICATE="${CERT_PREFIX}${I}.cer"
-#        keytool -exportcert -alias "${ALIAS}" -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -file ${CERTIFICATE}
-#        trust
-#        rm "${CERTIFICATE}"
-#    done <${ALIASES_FILE}
-#}
-
 function trust_zosmf {
   echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
