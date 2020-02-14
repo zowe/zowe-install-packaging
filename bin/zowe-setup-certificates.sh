@@ -4,11 +4,10 @@
 # - HOSTNAME - The hostname of the system running API Mediation
 # - IPADDRESS - The IP Address of the system running API Mediation
 # - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services (defaults to true)
-# - ZOSMF_KEYRING - Name of the z/OSMF keyring
-# - ZOSMF_USER - z/OSMF server user ID
 # - EXTERNAL_CERTIFICATE - optional - Path to a PKCS12 keystore with a server certificate for APIML
 # - EXTERNAL_CERTIFICATE_ALIAS - optional - Alias of the certificate in the keystore
 # - EXTERNAL_CERTIFICATE_AUTHORITIES - optional - Public certificates of trusted CAs
+# - ZOSMF_CERTIFICATE - Public certificates of z/OSMF - multiple certificates delimited with space has to be enclosed with quotes ("path/cer1 path/cer2")
 
 # - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore)
 # - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and 
@@ -138,17 +137,14 @@ if [ "$RC" -ne "0" ]; then
 fi
 
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
-  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USER} \
-    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX}
+  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
+    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
   RC=$?
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See $LOG_FILE for more details")
       (>&2 echo "WARNING: z/OSMF is not trusted by the API Mediation Layer. Follow instructions in Zowe documentation about manual steps to trust z/OSMF")
-      (>&2 echo "  Issue the following command as a user that has permissions to export public certificates from z/OSMF keyring:")
-      (>&2 echo "    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USER} \
-      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX}")
   fi
 fi
 echo "Creating certificates and keystores... DONE"
@@ -166,8 +162,6 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
   KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
   ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
-  ZOSMF_USERID=${ZOSMF_USER}
-  ZOSMF_KEYRING=${ZOSMF_KEYRING}
 EOF
 
 # set up privileges and ownership
