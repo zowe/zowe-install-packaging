@@ -81,7 +81,7 @@ for STC in ${STC_JOBS}
 do
     write_to_log "Collecting output for Zowe started task ${STC}"
     STC_FILE=`echo ${STC} | tr '()' '-.'`log
-    # TODO tsocmd output doesn't produce anything?
+    # TODO NOW - tsocmd output doesn't produce anything and purges job
     tsocmd "output ${STC}" > $STC_FILE
     add_to_pax $STC_FILE
     rm $STC_FILE
