@@ -27,7 +27,7 @@ function usage {
     echo "     - new-service-csr - creates CSR for new service to be signed by external CA"
     echo "     - new-service - adds new service signed by local CA or external CA"
     echo "     - trust - adds a public certificate of a service to APIML truststore"
-    echo "     - trust-zosmf - adds public certificates from z/OSMF keyring to APIML truststore"
+    echo "     - trust-zosmf - adds public certificates from z/OSMF to APIML truststore"
     echo "     - clean - removes files created by setup"
     echo "     - jwt-keygen - generates and exports JWT key pair"
     echo ""
@@ -57,9 +57,7 @@ SERVICE_VALIDITY=3650
 SERVICE_STORETYPE="PKCS12"
 EXTERNAL_CERTIFICATE=
 EXTERNAL_CERTIFICATE_ALIAS=
-
-ZOSMF_KEYRING="IZUKeyring.IZUDFLT"
-ZOSMF_USERID="IZUSVR"
+ZOSMF_CERTIFICATE=
 
 ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
@@ -264,6 +262,61 @@ EOF
     rm ${TEMP_DIR}/ExportPrivateKey.java ${TEMP_DIR}/ExportPrivateKey.class
 }
 
+function get_service_certificate_form_url {
+    echo "Exporting service certificate"
+    echo "TEMP_DIR=$TEMP_DIR"
+    cat <<EOF >$TEMP_DIR/GetCertificate.java
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.FileWriter;
+import java.io.File;
+import java.net.URL;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
+
+public class GetCertificate {
+
+    public static void getCertificateFromURL(String aURL, String dir, String alias) throws Exception{
+        URL destinationURL = new URL("https://"+aURL);
+        HttpsURLConnection conn = (HttpsURLConnection) destinationURL.openConnection();
+        conn.connect();
+        Certificate[] certs = conn.getServerCertificates();
+        int counter = 1;
+        for (Certificate cert : certs) {
+            if(cert instanceof X509Certificate) {
+                X509Certificate x = (X509Certificate ) cert;
+                String encoded = Base64.getEncoder().encodeToString(cert.getEncoded());
+                FileWriter fw = new FileWriter(new File (dir + "/" + alias + counter + ".cer"));
+                fw.write("-----BEGIN CERTIFICATE-----");
+                for (int i = 0; i < encoded.length(); i++) {
+                    if (((i % 64) == 0) && (i != (encoded.length() - 1))) {
+                        fw.write("\n");
+                    }
+                    fw.write(encoded.charAt(i));
+                }
+                fw.write("\n");
+                fw.write("-----END CERTIFICATE-----\n");
+                fw.close();
+                counter++;
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        getCertificateFromURL(args[0], args[1], args[2]);
+    }
+}
+
+EOF
+    echo "cat returned $?"
+    javac ${TEMP_DIR}/GetCertificate.java
+    echo "javac returned $?"
+    java -cp ${TEMP_DIR} GetCertificate "${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT}" ${CER_DIR} ${ALIAS} >> $LOG 2>&1
+    echo "java returned $?"
+    rm ${TEMP_DIR}/GetCertificate.java ${TEMP_DIR}/GetCertificate.class
+}
+
 function setup_local_ca {
     clean_local_ca
     create_certificate_authority
@@ -320,33 +373,31 @@ function jwt_key_gen_and_export {
 }
 
 function trust_zosmf {
-    ALIASES_FILE=${TEMP_DIR}/aliases.txt
-    rm -f ${ALIASES_FILE}
-    echo "Listing entries in the z/OSMF keyring (${ZOSMF_KEYRING}):"
-    if [ "$LOG" != "" ]; then
-        keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider >> $LOG 2>&1
-    else
-        keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-    fi
-    RC=$?
-    if [ "$RC" -ne "0" ]; then
-        USERID=`whoami`
-        echo "It is not possible to read z/OSMF keyring ${ZOSMF_USERID}/${ZOSMF_KEYRING}. The effective user ID was: ${USERID}. You need to run this command as user that has access to the z/OSMF keyring:"
-        echo "  cd ${PWD}"
-        echo "  scripts/apiml_cm.sh --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USERID}"
-        exit 1
-    fi
-    keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider | grep "Entry," | cut -f 1 -d , > ${ALIASES_FILE}
-    CERT_PREFIX=${TEMP_DIR}/zosmf_cert_
-    I=0
-    while read ALIAS; do
-        I=$((I + 1))
-        echo "Exporting certificate '${ALIAS}' from z/OSMF:"
-        CERTIFICATE="${CERT_PREFIX}${I}.cer"
-        keytool -exportcert -alias "${ALIAS}" -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -file ${CERTIFICATE}
-        trust
-        rm "${CERTIFICATE}"
-    done <${ALIASES_FILE}
+  echo ${ZOSMF_CERTIFICATE}
+  if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
+    echo "Getting certificates from z/OSMF host"
+    CER_DIR=`dirname ${SERVICE_TRUSTSTORE}/temp`
+    mkdir -p $CER_DIR
+    ALIAS="zosmf"
+    get_service_certificate_form_url
+    for entry in "${CER_DIR}"/*; do
+      echo "z/OSMF certificate fingerprint:" >&5
+      cat ${entry} | openssl x509 -sha1 -noout -fingerprint -subject >&5
+      CERTIFICATE=${entry}
+      entry=${entry##*/}
+      ALIAS=${entry%.cer}
+      trust
+    done
+    rm -rf ${CER_DIR}
+  else
+    echo "Getting zosmf certificates from file"
+    for entry in ${ZOSMF_CERTIFICATE}; do
+      CERTIFICATE=${entry}
+      entry=${entry##*/}
+      ALIAS=${entry%.*}
+      trust
+    done
+  fi
 }
 
 while [ "$1" != "" ]; do
@@ -364,7 +415,7 @@ while [ "$1" != "" ]; do
                                 ;;
         --log )                 shift
                                 export LOG=$1
-                                exec >> $LOG
+                                exec 5>&1 >>$LOG
                                 ;;
         --local-ca-filename )   shift
                                 LOCAL_CA_FILENAME=$1
@@ -417,11 +468,8 @@ while [ "$1" != "" ]; do
         --external-ca-filename ) shift
                                 EXTERNAL_CA_FILENAME=$1
                                 ;;
-        --zosmf-keyring )       shift
-                                ZOSMF_KEYRING=$1
-                                ;;
-        --zosmf-userid )        shift
-                                ZOSMF_USERID=$1
+        --zosmf-certificate )   shift
+                                ZOSMF_CERTIFICATE=$1
                                 ;;
         --certificate )         shift
                                 CERTIFICATE=$1
