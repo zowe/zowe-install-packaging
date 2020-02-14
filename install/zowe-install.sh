@@ -56,11 +56,18 @@ separator() {
 }
 separator
 
-# Create a log file with the year and time.log in a log folder 
-# that scripts can echo to and can be written to by scripts to diagnose any install 
-# problems.  
+# Create a temp directory to be a working directory for sed replacements and logs, if install_dir is read-only then put it in ${TMPDIR}/'/tmp\'
+if [[ -w "${$INSTALL_DIR}" ]]
+then
+  export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
+else
+  export TEMP_DIR=${TMPDIR:-/tmp}/zowe_"`date +%Y-%m-%d`"
+fi
+mkdir -p $TEMP_DIR
 
-export LOG_DIR=$INSTALL_DIR/log
+# Create a log file with the year and time.log in a log folder 
+# that scripts can echo to and can be written to by scripts to diagnose any install problems.  
+export LOG_DIR=$TEMP_DIR/log
 # Make the log directory if needed - first time through - subsequent installs create new .log files
 if [[ ! -d $LOG_DIR ]]; then
     mkdir -p $LOG_DIR
@@ -127,10 +134,6 @@ chmod a+rx $ZOWE_ROOT_DIR
 # copy manifest.json to root folder
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
 chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
-
-# Create a temp directory to be a working directory for sed replacements
-export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
-mkdir -p $TEMP_DIR
 
 # Install the API Mediation Layer
 . $INSTALL_DIR/scripts/zowe-install-api-mediation.sh
