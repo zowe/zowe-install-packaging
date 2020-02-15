@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
 #% stage Zowe product for SMP/E packaging
@@ -626,7 +626,7 @@ _super chown -R $(id -u) $stage
 # set permissions to ensure consistency & ability to move during split
 _cmd chmod -R 755 $stage
 
-# remove install log and possible other logs 
+# remove install log and possible other logs
 logDirs="$(ls -d $stage/*log 2>/dev/null)"
 test -n "$logDirs" && _cmd rm -rf "$logDirs"
 
