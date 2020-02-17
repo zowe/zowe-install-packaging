@@ -1,3 +1,14 @@
+#######################################################################
+# This program and the accompanying materials are made available       
+# under the terms of the Eclipse Public License v2.0 which             
+# accompanies this distribution, and is available at                   
+# https://www.eclipse.org/legal/epl-v20.html                           
+#                                                                      
+# SPDX-License-Identifier: EPL-2.0                                     
+#                                                                      
+# Copyright Contributors to the Zowe Project. 2020, 2020               
+#######################################################################
+
 # Zowe Open Source Project - This file can be used as properties file to define security permits for Zowe 
 
 # Before using this workflow, you will have to make the following
@@ -127,7 +138,7 @@ ADMINGRP=#ZWEADMIN
 # Category: General Security
 # Description:
 #  Group for Zowe started tasks
-STCGROUP=#ZWEADMIN
+STCGROUP=#STCGROUP
 
 # ZOWEUSER
 # Label: ZOWEUSER
@@ -151,7 +162,7 @@ XMEMUSER=#ZWESIUSR
 # Category: General Security
 # Description:
 #  userid for xmem AUX started task
-AUXUSER=#ZWESIUSR
+AUXUSER=#AUXUSER
 
 # ZOWESTC
 # Label: ZOWESTC
@@ -191,7 +202,7 @@ HLQ=#ZWE
 # Category: General Security
 # Description:
 #  System programmer user ID/group
-SYSPROG=#ZWEADMIN
+SYSPROG=#SYSPROG
 
 # ADMINGID
 # Label: ADMINGID
@@ -207,7 +218,7 @@ ADMINGID=#ADMINGID
 # Category: ACF2
 # Description:
 #  Group ID for ZOWE Started Task
-STCGID=#ADMINGID
+STCGID=#STCGID
 
 # ZOWEUID
 # Label: ZOWEUID
@@ -231,7 +242,7 @@ XMEMUID=#XMEMUID
 # Category: ACF2
 # Description:
 #  UID for xm AUX started task User
-AUXUID=#XMEMUID
+AUXUID=#AUXUID
 
 # ADMINDEP
 # Label: ADMINDEP

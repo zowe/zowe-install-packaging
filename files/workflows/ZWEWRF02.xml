@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- #######################################################################
+ This program and the accompanying materials are made available
+ under the terms of the Eclipse Public License v2.0 which
+ accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-v20.html
+ SPDX-License-Identifier: EPL-2.0
+ Copyright Contributors to the Zowe Project. 2019, 2020
+####################################################################### -->
 <workflow>
 	<autoTakeOwnership>true</autoTakeOwnership>
 	<workflowSettingInfo>
@@ -41,7 +49,7 @@
 		<description>Group for Zowe started tasks</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#ZWEADMIN</default>
+			<default>#STCGROUP</default>
 		</string>
 	</variable>
     <variable name="ZOWEUSER" scope="instance" visibility="public">
@@ -68,7 +76,7 @@
 		<description>userid for xmem AUX started task</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#ZWESIUSR</default>
+			<default>#AUXUSER</default>
 		</string>
 	</variable>
     <variable name="ZOWESTC" scope="instance" visibility="public">
@@ -114,7 +122,7 @@
 		<description>System programmer user ID/group</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#ZWEADMIN</default>
+			<default>#SYSPROG</default>
 		</string>
 	</variable>
   <variable name="ADMINGID" scope="instance" visibility="public">
@@ -132,7 +140,7 @@
 		<description>Group ID for ZOWE Started Task</description>
 		<category>ACF2</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#ADMINGID</default>
+			<default>#STCGID</default>
 		</string>
 	</variable>
   <variable name="ZOWEUID" scope="instance" visibility="public">
@@ -159,7 +167,7 @@
 		<description>UID for xm AUX started task User</description>
 		<category>ACF2</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#XMEMUID</default>
+			<default>#AUXUID</default>
 		</string>
 	</variable>
    <variable name="ADMINDEP" scope="instance" visibility="public">
@@ -589,7 +597,8 @@
   LISTDSD PREFIX(&amp;HLQ.) ALL
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -731,7 +740,8 @@ RECKEY $&amp;HLQ. ADD(- UID(&amp;SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 LIST &amp;HLQ.
 *
 * .................................................................
-* only the last RC is returned, this comment ensures it is a 0
+* only the last RC is returned, this command ensures it is a 0      *
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -877,7 +887,8 @@ $$
 /* TSS ADD(user_acid) FAC(ZOWE)                                      */
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 		</inlineTemplate>
