@@ -46,7 +46,7 @@ While the FMID has not GA'd, smpe-service.sh will create a USERMOD that matches 
 ### Header SYSMOD 1
 <pre>
 ++USERMOD(TMP0001) /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
-++VER(Z038,C150,P115) FMID(AZWE001)
+++VER(Z038) FMID(AZWE001)
   REQ(TMP0002)
  /*
   SPECIAL CONDITIONS:
@@ -110,7 +110,7 @@ AO00001 AO00002
 ### Header SYSMOD 1
 <pre>
 <strong><mark><font color='red'>++PTF(UO12345)</font></mark></strong></font color='red'> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
-++VER(Z038,C150,P115) FMID(AZWE001)
+++VER(Z038) FMID(AZWE001)
   REQ(UO43210)
   <strong><mark><font color='red'>SUP(AO12345,AO43210)</font></mark></strong>
  /*
@@ -193,7 +193,7 @@ AO00001 AO00002
 ### Header SYSMOD 1
 <pre>
 <strong><mark><font color='red'>++APAR(AO19283)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
-++VER(Z038,C150,P115) FMID(AZWE001)
+++VER(Z038) FMID(AZWE001)
   REQ(AO74650)
  /*
   SPECIAL CONDITIONS:
@@ -233,7 +233,7 @@ The presence of current-apar.txt will cause all future builds to supersede the A
 ### Header SYSMOD 1
 <pre>
 ++PTF(UO12345) /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
-++VER(Z038,C150,P115) FMID(AZWE001)
+++VER(Z038) FMID(AZWE001)
   REQ(UO43210)
   SUP(AO12345,<strong><mark><font color='red'>AO19283</font></mark></strong>,AO43210,<strong><mark><font color='red'>AO74650</font></mark></strong>)
  /*
@@ -383,7 +383,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
 ### Header SYSMOD 1
 <pre>
 <strong><mark><font color='red'>++PTF(UO67890)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
-++VER(Z038,C150,P115) FMID(AZWE001)
+++VER(Z038) FMID(AZWE001)
   REQ(UO98765)
   <strong><mark><font color='red'>SUP(AO12345,AO19283,AO43210,</font></mark></strong>AO67890,<strong><mark><font color='red'>AO74650,</font></mark></strong>AO98765,<strong><mark><font color='red'>UO12345,UO43210)</font></mark></strong>
  /*
@@ -564,7 +564,7 @@ before attempting to start the servers.
 ### Header SYSMOD 1
 <pre>
 <strong><mark><font color='red'>++APAR(AO00001)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020). 
-++VER(Z038,C150,P115) FMID(AZWE001)
+++VER(Z038) FMID(AZWE001)
   REQ(AO00002)
   <strong><mark><font color='red'>PRE(AO12345,AO19283,AO43210,AO74650,UO12345,UO43210)</font></mark></strong>
 /*
@@ -648,7 +648,7 @@ If required, a Zowe build engineer can trigger a USERMOD build instead of a PTF 
 ### Header SYSMOD 1
 <pre>
 <strong><mark><font color='red'>++USERMOD(TMP0001)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020).
-++VER(Z038,C150,P115) FMID(AZWE001)
+++VER(Z038) FMID(AZWE001)
   REQ(TMP0002)
   <strong><mark><font color='red'>SUP(AO00001,AO00002)</font></mark></strong>
   PRE(AO12345,AO19283,AO43210,AO74650,UO12345,UO43210)
