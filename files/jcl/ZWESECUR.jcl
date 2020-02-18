@@ -332,7 +332,8 @@
   LISTDSD PREFIX(&HLQ.) ALL
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -474,7 +475,8 @@ RECKEY $&HLQ. ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 LIST &HLQ.
 *
 * .................................................................
-* only the last RC is returned, this comment ensures it is a 0
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -620,6 +622,7 @@ $$
 /* TSS ADD(user_acid) FAC(ZOWE)                                      */
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
