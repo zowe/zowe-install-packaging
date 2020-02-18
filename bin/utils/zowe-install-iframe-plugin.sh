@@ -43,14 +43,14 @@ if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
 fi
 
 # remove any previous plugin files
-rm -rf $PLUGIN_DIR/web/images
+rm -rf $PLUGIN_DIR/web/assets
 rm -f $PLUGIN_DIR/web/index.html
 rm -f $PLUGIN_DIR/pluginDefinition.json
 
-mkdir -p $PLUGIN_DIR/web/images
-cp $TILE_IMAGE_PATH $PLUGIN_DIR/web/images
+mkdir -p $PLUGIN_DIR/web/assets
+cp $TILE_IMAGE_PATH $PLUGIN_DIR/web/assets
 # Tag the graphic as binary.
-chtag -b $PLUGIN_DIR/web/images/$(basename $TILE_IMAGE_PATH)
+chtag -b $PLUGIN_DIR/web/assets/$(basename $TILE_IMAGE_PATH)
 
 cat <<EOF >$PLUGIN_DIR/web/index.html
 <!DOCTYPE html>
@@ -78,7 +78,7 @@ cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
     "launchDefinition": {
       "pluginShortNameKey": "$PLUGIN_SHORTNAME",
       "pluginShortNameDefault": "$PLUGIN_SHORTNAME", 
-      "imageSrc": "images/$(basename $TILE_IMAGE_PATH)"
+      "imageSrc": "assets/$(basename $TILE_IMAGE_PATH)"
     },
     "descriptionKey": "",
     "descriptionDefault": "",
