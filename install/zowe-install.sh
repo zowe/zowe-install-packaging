@@ -56,19 +56,21 @@ separator() {
 }
 separator
 
-# Create a log file with the year and time.log in a log folder 
-# that scripts can echo to and can be written to by scripts to diagnose any install 
-# problems.  
-
-export LOG_DIR=$INSTALL_DIR/log
-# Make the log directory if needed - first time through - subsequent installs create new .log files
-if [[ ! -d $LOG_DIR ]]; then
-    mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
+# Create a temp directory to be a working directory for sed replacements and logs, if install_dir is read-only then put it in ${TMPDIR}/'/tmp\'
+if [[ -w "${INSTALL_DIR}" ]]
+then
+  export TEMP_DIR=${INSTALL_DIR}/temp_"`date +%Y-%m-%d`"
+else
+  export TEMP_DIR=${TMPDIR:-/tmp}/zowe_"`date +%Y-%m-%d`"
 fi
+mkdir -p $TEMP_DIR
+chmod a+rwx $TEMP_DIR 
+
+# Create a log file with the year and time.log in a log folder 
+# that scripts can echo to and can be written to by scripts to diagnose any install problems.  
 # Make the log file (unique assuming there is only one install per second)
 export LOG_FILE="`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$LOG_DIR/$LOG_FILE
+LOG_FILE=$TEMP_DIR/$LOG_FILE
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
@@ -80,15 +82,25 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-cd $INSTALL_DIR/install
-
-if [[ ! -z "$INSTALL_TARGET" ]]
+if [[ -z "$INSTALL_TARGET" ]]
 then
-  ZOWE_ROOT_DIR=$INSTALL_TARGET
+  echo "-i parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+else
+  # If the value starts with a ~ for the home variable then evaluate it
+  ZOWE_ROOT_DIR=`sh -c "echo $INSTALL_TARGET"`
+  # If the path is relative, then expand it
+  if [[ "$ZOWE_ROOT_DIR" != /* ]]
+  then
+    ZOWE_ROOT_DIR=$PWD/$ZOWE_ROOT_DIR
+  fi
 fi
 
-if [[ ! -z "$DSN_PREFIX" ]]
+if [[ -z "$DSN_PREFIX" ]]
 then
+  echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+else
   ZOWE_DSN_PREFIX=$DSN_PREFIX
 fi
 
@@ -117,10 +129,6 @@ chmod a+rx $ZOWE_ROOT_DIR
 # copy manifest.json to root folder
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
 chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
-
-# Create a temp directory to be a working directory for sed replacements
-export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
-mkdir -p $TEMP_DIR
 
 # Install the API Mediation Layer
 . $INSTALL_DIR/scripts/zowe-install-api-mediation.sh
