@@ -7,16 +7,17 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
-# Test if DCB (RECFM, LRECL, DSORG) of data set match criteria. When
-# DSORG=PO, optionally test for PDS versus PDS/E.
+# Test if DCB (RECFM, LRECL, DSORG, and optionally BLKSIZE) of data set
+# match criteria. When DSORG=PO, optionally test for PDS versus PDS/E.
 #
 # Arguments:
-# -e       (optional) data set must be PDS/E
-# -p       (optional) data set must be PDS
-# dsn      data set name
+# -B blkSiz (optional) data set must match specified block size
+# -e        (optional) data set must be PDS/E
+# -p        (optional) data set must be PDS
+# dsn       data set name
 # recFm     record format; {FB | U | VB}
 # lRecL     logical record length, use ** for RECFM(U)
 # dsOrg     data set organisation; {PO | PS}
@@ -41,12 +42,13 @@ test "$debug" && echo "> $me $@"
 unset rc
 
 # Clear input variables
-unset pds pdse
+unset blkSize pds pdse
 
 # Get startup arguments
 args="$@"
-while getopts ep opt
+while getopts epB: opt
 do case "$opt" in
+  B)   blkSize="$OPTARG";;
   e)   pdse="1";;
   p)   pds="1";;
   [?]) echo "** ERROR $me faulty startup argument: $@"
@@ -82,11 +84,18 @@ then
   rc=8
 fi    #
 
+# TODO blkSize numeric or null
+
 # Exit on input error
 test "$rc" -a ! "$IgNoRe_ErRoR" && exit 8                        # EXIT
 
 # lRecL can be **; if so, convert to \*\* but keep original in $dcb
-dcb="DCB($recFm $lRecL $dsOrg)"
+if test -z "$blkSize"
+then
+  dcb="DCB($recFm $lRecL $dsOrg)"
+else
+  dcb="DCB($recFm $lRecL $blkSize $dsOrg)"
+fi    #
 test "$lRecL" = "**" && lRecL="\*\*"
 
 # Get data set information
@@ -118,20 +127,31 @@ fi    # get data set info
 # Test DCB data
 if test -z "$rc"                             # only if no rc set so far
 then
-  # awk limits output to 1st line of DCB data, and prints word 1, 2, & 4
-  #   sample output: FB 80 PO
-  # grep limits output to lines that match pattern
-  #   sample output: FB 80 PO
-  match=$(echo "$cmdOut" \
-    | awk '/^--RECFM/{f=1;next} f{f=0;print $1,$2,$4}' \
-    | grep "^$recFm $lRecL $dsOrg$")
-
+  if test -z "$blkSize"
+  then
+    # awk limits output to 1st line of DCB data, and prints word 1,2,&4
+    #   sample output: FB 80 PO
+    # grep limits output to lines that match pattern
+    #   sample output: FB 80 PO
+    match=$(echo "$cmdOut" \
+      | awk '/^--RECFM/{f=1;next} f{f=0;print $1,$2,$4}' \
+      | grep "^$recFm $lRecL $dsOrg$")
+  else
+    # awk limits output to 1st line of DCB data, and prints word 1 -> 4
+    #   sample output: FB 80 32720 PO
+    # grep limits output to lines that match pattern
+    #   sample output: FB 80 32720 PO
+    match=$(echo "$cmdOut" \
+      | awk '/^--RECFM/{f=1;next} f{f=0;print $1,$2,$3,$4}' \
+      | grep "^$recFm $lRecL $blkSize $dsOrg$")
+  fi    #
+  
   if test -z "$match"
   then
-    test "$debug" && echo "data set $dsn does not have DCB $dcb"
+    test "$debug" && echo "data set $dsn does not have $dcb"
     rc=1
   else
-    test "$debug" && echo "data set $dsn has DCB $dcb"
+    test "$debug" && echo "data set $dsn has $dcb"
     test -z "$pdse$pds" && rc=0  # set rc only if no pds(e) requirement
   fi    #
 fi    # test DCB

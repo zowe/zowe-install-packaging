@@ -23,10 +23,14 @@ URL=$3
 PLUGIN_DIR=$4
 TILE_IMAGE_PATH=$5
 
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/utils/
+#TODO LATER - if block provided backwards compatibility until all components are updated
+if [[ ! -z "$6" ]]
+then
+  INSTANCE_DIR=$6
+fi
 
 if [ "$#" -ne 5 ]; then
-  echo "Usage: $0 PLUGIN_ID PLUGIN_SHORTNAME PLUGIN_DIRECTORY URL TILE_IMAGE_PATH \neg. install-iframe-plugin.sh \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe/component/plugin\" \"/zowe_plugin/artifacts/tile_image.png\"" >&2
+  echo "Usage: $0 PLUGIN_ID PLUGIN_SHORTNAME PLUGIN_DIRECTORY URL TILE_IMAGE_PATH INSTANCE_DIRECTORY \neg. install-iframe-plugin.sh \"org.zowe.plugin.example\" \"Example plugin\" \"https://zowe.org:443/about-us/\" \"/zowe/component/plugin\" \"/zowe_plugin/artifacts/tile_image.png\" \"/u/zowe_user/instance-dir\"" >&2
   exit 1
 fi
 if ! [ -f "$5" ]; then
@@ -39,14 +43,14 @@ if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
 fi
 
 # remove any previous plugin files
-rm -rf $PLUGIN_DIR/web/images
+rm -rf $PLUGIN_DIR/web/assets
 rm -f $PLUGIN_DIR/web/index.html
 rm -f $PLUGIN_DIR/pluginDefinition.json
 
-mkdir -p $PLUGIN_DIR/web/images
-cp $TILE_IMAGE_PATH $PLUGIN_DIR/web/images
+mkdir -p $PLUGIN_DIR/web/assets
+cp $TILE_IMAGE_PATH $PLUGIN_DIR/web/assets
 # Tag the graphic as binary.
-chtag -b $PLUGIN_DIR/web/images/$(basename $TILE_IMAGE_PATH)
+chtag -b $PLUGIN_DIR/web/assets/$(basename $TILE_IMAGE_PATH)
 
 cat <<EOF >$PLUGIN_DIR/web/index.html
 <!DOCTYPE html>
@@ -74,7 +78,7 @@ cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
     "launchDefinition": {
       "pluginShortNameKey": "$PLUGIN_SHORTNAME",
       "pluginShortNameDefault": "$PLUGIN_SHORTNAME", 
-      "imageSrc": "images/$(basename $TILE_IMAGE_PATH)"
+      "imageSrc": "assets/$(basename $TILE_IMAGE_PATH)"
     },
     "descriptionKey": "",
     "descriptionDefault": "",
