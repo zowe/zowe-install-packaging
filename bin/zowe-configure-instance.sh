@@ -206,6 +206,7 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
+echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-support.sh
 set -e
@@ -214,7 +215,17 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 . \${ROOT_DIR}/bin/zowe-support.sh
 EOF
-echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
+echo "Created ${INSTANCE_DIR}/bin/zowe-support.sh">> $LOG_FILE
+
+mkdir -p ${INSTANCE_DIR}/bin/utils
+cat <<EOF >${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh
+#!/bin/sh
+set -e
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
+. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@ ${INSTANCE_DIR}
+EOF
+echo "Created ${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh">> $LOG_FILE
 
 # Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
 # If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
