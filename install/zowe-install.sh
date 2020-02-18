@@ -10,9 +10,12 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-ZOWE_GROUP=${ZOWE_GROUP} # Replace when zowe has it's own group: https://github.com/zowe/zowe-install-packaging/issues/518
+if [ $# -lt 4 ]; then
+  echo "Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+fi
 
-while getopts "f:h:i:dI" opt; do
+while getopts "f:h:i:d" opt; do
   case $opt in
     d) # enable debug mode
       # future use, accept parm to stabilize SMPE packaging
@@ -25,7 +28,7 @@ while getopts "f:h:i:dI" opt; do
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$opt" >&2
       exit 1
       ;;
   esac
@@ -39,6 +42,10 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
+export _EDC_ADD_ERRNO2=1                        # show details on error
+unset ENV             # just in case, as it can cause unexpected output
+umask 0022                                       # similar to chmod 755
+
 export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
 
 # extract Zowe version from manifest.json
@@ -49,19 +56,21 @@ separator() {
 }
 separator
 
-# Create a log file with the year and time.log in a log folder 
-# that scripts can echo to and can be written to by scripts to diagnose any install 
-# problems.  
-
-export LOG_DIR=$INSTALL_DIR/log
-# Make the log directory if needed - first time through - subsequent installs create new .log files
-if [[ ! -d $LOG_DIR ]]; then
-    mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
+# Create a temp directory to be a working directory for sed replacements and logs, if install_dir is read-only then put it in ${TMPDIR}/'/tmp\'
+if [[ -w "${INSTALL_DIR}" ]]
+then
+  export TEMP_DIR=${INSTALL_DIR}/temp_"`date +%Y-%m-%d`"
+else
+  export TEMP_DIR=${TMPDIR:-/tmp}/zowe_"`date +%Y-%m-%d`"
 fi
+mkdir -p $TEMP_DIR
+chmod a+rwx $TEMP_DIR 
+
+# Create a log file with the year and time.log in a log folder 
+# that scripts can echo to and can be written to by scripts to diagnose any install problems.  
 # Make the log file (unique assuming there is only one install per second)
 export LOG_FILE="`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$LOG_DIR/$LOG_FILE
+LOG_FILE=$TEMP_DIR/$LOG_FILE
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
@@ -73,44 +82,53 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-cd $INSTALL_DIR/install
-# zowe-parse-yaml.sh to get the variables for install directory, APIM certificate resources, installation proc, and server ports
-. $INSTALL_DIR/scripts/zowe-parse-yaml.sh
-
-if [[ ! -z "$INSTALL_TARGET" ]]
+if [[ -z "$INSTALL_TARGET" ]]
 then
-  ZOWE_ROOT_DIR=$INSTALL_TARGET
+  echo "-i parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+else
+  # If the value starts with a ~ for the home variable then evaluate it
+  ZOWE_ROOT_DIR=`sh -c "echo $INSTALL_TARGET"`
+  # If the path is relative, then expand it
+  if [[ "$ZOWE_ROOT_DIR" != /* ]]
+  then
+    ZOWE_ROOT_DIR=$PWD/$ZOWE_ROOT_DIR
+  fi
 fi
 
-if [[ ! -z "$DSN_PREFIX" ]]
+if [[ -z "$DSN_PREFIX" ]]
 then
+  echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+else
   ZOWE_DSN_PREFIX=$DSN_PREFIX
 fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
+
+NEW_INSTALL="true"
 
 # warn about any prior installation
 if [[ -d $ZOWE_ROOT_DIR ]]; then
     directoryListLines=`ls -al $ZOWE_ROOT_DIR | wc -l`
     # Has total line, parent and self ref
     if [[ $directoryListLines -gt 3 ]]; then
-        echo "    $ZOWE_ROOT_DIR is not empty"
-        echo "    Please clear the contents of this directory, or edit zowe-install.yaml's root directory location before attempting the install."
-        echo "Exiting non emptry install directory $ZOWE_ROOT_DIR has `expr $directoryListLines - 3` directory entries" >> $LOG_FILE
-        exit 2
+        if [[ -f "${ZOWE_ROOT_DIR}/manifest.json" ]]
+        then
+            OLD_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+            NEW_INSTALL="false"
+            echo "  $ZOWE_ROOT_DIR contains version ${OLD_VERSION}. Updating this install to version ${ZOWE_VERSION}."
+            echo "  Backing up previous Zowe runtime files to ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak."
+            mv ${ZOWE_ROOT_DIR} ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak
+        fi
     fi
-else
-    mkdir -p $ZOWE_ROOT_DIR
 fi
+mkdir -p $ZOWE_ROOT_DIR
 chmod a+rx $ZOWE_ROOT_DIR
 
 # copy manifest.json to root folder
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
 chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
-
-# Create a temp directory to be a working directory for sed replacements
-export TEMP_DIR=$INSTALL_DIR/temp_"`date +%Y-%m-%d`"
-mkdir -p $TEMP_DIR
 
 # Install the API Mediation Layer
 . $INSTALL_DIR/scripts/zowe-install-api-mediation.sh
@@ -132,10 +150,7 @@ ls $ZOWE_ROOT_DIR >> $LOG_FILE
 mkdir -p $ZOWE_ROOT_DIR/scripts/templates
 chmod -R a+w $ZOWE_ROOT_DIR/scripts
 
-cd $INSTALL_DIR/scripts
-cp $INSTALL_DIR/scripts/zowe-verify.sh $ZOWE_ROOT_DIR/scripts/zowe-verify.sh
-
-mkdir $ZOWE_ROOT_DIR/scripts/internal
+mkdir -p $ZOWE_ROOT_DIR/scripts/internal
 chmod a+x $ZOWE_ROOT_DIR/scripts/internal
 
 echo "Copying the opercmd into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
@@ -144,7 +159,7 @@ cp $INSTALL_DIR/scripts/ocopyshr.sh $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.sh
 cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.clist
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 
-mkdir ${ZOWE_ROOT_DIR}/bin
+mkdir -p ${ZOWE_ROOT_DIR}/bin
 cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/bin
 
@@ -162,45 +177,30 @@ echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP " and " ${ZOWE_DSN_PREFIX}.SZWEA
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 
-# Prepare configure directory 
-mkdir ${ZOWE_ROOT_DIR}/scripts/configure
-cp $INSTALL_DIR/scripts/zowe-parse-yaml.sh ${ZOWE_ROOT_DIR}/scripts/configure
-# Copy all but root dir from yaml as we can derive that once there
-grep -v "rootDir=" $INSTALL_DIR/install/zowe-install.yaml > ${ZOWE_ROOT_DIR}/scripts/configure/zowe-install.yaml
-
-cp -r $INSTALL_DIR/scripts/configure/. ${ZOWE_ROOT_DIR}/scripts/configure
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/configure
-
 # Prepare utils directory 
-mkdir ${ZOWE_ROOT_DIR}/scripts/utils
+mkdir -p ${ZOWE_ROOT_DIR}/scripts/utils
 cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
-chmod -R 755 $ZOWE_ROOT_DIR/scripts/utils
 
-. $INSTALL_DIR/scripts/zowe-copy-xmem.sh
-
-#Give all directories -rw+x permission so they can be listed, but files -rwx
-chmod -R o-rwx ${ZOWE_ROOT_DIR}
-echo "  About to run find and chmods to add o+x on directories" >> $LOG_FILE
-find ${ZOWE_ROOT_DIR} -type d -exec chmod o+x {} \; 2>/dev/null
-echo "  Completed find and chmods to add o+x on directories" >> $LOG_FILE
-
-# If this step fails it is likely because the user running this script is not part of the IZUADMIN group
-chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}
-RETURN_CODE=$?
-if [[ $RETURN_CODE != "0" ]]; then
-  echo "  The current user does not have sufficient authority to change the group of ${ZOWE_ROOT_DIR}."
-  echo "  A user who is part of group ${ZOWE_GROUP} must run 'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}'."
-  echo "  'chgrp -R ${ZOWE_GROUP} ${ZOWE_ROOT_DIR}' failed to run successfully" >> $LOG_FILE
-fi
-
-chmod -R 550 ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/defaults
+# Based on zowe-install-packaging/issues/1014 we should set everything to 755
+chmod -R 755 ${ZOWE_ROOT_DIR}
 
 # save install log in runtime directory
-mkdir  $ZOWE_ROOT_DIR/install_log
+mkdir -p $ZOWE_ROOT_DIR/install_log
 cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
 
 # remove the working directory
 rm -rf $TEMP_DIR
 
-echo "zowe-install.sh completed. In order to use Zowe, you must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c \<INSTANCE_DIR\>'"
+echo "zowe-install.sh completed. In order to use Zowe:"
+if [[ ${NEW_INSTALL} == "true" ]]
+then
+  echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}/SZWESAMP/ZWESECUR'"
+  echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
+  echo " - You must ensure that the Zowe Proclibs are added to your PROCLIB JES concatenation path"
+  echo " - You must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
+else
+  echo " - Check that Zowe Proclibs are up-to-date in your PROCLIB JES concatenation path"
+  echo " - Check your instance directory is up to date, by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
+fi
+echo "Please review the 'Configuring the Zowe runtime' chapter of the documentation for more information about these steps"

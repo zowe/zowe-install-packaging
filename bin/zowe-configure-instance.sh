@@ -10,9 +10,17 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-while getopts "c:y" opt; do
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 -c zowe_install_directory [-g zowe_group]"
+  exit 1
+fi
+
+ZOWE_GROUP=ZWEADMIN
+
+while getopts "c:g:" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
+    g) ZOWE_GROUP=$OPTARG;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -34,10 +42,23 @@ export _TAG_REDIR_OUT=""
 export _TAG_REDIR_ERR=""
 export _BPXK_AUTOCVT="OFF"
 
+export _EDC_ADD_ERRNO2=1                        # show details on error
+unset ENV             # just in case, as it can cause unexpected output
+umask 0022                                       # similar to chmod 755
+
 if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
   exit 1
+else
+  # If the value starts with a ~ for the home variable then evaluate it
+  INSTANCE_DIR=`sh -c "echo ${INSTANCE_DIR}"` 
+  # If the path is relative, then expand it
+  if [[ "$INSTANCE_DIR" != /* ]]
+  then
+    # Relative path
+    INSTANCE_DIR=$PWD/$INSTANCE_DIR
+  fi
 fi
 
 echo_and_log() {
@@ -48,8 +69,8 @@ echo_and_log() {
 create_new_instance() {
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
-    -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
-    -e "s#{{node_home}}#${ZOWE_NODE_HOME}#" \
+    -e "s#{{java_home}}#${JAVA_HOME}#" \
+    -e "s#{{node_home}}#${NODE_HOME}#" \
     -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
     -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
     -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
@@ -78,7 +99,7 @@ check_existing_instance_for_updates() {
   if [[ -n $LINES_TO_APPEND ]]
   then
     LINES_TO_APPEND=$(echo "$LINES_TO_APPEND" | sed \
-      -e "s#{{java_home}}#${ZOWE_JAVA_HOME}#" \
+      -e "s#{{java_home}}#${JAVA_HOME}#" \
       -e "s#{{node_home}}#${NODE_HOME}#" \
       -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
       -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
@@ -185,6 +206,7 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
+echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-support.sh
 set -e
@@ -193,10 +215,26 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
 
 . \${ROOT_DIR}/bin/zowe-support.sh
 EOF
-echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
+echo "Created ${INSTANCE_DIR}/bin/zowe-support.sh">> $LOG_FILE
 
-# Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod 777 ${INSTANCE_DIR}
+mkdir -p ${INSTANCE_DIR}/bin/utils
+cat <<EOF >${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh
+#!/bin/sh
+set -e
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
+. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@ ${INSTANCE_DIR}
+EOF
+echo "Created ${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh">> $LOG_FILE
+
+# Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
+# If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
+chmod 775 ${INSTANCE_DIR}
+chgrp -R ${ZOWE_GROUP} ${INSTANCE_DIR} 1> /dev/null 2> /dev/null
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  chmod 777 ${INSTANCE_DIR}
+fi
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 

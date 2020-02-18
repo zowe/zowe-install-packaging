@@ -24,8 +24,8 @@ umask 0002
 APP_SERVER_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/app-server
 mkdir -p ${APP_SERVER_COMPONENT_DIR}
 cd ${APP_SERVER_COMPONENT_DIR}
-mkdir bin
-mkdir share
+mkdir -p bin
+mkdir -p share
 cd share
 echo "Unpax $INSTALL_DIR/files/zlux/zlux-core.pax " >> $LOG_FILE
 pax -r -px -f $INSTALL_DIR/files/zlux/zlux-core.pax
@@ -48,6 +48,8 @@ chtag -tc 1047 ${INSTALL_DIR}/files/zlux/config/plugins/*.json
 chmod -R u+w zlux-app-server 2>/dev/null
 mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
 cp -f ${INSTALL_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins
+cp -f ${INSTALL_DIR}/files/zlux/config/allowedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins/
 cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/serverConfig/server.json
 cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
 
