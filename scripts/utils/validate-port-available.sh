@@ -10,9 +10,10 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-# - FILES_API_PORT - should not be bound to a port currently
-MATCHES=`onetstat -a | grep -c $1`
+# $1 - should not be bound to a port currently
+PORT=$1
+MATCHES=`onetstat -a | grep -c $PORT`
 if [[ $MATCHES > 0 ]]
 then
-    . ${ROOT_DIR}/scripts/utils/error.sh "Port $1 is already in use by process `netstat -a -P $1 | grep Listen`"
+    . ${ROOT_DIR}/scripts/utils/error.sh "Port $PORT is already in use by process `netstat -a -P $PORT | grep Listen`"
 fi
