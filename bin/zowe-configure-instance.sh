@@ -35,16 +35,7 @@ then
 	export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
-# Ensure that newly created files are in EBCDIC codepage
-export _CEE_RUNOPTS=""
-export _TAG_REDIR_IN=""
-export _TAG_REDIR_OUT=""
-export _TAG_REDIR_ERR=""
-export _BPXK_AUTOCVT="OFF"
-
-export _EDC_ADD_ERRNO2=1                        # show details on error
-unset ENV             # just in case, as it can cause unexpected output
-umask 0022                                       # similar to chmod 755
+. ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
 
 if [[ -z ${INSTANCE_DIR} ]]
 then
