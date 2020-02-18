@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- #######################################################################
+ This program and the accompanying materials are made available
+ under the terms of the Eclipse Public License v2.0 which
+ accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-v20.html
+ SPDX-License-Identifier: EPL-2.0
+ Copyright Contributors to the Zowe Project. 2019, 2020
+####################################################################### -->
+<workflow>
+	<autoTakeOwnership>true</autoTakeOwnership>
+	<workflowSettingInfo>
+		<variablesSetting isInstanceVariableWithoutPrefix="true"/>
+	</workflowSettingInfo>
+	<workflowInfo>
+		<workflowID scope="none">Zowe_security</workflowID>
+		<workflowDefaultName>Zowe_security</workflowDefaultName>
+		<workflowDescription>This is the security configuration of Zowe</workflowDescription>
+		<workflowVersion>0.1</workflowVersion>
+		<vendor>Broadcom</vendor>
+		<General/>
+	</workflowInfo>
+	<variable name="PRODUCT" scope="instance" visibility="public">
+		<label>PRODUCT</label>
+		<abstract>Select statement to match your security product</abstract>
+		<description>Select statement to match your security product</description>
+		<category>General Security</category>
+		<string valueMustBeChoice="true" multiLine="false">
+            <regularExpression>(RACF|TSS|ACF2)</regularExpression>
+            <errorMessage>Valid Values are: RACF, TSS or ACF2</errorMessage>
+            <choice>RACF</choice>
+            <choice>TSS</choice>
+            <choice>ACF2</choice>
+            <default>RACF</default>
+        </string>
+	</variable>
+    <variable name="ADMINGRP" scope="instance" visibility="public">
+		<label>ADMINGRP</label>
+		<abstract>Group for Zowe administrators</abstract>
+		<description>Group for Zowe administrators</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZWEADMIN</default>
+		</string>
+	</variable>
+    <variable name="STCGROUP" scope="instance" visibility="public">
+		<label>STCGROUP</label>
+		<abstract>Group for Zowe started tasks</abstract>
+		<description>Group for Zowe started tasks</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#STCGROUP</default>
+		</string>
+	</variable>
+    <variable name="ZOWEUSER" scope="instance" visibility="public">
+		<label>ZOWEUSER</label>
+		<abstract>Userid for Zowe started task</abstract>
+		<description>Userid for Zowe started task</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZWESVUSR</default>
+		</string>
+	</variable>
+    <variable name="XMEMUSER" scope="instance" visibility="public">
+		<label>XMEMUSER</label>
+		<abstract>Userid for xmem started task</abstract>
+		<description>Userid for xmem started task</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZWESIUSR</default>
+		</string>
+	</variable>
+    <variable name="AUXUSER" scope="instance" visibility="public">
+		<label>AUXUSER</label>
+		<abstract>userid for xmem AUX started task</abstract>
+		<description>userid for xmem AUX started task</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#AUXUSER</default>
+		</string>
+	</variable>
+    <variable name="ZOWESTC" scope="instance" visibility="public">
+		<label>ZOWESTC</label>
+		<abstract>Zowe started task name</abstract>
+		<description>Zowe started task name</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZWESVSTC</default>
+		</string>
+	</variable>
+    <variable name="XMEMSTC" scope="instance" visibility="public">
+		<label>XMEMSTC</label>
+		<abstract>Xmem started task name</abstract>
+		<description>Xmem started task name</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZWESISTC</default>
+		</string>
+	</variable>
+    <variable name="AUXSTC" scope="instance" visibility="public">
+		<label>AUXSTC</label>
+		<abstract>Xmem AUX started task name</abstract>
+		<description>Xmem AUX started task name</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZWESASTC</default>
+		</string>
+	</variable>
+	<variable name="HLQ" scope="instance" visibility="public">
+		<label>HLQ</label>
+		<abstract>Data set high level qualifier</abstract>
+		<description>Data set high level qualifier</description>
+		<category>General Security</category>
+    <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+			<default>#ZWE</default>
+		</string>
+	</variable>
+	<variable name="SYSPROG" scope="instance" visibility="public">
+		<label>SYSPROG</label>
+		<abstract>System programmer user ID/group</abstract>
+		<description>System programmer user ID/group</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#SYSPROG</default>
+		</string>
+	</variable>
+  <variable name="ADMINGID" scope="instance" visibility="public">
+		<label>ADMINGID</label>
+		<abstract>Group ID for ZOWE Administrators</abstract>
+		<description>Group ID for ZOWE Administrators</description>
+		<category>ACF2</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ADMINGID</default>
+		</string>
+	</variable>
+  <variable name="STCGID" scope="instance" visibility="public">
+		<label>STCGID</label>
+		<abstract>Group ID for ZOWE Started Task</abstract>
+		<description>Group ID for ZOWE Started Task</description>
+		<category>ACF2</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#STCGID</default>
+		</string>
+	</variable>
+  <variable name="ZOWEUID" scope="instance" visibility="public">
+		<label>ZOWEUID</label>
+		<abstract>UID for ZOWE started task User</abstract>
+		<description>UID for ZOWE started task User</description>
+		<category>ACF2</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZOWEUID</default>
+		</string>
+	</variable>
+  <variable name="XMEMUID" scope="instance" visibility="public">
+		<label>XMEMUID</label>
+		<abstract>UID for xmem started task User</abstract>
+	  <description>UID for xmem started task User</description>
+		<category>ACF2</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#XMEMUID</default>
+		</string>
+	</variable>
+  <variable name="AUXUID" scope="instance" visibility="public">
+		<label>AUXUID</label>
+		<abstract>UID for xm AUX started task User</abstract>
+		<description>UID for xm AUX started task User</description>
+		<category>ACF2</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#AUXUID</default>
+		</string>
+	</variable>
+   <variable name="ADMINDEP" scope="instance" visibility="public">
+		<label>ADMINDEP</label>
+		<abstract>Department owning the STC group</abstract>
+		<description>Department owning the STC group</description>
+		<category>TSS</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ADMINDEP</default>
+		</string>
+	</variable>
+  <variable name="STCGDEP" scope="instance" visibility="public">
+		<label>STCGDEP</label>
+		<abstract>Department owning the STC group</abstract>
+		<description>Department owning the STC group</description>
+		<category>TSS</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#STCGDEP</default>
+		</string>
+	</variable>
+  <variable name="STCUDEP" scope="instance" visibility="public">
+		<label>STCUDEP</label>
+		<abstract>Department owning the Zowe STC user IDs</abstract>
+		<description>Department owning the Zowe STC user IDs</description>
+		<category>TSS</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#STCUDEP</default>
+		</string>
+	</variable>
+  <variable name="FACACID" scope="instance" visibility="public">
+		<label>FACACID</label>
+		<abstract>Acid that owns IBMFAC</abstract>
+		<description>Acid that owns IBMFAC</description>
+		<category>TSS</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#FACACID</default>
+		</string>
+	</variable>
+	<step name="define_variables" optional="false">
+		<title>Define Variables</title>
+		<description>Step to define the variables</description>
+		<variableValue name="PRODUCT" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="ADMINGRP" noPromptIfSet="false" required="false" scope="instance"/>
+   		<variableValue name="STCGROUP" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="ZOWEUSER" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="XMEMUSER" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="AUXUSER" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="ZOWESTC" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="XMEMSTC" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="AUXSTC" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="HLQ" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="SYSPROG" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="ADMINGID" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="STCGID" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="ZOWEUID" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="XMEMUID" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="AUXUID" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="ADMINDEP" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="STCGDEP" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="STCUDEP" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="FACACID" noPromptIfSet="false" required="false" scope="instance"/>
+		<instructions substitution="false">Run this step to initialize variable values.&lt;br/&gt;
+    Note(s):&lt;br/&gt;
+       1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY &lt;br/&gt;
+       TO ALTER SECURITY DEFINITONS &lt;br/&gt;
+       2. The sample ACF2 commands create ROLEs that match the group &lt;br/&gt;
+       names. Due to permits assigned to the &amp;STCGROUP ROLE, it is &lt;br/&gt;
+       advised to ensure this ROLE has a unique identifier. &lt;br/&gt;
+       3. The Zowe started task user ID (variable ZOWEUSER) must be able &lt;br/&gt;
+       to write persistent data in the zlux-app-server/deploy directory &lt;br/&gt;
+       structure. This sample JCL makes the Zowe started task part of &lt;br/&gt;
+       the Zowe administrator group (SET STCGROUP=&amp;ADMINGRP. statement) &lt;br/&gt;
+       to achieve this goal. Another solution, also below, which you can &lt;br/&gt;
+       comment out, is giving the Zowe started task CONTROL access to &lt;br/&gt;
+       the UNIXPRIV SUPERUSER.FILESYS profile. &lt;br/&gt;</instructions>
+		<weight>1</weight>
+		<autoEnable>false</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+	</step>
+	<step name="ZWESECUR_JCL" optional="false">
+		<title>ZWESECUR</title>
+		<description> Run this step to submit the JCL.&lt;br/&gt;
+			Review the instructions in JCL before submitting.&lt;br/&gt;
+			You can customize it to meet your system requirements.
+		</description>
+		<prereqStep name="define_variables"/>
+		<instructions substitution="false">Run this step to submit the JCL. &lt;br/&gt;
+			Review the instructions in JCL before submitting. &lt;br/&gt;
+			You can customize it to meet your system requirements.
+ 		</instructions>
+		<weight>1</weight>
+		<autoEnable>true</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+		<template>
+		<inlineTemplate substitution="true">//ZWESECUR JOB                                                                  
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2018, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL can be used to define security permits for Zowe
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* 2) Update the SET PRODUCT= statement to match your security
+//*    product.
+//*
+//* 3) Update the SET ADMINGRP= statement to match the desired
+//*    group name for Zowe administrators.
+//*
+//* 4) Update the SET STCGROUP= statement to match the desired
+//*    group name for started tasks.
+//*
+//* 5) Update the SET ZOWEUSER= statement to match the desired
+//*    user ID for the ZOWE started task.
+//*
+//* 6) Update the SET XMEMUSER= statement to match the desired
+//*    user ID for the XMEM started task.
+//*
+//* 7) Update the SET AUXUSER= statement to match the desired
+//*    user ID for the XMEM Auxilary started task.
+//*
+//* 8) Update the SET ZOWESTC= statement to match the desired
+//*    Zowe started task name.
+//*
+//* 9) Update the SET XMEMSTC= statement to match the desired
+//*    XMEM started task name.
+//*
+//* 10) Update the SET AUXSTC= statement to match the desired
+//*    XMEM Auxilary started task name.
+//*
+//* 11) Update the SET HLQ= statement to match the desired
+//*     Zowe data set high level qualifier.
+//*
+//* 12) Update the SET SYSPROG= statement to match the existing
+//*     user ID or group used by z/OS system programmers.
+//*
+//* 13) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//*     and GID values, update the SET *ID= statements to match the
+//*     desired UID and GID values.
+//*
+//* 14) When using Top Secret, update the Top Secret specific SET
+//*     statements.
+//*
+//* 15) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
+//*    TO ALTER SECURITY DEFINITONS
+//*
+//* 2. The sample ACF2 commands create ROLEs that match the group
+//*    names. Due to permits assigned to the &amp;STCGROUP ROLE, it is
+//*    advised to ensure this ROLE has a unique identifier.
+//*
+//* 3. The Zowe started task user ID (variable ZOWEUSER) must be able
+//*    to write persistent data in the zlux-app-server/deploy directory
+//*    structure. This sample JCL makes the Zowe started task part of
+//*    the Zowe administrator group (SET STCGROUP=&amp;ADMINGRP. statement)
+//*    to achieve this goal. Another solution, also below, which you can
+//*    comment out, is giving the Zowe started task CONTROL access to
+//*    the UNIXPRIV SUPERUSER.FILESYS profile.
+//*
+//* 4. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//         SET  PRODUCT=RACF           * RACF, ACF2, or TSS
+//*                       12345678
+//         SET ADMINGRP=${ADMINGRP}    * group for Zowe administrators
+//         SET STCGROUP=${STCGROUP}    * group for Zowe started tasks
+//         SET ZOWEUSER=${ZOWEUSER}    * userid for Zowe started task
+//         SET XMEMUSER=${XMEMUSER}    * userid for xmem started task
+//         SET  AUXUSER=${AUXUSER}     * userid for xmem AUX started task
+//         SET  ZOWESTC=${ZOWESTC}     * Zowe started task name
+//         SET  XMEMSTC=${XMEMSTC}     * xmem started task name
+//         SET   AUXSTC=${AUXSTC}      * xmem AUX started task name
+//         SET      HLQ=${HLQ}         * data set high level qualifier
+//         SET  SYSPROG=${SYSPROG}     * system programmer user ID/group
+//*
+//*********************************************************************  
+//*       
+//* The sample RACF and ACF2 commands assume AUTOUID and AUTOGID are
+//* enabled. When this is not the case, or you are using Top Secret,
+//* provide appropriate (numeric) values to these SET commands.
+//         SET ADMINGID=${ADMINGID}  * Group ID for ZOWE administrators
+//         SET   STCGID=${STCGID}    * Group ID for ZOWE started tasks
+//         SET  ZOWEUID=${ZOWEUID}   * UID for ZOWE started task User
+//         SET  XMEMUID=${XMEMUID}   * UID for xmem started task User
+//         SET   AUXUID=${AUXUID}    * UID for xm AUX started task User
+//*
+//* For RACF: If using AUTOUID and AUTOGID, the RACF database must be
+//*           at AIM 2 or higher, and BPX.NEXT.USER must exist.
+//* For ACF2: If using AUTOUID and AUTOGID, an AUTOIDOM GSO Record must
+//*           exist.
+//* For Top Secret: If a default UID and GID range is defined, you can
+//*                 specify '?' in the SET *ID= statements to utilize
+//*                 auto-assignment of UID and GID.
+//*
+//* Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*                       12345678
+//        SET  ADMINDEP=${ADMINDEP}  * department owning admin group
+//        SET   STCGDEP=${STCGDEP}   * department owning STC group
+//        SET   STCUDEP=${STCUDEP}   * department owning STC user IDs
+//        SET   FACACID=${FACACID}   * ACID owning IBMFAC
+//*                       12345678
+//*
+//* end Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUN      EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//*
+//*********************************************************************
+//*
+//* RACF ONLY, customize to meet your system requirements
+//*
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* ACTIVATE REQUIRED RACF SETTINGS AND CLASSES ..................... */
+
+/* - Comment out the activation statements for the classes that are  */
+/*   already active.                                                 */
+
+/* display current settings                                          */
+/*SETROPTS LIST                                                      */
+
+/* activate FACILITY class for z/OS UNIX &amp; Zowe XMEM profiles        */
+  SETROPTS GENERIC(FACILITY)
+  SETROPTS CLASSACT(FACILITY) RACLIST(FACILITY)
+
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
+/** activate UNIXPRIV class for z/OS UNIX profiles                   */
+  SETROPTS GENERIC(UNIXPRIV)
+  SETROPTS CLASSACT(UNIXPRIV) RACLIST(UNIXPRIV)
+
+/* activate started task class                                       */
+  SETROPTS GENERIC(STARTED)
+  RDEFINE STARTED ** STDATA(USER(=MEMBER) GROUP(&amp;STCGROUP.))
+  SETROPTS CLASSACT(STARTED) RACLIST(STARTED)
+
+/* show results .................................................... */
+  SETROPTS LIST
+
+/* DEFINE ADMINISTRATORS ........................................... */
+
+/* - The sample commands assume automatic generation of GID is       */
+/*   enabled.                                                        */
+
+/* group for administrators                                          */
+/* replace AUTOGID with GID(&amp;ADMINGID.) if AUTOGID is not enabled    */
+  LISTGRP  &amp;ADMINGRP. OMVS
+  ADDGROUP &amp;ADMINGRP. OMVS(AUTOGID) -
+   DATA('ZOWE ADMINISTRATORS')
+
+/* uncomment to add existing user IDs to the &amp;ADMINGRP group         */
+/* CONNECT (userid,userid,...) GROUP(&amp;ADMINGRP.) AUTH(USE)           */
+
+/* DEFINE STARTED TASK ............................................. */
+
+/* - Ensure that user IDs are protected with the NOPASSWORD keyword. */
+/* - The sample commands assume automatic generation of UID and GID  */
+/*   is enabled.                                                     */
+
+/* comment out if &amp;STCGROUP matches &amp;ADMINGRP (default), expect      */
+/*   warning messages otherwise                                      */
+/* group for started tasks                                           */
+/* replace AUTOGID with GID(&amp;STCGID.) if AUTOGID is not enabled      */
+  LISTGRP  &amp;STCGROUP. OMVS
+  ADDGROUP &amp;STCGROUP. OMVS(AUTOGID) -
+   DATA('STARTED TASK GROUP WITH OMVS SEGEMENT')
+
+/* */
+
+/* userid for ZOWE main server                                       */
+/* replace AUTOUID with UID(&amp;ZOWEUID.) if AUTOUID is not enabled     */
+  LISTUSER &amp;ZOWEUSER. OMVS
+  ADDUSER  &amp;ZOWEUSER. -
+   NOPASSWORD -
+   DFLTGRP(&amp;STCGROUP.) -
+   OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
+   NAME('ZOWE SERVER') -
+   DATA('ZOWE MAIN SERVER')
+
+/* userid for XMEM cross memory server                               */
+/* replace AUTOUID with UID(&amp;XMEMUID.) if AUTOUID is not enabled     */
+  LISTUSER &amp;XMEMUSER. OMVS
+  ADDUSER  &amp;XMEMUSER. -
+   NOPASSWORD -
+   DFLTGRP(&amp;STCGROUP.) -
+   OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
+   NAME('ZOWE XMEM SERVER') -
+   DATA('ZOWE XMEM CROSS MEMORY SERVER')
+
+/* comment out if &amp;AUXUSER matches &amp;XMEMUSER (default), expect       */
+/*   warning messages otherwise                                      */
+/* userid for XMEM auxilary cross memory server                      */
+/* replace AUTOUID with UID(&amp;AUXUID.) if AUTOUID is not enabled      */
+  LISTUSER &amp;AUXUSER. OMVS
+  ADDUSER  &amp;AUXUSER. -
+   NOPASSWORD -
+   DFLTGRP(&amp;STCGROUP.) -
+   OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
+   NAME('ZOWE XMEM AUX SERVER') -
+   DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')
+
+/* */
+
+/* started task for ZOWE main server                                 */
+  RLIST   STARTED &amp;ZOWESTC..* ALL STDATA
+  RDEFINE STARTED &amp;ZOWESTC..* -
+   STDATA(USER(&amp;ZOWEUSER.) GROUP(&amp;STCGROUP.) TRUSTED(NO)) -
+   DATA('ZOWE MAIN SERVER')
+
+/* started task for XMEM cross memory server                         */
+  RLIST   STARTED &amp;XMEMSTC..* ALL STDATA
+  RDEFINE STARTED &amp;XMEMSTC..* -
+   STDATA(USER(&amp;XMEMUSER.) GROUP(&amp;STCGROUP.) TRUSTED(NO)) -
+   DATA('ZOWE XMEM CROSS MEMORY SERVER')
+
+/* started task for XMEM auxilary cross memory server                */
+  RLIST   STARTED &amp;AUXSTC..* ALL STDATA
+  RDEFINE STARTED &amp;AUXSTC..* -
+   STDATA(USER(&amp;AUXUSER.) GROUP(&amp;STCGROUP.) TRUSTED(NO)) -
+   DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')
+
+  SETROPTS RACLIST(STARTED) REFRESH
+
+/* show results .................................................... */
+  LISTGRP  &amp;STCGROUP. OMVS
+  LISTUSER &amp;ZOWEUSER. OMVS
+  LISTUSER &amp;XMEMUSER. OMVS
+  LISTUSER &amp;AUXUSER.  OMVS
+  RLIST STARTED &amp;ZOWESTC..* ALL STDATA
+  RLIST STARTED &amp;XMEMSTC..* ALL STDATA
+  RLIST STARTED &amp;AUXSTC..*  ALL STDATA
+
+/* DEFINE ZOWE SERVER PERMISIONS ................................... */
+
+/* permit Zowe main server to use XMEM cross memory server           */
+  RLIST   FACILITY ZWES.IS ALL
+  RDEFINE FACILITY ZWES.IS UACC(NONE)
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&amp;ZOWEUSER.)
+
+  SETROPTS RACLIST(FACILITY) REFRESH
+
+/* permit Zowe main server to create a user's security environment   */
+/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
+/*            z/OS UNIX switch to z/OS UNIX level security. This is  */
+/*            more secure, but it can impact operation of existing   */
+/*            applications. Test this thoroughly before activating   */
+/*            it on a production system.                             */
+  RLIST   FACILITY BPX.DAEMON ALL
+  RDEFINE FACILITY BPX.DAEMON UACC(NONE)
+  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) ID(&amp;ZOWEUSER.)
+
+  RLIST   FACILITY BPX.SERVER ALL
+  RDEFINE FACILITY BPX.SERVER UACC(NONE)
+  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&amp;ZOWEUSER.)
+
+/* permit Zowe main server to set job name                           */
+  RLIST   FACILITY BPX.JOBNAME ALL
+  RDEFINE FACILITY BPX.JOBNAME UACC(NONE)
+  PERMIT BPX.JOBNAME CLASS(FACILITY) ACCESS(READ) ID(&amp;ZOWEUSER.)
+
+  SETROPTS RACLIST(FACILITY) REFRESH
+
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
+/** permit Zowe main server to write persistent data                 */
+  RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
+  RDEFINE UNIXPRIV SUPERUSER.FILESYS UACC(NONE)
+  PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) ACCESS(CONTROL) -
+   ID(&amp;ZOWEUSER.)
+
+   SETROPTS RACLIST(UNIXPRIV) REFRESH
+
+/* show results .................................................... */
+  RLIST   FACILITY ZWES.IS           ALL
+  RLIST   FACILITY BPX.DAEMON        ALL
+  RLIST   FACILITY BPX.SERVER        ALL
+  RLIST   FACILITY BPX.JOBNAME       ALL
+  RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &amp;HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+/* - The sample commands assume that EGN (Enhanced Generic Naming)   */
+/*   is active, which allows the usage of ** to represent any number */
+/*   of qualifiers in the DATASET class. Substitute *.** with * if   */
+/*   EGN is not active on your system.                               */
+
+/* HLQ stub                                                          */
+  LISTGRP  &amp;HLQ.
+  ADDGROUP &amp;HLQ. DATA('Zowe - HLQ STUB')
+
+/* general data set protection                                       */
+  LISTDSD PREFIX(&amp;HLQ.) ALL
+  ADDSD  '&amp;HLQ..*.**' UACC(READ) DATA('Zowe')
+  PERMIT '&amp;HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&amp;SYSPROG.)
+
+  SETROPTS GENERIC(DATASET) REFRESH
+
+/* show results .................................................... */
+  LISTGRP &amp;HLQ.
+  LISTDSD PREFIX(&amp;HLQ.) ALL
+
+/* ................................................................. */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
+$$
+//*
+//*********************************************************************
+//*
+//* ACF2 ONLY, customize to meet your system requirements
+//*
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+*
+* DEFINE ADMINISTRATORS ...........................................
+*
+* group for administrators
+* replace AUTOGID with GID(&amp;ADMINGID.) if AUTOGID is not enabled
+*
+SET PROFILE(GROUP) DIV(OMVS)
+INSERT &amp;ADMINGRP. AUTOGID
+F ACF2,REBUILD(GRP),CLASS(P)
+*
+* uncomment and customize to add an existing userid as administrator
+*
+* SET X(ROL)
+* INSERT &amp;ADMINGRP. INCLUDE(userid) ROLE
+* F ACF2,NEWXREF,TYPE(ROL)
+*
+* DEFINE STARTED TASK .............................................
+*
+* comment out if &amp;STCGROUP matches &amp;ADMINGRP (default), expect
+*   warning messages otherwise
+* group for started tasks
+* replace AUTOGID with GID(&amp;STCGID.) if AUTOGID is not enabled
+*
+SET PROFILE(GROUP) DIV(OMVS)
+INSERT &amp;STCGROUP. AUTOGID
+F ACF2,REBUILD(GRP),CLASS(P)
+*
+*****
+*
+* userid for ZOWE main server
+* replace AUTOUID with UID(&amp;ZOWEUID.) if AUTOUID is not enabled
+*
+SET LID
+INSERT &amp;ZOWEUSER. GROUP(&amp;STCGROUP.)
+SET PROFILE(USER) DIV(OMVS)
+INSERT &amp;ZOWEUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+* userid for XMEM cross memory server
+* replace AUTOUID with UID(&amp;XMEMUID.) if AUTOUID is not enabled
+*
+SET LID
+INSERT &amp;XMEMUSER. GROUP(&amp;STCGROUP.)
+SET PROFILE(USER) DIV(OMVS)
+INSERT &amp;XMEMUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+* comment out if &amp;AUXUSER matches &amp;XMEMUSER (default), expect
+*   warning messages otherwise
+* userid for XMEM auxilary cross memory server
+* replace AUTOUID with UID(&amp;AUXUID.) if AUTOUID is not enabled
+*
+SET LID
+INSERT &amp;AUXUSER. GROUP(&amp;STCGROUP.)
+SET PROFILE(USER) DIV(OMVS)
+INSERT &amp;AUXUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+*****
+*
+* started task for ZOWE main server
+*
+SET CONTROL(GSO)
+INSERT STC.&amp;ZOWESTC. LOGONID(&amp;ZOWEUSER.) GROUP(&amp;STCGROUP.) +
+STCID(&amp;ZOWESTC.)
+F ACF2,REFRESH(STC)
+*
+* started task for XMEM cross memory server
+*
+SET CONTROL(GSO)
+INSERT STC.&amp;XMEMSTC. LOGONID(&amp;XMEMUSER.) GROUP(&amp;STCGROUP.) +
+STCID(&amp;XMEMSTC.)
+F ACF2,REFRESH(STC)
+*
+* started task for XMEM auxilary cross memory server
+*
+SET CONTROL(GSO)
+INSERT STC.&amp;AUXSTC. LOGONID(&amp;AUXUSER.) GROUP(&amp;STCGROUP.) +
+STCID(&amp;AUXSTC.)
+F ACF2,REFRESH(STC)
+*
+* DEFINE ZOWE SERVER PERMISIONS ...................................
+*
+* define a role holding the permissions and add &amp;ZOWEUSER to it
+*
+SET X(ROL)
+INSERT &amp;STCGROUP. INCLUDE(&amp;ZOWEUSER.) ROLE
+F ACF2,NEWXREF,TYPE(ROL)
+*
+* permit Zowe main server to use XMEM cross memory server
+*
+SET RESOURCE(FAC)
+RECKEY ZWES ADD(IS SERVICE(READ) ROLE(&amp;STCGROUP.) ALLOW)
+F ACF2,REBUILD(FAC)
+*
+* permit Zowe main server to create a user's security environment
+* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes
+*            z/OS UNIX switch to z/OS UNIX level security. This is
+*            more secure, but it can impact operation of existing
+*            applications. Test this thoroughly before activating
+*            it on a production system.
+*
+SET RESOURCE(FAC)
+RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&amp;STCGROUP.) ALLOW)
+RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&amp;STCGROUP.) ALLOW)
+*
+* Allow STCGROUP role access to BPX.JOBNAME
+RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE(&amp;STCGROUP.) ALLOW)
+F ACF2,REBUILD(FAC)
+*
+** comment out to not use SUPERUSER.FILESYS, see JCL comments
+** permit Zowe main server to write persistent data
+*
+  SET RESOURCE(UNI)
+  RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE(&amp;STCGROUP.) ALLOW)
+  F ACF2,REBUILD(UNI)
+*
+* DEFINE ZOWE DATA SET PROTECTION .................................
+*
+* - &amp;HLQ..SZWEAUTH is an APF authorized data set. It is strongly
+*   advised to protect it against updates.
+*
+*  HLQ stub
+SET RULE
+*  general data set protection
+LIST &amp;HLQ.
+RECKEY $&amp;HLQ. ADD(- UID(-) READ(A) EXEC(P))
+RECKEY $&amp;HLQ. ADD(- UID(&amp;SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
+*
+*  show results
+LIST &amp;HLQ.
+*
+* .................................................................
+* only the last RC is returned, this command ensures it is a 0      *
+PROFILE
+$$
+//*
+//*********************************************************************
+//*
+//* Top Secret ONLY, customize to meet your system requirements
+//*
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* DEFINE ADMINISTRATORS ........................................... */
+
+/* group for administrators                                          */
+  TSS LIST(&amp;ADMINGRP.) SEGMENT(OMVS)
+  TSS CREATE(&amp;ADMINGRP.) TYPE(GROUP) +
+   NAME('ZOWE ADMINISTRATORS') +
+   DEPT(&amp;ADMINDEP.)
+  TSS ADD(&amp;ADMINGRP.) GID(&amp;ADMINGID.)
+
+/* TODO add sample command to add admin to &amp;ADMINGRP */
+
+/* DEFINE STARTED TASK ............................................. */
+
+/* comment out if &amp;STCGROUP matches &amp;ADMINGRP (default), expect      */
+/*   warning messages otherwise                                      */
+/* group for started tasks                                           */
+  TSS LIST(&amp;STCGROUP.) SEGMENT(OMVS)
+  TSS CREATE(&amp;STCGROUP.) TYPE(GROUP) +
+   NAME('STC GROUP WITH OMVS SEGEMENT') +
+   DEPT(&amp;STCGDEP.)
+  TSS ADD(&amp;STCGROUP.) GID(&amp;STCGID.)
+
+/* */
+
+/* userid for ZOWE main server                                       */
+  TSS LIST(&amp;ZOWEUSER.) SEGMENT(OMVS)
+  TSS CREATE(&amp;ZOWEUSER.) TYPE(USER) PASS(NOPW,0) +
+   NAME('ZOWE MAIN SERVER') +
+   DEPT(&amp;STCUDEP.)
+  TSS ADD(&amp;ZOWEUSER.) GROUP(&amp;STCGROUP.) DFLTGRP(&amp;STCGROUP.) +
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(&amp;ZOWEUID.)
+
+/* userid for XMEM cross memory server                               */
+  TSS LIST(&amp;XMEMUSER.) SEGMENT(OMVS)
+  TSS CREATE(&amp;XMEMUSER.) TYPE(USER) PASS(NOPW,0) +
+   NAME('ZOWE XMEM CROSS MEMORY SERVER') +
+   DEPT(&amp;STCUDEP.)
+  TSS ADD(&amp;XMEMUSER.) GROUP(&amp;STCGROUP.) DFLTGRP(&amp;STCGROUP.) +
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(&amp;XMEMUID.)
+
+/* comment out if &amp;AUXUSER matches &amp;XMEMUSER (default), expect       */
+/*   warning messages otherwise                                      */
+/* userid for XMEM auxilary cross memory server                      */
+  TSS LIST(&amp;AUXUSER.) SEGMENT(OMVS)
+  TSS CREATE(&amp;AUXUSER.) TYPE(USER) PASS(NOPW,0) +
+   NAME('ZOWE XMEM AUX SERVER') +
+   DEPT(&amp;STCUDEP.)
+  TSS ADD(&amp;AUXUSER.) GROUP(&amp;STCGROUP.) DFLTGRP(&amp;STCGROUP.) +
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(&amp;AUXUID.)
+
+/* */
+
+/* started task for ZOWE main server                                 */
+  TSS LIST(STC) PROCNAME(&amp;ZOWESTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&amp;ZOWESTC.) ACID(&amp;ZOWEUSER.)
+  TSS ADD(&amp;ZOWEUSER.) FAC(STC)
+
+/* started task for XMEM cross memory server                         */
+  TSS LIST(STC) PROCNAME(&amp;XMEMSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&amp;XMEMSTC.) ACID(&amp;XMEMUSER.)
+  TSS ADD(&amp;XMEMUSER.) FAC(STC)
+
+/* started task for XMEM auxilary cross memory server                */
+  TSS LIST(STC) PROCNAME(&amp;AUXSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&amp;AUXSTC.) ACID(&amp;AUXUSER.)
+  TSS ADD(&amp;AUXUSER.) FAC(STC)
+
+/* DEFINE ZOWE SERVER PERMISIONS ................................... */
+
+/* permit Zowe main server to use XMEM cross memory server           */
+  TSS ADD(&amp;FACACID.) IBMFAC(ZWES.IS)
+  TSS WHOHAS IBMFAC(ZWES.IS)
+  TSS PERMIT(&amp;ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
+
+/* permit Zowe main server to create a user's security environment   */
+/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
+/*            z/OS UNIX switch to z/OS UNIX level security. This is  */
+/*            more secure, but it can impact operation of existing   */
+/*            applications. Test this thoroughly before activating   */
+/*            it on a production system.                             */
+  TSS ADD(&amp;FACACID.) IBMFAC(BPX.)
+  TSS WHOHAS IBMFAC(BPX.DAEMON)
+  TSS PER(&amp;ZOWEUSER.) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
+  TSS WHOHAS IBMFAC(BPX.SERVER)
+  TSS PER(&amp;ZOWEUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+
+/* Allow ZOWEUSER access to BPX.JOBNAME                              */
+  TSS WHOHAS IBMFAC(BPX.JOBNAME)
+  TSS PER(&amp;ZOWEUSER.) IBMFAC(BPX.JOBNAME) ACCESS(READ)
+
+/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
+/** permit Zowe main server to write persistent data                 */
+  TSS ADD(&amp;FACACID.) UNIXPRIV(SUPERUSE)
+  TSS WHOHAS IBMFAC(SUPERUSER.FILESYS)
+  TSS PER(&amp;ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - &amp;HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/*   advised to protect it against updates.                          */
+
+/* HLQ stub                                                          */
+  TSS ADD DEPT(&amp;ADMINDEP.) DATASET(&amp;HLQ.)
+
+/* general data set protection                                       */
+  TSS WHOHAS DATASET(&amp;HLQ.)
+  TSS PER(ALL) DATASET(&amp;HLQ..) ACCESS(READ)
+  TSS PER(&amp;SYSPROG.) DATASET(&amp;HLQ..) ACCESS(ALL)
+
+/* show results                                                      */
+  TSS WHOHAS DATASET(&amp;HLQ.)
+
+/* If any of these started tasks are multiusers address spaces       */
+/* a TSS FACILITY needs to be defined and assigned to the started    */
+/* and should not be using the STC FACILITY . The all acids signing  */
+/* on to the started tasks will need to be authorized to the         */
+/* FACILITY.                                                         */
+/*                                                                   */
+/* Create FACILITY example:                                          */
+/* In the TSSPARMS add the following lines to create                 */
+/* the new FACILITY.                                                 */
+/*                                                                   */
+/* FACILITY(USER11=NAME=ZOWE)                                        */
+/* FACILITY(ZOWE=MODE=FAIL)                                          */
+/* FACILITY(ZOWE=RES)                                                */
+/*                                                                   */
+/* To assign the FACILITY to the started task issue the following    */
+/* command:                                                          */
+/*                                                                   */
+/* TSS ADD(started_task_acid) MASTFAC(ZOWE)                          */
+/*                                                                   */
+/* To authorize a user to signon to the FACILITY, issues the         */
+/* following command.                                                */
+/*                                                                   */
+/* TSS ADD(user_acid) FAC(ZOWE)                                      */
+
+/* ................................................................. */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
+$$
+//*
+		</inlineTemplate>
+			<submitAs maxRc="0">JCL</submitAs>
+			<maxLrecl>80</maxLrecl>
+		</template>
+	</step>
+</workflow> 
