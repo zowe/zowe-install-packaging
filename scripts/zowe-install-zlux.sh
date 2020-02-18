@@ -43,6 +43,8 @@ do
   fi
 done
 
+chtag -tc 1047 ${INSTALL_DIR}/files/zlux/config/*.json
+chtag -tc 1047 ${INSTALL_DIR}/files/zlux/config/plugins/*.json
 chmod -R u+w zlux-app-server 2>/dev/null
 mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
 cp -f ${INSTALL_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
