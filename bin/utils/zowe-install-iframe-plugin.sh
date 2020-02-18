@@ -65,6 +65,7 @@ cat <<EOF >$PLUGIN_DIR/web/index.html
     </body>
 </html>
 EOF
+chtag -tc 1047 $PLUGIN_FOLDER/web/index.html
 
 cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
 {
@@ -90,6 +91,7 @@ cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
   }
 }
 EOF
+chtag -tc 1047 $PLUGIN_FOLDER/pluginDefinition.json
 
 chmod -R a+rx $PLUGIN_DIR
 ${INSTANCE_DIR}/bin/install-app.sh $PLUGIN_DIR
