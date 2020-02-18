@@ -1,0 +1,1576 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 3//EN">
+<!-- 18 Feb 2020 11:29:49 -->
+<HTML><HEAD>
+<TITLE>Zowe Program Directory </TITLE>
+</HEAD><BODY>
+<A NAME=Top_Of_Page></A>
+<CENTER>
+<H1>Program Directory for
+  <BR>Zowe Open Source Project
+  <BR>
+  <BR> </H1>
+<H2>V0.0.1   </H2>
+<H2>  <H2>
+<H2>FMID AZWE001 </H2>
+<H3>for use with
+  <BR>z/OS V2.2.0 or later
+  <BR>
+  <BR> </H3>
+<H3> </H3>
+<H3>Document Date: February 2020 </H3>
+<H3> </H3>
+</CENTER>
+&nbsp;<BR>
+<TABLE BORDER="1"  WIDTH="100%"><TR><TH ALIGN="LEFT">Note</TH></TR><TR><TD>
+<P>Before using this information and the product it supports, be sure
+to read the general information under <A HREF="#HDRNOTICES">"Notices"</A>.
+</TD></TR></TABLE>
+<P>Copyright Contributors to the Zowe Project. 2019, 2020
+<HR><H1><A NAME="ToC">Table of Contents</A></H1>
+<P><B><A NAME="ToC_1" HREF="#HDRFIGLIST_START">Figures</A></B><BR>
+<P><B><A NAME="ToC_2" HREF="#HDRINTRO">Introduction</A></B><BR>
+<MENU>
+<LI><A NAME="ToC_3" HREF="#HDRZJUMP1">Zowe Description</A>
+<LI><A NAME="ToC_4" HREF="#Header_4">Zowe FMIDs</A>
+</MENU>
+<P><B><A NAME="ToC_5" HREF="#HDRMATERLS">Program Materials</A></B><BR>
+<MENU>
+<LI><A NAME="ToC_6" HREF="#HDRBASMRM">Basic Machine-Readable Material</A>
+<LI><A NAME="ToC_7" HREF="#HDRPUBS">Program Publications</A>
+<MENU>
+<LI><A NAME="ToC_8" HREF="#HDRPUBOPT">Optional Program Publications</A>
+</MENU>
+<LI><A NAME="ToC_9" HREF="#HDRPUBFCH">Program Source Materials</A>
+<LI><A NAME="ToC_10" HREF="#HDRPUBAUX">Publications Useful During Installation</A>
+</MENU>
+<P><B><A NAME="ToC_11" HREF="#HDRSUPPORT">Program Support</A></B><BR>
+<MENU>
+<LI><A NAME="ToC_12" HREF="#HDRSSUP">Statement of Support Procedures</A>
+</MENU>
+<P><B><A NAME="ToC_13" HREF="#HDRSERVICE">Program and Service Level Information</A></B><BR>
+<MENU>
+<LI><A NAME="ToC_14" HREF="#HDRSERVPLI">Program Level Information</A>
+<LI><A NAME="ToC_15" HREF="#HDRSERVSLI">Service Level Information</A>
+</MENU>
+<P><B><A NAME="ToC_16" HREF="#HDRINSRQMT">Installation Requirements and Considerations</A></B><BR>
+<MENU>
+<LI><A NAME="ToC_17" HREF="#HDRDSRQMT">Driving System Requirements</A>
+<MENU>
+<LI><A NAME="ToC_18" HREF="#HDRDSRQMTM">Machine Requirements</A>
+<LI><A NAME="ToC_19" HREF="#HDRDSRQMTP">Programming Requirements</A>
+</MENU>
+<LI><A NAME="ToC_20" HREF="#HDRTSRQMT">Target System Requirements</A>
+<MENU>
+<LI><A NAME="ToC_21" HREF="#HDRTSRQMTM">Machine Requirements</A>
+<LI><A NAME="ToC_22" HREF="#HDRTSRQMTP">Programming Requirements</A>
+<LI><A NAME="ToC_27" HREF="#HDRTSRQMTD">DASD Storage Requirements</A>
+</MENU>
+<LI><A NAME="ToC_28" HREF="#HDRFMIDDEL">FMIDs Deleted</A>
+<LI><A NAME="ToC_29" HREF="#HDRSPECCON">Special Considerations</A>
+</MENU>
+<P><B><A NAME="ToC_30" HREF="#HDRINSINST">Installation Instructions</A></B><BR>
+<MENU>
+<LI><A NAME="ToC_31" HREF="#HDRINSTALL">Installing Zowe</A>
+<MENU>
+<LI><A NAME="ToC_32" HREF="#HDRSMPREQ">SMP/E Considerations for Installing Zowe</A>
+<LI><A NAME="ToC_33" HREF="#HDRENTRQMT">SMP/E Options Subentry Values</A>
+<LI><A NAME="ToC_34" HREF="#Header_34">Overview of the installation steps</A>
+<LI><A NAME="ToC_35" HREF="#Header_35">Allocate file system to hold web download package</A>
+<LI><A NAME="ToC_36" HREF="#Header_36">Upload the web download package to the host</A>
+<LI><A NAME="ToC_37" HREF="#HDRUNPAX">Extract and expand the compressed SMPMCS and RELFILEs</A>
+<LI><A NAME="ToC_38" HREF="#HDRZJUMP2">Sample Jobs</A>
+<LI><A NAME="ToC_39" HREF="#HDRZJUMP3">Create SMP/E environment (optional)</A>
+<LI><A NAME="ToC_40" HREF="#HDRSMPREC">Perform SMP/E RECEIVE</A>
+<LI><A NAME="ToC_41" HREF="#HDRALLOC">Allocate SMP/E Target and Distribution Libraries</A>
+<LI><A NAME="ToC_42" HREF="#HDRSMPZFS">Allocate, create and mount ZFS Files (Optional)</A>
+<LI><A NAME="ToC_43" HREF="#HDRMKDIR">Allocate File System Paths</A>
+<LI><A NAME="ToC_44" HREF="#HDRDDDEF">Create DDDEF Entries</A>
+<LI><A NAME="ToC_45" HREF="#HDRAPPLY">Perform SMP/E APPLY</A>
+<LI><A NAME="ToC_46" HREF="#Header_46">Perform SMP/E ACCEPT</A>
+<LI><A NAME="ToC_47" HREF="#Header_47">Run REPORT CROSSZONE</A>
+<LI><A NAME="ToC_48" HREF="#HDRCLEANUP">Cleaning Up Obsolete Data Sets, Paths, and DDDEFs</A>
+</MENU>
+<LI><A NAME="ToC_49" HREF="#HDRACTIVAT">Activating Zowe</A>
+<MENU>
+<LI><A NAME="ToC_50" HREF="#Header_50">File System Execution</A>
+</MENU>
+<LI><A NAME="ToC_51" HREF="#HDRCUSTOM">Product Customization</A>
+</MENU>
+<P><B><A NAME="ToC_52" HREF="#HDRNOTICES">Notices</A></B><BR>
+<MENU>
+<LI><A NAME="ToC_53" HREF="#HDRNOTITMK">Trademarks</A>
+</MENU>
+<P><B><A NAME="ToC_54" HREF="#Header_54">Reader's Comments</A></B><BR>
+<P>
+<HR><H1><A NAME="HDRFIGLIST_START" HREF="#ToC_1">Figures</A></H1>
+<OL>
+</OL>
+<HR><H1><A NAME="HDRINTRO" HREF="#ToC_2">Introduction</A></H1>
+<P>This program directory is intended for system programmers who are
+responsible for program installation and maintenance.  It contains
+information about the material and procedures associated with the
+installation of Zowe Open Source Project.  This publication refers to Zowe Open Source Project as
+Zowe.
+<P>The Program Directory contains the following sections:
+<UL>
+<P><LI><A HREF="#HDRMATERLS">"Program Materials"</A> identifies the basic program
+materials and documentation for Zowe.
+<P><LI><A HREF="#HDRSUPPORT">"Program Support"</A> describes the support available for
+Zowe.
+<P><LI><A HREF="#HDRSERVICE">"Program and Service Level Information"</A> lists the APARs (program level) and PTFs
+(service level) that have been incorporated into Zowe.
+<P><LI><A HREF="#HDRINSRQMT">"Installation Requirements and Considerations"</A> identifies the resources and
+considerations that are required for installing and using Zowe.
+<P><LI><A HREF="#HDRINSINST">"Installation Instructions"</A> provides detailed installation instructions
+for Zowe.  It also describes the procedures for activating the
+functions of Zowe, or refers to appropriate publications.
+</UL>
+<HR><H2><A NAME="HDRZJUMP1" HREF="#ToC_3">Zowe Description</A></H2>
+<P>Zowe is an open source project created to host technologies
+that benefit the Z platform from all members of the Z community
+(Integrated Software Vendors, System Integrators and z/OS consumers).
+Zowe, like Mac or Windows, comes with a set of APIs and OS
+capabilities that applications build on and also includes some
+applications out of the box.
+<P>Zowe offers modern interfaces to interact with z/OS and allows
+you to work with z/OS in a way that is similar to what you experience
+on cloud platforms today. You can use these interfaces as delivered or
+through plug-ins and extensions that are created by clients or
+third-party vendors.
+<HR><H2><A NAME="Header_4" HREF="#ToC_4">Zowe FMIDs</A></H2>
+<P>Zowe consists of the following FMIDs:
+<DL COMPACT>
+<DD>AZWE001
+</DL>
+<HR><H1><A NAME="HDRMATERLS" HREF="#ToC_5">Program Materials</A></H1>
+<P>Basic Machine-Readable Materials are materials that are supplied
+under the base license and are required for the use of the product.
+<HR><H2><A NAME="HDRBASMRM" HREF="#ToC_6">Basic Machine-Readable Material</A></H2>
+<P>The distribution medium for this program is
+downloadable files.  This program is in SMP/E RELFILE format and is
+installed by using SMP/E.  See <A HREF="#HDRINSINST">"Installation Instructions"</A> for more
+information about how to install the program.
+<HR><H2><A NAME="HDRPUBS" HREF="#ToC_7">Program Publications</A></H2>
+<P>The following sections identify the basic publications for Zowe.
+<P><A HREF="#TBLWEBPUB">Table 1</A> identifies the basic unlicensed program
+publications for Zowe.
+<BR>
+<P><B><A NAME="TBLWEBPUB">Table 1. Basic Material: Unlicensed</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="97%">Publication Title
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM" WIDTH="1%">Form Number
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="2%">Media Format
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><CITE>
+<A href="https://docs.zowe.org/stable/user-guide/installandconfig.html">
+https://docs.zowe.org/stable/user-guide/installandconfig.html</A> </CITE>
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">online
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">See note
+<SUP><A HREF="#LIL0">1</A></SUP>
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3" WIDTH="100%"><B>Note&#58; </B>
+<OL TYPE=1>
+<P><LI><A NAME="LIL0"></A>These, and other, publications can be obtained from the
+Zowe online library, 
+<A href="https://docs.zowe.org/stable/">
+https://docs.zowe.org/stable/.</A> 
+</OL>
+</TD></TR></TABLE>
+<P><H3><A NAME="HDRPUBOPT" HREF="#ToC_8">Optional Program Publications</A></H3>
+<P>No optional publications are provided for Zowe.
+<HR><H2><A NAME="HDRPUBFCH" HREF="#ToC_9">Program Source Materials</A></H2>
+<P>No program source materials or viewable program listings are
+provided for Zowe.
+However, program source materials can be obtained from 
+<A href="https://github.com/zowe/">
+https://github.com/zowe/.</A> 
+<HR><H2><A NAME="HDRPUBAUX" HREF="#ToC_10">Publications Useful During Installation</A></H2>
+<P>You might want to use the publications listed in
+<A HREF="#TBLUSEPUB">Table 2</A> during
+the installation of Zowe.
+<BR>
+<P><B><A NAME="TBLUSEPUB">Table 2. Publications Useful During Installation</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="99%">Publication Title
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM" WIDTH="1%">Form Number
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%"><CITE>IBM SMP/E for z/OS User's Guide</CITE>
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">SA23-2277
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%"><CITE>IBM SMP/E for z/OS Commands</CITE>
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">SA23-2275
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%"><CITE>IBM SMP/E for z/OS Reference</CITE>
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">SA23-2276
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%"><CITE>IBM SMP/E for z/OS Messages, Codes, and Diagnosis</CITE>
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">GA32-0883
+</TD></TR></TABLE>
+<P><B>Note: </B>
+<UL>
+<P><LI>IBM Publications Center:
+<A href="https://www.ibm.com/shop/publications/order">
+https://www.ibm.com/shop/publications/order</A> 
+<P><LI>IBM Knowledge Center:
+<A href="https://www.ibm.com/support/knowledgecenter">
+https://www.ibm.com/support/knowledgecenter</A> 
+</UL>
+<HR><H1><A NAME="HDRSUPPORT" HREF="#ToC_11">Program Support</A></H1>
+<P>This section describes the support available for Zowe.
+<HR><H2><A NAME="HDRSSUP" HREF="#ToC_12">Statement of Support Procedures</A></H2>
+<P>Report any problems which you feel might be an error in the product
+materials to the Zowe community via 
+<A href="https://github.com/zowe/community/issues/new/choose">
+https://github.com/zowe/community/issues/new/choose.</A> You may be asked
+to gather and submit additional diagnostics to assist the community in
+their analysis.
+<HR><H1><A NAME="HDRSERVICE" HREF="#ToC_13">Program and Service Level Information</A></H1>
+<P>This section identifies the program and relevant service levels
+of Zowe.  The program level refers to the APAR fixes that have
+been incorporated into the program. The service level refers to the
+PTFs that have been incorporated into the program.
+<HR><H2><A NAME="HDRSERVPLI" HREF="#ToC_14">Program Level Information</A></H2>
+<P>All APARs of previous releases of Zowe that were resolved
+before February 2020 have been incorporated into Zowe.
+<HR><H2><A NAME="HDRSERVSLI" HREF="#ToC_15">Service Level Information</A></H2>
+<P>No PTFs against this release of Zowe have been incorporated
+into the product package.
+<HR><H1><A NAME="HDRINSRQMT" HREF="#ToC_16">Installation Requirements and Considerations</A></H1>
+<P>The following sections identify the system requirements for
+installing and activating Zowe.
+The following terminology is used:
+<UL>
+<P><LI><CITE>Driving system</CITE>: the system on which SMP/E is executed to
+install the program.
+<P>
+The program might have specific operating system or product level
+requirements for using processes, such as binder or assembly
+utilities during the installation.
+<P><LI><CITE>Target system</CITE>: the system on which the program is
+configured and run.
+<P>
+The program might have specific product level requirements,
+such as needing access to the library of another product for link-edits.
+These requirements, either mandatory or optional, might directly
+affect the element during the installation or in its basic or
+enhanced operation.
+</UL>
+<P>In many cases, you can use a system as both a driving system
+and a target system.
+However, you can make a separate IPL-able clone of
+the running system to use as a target system.
+The clone must include copies of all system
+libraries that SMP/E updates, copies of the SMP/E CSI data sets that
+describe the system libraries, and your PARMLIB and PROCLIB.
+<P>Use separate driving and target systems in the following situations:
+<UL>
+<P><LI>When you install a new level of a product that is already installed,
+the new level of the product will replace the old one. By installing
+the new level onto a separate
+target system, you can test the new level and keep the old
+one in production at the same time.
+<P><LI>When you install a product that shares libraries or load modules
+with other products, the installation can disrupt the other products.
+By installing the product onto a separate
+target system, you can assess these
+impacts without disrupting your production system.
+</UL>
+<HR><H2><A NAME="HDRDSRQMT" HREF="#ToC_17">Driving System Requirements</A></H2>
+<P>This section describes the environment of the driving system
+required to install Zowe.
+<P><H3><A NAME="HDRDSRQMTM" HREF="#ToC_18">Machine Requirements</A></H3>
+<P>The driving system can run in any hardware environment that supports
+the required software.
+<P><H3><A NAME="HDRDSRQMTP" HREF="#ToC_19">Programming Requirements</A></H3>
+<BR>
+<P><B><A NAME="TBLDRIVREQ">Table 3. Driving System Software Requirements</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Program
+<BR>
+Number
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="33%">Product
+<BR>
+Name
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="33%">Minimum
+<BR>
+VRM
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="33%">Minimum
+<BR>
+Service Level
+<BR>
+will satisfy
+<BR>
+these
+<BR>
+APARs
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Included
+<BR>
+in the
+<BR>
+shipped
+<BR>
+product?
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">z/OS
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">V2.2.0 or the lowest supported z/OS level, whichever is more recent
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">N/A
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">No
+</TD></TR></TABLE>
+<P><B>Note: </B>SMP/E is a requirement for Installation and is an element of
+z/OS.
+<P>
+<P><B>Note: </B>Installation might require migration to new z/OS releases to be
+service supported.
+See 
+<A href="https://www-01.ibm.com/software/support/lifecycle/index_z.html">
+https://www-01.ibm.com/software/support/lifecycle/index_z.html.</A> 
+<P>Zowe is installed into a file system, either HFS or zFS.
+Before installing Zowe, you must ensure that the target system
+file system data sets are available for processing on the driving
+system. OMVS must be active on the driving system and the target
+system file data sets must be mounted on the driving system.
+<P>If you plan to install Zowe in a zFS file system, this
+requires that zFS be active on the driving system. Information on
+activating and using zFS can be found in <CITE>z/OS Distributed File
+Service zSeries File System Administration</CITE> (SC24-5989).
+<HR><H2><A NAME="HDRTSRQMT" HREF="#ToC_20">Target System Requirements</A></H2>
+<P>This section describes the environment of the target system required
+to install and use Zowe.
+<P>Zowe can install in the z/OS (Z038) SREL.
+<P><H3><A NAME="HDRTSRQMTM" HREF="#ToC_21">Machine Requirements</A></H3>
+<P>The target system can run in any hardware environment that supports
+the required software.
+<P><H3><A NAME="HDRTSRQMTP" HREF="#ToC_22">Programming Requirements</A></H3>
+<P><H4><A NAME="Header_23">Installation Requisites</A></H4>
+<P>Installation requisites identify products
+that are required and <I>must</I> be present on the system
+or products that are not required but
+<I>should</I> be present on the system for the
+successful installation of this product.
+<P>Mandatory installation requisites identify products that are
+required on the system for the successful installation of this
+product. These products are specified as PREs or REQs.
+<P>Zowe has no mandatory installation requisites.
+<P>Conditional installation requisites identify products that
+are <I>not</I> required for successful installation
+of this product but can resolve
+such things as
+certain warning messages at installation time.  These products
+are specified as IF REQs.
+<P>Zowe has no conditional installation requisites.
+<P><H4><A NAME="Header_24">Operational Requisites</A></H4>
+<P>Operational requisites are products that are required
+and <I>must</I> be present on the system or products that are
+not required
+but <I>should</I> be present on the system for this
+product to operate all or part of its functions.
+<P>Mandatory operational requisites identify products that
+are required for this product
+to operate its basic functions.
+<BR>
+<P><B><A NAME="TBLHREQOM">Table 4. Target System Mandatory Operational Requisites</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Program Number
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="99%">Product Name and
+<BR>
+Minimum VRM/Service Level
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5655-SDK
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM SDK for Node.js - z/OS V6.14.4.1 or higher
+<BR>
+See note
+<SUP><A HREF="#LIL2">1</A></SUP>
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5655-DGH
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM 64-bit SDK for z/OS Java Technology Edition V8.0.0
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM z/OS Management Facility V2.2.0 or higher
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM z/OS V2.2.0 or higher
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2" WIDTH="100%"><B>Note&#58; </B>
+<OL TYPE=1>
+<P><LI><A NAME="LIL2"></A>The pre-requistes for Node.js itself are not required, nor is
+any configuration of Node.js required. The only requirement is the
+presence of the Node.js executable code.
+</OL>
+<P>
+<P>
+</TD></TR></TABLE>
+<P>Conditional operational requisites identify products that
+are <I>not</I> required for this product to operate its basic
+functions but are required at run time for this product to operate
+specific functions. These products are specified as IF REQs.
+<BR>
+<P><B><A NAME="TBLFOCCREQ">Table 5. Target System Conditional Operational Requisites</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Program
+<BR>
+Number
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="96%">Product Name and
+<BR>
+Minimum VRM/Service Level
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="3%">Function
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="96%">z/OS OpenSSH V2.2.0 or higher
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="3%">SSH connection
+</TD></TR></TABLE>
+<P><H4><A NAME="Header_25">Toleration/Coexistence Requisites</A></H4>
+<P>Toleration/coexistence requisites identify products that must
+be present on sharing systems.  These systems can be other systems in
+a multisystem environment (not necessarily sysplex), a shared DASD
+environment (such as test and production), or systems that reuse the
+same DASD environment at different time intervals.
+<P>Zowe has no toleration/coexistence requisites.
+<P><H4><A NAME="Header_26">Incompatibility (Negative) Requisites</A></H4>
+<P>Negative requisites identify products that must <I>not</I> be
+installed on the same system as this product.
+<P>Zowe has no negative requisites.
+<P><H3><A NAME="HDRTSRQMTD" HREF="#ToC_27">DASD Storage Requirements</A></H3>
+<P>Zowe libraries can reside on all supported DASD types.
+<P><A HREF="#TBLTOTSPAC">Table 6</A> lists the total space that is required for each
+type of library.
+<BR>
+<P><B><A NAME="TBLTOTSPAC">Table 6. Total DASD Space Required by Zowe</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Library Type
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="2%">Total Space Required
+<BR>
+in 3390 Trks
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="97%">Description
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">Target
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">45  Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><BR></TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">Distribution
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">12045 Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><BR></TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">File System(s)
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">21000 Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><BR></TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">Web Download
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">38666 Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">
+These are temporary data sets, which can be removed after the SMP/E
+install.
+<BR></TD></TR></TABLE>
+<P><B>Notes: </B>
+<OL TYPE=1>
+<P><LI>For non-RECFM U data sets, we recommend using system-determined
+block sizes for efficient DASD utilization.
+For RECFM U data sets,
+we recommend using a block size of 32760, which is most efficient
+from the performance and DASD utilization perspective.
+<P><LI>Abbreviations used for data set types are shown as follows.
+<TABLE CELLPADDING="3">
+<TR VALIGN="TOP"><TD><B>U
+</B></TD><TD>Unique data set, allocated by this product and used by only this
+product. This table provides all the required information
+to determine the correct storage for this data
+set. You do not need to refer to other tables or
+program directories for the data set size.
+</TD></TR><TR VALIGN="TOP"><TD><B>S
+</B></TD><TD>Shared data set, allocated by this product and used by this product
+and other products.  To determine the correct storage needed for this
+data set, add the storage size given in this table
+to those given in other tables (perhaps in other program directories).
+If the data set already exists, it must have enough free space to
+accommodate the storage size given in this table.
+</TD></TR><TR VALIGN="TOP"><TD><B>E
+</B></TD><TD>Existing shared data set, used by this product and other products.
+This data set is <I>not</I> allocated by this product.  To
+determine the correct storage for this data set, add the storage size
+given in this table to those given in other tables (perhaps in other
+program directories).  If the data set
+already exists, it must have enough free space to
+accommodate the storage size given in this table.
+</TD></TR></TABLE>
+<P>If you currently have a previous release of this product installed
+in these libraries, the installation of this release will delete the
+old release and reclaim the space that was used by the old release and
+any service that had been installed. You can determine whether these
+libraries have enough space by deleting the old release with a dummy
+function, compressing the libraries, and comparing the space
+requirements with the free space in the libraries.
+<P>For more information about the names and sizes of the required data
+sets, see <A HREF="#HDRALLOC">"Allocate SMP/E Target and Distribution Libraries"</A>.
+<P><LI>Abbreviations used for the file system path type are as follows.
+<TABLE CELLPADDING="3">
+<TR VALIGN="TOP"><TD><B>N
+</B></TD><TD>New path, created by this product.
+</TD></TR><TR VALIGN="TOP"><TD><B>X
+</B></TD><TD>Path created by this product, but might already exist from a
+previous release.
+</TD></TR><TR VALIGN="TOP"><TD><B>P
+</B></TD><TD>Previously existing path, created by another product.
+</TD></TR></TABLE>
+<P><LI>All target and distribution libraries listed have the following
+attributes:
+<UL COMPACT>
+<LI>The default name of the data set can be changed.
+<LI>The default block size of the data set can be changed.
+<LI>The data set can be merged with another data set that has equivalent
+characteristics.
+<LI>The data set can be either a PDS or a PDSE, with some exceptions.
+If the value in  the "ORG" column specifies "PDS", the data set must
+be a PDS. If the value in "DIR Blks" column specifies "N/A", the
+data set must be a PDSE.
+</UL>
+<P><LI>All target libraries listed have the following attributes:
+<UL COMPACT>
+<LI>These data sets can be SMS-managed, but they are not required to
+be SMS-managed.
+<LI>These data sets are not required to reside on the IPL volume.
+<LI>The values in the "Member Type" column are not necessarily the
+actual SMP/E element types that are identified in the SMPMCS.
+</UL>
+<P><LI>All target libraries that are listed and contain load modules have
+the following attributes:
+<UL COMPACT>
+<LI>These data sets can not be in the LPA, with some exceptions.
+If the value in the "Member Type" column specifies "LPA", it is
+advised to place the data set in the LPA.
+<LI>These data sets can be in the LNKLST.
+<LI>These data sets are not required to be APF-authorized, with some
+exceptions. If the value in the "Member Type" column specifies "APF",
+the data set must be APF-authorized.
+</UL>
+</OL>
+<BR>
+<P><B><A NAME="TBLSMPSP">Table 7. Storage Requirements for SMP/E Work Data Sets</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="98%">Library
+<BR>
+DDNAME
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">T
+<BR>
+Y
+<BR>
+P
+<BR>
+E
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">O
+<BR>
+R
+<BR>
+G
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM" WIDTH="1%">R
+<BR>
+E
+<BR>
+C
+<BR>
+F
+<BR>
+M
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM" WIDTH="1%">L
+<BR>
+R
+<BR>
+E
+<BR>
+C
+<BR>
+L
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+3390
+<BR>
+Trks
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+DIR
+<BR>
+Blks
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">SMPWRK6
+</TD><TD ALIGN="CENTER" VALIGN="TOP">S
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDS
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">(20,200)
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">50
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">SYSUT1
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">SEQ
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">--
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">--
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">(20,200)
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">0
+</TD></TR></TABLE>
+<BR>
+<P><B><A NAME="TBLSSPACE">Table 8. Storage Requirements for SMP/E Data Sets</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="98%">Library
+<BR>
+DDNAME
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">T
+<BR>
+Y
+<BR>
+P
+<BR>
+E
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">O
+<BR>
+R
+<BR>
+G
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM" WIDTH="1%">R
+<BR>
+E
+<BR>
+C
+<BR>
+F
+<BR>
+M
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM" WIDTH="1%">L
+<BR>
+R
+<BR>
+E
+<BR>
+C
+<BR>
+L
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+3390
+<BR>
+Trks
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+DIR
+<BR>
+Blks
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">SMPPTS
+</TD><TD ALIGN="CENTER" VALIGN="TOP">S
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">(12000,3000)
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">50
+</TD></TR></TABLE>
+<P>The following figures describe the target and distribution libraries
+and file system paths
+required to install Zowe.  The storage requirements of Zowe
+must be added to the storage required by other programs that have
+data in the same library or path.
+<P><B>Note: </B>Use the data in these tables to determine which libraries can be
+merged into common data sets.  In addition, since some
+ALIAS names may not be unique, ensure that no naming conflicts will be
+introduced before merging libraries.
+<BR>
+<P><B><A NAME="TBLTSSPACE">Table 9. Storage Requirements for Zowe Target Libraries</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Library
+<BR>
+DDNAME
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="96%">Member
+<BR>
+Type
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Target
+<BR>
+Volume
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">T
+<BR>
+Y
+<BR>
+P
+<BR>
+E
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">O
+<BR>
+R
+<BR>
+G
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">R
+<BR>
+E
+<BR>
+C
+<BR>
+F
+<BR>
+M
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM" WIDTH="1%">L
+<BR>
+R
+<BR>
+E
+<BR>
+C
+<BR>
+L
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+3390
+<BR>
+Trks
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+DIR
+<BR>
+Blks
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SZWEAUTH
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="96%">APF Load Modules
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ANY
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">0
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SZWESAMP
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="96%">Samples
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ANY
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">15
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD></TR></TABLE>
+<BR>
+<P><B><A NAME="TBLPATHSPC">Table 10. Zowe File System Paths</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">DDNAME
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">T
+<BR>
+Y
+<BR>
+P
+<BR>
+E
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="99%">Path Name
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SZWEZFS
+</TD><TD ALIGN="CENTER" VALIGN="TOP">X
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">/usr/lpp/zowe/SMPE
+</TD></TR></TABLE>
+<BR>
+<P><B><A NAME="TBLDLIBSP">Table 11. Storage Requirements for Zowe Distribution Libraries</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="98%">Library
+<BR>
+DDNAME
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">T
+<BR>
+Y
+<BR>
+P
+<BR>
+E
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">O
+<BR>
+R
+<BR>
+G
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM" WIDTH="1%">R
+<BR>
+E
+<BR>
+C
+<BR>
+F
+<BR>
+M
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM" WIDTH="1%">L
+<BR>
+R
+<BR>
+E
+<BR>
+C
+<BR>
+L
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+3390
+<BR>
+Trks
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+DIR
+<BR>
+Blks
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">AZWEAUTH
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">U
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">0
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">AZWESAMP
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">15
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">AZWEZFS
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">VB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">6995
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">12000
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD></TR></TABLE>
+<P>The following figures list data sets that are not used by Zowe,
+but are required as input for SMP/E.
+<BR>
+<P><B><A NAME="TBLOTHRDS">Table 12. Storage Requirements for Zowe Web Download Data Sets</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="98%">Data Set
+<BR>
+Name
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">T
+<BR>
+Y
+<BR>
+P
+<BR>
+E
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM">O
+<BR>
+R
+<BR>
+G
+</TH><TH ALIGN="CENTER" VALIGN="BOTTOM" WIDTH="1%">R
+<BR>
+E
+<BR>
+C
+<BR>
+F
+<BR>
+M
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM" WIDTH="1%">L
+<BR>
+R
+<BR>
+E
+<BR>
+C
+<BR>
+L
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+3390
+<BR>
+Trks
+</TH><TH ALIGN="RIGHT" VALIGN="BOTTOM">No.
+<BR>
+of
+<BR>
+DIR
+<BR>
+Blks
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F1
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">5
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F2
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">5
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F3
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">U
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">0
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F4
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">VB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">6995
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">9900
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.SMPMCS
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">SEQ
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">1
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">z/OS UNIX file system
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">zFS
+</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">N/A
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">N/A
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">28725
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="7" WIDTH="100%"><B>Note&#58; </B> These are temporary data sets, which can be removed after
+the SMP/E install.
+</TD></TR></TABLE>
+<HR><H2><A NAME="HDRFMIDDEL" HREF="#ToC_28">FMIDs Deleted</A></H2>
+<P>Installing Zowe might result in the deletion of other FMIDs. To
+see which FMIDs will be deleted, examine the ++VER statement in the
+SMPMCS of the product.
+<P>If you do not want to delete these FMIDs at this time,
+install Zowe into separate SMP/E target and distribution zones.
+<P><B>Note: </B>These FMIDs are not automatically deleted from the Global
+Zone. If you want to delete these FMIDs from the Global
+Zone, use the SMP/E REJECT NOFMID DELETEFMID command.  See the SMP/E
+Commands book for details.
+<HR><H2><A NAME="HDRSPECCON" HREF="#ToC_29">Special Considerations</A></H2>
+<P>Zowe has no special considerations for the target system.
+<HR><H1><A NAME="HDRINSINST" HREF="#ToC_30">Installation Instructions</A></H1>
+<P>This chapter describes the installation method and the step-by-step
+procedures to install and to activate the functions of Zowe.
+<P>Please note the following points:
+<UL>
+<P><LI>If you want to install Zowe into its own SMP/E environment,
+consult the SMP/E manuals for instructions on creating and initializing
+the SMPCSI and the SMP/E control data sets.
+<P><LI>You can use the sample jobs that are provided to perform part or all
+of the installation tasks.  The SMP/E jobs assume that all DDDEF entries
+that are required for SMP/E execution have been defined in appropriate
+zones.
+<P><LI>You can use the SMP/E dialogs instead of the sample jobs to
+accomplish the SMP/E installation steps.
+</UL>
+<HR><H2><A NAME="HDRINSTALL" HREF="#ToC_31">Installing Zowe</A></H2>
+<P><H3><A NAME="HDRSMPREQ" HREF="#ToC_32">SMP/E Considerations for Installing Zowe</A></H3>
+<P>Use the SMP/E RECEIVE,
+APPLY, and ACCEPT commands to install this release of Zowe.
+<P><H3><A NAME="HDRENTRQMT" HREF="#ToC_33">SMP/E Options Subentry Values</A></H3>
+<P>The recommended values for certain SMP/E CSI subentries are shown in
+<A HREF="#TBLSUBENT">Table 13</A>. Using values lower than the recommended values
+can result in failures in the installation.
+DSSPACE is a subentry in the
+GLOBAL options entry.  PEMAX is a subentry of the GENERAL entry in the
+GLOBAL options entry.  See the SMP/E manuals for instructions on
+updating the global zone.
+<BR>
+<P><B><A NAME="TBLSUBENT">Table 13. SMP/E Options Subentry Values</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Subentry
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Value
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="98%">Comment
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">DSSPACE
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">(1200,1200,1400)
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">Space allocation
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">PEMAX
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SMP/E Default
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">We recommend using the SMP/E default for PEMAX.
+</TD></TR></TABLE>
+<P><H3><A NAME="Header_34" HREF="#ToC_34">Overview of the installation steps</A></H3>
+<P>Overview of steps required to install Zowe Open Source Project.
+<OL TYPE=1>
+<P><LI>Allocate file system to hold web download package
+<P><LI>Upload the web download package to the host
+<P><LI>Extract and expand the compressed SMPMCS and RELFILEs
+<P><LI>Create SMP/E environment (optional)
+<P><LI>Perform SMP/E RECEIVE
+<P><LI>Allocate SMP/E target and distribution libraries
+<P><LI>Allocate and mount z/OS UNIX file system (optional)
+<P><LI>Allocate z/OS UNIX paths
+<P><LI>Create DDDEF entries
+<P><LI>Perform SMP/E APPLY
+<P><LI>Perform SMP/E ACCEPT
+<P><LI>Run REPORT CROSSZONE
+</OL>
+<P><H3><A NAME="Header_35" HREF="#ToC_35">Allocate file system to hold web download package</A></H3>
+<P>These instructions are also in the AZWE001.readme.txt file that you
+downloaded from the web.
+<P>The SMP/E input data sets to install Zowe Open Source Project are provided as
+compressed files in AZWE001.pax.Z, which must be uploaded to z/OS as a
+z/OS UNIX file. You can either create a new z/OS UNIX file system (zFS)
+or create a new directory in an existing file system to place
+AZWE001.pax.Z.
+<P>
+<P>You can use the following sample JCL to create a new file system,
+and directory, for the download package.
+<PRE>//FILESYS  JOB &lt;job information&gt;
+//*
+//* - Provide valid job card information
+//* - Change:
+//*   @zfs_path@
+//*   ----+----1----+----2----+----3----+----4----+----5
+//*              - To the absolute z/OS UNIX path for the download
+//*                package (starting with /)
+//*              - Maximum length is 50 characters
+//*              - Do not include a trailing /
+//*   @zfs_dsn@
+//*              - To your file system data set name
+//*
+//* Your userid MUST be defined as a SUPERUSER to successfully
+//* run this job
+//*
+//CREATE   EXEC PGM=IDCAMS,REGION=0M,COND=(0,LT)
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER ( -
+         NAME(@zfs_dsn@) -
+         TRK(28725 30) -
+         LINEAR -
+         SHAREOPTIONS(3) -
+         )
+//*
+//         SET ZFSDSN='@zfs_dsn@'
+//FORMAT   EXEC PGM=IOEAGFMT,REGION=0M,COND=(0,LT),
+//            PARM='-aggregate &ZFSDSN -compat'
+//*STEPLIB  DD DISP=SHR,DSN=IOE.SIOELMOD        before z/OS 1.13
+//*STEPLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE       from z/OS 1.13
+//SYSPRINT DD SYSOUT=*
+//*
+//MOUNT    EXEC PGM=IKJEFT01,REGION=0M,COND=(0,LT)
+//SYSEXEC  DD DISP=SHR,DSN=SYS1.SBPXEXEC
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD *
+  PROFILE MSGID WTPMSG
+  oshell umask 0022; +
+    mkdir -p @zfs_path@
+  MOUNT +
+    FILESYSTEM('@zfs_dsn@') +
+    MOUNTPOINT('@zfs_path@') +
+    MODE(RDWR) TYPE(ZFS) PARM('AGGRGROW')
+//*
+</PRE><P><B>Expected Return Codes and Messages:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="Header_36" HREF="#ToC_36">Upload the web download package to the host</A></H3>
+<P>These instructions are also in the AZWE001.readme.txt file that you
+downloaded from the web.
+<P>Upload the AZWE001.readme.txt file in text format and the AZWE001.pax.Z file
+in binary format from your workstation to the z/OS UNIX file system.
+<P>In the following sample dialog, we use FTP from a Microsoft Windows
+command line to do the transfer. Commands or other information entered
+by the user are in bold, and the following values are assumed:
+<BR>
+<P><B><A NAME="TBLSEQ5">Table 14. User Entered Values</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="33%">User enters:
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="67%">Values
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">mvsaddr
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="67%">TCP/IP address or hostname of the z/OS system
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">tsouid
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="67%">Your TSO user ID
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">tsopw
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="67%">Your TSO password
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">d:
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="67%">Location of the downloaded files
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">@zfs_path@
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="67%">z/OS UNIX path where to store the files. This matches the @zfs_path@
+variable you specified in the previous step.
+</TD></TR></TABLE>
+<PRE>C:\&gt;<B>ftp mvsaddr</B>
+<I>Connected to mvsaddr.
+220-FTPD1 IBM FTP CS %version% at mvsaddr, %time% on %date%.
+220 Connection will close if idle for more than 5 minutes.
+User (mvsaddr:(none)):</I> <B>tsouid</B>
+<I>331 Send password please.
+Password:</I> <B>tsopw</B>
+<I>230 tsouid is logged on.  Working directory is "tsouid.".
+</I>ftp&gt; <B>cd @zfs_path@</B>
+<I>250 HFS directory @zfs_path@ is the current working directory
+</I>ftp&gt; <B>ascii</B>
+<I>200 Representation type is Ascii NonPrint
+</I>ftp&gt; <B>put d:\AZWE001.readme.txt</B>
+<I>200 Port request OK.
+125 Storing data set @zfs_path@/AZWE001.readme.txt
+250 Transfer completed successfully.
+ftp: 19278 bytes sent in 0.01 sec. (1366.67 Kb/s)
+</I>ftp&gt; <B>binary</B>
+<I>200 Representation type is Image
+</I>ftp&gt; <B>put d:\AZWE001.pax.Z</B>
+<I>200 Port request OK.
+125 Storing data set @zfs_path@/AZWE001.pax.Z
+250 Transfer completed successfully.
+ftp: #FTPSIZPAX bytes sent in 1.26 sec. (1040.52 Kb/s)
+</I>ftp&gt; <B>quit</B>
+<I>221 Quit command received. Goodbye.
+</I></PRE><P><H3><A NAME="HDRUNPAX" HREF="#ToC_37">Extract and expand the compressed SMPMCS and RELFILEs</A></H3>
+<P>These instructions are also in the AZWE001.readme.txt file that you
+downloaded from the web.
+<P>The AZWE001.readme.txt file uploaded in the previous step holds a sample
+JCL to expand the compressed SMPMCS and RELFILEs from the uploaded
+AZWE001.pax.Z file into data sets for use by the SMP/E RECEIVE job. The
+JCL is repeated here for your convenience.
+<UL>
+<P><LI>@zfs_path@ matches the variable you specified in the previous step.
+<P><LI>If the 'oshell' command gets a RC=256 and message
+    "pax: checksum error on tape (got ee2e, expected 0)", then the
+    archive file was not uploaded to the host in binary format.
+<P><LI>GIMUNZIP allocates data sets to match the definitions of
+    the original data sets. You may encounter errors if your SMS ACS
+    routines alter the attributes used by GIMUNZIP.
+    If this occurs, specify a non-SMS managed volume for the
+    GIMUNZIP allocation of the data sets. For example:
+<BR>
+<ARCHDEF archid="..."
+<BR>
+         storclas="storage_class" volume="data_set_volume"
+<BR>
+         newname="..."/>
+</UL>
+<PRE>//EXTRACT  JOB &lt;job information&gt;
+//*
+//*   - Provide valid job card information
+//*   - Change:
+//*       @PREFIX@
+//*       ----+----1----+----2
+//*                  - To your desired data set name prefix
+//*                  - Maximum length is 20 characters
+//*                  - This value is used for the names of the
+//*                    data sets extracted from the download-package
+//*       @zfs_path@
+//*       ----+----1----+----2----+----3----+----4----+----5
+//*                  - To the absolute z/OS UNIX path for the
+//*                    download package (starting with /)
+//*                  - Maximum length is 50 characters
+//*                  - Do not include a trailing /
+//*
+//UNPAX    EXEC PGM=IKJEFT01,REGION=0M,COND=(0,LT)
+//SYSEXEC  DD DISP=SHR,DSN=SYS1.SBPXEXEC
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD *
+  oshell cd @zfs_path@/ ; +
+    pax -rvf AZWE001.pax.Z
+//*
+//GIMUNZIP EXEC PGM=GIMUNZIP,REGION=0M,COND=(0,LT)
+//*STEPLIB  DD DISP=SHR,DSN=SYS1.MIGLIB
+//SYSUT3   DD UNIT=SYSALLDA,SPACE=(CYL,(50,10))
+//SYSUT4   DD UNIT=SYSALLDA,SPACE=(CYL,(25,5))
+//SMPOUT   DD SYSOUT=*
+//SYSPRINT DD SYSOUT=*
+//SMPDIR   DD PATHDISP=KEEP,
+// PATH='@zfs_path@/'
+//SYSIN    DD *
+</PRE><PRE>&lt;GIMUNZIP&gt;
+&lt;ARCHDEF archid="AZWE001.SMPMCS"
+         newname="@PREFIX@.ZOWE.AZWE001.SMPMCS"/&gt;
+&lt;ARCHDEF archid="AZWE001.F1"
+         newname="@PREFIX@.ZOWE.AZWE001.F1"/&gt;
+&lt;ARCHDEF archid="AZWE001.F2"
+         newname="@PREFIX@.ZOWE.AZWE001.F2"/&gt;
+&lt;ARCHDEF archid="AZWE001.F3"
+         newname="@PREFIX@.ZOWE.AZWE001.F3"/&gt;
+&lt;ARCHDEF archid="AZWE001.F4"
+         newname="@PREFIX@.ZOWE.AZWE001.F4"/&gt;
+&lt;/GIMUNZIP&gt;
+//*
+</PRE><P><H3><A NAME="HDRZJUMP2" HREF="#ToC_38">Sample Jobs</A></H3>
+<P>The following sample installation jobs are provided as part of the
+product to help you install Zowe:
+<BR>
+<P><B><A NAME="TBLJOB">Table 15. Sample Installation Jobs</A></B><BR>
+<TABLE   BORDER="1">
+<TR>
+<TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Job Name
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="1%">Job Type
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="97%">Description
+</TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="2%">SMPTLIB Data Set
+</TH></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE1SMPE
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SMP/E
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to create an SMP/E environment (optional)
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE2RCVE
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">RECEIVE
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample SMP/E RECEIVE job
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE3ALOC
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ALLOCATE
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to allocate target and distribution libraries
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE4ZFS
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ALLOMZFS
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to allocate, create mountpoint, and mount zFS data sets
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE5MKD
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">MKDIR
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to invoke the supplied ZWEMKDIR EXEC to allocate
+file system paths
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE6DDEF
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">DDDEF
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to define SMP/E DDDEFs
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE7APLY
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">APPLY
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample SMP/E APPLY job
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE8ACPT
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ACCEPT
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample SMP/E ACCEPT job
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="4" WIDTH="100%"><B>Note&#58; </B> When Zowe is downloaded from the web, the RELFILE data
+set name will be prefixed by your chosen high level qualifier, as
+documented in section <A HREF="#HDRUNPAX">"Extract and expand the compressed SMPMCS and RELFILEs"</A>.
+</TD></TR></TABLE>
+<P>You can access the sample installation jobs by performing an
+SMP/E RECEIVE (refer to <A HREF="#HDRSMPREC">"Perform SMP/E RECEIVE"</A>) then copy the
+jobs from the SMPTLIB data sets to a work data
+set for editing and submission.  See <A HREF="#TBLJOB">Table 15</A> to find the
+appropriate data set.
+<P>You can also copy the sample installation jobs from the tape or
+product files by submitting the following job.
+Before you submit the job, add a job card and change the lowercase
+parameters to uppercase values to meet the requirements of your site.
+<PRE>//STEP1    EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=*
+//IN       DD DSN=ZOWE.AZWE001.F1,
+//            DISP=SHR,
+//*           VOL=SER=<B>filevol</B>,
+//            UNIT=SYSALLDA
+//OUT      DD DSNAME=<B>jcl-library-name</B>,
+//            DISP=(NEW,CATLG,DELETE),
+//            SPACE=(TRK,(5,5,5)),
+//*           VOL=SER=<B>dasdvol</B>,
+//            UNIT=SYSALLDA
+//SYSUT3   DD UNIT=SYSALLDA,SPACE=(CYL,(1,1))
+//SYSIN    DD *
+    COPY INDD=<B>IN</B>,OUTDD=OUT
+/*
+</PRE><P><B>Note: </B> When Zowe is downloaded from the web, the RELFILE data
+set name will be prefixed by your chosen high level qualifier, as
+documented in section <A HREF="#HDRUNPAX">"Extract and expand the compressed SMPMCS and RELFILEs"</A>.
+<P>See the following information to update the statements in the
+previous sample:
+<DL COMPACT>
+<DD>IN:
+<DL COMPACT>
+<DD><B>filevol</B> is the volume serial of the DASD device
+where the downloaded files reside.
+</DL>
+<DD>OUT:
+<DL COMPACT>
+<DD><B>jcl-library-name</B> is the name
+of the output data set where the sample jobs are stored.
+<DD>
+<B>dasdvol</B> is the volume serial of the DASD device where the
+output data set resides.
+Uncomment the statment if a volume serial must be provided.
+</DL>
+</DL>
+<P><H3><A NAME="HDRZJUMP3" HREF="#ToC_39">Create SMP/E environment (optional)</A></H3>
+<P>If you are using an existing CSI, do not run the sample job ZWE1SMPE.
+<P>If you choose to create a new SMP/E environment for this install, a
+sample job is provided or you may choose to use your own JCL.
+If you choose to use the sample job provided, edit and submit ZWE1SMPE.
+Consult the instructions in the sample job for more information.
+<P><B>Expected Return Codes and Messages:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="HDRSMPREC" HREF="#ToC_40">Perform SMP/E RECEIVE</A></H3>
+<P>Edit
+and submit sample job ZWE2RCVE to perform the
+SMP/E RECEIVE for Zowe. Consult the instructions in the sample
+job for more information.
+<P><B>Expected Return Codes and Messages:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="HDRALLOC" HREF="#ToC_41">Allocate SMP/E Target and Distribution Libraries</A></H3>
+<P>Edit and submit sample job ZWE3ALOC to allocate the SMP/E target
+and distribution libraries for Zowe.  Consult the instructions in
+the sample job for more information.
+<P><B>Expected Return Codes and Messages:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="HDRSMPZFS" HREF="#ToC_42">Allocate, create and mount ZFS Files (Optional)</A></H3>
+<P>This job allocates, creates a mountpoint, and mounts zFS data sets.
+<P>If you plan to install Zowe into a new z/OS UNIX file system,
+you can edit and submit the optional ZWE4ZFS job to perform the
+following tasks:
+<UL COMPACT>
+<LI>Create the z/OS UNIX file system
+<LI>Create a mountpoint
+<LI>Mount the z/OS UNIX file system on the mountpoint
+</UL>
+Consult the instructions in the sample job for more information.
+<P>The recommended z/OS UNIX file system type is <I>zFS</I>.
+The recommended mountpoint is <I>/usr/lpp/zowe</I>.
+<P>Before running the sample job to create the z/OS UNIX file system,
+you must ensure that OMVS is active on the driving system.
+zFS must be active on the driving system if you are installing
+Zowe into a file system that is zFS.
+<P>If you create a new file system for this product, consider
+updating the BPXPRMxx PARMLIB member to mount the new file system at
+IPL time. This action can be helpful if an IPL occurs before the
+installation is completed.
+<PRE>MOUNT FILESYSTEM('<B>#dsn</B>')
+  MOUNTPOINT('<B>/usr/lpp/zowe</B>')
+  MODE(RDWR)        /* can be MODE(READ) */
+  TYPE(ZFS) PARM('AGGRGROW') /* zFS, with extents */
+</PRE><P>See the following information to update the statements in the
+previous sample:
+<DL COMPACT>
+<DD><B>#dsn</B> is the name of the data set holding the z/OS
+UNIX file system.
+<DD><B>/usr/lpp/zowe</B> is the name of the mountpoint where the
+z/OS UNIX file system will be mounted.
+</DL>
+<P><B>Expected Return Codes and Messages:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="HDRMKDIR" HREF="#ToC_43">Allocate File System Paths</A></H3>
+<P>The target system HFS or zFS data set must be mounted on the driving
+system when running the sample ZWE5MKD job since the job will create
+paths in the HFS or zFS.
+<P>Before running the sample job to create the paths in the file system,
+you must ensure that OMVS is active on the driving system and that the
+target system's HFS or zFS file system is mounted to the driving system.
+zFS must be active on the driving system if you are installing Zowe
+into a file system that is zFS.
+<P>If you plan to install Zowe into a new HFS or zFS file system,
+you must create the mountpoint and mount the new file system to the
+driving system for Zowe.
+<P>The recommended mountpoint is <I>/usr/lpp/zowe</I>.
+<P>Edit and submit sample job ZWE5MKD to allocate the HFS or zFS paths
+for Zowe.  Consult the instructions in the sample job for more
+information.
+<P>If you create a new file system for this product, consider
+updating the BPXPRMxx PARMLIB member to mount the new file system at IPL
+time. This action can be helpful if an IPL occurs before the
+installation is completed.
+<P><B>Expected Return Codes and Messages:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="HDRDDDEF" HREF="#ToC_44">Create DDDEF Entries</A></H3>
+<P>Edit and submit sample job ZWE6DDEF to create DDDEF entries for the
+SMP/E target and distribution libraries for Zowe.  Consult the
+instructions in the sample job for more information.
+<P><B>Expected Return Codes and Messages:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="HDRAPPLY" HREF="#ToC_45">Perform SMP/E APPLY</A></H3>
+<OL TYPE=1>
+<P><LI>Ensure that you have the latest HOLDDATA; then edit and submit
+sample job ZWE7APLY to perform an SMP/E APPLY CHECK for Zowe.
+Consult the instructions in the sample job for more information.
+<P>The latest HOLDDATA is available through several different portals,
+including 
+<A href="http://service.software.ibm.com/holdata/390holddata.html">
+http://service.software.ibm.com/holdata/390holddata.html.</A> 
+The latest HOLDDATA may identify HIPER and FIXCAT APARs for the FMIDs
+you will be installing.  An APPLY CHECK will help you determine if any
+HIPER or FIXCAT APARs are applicable to the FMIDs you are installing.
+If there are any applicable HIPER or FIXCAT APARs, the APPLY CHECK will
+also identify fixing PTFs that will resolve the APARs, if a fixing PTF
+is available.
+<P>You should install the FMIDs regardless of the status of unresolved
+HIPER or FIXCAT APARs.  However, do not deploy the software until the
+unresolved HIPER and FIXCAT APARs have been analyzed to determine their
+applicability.  That is, before deploying the software either ensure
+fixing PTFs are applied to resolve all HIPER or FIXCAT APARs, or ensure
+the problems reported by all HIPER or FIXCAT APARs are not applicable
+to your environment.
+<P>To receive the full benefit of the SMP/E Causer SYSMOD Summary
+Report, do <I>not</I> bypass the PRE,
+ID, REQ, and IFREQ on the APPLY CHECK.
+The SMP/E root cause analysis identifies the cause only of
+<I>errors</I> and not of <I>warnings</I> (SMP/E treats
+bypassed PRE, ID, REQ, and IFREQ conditions as warnings, instead of
+errors).
+<P>Here are sample APPLY commands:
+<OL TYPE=a>
+<P><LI>To ensure that all recommended and
+critical service is installed with the FMIDs, receive the latest
+HOLDDATA and use the APPLY CHECK command as follows
+<PRE>APPLY S(fmid,fmid,...) CHECK
+FORFMID(fmid,fmid,...)
+SOURCEID(RSU*)
+FIXCAT(IBM.PRODUCTINSTALL-REQUIREDSERVICE)
+GROUPEXTEND .
+</PRE><BR><P>Some HIPER APARs might not have fixing PTFs available yet.
+You should analyze the symptom flags for the unresolved HIPER APARs to
+determine if the reported problem is applicable to your environment and
+if you should bypass the specific ERROR HOLDs in order to continue
+the installation of the FMIDs.
+<P>This method requires more initial research, but can provide
+resolution for all HIPERs that have fixing PTFs available and are not
+in a PE chain.
+Unresolved PEs or HIPERs might still exist and require
+the use of BYPASS.
+<P><LI>To install the FMIDs without regard for unresolved HIPER APARs,
+you can add the BYPASS(HOLDCLASS(HIPER))
+operand to the APPLY CHECK command. This will allow you to install FMIDs
+even though one or more unresolved HIPER APARs exist.  After the FMIDs
+are installed, use the SMP/E REPORT ERRSYSMODS command to identify
+unresolved HIPER APARs and any fixing PTFs.
+<PRE>APPLY S(fmid,fmid,...) CHECK
+FORFMID(fmid,fmid,...)
+SOURCEID(RSU*)
+FIXCAT(IBM.PRODUCTINSTALL-REQUIREDSERVICE)
+GROUPEXTEND
+BYPASS(HOLDCLASS(HIPER)) .
+ ..any other parameters documented in the program directory
+</PRE><P>This method is quicker, but requires subsequent review of the
+Exception SYSMOD report produced by the REPORT ERRSYSMODS command
+to investigate any unresolved HIPERs.  If you have received the
+latest HOLDDATA, you can also choose to use the REPORT MISSINGFIX
+command and specify Fix Category IBM.PRODUCTINSTALL-REQUIREDSERVICE to
+investigate missing recommended service.
+<P>If you bypass HOLDs during the installation of the FMIDs
+because fixing PTFs are not yet available, you can be notified
+when the fixing PTFs are available by using the
+APAR Status Tracking (AST)
+function of ServiceLink or the APAR Tracking function of ResourceLink.
+</OL>
+<P><LI>After you take actions that are indicated by the APPLY CHECK,
+remove the CHECK operand and run the job again to perform the APPLY.
+<P><B>Note: </B>The GROUPEXTEND operand indicates that SMP/E applies all requisite
+SYSMODs.  The requisite SYSMODS might be applicable to other functions.
+<P><B>Expected Return Codes and Messages from APPLY CHECK:</B> You
+will receive a return code of 0 if this job runs correctly.
+<P><B>Expected Return Codes and Messages from APPLY:</B> You will
+receive a return code of 0 if this job runs correctly.
+</OL>
+<P><H3><A NAME="Header_46" HREF="#ToC_46">Perform SMP/E ACCEPT</A></H3>
+<P>Edit and submit sample job ZWE8ACPT to perform an SMP/E ACCEPT
+CHECK for Zowe.  Consult the instructions in the sample job for
+more information.
+<P>To receive the full benefit of the SMP/E Causer SYSMOD Summary
+Report, do <I>not</I> bypass the
+PRE, ID, REQ, and IFREQ on the ACCEPT CHECK.
+The SMP/E root cause analysis
+identifies the cause of <I>errors</I> but not
+<I>warnings</I> (SMP/E treats bypassed PRE, ID, REQ, and IFREQ
+conditions as warnings rather than errors).
+<P>Before you use SMP/E to load new distribution libraries, it is
+recommended that you set the ACCJCLIN indicator in the distribution
+zone. In this way, you can save the entries that are produced from JCLIN
+in the distribution zone whenever a SYSMOD that contains inline JCLIN
+is accepted. For more information about the ACCJCLIN indicator, see the
+description of inline JCLIN in the SMP/E Commands book for details.
+<P>After you take actions that are indicated by the ACCEPT CHECK, remove
+the CHECK operand and run the job again to perform the ACCEPT.
+<P><B>Note: </B>The GROUPEXTEND operand indicates that SMP/E accepts all requisite
+SYSMODs.  The requisite SYSMODS might be applicable to other functions.
+<P><B>Expected Return Codes and Messages from ACCEPT CHECK:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P>If PTFs that contain replacement modules are accepted, SMP/E
+ACCEPT processing will link-edit or bind
+the modules into the distribution
+libraries.  During this processing, the Linkage Editor or Binder might
+issue messages that indicate unresolved external references, which will
+result in a return code of 4 during the ACCEPT phase. You can ignore
+these messages, because the distribution libraries are not executable
+and the unresolved external references do not affect the executable
+system libraries.
+<P><B>Expected Return Codes and Messages from ACCEPT:</B>
+You will receive a return code of 0 if this job runs correctly.
+<P><H3><A NAME="Header_47" HREF="#ToC_47">Run REPORT CROSSZONE</A></H3>
+<P>The SMP/E REPORT CROSSZONE command identifies requisites
+for products that are installed in separate zones.  This command
+also creates APPLY and ACCEPT commands in the SMPPUNCH data set.
+You can use the APPLY and ACCEPT commands to install those cross-zone
+requisites that the SMP/E REPORT CROSSZONE command identifies.
+<P>After you install Zowe, it is recommended that you run
+REPORT CROSSZONE against the new or updated target and distribution
+zones.  REPORT CROSSZONE requires a global zone with ZONEINDEX entries
+that describe all the target and distribution libraries to be reported
+on.
+<P>For more information about REPORT CROSSZONE, see the SMP/E manuals.
+<P><H3><A NAME="HDRCLEANUP" HREF="#ToC_48">Cleaning Up Obsolete Data Sets, Paths, and DDDEFs</A></H3>
+<P>The web download data sets listed in <A HREF="#TBLOTHRDS">Table 12</A> (section
+<A HREF="#HDRTSRQMTD">"DASD Storage Requirements"</A>) are temporary data sets. You can
+delete these data sets after you complete the SMP/E install.
+<HR><H2><A NAME="HDRACTIVAT" HREF="#ToC_49">Activating Zowe</A></H2>
+<P><H3><A NAME="Header_50" HREF="#ToC_50">File System Execution</A></H3>
+<P>If you mount the file system in which you have installed Zowe
+in read-only mode during execution, then you do not have to take
+further actions to activate Zowe.
+<HR><H2><A NAME="HDRCUSTOM" HREF="#ToC_51">Product Customization</A></H2>
+<P>The publication <CITE>
+<A href="https://docs.zowe.org/stable/user-guide/installandconfig.html">
+https://docs.zowe.org/stable/user-guide/installandconfig.html</A> </CITE> (online) contains
+the necessary information to customize and use Zowe.
+<P>Additional documentation can be found at 
+<A href="https://docs.zowe.org/stable/">
+https://docs.zowe.org/stable/.</A> 
+<HR><H1><A NAME="HDRNOTICES" HREF="#ToC_52">Notices</A></H1>
+<P>APAR numbers are provided in this document to assist in locating PTFs
+that may be required.  Ongoing problem reporting may result in
+additional APARs being created. Therefore, the APAR lists in this
+document may not be complete.
+<HR><H2><A NAME="HDRNOTITMK" HREF="#ToC_53">Trademarks</A></H2>
+<P>ZOWE, the ZOWE logo, and zowe.org are trademarks or registered
+trademarks of Linux Foundation, registered in many jurisdictions worldwide.
+Other product and service names might be trademarks of Linux Foundation or
+other companies.
+<BR>
+<HR><H1><A NAME="Header_54" HREF="#ToC_54">Reader's Comments</A></H1>
+<P><B>Program Directory for Zowe Open Source Project, February 2020</B>
+<P>
+We appreciate your input on this publication. Feel free to comment on
+the clarity, accuracy, and completeness of the information or give us
+any other feedback that you might have.
+<P>
+Report your comments in 
+<A href="https://github.com/zowe/community/issues/new/choose">
+https://github.com/zowe/community/issues/new/choose.</A> 
+<P>
+Thank you for your participation.
+<P>
+<A NAME="Bot_Of_Page"></A>
+</BODY></HTML>

@@ -168,7 +168,9 @@ fi    #
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 #TODO create cutomized PD
-_cmd touch $ship/${FMID}.htm
+# temporary hack, use manually created HTML
+paxSize=$(ls -l $ship/${FMID}.pax.Z | awk '{print $5}')
+_cmd --repl $ship/${FMID}.htm sed "s/#FTPSIZPAX/$paxSize/" $here/${FMID}.htm
 
 # zip up FMID & PD
 _zip
