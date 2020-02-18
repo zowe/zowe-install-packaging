@@ -12,8 +12,8 @@
 # Function: Copy Zowe server PROC from datasetPrefx.SZWESAMP(ZWESVSTC) to JES concatenation
 # Needs ./zowe-copy-to-JES.sh
 script_exit(){
-  echo exit $1 | tee -a ${LOG_FILE}
-  echo "</$SCRIPT>" | tee -a ${LOG_FILE}
+  echo exit $1 >> ${LOG_FILE}
+  echo "</$SCRIPT>" >> ${LOG_FILE}
   exit $1
 }
 # identify this script
@@ -23,7 +23,7 @@ LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
-echo "<$SCRIPT>" | tee -a ${LOG_FILE}
+echo "<$SCRIPT>" >> ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
 
 # check parms
@@ -81,6 +81,6 @@ do
 done
 
 ./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember
-echo "rc from zowe-copy-to-JES.sh is $?"  >> $LOG_FILE
+echo "rc from zowe-copy-to-JES.sh is $?" >> $LOG_FILE
 
 script_exit 0

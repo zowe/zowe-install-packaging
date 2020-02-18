@@ -118,6 +118,7 @@ then
 fi
 
 export ROOT_DIR=${UNPAX_DIR} #Set root so the validate scripts can work
+. ${UNPAX_DIR}/bin/internal/zowe-set-env.sh
 . ${UNPAX_DIR}/scripts/utils/configure-node.sh 1> /dev/null
 . ${UNPAX_DIR}/scripts/utils/validate-node.sh 2>&1
 
