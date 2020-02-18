@@ -170,7 +170,8 @@ fi    #
 #TODO create cutomized PD
 # temporary hack, use manually created HTML
 paxSize=$(ls -l $ship/${FMID}.pax.Z | awk '{print $5}')
-_cmd --repl $ship/${FMID}.htm sed "s/#FTPSIZPAX/$paxSize/" $here/${FMID}.htm
+_cmd --repl $log/${FMID}.htm sed "s/#FTPSIZPAX/$paxSize/" $here/${FMID}.htm
+_cmd --repl $ship/${FMID}.htm iconv -t ISO8859-1 -f IBM-1047 $log/${FMID}.htm
 
 # zip up FMID & PD
 _zip
