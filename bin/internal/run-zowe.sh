@@ -43,7 +43,7 @@ fi
 
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/internal/run-zowe.sh
 
-export _EDC_ADD_ERRNO2=1                        # show details on error
+. ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 . ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${INSTANCE_DIR}
@@ -67,7 +67,6 @@ LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 
-
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
@@ -76,9 +75,6 @@ checkForErrorsFound
 # Validate keystore directory accessible
 ${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
 checkForErrorsFound
-
-# Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
-export __UNTAGGED_READ_MODE=V6
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
