@@ -188,7 +188,8 @@
   DELGROUP &ADMINGRP.
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -200,7 +201,8 @@ $$
 /*TODO ACF2 remove security setup                                    */
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -212,6 +214,7 @@ $$
 /*TODO TSS remove security setup                                     */
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
