@@ -12,8 +12,6 @@
 
 # Verify that the Zowe pre-reqs are in place before you install Zowe on z/OS
 
-set -e
-
 #From zowe-init.sh - work out how to refactor?
 promptNodeHome(){
 loop=1
