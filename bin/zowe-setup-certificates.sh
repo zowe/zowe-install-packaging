@@ -13,6 +13,8 @@
 # - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and 
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
+# - ZOWE_KEYRING - specify zowe keyring that keeps zowe certificates, if not specified USS keystore
+#                  files will be created.
 
 
 # Set up logging
@@ -104,8 +106,13 @@ SAN="SAN=dns:${ZOWE_EXPLORER_HOST},ip:${ZOWE_IP_ADDRESS},dns:localhost.localdoma
 
 if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
   if [[ -z "${EXTERNAL_CERTIFICATE}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
-    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
-      --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
+    if [[ -z "${ZOWE_KEYRING}" ]]; then
+      ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
+        --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
+    else
+      ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-keystore ${KEYSTORE_PREFIX} \
+        --service-alias ${KEYSTORE_ALIAS} --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --local-ca-filename ${LOCAL_CA_PREFIX}
+    fi
     RC=$?
     echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
   else
@@ -121,10 +128,16 @@ else
       EXT_CA_PARM="${EXT_CA_PARM} --external-ca ${CA} "
   done
 
-  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
-    --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
-    --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX} \
-    --external-ca-filename ${EXTERNAL_CA_PREFIX}
+  if [[ -z "${ZOWE_KEYRING}" ]]; then
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
+      --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
+      --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX} \
+      --external-ca-filename ${EXTERNAL_CA_PREFIX}
+  else
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} \
+      --service-storetype "JCERACFKS" --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} \
+      --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX}  --local-ca-filename ${LOCAL_CA_PREFIX}
+  fi
   RC=$?
 
   echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
@@ -137,9 +150,15 @@ if [ "$RC" -ne "0" ]; then
 fi
 
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
-  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
-    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
-  RC=$?
+  if [[ -z "${ZOWE_KEYRING}" ]]; then
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
+      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
+    RC=$?
+  else
+    echo "Zosmf trust action for keyrings not supported yet."
+    RC=4
+  fi
+
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
@@ -153,16 +172,31 @@ echo "Creating certificates and keystores... DONE"
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
 
-cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
-  KEY_ALIAS=${KEYSTORE_ALIAS}
-  KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
-  KEYSTORE=${KEYSTORE_PREFIX}.p12
-  TRUSTSTORE=${TRUSTSTORE_PREFIX}.p12
-  KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
-  KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
-  KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
-  ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+if [[ -z "${ZOWE_KEYRING}" ]]; then
+  cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
+    KEY_ALIAS=${KEYSTORE_ALIAS}
+    KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+    KEYSTORE=${KEYSTORE_PREFIX}.p12
+    KEYSTORE_TYPE="PKCS12"
+    TRUSTSTORE=${TRUSTSTORE_PREFIX}.p12
+    KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
+    KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
+    KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
+    ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
 EOF
+else
+  cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
+    KEY_ALIAS=${KEYSTORE_ALIAS}
+    KEYSTORE_PASSWORD=""
+    KEYSTORE="safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}"
+    KEYSTORE_TYPE="JCERACFKS"
+    TRUSTSTORE="safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}"
+    KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
+    KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
+    KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
+    ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+EOF
+fi
 
 # set up privileges and ownership
 chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*

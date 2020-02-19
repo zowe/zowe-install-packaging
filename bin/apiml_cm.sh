@@ -59,11 +59,14 @@ EXTERNAL_CERTIFICATE=
 EXTERNAL_CERTIFICATE_ALIAS=
 ZOSMF_CERTIFICATE=
 
+ZOWE_USERID=ZWESVUSR
+ZOWE_KEYRING=ZWERING
+
 ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
 
 if [ -z ${TEMP_DIR+x} ]; then
-    TEMP_DIR=/tmp
+    TEMP_DIR=${TMPDIR:-/tmp}
 fi
 
 function pkeytool {
@@ -90,16 +93,26 @@ function clean_service {
 }
 
 function create_certificate_authority {
-    echo "Generate keystore with the local CA private key and local CA public certificate:"
-    pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
-        -dname "${LOCAL_CA_DNAME}" -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 -validity ${LOCAL_CA_VALIDITY} \
-        -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
-    chmod 600 ${LOCAL_CA_FILENAME}.keystore.p12
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        echo "Generate keyring with the local CA private key and local CA public certificate:"
+        pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
+            -dname "${LOCAL_CA_DNAME}" -storetype ${SERVICE_STORETYPE} -validity ${LOCAL_CA_VALIDITY} \
+            -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 
-    echo "Export local CA public certificate:"
-    pkeytool -export $V -alias ${LOCAL_CA_ALIAS} -file ${LOCAL_CA_FILENAME}.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 -rfc \
-        -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12
+        echo "Export local CA public certificate:"
+        pkeytool -export $V -alias ${LOCAL_CA_ALIAS} -file ${LOCAL_CA_FILENAME}.cer -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -rfc \
+            -storetype ${SERVICE_STORETYPE} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+    else
+        echo "Generate keystore with the local CA private key and local CA public certificate:"
+        pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
+            -dname "${LOCAL_CA_DNAME}" -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${LOCAL_CA_VALIDITY} \
+            -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
+        chmod 600 ${LOCAL_CA_FILENAME}.keystore.p12
 
+        echo "Export local CA public certificate:"
+        pkeytool -export $V -alias ${LOCAL_CA_ALIAS} -file ${LOCAL_CA_FILENAME}.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 -rfc \
+            -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype ${SERVICE_STORETYPE}
+    fi
     if [ `uname` = "OS/390" ]; then
         iconv -f ISO8859-1 -t IBM-1047 ${LOCAL_CA_FILENAME}.cer > ${LOCAL_CA_FILENAME}.cer-ebcdic
     fi
@@ -122,15 +135,25 @@ function add_external_ca {
 }
 
 function create_service_certificate_and_csr {
-    if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
-    then
-        echo "Generate service private key and service:"
-        pkeytool -genkeypair $V -alias ${SERVICE_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} \
-            -storetype PKCS12 -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY}
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        echo "Generate service private key and service into the keyring:"
+        pkeytool -genkeypair $V -alias ${SERVICE_ALIAS} -keyalg RSA -keysize 2048 -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
+            -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 
-        echo "Generate CSR for the the service certificate:"
-        pkeytool -certreq $V -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -file ${SERVICE_KEYSTORE}.csr \
-            -keyalg RSA -storetype PKCS12 -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY}
+        echo "Generate CSR for the service certificate in the keyring:"
+        pkeytool -certreq $V -alias ${SERVICE_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -file ${SERVICE_KEYSTORE}.csr \
+            -keyalg RSA -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+    else
+        if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
+        then
+            echo "Generate service private key and service:"
+            pkeytool -genkeypair $V -alias ${SERVICE_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} \
+                -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY}
+
+            echo "Generate CSR for the the service certificate:"
+            pkeytool -certreq $V -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -file ${SERVICE_KEYSTORE}.csr \
+                -keyalg RSA -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY}
+        fi
     fi
 }
 
@@ -145,16 +168,25 @@ function create_self_signed_service {
 }
 
 function sign_csr_using_local_ca {
-    echo "Sign the CSR using the Certificate Authority:"
-    pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
-        -alias ${LOCAL_CA_ALIAS} -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 \
-        -ext ${SERVICE_EXT} -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
-        -validity ${SERVICE_VALIDITY}
+     echo "Sign the CSR using the Certificate Authority:"
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
+            -alias ${LOCAL_CA_ALIAS} -storetype ${SERVICE_STORETYPE} \
+            -ext ${SERVICE_EXT} -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
+            -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+    else
+        pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
+            -alias ${LOCAL_CA_ALIAS} -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype ${SERVICE_STORETYPE} \
+            -ext ${SERVICE_EXT} -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
+            -validity ${SERVICE_VALIDITY}
+    fi
 }
 
 function import_local_ca_certificate {
-    echo "Import the local Certificate Authority to the truststore:"
-    pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
+    if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
+        echo "Import the local Certificate Authority to the truststore:"
+        pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE}
+    fi
 }
 
 function import_external_ca_certificates {
@@ -170,11 +202,17 @@ function import_external_ca_certificates {
 }
 
 function import_signed_certificate {
-    echo "Import the Certificate Authority to the keystore:"
-    pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        echo "Import the signed CSR to the keystore:"
+        pkeytool -importcert $V -trustcacerts -noprompt -file ${SERVICE_KEYSTORE}_signed.cer -alias ${SERVICE_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
+        -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+    else
+        echo "Import the Certificate Authority to the keystore:"
+        pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE}
 
-    echo "Import the signed CSR to the keystore:"
-    pkeytool -importcert $V -trustcacerts -noprompt -file ${SERVICE_KEYSTORE}_signed.cer -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
+        echo "Import the signed CSR to the keystore:"
+        pkeytool -importcert $V -trustcacerts -noprompt -file ${SERVICE_KEYSTORE}_signed.cer -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE}
+    fi
 }
 
 function import_external_certificate {
@@ -189,15 +227,27 @@ function import_external_certificate {
     fi
 
     if [ -n "${EXTERNAL_CERTIFICATE}" ]; then
-        echo "Import the signed certificate and its private key to the keystore:"
-        pkeytool -importkeystore $V -deststorepass ${SERVICE_PASSWORD} -destkeypass ${SERVICE_PASSWORD} -destkeystore ${SERVICE_KEYSTORE}.p12 -deststoretype PKCS12 -destalias ${SERVICE_ALIAS} \
-          -srckeystore ${EXTERNAL_CERTIFICATE} -srcstoretype PKCS12 -srcstorepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -srcalias ${EXTERNAL_CERTIFICATE_ALIAS}
+        if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+            echo "Import the signed certificate and its private key to the keyring:"
+            pkeytool -importkeystore $V -destkeystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -deststoretype ${SERVICE_STORETYPE} -destalias ${SERVICE_ALIAS} \
+              -srckeystore ${EXTERNAL_CERTIFICATE} -srcstoretype PKCS12 -srcstorepass ${SERVICE_PASSWORD} -srcalias ${EXTERNAL_CERTIFICATE_ALIAS} \
+              -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+        else
+            echo "Import the signed certificate and its private key to the keystore:"
+            pkeytool -importkeystore $V -deststorepass ${SERVICE_PASSWORD} -destkeypass ${SERVICE_PASSWORD} -destkeystore ${SERVICE_KEYSTORE}.p12 -deststoretype ${SERVICE_STORETYPE} -destalias ${SERVICE_ALIAS} \
+              -srckeystore ${EXTERNAL_CERTIFICATE} -srcstoretype PKCS12 -srcstorepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -srcalias ${EXTERNAL_CERTIFICATE_ALIAS}
+        fi
     fi
 }
 
 function export_service_certificate {
     echo "Export service certificate to the PEM format"
-    pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storetype PKCS12 -storepass ${SERVICE_PASSWORD} -rfc -file ${SERVICE_KEYSTORE}.cer
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} -rfc -file ${SERVICE_KEYSTORE}.cer \
+          -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+    else
+        pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storetype ${SERVICE_STORETYPE} -storepass ${SERVICE_PASSWORD} -rfc -file ${SERVICE_KEYSTORE}.cer
+    fi
 
     if [ `uname` = "OS/390" ]; then
         iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.cer > ${SERVICE_KEYSTORE}.cer-ebcdic
@@ -215,9 +265,10 @@ import java.io.FileWriter;
 import java.security.Key;
 import java.security.KeyStore;
 import java.util.Base64;
+import com.ibm.crypto.provider.RACFInputStream;
 
 public class ExportPrivateKey {
-    private File keystoreFile;
+    private String keystoreName;
     private String keyStoreType;
     private char[] keyStorePassword;
     private char[] keyPassword;
@@ -226,7 +277,13 @@ public class ExportPrivateKey {
 
     public void export() throws Exception {
         KeyStore keystore = KeyStore.getInstance(keyStoreType);
-        keystore.load(new FileInputStream(keystoreFile), keyStorePassword);
+        if ("JCERACFKS".equalsIgnoreCase(keyStoreType)) {
+            String splits[] = keystoreName.replaceFirst("safkeyring://", "").split("/");
+            keystore.load(new RACFInputStream(splits[0], splits[1], keyStorePassword), keyStorePassword);
+
+        } else {
+            keystore.load(new FileInputStream(new File(keystoreName)), keyStorePassword);
+        }
         Key key = keystore.getKey(alias, keyPassword);
         String encoded = Base64.getEncoder().encodeToString(key.getEncoded());
         FileWriter fw = new FileWriter(exportedFile);
@@ -244,7 +301,7 @@ public class ExportPrivateKey {
 
     public static void main(String args[]) throws Exception {
         ExportPrivateKey export = new ExportPrivateKey();
-        export.keystoreFile = new File(args[0]);
+        export.keystoreName = args[0];
         export.keyStoreType = args[1];
         export.keyStorePassword = args[2].toCharArray();
         export.alias = args[3];
@@ -257,12 +314,17 @@ EOF
     echo "cat returned $?"
     javac ${TEMP_DIR}/ExportPrivateKey.java
     echo "javac returned $?"
-    java -cp ${TEMP_DIR} ExportPrivateKey ${SERVICE_KEYSTORE}.p12 PKCS12 ${SERVICE_PASSWORD} ${SERVICE_ALIAS} ${SERVICE_PASSWORD} ${SERVICE_KEYSTORE}.key
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        java -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
+             -cp ${TEMP_DIR} ExportPrivateKey safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} ${SERVICE_STORETYPE} "" ${SERVICE_ALIAS} "" ${SERVICE_KEYSTORE}.key
+    else
+        java -cp ${TEMP_DIR} ExportPrivateKey ${SERVICE_KEYSTORE}.p12 ${SERVICE_STORETYPE} ${SERVICE_PASSWORD} ${SERVICE_ALIAS} ${SERVICE_PASSWORD} ${SERVICE_KEYSTORE}.key
+    fi
     echo "java returned $?"
     rm ${TEMP_DIR}/ExportPrivateKey.java ${TEMP_DIR}/ExportPrivateKey.class
 }
 
-function get_service_certificate_form_url {
+function get_service_certificate_from_url {
     echo "Exporting service certificate"
     echo "TEMP_DIR=$TEMP_DIR"
     cat <<EOF >$TEMP_DIR/GetCertificate.java
@@ -361,15 +423,27 @@ function new_self_signed_service {
 
 function trust {
     echo "Import a certificate to the truststore:"
-    pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
+            -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+    else
+        pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE}
+    fi
 }
 
 function jwt_key_gen_and_export {
     echo "Generates key pair for JWT token secret and exports the public key"
-    pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 \
-    -dname "${SERVICE_DNAME}" -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
-    pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} \
-    -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
+          -dname "${SERVICE_DNAME}" -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+        pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
+          -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+    else
+        pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 \
+        -dname "${SERVICE_DNAME}" -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
+        pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} \
+        -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+    fi
 }
 
 function trust_zosmf {
@@ -379,10 +453,15 @@ function trust_zosmf {
     CER_DIR=`dirname ${SERVICE_TRUSTSTORE}/temp`
     mkdir -p $CER_DIR
     ALIAS="zosmf"
-    get_service_certificate_form_url
+    get_service_certificate_from_url
     for entry in "${CER_DIR}"/*; do
-      echo "z/OSMF certificate fingerprint:" >&5
-      cat ${entry} | openssl x509 -sha1 -noout -fingerprint -subject >&5
+      if [[ "$LOG" != "" ]]; then
+        echo "z/OSMF certificate fingerprint:" >&5
+        cat ${entry} | openssl x509 -sha1 -noout -fingerprint -subject >&5
+      else
+        echo "z/OSMF certificate fingerprint:"
+        cat ${entry} | openssl x509 -sha1 -noout -fingerprint -subject
+      fi
       CERTIFICATE=${entry}
       entry=${entry##*/}
       ALIAS=${entry%.cer}
@@ -398,6 +477,10 @@ function trust_zosmf {
       trust
     done
   fi
+}
+
+function toUpperCase {
+    echo $1 | tr '[:lower:]' '[:upper:]'
 }
 
 while [ "$1" != "" ]; do
@@ -445,7 +528,7 @@ while [ "$1" != "" ]; do
                                 SERVICE_TRUSTSTORE=$1
                                 ;;
         --service-storetype )  shift
-                                SERVICE_STORETYPE=$1
+                                SERVICE_STORETYPE=`toUpperCase $1`
                                 ;;
         --service-dname )       shift
                                 SERVICE_DNAME=$1
@@ -470,6 +553,12 @@ while [ "$1" != "" ]; do
                                 ;;
         --zosmf-certificate )   shift
                                 ZOSMF_CERTIFICATE=$1
+                                ;;
+        --zowe-keyring )       shift
+                                ZOWE_KEYRING=$1
+                                ;;
+        --zowe-userid )        shift
+                                ZOWE_USERID=$1
                                 ;;
         --certificate )         shift
                                 CERTIFICATE=$1
