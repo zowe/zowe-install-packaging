@@ -25,7 +25,16 @@
 
 echo "<zowe-init.sh>" >> $LOG_FILE
 
-#set-x
+# If -v passed in any validation failure result in the script exiting, other they are logged and continue
+while getopts "s" opt; do
+  case $opt in
+    s) SKIP_NODE=1;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
 
 getZosmfHttpsPort() {
     ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
@@ -168,7 +177,8 @@ then
 else
     echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
 fi
-if ! ${NONODE}; then
+if [[ ! -z ${SKIP_NODE} ]]
+then
     promptNodeHome ${NODE_HOME}
 fi
 

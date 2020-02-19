@@ -69,8 +69,7 @@ fi
 
 ZOWE_EXPLORER_HOST=${HOSTNAME}
 ZOWE_IP_ADDRESS=${IPADDRESS}
-NONODE=true #skip node check
-. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
 
 ZOWE_CERT_ENV_NAME=zowe-certificates.env
