@@ -35,6 +35,7 @@ while getopts "s" opt; do
       ;;
   esac
 done
+shift "$(($OPTIND-1))"
 
 getZosmfHttpsPort() {
     ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
