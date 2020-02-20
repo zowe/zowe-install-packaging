@@ -18,7 +18,6 @@
 # ZOWE_EXPLORER_HOST points to the current host name
 # ZOWE_IP_ADDRESS is the external IP address of the host ZOWE_EXPLORER_HOST where Zowe is installed 
 # NODE_HOME points to the node directory
-# NONODE if true skips node check
 
 # This script checks to see whether they are set, and if not tries to locate them, 
 # and if they can't be found prompt for them before setting them
