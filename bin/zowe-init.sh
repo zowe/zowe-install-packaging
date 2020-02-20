@@ -25,7 +25,8 @@
 
 echo "<zowe-init.sh>" >> $LOG_FILE
 
-# If -v passed in any validation failure result in the script exiting, other they are logged and continue
+# process input parameters.
+OPTIND=1
 while getopts "s" opt; do
   case $opt in
     s) SKIP_NODE=1;;
@@ -178,7 +179,7 @@ then
 else
     echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
 fi
-if [[ ! -z ${SKIP_NODE} ]]
+if [[ ${SKIP_NODE} != 1 ]]
 then
     promptNodeHome ${NODE_HOME}
 fi
