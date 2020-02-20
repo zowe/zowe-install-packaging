@@ -205,7 +205,7 @@
       "componentGroup": "Secure Credential Store Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-scs-plugin",
-        "tag": "v4.0.0",
+        "tag": "v4.0.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
