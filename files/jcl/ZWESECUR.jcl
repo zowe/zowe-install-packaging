@@ -284,6 +284,11 @@
   RDEFINE FACILITY BPX.SERVER UACC(NONE)
   PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&ZOWEUSER.)
 
+/* permit Zowe main server to set job name                           */
+  RLIST   FACILITY BPX.JOBNAME ALL
+  RDEFINE FACILITY BPX.JOBNAME UACC(NONE)
+  PERMIT BPX.JOBNAME CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
@@ -299,6 +304,7 @@
   RLIST   FACILITY ZWES.IS           ALL
   RLIST   FACILITY BPX.DAEMON        ALL
   RLIST   FACILITY BPX.SERVER        ALL
+  RLIST   FACILITY BPX.JOBNAME       ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
@@ -326,7 +332,8 @@
   LISTDSD PREFIX(&HLQ.) ALL
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -440,6 +447,9 @@ F ACF2,REBUILD(FAC)
 SET RESOURCE(FAC)
 RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
 RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
+*
+* Allow STCGROUP role access to BPX.JOBNAME
+RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE(&STCGROUP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 ** comment out to not use SUPERUSER.FILESYS, see JCL comments
@@ -465,7 +475,8 @@ RECKEY $&HLQ. ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 LIST &HLQ.
 *
 * .................................................................
-* only the last RC is returned, this comment ensures it is a 0
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -556,9 +567,13 @@ $$
 /*            it on a production system.                             */
   TSS ADD(&FACACID.) IBMFAC(BPX.)
   TSS WHOHAS IBMFAC(BPX.DAEMON)
-  TSS PER(&ZOWEUSER.) IBMFAC(BPX.DAEMON) ACC(UPDATE)
+  TSS PER(&ZOWEUSER.) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
   TSS WHOHAS IBMFAC(BPX.SERVER)
-  TSS PER(&ZOWEUSER.) IBMFAC(BPX.SERVER) ACC(UPDATE)
+  TSS PER(&ZOWEUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+
+/* Allow ZOWEUSER access to BPX.JOBNAME                              */
+  TSS WHOHAS IBMFAC(BPX.JOBNAME)
+  TSS PER(&ZOWEUSER.) IBMFAC(BPX.JOBNAME) ACCESS(READ)
 
 /** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
 /** permit Zowe main server to write persistent data                 */
@@ -607,6 +622,7 @@ $$
 /* TSS ADD(user_acid) FAC(ZOWE)                                      */
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
