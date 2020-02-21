@@ -597,30 +597,6 @@ $$
 /* show results                                                      */
   TSS WHOHAS DATASET(&HLQ.)
 
-/* If any of these started tasks are multiusers address spaces       */
-/* a TSS FACILITY needs to be defined and assigned to the started    */
-/* and should not be using the STC FACILITY . The all acids signing  */
-/* on to the started tasks will need to be authorized to the         */
-/* FACILITY.                                                         */
-/*                                                                   */
-/* Create FACILITY example:                                          */
-/* In the TSSPARMS add the following lines to create                 */
-/* the new FACILITY.                                                 */
-/*                                                                   */
-/* FACILITY(USER11=NAME=ZOWE)                                        */
-/* FACILITY(ZOWE=MODE=FAIL)                                          */
-/* FACILITY(ZOWE=RES)                                                */
-/*                                                                   */
-/* To assign the FACILITY to the started task issue the following    */
-/* command:                                                          */
-/*                                                                   */
-/* TSS ADD(started_task_acid) MASTFAC(ZOWE)                          */
-/*                                                                   */
-/* To authorize a user to signon to the FACILITY, issues the         */
-/* following command.                                                */
-/*                                                                   */
-/* TSS ADD(user_acid) FAC(ZOWE)                                      */
-
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
 PROFILE
