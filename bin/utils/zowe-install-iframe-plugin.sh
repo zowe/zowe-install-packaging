@@ -39,7 +39,7 @@ if ! [ -f "$5" ]; then
 fi
 
 if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
-  PLUGIN_FOLDER=$PLUGIN_DIR_OVERRIDE
+  PLUGIN_DIR=$PLUGIN_DIR_OVERRIDE
 fi
 
 # remove any previous plugin files
@@ -65,7 +65,7 @@ cat <<EOF >$PLUGIN_DIR/web/index.html
     </body>
 </html>
 EOF
-chtag -tc 1047 $PLUGIN_FOLDER/web/index.html
+chtag -tc 1047 $PLUGIN_DIR/web/index.html
 
 cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
 {
@@ -91,7 +91,7 @@ cat <<EOF >$PLUGIN_DIR/pluginDefinition.json
   }
 }
 EOF
-chtag -tc 1047 $PLUGIN_FOLDER/pluginDefinition.json
+chtag -tc 1047 $PLUGIN_DIR/pluginDefinition.json
 
 chmod -R a+rx $PLUGIN_DIR
 ${INSTANCE_DIR}/bin/install-app.sh $PLUGIN_DIR
