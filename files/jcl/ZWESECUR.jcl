@@ -552,6 +552,33 @@ $$
   TSS ADD(STC) PROCNAME(&AUXSTC.) ACID(&AUXUSER.)
   TSS ADD(&AUXUSER.) FAC(STC)
 
+/* The &ZOWESTC started task is a multi-user address space therefore */
+/* a TSS FACILITY needs to be defined and assigned to the started    */
+/* task. The all acids signing on to the started task will need to   */
+/* be authorized to the FACILITY.                                    */
+/*                                                                   */
+/* The following steps have to performed manually. See more details  */
+/* in the 'Configuring the z/OS system for Zowe' section,            */
+/* https://docs.zowe.org/stable/user-guide/configure-zos-system.html */
+/*                                                                   */
+/* Create FACILITY example:                                          */
+/* In the TSSPARMS add the following lines to create                 */
+/* the new FACILITY.                                                 */
+/*                                                                   */
+/* FACILITY(USER11=NAME=ZOWE)                                        */
+/* FACILITY(ZOWE=MODE=FAIL)                                          */
+/* FACILITY(ZOWE=RES)                                                */
+/*                                                                   */
+/* To assign the FACILITY to the started task issue the following    */
+/* command:                                                          */
+/*                                                                   */
+/* TSS ADD(started_task_acid) MASTFAC(ZOWE)                          */
+/*                                                                   */
+/* To authorize a user to signon to the FACILITY, issues the         */
+/* following command.                                                */
+/*                                                                   */
+/* TSS ADD(user_acid) FAC(ZOWE)                                      */
+
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use XMEM cross memory server           */
@@ -596,30 +623,6 @@ $$
 
 /* show results                                                      */
   TSS WHOHAS DATASET(&HLQ.)
-
-/* If any of these started tasks are multiusers address spaces       */
-/* a TSS FACILITY needs to be defined and assigned to the started    */
-/* and should not be using the STC FACILITY . The all acids signing  */
-/* on to the started tasks will need to be authorized to the         */
-/* FACILITY.                                                         */
-/*                                                                   */
-/* Create FACILITY example:                                          */
-/* In the TSSPARMS add the following lines to create                 */
-/* the new FACILITY.                                                 */
-/*                                                                   */
-/* FACILITY(USER11=NAME=ZOWE)                                        */
-/* FACILITY(ZOWE=MODE=FAIL)                                          */
-/* FACILITY(ZOWE=RES)                                                */
-/*                                                                   */
-/* To assign the FACILITY to the started task issue the following    */
-/* command:                                                          */
-/*                                                                   */
-/* TSS ADD(started_task_acid) MASTFAC(ZOWE)                          */
-/*                                                                   */
-/* To authorize a user to signon to the FACILITY, issues the         */
-/* following command.                                                */
-/*                                                                   */
-/* TSS ADD(user_acid) FAC(ZOWE)                                      */
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
