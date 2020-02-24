@@ -65,10 +65,5 @@ csihlq: '#csihlq'
 # Change dzone to your CSI distribution zone name.
 dzone: '#dzone'
 
-# This product can install in multiple SREL subsystems; 
-# Z038 (z/OS), P115 (IMS/DB2), and C150 (CICS). Update the
-# set srel  to select the desired SREL.
-srel: 'Z038'
-
 # Change ibmTemplate to NO, if you are not generating IBM complient JCL templates
 ibmTemplate: 'YES'

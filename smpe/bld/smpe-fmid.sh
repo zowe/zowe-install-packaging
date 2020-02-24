@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
 #% package prepared product as base FMID (++FUNCTION)
@@ -71,22 +71,29 @@ done    # for dsn
 # TODO save target & DLIB info for PD (data in ZWE3ALOC)
 # TODO ensure ZWE3ALOC target allocations match community build
 
+# +----------------------------------------------------------------+
+# | ************************************************************** |
+# | * Do NOT change DCB or size data without contacting an IBM   * |
+# | * employed build engineer as Shopz has specific requirements * |
+# | ************************************************************** |
+# +----------------------------------------------------------------+
+
 # F1 - only SMP/E install related
 dd="S${prefix}SAMP"
 list=$(awk '/^'$dd'/{print $2}' $log/$parts \
      | grep -e ^${prefix}[[:digit:]] -e ^${prefix}MKDIR$)
-_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F1" "FB" "80" "PO" "5,2"
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F1" "FB" "80" "8800" "PO" "5,5"
 
 # F2 - all sample members except SMP/E install related
 dd="S${prefix}SAMP"
 list=$(awk '/^'$dd'/{print $2}' $log/$parts \
      | grep -v ^${prefix}[[:digit:]] | grep -v ^${prefix}MKDIR$)
-_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "PO" "5,2"
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "8800" "PO" "5,5"
 
 # F3 - all load modules
 dd="S${prefix}AUTH"
 list=$(awk '/^'$dd'/{print $2}' $log/$parts)
-_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "PO" "5,2"
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "6144" "PO" "30,5"
 
 # F4 - all USS files
 # half-track on 3390 DASD is 27998 bytes
@@ -94,7 +101,7 @@ _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "PO" "5,2"
 # subtract 4 for variable record length field gives LRECL(6995)
 dd="S${prefix}ZFS"
 list=$(awk '/^'$dd'/{print $2}' $log/$parts)
-_copyUssMvs $ussI "${mcsHlq}.F4" "VB" "6995" "PO" "8000,800"
+_copyUssMvs $ussI "${mcsHlq}.F4" "VB" "6995" "6999" "PO" "9000,300"
 
 test "$debug" && echo "< _relFiles"
 }    # _relFiles
@@ -230,8 +237,9 @@ test "$debug" && echo "< _verify"
 # $2: output data set name
 # $3: record format; {FB | U | VB}
 # $4: logical record length, use ** for RECFM(U)
-# $5: data set organisation; {PO | PS}
-# $6: space in tracks; primary[,secondary]
+# $5: block size
+# $6: data set organisation; {PO | PS}
+# $7: space in tracks; primary[,secondary]
 # ---------------------------------------------------------------------
 function _copyMvsMvs
 {
@@ -242,9 +250,9 @@ echo "-- populate $2 with $1"
 # create target data set
 if test -z "$fmidVolser"
 then
-  $here/$allocScript "$2" "$3" "$4" "$5" "$6"
+  $here/$allocScript -B "$5" "$2" "$3" "$4" "$6" "$7"
 else
-  $here/$allocScript -V "$fmidVolser" "$2" "$3" "$4" "$5" "$6"
+  $here/$allocScript -V "$fmidVolser" -B "$5" "$2" "$3" "$4" "$6" "$7"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
@@ -282,8 +290,9 @@ test "$debug" && echo "< _copyMvsMvs"
 # $2: output data set name
 # $3: record format; {FB | U | VB}
 # $4: logical record length, use ** for RECFM(U)
-# $5: data set organisation; {PO | PS}
-# $6: space in tracks; primary[,secondary]
+# $5: block size
+# $6: data set organisation; {PO | PS}
+# $7: space in tracks; primary[,secondary]
 # ---------------------------------------------------------------------
 function _copyUssMvs
 {
@@ -294,9 +303,9 @@ echo "-- populate $2 with $1"
 # validate/create target data set
 if test -z "$fmidVolser"
 then
-  $here/$allocScript "$2" "$3" "$4" "$5" "$6"
+  $here/$allocScript -B "$5" "$2" "$3" "$4" "$6" "$7"
 else
-  $here/$allocScript -V "$fmidVolser" "$2" "$3" "$4" "$5" "$6"
+  $here/$allocScript -V "$fmidVolser" -B "$5" "$2" "$3" "$4" "$6" "$7"
 fi    #
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
