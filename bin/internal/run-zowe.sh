@@ -54,7 +54,12 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 mkdir -p ${WORKSPACE_DIR}
 
 # Read in configuration
-. ${INSTANCE_DIR}/bin/internal/read-instance.sh
+if [ -e "${INSTANCE_DIR}/bin/internal/read-instance.sh" ]
+then
+  . ${INSTANCE_DIR}/bin/internal/read-instance.sh
+else
+  . ${INSTANCE_DIR}/bin/read-instance.sh
+fi
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 ZOWE_APIM_GATEWAY_PORT=$GATEWAY_PORT
 ZOWE_IPADDRESS=$ZOWE_IP_ADDRESS
