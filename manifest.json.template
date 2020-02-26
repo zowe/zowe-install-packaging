@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "1.9.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.9.0-20200221.154829.pax"
+      "artifact": "zlux-core-1.9.0-20200226.162344.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "1.9.0-RC",
@@ -64,7 +64,7 @@
     "org.zowe.zss": {
       "version": "1.9.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-1.9.0-rc-41-20200219211110.pax"
+      "artifact": "zss-1.9.0-rc-43-20200226162911.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "0.2.11",
