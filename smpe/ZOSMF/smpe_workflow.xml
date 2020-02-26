@@ -281,6 +281,17 @@
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
 	</variable>
+		<variable name="sysmodsCheck" scope="instance" visibility="public">
+		<label>CHECK operand</label>
+		<abstract>A good way to see which SYSMODs are included before you actually install them is with the CHECK operand.</abstract>
+		<description>There might be times when you want to&lt;br&gt;see which SYSMODs are included before&lt;br&gt;you actually install them. You can do this by&lt;br&gt;including the CHECK operand with the commands.</description>
+		<category>General</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<choice>YES</choice>
+			<choice>NO</choice>
+			<default>NO</default>
+		</string>
+	</variable>
 	<step name="define_variables" optional="false">
 		<title>Define Variables</title>
 		<description>Step to define the variables</description>
@@ -309,6 +320,7 @@
 		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="sysmodsCheck" noPromptIfSet="false" required="false" scope="instance"/>
 		<instructions substitution="false">Run this step to initialize variable values</instructions>
 		<weight>1</weight>
 		<autoEnable>true</autoEnable>
