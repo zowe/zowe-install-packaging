@@ -69,7 +69,7 @@ fi
 
 ZOWE_EXPLORER_HOST=${HOSTNAME}
 ZOWE_IP_ADDRESS=${IPADDRESS}
-. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
 
 ZOWE_CERT_ENV_NAME=zowe-certificates.env
@@ -144,7 +144,11 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See $LOG_FILE for more details")
-      (>&2 echo "WARNING: z/OSMF is not trusted by the API Mediation Layer. Follow instructions in Zowe documentation about manual steps to trust z/OSMF")
+      (>&2 echo "ERROR: z/OSMF is not trusted by the API Mediation Layer. Make sure ZOWE_ZOSMF_HOST and ZOWE_ZOSMF_PORT variables define the desired z/OSMF instance.")
+      (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
+      (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
+      echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+      exit 1
   fi
 fi
 echo "Creating certificates and keystores... DONE"

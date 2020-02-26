@@ -43,7 +43,7 @@ fi
 
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/internal/run-zowe.sh
 
-export _EDC_ADD_ERRNO2=1                        # show details on error
+. ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 . ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${INSTANCE_DIR}
@@ -54,7 +54,12 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 mkdir -p ${WORKSPACE_DIR}
 
 # Read in configuration
-. ${INSTANCE_DIR}/bin/internal/read-instance.sh
+if [ -e "${INSTANCE_DIR}/bin/internal/read-instance.sh" ]
+then
+  . ${INSTANCE_DIR}/bin/internal/read-instance.sh
+else
+  . ${INSTANCE_DIR}/bin/read-instance.sh
+fi
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 ZOWE_APIM_GATEWAY_PORT=$GATEWAY_PORT
 ZOWE_IPADDRESS=$ZOWE_IP_ADDRESS
@@ -67,7 +72,6 @@ LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 
-
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
@@ -76,9 +80,6 @@ checkForErrorsFound
 # Validate keystore directory accessible
 ${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
 checkForErrorsFound
-
-# Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
-export __UNTAGGED_READ_MODE=V6
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
@@ -114,9 +115,10 @@ LAUNCH_COMPONENTS=${INTERNAL_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
 # Validate component properties if script exists
 ERRORS_FOUND=0
-for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  VALIDATE_SCRIPT=${i}/validate.sh
+
+  VALIDATE_SCRIPT=${LAUNCH_COMPONENT}/validate.sh
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
     $(. ${VALIDATE_SCRIPT})
@@ -161,16 +163,16 @@ EOF
 cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
 # Run setup/configure on components if script exists
-for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  CONFIGURE_SCRIPT=${i}/configure.sh
+  CONFIGURE_SCRIPT=${LAUNCH_COMPONENT}/configure.sh
   if [[ -f ${CONFIGURE_SCRIPT} ]]
   then
     . ${CONFIGURE_SCRIPT}
   fi
 done
 
-for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  . ${i}/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
+  . ${LAUNCH_COMPONENT}/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
 done

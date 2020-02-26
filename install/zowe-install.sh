@@ -35,18 +35,9 @@ while getopts "f:h:i:d" opt; do
 done
 shift $(($OPTIND-1))
 
-# Ensure that newly created files are in EBCDIC codepage
-export _CEE_RUNOPTS=""
-export _TAG_REDIR_IN=""
-export _TAG_REDIR_OUT=""
-export _TAG_REDIR_ERR=""
-export _BPXK_AUTOCVT="OFF"
-
-export _EDC_ADD_ERRNO2=1                        # show details on error
-unset ENV             # just in case, as it can cause unexpected output
-umask 0022                                       # similar to chmod 755
-
 export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
+
+. ${INSTALL_DIR}/bin/internal/zowe-set-env.sh
 
 # extract Zowe version from manifest.json
 export ZOWE_VERSION=$(cat $INSTALL_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
@@ -164,9 +155,6 @@ cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/bin
 
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
-
-#TODO LATER - do we need a better location rather than scripts - covered by zip #519
-cp $INSTALL_DIR/files/jcl/ZWESVSTC.jcl ${ZOWE_ROOT_DIR}/scripts/templates/ZWESVSTC.jcl
 
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
