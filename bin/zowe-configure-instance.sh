@@ -52,7 +52,7 @@ else
   fi
 fi
 
-if [[ ${INSTANCE_DIR} == "${ZOWE_ROOT_DIR}/*" ]]
+if [[ ${INSTANCE_DIR} == "${ZOWE_ROOT_DIR}*" ]]
 then
   echo "The instance directory chosen ${INSTANCE_DIR} was within the zowe runtime install directory ${ZOWE_ROOT_DIR}. This will cause the instance directory to be overwritten when an upgrade is applied. Please choose an alternative instance directory and re-run 'zowe-configure-instance.sh -c <Instance directory>'"
   exit 1
