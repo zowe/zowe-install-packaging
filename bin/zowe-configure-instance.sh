@@ -111,6 +111,8 @@ check_existing_instance_for_updates() {
   else
     echo_and_log "No updates required"
   fi
+  #TODO move to top after shebang?
+  echo "\n# $(date +"%y.%m.%d.%H.%M.%S") updated version to ${ZOWE_VERSION}" >> $INSTANCE
 }
 
 echo "Creating zowe instance in ${INSTANCE_DIR}"
