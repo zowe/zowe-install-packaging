@@ -35,6 +35,7 @@ then
 	export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
+ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 . ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
 
 if [[ -z ${INSTANCE_DIR} ]]
@@ -72,6 +73,7 @@ create_new_instance() {
     -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
     -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
     -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
+    -e "s#{{version}}#${ZOWE_VERSION}#" \
     "${TEMPLATE}" \
     > "${INSTANCE}"
 
