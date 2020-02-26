@@ -57,7 +57,7 @@
   SET BOUNDARY(${dzone}) .
   ACCEPT SELECT([FMID])
          BYPASS(HOLDSYS,HOLDUSER)
-#if( $sysmodsCheck != 'YES')
+#if( $sysmodsCheck == 'YES')
          CHECK
 #end
          COMPRESS(ALL) .
