@@ -27,7 +27,7 @@ node('ibm-jenkins-slave-nvm') {
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
   def cliSourceBuildInfo
-  def cliPluginSourceBuildInfo
+  def cliPluginsSourceBuildInfo
 
   def testRegBuildErrorUrl
   def testSmpeBuildErrorUrl
@@ -111,7 +111,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "Ignored: ${e}"
       }
       try {
-        cliPluginSourceBuildInfo = pipeline.artifactory.getArtifact([
+        cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/zowe-cli-plugins-*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
         ])
@@ -331,9 +331,9 @@ node('ibm-jenkins-slave-nvm') {
                     "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
       }
-      if (cliPluginSourceBuildInfo && cliTargetFullPath) {
+      if (cliPluginsSourceBuildInfo && cliTargetFullPath) {
         message += "\n\n" +
-                    "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                    "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
       }
       if (testRegBuildErrorUrl) {
