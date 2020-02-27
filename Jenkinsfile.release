@@ -17,7 +17,8 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_RELEASE_PATH = '/org/zowe'
   def ZOWE_RELEASE_FILEPATTERN = "zowe-*.pax"
   def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.zip"
-  def ZOWE_RELEASE_CLI_FILEPATTERN = "zowe-cli-package-*.zip"
+  def ZOWE_RELEASE_CLI_CORE_FILEPATTERN = "zowe-cli-package-*.zip"
+  def ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN = "zowe-cli-plugins-*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
@@ -79,8 +80,14 @@ node('ibm-jenkins-slave-nvm') {
       trim: true
     ),
     string(
-      name: 'ZOWE_CLI_BUILD_RC_PATH',
-      description: 'REQUIRED if ZOWE_CLI_BUILD_NUMBER is empty. Zowe CLI build artifactory download path. If the build original file has been removed from artifactory, we can promote any existing file. Example: libs-release-local/org/zowe/0.9.3-RC2/zowe-cli-package-0.9.3.zip',
+      name: 'ZOWE_CLI_CORE_BUILD_RC_PATH',
+      description: 'REQUIRED if ZOWE_CLI_BUILD_NUMBER is empty. Zowe CLI CORE build artifactory download path. If the build original file has been removed from artifactory, we can promote any existing file. Example: libs-release-local/org/zowe/0.9.3-RC2/zowe-cli-package-0.9.3.zip',
+      defaultValue: '',
+      trim: true
+    ),
+    string(
+      name: 'ZOWE_CLI_PLUGINS_BUILD_RC_PATH',
+      description: 'REQUIRED if ZOWE_CLI_BUILD_NUMBER is empty. Zowe CLI PLUGINS build artifactory download path. If the build original file has been removed from artifactory, we can promote any existing file. Example: libs-release-local/org/zowe/0.9.3-RC2/zowe-cli-plugins-0.9.3.zip',
       defaultValue: '',
       trim: true
     ),
@@ -126,8 +133,8 @@ node('ibm-jenkins-slave-nvm') {
       if (!params.ZOWE_CLI_BUILD_NAME) {
         error "ZOWE_CLI_BUILD_NAME is required to promote build."
       }
-      if (!params.ZOWE_CLI_BUILD_NUMBER && !params.ZOWE_CLI_BUILD_RC_PATH) {
-        error "ZOWE_CLI_BUILD_NUMBER or ZOWE_CLI_BUILD_RC_PATH is required to promote build."
+      if (!params.ZOWE_CLI_BUILD_NUMBER && !params.ZOWE_CLI_CORE_BUILD_RC_PATH && !params.ZOWE_CLI_PLUGINS_BUILD_RC_PATH) {
+        error "ZOWE_CLI_BUILD_NUMBER or both ZOWE_CLI_CORE_BUILD_RC_PATH and ZOWE_CLI_PLUGINS_BUILD_RC_PATH is required to promote build."
       }
       if (!params.ZOWE_RELEASE_CATEGORY) {
         error "ZOWE_RELEASE_CATEGORY is required to promote build."
@@ -243,8 +250,12 @@ node('ibm-jenkins-slave-nvm') {
       // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
       releaseArtifacts['cli']['target'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
-      if (params.ZOWE_CLI_BUILD_RC_PATH) {
-        def artifact = pipeline.artifactory.getArtifact(params.ZOWE_CLI_BUILD_RC_PATH)
+      releaseArtifacts['cli-plugins'] = [:]
+      releaseArtifacts['cli-plugins']['target'] = "zowe-cli-plugins-${params.ZOWE_RELEASE_VERSION}.zip".toString()
+
+      // CLI Core
+      if (params.ZOWE_CLI_CORE_BUILD_RC_PATH) {
+        def artifact = pipeline.artifactory.getArtifact(params.ZOWE_CLI_CORE_BUILD_RC_PATH)
         if (artifact['build.name'].contains('zowe-promote-publish') &&
           artifact['build.parentName'] && artifact['build.parentNumber']) {
           artifact['build.name'] = artifact['build.parentName']
@@ -254,14 +265,33 @@ node('ibm-jenkins-slave-nvm') {
           releaseArtifacts['cli']['buildName'] = artifact['build.name']
           releaseArtifacts['cli']['buildNumber'] = artifact['build.number']
         } else {
-          error "Cannot find build information for artifact ${params.ZOWE_CLI_BUILD_RC_PATH}"
+          error "Cannot find build information for artifact ${params.ZOWE_CLI_CORE_BUILD_RC_PATH}"
         }
       } else {
         releaseArtifacts['cli']['buildName'] = params.ZOWE_CLI_BUILD_NAME
         releaseArtifacts['cli']['buildNumber'] = params.ZOWE_CLI_BUILD_NUMBER
       }
 
-      // get CLI build source artifact
+    // CLI Plugins
+    if (params.ZOWE_CLI_PLUGINS_BUILD_RC_PATH) {
+        def artifact = pipeline.artifactory.getArtifact(params.ZOWE_CLI_PLUGINS_BUILD_RC_PATH)
+        if (artifact['build.name'].contains('zowe-promote-publish') &&
+          artifact['build.parentName'] && artifact['build.parentNumber']) {
+          artifact['build.name'] = artifact['build.parentName']
+          artifact['build.number'] = artifact['build.parentNumber']
+        }
+        if (artifact['build.name'] && artifact['build.number']) {
+          releaseArtifacts['cli-plugins']['buildName'] = artifact['build.name']
+          releaseArtifacts['cli-plugins']['buildNumber'] = artifact['build.number']
+        } else {
+          error "Cannot find build information for artifact ${params.ZOWE_CLI_PLUGINS_BUILD_RC_PATH}"
+        }
+      } else {
+        releaseArtifacts['cli-plugins']['buildName'] = params.ZOWE_CLI_BUILD_NAME
+        releaseArtifacts['cli-plugins']['buildNumber'] = params.ZOWE_CLI_BUILD_NUMBER
+      }
+
+      // get CLI CORE build source artifact
       releaseArtifacts['cli']['source'] = pipeline.artifactory.getArtifact([
         'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
         'build-name'   : releaseArtifacts['cli']['buildName'],
@@ -269,7 +299,15 @@ node('ibm-jenkins-slave-nvm') {
       ])
       echo ">>> Found Zowe CLI build ${releaseArtifacts['cli']['source']['path']}."
 
-      // try to get Zowe CLI build commit hash
+      // get CLI PLUGINS builds source artifact
+      releaseArtifacts['cli-plugins']['source'] = pipeline.artifactory.getArtifact([
+        'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-*.zip",
+        'build-name'   : releaseArtifacts['cli-plugins']['buildName'],
+        'build-number' : releaseArtifacts['cli-plugins']['buildNumber']
+      ])
+      echo ">>> Found Zowe CLI Plugins ${releaseArtifacts['cli-plugins']['source']['path']}."
+
+      // try to get Zowe CLI CORE build commit hash
       def cliBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['cli']['buildName'],
         releaseArtifacts['cli']['buildNumber']
@@ -279,6 +317,18 @@ node('ibm-jenkins-slave-nvm') {
         error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
       }
       echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
+
+      // try to get Zowe CLI Plugins build commit hash
+      def cliPluginsBuildInfo = pipeline.artifactory.getBuildInfo(
+        releaseArtifacts['cli-plugins']['buildName'],
+        releaseArtifacts['cli-plugins']['buildNumber']
+      )
+      releaseArtifacts['cli-plugins']['revision'] = cliPluginsBuildInfo && cliPluginsBuildInfo['vcsRevision']
+      if (!("${releaseArtifacts['cli-plugins']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+        error "Cannot extract git revision from build \"${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']}\""
+      }
+      echo ">>>> Build ${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']} commit hash is ${releaseArtifacts['cli-plugins]['revision']}, may proceed."
+    
     }
   )
 
@@ -457,8 +507,11 @@ ${source} is promoted as Zowe v${params.ZOWE_RELEASE_VERSION}, you can download 
 
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
 ${smpeMessage}
-The CLI Standalone Package is published here:
+The CLI Core Package is published here:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
+
+The CLI Plugins Package is published here:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli-plugins']['target']}
 
 *************************************************************************************************
       """
