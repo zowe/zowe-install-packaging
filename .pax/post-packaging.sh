@@ -82,6 +82,10 @@ cd ${ZOSMF_PATH}   # required, smpe_workflow.xml has ./vtls references
 ./build-workflow.rex -d -i ./smpe_workflow.xml -o ${USS_PATH}/ZWEWRF01.xml
 cd ${CURR_PWD}
 
+# TODO: generate boilerplate SECURITY JCL
+
+# TODO: generate Config workflow
+
 # create smpe.pax
 cd ${CURR_PWD}/smpe/pax
 echo "files to be pax'd"
