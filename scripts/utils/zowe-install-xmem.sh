@@ -23,6 +23,17 @@
 
 # Needs ./zowe-copy-to-JES.sh for PROCLIB
 
+while getopts "l:" opt; do
+  case $opt in
+    l) LOG_DIRECTORY=$OPTARG;;
+    \?)
+      echo "Invalid option: -$opt" >&2
+      exit 1
+      ;;
+  esac
+done
+shift $(($OPTIND-1))
+
 script_exit(){
   echo exit $1 | tee -a ${LOG_FILE}
   echo "</$SCRIPT>" | tee -a ${LOG_FILE}
@@ -31,7 +42,14 @@ script_exit(){
 # identify this script
 SCRIPT="$(basename $0)"
 
-LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
+# If log directory not specified on input default to home
+if [[ -z "${LOG_DIRECTORY}" ]]
+then
+  LOG_DIRECTORY=${HOME}
+fi
+mkdir -p ${LOG_DIRECTORY}
+
+LOG_FILE=${LOG_DIRECTORY}/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
@@ -167,7 +185,7 @@ ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC  ${loadlib} ${parmlib}
-./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC  ${loadlib} ${parmlib}
+./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC  ${loadlib} ${parmlib} -l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC  ${loadlib} ${parmlib} -l ${LOG_DIRECTORY}
 
 script_exit 0

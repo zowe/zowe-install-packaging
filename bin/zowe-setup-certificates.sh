@@ -14,17 +14,31 @@
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
+while getopts "l:" opt; do
+  case $opt in
+    l) LOG_DIRECTORY=$OPTARG;;
+    \?)
+      echo "Invalid option: -$opt" >&2
+      exit 1
+      ;;
+  esac
+done
+shift $(($OPTIND-1))
 
-# Set up logging
-LOG_DIR=${HOME}/zowe_certificate_setup_log
+# If log directory not specified on input default to home
+if [[ -z "${LOG_DIRECTORY}" ]]
+then
+  LOG_DIRECTORY=${HOME}/zowe_certificate_setup_log
+fi
+
 # Make the log directory if needed - first time through - subsequent installs create new .log files
-if [[ ! -d $LOG_DIR ]]; then
-    mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
+if [[ ! -d ${LOG_DIRECTORY} ]]; then
+    mkdir -p ${LOG_DIRECTORY}
+    chmod a+rwx ${LOG_DIRECTORY} 
 fi
 
 export LOG_FILE="certificate_config_`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$LOG_DIR/$LOG_FILE
+LOG_FILE=${LOG_DIRECTORY}/$LOG_FILE
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
