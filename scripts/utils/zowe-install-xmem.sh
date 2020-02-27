@@ -23,16 +23,17 @@
 
 # Needs ./zowe-copy-to-JES.sh for PROCLIB
 
-while getopts "l:" opt; do
-  case $opt in
-    l) LOG_DIRECTORY=$OPTARG;;
-    \?)
-      echo "Invalid option: -$opt" >&2
-      exit 1
-      ;;
-  esac
-done
-shift $(($OPTIND-1))
+# zip #1157 - blocked by # zip #1156
+# while getopts "l:" opt; do
+#   case $opt in
+#     l) LOG_DIRECTORY=$OPTARG;;
+#     \?)
+#       echo "Invalid option: -$opt" >&2
+#       exit 1
+#       ;;
+#   esac
+# done
+# shift $(($OPTIND-1))
 
 script_exit(){
   echo exit $1 | tee -a ${LOG_FILE}
@@ -185,7 +186,7 @@ ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC  ${loadlib} ${parmlib} -l ${LOG_DIRECTORY}
-./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC  ${loadlib} ${parmlib} -l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC  ${loadlib} ${parmlib} #-l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC  ${loadlib} ${parmlib} #-l ${LOG_DIRECTORY}
 
 script_exit 0

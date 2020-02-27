@@ -29,16 +29,17 @@
 # sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
 #     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
-while getopts "l:" opt; do
-  case $opt in
-    l) LOG_DIRECTORY=$OPTARG;;
-    \?)
-      echo "Invalid option: -$opt" >&2
-      exit 1
-      ;;
-  esac
-done
-shift $(($OPTIND-1))
+# zip #1157 - blocked by # zip #1156
+# while getopts "l:" opt; do
+#   case $opt in
+#     l) LOG_DIRECTORY=$OPTARG;;
+#     \?)
+#       echo "Invalid option: -$opt" >&2
+#       exit 1
+#       ;;
+#   esac
+# done
+# shift $(($OPTIND-1))
 
 script_exit(){
   tsocmd delete "'$clist'"   1>> $LOG_FILE 2>> $LOG_FILE
