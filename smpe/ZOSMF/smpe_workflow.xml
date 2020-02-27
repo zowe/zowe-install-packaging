@@ -9,7 +9,7 @@
 		<workflowDefaultName>zowe_smpe</workflowDefaultName>
 		<workflowDescription>This is the SMP/E installation of Zowe</workflowDescription>
 		<workflowVersion>0.1</workflowVersion>
-		<vendor>Broadcom</vendor>
+		<vendor>Zowe</vendor>
 		<General/>
 	</workflowInfo>
 	<variable name="ibmTemplate" scope="instance" visibility="public">
