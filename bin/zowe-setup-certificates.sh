@@ -14,9 +14,10 @@
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
-while getopts "l:" opt; do
+while getopts "l:p:" opt; do
   case $opt in
     l) LOG_DIRECTORY=$OPTARG;;
+    p) CERTIFICATES_CONFIG_FILE=$OPTARG;;
     \?)
       echo "Invalid option: -$opt" >&2
       exit 1
@@ -43,18 +44,6 @@ touch $LOG_FILE
 chmod a+rw $LOG_FILE
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
-
-# process input parameters.
-while getopts "p:" opt; do
-  case $opt in
-    p) CERTIFICATES_CONFIG_FILE=$OPTARG;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-  esac
-done
-shift "$(($OPTIND-1))"
 
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
