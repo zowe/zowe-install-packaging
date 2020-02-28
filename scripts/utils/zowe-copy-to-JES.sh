@@ -18,7 +18,6 @@
 # Creates/deletes 2 temporary datasets
 #   $userid.zowetemp.instproc.SZWESAMP.proclib
 #   $userid.zowetemp.instproc.SZWESAMP.clist 
-# Creates log file in user's home directory
 
 # Edits member during copy if $loadlib and $parmlib were specified
 # The changes made are equivalent to this:
@@ -29,14 +28,14 @@
 # sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
 #     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
-while getopts "i:l:ll:o:pa:pr:s:" opt; do
+while getopts "a:d:i:l:o:r:s:" opt; do
   case $opt in
+    a) parmlib=$OPTARG;;
+    d) loadlib=$OPTARG;;
     i) input_member=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
-    ll) loadlib=$OPTARG;;
     o) output_member=$OPTARG;;
-    pa) parmlib=$OPTARG;;
-    pr) proclib=$OPTARG;;
+    r) proclib=$OPTARG;;
     s) samplib=$OPTARG;;
     \?)
       echo "Invalid option: -$opt" >&2
@@ -212,8 +211,7 @@ then
     echo "$input_member was not written to any JES PROCLIB dataset" | tee -a ${LOG_FILE}
     script_exit 11
 else
-  echo "tsocmd listds '$proclib'"
-  tsocmd listds "'$proclib' "
+  tsocmd listds "'$proclib' " 1>> $LOG_FILE 2>> $LOG_FILE
   if [[ $? -ne 0 ]]
   then
     echo Unable to list target PROCLIB dataset $proclib | tee -a ${LOG_FILE}
