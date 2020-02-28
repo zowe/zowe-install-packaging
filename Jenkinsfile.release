@@ -241,7 +241,7 @@ node('ibm-jenkins-slave-nvm') {
           def FMID = smpeTarSource['path'].split('/').last().split('-').first()
           releaseArtifacts['smpe-zip'] = [:]
           releaseArtifacts['smpe-zip']['source'] = smpeTarSource
-          releaseArtifacts['smpe-zip']['target'] = "zowe-smpe-${params.ZOWE_RELEASE_VERSION}.zip".toString()
+          releaseArtifacts['smpe-zip']['target'] = "zowe-smpe-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
         }
       } catch (e1) {
         echo ">>> no SMP/e zip found in the build."
