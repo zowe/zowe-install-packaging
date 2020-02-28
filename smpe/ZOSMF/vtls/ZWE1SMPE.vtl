@@ -10,7 +10,7 @@
 // CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
 #end
 #if($ibmTemplate == 'YES')
-//ZWE1SMPE JOB <job parameters>
+//ZWE1SMPE JOB
 #end
 //*
 //* This program and the accompanying materials are made available
@@ -61,10 +61,6 @@
 //*    optionally DTCLAS ${dataclass} and MGCLAS ${mgmtclass}
 //*
 #end
-//* 6) This product can install in multiple SREL subsystems;
-//*    Z038 (z/OS), P115 (IMS/DB2), and C150 (CICS). Update the
-//*    SET SREL= statement to select the desired SREL.
-//*
 //* Note(s):
 //*
 //* 1. JES3 configurations do not allow creation and usage of a
@@ -91,10 +87,9 @@
 //         SET STCLAS='${storclass}'
 //         SET DTCLAS='${dataclass}'
 //         SET MGCLAS='${mgmtclass}'
-//         SET SREL=Z038 # Z038 (z/OS), P115 (IMS/DB2), C150 (CICS)
 #end
 #if($ibmTemplate == 'YES')
-//         EXPORT SYMLIST=(CSIHLQ,CSIVOL,TZONE,DZONE,SREL,DSPREFIX)
+//         EXPORT SYMLIST=(CSIHLQ,CSIVOL,TZONE,DZONE,DSPREFIX)
 //* longest DSN is dsprefix.fmid.Fxx, so CISHLQ can be up to 32 chars
 //*                            1         2         3
 //*                   12345678901234567890123456789012
@@ -102,7 +97,6 @@
 //         SET TZONE=${tzone}
 //         SET DZONE=${dzone}
 //         SET CSIVOL=${csivol}
-//         SET SREL=Z038     # Z038 (z/OS), P115 (IMS/DB2), C150 (CICS)
 #end
 //*
 //         SET DSPREFIX=&CSIHLQ          # HLQ for SMP/E work data sets
@@ -155,7 +149,7 @@
   REPRO INFILE(ZPOOL) OUTFILE(SMPCSI)
 //*
 //* ALLOCATE SMP/E WORK DATA SETS
-//* DEFINE TARGET & DISTRIBUTION ZONES, OPTIONS, UTILITIES AND DDDEFS
+//* DEFINE TARGET AND DISTRIBUTION ZONES, OPTIONS, UTILITIES AND DDDEFS
 //*
 //ZONING   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=&CSIHLQ..CSI
@@ -351,7 +345,7 @@
   UCLIN.
     ADD GLOBALZONE              /* DEFINE GLOBAL ZONE NOW     */
         OPTIONS(ESAOPT)         /* DEFINE AN OPTIONS ENTRY    */
-        SREL(&SREL.)            /* z/OS, CICS, OR IMS/DB2     */
+        SREL(Z038)              /* z/OS                       */
         ZONEINDEX(              /* ZONES TO BE SET UP         */
           (&TZONE,&CSIHLQ..CSI,TARGET),
           (&DZONE,&CSIHLQ..CSI,DLIB))
@@ -398,7 +392,7 @@
     ADD TARGETZONE(&TZONE)      /* DEFINE TARGET ZONE         */
         RELATED(&DZONE)         /* DISTRIBUTION LIBRARY       */
         OPTIONS(ESAOPT)         /* DEFINE AN OPTIONS ENTRY    */
-        SREL(&SREL.)            /* z/OS, CICS, OR IMS/DB2     */
+        SREL(Z038)              /* z/OS                       */
         .                       /*                            */
     ADD DDDEF(SMPOUT)   SYSOUT(*) .
     ADD DDDEF(SMPRPT)   SYSOUT(*) .
@@ -429,7 +423,7 @@
     ADD DLIBZONE(&DZONE)        /* DEFINE DISTRIBUTION ZONE   */
         RELATED(&TZONE)         /* TARGET LIBRARY             */
         OPTIONS(ESAOPT)         /* DEFINE AN OPTIONS ENTRY    */
-        SREL(&SREL.)            /* z/OS, CICS, OR IMS/DB2     */
+        SREL(Z038)              /* z/OS                       */
         .
     ADD DDDEF(SMPOUT)   SYSOUT(*) .
     ADD DDDEF(SMPRPT)   SYSOUT(*) .

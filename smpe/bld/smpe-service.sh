@@ -299,7 +299,7 @@ test "$debug" && echo "< _ptfComments"
 # - $1  file with sysmod header (#req used as placeholder for REQ)
 #
 # ++PTF(UO64071) /* 5698-ZWE00-AZWE001 */ REWORK(2019271).
-# ++VER(Z038,C150,P115) FMID(AZWE001)
+# ++VER(Z038) FMID(AZWE001)
 #   REQ(UO64072)
 #   SUP(AO00204,AO00205,UO61806)
 #  /*
@@ -370,7 +370,7 @@ _cmd --repl $1 \
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-# ++VER(Z038,C150,P115) FMID(AZWE001)
+# ++VER(Z038) FMID(AZWE001)
 # get value from SMPMCS
 environment=$(sed -n '/^++VER/ s/++VER(\(.*\)).*/\1/p' $here/$mcs)
 _cmd --save $1 echo "++VER($environment) FMID($FMID)"

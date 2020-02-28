@@ -10,9 +10,17 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-while getopts "c:y" opt; do
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 -c zowe_install_directory [-g zowe_group]"
+  exit 1
+fi
+
+ZOWE_GROUP=ZWEADMIN
+
+while getopts "c:g:" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
+    g) ZOWE_GROUP=$OPTARG;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -27,17 +35,21 @@ then
 	export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
-# Ensure that newly created files are in EBCDIC codepage
-export _CEE_RUNOPTS=""
-export _TAG_REDIR_IN=""
-export _TAG_REDIR_OUT=""
-export _TAG_REDIR_ERR=""
-export _BPXK_AUTOCVT="OFF"
+. ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
 
 if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
   exit 1
+else
+  # If the value starts with a ~ for the home variable then evaluate it
+  INSTANCE_DIR=`sh -c "echo ${INSTANCE_DIR}"` 
+  # If the path is relative, then expand it
+  if [[ "$INSTANCE_DIR" != /* ]]
+  then
+    # Relative path
+    INSTANCE_DIR=$PWD/$INSTANCE_DIR
+  fi
 fi
 
 echo_and_log() {
@@ -127,7 +139,8 @@ fi
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 
-cat <<EOF >${INSTANCE_DIR}/bin/read-instance.sh
+cat <<EOF >${INSTANCE_DIR}/bin/internal/read-instance.sh
+#!/bin/sh
 # Requires INSTANCE_DIR to be set
 # Read in properties by executing, then export all the keys so we don't need to shell share
 . \${INSTANCE_DIR}/instance.env
@@ -139,15 +152,15 @@ key=\${line%%=*}
 export \$key
 done < \${INSTANCE_DIR}/instance.env
 EOF
-echo "Created ${INSTANCE_DIR}/bin/read-instance.sh">> $LOG_FILE
+echo "Created ${INSTANCE_DIR}/bin/internal/read-instance.sh">> $LOG_FILE
 
-cat <<EOF >${INSTANCE_DIR}/bin/read-keystore.sh
+cat <<EOF >${INSTANCE_DIR}/bin/internal/read-keystore.sh
+#!/bin/sh
 # Requires KEYSTORE_DIRECTORY to be set
 # Read in properties by executing, then export all the keys so we don't need to shell share
 
 # exit immediately if file cannot be accessed
 . \${KEYSTORE_DIRECTORY}/zowe-certificates.env || exit 1
-
 
 while read -r line
 do
@@ -156,22 +169,24 @@ key=\${line%%=*}
 export \$key
 done < \${KEYSTORE_DIRECTORY}/zowe-certificates.env
 EOF
-echo "Created ${INSTANCE_DIR}/bin/read-keystore.sh">> $LOG_FILE
+echo "Created ${INSTANCE_DIR}/bin/internal/read-keystore.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
+#!/bin/sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 # Validate keystore directory accessible before we try and use it
 . \${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
-. \${INSTANCE_DIR}/bin/read-keystore.sh
+. \${INSTANCE_DIR}/bin/internal/read-keystore.sh
 \${ROOT_DIR}/bin/internal/run-zowe.sh -c \${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/internal/run-zowe.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-start.sh
+#!/bin/sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd \"S ZWESVSTC,INSTANCE='"\${INSTANCE_DIR}"',JOBNAME=\${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV\"
 echo Start command issued, check SDSF job log ...
@@ -179,24 +194,41 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/zowe-start.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-stop.sh
+#!/bin/sh
 set -e
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 
 \${ROOT_DIR}/scripts/internal/opercmd "c \${ZOWE_PREFIX}\${ZOWE_INSTANCE}SV"
 EOF
+echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
 
 cat <<EOF >${INSTANCE_DIR}/bin/zowe-support.sh
-set -e
+#!/bin/sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../;pwd)
-. \${INSTANCE_DIR}/bin/read-instance.sh
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
 
 . \${ROOT_DIR}/bin/zowe-support.sh
 EOF
-echo "Created ${INSTANCE_DIR}/bin/zowe-stop.sh">> $LOG_FILE
+echo "Created ${INSTANCE_DIR}/bin/zowe-support.sh">> $LOG_FILE
 
-# Make the instance directory writable by all so the zowe process can use it, but not the bin directory so people can't maliciously edit it
-chmod 777 ${INSTANCE_DIR}
+mkdir -p ${INSTANCE_DIR}/bin/utils
+cat <<EOF >${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh
+#!/bin/sh
+export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
+. \${INSTANCE_DIR}/bin/internal/read-instance.sh
+. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@ ${INSTANCE_DIR}
+EOF
+echo "Created ${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh">> $LOG_FILE
+
+# Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
+# If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
+chmod 775 ${INSTANCE_DIR}
+chgrp -R ${ZOWE_GROUP} ${INSTANCE_DIR} 1> /dev/null 2> /dev/null
+RETURN_CODE=$?
+if [[ $RETURN_CODE != "0" ]]; then
+  chmod 777 ${INSTANCE_DIR}
+fi
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 

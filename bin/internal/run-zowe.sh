@@ -43,6 +43,8 @@ fi
 
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/internal/run-zowe.sh
 
+. ${ROOT_DIR}/bin/internal/zowe-set-env.sh
+
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 . ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${INSTANCE_DIR}
 checkForErrorsFound
@@ -52,7 +54,12 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 mkdir -p ${WORKSPACE_DIR}
 
 # Read in configuration
-. ${INSTANCE_DIR}/bin/read-instance.sh
+if [ -e "${INSTANCE_DIR}/bin/internal/read-instance.sh" ]
+then
+  . ${INSTANCE_DIR}/bin/internal/read-instance.sh
+else
+  . ${INSTANCE_DIR}/bin/read-instance.sh
+fi
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 ZOWE_APIM_GATEWAY_PORT=$GATEWAY_PORT
 ZOWE_IPADDRESS=$ZOWE_IP_ADDRESS
@@ -65,7 +72,6 @@ LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 
-
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
@@ -74,9 +80,6 @@ checkForErrorsFound
 # Validate keystore directory accessible
 ${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
 checkForErrorsFound
-
-# Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
-export __UNTAGGED_READ_MODE=V6
 
 if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
 then
@@ -87,13 +90,12 @@ fi
 #ZSS exists within app-server, may desire a distinct component later on
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use it's config
+  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
 #ZSS could be included separate to app-server, and vice-versa
 #But for simplicity of this script we have app-server prereq zss in DESKTOP
 #And zss & app-server sharing WORKSPACE_DIR
-
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
@@ -102,14 +104,24 @@ then
   mkdir -p ${STATIC_DEF_CONFIG_DIR}
 fi
 
-# Validate component properties if script exists
-ERRORS_FOUND=0
+# Prepend directory path to all internal components
+INTERNAL_COMPONENTS=""
 for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  VALIDATE_SCRIPT=${ROOT_DIR}/components/${i}/bin/validate.sh
+  INTERNAL_COMPONENTS=${INTERNAL_COMPONENTS}",${ROOT_DIR}/components/${i}/bin"
+done
+
+LAUNCH_COMPONENTS=${INTERNAL_COMPONENTS}",${EXTERNAL_COMPONENTS}"
+
+# Validate component properties if script exists
+ERRORS_FOUND=0
+for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+do
+
+  VALIDATE_SCRIPT=${LAUNCH_COMPONENT}/validate.sh
   if [[ -f ${VALIDATE_SCRIPT} ]]
   then
-    . ${VALIDATE_SCRIPT}
+    $(. ${VALIDATE_SCRIPT})
     retval=$?
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
@@ -151,16 +163,16 @@ EOF
 cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
 # Run setup/configure on components if script exists
-for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  CONFIGURE_SCRIPT=${ROOT_DIR}/components/${i}/bin/configure.sh
+  CONFIGURE_SCRIPT=${LAUNCH_COMPONENT}/configure.sh
   if [[ -f ${CONFIGURE_SCRIPT} ]]
   then
     . ${CONFIGURE_SCRIPT}
   fi
 done
 
-for i in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  . ${ROOT_DIR}/components/${i}/bin/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
+  . ${LAUNCH_COMPONENT}/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
 done

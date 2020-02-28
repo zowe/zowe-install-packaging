@@ -27,7 +27,7 @@ function usage {
     echo "     - new-service-csr - creates CSR for new service to be signed by external CA"
     echo "     - new-service - adds new service signed by local CA or external CA"
     echo "     - trust - adds a public certificate of a service to APIML truststore"
-    echo "     - trust-zosmf - adds public certificates from z/OSMF keyring to APIML truststore"
+    echo "     - trust-zosmf - adds public certificates from z/OSMF to APIML truststore"
     echo "     - clean - removes files created by setup"
     echo "     - jwt-keygen - generates and exports JWT key pair"
     echo ""
@@ -57,9 +57,7 @@ SERVICE_VALIDITY=3650
 SERVICE_STORETYPE="PKCS12"
 EXTERNAL_CERTIFICATE=
 EXTERNAL_CERTIFICATE_ALIAS=
-
-ZOSMF_KEYRING="IZUKeyring.IZUDFLT"
-ZOSMF_USERID="IZUSVR"
+ZOSMF_CERTIFICATE=
 
 ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
@@ -320,33 +318,66 @@ function jwt_key_gen_and_export {
 }
 
 function trust_zosmf {
-    ALIASES_FILE=${TEMP_DIR}/aliases.txt
-    rm -f ${ALIASES_FILE}
-    echo "Listing entries in the z/OSMF keyring (${ZOSMF_KEYRING}):"
-    if [ "$LOG" != "" ]; then
-        keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider >> $LOG 2>&1
+  echo ${ZOSMF_CERTIFICATE}
+  if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
+    echo "Getting certificates from z/OSMF host"
+    CER_DIR=`dirname ${SERVICE_TRUSTSTORE}`/temp
+    TEMP_CERT_FILE=temp-zosmf-cert
+    rm -rf CER_DIR=`dirname ${SERVICE_TRUSTSTORE}`/temp &> /dev/null
+    mkdir -p $CER_DIR
+    ALIAS="zosmf"
+
+    KEYTOOL_COMMAND="-printcert -sslserver ${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} -J-Dfile.encoding=UTF8"
+    # Check that the keytool command is okay and remote connection works. It prints out error messages
+    # and ends the program if an error occurs.
+    pkeytool ${KEYTOOL_COMMAND} -rfc
+
+    # First, print out ZOSMF certificates fingerprints for a user to check
+    # We call keytool directly because the pkeytool messes the output that we want to display
+    if [[ "$LOG" != "" ]]; then
+      echo "z/OSMF certificate fingerprint:" >&5
+      keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5' >&5
     else
-        keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+      echo "z/OSMF certificate fingerprint:"
+      keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5'
     fi
+    # keytool should work here but we check RC just in case
+    echo "z/OSMF certificate fingerprint: keytool returned: $RC"
     RC=$?
     if [ "$RC" -ne "0" ]; then
-        USERID=`whoami`
-        echo "It is not possible to read z/OSMF keyring ${ZOSMF_USERID}/${ZOSMF_KEYRING}. The effective user ID was: ${USERID}. You need to run this command as user that has access to the z/OSMF keyring:"
-        echo "  cd ${PWD}"
-        echo "  scripts/apiml_cm.sh --action trust-zosmf --zosmf-keyring ${ZOSMF_KEYRING} --zosmf-userid ${ZOSMF_USERID}"
         exit 1
     fi
-    keytool -list -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider | grep "Entry," | cut -f 1 -d , > ${ALIASES_FILE}
-    CERT_PREFIX=${TEMP_DIR}/zosmf_cert_
-    I=0
-    while read ALIAS; do
-        I=$((I + 1))
-        echo "Exporting certificate '${ALIAS}' from z/OSMF:"
-        CERTIFICATE="${CERT_PREFIX}${I}.cer"
-        keytool -exportcert -alias "${ALIAS}" -keystore safkeyring://${ZOSMF_USERID}/${ZOSMF_KEYRING} -storetype JCERACFKS -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -file ${CERTIFICATE}
-        trust
-        rm "${CERTIFICATE}"
-    done <${ALIASES_FILE}
+
+    # We call keytool directly because the pkeytool messes the output that we need to parse afterwards
+    keytool ${KEYTOOL_COMMAND} -rfc > ${CER_DIR}/${TEMP_CERT_FILE}
+    # keytool should work now but we check RC just in case
+    RC=$?
+    echo "z/OSMF certificate to temp file: keytool returned: $RC"
+    if [ "$RC" -ne "0" ]; then
+        exit 1
+    fi
+    # parse keytool output into separate files
+    csplit -s -k -f ${CER_DIR}/${ALIAS} ${CER_DIR}/${TEMP_CERT_FILE} /-----END\ CERTIFICATE-----/1 \
+      {$(expr `grep -c -e '-----END CERTIFICATE-----' ${CER_DIR}/${TEMP_CERT_FILE}` - 1)}
+    for entry in ${CER_DIR}/${ALIAS}*; do
+      [ -e "$entry" ] || continue
+      CERTIFICATE=${entry}
+      entry=${entry##*/}
+      ALIAS=${entry%.cer}
+      trust
+    done
+
+    # clean up temporary files
+    rm -rf ${CER_DIR}
+  else
+    echo "Getting zosmf certificates from file"
+    for entry in ${ZOSMF_CERTIFICATE}; do
+      CERTIFICATE=${entry}
+      entry=${entry##*/}
+      ALIAS=${entry%.*}
+      trust
+    done
+  fi
 }
 
 while [ "$1" != "" ]; do
@@ -364,7 +395,7 @@ while [ "$1" != "" ]; do
                                 ;;
         --log )                 shift
                                 export LOG=$1
-                                exec >> $LOG
+                                exec 5>&1 >>$LOG
                                 ;;
         --local-ca-filename )   shift
                                 LOCAL_CA_FILENAME=$1
@@ -417,11 +448,8 @@ while [ "$1" != "" ]; do
         --external-ca-filename ) shift
                                 EXTERNAL_CA_FILENAME=$1
                                 ;;
-        --zosmf-keyring )       shift
-                                ZOSMF_KEYRING=$1
-                                ;;
-        --zosmf-userid )        shift
-                                ZOSMF_USERID=$1
+        --zosmf-certificate )   shift
+                                ZOSMF_CERTIFICATE=$1
                                 ;;
         --certificate )         shift
                                 CERTIFICATE=$1

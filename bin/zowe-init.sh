@@ -24,7 +24,18 @@
 
 echo "<zowe-init.sh>" >> $LOG_FILE
 
-#set-x
+# process input parameters.
+OPTIND=1
+while getopts "s" opt; do
+  case $opt in
+    s) SKIP_NODE=1;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+shift "$(($OPTIND-1))"
 
 getZosmfHttpsPort() {
     ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
@@ -167,7 +178,10 @@ then
 else
     echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
 fi
-promptNodeHome ${NODE_HOME}
+if [[ ${SKIP_NODE} != 1 ]]
+then
+    promptNodeHome ${NODE_HOME}
+fi
 
 ###identify ping
 getPing_bin

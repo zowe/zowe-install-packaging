@@ -131,6 +131,10 @@
   RLIST  FACILITY BPX.SERVER ALL
   PERMIT BPX.SERVER CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
+/* remove permit to set jobname                                      */
+  RLIST  FACILITY BPX.JOBNAME ALL
+  PERMIT BPX.JOBNAME CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+
 /* remove permit to write persistent data                            */
   RLIST  UNIXPRIV SUPERUSER.FILESYS ALL
   PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE ID(&ZOWEUSER.)
@@ -184,7 +188,8 @@
   DELGROUP &ADMINGRP.
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -196,7 +201,8 @@ $$
 /*TODO ACF2 remove security setup                                    */
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*
 //*********************************************************************
@@ -208,6 +214,7 @@ $$
 /*TODO TSS remove security setup                                     */
 
 /* ................................................................. */
-/* only the last RC is returned, this comment ensures it is a 0      */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
 $$
 //*

@@ -7,12 +7,13 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
 # Allocate data set if needed, test existing data set for correct DCB.
 #
 # Arguments:
+# -B blkSiz (optional) use specified block size
 # -e        (optional) existing partitioned data set must be PDS/E
 # -h        (optional) hide the allocate command being issued
 # -p        (optional) existing partitioned data set must be PDS
@@ -47,12 +48,13 @@ test "$debug" && echo "> $me $@"
 unset rc
 
 # Clear input variables
-unset pdse hide pds dir volume
+unset blkSize pdse hide pds dir volume
 
 # Get startup arguments
 args="$@"
-while getopts ehpP:V: opt
+while getopts ehpB:P:V: opt
 do case "$opt" in
+  B)   blkSize="$OPTARG";;
   e)   pdse="-e";;
   h)   hide="-h";;
   p)   pds="-p";;
@@ -89,6 +91,7 @@ fi    #
 # TODO test recFm in {FB | FBA | U | VB | VBA}
 # TODO lRecL numeric or ** when RECFM(U)
 # TODO dsOrg in {PO | PS}
+# TODO blkSize numeric or null
 # TODO space numeric or numeric,numeric
 # TODO volume null or 1/more 6 alphanum strings separated by comma
 
@@ -111,7 +114,13 @@ then                                                  # data set exists
   test "$debug" && echo "use existing data set $dsn"
   test "$LOG_FILE" && echo "  Use existing data set $dsn" >> $LOG_FILE
 
-  $here/$dcbScript $pdse $pds "$dsn" "$recFm" "$lRecL" "$dsOrg"
+  if test -z "$blkSize"
+  then
+    $here/$dcbScript $pdse $pds "$dsn" "$recFm" "$lRecL" "$dsOrg"
+  else
+    $here/$dcbScript -B $blkSize \
+      $pdse $pds "$dsn" "$recFm" "$lRecL" "$dsOrg"
+  fi    #
   # Returns 0 for DCB match, 1 for other, 2 for not pds(e), 8 for error
   rc=$?
 elif test $rc -eq 2
@@ -121,11 +130,13 @@ then                                          # data set does not exist
 
   if test "$recFm" = "U"
   then            # library with undefined format length (load library)
-    dcb="recfm(u) lrecl(0) blksize(6999)"     # 4 blocks per half-track
+    blkSize=${blkSize:-6999}                  # 4 blocks per half-track
+    dcb="recfm(u) lrecl(0) blksize($blkSize)"
   else            # library with defined record format
     # TSO ALLOCATE expects RECFM letters to be blank or comma delimited
     recFm="$(echo $recFm | sed 's/./& /g;s/ $//')"
-    dcb="recfm($recFm) lrecl($lRecL) blksize(0)"
+    blkSize=${blkSize:-0}              # system determines optimal size
+    dcb="recfm($recFm) lrecl($lRecL) blksize($blkSize)"
   fi    #
 
   if test "$dsOrg" = "PS"
@@ -145,7 +156,7 @@ then                                          # data set does not exist
 
   if test "$hide"
   then
-    # trap stderr, do not show alloc command (&2), but show error (&1)
+    # Trap stderr, do not show alloc command (&2), but show error (&1)
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
       "space($space) tracks unit(sysallda) $volume" 2> /dev/null
   else
