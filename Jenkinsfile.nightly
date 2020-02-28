@@ -27,6 +27,7 @@ node('ibm-jenkins-slave-nvm') {
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
   def cliSourceBuildInfo
+  def cliPluginsSourceBuildInfo
 
   def testRegBuildErrorUrl
   def testSmpeBuildErrorUrl
@@ -102,7 +103,16 @@ node('ibm-jenkins-slave-nvm') {
       // check artifactory for latest CLI build
       try {
         cliSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/zowe-cli-package-*.zip",
+          'build-name'   : ZOWE_CLI_BUILD_NAME
+        ])
+      } catch (e) {
+        // CLI build missing, will not promote CLI
+        echo "Ignored: ${e}"
+      }
+      try {
+        cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/zowe-cli-plugins-*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
         ])
       } catch (e) {
@@ -175,6 +185,7 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "IS_SMPE_PACKAGE: false\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
              "TEST_CASE_DEBUG_INFORMATION: 'test:*'\n" +
              "Skip Stage: Lint: true\n" +
@@ -196,6 +207,11 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
+        //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
+        //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        // }
         def test_result = build(
             job: '/zowe-install-test/staging',
             parameters: testParameters,
@@ -223,6 +239,7 @@ node('ibm-jenkins-slave-nvm') {
              "STARTED_BY_AUTOMATION: true\n" +
              "SKIP_RESET_IMAGE: true\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "IS_SMPE_PACKAGE: true\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
@@ -247,6 +264,11 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
+        //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
+        //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        // }
         def test_result = build(
             job: '/zowe-install-test/staging',
             parameters: testParameters,
@@ -288,6 +310,12 @@ node('ibm-jenkins-slave-nvm') {
           'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
         ])
       }
+      if (cliPluginsSourceBuildInfo) {
+        cliTargetFullPath = pipeline.artifactory.promote([
+          'source'     : cliPluginsSourceBuildInfo,
+          'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
+        ])
+      }
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
@@ -302,10 +330,14 @@ node('ibm-jenkins-slave-nvm') {
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n"
       if (cliSourceBuildInfo && cliTargetFullPath) {
         message += "\n\n" +
-                    "The CLI Standalone Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                    "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
       }
-
+      if (cliPluginsSourceBuildInfo && cliTargetFullPath) {
+        message += "\n\n" +
+                    "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
+      }
       if (testRegBuildErrorUrl) {
         slackColor = 'warning'
         message = message + "\n\n" +
