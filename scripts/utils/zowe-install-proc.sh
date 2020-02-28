@@ -85,8 +85,8 @@ else
   proclib=auto
 fi
 
-Imember=ZWESVSTC
-Omember=ZWESVSTC
+input_member=ZWESVSTC
+output_member=ZWESVSTC
 
 echo    "samplib =" $samplib >> $LOG_FILE
 echo    "proclib =" $proclib >> $LOG_FILE
@@ -100,7 +100,7 @@ do
   fi
 done
 
-./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember #-l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh -s $samplib -i $input_member -pr $proclib -o $output_member -l ${LOG_DIRECTORY}
 echo "rc from zowe-copy-to-JES.sh is $?" >> $LOG_FILE
 
 script_exit 0
