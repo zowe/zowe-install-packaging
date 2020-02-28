@@ -29,7 +29,6 @@
 # sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
 #     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
-# zip #1157 - blocked by # zip #1156
 while getopts "i:l:ll:o:pa:pr:s:" opt; do
   case $opt in
     i) input_member=$OPTARG;;
