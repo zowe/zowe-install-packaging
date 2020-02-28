@@ -212,7 +212,8 @@ then
     echo "$input_member was not written to any JES PROCLIB dataset" | tee -a ${LOG_FILE}
     script_exit 11
 else
-  tsocmd listds "'$proclib' " 1>> $LOG_FILE 2>> $LOG_FILE
+  echo "tsocmd listds '$proclib'"
+  tsocmd listds "'$proclib' "
   if [[ $? -ne 0 ]]
   then
     echo Unable to list target PROCLIB dataset $proclib | tee -a ${LOG_FILE}
