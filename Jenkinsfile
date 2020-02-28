@@ -147,7 +147,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/zowe-smpe.zip',
       '.pax/smpe-promote.tar',
       '.pax/pd.htm',
-      '.pax/smpe-build-logs.pax.Z'
+      '.pax/smpe-build-logs.pax.Z',
+      '.pax/AZWE001.TMP0001.zip'
     ]
   )
 
