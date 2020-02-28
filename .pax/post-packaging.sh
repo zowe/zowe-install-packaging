@@ -84,7 +84,13 @@ cd ${CURR_PWD}
 
 # TODO: generate boilerplate SECURITY JCL
 
-# TODO: generate Config workflow
+# generate SECURITY workflow
+# USS_PATH="${PAX_PATH}/workflows"        # output
+# LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
+# cp ${LOCAL_PATH}/ZWEYML01.yml ${USS_PATH}/ZOWE_SECURITY_VIF.yml
+# cd ${ZOSMF_PATH}   # required, smpe_workflow.xml has ./vtls references
+# ./build-workflow.rex -d -i ./security_workflow.xml -o ${USS_PATH}/ZOWE_SECURITY_WORKFLOW.xml
+# cd ${CURR_PWD}
 
 # create smpe.pax
 cd ${CURR_PWD}/smpe/pax

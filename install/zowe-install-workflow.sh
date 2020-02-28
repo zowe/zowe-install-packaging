@@ -15,6 +15,7 @@
 mkdir "$ZOWE_ROOT_DIR/workflows"
 TARGET_DIR= "$ZOWE_ROOT_DIR/workflows"
 WORKFLOWS_DIR="/workflows"
+
 # look for empty dir
 if [ "$(ls -A $WORKFLOWS_DIR)" ]; then
      cp "$WORKFLOWS_DIR/" "$TARGET_DIR"
