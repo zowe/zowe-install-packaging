@@ -52,6 +52,13 @@ else
   fi
 fi
 
+#zip-1172: Ensure trailing slash on root-dir to stop sibiling matches
+echo "${ZOWE_ROOT_DIR}" | grep '/$' 1> /dev/null
+if [[ $? -ne 0 ]]
+then
+  ZOWE_ROOT_DIR="${ZOWE_ROOT_DIR}/"
+fi
+
 if [[ ${INSTANCE_DIR} == "${ZOWE_ROOT_DIR}"* ]]
 then
   echo "The instance directory chosen ${INSTANCE_DIR} was within the zowe runtime install directory ${ZOWE_ROOT_DIR}. This will cause the instance directory to be overwritten when an upgrade is applied. Please choose an alternative instance directory and re-run 'zowe-configure-instance.sh -c <Instance directory>'"
