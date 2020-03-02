@@ -283,7 +283,7 @@
 	</variable>
 		<variable name="sysmodsCheck" scope="instance" visibility="public">
 		<label>CHECK operand</label>
-		<abstract>A good way to see which SYSMODs are included before you actually install them is with the CHECK operand.</abstract>
+		<abstract>the CHECK operand lets SMP/E run through the motions without doing actual copies, thus checking that setup looks good</abstract>
 		<description>There might be times when you want to&lt;br&gt;see which SYSMODs are included before&lt;br&gt;you actually install them. You can do this by&lt;br&gt;including the CHECK operand with the commands.</description>
 		<category>General</category>
 		<string multiLine="false" valueMustBeChoice="false">
