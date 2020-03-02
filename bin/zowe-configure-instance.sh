@@ -58,6 +58,11 @@ if [[ $? -ne 0 ]]
 then
   ZOWE_ROOT_DIR="${ZOWE_ROOT_DIR}/"
 fi
+echo "${INSTANCE_DIR}" | grep '/$' 1> /dev/null
+if [[ $? -ne 0 ]]
+then
+  INSTANCE_DIR="${INSTANCE_DIR}/"
+fi
 
 if [[ ${INSTANCE_DIR} == "${ZOWE_ROOT_DIR}"* ]]
 then
