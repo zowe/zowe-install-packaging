@@ -42,6 +42,24 @@ mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files"
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
 
+# make sure the workflow files directory exists
+mkdir -p "files/workflows"
+
+# this function is used to force a certain zowe_version
+function replace_version() {
+  TEMPLATE_FILE=$1
+  OUTPUT_FILE=$2
+
+  sed -e "s/#ZOWE_VERSION#/${ZOWE_VERSION}/g" $TEMPLATE_FILE>$OUTPUT_FILE
+}
+
+# fill in Zowe version in the workflow files
+wf_files=$(ls workflows)
+for wf_file in $wf_files
+do
+  replace_version("workflows/$wf_file", "files/workflows/$wf_file")
+done
+
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
 cp -R files/* "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
