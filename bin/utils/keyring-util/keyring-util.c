@@ -80,11 +80,12 @@ void delcert_action(R_datalib_parm_list_64* rdatalib_parms, void * function, Com
     check_return_code(rdatalib_parms);
     // refresh DIGTCERT class if required
     if (rdatalib_parms->return_code == 4 && rdatalib_parms->RACF_return_code == 4 && rdatalib_parms->RACF_reason_code == 12) {
+        printf("DIGTCERT class has to refreshed.\n");
         func->code = REFRESH_CODE;
         set_up_R_datalib_parameters(rdatalib_parms, func, "", "");
         invoke_R_datalib(rdatalib_parms);
         check_return_code(rdatalib_parms);
-        printf("DIGTCERT class refreshed.");
+        printf("DIGTCERT class refreshed.\n");
     }
 }
 
