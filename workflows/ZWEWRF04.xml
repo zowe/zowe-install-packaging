@@ -6,7 +6,7 @@
         <workflowID scope="system" isCallable="system">zowe_create_runtime</workflowID>
         <workflowDefaultName>Zowe Create Runtime</workflowDefaultName>
         <workflowDescription>Use this workflow to create the runtime from the convenient build.</workflowDescription>
-        <workflowVersion>1.0</workflowVersion>
+        <workflowVersion>#ZOWE_VERSION#</workflowVersion>
         <vendor>ZOWE</vendor>
         <General/>
     </workflowInfo>
@@ -19,7 +19,7 @@
             <regularExpression>~?(\/[^\/]+)+</regularExpression>
             <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
             <!-- Specify choices here -->
-            <default>~/zowe-1.9.0</default>
+            <default>~/zowe-#ZOWE_VERSION#</default>
         </string>
     </variable>
     <variable name="zowe_install_path" scope="instance" visibility="public">
