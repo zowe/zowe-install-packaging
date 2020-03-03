@@ -130,13 +130,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : ''),
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
-          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,ptf.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
+          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z' : ''),
           keepTempFolder      : params.KEEP_TEMP_FOLDER
       )
-      if (params.BUILD_SMPE) {
-        // rename SMP/e build with correct FMID name
-        sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
-      }
     }
   )
 
