@@ -49,7 +49,7 @@ mkdir -p "files/workflows"
 wf_files=$(ls workflows)
 for wf_file in $wf_files
 do
-  sed -e "s/#ZOWE_VERSION#/${ZOWE_VERSION}/g" "workflows/$wf_file">"files/workflows/$wf_file"
+  sed -e "s/#ZOWE_VERSION#/${ZOWE_VERSION}/g" -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" "workflows/$wf_file">"files/workflows/$wf_file"
 done
 
 # copy from current github source
