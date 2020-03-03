@@ -46,7 +46,7 @@ mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
 mkdir -p "files/workflows"
 
 # this function is used to force a certain zowe_version
-function replace_version() {
+function replace_version {
   TEMPLATE_FILE=$1
   OUTPUT_FILE=$2
 
