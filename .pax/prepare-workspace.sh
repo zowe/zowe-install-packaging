@@ -57,7 +57,7 @@ function replace_version() {
 wf_files=$(ls workflows)
 for wf_file in $wf_files
 do
-  replace_version("workflows/$wf_file", "files/workflows/$wf_file")
+  replace_version "workflows/$wf_file" "files/workflows/$wf_file"
 done
 
 # copy from current github source
