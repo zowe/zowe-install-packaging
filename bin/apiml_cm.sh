@@ -324,61 +324,6 @@ EOF
     rm ${TEMP_DIR}/ExportPrivateKey.java ${TEMP_DIR}/ExportPrivateKey.class
 }
 
-function get_service_certificate_from_url {
-    echo "Exporting service certificate"
-    echo "TEMP_DIR=$TEMP_DIR"
-    cat <<EOF >$TEMP_DIR/GetCertificate.java
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.FileWriter;
-import java.io.File;
-import java.net.URL;
-import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
-import java.util.Base64;
-
-public class GetCertificate {
-
-    public static void getCertificateFromURL(String aURL, String dir, String alias) throws Exception{
-        URL destinationURL = new URL("https://"+aURL);
-        HttpsURLConnection conn = (HttpsURLConnection) destinationURL.openConnection();
-        conn.connect();
-        Certificate[] certs = conn.getServerCertificates();
-        int counter = 1;
-        for (Certificate cert : certs) {
-            if(cert instanceof X509Certificate) {
-                X509Certificate x = (X509Certificate ) cert;
-                String encoded = Base64.getEncoder().encodeToString(cert.getEncoded());
-                FileWriter fw = new FileWriter(new File (dir + "/" + alias + counter + ".cer"));
-                fw.write("-----BEGIN CERTIFICATE-----");
-                for (int i = 0; i < encoded.length(); i++) {
-                    if (((i % 64) == 0) && (i != (encoded.length() - 1))) {
-                        fw.write("\n");
-                    }
-                    fw.write(encoded.charAt(i));
-                }
-                fw.write("\n");
-                fw.write("-----END CERTIFICATE-----\n");
-                fw.close();
-                counter++;
-            }
-        }
-    }
-
-    public static void main(String[] args) throws Exception {
-        getCertificateFromURL(args[0], args[1], args[2]);
-    }
-}
-
-EOF
-    echo "cat returned $?"
-    javac ${TEMP_DIR}/GetCertificate.java
-    echo "javac returned $?"
-    java -cp ${TEMP_DIR} GetCertificate "${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT}" ${CER_DIR} ${ALIAS} >> $LOG 2>&1
-    echo "java returned $?"
-    rm ${TEMP_DIR}/GetCertificate.java ${TEMP_DIR}/GetCertificate.class
-}
-
 function setup_local_ca {
     clean_local_ca
     create_certificate_authority
@@ -450,23 +395,53 @@ function trust_zosmf {
   echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
     echo "Getting certificates from z/OSMF host"
-    CER_DIR=`dirname ${SERVICE_TRUSTSTORE}/temp`
+    CER_DIR=`dirname ${SERVICE_TRUSTSTORE}`/temp
+    TEMP_CERT_FILE=temp-zosmf-cert
+    rm -rf CER_DIR=`dirname ${SERVICE_TRUSTSTORE}`/temp &> /dev/null
     mkdir -p $CER_DIR
     ALIAS="zosmf"
-    get_service_certificate_from_url
-    for entry in "${CER_DIR}"/*; do
-      if [[ "$LOG" != "" ]]; then
-        echo "z/OSMF certificate fingerprint:" >&5
-        cat ${entry} | openssl x509 -sha1 -noout -fingerprint -subject >&5
-      else
-        echo "z/OSMF certificate fingerprint:"
-        cat ${entry} | openssl x509 -sha1 -noout -fingerprint -subject
-      fi
+
+    KEYTOOL_COMMAND="-printcert -sslserver ${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} -J-Dfile.encoding=UTF8"
+    # Check that the keytool command is okay and remote connection works. It prints out error messages
+    # and ends the program if an error occurs.
+    pkeytool ${KEYTOOL_COMMAND} -rfc
+
+    # First, print out ZOSMF certificates fingerprints for a user to check
+    # We call keytool directly because the pkeytool messes the output that we want to display
+    if [[ "$LOG" != "" ]]; then
+      echo "z/OSMF certificate fingerprint:" >&5
+      keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5' >&5
+    else
+      echo "z/OSMF certificate fingerprint:"
+      keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5'
+    fi
+    # keytool should work here but we check RC just in case
+    echo "z/OSMF certificate fingerprint: keytool returned: $RC"
+    RC=$?
+    if [ "$RC" -ne "0" ]; then
+        exit 1
+    fi
+
+    # We call keytool directly because the pkeytool messes the output that we need to parse afterwards
+    keytool ${KEYTOOL_COMMAND} -rfc > ${CER_DIR}/${TEMP_CERT_FILE}
+    # keytool should work now but we check RC just in case
+    RC=$?
+    echo "z/OSMF certificate to temp file: keytool returned: $RC"
+    if [ "$RC" -ne "0" ]; then
+        exit 1
+    fi
+    # parse keytool output into separate files
+    csplit -s -k -f ${CER_DIR}/${ALIAS} ${CER_DIR}/${TEMP_CERT_FILE} /-----END\ CERTIFICATE-----/1 \
+      {$(expr `grep -c -e '-----END CERTIFICATE-----' ${CER_DIR}/${TEMP_CERT_FILE}` - 1)}
+    for entry in ${CER_DIR}/${ALIAS}*; do
+      [ -e "$entry" ] || continue
       CERTIFICATE=${entry}
       entry=${entry##*/}
       ALIAS=${entry%.cer}
       trust
     done
+
+    # clean up temporary files
     rm -rf ${CER_DIR}
   else
     echo "Getting zosmf certificates from file"
