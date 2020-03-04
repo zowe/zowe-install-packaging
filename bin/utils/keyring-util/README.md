@@ -35,10 +35,12 @@ keyring-util function userid keyring label
   
   * `REFRESH` - refreshes DIGTCERT class
        * Example: `keyring-util REFRESH`
+       
+For any return and reason codes, check [R_datalib return and reason codes](https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.ichd100/ich2d100238.htm)
 
 ## Further development
 There is room for improvement: 
-  * command line argument processing and syntax
+  * command line argument processing and syntax (perhaps using the argp library from [ambitus project](https://github.com/ambitus/glibc/tree/zos/2.28/master/argp))
   * an extension of functionality of the current functions
   * implementation of new [functions](https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.ichd100/ich2d100226.htm) 
     

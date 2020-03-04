@@ -92,6 +92,13 @@ if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
   fi
 fi
 
+# build keyring-util program
+if [[ -n "${ZOWE_KEYRING}" ]]; then
+  xlc -q64 -o ${KEYSTORE_DIRECTORY}/keyring-util ${ZOWE_ROOT_DIR}/bin/utils/keyring-util/keyring-util.c >> $LOG_FILE
+  #c89 -W"c,lp64,langlv(STDC99)" -Wl,lp64 -o ${KEYSTORE_DIRECTORY}/keyring-util ${ZOWE_ROOT_DIR}/bin/utils/keyring-util/keyring-util.c 2>> $LOG_FILE
+  rm ${KEYSTORE_DIRECTORY}/keyring-util.o 2> /dev/null
+fi
+
 echo "Creating certificates and keystores... STARTED"
 # set up parameters for apiml_cm.sh script
 KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"
@@ -120,6 +127,7 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
     (>&2 echo "Some external apiml certificate fields are supplied...Fields must be filled out in full or left completely blank.")
     (>&2 echo "See $LOG_FILE for more details.")
     echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+    rm ${KEYSTORE_PREFIX}* ${TRUSTSTORE_PREFIX}* ${EXTERNAL_CA_PREFIX}* ${LOCAL_CA_PREFIX}* 2> /dev/null
     exit 1
   fi
 else
@@ -146,6 +154,7 @@ fi
 if [ "$RC" -ne "0" ]; then
     (>&2 echo "apiml_cm.sh --action setup has failed. See $LOG_FILE for more details")
     echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+    rm ${KEYSTORE_PREFIX}* ${TRUSTSTORE_PREFIX}* ${EXTERNAL_CA_PREFIX}* ${LOCAL_CA_PREFIX}* 2> /dev/null
     exit 1
 fi
 
@@ -155,10 +164,9 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
     RC=$?
   else
-    echo "Zosmf trust action for keyrings not supported yet."
-    RC=4
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zowe-userid ${ZOWE_USER_ID} \
+      --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}"
   fi
-
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
@@ -167,6 +175,7 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
       (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
       echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+      rm ${KEYSTORE_PREFIX}* ${TRUSTSTORE_PREFIX}* ${EXTERNAL_CA_PREFIX}* ${LOCAL_CA_PREFIX}* 2> /dev/null
       exit 1
   fi
 fi

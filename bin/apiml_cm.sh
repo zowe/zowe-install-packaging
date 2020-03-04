@@ -84,12 +84,38 @@ function pkeytool {
     fi
 }
 
+function clean_keyring {
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        KEYRING_UTIL=`dirname ${LOCAL_CA_FILENAME}`/../keyring-util
+        echo "Removing ${ZOWE_USERID}/${ZOWE_KEYRING} keyring"
+        $KEYRING_UTIL delring ${ZOWE_USERID} ${ZOWE_KEYRING}
+    fi
+}
+
 function clean_local_ca {
     rm -f ${LOCAL_CA_FILENAME}.keystore.p12 ${LOCAL_CA_FILENAME}.cer
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        KEYRING_UTIL=`dirname ${LOCAL_CA_FILENAME}`/../keyring-util
+        echo "Disconnecting ${LOCAL_CA_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
+        $KEYRING_UTIL delcert ${ZOWE_USERID} ${ZOWE_KEYRING} ${LOCAL_CA_ALIAS}
+        echo "Removing ${LOCAL_CA_ALIAS} certificate from RACF database"
+        $KEYRING_UTIL delcert ${ZOWE_USERID} "*" ${LOCAL_CA_ALIAS}
+    fi
 }
 
 function clean_service {
     rm -f ${SERVICE_KEYSTORE}.p12 ${SERVICE_KEYSTORE}.csr ${SERVICE_KEYSTORE}_signed.cer ${SERVICE_TRUSTSTORE}.p12
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+        KEYRING_UTIL=`dirname ${SERVICE_KEYSTORE}`/../keyring-util
+        echo "Disconnecting ${SERVICE_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
+        $KEYRING_UTIL delcert ${ZOWE_USERID} ${ZOWE_KEYRING} ${SERVICE_ALIAS}
+        echo "Disconnecting ${JWT_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
+        $KEYRING_UTIL delcert ${ZOWE_USERID} ${ZOWE_KEYRING} ${JWT_ALIAS}
+        echo "Removing ${SERVICE_ALIAS} certificate from RACF database"
+        $KEYRING_UTIL delcert ${ZOWE_USERID} "*" ${SERVICE_ALIAS}
+        echo "Removing ${JWT_ALIAS} certificate from RACF database"
+        $KEYRING_UTIL delcert ${ZOWE_USERID} "*" ${JWT_ALIAS}
+    fi
 }
 
 function create_certificate_authority {
@@ -336,7 +362,9 @@ function new_service_csr {
     clean_service
     create_service_certificate_and_csr
     echo "Listing generated files for service:"
-    ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
+    if [[ "${SERVICE_STORETYPE}" != "JCERACFKS" ]]; then
+        ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
+    fi
 }
 
 function new_service {
@@ -353,7 +381,9 @@ function new_service {
     export_service_certificate
     export_service_private_key
     echo "Listing generated files for service:"
-    ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
+    if [[ "${SERVICE_STORETYPE}" != "JCERACFKS" ]]; then
+        ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
+    fi
 }
 
 function new_self_signed_service {
@@ -550,10 +580,12 @@ done
 
 case $ACTION in
     clean)
+        clean_keyring
         clean_local_ca
         clean_service
         ;;
     setup)
+        clean_keyring
         setup_local_ca
         new_service
         jwt_key_gen_and_export
