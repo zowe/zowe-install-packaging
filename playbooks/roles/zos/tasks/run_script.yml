@@ -1,0 +1,19 @@
+# This playbook will upload a script in template in var/template/ folder to z/OS
+# work_dir_remote folder
+
+# input:
+# - script_chdir: optional
+# - script_filename: required
+# - script_parameters: optional
+
+- fail:
+    msg: work_dir_remote is required
+  when: work_dir_remote is not defined or work_dir_remote is none or work_dir_remote == ''
+
+- name: Run {{ script_filename }} from {{ script_chdir | default(work_dir_remote) }}
+  raw: >-
+    touch {{ zos_uss_user_profile }} && \
+    . {{ zos_uss_user_profile }} \
+    {{ zowe_environment_variable_overrides | default('') }} && \
+    cd "{{ script_chdir | default(work_dir_remote) }}" && \
+    {{ script_filename }} {{ script_parameters | default('') }}

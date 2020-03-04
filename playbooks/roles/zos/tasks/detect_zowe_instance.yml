@@ -1,0 +1,46 @@
+---
+# try to detect current installation is from convenient build or SMPE build
+
+# ============================================================================
+# validate variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_smpe_dir_prefix
+    - zowe_smpe_default_path
+    - zowe_root_dir
+
+- name: Reset variables
+  set_fact:
+    is_smpe_build: false
+    is_convenient_build: false
+
+# ============================================================================
+- name: Test SMPE install folder
+  raw: test -f "{{ (zowe_smpe_dir_prefix is regex("/$")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + "/") }}{{ zowe_smpe_default_path }}/manifest.json"
+  register: zowe_smpe_dir_exists
+  ignore_errors: True
+
+- name: Set is_smpe_build to True
+  set_fact:
+    is_smpe_build: True
+  when: zowe_smpe_dir_exists.rc == 0
+
+# ============================================================================
+- name: Test convenient build install folder
+  raw: test -f "{{ zowe_root_dir }}/manifest.json"
+  register: zowe_root_dir_exists
+  ignore_errors: True
+
+- name: Set is_convenient_build to True
+  set_fact:
+    is_convenient_build: True
+  when: zowe_root_dir_exists.rc == 0
+
+# ============================================================================
+- import_role:
+    name: fmid
+    tasks_from: overwrite_vars
+  when: is_smpe_build

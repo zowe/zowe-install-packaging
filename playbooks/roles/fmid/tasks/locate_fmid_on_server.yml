@@ -1,0 +1,50 @@
+---
+# find FMID files on z/OS
+#
+# output:
+# - zowe_smpe_fmid
+# - zowe_smpe_fmid_paxz
+# - zowe_smpe_fmid_readme
+
+# ============================================================================
+- name: Init zowe_smpe_fmid_paxz and zowe_smpe_fmid_readme variables
+  set_fact:
+    zowe_smpe_fmid: ""
+    zowe_smpe_fmid_paxz: ""
+    zowe_smpe_fmid_readme: ""
+
+- name: Find Zowe FMID
+  raw: cd {{ work_dir_remote }} && ls -1 {{ zowe_build_smpe_fmid_pattern_paxz }} | awk -F. '{print $1};' | tr -d '\n'
+  register: zowe_smpe_fmid_result
+
+- name: Set zowe_smpe_fmid to {{ zowe_smpe_fmid_result.stdout }}
+  set_fact:
+    zowe_smpe_fmid: "{{ zowe_smpe_fmid_result.stdout }}"
+  when: zowe_smpe_fmid_result.stdout != ''
+
+- name: Check if Zowe SMPE pax.Z exists
+  raw: cd {{ work_dir_remote }} && ls -1 {{ zowe_build_smpe_fmid_pattern_paxz }} | tr -d '\n'
+  register: zowe_smpe_fmid_paxz_result
+
+- name: Set zowe_smpe_fmid_paxz to {{ zowe_smpe_fmid_paxz_result.stdout }}
+  set_fact:
+    zowe_smpe_fmid_paxz: "{{ zowe_smpe_fmid_paxz_result.stdout }}"
+  when: zowe_smpe_fmid_paxz_result.stdout != ''
+
+- name: Check if Zowe SMPE readme exists
+  raw: cd {{ work_dir_remote }} && ls -1 {{ zowe_build_smpe_fmid_pattern_readme }} | tr -d '\n'
+  register: zowe_smpe_fmid_readme_result
+
+- name: Set zowe_smpe_fmid_readme to {{ zowe_smpe_fmid_readme_result.stdout }}
+  set_fact:
+    zowe_smpe_fmid_readme: "{{ zowe_smpe_fmid_readme_result.stdout }}"
+  when: zowe_smpe_fmid_readme_result.stdout != ''
+
+- name: Verify SMPE file
+  assert:
+    that:
+      - zowe_smpe_fmid != ''
+      - zowe_smpe_fmid_paxz != ''
+      - zowe_smpe_fmid_readme != ''
+    success_msg: "All required Zowe SMPE FMID files are uploaded."
+    fail_msg: "Couldn't find all Zowe SMPE FMID files (pax.Z and readme.txt)"

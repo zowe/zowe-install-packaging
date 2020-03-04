@@ -1,0 +1,11 @@
+---
+# this task runs operator command on server
+
+# input:
+# - path_to_opercmd: where is opercmd located on remote server. optional, default to "{{ work_dir_remote }}/opercmd"
+# output:
+# - opercmd_result
+
+- name: "Run operator command: {{ opercmd | default('') }}"
+  raw: "{{ path_to_opercmd | default( work_dir_remote + '/opercmd') }} '{{ opercmd | default('') }}'"
+  register: opercmd_result

@@ -1,0 +1,5 @@
+- name: Update zowe_external_domain_name from ansible_ssh_host if it's not defined
+  no_log: True
+  set_fact:
+    zowe_external_domain_name: "{{ hostvars[inventory_hostname].ansible_ssh_host }}"
+  when: zowe_external_domain_name == '' or zowe_external_domain_name is none

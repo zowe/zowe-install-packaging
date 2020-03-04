@@ -1,0 +1,41 @@
+---
+# install zowe convenient build
+# the build should have been uploaded to "{{ work_dir_remote }}/{{ zowe_build_file }}"
+# ============================================================================
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - work_dir_remote
+    - zowe_root_dir
+    - zowe_dataset_prefix
+
+- name: Check if Zowe build has been uploaded
+  raw: test -f '{{ work_dir_remote }}/{{ zowe_build_file }}'
+
+- name: Extract Zowe
+  raw: >-
+    rm -fr "{{ work_dir_remote }}/extracted" && \
+    mkdir -p "{{ work_dir_remote }}/extracted" && \
+    cd "{{ work_dir_remote }}/extracted" && \
+    pax -ppx -rf '{{ work_dir_remote }}/{{ zowe_build_file }}'
+
+# after extracted, we should have a folder like "zowe-1.9.0"
+- name: Check subfolder after Zowe build is extracted
+  raw: cd "{{ work_dir_remote }}/extracted" && ls -1 | tr -d '\n'
+  register: zowe_build_extracted_subfolder
+  failed_when: zowe_build_extracted_subfolder.stdout == ""
+
+- name: Install Zowe
+  import_role:
+    name: zos
+    tasks_from: run_script
+  vars:
+    script_chdir: "{{ work_dir_remote }}/extracted/{{ zowe_build_extracted_subfolder.stdout }}/install"
+    script_filename: ./zowe-install.sh
+    script_parameters: "-i \"{{ zowe_root_dir }}\" -h \"{{ zowe_dataset_prefix }}\""
+
+- name: Show installation log
+  raw: find {{ zowe_root_dir }}/install_log -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  ignore_errors: True

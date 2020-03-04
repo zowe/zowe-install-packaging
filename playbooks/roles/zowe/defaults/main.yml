@@ -1,0 +1,101 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+# default uss shell profile name
+zos_uss_user_profile: ~/.profile
+# this is the Zowe convenient build will be installed, it should exists in {{ work_dir_remote }}
+zowe_build_file: zowe.pax
+
+# this should list all known Zowe job names we ever shipped
+zowe_known_jobnames:
+# job name before 1.4.0: ZOWESVR
+- ZOWESVR
+# job name after 1.4.0: ZOWESV1
+- ZOWESV1
+# job name preparing for 1.5.0: ZOWE1SV
+- ZOWE1SV
+# job name preparing for 1.8.0: ZWE1SV
+- ZWE1SV
+# variations
+- ZWE2SV
+
+# this should list all known xmem Zowe job names we ever shipped
+zowe_known_xmem_jobnames:
+# job name before 1.8.0: ZWESIS01
+- ZWESIS01
+# job name before in some testing 1.7.1: ZWEXMSTC
+- ZWEXMSTC
+# job name preparing for 1.8.0: ZWESISTC
+- ZWESISTC
+
+# this should list all known started tasks we ever setup during install
+zowe_known_started_tasks:
+- ZWESIS*.*
+- ZOWESVR.*
+- ZWESVSTC.*
+- ZWES*.*
+
+# this should list all known facility profiles we ever setup during install
+zowe_known_facility_profiles:
+- ZWES.IS
+# this profile was used shortly by some testing versions of 1.7.1
+- ZWEX.IS
+
+# this should list all known stc we ever setup during install
+zowe_known_proc_stcs:
+# known zowe stc
+- ZOWESVR
+- ZOWESTC
+- ZWESVSTC
+# known cross memory server stc
+- ZWESIS01
+- ZWEXMSTC
+- ZWESISTC
+# known aux server stc
+- ZWESAUX
+- ZWEXASTC
+- ZWESASTC
+
+# this should list all known cross memory server stc we ever setup during install
+zowe_known_xmem_proc_stcs:
+- ZWESIS01
+- ZWEXMSTC
+- ZWESISTC
+
+# this should list all loadlib members we ever setup during install
+zowe_known_loadlib_members:
+- ZWESIS01
+- ZWESAUX
+
+# this should list all parmlib members we ever setup during install
+zowe_known_parmlib_members:
+- ZWESIP00
+
+# default zowe profile
+# this profile is abandoned after v1.7.0
+zowe_user_profile: ~/.zowe_profile
+
+# ==============================================================================
+# Variables should be verified and overwrittern.
+# ==============================================================================
+# temporary folder on remote
+work_dir_remote:
+# default zowe runtime root directory
+zowe_root_dir: ~/zowe
+# dataset prefix where zowe will be installed
+zowe_dataset_prefix:
+# userDir. This is replaced with instanceDir
+zowe_user_dir: ~/.zowe/user
+# instanceDir
+zowe_instance_dir: ~/.zowe/instance
+# keystore directory
+zowe_keystore_dir: ~/.zowe/keystore
+
+################################################################################
+# these are default variables for cross memory configuration
+zowe_xmem_proclib:
+zowe_xmem_parmlib:
+zowe_xmem_loadlib:
+zowe_xmem_proclib_member_zss: ZWESISTC
+zowe_xmem_proclib_member_aux: ZWESASTC

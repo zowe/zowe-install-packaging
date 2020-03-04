@@ -1,0 +1,74 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+
+# ==============================================================================
+# Variables should be verified and overwrittern.
+# ==============================================================================
+# temporary folder on remote
+work_dir_remote:
+# default zowe runtime root directory
+zowe_root_dir: ~/zowe
+# dataset prefix where zowe will be installed
+zowe_dataset_prefix:
+# userDir. This is replaced with instanceDir
+zowe_user_dir: ~/.zowe/user
+# instanceDir
+zowe_instance_dir: ~/.zowe/instance
+# zowe job prefix.
+zowe_job_prefix: ZWE
+# instance id. This will be put into zowe job name after {{ zowe_job_prefix }}
+zowe_instance_id: 1
+# APIML ports
+zowe_apiml_catalog_port: 7552
+zowe_apiml_discovery_port: 7553
+zowe_apiml_gateway_port: 7554
+zowe_apiml_verify_certficates_of_services: true
+zowe_apiml_enable_sso: false
+zowe_apiml_zosmf_keyring: IZUKeyring.IZUDFLT
+# explorer APIs/plugins ports
+zowe_jobs_api_port: 8545
+zowe_mvs_api_port: 8547
+zowe_jobs_explorer_port: 8546
+zowe_mvs_explorer_port: 8548
+zowe_uss_explorer_port: 8550
+# zlux ports
+zowe_zlux_port: 8544
+zowe_zss_port: 8542
+# make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
+zowe_zss_xmem_name: ZWESIS_STD
+zowe_zlux_terminal_ssh_port: 22
+zowe_zlux_terminal_telnet_port: 23
+# The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'
+zowe_zlux_terminal_telnet_security_type:
+zowe_external_certficate:
+zowe_external_certficate_alias:
+zowe_external_certficate_authorities:
+zowe_keystore_dir: ~/.zowe/keystore
+zowe_keystore_password: password
+zowe_keystore_alias: localhost
+zowe_proclib_dsname: auto
+zowe_proclib_membername: ZWESVSTC
+zowe_runtime_user: ZWESVUSR
+zowe_runtime_group: ZWEADMIN
+
+################################################################################
+# these are default variables for cross memory configuration
+zowe_xmem_proclib:
+zowe_xmem_parmlib:
+zowe_xmem_loadlib:
+zowe_xmem_server_name: ZWESIS_STD
+zowe_xmem_proclib_member_zss: ZWESISTC
+zowe_xmem_proclib_member_aux: ZWESASTC
+zowe_xmem_tss_facility_owner: auto
+zowe_xmem_stc_user: ZWESIUSR
+zowe_xmem_stc_user_id:
+zowe_xmem_stc_group: ZWEADMIN
+
+# optional, default to ansible_ssh_host
+# required for zD&T (external IP is different from internal IP)
+zowe_external_domain_name:
+# optional, no default value
+# required for zD&T (external IP is different from internal IP)
+zowe_external_ip_address:

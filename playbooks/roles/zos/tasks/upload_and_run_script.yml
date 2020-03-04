@@ -1,0 +1,24 @@
+# This playbook will upload a script in template in var/template/ folder to z/OS
+# work_dir_remote folder
+
+# input:
+# - upload_and_run_script_filename: required
+# - upload_and_run_script_parameters: optional
+
+- import_role:
+    name: common
+    tasks_from: upload_file
+  vars:
+    filename_to_upload: "{{ upload_and_run_script_filename }}"
+    zos_upload_method: scp
+
+- name: Add executive permission to {{ upload_and_run_script_filename }}
+  raw: chmod g+x "{{ work_dir_remote }}/{{ upload_and_run_script_filename }}"
+
+- import_role:
+    name: zos
+    tasks_from: run_script
+  vars:
+    script_chdir: "{{ work_dir_remote }}"
+    script_filename: ./{{ upload_and_run_script_filename }}
+    script_parameters: "{{ upload_and_run_script_parameters | default('') }}"

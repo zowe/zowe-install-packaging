@@ -1,0 +1,30 @@
+---
+# our zD&T instances are located at this server
+ansible_ssh_host: river.zowe.org
+
+################################################################################
+# variables for zowe uninstallation and installation
+work_dir_remote: /zaas1/zowe-install
+zowe_external_domain_name: river.zowe.org
+zowe_external_ip_address: 37.58.118.251
+zowe_root_dir: /zaas1/zowe
+zowe_user_dir: /zaas1/.zowe
+zowe_instance_dir: /zaas1/.zowe
+zowe_keystore_dir: /zaas1/keystore
+zowe_dataset_prefix: TSTRADM.ZWE
+zowe_apiml_verify_certficates_of_services: false
+zowe_proclib_dsname: ZAAS1.PROCLIB
+zowe_xmem_proclib: ZAAS1.PROCLIB
+zowe_xmem_loadlib: IZUSVR.LOADLIB
+zowe_xmem_parmlib: IZUSVR.PARMLIB
+zowe_xmem_stc_user_id: 990010
+# variables for zowe smpe uninstallation and installation
+# during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed
+zowe_smpe_hlq_dsn: ZOE
+# during uninstallation, any data-sets start with this will be removed
+zowe_smpe_hlq_csi: ZOE.SMPE
+zowe_smpe_hlq_tzone: ZOE.SMPE
+zowe_smpe_hlq_dzone: ZOE.SMPE
+zowe_smpe_dir_prefix: /zaas1/zowe
+zowe_smpe_rel_file_prefix: ZOE
+zowe_smpe_volser: B3IME1
