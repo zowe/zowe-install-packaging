@@ -399,7 +399,7 @@ function new_self_signed_service {
 function trust {
     echo "Import a certificate to the truststore:"
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
+        keytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
             -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
         pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE}

@@ -162,11 +162,11 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
       --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
-    RC=$?
   else
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zowe-userid ${ZOWE_USER_ID} \
       --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}"
   fi
+  RC=$?
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
