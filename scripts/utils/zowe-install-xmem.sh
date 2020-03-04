@@ -63,7 +63,7 @@ EndOfUsage
 script_exit 1
 fi
 
-authlib=$1.SZWEAUTH | tr a-z A-Z 
+authlib=`echo $1.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
 loadlib=`echo $2 | tr '[:lower:]' '[:upper:]'`
 samplib=`echo $1.SZWESAMP | tr '[:lower:]' '[:upper:]'`
 parmlib=`echo $3 | tr '[:lower:]' '[:upper:]'`
