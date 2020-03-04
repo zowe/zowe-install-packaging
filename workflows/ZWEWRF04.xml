@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- #######################################################################
+ This program and the accompanying materials are made available
+ under the terms of the Eclipse Public License v2.0 which
+ accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-v20.html
+ SPDX-License-Identifier: EPL-2.0
+ Copyright Contributors to the Zowe Project. 2019, 2020
+####################################################################### -->
 <workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <autoTakeOwnership>true</autoTakeOwnership>
 <!-- instance prefix settings -->
@@ -6,7 +14,7 @@
         <workflowID scope="system" isCallable="system">zowe_create_runtime</workflowID>
         <workflowDefaultName>Zowe Create Runtime</workflowDefaultName>
         <workflowDescription>Use this workflow to create the runtime from the convenient build.</workflowDescription>
-        <workflowVersion>1.0</workflowVersion>
+        <workflowVersion>#ZOWE_VERSION#</workflowVersion>
         <vendor>ZOWE</vendor>
         <General/>
     </workflowInfo>
@@ -19,7 +27,7 @@
             <regularExpression>~?(\/[^\/]+)+</regularExpression>
             <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
             <!-- Specify choices here -->
-            <default>~/zowe-1.9.0</default>
+            <default>~/zowe-#ZOWE_VERSION#</default>
         </string>
     </variable>
     <variable name="zowe_install_path" scope="instance" visibility="public">
@@ -58,7 +66,7 @@
         <description>This is a custom temporary directory that will be used if Zowe Build path is read-only.</description>
         <category>Installation</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <regularExpression>~?(\/[^\/]+)*</regularExpression>
             <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
         </string>
     </variable>
