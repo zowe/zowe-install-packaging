@@ -63,25 +63,14 @@ EndOfUsage
 script_exit 1
 fi
 
-# # check invocation path
-# dirName=$(dirname `pwd`)
-# parentDir=$(basename $dirName)
-# baseDir=$(basename `pwd`)
-
-# if [[ $baseDir != utils || $parentDir != scripts ]]
-# then
-#   echo Wrong directory `pwd`, you must be in scripts/utils to run this script | tee -a ${LOG_FILE}
-#   script_exit 2
-# fi 
-
-authlib=$1.SZWEAUTH
-loadlib=$2
-samplib=$1.SZWESAMP
-parmlib=$3
+authlib=`echo $1.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
+loadlib=`echo $2 | tr '[:lower:]' '[:upper:]'`
+samplib=`echo $1.SZWESAMP | tr '[:lower:]' '[:upper:]'`
+parmlib=`echo $3 | tr '[:lower:]' '[:upper:]'`
  
 if [[ $# -eq 4 ]]
 then
-  proclib=$4
+  proclib=`echo $4 | tr '[:lower:]' '[:upper:]'`
 else
   proclib=auto
 fi 
