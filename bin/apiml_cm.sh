@@ -63,7 +63,7 @@ ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
 
 if [ -z ${TEMP_DIR+x} ]; then
-    TEMP_DIR=/tmp
+    TEMP_DIR=${TMPDIR:-/tmp}
 fi
 
 function pkeytool {
