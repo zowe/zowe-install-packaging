@@ -4,6 +4,8 @@ This project targets to use Ansible to uninstall / install Zowe.
 
 ## Prepare Environment
 
+You need Ansible v2.9.4+. Please check [Installation Document](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) from Ansible website.
+
 ### Verify Inventory and Variables
 
 - Check [hosts](hosts) file.

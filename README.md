@@ -2,6 +2,17 @@
 
 This repository includes Zowe installation script and pipelines to build Zowe.
 
+- [Branches](#branches)
+- [Manifest File](#manifest-file)
+  - [General information](#general-information)
+  - [Build information](#build-information)
+  - [Binary Dependencies](#binary-dependencies)
+  - [Source Dependencies](#source-dependencies)
+- [Build Pipeline](#build-pipeline)
+  - [Generate Customized Zowe Build](#generate-customized-zowe-build)
+- [Automate Install / Uninstall of Zowe with Ansible](#automate-install--uninstall-of-zowe-with-ansible)
+- [Quick Sanity Check on Your Zowe Instance](#quick-sanity-check-on-your-zowe-instance)
+
 ## Branches
 
 - From `master` branch, you can find the most recent **stable** build. It matches to the most recent official Zowe release.
