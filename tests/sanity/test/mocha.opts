@@ -1,0 +1,5 @@
+--recursive
+--timeout 360s
+--colors
+--reporter mocha-multi-reporters
+--reporter-options configFile=test/multi-reporters.json
