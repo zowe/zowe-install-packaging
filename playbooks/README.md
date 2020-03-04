@@ -8,8 +8,8 @@ This project targets to use Ansible to uninstall / install Zowe.
 
 - Check [hosts](hosts) file.
 - Check variables defined in [group_vars/all.yml](group_vars/all.yml).
-- Check variables defined in each group, for example: [group_vars/marist.yml](group_vars/marist.yml).
-- Check variables defined in each host, for example: [host_vars/marist-1.yml](host_vars/marist-1.yml).
+- Check variables defined for each group, for example: [group_vars/marist.yml](group_vars/marist.yml).
+- Check variables defined for each host or create a host variable YAML for your server. For example: [host_vars/river-0.yml](host_vars/river-0.yml).
 - Setup `ansible_password` or `ansible_ssh_private_key_file` for your host you are working on.
 - Verify values of `zowe_external_domain_name`, `zowe_external_ip_address`, `zowe_test_user` and `zowe_test_password` for your host.
 

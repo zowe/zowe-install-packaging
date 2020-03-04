@@ -101,3 +101,11 @@ If your changes are in components, it may depend on how the Zowe build picks you
       "explode": "true"
     },
   ```
+
+## Automate Install / Uninstall of Zowe with Ansible
+
+Please check details in [playbooks folder](playbooks/README.md).
+
+## Quick Sanity Check on Your Zowe Instance
+
+Please check details in [sanity test folder](tests/sanity/README.md).
