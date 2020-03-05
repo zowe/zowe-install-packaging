@@ -86,7 +86,7 @@ function pkeytool {
 
 function clean_keyring {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        KEYRING_UTIL=`dirname ${LOCAL_CA_FILENAME}`/../keyring-util
+        KEYRING_UTIL=`dirname ${SERVICE_KEYSTORE}`/../keyring-util
         echo "Removing ${ZOWE_USERID}/${ZOWE_KEYRING} keyring"
         $KEYRING_UTIL delring ${ZOWE_USERID} ${ZOWE_KEYRING}
     fi

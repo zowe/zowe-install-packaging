@@ -44,6 +44,8 @@ while getopts "p:" opt; do
 done
 shift "$(($OPTIND-1))"
 
+umask 0027
+
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
@@ -95,7 +97,6 @@ fi
 # build keyring-util program
 if [[ -n "${ZOWE_KEYRING}" ]]; then
   xlc -q64 -o ${KEYSTORE_DIRECTORY}/keyring-util ${ZOWE_ROOT_DIR}/bin/utils/keyring-util/keyring-util.c >> $LOG_FILE
-  #c89 -W"c,lp64,langlv(STDC99)" -Wl,lp64 -o ${KEYSTORE_DIRECTORY}/keyring-util ${ZOWE_ROOT_DIR}/bin/utils/keyring-util/keyring-util.c 2>> $LOG_FILE
   rm ${KEYSTORE_DIRECTORY}/keyring-util.o 2> /dev/null
 fi
 

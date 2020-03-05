@@ -27,10 +27,11 @@ keyring-util function userid keyring label
     **Current Limitation:** The `DELCERT` function can only manipulate a certificate that is owned by the `userid`, i.e. it can't 
      work with certificates owned by the CERTAUTH, SITE or different userid.
      
-       The following example removes `localhost` certificate owned by the `USER01` from the `ZOWERING` keyring owner by the `USER01` userid
+       The following example removes `localhost` certificate owned by the `USER01` from the `ZOWERING` keyring owned by the `USER01` userid
        * Example: `keyring-util DELCERT USER01 ZOWERING localhost`
        
-       The following example removes `localhost` certificate owned by the `USER01` from the RACF database.
+       The following example removes `localhost` certificate owned by the `USER01` from the RACF database. The command fails if the certificate
+       is still connected to some keyring. 
        * Example: `keyring-util DELCERT USER01 '*' localhost`
   
   * `REFRESH` - refreshes DIGTCERT class
@@ -41,8 +42,8 @@ For any return and reason codes, check [R_datalib return and reason codes](https
 ## Further development
 There is room for improvement: 
   * command line argument processing and syntax (perhaps using the argp library from [ambitus project](https://github.com/ambitus/glibc/tree/zos/2.28/master/argp))
-  * an extension of functionality of the current functions
-  * implementation of new [functions](https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.ichd100/ich2d100226.htm) 
+  * an extension of functionality of the current R_datalib functions
+  * adding support for other [R_datalib functions](https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.ichd100/ich2d100226.htm) 
     
-Work with the following resource if you want to implement a new R_datalib function [Data areas for R_datalib callable service](https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.ichc400/comx.htm)
+Work with the following resource if you want to add support for other R_datalib functions [Data areas for R_datalib callable service](https://www.ibm.com/support/knowledgecenter/SSLTBW_2.4.0/com.ibm.zos.v2r4.ichc400/comx.htm)
 
