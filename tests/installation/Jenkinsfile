@@ -115,7 +115,7 @@ node('ibm-jenkins-slave-dind') {
     string(
       name: 'TEST_DEBUG_INFORMATION',
       description: 'How to show debug logging for running test cases.',
-      defaultValue: '',
+      defaultValue: 'zowe-install-test:*',
       trim: true
     )
   )
@@ -227,9 +227,9 @@ node('ibm-jenkins-slave-dind') {
       ]) {
         def nodeHomeOverwrite = ''
         if (params.TEST_SERVER == 'marist') {
-          nodeHomeOverwrite = "NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
+          nodeHomeOverwrite = "ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
         }
-        def zoweBuild = sh(
+        def zoweBuild = pwd() + '/.tmp/zowe/' + sh(
           script: "ls -1 .tmp/zowe/",
           returnStdout: true
         ).trim()
@@ -240,7 +240,7 @@ SSH_HOST=${SSH_HOST} \
 SSH_PORT=${SSH_PORT} \
 SSH_USER=${USERNAME} \
 SSH_PASSWD=${PASSWORD} \
-ZOWE_BUILD_LOCAL=${zoweBuild} \
+ZOWE_BUILD_LOCAL="${zoweBuild}" \
 DEBUG=${params.TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
 npm test --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
 """
