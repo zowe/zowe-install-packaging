@@ -9,7 +9,7 @@
  */
 
 const expect = require('chai').expect;
-const debug = require('debug')('test:install:installed-files');
+const debug = require('debug')('zowe-sanity-test:install:installed-files');
 const SSH = require('node-ssh');
 const ssh = new SSH();
 

@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const debug = require('debug')('test:cli:utils');
+const debug = require('debug')('zowe-sanity-test:cli:utils');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const writeFile = util.promisify(fs.writeFile);

@@ -11,7 +11,7 @@
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
 
 const expect = require('chai').expect;
-const debug = require('debug')('test:cli:jobs');
+const debug = require('debug')('zowe-sanity-test:cli:jobs');
 const addContext = require('mochawesome/addContext');
 const { execZoweCli, defaultZOSMFProfileName, createDefaultZOSMFProfile } = require('./utils');
 const { ZOWE_JOB_NAME } = require('../constants');

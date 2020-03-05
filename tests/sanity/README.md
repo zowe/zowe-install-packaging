@@ -81,13 +81,13 @@ Test case can use [debug](https://www.npmjs.com/package/debug) package to output
 
 ```javascript
 // declare debug
-const debug = require('debug')('test:my-testsuite:my-testcase');
+const debug = require('debug')('zowe-sanity-test:my-testsuite:my-testcase');
 
 // output debug information
 debug('result:', result);
 ```
 
-To show debugging information on your local, you can add `DEBUG=test:*` to the test command:
+To show debugging information on your local, you can add `DEBUG=zowe-sanity-test:*` to the test command:
 
 ```
 ZOWE_ROOT_DIR=/path/to/zowe \
@@ -103,11 +103,11 @@ ZOWE_ROOT_DIR=/path/to/zowe \
   ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554 \
   ZOWE_EXPLORER_JOBS_PORT=8545 \
   ZOWE_EXPLORER_DATASETS_PORT=8547 \
-  DEBUG=test:* \
+  DEBUG=zowe-sanity-test:* \
   npm test
 ```
 
-In Jenkins Pipeline, we have pre-defined build parameter `TEST_CASE_DEBUG_INFORMATION`, which can enable to show debugging information. For example, give `TEST_CASE_DEBUG_INFORMATION` value `test:*` will show all test debugging information.
+In Jenkins Pipeline, we have pre-defined build parameter `TEST_CASE_DEBUG_INFORMATION`, which can enable to show debugging information. For example, give `TEST_CASE_DEBUG_INFORMATION` value `zowe-sanity-test:*` will show all test debugging information.
 
 ### Add Extra Information To HTML Result
 

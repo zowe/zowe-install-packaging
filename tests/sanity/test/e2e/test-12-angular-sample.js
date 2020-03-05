@@ -10,7 +10,7 @@
 
 const path = require('path');
 const expect = require('chai').expect;
-const debug = require('debug')('test:e2e:angular-sample');
+const debug = require('debug')('zowe-sanity-test:e2e:angular-sample');
 const addContext = require('mochawesome/addContext');
 const testName = path.basename(__filename, path.extname(__filename));
 const {

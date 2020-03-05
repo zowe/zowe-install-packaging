@@ -9,7 +9,7 @@
  */
 
 const expect = require('chai').expect;
-const debug = require('debug')('test:cli:zosmf');
+const debug = require('debug')('zowe-sanity-test:cli:zosmf');
 const addContext = require('mochawesome/addContext');
 const { execZoweCli, defaultZOSMFProfileName, createDefaultZOSMFProfile } = require('./utils');
 

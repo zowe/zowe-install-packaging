@@ -8,15 +8,23 @@
  * Copyright IBM Corporation 2020
  */
 
-const debug = require('debug')('test:basic:install-convenient-build');
+const debug = require('debug')('zowe-install-test:basic:install-fmid');
 
-const { checkMadatoryEnvironmentVariabls, runAnsiblePlaybook, copySanityTestReport } = require('../../utils');
+const {
+  checkMandatoryEnvironmentVariables,
+  runAnsiblePlaybook,
+  copySanityTestReport,
+} = require('../../utils');
+const {
+  TEST_TIMEOUT_INSTALL_TEST,
+  TEST_TIMEOUT_SANITY_TEST,
+} = require('../../constants');
 
-const TEST_SUITE_NAME = 'Test convenient build installation';
+const TEST_SUITE_NAME = 'Test SMPE FMID installation';
 describe(TEST_SUITE_NAME, () => {
   beforeAll(() => {
     // validate variables
-    checkMadatoryEnvironmentVariabls([
+    checkMandatoryEnvironmentVariables([
       'ANSIBLE_HOST',
       'SSH_HOST',
       'SSH_PORT',
@@ -27,17 +35,25 @@ describe(TEST_SUITE_NAME, () => {
 
   test('install', async () => {
     debug(`run install-fmid.yml on ${process.env.ANSIBLE_HOST}`);
-    const result = await runAnsiblePlaybook(TEST_SUITE_NAME, 'install-fmid.yml', process.env.ANSIBLE_HOST);
+    const result = await runAnsiblePlaybook(
+      TEST_SUITE_NAME,
+      'install-fmid.yml',
+      process.env.ANSIBLE_HOST
+    );
 
     expect(result.code).toBe(0);
-  });
+  }, TEST_TIMEOUT_INSTALL_TEST);
 
   test('verify', async () => {
     debug(`run verify.yml on ${process.env.ANSIBLE_HOST}`);
-    const result = await runAnsiblePlaybook(TEST_SUITE_NAME, 'verify.yml', process.env.ANSIBLE_HOST);
+    const result = await runAnsiblePlaybook(
+      TEST_SUITE_NAME,
+      'verify.yml',
+      process.env.ANSIBLE_HOST
+    );
     expect(result).toHaveProperty('reportId');
     await copySanityTestReport(result.reportId);
 
     expect(result.code).toBe(0);
-  });
+  }, TEST_TIMEOUT_SANITY_TEST);
 });

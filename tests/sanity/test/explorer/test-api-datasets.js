@@ -10,7 +10,7 @@
 
 const _ = require('lodash');
 const expect = require('chai').expect;
-const debug = require('debug')('test:explorer:api-datasets');
+const debug = require('debug')('zowe-sanity-test:explorer:api-datasets');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 

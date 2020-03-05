@@ -15,28 +15,52 @@ const fs = require('fs');
 const ncp = util.promisify(require('ncp').ncp);
 const mkdirp = require('mkdirp');
 const path = require('path');
-const debug = require('debug')('test:utils');
+const debug = require('debug')('zowe-install-test:utils');
 
-const { ANSIBLE_ROOT_DIR, SANITY_TEST_REPORTS_DIR, INSTALL_TEST_REPORTS_DIR } = require('./constants');
+const {
+  ANSIBLE_ROOT_DIR,
+  SANITY_TEST_REPORTS_DIR,
+  INSTALL_TEST_REPORTS_DIR,
+} = require('./constants');
 
-const checkMadatoryEnvironmentVariabls = (vars) => {
+/**
+ * Check if there are any mandatory environment variable is missing.
+ * 
+ * @param {Array} vars     list of env variable names
+ */
+const checkMandatoryEnvironmentVariables = (vars) => {
   for (let v of vars) {
     expect(process.env).toHaveProperty(v);
   }
 };
 
+/**
+ * Generate MD5 hash of a variable
+ *
+ * @param {Any} obj        any object
+ */
 const calculateHash = (obj) => {
   return crypto.createHash('md5').update(util.format('%j', obj)).digest('hex');
 };
 
-const copySanityTestReport = async (reportId) => {
+/**
+ * Copy sanity test report to install test report folder for future publish.
+ *
+ * @param {String} reportHash      report hash
+ */
+const copySanityTestReport = async (reportHash) => {
   if (fs.existsSync(path.resolve(SANITY_TEST_REPORTS_DIR, 'junit.xml'))) {
-    const targetReportDir = path.resolve(INSTALL_TEST_REPORTS_DIR, `${reportId}`);
+    const targetReportDir = path.resolve(INSTALL_TEST_REPORTS_DIR, `${reportHash}`);
     mkdirp.sync(targetReportDir);
     await ncp(SANITY_TEST_REPORTS_DIR, targetReportDir);
   }
 };
 
+/**
+ * Import extra vars for Ansible playbook from environment variables.
+ * 
+ * @param {Object} extraVars      Object
+ */
 const importDefaultExtraVars = (extraVars) => {
   const defaultMapping = {
     'ansible_ssh_host': 'SSH_HOST',
@@ -64,7 +88,7 @@ const importDefaultExtraVars = (extraVars) => {
 const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbose = '-v') => {
   return new Promise((resolve, reject) => {
     let result = {
-      reportId: calculateHash(testcase),
+      reportHash: calculateHash(testcase),
       code: null,
       stdout: '',
       stderr: '',
@@ -77,7 +101,7 @@ const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbos
     let params = [
       '-l', serverId,
       playbook,
-      verbose,
+      process.env.ANSIBLE_VERBOSE || verbose,
       `--extra-vars`,
       util.format('%j', extraVars),
     ];
@@ -121,7 +145,7 @@ const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbos
 
 // export constants and methods
 module.exports = {
-  checkMadatoryEnvironmentVariabls,
+  checkMandatoryEnvironmentVariables,
   calculateHash,
   copySanityTestReport,
   runAnsiblePlaybook,
