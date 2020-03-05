@@ -212,6 +212,7 @@ node('ibm-jenkins-slave-dind') {
     operation         : {
       lock("zowe-install-test-${params.TEST_SERVER}") {
       timestamps {
+      dir(INSTALL_TEST_PATH) {
       ansiColor('xterm') {
       withCredentials([
         usernamePassword(
@@ -234,7 +235,8 @@ node('ibm-jenkins-slave-dind') {
           returnStdout: true
         ).trim()
 
-        sh """
+        try {
+          sh """
 ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']} \
 SSH_HOST=${SSH_HOST} \
 SSH_PORT=${SSH_PORT} \
@@ -244,11 +246,12 @@ ZOWE_BUILD_LOCAL="${zoweBuild}" \
 DEBUG=${params.TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
 npm test --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
 """
+        } finally {
+          sh 'npm run merge-reports'
+        }
       } // end of withCredentials
-
-      // merge reports
-      sh 'npm run merge-reports'
       } // end of ansiColor
+      } // end of dir
       } // end of timestamps
       } // end of lock
     },
