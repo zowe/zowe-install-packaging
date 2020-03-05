@@ -85,7 +85,7 @@ const readXml = async (file) => {
     htmlReport.push(`, ${ts.$.failures ? ts.$.failures : 0} failures`);
     htmlReport.push(`, ${ts.$.skipped ? ts.$.skipped : 0} skipped`);
     htmlReport.push(`) in ${ts.$.time} seconds.</ul>`);
-}
+  }
 
   // ---------------------------------------------------------
   if (testcasesMerged > 0) {
