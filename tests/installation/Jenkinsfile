@@ -210,6 +210,15 @@ node('ibm-jenkins-slave-dind') {
   pipeline.test(
     name              : "Test",
     operation         : {
+      def nodeHomeOverwrite = ''
+      if (params.TEST_SERVER == 'marist') {
+        nodeHomeOverwrite = "ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
+      }
+      def zoweBuild = pwd() + '/.tmp/zowe/' + sh(
+        script: "ls -1 .tmp/zowe/",
+        returnStdout: true
+      ).trim()
+
       lock("zowe-install-test-${params.TEST_SERVER}") {
       timestamps {
       dir(INSTALL_TEST_PATH) {
@@ -226,15 +235,6 @@ node('ibm-jenkins-slave-dind') {
           usernameVariable: 'USERNAME'
         )
       ]) {
-        def nodeHomeOverwrite = ''
-        if (params.TEST_SERVER == 'marist') {
-          nodeHomeOverwrite = "ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
-        }
-        def zoweBuild = pwd() + '/.tmp/zowe/' + sh(
-          script: "ls -1 .tmp/zowe/",
-          returnStdout: true
-        ).trim()
-
         try {
           sh """
 ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']} \
