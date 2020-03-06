@@ -239,6 +239,7 @@ node('ibm-jenkins-slave-nvm') {
         )
       ]) {
       withEnv([
+        'ANSIBLE_VERBOSE=-vvv',
         'ANSIBLE_FORCE_COLOR=true',
         'FORCE_COLOR=1'
       ]) {
