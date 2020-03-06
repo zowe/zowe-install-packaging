@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<autoTakeOwnership>true</autoTakeOwnership>
+<!-- instance prefix settings -->
+    <workflowInfo>
+        <workflowID scope="none" >zowe_instance</workflowID>
+        <workflowDefaultName>ZOWE Instance Configuration</workflowDefaultName>
+        <workflowDescription>This workflow creates and configures new Zowe instance</workflowDescription>
+        <workflowVersion>#ZOWE_VERSION#</workflowVersion>
+        <vendor>Zowe</vendor>
+        <General/>
+    </workflowInfo>
+    <variable name="zowe_install_path" scope="instance" visibility="public">
+        <label>Install Path</label>
+        <abstract>Path for the Zowe runtime</abstract>
+        <description>Specify the path where your Zowe runtime resides</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="ZOWE_PREFIX" scope="instance" visibility="public">
+        <label>Zowe Prefix</label>
+        <abstract>Prefix of the Zowe instance</abstract>
+        <description>Prefix of the Zowe instance</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>ZWE</default>
+        </string>
+    </variable>
+    <variable name="ZOWE_INSTANCE" scope="instance" visibility="public">
+        <label>Zowe instance Suffix</label>
+        <abstract>Zowe instance suffix</abstract>
+        <description>Zowe instance suffix</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>1</default>
+        </string>
+    </variable>
+    <variable name="LAUNCH_COMPONENT_GROUPS" scope="instance" visibility="public">
+        <label>Launch Component Groups</label>
+        <abstract>Comma separated list of components should start</abstract>
+        <description>Comma separated list of components should start</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>GATEWAY</choice>
+            <choice>DESKTOP</choice>
+            <choice>GATEWAY,DESKTOP</choice>
+            <default>GATEWAY,DESKTOP</default>
+        </string>
+    </variable>
+    <variable name="JAVA_HOME" scope="instance" visibility="public">
+        <label>Java Home</label>
+        <abstract>Path to the Java Home.</abstract>
+        <description>Path to the Java Home.</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="NODE_HOME" scope="instance" visibility="public">
+        <label>NodeJS Home</label>
+        <abstract>Path to your NodeJS Home</abstract>
+        <description>Path to your NodeJS Home</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="ZOSMF_PORT" scope="instance" visibility="public">
+        <label>z/OSMF Port</label>
+        <abstract>Port used by your z/OSMF</abstract>
+        <description>Port used by your z/OSMF</description>
+        <category>z/OS MF config</category>
+        <integer>
+            <!-- validation -->
+            <default>01444</default>
+        </integer>
+    </variable>
+    <variable name="ZOSMF_HOST" scope="instance" visibility="public">
+        <label>z/OSMF Hostname</label>
+        <abstract>Hostname to your z/OSMF</abstract>
+        <description>Hostname to your z/OSMF</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+        </string>
+    </variable>
+    <variable name="ZOWE_EXPLORER_HOST" scope="instance" visibility="public">
+        <label>Zowe Explorer Host</label>
+        <abstract>Zowe Explorer Host (probably same as the z/Osmf Host</abstract>
+        <description>Zowe Explorer Host (probably same as the z/Osmf Host</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+        </string>
+    </variable>
+    <variable name="ZOWE_IP_ADDRESS" scope="instance" visibility="public">
+        <label>Zowe IP Address</label>
+        <abstract>IP address of the system that will run Zowe</abstract>
+        <description>IP address of the system that will run Zowe</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+        </string>
+    </variable>
+    <variable name="KEYSTORE_DIRECTORY" scope="instance" visibility="public">
+        <label>Keystore Directory</label>
+        <abstract>Directory location of the keystore</abstract>
+        <description>Directory location of the keystore</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+            <default>/global/zowe/keystore</default>
+        </string>
+    </variable>
+    <variable name="CATALOG_PORT" scope="instance" visibility="public">
+        <label>Catalog Port</label>
+        <abstract>Port that will be used for the API ML Catalog</abstract>
+        <description>Port that will be used for the API ML Catalog</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>7552</default>
+        </integer>
+    </variable>
+    <variable name="DISCOVERY_PORT" scope="instance" visibility="public">
+        <label>Discovery Port</label>
+        <abstract>Port that will be used for the API ML Discovery Service</abstract>
+        <description>Port that will be used for the API ML Discovery Service</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>7553</default>
+        </integer>
+    </variable>
+    <variable name="GATEWAY_PORT" scope="instance" visibility="public">
+        <label>Gateway Port</label>
+        <abstract>Port that will be used for the API ML Gateway</abstract>
+        <description>Port that will be used for the API ML Gateway</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>7554</default>
+        </integer>
+    </variable>
+    <variable name="APIML_ENABLE_SSO" scope="instance" visibility="public">
+        <label>API Mediation Layer Single Sign-On</label>
+        <abstract>Do you want to enable Single Sign-On?</abstract>
+        <description>Check this option to enable the Single Sign-On.</description>
+        <category>API Mediation Layer</category>
+        <boolean>
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
+        <label>Zowe ZLUX Server HTTPS Port</label>
+        <abstract>Zowe ZLUX Server HTTPS Port</abstract>
+        <description>Zowe ZLUX Server HTTPS Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8544</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZSS_SERVER_PORT" scope="instance" visibility="public">
+        <label>Zowe ZSS Server Port</label>
+        <abstract>Zowe ZSS Server Port</abstract>
+        <description>Zowe ZSS Server Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8542</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" visibility="public">
+        <label>Zowe ZSS XMEM Server Name</label>
+        <abstract>Zowe ZSS XMEM Server Name</abstract>
+        <description>Zowe ZSS XMEM Server Name</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>ZWESIS_STD</default>
+        </string>
+    </variable>
+    <variable name="ZOWE_ZLUX_SSH_PORT" scope="instance" visibility="public">
+        <label>Zowe ZLUX SSH Port</label>
+        <abstract>Zowe ZLUX SSH Port</abstract>
+        <description>Zowe ZLUX SSH Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>22</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZLUX_TELNET_PORT" scope="instance" visibility="public">
+        <label>Zowe ZLUX Telnet Port</label>
+        <abstract>Zowe ZLUX Telnet Port</abstract>
+        <description>Zowe ZLUX Telnet Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>23</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZLUX_SECURITY_TYPE" scope="instance" visibility="public">
+        <label>Zowe ZLUX Security Type</label>
+        <abstract>The security type of the tn3270 connection</abstract>
+        <description>The security type of the tn3270 connection
+valid values are blank('') for telnet, or 'tls'</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice> </choice>
+            <choice>tls</choice>
+            <default> </default>
+        </string>
+    </variable>
+    <variable name="ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" scope="instance" visibility="public">
+        <label>ZWEAD External Static Def Directories</label>
+        <abstract>For third-party extender to add the full path to the directory</abstract>
+        <description>For third-party extender to add the full path to the directory containing their static yml definition semi-colon separated</description>
+        <category>Extender variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="EXTERNAL_COMPONENTS" scope="instance" visibility="public">
+        <label>External Components</label>
+        <abstract>Path for the component lifecycle scripts</abstract>
+        <description>For third-party extender to add the full path to the directory containing their component lifecycle scripts</description>
+        <category>Extender variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <!--atCreate-->
+    <step name="define_variables" optional="false">
+        <title>Define Variables</title>
+        <description>Define the variables</description>
+        <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_PREFIX" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_INSTANCE" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="LAUNCH_COMPONENT_GROUPS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="JAVA_HOME" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="NODE_HOME" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOSMF_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOSMF_HOST" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_EXPLORER_HOST" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_IP_ADDRESS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="KEYSTORE_DIRECTORY" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="CATALOG_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="DISCOVERY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="GATEWAY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_ENABLE_SSO" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZSS_SERVER_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_SSH_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_TELNET_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_SECURITY_TYPE" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="EXTERNAL_COMPONENTS" scope="instance" noPromptIfSet="false" required="false"/>
+        <instructions substitution="true">Define the variables for the workflow execution</instructions>
+        <weight>1</weight>
+        <skills>None</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+    </step>
+</workflow>
