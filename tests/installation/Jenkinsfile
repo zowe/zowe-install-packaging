@@ -238,6 +238,10 @@ node('ibm-jenkins-slave-nvm') {
           usernameVariable: 'USERNAME'
         )
       ]) {
+      withEnv([
+        'ANSIBLE_FORCE_COLOR=true',
+        'FORCE_COLOR=1'
+      ]) {
         try {
           sh """
 ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']} \
@@ -252,6 +256,7 @@ npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
         } finally {
           sh 'npm run merge-reports'
         }
+      } // end of withEnv
       } // end of withCredentials
       } // end of ansiColor
       } // end of dir
