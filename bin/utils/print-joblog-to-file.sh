@@ -11,9 +11,14 @@
 #######################################################################
 
 # Function: Print a JES job log to a USS file
-# Inputs  - jobname and jobid of job to be printed
-# Outputs - a USS file containing the job log, which will be placed in $jobname-$jobid.log
-#         - The job will be purged from the JES spool
+#
+# Inputs  - jobname   - the name of the job
+#         - jobid     - JES JobID of job, like job00000, stc00000 or tsu00000
+# Lowercase is treated as uppercase in jobname and jobid
+#
+# Outputs - jobfile   - the USS filename to receive the output
+#
+# The job will be purged from the JES spool
 # Uses    - The TSO OUTPUT command
 
 # identify this script
@@ -21,19 +26,19 @@ SCRIPT_DIR="$(dirname $0)"
 SCRIPT="$(basename $0)"
 echo script $SCRIPT started from $SCRIPT_DIR
 
-if [[ $# -ne 2 ]]
+if [[ $# -ne 3 ]]
 then
 echo; echo $SCRIPT Usage:
 cat <<EndOfUsage
 
-    $SCRIPT jobname jobid
+    $SCRIPT jobname jobid jobfile
 
 for example
 
-    $SCRIPT myjob   job65262
-    $SCRIPT zwe1sv  stc00406
+    $SCRIPT myjob   job65262 myjob.out
+    $SCRIPT zwe1sv  stc00406 /u/userid/zowestc.out
 
-The output will be placed in $jobname-$jobid.log and the job will be purged.
+The output will be placed in jobfile and the job will be purged.
 EndOfUsage
 echo script $SCRIPT ended 
 exit 
@@ -41,12 +46,16 @@ fi
 
 jobname=$1
 jobid=$2
+jobfile=$3
 
 userid=${USER:-${USERNAME:-${LOGNAME}}}
 tsoJobname=RUNTSOCM
-tsoCommandOut=/tmp/print.job.log.$$.tso.out
+if [ -z ${TEMP_DIR+x} ]; then
+    TEMP_DIR=${TMPDIR:-/tmp}
+fi
+tsoCommandOut=${TEMP_DIR}/print.job.log.$$.tso.out
 
-cat > runtso1.jcl <<EndOfJCL1
+cat > ${TEMP_DIR}/runtso1.jcl <<EndOfJCL1
 //$tsoJobname JOB REGION=0M
 //         EXEC PGM=IKJEFT01
 //SYSTSPRT DD PATH='$tsoCommandOut',
@@ -58,9 +67,9 @@ output $jobname($jobid) print($jobname.$jobid)
 EndOfJCL1
 
 # submit the job
-response=`submit runtso1.jcl`
+response=`submit ${TEMP_DIR}/runtso1.jcl`
 rc=$?
-rm  runtso1.jcl
+rm  ${TEMP_DIR}/runtso1.jcl
 if [[ $rc -ne 0 ]]
 then
     echo $SCRIPT submit JCL $tsoJobname failed
@@ -130,10 +139,10 @@ fi
 
 rm  $tsoCommandOut
 
-cp "//$jobname.$jobid.outlist" $jobname-$jobid.log
+cp "//$jobname.$jobid.outlist" $jobfile
 if [[ $? -eq 0 ]]
 then
-    echo $SCRIPT job output of "$jobname($jobid)" copied to $jobname-$jobid.log
+    echo $SCRIPT job output of "$jobname($jobid)" copied to $jobfile
     tsocmd delete $jobname.$jobid.outlist 1> /dev/null 2> /dev/null
 else
     echo $SCRIPT job output of "$jobname($jobid)" not copied to USS
