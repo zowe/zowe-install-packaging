@@ -10,7 +10,7 @@
 ################################################################################
 
 # Function: Copy SAMPLIB member into JES PROCLIB concatenation
-# Usage:  ./zowe-copy-to-JES.sh -s $samplib -i $input_member -r $proclib -o $output_member [-d $loadlib -a $parmlib]
+# Usage:  ./zowe-copy-to-JES.sh -s $samplib -i $input_member -r $proclib -o $output_member [-b $loadlib -a $parmlib]
 
 # Needs ../internal/opercmd to check JES concatenation
 # Needs ./mcopyshr.clist to write to the target PDS
