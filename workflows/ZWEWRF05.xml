@@ -40,6 +40,16 @@
             <default>1</default>
         </string>
     </variable>
+    <variable name="zowe_instance_path" scope="instance" visibility="public">
+        <label>Zowe Instance Path</label>
+        <abstract>USS Path to the newly created Zowe instance directory</abstract>
+        <description>USS Path to the newly created Zowe instance directory without trailing slash</description>
+        <category>Instance</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
     <variable name="LAUNCH_COMPONENT_GROUPS" scope="instance" visibility="public">
         <label>Launch Component Groups</label>
         <abstract>Comma separated list of components should start</abstract>
@@ -246,6 +256,7 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_PREFIX" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_INSTANCE" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="zowe_instance_path" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="LAUNCH_COMPONENT_GROUPS" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="JAVA_HOME" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="NODE_HOME" scope="instance" noPromptIfSet="false" required="true"/>
@@ -271,5 +282,24 @@ valid values are blank('') for telnet, or 'tls'</description>
         <skills>None</skills>
         <autoEnable>true</autoEnable>
         <canMarkAsFailed>false</canMarkAsFailed>
+    </step>
+    <step name="create_instance" optional="false">
+        <title>Create the Zowe instance</title>
+        <description>This step creates the Zowe instance directory</description>
+        <prereqStep name="define_variables"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="false">Use this step to generate the Zowe instance directory</instructions>
+        <weight>1</weight>
+        <skills>None</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
+sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
     </step>
 </workflow>
