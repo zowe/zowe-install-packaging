@@ -25,3 +25,6 @@ tmp/
 
 # zowe jobs output
 output/
+
+# workflow folder
+files/workflows/
