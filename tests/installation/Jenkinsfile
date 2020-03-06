@@ -223,7 +223,7 @@ node('ibm-jenkins-slave-nvm') {
       ).trim()
 
       lock("zowe-install-test-${params.TEST_SERVER}") {
-      timestamps {
+      // timestamps {
       dir(INSTALL_TEST_PATH) {
       ansiColor('xterm') {
       withCredentials([
@@ -255,7 +255,7 @@ npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
       } // end of withCredentials
       } // end of ansiColor
       } // end of dir
-      } // end of timestamps
+      // end of timestamps
       } // end of lock
     },
     junit         : "${INSTALL_TEST_PATH}/reports/junit.xml",

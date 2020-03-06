@@ -111,30 +111,37 @@ const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbos
       cwd: ANSIBLE_ROOT_DIR,
     };
 
+    debug(`Playbook ${playbook} started with parameter: ${util.format('%j', params)}`);
+    process.stdout.write(`>>>>>>>>>>>>>>>>>>>>> playbook ${playbook} started >>>>>>>>>>>>>>>>>>>>>`);
     const pb = spawn('ansible-playbook', params, opts);
 
     pb.stdout.on('data', (data) => {
       const d = data.toString('utf8');
       result.stdout += d;
-      debug(d);
+      process.stdout.write(d);
+      // debug(d);
     });
     
     pb.stderr.on('data', (data) => {
       const d = data.toString('utf8');
       result.stderr += d;
-      debug('Error: ' + d);
+      process.stderr.write(d);
+      // debug('Error: ' + d);
     });
 
     pb.on('error', (err) => {
-      debug('Error: ' + err);
+      // debug('Error: ' + err);
+      process.stderr.write('Error: ' + err);
       result.error = err;
 
+      process.stdout.write(`<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with error <<<<<<<<<<<<<<<<<<<<<<<<<`);
       reject(result);
     });
     
     pb.on('close', (code) => {
       result.code = 0;
       debug(`Playbook ${playbook} exits with code ${code}`);
+      process.stdout.write(`<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with code ${code} <<<<<<<<<<<<<<<<<<<<<<<<<`);
 
       if (code === 0) {
         resolve(result);
