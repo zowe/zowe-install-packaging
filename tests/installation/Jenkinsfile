@@ -238,7 +238,6 @@ node('ibm-jenkins-slave-nvm') {
         'FORCE_COLOR=1',
         // 'ANSIBLE_VERBOSE=-vvv',
         'ANSIBLE_FORCE_COLOR=true',
-        'ANSIBLE_STDOUT_CALLBACK=yaml',
         "ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']}",
         "SSH_HOST=${SSH_HOST}",
         "SSH_PORT=${SSH_PORT}",

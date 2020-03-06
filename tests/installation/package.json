@@ -14,7 +14,7 @@
     "xml2js": "^0.4.23"
   },
   "scripts": {
-    "test": "jest --runInBand",
+    "test": "jest --colors --runInBand",
     "merge-reports": "node merge-test-reports.js",
     "lint": "eslint ."
   }
