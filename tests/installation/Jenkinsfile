@@ -11,7 +11,7 @@
  */
 
 
-node('ibm-jenkins-slave-dind') {
+node('ibm-jenkins-slave-nvm') {
   String INSTALL_TEST_PATH = 'tests/installation'
   String SANITY_TEST_PATH = 'tests/sanity'
 
@@ -135,6 +135,9 @@ node('ibm-jenkins-slave-dind') {
 
       // upgrade npm
       sh 'npm install -g npm'
+
+      // install ansible
+
     }
   )
 
@@ -244,7 +247,7 @@ SSH_USER=${USERNAME} \
 SSH_PASSWD=${PASSWORD} \
 ZOWE_BUILD_LOCAL="${zoweBuild}" \
 DEBUG=${params.TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
-npm test --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
+npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
 """
         } finally {
           sh 'npm run merge-reports'
