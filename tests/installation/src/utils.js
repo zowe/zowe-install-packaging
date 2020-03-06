@@ -112,7 +112,7 @@ const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbos
     };
 
     debug(`Playbook ${playbook} started with parameter: ${util.format('%j', params)}`);
-    process.stdout.write(`>>>>>>>>>>>>>>>>>>>>> playbook ${playbook} started >>>>>>>>>>>>>>>>>>>>>`);
+    process.stdout.write(`\n\n>>>>>>>>>>>>>>>>>>>>> playbook ${playbook} started >>>>>>>>>>>>>>>>>>>>>\n\n`);
     const pb = spawn('ansible-playbook', params, opts);
 
     pb.stdout.on('data', (data) => {
@@ -131,17 +131,17 @@ const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbos
 
     pb.on('error', (err) => {
       // debug('Error: ' + err);
-      process.stderr.write('Error: ' + err);
+      process.stderr.write('\n\nError: ' + err);
       result.error = err;
 
-      process.stdout.write(`<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with error <<<<<<<<<<<<<<<<<<<<<<<<<`);
+      process.stdout.write(`\n\n<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with error <<<<<<<<<<<<<<<<<<<<<<<<<\n\n`);
       reject(result);
     });
     
     pb.on('close', (code) => {
       result.code = 0;
-      debug(`Playbook ${playbook} exits with code ${code}`);
-      process.stdout.write(`<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with code ${code} <<<<<<<<<<<<<<<<<<<<<<<<<`);
+      debug(`\n\nPlaybook ${playbook} exits with code ${code}`);
+      process.stdout.write(`\n\n<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with code ${code} <<<<<<<<<<<<<<<<<<<<<<<<<\n\n`);
 
       if (code === 0) {
         resolve(result);
