@@ -258,9 +258,9 @@ npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
       } // end of timestamps
       } // end of lock
     },
-    junit         : "reports/junit.xml",
+    junit         : "${INSTALL_TEST_PATH}/reports/junit.xml",
     htmlReports   : [
-      [dir: "reports", files: "index.html", name: "Report: Test Result"],
+      [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 30, unit: 'MINUTES'],
   )
