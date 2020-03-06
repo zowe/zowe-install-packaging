@@ -21,6 +21,7 @@ const {
 } = require('../../constants');
 
 const TEST_SUITE_NAME = 'Test SMPE FMID installation';
+let installSucceeded = false;
 describe(TEST_SUITE_NAME, () => {
   beforeAll(() => {
     // validate variables
@@ -42,9 +43,14 @@ describe(TEST_SUITE_NAME, () => {
     );
 
     expect(result.code).toBe(0);
+    installSucceeded = true;
   }, TEST_TIMEOUT_INSTALL_TEST);
 
   test('verify', async () => {
+    if (!installSucceeded) {
+      throw new Error('Install failed, skip verify test');
+    }
+
     debug(`run verify.yml on ${process.env.ANSIBLE_HOST}`);
     const result = await runAnsiblePlaybook(
       TEST_SUITE_NAME,
