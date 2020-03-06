@@ -213,6 +213,10 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.test(
     name              : "Test",
     operation         : {
+      def nodeHomeOverwrite = ''
+      if (params.TEST_SERVER == 'marist') {
+        nodeHomeOverwrite = "ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
+      }
       def zoweBuild = pwd() + '/.tmp/zowe/' + sh(
         script: "ls -1 .tmp/zowe/",
         returnStdout: true
@@ -234,28 +238,22 @@ node('ibm-jenkins-slave-nvm') {
           usernameVariable: 'USERNAME'
         )
       ]) {
-      def customeEnvVars = [
-        'FORCE_COLOR=1',
-        // 'ANSIBLE_VERBOSE=-vvv',
-        'ANSIBLE_FORCE_COLOR=true',
-        "ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']}",
-        "SSH_HOST=${SSH_HOST}",
-        "SSH_PORT=${SSH_PORT}",
-        "SSH_USER=${USERNAME}",
-        "SSH_PASSWD=${PASSWORD}",
-        "ZOWE_BUILD_LOCAL=\"${zoweBuild}\"",
-        "DEBUG=${params.TEST_DEBUG_INFORMATION}"
-      ]
-      if (params.TEST_SERVER == 'marist') {
-        customeEnvVars.add("ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x")
-      }
-      withEnv(customeEnvVars) {
         try {
-          sh "npm test -- --runTestsByPath \"${TEST_SCOPES[params.TEST_SCOPE]}\""
+          sh """
+FORCE_COLOR=1 \
+ANSIBLE_FORCE_COLOR=true \
+ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']} \
+SSH_HOST=${SSH_HOST} \
+SSH_PORT=${SSH_PORT} \
+SSH_USER=${USERNAME} \
+SSH_PASSWD=${PASSWORD} \
+ZOWE_BUILD_LOCAL="${zoweBuild}" \
+DEBUG=${params.TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
+npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
+"""
         } finally {
           sh 'npm run merge-reports'
         }
-      } // end of withEnv
       } // end of withCredentials
       } // end of ansiColor
       } // end of dir
