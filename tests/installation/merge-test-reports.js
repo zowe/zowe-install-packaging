@@ -80,7 +80,7 @@ const readXml = async (file) => {
     } else {
       htmlReport.push(ts.$.name);
     }
-    htmlReport.push(`${ts.$.tests} tests (`);
+    htmlReport.push(`: ${ts.$.tests} tests (`);
     htmlReport.push(`${ts.$.errors ? ts.$.errors : 0} errors`);
     htmlReport.push(`, ${ts.$.failures ? ts.$.failures : 0} failures`);
     htmlReport.push(`, ${ts.$.skipped ? ts.$.skipped : 0} skipped`);

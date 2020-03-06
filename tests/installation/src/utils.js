@@ -87,7 +87,7 @@ const importDefaultExtraVars = (extraVars) => {
  * @param  {Object}    extraVars
  * @param  {String}    verbose
  */
-const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbose = '-vv') => {
+const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbose = '-v') => {
   return new Promise((resolve, reject) => {
     let result = {
       reportHash: calculateHash(testcase),
