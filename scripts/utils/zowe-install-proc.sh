@@ -56,7 +56,7 @@ EndOfUsage
 script_exit 1
 fi
 
-if [[ -z ${data_set_prefix} ]]
+if [[ -z ${proclib} ]]
 then
 proclib=auto
 fi
