@@ -240,6 +240,7 @@ node('ibm-jenkins-slave-nvm') {
       ]) {
         try {
           sh """
+ANSIBLE_FORCE_COLOR=true \
 ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']} \
 SSH_HOST=${SSH_HOST} \
 SSH_PORT=${SSH_PORT} \
