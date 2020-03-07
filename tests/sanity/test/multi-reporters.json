@@ -1,5 +1,5 @@
 {
-  "reporterEnabled": "mochawesome",
+  "reporterEnabled": "mocha-jenkins-reporter, mochawesome",
   "mochaJenkinsReporterReporterOptions": {
     "junit_report_path": "reports/junit.xml"
   },
