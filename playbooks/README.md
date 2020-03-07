@@ -103,3 +103,13 @@ $ ansible-playbook -l <server> install-fmid.yml -v --extra-vars "zowe_build_url=
 
 - **zos_java_home**: customize your Java version by specifying the full path to your Java folder.
 - **zos_node_home**: customize your node.js version by specifying the full path to your node.js folder.
+
+### Sanity Test a Zowe Instance
+
+You can run a playbook to give a quick check if the Zowe instance is running as expected. The playbook will launch sanity tests defined in [tests/sanity](../tests/sanity/README.md).
+
+```
+$ ansible-playbook -l <server> verify.yml -v
+```
+
+_To run this playbook, you need node.js v8+ and npm installed on your computer._
