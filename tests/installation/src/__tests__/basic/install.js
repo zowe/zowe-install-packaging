@@ -11,6 +11,7 @@
 const debug = require('debug')('zowe-install-test:basic:install-pax');
 
 const {
+  sleep,
   checkMandatoryEnvironmentVariables,
   runAnsiblePlaybook,
   copySanityTestReport,
@@ -52,14 +53,18 @@ describe(TEST_SUITE_NAME, () => {
       throw new Error('Install failed, skip verify test');
     }
 
+    // sleep extra 2 minutes
+    debug(`wait extra 2 min before sanity test`);
+    await sleep(120000);
+
     debug(`run verify.yml on ${process.env.ANSIBLE_HOST}`);
     const result = await runAnsiblePlaybook(
       TEST_SUITE_NAME,
       'verify.yml',
       process.env.ANSIBLE_HOST
     );
-    expect(result).toHaveProperty('reportId');
-    await copySanityTestReport(result.reportId);
+    expect(result).toHaveProperty('reportHash');
+    await copySanityTestReport(result.reportHash);
 
     expect(result.code).toBe(0);
   }, TEST_TIMEOUT_SANITY_TEST);

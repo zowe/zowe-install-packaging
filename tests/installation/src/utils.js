@@ -24,6 +24,16 @@ const {
 } = require('./constants');
 
 /**
+ * Sleep for certain time
+ * @param {Integer} ms 
+ */
+const sleep = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/**
  * Check if there are any mandatory environment variable is missing.
  * 
  * @param {Array} vars     list of env variable names
@@ -109,39 +119,21 @@ const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbos
     ];
     let opts = {
       cwd: ANSIBLE_ROOT_DIR,
+      stdio: 'inherit',
     };
 
     debug(`Playbook ${playbook} started with parameter: ${util.format('%j', params)}`);
-    process.stdout.write(`\n\n>>>>>>>>>>>>>>>>>>>>> playbook ${playbook} started >>>>>>>>>>>>>>>>>>>>>\n\n`);
     const pb = spawn('ansible-playbook', params, opts);
 
-    pb.stdout.on('data', (data) => {
-      const d = data.toString('utf8');
-      result.stdout += d;
-      process.stdout.write(d);
-      // debug(d);
-    });
-    
-    pb.stderr.on('data', (data) => {
-      const d = data.toString('utf8');
-      result.stderr += d;
-      process.stderr.write(d);
-      // debug('Error: ' + d);
-    });
-
     pb.on('error', (err) => {
-      // debug('Error: ' + err);
-      process.stderr.write('\n\nError: ' + err);
+      process.stderr.write('Child Process Error: ' + err);
       result.error = err;
 
-      process.stdout.write(`\n\n<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with error <<<<<<<<<<<<<<<<<<<<<<<<<\n\n`);
       reject(result);
     });
-    
+
     pb.on('close', (code) => {
-      result.code = 0;
-      debug(`\n\nPlaybook ${playbook} exits with code ${code}`);
-      process.stdout.write(`\n\n<<<<<<<<<<<<<<<<<<<<<<<<< playbook ${playbook} exit with code ${code} <<<<<<<<<<<<<<<<<<<<<<<<<\n\n`);
+      result.code = code;
 
       if (code === 0) {
         resolve(result);
@@ -154,6 +146,7 @@ const runAnsiblePlaybook = (testcase, playbook, serverId, extraVars = {}, verbos
 
 // export constants and methods
 module.exports = {
+  sleep,
   checkMandatoryEnvironmentVariables,
   calculateHash,
   copySanityTestReport,
