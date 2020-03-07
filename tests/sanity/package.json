@@ -20,7 +20,7 @@
     "selenium-webdriver": "^4.0.0-alpha.1"
   },
   "scripts": {
-    "test": "rm -fr reports && mocha",
+    "test": "mocha",
     "lint": "eslint ."
   }
 }
