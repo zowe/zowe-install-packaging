@@ -11,7 +11,7 @@
  */
 
 
-node('ibm-jenkins-slave-nvm') {
+node('ibm-jenkins-slave-dind') {
   String INSTALL_TEST_PATH = 'tests/installation'
   String SANITY_TEST_PATH = 'tests/sanity'
 
