@@ -61,11 +61,16 @@ describe(TEST_SUITE_NAME, () => {
     cleanupSanityTestReportDir();
 
     debug(`run verify.yml on ${process.env.ANSIBLE_HOST}`);
-    const result = await runAnsiblePlaybook(
-      TEST_SUITE_NAME,
-      'verify.yml',
-      process.env.ANSIBLE_HOST
-    );
+    let result;
+    try {
+      result = await runAnsiblePlaybook(
+        TEST_SUITE_NAME,
+        'verify.yml',
+        process.env.ANSIBLE_HOST
+      );
+    } catch (e) {
+      result = e;
+    }
     expect(result).toHaveProperty('reportHash');
 
     // copy sanity test result to install test report folder
