@@ -11,9 +11,7 @@
 const util = require('util');
 const { spawn } = require('child_process');
 const crypto = require('crypto');
-const fs = require('fs');
-const ncp = util.promisify(require('ncp').ncp);
-const mkdirp = require('mkdirp');
+const fs = require('fs-extra');
 const path = require('path');
 const debug = require('debug')('zowe-install-test:utils');
 
@@ -58,12 +56,20 @@ const calculateHash = (obj) => {
  *
  * @param {String} reportHash      report hash
  */
-const copySanityTestReport = async (reportHash) => {
-  if (fs.existsSync(path.resolve(SANITY_TEST_REPORTS_DIR, 'junit.xml'))) {
+const copySanityTestReport = (reportHash) => {
+  if (fs.pathExistsSync(path.resolve(SANITY_TEST_REPORTS_DIR, 'junit.xml'))) {
     const targetReportDir = path.resolve(INSTALL_TEST_REPORTS_DIR, `${reportHash}`);
-    mkdirp.sync(targetReportDir);
-    await ncp(SANITY_TEST_REPORTS_DIR, targetReportDir);
+    fs.ensureDirSync(targetReportDir);
+    fs.copySync(SANITY_TEST_REPORTS_DIR, targetReportDir);
   }
+};
+
+/**
+ * Clean up sanity test report directory for next test
+ */
+const prepareSanityTestReportDir = () => {
+  fs.removeSync(SANITY_TEST_REPORTS_DIR);
+  fs.ensureDirSync(SANITY_TEST_REPORTS_DIR);
 };
 
 /**
@@ -79,6 +85,7 @@ const importDefaultExtraVars = (extraVars) => {
     'ansible_password': 'SSH_PASSWD',
     'zowe_build_local': 'ZOWE_BUILD_LOCAL',
     'zos_node_home': 'ZOS_NODE_HOME',
+    'zowe_sanity_test_debug_mode': 'SANITY_TEST_DEBUG',
   };
 
   Object.keys(defaultMapping).forEach((item) => {
@@ -150,5 +157,6 @@ module.exports = {
   checkMandatoryEnvironmentVariables,
   calculateHash,
   copySanityTestReport,
+  prepareSanityTestReportDir,
   runAnsiblePlaybook,
 };

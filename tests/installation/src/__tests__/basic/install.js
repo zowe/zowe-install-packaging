@@ -15,6 +15,7 @@ const {
   checkMandatoryEnvironmentVariables,
   runAnsiblePlaybook,
   copySanityTestReport,
+  prepareSanityTestReportDir,
 } = require('../../utils');
 const {
   TEST_TIMEOUT_INSTALL_TEST,
@@ -57,6 +58,9 @@ describe(TEST_SUITE_NAME, () => {
     debug(`wait extra 2 min before sanity test`);
     await sleep(120000);
 
+    // clean up sanity test folder
+    prepareSanityTestReportDir();
+
     debug(`run verify.yml on ${process.env.ANSIBLE_HOST}`);
     const result = await runAnsiblePlaybook(
       TEST_SUITE_NAME,
@@ -64,7 +68,9 @@ describe(TEST_SUITE_NAME, () => {
       process.env.ANSIBLE_HOST
     );
     expect(result).toHaveProperty('reportHash');
-    await copySanityTestReport(result.reportHash);
+
+    // copy sanity test result to install test report folder
+    copySanityTestReport(result.reportHash);
 
     expect(result.code).toBe(0);
   }, TEST_TIMEOUT_SANITY_TEST);

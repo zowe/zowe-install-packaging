@@ -7,10 +7,9 @@
   "devDependencies": {
     "debug": "^3.1.0",
     "eslint": "^5.2.0",
+    "fs-extra": "^8.1.0",
     "jest": "^25.1.0",
     "jest-junit": "^10.0.0",
-    "mkdirp": "^1.0.3",
-    "ncp": "^2.0.0",
     "xml2js": "^0.4.23"
   },
   "scripts": {

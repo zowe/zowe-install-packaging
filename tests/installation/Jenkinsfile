@@ -113,9 +113,15 @@ node('ibm-jenkins-slave-dind') {
       trim: true
     ),
     string(
-      name: 'TEST_DEBUG_INFORMATION',
-      description: 'How to show debug logging for running test cases.',
+      name: 'INSTALL_TEST_DEBUG_INFORMATION',
+      description: 'How to show debug logging for running install test cases.',
       defaultValue: 'zowe-install-test:*',
+      trim: true
+    ),
+    string(
+      name: 'SANITY_TEST_DEBUG_INFORMATION',
+      description: 'How to show debug logging for running sanity test cases.',
+      defaultValue: 'zowe-sanity-test:*',
       trim: true
     )
   )
@@ -247,7 +253,8 @@ SSH_PORT=${SSH_PORT} \
 SSH_USER=${USERNAME} \
 SSH_PASSWD=${PASSWORD} \
 ZOWE_BUILD_LOCAL="${zoweBuild}" \
-DEBUG=${params.TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
+SANITY_TEST_DEBUG=${params.SANITY_TEST_DEBUG_INFORMATION} \
+DEBUG=${params.INSTALL_TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
 npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
 """
         } finally {
