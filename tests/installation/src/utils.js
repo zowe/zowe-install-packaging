@@ -57,17 +57,23 @@ const calculateHash = (obj) => {
  * @param {String} reportHash      report hash
  */
 const copySanityTestReport = (reportHash) => {
+  debug(`Copy sanity test report of ${reportHash}`);
   if (fs.pathExistsSync(path.resolve(SANITY_TEST_REPORTS_DIR, 'junit.xml'))) {
+    debug(`Found junit.xml in ${SANITY_TEST_REPORTS_DIR}`);
     const targetReportDir = path.resolve(INSTALL_TEST_REPORTS_DIR, `${reportHash}`);
+    debug(`- copy to ${targetReportDir}`);
     fs.ensureDirSync(targetReportDir);
     fs.copySync(SANITY_TEST_REPORTS_DIR, targetReportDir);
+  } else {
+    debug(`junit.xml NOT found in ${SANITY_TEST_REPORTS_DIR}`);
   }
 };
 
 /**
  * Clean up sanity test report directory for next test
  */
-const prepareSanityTestReportDir = () => {
+const cleanupSanityTestReportDir = () => {
+  debug(`Clean up sanity test reeport directory: ${SANITY_TEST_REPORTS_DIR}`);
   fs.removeSync(SANITY_TEST_REPORTS_DIR);
   fs.ensureDirSync(SANITY_TEST_REPORTS_DIR);
 };
@@ -157,6 +163,6 @@ module.exports = {
   checkMandatoryEnvironmentVariables,
   calculateHash,
   copySanityTestReport,
-  prepareSanityTestReportDir,
+  cleanupSanityTestReportDir,
   runAnsiblePlaybook,
 };

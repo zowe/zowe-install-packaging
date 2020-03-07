@@ -15,7 +15,7 @@ const {
   checkMandatoryEnvironmentVariables,
   runAnsiblePlaybook,
   copySanityTestReport,
-  prepareSanityTestReportDir,
+  cleanupSanityTestReportDir,
 } = require('../../utils');
 const {
   TEST_TIMEOUT_INSTALL_TEST,
@@ -59,7 +59,7 @@ describe(TEST_SUITE_NAME, () => {
     await sleep(120000);
 
     // clean up sanity test folder
-    prepareSanityTestReportDir();
+    cleanupSanityTestReportDir();
 
     debug(`run verify.yml on ${process.env.ANSIBLE_HOST}`);
     const result = await runAnsiblePlaybook(
