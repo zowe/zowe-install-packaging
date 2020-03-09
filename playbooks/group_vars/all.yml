@@ -1,8 +1,6 @@
 ---
 # default to ssh connection
 ansible_connection: ssh
-# default ssh port
-ansible_port: 22
 
 # always uninstall before install new
 zowe_uninstall_before_install: true

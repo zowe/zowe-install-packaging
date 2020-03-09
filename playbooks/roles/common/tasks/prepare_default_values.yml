@@ -1,5 +1,16 @@
+- name: Update ansible_* (strings) from environment variables if it's not defined
+  no_log: True
+  set_fact:
+    "{{ item }}": "{{ lookup('env',item|upper)|default('') }}"
+  when: (item not in vars or item is none or item == '') and lookup('env',item|upper) != ''
+  loop:
+  - "ansible_ssh_host"
+  - "ansible_port"
+  - "ansible_user"
+  - "ansible_password"
+
 - name: Update zowe_external_domain_name from ansible_ssh_host if it's not defined
   no_log: True
   set_fact:
-    zowe_external_domain_name: "{{ hostvars[inventory_hostname].ansible_ssh_host }}"
+    zowe_external_domain_name: "{{ ansible_ssh_host|default('') }}"
   when: zowe_external_domain_name == '' or zowe_external_domain_name is none
