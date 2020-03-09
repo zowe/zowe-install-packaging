@@ -77,7 +77,7 @@ do
   fi
 done
 
-./zowe-copy-to-JES.sh -s $samplib -i $input_member -r $proclib -o $output_member -l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh -s $samplib -i $input_member -r $proclib -o $output_member
 echo "rc from zowe-copy-to-JES.sh is $?" >> $LOG_FILE
 
 script_exit 0
