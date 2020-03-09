@@ -48,11 +48,8 @@ jobname=$1
 jobid=$2
 jobfile=$3
 
-userid=${USER:-${USERNAME:-${LOGNAME}}}
 tsoJobname=RUNTSOCM
-if [ -z ${TEMP_DIR+x} ]; then
-    TEMP_DIR=${TMPDIR:-/tmp}
-fi
+TEMP_DIR=${TMPDIR:-/tmp}
 tsoCommandOut=${TEMP_DIR}/print.job.log.$$.tso.out
 
 cat > ${TEMP_DIR}/runtso1.jcl <<EndOfJCL1
