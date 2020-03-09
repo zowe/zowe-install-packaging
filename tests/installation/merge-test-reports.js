@@ -39,11 +39,11 @@ const readXml = async (file) => {
   // console.dir(rootJunit, {depth: null, colors: true})
   
   // init test count if missing
-  rootJunit.testsuites.$.tests = rootJunit.testsuites.$.tests || 0;
-  rootJunit.testsuites.$.errors = rootJunit.testsuites.$.errors || 0;
-  rootJunit.testsuites.$.failures = rootJunit.testsuites.$.failures || 0;
-  rootJunit.testsuites.$.skipped = rootJunit.testsuites.$.skipped || 0;
-  rootJunit.testsuites.$.time = rootJunit.testsuites.$.time || 0;
+  rootJunit.testsuites.$.tests = '' + parseInt(rootJunit.testsuites.$.tests || 0, 10);
+  rootJunit.testsuites.$.errors = '' + parseInt(rootJunit.testsuites.$.errors || 0, 10);
+  rootJunit.testsuites.$.failures = '' + parseInt(rootJunit.testsuites.$.failures || 0, 10);
+  rootJunit.testsuites.$.skipped = '' + parseInt(rootJunit.testsuites.$.skipped || 0, 10);
+  rootJunit.testsuites.$.time = '' + parseFloat(rootJunit.testsuites.$.time || 0);
 
   // ---------------------------------------------------------
   let htmlReport = [
@@ -65,11 +65,11 @@ const readXml = async (file) => {
   for (let ts of rootJunit.testsuites.testsuite) {
     const testHash = calculateHash(ts.$.name);
     // init test count if missing
-    ts.$.tests = ts.$.tests || 0;
-    ts.$.errors = ts.$.errors || 0;
-    ts.$.failures = ts.$.failures || 0;
-    ts.$.skipped = ts.$.skipped || 0;
-    ts.$.time = ts.$.time || 0;
+    ts.$.tests = '' + parseInt(ts.$.tests || 0, 10);
+    ts.$.errors = '' + parseInt(ts.$.errors || 0, 10);
+    ts.$.failures = '' + parseInt(ts.$.failures || 0, 10);
+    ts.$.skipped = '' + parseInt(ts.$.skipped || 0, 10);
+    ts.$.time = '' + parseFloat(ts.$.time || 0);
 
     const verifyTestResultFile = path.resolve(INSTALL_TEST_REPORTS_DIR, testHash, 'junit.xml');
     if (fs.existsSync(verifyTestResultFile)) {
@@ -77,16 +77,16 @@ const readXml = async (file) => {
       const verifyJunit = await readXml(verifyTestResultFile);
       for (let vts of verifyJunit.testsuites.testsuite) {
         // add tests count
-        ts.$.tests += vts.$.tests || 0;
-        ts.$.errors += vts.$.errors || 0;
-        ts.$.failures += vts.$.failures || 0;
-        ts.$.skipped += vts.$.skipped || 0;
-        ts.$.time += vts.$.time || 0;
-        rootJunit.testsuites.$.tests += vts.$.tests || 0;
-        rootJunit.testsuites.$.errors += vts.$.errors || 0;
-        rootJunit.testsuites.$.failures += vts.$.failures || 0;
-        rootJunit.testsuites.$.skipped += vts.$.skipped || 0;
-        rootJunit.testsuites.$.time += vts.$.time || 0;
+        ts.$.tests = '' + (parseInt(ts.$.tests, 10) + parseInt(vts.$.tests || 0, 10));
+        ts.$.errors = '' + (parseInt(ts.$.errors, 10) + parseInt(vts.$.errors || 0, 10));
+        ts.$.failures = '' + (parseInt(ts.$.failures, 10) + parseInt(vts.$.failures || 0, 10));
+        ts.$.skipped = '' + (parseInt(ts.$.skipped, 10) + parseInt(vts.$.skipped || 0, 10));
+        ts.$.time = '' + (parseFloat(ts.$.time) + parseFloat(vts.$.time || 0));
+        rootJunit.testsuites.$.tests = '' + (parstInt(rootJunit.testsuites.$.tests, 10) + parseInt(vts.$.tests || 0, 10));
+        rootJunit.testsuites.$.errors = '' + (parstInt(rootJunit.testsuites.$.errors, 10) + parseInt(vts.$.errors || 0, 10));
+        rootJunit.testsuites.$.failures = '' + (parstInt(rootJunit.testsuites.$.failures, 10) + parseInt(vts.$.failures || 0, 10));
+        rootJunit.testsuites.$.skipped = '' + (parstInt(rootJunit.testsuites.$.skipped, 10) + parseInt(vts.$.skipped || 0, 10));
+        rootJunit.testsuites.$.time = '' + (parseFloat(rootJunit.testsuites.$.time) + parseFloat(vts.$.time || 0));
 
         // merge test cases
         for (let vtc of vts.testcase) {
