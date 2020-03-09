@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<workflow>
+	<autoTakeOwnership>true</autoTakeOwnership>
+	<workflowSettingInfo>
+		<variablesSetting isInstanceVariableWithoutPrefix="true"/>
+	</workflowSettingInfo>
+	<workflowInfo>
+		<workflowID scope="none">Zowe_certificate_generation</workflowID>
+		<workflowDefaultName>Zowe_certificate_generation</workflowDefaultName>
+		<workflowDescription>This workflow will generate certificates for ZOWE</workflowDescription>
+		<workflowVersion>#ZOWE_VERSION#</workflowVersion>
+		<vendor>ZOWE</vendor>
+		<General/>
+	</workflowInfo>
+    <variable name="zowe_install_path" scope="instance" visibility="public">
+        <label>Install Path</label>
+        <abstract>Path for the Zowe runtime</abstract>
+        <description>Specify the path that will be used for the ZOWE runtime installation</description>
+        <category>Installation</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="USSDIR" scope="instance" visibility="public">
+        <label>Path to new zowe-setup-certificates.env</label>
+        <abstract>Location to which your new customized environment file will be created</abstract>
+        <description>Location to which your new customized environment file will be created</description>
+        <category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full path ending without a slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="HOSTNAME" scope="instance" visibility="public">
+        <label>HOSTNAME</label>
+        <abstract>The hostname of the system running API Mediation.</abstract>
+        <description>The hostname of the system running API Mediation. If the hostname is omitted, the configuration
+script attempts to calculate the value on its own.</description>
+        <category>General Security</category>
+        <string valueMustBeChoice="false" multiLine="false"></string>
+    </variable>
+    <variable name="IPADDRESS" scope="instance" visibility="public">
+        <label>IPADDRESS</label>
+        <abstract>The IP address of the system running API Mediation.</abstract>
+        <description>The IP address of the system running API Mediation. If the IP address is omitted, the configuration
+script attempts to calculate the value on its own.</description>
+        <category>General Security</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>IPADDR</validationType>
+        </string>
+    </variable>
+    <variable name="VERIFY_CERTIFICATES" scope="instance" visibility="public">
+        <label>VERIFY_CERTIFICATES</label>
+        <abstract>Should APIML verify certificates of services - true/false</abstract>
+        <description>Should APIML verify certificates of services - true/false</description>
+        <category>General Security</category>
+        <boolean>
+            <default>true</default>
+        </boolean>
+    </variable>
+    <variable name="EXTERNAL_CERTIFICATE" scope="instance" visibility="public">
+        <label>EXTERNAL_CERTIFICATE</label>
+        <abstract>Path to a PKCS12 keystore</abstract>
+        <description>Path to a PKCS12 keystore with a server certificate for API Mediaton Layer (APIML)</description>
+        <category>General Security</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full path ending without a slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="EXTERNAL_CERTIFICATE_ALIAS" scope="instance" visibility="public">
+        <label>EXTERNAL_CERTIFICATE_ALIAS</label>
+        <abstract>Alias of the certificate in the keystore</abstract>
+        <description>Alias of the certificate in the keystore</description>
+        <category>General security</category>
+        <string valueMustBeChoice="false" multiLine="false"></string>
+    </variable>
+    <variable name="EXTERNAL_CERTIFICATE_AUTHORITIES" scope="instance" visibility="public">
+        <label>EXTERNAL_CERTIFICATE_AUTHORITIES</label>
+        <abstract>Public certificates of trusted CAs</abstract>
+        <description>Public certificates of trusted CAs - multiple certificates 
+# delimitad with space has to be enclosed with quotes ("cer1 cer2")</description>
+        <category>General security</category>
+        <string valueMustBeChoice="false" multiLine="false"></string>
+    </variable>
+    <variable name="ZOSMF_CERTIFICATE" scope="instance" visibility="public">
+        <label>ZOSMF_CERTIFICATE</label>
+        <abstract>Public certificates of z/OSMF</abstract>
+        <description>Public certificates of z/OSMF - multiple certificates 
+delimited with space has to be enclosed with quotes ("cer1 cer2")</description>
+        <category>General security</category>
+        <string valueMustBeChoice="false" multiLine="false"></string>
+    </variable>
+    <variable name="KEYSTORE_PASSWORD" scope="instance" visibility="public">
+        <label>KEYSTORE_PASSWORD</label>
+        <abstract>Password that is used to secure EXTERNAL_CERTIFICATE keystore</abstract>
+        <description>Password that is used to secure EXTERNAL_CERTIFICATE keystore
+and that will be also used to secure newly generated keystores for API Mediation</description>
+        <category>General security</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>password</default>
+        </string>
+    </variable>
+    <variable name="KEYSTORE_DIRECTORY" scope="instance" visibility="public">
+        <label>KEYSTORE_DIRECTORY</label>
+        <abstract>Location for generated certificates</abstract>
+        <description>Location for generated certificates</description>
+        <category>General security</category>
+        <string multiLine="false" valueMustBeChoice="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a slash.</errorMessage>
+            <default>/global/zowe/keystore</default>
+        </string>
+    </variable>
+    <variable name="KEYSTORE_ALIAS" scope="instance" visibility="public">
+        <label>KEYSTORE_ALIAS</label>
+        <abstract>Alias for the certificate in the generated keystore</abstract>
+        <description>Alias for the certificate in the generated keystore</description>
+        <category>General security</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>localhost</default>
+        </string>
+    </variable>
+    <variable name="ZOWE_USER_ID" scope="instance" visibility="public">
+        <label>ZOWE_USER_ID</label>
+        <abstract>User id to set up ownership of the generated certificates</abstract>
+        <description>User id to set up ownership of the generated certificates</description>
+        <category>General security</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>USERID</validationType>
+            <default>ZWESVUSR</default>
+        </string>
+    </variable>
+        <variable name="ZOWE_GROUP_ID" scope="instance" visibility="public">
+        <label>ZOWE_GROUP_ID</label>
+        <abstract>User id to set up ownership of the generated certificates</abstract>
+        <description>User id to set up ownership of the generated certificates</description>
+        <category>General security</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>ZWEADMIN</default>
+        </string>
+    </variable>
+    <step name="define_variables" optional="false">
+		<title>Define Variables</title>
+		<description>Step to define the variables</description>
+        <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="USSDIR" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="HOSTNAME" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="IPADDRESS" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="VERIFY_CERTIFICATES" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="EXTERNAL_CERTIFICATE" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="EXTERNAL_CERTIFICATE_ALIAS" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="EXTERNAL_CERTIFICATE_AUTHORITIES" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="ZOSMF_CERTIFICATE" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="KEYSTORE_PASSWORD" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="KEYSTORE_DIRECTORY" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="KEYSTORE_ALIAS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_USER_ID" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_GROUP_ID" scope="instance" noPromptIfSet="false" required="true"/>
+		<instructions substitution="false">Run this step to initialize variable values</instructions>
+		<weight>1</weight>
+		<autoEnable>false</autoEnable>
+		<canMarkAsFailed>false</canMarkAsFailed>
+	</step>
+    <step name="Substitute_vars_in_env_file" optional="true">
+        <title>New Custom zowe-setup-certificates.env</title>
+        <description>Creates new zowe-setup-certificates.env in user specified location adn substitutes values</description>
+        <prereqStep name="define_variables"/>
+        <instructions substitution="false">This step creates zowe-setup-certificates.env and substitutes variables</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>true</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">
+if test ! -d ${USSDIR}; then mkdir -p -m 755 ${USSDIR}; fi
+cp ${zowe_install_path}/bin/zowe-setup-certificates.env ${USSDIR}/zowe-setup-certificates.env
+chmod 755 ${USSDIR}/zowe-setup-certificates.env
+
+HOSTNAME='${HOSTNAME}'
+IPADDRESS='${IPADDRESS}'
+VERIFY_CERTIFICATES='${VERIFY_CERTIFICATES}'
+EXTERNAL_CERTIFICATE='${EXTERNAL_CERTIFICATE}'
+EXTERNAL_CERTIFICATE_ALIAS='${EXTERNAL_CERTIFICATE_ALIAS}'
+EXTERNAL_CERTIFICATE_AUTHORITIES='${EXTERNAL_CERTIFICATE_AUTHORITIES}'
+ZOSMF_CERTIFICATE='${ZOSMF_CERTIFICATE}'
+KEYSTORE_PASSWORD='${KEYSTORE_PASSWORD}'
+KEYSTORE_DIRECTORY='${KEYSTORE_DIRECTORY}'
+KEYSTORE_ALIAS='${KEYSTORE_ALIAS}'
+ZOWE_USER_ID='${ZOWE_USER_ID}'
+ZOWE_GROUP_ID='${ZOWE_GROUP_ID}'
+
+sed -e "s#HOSTNAME=#HOSTNAME=$HOSTNAME#g" -e "s#IPADDRESS=#IPADDRESS=$IPADDRESS#g" -e "s#VERIFY_CERTIFICATES=true#VERIFY_CERTIFICATES=$VERIFY_CERTIFICATES#g" -e "s#EXTERNAL_CERTIFICATE=#EXTERNAL_CERTIFICATE=$EXTERNAL_CERTIFICATE#g" -e "s#EXTERNAL_CERTIFICATE_ALIAS=#EXTERNAL_CERTIFICATE_ALIAS=$EXTERNAL_CERTIFICATE_ALIAS#g" -e "s#EXTERNAL_CERTIFICATE_AUTHORITIES=#EXTERNAL_CERTIFICATE_AUTHORITIES=$EXTERNAL_CERTIFICATE_AUTHORITIES#g" -e "s#ZOSMF_CERTIFICATE=#ZOSMF_CERTIFICATE=$ZOSMF_CERTIFICATE#g" -e "s#KEYSTORE_PASSWORD=password#KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD#g" -e "s#KEYSTORE_DIRECTORY=/global/zowe/keystore#KEYSTORE_DIRECTORY=$KEYSTORE_DIRECTORY#g" -e "s#KEYSTORE_ALIAS=localhost#KEYSTORE_ALIAS=$KEYSTORE_ALIAS#g" -e "s#ZOWE_USER_ID=ZWESVUSR#ZOWE_USER_ID=$ZOWE_USER_ID#g" -e "s#ZOWE_GROUP_ID=ZWEADMIN#ZOWE_GROUP_ID=$ZOWE_GROUP_ID#g" ${zowe_install_path}/bin/zowe-setup-certificates.env > ${USSDIR}/zowe-setup-certificates.env
+            </inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+        </template>
+    </step>
+    <step name="Run_Gen_Script" optional="true">
+        <title>Execute zowe-setup-certificates.sh</title>
+        <description>This step will execute zowe-setup-certificates.sh with customized zowe-setup-certificates.env file</description>
+        <prereqStep name="define_variables"/>
+        <instructions substitution="false">This step will execute zowe-setup-certificates.sh with customized zowe-setup-certificates.env file</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>true</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">
+sh ${zowe_install_path}/bin/zowe-setup-certificates.sh -p ${USSDIR}/zowe-setup-certificates.env
+            </inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+        </template>
+    </step>
+</workflow>
