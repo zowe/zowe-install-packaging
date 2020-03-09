@@ -31,6 +31,25 @@
             <default>ZWE</default>
         </string>
     </variable>
+    <variable name="zowe_runtime_hlq" scope="instance" visibility="public">
+        <label>Zowe Runtime HLQ</label>
+        <abstract>High Level Qualifier for the Zowe Runtime data sets</abstract>
+        <description>Please input the High Level Qualifier for the Zowe Runtime data sets</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+        </string>
+    </variable>
+    <variable name="procedure_library" scope="instance" visibility="public">
+        <label>Procedure Library</label>
+        <abstract>Procedure library where the the STC task should be copied to</abstract>
+        <description>Specify the data set name of the procedure library (PROCLIB) you want to copy the STC task to.
+Keep this variable empty if you do not want to copy the STC task.</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+        </string>
+    </variable>
     <variable name="ZOWE_INSTANCE" scope="instance" visibility="public">
         <label>Zowe instance Suffix</label>
         <abstract>Zowe instance suffix</abstract>
@@ -254,6 +273,8 @@ valid values are blank('') for telnet, or 'tls'</description>
         <title>Define Variables</title>
         <description>Define the variables</description>
         <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="zowe_runtime_hlq" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="procedure_library" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_PREFIX" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_INSTANCE" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="zowe_instance_path" scope="instance" noPromptIfSet="false" required="true"/>
@@ -307,6 +328,7 @@ sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTempl
         <description>This step changes the configuration of the newly created instance
 based on the values input by the user.</description>
         <prereqStep name="define_variables"/>
+        <prereqStep name="create_instance"/>
         <!--variableValues-->
         <!-- condition -->
         <instructions substitution="false">Run this step to change the instance configuration.</instructions>
@@ -380,4 +402,36 @@ EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
             <!-- zosmfOutput -->
         </template>
     </step>
+    <step name="copy_stc" optional="false">
+        <title>Copies the STC to the procedure library</title>
+        <description>This step is skipped if the procedure library is empty</description>
+        <prereqStep name="define_variables"/>
+        <!--variableValues-->
+        <condition>
+            <expression>"a"=="a"</expression>
+            <description>Checks whether the PROCLIB is empty</description>
+            <targetStateSet>
+                <extendStateExpression>
+                    <description>Checks the PROCLIB value</description>
+                    <expression>"$!{instance-procedure_library}"==""</expression>
+                    <targetState>skipped</targetState>
+                </extendStateExpression>
+            </targetStateSet>
+        </condition>
+        <instructions substitution="false">Run this step to copy the STC procedure to the PROCLIB.</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">set -x
+cd "${instance-zowe_install_path}/scripts/utils"
+sh zowe-install-proc.sh "${instance-zowe_runtime_hlq}" "${instance-procedure_library}"
+exit $?</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+    <!-- TODO: Optionally start the STC -->
 </workflow>
