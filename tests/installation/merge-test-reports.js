@@ -37,6 +37,13 @@ const readXml = async (file) => {
   process.stdout.write(`Read ${rootJunitFile}\n`);
   let rootJunit = await readXml(rootJunitFile);
   // console.dir(rootJunit, {depth: null, colors: true})
+  
+  // init test count if missing
+  rootJunit.testsuites.$.tests = rootJunit.testsuites.$.tests || 0;
+  rootJunit.testsuites.$.errors = rootJunit.testsuites.$.errors || 0;
+  rootJunit.testsuites.$.failures = rootJunit.testsuites.$.failures || 0;
+  rootJunit.testsuites.$.skipped = rootJunit.testsuites.$.skipped || 0;
+  rootJunit.testsuites.$.time = rootJunit.testsuites.$.time || 0;
 
   // ---------------------------------------------------------
   let htmlReport = [
@@ -45,9 +52,9 @@ const readXml = async (file) => {
     '<body>',
     `<h1>${rootJunit.testsuites.$.name} HTML Report</h1>`,
     `<p>Total ${rootJunit.testsuites.$.tests} tests (`,
-    `${rootJunit.testsuites.$.errors ? rootJunit.testsuites.$.errors : 0} errors`,
-    `, ${rootJunit.testsuites.$.failures ? rootJunit.testsuites.$.failures : 0} failures`,
-    `, ${rootJunit.testsuites.$.skipped ? rootJunit.testsuites.$.skipped : 0} skipped`,
+    `${rootJunit.testsuites.$.errors} errors`,
+    `, ${rootJunit.testsuites.$.failures} failures`,
+    `, ${rootJunit.testsuites.$.skipped} skipped`,
     `) in ${rootJunit.testsuites.$.time} seconds.</p>`,
     '<ul>',
   ];
@@ -57,12 +64,31 @@ const readXml = async (file) => {
   let testcasesMerged = 0;
   for (let ts of rootJunit.testsuites.testsuite) {
     const testHash = calculateHash(ts.$.name);
+    // init test count if missing
+    ts.$.tests = ts.$.tests || 0;
+    ts.$.errors = ts.$.errors || 0;
+    ts.$.failures = ts.$.failures || 0;
+    ts.$.skipped = ts.$.skipped || 0;
+    ts.$.time = ts.$.time || 0;
 
     const verifyTestResultFile = path.resolve(INSTALL_TEST_REPORTS_DIR, testHash, 'junit.xml');
     if (fs.existsSync(verifyTestResultFile)) {
       process.stdout.write(`- ${ts.$.name} (${testHash})\n`);
       const verifyJunit = await readXml(verifyTestResultFile);
       for (let vts of verifyJunit.testsuites.testsuite) {
+        // add tests count
+        ts.$.tests += vts.$.tests || 0;
+        ts.$.errors += vts.$.errors || 0;
+        ts.$.failures += vts.$.failures || 0;
+        ts.$.skipped += vts.$.skipped || 0;
+        ts.$.time += vts.$.time || 0;
+        rootJunit.testsuites.$.tests += vts.$.tests || 0;
+        rootJunit.testsuites.$.errors += vts.$.errors || 0;
+        rootJunit.testsuites.$.failures += vts.$.failures || 0;
+        rootJunit.testsuites.$.skipped += vts.$.skipped || 0;
+        rootJunit.testsuites.$.time += vts.$.time || 0;
+
+        // merge test cases
         for (let vtc of vts.testcase) {
           vtc.$.name = `${ts.$.name} - sanity test - ${vts.$.name}  - ${vtc.$.name}`;
           ts.testcase.push(vtc);
@@ -81,9 +107,9 @@ const readXml = async (file) => {
       htmlReport.push(ts.$.name);
     }
     htmlReport.push(`: ${ts.$.tests} tests (`);
-    htmlReport.push(`${ts.$.errors ? ts.$.errors : 0} errors`);
-    htmlReport.push(`, ${ts.$.failures ? ts.$.failures : 0} failures`);
-    htmlReport.push(`, ${ts.$.skipped ? ts.$.skipped : 0} skipped`);
+    htmlReport.push(`${ts.$.errors} errors`);
+    htmlReport.push(`, ${ts.$.failures} failures`);
+    htmlReport.push(`, ${ts.$.skipped} skipped`);
     htmlReport.push(`) in ${ts.$.time} seconds.</ul>`);
   }
 
