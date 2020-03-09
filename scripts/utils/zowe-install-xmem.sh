@@ -78,11 +78,11 @@ loadlib=`echo ${loadlib} | tr '[:lower:]' '[:upper:]'`
 samplib=`echo ${data_set_prefix}.SZWESAMP | tr '[:lower:]' '[:upper:]'`
 parmlib=`echo ${parmlib} | tr '[:lower:]' '[:upper:]'`
  
-if [[ ! -z ${proclib} ]]
+if [[ -z ${proclib} ]]
 then
-  proclib=`echo ${proclib} | tr '[:lower:]' '[:upper:]'`
-else
   proclib=auto
+else
+  proclib=`echo ${proclib} | tr '[:lower:]' '[:upper:]'`
 fi 
 
 echo    "authlib =" $authlib >> $LOG_FILE
