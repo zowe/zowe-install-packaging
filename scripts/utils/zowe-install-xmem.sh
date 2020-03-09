@@ -73,14 +73,14 @@ EndOfUsage
 script_exit 1
 fi
 
-authlib=`echo $1.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
-loadlib=`echo $2 | tr '[:lower:]' '[:upper:]'`
-samplib=`echo $1.SZWESAMP | tr '[:lower:]' '[:upper:]'`
-parmlib=`echo $3 | tr '[:lower:]' '[:upper:]'`
+authlib=`echo ${data_set_prefix}.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
+loadlib=`echo ${loadlib} | tr '[:lower:]' '[:upper:]'`
+samplib=`echo ${data_set_prefix}.SZWESAMP | tr '[:lower:]' '[:upper:]'`
+parmlib=`echo ${parmlib} | tr '[:lower:]' '[:upper:]'`
  
-if [[ $# -eq 4 ]]
+if [[ ! -z ${proclib} ]]
 then
-  proclib=`echo $4 | tr '[:lower:]' '[:upper:]'`
+  proclib=`echo ${proclib} | tr '[:lower:]' '[:upper:]'`
 else
   proclib=auto
 fi 
