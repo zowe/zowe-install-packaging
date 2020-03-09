@@ -224,9 +224,9 @@ valid values are blank('') for telnet, or 'tls'</description>
         <category>Zowe Desktop/app framework variables</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
-            <choice> </choice>
+            <choice>''</choice>
             <choice>tls</choice>
-            <default> </default>
+            <default>''</default>
         </string>
     </variable>
     <variable name="ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" scope="instance" visibility="public">
@@ -298,6 +298,84 @@ valid values are blank('') for telnet, or 'tls'</description>
             <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
 sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+    <step name="change_instance_configuration" optional="false">
+        <title>Change instance configuration</title>
+        <description>This step changes the configuration of the newly created instance
+based on the values input by the user.</description>
+        <prereqStep name="define_variables"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="false">Run this step to change the instance configuration.</instructions>
+        <weight>1</weight>
+        <skills>None</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">//REPLFILE EXEC PGM=IEBGENER
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD DUMMY
+//SYSUT2   DD PATH='${instance-zowe_instance_path}/instance.env',
+//    PATHMODE=(SIRWXU,SIRGRP),
+//    PATHOPTS=(OCREAT,OWRONLY,OTRUNC),
+//    FILEDATA=TEXT
+//SYSUT1   DD *
+#!/bin/sh
+
+# Note this script is executed like a shell script, so can have embedded variables
+# TODO LATER - rename variable names to match some consistent naming conventions
+
+# global config
+ROOT_DIR=${instance-zowe_install_path}
+ZOWE_PREFIX=${instance-ZOWE_PREFIX}
+ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
+
+# Comma separated list of components should start from [GATEWAY,DESKTOP]
+LAUNCH_COMPONENT_GROUPS=${instance-LAUNCH_COMPONENT_GROUPS}
+
+JAVA_HOME=${instance-JAVA_HOME}
+NODE_HOME=${instance-NODE_HOME}
+
+# z/OS MF config
+ZOSMF_PORT=${instance-ZOSMF_PORT}
+ZOSMF_HOST=${instance-ZOSMF_HOST}
+
+ZOWE_EXPLORER_HOST=${instance-ZOWE_EXPLORER_HOST}
+ZOWE_IP_ADDRESS=${instance-ZOWE_IP_ADDRESS}
+
+# keystore config
+KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
+
+# APIML variables
+CATALOG_PORT=${instance-CATALOG_PORT}
+DISCOVERY_PORT=${instance-DISCOVERY_PORT}
+GATEWAY_PORT=${instance-GATEWAY_PORT}
+APIML_ENABLE_SSO=${instance-APIML_ENABLE_SSO}
+
+# explorer variables
+JOBS_API_PORT=${instance-JOBS_API_PORT}
+FILES_API_PORT=${instance-FILES_API_PORT}
+JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
+MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
+USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+
+# Zowe Desktop/app framework variables
+ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
+ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
+ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
+ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
+ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+
+# Extender variables
+ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
+EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
+
+/*</inlineTemplate>
+            <submitAs maxRc="0">JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
         </template>
