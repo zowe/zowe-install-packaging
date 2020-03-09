@@ -53,7 +53,7 @@ echo "<$SCRIPT>" | tee -a ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
 
 # check parms
-if [[ -z ${data_set_prefix} || -z ${loadlib} || -z ${parmlib}]]
+if [[ -z ${data_set_prefix} || -z ${loadlib} || -z ${parmlib} ]]
 then
 echo Parameters supplied were $@ >> ${LOG_FILE}
 echo "Not all the required parameters were supplied"
