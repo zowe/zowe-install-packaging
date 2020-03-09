@@ -82,10 +82,10 @@ const readXml = async (file) => {
         ts.$.failures = '' + (parseInt(ts.$.failures, 10) + parseInt(vts.$.failures || 0, 10));
         ts.$.skipped = '' + (parseInt(ts.$.skipped, 10) + parseInt(vts.$.skipped || 0, 10));
         ts.$.time = '' + (parseFloat(ts.$.time) + parseFloat(vts.$.time || 0));
-        rootJunit.testsuites.$.tests = '' + (parstInt(rootJunit.testsuites.$.tests, 10) + parseInt(vts.$.tests || 0, 10));
-        rootJunit.testsuites.$.errors = '' + (parstInt(rootJunit.testsuites.$.errors, 10) + parseInt(vts.$.errors || 0, 10));
-        rootJunit.testsuites.$.failures = '' + (parstInt(rootJunit.testsuites.$.failures, 10) + parseInt(vts.$.failures || 0, 10));
-        rootJunit.testsuites.$.skipped = '' + (parstInt(rootJunit.testsuites.$.skipped, 10) + parseInt(vts.$.skipped || 0, 10));
+        rootJunit.testsuites.$.tests = '' + (parseInt(rootJunit.testsuites.$.tests, 10) + parseInt(vts.$.tests || 0, 10));
+        rootJunit.testsuites.$.errors = '' + (parseInt(rootJunit.testsuites.$.errors, 10) + parseInt(vts.$.errors || 0, 10));
+        rootJunit.testsuites.$.failures = '' + (parseInt(rootJunit.testsuites.$.failures, 10) + parseInt(vts.$.failures || 0, 10));
+        rootJunit.testsuites.$.skipped = '' + (parseInt(rootJunit.testsuites.$.skipped, 10) + parseInt(vts.$.skipped || 0, 10));
         rootJunit.testsuites.$.time = '' + (parseFloat(rootJunit.testsuites.$.time) + parseFloat(vts.$.time || 0));
 
         // merge test cases
