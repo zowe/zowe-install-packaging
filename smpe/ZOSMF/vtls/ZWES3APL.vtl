@@ -53,7 +53,7 @@
 //********************************************************************
 //         EXPORT SYMLIST=(ZONE,SYSMOD)
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         SET SYSMOD='${sysmod}'
 //         SET ZONE='${tzone}'
 //         SET CSIHLQ='${csihlq}'

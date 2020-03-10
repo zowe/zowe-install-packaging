@@ -61,7 +61,7 @@
 //*    b) Change ${dvol} to the volser of the distribution volume,
 //*       as used in the ZWE3ALOC job.
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //* 9) Change the string "${pathPrefix}" in step DEFPATH to the
 #end
 #if($ibmTemplate == 'YES')
@@ -77,7 +77,7 @@
 //*    must also specify the same volume in the corresponding
 //*    data set allocation job, ZWE3ALOC.
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //* 2. Ensure that ${pathPrefix} is an absolute path name and begins
 #end
 #if($ibmTemplate == 'YES')
@@ -103,7 +103,7 @@
 //*    for the DEFPATH step.
 //*
 //********************************************************************
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         EXPORT SYMLIST=*
 //*
 //         SET CSIHLQ='${csihlq}'
@@ -235,7 +235,7 @@
         SHR .
   ENDUCL .
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //*  Change the string "${pathPrefix}" to the appropriate
 #end
 #if($ibmTemplate == 'YES')
@@ -245,7 +245,7 @@
 //*  this would be "/". For others, the high level directory may
 //*  be something like "/service/", or a more meaningful name.
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //*  "${pathPrefix}" must match the value used in job ZWE5MKD.
 #end
 #if($ibmTemplate == 'YES')
@@ -261,7 +261,7 @@
   SET BDY(&TZONE) .        /* do NOT change "PATH('/usr/lpp/zowe'*," */
   ZONEEDIT DDDEF .         /* only change the 2nd (PathPrefix) line  */
     CHANGE PATH('/usr/lpp/zowe'*,
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
      '${pathPrefix}usr/lpp/zowe'*)
 #end
 #if($ibmTemplate == 'YES')

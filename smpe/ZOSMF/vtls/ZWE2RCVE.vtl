@@ -52,7 +52,7 @@
 //* 3. This job should complete with a return code 0.
 //*
 //********************************************************************
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         EXPORT SYMLIST=*
 //*
 //         SET HLQ='${hlq}'

@@ -36,7 +36,7 @@
 //* 1) Add the job parameters to meet your system requirements.
 //*
 //* 2) Change ${csihlq} to the high level qualifier for the CSI and
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //*    other SMP/E data sets. The maximum length is 35 characters.
 #end
 #if($ibmTemplate == 'YES')
@@ -55,7 +55,7 @@
 //*    - VOLUMES(&CSIVOL) in step DEFCSI
 //*    - VOL=SER=&CSIVOL in multiple DDs of step ZONING
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //*    If you are using sms managed system, instead of
 //*    CSIVOL set STCLAS ${storclass} and 
 //*    optionally DTCLAS ${dataclass} and MGCLAS ${mgmtclass}
@@ -75,7 +75,7 @@
 //* 3. This job should complete with a return code 0.
 //*
 //*********************************************************************
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         EXPORT SYMLIST=*
 //* longest DSN is dsprefix.fmid.Fxx, so CISHLQ can be up to 32 chars
 //*                            1         2         3
