@@ -274,7 +274,7 @@ valid values are blank('') for telnet, or 'tls'</description>
         <description>Define the variables</description>
         <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="zowe_runtime_hlq" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="procedure_library" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="procedure_library" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="ZOWE_PREFIX" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_INSTANCE" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="zowe_instance_path" scope="instance" noPromptIfSet="false" required="true"/>
@@ -433,5 +433,37 @@ exit $?</inlineTemplate>
             <!-- zosmfOutput -->
         </template>
     </step>
-    <!-- TODO: Optionally start the STC -->
+    <step name="run_stc" optional="false">
+        <title>Start the Zowe instance</title>
+        <description>This step starts the Zowe instance</description>
+        <prereqStep name="define_variables"/>
+        <prereqStep name="create_instance"/>
+        <prereqStep name="change_instance_configuration"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="true">Run this step to start the Zowe instance.
+        
+If you want to start the instance manually (e.g. after IPL), you can do it with the following command:
+&lt;code&gt;sh "${instance-zowe_instance_path}/bin/zowe-start.sh"&lt;/code&gt;
+
+You can also start the instance using the following MVS command:
+
+&lt;code&gt;/S ZWESVSTC INSTANCE='${instance-zowe_instance_path}',JOBNAME=${instance-ZOWE_PREFIX}${instance-ZOWE_INSTANCE}SV&lt;/code&gt;
+
+To learn more about the task and how to stop it, please refer to the documentation at &lt;a href="https://docs.zowe.org"&gt;docs.zowe.org&lt;/a&gt;
+</instructions>
+        <weight>1</weight>
+        <skills>Security Administrator</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">set -x
+cd "${instance-zowe_instance_path}/bin"
+sh ./zowe-start.sh
+exit $?</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
 </workflow>
