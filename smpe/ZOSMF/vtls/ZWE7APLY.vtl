@@ -62,8 +62,6 @@
   SET BOUNDARY(${tzone}) .
   APPLY  SELECT([FMID])
          BYPASS(HOLDSYS,HOLDUSER)
-#if( $sysmodsCheck == 'YES')
          CHECK
-#end
          COMPRESS(ALL) .
 //*

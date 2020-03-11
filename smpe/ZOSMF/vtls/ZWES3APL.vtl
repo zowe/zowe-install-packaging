@@ -69,9 +69,7 @@
 //SMPCNTL  DD *,SYMBOLS=JCLONLY
    SET BOUNDARY(&ZONE) .
    APPLY REDO COMPRESS(ALL)
-#if( $sysmodsCheck == 'YES')
          CHECK
-#end
          SELECT(
    &SYSMOD
    ) .
