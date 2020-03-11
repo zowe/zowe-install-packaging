@@ -34,16 +34,28 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
+#if($ibmTemplate == 'YES')
 //* 2) Change ${csihlq} to the high level qualifier for the global zone
+#else
+//* 2) Change csihlq to the high level qualifier for the global zone
+#end
 //*    of the CSI.
 //*
+#if($ibmTemplate == 'YES')
 //* 3) Change ${hlq} to the high level qualifier(s) of the SMPMCS and
+#else
+//* 3) Change hlq to the high level qualifier(s) of the SMPMCS and
+#end
 //*    REL files, as specified when uploading the files to the host
 //*    (as described in the program directory).
 //*
 //* Note(s):
 //*
+#if($ibmTemplate == 'YES')
 //* 1. If ${hlq} is blank you must remove the RFPREFIX operand.
+#else
+//* 1. If hlq is blank you must remove the RFPREFIX operand.
+#end
 //*
 //* 2. SMP/E makes copies of the relfiles and uses these as input.
 //*    Uncomment and customize DD SMPTLIB if you want to place these

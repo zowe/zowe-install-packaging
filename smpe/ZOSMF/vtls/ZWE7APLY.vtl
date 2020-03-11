@@ -34,7 +34,11 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
+#if($ibmTemplate == 'YES')
 //* 2) Change ${csihlq} to the high level qualifier for the global zone
+#else
+//* 2) Change csihlq to the high level qualifier for the global zone
+#end
 //*    of the CSI.
 //*
 //* 3) Change ${tzone} to your CSI target zone name.
