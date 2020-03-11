@@ -35,7 +35,11 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
+#if($ibmTemplate == 'YES')
 //* 2) Change ${csihlq} to the high level qualifier for the CSI and
+#else
+//* 2) Change csihlq to the high level qualifier for the CSI and
+#end
 #if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //*    other SMP/E data sets. The maximum length is 35 characters.
 #end
