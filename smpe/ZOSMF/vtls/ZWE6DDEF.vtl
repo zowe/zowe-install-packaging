@@ -262,7 +262,7 @@
   ZONEEDIT DDDEF .         /* only change the 2nd (PathPrefix) line  */
     CHANGE PATH('/usr/lpp/zowe'*,
 #if($ibmTemplate == 'NO' || !$!ibmTemplate)
-     '${pathPrefix}usr/lpp/zowe'*)
+     '${pathPrefix}usr/lpp/zowe'*) .
 #end
 #if($ibmTemplate == 'YES')
      '-PathPrefix-usr/lpp/zowe'*) .
