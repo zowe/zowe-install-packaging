@@ -55,7 +55,7 @@
 //*
 //********************************************************************
 //*
-//APPLY    EXEC PGM=GIMSMP,REGION=0M
+//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
 //SMPHOLD  DD DUMMY
 //SMPCNTL  DD *
