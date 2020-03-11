@@ -55,7 +55,7 @@
 //*
 //********************************************************************
 //*
-//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//APPLY    EXEC PGM=GIMSMP,REGION=0M
 //SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
 //SMPHOLD  DD DUMMY
 //SMPCNTL  DD *
@@ -65,3 +65,14 @@
          CHECK
          COMPRESS(ALL) .
 //*
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
+//APPLY2   EXEC PGM=GIMSMP,REGION=0M,COND=(0,NE)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
+//SMPHOLD  DD DUMMY
+//SMPCNTL  DD *
+  SET BOUNDARY(${tzone}) .
+  APPLY  SELECT([FMID])
+         BYPASS(HOLDSYS,HOLDUSER)
+         COMPRESS(ALL) .
+//*
+#end
