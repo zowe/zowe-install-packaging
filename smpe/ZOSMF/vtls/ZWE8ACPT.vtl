@@ -64,3 +64,13 @@
          CHECK
          COMPRESS(ALL) .
 //*
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
+//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(0,NE)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
+//SMPCNTL  DD *
+  SET BOUNDARY(${dzone}) .
+  ACCEPT SELECT([FMID])
+         BYPASS(HOLDSYS,HOLDUSER)
+         COMPRESS(ALL) .
+//*
+#end
