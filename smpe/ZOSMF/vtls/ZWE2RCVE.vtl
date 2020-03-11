@@ -67,7 +67,7 @@
 #if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         EXPORT SYMLIST=*
 //*
-//         SET HLQ='${hlq}'
+//         SET HLQ='${!hlq}'
 //         SET CSIVOL='${csivol}'
 //         SET STCLAS='${storclass}'
 //         SET DTCLAS='${dataclass}'
@@ -99,12 +99,16 @@
 //            UNIT=SYSALLDA
 #end
 //SMPHOLD  DD DUMMY
+#if($!hlq)
 //SMPPTFIN DD DISP=SHR,DSN=&HLQ..[RFDSNPFX].[FMID].SMPMCS
+#else
+//SMPPTFIN DD DISP=SHR,DSN=[RFDSNPFX].[FMID].SMPMCS
+#end
 //SMPCNTL  DD *,SYMBOLS=JCLONLY
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT([FMID])
            SYSMODS
-#if( $hlq and $hlq != "" and $hlq != '#hlq')
+#if( $!hlq and $hlq != '#hlq')
            RFPREFIX(&HLQ)
 #end
 #if($ibmTemplate == 'YES')
