@@ -53,10 +53,24 @@ echo "<$SCRIPT>" | tee -a ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
 
 # check parms
-if [[ -z ${data_set_prefix} || -z ${loadlib} || -z ${parmlib} ]]
+missing_parms=
+if [[ -z ${data_set_prefix} ]]
+then
+  missing_parms=${missing_parms}" -d"
+fi
+if [[ -z ${loadlib} ]]
+then
+  missing_parms=${missing_parms}" -b"
+fi
+if [[ -z ${parmlib} ]]
+then
+  missing_parms=${missing_parms}" -a"
+fi
+
+if [[ -n ${missing_parms} ]]
 then
 echo Parameters supplied were $@ >> ${LOG_FILE}
-echo "Not all the required parameters were supplied"
+echo "Some required parameters were not supplied:${missing_parms}"
 cat <<EndOfUsage
 Usage  $SCRIPT -d <dataSetPrefix> -b <loadlib> -a <parmlib> [-r <proclib>]
 Opt flag    Parm name     Value e.g.              Meaning
