@@ -162,9 +162,9 @@ If you want the APF, to be permanent, add following library to your system autho
         <rest>
             <httpMethod>PUT</httpMethod>
             <uriPath substitution="true">/zosmf/restconsoles/consoles/${_step-stepOwnerUpper}</uriPath>
-            <requestBody substitution="true">#if(${instance-xmem_dasd.startswith("STORCLAS")})
+            <requestBody substitution="true">#if(${instance-xmem_dasd.startsWith("STORCLAS")})
 #set($dasd = "SMS")
-#elif(${instance-xmem_dasd.startswith("VOL=SER=")})
+#elif(${instance-xmem_dasd.startsWith("VOL=SER=")})
 #set($dasd = "VOLUME=${instance-xmem_dasd.substring(8)}")
 #end
 {"cmd":"SETPROG APF,ADD,DSNAME=${instance-xmem_prefix}.LOADLIB,${dasd}"}</requestBody>
