@@ -88,9 +88,7 @@ add_to_pax $PS_OUTPUT_FILE process_info
 rm $PS_OUTPUT_FILE
 
 # Collect STC output
-if [ -z ${TEMP_DIR+x} ]; then
-    export TEMP_DIR=${TMPDIR:-/tmp}
-fi
+export TEMP_DIR=${TMPDIR:-/tmp}
 
 tsocmd status ${ZOWE_STC} 2>/dev/null | \
     sed -n 's/.*JOB *\([^ ]*\)(\([^ ]*\)) ON OUTPUT QUEUE.*/\1 \2/p' > ${TEMP_DIR}/jobname.jobid.$$.list
