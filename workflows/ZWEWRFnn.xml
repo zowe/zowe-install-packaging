@@ -114,11 +114,12 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
             <inlineTemplate substitution="true">//ALLOCDSS EXEC PGM=IEFBR14
 //LOADLIB1 DD DISP=(NEW,CATLG,DELETE),
 //    DSN=${instance-xmem_prefix}.LOADLIB,
-//    DSNTYPE=LIBRARY,SPACE=(CYLS,(10,5,5)),
+//    DSNTYPE=LIBRARY,SPACE=(CYL,(10,5,5)),
+//    DCB=(RECFM=U),
 //    ${instance-xmem_dasd}
 //PARMLIB1 DD DISP=(NEW,CATLG,DELETE),
 //    DSN=${instance-xmem_prefix}.PARMLIB,
-//    DCB=(LRECL=80,RECFM=FB),SPACE=(CYLS,(5,3,5)),
+//    DCB=(LRECL=80,RECFM=FB),SPACE=(CYL,(5,3,5)),
 //    ${instance-xmem_dasd}</inlineTemplate>
             <submitAs maxRc="0">JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
