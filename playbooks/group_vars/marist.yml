@@ -22,3 +22,5 @@ zowe_smpe_hlq_dzone: ZOWEAD3.SMPE
 zowe_smpe_dir_prefix: /ZOWE/staging
 zowe_smpe_rel_file_prefix: ZOWEAD3
 zowe_smpe_volser: ZOWE02
+# marist server tn3270 port
+zowe_zlux_terminal_telnet_port: 623
