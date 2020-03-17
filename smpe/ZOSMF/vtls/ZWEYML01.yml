@@ -205,6 +205,8 @@ ptfhlq: '#ptfhlq'
 # Change holddata to yes is if the service SYSMOD has embedded HOLDDATA
 holddata: 'no'
 
+# See which SYSMODs are included before you actually install them
+sysmodsCheck: 'YES'
 
 
 
