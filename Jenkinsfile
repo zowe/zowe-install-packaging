@@ -144,7 +144,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   pipeline.publish(
     artifacts: [
       '.pax/zowe.pax',
-      '.pax/zowe-smpe.zip',
       '.pax/smpe-promote.tar',
       '.pax/pd.htm',
       '.pax/smpe-build-logs.pax.Z',
