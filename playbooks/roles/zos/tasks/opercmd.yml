@@ -7,5 +7,5 @@
 # - opercmd_result
 
 - name: "Run operator command: {{ opercmd | default('') }}"
-  raw: "{{ path_to_opercmd | default( work_dir_remote + '/opercmd') }} '{{ opercmd | default('') }}'"
+  raw: "{{ path_to_opercmd | default( work_dir_remote + '/opercmd.rexx') }} '{{ opercmd | default('') }}'"
   register: opercmd_result
