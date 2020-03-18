@@ -41,6 +41,7 @@ zowe_zlux_terminal_ssh_port: 22
 zowe_zlux_terminal_telnet_port: 23
 # The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'
 zowe_zlux_terminal_telnet_security_type:
+zowe_zosmf_certificate:
 zowe_external_certficate:
 zowe_external_certficate_alias:
 zowe_external_certficate_authorities:

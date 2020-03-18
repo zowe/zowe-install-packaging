@@ -5,13 +5,14 @@
     cat "{{ zowe_root_dir }}/bin/zowe-setup-certificates.env" | \
     sed -e "s+^HOSTNAME=.*\$+HOSTNAME={{ zowe_external_domain_name }}+" | \
     sed -e "s+^IPADDRESS=.*\$+IPADDRESS={{ zowe_external_ip_address }}+" | \
+    sed -e "s+^ZOSMF_CERTIFICATE=.*\$+ZOSMF_CERTIFICATE={{ zowe_zosmf_certificate }}+" | \
     sed -e "s+^EXTERNAL_CERTIFICATE=.*\$+EXTERNAL_CERTIFICATE={{ zowe_external_certficate }}+" | \
     sed -e "s+^EXTERNAL_CERTIFICATE_ALIAS=.*\$+EXTERNAL_CERTIFICATE_ALIAS={{ zowe_external_certficate_alias }}+" | \
     sed -e "s+^EXTERNAL_CERTIFICATE_AUTHORITIES=.*\$+EXTERNAL_CERTIFICATE_AUTHORITIES={{ zowe_external_certficate_authorities }}+" | \
     sed -e "s+^VERIFY_CERTIFICATES=.*\$+VERIFY_CERTIFICATES={{ zowe_apiml_verify_certficates_of_services|string|lower }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^KEYSTORE_PASSWORD=.*\$+KEYSTORE_PASSWORD={{ zowe_keystore_password }}+" | \
-    sed -e "s+^KEYSTORE_ALIAS=.*\$+KEYSTORE_ALIAS={{ zowe_keystore_alias }}+" | \
+    sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
     sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
     sed -e "s+^ZOWE_GROUP_ID=.*\$+ZOWE_GROUP_ID={{ zowe_runtime_group }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.env"
