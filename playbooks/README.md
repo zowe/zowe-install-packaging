@@ -38,9 +38,9 @@ You need Ansible v2.9.4+. Please check [Installation Document](https://docs.ansi
 
 ## Install (Uninstall) Zowe
 
-### Convenient Build
+### Convenience Build
 
-To install Zowe convenient build, run playbook `install.yml`:
+To install Zowe convenience build, run playbook `install.yml`:
 
 ```
 $ ansible-playbook -l <server> install.yml -v

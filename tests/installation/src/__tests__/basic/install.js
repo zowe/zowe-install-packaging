@@ -22,7 +22,7 @@ const {
   TEST_TIMEOUT_SANITY_TEST,
 } = require('../../constants');
 
-const TEST_SUITE_NAME = 'Test convenient build installation';
+const TEST_SUITE_NAME = 'Test convenience build installation';
 let installSucceeded = false;
 describe(TEST_SUITE_NAME, () => {
   beforeAll(() => {

@@ -1,5 +1,5 @@
 ---
-# try to detect current installation is from convenient build or SMPE build
+# try to detect current installation is from convenience build or SMPE build
 
 # ============================================================================
 # validate variables
@@ -15,7 +15,7 @@
 - name: Reset variables
   set_fact:
     is_smpe_build: false
-    is_convenient_build: false
+    is_convenience_build: false
 
 # ============================================================================
 - name: Test SMPE install folder
@@ -29,14 +29,14 @@
   when: zowe_smpe_dir_exists.rc == 0
 
 # ============================================================================
-- name: Test convenient build install folder
+- name: Test convenience build install folder
   raw: test -f "{{ zowe_root_dir }}/manifest.json"
   register: zowe_root_dir_exists
   ignore_errors: True
 
-- name: Set is_convenient_build to True
+- name: Set is_convenience_build to True
   set_fact:
-    is_convenient_build: True
+    is_convenience_build: True
   when: zowe_root_dir_exists.rc == 0
 
 # ============================================================================

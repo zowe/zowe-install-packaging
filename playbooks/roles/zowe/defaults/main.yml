@@ -4,7 +4,7 @@
 # ==============================================================================
 # default uss shell profile name
 zos_uss_user_profile: ~/.profile
-# this is the Zowe convenient build will be installed, it should exists in {{ work_dir_remote }}
+# this is the Zowe convenience build will be installed, it should exists in {{ work_dir_remote }}
 zowe_build_file: zowe.pax
 
 # this should list all known Zowe job names we ever shipped

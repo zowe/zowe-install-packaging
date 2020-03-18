@@ -1,5 +1,5 @@
 ---
-# install zowe convenient build
+# install zowe convenience build
 # the build should have been uploaded to "{{ work_dir_remote }}/{{ zowe_build_file }}"
 # ============================================================================
 - import_role:

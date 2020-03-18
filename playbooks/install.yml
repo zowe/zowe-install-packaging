@@ -2,7 +2,7 @@
 # input:
 # - zowe_build_url: optional, full url of zowe build
 # - zowe_build_local: optional, path to zowe build exists locally
-- name: Install Zowe Convenient Build
+- name: Install Zowe Convenience Build
   hosts: all
   gather_facts: false
   become: false
