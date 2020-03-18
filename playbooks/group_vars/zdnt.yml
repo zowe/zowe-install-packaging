@@ -8,7 +8,6 @@ work_dir_remote: /zaas1/zowe-install
 zowe_external_domain_name: river.zowe.org
 zowe_external_ip_address: 37.58.118.251
 zowe_root_dir: /zaas1/zowe
-zowe_user_dir: /zaas1/.zowe
 zowe_instance_dir: /zaas1/.zowe
 zowe_keystore_dir: /zaas1/keystore
 zowe_dataset_prefix: TSTRADM.ZWE

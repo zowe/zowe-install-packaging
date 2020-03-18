@@ -3,7 +3,6 @@
 # variables for zowe uninstallation and installation
 work_dir_remote: /ZOWE/zowe-installs
 zowe_root_dir: /ZOWE/staging/zowe
-zowe_user_dir: /ZOWE/tmp/.zowe
 zowe_instance_dir: /ZOWE/tmp/.zowe
 zowe_keystore_dir: /ZOWE/tmp/keystore
 zowe_dataset_prefix: ZOWEAD3.ZWE

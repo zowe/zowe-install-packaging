@@ -12,8 +12,6 @@ work_dir_remote:
 zowe_root_dir: ~/zowe
 # dataset prefix where zowe will be installed
 zowe_dataset_prefix:
-# userDir. This is replaced with instanceDir
-zowe_user_dir: ~/.zowe/user
 # instanceDir
 zowe_instance_dir: ~/.zowe/instance
 # zowe job prefix.

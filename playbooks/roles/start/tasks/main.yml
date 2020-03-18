@@ -7,7 +7,6 @@
   vars:
     variable_list:
     - zowe_root_dir
-    - zowe_user_dir
     - zowe_instance_dir
     - zowe_xmem_proclib
 
@@ -44,15 +43,6 @@
     set_fact:
       zowe_start_path: "{{ zowe_start_at_instancedir.stdout }}"
     when: zowe_start_path == "" and zowe_start_at_instancedir.stdout != ''
-  - name: Check if zowe-start.sh is located at userDir
-    raw: test -f {{ zowe_user_dir }}/bin/zowe-start.sh && echo "{{ zowe_user_dir }}/bin/zowe-start.sh" | tr -d '\n'
-    register: zowe_start_at_userdir
-    ignore_errors: yes
-    when: zowe_start_path == ""
-  - name: Set zowe_start_path to {{ zowe_start_at_userdir.stdout }}
-    set_fact:
-      zowe_start_path: "{{ zowe_start_at_userdir.stdout }}"
-    when: zowe_start_path == "" and zowe_start_at_userdir.stdout != ''
   - name: Check if zowe-start.sh is located at rootDir
     raw: test -f {{ zowe_root_dir }}/scripts/zowe-start.sh && echo "{{ zowe_root_dir }}/scripts/zowe-start.sh" | tr -d '\n'
     register: zowe_start_at_rootdir

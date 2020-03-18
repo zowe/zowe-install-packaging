@@ -9,7 +9,6 @@
   vars:
     variable_list:
     - work_dir_remote
-    - zowe_user_dir
     - zowe_instance_dir
     - zowe_keystore_dir
     - zowe_dataset_prefix
@@ -140,7 +139,6 @@
   raw: echo rm -fr {{ item }} | su
   loop:
   - "{{ zowe_root_dir }}"
-  - "{{ zowe_user_dir }}"
   - "{{ zowe_instance_dir }}"
   - "{{ zowe_keystore_dir }}"
   # configure certificate log, added after v1.7.1
