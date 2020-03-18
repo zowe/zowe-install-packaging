@@ -88,16 +88,20 @@ add_to_pax $PS_OUTPUT_FILE process_info
 rm $PS_OUTPUT_FILE
 
 # Collect STC output
-STC_JOBS=`tsocmd "STATUS ${ZOWE_STC}" 2>/dev/null | grep -E 'OUTPUT' | cut -d' ' -f2`
-for STC in ${STC_JOBS}
+export TEMP_DIR=${TMPDIR:-/tmp}
+
+tsocmd status ${ZOWE_STC} 2>/dev/null | \
+    sed -n 's/.*JOB *\([^ ]*\)(\([^ ]*\)) ON OUTPUT QUEUE.*/\1 \2/p' > ${TEMP_DIR}/jobname.jobid.$$.list
+while read jobname jobid
 do
-    write_to_log "Collecting output for Zowe started task ${STC}"
-    STC_FILE=`echo ${STC} | tr '()' '-.'`log
-    # TODO NOW - tsocmd output doesn't produce anything and purges job
-    tsocmd "output ${STC}" > $STC_FILE
+    write_to_log "Collecting output for Zowe started task $jobname($jobid)"
+    STC_FILE=${TEMP_DIR}/$jobname-$jobid.log   # print-joblog-to-file.sh will create a file of this name    
+    ${ROOT_DIR}/bin/utils/print-joblog-to-file.sh $jobname $jobid $STC_FILE | tee -a ${SUPPORT_ARCHIVE_LOG}
+    write_to_log "Return code from print-joblog-to-file.sh was $?"
     add_to_pax $STC_FILE
     rm $STC_FILE
-done
+done < ${TEMP_DIR}/jobname.jobid.$$.list
+rm     ${TEMP_DIR}/jobname.jobid.$$.list
 
 # Collect install logs
 if [[ -d ${INSTALL_LOG_DIRECTORY} ]];then
