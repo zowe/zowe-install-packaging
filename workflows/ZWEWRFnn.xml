@@ -200,4 +200,52 @@ to run XMEM Server to run in key 4 and be non-swappable</description>
             <!-- zosmfOutput -->
         </template>
     </step>
+    <step name="reload_scheduler" optional="false">
+        <title>Reload Scheduler Settings</title>
+        <description>This step will make the previous changes effective immediately</description>
+        <prereqStep name="modify_scheduler"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="false">Run this step to reload the scheduler settings</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <rest>
+            <httpMethod>PUT</httpMethod>
+            <uriPath substitution="true">/zosmf/restconsoles/consoles/${_step-stepOwnerUpper}</uriPath>
+            <requestBody substitution="true">#if(${instance-sched.startsWith("SCHED")})
+#set($SCH_ID = '${instance-sched.substring(5)}')
+{"cmd":"SET SCH=${SCH_ID}"}
+#end</requestBody>
+            <expectedStatusCode>200</expectedStatusCode>
+            <!-- REST mappings -->
+        </rest>
+    </step>
+    <step name="start_xmem" optional="false">
+        <title>Start the XMEM server</title>
+        <description>This step starts the Cross Memory Server</description>
+        <prereqStep name="reload_scheduler"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="false">Run this step to start the Cross Memory Server.
+
+You can also do it manually with the following command:
+/S ZWESISTC,REUSASID=YES
+
+To stop the Cross Memory Server use:
+/P ZWESISTC
+</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <rest>
+            <httpMethod>PUT</httpMethod>
+            <uriPath substitution="true">/zosmf/restconsoles/consoles/${_step-stepOwnerUpper}</uriPath>
+            <requestBody substitution="true">{"cmd":"S ZWESISTC,REUSASID=YES"}</requestBody>
+            <expectedStatusCode>200</expectedStatusCode>
+            <!-- REST mappings -->
+        </rest>
+    </step>
 </workflow>
