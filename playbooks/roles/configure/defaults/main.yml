@@ -26,7 +26,6 @@ zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
 zowe_apiml_verify_certficates_of_services: true
 zowe_apiml_enable_sso: false
-zowe_apiml_zosmf_keyring: IZUKeyring.IZUDFLT
 # explorer APIs/plugins ports
 zowe_jobs_api_port: 8545
 zowe_mvs_api_port: 8547
