@@ -1,0 +1,39 @@
+---
+# this is ideal way, but not supported
+# see: https://github.com/ansible/ansible/issues/46203
+# - import_tasks: var/common_tasks/zos/check_job_status.yml
+#   until: jcl_job_completion != ""
+#   retries: "{{ job_wait_for_retries }}"
+#   delay:  "{{ job_wait_for_delay }}"
+
+# input:
+# - jcl_job_id: required
+# - job_wait_for_index: required
+# output:
+# - jcl_job_name
+# - jcl_job_completion
+# - jcl_job_rc
+
+- include_role:
+    name: zos
+    tasks_from: check_job_status
+
+- name: increase job_wait_for_index to {{ job_wait_for_index|int + 1 }}
+  set_fact:
+    job_wait_for_index: '{{ job_wait_for_index|int + 1 }}'
+
+- name: check if exceeds maximum retries ({{ job_wait_for_retries }})
+  fail: 
+    msg: Exit wait_zos_started.yml after exceeded {{ job_wait_for_retries }} retries
+  when: (jcl_job_completion == "") and (job_wait_for_index|int > job_wait_for_retries|int)
+
+- name: Wait for {{ job_wait_for_delay }} seconds
+  wait_for:
+    timeout: "{{ job_wait_for_delay|int }}"
+  when: jcl_job_completion == ""
+  delegate_to: localhost
+
+- include_role:
+    name: zos
+    tasks_from: wait_for_job_completed
+  when: jcl_job_completion == ""

@@ -1,0 +1,24 @@
+---
+# work folder on local, we will store some temporary files here
+work_dir_local: .tmp
+# work folder on remote. Required. This variable needs to be overwritten.
+work_dir_remote:
+# overwrite JAVA_HOME environment on z/OS
+zos_java_home:
+# overwrite NODE_HOME environment on z/OS
+zos_node_home:
+# default upload method, should be either sftp or scp
+zos_upload_method: sftp
+
+# optional, default to ansible_ssh_host
+# required for zD&T (external IP is different from internal IP)
+zowe_external_domain_name:
+# optional, no default value
+# required for zD&T (external IP is different from internal IP)
+zowe_external_ip_address:
+# define extra environemtn variables required for the server
+zowe_extra_environment_variables: {}
+# variable generated from zowe_extra_environment_variables and others to overwrite
+# default environment variables on the server.
+# this should be called before executing any script on the server.
+zowe_environment_variable_overrides:

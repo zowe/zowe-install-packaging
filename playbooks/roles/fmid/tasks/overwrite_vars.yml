@@ -1,0 +1,5 @@
+---
+- name: Reset zowe_root_dir and zowe_dataset_prefix for SMPE install
+  set_fact:
+    zowe_root_dir: "{{ (zowe_smpe_dir_prefix is regex(\"/$\")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + \"/\") }}{{ zowe_smpe_default_path }}"
+    zowe_dataset_prefix: "{{ zowe_smpe_hlq_dsn }}.SMPE"

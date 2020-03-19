@@ -1,0 +1,17 @@
+---
+# verify variables
+
+# input:
+# - variable_list: required, list
+
+- name: Verify variables are defined properly
+  assert:
+    that:
+      - lookup('vars',validate_this_var,default='') is defined
+      - lookup('vars',validate_this_var,default='') != ''
+      - lookup('vars',validate_this_var,default='') is not none
+    success_msg: "{{ validate_this_var }} value is {{ lookup('vars',validate_this_var,default='') }}"
+    fail_msg: "{{ validate_this_var }} is not defined"
+  loop: "{{ variable_list }}"
+  loop_control:
+    loop_var: validate_this_var

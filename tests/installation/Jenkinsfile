@@ -1,0 +1,277 @@
+#!groovy
+
+/**
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2020
+ */
+
+
+node('ibm-jenkins-slave-dind') {
+  String INSTALL_TEST_PATH = 'tests/installation'
+  String SANITY_TEST_PATH = 'tests/sanity'
+
+  // Test server configurations:
+  // - ansible host id
+  // - credential id for ssh server hostname and port
+  // - credential id for ssh username and password
+  Map TEST_SERVERS = [
+    'marist': [
+      ansible_host     : 'marist-1',
+      ssh_hostport     : 'ssh-marist-server-zzow01-hostport',
+      ssh_userpass     : 'ssh-marist-server-zzow01'
+    ],
+    'marist-2': [
+      ansible_host     : 'marist-2',
+      ssh_hostport     : 'ssh-marist-server-zzow02-hostport',
+      ssh_userpass     : 'ssh-marist-server-zzow02'
+    ],
+    'marist-3': [
+      ansible_host     : 'marist-3',
+      ssh_hostport     : 'ssh-marist-server-zzow03-hostport',
+      ssh_userpass     : 'ssh-marist-server-zzow03'
+    ],
+    'river': [
+      ansible_host     : 'river-0',
+      ssh_hostport     : 'ssh-river-original-hostport',
+      ssh_userpass     : 'ssh-zdt-test-image-guest'
+    ],
+    'river-3': [
+      ansible_host     : 'river-3',
+      ssh_hostport     : 'ssh-river-c3-hostport',
+      ssh_userpass     : 'ssh-zdt-test-image-guest'
+    ]
+  ];
+  // Test scopes, what test should we run
+  Map TEST_SCOPES = [
+    'conv-build': 'src/__tests__/basic/install.js',
+    'smpe-fmid': 'src/__tests__/basic/install-fmid.js',
+  ]
+
+  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+
+  def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
+
+  pipeline.admins.add("jackjia")
+
+  // we have extra parameters for integration test
+  pipeline.addBuildParameters(
+    booleanParam(
+      name: 'STARTED_BY_AUTOMATION',
+      description: 'If this task is started with pipeline automation. Set to true if you want to skip the Continue prompt question.',
+      defaultValue: false
+    ),
+    // >>>>>>>> parameters of where and what to test
+    choice(
+      name: 'TEST_SERVER',
+      choices: TEST_SERVERS.keySet().collect(),
+      description: 'Choose which server to run test',
+      trim: true
+    ),
+    choice(
+      name: 'TEST_SCOPE',
+      choices: TEST_SCOPES.keySet().collect(),
+      description: 'Choose scope of test',
+      trim: true
+    ),
+    // >>>>>>>> parameters of artifactory
+    string(
+      name: 'ZOWE_ARTIFACTORY_PATTERN',
+      description: 'Zowe artifactory download pattern',
+      defaultValue: 'libs-snapshot-local/org/zowe/*.pax',
+      trim: true,
+      required: true
+    ),
+    string(
+      name: 'ZOWE_ARTIFACTORY_BUILD',
+      description: 'Zowe artifactory download build',
+      defaultValue: 'zowe-install-packaging :: staging',
+      trim: true
+    ),
+    string(
+      name: 'ZOWE_CLI_ARTIFACTORY_PATTERN',
+      description: 'Zowe artifactory download pattern',
+      defaultValue: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*.zip',
+      trim: true,
+      required: true
+    ),
+    string(
+      name: 'ZOWE_CLI_ARTIFACTORY_BUILD',
+      description: 'Zowe artifactory download build',
+      defaultValue: 'Zowe CLI Bundle :: master',
+      trim: true
+    ),
+    // >>>>>>>> parametters for test cases
+    choice(
+      name: 'NODE_VERSION',
+      choices: ['v8.16.0', 'v6.17.0', 'v8.16.2', 'v8.17.0', 'v12.13.0', 'v12.14.1'],
+      description: 'This option is only valid for Marist server. The installation will set NODE_HOME to /ZOWE/node/node-{{version}}-os390-s390x.',
+      trim: true
+    ),
+    string(
+      name: 'INSTALL_TEST_DEBUG_INFORMATION',
+      description: 'How to show debug logging for running install test cases.',
+      defaultValue: 'zowe-install-test:*',
+      trim: true
+    ),
+    string(
+      name: 'SANITY_TEST_DEBUG_INFORMATION',
+      description: 'How to show debug logging for running sanity test cases.',
+      defaultValue: 'zowe-sanity-test:*',
+      trim: true
+    )
+  )
+
+  pipeline.setup(
+    extraInit: {
+      if (!params.STARTED_BY_AUTOMATION) {
+        // The purpose of this stage is when you scan the repository, all branches/PRs builds will be
+        // kicked off. This stage will pause the pipeline so you have time to cancel the build.
+        //
+        // NOTE: you have 5 minutes to cancel the build. After 5 minutes, the build will continue to
+        //       next stage.
+        timeout(time: 5, unit: 'MINUTES') { 
+          input message: 'Do you want to continue the pipeline?', ok: "Continue"
+        }
+      }
+
+      // upgrade npm
+      sh 'npm install -g npm'
+
+      // install ansible
+
+    }
+  )
+
+  pipeline.build(
+    operation: {
+      ansiColor('xterm') {
+        dir(INSTALL_TEST_PATH) {
+          sh "npm install"
+        }
+        dir(SANITY_TEST_PATH) {
+          sh "npm install"
+        }
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name          : "Lint",
+    isSkippable   : true,
+    stage         : {
+      ansiColor('xterm') {
+        dir(INSTALL_TEST_PATH) {
+          sh "npm run lint"
+        }
+        dir(SANITY_TEST_PATH) {
+          sh "npm run lint"
+        }
+      }
+    },
+    timeout: [time: 2, unit: 'MINUTES']
+  )
+
+
+  pipeline.createStage(
+    name          : "Download Zowe",
+    isSkippable   : true,
+    stage         : {
+      pipeline.artifactory.download(
+        specContent : """
+{
+  "files": [{
+    "pattern": "${params.ZOWE_ARTIFACTORY_PATTERN}",
+    "target": ".tmp/zowe/",
+    "flat": "true",
+    "build": "${params.ZOWE_ARTIFACTORY_BUILD}"
+  }, {
+    "pattern": "${params.ZOWE_CLI_ARTIFACTORY_PATTERN}",
+    "target": ".tmp/cli/",
+    "flat": "true",
+    "build": "${params.ZOWE_CLI_ARTIFACTORY_BUILD}",
+    "explode": "true"
+  }]
+}
+""",
+        expected    : 2
+      )
+    },
+    timeout: [time: 20, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
+    name          : "Install CLI",
+    isSkippable   : true,
+    stage         : {
+      ansiColor('xterm') {
+        // install CLI
+        sh 'npm install -g .tmp/cli/zowe-cli*.tgz'
+      }
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.test(
+    name              : "Test",
+    operation         : {
+      def nodeHomeOverwrite = ''
+      if (params.TEST_SERVER == 'marist') {
+        nodeHomeOverwrite = "ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
+      }
+      def zoweBuild = pwd() + '/.tmp/zowe/' + sh(
+        script: "ls -1 .tmp/zowe/",
+        returnStdout: true
+      ).trim()
+
+      lock("zowe-install-test-${params.TEST_SERVER}") {
+      // timestamps {
+      dir(INSTALL_TEST_PATH) {
+      ansiColor('xterm') {
+      withCredentials([
+        usernamePassword(
+          credentialsId: TEST_SERVERS[params.TEST_SERVER]['ssh_hostport'],
+          passwordVariable: 'SSH_PORT',
+          usernameVariable: 'SSH_HOST'
+        ),
+        usernamePassword(
+          credentialsId: TEST_SERVERS[params.TEST_SERVER]['ssh_userpass'],
+          passwordVariable: 'PASSWORD',
+          usernameVariable: 'USERNAME'
+        )
+      ]) {
+        try {
+          sh """
+ANSIBLE_FORCE_COLOR=true \
+ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']} \
+SSH_HOST=${SSH_HOST} \
+SSH_PORT=${SSH_PORT} \
+SSH_USER=${USERNAME} \
+SSH_PASSWD=${PASSWORD} \
+ZOWE_BUILD_LOCAL="${zoweBuild}" \
+SANITY_TEST_DEBUG=${params.SANITY_TEST_DEBUG_INFORMATION} \
+DEBUG=${params.INSTALL_TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
+npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
+"""
+        } finally {
+          sh 'npm run merge-reports'
+        }
+      } // end of withCredentials
+      } // end of ansiColor
+      } // end of dir
+      // end of timestamps
+      } // end of lock
+    },
+    junit         : "${INSTALL_TEST_PATH}/reports/junit.xml",
+    htmlReports   : [
+      [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
+    ],
+    timeout: [time: 30, unit: 'MINUTES'],
+  )
+
+  pipeline.end()
+}

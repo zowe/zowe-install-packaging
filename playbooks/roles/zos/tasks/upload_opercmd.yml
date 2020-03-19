@@ -1,0 +1,28 @@
+# ============================================================================
+- fail:
+    msg: work_dir_remote is required
+  when: work_dir_remote is not defined or work_dir_remote is none or work_dir_remote == ''
+
+- name: Check if opercmd.rexx exists on zOS
+  raw: test -f "{{ work_dir_remote }}/opercmd.rexx"
+  ignore_errors: True
+  register: zowe_install_opercmd_exists
+
+- name: Transfer opercmd.rexx to zOS
+  when: zowe_install_opercmd_exists is failed
+  block:
+  - name: Copy opercmd.rexx to local tmp folder
+    copy:
+      src: opercmd.rexx
+      dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
+    delegate_to: localhost
+
+  - import_role:
+      name: common
+      tasks_from: upload_file
+    vars:
+      filename_to_upload: opercmd.rexx
+      zos_upload_method: scp
+
+  - name: Add executive permission to opercmd.rexx
+    raw: chmod a+x "{{ work_dir_remote }}/opercmd.rexx"
