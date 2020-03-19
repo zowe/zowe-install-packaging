@@ -4,7 +4,8 @@ ansible_user:
 ansible_password:
 
 # zowe running in container
-# zos_node_home: /zaas1/node/node-v8.17.0-os390-s390x
+zos_zosmf_port: 53018
+# zos_node_home: /zaas1/node/node-v8.16.0-os390-s390x
 zowe_apiml_catalog_port: 53008
 zowe_apiml_discovery_port: 53009
 zowe_apiml_gateway_port: 53010

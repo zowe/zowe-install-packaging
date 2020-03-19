@@ -10,7 +10,6 @@ zowe_apiml_verify_certficates_of_services: false
 zowe_xmem_proclib: VENDOR.PROCLIB
 zowe_xmem_loadlib: ZOWEAD3.LOADLIB
 zowe_xmem_parmlib: ZOWEAD3.PARMLIB
-zowe_xmem_stc_user_id: 2
 # # variables for zowe smpe uninstallation and installation
 # during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed
 zowe_smpe_hlq_dsn: ZOWEAD3
