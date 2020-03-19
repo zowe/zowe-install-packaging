@@ -1,0 +1,79 @@
+---
+# input:
+# - zowe_build_url: optional, full url of zowe build
+# - zowe_build_local: optional, path to zowe build exists locally
+- name: Install Zowe Convenience Build
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # prepare ansible environment for install
+  - import_role:
+      name: common
+  - import_role:
+      name: zos
+
+  # ============================================================================
+  # uninstall zowe
+  - name: Uninstall Zowe
+    when: zowe_uninstall_before_install|default(True)
+    block:
+    - import_role:
+        name: zowe
+        tasks_from: uninstall
+    - import_role:
+        name: fmid
+        tasks_from: uninstall
+
+  # ============================================================================
+  - name: Download Zowe from zowe_build_url if it has value
+    when: zowe_build_url is defined
+    block:
+    - name: Download zowe build if zowe_build_url exists
+      get_url:
+        url: "{{ zowe_build_url }}"
+        dest: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zowe_build_file }}"
+      delegate_to: localhost
+
+    - import_role:
+        name: common
+        tasks_from: upload_file
+      vars:
+        filename_to_upload: "{{ zowe_build_file }}"
+        zos_upload_method: sftp
+
+  # ============================================================================
+  # if zowe_build_local is set, upload to z/OS
+  - name: Download Zowe from zowe_build_local if it has value
+    when: zowe_build_local is defined
+    block:
+    - name: Prepare zowe build locally
+      copy:
+        src: "{{ zowe_build_local }}"
+        dest: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zowe_build_file }}"
+      delegate_to: localhost
+
+    - import_role:
+        name: common
+        tasks_from: upload_file
+      vars:
+        filename_to_upload: "{{ zowe_build_file }}"
+        zos_upload_method: sftp
+
+  # ============================================================================
+  # Install Zowe
+  - import_role:
+      name: zowe
+
+  # ============================================================================
+  # Configure Zowe
+  - import_role:
+      name: configure
+
+  # ============================================================================
+  # Start Zowe
+  - import_role:
+      name: start

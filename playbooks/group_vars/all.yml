@@ -1,0 +1,6 @@
+---
+# default to ssh connection
+ansible_connection: ssh
+
+# always uninstall before install new
+zowe_uninstall_before_install: true

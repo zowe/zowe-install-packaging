@@ -1,0 +1,74 @@
+---
+# this playbook check if the data set is SMS managed
+
+# input:
+# - dataset: required
+# output:
+# - dataset_is_sms: boolean
+
+- name: Reset variables
+  set_fact:
+    dataset_dscb:
+    dataset_sms_flag:
+    dataset_sms_flag_masked:
+    dataset_is_sms:
+
+# Example of listds response:
+#
+# listds 'ZOWEAD3.LOADLIB' label
+# ZOWEAD3.LOADLIB
+# --RECFM-LRECL-BLKSIZE-DSORG
+#   U     **    6144    PO                                                                                          
+# --VOLUMES--
+#   VPMVSH
+# --FORMAT 1 DSCB--
+# F1 E5D7D4E5E2C8 0001 780034 000000 09 00 00 C9C2D4D6E2E5E2F24040404040
+# 78003708000000 0200 C0 00 1800 0000 00 0000 82 80000002 000000 0000 0000
+# 0100037D000A037E0004 01010018000C0018000D 0102006F000D006F000E 0000000217
+# --FORMAT 3 DSCB--
+# 03030303 0103009200090092000A 01040092000B0092000C 01050092000D0092000E
+# 0106035B0006035B0007 F3 0107035B0008035B0009 0108035B000A035B000B
+# 00000000000000000000 00000000000000000000 00000000000000000000
+# 00000000000000000000 00000000000000000000 00000000000000000000
+# 00000000000000000000 0000000000
+#
+# SMS flag is in `FORMAT 1 DSCB` section second line, after 780037
+- name: Get data set FORMAT 1 DSCB record
+  raw: tsocmd listds "'{{ dataset }}'" label | sed -e '1,/--FORMAT 1 DSCB--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d'
+  register: dataset_dscb
+
+ # we have a response with listds line
+# "stdout_lines": [
+#     "listds 'ZOWEAD3.LOADLIB' label", 
+#     "F1 E5D7D4E5E2C8 0001 780034 000000 09 00 00 C9C2D4D6E2E5E2F24040404040", 
+#     "78003708000000 0200 C0 00 1800 0000 00 0000 82 80000002 000000 0000 0000", 
+#     "0100037D000A037E0004 01010018000C0018000D 0102006F000D006F000E 0000000217"
+# ]
+- fail:
+    msg: "No Format 1 DSCB record found for data set {{ dataset }}: {{ dataset_dscb.stdout }}"
+  when: dataset_dscb.stdout_lines|length < 4
+
+- name: Extract SMS flag from FORMAT 1 DSCB record
+  raw: echo "{{ dataset_dscb.stdout_lines[2] }}" | sed -e 's#^.\{6\}\(.\{2\}\).*#\1#'
+  register: dataset_sms_flag
+
+- fail:
+    msg: "Failed to extract SMS flag from data set {{ dataset }}: {{ dataset_dscb.stdout }}"
+  when: dataset_sms_flag.stdout_lines|length < 1
+
+- name: Calculate masked SMS flag
+  raw: "echo $((0x{{ dataset_sms_flag.stdout_lines[0] }} & 0x80))"
+  register: dataset_sms_flag_masked
+
+- name: Set dataset_is_sms to true
+  set_fact:
+    dataset_is_sms: True
+  when: dataset_sms_flag_masked.stdout_lines[0] == "128"
+
+- name: Set dataset_is_sms to false
+  set_fact:
+    dataset_is_sms: False
+  when: dataset_sms_flag_masked.stdout_lines[0] != "128"
+
+- debug:
+    msg: "Data set '{{ dataset }}' SMS status is: {{ dataset_is_sms }}"
