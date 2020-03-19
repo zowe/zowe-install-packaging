@@ -13,7 +13,7 @@
     zos_upload_method: scp
 
 - name: Add executive permission to {{ upload_and_run_script_filename }}
-  raw: chmod g+x "{{ work_dir_remote }}/{{ upload_and_run_script_filename }}"
+  raw: chmod a+x "{{ work_dir_remote }}/{{ upload_and_run_script_filename }}"
 
 - import_role:
     name: zos

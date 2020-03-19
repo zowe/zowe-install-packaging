@@ -25,4 +25,4 @@
       zos_upload_method: scp
 
   - name: Add executive permission to opercmd.rexx
-    raw: chmod g+x "{{ work_dir_remote }}/opercmd.rexx"
+    raw: chmod a+x "{{ work_dir_remote }}/opercmd.rexx"
