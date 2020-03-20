@@ -1,0 +1,14 @@
+# MacOS
+.DS_Store
+
+# stores ssh key
+.env
+# stores temporary files when running playbook
+.tmp
+# ansible playbook retry file
+*.retry
+# python compiled code
+*.pyc
+
+# test playbooks
+test*

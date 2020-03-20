@@ -5,7 +5,7 @@
 ****************************************************************
 * Timing: pre-APPLY                                            *
 ****************************************************************
-* Part: ZOWESVR & ZWESISVR                                     *
+* Part: ZWESVSTC & ZWESISTC                                    *
 ****************************************************************
 Stop the Zowe servers before installing this update.
  
@@ -16,6 +16,6 @@ Stop the Zowe servers before installing this update.
 ****************************************************************
 * Timing: post-APPLY                                           *
 ****************************************************************
-* Part: ZOWESVR & ZWESISVR                                     *
+* Part: ZWESVSTC & ZWESISTC                                    *
 ****************************************************************
 Start the Zowe servers after installing this update.
