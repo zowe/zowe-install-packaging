@@ -1,0 +1,48 @@
+---
+- name: Install Zowe SMPE FMID
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # prepare ansible environment for install
+  - import_role:
+      name: common
+  - import_role:
+      name: zos
+
+  # ============================================================================
+  - name: Download Zowe from zowe_build_url if it has value
+    when: zowe_build_url is defined
+    block:
+    - name: Download zowe build if zowe_build_url exists
+      get_url:
+        url: "{{ zowe_build_url }}"
+        dest: ".tmp/{{ inventory_hostname }}/zowe-ptf.zip"
+      delegate_to: localhost
+
+    - import_role:
+        name: ptf
+        tasks_from: extract_and_upload_ptf
+      vars:
+        zowe_smpe_ptf_file: zowe-ptf.zip
+
+  # ============================================================================
+  # if zowe_build_local is set, upload to z/OS
+  - name: Copy Zowe from zowe_build_local if it has value
+    when: zowe_build_local is defined
+    block:
+    - name: Prepare zowe build locally
+      copy:
+        src: "{{ zowe_build_local }}"
+        dest: ".tmp/{{ inventory_hostname }}/zowe-ptf.zip"
+      delegate_to: localhost
+
+    - import_role:
+        name: ptf
+        tasks_from: extract_and_upload_ptf
+      vars:
+        zowe_smpe_ptf_file: zowe-ptf.zip
+

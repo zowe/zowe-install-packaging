@@ -1,6 +1,6 @@
 ---
 # extract FMID zip and upload to z/OS
-# { zowe_smpe_fmid_file } must exist in 
+# { zowe_smpe_fmid_file } must exist in { work_dir_local }/{ inventory_hostname }
 #
 # input:
 # - zowe_smpe_fmid_file: required

@@ -2,6 +2,22 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
+# file name pattern in Zowe PTF
+zowe_build_smpe_ptf_pattern: ZOWE.AZWE*
+# Zowe PTF file pattern: sysmod
+zowe_build_smpe_ptf_pattern_sysmod: ZOWE.AZWE[0-9][0-9][0-9].[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][0-9][0-9][0-9][0-9]
+# Zowe PTF file pattern: readme
+zowe_build_smpe_ptf_pattern_readme: ZOWE.AZWE[0-9][0-9][0-9].[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][0-9][0-9][0-9][0-9].readme.htm
+# PTF install JCLs
+zowe_ptf_install_jcls:
+- Z0PTFUCL
+- Z1ALLOC
+- Z2ACCEPT
+- Z3RECEIV
+- Z4APPLY
+- Z6REST
+- Z7REJECT
+- Z8DEALOC
 
 # ==============================================================================
 # Variables should be verified and overwrittern.
