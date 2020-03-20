@@ -1,0 +1,53 @@
+---
+# This playbook will run a JCL file exists in USS
+
+# input:
+# - jcl_filename: required
+
+# verify variables
+- name: Verify variables are defined for the host
+  fail:
+    msg: jcl_filename is required
+  when: jcl_filename is not defined or jcl_filename is none or jcl_filename == ''
+
+- name: Check if JCL exists
+  raw: test -f "{{ jcl_filename }}"
+
+- name: submit job
+  raw: submit "{{ jcl_filename }}"
+  register: jcl_submit_result
+
+- fail:
+    msg: submit JCL {{ jcl_filename }} failed, exit code is {{ jcl_submit_result.rc }}
+  when: jcl_submit_result.rc != 0
+
+- name: Get Job ID
+  set_fact:
+    jcl_job_id: "{{ jcl_submit_result.stdout | regex_search(qry, multiline=True, ignorecase=True) }}"
+  vars:
+    qry: (?!JOB JOB)[0-9]{1,}(?<! submitted)
+
+- fail:
+    msg: "Failed to find job ID from submit output: {{ jcl_submit_result.stdout }}"
+  when: jcl_job_id == ""
+
+- import_role:
+    name: zos
+    tasks_from: wait_for_job_completed
+  vars:
+    job_wait_for_index: 0
+
+- fail:
+    msg: "Job {{ jcl_job_id }} is not finished in time: {{ jcl_job_status }}"
+  when: jcl_job_completion == ""
+
+- fail:
+    msg: "Job {{ jcl_job_id }} is not exit properly: {{ jcl_job_completion }}"
+  when: jcl_job_rc == ""
+
+- fail:
+    msg: "Job {{ jcl_job_id }} failed with exit code: {{ jcl_job_rc }}"
+  when: jcl_job_rc|int > 4
+
+- debug:
+    msg: JCL {{ jcl_filename }} as job {{ jcl_job_id }} is completed and exits with code {{ jcl_job_rc }}

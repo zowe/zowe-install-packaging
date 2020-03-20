@@ -1,0 +1,18 @@
+---
+ansible_port: 53001
+ansible_user:
+ansible_password:
+
+# zowe running in container
+# zos_node_home: /zaas1/node/node-v8.17.0-os390-s390x
+zowe_apiml_catalog_port: 53008
+zowe_apiml_discovery_port: 53009
+zowe_apiml_gateway_port: 53010
+zowe_jobs_api_port: 53013
+zowe_mvs_api_port: 53015
+zowe_jobs_explorer_port: 53014
+zowe_mvs_explorer_port: 53016
+zowe_uss_explorer_port: 53017
+zowe_zlux_port: 53011
+zowe_zss_port: 53012
+zowe_smpe_volser: D3IME1

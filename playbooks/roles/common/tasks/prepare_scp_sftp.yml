@@ -1,0 +1,49 @@
+- name: Prepare working folder on local
+  raw: >-
+    rm -fr {{ work_dir_local }}/{{ inventory_hostname }};
+    mkdir -p {{ work_dir_local }}/{{ inventory_hostname }}
+  delegate_to: localhost
+
+- name: Prepare scp.sh with ssh key file
+  template:
+    src: scp.with-key.sh.j2
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}/scp.sh"
+    newline_sequence: '\n'
+    mode: 0700
+  delegate_to: localhost
+  when:
+  - ansible_ssh_private_key_file is defined
+  - ansible_ssh_private_key_file is not none
+  - ansible_ssh_private_key_file != ''
+
+- name: Prepare scp.sh with password
+  template:
+    src: scp.with-pwd.sh.j2
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}/scp.sh"
+    newline_sequence: '\n'
+    mode: 0700
+  delegate_to: localhost
+  when: ansible_ssh_private_key_file is not defined or ansible_ssh_private_key_file is none or ansible_ssh_private_key_file == ''
+  failed_when: ansible_password is not defined or ansible_password is none or ansible_password == ''
+
+- name: Prepare sftp.sh with ssh key file
+  template:
+    src: sftp.with-key.sh.j2
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}/sftp.sh"
+    newline_sequence: '\n'
+    mode: 0700
+  delegate_to: localhost
+  when:
+  - ansible_ssh_private_key_file is defined
+  - ansible_ssh_private_key_file is not none
+  - ansible_ssh_private_key_file != ''
+
+- name: Prepare sftp.sh with password
+  template:
+    src: sftp.with-pwd.sh.j2
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}/sftp.sh"
+    newline_sequence: '\n'
+    mode: 0700
+  delegate_to: localhost
+  when: ansible_ssh_private_key_file is not defined or ansible_ssh_private_key_file is none or ansible_ssh_private_key_file == ''
+  failed_when: ansible_password is not defined or ansible_password is none or ansible_password == ''

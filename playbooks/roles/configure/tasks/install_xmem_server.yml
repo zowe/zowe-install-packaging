@@ -1,0 +1,58 @@
+---
+# ============================================================================
+- name: Install Cross Memory Server
+  import_role:
+    name: zos
+    tasks_from: run_script
+  vars:
+    script_chdir: "{{ zowe_root_dir }}/scripts/utils"
+    script_filename: ./zowe-install-xmem.sh
+    script_parameters: "\"{{ zowe_dataset_prefix }}\" \"{{ zowe_xmem_loadlib }}\" \"{{ zowe_xmem_parmlib }}\" \"{{ zowe_xmem_proclib }}\""
+
+- name: Show content of ZSS proc {{ zowe_xmem_proclib_member_zss }}
+  raw: cat "//'{{ zowe_xmem_proclib }}({{ zowe_xmem_proclib_member_zss }})'"
+
+# ============================================================================
+# Add XMEM loadlib to APF list
+- import_role:
+    name: zos
+    tasks_from: is_dataset_sms
+  vars:
+    dataset: "{{ zowe_xmem_loadlib }}"
+
+- name: Add loadlib (SMS) to APF list
+  when: dataset_is_sms
+  block:
+  - name: update APF list
+    import_role:
+      name: zos
+      tasks_from: opercmd
+    vars:
+      opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},SMS"
+  
+  - fail:
+      msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
+    when: 'not "CSV410I" in opercmd_result.stdout'
+
+- name: Add loadlib (non-SMS) to APF list
+  when: not dataset_is_sms
+  block:
+  - import_role:
+      name: zos
+      tasks_from: get_dataset_volume
+    vars:
+      dataset: "{{ zowe_xmem_loadlib }}"
+
+  - name: update APF list
+    import_role:
+      name: zos
+      tasks_from: opercmd
+    vars:
+      opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},VOLUME={{ dataset_volume }}"
+  
+  - fail:
+      msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
+    when: 'not "CSV410I" in opercmd_result.stdout'
+
+- debug:
+    msg: "data set {{ zowe_xmem_loadlib }} is added to APF list"
