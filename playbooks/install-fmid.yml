@@ -25,7 +25,7 @@
         name: fmid
         tasks_from: uninstall
 
-  # # ============================================================================
+  # ============================================================================
   - name: Download Zowe from zowe_build_url if it has value
     when: zowe_build_url is defined
     block:
@@ -77,3 +77,4 @@
   # Start Zowe
   - import_role:
       name: start
+    when: not skip_start|default(False)
