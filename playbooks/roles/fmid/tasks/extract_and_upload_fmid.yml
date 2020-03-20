@@ -1,0 +1,49 @@
+---
+# extract FMID zip and upload to z/OS
+# { zowe_smpe_fmid_file } must exist in 
+#
+# input:
+# - zowe_smpe_fmid_file: required
+
+# ============================================================================
+# check variables
+- fail:
+    msg: zowe_smpe_fmid_file is required
+  when: zowe_smpe_fmid_file is not defined or zowe_smpe_fmid_file is none or zowe_smpe_fmid_file == ''
+
+- name: Extract {{ zowe_smpe_fmid_file }}
+  unarchive:
+    src: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zowe_smpe_fmid_file }}"
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}"
+  delegate_to: localhost
+
+- name: Get SMPE file list
+  find:
+    paths: "{{ work_dir_local }}/{{ inventory_hostname }}"
+    patterns: "{{ zowe_build_smpe_fmid_pattern }}"
+  register: zowe_smpe_fmid_files_in_zip
+  delegate_to: localhost
+
+- fail:
+    msg: "No {{ zowe_build_smpe_fmid_pattern }} file found in the SMPE package."
+  # must have pax and readme
+  when: zowe_smpe_fmid_files_in_zip.matched < 2
+
+- name: These files are found in SMPE package
+  debug:
+    msg: "- {{ item.path }}"
+  loop: "{{ zowe_smpe_fmid_files_in_zip.files }}"
+
+- name: Clean zowe build remotely
+  raw: rm -f {{ work_dir_remote }}/{{ zowe_build_smpe_fmid_pattern }}
+
+- name: Transfer zowe SMPE files to zOS
+  include_role:
+    name: common
+    tasks_from: upload_file
+  vars:
+    filename_to_upload: "{{ smpe_file.path | basename }}"
+    zos_upload_method: sftp
+  loop: "{{ zowe_smpe_fmid_files_in_zip.files }}"
+  loop_control:
+    loop_var: smpe_file

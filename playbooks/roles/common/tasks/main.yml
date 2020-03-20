@@ -1,0 +1,13 @@
+---
+# this is the most common tasks
+- import_role:
+    name: common
+    tasks_from: prepare_default_values
+
+- import_role:
+    name: common
+    tasks_from: prepare_envvars
+
+- import_role:
+    name: common
+    tasks_from: prepare_scp_sftp
