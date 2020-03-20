@@ -1,0 +1,102 @@
+---
+# ============================================================================
+- name: Update zowe_test_user from ansible_user if it's not defined
+  # hide log to avoid exposing zowe_test_user
+  no_log: True
+  set_fact:
+    zowe_test_user: "{{ hostvars[inventory_hostname].ansible_user }}"
+  when: zowe_test_user == '' or zowe_test_user is none
+
+- name: Update zowe_test_password from ansible_password if it's not defined
+  # hide log to avoid exposing zowe_test_password
+  no_log: True
+  set_fact:
+    zowe_test_password: "{{ hostvars[inventory_hostname].ansible_password }}"
+  when: zowe_test_password == '' or zowe_test_password is none
+
+# ============================================================================
+# verify variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_external_domain_name
+    - zowe_zlux_port
+    - zowe_jobs_api_port
+    - zowe_apiml_gateway_port
+
+- fail:
+    msg: zowe_test_user is required
+  when: zowe_test_user is not defined or zowe_test_user is none or zowe_test_user == ''
+  # hide log to avoid exposing zowe_test_user
+  no_log: True
+
+- fail:
+    msg: zowe_test_password is required
+  when: zowe_test_password is not defined or zowe_test_password is none or zowe_test_password == ''
+  # hide log to avoid exposing zowe_test_password
+  no_log: True
+
+# ============================================================================
+# Wait for Zowe services be started
+- name: Wait for Desktop port {{ zowe_zlux_port }} to become open
+  uri:
+    url: "https://{{ zowe_external_domain_name }}:{{ zowe_zlux_port }}"
+    follow_redirects: all
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+
+- name: Wait for Jobs API port {{ zowe_jobs_api_port }} to become open
+  uri:
+    url: "https://{{ zowe_external_domain_name }}:{{ zowe_jobs_api_port }}/api/v1/jobs?prefix=ZWE*&status=ACTIVE"
+    url_password: "{{ zowe_test_password }}"
+    url_username: "{{ zowe_test_user }}"
+    follow_redirects: none
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+  # hide log to avoid exposing zowe_test_user and zowe_test_password
+  no_log: True
+
+- name: Wait for APIML port {{ zowe_apiml_gateway_port }} to become open
+  uri:
+    url: "https://{{ zowe_external_domain_name }}:{{ zowe_apiml_gateway_port }}"
+    follow_redirects: none
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+
+- name: Wait for being able to login to API Catelog
+  uri:
+    url: "https://{{ zowe_external_domain_name }}:{{ zowe_apiml_gateway_port }}/api/v1/apicatalog/auth/login"
+    follow_redirects: none
+    method: POST
+    body_format: json
+    body: 
+      username: "{{ zowe_test_user }}"
+      password: "{{ zowe_test_password }}"
+    validate_certs: false
+    status_code:
+    - 200
+    - 204
+  register: _result
+  until: _result.status == 204
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+  # hide log to avoid exposing zowe_test_user and zowe_test_password
+  no_log: True

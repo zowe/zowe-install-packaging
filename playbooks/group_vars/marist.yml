@@ -1,0 +1,25 @@
+---
+################################################################################
+# variables for zowe uninstallation and installation
+work_dir_remote: /ZOWE/zowe-installs
+zowe_root_dir: /ZOWE/staging/zowe
+zowe_instance_dir: /ZOWE/tmp/.zowe
+zowe_keystore_dir: /ZOWE/tmp/keystore
+zowe_dataset_prefix: ZOWEAD3.ZWE
+zowe_apiml_verify_certficates_of_services: false
+zowe_xmem_proclib: VENDOR.PROCLIB
+zowe_xmem_loadlib: ZOWEAD3.LOADLIB
+zowe_xmem_parmlib: ZOWEAD3.PARMLIB
+zowe_xmem_stc_user_id: 2
+# # variables for zowe smpe uninstallation and installation
+# during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed
+zowe_smpe_hlq_dsn: ZOWEAD3
+# during uninstallation, any data-sets start with this will be removed
+zowe_smpe_hlq_csi: ZOWEAD3.SMPE
+zowe_smpe_hlq_tzone: ZOWEAD3.SMPE
+zowe_smpe_hlq_dzone: ZOWEAD3.SMPE
+zowe_smpe_dir_prefix: /ZOWE/staging
+zowe_smpe_rel_file_prefix: ZOWEAD3
+zowe_smpe_volser: ZOWE02
+# marist server tn3270 port
+zowe_zlux_terminal_telnet_port: 623
