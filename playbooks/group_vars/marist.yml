@@ -22,3 +22,5 @@ zowe_smpe_rel_file_prefix: ZOWEAD3
 zowe_smpe_volser: ZOWE02
 # marist server tn3270 port
 zowe_zlux_terminal_telnet_port: 623
+# optional, this is the folder where we store Zowe FMIDs on the z/OS server
+zowe_fmids_dir_remote: /ZOWE/zowe-fmids

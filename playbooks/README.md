@@ -87,6 +87,12 @@ Please Note:
 - The install playbook will also uninstall Zowe by default.
 - The `-v` option allows you to see stdout from server side, which includes installation log, etc.
 
+If you want to install a Zowe FMID pre-uploaded to your remote server, you can run the playbook with variable `zowe_build_remote` (You must define `zowe_fmids_dir_remote` if you choose this option):
+
+```
+$ ansible-playbook -l <server> install-fmid.yml -v --extra-vars "zowe_build_remote=AZWE001"
+```
+
 If you want to install a Zowe downloaded to your local computer, you can run the playbook with variable `zowe_build_local`:
 
 ```

@@ -7,7 +7,8 @@
 
 # ============================================================================
 # check variables
-- fail:
+- name: Check if zowe_smpe_fmid_file has a value
+  fail:
     msg: zowe_smpe_fmid_file is required
   when: zowe_smpe_fmid_file is not defined or zowe_smpe_fmid_file is none or zowe_smpe_fmid_file == ''
 
