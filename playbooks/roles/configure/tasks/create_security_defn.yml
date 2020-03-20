@@ -1,0 +1,42 @@
+---
+# this playbook runs SZWESAMP(ZWESECUR)
+- name: Remove ZWESECUR.jcl or ZWESECUR.raw.jcl if exists
+  raw: >-
+    rm -f "{{ work_dir_remote }}/ZWESECUR.raw.jcl";
+    rm -f "{{ work_dir_remote }}/ZWESECUR.jcl"
+
+- name: Copy SZWESAMP(ZWESECUR) to USS
+  raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWESECUR)'" "{{ work_dir_remote }}/ZWESECUR.raw.jcl"
+
+- name: Update ZWESECUR.jcl with configurations
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWESECUR.raw.jcl" | \
+    sed -e "s+ADMINGRP=ZWEADMIN+ADMINGRP={{ zowe_runtime_group }}+" | \
+    sed -e "s+ZOWEUSER=ZWESVUSR+ZOWEUSER={{ zowe_runtime_user }}+" | \
+    sed -e "s+ZSSUSER=ZWESIUSR+ZSSUSER={{ zowe_xmem_stc_user }}+" | \
+    sed -e "s+ZOWESTC=ZWESVSTC+ZOWESTC={{ zowe_proclib_membername }}+" | \
+    sed -e "s+ZSSSTC=ZWESISTC+ZSSSTC={{ zowe_xmem_proclib_member_zss }}+" | \
+    sed -e "s+AUXSTC=ZWESASTC+AUXSTC={{ zowe_xmem_proclib_member_aux }}+" | \
+    sed -e "s+ADDGROUP+NOADDGROUP+" | \
+    sed -e "s+ALTGROUP+NOALTGROUP+" | \
+    sed -e "s+ADDUSER+NOADDUSER+" > "{{ work_dir_remote }}/ZWESECUR.jcl"
+
+- name: Check ZWESECUR.jcl changes
+  raw: >-
+    grep -e "^// *SET " \
+        -e ADDGROUP \
+        -e ALTGROUP \
+        -e ADDUSER \
+        "{{ work_dir_remote }}/ZWESECUR.jcl"
+
+- name: Run ZWESECUR.jcl
+  import_role:
+    name: zos
+    tasks_from: run_jcl
+  vars:
+    jcl_filename: "{{ work_dir_remote }}/ZWESECUR.jcl"
+
+- name: Remove ZWESECUR.jcl or ZWESECUR.raw.jcl if exists
+  raw: >-
+    rm -f "{{ work_dir_remote }}/ZWESECUR.raw.jcl";
+    rm -f "{{ work_dir_remote }}/ZWESECUR.jcl"
