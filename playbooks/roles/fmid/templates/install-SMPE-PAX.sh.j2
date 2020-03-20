@@ -17,7 +17,7 @@ echo script $SCRIPT started from $SCRIPT_DIR
 
 # allow to customize /tmp folder
 if [ -z "${CIZT_TMP}" ]; then
-  CIZT_TMP=/tmp
+  CIZT_TMP="{{ work_dir_remote }}/tmp"
 fi
 
 if [[ $# -ne 10 ]]   # until script is called with 10 parms
