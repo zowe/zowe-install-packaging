@@ -1,0 +1,22 @@
+# This playbook will upload a file in {{ work_dir_local }}/{{ inventory_hostname }}/ folder to z/OS
+# work_dir_remote folder
+
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - filename_to_upload
+    - work_dir_remote
+    - zos_upload_method
+
+- name: Test if file exists
+  raw: test -f "{{ work_dir_local }}/{{ inventory_hostname }}/{{ filename_to_upload }}"
+  delegate_to: localhost
+
+- name: Clean {{ filename_to_upload }} on z/OS and make sure tmp folder exists
+  raw: rm -f "{{ work_dir_remote }}/{{ filename_to_upload }}" && mkdir -p "{{ work_dir_remote }}"
+
+- name: Transfer {{ filename_to_upload }} to zOS
+  command: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zos_upload_method }}.sh {{ work_dir_local }}/{{ inventory_hostname }}/{{ filename_to_upload }} {{ work_dir_remote }}/"
+  delegate_to: localhost

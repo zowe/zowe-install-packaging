@@ -1,0 +1,46 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+# work folder on local, we will store some temporary files here
+work_dir_local: .tmp
+
+# this should list all FMIDs we ever setup during install
+zowe_smpe_knwon_fmids:
+- AZWE001
+
+# default install path for SMP/e
+zowe_smpe_default_path: usr/lpp/zowe
+# Zowe FMID file pattern: all
+zowe_build_smpe_fmid_pattern: AZWE*
+# Zowe FMID file pattern: pax file
+zowe_build_smpe_fmid_pattern_paxz: AZWE*.pax.Z
+# Zowe FMID file pattern: readme
+zowe_build_smpe_fmid_pattern_readme: AZWE*.readme.txt
+
+# ==============================================================================
+# Variables should be verified and overwrittern.
+# ==============================================================================
+# HLQ of SMPE
+# during uninstallation, any data-sets start with {zowe_smpe_hlq_dsn}.ZOWE.{fmid} will be removed
+zowe_smpe_hlq_dsn:
+# HLQ of SMPE CSI, TZONE, DZONE
+# during uninstallation, any data-sets start with {zowe_smpe_hlq_csi},
+# {zowe_smpe_hlq_tzone}, {zowe_smpe_hlq_dzone} will be removed.
+zowe_smpe_hlq_csi:
+zowe_smpe_hlq_tzone:
+zowe_smpe_hlq_dzone:
+# SMPE install directory prefix
+zowe_smpe_dir_prefix: /var
+# SMPE dataset prefix
+zowe_smpe_rel_file_prefix:
+# volser for SMPE datasets, optional
+zowe_smpe_volser:
+# FMID install steps
+zowe_smpe_fmid_install_steps:
+- ZWE1SMPE
+- ZWE2RCVE
+- ZWE3ALOC
+- ZWE6DDEF
+- ZWE7APLY
+- ZWE8ACPT
