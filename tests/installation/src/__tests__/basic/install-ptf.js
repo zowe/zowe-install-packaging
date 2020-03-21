@@ -8,7 +8,7 @@
  * Copyright IBM Corporation 2020
  */
 
-const debug = require('debug')('zowe-install-test:basic:install-fmid');
+const debug = require('debug')('zowe-install-test:basic:install-ptf');
 
 const {
   sleep,
@@ -18,11 +18,12 @@ const {
   cleanupSanityTestReportDir,
 } = require('../../utils');
 const {
+  ZOWE_FMID,
   TEST_TIMEOUT_INSTALL_TEST,
   TEST_TIMEOUT_SANITY_TEST,
 } = require('../../constants');
 
-const TEST_SUITE_NAME = 'Test SMPE FMID installation';
+const TEST_SUITE_NAME = 'Test SMPE PTF installation';
 let installSucceeded = false;
 describe(TEST_SUITE_NAME, () => {
   beforeAll(() => {
@@ -36,11 +37,26 @@ describe(TEST_SUITE_NAME, () => {
     ]);
   });
 
-  test('install', async () => {
+  test('install fmid', async () => {
     debug(`run install-fmid.yml on ${process.env.ANSIBLE_HOST}`);
     const result = await runAnsiblePlaybook(
       TEST_SUITE_NAME,
       'install-fmid.yml',
+      process.env.ANSIBLE_HOST,
+      {
+        zowe_build_remote: ZOWE_FMID
+      }
+    );
+
+    expect(result.code).toBe(0);
+    installSucceeded = true;
+  }, TEST_TIMEOUT_INSTALL_TEST);
+
+  test('install ptf', async () => {
+    debug(`run install-ptf.yml on ${process.env.ANSIBLE_HOST}`);
+    const result = await runAnsiblePlaybook(
+      TEST_SUITE_NAME,
+      'install-ptf.yml',
       process.env.ANSIBLE_HOST,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
