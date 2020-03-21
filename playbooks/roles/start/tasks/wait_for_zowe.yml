@@ -26,13 +26,15 @@
     - zowe_jobs_api_port
     - zowe_apiml_gateway_port
 
-- fail:
+- name: Check if zowe_test_user has a value
+  fail:
     msg: zowe_test_user is required
   when: zowe_test_user is not defined or zowe_test_user is none or zowe_test_user == ''
   # hide log to avoid exposing zowe_test_user
   no_log: True
 
-- fail:
+- name: Check if zowe_test_password has a value
+  fail:
     msg: zowe_test_password is required
   when: zowe_test_password is not defined or zowe_test_password is none or zowe_test_password == ''
   # hide log to avoid exposing zowe_test_password

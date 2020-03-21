@@ -17,7 +17,8 @@
   raw: submit "{{ jcl_filename }}"
   register: jcl_submit_result
 
-- fail:
+- name: Check if job is successfully submitted
+  fail:
     msg: submit JCL {{ jcl_filename }} failed, exit code is {{ jcl_submit_result.rc }}
   when: jcl_submit_result.rc != 0
 
@@ -27,7 +28,8 @@
   vars:
     qry: (?!JOB JOB)[0-9]{1,}(?<! submitted)
 
-- fail:
+- name: Check if jcl_job_id has a value
+  fail:
     msg: "Failed to find job ID from submit output: {{ jcl_submit_result.stdout }}"
   when: jcl_job_id == ""
 
@@ -37,15 +39,18 @@
   vars:
     job_wait_for_index: 0
 
-- fail:
+- name: Check if job completion has a value
+  fail:
     msg: "Job {{ jcl_job_id }} is not finished in time: {{ jcl_job_status }}"
   when: jcl_job_completion == ""
 
-- fail:
+- name: Check if job exit code has a value
+  fail:
     msg: "Job {{ jcl_job_id }} is not exit properly: {{ jcl_job_completion }}"
   when: jcl_job_rc == ""
 
-- fail:
+- name: Check if job exit code is lesser than 4
+  fail:
     msg: "Job {{ jcl_job_id }} failed with exit code: {{ jcl_job_rc }}"
   when: jcl_job_rc|int > 4
 

@@ -25,7 +25,8 @@
   register: zowe_smpe_ptf_files_in_zip
   delegate_to: localhost
 
-- fail:
+- name: Check if PTF zip has more than 2 files
+  fail:
     msg: "No {{ zowe_build_smpe_ptf_pattern }} file found in the PTF package."
   # must have 2 SYSMODs and readme, but let's make readme optional
   when: zowe_smpe_ptf_files_in_zip.matched < 2

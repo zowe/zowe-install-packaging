@@ -25,7 +25,8 @@
   register: zowe_smpe_fmid_files_in_zip
   delegate_to: localhost
 
-- fail:
+- name: Check if FMID zip has more than 2 files
+  fail:
     msg: "No {{ zowe_build_smpe_fmid_pattern }} file found in the SMPE package."
   # must have pax and readme
   when: zowe_smpe_fmid_files_in_zip.matched < 2

@@ -54,7 +54,8 @@
     vars:
       opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},SMS"
   
-  - fail:
+  - name: Check if APF updating response has CSV410I
+    fail:
       msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
     when: 'not "CSV410I" in opercmd_result.stdout'
 
@@ -74,7 +75,8 @@
     vars:
       opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},VOLUME={{ dataset_volume }}"
   
-  - fail:
+  - name: Check if APF updating response has CSV410I
+    fail:
       msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
     when: 'not "CSV410I" in opercmd_result.stdout'
 

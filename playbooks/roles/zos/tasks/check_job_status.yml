@@ -8,7 +8,8 @@
 # - jcl_job_completion
 # - jcl_job_rc
 
-- fail:
+- name: Check if jcl_job_id has a value
+  fail:
     msg: jcl_job_id is required
   when: jcl_job_id is not defined or jcl_job_id is none or jcl_job_id == ''
 

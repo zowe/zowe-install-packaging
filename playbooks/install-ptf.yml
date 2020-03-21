@@ -1,5 +1,5 @@
 ---
-- name: Install Zowe SMPE FMID
+- name: Install Zowe SMPE PTF
   hosts: all
   gather_facts: false
   become: false
