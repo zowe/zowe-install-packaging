@@ -271,7 +271,7 @@ npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
     htmlReports   : [
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
-    timeout: [time: 30, unit: 'MINUTES'],
+    timeout: [time: 90, unit: 'MINUTES'],
   )
 
   pipeline.end()
