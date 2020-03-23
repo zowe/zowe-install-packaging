@@ -26,6 +26,8 @@
 # dsOrg     data set organisation; {PO | PS}
 # space     space in tracks; primary[,secondary]
 #
+# -C and -V are mutually exclusive
+#
 # Expected globals:
 # $debug $LOG_FILE
 #
@@ -87,6 +89,13 @@ if test "$recFm" = "U" -a "$dsOrg" != "PO"
 then
   echo "** ERROR $me faulty startup argument: $args"
   echo "RECFM(U) requires DSORG(PO)"
+  rc=8
+fi    #
+
+if test -n "$uCount" -a -n "$volume"
+then
+  echo "** ERROR $me faulty startup argument: $args"
+  echo "-C and -V are mutually exclusive"
   rc=8
 fi    #
 
