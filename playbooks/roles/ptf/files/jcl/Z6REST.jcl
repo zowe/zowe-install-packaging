@@ -8,7 +8,7 @@
 //* SPDX-License-Identifier: EPL-2.0                                   
 //*                                                                    
 //* Copyright Contributors to the Zowe Project. 2019, 2020             
-//*                                                                    
+                                                                  
 //******************************************************************** 
 //*                                                                    
 //* This JCL will RESTORE a service SYSMOD (PTF, APAR, USERMOD).       
