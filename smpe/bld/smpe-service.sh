@@ -1207,6 +1207,7 @@ test "$debug" && echo "< _submit"
 
 # ---------------------------------------------------------------------
 # --- allocate data set (removes pre-existing one)
+# $1: if --multi then allow multi volume, parm is removed when present
 # $1: data set name
 # $2: record format; {FB | U | VB}
 # $3: logical record length, use ** for RECFM(U)
@@ -1219,6 +1220,15 @@ function _alloc
 {
 test "$debug" && echo && echo "> _alloc $@"
 
+unset allocParms
+
+# multi-volume permitted ? (dsOrg PS required)     MUST be tested first
+if test "$1" = "--multi"
+then         
+  shift
+  test -n "$gimdtsUCount" && allocParms="$allocParms -C $gimdtsUCount"
+fi    #
+                          
 # remove previous run
 test "$debug" && echo
 test "$debug" && echo "\"$here/$existScript $1\""
@@ -1234,17 +1244,18 @@ then
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
+# hide allocation command when not in debug mode
+test "$debug" || allocParms="$allocParms -h"
+
+# allocate on specific volser(s)
+test -n "$gimdtsVolser" && allocParms="$allocParms -V $gimdtsVolser"
+
 # create target data set
 test "$debug" && echo
-if test -z "$gimdtsVolser"
-then
-  test "$debug" && echo "\"$here/$allocScript -h $1 $2 $3 $4 $5\""
-  $here/$allocScript -h "$1" "$2" "$3" "$4" "$5"
-else
-  test "$debug" && \
-    echo "\"$here/$allocScript -h -V $gimdtsVolser $1 $2 $3 $4 $5\""
-  $here/$allocScript -h -V "$gimdtsVolser" "$1" "$2" "$3" "$4" "$5"
-fi    #
+test "$debug" && echo \
+  "\"$here/$allocScript $allocParms $1 $2 $3 $4 $5\""
+$here/$allocScript $allocParms "$1" "$2" "$3" "$4" "$5"
+
 # returns 0 for OK, 1 for DCB mismatch, 2 for not pds(e), 8 for error
 rc=$?
 if test $rc -gt 0
@@ -1482,7 +1493,7 @@ test "$debug" && echo "for file in \$allParts*)"
 for file in $allParts
 do
   # TODO KEEP DSN IN SYNC WITH $here/PTF@.jcl
-  _alloc "${gimdtsHlq}.${MLQ}.$file" "FB" "80" "PS" "$gimdtsTrks"
+  _alloc --multi "${gimdtsHlq}.${MLQ}.$file" "FB" "80" "PS" "$gimdtsTrks"
   _cmd mv $ptf/meta/$file "//'${gimdtsHlq}.${MLQ}.$file'"
 done    # for file
 
