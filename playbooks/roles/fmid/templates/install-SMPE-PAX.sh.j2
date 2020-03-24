@@ -2,7 +2,7 @@
 
 # Function: install the Zowe SMP/E PAX file
 # POC - no error checking
-# Requires opercmd to check job RC
+# Requires opercmd.rexx to check job RC
 
 # Inputs
 # <OLD VERSION> $download_path/$FMID.$README      # EBCDIC text of README job JCL text file
@@ -72,12 +72,12 @@ echo $SCRIPT    FMID=$FMID
 echo $SCRIPT    PREFIX=$PREFIX
 echo $SCRIPT    volser=$volser
 
-operdir=$SCRIPT_DIR         # this is where opercmd should be available
+operdir=$SCRIPT_DIR         # this is where opercmd.rexx should be available
 
-head -1 $operdir/opercmd | grep REXX 1> /dev/null 2> /dev/null
+head -1 $operdir/opercmd.rexx | grep REXX 1> /dev/null 2> /dev/null
 if [[ $? -ne 0 ]]
 then
-    echo $SCRIPT ERROR: opercmd not found in $operdir or is not valid REXX 
+    echo $SCRIPT ERROR: opercmd.rexx not found in $operdir or is not valid REXX 
     echo $SCRIPT INFO: CWD is `pwd`
     exit 9
 fi
@@ -121,7 +121,7 @@ function runJob {
     for secs in 1 5 10 30 100 300 500
     do
         sleep $secs
-        $operdir/opercmd "\$DJ${jobid},CC" > $CIZT_TMP/dj.$$.cc
+        $operdir/opercmd.rexx "\$DJ${jobid},CC" > $CIZT_TMP/dj.$$.cc
             # $DJ gives ...
             # ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
             # ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
@@ -160,7 +160,7 @@ function runJob {
     # jobname=`sed -n 's/.*JOB(\([^ ]*\)).*/\1/p' $CIZT_TMP/dj.$$.cc`
     # echo $SCRIPT jobname $jobname
     
-    # $operdir/opercmd "\$DJ${jobid},CC" > $CIZT_TMP/dj.$$.cc
+    # $operdir/opercmd.rexx "\$DJ${jobid},CC" > $CIZT_TMP/dj.$$.cc
     grep RC= $CIZT_TMP/dj.$$.cc > /dev/null
     if [[ $? -ne 0 ]]
     then
