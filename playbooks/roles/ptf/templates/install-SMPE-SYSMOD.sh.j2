@@ -102,6 +102,26 @@ echo $SCRIPT    SYSMOD2=$SYSMOD2
 echo $SCRIPT    volser=$volser
 echo $SCRIPT    install=$install
 
+################################################################################
+# Wrap call into $()
+#
+# NOTE: This function exists to solve the issue calling tsocmd/submit/cp directly
+#       in pipeline will not exit properly.
+################################################################################
+function wrap_call {
+  echo "[wrap_call] $@ >>>"
+  CALL_RESULT=$($@)
+  printf "%s\n[wrap_call] <<<\n" "$CALL_RESULT"
+}
+
+# Clean up sysmod data sets
+wrap_call tsocmd delete "'${hlq}.ZOWE.${FMID}.$SYSMOD1'"
+wrap_call tsocmd delete "'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
+
+echo "Before sysmod1 allocate:"
+wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD1'" history status members
+wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+
 csidsn=$csihlq.CSI
 
 for FMIDpath in \
@@ -322,8 +342,16 @@ do
     if [[ $smpejob = Z1ALLOC ]]
     then
         echo script $SCRIPT copying USS sysmod files to datasets
-        cp $download_path/ZOWE.$FMID.$SYSMOD1 "//'${hlq}.ZOWE.${FMID}.$SYSMOD1'"
-        cp $download_path/ZOWE.$FMID.$SYSMOD2 "//'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
+        echo "Before sysmod1 copies:"
+        wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD1'" history status members
+        wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+        echo "uss sysmod 1: $(ls -al $download_path/ZOWE.$FMID.$SYSMOD1)"
+        echo "uss sysmod 2: $(ls -al $download_path/ZOWE.$FMID.$SYSMOD2)"
+        wrap_call cp $download_path/ZOWE.$FMID.$SYSMOD1 "//'${hlq}.ZOWE.${FMID}.$SYSMOD1'"
+        wrap_call cp $download_path/ZOWE.$FMID.$SYSMOD2 "//'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
+        echo "After sysmod copy:"
+        wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD1'" history status members
+        wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
         echo script $SCRIPT copy complete
     fi
 
