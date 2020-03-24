@@ -39,6 +39,14 @@
   vars:
     job_wait_for_index: 0
 
+- import_role:
+    name: zos
+    tasks_from: show_job_log
+  vars:
+    jcl_job_id: "{{ jcl_job_id }}"
+    jcl_job_owner: "*"
+    jcl_job_name: "*"
+
 - name: Check if job completion has a value
   fail:
     msg: "Job {{ jcl_job_id }} is not finished in time: {{ jcl_job_status }}"
