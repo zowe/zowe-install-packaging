@@ -1,6 +1,6 @@
 /* REXX */
 
-/* Usage: showlog.rexx "jobid=JOB12345 owner=* jobname=*" */
+/* Usage: show_job_log.rexx "jobid=JOB12345 owner=* jobname=*" */
 arg options
 parse var options param
 upper param

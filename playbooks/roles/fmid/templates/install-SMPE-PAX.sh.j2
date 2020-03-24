@@ -82,6 +82,14 @@ then
     exit 9
 fi
 
+head -1 $operdir/show_job_log.rexx | grep REXX 1> /dev/null 2> /dev/null
+if [[ $? -ne 0 ]]
+then
+    echo $SCRIPT ERROR: show_job_log.rexx not found in $operdir or is not valid REXX 
+    echo $SCRIPT INFO: CWD is `pwd`
+    exit 9
+fi
+
 README=readme.txt                   # the filename of the FMID.readme-v.m.r-smpe-test-nn-yyyymmddhhmmss.txt file
 
 # # prepare to run this script
@@ -156,6 +164,11 @@ function runJob {
     else
         : # echo; echo $SCRIPT job JOB$jobid completed
     fi
+
+    # show job log for debugging purpose
+    echo $SCRIPT ====================== content start ======================
+    show_job_log.rexx "jobid=JOB${jobid} owner=* jobname=*"
+    echo $SCRIPT ====================== content end ========================
 
     # jobname=`sed -n 's/.*JOB(\([^ ]*\)).*/\1/p' $CIZT_TMP/dj.$$.cc`
     # echo $SCRIPT jobname $jobname
