@@ -667,7 +667,7 @@ do
   existRC=$?
   if test $existRC -eq 0
   then
-    _cmd cp "//'$SYSMOD'" "$ptf/${ptfHLQ}.$sysmodName"
+    _cmd cp -B "//'$SYSMOD'" "$ptf/${ptfHLQ}.$sysmodName"
   else
     echo "** ERROR $me merge job $cnt did not create //'$SYSMOD'"
     test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
