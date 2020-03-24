@@ -43,7 +43,7 @@
     name: zos
     tasks_from: show_job_log
   vars:
-    jcl_job_id: "{{ jcl_job_id }}"
+    jcl_job_id: "JOB{{ jcl_job_id }}"
     jcl_job_owner: "*"
     jcl_job_name: "*"
 
