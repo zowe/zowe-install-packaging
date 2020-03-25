@@ -194,7 +194,7 @@
 /* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled      */
   LISTGRP  &STCGROUP. OMVS
   ADDGROUP &STCGROUP. OMVS(AUTOGID) -
-   DATA('STARTED TASK GROUP WITH OMVS SEGEMENT')
+   DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
 
 /* */
 
@@ -494,7 +494,8 @@ $$
    DEPT(&ADMINDEP.)
   TSS ADD(&ADMINGRP.) GID(&ADMINGID.)
 
-/* TODO add sample command to add admin to &ADMINGRP */
+/* uncomment to add existing user IDs to the &ADMINGRP group         */
+/* TSS ADD(userid) GROUP(&ADMINGRP.)                                 */
 
 /* DEFINE STARTED TASK ............................................. */
 
@@ -503,7 +504,7 @@ $$
 /* group for started tasks                                           */
   TSS LIST(&STCGROUP.) SEGMENT(OMVS)
   TSS CREATE(&STCGROUP.) TYPE(GROUP) +
-   NAME('STC GROUP WITH OMVS SEGEMENT') +
+   NAME('STC GROUP WITH OMVS SEGMENT') +
    DEPT(&STCGDEP.)
   TSS ADD(&STCGROUP.) GID(&STCGID.)
 
@@ -605,7 +606,7 @@ $$
 /** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
 /** permit Zowe main server to write persistent data                 */
   TSS ADD(&FACACID.) UNIXPRIV(SUPERUSE)
-  TSS WHOHAS IBMFAC(SUPERUSER.FILESYS)
+  TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
   TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
@@ -614,7 +615,7 @@ $$
 /*   advised to protect it against updates.                          */
 
 /* HLQ stub                                                          */
-  TSS ADD DEPT(&ADMINDEP.) DATASET(&HLQ.)
+  TSS ADD(&ADMINDEP.) DATASET(&HLQ..)
 
 /* general data set protection                                       */
   TSS WHOHAS DATASET(&HLQ.)
