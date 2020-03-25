@@ -164,6 +164,26 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
 EOF
 
+APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.jwtsecret.pem"
+P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.jwtsecret.p12"
+echo "Please enter a valid PKCS#11 token name: "
+read TOKEN_NAME
+echo "Please enter a key label: "
+read KEY_LABEL
+if [[ -f ${APIML_PUBLIC_KEY} ]]
+then
+  chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
+  openssl pkcs12 -export -nokeys -in ${APIML_PUBLIC_KEY} -out ${P12_PUBLIC_KEY}
+  chtag -tc utf8 ${P12_PUBLIC_KEY}
+  if ! gskkyman -i -t ${TOKEN_NAME} -l ${KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
+    echo "Unable to store ${P12_PUBLIC_KEY} in token ${TOKEN_NAME} with label ${KEY_LABEL}. See $LOG_FILE for more details."
+  else
+    echo "APIML public key successfully loaded into token ${TOKEN_NAME}."
+  fi
+else
+  echo "No such file ${APIML_PUBLIC_KEY}"
+fi
+
 # set up privileges and ownership
 chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
