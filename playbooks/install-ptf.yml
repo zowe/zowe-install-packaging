@@ -52,6 +52,14 @@
       name: ptf
 
   # ============================================================================
+  # Stop Zowe
+  - import_role:
+      name: stop
+  - name: Wait for Zowe stopping
+    pause:
+      seconds: 30
+
+  # ============================================================================
   - import_role:
       name: fmid
       tasks_from: overwrite_vars
@@ -62,11 +70,6 @@
   #     name: configure
 
   # ============================================================================
-  # Restart Zowe
-  - import_role:
-      name: stop
-  - name: Wait for Zowe stopping
-    pause:
-      seconds: 30
+  # Start Zowe
   - import_role:
       name: start
