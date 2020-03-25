@@ -166,22 +166,30 @@ EOF
 
 APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.jwtsecret.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.jwtsecret.p12"
-echo "Please enter a valid PKCS#11 token name: "
-read TOKEN_NAME
-echo "Please enter a key label: "
-read KEY_LABEL
-if [[ -f ${APIML_PUBLIC_KEY} ]]
-then
-  chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
-  openssl pkcs12 -export -nokeys -in ${APIML_PUBLIC_KEY} -out ${P12_PUBLIC_KEY}
-  chtag -tc utf8 ${P12_PUBLIC_KEY}
-  if ! gskkyman -i -t ${TOKEN_NAME} -l ${KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
-    echo "Unable to store ${P12_PUBLIC_KEY} in token ${TOKEN_NAME} with label ${KEY_LABEL}. See $LOG_FILE for more details."
+
+echo "    Would you like to enable SSO? (Y/N): "
+read USER_ANS
+SSO_ANSWER=$(echo "$USER_ANS" | tr '[:lower:]' '[:upper:]')
+
+if [[ "${SSO_ANSWER}" == "Y" ]]; then
+  echo "    Please enter a valid PKCS#11 token name: "
+  read TOKEN_NAME
+  echo "    Please enter a key label: "
+  read KEY_LABEL
+  if [[ -f ${APIML_PUBLIC_KEY} ]]
+  then
+    chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
+    openssl pkcs12 -export -nokeys -in ${APIML_PUBLIC_KEY} -out ${P12_PUBLIC_KEY}
+    chtag -tc utf8 ${P12_PUBLIC_KEY}
+    UPPER_KEY_LABEL=$(echo "$KEY_LABEL" | tr '[:lower:]' '[:upper:]')
+    if ! gskkyman -i -t ${TOKEN_NAME} -l ${UPPER_KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
+      echo "Unable to store ${P12_PUBLIC_KEY} in token ${TOKEN_NAME} with label ${KEY_LABEL}. See $LOG_FILE for more details."
+    else
+      echo "APIML public key successfully loaded into token ${TOKEN_NAME} with label ${UPPER_KEY_LABEL}."
+    fi
   else
-    echo "APIML public key successfully loaded into token ${TOKEN_NAME}."
+    echo "No such file ${APIML_PUBLIC_KEY}."
   fi
-else
-  echo "No such file ${APIML_PUBLIC_KEY}"
 fi
 
 # set up privileges and ownership
