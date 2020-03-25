@@ -362,12 +362,12 @@ do
         wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
         echo "uss sysmod 1: $(ls -al $download_path/ZOWE.$FMID.$SYSMOD1)"
         echo "uss sysmod 2: $(ls -al $download_path/ZOWE.$FMID.$SYSMOD2)"
-        cp $download_path/ZOWE.$FMID.$SYSMOD1 "//'${hlq}.ZOWE.${FMID}.$SYSMOD1'"
+        cp -B $download_path/ZOWE.$FMID.$SYSMOD1 "//'${hlq}.ZOWE.${FMID}.$SYSMOD1'"
         if [[ $? -ne 0 ]]; then
           echo $SCRIPT ERROR: copy $SYSMOD1 failed
           exit 3
         fi
-        cp $download_path/ZOWE.$FMID.$SYSMOD2 "//'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
+        cp -B $download_path/ZOWE.$FMID.$SYSMOD2 "//'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
         if [[ $? -ne 0 ]]; then
           echo $SCRIPT ERROR: copy $SYSMOD2 failed
           exit 3
