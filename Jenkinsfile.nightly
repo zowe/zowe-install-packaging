@@ -103,7 +103,7 @@ node('ibm-jenkins-slave-nvm') {
       // check artifactory for latest CLI build
       try {
         cliSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/zowe-cli-package-*.zip",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
         ])
       } catch (e) {
@@ -112,7 +112,7 @@ node('ibm-jenkins-slave-nvm') {
       }
       try {
         cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/zowe-cli-plugins-*.zip",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
         ])
       } catch (e) {
