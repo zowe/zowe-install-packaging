@@ -2,6 +2,16 @@
 
 This project targets to use Ansible to uninstall / install Zowe.
 
+- [Prepare Environment](#prepare-environment)
+  - [Verify Inventory and Variables](#verify-inventory-and-variables)
+  - [Other verifications or tools](#other-verifications-or-tools)
+- [Install (Uninstall) Zowe](#install-uninstall-zowe)
+  - [Convenience Build](#convenience-build)
+  - [SMPE FMID](#smpe-fmid)
+  - [SMPE PTF](#smpe-ptf)
+  - [Other Build Variables](#other-build-variables)
+  - [Sanity Test a Zowe Instance](#sanity-test-a-zowe-instance)
+
 ## Prepare Environment
 
 You need Ansible v2.9.4+. Please check [Installation Document](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) from Ansible website.
@@ -72,7 +82,7 @@ $ ansible-playbook -l <server> install.yml -v --extra-vars "zowe_build_url=https
 
 For example, you can pick a downloadable Zowe build from https://zowe.jfrog.io/zowe/webapp/#/artifacts/browse/tree/General/libs-release-local/org/zowe.
 
-### SMPE Build
+### SMPE FMID
 
 To install Zowe SMPE build, run playbook `install-fmid.yml`:
 
@@ -103,6 +113,35 @@ If you want to install a Zowe from a URL, you can run the playbook with variable
 
 ```
 $ ansible-playbook -l <server> install-fmid.yml -v --extra-vars "zowe_build_url=https://zowe.jfrog.io/zowe/libs-release-local/org/zowe/1.9.0/zowe-smpe-package-1.9.0.zip"
+```
+
+### SMPE PTF
+
+To install Zowe SMPE PTF, run playbook `install-ptf.yml`:
+
+```
+$ ansible-playbook -l <server> install-ptf.yml -v
+```
+
+Please Note:
+
+- The playbook will install the `ZOWE.AZWE*.UO*` and `ZOWE.AZWE*.UO*.readme.htm` pre-uploaded to `work_dir_remote`.
+- The SMPE PTF build must be the new `.zip` format. The old release formats of `.pax.Z` or `.tar` are not supported.
+- The PTF install playbook requires Zowe FMID pre-installed on the server.
+- The PTF install playbook will NOT uninstall Zowe.
+- The `-v` option allows you to see stdout from server side, which includes installation log, etc.
+
+
+If you want to install a Zowe downloaded to your local computer, you can run the playbook with variable `zowe_build_local`:
+
+```
+$ ansible-playbook -l <server> install-ptf.yml -v --extra-vars "zowe_build_local=/path/to/your/local/zowe-smpe.zip"
+```
+
+If you want to install a Zowe from a URL, you can run the playbook with variable `zowe_build_url`:
+
+```
+$ ansible-playbook -l <server> install-ptf.yml -v --extra-vars "zowe_build_url=https://zowe.jfrog.io/zowe/libs-release-local/org/zowe/1.10.0/zowe-smpe-package-1.10.0.zip"
 ```
 
 ### Other Build Variables
