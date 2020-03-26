@@ -3,7 +3,14 @@
 
 # input:
 # - jcl_filename: required
+#
+# output:
+# - jcl_job_id
+# - jcl_job_completion
+# - jcl_job_rc
+# - jcl_job_log
 
+# ============================================================================
 # verify variables
 - name: Verify variables are defined for the host
   fail:
@@ -39,13 +46,17 @@
   vars:
     job_wait_for_index: 0
 
-- import_role:
+- include_role:
     name: zos
     tasks_from: show_job_log
   vars:
-    jcl_job_id: "JOB{{ jcl_job_id }}"
-    jcl_job_owner: "*"
-    jcl_job_name: "*"
+    show_job_log_id: "JOB{{ jcl_job_id }}"
+    show_job_log_owner: "*"
+    show_job_log_name: "*"
+
+- name: Assign jcl_job_log
+  set_fact:
+    jcl_job_log: "{{ show_job_log_result.stdout }}"
 
 - name: Check if job completion has a value
   fail:

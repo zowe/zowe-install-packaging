@@ -62,3 +62,23 @@
   vars:
     upload_and_run_script_filename: install-SMPE-SYSMOD.sh
     upload_and_run_script_parameters: "\"{{ zowe_smpe_hlq_dsn }}\" \"{{ zowe_smpe_hlq_csi }}\" \"{{ (zowe_smpe_dir_prefix is regex(\"/$\")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + \"/\") }}\" \"{{ work_dir_remote }}\" \"{{ zowe_smpe_fmid }}\" \"{{ zowe_smpe_ptf }}\" \"{{ zowe_smpe_ptf_2 }}\" \"{{ zowe_smpe_volser }}\" install"
+
+- import_role:
+    name: ptf
+    tasks_from: is_ptf_installed
+  vars:
+    smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
+    # we hardcoded TZONE name
+    smpe_tzone: TZONE
+    smpe_fmid: "{{ zowe_smpe_fmid }}"
+    ptfs:
+    - "{{ zowe_smpe_ptf }}"
+    - "{{ zowe_smpe_ptf_2 }}"
+
+- name: Validate if PTFs are installed properly
+  fail:
+    msg: "PTF {{ item }} is not installed"
+  when: not ptfs_existence[item]
+  loop: 
+  - "{{ zowe_smpe_ptf }}"
+  - "{{ zowe_smpe_ptf_2 }}"

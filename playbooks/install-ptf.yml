@@ -47,17 +47,17 @@
         zowe_smpe_ptf_file: zowe-ptf.zip
 
   # ============================================================================
-  - name: Install Zowe SMPE PTF
-    import_role:
-      name: ptf
-
-  # ============================================================================
   # Stop Zowe
   - import_role:
       name: stop
   - name: Wait for Zowe stopping
     pause:
       seconds: 30
+
+  # ============================================================================
+  - name: Install Zowe SMPE PTF
+    import_role:
+      name: ptf
 
   # ============================================================================
   - import_role:
