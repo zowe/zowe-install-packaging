@@ -230,7 +230,7 @@ function runJob {
 
     # show job log for debugging purpose
     echo $SCRIPT ====================== content start ======================
-    show_job_log.rexx "jobid=JOB${jobid} owner=* jobname=*"
+    $operdir/show_job_log.rexx "jobid=JOB${jobid} owner=* jobname=*"
     echo $SCRIPT ====================== content end ========================
 
     # jobname=`sed -n 's/.*JOB(\([^ ]*\)).*/\1/p' $CIZT_TMP/dj.$$.cc`

@@ -5,6 +5,7 @@ ansible_ssh_host: river.zowe.org
 ################################################################################
 # variables for zowe uninstallation and installation
 work_dir_remote: /zaas1/zowe/ansible
+zowe_fmids_dir_remote: /zaas1/zowe/fmids
 zowe_external_domain_name: river.zowe.org
 zowe_external_ip_address: 37.58.118.251
 zowe_root_dir: /zaas1/zowe/runtime
