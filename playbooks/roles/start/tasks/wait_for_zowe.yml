@@ -58,6 +58,8 @@
     follow_redirects: none
     method: GET
     validate_certs: false
+    status_code:
+    - 401
   register: _result
   until: _result.status == 401
   retries: "{{ wait_for_zowe_service_retries | int }}"
