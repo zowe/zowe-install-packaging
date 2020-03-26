@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright IBM Corporation 2018, 2020
  */
 
 const { setApimlAuthTokenCookie } = require('explorer-fvt-utilities');
@@ -66,8 +66,8 @@ describe(`test ${APP_TO_TEST}`, function() {
     await setApimlAuthTokenCookie(driver, 
       process.env.SSH_USER, 
       process.env.SSH_PASSWD, 
-      `${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 
-      `${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/explorer-jes`);
+      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 
+      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/explorer-jes`);
   });
 
 
