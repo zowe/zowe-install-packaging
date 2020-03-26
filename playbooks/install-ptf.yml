@@ -65,6 +65,15 @@
       tasks_from: overwrite_vars
 
   # ============================================================================
+  # FIXME
+  - name: Check if zowe_keystore_dir has a value
+    fail:
+      msg: zowe_keystore_dir is required
+    when: zowe_keystore_dir is not defined or zowe_keystore_dir is none or zowe_keystore_dir == ''
+  - name: Remove keystore folder because the user may not have permission
+    raw: echo "rm -fr {{ zowe_keystore_dir }}" | su
+
+  # ============================================================================
   # Configure Zowe ?
   - import_role:
       name: configure
