@@ -83,7 +83,6 @@ describe('test explorer server docs', function() {
           'swagger': '2.0',
         });
         expect(res.data).to.have.nested.property('paths./api/v1/jobs');
-        expect(res.data).to.have.nested.property('paths./api/v1/jobs/username');
         expect(res.data).to.have.nested.property('paths./api/v1/jobs/{jobName}/{jobId}');
       });
   });
