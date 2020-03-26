@@ -57,6 +57,8 @@
 - name: Assign jcl_job_log
   set_fact:
     jcl_job_log: "{{ show_job_log_result.stdout }}"
+  # job log alredy displayed in show_job_log task, skip output here
+  no_log: True
 
 - name: Check if job completion has a value
   fail:
