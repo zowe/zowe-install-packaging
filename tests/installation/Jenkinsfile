@@ -48,8 +48,9 @@ node('ibm-jenkins-slave-dind') {
   ];
   // Test scopes, what test should we run
   Map TEST_SCOPES = [
-    'conv-build': 'src/__tests__/basic/install.js',
-    'smpe-fmid': 'src/__tests__/basic/install-fmid.js',
+    'convenience build': 'src/__tests__/basic/install.js',
+    'smpe fmid': 'src/__tests__/basic/install-fmid.js',
+    'smpe ptf': 'src/__tests__/basic/install-ptf.js',
   ]
 
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
@@ -272,7 +273,7 @@ npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
     htmlReports   : [
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
-    timeout: [time: 30, unit: 'MINUTES'],
+    timeout: [time: 90, unit: 'MINUTES'],
   )
 
   pipeline.end()

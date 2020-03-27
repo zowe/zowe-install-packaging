@@ -77,3 +77,4 @@
   # Start Zowe
   - import_role:
       name: start
+    when: not skip_start|default(False)

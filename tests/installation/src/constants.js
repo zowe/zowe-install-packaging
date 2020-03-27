@@ -10,6 +10,9 @@
 
 const path = require('path');
 
+// the FMID we will use to test PTF
+const ZOWE_FMID = 'AZWE001';
+
 // where ansible playbooks located
 const ANSIBLE_ROOT_DIR = path.resolve(__dirname, '../../../playbooks');
 // where install test located
@@ -29,6 +32,7 @@ const TEST_TIMEOUT_INSTALL_TEST = 90 * 60 * 1000;
 const TEST_TIMEOUT_SANITY_TEST = 30 * 60 * 1000;
 
 module.exports = {
+  ZOWE_FMID,
   ANSIBLE_ROOT_DIR,
   INSTALL_TEST_ROOT_DIR,
   SANITY_TEST_ROOT_DIR,
