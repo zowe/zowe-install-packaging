@@ -1,0 +1,2 @@
+# format: <ptf1> <ptf2>- <apar1> <apar2>
+UO01939 UO01940 - IO27710 IO27711

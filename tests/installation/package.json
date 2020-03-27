@@ -1,0 +1,20 @@
+{
+  "name": "@zowe/installation-test",
+  "version": "0.9.0",
+  "description": "Installation test of Zowe build",
+  "main": "index.js",
+  "license": "EPL-2.0",
+  "devDependencies": {
+    "debug": "^3.1.0",
+    "eslint": "^5.2.0",
+    "fs-extra": "^8.1.0",
+    "jest": "^25.1.0",
+    "jest-junit": "^10.0.0",
+    "xml2js": "^0.4.23"
+  },
+  "scripts": {
+    "test": "jest --no-colors --runInBand",
+    "merge-reports": "node merge-test-reports.js",
+    "lint": "eslint ."
+  }
+}

@@ -1,0 +1,27 @@
+---
+ansible_port: 53001
+ansible_user:
+ansible_password:
+
+# zowe running in container
+zos_zosmf_port: 53018
+# zos_node_home: /zaas1/node/node-v8.16.0-os390-s390x
+zowe_apiml_catalog_port: 53008
+zowe_apiml_discovery_port: 53009
+zowe_apiml_gateway_port: 53010
+zowe_jobs_api_port: 53013
+zowe_mvs_api_port: 53015
+zowe_jobs_explorer_port: 53014
+zowe_mvs_explorer_port: 53016
+zowe_uss_explorer_port: 53017
+zowe_zlux_port: 53011
+zowe_zss_port: 53012
+zowe_smpe_volser: D3IME1
+
+
+zowe_extra_environment_variables:
+  # TVT image has an error when executing netstat
+  # EZZ2376I Could not determine TCPIPjobname, using default of 'INET'
+  # EZZ2377I Could not establish affinity with INET (1011/11B3005A) - can not provide the requested option information
+  # to fix it, this variable is required
+  RESOLVER_CONFIG: "\"//'ADCD.Z23D.TCPPARMS(TCPDATA)'\""

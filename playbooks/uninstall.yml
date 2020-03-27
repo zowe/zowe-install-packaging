@@ -1,0 +1,26 @@
+---
+- name: Uninstall Zowe
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # prepare ansible environment for install
+  - import_role:
+      name: common
+  - import_role:
+      name: zos
+
+  # ============================================================================
+  # uninstall zowe
+  - name: Uninstall Zowe
+    when: zowe_uninstall_before_install|default(True)
+    block:
+    - import_role:
+        name: zowe
+        tasks_from: uninstall
+    - import_role:
+        name: fmid
+        tasks_from: uninstall

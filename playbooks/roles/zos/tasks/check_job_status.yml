@@ -1,0 +1,51 @@
+---
+# this playbook check the status of a job
+
+# input:
+# - jcl_job_id: required
+# output:
+# - jcl_job_name
+# - jcl_job_completion
+# - jcl_job_rc
+
+- name: Check if jcl_job_id has a value
+  fail:
+    msg: jcl_job_id is required
+  when: jcl_job_id is not defined or jcl_job_id is none or jcl_job_id == ''
+
+- name: Reset variables
+  set_fact:
+    jcl_job_name: ""
+    jcl_job_completion: ""
+    jcl_job_rc: ""
+
+- name: Get job status
+  import_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: "$DJ{{ jcl_job_id }},CC"
+
+- name: Get Job name
+  set_fact:
+    jcl_job_name: "{{ opercmd_result.stdout | regex_search(qry, multiline=True, ignorecase=True) }}"
+  vars:
+    qry: (?<=\$HASP890 JOB\()[^)]+(?=\))
+
+# $DJ gives ...
+# ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
+# ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
+- name: Get Job completion
+  set_fact:
+    jcl_job_completion: "{{ opercmd_result.stdout | regex_search(qry, multiline=True, ignorecase=True) }}"
+  vars:
+    qry: (?<=CC=\()[^)]+(?<!\))
+
+- name: Get Job return code
+  set_fact:
+    jcl_job_rc: "{{ jcl_job_completion | regex_search(qry, ignorecase=True) }}"
+  vars:
+    qry: (?<=RC=).+
+
+- debug:
+    msg: "Job {{ jcl_job_id }} ({{ jcl_job_name }}) status is <{{ jcl_job_completion }}>, return code <{{ jcl_job_rc }}>"

@@ -1,0 +1,5 @@
+---
+# this is the most common tasks
+- import_role:
+    name: zos
+    tasks_from: upload_rexx

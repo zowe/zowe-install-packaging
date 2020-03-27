@@ -1,0 +1,19 @@
+- name: Init zowe_environment_variable_overrides variable
+  set_fact:
+    zowe_environment_variable_overrides: ""
+- name: Update ZOWE_IP_ADDRESS to {{ zowe_external_ip_address }}
+  set_fact:
+    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export ZOWE_IP_ADDRESS={{ zowe_external_ip_address }}"
+  when: zowe_external_ip_address != '' and zowe_external_ip_address is not none
+- name: Update JAVA_HOME to {{ zos_java_home }}
+  set_fact:
+    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export JAVA_HOME={{ zos_java_home }}"
+  when: zos_java_home != '' and zos_java_home is not none
+- name: Update NODE_HOME to {{ zos_node_home }}
+  set_fact:
+    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export NODE_HOME={{ zos_node_home }}"
+  when: zos_node_home != '' and zos_node_home is not none
+- name: Import extra environment variables if exists
+  set_fact:
+    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export {{ item.key }}={{ item.value }}"
+  loop: "{{ zowe_extra_environment_variables|dict2items }}"

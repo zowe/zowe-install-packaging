@@ -1,0 +1,46 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+# file name pattern in Zowe PTF
+zowe_build_smpe_ptf_pattern: ZOWE.AZWE*
+# Zowe PTF file pattern: sysmod
+zowe_build_smpe_ptf_pattern_sysmod: ZOWE.AZWE[0-9][0-9][0-9].[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][0-9][0-9][0-9][0-9]
+# Zowe PTF file pattern: readme
+zowe_build_smpe_ptf_pattern_readme: ZOWE.AZWE[0-9][0-9][0-9].[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][0-9][0-9][0-9][0-9].readme.htm
+# PTF install JCLs
+zowe_ptf_install_jcls:
+- Z0PTFUCL
+- Z1ALLOC
+- Z2ACCEPT
+- Z3RECEIV
+- Z4APPLY
+- Z6REST
+- Z7REJECT
+- Z8DEALOC
+
+# ==============================================================================
+# Variables should be verified and overwrittern.
+# ==============================================================================
+# HLQ of SMPE
+# during uninstallation, any data-sets start with {zowe_smpe_hlq_dsn}.ZOWE.{fmid} will be removed
+zowe_smpe_hlq_dsn:
+# HLQ of SMPE CSI, TZONE, DZONE
+# during uninstallation, any data-sets start with {zowe_smpe_hlq_csi},
+# {zowe_smpe_hlq_tzone}, {zowe_smpe_hlq_dzone} will be removed.
+zowe_smpe_hlq_csi:
+# SMPE install directory prefix
+zowe_smpe_dir_prefix: /var
+# volser for SMPE datasets, optional
+zowe_smpe_volser:
+# FMID install steps
+zowe_smpe_ptf_install_steps:
+- Z0PTFUCL
+- Z1ALLOC
+- Z2ACCEPT
+- Z3RECEIV
+- Z4APPLY
+zowe_smpe_ptf_uninstall_steps:
+- Z6REST
+- Z7REJECT
+- Z8DEALOC

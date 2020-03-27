@@ -130,7 +130,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : ''),
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
-          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,ptf.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
+          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
           keepTempFolder      : params.KEEP_TEMP_FOLDER
       )
       if (params.BUILD_SMPE) {
@@ -147,7 +147,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/zowe-smpe.zip',
       '.pax/smpe-promote.tar',
       '.pax/pd.htm',
-      '.pax/smpe-build-logs.pax.Z'
+      '.pax/smpe-build-logs.pax.Z',
+      '.pax/AZWE*'
     ]
   )
 

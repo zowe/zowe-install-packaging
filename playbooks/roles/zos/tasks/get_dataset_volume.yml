@@ -1,0 +1,41 @@
+---
+# this playbook will return data set volume definition
+
+# input:
+# - dataset: required
+# output:
+# - dataset_volume
+
+- name: Reset variables
+  set_fact:
+    dataset_volume_response:
+    dataset_volume:
+
+# Example of listds response:
+#
+# listds 'ZOWEAD3.LOADLIB' label
+# ZOWEAD3.LOADLIB
+# --RECFM-LRECL-BLKSIZE-DSORG
+#   U     **    6144    PO                                                                                          
+# --VOLUMES--
+#   VPMVSH
+- name: Get data set volumes record
+  raw: tsocmd listds "'{{ dataset }}'" | sed -e '1,/--VOLUMES--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d' | tr -d '[:space:]'
+  register: dataset_volume_response
+
+ # we have a response with listds line
+# "stdout_lines": [
+#     "listds 'ZOWEAD3.LOADLIB'", 
+#     "VPMVSH"
+# ]
+- name: Check if data set has volume record
+  fail:
+    msg: "No VOLUMES record found for data set {{ dataset }}: {{ dataset_volume_response.stdout }}"
+  when: dataset_volume_response.stdout_lines|length < 2
+
+- name: Set dataset_volume
+  set_fact:
+    dataset_volume: "{{ dataset_volume_response.stdout_lines[1] }}"
+
+- debug:
+    msg: "Data set '{{ dataset }}' volume is: {{ dataset_volume }}"
