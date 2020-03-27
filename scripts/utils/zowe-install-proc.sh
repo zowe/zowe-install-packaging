@@ -34,8 +34,8 @@ script_exit(){
 SCRIPT="$(basename $0)"
 
 LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
+touch ${LOG_FILE}
+chmod a+rw ${LOG_FILE}
 
 echo "<$SCRIPT>" >> ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
@@ -65,19 +65,19 @@ samplib=${data_set_prefix}.SZWESAMP
 input_member=ZWESVSTC
 output_member=ZWESVSTC
 
-echo    "samplib =" $samplib >> $LOG_FILE
-echo    "proclib =" $proclib >> $LOG_FILE
+echo    "samplib =" ${samplib} >> $LOG_FILE
+echo    "proclib =" ${proclib} >> $LOG_FILE
 
-for dsname in $samplib $proclib
+for dsname in ${samplib} ${proclib}
 do
-  if [[ `echo $dsname | wc -c` -gt 44+1 ]] # character count includes trailing newline
+  if [[ `echo ${dsname} | wc -c` -gt 44+1 ]] # character count includes trailing newline
   then
-    echo Specified dataset name $dsname is too long | tee -a ${LOG_FILE}
+    echo Specified dataset name ${dsname} is too long | tee -a ${LOG_FILE}
     script_exit 3
   fi
 done
 
-./zowe-copy-to-JES.sh -s $samplib -i $input_member -r $proclib -o $output_member
-echo "rc from zowe-copy-to-JES.sh is $?" >> $LOG_FILE
+./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member}
+echo "rc from zowe-copy-to-JES.sh is $?" >> ${LOG_FILE}
 
 script_exit 0
