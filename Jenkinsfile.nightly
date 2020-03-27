@@ -213,7 +213,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test-ansible/staging',
+            job: '/zowe-install-test/staging',
             parameters: testParameters,
             propagate: false
           )
@@ -270,7 +270,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test-ansible/staging',
+            job: '/zowe-install-test/staging',
             parameters: testParameters,
             propagate: false
           )
