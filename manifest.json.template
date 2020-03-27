@@ -56,7 +56,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~0.2.8-STAGING",
+      "version": "0.2.11",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
