@@ -41,7 +41,10 @@ describe(TEST_SUITE_NAME, () => {
     const result = await runAnsiblePlaybook(
       TEST_SUITE_NAME,
       'install-fmid.yml',
-      process.env.ANSIBLE_HOST
+      process.env.ANSIBLE_HOST,
+      {
+        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+      }
     );
 
     expect(result.code).toBe(0);

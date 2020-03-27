@@ -21,6 +21,14 @@
     - zowe_smpe_fmid
     - zowe_smpe_rel_file_prefix
 
+- name: Prepare extracted and tmp folders
+  raw: >-
+    rm -fr "{{ work_dir_remote }}/tmp" && \
+    mkdir -p "{{ work_dir_remote }}/tmp" && \
+    chmod 777 "{{ work_dir_remote }}/tmp" && \
+    rm -fr "{{ work_dir_remote }}/extracted" && \
+    mkdir -p "{{ work_dir_remote }}/extracted"
+
 # ============================================================================
 # Run install-SMPE-PAX.sh to install Zowe SMPE FMID
 - name: Prepare install-SMPE-PAX.sh

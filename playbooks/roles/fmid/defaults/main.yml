@@ -21,6 +21,12 @@ zowe_build_smpe_fmid_pattern_readme: AZWE*.readme.txt
 # ==============================================================================
 # Variables should be verified and overwrittern.
 # ==============================================================================
+# optional, this is the folder where we pre-upload all Zowe FMIDs on the z/OS server
+# example content of this folder should be:
+# - AZWE001.htm
+# - AZWE001.pax.Z
+# - AZWE001.readme.txt
+zowe_fmids_dir_remote:
 # HLQ of SMPE
 # during uninstallation, any data-sets start with {zowe_smpe_hlq_dsn}.ZOWE.{fmid} will be removed
 zowe_smpe_hlq_dsn:

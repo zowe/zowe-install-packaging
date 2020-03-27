@@ -42,7 +42,10 @@ describe(TEST_SUITE_NAME, () => {
       TEST_SUITE_NAME,
       // 'test.yml',
       'install.yml',
-      process.env.ANSIBLE_HOST
+      process.env.ANSIBLE_HOST,
+      {
+        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+      }
     );
 
     expect(result.code).toBe(0);
