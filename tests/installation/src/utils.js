@@ -89,7 +89,6 @@ const importDefaultExtraVars = (extraVars) => {
     'ansible_port': 'SSH_PORT',
     'ansible_user': 'SSH_USER',
     'ansible_password': 'SSH_PASSWD',
-    'zowe_build_local': 'ZOWE_BUILD_LOCAL',
     'zos_node_home': 'ZOS_NODE_HOME',
     'zowe_sanity_test_debug_mode': 'SANITY_TEST_DEBUG',
   };

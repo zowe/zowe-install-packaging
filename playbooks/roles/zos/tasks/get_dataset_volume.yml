@@ -28,7 +28,8 @@
 #     "listds 'ZOWEAD3.LOADLIB'", 
 #     "VPMVSH"
 # ]
-- fail:
+- name: Check if data set has volume record
+  fail:
     msg: "No VOLUMES record found for data set {{ dataset }}: {{ dataset_volume_response.stdout }}"
   when: dataset_volume_response.stdout_lines|length < 2
 

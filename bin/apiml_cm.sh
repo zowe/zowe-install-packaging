@@ -317,6 +317,22 @@ function jwt_key_gen_and_export {
     -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
 
+function zosmf_jwt_public_key {
+    echo "Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+    java -Xms16m -Xmx32m -Xquickstart \
+        -Dfile.encoding=UTF-8 \
+        -Djava.io.tmpdir=${TEMP_DIR} \
+        -Dapiml.security.ssl.verifySslCertificatesOfServices=${VERIFY_CERTIFICATES} \
+        -Dserver.ssl.trustStore=${SERVICE_TRUSTSTORE}.p12 \
+        -Dserver.ssl.trustStoreType=PKCS12 \
+        -Dserver.ssl.trustStorePassword=${SERVICE_PASSWORD} \
+        -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
+        -cp ${BASE_DIR}/../components/api-mediation/gateway-service.jar \
+        -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
+        org.springframework.boot.loader.PropertiesLauncher \
+        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+}
+
 function trust_zosmf {
   echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
@@ -494,6 +510,7 @@ case $ACTION in
         ;;
     trust-zosmf)
         trust_zosmf
+        zosmf_jwt_public_key
         ;;
     cert-key-export)
         export_service_certificate

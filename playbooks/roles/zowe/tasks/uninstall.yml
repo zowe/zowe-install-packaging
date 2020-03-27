@@ -94,7 +94,7 @@
 # ============================================================================
 - name: List proclibs on server
   raw: >-
-    '{{ work_dir_remote }}/opercmd' '$d proclib' | grep 'DSNAME=.*\.PROCLIB' | sed 's/.*DSNAME=\(.*\)\.PROCLIB.*/\1.PROCLIB/'
+    '{{ work_dir_remote }}/opercmd.rexx' '$d proclib' | grep 'DSNAME=.*\.PROCLIB' | sed 's/.*DSNAME=\(.*\)\.PROCLIB.*/\1.PROCLIB/'
   register: server_proclibs
 
 # ============================================================================
@@ -106,18 +106,18 @@
 # ============================================================================
 - name: Check APF settings of {{ zowe_xmem_loadlib }}
   raw: >-
-    '{{ work_dir_remote }}/opercmd' 'D PROG,APF,DSNAME={{ zowe_xmem_loadlib }}' | grep '[0-9]\{1,\} \{1,\}[0-9a-zA-Z*]\{1,\} \{1,\}{{ zowe_xmem_loadlib }}' | awk '{print $2}' | tr -d '\n'
+    '{{ work_dir_remote }}/opercmd.rexx' 'D PROG,APF,DSNAME={{ zowe_xmem_loadlib }}' | grep '[0-9]\{1,\} \{1,\}[0-9a-zA-Z*]\{1,\} \{1,\}{{ zowe_xmem_loadlib }}' | awk '{print $2}' | tr -d '\n'
   register: zowe_xmem_loadlib_volume
   ignore_errors: true
 
 - name: Delete APF settings of {{ zowe_xmem_loadlib }} for SMS volume
   raw: >-
-    '{{ work_dir_remote }}/opercmd' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_loadlib }},SMS'
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_loadlib }},SMS'
   when: zowe_xmem_loadlib_volume.stdout == 'SMS' or zowe_xmem_loadlib_volume.stdout == '*SMS*'
 
 - name: Delete APF settings of {{ zowe_xmem_loadlib }} for non-SMS volume
   raw: >-
-    '{{ work_dir_remote }}/opercmd' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_loadlib }},VOLUME={{ zowe_xmem_loadlib_volume.stdout }}'
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_loadlib }},VOLUME={{ zowe_xmem_loadlib_volume.stdout }}'
   when:
   - zowe_xmem_loadlib_volume.stdout != ''
   - zowe_xmem_loadlib_volume.stdout != 'SMS'

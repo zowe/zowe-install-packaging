@@ -34,6 +34,8 @@ zowe_known_started_tasks:
 - ZWESIS*.*
 - ZOWESVR.*
 - ZWESVSTC.*
+- ZWESISTC.*
+- ZWESASTC.*
 - ZWES*.*
 
 # this should list all known facility profiles we ever setup during install

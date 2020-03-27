@@ -1,13 +1,14 @@
 ---
 # extract FMID zip and upload to z/OS
-# { zowe_smpe_fmid_file } must exist in 
+# { zowe_smpe_fmid_file } must exist in { work_dir_local }/{ inventory_hostname }
 #
 # input:
 # - zowe_smpe_fmid_file: required
 
 # ============================================================================
 # check variables
-- fail:
+- name: Check if zowe_smpe_fmid_file has a value
+  fail:
     msg: zowe_smpe_fmid_file is required
   when: zowe_smpe_fmid_file is not defined or zowe_smpe_fmid_file is none or zowe_smpe_fmid_file == ''
 
@@ -24,7 +25,8 @@
   register: zowe_smpe_fmid_files_in_zip
   delegate_to: localhost
 
-- fail:
+- name: Check if FMID zip has more than 2 files
+  fail:
     msg: "No {{ zowe_build_smpe_fmid_pattern }} file found in the SMPE package."
   # must have pax and readme
   when: zowe_smpe_fmid_files_in_zip.matched < 2

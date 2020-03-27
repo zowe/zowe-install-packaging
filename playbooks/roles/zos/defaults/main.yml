@@ -6,8 +6,6 @@ work_dir_remote:
 
 # default uss shell profile name
 zos_uss_user_profile: ~/.profile
-# default z/OSMF port
-zos_zosmf_port: 10443
 
 # to check job status, how many retries we do before exit with timeout
 job_wait_for_retries: 60

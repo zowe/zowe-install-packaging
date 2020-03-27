@@ -16,10 +16,23 @@
     sed -e "s+ZSSUSER=ZWESIUSR+ZSSUSER={{ zowe_xmem_stc_user }}+" | \
     sed -e "s+ZOWESTC=ZWESVSTC+ZOWESTC={{ zowe_proclib_membername }}+" | \
     sed -e "s+ZSSSTC=ZWESISTC+ZSSSTC={{ zowe_xmem_proclib_member_zss }}+" | \
+    sed -e "s+AUXSTC=ZWESASTC+AUXSTC={{ zowe_xmem_proclib_member_aux }}+" \
+    > "{{ work_dir_remote }}/ZWESECUR.jcl"
+  when: zowe_auto_create_user_group
+
+- name: Update ZWESECUR.jcl with configurations
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWESECUR.raw.jcl" | \
+    sed -e "s+ADMINGRP=ZWEADMIN+ADMINGRP={{ zowe_runtime_group }}+" | \
+    sed -e "s+ZOWEUSER=ZWESVUSR+ZOWEUSER={{ zowe_runtime_user }}+" | \
+    sed -e "s+ZSSUSER=ZWESIUSR+ZSSUSER={{ zowe_xmem_stc_user }}+" | \
+    sed -e "s+ZOWESTC=ZWESVSTC+ZOWESTC={{ zowe_proclib_membername }}+" | \
+    sed -e "s+ZSSSTC=ZWESISTC+ZSSSTC={{ zowe_xmem_proclib_member_zss }}+" | \
     sed -e "s+AUXSTC=ZWESASTC+AUXSTC={{ zowe_xmem_proclib_member_aux }}+" | \
     sed -e "s+ADDGROUP+NOADDGROUP+" | \
     sed -e "s+ALTGROUP+NOALTGROUP+" | \
     sed -e "s+ADDUSER+NOADDUSER+" > "{{ work_dir_remote }}/ZWESECUR.jcl"
+  when: not zowe_auto_create_user_group
 
 - name: Check ZWESECUR.jcl changes
   raw: >-
