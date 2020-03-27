@@ -13,7 +13,8 @@
   raw: test -f "{{ zowe_instance_dir }}/bin/zowe-start.sh"
   register: zowe_configure_instance_result
 
-- fail:
+- name: Check file existence check exit code
+  fail:
     msg: "After configuring instance, {{ zowe_instance_dir }}/bin/zowe-start.sh doesn't exist."
   when: zowe_configure_instance_result.rc != 0
 

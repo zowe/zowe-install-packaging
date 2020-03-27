@@ -1,0 +1,33 @@
+---
+# Copy FMID pre-uploaded on the server to work dir
+#
+# input:
+# - zowe_fmid: required
+#
+# Other variables
+# - zowe_fmids_dir_remote: required
+
+# ============================================================================
+# check variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_fmids_dir_remote
+    - zowe_fmid
+
+- name: Check if FMID {{ zowe_fmid }} files exists
+  raw: test -f "{{ zowe_fmids_dir_remote }}/{{ zowe_fmid }}.{{ item }}"
+  loop:
+  - pax.Z
+  - readme.txt
+
+- name: Clean zowe build remotely
+  raw: rm -f {{ work_dir_remote }}/{{ zowe_build_smpe_fmid_pattern }}
+
+- name: Copy FMID {{ zowe_fmid }} files to work dir
+  raw: cp "{{ zowe_fmids_dir_remote }}/{{ zowe_fmid }}.{{ item }}" "{{ work_dir_remote }}/"
+  loop:
+  - pax.Z
+  - readme.txt
