@@ -71,7 +71,7 @@
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "0.2.7",
+      "version": "0.2.9",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
@@ -261,14 +261,14 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "v0.3.10",
+        "tag": "v0.3.11",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v0.2.7",
+        "tag": "v0.2.9",
         "destinations": ["Zowe PAX"]
       }]
     }, {
