@@ -1,0 +1,84 @@
+---
+- name: Install Zowe SMPE PTF
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # prepare ansible environment for install
+  - import_role:
+      name: common
+  - import_role:
+      name: zos
+
+  # ============================================================================
+  - name: Download Zowe from zowe_build_url if it has value
+    when: zowe_build_url is defined
+    block:
+    - name: Download zowe build if zowe_build_url exists
+      get_url:
+        url: "{{ zowe_build_url }}"
+        dest: ".tmp/{{ inventory_hostname }}/zowe-ptf.zip"
+      delegate_to: localhost
+
+    - import_role:
+        name: ptf
+        tasks_from: extract_and_upload_ptf
+      vars:
+        zowe_smpe_ptf_file: zowe-ptf.zip
+
+  # ============================================================================
+  # if zowe_build_local is set, upload to z/OS
+  - name: Copy Zowe from zowe_build_local if it has value
+    when: zowe_build_local is defined
+    block:
+    - name: Prepare zowe build locally
+      copy:
+        src: "{{ zowe_build_local }}"
+        dest: ".tmp/{{ inventory_hostname }}/zowe-ptf.zip"
+      delegate_to: localhost
+
+    - import_role:
+        name: ptf
+        tasks_from: extract_and_upload_ptf
+      vars:
+        zowe_smpe_ptf_file: zowe-ptf.zip
+
+  # ============================================================================
+  # Stop Zowe
+  - import_role:
+      name: stop
+  - name: Wait for Zowe stopping
+    pause:
+      seconds: 30
+
+  # ============================================================================
+  - name: Install Zowe SMPE PTF
+    import_role:
+      name: ptf
+
+  # ============================================================================
+  - import_role:
+      name: fmid
+      tasks_from: overwrite_vars
+
+  # ============================================================================
+  # FIXME
+  - name: Check if zowe_keystore_dir has a value
+    fail:
+      msg: zowe_keystore_dir is required
+    when: zowe_keystore_dir is not defined or zowe_keystore_dir is none or zowe_keystore_dir == ''
+  - name: Remove keystore folder because the user may not have permission
+    raw: echo "rm -fr {{ zowe_keystore_dir }}" | su
+
+  # ============================================================================
+  # Configure Zowe ?
+  - import_role:
+      name: configure
+
+  # ============================================================================
+  # Start Zowe
+  - import_role:
+      name: start

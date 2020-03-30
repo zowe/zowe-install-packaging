@@ -10,7 +10,7 @@
 # - ZOSMF_CERTIFICATE - Public certificates of z/OSMF - multiple certificates delimited with space has to be enclosed with quotes ("path/cer1 path/cer2")
 
 # - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore)
-# - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and 
+# - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
@@ -20,7 +20,7 @@ LOG_DIR=${HOME}/zowe_certificate_setup_log
 # Make the log directory if needed - first time through - subsequent installs create new .log files
 if [[ ! -d $LOG_DIR ]]; then
     mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
+    chmod a+rwx $LOG_DIR
 fi
 
 export LOG_FILE="certificate_config_`date +%Y-%m-%d-%H-%M-%S`.log"
@@ -60,7 +60,7 @@ else
   then
     echo "Loading ${CERTIFICATES_CONFIG_FILE} file and overriding default variables."
     # Load custom values
-    . ${CERTIFICATES_CONFIG_FILE}  
+    . ${CERTIFICATES_CONFIG_FILE}
   else
     echo "${CERTIFICATES_CONFIG_FILE} file does not exist."
     exit 1
@@ -77,7 +77,7 @@ LOCAL_KEYSTORE_SUBDIR=local_ca
 
 # create keystore directories
 if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
-  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then 
+  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then
     echo "Unable to create ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} directory."
     exit 1;
   fi
@@ -138,13 +138,18 @@ fi
 
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
-    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
+    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+    --service-keystore ${KEYSTORE_PREFIX}
   RC=$?
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See $LOG_FILE for more details")
-      (>&2 echo "WARNING: z/OSMF is not trusted by the API Mediation Layer. Follow instructions in Zowe documentation about manual steps to trust z/OSMF")
+      (>&2 echo "ERROR: z/OSMF is not trusted by the API Mediation Layer. Make sure ZOWE_ZOSMF_HOST and ZOWE_ZOSMF_PORT variables define the desired z/OSMF instance.")
+      (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
+      (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
+      echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+      exit 1
   fi
 fi
 echo "Creating certificates and keystores... DONE"
@@ -157,6 +162,7 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   KEY_ALIAS=${KEYSTORE_ALIAS}
   KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
   KEYSTORE=${KEYSTORE_PREFIX}.p12
+  KEYSTORE_TYPE="PKCS12"
   TRUSTSTORE=${TRUSTSTORE_PREFIX}.p12
   KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
   KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic

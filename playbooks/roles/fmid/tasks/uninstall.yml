@@ -1,0 +1,30 @@
+---
+# ============================================================================
+# check variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_smpe_hlq_dsn
+    - zowe_smpe_hlq_csi
+    - zowe_smpe_hlq_tzone
+    - zowe_smpe_hlq_dzone
+
+# ============================================================================
+- name: Remove SMPE installation folders
+  raw: echo rm -fr {{ item }} | su
+  loop:
+  - "{{ (zowe_smpe_dir_prefix is regex(\"/$\")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + \"/\") }}{{ zowe_smpe_default_path }}"
+
+# ============================================================================
+- name: Remove SMPE installed data sets - DSN
+  raw: tsocmd listds "'{{ zowe_smpe_hlq_dsn }}.ZOWE.{{ item }}'" level | grep '{{ zowe_smpe_hlq_dsn }}.ZOWE.{{ item }}' | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
+  loop: "{{ zowe_smpe_knwon_fmids }}"
+  ignore_errors: True
+
+# ============================================================================
+- name: Remove SMPE installed data sets - CSI, TZONE, DZONE
+  raw: tsocmd listds "'{{ item }}'" level | grep '{{ item }}' | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
+  loop: "{{ [zowe_smpe_hlq_csi, zowe_smpe_hlq_tzone, zowe_smpe_hlq_dzone]|flatten|unique }}"
+  ignore_errors: True
