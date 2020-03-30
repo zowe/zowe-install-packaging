@@ -324,6 +324,9 @@ node('ibm-jenkins-slave-nvm') {
     name          : "Message",
     isSkippable   : true,
     stage         : {
+      // update build description with build ID
+      currentBuild.description = "${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']}".toString()
+
       def slackColor = 'good'
       def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
