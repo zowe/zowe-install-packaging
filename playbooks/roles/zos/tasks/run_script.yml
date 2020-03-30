@@ -6,7 +6,8 @@
 # - script_filename: required
 # - script_parameters: optional
 
-- fail:
+- name: Check if work_dir_remote has a value
+  fail:
     msg: work_dir_remote is required
   when: work_dir_remote is not defined or work_dir_remote is none or work_dir_remote == ''
 
