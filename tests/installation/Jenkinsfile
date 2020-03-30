@@ -224,10 +224,13 @@ node('ibm-jenkins-slave-dind') {
       if (params.TEST_SERVER == 'marist') {
         nodeHomeOverwrite = "ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
       }
-      def zoweBuild = pwd() + '/.tmp/zowe/' + sh(
+      def zoweBuildFile = sh(
         script: "ls -1 .tmp/zowe/",
         returnStdout: true
       ).trim()
+      def zoweBuild = pwd() + '/.tmp/zowe/' + zoweBuildFile
+      // update build description with the zowe build be tested
+      currentBuild.description = "${zoweBuildFile}".toString()
 
       lock("zowe-install-test-${params.TEST_SERVER}") {
       // timestamps {
