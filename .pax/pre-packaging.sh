@@ -71,7 +71,7 @@ SECURWF_TEMPLATE="ZWEWRF02.xml"
 > "${WORKFLOW_PATH}/ZOWE_SECURITY_WORKFLOW.xml"
 cp ${LOCAL_PATH}/ZWEWRF02.yml ${WORKFLOW_PATH}/ZOWE_SECURITY_VIF.yml
 cd "content/templates/vtl/ZWESECUR"
-../build-workflow.rex -d -i "../${SECURWF_TEMPLATE}" -o ../../../zowe-1.9.0/files/templates/ZOWE_SECURITY_WORKFLOW.xml
+../build-workflow.rex -d -i "../${SECURWF_TEMPLATE}" -o ../../../zowe-1.9.0/files/workflow/ZOWE_SECURITY_WORKFLOW.xml
 cd ../../../../
 
 mv content/templates .
