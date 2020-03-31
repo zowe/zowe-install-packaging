@@ -34,7 +34,7 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
 chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
-chmod +x content/workflows/vtl/build-workflow.rex
+chmod +x content/templates/vtl/build-workflow.rex
 
 # prepare for SMPE
 echo "$SCRIPT_NAME smpe is not part of zowe.pax, moving out ..."
