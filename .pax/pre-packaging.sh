@@ -62,7 +62,7 @@ do
   fi
 done
 
-# # generate SECURITY workflow
+# generate SECURITY workflow
 ls "content/templates/vtl/ZWESECUR"
 WORKFLOW_PATH="content/zowe-$ZOWE_VERSION/files/workflows"       # output
 LOCAL_PATH="content/templates/vtl/ZWESECUR"   # input
