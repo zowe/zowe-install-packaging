@@ -51,7 +51,7 @@ node('ibm-jenkins-slave-nvm') {
 
   // we want to run daily on master branch
   if (isStagingBranch) {
-    pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 21 * * *")]))
+    pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 1 * * *")]))
   }
 
   pipeline.setup(
