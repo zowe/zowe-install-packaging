@@ -22,19 +22,19 @@
   <H2>Installation instructions for #type #ptf1 for FMID #fmid</H2>
   <P>The #type is shipped as file #name1</P>
   <P>The #type has rework (build) date #rework</P>
- 
+
   <P>The following fixes are prerequisites for this #type:<br>
   #pre
   </P>
- 
+
   <P>The following fixes are corequisites for this #type:<br>
   #req
   </P>
- 
+
   <P>The following fixes are superseded by this #type:<br>
   #sup
   </P>
- 
+
   <H3><A name="Overview of the installation steps">Overview of the installation
     steps</A></H3>
   <P>Steps required to install the #type:
@@ -46,7 +46,7 @@
     <LI><A href="#smpe">Perform SMP/E RECEIVE and APPLY for the #type</A>.</LI>
     <LI><A href="#boot">Restart started tasks to activate changes</A>.</LI>
    </OL></P>
- 
+
   <H3><A name=alloc>Allocate host data sets for the #type</A></H3>
   <P>A sequential data set must be allocated on the z/OS system to receive the
     #type that you will upload from your workstation. You can do this by
@@ -73,7 +73,7 @@
 <!--cut-->
 //*
   </PRE>
- 
+
   <H3><A name=upload>Upload the #type from your workstation to z/OS</A></H3>
   <P>Upload the file in binary format from your workstation to the z/OS data
 set. On a Windows system, you can use FTP from a command prompt to upload the
@@ -99,22 +99,22 @@ C:\&gt;<STRONG>ftp mvsaddr</STRONG>
 <I>Connected to mvsaddr.
 220-FTPD1 IBM FTP CS %version% at mvsaddr, %time% on %date%.
 220 Connection will close if idle for more than 60 minutes.
- 
+
 User (mvsaddr:(none)):</I> <STRONG>tsouid</STRONG>
 <I>331 Send password please.
- 
+
 Password:</I> <STRONG>tsopw</STRONG>
 <I>230 tsouid is logged on.&nbsp; Working directory is "tsouid.".
- 
+
 </I>ftp&gt; <STRONG>cd ..</STRONG>
 <I>250 "" is the working directory name prefix.
- 
+
 </I>ftp&gt; <STRONG>cd #hlq</STRONG>
 <I>250 "#hlq." is the working directory name prefix.
- 
+
 </I>ftp&gt; <STRONG>binary</STRONG>
 <I>200 Representation type is Image
- 
+
 <!--cut-->
 </I>ftp&gt; <STRONG>put d:\#name</STRONG>
 <I>200 Port request OK.
@@ -126,22 +126,22 @@ Password:</I> <STRONG>tsopw</STRONG>
 </I>ftp&gt; <STRONG>quit</STRONG>
 <I>221 Quit command received. Goodbye.</I>
   </PRE>
- 
+
   <H3><A name="hold">SMP/E hold information for the #type</A></H3>
   <PRE>
 <!--cut-->
 #holddata
 <!--cut-->
   </PRE>
- 
+
   <H3><A name="acpt">Perform SMP/E ACCEPT for the prerequisites</A></H3>
   <P>SMP/E ACCEPT the prerequisites to facilitate an easy backout of the
     #type, if required. Note that once accepted, you cannot backout the
     accepted prerequisites.</P>
- 
+
   <P>This step can be skipped if there are no prerequisites, or if
      there is a reason to not make a prerequisite permanent.</P>
- 
+
   <P>You can accept the prerequisites by submitting the job below.
      Add a job card and modify the parameters to meet your site's
      requirements before submitting.</P>
@@ -159,10 +159,10 @@ Password:</I> <STRONG>tsopw</STRONG>
    ) REDO COMPRESS(ALL) BYPASS(HOLDSYS,HOLDERROR).
 //*
   </PRE>
- 
+
   <H3><A name="smpe">Perform SMP/E RECEIVE and APPLY for the #type</A></H3>
   <P>SMP/E RECEIVE and APPLY the #type.</P>
- 
+
   <P>You can do this by submitting the job below. Add a job card and
      modify the parameters to meet your site's requirements before
      submitting.</P>
@@ -171,6 +171,8 @@ Password:</I> <STRONG>tsopw</STRONG>
 //* Change #hlq to the high level qualifier used to upload the #type.
 //* Change #globalcsi to the data set name of your global CSI.
 //* Change #tzone to your CSI target zone name.
+//* Once the APPLY CHECK is successful, remove the CHECK operand
+//* and run the APPLY step again to do the actual APPLY.
 //*
 //         SET HLQ=<STRONG>#hlq</STRONG>
 //         SET CSI=<STRONG>#globalcsi</STRONG>
@@ -196,13 +198,13 @@ Password:</I> <STRONG>tsopw</STRONG>
      #ptf1
      #req
    )
-   CHECK 
-   BYPASS(HOLDSYS,HOLDERROR) 
+   CHECK
+   BYPASS(HOLDSYS,HOLDERROR)
    REDO COMPRESS(ALL) .
 //*
   </PRE>
- 
+
   <H3><A name="boot">Restart started tasks to activate changes</A></H3>
   <P>Restart started tasks to activate changes.</P>
- 
+
 </BODY></HTML>
