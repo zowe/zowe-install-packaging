@@ -103,6 +103,26 @@ end    /* */
 if \_readFile(Input)
   then exit 8  /* error already reported */         /* LEAVE PROGRAM */
 
+/* Gather variable names from Input */
+xmlIndex = 0
+xmlVariables.0 = "initiate"
+do while lines(Input) > 0
+  line_str = linein(Input)
+  do while line_str <> ''
+    parse var line_str '<' tag '='
+    if(tag == "variable name") then
+    do
+      parse var line_str 'name="' xmlVariables.xmlIndex '"' line_str
+      say xmlVariables.xmlIndex
+      xmlIndex = xmlIndex + 1
+    end
+    else
+    do
+      line_str = ''
+    end
+   end
+end
+
 /* copy to iFile. so that File. is free for reading include file */
 do F=0 to File.0 ; iFile.F=File.F ; end
 
