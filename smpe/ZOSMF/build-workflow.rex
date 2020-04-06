@@ -104,19 +104,20 @@ if \_readFile(Input)
   then exit 8  /* error already reported */         /* LEAVE PROGRAM */
 
 /* Gather variable names from Input */
-xmlIndex = 0
-xmlVariables.0 = "initiate"
+xmlVariables.0 = "initiate" /* Initiate an variable name array */
+xmlIndex = 0 /* Arrays index */
+/* Loop through the xml to collect variable names */
 do while lines(Input) > 0
   line_str = linein(Input)
   do while line_str <> ''
     parse var line_str '<' tag '='
-    if(tag == "variable name") then
+    if(tag == "variable name") then /* Store the found variable names in array */
     do
       parse var line_str 'name="' xmlVariables.xmlIndex '"' line_str
       say xmlVariables.xmlIndex
       xmlIndex = xmlIndex + 1
     end
-    else
+    else /* If no variable name null the line */
     do
       line_str = ''
     end
