@@ -64,7 +64,7 @@
     "org.zowe.zss": {
       "version": "1.10.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-1.10.0-rc-45-20200325155052.pax"
+      "artifact": "zss-1.10.0-rc-46-20200403204049.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "0.2.11",
@@ -84,7 +84,7 @@
       "version": "0.0.16"
     },
     "org.zowe.apiml.sdk.zowe-install": {
-      "version": "1.4.1",
+      "version": "1.4.2",
       "artifact": "zowe-install-*.zip",
       "target": ".pax/mediation/",
       "explode": "true",
@@ -105,7 +105,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.4.1",
+        "tag": "v1.4.2",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -349,7 +349,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.3.1",
+        "tag": "v1.4.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     }
