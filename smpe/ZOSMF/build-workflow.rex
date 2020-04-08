@@ -104,8 +104,8 @@ if \_readFile(Input)
   then exit 8  /* error already reported */         /* LEAVE PROGRAM */
 
 /* Gather variable names from Input */
-xmlVariables.0 = "initiate" /* Initiate an variable name array */
-xmlIndex = 0 /* Arrays index */
+xmlVariables.0 = "initiate" /* Initiate a XML variables array */
+xmlIndex = 0 /* XML arrays index */
 /* Loop through the xml to collect variable names */
 do while lines(Input) > 0
   line_str = linein(Input)
@@ -146,6 +146,39 @@ do I=1 to iFile.0
 
     if \_readFile(Include)
       then exit 8  /* error already reported */     /* LEAVE PROGRAM */
+
+    /* Check variables in VLT file(s) */
+    do while lines(Include) > 0
+      check_str = linein(Include)
+      do while check_str <> ''
+        totalMatchesCount = 0 /* The number of */
+        if(find(check_str, '$') > 0) then do
+          currentVar = '' /* Initiate empy current variable*/
+          if(find(check_str, '${') > 0) then do
+            parse var line_str '${' currentVar "}" Other
+          end
+          else do
+            parse var line_str '$' currentVar " " Other
+          end
+          if(currentVar != '') then do
+            i = 0
+            do while i <= xmlIndex
+              if(xmlVariables.i == currentVar) then do
+                totalMatchesCount = totalMatchesCount + 1
+              end
+            i = i + 1
+            end
+            if(totalMatchesCount < i) then do
+              say 'ERROR: no variable with name "' currentVar '" was found in the ' Input ' template!'
+             exit 8
+            end
+          end
+        end
+        else do
+          line_str = ''
+        end
+      end
+    end
 
     select
     when File.0 = 0 then do
