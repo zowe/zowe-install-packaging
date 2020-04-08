@@ -1,0 +1,91 @@
+---
+- name: Install Zowe SMPE FMID
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # prepare ansible environment for install
+  - import_role:
+      name: common
+  - import_role:
+      name: zos
+
+  # ============================================================================
+  # uninstall zowe
+  - name: Uninstall Zowe
+    when: zowe_uninstall_before_install|default(True)
+    block:
+    - import_role:
+        name: zowe
+        tasks_from: uninstall
+    - import_role:
+        name: fmid
+        tasks_from: uninstall
+
+  # ============================================================================
+  - name: Download Zowe from zowe_build_url if it has value
+    when: zowe_build_url is defined
+    block:
+    - name: Download zowe build if zowe_build_url exists
+      get_url:
+        url: "{{ zowe_build_url }}"
+        dest: ".tmp/{{ inventory_hostname }}/zowe-smpe.zip"
+      delegate_to: localhost
+
+    - import_role:
+        name: fmid
+        tasks_from: extract_and_upload_fmid
+      vars:
+        zowe_smpe_fmid_file: zowe-smpe.zip
+
+  # ============================================================================
+  # if zowe_build_local is set, upload to z/OS
+  - name: Copy Zowe from zowe_build_local if it has value
+    when: zowe_build_local is defined
+    block:
+    - name: Prepare zowe build locally
+      copy:
+        src: "{{ zowe_build_local }}"
+        dest: ".tmp/{{ inventory_hostname }}/zowe-smpe.zip"
+      delegate_to: localhost
+
+    - import_role:
+        name: fmid
+        tasks_from: extract_and_upload_fmid
+      vars:
+        zowe_smpe_fmid_file: zowe-smpe.zip
+
+  # ============================================================================
+  # if zowe_build_remote is set, we copy the FMID from zowe_fmids_dir_remote to our work folder
+  # the value of zowe_build_remote should be FMID like AZWE001
+  - name: Copy Zowe FMID files from {{ zowe_fmids_dir_remote }}/{{ zowe_build_remote }} if it has value
+    when: zowe_build_remote is defined
+    import_role:
+      name: fmid
+      tasks_from: copy_fmid_on_server
+    vars:
+      zowe_fmid: "{{ zowe_build_remote }}"
+
+  # ============================================================================
+  - name: Install Zowe SMPE FMID
+    import_role:
+      name: fmid
+
+  # ============================================================================
+  - import_role:
+      name: fmid
+      tasks_from: overwrite_vars
+
+  # ============================================================================
+  # Configure Zowe
+  - import_role:
+      name: configure
+
+  # ============================================================================
+  # Start Zowe
+  - import_role:
+      name: start
+    when: not skip_start|default(False)

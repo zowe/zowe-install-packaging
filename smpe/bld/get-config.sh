@@ -132,6 +132,8 @@ service:
   gimdtsHlq=
   # GIMDTS JOB card, line 1
   gimdtsJob1=
+  # maximum number of (unit) devices used for a GIMDTS allocation
+  gimdtsUCnt=
   # comma-separated list of volume labels for GIMDTS allocations
   gimdtsVol=
   # primary & secondary size (in tracks) for GIMDTS part allocations
@@ -222,6 +224,7 @@ do
     _export service ptf        ptf           ${ROOT}/ptf    # internal
     _export service gimdtsJob1 gimdtsJob1                   # internal
     _export service gimdtsHlq  gimdtsHlq     ${HLQ}.GIMDTS  # internal
+    _export service gimdtsUCnt gimdtsUCount                 # internal
     _export service gimdtsVol  gimdtsVolser  $VOLSER        # internal
     _export service gimdtsTrks gimdtsTrks    "15,750"       # internal
     _export service compID     compID        5698-ZWE00     # internal

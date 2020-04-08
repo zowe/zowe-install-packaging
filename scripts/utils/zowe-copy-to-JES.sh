@@ -41,6 +41,10 @@ script_exit(){
 # identify this script
 SCRIPT="$(basename $0)"
 
+if [ -z ${TEMP_DIR+x} ]; then
+    TEMP_DIR=${TMPDIR:-/tmp}
+fi
+
 LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
 touch $LOG_FILE
 chmod a+rw $LOG_FILE
@@ -143,18 +147,18 @@ else
   sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
       -e "s/ZWES.SISSAMP/${parmlib}/g" \
       -e "s/zis-loadlib/${loadlib}/g" \
-      "//'$samplib($Imember)'" > /tmp/$samplib.$Imember.jcl
+      "//'$samplib($Imember)'" > $TEMP_DIR/$samplib.$Imember.jcl
   if [[ $? -ne 0 ]]
   then
-    echo Failed to edit "$samplib($Imember)" into /tmp/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
+    echo Failed to edit "$samplib($Imember)" into $TEMP_DIR/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
     script_exit 8
   else
     echo Edited "$samplib($Imember)" 
   fi
-  cp /tmp/$samplib.$Imember.jcl "//'$templib($Imember)'"
+  cp $TEMP_DIR/$samplib.$Imember.jcl "//'$templib($Imember)'"
   if [[ $? -ne 0 ]]
   then
-    echo Failed to copy /tmp/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
+    echo Failed to copy $TEMP_DIR/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
     script_exit 8
   else
     echo Copied into "$templib($Imember)"   
