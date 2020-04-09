@@ -117,9 +117,10 @@ do while lines(Input) > 0
       say xmlVariables.xmlIndex
       xmlIndex = xmlIndex + 1
     end
-    else if(tag == "step name") /* No need to continie when steps are reached */
+    else if(tag == "step name") then /* No need to continie when steps are reached */
     do
       lines(Input) = 0
+    end
     else /* If no variable name null the line */
     do
       line_str = ''
