@@ -482,9 +482,6 @@ RECKEY &HLQ. ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *  show results
 LIST &HLQ.
 *
-* .................................................................
-/* only the last RC is returned, this command ensures it is a 0      */
-PROFILE
 $$
 //*
 //*********************************************************************
