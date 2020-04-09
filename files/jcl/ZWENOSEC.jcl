@@ -28,7 +28,7 @@
 //* 3) Update the SET ADMINGRP= statement to match the desired
 //*    group name for Zowe administrators.
 //*
-//* 4) Update the SET STCGROUP= statement to match the desired
+//* 4) Update the SET STCGRP= statement to match the desired
 //*    group name for started tasks.
 //*
 //* 5) Update the SET ZOWEUSER= statement to match the desired
@@ -75,7 +75,7 @@
 //         SET PRODUCT=RACF          * RACF, ACF2, or TSS
 //*                     12345678
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
-//         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
+//         SET STCGRP=&ADMINGRP.     * group for Zowe started tasks
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
@@ -85,6 +85,13 @@
 //         SET      HLQ=ZWE          * data set high level qualifier
 //         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
 //*                     12345678
+//*
+//* Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*                     12345678
+//         SET ADMINDEP=SYSPDEPT     * department owning admin group
+//*                     12345678
+//*
+//* end Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*
 //*********************************************************************
 //*
@@ -158,11 +165,11 @@
   LISTUSER &AUXUSER. OMVS
   DELUSER  &AUXUSER.
 
-/* comment out if &STCGROUP matches &ADMINGRP (default), expect      */
+/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
 /* remove group for started tasks                                    */
-  LISTGRP  &STCGROUP. OMVS
-  DELGROUP &STCGROUP.
+  LISTGRP  &STCGRP. OMVS
+  DELGROUP &STCGRP.
 
 /* remove started task for ZOWE main server                          */
   RLIST   STARTED &ZOWESTC..* ALL STDATA
@@ -197,12 +204,80 @@ $$
 //* ACF2 ONLY, customize to meet your system requirements
 //*
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
-
-/*TODO ACF2 remove security setup                                    */
-
-/* ................................................................. */
-/* only the last RC is returned, this command ensures it is a 0      */
-PROFILE
+ACF
+*
+* DELETE ADMINISTRATORS ...........................................
+*
+* group for administrators
+*
+SET PROFILE(GROUP) DIV(OMVS)
+DELETE &ADMINGRP.
+F ACF2,REBUILD(GRP),CLASS(P)
+*
+*
+SET LID
+SET PROFILE(USER) DIV(OMVS)
+DELETE &ZOWEUSER.
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+SET LID
+SET PROFILE(USER) DIV(OMVS)
+DELETE &XMEMUSER.
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+* remove userid for ZOWE main server (XMEMSTC,AUXSTC have same user id)
+SET LID
+LIST &ZOWEUSER
+DELETE &ZOWEUSER.
+*
+*
+* remove userid for XMEM Cross Memory server                        */
+SET LID
+LIST &XMEMUSER
+DELETE &XMEMUSER.
+*
+*
+*****
+*
+* Delete  task for ZOWE main server
+*
+SET CONTROL(GSO)
+LIST LIKE(STC.Z-)
+DELETE STC.&ZOWESTC.
+F ACF2,REFRESH(STC)
+*
+* started task for XMEM cross memory server
+*
+SET CONTROL(GSO)
+DELETE STC.&XMEMSTC.
+F ACF2,REFRESH(STC)
+*
+* started task for XMEM auxilary cross memory server
+*
+SET CONTROL(GSO)
+DELETE STC.&AUXSTC.
+F ACF2,REFRESH(STC)
+*
+* Remove Zowe main server
+*
+SET RESOURCE(FAC)
+RECKEY BPX2 DEL(DAEMON ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
+RECKEY BPX2 DEL(SERVER ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
+RECKEY BPX2 DEL(JOBNAME ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+* Remove Zowe main server
+RECKEY ZWES DEL(IS ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+* Remove UNI
+*
+SET RESOURCE(UNI)
+DELETE SUPERUSER.FILESYS
+*
+F ACF2,REBUILD(UNI)
+*  Remove  data set protection
+SET RULE
+LIST &HLQ.
+DELETE &HLQ.
+*
 $$
 //*
 //*********************************************************************
@@ -211,8 +286,74 @@ $$
 //*
 //TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
-/*TODO TSS remove security setup                                     */
+/* REMOVE ZOWE DATA SET PROTECTION ................................. */
+/* removE general data set protection                                */
+TSS WHOHAS DATASET(&HLQ)
+TSS REVOKE(ALL) DATASET(&HLQ..)
+TSS REVOKE(&SYSPROG) DATASET(&HLQ..)
+TSS REMOVE(&ADMINDEP) DATASET(&HLQ..)
 
+/* REMOVE ZOWE SERVER PERMISIONS ................................... */
+
+/* remove permit to use XMEM Cross Memory server                     */
+TSS WHOHAS IBMFAC(ZWES.IS)
+TSS REVOKE(&ZOWEUSER) IBMFAC(ZWES.IS)
+
+/* remove permit to create a user's security environment             */
+TSS WHOHAS IBMFAC(BPX.DAEMON)
+TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.DAEMON)
+TSS WHOHAS IBMFAC(BPX.SERVER)
+TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.SERVER)
+
+/* remove permit to set jobname                                      */
+TSS WHOHAS IBMFAC(BPX.JOBNAME)
+TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.JOBNAME)
+
+/* remove permit to write persistent data                            */
+TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
+TSS REVOKE(&ZOWEUSER) UNIXPRIV(SUPERUSER.FILESYS)
+
+/* REMOVE STARTED TASKS ............................................ */
+
+/* remove userid for ZOWE main server                                */
+TSS LIST(&ZOWEUSER)
+TSS DELETE(&ZOWEUSER)
+
+/* remove userid for XMEM Cross Memory server                        */
+TSS LIST(&XMEMUSER)
+TSS DELETE(&XMEMUSER)
+
+/* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
+/*   warning messages otherwise                                      */
+/* remove userid for XMEM auxilary cross memory server               */
+TSS LIST(&AUXUSER)
+TSS DELETE(&AUXUSER)
+
+/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
+/*   warning messages otherwise                                      */
+/* remove group for started tasks                                    */
+TSS LIST(&STCGRP)
+TSS DELETE(&STCGRP)
+
+/* remove started task for ZOWE main server                          */
+TSS LIST(STC)
+TSS REMOVE(STC) PROCNAME(&ZOWESTC)
+
+/* remove started task for XMEM Cross Memory server                  */
+TSS LIST(STC)
+TSS REMOVE(STC) PROCNAME(&XMEMSTC)
+
+/* remove started task for XMEM Auxilary Cross Memory server         */
+TSS LIST(STC)
+TSS REMOVE(STC) PROCNAME(&AUXSTC)
+
+/* REMOVE ADMINISTRATORS ........................................... */
+
+/* uncomment to remove user IDs from the &ADMINGRP group             */
+/* TSS REMOVE (userid) GROUP(&ADMINGRP.)                             */
+/* remove group for administrators                                   */
+TSS LIST(&ADMINGRP)
+TSS DELETE(&ADMINGRP)
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
 PROFILE
