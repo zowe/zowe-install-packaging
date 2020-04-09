@@ -8,15 +8,70 @@
     variable_list:
     - filename_to_upload
     - work_dir_remote
-    - zos_upload_method
+    - file_upload_method
 
-- name: Test if file exists
+- name: Test if file exists locally
   raw: test -f "{{ work_dir_local }}/{{ inventory_hostname }}/{{ filename_to_upload }}"
   delegate_to: localhost
 
-- name: Clean {{ filename_to_upload }} on z/OS and make sure tmp folder exists
-  raw: rm -f "{{ work_dir_remote }}/{{ filename_to_upload }}" && mkdir -p "{{ work_dir_remote }}"
+- name: Reset should_upload_file
+  set_fact:
+    should_upload_file: false
+
+- name: Compare hash
+  when: file_upload_hashcheck
+  block:
+  - name: Test if file exists remotely
+    raw: test -f "{{ work_dir_remote }}/{{ filename_to_upload }}"
+    ignore_errors: True
+    register: upload_file_check_existence
+
+  # file doesn't exist, we should upload
+  - name: Set should_upload_file to true
+    set_fact:
+      should_upload_file: true
+    when: upload_file_check_existence.rc != 0
+
+  - name: Calculate hash locally
+    when: upload_file_check_existence.rc == 0
+    stat:
+      path: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ filename_to_upload }}"
+      checksum_algorithm: md5
+    delegate_to: localhost
+    register: upload_file_hash_local
+
+  - debug:
+      var: upload_file_hash_local
+
+  - name: Calculate hash remotely
+    when: upload_file_check_existence.rc == 0
+    raw: >-
+      touch {{ zos_uss_user_profile }} && \
+      . {{ zos_uss_user_profile }} \
+      {{ zowe_environment_variable_overrides | default('') }} && \
+      cd "{{ work_dir_remote }}" && \
+      java MD5Checksum "{{ filename_to_upload }}"
+    register: upload_file_hash_remote
+  
+  - name: Show local and remote hashes
+    debug:
+      msg: "Hash of local file is {{ upload_file_hash_local.stat.checksum }}\nHash of remote file is {{ upload_file_hash_remote.stdout|trim }}"
+
+  - name: Set should_upload_file to true if hash are not match
+    set_fact:
+      should_upload_file: true
+    when: upload_file_hash_local.stat.checksum != upload_file_hash_remote.stdout|trim
+
+- name: No need to compare hash, always upload
+  when: not file_upload_hashcheck
+  block:
+  - name: Clean {{ filename_to_upload }} on z/OS and make sure tmp folder exists
+    raw: rm -f "{{ work_dir_remote }}/{{ filename_to_upload }}" && mkdir -p "{{ work_dir_remote }}"
+  - name: Set should_upload_file to true
+    set_fact:
+      should_upload_file: true
 
 - name: Transfer {{ filename_to_upload }} to zOS
-  command: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zos_upload_method }}.sh {{ work_dir_local }}/{{ inventory_hostname }}/{{ filename_to_upload }} {{ work_dir_remote }}/"
+  command: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ file_upload_method }}.sh {{ work_dir_local }}/{{ inventory_hostname }}/{{ filename_to_upload }} {{ work_dir_remote }}/"
   delegate_to: localhost
+  when: should_upload_file

@@ -23,7 +23,8 @@
       tasks_from: upload_file
     vars:
       filename_to_upload: opercmd.rexx
-      zos_upload_method: scp
+      file_upload_method: scp
+      file_upload_hashcheck: false
 
   - name: Add executive permission to opercmd.rexx
     raw: chmod a+x "{{ work_dir_remote }}/opercmd.rexx"
@@ -47,7 +48,8 @@
       tasks_from: upload_file
     vars:
       filename_to_upload: show_job_log.rexx
-      zos_upload_method: scp
+      file_upload_method: scp
+      file_upload_hashcheck: false
 
   - name: Add executive permission to show_job_log.rexx
     raw: chmod a+x "{{ work_dir_remote }}/show_job_log.rexx"
