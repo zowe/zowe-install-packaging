@@ -105,14 +105,17 @@ function _displayUsage
 {
 echo " "
 echo " $me"
-sed -n 's/^#%//p' $(whence $0)
+sed -n 's/^#%//p' ${here}/${me}
 echo " "
 }    # _displayUsage
 
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
-function main { }     # dummy function to simplify program flow parsing
+function main      # dummy function to simplify program flow parsing
+{
+  echo
+}
 
 # misc setup
 _EDC_ADD_ERRNO2=1                               # show details on error
