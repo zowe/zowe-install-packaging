@@ -16,6 +16,8 @@ This project targets to use Ansible to uninstall / install Zowe.
 
 You need Ansible v2.9.4+. Please check [Installation Document](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) from Ansible website.
 
+You also need Java installed on z/OS. The `JAVA_HOME` should be defined in the user `~/.profile` and Java bin folder should be added to `PATH` environment variable.
+
 ### Verify Inventory and Variables
 
 - Check [hosts](hosts) file.
