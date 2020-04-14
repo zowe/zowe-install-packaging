@@ -8,34 +8,33 @@
  * Copyright IBM Corporation 2020
  */
 
-const util = require('util');
-const fs = require('fs');
-const path = require('path');
-const xml2js = require('xml2js');
-const parseString = util.promisify(xml2js.parseString);
-const builder = new xml2js.Builder();
+import * as fs from 'fs';
+import * as path from 'path';
+import { parseStringPromise, Options as parseStringOptions, Builder } from 'xml2js';
+const builder = new Builder();
 
-const { INSTALL_TEST_REPORTS_DIR } = require('./src/constants');
-const { calculateHash } = require('./src/utils');
+import { INSTALL_TEST_REPORTS_DIR } from './constants';
+import { calculateHash } from './utils';
 
-const rootJunitFile = path.resolve(INSTALL_TEST_REPORTS_DIR, 'junit.xml');
+const rootJunitFile: string = path.resolve(INSTALL_TEST_REPORTS_DIR, 'junit.xml');
 if (!fs.existsSync(rootJunitFile)) {
   process.stderr.write(`Error: no test result found\n`);
   process.exit(1);
 }
-const htmlReportIndex = path.resolve(INSTALL_TEST_REPORTS_DIR, 'index.html');
+const htmlReportIndex: string = path.resolve(INSTALL_TEST_REPORTS_DIR, 'index.html');
 
-const readXml = async (file) => {
-  var xml = fs.readFileSync(file, {
+async function readXml(file: string): Promise<any> {
+  const xml = fs.readFileSync(file, {
     encoding: 'utf8'
   });
-  return await parseString(xml, {trim: true});
+  const parseOpt: parseStringOptions = {trim: true};
+  return await parseStringPromise(xml, parseOpt);
 };
 
-(async () => {
+(async (): Promise<void> => {
   // ---------------------------------------------------------
   process.stdout.write(`Read ${rootJunitFile}\n`);
-  let rootJunit = await readXml(rootJunitFile);
+  const rootJunit = await readXml(rootJunitFile);
   // console.dir(rootJunit, {depth: null, colors: true})
   
   // init test count if missing
@@ -46,7 +45,7 @@ const readXml = async (file) => {
   rootJunit.testsuites.$.time = '' + parseFloat(rootJunit.testsuites.$.time || 0);
 
   // ---------------------------------------------------------
-  let htmlReport = [
+  let htmlReport: string[] = [
     '<!DOCTYPE html>',
     '<html>',
     '<body>',
@@ -62,7 +61,7 @@ const readXml = async (file) => {
   // ---------------------------------------------------------
   process.stdout.write('Merge:\n');
   let testcasesMerged = 0;
-  for (let ts of rootJunit.testsuites.testsuite) {
+  for (const ts of rootJunit.testsuites.testsuite) {
     const testHash = calculateHash(ts.$.name);
     // init test count if missing
     ts.$.tests = '' + parseInt(ts.$.tests || 0, 10);
@@ -71,11 +70,11 @@ const readXml = async (file) => {
     ts.$.skipped = '' + parseInt(ts.$.skipped || 0, 10);
     ts.$.time = '' + parseFloat(ts.$.time || 0);
 
-    const verifyTestResultFile = path.resolve(INSTALL_TEST_REPORTS_DIR, testHash, 'junit.xml');
+    const verifyTestResultFile: string = path.resolve(INSTALL_TEST_REPORTS_DIR, testHash, 'junit.xml');
     if (fs.existsSync(verifyTestResultFile)) {
       process.stdout.write(`- ${ts.$.name} (${testHash})\n`);
       const verifyJunit = await readXml(verifyTestResultFile);
-      for (let vts of verifyJunit.testsuites.testsuite) {
+      for (const vts of verifyJunit.testsuites.testsuite) {
         // add tests count
         ts.$.tests = '' + (parseInt(ts.$.tests, 10) + parseInt(vts.$.tests || 0, 10));
         ts.$.errors = '' + (parseInt(ts.$.errors, 10) + parseInt(vts.$.errors || 0, 10));
@@ -89,7 +88,7 @@ const readXml = async (file) => {
         rootJunit.testsuites.$.time = '' + (parseFloat(rootJunit.testsuites.$.time) + parseFloat(vts.$.time || 0));
 
         // merge test cases
-        for (let vtc of vts.testcase) {
+        for (const vtc of vts.testcase) {
           vtc.$.name = `${ts.$.name} - sanity test - ${vts.$.name}  - ${vtc.$.name}`;
           ts.testcase.push(vtc);
           testcasesMerged++;
@@ -99,7 +98,7 @@ const readXml = async (file) => {
       fs.unlinkSync(verifyTestResultFile);
     }
 
-    const verifyTestHtmlReport = path.resolve(INSTALL_TEST_REPORTS_DIR, testHash, 'index.html');
+    const verifyTestHtmlReport: string = path.resolve(INSTALL_TEST_REPORTS_DIR, testHash, 'index.html');
     htmlReport.push('<ul>');
     if (fs.existsSync(verifyTestHtmlReport)) {
       htmlReport.push(`<a href="${testHash}/index.html">${ts.$.name}</a>`);
@@ -116,7 +115,7 @@ const readXml = async (file) => {
   // ---------------------------------------------------------
   if (testcasesMerged > 0) {
     process.stdout.write(`Write back to ${rootJunitFile}\n`);
-    const updatedXml = builder.buildObject(rootJunit);
+    const updatedXml: string = builder.buildObject(rootJunit);
     fs.writeFileSync(rootJunitFile, updatedXml);
   } else {
     process.stdout.write(`No update required.\n`);
