@@ -454,9 +454,11 @@ exit $?</inlineTemplate>
 If you want to start the instance manually (e.g. after IPL), you can do it with the following command:
 &lt;code&gt;sh "${instance-zowe_instance_path}/bin/zowe-start.sh"&lt;/code&gt;
 
-You can also start the instance using the following MVS command:
+You can also start the instance using the following operator command:
 
-&lt;code&gt;/S ZWESVSTC INSTANCE='${instance-zowe_instance_path}',JOBNAME=${instance-ZOWE_PREFIX}${instance-ZOWE_INSTANCE}SV&lt;/code&gt;
+&lt;code&gt;S ZWESVSTC INSTANCE='${instance-zowe_instance_path}',JOBNAME=${instance-ZOWE_PREFIX}${instance-ZOWE_INSTANCE}SV&lt;/code&gt;
+
+&lt;b&gt;Note:&lt;/b&gt; Operator commands can be issued from the SDSF command line if you are authorized to do so. In SDSF, operator commands are prefixed with the forward slash (/) character.
 
 To learn more about the task and how to stop it, please refer to the documentation at &lt;a href="https://docs.zowe.org"&gt;docs.zowe.org&lt;/a&gt;
 </instructions>
