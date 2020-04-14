@@ -23,7 +23,8 @@ node('ibm-jenkins-slave-dind') {
     'marist': [
       ansible_host     : 'marist-1',
       ssh_hostport     : 'ssh-marist-server-zzow01-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow01'
+      ssh_userpass     : 'ssh-marist-server-zzow01',
+      node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
     ],
     'marist-2': [
       ansible_host     : 'marist-2',
@@ -35,11 +36,11 @@ node('ibm-jenkins-slave-dind') {
       ssh_hostport     : 'ssh-marist-server-zzow03-hostport',
       ssh_userpass     : 'ssh-marist-server-zzow03'
     ],
-    'river': [
-      ansible_host     : 'river-0',
-      ssh_hostport     : 'ssh-river-original-hostport',
-      ssh_userpass     : 'ssh-zdt-test-image-guest'
-    ],
+    // 'river': [
+    //   ansible_host     : 'river-0',
+    //   ssh_hostport     : 'ssh-river-original-hostport',
+    //   ssh_userpass     : 'ssh-zdt-test-image-guest'
+    // ],
     'river-3': [
       ansible_host     : 'river-3',
       ssh_hostport     : 'ssh-river-c3-hostport',
@@ -47,9 +48,23 @@ node('ibm-jenkins-slave-dind') {
     ]
   ];
   // Test scopes, what test should we run
+  // each scope can have these optional configurations
+  // - jenkins_primary_lock: should be a string
+  // - jenkins_extra_locks: should be a list of strings
   Map TEST_SCOPES = [
-    'conv-build': 'src/__tests__/basic/install.js',
-    'smpe-fmid': 'src/__tests__/basic/install-fmid.js',
+    'convenience build': [
+      test_files: 'dist/__tests__/basic/install.js',
+    ],
+    'smpe fmid': [
+      test_files: 'dist/__tests__/basic/install-fmid.js',
+    ],
+    'smpe ptf': [
+      test_files: 'dist/__tests__/basic/install-ptf.js',
+    ],
+    'bundle: multiple node versions': [
+      test_files: 'dist/__tests__/extented/node-versions/',
+      jenkins_primary_lock: 'marist',
+    ],
   ]
 
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
@@ -142,8 +157,7 @@ node('ibm-jenkins-slave-dind') {
       // upgrade npm
       sh 'npm install -g npm'
 
-      // install ansible
-
+      // install ansible (we put in base image)
     }
   )
 
@@ -151,7 +165,7 @@ node('ibm-jenkins-slave-dind') {
     operation: {
       ansiColor('xterm') {
         dir(INSTALL_TEST_PATH) {
-          sh "npm install"
+          sh "npm install && npm run build"
         }
         dir(SANITY_TEST_PATH) {
           sh "npm install"
@@ -219,47 +233,67 @@ node('ibm-jenkins-slave-dind') {
   pipeline.test(
     name              : "Test",
     operation         : {
-      def nodeHomeOverwrite = ''
-      if (params.TEST_SERVER == 'marist') {
-        nodeHomeOverwrite = "ZOS_NODE_HOME=/ZOWE/node/node-${params.NODE_VERSION}-os390-s390x"
+      def serverCredentials = []
+      TEST_SERVERS.each{ key, host ->
+        def hostKey = host['ansible_host'].replaceAll(/[^A-Za-z0-9]/, '_').toUpperCase()
+        serverCredentials.add(usernamePassword(
+          credentialsId: host['ssh_hostport'],
+          passwordVariable: "${hostKey}_SSH_PORT".toString(),
+          usernameVariable: "${hostKey}_SSH_HOST".toString()
+        ))
+        serverCredentials.add(usernamePassword(
+          credentialsId: host['ssh_userpass'],
+          passwordVariable: "${hostKey}_SSH_PASSWORD".toString(),
+          usernameVariable: "${hostKey}_SSH_USER".toString()
+        ))
       }
-      def zoweBuild = pwd() + '/.tmp/zowe/' + sh(
+
+      def zoweBuildFile = sh(
         script: "ls -1 .tmp/zowe/",
         returnStdout: true
       ).trim()
+      def zoweBuild = pwd() + '/.tmp/zowe/' + zoweBuildFile
+      // update build description with the zowe build be tested
+      currentBuild.description = "${zoweBuildFile} with scope ${params.TEST_SCOPE}".toString()
 
-      lock("zowe-install-test-${params.TEST_SERVER}") {
+      def testEnvVars = [
+        'ANSIBLE_FORCE_COLOR=true',
+        "TEST_SERVER=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']}".toString(),
+        "ZOWE_BUILD_LOCAL=${zoweBuild}".toString(),
+        "SANITY_TEST_DEBUG=${params.SANITY_TEST_DEBUG_INFORMATION}".toString(),
+        "DEBUG=${params.INSTALL_TEST_DEBUG_INFORMATION}".toString(),
+      ]
+
+      if (TEST_SERVERS[params.TEST_SERVER].containsKey('node_home_pattern')) {
+        testEnvVars.add("ZOS_NODE_HOME=" + TEST_SERVERS[params.TEST_SERVER]['node_home_pattern'].replace('{NODE_VERSION}', params.NODE_VERSION))
+      }
+      echo "Test environment variables:\n" + testEnvVars.join("\n") + "\n"
+
+      def lockResources = "zowe-install-test-${params.TEST_SERVER}".toString()
+      def lockExtraResources = []
+      // - jenkins_primary_lock
+      // - jenkins_extra_locks
+      if (TEST_SCOPES[params.TEST_SCOPE].containsKey('jenkins_primary_lock')) {
+        lockResources = "zowe-install-test-${TEST_SCOPES[params.TEST_SCOPE]['jenkins_primary_lock']}".toString()
+      }
+      if (TEST_SCOPES[params.TEST_SCOPE].containsKey('jenkins_extra_locks')) {
+        TEST_SCOPES[params.TEST_SCOPE]['jenkins_extra_locks'].each {
+          lockExtraResources.add([label: "zowe-install-test-${it}".toString()])
+        }
+      }
+
+      lock(label: lockResources, extra: lockExtraResources) {
       // timestamps {
       dir(INSTALL_TEST_PATH) {
       ansiColor('xterm') {
-      withCredentials([
-        usernamePassword(
-          credentialsId: TEST_SERVERS[params.TEST_SERVER]['ssh_hostport'],
-          passwordVariable: 'SSH_PORT',
-          usernameVariable: 'SSH_HOST'
-        ),
-        usernamePassword(
-          credentialsId: TEST_SERVERS[params.TEST_SERVER]['ssh_userpass'],
-          passwordVariable: 'PASSWORD',
-          usernameVariable: 'USERNAME'
-        )
-      ]) {
+      withCredentials(serverCredentials) {
+      withEnv(testEnvVars) {
         try {
-          sh """
-ANSIBLE_FORCE_COLOR=true \
-ANSIBLE_HOST=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']} \
-SSH_HOST=${SSH_HOST} \
-SSH_PORT=${SSH_PORT} \
-SSH_USER=${USERNAME} \
-SSH_PASSWD=${PASSWORD} \
-ZOWE_BUILD_LOCAL="${zoweBuild}" \
-SANITY_TEST_DEBUG=${params.SANITY_TEST_DEBUG_INFORMATION} \
-DEBUG=${params.INSTALL_TEST_DEBUG_INFORMATION} ${nodeHomeOverwrite} \
-npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
-"""
+          sh "npm test -- --testPathPattern \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
         } finally {
           sh 'npm run merge-reports'
         }
+      } // end of withEnv
       } // end of withCredentials
       } // end of ansiColor
       } // end of dir
@@ -270,7 +304,7 @@ npm test -- --runTestsByPath "${TEST_SCOPES[params.TEST_SCOPE]}"
     htmlReports   : [
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
-    timeout: [time: 30, unit: 'MINUTES'],
+    timeout: [time: 360, unit: 'MINUTES'],
   )
 
   pipeline.end()

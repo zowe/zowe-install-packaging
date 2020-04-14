@@ -1,0 +1,52 @@
+---
+# extract PTF zip and upload to z/OS
+# { zowe_smpe_ptf_file } must exist in { work_dir_local }/{ inventory_hostname }
+#
+# input:
+# - zowe_smpe_ptf_file: required
+
+# ============================================================================
+# check variables
+- name: Check if zowe_smpe_ptf_file has a value
+  fail:
+    msg: zowe_smpe_ptf_file is required
+  when: zowe_smpe_ptf_file is not defined or zowe_smpe_ptf_file is none or zowe_smpe_ptf_file == ''
+
+- name: Extract {{ zowe_smpe_ptf_file }}
+  unarchive:
+    src: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zowe_smpe_ptf_file }}"
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}"
+  delegate_to: localhost
+
+- name: Get PTF file list
+  find:
+    paths: "{{ work_dir_local }}/{{ inventory_hostname }}"
+    patterns: "{{ zowe_build_smpe_ptf_pattern }}"
+  register: zowe_smpe_ptf_files_in_zip
+  delegate_to: localhost
+
+- name: Check if PTF zip has more than 2 files
+  fail:
+    msg: "No {{ zowe_build_smpe_ptf_pattern }} file found in the PTF package."
+  # must have 2 SYSMODs and readme, but let's make readme optional
+  when: zowe_smpe_ptf_files_in_zip.matched < 2
+
+- name: These files are found in PTF package
+  debug:
+    msg: "- {{ item.path }}"
+  loop: "{{ zowe_smpe_ptf_files_in_zip.files }}"
+
+- name: Clean zowe build remotely
+  raw: rm -f {{ work_dir_remote }}/{{ zowe_build_smpe_ptf_pattern }}
+
+- name: Transfer Zowe PTF files to zOS
+  include_role:
+    name: common
+    tasks_from: upload_file
+  vars:
+    filename_to_upload: "{{ smpe_file.path | basename }}"
+    file_upload_method: sftp
+    file_upload_hashcheck: true
+  loop: "{{ zowe_smpe_ptf_files_in_zip.files }}"
+  loop_control:
+    loop_var: smpe_file

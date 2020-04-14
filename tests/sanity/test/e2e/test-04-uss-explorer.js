@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright IBM Corporation 2018, 2020
  */
 
 const path = require('path');
@@ -57,7 +57,6 @@ describe(`test ${APP_TO_TEST}`, function() {
     // init webdriver
     driver = await getDefaultDriver();
     debug('webdriver initialized');
-
     // load MVD login page
     await loginMVD(
       driver,
@@ -89,9 +88,9 @@ describe(`test ${APP_TO_TEST}`, function() {
     expect(atlas).to.be.an('object');
     debug('zlux iframe is ready');
 
-    // FIXME: shouldn't pop out authentication
-    const alert = await driver.wait(until.alertIsPresent(), DEFAULT_PAGE_LOADING_TIMEOUT);
-    await alert.sendKeys(process.env.SSH_USER + Key.TAB + process.env.SSH_PASSWD);
+    // FIXME: shouldn't pop out authentication	
+    const alert = await driver.wait(until.alertIsPresent(), DEFAULT_PAGE_LOADING_TIMEOUT);	
+    await alert.sendKeys(process.env.SSH_USER + Key.TAB + process.env.SSH_PASSWD);	
     await alert.accept();
     // to avoid StaleElementReferenceError, find the iframes context again
     await switchToIframeAppContext(driver, APP_TO_TEST, MVD_IFRAME_APP_CONTENT);

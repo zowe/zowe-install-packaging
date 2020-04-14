@@ -17,6 +17,11 @@ wait_for_zowe_service_delay: 10
 # ==============================================================================
 # Variables should be verified and overwrittern.
 # ==============================================================================
+# default zowe runtime root directory
+zowe_root_dir: ~/zowe
+# instanceDir
+zowe_instance_dir: ~/.zowe/instance
+
 # optional, default to ansible_ssh_host
 # required for zD&T (external IP is different from internal IP)
 zowe_external_domain_name:
