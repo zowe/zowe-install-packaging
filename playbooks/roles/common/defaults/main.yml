@@ -8,7 +8,9 @@ zos_java_home:
 # overwrite NODE_HOME environment on z/OS
 zos_node_home:
 # default upload method, should be either sftp or scp
-zos_upload_method: sftp
+file_upload_method: sftp
+# if we perform hash (MD5) check before uploading the file
+file_upload_hashcheck: false
 
 # optional, default to ansible_ssh_host
 # required for zD&T (external IP is different from internal IP)
