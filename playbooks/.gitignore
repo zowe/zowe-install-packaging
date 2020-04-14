@@ -12,3 +12,6 @@
 
 # test playbooks
 test*
+
+# marist hosts
+host_vars/marist-*.yml

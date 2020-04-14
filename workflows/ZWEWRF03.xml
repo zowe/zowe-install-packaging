@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- #######################################################################
+ This program and the accompanying materials are made available
+ under the terms of the Eclipse Public License v2.0 which
+ accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-v20.html
+ SPDX-License-Identifier: EPL-2.0
+ Copyright Contributors to the Zowe Project. 2019, 2020
+####################################################################### -->
+<workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<autoTakeOwnership>true</autoTakeOwnership>
+<!-- instance prefix settings -->
+    <workflowInfo>
+        <workflowID scope="none" >zowe_instance</workflowID>
+        <workflowDefaultName>ZOWE Instance Configuration</workflowDefaultName>
+        <workflowDescription>This workflow creates and configures new Zowe instance</workflowDescription>
+        <workflowVersion>#ZOWE_VERSION#</workflowVersion>
+        <vendor>Zowe</vendor>
+        <General/>
+    </workflowInfo>
+    <variable name="zowe_install_path" scope="instance" visibility="public">
+        <label>Install Path</label>
+        <abstract>Path for the Zowe runtime</abstract>
+        <description>Specify the path where your Zowe runtime resides</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="ZOWE_PREFIX" scope="instance" visibility="public">
+        <label>Zowe Prefix</label>
+        <abstract>Prefix of the Zowe instance</abstract>
+        <description>Prefix of the Zowe instance</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>ZWE</default>
+        </string>
+    </variable>
+    <variable name="zowe_runtime_hlq" scope="instance" visibility="public">
+        <label>Zowe Runtime HLQ</label>
+        <abstract>High Level Qualifier for the Zowe Runtime data sets</abstract>
+        <description>Please input the High Level Qualifier for the Zowe Runtime data sets</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+        </string>
+    </variable>
+    <variable name="procedure_library" scope="instance" visibility="public">
+        <label>Procedure Library</label>
+        <abstract>Procedure library where the the STC task should be copied to</abstract>
+        <description>Specify the data set name of the procedure library (PROCLIB) you want to copy the STC task to.
+Keep this variable empty if you do not want to copy the STC task.</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+        </string>
+    </variable>
+    <variable name="ZOWE_INSTANCE" scope="instance" visibility="public">
+        <label>Zowe instance Suffix</label>
+        <abstract>Zowe instance suffix</abstract>
+        <description>Zowe instance suffix</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>1</default>
+        </string>
+    </variable>
+    <variable name="zowe_instance_path" scope="instance" visibility="public">
+        <label>Zowe Instance Path</label>
+        <abstract>USS Path to the newly created Zowe instance directory</abstract>
+        <description>USS Path to the newly created Zowe instance directory without trailing slash</description>
+        <category>Instance</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="LAUNCH_COMPONENT_GROUPS" scope="instance" visibility="public">
+        <label>Launch Component Groups</label>
+        <abstract>Comma separated list of components should start</abstract>
+        <description>Comma separated list of components should start</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>GATEWAY</choice>
+            <choice>DESKTOP</choice>
+            <choice>GATEWAY,DESKTOP</choice>
+            <default>GATEWAY,DESKTOP</default>
+        </string>
+    </variable>
+    <variable name="JAVA_HOME" scope="instance" visibility="public">
+        <label>Java Home</label>
+        <abstract>Path to the Java Home.</abstract>
+        <description>Path to the Java Home.</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="NODE_HOME" scope="instance" visibility="public">
+        <label>NodeJS Home</label>
+        <abstract>Path to your NodeJS Home</abstract>
+        <description>Path to your NodeJS Home</description>
+        <category>Global Config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="ZOSMF_PORT" scope="instance" visibility="public">
+        <label>z/OSMF Port</label>
+        <abstract>Port used by your z/OSMF</abstract>
+        <description>Port used by your z/OSMF</description>
+        <category>z/OS MF config</category>
+        <integer>
+            <!-- validation -->
+            <default>01444</default>
+        </integer>
+    </variable>
+    <variable name="ZOSMF_HOST" scope="instance" visibility="public">
+        <label>z/OSMF Hostname</label>
+        <abstract>Hostname to your z/OSMF</abstract>
+        <description>Hostname to your z/OSMF</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+        </string>
+    </variable>
+    <variable name="ZOWE_EXPLORER_HOST" scope="instance" visibility="public">
+        <label>Zowe Explorer Host</label>
+        <abstract>Zowe Explorer Host (probably same as the z/Osmf Host</abstract>
+        <description>Zowe Explorer Host (probably same as the z/Osmf Host</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+        </string>
+    </variable>
+    <variable name="ZOWE_IP_ADDRESS" scope="instance" visibility="public">
+        <label>Zowe IP Address</label>
+        <abstract>IP address of the system that will run Zowe</abstract>
+        <description>IP address of the system that will run Zowe</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+        </string>
+    </variable>
+    <variable name="KEYSTORE_DIRECTORY" scope="instance" visibility="public">
+        <label>Keystore Directory</label>
+        <abstract>Directory location of the keystore</abstract>
+        <description>Directory location of the keystore</description>
+        <category>z/OS MF config</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+            <default>/global/zowe/keystore</default>
+        </string>
+    </variable>
+    <variable name="CATALOG_PORT" scope="instance" visibility="public">
+        <label>Catalog Port</label>
+        <abstract>Port that will be used for the API ML Catalog</abstract>
+        <description>Port that will be used for the API ML Catalog</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>7552</default>
+        </integer>
+    </variable>
+    <variable name="DISCOVERY_PORT" scope="instance" visibility="public">
+        <label>Discovery Port</label>
+        <abstract>Port that will be used for the API ML Discovery Service</abstract>
+        <description>Port that will be used for the API ML Discovery Service</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>7553</default>
+        </integer>
+    </variable>
+    <variable name="GATEWAY_PORT" scope="instance" visibility="public">
+        <label>Gateway Port</label>
+        <abstract>Port that will be used for the API ML Gateway</abstract>
+        <description>Port that will be used for the API ML Gateway</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>7554</default>
+        </integer>
+    </variable>
+    <variable name="APIML_ENABLE_SSO" scope="instance" visibility="public">
+        <label>API Mediation Layer Single Sign-On</label>
+        <abstract>Do you want to enable Single Sign-On?</abstract>
+        <description>Check this option to enable the Single Sign-On.</description>
+        <category>API Mediation Layer</category>
+        <boolean>
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
+        <label>Zowe ZLUX Server HTTPS Port</label>
+        <abstract>Zowe ZLUX Server HTTPS Port</abstract>
+        <description>Zowe ZLUX Server HTTPS Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8544</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZSS_SERVER_PORT" scope="instance" visibility="public">
+        <label>Zowe ZSS Server Port</label>
+        <abstract>Zowe ZSS Server Port</abstract>
+        <description>Zowe ZSS Server Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8542</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" visibility="public">
+        <label>Zowe ZSS XMEM Server Name</label>
+        <abstract>Zowe ZSS XMEM Server Name</abstract>
+        <description>Zowe ZSS XMEM Server Name</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>ZWESIS_STD</default>
+        </string>
+    </variable>
+    <variable name="ZOWE_ZLUX_SSH_PORT" scope="instance" visibility="public">
+        <label>Zowe ZLUX SSH Port</label>
+        <abstract>Zowe ZLUX SSH Port</abstract>
+        <description>Zowe ZLUX SSH Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>22</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZLUX_TELNET_PORT" scope="instance" visibility="public">
+        <label>Zowe ZLUX Telnet Port</label>
+        <abstract>Zowe ZLUX Telnet Port</abstract>
+        <description>Zowe ZLUX Telnet Port</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <integer>
+            <!-- validation -->
+            <default>23</default>
+        </integer>
+    </variable>
+    <variable name="ZOWE_ZLUX_SECURITY_TYPE" scope="instance" visibility="public">
+        <label>Zowe ZLUX Security Type</label>
+        <abstract>The security type of the tn3270 connection</abstract>
+        <description>The security type of the tn3270 connection
+valid values are blank('') for telnet, or 'tls'</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>''</choice>
+            <choice>tls</choice>
+            <default>''</default>
+        </string>
+    </variable>
+    <variable name="ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" scope="instance" visibility="public">
+        <label>ZWEAD External Static Def Directories</label>
+        <abstract>For third-party extender to add the full path to the directory</abstract>
+        <description>For third-party extender to add the full path to the directory containing their static yml definition semi-colon separated</description>
+        <category>Extender variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <variable name="EXTERNAL_COMPONENTS" scope="instance" visibility="public">
+        <label>External Components</label>
+        <abstract>Path for the component lifecycle scripts</abstract>
+        <description>For third-party extender to add the full path to the directory containing their component lifecycle scripts</description>
+        <category>Extender variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+        </string>
+    </variable>
+    <!--atCreate-->
+    <step name="define_variables" optional="false">
+        <title>Define Variables</title>
+        <description>Define the variables</description>
+        <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="zowe_runtime_hlq" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="procedure_library" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="ZOWE_PREFIX" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_INSTANCE" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="zowe_instance_path" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="LAUNCH_COMPONENT_GROUPS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="JAVA_HOME" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="NODE_HOME" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOSMF_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOSMF_HOST" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_EXPLORER_HOST" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_IP_ADDRESS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="KEYSTORE_DIRECTORY" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="CATALOG_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="DISCOVERY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="GATEWAY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_ENABLE_SSO" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZSS_SERVER_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_SSH_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_TELNET_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZOWE_ZLUX_SECURITY_TYPE" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="EXTERNAL_COMPONENTS" scope="instance" noPromptIfSet="false" required="false"/>
+        <instructions substitution="true">Define the variables for the workflow execution</instructions>
+        <weight>1</weight>
+        <skills>None</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+    </step>
+    <step name="create_instance" optional="false">
+        <title>Create the Zowe instance</title>
+        <description>This step creates the Zowe instance directory</description>
+        <prereqStep name="define_variables"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="false">Use this step to generate the Zowe instance directory</instructions>
+        <weight>1</weight>
+        <skills>None</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
+sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+    <step name="change_instance_configuration" optional="false">
+        <title>Change instance configuration</title>
+        <description>This step changes the configuration of the newly created instance
+based on the values input by the user.</description>
+        <prereqStep name="define_variables"/>
+        <prereqStep name="create_instance"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="false">Run this step to change the instance configuration.</instructions>
+        <weight>1</weight>
+        <skills>None</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">//REPLFILE EXEC PGM=IEBGENER
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD DUMMY
+//SYSUT2   DD PATH='${instance-zowe_instance_path}/instance.env',
+//    PATHMODE=(SIRWXU,SIRGRP),
+//    PATHOPTS=(OCREAT,OWRONLY,OTRUNC),
+//    FILEDATA=TEXT
+//SYSUT1   DD *
+#!/bin/sh
+
+# Note this script is executed like a shell script, so can have embedded variables
+# TODO LATER - rename variable names to match some consistent naming conventions
+
+# global config
+ROOT_DIR=${instance-zowe_install_path}
+ZOWE_PREFIX=${instance-ZOWE_PREFIX}
+ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
+
+# Comma separated list of components should start from [GATEWAY,DESKTOP]
+LAUNCH_COMPONENT_GROUPS=${instance-LAUNCH_COMPONENT_GROUPS}
+
+JAVA_HOME=${instance-JAVA_HOME}
+NODE_HOME=${instance-NODE_HOME}
+
+# z/OS MF config
+ZOSMF_PORT=${instance-ZOSMF_PORT}
+ZOSMF_HOST=${instance-ZOSMF_HOST}
+
+ZOWE_EXPLORER_HOST=${instance-ZOWE_EXPLORER_HOST}
+ZOWE_IP_ADDRESS=${instance-ZOWE_IP_ADDRESS}
+
+# keystore config
+KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
+
+# APIML variables
+CATALOG_PORT=${instance-CATALOG_PORT}
+DISCOVERY_PORT=${instance-DISCOVERY_PORT}
+GATEWAY_PORT=${instance-GATEWAY_PORT}
+APIML_ENABLE_SSO=${instance-APIML_ENABLE_SSO}
+
+# explorer variables
+JOBS_API_PORT=${instance-JOBS_API_PORT}
+FILES_API_PORT=${instance-FILES_API_PORT}
+JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
+MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
+USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+
+# Zowe Desktop/app framework variables
+ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
+ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
+ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
+ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
+ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+
+# Extender variables
+ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
+EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
+
+/*</inlineTemplate>
+            <submitAs maxRc="0">JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+    <step name="copy_stc" optional="false">
+        <title>Copies the STC to the procedure library</title>
+        <description>This step is skipped if the procedure library is empty</description>
+        <prereqStep name="define_variables"/>
+        <!--variableValues-->
+        <condition>
+            <expression>"a"=="a"</expression>
+            <description>Checks whether the PROCLIB is empty</description>
+            <targetStateSet>
+                <extendStateExpression>
+                    <description>Checks the PROCLIB value</description>
+                    <expression>"$!{instance-procedure_library}"==""</expression>
+                    <targetState>skipped</targetState>
+                </extendStateExpression>
+            </targetStateSet>
+        </condition>
+        <instructions substitution="false">Run this step to copy the STC procedure to the PROCLIB.</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">set -x
+cd "${instance-zowe_install_path}/scripts/utils"
+sh zowe-install-proc.sh "${instance-zowe_runtime_hlq}" "${instance-procedure_library}"
+exit $?</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+    <step name="run_stc" optional="false">
+        <title>Start the Zowe instance</title>
+        <description>This step starts the Zowe instance</description>
+        <prereqStep name="define_variables"/>
+        <prereqStep name="create_instance"/>
+        <prereqStep name="change_instance_configuration"/>
+        <!--variableValues-->
+        <!-- condition -->
+        <instructions substitution="true">Run this step to start the Zowe instance.
+        
+If you want to start the instance manually (e.g. after IPL), you can do it with the following command:
+&lt;code&gt;sh "${instance-zowe_instance_path}/bin/zowe-start.sh"&lt;/code&gt;
+
+You can also start the instance using the following operator command:
+
+&lt;code&gt;S ZWESVSTC INSTANCE='${instance-zowe_instance_path}',JOBNAME=${instance-ZOWE_PREFIX}${instance-ZOWE_INSTANCE}SV&lt;/code&gt;
+
+&lt;b&gt;Note:&lt;/b&gt; Operator commands can be issued from the SDSF command line if you are authorized to do so. In SDSF, operator commands are prefixed with the forward slash (/) character.
+
+To learn more about the task and how to stop it, please refer to the documentation at &lt;a href="https://docs.zowe.org"&gt;docs.zowe.org&lt;/a&gt;
+</instructions>
+        <weight>1</weight>
+        <skills>Security Administrator</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">set -x
+cd "${instance-zowe_instance_path}/bin"
+sh ./zowe-start.sh
+exit $?</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+</workflow>

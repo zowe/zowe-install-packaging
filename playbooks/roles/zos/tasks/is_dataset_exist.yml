@@ -1,0 +1,50 @@
+---
+# this playbook check if the data set exists on the server
+
+# input:
+# - dataset: required
+# output:
+# - dataset_exists: boolean
+
+- name: Reset variables
+  set_fact:
+    dataset_exists:
+
+# Example of listds response:
+#
+# listds 'TSTRADM.PARMLIB' label
+# TSTRADM.PARMLIB
+# IKJ58503I DATA SET 'TSTRADM.PARMLIB' NOT IN CATALOG
+#
+# listds 'ZOWEAD3.LOADLIB' label
+# ZOWEAD3.LOADLIB
+# --RECFM-LRECL-BLKSIZE-DSORG
+#   U     **    6144    PO                                                                                          
+# --VOLUMES--
+#   VPMVSH
+# --FORMAT 1 DSCB--
+# F1 E5D7D4E5E2C8 0001 780034 000000 09 00 00 C9C2D4D6E2E5E2F24040404040
+# 78003708000000 0200 C0 00 1800 0000 00 0000 82 80000002 000000 0000 0000
+# 0100037D000A037E0004 01010018000C0018000D 0102006F000D006F000E 0000000217
+- name: Get data set label record
+  raw: tsocmd listds "'{{ dataset }}'" label
+  register: dataset_label
+  ignore_errors: True
+
+- name: Check if data set exists
+  fail:
+    msg: "Failed to detect data set {{ dataset }} existence: {{ dataset_label.stderr }}"
+  when: dataset_label.rc != 0 and 'NOT IN CATALOG' not in dataset_label.stdout
+
+- name: Set dataset_exists to false
+  set_fact:
+    dataset_exists: False
+  when: "'NOT IN CATALOG' in dataset_label.stdout"
+
+- name: Set dataset_exists to true
+  set_fact:
+    dataset_exists: True
+  when: dataset_label.rc == 0
+
+- debug:
+    msg: "Data set '{{ dataset }}' existence status is: {{ dataset_exists }}"

@@ -1,5 +1,29 @@
 ---
 # ============================================================================
+# Create loadlib is doesn't exist
+- import_role:
+    name: zos
+    tasks_from: is_dataset_exist
+  vars:
+    dataset: "{{ zowe_xmem_loadlib }}"
+
+- name: Create {{ zowe_xmem_loadlib }}
+  raw: tsocmd "allocate da('{{ zowe_xmem_loadlib }}') dsntype(library) dsorg(po) recfm(u) blksize(6144) space(10,2) tracks new"
+  when: not dataset_exists
+
+# ============================================================================
+# Create loadlib is doesn't exist
+- import_role:
+    name: zos
+    tasks_from: is_dataset_exist
+  vars:
+    dataset: "{{ zowe_xmem_parmlib }}"
+
+- name: Create {{ zowe_xmem_parmlib }}
+  raw: tsocmd "allocate da('{{ zowe_xmem_parmlib }}') dsntype(pds) dsorg(po) recfm(f,b) lrecl(80) blksize(23440) dir(64) space(10,2) tracks new"
+  when: not dataset_exists
+
+# ============================================================================
 - name: Install Cross Memory Server
   import_role:
     name: zos
@@ -7,7 +31,7 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/scripts/utils"
     script_filename: ./zowe-install-xmem.sh
-    script_parameters: "\"{{ zowe_dataset_prefix }}\" \"{{ zowe_xmem_loadlib }}\" \"{{ zowe_xmem_parmlib }}\" \"{{ zowe_xmem_proclib }}\""
+    script_parameters: "-d \"{{ zowe_dataset_prefix }}\" -b \"{{ zowe_xmem_loadlib }}\" -a \"{{ zowe_xmem_parmlib }}\" -r \"{{ zowe_xmem_proclib }}\""
 
 - name: Show content of ZSS proc {{ zowe_xmem_proclib_member_zss }}
   raw: cat "//'{{ zowe_xmem_proclib }}({{ zowe_xmem_proclib_member_zss }})'"
@@ -30,7 +54,8 @@
     vars:
       opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},SMS"
   
-  - fail:
+  - name: Check if APF updating response has CSV410I
+    fail:
       msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
     when: 'not "CSV410I" in opercmd_result.stdout'
 
@@ -50,7 +75,8 @@
     vars:
       opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},VOLUME={{ dataset_volume }}"
   
-  - fail:
+  - name: Check if APF updating response has CSV410I
+    fail:
       msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
     when: 'not "CSV410I" in opercmd_result.stdout'
 
