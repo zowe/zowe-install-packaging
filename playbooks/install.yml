@@ -43,7 +43,8 @@
         tasks_from: upload_file
       vars:
         filename_to_upload: "{{ zowe_build_file }}"
-        zos_upload_method: sftp
+        file_upload_method: sftp
+        file_upload_hashcheck: true
 
   # ============================================================================
   # if zowe_build_local is set, upload to z/OS
@@ -61,7 +62,8 @@
         tasks_from: upload_file
       vars:
         filename_to_upload: "{{ zowe_build_file }}"
-        zos_upload_method: sftp
+        file_upload_method: sftp
+        file_upload_hashcheck: true
 
   # ============================================================================
   # Install Zowe
@@ -77,3 +79,4 @@
   # Start Zowe
   - import_role:
       name: start
+    when: not skip_start|default(False)
