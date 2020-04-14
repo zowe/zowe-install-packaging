@@ -1,0 +1,47 @@
+---
+# ============================================================================
+- name: Locate Zowe SMPE files
+  # this should set zowe_smpe_fmid if succeeds
+  import_role:
+    name: fmid
+    tasks_from: locate_fmid_on_server
+
+# ============================================================================
+# validate variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_smpe_dir_prefix
+    - zowe_smpe_hlq_dsn
+    - zowe_smpe_hlq_csi
+    - zowe_smpe_hlq_tzone
+    - zowe_smpe_hlq_dzone
+    - zowe_smpe_fmid
+    - zowe_smpe_rel_file_prefix
+
+- name: Prepare extracted and tmp folders
+  raw: >-
+    rm -fr "{{ work_dir_remote }}/tmp" && \
+    mkdir -p "{{ work_dir_remote }}/tmp" && \
+    chmod 777 "{{ work_dir_remote }}/tmp" && \
+    rm -fr "{{ work_dir_remote }}/extracted" && \
+    mkdir -p "{{ work_dir_remote }}/extracted"
+
+# ============================================================================
+# Run install-SMPE-PAX.sh to install Zowe SMPE FMID
+- name: Prepare install-SMPE-PAX.sh
+  template:
+    src: install-SMPE-PAX.sh.j2
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}/install-SMPE-PAX.sh"
+    newline_sequence: '\n'
+    mode: 0700
+  delegate_to: localhost
+
+- import_role:
+    name: zos
+    tasks_from: upload_and_run_script
+  vars:
+    upload_and_run_script_filename: install-SMPE-PAX.sh
+    upload_and_run_script_parameters: "{{ zowe_smpe_hlq_dsn }} {{ zowe_smpe_hlq_csi }} {{ zowe_smpe_hlq_tzone }} {{ zowe_smpe_hlq_dzone }} {{ (zowe_smpe_dir_prefix is regex(\"/$\")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + \"/\") }} {{ work_dir_remote }} {{ work_dir_remote }}/extracted {{ zowe_smpe_fmid }} {{ zowe_smpe_rel_file_prefix }} \"{{ zowe_smpe_volser }}\""

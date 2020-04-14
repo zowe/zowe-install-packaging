@@ -281,7 +281,6 @@ fi
 # stage build output for upload to artifactory
 cd "${CURR_PWD}"
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_FMID_ZIP}"  fmid.zip
-mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PTF_ZIP}"  ptf.zip
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}" pd.htm
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PROMOTE_TAR}" ${SMPE_PROMOTE_TAR}
 
@@ -289,7 +288,6 @@ mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PROMOTE_TAR}" ${SMPE_PROMOTE_TAR}
 # leave fixed name for PD to simplify automated processing by doc build
 # leave fixed name for promote.tar to simplify automated processing during promote
 echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
-echo "mv ptf.zip ${SMPE_PTF_ZIP}" >> rename-back.sh.1047
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
 # files to be uploaded to artifactory:

@@ -1,0 +1,63 @@
+---
+# This file is generated from command:
+#   find . -name main.yml | grep defaults | xargs cat | sort | uniq
+# and removed some constants normally we don't change
+
+# You can use this as starting point of a new host or host group.
+
+work_dir_remote:
+zos_java_home:
+zos_node_home:
+zos_zosmf_port: 10443
+zowe_apiml_catalog_port: 7552
+zowe_apiml_discovery_port: 7553
+zowe_apiml_enable_sso: false
+zowe_apiml_gateway_port: 7554
+zowe_apiml_verify_certficates_of_services: true
+zowe_auto_create_user_group: false
+zowe_dataset_prefix:
+zowe_external_certficate:
+zowe_external_certficate_alias:
+zowe_external_certficate_authorities:
+zowe_external_domain_name:
+zowe_external_ip_address:
+zowe_fmids_dir_remote:
+zowe_instance_dir: ~/.zowe/instance
+zowe_instance_id: 1
+zowe_job_prefix: ZWE
+zowe_jobs_api_port: 8545
+zowe_jobs_explorer_port: 8546
+zowe_keystore_alias: localhost
+zowe_keystore_dir: ~/.zowe/keystore
+zowe_keystore_password: password
+zowe_mvs_api_port: 8547
+zowe_mvs_explorer_port: 8548
+zowe_proclib_dsname: auto
+zowe_proclib_membername: ZWESVSTC
+zowe_root_dir: ~/zowe
+zowe_runtime_group: ZWEADMIN
+zowe_runtime_user: ZWESVUSR
+zowe_smpe_dir_prefix: /var
+zowe_smpe_hlq_csi:
+zowe_smpe_hlq_dsn:
+zowe_smpe_hlq_dzone:
+zowe_smpe_hlq_tzone:
+zowe_smpe_rel_file_prefix:
+zowe_smpe_volser:
+zowe_test_password:
+zowe_test_user:
+zowe_user_profile: ~/.zowe_profile
+zowe_uss_explorer_port: 8550
+zowe_xmem_loadlib:
+zowe_xmem_parmlib:
+zowe_xmem_proclib:
+zowe_xmem_proclib_member_aux: ZWESASTC
+zowe_xmem_proclib_member_zss: ZWESISTC
+zowe_xmem_stc_group: ZWEADMIN
+zowe_xmem_stc_user: ZWESIUSR
+zowe_zlux_port: 8544
+zowe_zlux_terminal_ssh_port: 22
+zowe_zlux_terminal_telnet_port: 23
+zowe_zlux_terminal_telnet_security_type:
+zowe_zosmf_certificate:
+zowe_zss_port: 8542

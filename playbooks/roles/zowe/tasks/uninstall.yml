@@ -1,0 +1,147 @@
+---
+# Uninstall Zowe
+
+# ============================================================================
+# check variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - work_dir_remote
+    - zowe_instance_dir
+    - zowe_keystore_dir
+    - zowe_dataset_prefix
+    - zowe_xmem_loadlib
+    - zowe_xmem_parmlib
+    - zowe_xmem_proclib_member_zss
+    - zowe_xmem_proclib_member_aux
+
+# ============================================================================
+- name: add zowe_xmem_proclib_member_zss to zowe_known_xmem_jobnames
+  set_fact:
+    zowe_known_xmem_jobnames: "{{ zowe_known_xmem_jobnames }} + [ '{{ zowe_xmem_proclib_member_zss }}' ]"
+  when: not zowe_xmem_proclib_member_zss in zowe_known_xmem_jobnames
+
+- name: add zowe_xmem_proclib_member_aux to zowe_known_xmem_jobnames
+  set_fact:
+    zowe_known_xmem_jobnames: "{{ zowe_known_xmem_jobnames }} + [ '{{ zowe_xmem_proclib_member_aux }}' ]"
+  when: not zowe_xmem_proclib_member_aux in zowe_known_xmem_jobnames
+
+- name: Stop Zowe Cross Memory Server
+  include_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: P {{ item }}
+  loop: "{{ zowe_known_xmem_jobnames }}"
+  ignore_errors: True
+
+- name: Stop Zowe if zowe-stop.sh exists
+  raw: test -f "{{ zowe_instance_dir }}/bin/zowe-stop.sh" && {{ zowe_instance_dir }}/bin/zowe-stop.sh
+  ignore_errors: True
+
+- name: Stopping Zowe
+  include_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: C {{ item }}
+  loop: "{{ zowe_known_jobnames }}"
+  ignore_errors: True
+
+- name: Deleting started tasks
+  raw: tsocmd 'RDELETE STARTED ({{ item }})'
+  loop: "{{ zowe_known_started_tasks }}"
+  ignore_errors: True
+
+- name: Deleting facility profiles
+  raw: tsocmd 'RDELETE FACILITY ({{ item }})'
+  loop: "{{ zowe_known_facility_profiles }}"
+  ignore_errors: True
+
+- name: Refresh STARTED
+  raw: tsocmd 'SETR RACLIST(STARTED) REFRESH'
+  ignore_errors: True
+
+- name: Refresh FACILITY
+  raw: tsocmd 'SETR RACLIST(FACILITY) REF'
+  ignore_errors: True
+
+# ============================================================================
+- name: Test if we have {{ zos_uss_user_profile }}
+  raw: test -f "{{ zos_uss_user_profile }}"
+  ignore_errors: True
+  register: zos_uss_user_profile_existence
+
+- name: Clean up {{ zos_uss_user_profile }}
+  when: zos_uss_user_profile_existence.rc == 0
+  block:
+  - name: Show user profile {{ zos_uss_user_profile }} before cleaning up
+    raw: cat {{ zos_uss_user_profile }}
+
+  - name: Remove ZOWE_* from {{ zos_uss_user_profile }}
+    raw: >-
+      sed -E '/export +ZOWE_[^=]+=/d' {{ zos_uss_user_profile }} > {{ zos_uss_user_profile }}.zowe-ansible-bak;
+      mv -f {{ zos_uss_user_profile }}.zowe-ansible-bak {{ zos_uss_user_profile }}
+
+  - name: Show user profile {{ zos_uss_user_profile }} after cleaning up
+    raw: cat {{ zos_uss_user_profile }}
+
+- name: Remove zowe user profile {{ zowe_user_profile }}
+  raw: rm -f {{ zowe_user_profile }}
+
+# ============================================================================
+- name: List proclibs on server
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' '$d proclib' | grep 'DSNAME=.*\.PROCLIB' | sed 's/.*DSNAME=\(.*\)\.PROCLIB.*/\1.PROCLIB/'
+  register: server_proclibs
+
+# ============================================================================
+- name: Delete Zowe STC
+  raw: (tsocmd listds "'{{ item[0] }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1' | grep '^{{ item[1] }}$') && echo "Deleting {{ item[0] }}({{ item[1] }}) ..." && tsocmd DELETE "'{{ item[0] }}({{ item[1] }})'"
+  loop: "{{ server_proclibs.stdout_lines|product(zowe_known_proc_stcs)|list }}"
+  ignore_errors: True
+
+# ============================================================================
+- name: Check APF settings of {{ zowe_xmem_loadlib }}
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'D PROG,APF,DSNAME={{ zowe_xmem_loadlib }}' | grep '[0-9]\{1,\} \{1,\}[0-9a-zA-Z*]\{1,\} \{1,\}{{ zowe_xmem_loadlib }}' | awk '{print $2}' | tr -d '\n'
+  register: zowe_xmem_loadlib_volume
+  ignore_errors: true
+
+- name: Delete APF settings of {{ zowe_xmem_loadlib }} for SMS volume
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_loadlib }},SMS'
+  when: zowe_xmem_loadlib_volume.stdout == 'SMS' or zowe_xmem_loadlib_volume.stdout == '*SMS*'
+
+- name: Delete APF settings of {{ zowe_xmem_loadlib }} for non-SMS volume
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_loadlib }},VOLUME={{ zowe_xmem_loadlib_volume.stdout }}'
+  when:
+  - zowe_xmem_loadlib_volume.stdout != ''
+  - zowe_xmem_loadlib_volume.stdout != 'SMS'
+  - zowe_xmem_loadlib_volume.stdout != '*SMS*'
+
+# ============================================================================
+- name: Delete members of loadlib/parmlib data sets
+  raw: (tsocmd listds "'{{ item[0] }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1' | grep '^{{ item[1] }}$') && echo "Deleting {{ item[0] }}({{ item[1] }}) ..." && tsocmd DELETE "'{{ item[0] }}({{ item[1] }})'"
+  loop: "{{ [zowe_xmem_loadlib, zowe_xmem_parmlib]|product([zowe_known_loadlib_members, zowe_known_parmlib_members]|flatten)|list }}"
+  ignore_errors: True
+
+# ============================================================================
+- name: Remove everything prefix with {{ zowe_dataset_prefix }}
+  raw: tsocmd listds "'{{ zowe_dataset_prefix }}'" level | grep '{{ zowe_dataset_prefix }}' | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
+  ignore_errors: True
+
+# ============================================================================
+- name: Remove installation folders
+  raw: echo rm -fr {{ item }} | su
+  loop:
+  - "{{ zowe_root_dir }}"
+  - "{{ zowe_instance_dir }}"
+  - "{{ zowe_keystore_dir }}"
+  # configure certificate log, added after v1.7.1
+  # these files should be organized into install_log
+  - "~/zowe_certificate_setup_log"
+  - "~/zowe-*.log"

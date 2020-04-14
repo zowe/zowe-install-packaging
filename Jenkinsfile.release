@@ -483,6 +483,9 @@ echo ===============================================
     name          : "Message",
     isSkippable   : true,
     stage         : {
+      // update build description with release version
+      currentBuild.description = "v${params.ZOWE_RELEASE_VERSION}".toString()
+
       def source = ""
       if (params.ZOWE_BUILD_NUMBER) {
         source = "Build #${params.ZOWE_BUILD_NUMBER}"

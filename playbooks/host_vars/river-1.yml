@@ -1,0 +1,7 @@
+---
+ansible_port: 50001
+ansible_user:
+ansible_password:
+
+# zowe running in container
+zos_zosmf_port: 50018

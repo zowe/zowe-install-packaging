@@ -1,0 +1,47 @@
+---
+# this playbook call bin/zowe-configure-instance.sh to create instance
+- name: Create Zowe instance
+  import_role:
+    name: zos
+    tasks_from: run_script
+  vars:
+    script_chdir: "{{ zowe_root_dir }}/bin"
+    script_filename: ./zowe-configure-instance.sh
+    script_parameters: "-c \"{{ zowe_instance_dir }}\""
+
+- name: Check instance directory
+  raw: test -f "{{ zowe_instance_dir }}/bin/zowe-start.sh"
+  register: zowe_configure_instance_result
+
+- name: Check file existence check exit code
+  fail:
+    msg: "After configuring instance, {{ zowe_instance_dir }}/bin/zowe-start.sh doesn't exist."
+  when: zowe_configure_instance_result.rc != 0
+
+- name: Update instance.env
+  raw: >-
+    cat "{{ zowe_instance_dir }}/instance.env" | \
+    sed -e "s+^ZOWE_EXPLORER_HOST=.*\$+ZOWE_EXPLORER_HOST={{ zowe_external_domain_name }}+" | \
+    sed -e "s+^ZOWE_PREFIX=.*\$+ZOWE_PREFIX={{ zowe_job_prefix }}+" | \
+    sed -e "s+^ZOWE_INSTANCE=.*\$+ZOWE_INSTANCE={{ zowe_instance_id }}+" | \
+    sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
+    sed -e "s+^CATALOG_PORT=.*\$+CATALOG_PORT={{ zowe_apiml_catalog_port }}+" | \
+    sed -e "s+^DISCOVERY_PORT=.*\$+DISCOVERY_PORT={{ zowe_apiml_discovery_port }}+" | \
+    sed -e "s+^GATEWAY_PORT=.*\$+GATEWAY_PORT={{ zowe_apiml_gateway_port }}+" | \
+    sed -e "s+^APIML_ENABLE_SSO=.*\$+APIML_ENABLE_SSO={{ zowe_apiml_enable_sso|string|lower }}+" | \
+    sed -e "s+^JOBS_API_PORT=.*\$+JOBS_API_PORT={{ zowe_jobs_api_port }}+" | \
+    sed -e "s+^FILES_API_PORT=.*\$+FILES_API_PORT={{ zowe_mvs_api_port }}+" | \
+    sed -e "s+^JES_EXPLORER_UI_PORT=.*\$+JES_EXPLORER_UI_PORT={{ zowe_jobs_explorer_port }}+" | \
+    sed -e "s+^MVS_EXPLORER_UI_PORT=.*\$+MVS_EXPLORER_UI_PORT={{ zowe_mvs_explorer_port }}+" | \
+    sed -e "s+^USS_EXPLORER_UI_PORT=.*\$+USS_EXPLORER_UI_PORT={{ zowe_uss_explorer_port }}+" | \
+    sed -e "s+^ZOWE_ZLUX_SERVER_HTTPS_PORT=.*\$+ZOWE_ZLUX_SERVER_HTTPS_PORT={{ zowe_zlux_port }}+" | \
+    sed -e "s+^ZOWE_ZSS_SERVER_PORT=.*\$+ZOWE_ZSS_SERVER_PORT={{ zowe_zss_port }}+" | \
+    sed -e "s+^ZOWE_ZSS_XMEM_SERVER_NAME=.*\$+ZOWE_ZSS_XMEM_SERVER_NAME={{ zowe_zss_xmem_name }}+" | \
+    sed -e "s+^ZOWE_ZLUX_SSH_PORT=.*\$+ZOWE_ZLUX_SSH_PORT={{ zowe_zlux_terminal_ssh_port }}+" | \
+    sed -e "s+^ZOWE_ZLUX_TELNET_PORT=.*\$+ZOWE_ZLUX_TELNET_PORT={{ zowe_zlux_terminal_telnet_port }}+" | \
+    sed -e "s+^ZOWE_ZLUX_SECURITY_TYPE=.*\$+ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }}+" \
+    > "{{ zowe_instance_dir }}/instance.env.tmp" && \
+    mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
+
+- name: Show instance.env
+  raw: cat "{{ zowe_instance_dir }}/instance.env"

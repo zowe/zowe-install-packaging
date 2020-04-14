@@ -1,0 +1,72 @@
+---
+# ============================================================================
+# validate variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_root_dir
+    - zowe_instance_dir
+    - zowe_xmem_proclib
+
+# ============================================================================
+- name: Locate Cross Memory Server
+  block:
+  - name: Init zowe_xmem_stc_name variable
+    set_fact:
+      zowe_xmem_stc_name: ""
+  - name: List members of zowe_xmem_proclib - {{ zowe_xmem_proclib }}
+    raw: tsocmd listds "'{{ zowe_xmem_proclib }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1'
+    register: zos_proclib_members
+    ignore_errors: True
+  - name: Find crosss memory server proc
+    set_fact:
+      zowe_xmem_stc_name: "{{ item }}"
+    when: item in zos_proclib_members.stdout_lines
+    loop: "{{ zowe_known_xmem_proc_stcs }}"
+  - name: Show zowe_xmem_stc_name value
+    debug:
+      var: zowe_xmem_stc_name
+
+- name: Locate zowe-stop.sh
+  block:
+  - name: Init zowe_stop_path variable
+    set_fact:
+      zowe_stop_path: ""
+  - name: Check if zowe-stop.sh is located at instanceDir
+    raw: test -f {{ zowe_instance_dir }}/bin/zowe-stop.sh && echo "{{ zowe_instance_dir }}/bin/zowe-stop.sh" | tr -d '\n'
+    register: zowe_stop_at_instancedir
+    ignore_errors: yes
+    when: zowe_stop_path == ""
+  - name: Set zowe_stop_path to {{ zowe_stop_at_instancedir.stdout }}
+    set_fact:
+      zowe_stop_path: "{{ zowe_stop_at_instancedir.stdout }}"
+    when: zowe_stop_path == "" and zowe_stop_at_instancedir.stdout != ''
+  - name: Check if zowe-stop.sh is located at rootDir
+    raw: test -f {{ zowe_root_dir }}/scripts/zowe-stop.sh && echo "{{ zowe_root_dir }}/scripts/zowe-stop.sh" | tr -d '\n'
+    register: zowe_stop_at_rootdir
+    ignore_errors: yes
+    when: zowe_stop_path == ""
+  - name: Set zowe_stop_path to {{ zowe_stop_at_rootdir.stdout }}
+    set_fact:
+      zowe_stop_path: "{{ zowe_stop_at_rootdir.stdout }}"
+    when: zowe_stop_path == "" and zowe_stop_at_rootdir.stdout != ''
+  - name: Show zowe_stop_path value
+    debug:
+      var: zowe_stop_path
+  - name: Check if zowe_stop_path has a value
+    fail:
+      msg: Cannot find zowe-stop.sh
+    when: zowe_stop_path == ""
+
+# ============================================================================
+- name: Stop Cross Memory Server
+  import_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: "P {{ zowe_xmem_stc_name }}"
+
+- name: Stop Zowe
+  raw: "{{ zowe_stop_path }}"
