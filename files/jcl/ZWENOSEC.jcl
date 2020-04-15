@@ -75,7 +75,7 @@
 //         SET PRODUCT=RACF          * RACF, ACF2, or TSS
 //*                     12345678
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
-//         SET STCGRP=&ADMINGRP.     * group for Zowe started tasks
+//         SET   STCGRP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
