@@ -114,12 +114,7 @@ do while lines(Input) > 0
     if(tag == "variable name") then /* Store the found variable names in array */
     do
       parse var line_str 'name="' xmlVariables.xmlIndex '"' line_str
-      say xmlVariables.xmlIndex
       xmlIndex = xmlIndex + 1
-    end
-    else if(tag == "step name") then /* No need to continie when steps are reached */
-    do
-      lines(Input) = 0
     end
     else /* If no variable name null the line */
     do
@@ -149,36 +144,54 @@ do I=1 to iFile.0
       then exit 8  /* error already reported */     /* LEAVE PROGRAM */
 
     /* Check variables in VLT file(s) */
+    checkFailed = 0
     do while lines(Include) > 0
       check_str = linein(Include)
+      totalMatchesCount = 0 /* The number of matches so far */
+      varcount = 0
+      vtlIndex = 0
       do while check_str <> ''
-        totalMatchesCount = 0 /* The number of */
-        if(find(check_str, '$') > 0) then do
-          currentVar = '' /* Initiate empy current variable*/
-          if(find(check_str, '${') > 0) then do
-            parse var line_str '${' currentVar "}" Other
+        parse var check_str pre '$' post
+        currentVar = '' /* Initiate empy current variable*/
+        if(length(post) > 0 ) then do
+          varcount = varcount + 1
+          parse var post leftBrace '{' possibleVar "}" Other
+          if(length(possibleVar) > 0) then do
+            currentVar = possibleVar
           end
           else do
-            parse var line_str '$' currentVar " " Other
-          end
-          if(currentVar != '') then do
-            i = 0
-            do while i <= xmlIndex
-              if(xmlVariables.i == currentVar) then do
-                totalMatchesCount = totalMatchesCount + 1
-              end
-            i = i + 1
+            parse var check_str '$$' doublePref1 " " Other
+            parse var check_str '$&' doublePref2 " " Other
+            parse var check_str '$' possiblyOk " " Other
+            if(length(doublePref1) > 0) | (check_str == "$$") | (length(doublePref2) > 0) then do
+              currentVar = ''
             end
-            if(totalMatchesCount < i) then do
-              say 'ERROR: no variable with name "' currentVar '" was found in the ' Input ' template!'
-             exit 8
+            else do
+              currentVar = possiblyOk
             end
           end
         end
-        else do
-          line_str = ''
+        check_str = ''
+      end
+      if(length(currentVar) > 0) then do
+        vtlIndex = vtlIndex + 1
+        count = 0
+        noMatch = 1
+        do until count >= xmlIndex
+          if (currentVar == xmlVariables.count) then do
+            totalMatchesCount = totalMatchesCount + 1
+            noMatch = 0
+          end
+          count = count + 1
+        end
+        if (noMatch == 1) then do
+          say 'ERROR: no variable with name "' currentVar '" was found in the ' Input ' template!'
+          checkFailed = 1
         end
       end
+    end
+    if(checkFailed == 1) then do
+        exit 8
     end
 
     select
