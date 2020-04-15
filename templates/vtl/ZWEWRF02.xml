@@ -20,6 +20,53 @@
 		<vendor>Zowe</vendor>
 		<General/>
 	</workflowInfo>
+	<variable name="ibmTemplate" scope="instance" visibility="public">
+		<label>Original IBM JCLs in steps</label>
+		<abstract>Specifies whether steps should contain original IBM JCLs (keep NO to run properly with zosmf)</abstract>
+		<description>IBM have JCLs not ready for automatic execution. &lt;br&gt;Modifications were done to run properly automatically under zosmf workflow.&lt;br&gt; If you specify YES, you would have to update every step context manually before step execution.</description>
+		<category>Internal</category>
+		<string valueMustBeChoice="true" multiLine="false">
+			<choice>YES</choice>
+			<choice>NO</choice>
+			<default>NO</default>
+		</string>
+	</variable>
+	<variable name="jobCard" scope="instance" visibility="public">
+		<label>jobCard</label>
+		<abstract>Change jobCard to 'YES' to generate a job card for the JCL,if you have a default job card you ..</abstract>
+		<description>Change jobCard to 'YES' to generate a job card for the JCL,&lt;br&gt;if you have a default job card you want to use do not change this value.</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#jobCard</default>
+		</string>
+	</variable>
+	<variable name="acct" scope="instance" visibility="public">
+		<label>acct</label>
+		<abstract>Change acct to a valid accounting information parameter.This value is required and only used i..</abstract>
+		<description>Change acct to a valid accounting information parameter.&lt;br&gt;This value is required and only used if a new jobcard is generated.&lt;br&gt;(see jobCard)</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#acct</default>
+		</string>
+	</variable>
+	<variable name="user" scope="instance" visibility="public">
+		<label>user</label>
+		<abstract>Change user to a valid user ID on the system to identify the person submitting the job.This va..</abstract>
+		<description>Change user to a valid user ID on the system to identify the person submitting the job.&lt;br&gt;This value only used if a new jobcard is generated and it is not required.</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#user</default>
+		</string>
+	</variable>
+	<variable name="sysaff" scope="instance" visibility="public">
+		<label>sysaff</label>
+		<abstract>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.&lt;..</abstract>
+		<description>Change sysaff to indicate the JES2 members and JES3 systems that are eligible to process the job.&lt;br&gt;This value only used if a new jobcard is generated and it is not required.</description>
+		<category>Internal</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#sysaff</default>
+		</string>
+	</variable>
 	<variable name="PRODUCT" scope="instance" visibility="public">
 		<label>PRODUCT</label>
 		<abstract>Select statement to match your security product</abstract>
