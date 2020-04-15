@@ -18,7 +18,7 @@ export _BPXK_AUTOCVT="ON"
 
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
-umask 0022                                       # similar to chmod 755
+umask 0002                                       # similar to chmod 755
 
 # Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
 export __UNTAGGED_READ_MODE=V6

@@ -10,7 +10,7 @@
 # - ZOSMF_CERTIFICATE - Public certificates of z/OSMF - multiple certificates delimited with space has to be enclosed with quotes ("path/cer1 path/cer2")
 
 # - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore)
-# - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and 
+# - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
@@ -20,7 +20,7 @@ LOG_DIR=${HOME}/zowe_certificate_setup_log
 # Make the log directory if needed - first time through - subsequent installs create new .log files
 if [[ ! -d $LOG_DIR ]]; then
     mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
+    chmod a+rwx $LOG_DIR
 fi
 
 export LOG_FILE="certificate_config_`date +%Y-%m-%d-%H-%M-%S`.log"
@@ -60,7 +60,7 @@ else
   then
     echo "Loading ${CERTIFICATES_CONFIG_FILE} file and overriding default variables."
     # Load custom values
-    . ${CERTIFICATES_CONFIG_FILE}  
+    . ${CERTIFICATES_CONFIG_FILE}
   else
     echo "${CERTIFICATES_CONFIG_FILE} file does not exist."
     exit 1
@@ -77,7 +77,7 @@ LOCAL_KEYSTORE_SUBDIR=local_ca
 
 # create keystore directories
 if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
-  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then 
+  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then
     echo "Unable to create ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} directory."
     exit 1;
   fi
@@ -138,7 +138,8 @@ fi
 
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
-    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
+    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+    --service-keystore ${KEYSTORE_PREFIX}
   RC=$?
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
