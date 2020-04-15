@@ -10,7 +10,8 @@
     tasks_from: upload_file
   vars:
     filename_to_upload: "{{ upload_and_run_script_filename }}"
-    zos_upload_method: scp
+    file_upload_method: scp
+    file_upload_hashcheck: false
 
 - name: Add executive permission to {{ upload_and_run_script_filename }}
   raw: chmod a+x "{{ work_dir_remote }}/{{ upload_and_run_script_filename }}"

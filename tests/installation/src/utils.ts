@@ -1,0 +1,302 @@
+/**
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2020
+ */
+
+import * as util from 'util';
+import { spawn, SpawnOptions } from 'child_process';
+import * as crypto from 'crypto';
+import { pathExistsSync, ensureDirSync, copySync, removeSync  } from 'fs-extra';
+import * as path from 'path';
+import Debug from 'debug';
+const debug = Debug('zowe-install-test:utils');
+
+import {
+  ZOWE_FMID,
+  ANSIBLE_ROOT_DIR,
+  SANITY_TEST_REPORTS_DIR,
+  INSTALL_TEST_REPORTS_DIR,
+} from './constants';
+
+/**
+ * Sleep for certain time
+ * @param {Integer} ms 
+ */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/**
+ * Check if there are any mandatory environment variable is missing.
+ * 
+ * @param {Array} vars     list of env variable names
+ */
+export function checkMandatoryEnvironmentVariables(vars: string[]): void {
+  for (const v of vars) {
+    expect(process.env).toHaveProperty(v);
+  }
+};
+
+/**
+ * Generate MD5 hash of a variable
+ *
+ * @param {Any} obj        any object
+ */
+export function calculateHash(obj: any): string {
+  return crypto.createHash('md5').update(util.format('%j', obj)).digest('hex');
+};
+
+/**
+ * Copy sanity test report to install test report folder for future publish.
+ *
+ * @param {String} reportHash      report hash
+ */
+export function copySanityTestReport(reportHash: string): void {
+  debug(`Copy sanity test report of ${reportHash}`);
+  if (pathExistsSync(path.resolve(SANITY_TEST_REPORTS_DIR, 'junit.xml'))) {
+    debug(`Found junit.xml in ${SANITY_TEST_REPORTS_DIR}`);
+    const targetReportDir: string = path.resolve(INSTALL_TEST_REPORTS_DIR, `${reportHash}`);
+    debug(`- copy to ${targetReportDir}`);
+    ensureDirSync(targetReportDir);
+    copySync(SANITY_TEST_REPORTS_DIR, targetReportDir);
+  } else {
+    debug(`junit.xml NOT found in ${SANITY_TEST_REPORTS_DIR}`);
+  }
+};
+
+/**
+ * Clean up sanity test report directory for next test
+ */
+export function cleanupSanityTestReportDir(): void {
+  debug(`Clean up sanity test reports directory: ${SANITY_TEST_REPORTS_DIR}`);
+  removeSync(SANITY_TEST_REPORTS_DIR);
+  ensureDirSync(SANITY_TEST_REPORTS_DIR);
+};
+
+/**
+ * Import extra vars for Ansible playbook from environment variables.
+ * 
+ * @param {Object} extraVars      Object
+ * @param {String} serverId       String
+ */
+export function importDefaultExtraVars(extraVars: {[key: string]: string}, serverId: string): void {
+  const defaultMapping: {[key: string]: string[]} = {
+    'ansible_ssh_host'           : ['SSH_HOST'],
+    'ansible_port'               : ['SSH_PORT'],
+    'ansible_user'               : ['SSH_USER'],
+    'ansible_password'           : ['SSH_PASSWORD'],
+    'zos_node_home'              : ['ZOS_NODE_HOME'],
+    'zowe_sanity_test_debug_mode': ['SANITY_TEST_DEBUG'],
+  };
+  const serverIdSanitized = serverId.replace(/[^A-Za-z0-9]/g, '_').toUpperCase();
+  defaultMapping['ansible_ssh_host'].push(`${serverIdSanitized}_SSH_HOST`);
+  defaultMapping['ansible_port'].push(`${serverIdSanitized}_SSH_PORT`);
+  defaultMapping['ansible_user'].push(`${serverIdSanitized}_SSH_USER`);
+  defaultMapping['ansible_password'].push(`${serverIdSanitized}_SSH_PASSWORD`);
+
+  Object.keys(defaultMapping).forEach((item) => {
+    for (const k of defaultMapping[item]) {
+      if (process.env[k] && !extraVars[item]) {
+        extraVars[item] = process.env[k];
+      }
+    }
+  });
+};
+
+type PlaybookResponse = {
+  reportHash: string;
+  code: number | null;
+  stdout: string;
+  stderr: string;
+  error?: Error;
+};
+
+/**
+ * Run Ansible playbook
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    playbook
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ * @param  {String}    verbose
+ */
+export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: string} = {}, verbose = '-v'): Promise<PlaybookResponse> {
+  return new Promise((resolve, reject) => {
+    const result: PlaybookResponse = {
+      reportHash: calculateHash(testcase),
+      code: null,
+      stdout: '',
+      stderr: '',
+    };
+    // import default vars
+    if (!extraVars) {
+      extraVars = {};
+    }
+    importDefaultExtraVars(extraVars, serverId);
+    const params = [
+      '-l', serverId,
+      playbook,
+      process.env.ANSIBLE_VERBOSE || verbose,
+      `--extra-vars`,
+      util.format('%j', extraVars),
+    ];
+    const opts: SpawnOptions = {
+      cwd: ANSIBLE_ROOT_DIR,
+      stdio: 'inherit',
+    };
+
+    debug(`Playbook ${playbook} started with parameter: ${util.format('%j', params)}`);
+    const pb = spawn('ansible-playbook', params, opts);
+
+    pb.on('error', (err) => {
+      process.stderr.write('Child Process Error: ' + err);
+      result.error = err;
+
+      reject(result);
+    });
+
+    pb.on('close', (code) => {
+      result.code = code;
+
+      if (code === 0) {
+        resolve(result);
+      } else {
+        reject(result);
+      }
+    });
+  });
+};
+
+/**
+ * Install and verify a Zowe build
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    installPlaybook
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  debug(`run ${installPlaybook} on ${serverId}`);
+  const resultInstall = await runAnsiblePlaybook(
+    testcase,
+    installPlaybook,
+    serverId,
+    extraVars
+  );
+
+  expect(resultInstall.code).toBe(0);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  debug(`run verify.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify.yml',
+      serverId
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
+};
+
+/**
+ * Install and verify convenience build
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
+};
+
+/**
+ * Install and verify SMPE FMID
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  await installAndVerifyZowe(testcase, 'install-fmid.yml', serverId, extraVars);
+}
+
+/**
+ * Install and verify SMPE PTF
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndVerifySmpeFmid(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  debug(`run install-fmid.yml on ${serverId}`);
+  const resultFmid = await runAnsiblePlaybook(
+    testcase,
+    'install-fmid.yml',
+    serverId,
+    {
+      'zowe_build_remote': ZOWE_FMID
+    }
+  );
+
+  expect(resultFmid.code).toBe(0);
+
+  debug(`run install-ptf.yml on ${serverId}`);
+  const resultPtf = await runAnsiblePlaybook(
+    testcase,
+    'install-ptf.yml',
+    serverId,
+    extraVars
+  );
+
+  expect(resultPtf.code).toBe(0);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  debug(`run verify.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify.yml',
+      serverId
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
+};
