@@ -46,7 +46,7 @@
 //*    If you use ${fsvol}, also uncomment all references to it:
 //*    - VOLUMES(${fsvol}) in step ZFSALLOC
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //* 4) Change the string "${pathPrefix}" to the appropriate
 #end
 #if($ibmTemplate == 'YES')
@@ -110,7 +110,7 @@
 //*    and resubmit this job.
 //*
 //********************************************************************
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         EXPORT SYMLIST=*
 #end
 #if($ibmTemplate == 'YES')
@@ -118,7 +118,7 @@
 #end
 //*
 //         SET DSN='${fsdsn}'
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         SET CSIVOL='${csivol}'
 //         SET STCLAS='${storclass}'
 //         SET DTCLAS='${dataclass}'
@@ -153,7 +153,7 @@
 //ZFSFORMT EXEC PGM=IOEAGFMT,REGION=0M,COND=(4,LT),
 //            PARM='-aggregate &DSN -compat'
 //*STEPLIB  DD DISP=SHR,DSN=IOE.SIOELMOD        before z/OS 1.13
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //STEPLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE       from z/OS 1.13
 #end
 #if($ibmTemplate == 'YES')
@@ -167,7 +167,7 @@
 //SYSTSPRT DD SYSOUT=*
 //SYSTSIN  DD DUMMY
 //ROOT     DD DATA,DLM=$$                        data can be multi-line
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
   ${pathPrefix}
   usr/lpp/zowe
 #end

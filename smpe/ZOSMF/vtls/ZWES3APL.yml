@@ -41,6 +41,3 @@ holddata: 'no'
 
 # Change ibmTemplate to NO, if you are not generating IBM complient JCL templates
 ibmTemplate: 'YES'
-
-# See which SYSMODs are included before you actually install them
-sysmodsCheck: 'YES'

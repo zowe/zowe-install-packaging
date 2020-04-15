@@ -97,7 +97,7 @@
 PROFILE MSGID
 ZWEMKDIR
 //ROOT     DD DATA,DLM=$$                        data can be multi-line
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
   ${pathPrefix}
   usr/lpp/zowe
 #end
