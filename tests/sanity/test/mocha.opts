@@ -1,5 +1,0 @@
---recursive
---timeout 360s
---reporter mocha-multi-reporters
---reporter-options configFile=test/multi-reporters.json
---require test/mocha-helper.js
