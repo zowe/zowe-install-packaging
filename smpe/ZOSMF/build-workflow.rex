@@ -111,13 +111,11 @@ do while lines(Input) > 0
   line_str = linein(Input)
   do while line_str <> ''
     parse var line_str '<' tag '='
-    if(tag == "variable name") then /* Store the found variable names in array */
-    do
+    if(tag == "variable name") then do /* Store the found variable names in array */
       parse var line_str 'name="' xmlVariables.xmlIndex '"' line_str
       xmlIndex = xmlIndex + 1
     end
-    else /* If no variable name null the line */
-    do
+    else do /* If no variable name null the line */
       line_str = ''
     end
    end
@@ -144,7 +142,7 @@ do I=1 to iFile.0
       then exit 8  /* error already reported */     /* LEAVE PROGRAM */
 
     /* Check variables in VLT file(s) */
-    checkFailed = 0
+    checkFailed = 0 /* Set to 1 if there are variables missing */
     do while lines(Include) > 0
       check_str = linein(Include)
       totalMatchesCount = 0 /* The number of matches so far */
@@ -152,46 +150,46 @@ do I=1 to iFile.0
       vtlIndex = 0
       do while check_str <> ''
         parse var check_str pre '$' post
-        currentVar = '' /* Initiate empy current variable*/
-        if(length(post) > 0 ) then do
+        currentVar = '' /* Initiate empy current variable */
+        if(length(post) > 0 ) then do /* Check if there is a $ on this line */
           varcount = varcount + 1
           parse var post leftBrace '{' possibleVar "}" Other
-          if(length(possibleVar) > 0) then do
+          if(length(possibleVar) > 0) then do /* Check if the variable is in curly brackets */
             currentVar = possibleVar
           end
-          else do
+          else do /* If it is not in curly brackets */
             parse var check_str '$$' doublePref1 " " Other
             parse var check_str '$&' doublePref2 " " Other
             parse var check_str '$' possiblyOk " " Other
-            if(length(doublePref1) > 0) | (check_str == "$$") | (length(doublePref2) > 0) then do
+            if(length(doublePref1) > 0) | (check_str == "$$") | (length(doublePref2) > 0) then do /* Exclude unwanted lines */
               currentVar = ''
             end
-            else do
+            else do /* The remaining should be fine, filters should be updated if needed */
               currentVar = possiblyOk
             end
           end
         end
         check_str = ''
       end
-      if(length(currentVar) > 0) then do
+      if(length(currentVar) > 0) then do /* Check if there is a variable on this line */
         vtlIndex = vtlIndex + 1
         count = 0
         noMatch = 1
-        do until count >= xmlIndex
-          if (currentVar == xmlVariables.count) then do
-            totalMatchesCount = totalMatchesCount + 1
+        do until count >= xmlIndex /* Loop through the xml variables array to find matches */
+          if (currentVar == xmlVariables.count) then do /* Check if there is a match */
+            totalMatchesCount = totalMatchesCount + 1 /* Update total match counter (currently not used) */
             noMatch = 0
           end
           count = count + 1
         end
-        if (noMatch == 1) then do
-          say 'ERROR: no variable with name "' currentVar '" was found in the ' Input ' template!'
+        if (noMatch == 1) then do /* Return an error message if this variable is not found */
+          say 'ERROR: The variable "'currentVar'" from the VTL file "'Include'" was not found in the "'Input'" template!'
           checkFailed = 1
         end
       end
     end
     if(checkFailed == 1) then do
-        exit 8
+        exit 8 /* LEAVE PROGRAM */
     end
 
     select
