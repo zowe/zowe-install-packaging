@@ -15,5 +15,5 @@ PORT=$1
 MATCHES=`onetstat -P $PORT | grep -c $PORT`
 if [[ $MATCHES > 0 ]]
 then
-    echo "Port $PORT is already in use by process `onetstat -P $PORT | grep Listen`"
+    . ${ROOT_DIR}/scripts/utils/error.sh "Port $PORT is already in use by process `onetstat -P $PORT | grep Listen`"
 fi
