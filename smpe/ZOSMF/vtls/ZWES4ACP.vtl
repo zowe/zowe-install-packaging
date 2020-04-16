@@ -53,7 +53,7 @@
 //********************************************************************
 //         EXPORT SYMLIST=(ZONE,SYSMOD)
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         SET SYSMOD='${sysmod}'
 //         SET ZONE='${dzone}'
 //         SET CSIHLQ='${csihlq}'
@@ -69,9 +69,7 @@
 //SMPCNTL  DD *,SYMBOLS=JCLONLY
    SET BOUNDARY(&ZONE) .
    ACCEPT REDO COMPRESS(ALL)
-#if( $sysmodsCheck == 'YES')
           CHECK
-#end
           SELECT(
    &SYSMOD
    ) .
