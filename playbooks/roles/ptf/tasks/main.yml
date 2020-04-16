@@ -43,7 +43,8 @@
     tasks_from: upload_file
   vars:
     filename_to_upload: "{{ item }}.jcl"
-    zos_upload_method: scp
+    file_upload_method: scp
+    file_upload_hashcheck: false
   loop: "{{ zowe_ptf_install_jcls }}"
 
 # ============================================================================

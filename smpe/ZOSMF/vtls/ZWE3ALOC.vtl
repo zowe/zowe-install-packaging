@@ -78,7 +78,7 @@
 //********************************************************************
 //*
 //* ALLOCATE TARGET LIBRARIES
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //* longest DSN is thlq.llq, so THLQ can be up to 35 chars
 #end
 //*
@@ -138,7 +138,7 @@
 //EALLOCT  PEND
 //*
 //* ALLOCATE DISTRIBUTION LIBRARIES
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //* longest DSN is dhlq.llq, so dHLQ can be up to 35 chars
 #end
 //*

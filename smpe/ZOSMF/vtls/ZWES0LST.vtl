@@ -36,7 +36,7 @@
 //* 2) Change ${csihlq} to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //* 3) Change ${tzone} to your CSI target zone name.
 //*
 //* 4) Change ${tzone} to your CSI distribution zone name.
@@ -58,7 +58,7 @@
 //********************************************************************
 //         EXPORT SYMLIST=(ZONE)
 //*
-#if($ibmTemplate == 'NO')
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //RECEIVE  SET ZONE='${tzone}'
 #end
 #if($ibmTemplate == 'YES')

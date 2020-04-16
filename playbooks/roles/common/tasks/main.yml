@@ -11,3 +11,7 @@
 - import_role:
     name: common
     tasks_from: prepare_scp_sftp
+
+- import_role:
+    name: common
+    tasks_from: upload_essentials

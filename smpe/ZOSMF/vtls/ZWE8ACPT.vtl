@@ -34,7 +34,11 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
+#if($ibmTemplate == 'YES')
 //* 2) Change ${csihlq} to the high level qualifier for the global zone
+#else
+//* 2) Change csihlq to the high level qualifier for the global zone
+#end
 //*    of the CSI.
 //*
 //* 3) Change ${dzone} to your CSI distribution zone name.
@@ -57,8 +61,16 @@
   SET BOUNDARY(${dzone}) .
   ACCEPT SELECT([FMID])
          BYPASS(HOLDSYS,HOLDUSER)
-#if( $sysmodsCheck == 'YES')
          CHECK
-#end
          COMPRESS(ALL) .
 //*
+#if($ibmTemplate == 'NO' || !$!ibmTemplate)
+//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(0,NE)
+//SMPCSI   DD DISP=OLD,DSN=${csihlq}.CSI
+//SMPCNTL  DD *
+  SET BOUNDARY(${dzone}) .
+  ACCEPT SELECT([FMID])
+         BYPASS(HOLDSYS,HOLDUSER)
+         COMPRESS(ALL) .
+//*
+#end
