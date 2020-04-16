@@ -28,7 +28,7 @@
 //* 3) Update the SET ADMINGRP= statement to match the desired
 //*    group name for Zowe administrators.
 //*
-//* 4) Update the SET STCGROUP= statement to match the desired
+//* 4) Update the SET STCGRP= statement to match the desired
 //*    group name for started tasks.
 //*
 //* 5) Update the SET ZOWEUSER= statement to match the desired
@@ -71,13 +71,13 @@
 //*    TO ALTER SECURITY DEFINITONS
 //*
 //* 2. The sample ACF2 commands create ROLEs that match the group
-//*    names. Due to permits assigned to the &STCGROUP ROLE, it is
+//*    names. Due to permits assigned to the &STCGRP ROLE, it is
 //*    advised to ensure this ROLE has a unique identifier.
 //*
 //* 3. The Zowe started task user ID (variable ZOWEUSER) must be able
 //*    to write persistent data in the zlux-app-server/deploy directory
 //*    structure. This sample JCL makes the Zowe started task part of
-//*    the Zowe administrator group (SET STCGROUP=&ADMINGRP. statement)
+//*    the Zowe administrator group (SET STCGRP=&ADMINGRP. statement)
 //*    to achieve this goal. Another solution, also below, which you can
 //*    comment out, is giving the Zowe started task CONTROL access to
 //*    the UNIXPRIV SUPERUSER.FILESYS profile.
@@ -91,7 +91,7 @@
 //         SET  PRODUCT=RACF         * RACF, ACF2, or TSS
 //*                     12345678
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
-//         SET STCGROUP=&ADMINGRP.   * group for Zowe started tasks
+//         SET   STCGRP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
@@ -162,7 +162,7 @@
 
 /* activate started task class                                       */
   SETROPTS GENERIC(STARTED)
-  RDEFINE STARTED ** STDATA(USER(=MEMBER) GROUP(&STCGROUP.))
+  RDEFINE STARTED ** STDATA(USER(=MEMBER) GROUP(&STCGRP.))
   SETROPTS CLASSACT(STARTED) RACLIST(STARTED)
 
 /* show results .................................................... */
@@ -188,13 +188,13 @@
 /* - The sample commands assume automatic generation of UID and GID  */
 /*   is enabled.                                                     */
 
-/* comment out if &STCGROUP matches &ADMINGRP (default), expect      */
+/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
 /* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled      */
-  LISTGRP  &STCGROUP. OMVS
-  ADDGROUP &STCGROUP. OMVS(AUTOGID) -
-   DATA('STARTED TASK GROUP WITH OMVS SEGEMENT')
+  LISTGRP  &STCGRP. OMVS
+  ADDGROUP &STCGRP. OMVS(AUTOGID) -
+   DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
 
 /* */
 
@@ -203,7 +203,7 @@
   LISTUSER &ZOWEUSER. OMVS
   ADDUSER  &ZOWEUSER. -
    NOPASSWORD -
-   DFLTGRP(&STCGROUP.) -
+   DFLTGRP(&STCGRP.) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
    NAME('ZOWE SERVER') -
    DATA('ZOWE MAIN SERVER')
@@ -213,7 +213,7 @@
   LISTUSER &XMEMUSER. OMVS
   ADDUSER  &XMEMUSER. -
    NOPASSWORD -
-   DFLTGRP(&STCGROUP.) -
+   DFLTGRP(&STCGRP.) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
    NAME('ZOWE XMEM SERVER') -
    DATA('ZOWE XMEM CROSS MEMORY SERVER')
@@ -225,7 +225,7 @@
   LISTUSER &AUXUSER. OMVS
   ADDUSER  &AUXUSER. -
    NOPASSWORD -
-   DFLTGRP(&STCGROUP.) -
+   DFLTGRP(&STCGRP.) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
    NAME('ZOWE XMEM AUX SERVER') -
    DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')
@@ -235,25 +235,25 @@
 /* started task for ZOWE main server                                 */
   RLIST   STARTED &ZOWESTC..* ALL STDATA
   RDEFINE STARTED &ZOWESTC..* -
-   STDATA(USER(&ZOWEUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -
+   STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE MAIN SERVER')
 
 /* started task for XMEM cross memory server                         */
   RLIST   STARTED &XMEMSTC..* ALL STDATA
   RDEFINE STARTED &XMEMSTC..* -
-   STDATA(USER(&XMEMUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -
+   STDATA(USER(&XMEMUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE XMEM CROSS MEMORY SERVER')
 
 /* started task for XMEM auxilary cross memory server                */
   RLIST   STARTED &AUXSTC..* ALL STDATA
   RDEFINE STARTED &AUXSTC..* -
-   STDATA(USER(&AUXUSER.) GROUP(&STCGROUP.) TRUSTED(NO)) -
+   STDATA(USER(&AUXUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')
 
   SETROPTS RACLIST(STARTED) REFRESH
 
 /* show results .................................................... */
-  LISTGRP  &STCGROUP. OMVS
+  LISTGRP  &STCGRP. OMVS
   LISTUSER &ZOWEUSER. OMVS
   LISTUSER &XMEMUSER. OMVS
   LISTUSER &AUXUSER.  OMVS
@@ -360,13 +360,13 @@ F ACF2,REBUILD(GRP),CLASS(P)
 *
 * DEFINE STARTED TASK .............................................
 *
-* comment out if &STCGROUP matches &ADMINGRP (default), expect
+* comment out if &STCGRP matches &ADMINGRP (default), expect
 *   warning messages otherwise
 * group for started tasks
 * replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
-INSERT &STCGROUP. AUTOGID
+INSERT &STCGRP. AUTOGID
 F ACF2,REBUILD(GRP),CLASS(P)
 *
 *****
@@ -375,7 +375,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 * replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT &ZOWEUSER. GROUP(&STCGROUP.)
+INSERT &ZOWEUSER. STC GROUP(&STCGRP.)
 SET PROFILE(USER) DIV(OMVS)
 INSERT &ZOWEUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
@@ -384,7 +384,7 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * replace AUTOUID with UID(&XMEMUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT &XMEMUSER. GROUP(&STCGROUP.)
+INSERT &XMEMUSER. STC GROUP(&STCGRP.)
 SET PROFILE(USER) DIV(OMVS)
 INSERT &XMEMUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
@@ -395,7 +395,7 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT &AUXUSER. GROUP(&STCGROUP.)
+INSERT &AUXUSER. STC GROUP(&STCGRP.)
 SET PROFILE(USER) DIV(OMVS)
 INSERT &AUXUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
@@ -405,21 +405,21 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * started task for ZOWE main server
 *
 SET CONTROL(GSO)
-INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) GROUP(&STCGROUP.) +
+INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) GROUP(&STCGRP.) +
 STCID(&ZOWESTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for XMEM cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.&XMEMSTC. LOGONID(&XMEMUSER.) GROUP(&STCGROUP.) +
+INSERT STC.&XMEMSTC. LOGONID(&XMEMUSER.) GROUP(&STCGRP.) +
 STCID(&XMEMSTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for XMEM auxilary cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.&AUXSTC. LOGONID(&AUXUSER.) GROUP(&STCGROUP.) +
+INSERT STC.&AUXSTC. LOGONID(&AUXUSER.) GROUP(&STCGRP.) +
 STCID(&AUXSTC.)
 F ACF2,REFRESH(STC)
 *
@@ -428,13 +428,13 @@ F ACF2,REFRESH(STC)
 * define a role holding the permissions and add &ZOWEUSER to it
 *
 SET X(ROL)
-INSERT &STCGROUP. INCLUDE(&ZOWEUSER.) ROLE
+INSERT &STCGRP. INCLUDE(&ZOWEUSER.) ROLE
 F ACF2,NEWXREF,TYPE(ROL)
 *
 * permit Zowe main server to use XMEM cross memory server
 *
 SET RESOURCE(FAC)
-RECKEY ZWES ADD(IS SERVICE(READ) ROLE(&STCGROUP.) ALLOW)
+RECKEY ZWES ADD(IS SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 * permit Zowe main server to create a user's security environment
@@ -445,18 +445,26 @@ F ACF2,REBUILD(FAC)
 *            it on a production system.
 *
 SET RESOURCE(FAC)
-RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
-RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&STCGROUP.) ALLOW)
+RECKEY BPX2 ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
+RECKEY BPX2 ADD(SERVER SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
 *
-* Allow STCGROUP role access to BPX.JOBNAME
-RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE(&STCGROUP.) ALLOW)
+* Allow STCGRP role access to BPX.JOBNAME
+RECKEY BPX2 ADD(JOBNAME SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 ** comment out to not use SUPERUSER.FILESYS, see JCL comments
 ** permit Zowe main server to write persistent data
-*
-  SET RESOURCE(UNI)
-  RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE(&STCGROUP.) ALLOW)
+** if there is no rule, use set rule
+SET RULE
+COMPILE *
+$KEY(SUPERUSER.FILESYS)
+$TYPE(UNI)
+$ROLESET
+ ROLE(&STCGRP.) ALLOW
+
+STORE
+* SET RESOURCE(UNI)
+* RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
   F ACF2,REBUILD(UNI)
 *
 * DEFINE ZOWE DATA SET PROTECTION .................................
@@ -468,15 +476,12 @@ F ACF2,REBUILD(FAC)
 SET RULE
 *  general data set protection
 LIST &HLQ.
-RECKEY $&HLQ. ADD(- UID(-) READ(A) EXEC(P))
-RECKEY $&HLQ. ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
+RECKEY &HLQ. ADD(- UID(-) READ(A) EXEC(P))
+RECKEY &HLQ. ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results
 LIST &HLQ.
 *
-* .................................................................
-/* only the last RC is returned, this command ensures it is a 0      */
-PROFILE
 $$
 //*
 //*********************************************************************
@@ -494,18 +499,19 @@ $$
    DEPT(&ADMINDEP.)
   TSS ADD(&ADMINGRP.) GID(&ADMINGID.)
 
-/* TODO add sample command to add admin to &ADMINGRP */
+/* uncomment to add existing user IDs to the &ADMINGRP group         */
+/* TSS ADD(userid) GROUP(&ADMINGRP.)                                 */
 
 /* DEFINE STARTED TASK ............................................. */
 
-/* comment out if &STCGROUP matches &ADMINGRP (default), expect      */
+/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
-  TSS LIST(&STCGROUP.) SEGMENT(OMVS)
-  TSS CREATE(&STCGROUP.) TYPE(GROUP) +
-   NAME('STC GROUP WITH OMVS SEGEMENT') +
+  TSS LIST(&STCGRP.) SEGMENT(OMVS)
+  TSS CREATE(&STCGRP.) TYPE(GROUP) +
+   NAME('STC GROUP WITH OMVS SEGMENT') +
    DEPT(&STCGDEP.)
-  TSS ADD(&STCGROUP.) GID(&STCGID.)
+  TSS ADD(&STCGRP.) GID(&STCGID.)
 
 /* */
 
@@ -514,7 +520,7 @@ $$
   TSS CREATE(&ZOWEUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE MAIN SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD(&ZOWEUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
+  TSS ADD(&ZOWEUSER.) GROUP(&STCGRP.) DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZOWEUID.)
 
 /* userid for XMEM cross memory server                               */
@@ -522,7 +528,7 @@ $$
   TSS CREATE(&XMEMUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE XMEM CROSS MEMORY SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD(&XMEMUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
+  TSS ADD(&XMEMUSER.) GROUP(&STCGRP.) DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&XMEMUID.)
 
 /* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
@@ -532,7 +538,7 @@ $$
   TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE XMEM AUX SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD(&AUXUSER.) GROUP(&STCGROUP.) DFLTGRP(&STCGROUP.) +
+  TSS ADD(&AUXUSER.) GROUP(&STCGRP.) DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&AUXUID.)
 
 /* */
@@ -605,7 +611,7 @@ $$
 /** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
 /** permit Zowe main server to write persistent data                 */
   TSS ADD(&FACACID.) UNIXPRIV(SUPERUSE)
-  TSS WHOHAS IBMFAC(SUPERUSER.FILESYS)
+  TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
   TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
@@ -614,12 +620,12 @@ $$
 /*   advised to protect it against updates.                          */
 
 /* HLQ stub                                                          */
-  TSS ADD DEPT(&ADMINDEP.) DATASET(&HLQ.)
+  TSS ADD(&ADMINDEP.) DATASET(&HLQ..)
 
 /* general data set protection                                       */
   TSS WHOHAS DATASET(&HLQ.)
   TSS PER(ALL) DATASET(&HLQ..) ACCESS(READ)
-  TSS PER(&SYSPROG.) DATASET(&HLQ..) ACCESS(ALL)
+  TSS PER(&SYSPROG)  DATASET(&HLQ..) ACCESS(ALL)
 
 /* show results                                                      */
   TSS WHOHAS DATASET(&HLQ.)
