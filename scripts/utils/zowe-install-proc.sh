@@ -12,7 +12,7 @@
 # Function: Copy Zowe server PROC from datasetPrefx.SZWESAMP(ZWESVSTC) to JES concatenation
 # Needs ./zowe-copy-to-JES.sh
 
-while getopts "d:r:" opt; do
+while getopts "d:l:r:" opt; do
   case $opt in
     d) data_set_prefix=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
