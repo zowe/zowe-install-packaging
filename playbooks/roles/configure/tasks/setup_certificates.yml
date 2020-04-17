@@ -27,7 +27,7 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./zowe-setup-certificates.sh
-    script_parameters: "-p \"{{ work_dir_remote }}/zowe-setup-certificates.env\""
+    script_parameters: "-p \"{{ work_dir_remote }}/zowe-setup-certificates.env\"  -l \"{{ zowe_logs_dir }}\""
 
 - name: List certifactes directory
   raw: ls -l "{{ zowe_keystore_dir }}"
