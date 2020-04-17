@@ -169,10 +169,6 @@ cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 # Based on zowe-install-packaging/issues/1014 we should set everything to 755
 chmod -R 755 ${ZOWE_ROOT_DIR}
 
-# save install log in runtime directory
-mkdir -p $ZOWE_ROOT_DIR/install_log
-cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
-
 # remove the working directory
 rm -rf $TEMP_DIR
 
