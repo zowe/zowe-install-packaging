@@ -14,38 +14,32 @@
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
-
-# Set up logging
-LOG_DIR=${HOME}/zowe_certificate_setup_log
-# Make the log directory if needed - first time through - subsequent installs create new .log files
-if [[ ! -d $LOG_DIR ]]; then
-    mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR
-fi
-
-export LOG_FILE="certificate_config_`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$LOG_DIR/$LOG_FILE
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
-
-echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
-
 # process input parameters.
-while getopts "p:" opt; do
+while getopts "l:p:" opt; do
   case $opt in
+    l) LOG_DIRECTORY=$OPTARG;;
     p) CERTIFICATES_CONFIG_FILE=$OPTARG;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$opt" >&2
       exit 1
       ;;
   esac
 done
-shift "$(($OPTIND-1))"
+shift $(($OPTIND-1))
 
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
+
+. ${ZOWE_ROOT_DIR}/bin/setup-log-dir.sh ${LOG_DIRECTORY}
+export LOG_FILE="zowe-setup-certificates-`date +%Y-%m-%d-%H-%M-%S`.log"
+LOG_FILE=${LOG_DIRECTORY}/${LOG_FILE}
+touch ${LOG_FILE}
+chmod a+rw ${LOG_FILE}
+echo "Log file created: ${LOG_FILE}"
+
+echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env

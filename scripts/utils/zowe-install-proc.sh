@@ -15,6 +15,7 @@
 while getopts "d:r:" opt; do
   case $opt in
     d) data_set_prefix=$OPTARG;;
+    l) LOG_DIRECTORY=$OPTARG;;
     r) proclib=$OPTARG;;
     \?)
       echo "Invalid option: -$opt" >&2
@@ -24,18 +25,26 @@ while getopts "d:r:" opt; do
 done
 shift $(($OPTIND-1))
 
-
 script_exit(){
   echo exit $1 >> ${LOG_FILE}
   echo "</$SCRIPT>" >> ${LOG_FILE}
   exit $1
 }
+
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+fi
+
 # identify this script
 SCRIPT="$(basename $0)"
 
-LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
+. ${ZOWE_ROOT_DIR}/bin/setup-log-dir.sh ${LOG_DIRECTORY}
+export LOG_FILE="${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log"
+LOG_FILE=${LOG_DIRECTORY}/${LOG_FILE}
 touch ${LOG_FILE}
 chmod a+rw ${LOG_FILE}
+echo "Log file created: ${LOG_FILE}"
 
 echo "<$SCRIPT>" >> ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
@@ -77,7 +86,7 @@ do
   fi
 done
 
-./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member} -l ${LOG_DIRECTORY}
 echo "rc from zowe-copy-to-JES.sh is $?" >> ${LOG_FILE}
 
 script_exit 0
