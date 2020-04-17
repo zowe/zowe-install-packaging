@@ -32,7 +32,7 @@ then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
-. ${ZOWE_ROOT_DIR}/bin/setup-log-dir.sh ${LOG_DIRECTORY}
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
 export LOG_FILE="zowe-setup-certificates-`date +%Y-%m-%d-%H-%M-%S`.log"
 LOG_FILE=${LOG_DIRECTORY}/${LOG_FILE}
 touch ${LOG_FILE}
