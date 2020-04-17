@@ -39,7 +39,7 @@ fi
 # identify this script
 SCRIPT="$(basename $0)"
 
-. ${ZOWE_ROOT_DIR}/bin/setup-log-dir.sh ${LOG_DIRECTORY}
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
 export LOG_FILE="${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log"
 LOG_FILE=${LOG_DIRECTORY}/${LOG_FILE}
 touch ${LOG_FILE}
