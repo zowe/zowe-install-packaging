@@ -69,7 +69,19 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-
+if [[ -z "$INSTALL_TARGET" ]]
+then
+  echo "-i parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+else
+  # If the value starts with a ~ for the home variable then evaluate it
+  ZOWE_ROOT_DIR=`sh -c "echo $INSTALL_TARGET"`
+  # If the path is relative, then expand it
+  if [[ "$ZOWE_ROOT_DIR" != /* ]]
+  then
+    ZOWE_ROOT_DIR=$PWD/$ZOWE_ROOT_DIR
+  fi
+fi
 
 if [[ -z "$DSN_PREFIX" ]]
 then
