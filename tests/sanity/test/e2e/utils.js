@@ -199,7 +199,7 @@ const loginMVD = async(driver, url, username, password) => {
   try {
     await driver.wait(
       async() => {
-        const loginButton = await getElement(driver, '#\\#loginButton', true);
+        const loginButton = await getElement(driver, '.login-button', true);
         if (loginButton) {
           return true;
         }
@@ -235,7 +235,7 @@ const loginMVD = async(driver, url, username, password) => {
   await passwordInput.clear();
   await passwordInput.sendKeys(password);
   // submit login
-  const loginButton = await getElement(driver, '#\\#loginButton', true);
+  const loginButton = await getElement(driver, '.login-button', true);
   expect(loginButton).to.be.an('object');
   await loginButton.click();
   debug('login button clicked');
