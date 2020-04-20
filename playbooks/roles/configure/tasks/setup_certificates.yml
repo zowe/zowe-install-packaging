@@ -29,6 +29,10 @@
     script_filename: ./zowe-setup-certificates.sh
     script_parameters: "-p \"{{ work_dir_remote }}/zowe-setup-certificates.env\"  -l \"{{ zowe_logs_dir }}\""
 
+- name: List log dir
+  raw: ls -l "{{ zowe_logs_dir }}"
+  ignore_errors: True
+
 - name: Show setup certificate log
   raw: find {{ zowe_logs_dir }} -name "zowe-setup-certificates-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
