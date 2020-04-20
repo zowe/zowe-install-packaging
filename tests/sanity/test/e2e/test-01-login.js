@@ -48,7 +48,7 @@ describe('test MVD login page', function() {
     try {
       await driver.wait(
         async() => {
-          const loginButton = await getElement(driver, '#\\#loginButton', true);
+          const loginButton = await getElement(driver, '.login-button', true);
           if (loginButton) {
             return true;
           }
@@ -104,7 +104,7 @@ describe('test MVD login page', function() {
     await passwordInput.sendKeys('wrong+passdword!');
     await driver.sleep(2000);
     // submit login
-    const loginButton = await getElement(driver, '#\\#loginButton', true);
+    const loginButton = await getElement(driver, '.login-button', true);
     expect(loginButton).to.be.an('object');
     await driver.sleep(3000);
     await loginButton.click();
@@ -183,7 +183,7 @@ describe('test MVD login page', function() {
     await passwordInput.sendKeys(process.env.SSH_PASSWD);
     await driver.sleep(2000);
     // submit login
-    const loginButton = await getElement(driver, '#\\#loginButton', true);
+    const loginButton = await getElement(driver, '.login-button', true);
     expect(loginButton).to.be.an('object');
     await driver.sleep(3000);
     await loginButton.click();
@@ -334,7 +334,7 @@ describe('test MVD login page', function() {
 
     await driver.sleep(3000);
     await signout.click();
-    await waitUntilElement(driver, '#\\#loginButton');
+    await waitUntilElement(driver, '.login-button');
 
     // save screenshot
     const file2 = await saveScreenshot(driver, testName, 'user-logout');

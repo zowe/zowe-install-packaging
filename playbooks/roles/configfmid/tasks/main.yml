@@ -1,0 +1,76 @@
+---
+# This playbook performs regular configuration after Zowe is installed.
+
+# ============================================================================
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - work_dir_remote
+    - zowe_root_dir
+    - zowe_instance_dir
+    - zowe_keystore_dir
+    - zowe_dataset_prefix
+    - zowe_proclib_dsname
+    - zowe_proclib_membername
+    - zowe_runtime_group
+    - zowe_runtime_user
+    - zowe_xmem_proclib
+    - zowe_xmem_parmlib
+    - zowe_xmem_loadlib
+    - zowe_xmem_proclib_member_zss
+    - zowe_xmem_proclib_member_aux
+    - zowe_xmem_stc_user
+    - zowe_job_prefix
+    - zowe_instance_id
+    - zowe_apiml_catalog_port
+    - zowe_apiml_discovery_port
+    - zowe_apiml_gateway_port
+    - zowe_apiml_enable_sso
+    - zowe_jobs_api_port
+    - zowe_mvs_api_port
+    - zowe_jobs_explorer_port
+    - zowe_mvs_explorer_port
+    - zowe_uss_explorer_port
+    - zowe_zlux_port
+    - zowe_zss_port
+    - zowe_zss_xmem_name
+    - zowe_zlux_terminal_ssh_port
+    - zowe_zlux_terminal_telnet_port
+
+# ============================================================================
+- name: Show Zowe manifest
+  raw: cat "{{ zowe_root_dir }}/manifest.json"
+
+# ============================================================================
+# Install Zowe proc
+- import_role:
+    name: configfmid
+    tasks_from: install_proc
+
+# ============================================================================
+# Install Cross Memory Server
+- import_role:
+    name: configfmid
+    tasks_from: install_xmem_server
+  vars:
+    zowe_xmem_install_from_path: "{{ zowe_root_dir }}/scripts/utils"
+
+# ============================================================================
+# Run ZWESECUR
+- import_role:
+    name: configfmid
+    tasks_from: create_security_defn
+
+# ============================================================================
+# Setup certificates
+- import_role:
+    name: configfmid
+    tasks_from: setup_certificates
+
+# ============================================================================
+# Configure Zowe Instance
+- import_role:
+    name: configfmid
+    tasks_from: configure_instance
