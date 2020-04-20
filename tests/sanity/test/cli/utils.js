@@ -79,8 +79,8 @@ const execZoweCli = async(command) => {
   return result;
 };
 
-// default z/OSMF CLI profile name
-const defaultZOSMFProfileName = 'zowe-install-test';
+// default z/OSMF CLI profile name, separated by process pid
+const defaultZOSMFProfileName = `zowe-install-test-${process.pid}`;
 
 /**
  * Create z/OSMF CLI profile
