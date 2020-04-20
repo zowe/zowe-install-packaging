@@ -58,7 +58,11 @@ Input='./smpe_workflow.xml'                    /* default input file */
 Output='./ZWEWRF01.xml'                       /* default output file */
 
 /* system variables .................................................*/
+cRC=0                                                 /* return code */
 Debug=0  /* FALSE */                     /* assume not in debug mode */
+xmlList=''                               /* init list to null string */
+xmlVars.=0  /* FALSE */                /* init table to FALSE values */
+vtlVars.=0  /* FALSE */                /* init table to FALSE values */
 
 /* system code ......................................................*/
 /* trace r */
@@ -103,23 +107,29 @@ end    /* */
 if \_readFile(Input)
   then exit 8  /* error already reported */         /* LEAVE PROGRAM */
 
-/* Gather variable names from Input */
-xmlVariables.0 = "initiate" /* Initiate a XML variables array */
-xmlIndex = 0 /* XML arrays index */
-/* Loop through the xml to collect variable names */
-do while lines(Input) > 0
-  line_str = linein(Input)
-  do while line_str <> ''
-    parse var line_str '<' tag '='
-    if(tag == "variable name") then do /* Store the found variable names in array */
-      parse var line_str 'name="' xmlVariables.xmlIndex '"' line_str
-      xmlIndex = xmlIndex + 1
-    end
-    else do /* If no variable name null the line */
-      line_str = ''
-    end
-   end
-end
+/* gather variable names from Input (XML workflow) */
+/* <variable name="ibmTemplate" scope="instance" visibility="public">*/
+do F=1 to File.0
+  parse var File.F . '<variable name="' Name '"' .
+  if Name <> ''                             /* variable definition ? */
+  then if xmlVars.Name     /* already defined ? (value is a boolean) */
+    then do
+      say '** ERROR' ExecName 'duplicate variable definition for' ,
+        Name 'in' Input 'at line' F
+      cRC=8              /* continue processing to find other errors */
+    end    /* */
+    else do                           /* table with variable name as */
+      xmlVars.Name=1  /* TRUE */      /* index, value set to TRUE    */
+      xmlList=xmlList Name                 /* list of variable names */
+    end    /* */
+  else do
+    /* variable definitions are done when step definitions start */
+    /* <step name="define_variables" optional="false"> */
+    parse var File.F . '<step name="' Name '"' .
+    if Name <> '' then leave                         /* LEAVE LOOP F */
+  end    /* */
+end    /* loop F */
+if Debug then say '. workflow variables:'xmlList
 
 /* copy to iFile. so that File. is free for reading include file */
 do F=0 to File.0 ; iFile.F=File.F ; end
@@ -130,6 +140,7 @@ do I=1 to iFile.0
   iFile.I=_substitute('utf-8','IBM-1047',iFile.I)
 
   /* add include file ? */
+  /* <inlineTemplate substitution="true">###...###</inlineTemplate> */
   parse var iFile.I Before '###' Include '###' After
   if Include = ''
   then do                                         /* no include file */
@@ -141,61 +152,16 @@ do I=1 to iFile.0
     if \_readFile(Include)
       then exit 8  /* error already reported */     /* LEAVE PROGRAM */
 
-    /* Check variables in VLT file(s) */
-    checkFailed = 0 /* Set to 1 if there are variables missing */
-    do while lines(Include) > 0
-      check_str = linein(Include)
-      totalMatchesCount = 0 /* The number of matches so far */
-      varcount = 0
-      vtlIndex = 0
-      do while check_str <> ''
-        parse var check_str pre '$' post
-        currentVar = '' /* Initiate empy current variable */
-        if(length(post) > 0 ) then do /* Check if there is a $ on this line */
-          varcount = varcount + 1
-          parse var post leftBrace '{' possibleVar "}" Other
-          if(length(possibleVar) > 0) then do /* Check if the variable is in curly brackets */
-            currentVar = possibleVar
-          end
-          else do /* If it is not in curly brackets */
-            parse var check_str '$$' doublePref1 " " Other
-            parse var check_str '$&' doublePref2 " " Other
-            parse var check_str '$' possiblyOk " " Other
-            if(length(doublePref1) > 0) | (check_str == "$$") | (length(doublePref2) > 0) then do /* Exclude unwanted lines */
-              currentVar = ''
-            end
-            else do /* The remaining should be fine, filters should be updated if needed */
-              currentVar = possiblyOk
-            end
-          end
-        end
-        check_str = ''
-      end
-      if(length(currentVar) > 0) then do /* Check if there is a variable on this line */
-        vtlIndex = vtlIndex + 1
-        count = 0
-        noMatch = 1
-        do until count >= xmlIndex /* Loop through the xml variables array to find matches */
-          if (currentVar == xmlVariables.count) then do /* Check if there is a match */
-            totalMatchesCount = totalMatchesCount + 1 /* Update total match counter (currently not used) */
-            noMatch = 0
-          end
-          count = count + 1
-        end
-        if (noMatch == 1) then do /* Return an error message if this variable is not found */
-          say 'ERROR: The variable "'currentVar'" from the VTL file "'Include'" was not found in the "'Input'" template!'
-          checkFailed = 1
-        end
-      end
-    end
-    if(checkFailed == 1) then do
-        exit 8 /* LEAVE PROGRAM */
-    end
-
+    /* gather variables used in include file (VLT) */
+    do F=1 to File.0
+      cRC=max(cRC,_getVars(File.F,F,Include))
+    end /* loop F */
+ 
+    /* add include file to workflow */
     select
     when File.0 = 0 then do
       say '** ERROR' ExecName 'include file' Include 'is empty'
-      exit 8                                        /* LEAVE PROGRAM */
+      cRC=8              /* continue processing to find other errors */
     end    /* */
     when File.0 = 1 then do
       File.1=_substitute71('&','&amp;',File.1)
@@ -220,15 +186,76 @@ end    /* loop I */
 oFile.0=T
 if Debug then say '.' oFile.0 'output lines'
 
-/* copy to File., expected bu _writeFile() */
+/* verify that all workflow variables are used */
+do while xmlList <> ''
+  /* cut first word from list and place in Name */
+  parse var xmlList Name xmlList         
+  
+  if \vtlVars.Name   /* used in include files ? (value is a boolean) */
+  then do
+    say '** ERROR' ExecName 'variable' Name 'in' Input 'is not used'
+    cRC=8                /* continue processing to find other errors */
+  end    /* */
+end    /* while xmlList */
+
+/* copy to File., expected by _writeFile() */
 do F=0 to oFile.0 ; File.F=oFile.F ; end
 
 /* save result */
 if \_writeFile(Output)
   then exit 8  /* error already reported */         /* LEAVE PROGRAM */
 
-if Debug then say '<' ExecName '0'
-exit 0                                              /* LEAVE PROGRAM */
+if Debug then say '<' ExecName cRC
+exit cRC                                            /* LEAVE PROGRAM */
+
+/*---------------------------------------------------------------------
+ * -- gather variable names used in VTL include file
+ * Returns return code
+ * Updates vtlVars.
+ * Args:
+ *  String: string to process
+ *  Line  : line number in file
+ *  File  : file holding string
+ */
+_getVars: PROCEDURE EXPOSE Debug ExecName Input xmlVars. vtlVars.
+parse arg String,Line,File
+cRC=0                                                 /* return code */
+
+/* #if has a different variable format */
+if left(String,4) == '#if('   
+then do                                                    /* '#if(' */
+  /* #if($ibmTemplate == 'NO' || !$!ibmTemplate) */
+  /* #if( $sysaff and $sysaff != "" and $sysaff != '#sysaff') */ 
+
+  /* replace evaluation characters with blanks to simplify parsing */
+  String=translate(_substitute('$!','$',String),,'(!=)',' ')
+  if Debug then say '. String='String
+
+  Start='$'  
+  Stop=' '
+end    /* #if( */
+else do                                                  /* not #if( */
+  /* // SYSAFF=${sysaff}, */
+  Start='${'  
+  Stop='}'
+end    /* not #if( */
+
+do while String <> ''
+  /* get first variable name, and trim String to trailing part */
+  parse var String . (Start) Name (Stop) String
+  
+  if Name <> ''                                  /* variable found ? */
+  then do                             /* table with variable name as */
+    vtlVars.Name=1  /* TRUE */        /* index, value set to TRUE    */
+    if \xmlVars.Name            /* is variable defined in workflow ? */
+    then do
+      say '** ERROR' ExecName 'variable' Name 'on line' Line ,
+        'in include file' File 'is not defined in workflow' Input
+      cRC=8              /* continue processing to find other errors */
+    end    /* oops */
+  end    /* variable found */
+end    /* while String */
+return cRC    /* _getVars */
 
 /*---------------------------------------------------------------------
  * -- Substitute one string with another and keep line within 71 chars
@@ -381,4 +408,3 @@ else if @RetVal == -1
 drop rc retval errno errnojr /* ensure that the name is used in parse*/
 parse value @RC @RetVal @ErrNo @ErrNoJr with rc retval errno errnojr
 return @Success    /* _syscall */
-
