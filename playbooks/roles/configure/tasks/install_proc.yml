@@ -8,3 +8,7 @@
     script_chdir: "{{ zowe_root_dir }}/scripts/utils"
     script_filename: ./zowe-install-proc.sh
     script_parameters: "-d \"{{ zowe_dataset_prefix }}\" -r \"{{ zowe_proclib_dsname }}\" -l \"{{ zowe_logs_dir }}\""
+
+- name: Show install proc log
+  raw: find {{ zowe_logs_dir }} -name "zowe-install-proc-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  ignore_errors: True
