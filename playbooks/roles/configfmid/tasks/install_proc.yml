@@ -10,5 +10,5 @@
     script_parameters: "\"{{ zowe_dataset_prefix }}\" \"{{ zowe_proclib_dsname }}\""
 
 - name: Show install proc log
-  raw: find {{ zowe_logs_dir }}/zowe-install-proc-* -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  raw: find {{ zowe_logs_dir }} -name "zowe-install-proc-*" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
