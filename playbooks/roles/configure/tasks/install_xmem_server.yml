@@ -37,8 +37,8 @@
   raw: cat "//'{{ zowe_xmem_proclib }}({{ zowe_xmem_proclib_member_zss }})'"
 
   - name: Show install xmem log
-  raw: find {{ zowe_logs_dir }}/zowe-install-xmem-* -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
-  ignore_errors: True
+    raw: find {{ zowe_logs_dir }}/zowe-install-xmem-* -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+    ignore_errors: True
 
 # ============================================================================
 # Add XMEM loadlib to APF list
