@@ -50,10 +50,10 @@ describe(`cli list data sets of ${TEST_DATASET_PATTERN}`, function() {
     const result = await execZoweCli(`zowe zos-files list data-set "${TEST_DATASET_PATTERN}" --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
 
     debug('result:', result);
-    addContext(this, {
-      title: 'cli result',
-      value: result
-    });
+    // addContext(this, {
+    //   title: 'cli result',
+    //   value: result
+    // });
 
     expect(result).to.have.property('stdout');
     expect(result).to.have.property('stderr');
@@ -76,10 +76,10 @@ describe(`cli list data sets of ${TEST_DATASET_PATTERN}`, function() {
     const result = await execZoweCli(`zowe zos-files download data-set '${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})' --file "${targetFile}" --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
 
     debug('result:', result);
-    addContext(this, {
-      title: 'cli result',
-      value: result
-    });
+    // addContext(this, {
+    //   title: 'cli result',
+    //   value: result
+    // });
 
     expect(result).to.have.property('stdout');
     expect(result).to.have.property('stderr');
