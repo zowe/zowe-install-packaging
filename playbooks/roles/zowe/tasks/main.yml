@@ -39,7 +39,7 @@
 - name: List log dir
   raw: ls -l "{{ zowe_logs_dir }}"
   ignore_errors: True
-  
+
 - name: Show installation log
-  raw: find {{ zowe_logs_dir }} -name "install-*" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  raw: find {{ zowe_logs_dir }} -name "zowe-install-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
