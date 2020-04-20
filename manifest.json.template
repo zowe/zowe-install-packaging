@@ -60,7 +60,7 @@
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "~1.0.0-PR-156",
+      "version": "~1.0.0-STAGING",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
