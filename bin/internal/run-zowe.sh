@@ -83,6 +83,10 @@ ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
 checkForErrorsFound
 
+#Temp - whilst desktop components don't have validate scripts
+. ${ROOT_DIR}/scripts/utils/validate-node.sh
+checkForErrorsFound
+
 # Validate keystore directory accessible
 ${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
 checkForErrorsFound
