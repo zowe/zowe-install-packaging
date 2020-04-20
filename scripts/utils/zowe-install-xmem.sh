@@ -23,7 +23,7 @@
 
 # Needs ./zowe-copy-to-JES.sh for PROCLIB
 
-while getopts "a:b:d:r:" opt; do
+while getopts "a:b:d:l:r:" opt; do
   case $opt in
     a) parmlib=$OPTARG;;
     b) loadlib=$OPTARG;;
