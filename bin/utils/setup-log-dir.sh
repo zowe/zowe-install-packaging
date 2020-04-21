@@ -10,6 +10,14 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+set_log_file() {
+  LOG_FILE_PREFIX=$1
+  export LOG_FILE="${LOG_DIRECTORY}/${LOG_FILE_PREFIX}-`date +%Y-%m-%d-%H-%M-%S`.log"
+  touch ${LOG_FILE}
+  chmod a+rw ${LOG_FILE}
+  echo "Log file created: ${LOG_FILE}"
+}
+
 LOG_DIRECTORY=$1
 
 # If log directory not specified on input try /global/zowe/logs then ~/zowe/logs

@@ -33,11 +33,7 @@ then
 fi
 
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
-export LOG_FILE="zowe-setup-certificates-`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=${LOG_DIRECTORY}/${LOG_FILE}
-touch ${LOG_FILE}
-chmod a+rw ${LOG_FILE}
-echo "Log file created: ${LOG_FILE}"
+set_log_file "zowe-setup-certificates"
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
