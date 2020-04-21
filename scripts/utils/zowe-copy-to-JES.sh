@@ -29,11 +29,12 @@
 # sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
 #     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
-while getopts "a:b:i:o:r:s:" opt; do
+while getopts "a:b:i:l:o:r:s:" opt; do
   case $opt in
     a) parmlib=$OPTARG;;
     b) loadlib=$OPTARG;;
     i) input_member=$OPTARG;;
+    l) LOG_DIRECTORY=$OPTARG;;
     o) output_member=$OPTARG;;
     r) proclib=$OPTARG;;
     s) samplib=$OPTARG;;
@@ -53,19 +54,23 @@ script_exit(){
   exit $1
 }
 
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+fi
+
 # identify this script
 SCRIPT="$(basename $0)"
+
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+set_log_file "zowe-copy-to-jes"
+
+echo "<$SCRIPT>" | tee -a ${LOG_FILE}
+echo started from `pwd` >> ${LOG_FILE}
 
 if [ -z ${TEMP_DIR+x} ]; then
     TEMP_DIR=${TMPDIR:-/tmp}
 fi
-
-LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
-
-echo "<$SCRIPT>" | tee -a ${LOG_FILE}
-echo started from `pwd` >> ${LOG_FILE}
 
 # code starts here
 userid=${USER:-${USERNAME:-${LOGNAME}}}

@@ -91,6 +91,8 @@ zowe_dataset_prefix:
 zowe_instance_dir: ~/.zowe/instance
 # keystore directory
 zowe_keystore_dir: ~/.zowe/keystore
+#logs directory
+zowe_logs_dir: ~/.zowe/logs
 
 ################################################################################
 # these are default variables for cross memory configuration

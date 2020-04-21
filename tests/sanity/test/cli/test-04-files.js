@@ -15,7 +15,7 @@ const debug = require('debug')('zowe-sanity-test:cli:jobs');
 const fs = require('fs');
 const util = require('util');
 const fsAccess = util.promisify(fs.access);
-const addContext = require('mochawesome/addContext');
+// const addContext = require('mochawesome/addContext');
 
 const { execZoweCli, defaultZOSMFProfileName, createDefaultZOSMFProfile } = require('./utils');
 
