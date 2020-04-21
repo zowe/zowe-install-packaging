@@ -7,4 +7,4 @@
 - name: Check if extender property preserved during upgrade
   fail: 
     msg: "property EXAMPLE_EXTENDER_PROPERTY=TEST123 was not preserved during upgrade"
-  when: instance_contents.stdout.find('EXAMPLE_EXTENDER_PROPERTY=TEST123') == -1
+  when: instance_contents.stdout.find('{{ zowe_extender_test_property }}') == -1

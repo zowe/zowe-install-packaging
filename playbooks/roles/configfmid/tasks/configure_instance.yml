@@ -44,7 +44,7 @@
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
 
 - name: Add 'extension' parameter to instance.env
-  raw: echo "EXAMPLE_EXTENDER_PROPERTY=TEST123" >> "{{ zowe_instance_dir }}/instance.env"
+  raw: echo "{{ zowe_extender_test_property }}" >> "{{ zowe_instance_dir }}/instance.env"
 
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"
