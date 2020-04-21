@@ -1,0 +1,10 @@
+# this playbook is used to check that the custom parameter added to the instance.env is preserved
+
+- name: Read instance.env
+  raw: cat "{{ zowe_instance_dir }}/instance.env"
+  register: instance_contents
+
+- name: Check if extender property preserved during upgrade
+  fail: 
+    msg: "property EXAMPLE_EXTENDER_PROPERTY=TEST123 was not preserved during upgrade"
+  when: instance_contents.stdout.find('EXAMPLE_EXTENDER_PROPERTY=TEST123') == -1
