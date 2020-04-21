@@ -78,10 +78,11 @@
   - import_role:
       name: configure
 
-  # Check upgrade didn't effect custom configuration in base fmid
-  - import_role:
-    name: configurefmid
-    tasks_from: validate_configuration
+  # ============================================================================
+  - name: Test upgraded configuration
+    import_role:
+      name: configfmid
+      tasks_from: validate_configuration
 
   # ============================================================================
   # Start Zowe
