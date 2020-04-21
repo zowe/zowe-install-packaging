@@ -44,10 +44,10 @@ describe('cli list jobs of ZWE*', function() {
     const result = await execZoweCli(`zowe zos-jobs list jobs --owner 'ZWE*' --prefix '${ZOWE_JOB_NAME}*' --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
 
     debug('result:', result);
-    addContext(this, {
-      title: 'cli result',
-      value: result
-    });
+    // addContext(this, {
+    //   title: 'cli result',
+    //   value: result
+    // });
 
     expect(result).to.have.property('stdout');
     expect(result).to.have.property('stderr');
@@ -74,10 +74,10 @@ describe('cli list jobs of ZWE*', function() {
     const result = await execZoweCli(`zowe zos-jobs view job-status-by-jobid ${testJobId} --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
 
     debug('result:', result);
-    addContext(this, {
-      title: 'cli result',
-      value: result
-    });
+    // addContext(this, {
+    //   title: 'cli result',
+    //   value: result
+    // });
 
     expect(result).to.have.property('stdout');
     expect(result).to.have.property('stderr');

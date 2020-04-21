@@ -40,10 +40,10 @@ describe('cli check zosmf status', function() {
     const result = await execZoweCli(`zowe zosmf check status --zosmf-profile ${defaultZOSMFProfileName}`);
 
     debug('result:', result);
-    addContext(this, {
-      title: 'cli result',
-      value: result
-    });
+    // addContext(this, {
+    //   title: 'cli result',
+    //   value: result
+    // });
 
     expect(result).to.have.property('stdout');
     expect(result).to.have.property('stderr');
