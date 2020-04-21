@@ -19,10 +19,10 @@ describe('cli version', function() {
     const result = await exec('zowe --version');
 
     debug('result:', result);
-    addContext(this, {
-      title: 'cli result',
-      value: result
-    });
+    // addContext(this, {
+    //   title: 'cli result',
+    //   value: result
+    // });
 
     expect(result).to.have.property('stdout');
     expect(result).to.have.property('stderr');

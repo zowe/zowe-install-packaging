@@ -20,7 +20,7 @@
     dataset: "{{ zowe_xmem_parmlib }}"
 
 - name: Create {{ zowe_xmem_parmlib }}
-  raw: tsocmd "allocate da('{{ zowe_xmem_parmlib }}') dsntype(pds) dsorg(po) recfm(f,b) lrecl(80) blksize(23440) dir(64) space(10,2) tracks new"
+  raw: tsocmd "allocate da('{{ zowe_xmem_parmlib }}') dsntype(library) dsorg(po) recfm(f,b) lrecl(80) blksize(23440) dir(64) space(10,2) tracks new"
   when: not dataset_exists
 
 # ============================================================================
