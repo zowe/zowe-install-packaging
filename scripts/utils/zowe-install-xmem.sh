@@ -23,11 +23,12 @@
 
 # Needs ./zowe-copy-to-JES.sh for PROCLIB
 
-while getopts "a:b:d:r:" opt; do
+while getopts "a:b:d:l:r:" opt; do
   case $opt in
     a) parmlib=$OPTARG;;
     b) loadlib=$OPTARG;;
     d) data_set_prefix=$OPTARG;;
+    l) LOG_DIRECTORY=$OPTARG;;
     r) proclib=$OPTARG;;
     \?)
       echo "Invalid option: -$opt" >&2
@@ -42,12 +43,17 @@ script_exit(){
   echo "</$SCRIPT>" | tee -a ${LOG_FILE}
   exit $1
 }
+
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+fi
+
 # identify this script
 SCRIPT="$(basename $0)"
 
-LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+set_log_file "zowe-install-xmem"
 
 echo "<$SCRIPT>" | tee -a ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
@@ -178,7 +184,7 @@ ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${loadlib} -a ${parmlib}
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${loadlib} -a ${parmlib}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
 
 script_exit 0

@@ -5,6 +5,7 @@ work_dir_remote: /ZOWE/zowe-installs
 zowe_root_dir: /ZOWE/staging/zowe
 zowe_instance_dir: /ZOWE/tmp/.zowe
 zowe_keystore_dir: /ZOWE/tmp/keystore
+zowe_logs_dir: /ZOWE/tmp/logs
 zowe_dataset_prefix: ZOWEAD3.ZWE
 zowe_apiml_verify_certficates_of_services: false
 zowe_xmem_proclib: VENDOR.PROCLIB
