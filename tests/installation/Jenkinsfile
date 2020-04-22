@@ -154,6 +154,8 @@ node('ibm-jenkins-slave-dind') {
         }
       }
 
+      // Use zowe artifactory	
+      sh "npm config set registry https://zowe.jfrog.io/zowe/api/npm/npm-release/"
       // upgrade npm
       sh 'npm install -g npm'
 
