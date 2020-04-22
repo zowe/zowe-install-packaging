@@ -27,7 +27,7 @@ then
   then 
     LOG_DIRECTORY="/global/zowe/logs"
   else
-	LOG_DIRECTORY=`sh -c "echo ~/zowe/logs"`
+	  LOG_DIRECTORY=`sh -c "echo ~/zowe/logs"`
   fi
 else
   # If the path is relative, then expand it
