@@ -29,7 +29,14 @@ then
   else
 	LOG_DIRECTORY=`sh -c "echo ~/zowe/logs"`
   fi
+else
+  # If the path is relative, then expand it
+  if [[ "$LOG_DIRECTORY" != /* ]]
+  then
+    LOG_DIRECTORY=$PWD/$LOG_DIRECTORY
+  fi
 fi
+
 
 if ! mkdir -p ${LOG_DIRECTORY}
 then
