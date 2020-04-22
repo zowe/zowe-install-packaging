@@ -1,4 +1,17 @@
+#if( $jobCard and $jobCard != "" and $jobCard != '#jobCard')
+//ZWESECUR JOB ${acct},
+// NOTIFY=&SYSUID,
+#if( $sysaff and $sysaff != "" and $sysaff != '#sysaff')
+// SYSAFF=${sysaff},
+#end
+#if( $user and $user != "" and $user != '#user')
+// TIME=,USER=${user},
+#end
+// CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+#end
+#if($ibmTemplate == 'YES')
 //ZWESECUR JOB
+#end
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -77,7 +90,7 @@
 //* 3. The Zowe started task user ID (variable ZOWEUSER) must be able
 //*    to write persistent data in the zlux-app-server/deploy directory
 //*    structure. This sample JCL makes the Zowe started task part of
-//*    the Zowe administrator group (SET STCGRP=&ADMINGRP. statement)
+//*    the Zowe administrator group (SET STCGRP=ADMINGRP. statement)
 //*    to achieve this goal. Another solution, also below, which you can
 //*    comment out, is giving the Zowe started task CONTROL access to
 //*    the UNIXPRIV SUPERUSER.FILESYS profile.
@@ -86,6 +99,7 @@
 //*    The results of each command must be verified after completion.
 //*
 //*********************************************************************
+#if($ibmTemplate == 'YES')
 //         EXPORT SYMLIST=*
 //*
 //         SET  PRODUCT=RACF         * RACF, ACF2, or TSS
@@ -126,6 +140,49 @@
 //         SET  STCUDEP=             * department owning STC user IDs
 //         SET  FACACID=             * ACID owning IBMFAC
 //*                     12345678
+#end
+#if($ibmTemplate != 'YES')
+//         EXPORT SYMLIST=*
+//*
+//         SET  PRODUCT=${PRODUCT}       * RACF, ACF2, or TSS
+//*                     12345678
+//         SET ADMINGRP=${ADMINGRP}  * group for Zowe administrators
+//         SET STCGROUP=${STCGROUP}  * group for Zowe started tasks
+//         SET ZOWEUSER=${ZOWEUSER}  * userid for Zowe started task
+//         SET XMEMUSER=${XMEMUSER}  * userid for xmem started task
+//         SET  AUXUSER=${AUXUSER}   * userid for xmem AUX started task
+//         SET  ZOWESTC=${ZOWESTC}  * Zowe started task name
+//         SET  XMEMSTC=${XMEMSTC}  * xmem started task name
+//         SET   AUXSTC=${AUXSTC}  * xmem AUX started task name
+//         SET      HLQ=${HLQ}    * data set high level qualifier
+//         SET  SYSPROG=${SYSPROG}   * system programmer user ID/group
+//*                     12345678
+//*
+//* The sample RACF and ACF2 commands assume AUTOUID and AUTOGID are
+//* enabled. When this is not the case, or you are using Top Secret,
+//* provide appropriate (numeric) values to these SET commands.
+//         SET ADMINGID=${ADMINGID}  * Group ID for ZOWE administrators
+//         SET   STCGID=${STCGID}    * Group ID for ZOWE started tasks
+//         SET  ZOWEUID=${ZOWEUID}   * UID for ZOWE started task User
+//         SET  XMEMUID=${XMEMUID}   * UID for xmem started task User
+//         SET   AUXUID=${AUXUID}    * UID for xm AUX started task User
+//*
+//* For RACF: If using AUTOUID and AUTOGID, the RACF database must be
+//*           at AIM 2 or higher, and BPX.NEXT.USER must exist.
+//* For ACF2: If using AUTOUID and AUTOGID, an AUTOIDOM GSO Record must
+//*           exist.
+//* For Top Secret: If a default UID and GID range is defined, you can
+//*                 specify '?' in the SET *ID= statements to utilize
+//*                 auto-assignment of UID and GID.
+//*
+//* Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*                     12345678
+//         SET ADMINDEP=${ADMINDEP}  * department owning admin group
+//         SET  STCGDEP=${STCGDEP}   * department owning STC group
+//         SET  STCUDEP=${STCUDEP}   * department owning STC user IDs
+//         SET  FACACID=${FACACID}   * ACID owning IBMFAC
+//*                     12345678
+#end
 //*
 //* end Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*
@@ -174,13 +231,13 @@
 /*   enabled.                                                        */
 
 /* group for administrators                                          */
-/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID is not enabled    */
+/* replace AUTOGID with GID(ADMINGID.) if AUTOGID is not enabled    */
   LISTGRP  &ADMINGRP. OMVS
   ADDGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
 
 /* uncomment to add existing user IDs to the &ADMINGRP group         */
-/* CONNECT (userid,userid,...) GROUP(&ADMINGRP.) AUTH(USE)           */
+/* CONNECT (userid,userid,...) GROUP(ADMINGRP.) AUTH(USE)           */
 
 /* DEFINE STARTED TASK ............................................. */
 
@@ -188,10 +245,10 @@
 /* - The sample commands assume automatic generation of UID and GID  */
 /*   is enabled.                                                     */
 
-/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
+/* comment out if STCGRP matches ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
-/* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled      */
+/* replace AUTOGID with GID(STCGID.) if AUTOGID is not enabled      */
   LISTGRP  &STCGRP. OMVS
   ADDGROUP &STCGRP. OMVS(AUTOGID) -
    DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
@@ -199,7 +256,7 @@
 /* */
 
 /* userid for ZOWE main server                                       */
-/* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled     */
+/* replace AUTOUID with UID(ZOWEUID.) if AUTOUID is not enabled     */
   LISTUSER &ZOWEUSER. OMVS
   ADDUSER  &ZOWEUSER. -
    NOPASSWORD -
@@ -209,7 +266,7 @@
    DATA('ZOWE MAIN SERVER')
 
 /* userid for XMEM cross memory server                               */
-/* replace AUTOUID with UID(&XMEMUID.) if AUTOUID is not enabled     */
+/* replace AUTOUID with UID(XMEMUID.) if AUTOUID is not enabled     */
   LISTUSER &XMEMUSER. OMVS
   ADDUSER  &XMEMUSER. -
    NOPASSWORD -
@@ -218,10 +275,10 @@
    NAME('ZOWE XMEM SERVER') -
    DATA('ZOWE XMEM CROSS MEMORY SERVER')
 
-/* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
+/* comment out if AUXUSER matches XMEMUSER (default), expect       */
 /*   warning messages otherwise                                      */
 /* userid for XMEM auxilary cross memory server                      */
-/* replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled      */
+/* replace AUTOUID with UID(AUXUID.) if AUTOUID is not enabled      */
   LISTUSER &AUXUSER. OMVS
   ADDUSER  &AUXUSER. -
    NOPASSWORD -
@@ -309,7 +366,7 @@
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
-/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
 /*   advised to protect it against updates.                          */
 /* - The sample commands assume that EGN (Enhanced Generic Naming)   */
 /*   is active, which allows the usage of ** to represent any number */
@@ -360,10 +417,10 @@ F ACF2,REBUILD(GRP),CLASS(P)
 *
 * DEFINE STARTED TASK .............................................
 *
-* comment out if &STCGRP matches &ADMINGRP (default), expect
+* comment out if STCGRP matches ADMINGRP (default), expect
 *   warning messages otherwise
 * group for started tasks
-* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
+* replace AUTOGID with GID(STCGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
 INSERT &STCGRP. AUTOGID
@@ -372,7 +429,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 *****
 *
 * userid for ZOWE main server
-* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(ZOWEUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &ZOWEUSER. STC GROUP(&STCGRP.)
@@ -381,7 +438,7 @@ INSERT &ZOWEUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 * userid for XMEM cross memory server
-* replace AUTOUID with UID(&XMEMUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(XMEMUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &XMEMUSER. STC GROUP(&STCGRP.)
@@ -389,10 +446,10 @@ SET PROFILE(USER) DIV(OMVS)
 INSERT &XMEMUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
-* comment out if &AUXUSER matches &XMEMUSER (default), expect
+* comment out if AUXUSER matches XMEMUSER (default), expect
 *   warning messages otherwise
 * userid for XMEM auxilary cross memory server
-* replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(AUXUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &AUXUSER. STC GROUP(&STCGRP.)
@@ -405,21 +462,24 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * started task for ZOWE main server
 *
 SET CONTROL(GSO)
-INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) GROUP(&STCGRP.) +
+INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) +
+GROUP(&STCGRP.) +
 STCID(&ZOWESTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for XMEM cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.&XMEMSTC. LOGONID(&XMEMUSER.) GROUP(&STCGRP.) +
+INSERT STC.&XMEMSTC. LOGONID(&XMEMUSER.) +
+GROUP(&STCGRP.) +
 STCID(&XMEMSTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for XMEM auxilary cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.&AUXSTC. LOGONID(&AUXUSER.) GROUP(&STCGRP.) +
+INSERT STC.&AUXSTC. LOGONID(&AUXUSER.) +
+GROUP(&STCGRP.) +
 STCID(&AUXSTC.)
 F ACF2,REFRESH(STC)
 *
@@ -469,7 +529,7 @@ STORE
 *
 * DEFINE ZOWE DATA SET PROTECTION .................................
 *
-* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly
+* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly
 *   advised to protect it against updates.
 *
 *  HLQ stub
@@ -477,7 +537,8 @@ SET RULE
 *  general data set protection
 LIST &HLQ.
 RECKEY &HLQ. ADD(- UID(-) READ(A) EXEC(P))
-RECKEY &HLQ. ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
+RECKEY &HLQ. +
+ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results
 LIST &HLQ.
@@ -504,7 +565,7 @@ $$
 
 /* DEFINE STARTED TASK ............................................. */
 
-/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
+/* comment out if STCGRP matches ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
   TSS LIST(&STCGRP.) SEGMENT(OMVS)
@@ -520,7 +581,8 @@ $$
   TSS CREATE(&ZOWEUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE MAIN SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD(&ZOWEUSER.) GROUP(&STCGRP.) DFLTGRP(&STCGRP.) +
+   TSS ADD(&ZOWEUSER.) GROUP(&STCGRP.) +
+   DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZOWEUID.)
 
 /* userid for XMEM cross memory server                               */
@@ -528,17 +590,19 @@ $$
   TSS CREATE(&XMEMUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE XMEM CROSS MEMORY SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD(&XMEMUSER.) GROUP(&STCGRP.) DFLTGRP(&STCGRP.) +
+  TSS ADD(&XMEMUSER.) GROUP(&STCGRP.) +
+   DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&XMEMUID.)
 
-/* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
+/* comment out if AUXUSER matches XMEMUSER (default), expect       */
 /*   warning messages otherwise                                      */
 /* userid for XMEM auxilary cross memory server                      */
   TSS LIST(&AUXUSER.) SEGMENT(OMVS)
   TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE XMEM AUX SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD(&AUXUSER.) GROUP(&STCGRP.) DFLTGRP(&STCGRP.) +
+  TSS ADD(&AUXUSER.) GROUP(&STCGRP.) +
+   DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&AUXUID.)
 
 /* */
@@ -558,7 +622,8 @@ $$
   TSS ADD(STC) PROCNAME(&AUXSTC.) ACID(&AUXUSER.)
   TSS ADD(&AUXUSER.) FAC(STC)
 
-/* The &ZOWESTC started task is a multi-user address space therefore */
+#if($ibmTemplate != 'YES')
+/* The ZOWESTC started task is a multi-user address space therefore */
 /* a TSS FACILITY needs to be defined and assigned to the started    */
 /* task. The all acids signing on to the started task will need to   */
 /* be authorized to the FACILITY.                                    */
@@ -584,7 +649,7 @@ $$
 /* following command.                                                */
 /*                                                                   */
 /* TSS ADD(user_acid) FAC(ZOWE)                                      */
-
+#end
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use XMEM cross memory server           */
@@ -616,7 +681,7 @@ $$
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
-/* - &HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
 /*   advised to protect it against updates.                          */
 
 /* HLQ stub                                                          */
@@ -629,6 +694,30 @@ $$
 
 /* show results                                                      */
   TSS WHOHAS DATASET(&HLQ.)
+
+/* If any of these started tasks are multiusers address spaces       */
+/* a TSS FACILITY needs to be defined and assigned to the started    */
+/* and should not be using the STC FACILITY . The all acids signing  */
+/* on to the started tasks will need to be authorized to the         */
+/* FACILITY.                                                         */
+/*                                                                   */
+/* Create FACILITY example:                                          */
+/* In the TSSPARMS add the following lines to create                 */
+/* the new FACILITY.                                                 */
+/*                                                                   */
+/* FACILITY(USER11=NAME=ZOWE)                                        */
+/* FACILITY(ZOWE=MODE=FAIL)                                          */
+/* FACILITY(ZOWE=RES)                                                */
+/*                                                                   */
+/* To assign the FACILITY to the started task issue the following    */
+/* command:                                                          */
+/*                                                                   */
+/* TSS ADD(started_task_acid) MASTFAC(ZOWE)                          */
+/*                                                                   */
+/* To authorize a user to signon to the FACILITY, issues the         */
+/* following command.                                                */
+/*                                                                   */
+/* TSS ADD(user_acid) FAC(ZOWE)                                      */
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
