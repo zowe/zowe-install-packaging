@@ -34,7 +34,45 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
 chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
+chmod +x content/templates/vtl/build-workflow.rex
 
 # prepare for SMPE
 echo "$SCRIPT_NAME smpe is not part of zowe.pax, moving out ..."
 mv content/smpe .
+
+# prepare for workflows
+
+# move create JCL and VTL functionality here
+#  Output for JCL and Workflows chmod +x content/zowe-$ZOWE_VERSION/ plus correct dir
+
+# generate boilerplate SECURITY JCL
+JCL_PATH="content/zowe-$ZOWE_VERSION/files/jcl"        # output
+LOCAL_PATH="content/templates/vtl/ZWESECUR"   # input
+VTLCLI_PATH="/ZOWE/vtl-cli"       # tool
+for entry in $(ls ${LOCAL_PATH}/)
+do
+  if [ "${entry##*.}" = "vtl" ]          # keep from last . (exclusive)
+  then
+    BASE=${entry%.*}                    # keep up to last . (exclusive)
+    VTL="${LOCAL_PATH}/${entry}"
+    YAML="${LOCAL_PATH}/${BASE}.yml"
+    JCL="${JCL_PATH}/${BASE}.jcl"
+    # assumes java is in $PATH
+    java -jar ${VTLCLI_PATH}/vtl-cli.jar -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
+  fi
+done
+
+# generate SECURITY workflow
+ls "content/templates/vtl/ZWESECUR"
+WORKFLOW_PATH="content/zowe-$ZOWE_VERSION/files/workflows"       # output
+LOCAL_PATH="content/templates/vtl/ZWESECUR"   # input
+SECURWF_TEMPLATE="ZWEWRF02.xml"
+> "${WORKFLOW_PATH}/ZOWE_SECURITY_VIF.yml"
+> "${WORKFLOW_PATH}/ZOWE_SECURITY_WORKFLOW.xml"
+cp ${LOCAL_PATH}/ZWEWRF02.yml ${WORKFLOW_PATH}/ZOWE_SECURITY_VIF.yml
+cd "content/templates/vtl/ZWESECUR"
+ls
+../build-workflow.rex -d -i "../${SECURWF_TEMPLATE}" -o ../../../zowe-$ZOWE_VERSION/files/workflows/ZOWE_SECURITY_WORKFLOW.xml
+cd ../../../../
+
+mv content/templates .
