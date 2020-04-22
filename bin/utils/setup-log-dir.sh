@@ -37,7 +37,6 @@ else
   fi
 fi
 
-
 if ! mkdir -p ${LOG_DIRECTORY}
 then
   echo "Unable to create directory ${LOG_DIRECTORY}. Please use call the script with the additional parameter '-l <log_dir>' specifying a creatable and writable log_dir"
