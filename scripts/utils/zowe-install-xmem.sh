@@ -185,6 +185,14 @@ ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
 ./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
+aux_rc=$?
+echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
 ./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
+xmem_rc=$?
+echo "ZWEXMSTC rc from zowe-copy-to-JES.sh is ${xmem_rc}" >> ${LOG_FILE}
 
-script_exit 0
+if [[ ${xmem_rc} -ne 0 ]]
+then
+ script_exit ${xmem_rc}
+fi
+script_exit ${aux_rc}
