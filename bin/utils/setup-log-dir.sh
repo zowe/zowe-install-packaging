@@ -27,7 +27,7 @@ then
   then 
     LOG_DIRECTORY="/global/zowe/logs"
   else
-	  LOG_DIRECTORY=`sh -c "echo ~/zowe/logs"`
+	  LOG_DIRECTORY="~/zowe/logs"
   fi
 else
   # If the path is relative, then expand it
@@ -36,6 +36,9 @@ else
     LOG_DIRECTORY=$PWD/$LOG_DIRECTORY
   fi
 fi
+
+# If the value starts with a ~ for the home variable then evaluate it
+LOG_DIRECTORY=`sh -c "echo $LOG_DIRECTORY"`
 
 if ! mkdir -p ${LOG_DIRECTORY}
 then
