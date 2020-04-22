@@ -30,7 +30,7 @@ describe(testSuiteName, () => {
       'marist-1',
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zos_node_home': '/ZOWE/node/node-v8.16.0-os390-s390x',
+        'zos_node_home': '/ZOWE/node/node-v8.17.0-os390-s390x',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
