@@ -64,7 +64,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     expect(caption).to.be.an('object');
     debug('caption is ready');
     const captionTest = await caption.getText();
-    expect(captionTest).to.be.oneOf([APP_TO_TEST, 'VT - Disconnected']);
+    expect(captionTest).to.match(/^VT /);
     debug('app caption checked ok');
 
     // wait for caption is loaded

@@ -1,0 +1,62 @@
+---
+# find PTF files on z/OS
+#
+# output:
+# - zowe_smpe_ptf
+# - zowe_smpe_ptf_2
+# - zowe_smpe_ptf_readme
+
+# ============================================================================
+- name: Init zowe_smpe_ptf and zowe_smpe_ptf_readme variables
+  set_fact:
+    zowe_smpe_fmid: ""
+    zowe_smpe_ptf: ""
+    zowe_smpe_ptf_2: ""
+    zowe_smpe_ptf_readme: ""
+
+- name: Find Zowe FMID
+  raw: cd {{ work_dir_remote }} && ls -1 {{ zowe_build_smpe_ptf_pattern_sysmod }} | head -1 | awk -F. '{print $2};' | tr -d '\n'
+  register: zowe_smpe_fmid_result
+
+- name: Set zowe_smpe_fmid to {{ zowe_smpe_fmid_result.stdout }}
+  set_fact:
+    zowe_smpe_fmid: "{{ zowe_smpe_fmid_result.stdout }}"
+  when: zowe_smpe_fmid_result.stdout != ''
+
+- name: Check if Zowe SMPE SYSMODs exists
+  raw: cd {{ work_dir_remote }} && ls -1 {{ zowe_build_smpe_ptf_pattern_sysmod }} | awk -F. '{print $3;}'
+  register: zowe_smpe_ptf_sysmod_result
+
+- name: Zowe PTF should have 2 files
+  fail:
+    msg: There are {{ zowe_smpe_ptf_sysmod_result.stdout_lines|length }} SYSMOD(s) found, which is not 2.
+  when: zowe_smpe_ptf_sysmod_result.stdout_lines|length != 2
+
+- name: Set zowe_smpe_ptf to {{ zowe_smpe_ptf_sysmod_result.stdout_lines[0] }}
+  set_fact:
+    zowe_smpe_ptf: "{{  zowe_smpe_ptf_sysmod_result.stdout_lines[0] }}"
+
+- name: Set zowe_smpe_ptf_2 to {{ zowe_smpe_ptf_sysmod_result.stdout_lines[1] }}
+  set_fact:
+    zowe_smpe_ptf_2: "{{  zowe_smpe_ptf_sysmod_result.stdout_lines[1] }}"
+
+- name: Check if Zowe SMPE readme exists
+  raw: cd {{ work_dir_remote }} && ls -1 {{ zowe_build_smpe_ptf_pattern_readme }} | tr -d '\n'
+  register: zowe_smpe_ptf_readme_result
+  ignore_errors: True
+
+- name: Set zowe_smpe_ptf_readme to {{ zowe_smpe_ptf_readme_result.stdout }}
+  set_fact:
+    zowe_smpe_ptf_readme: "{{ zowe_smpe_ptf_readme_result.stdout }}"
+  when: zowe_smpe_ptf_readme_result.stdout != ''
+
+- name: Verify SMPE file
+  assert:
+    that:
+      - zowe_smpe_fmid != ''
+      - zowe_smpe_ptf != ''
+      - zowe_smpe_ptf_2 != ''
+      # it's ok we don't have readme
+      # - zowe_smpe_ptf_readme != ''
+    success_msg: "All required Zowe SMPE PTF files are uploaded."
+    fail_msg: "Couldn't find all Zowe SMPE PTF files (SYSMOD and readme.htm)"

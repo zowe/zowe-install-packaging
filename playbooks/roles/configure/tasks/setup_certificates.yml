@@ -12,7 +12,7 @@
     sed -e "s+^VERIFY_CERTIFICATES=.*\$+VERIFY_CERTIFICATES={{ zowe_apiml_verify_certficates_of_services|string|lower }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^KEYSTORE_PASSWORD=.*\$+KEYSTORE_PASSWORD={{ zowe_keystore_password }}+" | \
-    sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
+    sed -e "s+^KEYSTORE_ALIAS=.*\$+KEYSTORE_ALIAS={{ zowe_keystore_alias }}+" | \
     sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
     sed -e "s+^ZOWE_GROUP_ID=.*\$+ZOWE_GROUP_ID={{ zowe_runtime_group }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.env"
@@ -27,7 +27,15 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./zowe-setup-certificates.sh
-    script_parameters: "-p \"{{ work_dir_remote }}/zowe-setup-certificates.env\""
+    script_parameters: "-p \"{{ work_dir_remote }}/zowe-setup-certificates.env\"  -l \"{{ zowe_logs_dir }}\""
+
+- name: List log dir
+  raw: ls -l "{{ zowe_logs_dir }}"
+  ignore_errors: True
+
+- name: Show setup certificate log
+  raw: find {{ zowe_logs_dir }} -name "zowe-setup-certificates-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  ignore_errors: True
 
 - name: List certifactes directory
   raw: ls -l "{{ zowe_keystore_dir }}"

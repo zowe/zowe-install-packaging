@@ -25,7 +25,7 @@
         name: fmid
         tasks_from: uninstall
 
-  # # ============================================================================
+  # ============================================================================
   - name: Download Zowe from zowe_build_url if it has value
     when: zowe_build_url is defined
     block:
@@ -59,6 +59,17 @@
         zowe_smpe_fmid_file: zowe-smpe.zip
 
   # ============================================================================
+  # if zowe_build_remote is set, we copy the FMID from zowe_fmids_dir_remote to our work folder
+  # the value of zowe_build_remote should be FMID like AZWE001
+  - name: Copy Zowe FMID files from {{ zowe_fmids_dir_remote }}/{{ zowe_build_remote }} if it has value
+    when: zowe_build_remote is defined
+    import_role:
+      name: fmid
+      tasks_from: copy_fmid_on_server
+    vars:
+      zowe_fmid: "{{ zowe_build_remote }}"
+
+  # ============================================================================
   - name: Install Zowe SMPE FMID
     import_role:
       name: fmid
@@ -71,9 +82,10 @@
   # ============================================================================
   # Configure Zowe
   - import_role:
-      name: configure
+      name: configfmid
 
   # ============================================================================
   # Start Zowe
   - import_role:
       name: start
+    when: not skip_start|default(False)

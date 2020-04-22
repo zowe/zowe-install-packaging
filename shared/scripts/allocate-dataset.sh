@@ -14,6 +14,7 @@
 #
 # Arguments:
 # -B blkSiz (optional) use specified block size
+# -C uCount (optional) maximum number of dsOrg=PS devices to be allocated
 # -e        (optional) existing partitioned data set must be PDS/E
 # -h        (optional) hide the allocate command being issued
 # -p        (optional) existing partitioned data set must be PDS
@@ -24,6 +25,8 @@
 # lRecL     logical record length, use ** for RECFM(U)
 # dsOrg     data set organisation; {PO | PS}
 # space     space in tracks; primary[,secondary]
+#
+# -C and -V are mutually exclusive
 #
 # Expected globals:
 # $debug $LOG_FILE
@@ -48,13 +51,14 @@ test "$debug" && echo "> $me $@"
 unset rc
 
 # Clear input variables
-unset blkSize pdse hide pds dir volume
+unset blkSize uCount pdse hide pds dir volume
 
 # Get startup arguments
 args="$@"
-while getopts ehpB:P:V: opt
+while getopts ehpB:C:P:V: opt
 do case "$opt" in
   B)   blkSize="$OPTARG";;
+  C)   uCount="$OPTARG";;
   e)   pdse="-e";;
   h)   hide="-h";;
   p)   pds="-p";;
@@ -85,6 +89,13 @@ if test "$recFm" = "U" -a "$dsOrg" != "PO"
 then
   echo "** ERROR $me faulty startup argument: $args"
   echo "RECFM(U) requires DSORG(PO)"
+  rc=8
+fi    #
+
+if test -n "$uCount" -a -n "$volume"
+then
+  echo "** ERROR $me faulty startup argument: $args"
+  echo "-C and -V are mutually exclusive"
   rc=8
 fi    #
 
@@ -149,7 +160,12 @@ then                                          # data set does not exist
     dsOrg="dsntype(library) dsorg(po)"
   fi    #
 
-  if test "$volume"
+  if test "$uCount"            # matches UNIT=(SYSALLDA,$uCount) in JCL
+  then
+    uCount="ucount($uCount)"
+  fi    #
+
+  if test "$volume"                  # matches VOL=SER=($volume) in JCL
   then
     volume="volume($volume)"
   fi    #
@@ -158,11 +174,11 @@ then                                          # data set does not exist
   then
     # Trap stderr, do not show alloc command (&2), but show error (&1)
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
-      "space($space) tracks unit(sysallda) $volume" 2> /dev/null
+      "space($space) tracks $uCount unit(sysallda) $volume" 2> /dev/null
   else
     # Do NOT trap output, user must see alloc command (&2) & error (&1)
     tsocmd "allocate new da('$dsn') $dsOrg $dcb" \
-      "space($space) tracks unit(sysallda) $volume" 2>&1
+      "space($space) tracks $uCount unit(sysallda) $volume" 2>&1
   fi    #
 
   if test $? -eq 0

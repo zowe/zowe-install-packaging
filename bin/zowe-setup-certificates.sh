@@ -10,39 +10,24 @@
 # - ZOSMF_CERTIFICATE - Public certificates of z/OSMF - multiple certificates delimited with space has to be enclosed with quotes ("path/cer1 path/cer2")
 
 # - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore)
-# - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and 
+# - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 # - ZOWE_KEYRING - specify zowe keyring that keeps zowe certificates, if not specified USS keystore
 #                  files will be created.
 
-
-# Set up logging
-LOG_DIR=${HOME}/zowe_certificate_setup_log
-# Make the log directory if needed - first time through - subsequent installs create new .log files
-if [[ ! -d $LOG_DIR ]]; then
-    mkdir -p $LOG_DIR
-    chmod a+rwx $LOG_DIR 
-fi
-
-export LOG_FILE="certificate_config_`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$LOG_DIR/$LOG_FILE
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
-
-echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
-
 # process input parameters.
-while getopts "p:" opt; do
+while getopts "l:p:" opt; do
   case $opt in
+    l) LOG_DIRECTORY=$OPTARG;;
     p) CERTIFICATES_CONFIG_FILE=$OPTARG;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$opt" >&2
       exit 1
       ;;
   esac
 done
-shift "$(($OPTIND-1))"
+shift $(($OPTIND-1))
 
 umask 0027
 
@@ -50,6 +35,11 @@ if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
+
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+set_log_file "zowe-setup-certificates"
+
+echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
@@ -64,7 +54,7 @@ else
   then
     echo "Loading ${CERTIFICATES_CONFIG_FILE} file and overriding default variables."
     # Load custom values
-    . ${CERTIFICATES_CONFIG_FILE}  
+    . ${CERTIFICATES_CONFIG_FILE}
   else
     echo "${CERTIFICATES_CONFIG_FILE} file does not exist."
     exit 1
@@ -81,7 +71,7 @@ LOCAL_KEYSTORE_SUBDIR=local_ca
 
 # create keystore directories
 if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
-  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then 
+  if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then
     echo "Unable to create ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} directory."
     exit 1;
   fi
@@ -162,10 +152,12 @@ fi
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
-      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}"
+      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+      --service-keystore ${KEYSTORE_PREFIX}
   else
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zowe-userid ${ZOWE_USER_ID} \
-      --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}"
+      --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+      --service-keystore ${KEYSTORE_PREFIX}
   fi
   RC=$?
 

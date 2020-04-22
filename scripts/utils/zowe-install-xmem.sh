@@ -6,7 +6,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019, 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
 # Function: Copy cross-memory server artefacts to the required locations
@@ -23,56 +23,86 @@
 
 # Needs ./zowe-copy-to-JES.sh for PROCLIB
 
+while getopts "a:b:d:l:r:" opt; do
+  case $opt in
+    a) parmlib=$OPTARG;;
+    b) loadlib=$OPTARG;;
+    d) data_set_prefix=$OPTARG;;
+    l) LOG_DIRECTORY=$OPTARG;;
+    r) proclib=$OPTARG;;
+    \?)
+      echo "Invalid option: -$opt" >&2
+      exit 1
+      ;;
+  esac
+done
+shift $(($OPTIND-1))
+
 script_exit(){
   echo exit $1 | tee -a ${LOG_FILE}
   echo "</$SCRIPT>" | tee -a ${LOG_FILE}
   exit $1
 }
+
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+fi
+
 # identify this script
 SCRIPT="$(basename $0)"
 
-LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+set_log_file "zowe-install-xmem"
 
 echo "<$SCRIPT>" | tee -a ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
 
 # check parms
-if [[ $# -lt 3 || $# -gt 4 ]]
+missing_parms=
+if [[ -z ${data_set_prefix} ]]
 then
-echo Expected 3 or 4 parameters, found $# | tee -a ${LOG_FILE}
-echo Parameters supplied were $@ | tee -a ${LOG_FILE}
-echo Usage:
+  missing_parms=${missing_parms}" -d"
+fi
+if [[ -z ${loadlib} ]]
+then
+  missing_parms=${missing_parms}" -b"
+fi
+if [[ -z ${parmlib} ]]
+then
+  missing_parms=${missing_parms}" -a"
+fi
+
+if [[ -n ${missing_parms} ]]
+then
+echo Parameters supplied were $@ >> ${LOG_FILE}
+echo "Some required parameters were not supplied:${missing_parms}"
 cat <<EndOfUsage
-  $SCRIPT datasetPrefix loadlib parmlib proclib
-
-    Parameter subsitutions:
-    Parm name     Value e.g.              Meaning
-    ---------     ----------              -------
- 1  datasetPrefix {userid}.ZWE            Dataset prefix of source library .SZWEAUTH where members ZWESIS01,ZWESAUX are located
-                                          and of source library .SZWESAMP where members ZWESASTC, ZWESIP00 and ZWESISTC are located.
- 2  loadlib       {hlq}.ZIS.SZISLOAD      DSN of target LOADLIB where members ZWESIS01,ZWESAUX will be placed. 
-                  
- 3  parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWESIP00 will be placed. 
- 
- 4  proclib       USER.PROCLIB            DSN of target PROCLIB where members ZWESASTC and ZWESISTC will be placed. 
-                  (omitted)               PROCLIB will be selected from JES PROCLIB concatenation.
-
+Usage  $SCRIPT -d <dataSetPrefix> -b <loadlib> -a <parmlib> [-r <proclib>]
+Opt flag    Parm name     Value e.g.              Meaning
+--------    ---------     ----------              -------
+   -d       dataSetPrefix {userid}.ZWE            Data set prefix of source library .SZWEAUTH where members ZWESIS01,ZWESAUX are located
+                                                    and of source library .SZWESAMP where members ZWESASTC, ZWESIP00 and ZWESISTC are located.
+   -b       loadlib       {hlq}.ZIS.SZISLOAD      DSN of target LOADLIB where members ZWESIS01,ZWESAUX will be placed. 
+                            
+   -a       parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWESIP00 will be placed. 
+          
+   -r       proclib       USER.PROCLIB            DSN of target PROCLIB where members ZWESASTC and ZWESISTC will be placed. 
+                          (omitted)               PROCLIB will be selected from JES PROCLIB concatenation.
 EndOfUsage
 script_exit 1
 fi
 
-authlib=`echo $1.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
-loadlib=`echo $2 | tr '[:lower:]' '[:upper:]'`
-samplib=`echo $1.SZWESAMP | tr '[:lower:]' '[:upper:]'`
-parmlib=`echo $3 | tr '[:lower:]' '[:upper:]'`
+authlib=`echo ${data_set_prefix}.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
+loadlib=`echo ${loadlib} | tr '[:lower:]' '[:upper:]'`
+samplib=`echo ${data_set_prefix}.SZWESAMP | tr '[:lower:]' '[:upper:]'`
+parmlib=`echo ${parmlib} | tr '[:lower:]' '[:upper:]'`
  
-if [[ $# -eq 4 ]]
+if [[ -z ${proclib} ]]
 then
-  proclib=`echo $4 | tr '[:lower:]' '[:upper:]'`
-else
   proclib=auto
+else
+  proclib=`echo ${proclib} | tr '[:lower:]' '[:upper:]'`
 fi 
 
 echo    "authlib =" $authlib >> $LOG_FILE
@@ -127,8 +157,6 @@ do
   fi
 done
 
-
-
 # PARMLIB  - - - - - - - - - - - - - - - - 
 # parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWEXMP00 goes
 # The suffix (last 2 digits) can be adjusted in the STC JCL, but the prefix must be ZWESIP
@@ -156,7 +184,15 @@ ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh $samplib $ZWEXASTC $proclib $ZWEXASTC  ${loadlib} ${parmlib}
-./zowe-copy-to-JES.sh $samplib $ZWEXMSTC $proclib $ZWEXMSTC  ${loadlib} ${parmlib}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
+aux_rc=$?
+echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
+xmem_rc=$?
+echo "ZWEXMSTC rc from zowe-copy-to-JES.sh is ${xmem_rc}" >> ${LOG_FILE}
 
-script_exit 0
+if [[ ${xmem_rc} -ne 0 ]]
+then
+ script_exit ${xmem_rc}
+fi
+script_exit ${aux_rc}
