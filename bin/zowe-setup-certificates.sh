@@ -160,6 +160,28 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
 EOF
 
+JWT_ALIAS="jwtsecret"
+APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
+P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
+if [[ "${SETUP_APIML_SSO}" == "true" ]]; then
+  if [[ -f ${APIML_PUBLIC_KEY} ]]
+  then
+    chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
+    if ! keytool -importcert -file ${APIML_PUBLIC_KEY} -keystore ${P12_PUBLIC_KEY} -storetype pkcs12 -storepass ${KEYSTORE_PASSWORD} -trustcacerts -noprompt >> $LOG_FILE 2>&1 ; then
+      echo "Unable to convert ${APIML_PUBLIC_KEY} to PKCS#12. See $LOG_FILE for more details."
+    else
+      UPPER_KEY_LABEL=$(echo "${PKCS11_TOKEN_LABEL}" | tr '[:lower:]' '[:upper:]')
+      if ! gskkyman -i -t ${PKCS11_TOKEN_NAME} -l ${UPPER_KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
+        echo "Unable to store ${P12_PUBLIC_KEY} in token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}. See $LOG_FILE for more details."
+      else
+        echo "Successfully loaded ${APIML_PUBLIC_KEY} into token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}."
+        rm ${P12_PUBLIC_KEY} 2> /dev/null
+      fi
+    fi
+  else
+    echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
+  fi
+fi
 # set up privileges and ownership
 chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
