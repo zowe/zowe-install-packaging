@@ -15,18 +15,15 @@ if [ $# -lt 4 ]; then
   exit 1
 fi
 
-while getopts "f:h:i:d" opt; do
+while getopts "h:i:l:d" opt; do
   case $opt in
     d) # enable debug mode
       # future use, accept parm to stabilize SMPE packaging
       #debug="-d"
       ;;
-    f) # override default value for LOG_FILE
-      # future use, issue 801, accept parm to stabilize SMPE packaging
-      #...="$OPTARG"
-      ;;
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
+    l) LOG_DIRECTORY=$OPTARG;;
     \?)
       echo "Invalid option: -$opt" >&2
       exit 1
@@ -57,13 +54,8 @@ fi
 mkdir -p $TEMP_DIR
 chmod a+rwx $TEMP_DIR 
 
-# Create a log file with the year and time.log in a log folder 
-# that scripts can echo to and can be written to by scripts to diagnose any install problems.  
-# Make the log file (unique assuming there is only one install per second)
-export LOG_FILE="`date +%Y-%m-%d-%H-%M-%S`.log"
-LOG_FILE=$TEMP_DIR/$LOG_FILE
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
+. ${INSTALL_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+set_log_file "zowe-install"
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "Error: failed to determine Zowe version."
@@ -173,17 +165,13 @@ cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
 # Based on zowe-install-packaging/issues/1014 we should set everything to 755
 chmod -R 755 ${ZOWE_ROOT_DIR}
 
-# save install log in runtime directory
-mkdir -p $ZOWE_ROOT_DIR/install_log
-cp $LOG_FILE $ZOWE_ROOT_DIR/install_log
-
 # remove the working directory
 rm -rf $TEMP_DIR
 
 echo "zowe-install.sh completed. In order to use Zowe:"
 if [[ ${NEW_INSTALL} == "true" ]]
 then
-  echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}/SZWESAMP/ZWESECUR'"
+  echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}.SZWESAMP(ZWESECUR)'"
   echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
   echo " - You must ensure that the Zowe Proclibs are added to your PROCLIB JES concatenation path"
   echo " - You must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
