@@ -9,7 +9,11 @@
  */
 
 module.exports = {
-  runner: "./dist/worker-group-runner.js",
+  // FIXME: disable the customized runner to handle running test in parallel.
+  //        The complexity is not just running multiple tests in different sub-
+  //        processes, but also how can we separate the test reports and merge
+  //        them later.
+  // runner: "./dist/worker-group-runner.js",
   reporters: [
     "default",
     [

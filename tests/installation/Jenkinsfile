@@ -83,6 +83,7 @@ node('ibm-jenkins-slave-dind') {
     'bundle: all extended tests': [
       test_files: 'dist/__tests__/extented/',
       jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
   ]
 
