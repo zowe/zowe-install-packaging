@@ -66,10 +66,10 @@ done
 ls "content/templates/vtl/ZWESECUR"
 WORKFLOW_PATH="content/zowe-$ZOWE_VERSION/files/workflows"       # output
 LOCAL_PATH="content/templates/vtl/ZWESECUR"   # input
-SECURWF_TEMPLATE="ZWEWRF02.xml"
+SECURWF_TEMPLATE="ZWESECUR.xml"
 > "${WORKFLOW_PATH}/ZOWE_SECURITY_VIF.yml"
 > "${WORKFLOW_PATH}/ZOWE_SECURITY_WORKFLOW.xml"
-cp ${LOCAL_PATH}/ZWEWRF02.yml ${WORKFLOW_PATH}/ZOWE_SECURITY_VIF.yml
+cp ${LOCAL_PATH}/ZWESECUR.yml ${WORKFLOW_PATH}/ZOWE_SECURITY_VIF.yml
 cd "content/templates/vtl/ZWESECUR"
 ls
 ../build-workflow.rex -d -i "../${SECURWF_TEMPLATE}" -o ../../../zowe-$ZOWE_VERSION/files/workflows/ZOWE_SECURITY_WORKFLOW.xml
