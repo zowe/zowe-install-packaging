@@ -175,8 +175,8 @@ if [[ "${SETUP_APIML_SSO}" == "true" ]]; then
         echo "Unable to store ${P12_PUBLIC_KEY} in token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}. See $LOG_FILE for more details."
       else
         echo "Successfully loaded ${APIML_PUBLIC_KEY} into token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}."
-        rm ${P12_PUBLIC_KEY} 2> /dev/null
       fi
+      rm ${P12_PUBLIC_KEY} 2> /dev/null
     fi
   else
     echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
