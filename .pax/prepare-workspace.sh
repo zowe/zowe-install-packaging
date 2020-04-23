@@ -41,6 +41,7 @@ mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/scripts"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/install"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/files"
 mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/files"
+mkdir -p "${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/templates"
 
 # make sure the workflow files directory exists
 mkdir -p "files/workflows"
@@ -107,3 +108,8 @@ cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"
 cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/bld"
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
 cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
+
+# copy workflows
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/templates"
+cp -R templates/. "${PAX_WORKSPACE_DIR}/ascii/templates"
+cp -R smpe/ZOSMF/build-workflow.rex "${PAX_WORKSPACE_DIR}/ascii/templates/vtl"

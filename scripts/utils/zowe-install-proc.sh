@@ -12,9 +12,10 @@
 # Function: Copy Zowe server PROC from datasetPrefx.SZWESAMP(ZWESVSTC) to JES concatenation
 # Needs ./zowe-copy-to-JES.sh
 
-while getopts "d:r:" opt; do
+while getopts "d:l:r:" opt; do
   case $opt in
     d) data_set_prefix=$OPTARG;;
+    l) LOG_DIRECTORY=$OPTARG;;
     r) proclib=$OPTARG;;
     \?)
       echo "Invalid option: -$opt" >&2
@@ -24,18 +25,22 @@ while getopts "d:r:" opt; do
 done
 shift $(($OPTIND-1))
 
-
 script_exit(){
   echo exit $1 >> ${LOG_FILE}
   echo "</$SCRIPT>" >> ${LOG_FILE}
   exit $1
 }
+
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+fi
+
 # identify this script
 SCRIPT="$(basename $0)"
 
-LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
-touch ${LOG_FILE}
-chmod a+rw ${LOG_FILE}
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+set_log_file "zowe-install-proc"
 
 echo "<$SCRIPT>" >> ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
@@ -77,7 +82,8 @@ do
   fi
 done
 
-./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member}
-echo "rc from zowe-copy-to-JES.sh is $?" >> ${LOG_FILE}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member} -l ${LOG_DIRECTORY}
+rc=$?
+echo "rc from zowe-copy-to-JES.sh is ${rc}" >> ${LOG_FILE}
 
-script_exit 0
+script_exit ${rc}
