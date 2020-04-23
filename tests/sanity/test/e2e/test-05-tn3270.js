@@ -64,7 +64,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     expect(caption).to.be.an('object');
     debug('caption is ready');
     const captionTest = await caption.getText();
-    expect(captionTest).to.be.equal(APP_TO_TEST);
+    expect(captionTest).to.match(new RegExp(`^${APP_TO_TEST}`));
     debug('app caption checked ok');
 
     // wait for caption is loaded
