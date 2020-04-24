@@ -8,7 +8,7 @@
 		<workflowID scope="none">Zowe_certificate_generation</workflowID>
 		<workflowDefaultName>Zowe_certificate_generation</workflowDefaultName>
 		<workflowDescription>This workflow will generate certificates for ZOWE</workflowDescription>
-		<workflowVersion>#ZOWE_VERSION#</workflowVersion>
+		<workflowVersion>###ZOWE_VERSION###</workflowVersion>
 		<vendor>ZOWE</vendor>
 		<General/>
 	</workflowInfo>
