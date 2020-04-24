@@ -8,7 +8,7 @@ Do this for workflows that do not share source with a shipped JCL:
 - create variable definitions as workflows/files/<id>.properties
 
 During build, .pax/prepare-workspace.sh will:
-- substitute #ZOWE_VERSION#
+- substitute ###ZOWE_VERSION###
 - create zowe-<vrm>/files/workflows/*
 
 ---
@@ -20,7 +20,7 @@ Do this for workflows that share source with a single shipped JCL:
 - create shared JCL source as workflows/templates/<id>.vtl
 
 During build, .pax/prepare-workspace.sh will:
-- substitute #ZOWE_VERSION#
+- substitute ###ZOWE_VERSION###
 - create templates/*
 
 During build, .pax/pre-packaging.sh will:
@@ -39,7 +39,7 @@ Do this for workflows that share source with multiple shipped JCL:
 - create shared JCL source as workflows/templates/<id>/<jcl>.vtl
 
 During build, .pax/prepare-workspace.sh will:
-- substitute #ZOWE_VERSION#
+- substitute ###ZOWE_VERSION###
 - create templates/*
 
 During build, .pax/pre-packaging.sh will:
