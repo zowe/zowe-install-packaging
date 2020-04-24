@@ -38,8 +38,7 @@ set -x
 # $wf_from: input location (raw workfiles)
 # $wf_to: target location (customized workfiles)
 # ---------------------------------------------------------------------
-function _customizeWorkflow
-{
+_customizeWorkflow () {
 echo "[${SCRIPT_NAME}] creating workflows in $wf_to ..."
 mkdir -p "$wf_to"
 
@@ -63,8 +62,7 @@ done
 # $wf_from: input location (raw workfiles)
 # $wf_to: target location (customized workfiles)
 # ---------------------------------------------------------------------
-function _templateWorkflow
-{
+_templateWorkflow () {
 wf_temp="${PAX_WORKSPACE_DIR}/ascii/wf_temp"  # temp dir for sed
 mkdir -p "$wf_temp"
 mkdir -p "$wf_to"
