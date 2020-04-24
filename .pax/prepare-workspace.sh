@@ -87,7 +87,7 @@ return 0
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 SCRIPT_NAME=$(basename "$0")  # $0=./.pax/prepare-workspace.sh
-BASEDIR=$(dirname "$0")       # <something>/.pax
+BASE_DIR=$(dirname "$0")      # <something>/.pax
 PAX_WORKSPACE_DIR=.pax
 
 if [ -z "$ZOWE_VERSION" ]; then
@@ -97,7 +97,7 @@ else
   echo "[$SCRIPT_NAME] working on Zowe v${ZOWE_VERSION} ..."
 fi
 
-cd $BASEDIR
+cd $BASE_DIR
 cd ..
 ROOT_DIR=$(pwd)
 
@@ -118,7 +118,6 @@ mkdir -p "${ASCII_DIR}/install"
 mkdir -p "${ASCII_DIR}/scripts"
 #-- content
 mkdir -p "${CONTENT_DIR}/files"
-mkdir -p "${CONTENT_DIR}/templates"  # TODO no longer needed?
 
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
@@ -192,7 +191,7 @@ wf_to="${PAX_WORKSPACE_DIR}/ascii/templates"
 _templateWorkflow
 cp workflows/*.rex "$wf_to"                               # add tooling
 
-echo "$SCRIPT_NAME ended"
+echo "[$SCRIPT_NAME] done"
 
 # result:
 # ${PAX_WORKSPACE_DIR}/ascii/smpe/

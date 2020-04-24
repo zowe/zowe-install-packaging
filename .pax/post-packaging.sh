@@ -267,7 +267,7 @@ mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PROMOTE_TAR}" ${SMPE_PROMOTE_TAR}
 echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
-echo "[$SCRIPT_NAME] ended"
+echo "[$SCRIPT_NAME] done"
 
 # files to be uploaded to artifactory:
 # ${CURR_PWD}/smpe-build-logs.pax.Z
