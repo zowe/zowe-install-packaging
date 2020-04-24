@@ -43,7 +43,7 @@ if [ -f "$1/$2.vtl" ]; then
   vtlPath="$1"
 elif [ -d "$1/$2" ]; then
   vtlList="$(ls $1/$2/)"           # process all if directory passed in
-  vtlPath="$1/$2"
+  vtlPath="$1/${2:-.}"
 else
   echo "[$SCRIPT_NAME] $1/$2.vtl not found"
   exit 1
@@ -66,6 +66,8 @@ do
       echo "[$SCRIPT_NAME] ${vtlPath}/${vtlBase}.properties not found"
       exit 1
     fi
+
+    echo "[$SCRIPT_NAME] creating $JCL"
 
     # TODO match variables used in .vtl and .properties
 
@@ -94,7 +96,7 @@ if [ -f "$1/$2.xml" ]; then
   xmlPath="$1"
 elif [ -d "$1/$2" ]; then
   xmlList="$(ls $1/$2/)"           # process all if directory passed in
-  xmlPath="$1/$2"
+  xmlPath="$1/${2:-.}"
 else
   echo "[$SCRIPT_NAME] $1/$2.xml not found"
   exit 1
@@ -115,6 +117,7 @@ do
     _createJCL ${xmlPath} ${xmlBase}    # ${xmlBase} can be a directory
 
     # create workflow
+    echo "[$SCRIPT_NAME] creating $XML"
     # inlineTemplate definition in xml expects us to be in $xmlPath
     cd "${xmlPath}"
     ${CREAXML_PATH}/build-workflow.rex -d -i ${xmlEntry} -o ${XML}

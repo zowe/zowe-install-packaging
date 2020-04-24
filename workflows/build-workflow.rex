@@ -229,7 +229,6 @@ then do                                                    /* '#if(' */
 
   /* replace evaluation characters with blanks to simplify parsing */
   String=translate(_substitute('$!','$',String),,'(!=)',' ')
-  if Debug then say '. String='String
 
   Start='$'  
   Stop=' '
@@ -239,12 +238,12 @@ else do                                                  /* not #if( */
 
   /* replace ! variable names to simplify parsing */
   String=_substitute('${!','${',String)
-  if Debug then say '. String='String
 
   Start='${'  
   Stop='}'
 end    /* not #if( */
 
+if Debug then say '. String='String
 do while String <> ''
   /* get first variable name, and trim String to trailing part */
   parse var String . (Start) Name (Stop) String
