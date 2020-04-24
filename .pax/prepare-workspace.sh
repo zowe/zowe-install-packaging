@@ -55,6 +55,8 @@ do
   # remove raw workflow file if requested
   test -n "$1" && rm "$wf_from/$wf_file"
 done
+
+return 0
 }    # _customizeWorkflow
 
 # ---------------------------------------------------------------------
@@ -77,6 +79,8 @@ _customizeWorkflow move
 # move remaining sub-dirs from temp
 mv -R $wf_temp/. "$wf_to"
 rmdir $wf_temp
+
+return 0
 }    # _templateWorkflow
 
 # ---------------------------------------------------------------------
