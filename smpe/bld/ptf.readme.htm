@@ -94,6 +94,12 @@ by the user are in bold, and the following values are assumed:</P>
         <TD vAlign=top width="75%">High-level qualifier that you used for the
           data set that you allocated in the job above</TD></TR>
   </TBODY></TABLE>
+  <B>Note:</B> In this example, the FTP server is configured to start 
+  in MVS with your user ID as current high level qualifier. Adjust the 
+  <TT>cd ..</TT> command to match your system setup. 
+  <BR>If you start in a z/OS UNIX path, for example 
+  <TT>Working directory is "/u/tsouid".</TT>,
+  then you can switch to the MVS side using <TT>cd //</TT>.
   <PRE>
 C:\&gt;<STRONG>ftp mvsaddr</STRONG>
 <I>Connected to mvsaddr.
