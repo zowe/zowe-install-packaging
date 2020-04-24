@@ -86,7 +86,8 @@ done
 # ---------------------------------------------------------------------
 function _createWorkflow
 {
-CREAXML_PATH="$(pwd)/templates"    # tools, path must be absolute
+here=$(pwd)
+CREAXML_PATH="${here}/templates"   # tools, path must be absolute
 
 if [ -f "$1/$2.xml" ]; then
   xmlList="$2.xml"                             # process just this file
@@ -104,7 +105,7 @@ do
   if [ "${xmlEntry##*.}" = "xml" ]       # keep from last . (exclusive)
   then
     xmlBase="${xmlEntry%.*}"            # keep up to last . (exclusive)
-    XML="${WORKFLOW_PATH}/${xmlBase}.xml"
+    XML="${here}/${WORKFLOW_PATH}/${xmlBase}.xml"   # use absolute path
 
     if [ -d ${xmlBase} ]; then
       # TODO ensure workflow yaml has all variables of JCL yamls
