@@ -39,7 +39,7 @@ function _createJCL
 VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
 
 if [ -f "$1/$2.vtl" ]; then
-  vtlList="$1/$2.vtl"                          # process just this file
+  vtlList="$2.vtl"                             # process just this file
   vtlPath="$1"
 elif [ -d "$1/$2" ]; then
   vtlList="$(ls $1/$2/)"           # process all if directory passed in
