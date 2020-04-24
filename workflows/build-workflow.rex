@@ -227,8 +227,10 @@ then do                                                    /* '#if(' */
   /* #if($ibmTemplate == 'NO' || !$!ibmTemplate) */
   /* #if( $sysaff and $sysaff != "" and $sysaff != '#sysaff') */ 
 
+  /* replace ! variable names to simplify parsing */
+  String=_substitute('$!','$',_substitute('${!','${',String))
   /* replace evaluation characters with blanks to simplify parsing */
-  String=translate(_substitute('$!','$',String),,'(!=)',' ')
+  String=translate(String,,'(!=)',' ')
   if Debug then say '. String='String
 
   Start='$'  
