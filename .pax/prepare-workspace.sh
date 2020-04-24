@@ -46,7 +46,7 @@ wf_files=$(ls "$wf_from")  # processes all files (.xml, .vtl & .properties)
 for wf_file in $wf_files
 do
   # skip if directory
-  test -d "$wf_file" && continue
+  test -d "$wf_from/$wf_file" && continue
   # fill in Zowe version in the workflow file
   sed -e "s/###ZOWE_VERSION###/${ZOWE_VERSION}/g" \
       -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" \
