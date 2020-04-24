@@ -36,7 +36,7 @@ set -x
 # ---------------------------------------------------------------------
 function _createJCL
 {
-VTLCLI_PATH="/ZOWE/vtl-cli"        # tools
+VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
 
 if [ -f "$1/$2.vtl" ]; then
   vtlList="$1/$2.vtl"                          # process just this file
@@ -86,7 +86,7 @@ done
 # ---------------------------------------------------------------------
 function _createWorkflow
 {
-CREAXML_PATH="./templates"         # tools
+CREAXML_PATH="$(pwd)/templates"    # tools, path must be absolute
 
 if [ -f "$1/$2.xml" ]; then
   xmlList="$2.xml"                             # process just this file
