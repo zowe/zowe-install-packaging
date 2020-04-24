@@ -185,7 +185,7 @@ JCL_PATH="./smpe/pax/MVS"
 _createWorkflow "./templates" "smpe-install"
 # adjust names as these files will be known by SMP/E
 mv -f "$WORKFLOW_PATH/smpe-install.xml" "$WORKFLOW_PATH/ZWEWRK01.xml"
-mv -f "$WORKFLOW_PATH/smpe-install.yml" "$WORKFLOW_PATH/ZWEYML01.yml"
+mv -f "$WORKFLOW_PATH/smpe-install.properties" "$WORKFLOW_PATH/ZWEYML01.yml"
 
 #2. create all other workflow & JCL, must be last in workflow creation
 WORKFLOW_PATH="./content/zowe-$ZOWE_VERSION/files/workflows"
