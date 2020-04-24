@@ -11,16 +11,17 @@
 ################################################################################
 
 if [ $# -lt 4 ]; then
-  echo "Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>"
   exit 1
 fi
 
-while getopts "h:i:l:d" opt; do
+while getopts "f:h:i:l:d" opt; do
   case $opt in
     d) # enable debug mode
       # future use, accept parm to stabilize SMPE packaging
       #debug="-d"
       ;;
+    f) LOG_FILE=$OPTARG;;
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
@@ -54,8 +55,14 @@ fi
 mkdir -p $TEMP_DIR
 chmod a+rwx $TEMP_DIR 
 
-. ${INSTALL_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
-set_log_file "zowe-install"
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+if [[ -z "${LOG_FILE}" ]]
+then
+  set_log_directory ${LOG_DIRECTORY}
+  set_log_file "zowe-install"
+else
+  set_log_file_from_full_path $LOG_FILE
+fi
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "Error: failed to determine Zowe version."

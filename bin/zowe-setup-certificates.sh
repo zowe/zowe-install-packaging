@@ -32,7 +32,8 @@ then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
-. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+set_log_directory ${LOG_DIRECTORY}
 set_log_file "zowe-setup-certificates"
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
