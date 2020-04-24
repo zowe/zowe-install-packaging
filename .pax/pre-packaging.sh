@@ -38,12 +38,12 @@ function _createJCL
 {
 VTLCLI_PATH="/ZOWE/vtl-cli"        # tools
 
-if [ -d "$1/$2" ]; then
-  vtlList="$(ls $1/$2/)"           # process all if directory passed in
-  vtlPath="$1/$2"
-elif [ -f $1/$2.vtl ]; then
+if [ -f "$1/$2.vtl" ]; then
   vtlList="$1/$2.vtl"                          # process just this file
   vtlPath="$1"
+elif [ -d "$1/$2" ]; then
+  vtlList="$(ls $1/$2/)"           # process all if directory passed in
+  vtlPath="$1/$2"
 else
   echo "[$SCRIPT_NAME] $1/$2.vtl not found"
   exit 1
@@ -88,12 +88,12 @@ function _createWorkflow
 {
 CREAXML_PATH="./templates"         # tools
 
-if [ -d "$1/$2" ]; then
-  xmlList="$(ls $1/$2/)"           # process all if directory passed in
-  xmlPath="$1/$2"
-elif [ -f $1/$2.xml ]; then
+if [ -f "$1/$2.xml" ]; then
   xmlList="$1/$2.xml"                          # process just this file
   xmlPath="$1"
+elif [ -d "$1/$2" ]; then
+  xmlList="$(ls $1/$2/)"           # process all if directory passed in
+  xmlPath="$1/$2"
 else
   echo "[$SCRIPT_NAME] $1/$2.xml not found"
   exit 1
