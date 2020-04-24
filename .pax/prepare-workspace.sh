@@ -77,7 +77,7 @@ wf_from="$wf_temp"
 _customizeWorkflow move
 
 # move remaining sub-dirs from temp
-mv -R $wf_temp/. "$wf_to"
+mv $wf_temp/. "$wf_to"
 rmdir $wf_temp
 
 return 0
