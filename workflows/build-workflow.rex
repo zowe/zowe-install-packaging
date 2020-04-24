@@ -227,11 +227,8 @@ then do                                                    /* '#if(' */
   /* #if($ibmTemplate == 'NO' || !$!ibmTemplate) */
   /* #if( $sysaff and $sysaff != "" and $sysaff != '#sysaff') */ 
 
-  /* replace ! variable names to simplify parsing */
-  String=_substitute('$!','$',String)
-  String=_substitute('${!','${',String)
   /* replace evaluation characters with blanks to simplify parsing */
-  String=translate(String,,'(!=)',' ')
+  String=translate(_substitute('$!','$',String),,'(!=)',' ')
   if Debug then say '. String='String
 
   Start='$'  
@@ -239,6 +236,11 @@ then do                                                    /* '#if(' */
 end    /* #if( */
 else do                                                  /* not #if( */
   /* // SYSAFF=${sysaff}, */
+
+  /* replace ! variable names to simplify parsing */
+  String=_substitute('${!','${',String)
+  if Debug then say '. String='String
+
   Start='${'  
   Stop='}'
 end    /* not #if( */
