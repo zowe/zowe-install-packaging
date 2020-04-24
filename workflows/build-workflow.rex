@@ -228,7 +228,8 @@ then do                                                    /* '#if(' */
   /* #if( $sysaff and $sysaff != "" and $sysaff != '#sysaff') */ 
 
   /* replace ! variable names to simplify parsing */
-  String=_substitute('$!','$',_substitute('${!','${',String))
+  String=_substitute('$!','$',String)
+  String=_substitute('${!','${',String)
   /* replace evaluation characters with blanks to simplify parsing */
   String=translate(String,,'(!=)',' ')
   if Debug then say '. String='String
