@@ -16,7 +16,7 @@
 		<workflowID scope="none">Zowe_security</workflowID>
 		<workflowDefaultName>Zowe_security</workflowDefaultName>
 		<workflowDescription>This is the security configuration of Zowe</workflowDescription>
-		<workflowVersion>#ZOWE_VERSION#</workflowVersion>
+		<workflowVersion>###ZOWE_VERSION###</workflowVersion>
 		<vendor>Zowe</vendor>
 		<General/>
 	</workflowInfo>
