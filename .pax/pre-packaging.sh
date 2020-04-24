@@ -144,7 +144,7 @@ done
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 SCRIPT_NAME=$(basename "$0")  # $0=./pre-packaging.sh
-BASEDIR=$(dirname "$0")       # <something>/.pax
+BASE_DIR=$(dirname "$0")      # <something>/.pax
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
@@ -187,7 +187,7 @@ WORKFLOW_PATH="./smpe/pax/USS"
 JCL_PATH="./smpe/pax/MVS"
 _createWorkflow "./templates" "smpe-install"
 # adjust names as these files will be known by SMP/E
-mv -f "$WORKFLOW_PATH/smpe-install.xml" "$WORKFLOW_PATH/ZWEWRK01.xml"
+mv -f "$WORKFLOW_PATH/smpe-install.xml" "$WORKFLOW_PATH/ZWEWRF01.xml"
 mv -f "$WORKFLOW_PATH/smpe-install.properties" "$WORKFLOW_PATH/ZWEYML01.yml"
 
 #2. create all other workflow & JCL, must be last in workflow creation
@@ -198,4 +198,4 @@ _createWorkflow "./templates"
 #3. clean up working files
 rm -rf "./templates"
 
-echo "[$SCRIPT_NAME] ended"
+echo "[$SCRIPT_NAME] done"
