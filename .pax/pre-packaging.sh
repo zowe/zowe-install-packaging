@@ -89,7 +89,7 @@ function _createWorkflow
 CREAXML_PATH="./templates"         # tools
 
 if [ -f "$1/$2.xml" ]; then
-  xmlList="$1/$2.xml"                          # process just this file
+  xmlList="$2.xml"                             # process just this file
   xmlPath="$1"
 elif [ -d "$1/$2" ]; then
   xmlList="$(ls $1/$2/)"           # process all if directory passed in
