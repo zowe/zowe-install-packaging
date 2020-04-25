@@ -11,6 +11,7 @@
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifySmpePtf,
+  showZoweRuntimeLogs,
 } from '../../utils';
 import { TEST_TIMEOUT_SMPE_PTF } from '../../constants';
 
@@ -33,4 +34,8 @@ describe(testSuiteName, () => {
       }
     );
   }, TEST_TIMEOUT_SMPE_PTF);
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+  })
 });

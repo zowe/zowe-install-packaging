@@ -65,6 +65,26 @@ node('ibm-jenkins-slave-dind') {
       test_files: 'dist/__tests__/extented/node-versions/',
       jenkins_primary_lock: 'marist',
     ],
+    'bundle: convenience build on multiple security systems': [
+      test_files: 'dist/__tests__/extented/security-systems/convenience/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
+    ],
+    'bundle: smpe fmid on multiple security systems': [
+      test_files: 'dist/__tests__/extented/security-systems/fmid/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
+    ],
+    'bundle: smpe ptf on multiple security systems': [
+      test_files: 'dist/__tests__/extented/security-systems/ptf/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
+    ],
+    'bundle: all extended tests': [
+      test_files: 'dist/__tests__/extented/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
+    ],
   ]
 
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
@@ -90,7 +110,7 @@ node('ibm-jenkins-slave-dind') {
     choice(
       name: 'TEST_SCOPE',
       choices: TEST_SCOPES.keySet().collect(),
-      description: 'Choose scope of test',
+      description: 'Choose scope of test. PLEASE NOTE: a test scope bundle usually ignores the value of TEST_SERVER.',
       trim: true
     ),
     // >>>>>>>> parameters of artifactory

@@ -11,6 +11,7 @@
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifySmpeFmid,
+  showZoweRuntimeLogs,
 } from '../../utils';
 import { TEST_TIMEOUT_SMPE_FMID } from '../../constants';
 
@@ -33,4 +34,8 @@ describe(testSuiteName, () => {
       }
     );
   }, TEST_TIMEOUT_SMPE_FMID);
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+  })
 });
