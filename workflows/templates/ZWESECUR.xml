@@ -16,7 +16,7 @@
 		<workflowID scope="none">Zowe_security</workflowID>
 		<workflowDefaultName>Zowe_security</workflowDefaultName>
 		<workflowDescription>This is the security configuration of Zowe</workflowDescription>
-		<workflowVersion>0.1</workflowVersion>
+		<workflowVersion>###ZOWE_VERSION###</workflowVersion>
 		<vendor>Zowe</vendor>
 		<General/>
 	</workflowInfo>
@@ -309,7 +309,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-	    <inlineTemplate substitution="true">###./ZWEWRF02.vtl###</inlineTemplate>
+	    <inlineTemplate substitution="true">###./ZWESECUR.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>80</maxLrecl>
 		</template>
