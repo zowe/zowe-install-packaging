@@ -110,11 +110,12 @@ me=$(basename $0)              # script name
 test "$debug" && echo && echo "> $me $@"
 
 # ---------------------------------------------------------------------
-# --- return PRE/SUP/REQ formatted list of sysmods
+# --- return PRE/SUP/REQ formatted list of sysmods for $header & $readme
 # $1: PRE | SUP | REQ
 # $2: file with list of sysmods
 # output:
 # - $2 is updated
+# - $ptf/$readme.$1 is created
 # ---------------------------------------------------------------------
 function _formatPreSupReq
 {
@@ -155,6 +156,14 @@ then
   cat $ptf/err
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
+
+# remove trailing ), save list for readme
+# sample output:
+#       AH02861,AH02907,AH02908,AH06007,AH06132,AH06136,AH06139,AH09610
+#       AH09614,AH13239,AH13307,AH13308,AH19771,AH19939,AH19940,AI91486
+#       UI52748,UI52749,UI52750,UI54690,UI54691,UI54692,UI56525,UI56526
+#       UI61814,UI61815,UI63579,UI63580,UI63581
+_cmd --repl $ptf/$readme.$1 sed "s/)//" $ptf/tmp
 
 # add REQ/PRE/SUP to first line, replace original input
 # sample output:
@@ -593,7 +602,7 @@ do
   # allocate data set used to merge header and parts
   # IBM: max PTF size is 5,000,000 * 80 bytes (including SMP/E metadata)
   #      5mio FB80 lines requires 7,164 tracks
-  _alloc "$SYSMOD" "FB" "80" "PS" "7164,5"
+  _alloc --multi "$SYSMOD" "FB" "80" "PS" "7164,5"
 
   # select correct header
   if test $cnt -eq 1
@@ -737,12 +746,12 @@ _cmd cp $here/$readme $ptf/$readme
 # ensure csplit output goes in $ptf
 _cmd cd $ptf
 
-# split instructions at <!--cut--> markers
+# split instructions at <!--cut..--> markers, with .. being any 2 chars
 # - csplit creates xx## files, each holding block up to next marker (exclusive)
-# - "$(($(grep -c ^<!--cut-->$ $ptf/$readme)-1))" counts number of markers
-#   and when wrapped in {}, it repeats the /^<!--cut-->$/ filter x times
-_cmd csplit -s $ptf/$readme "/^<!--cut-->$/" \
-  {$(($(grep -c "^<!--cut-->$" $ptf/$readme)-1))}
+# - "$(($(grep -c ^<!--cut..-->$ $ptf/$readme)-1))" counts number of markers
+#   and when wrapped in {}, it repeats the /^<!--cut..-->$/ filter x times
+_cmd csplit -s $ptf/$readme "/^<!--cut..-->$/" \
+  {$(($(grep -c "^<!--cut..-->$" $ptf/$readme)-1))}
 
 # return to base
 _cmd --null cd -
@@ -759,6 +768,23 @@ do
 done    # for f
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+# create dummy PRE/SUP data files if they do not exist
+# if there is data then file is created by _formatPreSupReq()
+test -f $ptf/$readme.PRE || _cmd --save $ptf/$readme.PRE echo none
+test -f $ptf/$readme.SUP || _cmd --save $ptf/$readme.SUP echo none
+
+# add list of PRE sysmods (replace , with blank so broswer can reformat)
+_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.PRE
+
+# append next csplit block (xx01 holds PRE placeholder)
+_cmd --save $log/$html cat $ptf/xx02
+
+# add list of SUP sysmods (replace , with blank so broswer can reformat)
+_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.SUP
+
+# append next csplit block (xx03 holds SUP placeholder)
+_cmd --save $log/$html cat $ptf/xx04
 
 # add an allocation statement for each sysmod
 test "$debug" && echo "while read -r trk name"
@@ -785,11 +811,11 @@ do
   SED="$SED;s/#ptf8/$sysmod8/"
   SED="$SED;s/#name/$name/"
   SED="$SED;s/#pri/$trk/"
-  _cmd --save $log/$html sed "$SED" $ptf/xx01
+  _cmd --save $log/$html sed "$SED" $ptf/xx05
 done < $ptf/$tracks    # while read
 
 # append next csplit block
-_cmd --save $log/$html cat $ptf/xx02
+_cmd --save $log/$html cat $ptf/xx06
 
 # add a FTP statement for each sysmod
 test "$debug" && echo "while read -r trk name"
@@ -799,7 +825,7 @@ do
   test $debug && echo "(ftp) name=$name, bytes=$bytes"
 
   # append customized data
-  # expected xx03 content:
+  # expected xx07 content:
   # </I>ftp&gt; <STRONG>put d:\#name</STRONG>
   # <I>200 Port request OK.
   # 125 Storing data set #hlq.#name
@@ -808,18 +834,30 @@ do
   SED=""
   SED="$SED;s/#name/$name/"
   SED="$SED;s/#bytes/$bytes/"
-  _cmd --save $log/$html sed "$SED" $ptf/xx03
+  _cmd --save $log/$html sed "$SED" $ptf/xx07
 done < $ptf/$tracks    # while read
 
 # append next csplit block
-_cmd --save $log/$html cat $ptf/xx04
+_cmd --save $log/$html cat $ptf/xx08
+
+# start off with no hold data
+test -f $ptf/tmp && _cmd rm -f $ptf/tmp
+# stage current hold data
+test -f $ptf/$thisHold && _cmd --save $ptf/tmp cat $ptf/$thisHold
+# ++PTF SUPs promoted PTFs, and thus includes their hold info
+test "$sysmodType" = "++PTF" -a -f $service/$prevHold && \
+  _cmd --save $ptf/tmp cat $service/$prevHold
 
 # append hold data
-# TODO add hold data if there is any
-_cmd --save $log/$html echo none
+if test -f $ptf/tmp
+then
+  _cmd --save $log/$html cat $ptf/tmp
+else
+  _cmd --save $log/$html echo none
+fi    #
 
-# append next csplit block
-_cmd --save $log/$html cat $ptf/xx06
+# append next csplit block (xx09 holds HOLD placeholder)
+_cmd --save $log/$html cat $ptf/xx10
 
 # add a requisite data set names to RECEIVE SMPPTFIN (sysmod 2 and up)
 test "$debug" && echo "while read -r trk name"
@@ -831,8 +869,8 @@ do
   _cmd --save $log/$html echo "//         DD DISP=SHR,DSN=&HLQ..$name"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 
-# append next csplit block
-_cmd --save $log/$html cat $ptf/xx08
+# append next csplit block (xx11 holds DSN placeholder)
+_cmd --save $log/$html cat $ptf/xx12
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
@@ -853,17 +891,13 @@ SED="$SED;s/#type/$sysmodType/"
 SED="$SED;s/#name1/$name1/"
 SED="$SED;s/#ptf1/$sysmod1/"
 SED="$SED;s/#fmid/$FMID/"
-SED="$SED;s/#rework/$julian5/"
-SED="$SED;s/#rework/$julian7/"
+SED="$SED;s/#rework/$julian7 ($yyyymmdd)/"
 SED="$SED;s/#req/$coreq/"
-# TODO #pre
-SED="$SED;s/#pre/TODO #pre/"
-# TODO #sup
-SED="$SED;s/#sup/TODO #sup/"
 _sed $log/$html
 
 # no longer needed
-_cmd rm -f $ptf/$tracksCoreq $ptf/$readme $ptf/xx*
+_cmd rm -f $ptf/$tracksCoreq  $ptf/$readme $ptf/xx*  $ptf/tmp
+_cmd rm -f $ptf/$readme.PRE   $ptf/$readme.SUP
 
 test "$debug" && echo "< _readme"
 }    # _readme
@@ -1224,11 +1258,11 @@ unset allocParms
 
 # multi-volume permitted ? (dsOrg PS required)     MUST be tested first
 if test "$1" = "--multi"
-then         
+then
   shift
   test -n "$gimdtsUCount" && allocParms="$allocParms -C $gimdtsUCount"
 fi    #
-                          
+
 # remove previous run
 test "$debug" && echo
 test "$debug" && echo "\"$here/$existScript $1\""
@@ -2320,9 +2354,11 @@ LINES=${gimdtsHlq}.LINES                     # line count data set name
 TRACKS=${gimdtsHlq}.TRACKS                  # track count data set name
 SYSPRINT=${gimdtsHlq}.SYSPRINT               # job output data set name
 unset allParts                        # collect names of all parts here
-julian7=$(date +%Y%j)                    # 7-digit Julian date, yyyyddd
+today=$(date +%Y-%m-%d?%j)         # get date just once, yyyy-mm-dd?jjj
+yyyymmdd=$(echo $today | sed 's/?.*//') # 10-character date, yyyy-mm-dd
+julian7=$(echo $today | sed 's/-.*?//')  # 7-digit Julian date, yyyyddd
 julian5=$(echo $julian7 | sed 's/^..//')   # 5-digit Julian date, yyddd
-year=$(echo $julian7 | sed 's/...$//')             # 4-digit year, yyyy
+year=$(echo $today | sed 's/-.*//')                # 4-digit year, yyyy
 copyright="Contributors to the Zowe Project. $year"         # copyright
 #          ----+----1----+----2----+----3----+----4--      max 42 chars
 

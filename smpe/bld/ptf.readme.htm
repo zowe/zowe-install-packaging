@@ -24,7 +24,9 @@
   <P>The #type has rework (build) date #rework</P>
 
   <P>The following fixes are prerequisites for this #type:<br>
+<!--cut01-->
   #pre
+<!--cut02-->
   </P>
 
   <P>The following fixes are corequisites for this #type:<br>
@@ -32,7 +34,9 @@
   </P>
 
   <P>The following fixes are superseded by this #type:<br>
+<!--cut03-->
   #sup
+<!--cut04-->
   </P>
 
   <H3><A name="Overview of the installation steps">Overview of the installation
@@ -60,7 +64,7 @@
 //         SET HLQ=<STRONG>#hlq</STRONG>
 //*
 //ALLOC    EXEC PGM=IEFBR14
-<!--cut-->
+<!--cut05-->
 //#ptf8 DD DSN=&HLQ..#name,
 //            DISP=(NEW,CATLG,DELETE),
 //            DSORG=PS,
@@ -70,7 +74,7 @@
 //*            VOL=SER=<STRONG>#volser</STRONG>,
 //*            BLKSIZE=6160,
 //            SPACE=(TRK,(#pri,15))
-<!--cut-->
+<!--cut06-->
 //*
   </PRE>
 
@@ -121,23 +125,23 @@ Password:</I> <STRONG>tsopw</STRONG>
 </I>ftp&gt; <STRONG>binary</STRONG>
 <I>200 Representation type is Image
 
-<!--cut-->
+<!--cut07-->
 </I>ftp&gt; <STRONG>put d:\#name</STRONG>
 <I>200 Port request OK.
 125 Storing data set #hlq.#name
 250 Transfer completed successfully
 #bytes bytes sent in 0.28 seconds
 
-<!--cut-->
+<!--cut08-->
 </I>ftp&gt; <STRONG>quit</STRONG>
 <I>221 Quit command received. Goodbye.</I>
   </PRE>
 
   <H3><A name="hold">SMP/E hold information for the #type</A></H3>
   <PRE>
-<!--cut-->
-#holddata
-<!--cut-->
+<!--cut09-->
+  #holddata
+<!--cut10-->
   </PRE>
 
   <H3><A name="acpt">Perform SMP/E ACCEPT for the prerequisites</A></H3>
@@ -186,9 +190,9 @@ Password:</I> <STRONG>tsopw</STRONG>
 //RECEIVE  EXEC PGM=GIMSMP,REGION=0M
 //SMPCSI   DD DISP=OLD,DSN=&CSI
 //SMPPTFIN DD DISP=SHR,DSN=&HLQ..#name1
-<!--cut-->
+<!--cut11-->
 #dsnreq
-<!--cut-->
+<!--cut12-->
 //SMPCNTL  DD *
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT(
