@@ -1,0 +1,7 @@
+//LSTFMID JOB
+//LIST    EXEC PGM=GIMSMP,REGION=0M
+//SMPCSI  DD DISP=SHR,DSN={{ smpe_csi }}
+//SMPCNTL DD *
+  SET     BDY({{ smpe_tzone }}) .
+  LIST    SYSMOD FORFMID({{ smpe_fmid }}) .
+//*

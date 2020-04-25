@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
 # NODE_HOME Should contain a valid install of Node
@@ -28,10 +28,14 @@ then
       fi
 
       NODE_MIN_VERSION=6.14
-      NODE_VERSION=`${NODE_HOME}/bin/node --version | sed 's/^.\{1\}//' | cut -d. -f1,2 2>&1`
-      if [[ `echo "$NODE_VERSION $NODE_MIN_VERSION" | awk '{print ($1 < $2)}'` == 1 ]];
+      NODE_VERSION=`${NODE_HOME}/bin/node --version` 
+      NODE_VERSION_TRIMMED=`${NODE_HOME}/bin/node --version | sed 's/^.\{1\}//' | cut -d. -f1,2 2>&1`
+      if [[ $NODE_VERSION = "v8.16.1" ]];
       then
-        . ${ROOT_DIR}/scripts/utils/error.sh "NODE Version ${NODE_VERSION} is less than minimum level required of ${NODE_MIN_VERSION}";
+        . ${ROOT_DIR}/scripts/utils/error.sh "NODE Version 8.16.1 is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details";
+      elif [[ `echo "$NODE_VERSION_TRIMMED $NODE_MIN_VERSION" | awk '{print ($1 < $2)}'` == 1 ]];
+      then
+        . ${ROOT_DIR}/scripts/utils/error.sh "NODE Version ${NODE_VERSION_TRIMMED} is less than minimum level required of ${NODE_MIN_VERSION}";
       else
         echo "OK: Node is at a supported version"
       fi

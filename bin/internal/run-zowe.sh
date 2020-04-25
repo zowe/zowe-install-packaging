@@ -68,6 +68,12 @@ VERIFY_CERTIFICATES=$ZOWE_APIM_VERIFY_CERTIFICATES
 ZOWE_NODE_HOME=$NODE_HOME
 ZOWE_JAVA_HOME=$JAVA_HOME
 
+# zip #1226 - 1.10 -> 1.9 backward compatibility - default keystore type if not supplied
+if [[ -z ${KEYSTORE_TYPE} ]]
+then
+  KEYSTORE_TYPE="PKCS12"
+fi
+
 LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 ZOWE_DESKTOP=${ZOWE_PREFIX}DT
@@ -75,6 +81,10 @@ ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
+checkForErrorsFound
+
+#Temp - whilst desktop components don't have validate scripts
+. ${ROOT_DIR}/scripts/utils/validate-node.sh
 checkForErrorsFound
 
 # Validate keystore directory accessible

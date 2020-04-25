@@ -44,7 +44,8 @@
 #     "78003708000000 0200 C0 00 1800 0000 00 0000 82 80000002 000000 0000 0000", 
 #     "0100037D000A037E0004 01010018000C0018000D 0102006F000D006F000E 0000000217"
 # ]
-- fail:
+- name: Check if data set has format 1 DSCB record
+  fail:
     msg: "No Format 1 DSCB record found for data set {{ dataset }}: {{ dataset_dscb.stdout }}"
   when: dataset_dscb.stdout_lines|length < 4
 
@@ -52,7 +53,8 @@
   raw: echo "{{ dataset_dscb.stdout_lines[2] }}" | sed -e 's#^.\{6\}\(.\{2\}\).*#\1#'
   register: dataset_sms_flag
 
-- fail:
+- name: Check if we find SMS flag in data set
+  fail:
     msg: "Failed to extract SMS flag from data set {{ dataset }}: {{ dataset_dscb.stdout }}"
   when: dataset_sms_flag.stdout_lines|length < 1
 

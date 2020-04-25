@@ -1,0 +1,15 @@
+---
+# this playbook show log of a job
+
+# input:
+# - show_job_log_id: optional
+# - show_job_log_owner: optional, default is *
+# - show_job_log_name: optional, default is *
+# - path_to_show_job_log: where is show_job_log located on remote server. optional, default to "{{ work_dir_remote }}/show_job_log.rexx"
+#
+# output:
+# - show_job_log_result
+
+- name: "Display job log of \"id={{ show_job_log_id }}, name={{ show_job_log_name }}, owner={{ show_job_log_owner }}\""
+  raw: "{{ path_to_show_job_log | default( work_dir_remote + '/show_job_log.rexx') }} 'jobid={{ show_job_log_id|default('') }} owner={{ show_job_log_owner|default('*') }} jobname={{ show_job_log_name|default('*') }}'"
+  register: show_job_log_result

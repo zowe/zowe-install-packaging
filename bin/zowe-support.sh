@@ -53,7 +53,7 @@ function add_to_pax {
             SUBSTITUTION=""
         ;;
     esac
-    pax -wva -o saveext ${SUBSTITUTION} -s#${ROOT_DIR}#ROOT_DIR# -s#${INSTANCE_DIR}#INSTANCE_DIR# -s#${KEYSTORE_DIRECTORY}#KEYSTORE_DIRECTORY# -f ${SUPPORT_ARCHIVE}  $1 2>&1 | tee -a ${SUPPORT_ARCHIVE_LOG}
+    pax -wva -o saveext ${SUBSTITUTION} -s#${ROOT_DIR}#ROOT_DIR# -s#${INSTANCE_DIR}#INSTANCE_DIR# -s#${KEYSTORE_DIRECTORY}#KEYSTORE_DIR# -s#${TMPDIR:-/tmp}#TEMP_DIR# -f ${SUPPORT_ARCHIVE}  $1 2>&1 | tee -a ${SUPPORT_ARCHIVE_LOG}
 }
 
 function add_file_to_pax_if_found {
@@ -119,19 +119,19 @@ else
     write_to_log "Directory ${LOGS_DIRECTORY} was not found."
 fi
 
-# TODO - collect all the rest of workspace directory?
-add_file_to_pax_if_found "${INSTANCE_DIR}/instance.env"
-add_file_to_pax_if_found "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
-add_file_to_pax_if_found "$ROOT_DIR/manifest.json"
-
 # Collect api-definitions
 API_DEFS_DIRECTORY="${INSTANCE_DIR}/workspace/api-mediation/api-defs"
 if [[ -d ${API_DEFS_DIRECTORY} ]];then
-    write_to_log "Collecting instance log files from ${API_DEFS_DIRECTORY}:"
+    write_to_log "Collecting instance static definition files from ${API_DEFS_DIRECTORY}:"
     add_to_pax ${API_DEFS_DIRECTORY} api-defs *.yml
 else
     write_to_log "Directory ${API_DEFS_DIRECTORY} was not found."
 fi
+
+# TODO - collect all the rest of workspace directory?
+add_file_to_pax_if_found "${INSTANCE_DIR}/instance.env"
+add_file_to_pax_if_found "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
+add_file_to_pax_if_found "$ROOT_DIR/manifest.json"
 
 # Add support log file to pax
 write_to_log "Adding ${SUPPORT_ARCHIVE_LOG}"
@@ -142,7 +142,4 @@ rm ${SUPPORT_ARCHIVE_LOG}
 compress ${SUPPORT_ARCHIVE}
 
 # Print final message
-echo "The support file was created, pass it to support guys. Thanks."
-echo ${SUPPORT_ARCHIVE}.Z
-
-# done
+echo "The support file was created ${SUPPORT_ARCHIVE}.Z"

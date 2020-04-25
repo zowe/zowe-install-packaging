@@ -2,17 +2,12 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
-
-# this should list all known cross memory server stc we ever setup during install
-zowe_known_xmem_proc_stcs:
-- ZWESIS01
-- ZWEXMSTC
-- ZWESISTC
-
 # 360 * 10 seconds = 1hour
 wait_for_zowe_service_retries: 360
 # Every 10 seconds
 wait_for_zowe_service_delay: 10
+# If we clean up history job output befor starting new
+cleanup_zowe_job_history: True
 
 # ==============================================================================
 # Variables should be verified and overwrittern.
@@ -25,8 +20,6 @@ zowe_test_user:
 # optional, default to ansible_password
 zowe_test_password:
 
-# cross memory server proclib
-zowe_xmem_proclib:
 # ports will be tested
 zowe_zlux_port: 8544
 zowe_jobs_api_port: 8545

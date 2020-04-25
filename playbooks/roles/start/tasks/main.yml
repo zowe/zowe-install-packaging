@@ -1,63 +1,20 @@
 ---
+
 # ============================================================================
-# validate variables
+# Clean up history job output
 - import_role:
-    name: common
-    tasks_from: validate_variables
-  vars:
-    variable_list:
-    - zowe_root_dir
-    - zowe_instance_dir
-    - zowe_xmem_proclib
+    name: configure
+    tasks_from: purge_job_outputs
+  when: cleanup_zowe_job_history
 
 # ============================================================================
-- name: Locate Cross Memory Server
-  block:
-  - name: Init zowe_xmem_stc_name variable
-    set_fact:
-      zowe_xmem_stc_name: ""
-  - name: List members of zowe_xmem_proclib - {{ zowe_xmem_proclib }}
-    raw: tsocmd listds "'{{ zowe_xmem_proclib }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1'
-    register: zos_proclib_members
-    ignore_errors: True
-  - name: Find crosss memory server proc
-    set_fact:
-      zowe_xmem_stc_name: "{{ item }}"
-    when: item in zos_proclib_members.stdout_lines
-    loop: "{{ zowe_known_xmem_proc_stcs }}"
-  - name: Show zowe_xmem_stc_name value
-    debug:
-      var: zowe_xmem_stc_name
+- import_role:
+    name: configure
+    tasks_from: locate_xmem
 
-- name: Locate zowe-start.sh
-  block:
-  - name: Init zowe_start_path variable
-    set_fact:
-      zowe_start_path: ""
-  - name: Check if zowe-start.sh is located at instanceDir
-    raw: test -f {{ zowe_instance_dir }}/bin/zowe-start.sh && echo "{{ zowe_instance_dir }}/bin/zowe-start.sh" | tr -d '\n'
-    register: zowe_start_at_instancedir
-    ignore_errors: yes
-    when: zowe_start_path == ""
-  - name: Set zowe_start_path to {{ zowe_start_at_instancedir.stdout }}
-    set_fact:
-      zowe_start_path: "{{ zowe_start_at_instancedir.stdout }}"
-    when: zowe_start_path == "" and zowe_start_at_instancedir.stdout != ''
-  - name: Check if zowe-start.sh is located at rootDir
-    raw: test -f {{ zowe_root_dir }}/scripts/zowe-start.sh && echo "{{ zowe_root_dir }}/scripts/zowe-start.sh" | tr -d '\n'
-    register: zowe_start_at_rootdir
-    ignore_errors: yes
-    when: zowe_start_path == ""
-  - name: Set zowe_start_path to {{ zowe_start_at_rootdir.stdout }}
-    set_fact:
-      zowe_start_path: "{{ zowe_start_at_rootdir.stdout }}"
-    when: zowe_start_path == "" and zowe_start_at_rootdir.stdout != ''
-  - name: Show zowe_start_path value
-    debug:
-      var: zowe_start_path
-  - fail:
-      msg: Cannot find zowe-start.sh
-    when: zowe_start_path == ""
+- import_role:
+    name: configure
+    tasks_from: locate_zowe_start
 
 # ============================================================================
 - name: Start Cross Memory Server

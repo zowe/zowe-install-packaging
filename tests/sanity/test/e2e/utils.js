@@ -31,7 +31,7 @@ const PRE_INSTALLED_APPS = [
   'USS Explorer',
   'TN3270',
   'VT Terminal',
-  'User Tasks/Workflows',
+  // 'User Tasks/Workflows',
   // 'IFrame',
   // 'ZOS Subsystems',
   'API Catalog',
@@ -61,6 +61,17 @@ let SCREENSHOT_FILECOUNT = 0;
 const MVD_IFRAME_APP_CONTEXT = ['rs-com-mvd-iframe-component > iframe'];
 // css selector to find MVD iframe app content
 const MVD_IFRAME_APP_CONTENT = ['rs-com-mvd-iframe-component > iframe', 'iframe#zluxIframe'];
+
+/**
+ * Array filter but support async predicate function
+ * @param {Array}    arr 
+ * @param {Function} predicate 
+ */
+const asyncFilter = async (arr, predicate) => {
+  const results = await Promise.all(arr.map(predicate));
+
+  return arr.filter((_v, index) => results[index]);
+};
 
 /**
  * Get unqiue screen shot image name
@@ -188,7 +199,7 @@ const loginMVD = async(driver, url, username, password) => {
   try {
     await driver.wait(
       async() => {
-        const loginButton = await getElement(driver, '#\\#loginButton', true);
+        const loginButton = await getElement(driver, '.login-button', true);
         if (loginButton) {
           return true;
         }
@@ -224,7 +235,7 @@ const loginMVD = async(driver, url, username, password) => {
   await passwordInput.clear();
   await passwordInput.sendKeys(password);
   // submit login
-  const loginButton = await getElement(driver, '#\\#loginButton');
+  const loginButton = await getElement(driver, '.login-button', true);
   expect(loginButton).to.be.an('object');
   await loginButton.click();
   debug('login button clicked');
@@ -289,22 +300,21 @@ const loginMVD = async(driver, url, username, password) => {
  * @return {Array}                                array of Selenium WebElement
  */
 const getElements = async(driver, selector, checkDisplayed) => {
-  const elements = await driver.findElements(By.css(selector));
+  let elements = await driver.findElements(By.css(selector));
   if (!elements[0]) {
     debug(`[getElements] cannot find "${selector}"`);
     return false;
   }
   debug(`[getElements] find ${elements.length} of "${selector}"`);
-  if (!checkDisplayed) {
-    return elements;
-  }
 
-  // check if element is visible
-  const isDisplayed = await elements[0].isDisplayed();
-  if (!isDisplayed) {
-    return false;
+  if (checkDisplayed) {
+    // filter out hidden elements
+    elements = await asyncFilter(
+      elements,
+      async (element) => await element.isDisplayed()
+    );
+    debug(`[getElements]     and ${elements.length} is/are visible`);
   }
-  debug('[getElements]     and the first element is displayed');
 
   return elements;
 };
@@ -410,7 +420,7 @@ const waitUntilElementIsGone = async(driver, selector, parent) => {
   try {
     await driver.wait(
       async() => {
-        const elementsDisplayed = await getElement(parent, selector, false);
+        const elementsDisplayed = await getElement(parent, selector);
         if (!elementsDisplayed) {
           return true;
         }

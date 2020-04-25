@@ -5,16 +5,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright IBM Corporation 2018, 2020
  */
 
+const { setApimlAuthTokenCookie } = require('explorer-fvt-utilities');
 const path = require('path');
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:e2e:jes-explorer');
 const addContext = require('mochawesome/addContext');
 const testName = path.basename(__filename, path.extname(__filename));
-
-const { Key, until } = require('selenium-webdriver');
 
 const { ZOWE_JOB_NAME } = require('../constants');
 const {
@@ -50,10 +49,18 @@ describe(`test ${APP_TO_TEST}`, function() {
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ZLUX_HTTPS_PORT, 'ZOWE_ZLUX_HTTPS_PORT is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
     // init webdriver
     driver = await getDefaultDriver();
     debug('webdriver initialized');
+    
+    await setApimlAuthTokenCookie(driver, 	
+      process.env.SSH_USER, 	
+      process.env.SSH_PASSWD, 	
+      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
+      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/explorer-jes`	
+    );
 
     // load MVD login page
     await loginMVD(
@@ -85,14 +92,6 @@ describe(`test ${APP_TO_TEST}`, function() {
     const atlas = await waitUntilIframe(driver, 'iframe#zluxIframe');
     expect(atlas).to.be.an('object');
     debug('atlas iframe is ready');
-
-    // FIXME: shouldn't pop out authentication
-    const alert = await driver.wait(until.alertIsPresent(), DEFAULT_PAGE_LOADING_TIMEOUT);
-    await alert.sendKeys(process.env.SSH_USER + Key.TAB + process.env.SSH_PASSWD);
-    await alert.accept();
-    // to avoid StaleElementReferenceError, find the iframes context again
-    await switchToIframeAppContext(driver, APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
-    debug('atlas login successfully');
 
     // wait for page is loaded
     const treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
