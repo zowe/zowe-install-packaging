@@ -1,0 +1,21 @@
+---
+# This task will purge job output with job id
+
+# Input:
+# - purge_job_output_id: job ID like STC03626
+#                        The job id can be the first part of the value if it can
+#                        be split with comma. For example, this is valid:
+#                        STC03626,ZWE1SV,ZWESVUSR,
+
+- name: Check if purge_job_output_id has a value
+  fail:
+    msg: purge_job_output_id is required
+  when: purge_job_output_id is not defined or purge_job_output_id is none or purge_job_output_id == ''
+
+- name: Purge log of {{ purge_job_output_id }}
+  include_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: $P O {{ purge_job_output_id.split(",")[0] }}
+  ignore_errors: True

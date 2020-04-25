@@ -1,0 +1,20 @@
+---
+- name: Show Zowe Job Logs
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # prepare ansible environment for install
+  - import_role:
+      name: common
+  - import_role:
+      name: zos
+
+  # ============================================================================
+  # Show all Zowe Job runtime logs
+  - import_role:
+      name: configure
+      tasks_from: show_logs
