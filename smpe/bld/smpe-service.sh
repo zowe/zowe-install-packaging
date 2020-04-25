@@ -797,7 +797,7 @@ do
   sysmod8=$(echo "$sysmod      " | sed 's/^\(........\).*/\1/')
 
   # append customized data
-  # expected xx01 content:
+  # expected xx05 content:
   # //#ptf8 DD DSN=&HLQ..#name,
   # //            DISP=(NEW,CATLG,DELETE),
   # //            DSORG=PS,
@@ -892,6 +892,8 @@ SED="$SED;s/#name1/$name1/"
 SED="$SED;s/#ptf1/$sysmod1/"
 SED="$SED;s/#fmid/$FMID/"
 SED="$SED;s/#rework/$julian7 ($yyyymmdd)/"
+SED="$SED;s/#vrm/$VERSION/"
+SED="$SED;s/#branch/$BRANCH (build $BUILD)/"
 SED="$SED;s/#req/$coreq/"
 _sed $log/$html
 
