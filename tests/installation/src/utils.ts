@@ -311,10 +311,14 @@ export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: st
   debug(`showZoweRuntimeLogs(${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run show_logs on ${serverId}`);
-  await runAnsiblePlaybook(
-    'doesn\'t matter',
-    'show-logs.yml',
-    serverId,
-    extraVars
-  );
+  try {
+    await runAnsiblePlaybook(
+      'doesn\'t matter',
+      'show-logs.yml',
+      serverId,
+      extraVars
+    );
+  } catch (e) {
+    debug(`showZoweRuntimeLogs failed: ${e}`);
+  }
 };
