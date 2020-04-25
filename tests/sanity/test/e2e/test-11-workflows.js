@@ -27,7 +27,7 @@ let driver;
 const APP_TO_TEST = 'User Tasks/Workflows';
 
 
-describe(`test ${APP_TO_TEST}`, function() {
+describe.skip(`test ${APP_TO_TEST}`, function() {
   before('verify environment variable and load login page', async function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
