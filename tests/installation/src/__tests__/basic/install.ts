@@ -11,6 +11,7 @@
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifyConvenienceBuild,
+  showZoweRuntimeLogs,
 } from '../../utils';
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
 
@@ -33,4 +34,8 @@ describe(testSuiteName, () => {
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+  })
 });
