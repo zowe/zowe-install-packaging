@@ -1,0 +1,29 @@
+---
+# Show all Zowe Job Logs
+
+# ============================================================================
+- import_role:
+    name: configure
+    tasks_from: locate_xmem
+
+# ============================================================================
+- import_role:
+    name: zos
+    tasks_from: show_job_log
+  vars:
+    show_job_log_id:
+    show_job_log_owner: '*'
+    show_job_log_name: "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
+
+- import_role:
+    name: zos
+    tasks_from: show_job_log
+  vars:
+    show_job_log_id:
+    show_job_log_owner: '*'
+    show_job_log_name: "{{ zowe_xmem_stc_name }}"
+
+# ============================================================================
+- name: Show Zowe runtime logs
+  raw: find "{{ zowe_instance_dir }}/logs" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  ignore_errors: True

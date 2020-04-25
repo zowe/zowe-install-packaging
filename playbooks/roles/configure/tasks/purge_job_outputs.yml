@@ -1,0 +1,37 @@
+---
+# This task will purge all Zowe job output
+
+# ============================================================================
+- import_role:
+    name: configure
+    tasks_from: locate_xmem
+
+# ============================================================================
+# Purge Zowe Job Output
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge Cross Memory Job Output
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "{{ zowe_xmem_stc_name }}"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
