@@ -300,3 +300,25 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
 
   expect(resultVerify.code).toBe(0);
 };
+
+/**
+ * Show all Zowe runtime logs
+ *
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`showZoweRuntimeLogs(${serverId}, ${JSON.stringify(extraVars)})`);
+
+  debug(`run show_logs on ${serverId}`);
+  try {
+    await runAnsiblePlaybook(
+      'doesn\'t matter',
+      'show-logs.yml',
+      serverId,
+      extraVars
+    );
+  } catch (e) {
+    debug(`showZoweRuntimeLogs failed: ${e}`);
+  }
+};

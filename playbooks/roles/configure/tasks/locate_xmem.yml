@@ -1,0 +1,38 @@
+---
+# This task will find the cross memory server
+
+# Variables:
+# - zowe_xmem_proclib
+# - zowe_known_xmem_proc_stcs
+# Output:
+# - zowe_xmem_stc_name
+
+# validate variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_xmem_proclib
+
+- name: Locate Cross Memory Server
+  block:
+  - name: Init zowe_xmem_stc_name variable
+    set_fact:
+      zowe_xmem_stc_name: ""
+  - name: List members of zowe_xmem_proclib - {{ zowe_xmem_proclib }}
+    raw: tsocmd listds "'{{ zowe_xmem_proclib }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1'
+    register: zos_proclib_members
+    ignore_errors: True
+  - name: Find crosss memory server proc
+    set_fact:
+      zowe_xmem_stc_name: "{{ item }}"
+    when: item in zos_proclib_members.stdout_lines
+    loop: "{{ zowe_known_xmem_proc_stcs }}"
+  - name: Show zowe_xmem_stc_name value
+    debug:
+      var: zowe_xmem_stc_name
+  - name: Check if zowe_xmem_stc_name has a value
+    fail:
+      msg: Cannot find cross memory server
+    when: zowe_xmem_stc_name == ""
