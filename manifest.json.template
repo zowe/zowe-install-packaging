@@ -67,21 +67,21 @@
       "artifact": "zss-1.11.0-rc-48-20200423203540.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "0.2.11",
+      "version": "1.0.0",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "0.2.9",
+      "version": "1.0.0",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "0.0.25"
+      "version": "1.0.0"
     },
     "org.zowe.explorer-mvs": {
-      "version": "0.0.18"
+      "version": "1.0.0"
     },
     "org.zowe.explorer-uss": {
-      "version": "0.0.16"
+      "version": "1.0.0"
     },
     "org.zowe.apiml.sdk.zowe-install": {
       "version": "1.11.0",
@@ -226,21 +226,21 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v0.0.18",
+        "tag": "v1.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "v0.0.9",
+        "tag": "v0.0.11",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v0.0.25",
+        "tag": "v1.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -254,28 +254,28 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v0.0.16",
+        "tag": "v1.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "v0.3.11",
+        "tag": "v1.1.1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v0.2.9",
+        "tag": "v1.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v0.2.11",
+        "tag": "v1.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
