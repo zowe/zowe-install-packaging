@@ -97,7 +97,7 @@ else
   done
   if [[ $ICSF -eq 1 ]]
   then 
-    echo OK: jobname ICSF or CSF is not running
+    echo OK: jobname ICSF or CSF is running
   else
     echo Error: jobname ICSF or CSF is not running
   fi

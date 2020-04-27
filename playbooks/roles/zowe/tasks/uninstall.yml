@@ -11,6 +11,7 @@
     - work_dir_remote
     - zowe_instance_dir
     - zowe_keystore_dir
+    - zowe_logs_dir
     - zowe_dataset_prefix
     - zowe_xmem_loadlib
     - zowe_xmem_parmlib
@@ -141,6 +142,7 @@
   - "{{ zowe_root_dir }}"
   - "{{ zowe_instance_dir }}"
   - "{{ zowe_keystore_dir }}"
+  - "{{ zowe_logs_dir }}"
   # configure certificate log, added after v1.7.1
   # these files should be organized into install_log
   - "~/zowe_certificate_setup_log"
