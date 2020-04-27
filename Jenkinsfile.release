@@ -17,6 +17,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_RELEASE_PATH = '/org/zowe'
   def ZOWE_RELEASE_FILEPATTERN = "zowe-*.pax"
   def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.zip"
+  def ZOWE_RELEASE_SMPE_PTF_PROMOTE_FILEPATTERN = "smpe-promote-*.tar"
   def ZOWE_RELEASE_CLI_CORE_FILEPATTERN = "zowe-cli-package-*.zip"
   def ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN = "zowe-cli-plugins-*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
@@ -28,6 +29,7 @@ node('ibm-jenkins-slave-nvm') {
   def releaseFilePath
   def releaseArtifacts = readJSON(text:'{}')
   def publishFilePath
+  def smpePtfPromoteTarPath
 
   pipeline.admins.add("jackjia", "markackert")
 
@@ -212,7 +214,7 @@ node('ibm-jenkins-slave-nvm') {
 
       // get zowe build source artifact
       releaseArtifacts['zowe']['source'] = pipeline.artifactory.getArtifact([
-        'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
+        'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/${ZOWE_RELEASE_FILEPATTERN}",
         'build-name'   : releaseArtifacts['zowe']['buildName'],
         'build-number' : releaseArtifacts['zowe']['buildNumber']
       ])
@@ -232,7 +234,7 @@ node('ibm-jenkins-slave-nvm') {
       // get SMP/e build
       try {
         def smpeTarSource = pipeline.artifactory.getArtifact([
-          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/${ZOWE_RELEASE_SMPE_PAX_FILEPATTERN}",
           'build-name'   : releaseArtifacts['zowe']['buildName'],
           'build-number' : releaseArtifacts['zowe']['buildNumber']
         ])
@@ -242,6 +244,18 @@ node('ibm-jenkins-slave-nvm') {
           releaseArtifacts['smpe-zip'] = [:]
           releaseArtifacts['smpe-zip']['source'] = smpeTarSource
           releaseArtifacts['smpe-zip']['target'] = "zowe-smpe-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
+        }
+
+        try {
+          def smpePtfPromote = pipeline.artifactory.getArtifact([
+            'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/*/${ZOWE_RELEASE_SMPE_PTF_PROMOTE_FILEPATTERN}",
+            'build-name'   : releaseArtifacts['zowe']['buildName'],
+            'build-number' : releaseArtifacts['zowe']['buildNumber']
+          ])
+          echo ">>> Found SMP/e promote tar ${smpePtfPromote['path']}."
+          smpePtfPromoteTarPath = smpePtfPromote['path']
+        } catch (e2) {
+          echo ">>> no SMP/e promote tar found in the build."
         }
       } catch (e1) {
         echo ">>> no SMP/e zip found in the build."
@@ -293,7 +307,7 @@ node('ibm-jenkins-slave-nvm') {
 
       // get CLI CORE build source artifact
       releaseArtifacts['cli']['source'] = pipeline.artifactory.getArtifact([
-        'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+        'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/*/${ZOWE_RELEASE_CLI_CORE_FILEPATTERN}",
         'build-name'   : releaseArtifacts['cli']['buildName'],
         'build-number' : releaseArtifacts['cli']['buildNumber']
       ])
@@ -301,7 +315,7 @@ node('ibm-jenkins-slave-nvm') {
 
       // get CLI PLUGINS builds source artifact
       releaseArtifacts['cli-plugins']['source'] = pipeline.artifactory.getArtifact([
-        'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-*.zip",
+        'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/*/${ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN}",
         'build-name'   : releaseArtifacts['cli-plugins']['buildName'],
         'build-number' : releaseArtifacts['cli-plugins']['buildNumber']
       ])
@@ -478,6 +492,50 @@ echo ===============================================
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
+
+  pipeline.createStage(
+    name          : "Promote PTF",
+    isSkippable   : true,
+    shouldExecute : {
+      return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision'] && smpePtfPromoteTarPath
+    },
+    stage         : {
+      def gitPromotePtf = lib.scm.GitHub.new(this)
+      def pathPromotePtfGit = '.promote-ptf'
+      def pathPromotePtfTmp = '.tmp-promote-ptf'
+
+      // clone staging branch
+      gitPromotePtf.cloneRepository([
+        email                      : lib.Constants.DEFAULT_GITHUB_ROBOT_EMAIL,
+        usernamePasswordCredential : lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
+        repository                 : ZOWE_INSTALL_PACKAGING_REPO,
+        folder                     : pathPromotePtfGit,
+        branch                     : 'staging'
+      ])
+
+      // download smpe-promote zip
+      pipeline.artifactory.download([
+        'specContent' : [
+          "[{",
+          "\"pattern\":\"${smpePtfPromoteTarPath}\"",
+          "\"target\":\"${pathPromotePtfTmp}/smpe-promote.tar\",",
+          "\"flat\":true",
+          "}]",
+        ].join("")
+        'expected'    : 1
+      ])
+
+      // run smpe-promote.sh
+      sh "./${pathPromotePtfGit}/smpe/bld/smpe-promote.sh -d -g -p \"\$(pwd)/${pathPromotePtfTmp}/smpe-promote.tar\""
+
+      // show change status
+      gitPromotePtf.command('git status')
+
+      // create PR
+      gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  }
 
   pipeline.createStage(
     name          : "Message",
