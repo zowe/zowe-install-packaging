@@ -517,7 +517,7 @@ echo ===============================================
       pipeline.artifactory.download([
         'specContent' : [
           "[{",
-          "\"pattern\":\"${smpePtfPromoteTarPath}\"",
+          "\"pattern\":\"${smpePtfPromoteTarPath}\",",
           "\"target\":\"${pathPromotePtfTmp}/smpe-promote.tar\",",
           "\"flat\":true",
           "}]",
