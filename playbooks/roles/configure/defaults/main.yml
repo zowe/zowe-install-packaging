@@ -3,6 +3,12 @@
 # Constants
 # ==============================================================================
 
+# this should list all known cross memory server stc we ever setup during install
+zowe_known_xmem_proc_stcs:
+- ZWESIS01
+- ZWEXMSTC
+- ZWESISTC
+
 # ==============================================================================
 # Variables should be verified and overwrittern.
 # ==============================================================================
@@ -44,6 +50,7 @@ zowe_external_certficate:
 zowe_external_certficate_alias:
 zowe_external_certficate_authorities:
 zowe_keystore_dir: ~/.zowe/keystore
+zowe_log_dir: ~/.zowe/logs
 zowe_keystore_password: password
 zowe_keystore_alias: localhost
 zowe_proclib_dsname: auto

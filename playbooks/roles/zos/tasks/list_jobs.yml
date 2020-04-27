@@ -1,0 +1,9 @@
+---
+# this task list all jobs with pattern
+
+# Input:
+# - list_jobs_name
+
+- name: "List jobs by name pattern: {{ list_jobs_name | default('') }}"
+  raw: "{{ path_to_list_jobs | default( work_dir_remote + '/list_jobs.rexx') }} '{{ list_jobs_name | default('') }}'"
+  register: list_jobs_result

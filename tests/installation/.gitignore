@@ -4,6 +4,9 @@
 *.gz
 *.tgz
 
+# build result
+dist/
+
 # temporary folder
 .tmp/
 

@@ -6,11 +6,11 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019, 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
 # Function: Copy SAMPLIB member into JES PROCLIB concatenation
-# Usage:  ./zowe-copy-to-JES.sh $samplib $Imember $proclib $Omember [$loadlib $parmlib]
+# Usage:  ./zowe-copy-to-JES.sh -s $samplib -i ${input_member} -r $proclib -o ${output_member} [-b $loadlib -a $parmlib]
 
 # Needs ../internal/opercmd to check JES concatenation
 # Needs ./mcopyshr.clist to write to the target PDS
@@ -29,6 +29,22 @@
 # sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
 #     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
+while getopts "a:b:i:l:o:r:s:" opt; do
+  case $opt in
+    a) parmlib=$OPTARG;;
+    b) loadlib=$OPTARG;;
+    i) input_member=$OPTARG;;
+    l) LOG_DIRECTORY=$OPTARG;;
+    o) output_member=$OPTARG;;
+    r) proclib=$OPTARG;;
+    s) samplib=$OPTARG;;
+    \?)
+      echo "Invalid option: -$opt" >&2
+      exit 1
+      ;;
+  esac
+done
+shift $(($OPTIND-1))
 
 script_exit(){
   tsocmd delete "'$clist'"   1>> $LOG_FILE 2>> $LOG_FILE
@@ -38,29 +54,25 @@ script_exit(){
   exit $1
 }
 
+if [[ -z ${ZOWE_ROOT_DIR} ]]
+then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+fi
+
 # identify this script
 SCRIPT="$(basename $0)"
+
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+set_log_file "zowe-copy-to-jes"
+
+echo "<$SCRIPT>" | tee -a ${LOG_FILE}
+echo started from `pwd` >> ${LOG_FILE}
 
 if [ -z ${TEMP_DIR+x} ]; then
     TEMP_DIR=${TMPDIR:-/tmp}
 fi
 
-LOG_FILE=~/${SCRIPT}-`date +%Y-%m-%d-%H-%M-%S`.log
-touch $LOG_FILE
-chmod a+rw $LOG_FILE
-
-echo "<$SCRIPT>" | tee -a ${LOG_FILE}
-echo started from `pwd` >> ${LOG_FILE}
-
 # code starts here
-
-samplib=$1
-Imember=$2
-proclib=$3
-Omember=$4
-loadlib=$5
-parmlib=$6
-
 userid=${USER:-${USERNAME:-${LOGNAME}}}
 templib=$userid.zowetemp.instproc.SZWESAMP.proclib
 clist=$userid.zowetemp.instproc.SZWESAMP.clist 
@@ -109,32 +121,32 @@ then
   script_exit 5
 fi
 
-tsocmd listds "'$samplib' members" 2>> $LOG_FILE | grep -i "  $Imember$" 1>> $LOG_FILE 2>> $LOG_FILE
+tsocmd listds "'$samplib' members" 2>> $LOG_FILE | grep -i "  ${input_member}$" 1>> $LOG_FILE 2>> $LOG_FILE
 if [[ $? -ne 0 ]]
 then
-  echo $Imember not found in \"$samplib\" | tee -a ${LOG_FILE}
+  echo ${input_member} not found in \"$samplib\" | tee -a ${LOG_FILE}
   script_exit 6
 fi
 
-echo Check name of $Imember PROC | tee -a ${LOG_FILE}
-cat "//'$samplib($Imember)'" | grep -i "^//$Imember *PROC" 1>> $LOG_FILE 2>> $LOG_FILE
+echo Check name of ${input_member} PROC | tee -a ${LOG_FILE}
+cat "//'$samplib(${input_member})'" | grep -i "^//${input_member} *PROC" 1>> $LOG_FILE 2>> $LOG_FILE
 if [[ $? -ne 0 ]]
 then
-  echo Did not find PROC name \"$Imember\" in "$samplib($Imember)" | tee -a ${LOG_FILE}
+  echo Did not find PROC name \"${input_member}\" in "$samplib(${input_member})" | tee -a ${LOG_FILE}
   echo PROC statement is : | tee -a ${LOG_FILE}
-  cat "//'$samplib($Imember)'" | grep "^//[^ *][^ ]*  *PROC" | tee -a ${LOG_FILE}
+  cat "//'$samplib(${input_member})'" | grep "^//[^ *][^ ]*  *PROC" | tee -a ${LOG_FILE}
 fi
 
 if [[ $# -eq 4 ]]
 then
   # Perform a straight copy ...
-  cp "//'$samplib($Imember)'" "//'$templib($Imember)'"
+  cp "//'$samplib(${input_member})'" "//'$templib(${input_member})'"
   if [[ $? -ne 0 ]]
   then
-    echo Failed to copy "$samplib($Imember)" into "$templib($Imember)" | tee -a ${LOG_FILE}
+    echo Failed to copy "$samplib(${input_member})" into "$templib(${input_member})" | tee -a ${LOG_FILE}
     script_exit 8
   else
-    echo Copied "$samplib($Imember)" into "$templib($Imember)"   
+    echo Copied "$samplib(${input_member})" into "$templib(${input_member})"   
   fi
 else
   # Edit the JCL in flight using parms 5 and 6 ...
@@ -147,21 +159,21 @@ else
   sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
       -e "s/ZWES.SISSAMP/${parmlib}/g" \
       -e "s/zis-loadlib/${loadlib}/g" \
-      "//'$samplib($Imember)'" > $TEMP_DIR/$samplib.$Imember.jcl
+      "//'$samplib(${input_member})'" > $TEMP_DIR/$samplib.${input_member}.jcl
   if [[ $? -ne 0 ]]
   then
-    echo Failed to edit "$samplib($Imember)" into $TEMP_DIR/$samplib.$Imember.jcl | tee -a ${LOG_FILE}
+    echo Failed to edit "$samplib(${input_member})" into $TEMP_DIR/$samplib.${input_member}.jcl | tee -a ${LOG_FILE}
     script_exit 8
   else
-    echo Edited "$samplib($Imember)" 
+    echo Edited "$samplib(${input_member})" 
   fi
-  cp $TEMP_DIR/$samplib.$Imember.jcl "//'$templib($Imember)'"
+  cp $TEMP_DIR/$samplib.${input_member}.jcl "//'$templib(${input_member})'"
   if [[ $? -ne 0 ]]
   then
-    echo Failed to copy $TEMP_DIR/$samplib.$Imember.jcl into "$templib($Imember)" | tee -a ${LOG_FILE}
+    echo Failed to copy $TEMP_DIR/$samplib.${input_member}.jcl into "$templib(${input_member})" | tee -a ${LOG_FILE}
     script_exit 8
   else
-    echo Copied into "$templib($Imember)"   
+    echo Copied into "$templib(${input_member})"   
   fi
 fi
 
@@ -187,18 +199,18 @@ then
     for candidate in $procs
     do
       echo "  " candidate = $candidate >> $LOG_FILE
-      tsocmd "exec '$clist(mcopyshr)' '$templib($Imember) $candidate($Omember)'" 1>> $LOG_FILE 2>> $LOG_FILE
+      tsocmd "exec '$clist(mcopyshr)' '$templib(${input_member}) $candidate(${output_member})'" 1>> $LOG_FILE 2>> $LOG_FILE
  
       if [[ $? -ne 0 ]]
       then
-        echo Unable to write $Omember to PROCLIB dataset $candidate, try next PROCLIB >> $LOG_FILE
+        echo Unable to write ${output_member} to PROCLIB dataset $candidate, try next PROCLIB >> $LOG_FILE
       else
-        echo "$samplib($Imember) was written to $candidate($Omember)" | tee -a ${LOG_FILE}
+        echo "$samplib(${input_member}) was written to $candidate(${output_member})" | tee -a ${LOG_FILE}
         tsocmd listds "'$candidate' members" 1>> $LOG_FILE 2>> $LOG_FILE
         script_exit 0
       fi
     done
-    echo "$Imember was not written to any JES PROCLIB dataset" | tee -a ${LOG_FILE}
+    echo "${input_member} was not written to any JES PROCLIB dataset" | tee -a ${LOG_FILE}
     script_exit 11
 else
   tsocmd listds "'$proclib' " 1>> $LOG_FILE 2>> $LOG_FILE
@@ -208,13 +220,13 @@ else
     script_exit 12
   fi 
 
-  tsocmd "exec '$clist(mcopyshr)' '$templib($Imember) $proclib($Omember)'" 1>> $LOG_FILE 2>> $LOG_FILE
+  tsocmd "exec '$clist(mcopyshr)' '$templib(${input_member}) $proclib(${output_member})'" 1>> $LOG_FILE 2>> $LOG_FILE
   if [[ $? -ne 0 ]]
   then
     echo Unable to write to PROCLIB dataset $proclib | tee -a ${LOG_FILE}
     script_exit 13
   else
-    echo "$Imember was written to $proclib($Omember)" | tee -a ${LOG_FILE}
+    echo "${input_member} was written to $proclib(${output_member})" | tee -a ${LOG_FILE}
     tsocmd listds "'$proclib' members" 1>> $LOG_FILE 2>> $LOG_FILE
     script_exit 0
   fi
