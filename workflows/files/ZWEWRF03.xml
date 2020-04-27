@@ -14,7 +14,7 @@
         <workflowID scope="none" >zowe_instance</workflowID>
         <workflowDefaultName>ZOWE Instance Configuration</workflowDefaultName>
         <workflowDescription>This workflow creates and configures new Zowe instance</workflowDescription>
-        <workflowVersion>#ZOWE_VERSION#</workflowVersion>
+        <workflowVersion>###ZOWE_VERSION###</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
     </workflowInfo>

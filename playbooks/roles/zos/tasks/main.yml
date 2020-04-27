@@ -1,5 +1,11 @@
 ---
 # this is the most common tasks
-- import_role:
+- include_role:
     name: zos
-    tasks_from: upload_rexx
+    tasks_from: upload_scripts_if_not_exists
+  vars:
+    usine_file: "{{ item }}"
+  loop:
+  - opercmd.rexx
+  - show_job_log.rexx
+  - list_jobs.rexx

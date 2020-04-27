@@ -3,6 +3,12 @@
 # Constants
 # ==============================================================================
 
+# this should list all known cross memory server stc we ever setup during install
+zowe_known_xmem_proc_stcs:
+- ZWESIS01
+- ZWEXMSTC
+- ZWESISTC
+
 # ==============================================================================
 # Variables should be verified and overwrittern.
 # ==============================================================================

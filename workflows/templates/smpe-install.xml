@@ -8,7 +8,7 @@
 		<workflowID scope="none">zowe_smpe</workflowID>
 		<workflowDefaultName>zowe_smpe</workflowDefaultName>
 		<workflowDescription>This is the SMP/E installation of Zowe</workflowDescription>
-		<workflowVersion>0.1</workflowVersion>
+		<workflowVersion>###ZOWE_VERSION###</workflowVersion>
 		<vendor>Zowe</vendor>
 		<General/>
 	</workflowInfo>
@@ -323,7 +323,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE1SMPE.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE1SMPE.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>80</maxLrecl>
 		</template>
@@ -337,7 +337,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE2RCVE.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE2RCVE.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>80</maxLrecl>
 		</template>
@@ -351,7 +351,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE3ALOC.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE3ALOC.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>1024</maxLrecl>
 		</template>
@@ -365,7 +365,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE4ZFS.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE4ZFS.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>1024</maxLrecl>
 		</template>
@@ -379,7 +379,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE5MKD.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE5MKD.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>1024</maxLrecl>
 		</template>
@@ -393,7 +393,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE6DDEF.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE6DDEF.vtl###</inlineTemplate>
 			<submitAs maxRc="4">JCL</submitAs>
 			<maxLrecl>80</maxLrecl>
 		</template>
@@ -407,7 +407,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE7APLY.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE7APLY.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>80</maxLrecl>
 		</template>
@@ -421,7 +421,7 @@
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 		<template>
-			<inlineTemplate substitution="true">###./vtls/ZWE8ACPT.vtl###</inlineTemplate>
+			<inlineTemplate substitution="true">###./smpe-install/ZWE8ACPT.vtl###</inlineTemplate>
 			<submitAs maxRc="0">JCL</submitAs>
 			<maxLrecl>80</maxLrecl>
 		</template>
