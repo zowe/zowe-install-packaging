@@ -12,19 +12,28 @@
 #
 # Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
+
+#######################################################################
+# Build script
+#
+# runs on z/OS, after creating zowe.pax
+#
+#######################################################################
 set -x
 
 SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
 
 if [ "$BUILD_SMPE" != "yes" ]; then
-  echo "[$SCRIPT_NAME] not building SMP/e package, skipping."
+  echo "[$SCRIPT_NAME] not building SMP/E package, skipping."
   exit 0
 fi
 
-if [ -z "${ZOWE_VERSION}" ]; then
-  echo "[$SCRIPT_NAME][ERROR] ZOWE_VERSION environment variable is missing"
+if [ -z "$ZOWE_VERSION" ]; then
+  echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
   exit 1
+else
+  echo "[$SCRIPT_NAME] working on Zowe v${ZOWE_VERSION} ..."
 fi
 
 # define constants for this build
@@ -49,38 +58,8 @@ SMPE_BUILD_VOLSER=ZOWE02
 # write data sets list we want to clean up
 echo "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" > ${CURR_PWD}/cleanup-smpe-packaging-datasets.txt
 
-# add x permission to all smpe files
+# add rx permission to all smpe files
 chmod -R 755 smpe
-
-# smpe.pax ------------------------------------------------------------
-
-PAX_PATH="${CURR_PWD}/smpe/pax"
-ZOSMF_PATH="${CURR_PWD}/smpe/ZOSMF"
-
-# generate boilerplate SMPE JCL
-MVS_PATH="${PAX_PATH}/MVS"        # output
-LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
-VTLCLI_PATH="/ZOWE/vtl-cli"       # tool
-for entry in $(ls ${LOCAL_PATH}/)
-do
-  if [ "${entry##*.}" = "vtl" ]          # keep from last . (exclusive)
-  then
-    BASE=${entry%.*}                    # keep up to last . (exclusive)
-    VTL="${LOCAL_PATH}/${entry}"
-    YAML="${LOCAL_PATH}/${BASE}.yml"
-    JCL="${MVS_PATH}/${BASE}.jcl"
-    # assumes java is in $PATH
-    java -jar ${VTLCLI_PATH}/vtl-cli.jar -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
-  fi
-done
-
-# generate SMPE workflow
-USS_PATH="${PAX_PATH}/USS"        # output
-LOCAL_PATH="${ZOSMF_PATH}/vtls"   # input
-cp ${LOCAL_PATH}/ZWEYML01.yml ${USS_PATH}/ZWEYML01.yml
-cd ${ZOSMF_PATH}   # required, smpe_workflow.xml has ./vtls references
-./build-workflow.rex -d -i ./smpe_workflow.xml -o ${USS_PATH}/ZWEWRF01.xml
-cd ${CURR_PWD}
 
 # create smpe.pax
 cd ${CURR_PWD}/smpe/pax
@@ -88,8 +67,6 @@ echo "files to be pax'd"
 ls -lER .
 pax -x os390 -w -f ../../smpe.pax *
 cd ${CURR_PWD}
-
-# ---------------------------------------------------------------------
 
 # extract last build log
 LAST_BUILD_LOG=$(ls -1 ${CURR_PWD}/smpe/smpe-build-logs* || true)
@@ -290,10 +267,11 @@ mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PROMOTE_TAR}" ${SMPE_PROMOTE_TAR}
 echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
+echo "[$SCRIPT_NAME] done"
+
 # files to be uploaded to artifactory:
 # ${CURR_PWD}/smpe-build-logs.pax.Z
 # ${CURR_PWD}/zowe-smpe.zip          -> goes to zowe.org
 # ${CURR_PWD}/fmid.zip
-# ${CURR_PWD}/ptf.zip
 # ${CURR_PWD}/pd.htm                 -> can be a null file
 # ${CURR_PWD}/smpe-promote.tar       -> can be a null file

@@ -1,3 +1,3 @@
-# format: <ptf1> <ptf2>- <apar1> <apar2>
+# format: <ptf1> <ptf2> - <apar1> <apar2>
 #UO01939 UO01940 - IO27710 IO27711 - Thu Apr  9 14:06:18 EDT 2020 - Zowe 1.10.0
 UO01942 UO01943 - IO27757 IO27758

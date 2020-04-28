@@ -11,16 +11,14 @@
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifyConvenienceBuild,
-  showZoweRuntimeLogs,
-} from '../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
+} from '../../../utils';
+import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
-const testSuiteName = 'Test convenience build installation';
+const testSuiteName = 'Test convenience build installation with node.js v8';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
-      'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
     ]);
   });
@@ -28,14 +26,12 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifyConvenienceBuild(
       testSuiteName,
-      process.env.TEST_SERVER,
+      // hard code to use marist-1 which we have uploaded correct versions in
+      'marist-1',
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zos_node_home': '/ZOWE/node/node-v8.17.0-os390-s390x',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
-
-  afterAll(async () => {
-    await showZoweRuntimeLogs(process.env.TEST_SERVER);
-  })
 });

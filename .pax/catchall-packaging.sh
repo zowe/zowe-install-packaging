@@ -1,16 +1,25 @@
 #!/bin/sh -e
-#TODO -e is not documented as valid option, what is this supposed to do?
-set -x
-
-################################################################################
-# This program and the accompanying materials are made available under the terms of the
-# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+#
+# SCRIPT ENDS ON FIRST NON-ZERO RC
+#
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
 # https://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
-################################################################################
+# Copyright Contributors to the Zowe Project. 2019, 2020
+#######################################################################
+
+#######################################################################
+# Build script
+#
+# runs on z/OS, after build completed (success and error)
+#
+#######################################################################
+set -x
 
 SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
@@ -23,11 +32,14 @@ if [ -f cleanup-smpe-packaging-datasets.txt ]; then
       echo "[${SCRIPT_NAME}] deleting ${dsprefix}.** ..."
       tsocmd listds "'${dsprefix}'" level 2>&1 > .tmp-datasets-list &
       sleep 2
-      datasets=$(cat .tmp-datasets-list | grep "${dsprefix}" | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1')
+      datasets=$(cat .tmp-datasets-list \
+        | grep "${dsprefix}" \
+        | grep -v 'UNABLE TO COMPLETE' \
+        | awk '{$1=$1};1')
       for dsn in $datasets
       do
         if [ -n "$(echo $dsn | grep ' ')" ]; then
-          echo "[${SCRIPT_NAME}][error] $dsn"                     # variable holds error message
+          echo "[${SCRIPT_NAME}][error] $dsn" # variable holds error message
           # exit 1
         elif [ -n "${dsn}" ]; then
           # delete data sets
@@ -35,8 +47,8 @@ if [ -f cleanup-smpe-packaging-datasets.txt ]; then
           sleep 2
         fi
       done    # for dsn
-    fi
-  done
-fi
+    fi    # -n $dsprefix 
+  done    # for dsprefix
+fi    # -f cleanup-smpe-packaging-datasets.txt
 
-echo "[${SCRIPT_NAME}] - done"
+echo "[${SCRIPT_NAME}] done"

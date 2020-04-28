@@ -1,4 +1,0 @@
-{
-  "identifier": "org.zowe.zlux.proxy.zosmf",
-  "pluginLocation": "../../zosmf-auth/proxy"
-}
