@@ -101,7 +101,9 @@ fi
 echo Info: Gathering files ...
 
 cd $runtimePath
-find . -name ./SMPE -prune -o -type f -print > $hashPath/files.in # exclude SMPE
+find . -name ./SMPE -prune \
+    -o -name "./ZWE*" -prune \
+    -o -type f -print > $hashPath/files.in # exclude SMPE
 if [[ $? -ne 0 ]]
 then
     echo Error: Failed to generate a list of files from $runtimePath
