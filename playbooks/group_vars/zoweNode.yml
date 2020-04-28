@@ -1,0 +1,34 @@
+---
+
+ansible_port: 22
+
+################################################################################
+# variables for zowe uninstallation and installation
+
+# optional, this is the folder where we store Zowe FMIDs on the z/OS server
+zowe_fmids_dir_remote: /opt/zowe/zowe-fmids
+work_dir_remote: /opt/zowe/ansible
+zowe_root_dir: /opt/zowe/runtime
+zowe_instance_dir: /opt/zowe/zowe-instance-dir
+zowe_keystore_dir: /opt/zowe/keystore
+zowe_logs_dir: /opt/zowe/logs
+
+zowe_dataset_prefix: IBMUSER.ZWE
+zowe_apiml_verify_certficates_of_services: false
+zowe_proclib_dsname: AUTO
+zowe_xmem_proclib: USER.PROCLIB
+zowe_xmem_loadlib: IBMUSER.LOADLIB
+zowe_xmem_parmlib: IBMUSER.PARMLIB
+# variables for zowe smpe uninstallation and installation
+# during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed
+zowe_smpe_hlq_dsn: ZOE
+# during uninstallation, any data-sets start with this will be removed
+zowe_smpe_hlq_csi: ZOE.SMPE
+zowe_smpe_hlq_tzone: ZOE.SMPE
+zowe_smpe_hlq_dzone: ZOE.SMPE
+zowe_smpe_dir_prefix: /opt/zowe/runtime
+
+zowe_smpe_rel_file_prefix: ZOE
+
+
+
