@@ -22,7 +22,9 @@ echo "<zowe-install-zlux.sh>" >> $LOG_FILE
 
 umask 0002
 APP_SERVER_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/app-server
+ZSS_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/zss
 mkdir -p ${APP_SERVER_COMPONENT_DIR}
+mkdir -p ${ZSS_COMPONENT_DIR}
 cd ${APP_SERVER_COMPONENT_DIR}
 mkdir -p bin
 mkdir -p share
@@ -54,14 +56,16 @@ cp -f ${INSTALL_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/
 cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
 
 echo "Unpax zssServer " >> $LOG_FILE
-cd zlux-app-server
+cd ${ZSS_COMPONENT_DIR}
 pax -r -px -f $INSTALL_DIR/files/zss.pax bin
-cd bin
-extattr +p zssServer
-cd ../..
+extattr +p bin/zssServer
+cp -r ${ZSS_COMPONENT_DIR}/bin/z* ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/bin
+cd ${APP_SERVER_COMPONENT_DIR}/share
 
 chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ 2>/dev/null
 cp zlux-app-server/bin/start.sh zlux-app-server/bin/configure.sh ${APP_SERVER_COMPONENT_DIR}/bin
 chmod -R a-w zlux-app-server/ 2>/dev/null
+chmod 750 ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/defaults/serverConfig
+chmod 740 ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/defaults/serverConfig/*
 cd $INSTALL_DIR
 echo "</zowe-install-zlux.sh>" >> $LOG_FILE
