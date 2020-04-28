@@ -69,5 +69,5 @@ zowe_external_domain_name:
 # required for zD&T (external IP is different from internal IP)
 zowe_external_ip_address:
 
-# property added to instance.env for extender test
+# property added to instance.env for extender test - Note this variable is for PTF installation verification purpose, not used by any extensions. You are safe to ignore.
 zowe_extender_test_property: EXAMPLE_EXTENDER_PROPERTY=TEST123
