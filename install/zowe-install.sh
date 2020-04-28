@@ -55,7 +55,7 @@ fi
 mkdir -p $TEMP_DIR
 chmod a+rwx $TEMP_DIR 
 
-. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+. ${INSTALL_DIR}/bin/utils/setup-log-dir.sh
 if [[ -z "${LOG_FILE}" ]]
 then
   set_log_directory ${LOG_DIRECTORY}
