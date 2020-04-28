@@ -1,0 +1,41 @@
+---
+# this task will upload a script from files folder and add execution permission
+
+- name: Check if work_dir_remote has a value
+  fail:
+    msg: work_dir_remote is required
+  when: work_dir_remote is not defined or work_dir_remote is none or work_dir_remote == ''
+
+# usine is short of upload_scripts_if_not_exists
+- name: Check if usine_file has a value
+  fail:
+    msg: usine_file is required
+  when: usine_file is not defined or usine_file is none or usine_file == ''
+
+- debug:
+    msg: upload_scripts_if_not_exists {{ usine_file }}
+
+- name: Check if {{ usine_file }} exists on zOS
+  raw: test -f "{{ work_dir_remote }}/{{ usine_file }}"
+  ignore_errors: True
+  register: usine_file_existence
+
+- name: Transfer {{ usine_file }} to zOS
+  when: usine_file_existence is failed
+  block:
+  - name: Copy {{ usine_file }} to local tmp folder
+    copy:
+      src: "{{ usine_file }}"
+      dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
+    delegate_to: localhost
+
+  - include_role:
+      name: common
+      tasks_from: upload_file
+    vars:
+      filename_to_upload: "{{ usine_file }}"
+      file_upload_method: scp
+      file_upload_hashcheck: false
+
+  - name: Add executive permission to {{ usine_file }}
+    raw: chmod a+x "{{ work_dir_remote }}/{{ usine_file }}"
