@@ -15,7 +15,7 @@ zowe_logs_dir: /opt/zowe/logs
 
 zowe_dataset_prefix: IBMUSER.ZWE
 zowe_apiml_verify_certficates_of_services: false
-zowe_proclib_dsname: AUTO
+zowe_proclib_dsname: USER.PROCLIB
 zowe_xmem_proclib: USER.PROCLIB
 zowe_xmem_loadlib: IBMUSER.LOADLIB
 zowe_xmem_parmlib: IBMUSER.PARMLIB
