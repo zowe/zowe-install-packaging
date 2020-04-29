@@ -54,3 +54,15 @@
     ZOWE_EXPLORER_DATASETS_PORT: "{{ zowe_mvs_api_port }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
   delegate_to: localhost
+
+# ============================================================================
+- name: Test API Mediation Layer in the Zowe instance with E2E Tests
+  command: npm run cy:e2e:ci
+  args:
+    chdir: "{{ zowe_apiml_e2e_tests_root_dir }}"
+  environment:
+    API_CATALOG_BASE_URL: "https://{{ ansible_ssh_host }}:{{ zowe_apiml_catalog_port }}/"
+    MF_USERID: "{{ ansible_user }}"
+    MF_PASSWORD: "{{ ansible_password }}"
+  delegate_to: localhost
+
