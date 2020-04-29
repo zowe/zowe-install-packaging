@@ -52,7 +52,8 @@ fi
 # identify this script
 SCRIPT="$(basename $0)"
 
-. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+set_log_directory ${LOG_DIRECTORY}
 set_log_file "zowe-install-xmem"
 
 echo "<$SCRIPT>" | tee -a ${LOG_FILE}
@@ -184,10 +185,10 @@ ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${loadlib} -a ${parmlib} -f ${LOG_FILE}
 aux_rc=$?
 echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${loadlib} -a ${parmlib} -l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${loadlib} -a ${parmlib} -f ${LOG_FILE}
 xmem_rc=$?
 echo "ZWEXMSTC rc from zowe-copy-to-JES.sh is ${xmem_rc}" >> ${LOG_FILE}
 
