@@ -208,6 +208,10 @@ then
     then
         echo "    Please enter the ZOWE_EXPLORER_HOST of this system"
         read ZOWE_EXPLORER_HOST
+        if [[ ! -n "$ZOWE_EXPLORER_HOST" ]]
+        then
+            echo Info: User entered blank ZOWE_EXPLORER_HOST
+        fi
     fi 
     export ZOWE_EXPLORER_HOST
 else    
@@ -296,49 +300,42 @@ then
     
     if [[ $rc -ne 0 ]]  # ask the user to enter the external IP
     then
-            echo "    Please enter the ZOWE_IP_ADDRESS of this system"
-            read ZOWE_IP_ADDRESS_INPUT
-            if [[ ! -n "$ZOWE_IP_ADDRESS_INPUT" ]]
-            then
-               echo Error: User entered blank ZOWE_IP_ADDRESS    # leave ZOWE_IP_ADDRESS unchanged,
-               echo Info: Using ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS  # as discovered above
-            else
-               echo Info: User entered ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT
-               ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT             # take what the user entered
-            fi
-            checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IP_ADDRESS
-            case $? in
-                0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IP_ADDRESS >> $LOG_FILE
-                ;;
-                1)  echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IP_ADDRESS"
-                ;;
-                2)  echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IP_ADDRESS"
-                ;;
-                3)  echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
-                ;;  
-                4)  echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
-                ;;   
-            esac
+        echo "    Please enter the ZOWE_IP_ADDRESS of this system"
+        read ZOWE_IP_ADDRESS_INPUT
+        if [[ ! -n "$ZOWE_IP_ADDRESS_INPUT" ]]
+        then
+            echo Error: User entered blank ZOWE_IP_ADDRESS    # leave ZOWE_IP_ADDRESS unchanged,
+            echo Info: Using ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS  # as discovered above
+        else
+            echo Info: User entered ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT
+            ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT             # take what the user entered
+        fi
     fi  
-
     export ZOWE_IP_ADDRESS
-else
-    checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IP_ADDRESS
+fi 
 
-    case $? in
-        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IP_ADDRESS >> $LOG_FILE
-        ;;
-        1)        echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IP_ADDRESS"
-        ;;
-        2)        echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IP_ADDRESS"
-        ;;
-        3)        echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
-        ;;
-        4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
-        ;; 
-    esac
-    echo "  ZOWE_IP_ADDRESS variable value="$ZOWE_IP_ADDRESS >> $LOG_FILE
+checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IP_ADDRESS
+rc=$?
+case $rc in
+    0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IP_ADDRESS >> $LOG_FILE
+    ;;
+    1)        echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IP_ADDRESS"
+    ;;
+    2)        echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IP_ADDRESS"
+    ;;
+    3)        echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
+    ;;
+    4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
+    ;; 
+esac
+if [[ $rc -ne 0 ]]
+then
+    echo "    Defaulting hostname to value of ZOWE_IP_ADDRESS $ZOWE_IP_ADDRESS" 
+    export ZOWE_EXPLORER_HOST=$ZOWE_IP_ADDRESS                
 fi
+
+echo "  ZOWE_IP_ADDRESS    variable value="$ZOWE_IP_ADDRESS
+echo "  ZOWE_EXPLORER_HOST variable value="$ZOWE_EXPLORER_HOST
 
 if [[ $ZOWE_ZOSMF_HOST == "" ]]
 then
