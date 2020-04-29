@@ -21,7 +21,7 @@ while getopts "f:h:i:l:d" opt; do
       # future use, accept parm to stabilize SMPE packaging
       #debug="-d"
       ;;
-    f) LOG_FILE=$OPTARG;;
+    f) LOG_FILE=$OPTARG;; #Internal - used in the smpe-packaging build zip #801
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
