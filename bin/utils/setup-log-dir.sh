@@ -10,19 +10,44 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-set_log_file_from_full_path() {
+set_install_log_file_from_full_path() {
   export LOG_FILE=$1
   touch ${LOG_FILE}
   chmod a+rw ${LOG_FILE}
   echo "Log file created: ${LOG_FILE}"
 }
 
-set_log_file() {
+set_install_log_file() {
   LOG_FILE_PREFIX=$1
-  set_log_file_from_full_path "${LOG_DIRECTORY}/${LOG_FILE_PREFIX}-`date +%Y-%m-%d-%H-%M-%S`.log"
+  set_install_log_file_from_full_path "${LOG_DIRECTORY}/${LOG_FILE_PREFIX}-`date +%Y-%m-%d-%H-%M-%S`.log"
 }
 
-set_log_directory() {
+get_install_log_directory() {
+  INSTALL_LOG_DIR=$1
+  
+  # If log directory not specified on input try /global/zowe/logs then ~/zowe/logs
+  if [[ -z "${INSTALL_LOG_DIR}" ]]
+  then
+    if [[ -r "/global/zowe" ]]
+    then 
+      INSTALL_LOG_DIR="/global/zowe/logs"
+    else
+      INSTALL_LOG_DIR="~/zowe/logs"
+    fi
+  fi
+
+  # If the value starts with a ~ for the home variable then evaluate it
+  INSTALL_LOG_DIR=`sh -c "echo $INSTALL_LOG_DIR"`
+
+  if { [[ ! -d "${INSTALL_LOG_DIR}" ]] || [[ ! -r "${INSTALL_LOG_DIR}" ]] }
+  then	
+    echo "The directory ${INSTALL_LOG_DIR} was not readable. Please use call the script with the additional parameter '-l <log_dir>' specifying the directory that the install logs were created in"
+    exit 1
+  fi
+  export INSTALL_LOG_DIR
+}
+
+set_install_log_directory() {
   LOG_DIRECTORY=$1
 
   # If log directory not specified on input try /global/zowe/logs then ~/zowe/logs
@@ -49,7 +74,7 @@ set_log_directory() {
   then
     echo "Unable to create directory ${LOG_DIRECTORY}. Please use call the script with the additional parameter '-l <log_dir>' specifying a creatable and writable log_dir"
     exit 1
-  elif [[ ! -w ${LOG_DIRECTORY} ]]
+  elif [[ ! -w "${LOG_DIRECTORY}" ]]
   then	
     echo "The directory ${LOG_DIRECTORY} was not writable. Please use call the script with the additional parameter '-l <log_dir>' specifying a writable log_dir"
     exit 1
