@@ -172,7 +172,7 @@ if [[ "${SETUP_APIML_SSO}" == "true" ]]; then
       echo "Unable to convert ${APIML_PUBLIC_KEY} to PKCS#12. See $LOG_FILE for more details."
     else
       UPPER_KEY_LABEL=$(echo "${PKCS11_TOKEN_LABEL}" | tr '[:lower:]' '[:upper:]')
-      if ! gskkyman -i -t ${PKCS11_TOKEN_NAME} -l ${UPPER_KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
+      if ! echo "${KEYSTORE_PASSWORD}" | gskkyman -i -t ${PKCS11_TOKEN_NAME} -l ${UPPER_KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
         echo "Unable to store ${P12_PUBLIC_KEY} in token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}. See $LOG_FILE for more details."
       else
         echo "Successfully loaded ${APIML_PUBLIC_KEY} into token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}."
