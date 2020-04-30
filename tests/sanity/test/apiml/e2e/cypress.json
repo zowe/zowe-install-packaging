@@ -1,0 +1,15 @@
+{
+    "env":{
+        "catalogHomePage": "https://localhost:10010/ui/v1/apicatalog",
+        "viewportWidth": 1400,
+        "viewportHeight": 980,
+        "username": "user",
+        "password": "user"
+    },
+    "reporter": "junit",
+    "defaultCommandTimeout": 60000,
+    "reporterOptions": {
+        "mochaFile": "test-results/e2e/output-[hash].xml"
+    }
+
+}

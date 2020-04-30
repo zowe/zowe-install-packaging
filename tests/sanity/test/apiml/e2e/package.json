@@ -1,0 +1,20 @@
+{
+  "name": "@zowe/apiml-e2e-tests",
+  "version": "0.9.0",
+  "description": "Sanity test for Zowe instance",
+  "main": "index.js",
+  "license": "EPL-2.0",
+  "dependencies": {
+    "redux": "4.0.1",
+    "redux-persist": "5.10.0"
+  },
+  "devDependencies": {
+    "cypress": "^4.5.0",
+    "eslint": "^5.2.0"
+  },
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:e2e:localhost": "cypress run --spec \"cypress/integration/e2e/**/*.test.js\"",
+    "cy:e2e:mocked-backend": "cypress run --spec \"cypress/integration/mocked-e2e/**/*.test.js\" --env catalogHomePage=https://localhost:3000/ui/v1/apicagalog,username=user,password=user"
+  }
+}
