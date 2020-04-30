@@ -64,3 +64,5 @@ cd ../ && rm -rf ${CHILD_DIR}
 ##### Summary
 
 echo "Ran ${tests} tests with ${failures} failures"
+
+exit ${failures}
