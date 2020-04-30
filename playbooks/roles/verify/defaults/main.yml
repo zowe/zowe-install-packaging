@@ -31,5 +31,8 @@ zowe_jobs_api_port: 8545
 zowe_mvs_api_port: 8547
 zowe_zlux_port: 8544
 
+# default folder of the integration tests
+zowe_apiml_integration_tests_root_dir: ../tests/sanity/test/apiml/integration
+
 # default folder of the E2E tests
-zowe_apiml_e2e_tests_root_dir: ../tests/apiml/e2e
+zowe_apiml_e2e_tests_root_dir: ../tests/sanity/test/apiml/e2e

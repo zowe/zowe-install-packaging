@@ -16,6 +16,7 @@
     - zowe_job_prefix
     - zowe_zlux_port
     - zowe_apiml_gateway_port
+    - zowe_apiml_discovery_port
     - zowe_jobs_api_port
     - zowe_mvs_api_port
 
@@ -53,6 +54,29 @@
     ZOWE_EXPLORER_JOBS_PORT: "{{ zowe_jobs_api_port }}"
     ZOWE_EXPLORER_DATASETS_PORT: "{{ zowe_mvs_api_port }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
+  delegate_to: localhost
+
+# ============================================================================
+- name: Test API Mediation Layer in the Zowe instance with Integration Tests
+  command: ./gradlew runZoweIntegrationTests
+    -Dcredentials.user={{ ansible_user }}
+    -Dcredentials.password={{ ansible_password }}
+    -Ddiscovery.host={{ ansible_ssh_host }}
+    -Ddiscovery.port={{ zowe_apiml_discovery_port }}
+    -Dgateway.host={{ ansible_ssh_host }}
+    -Dgateway.port={{ zowe_apiml_gateway_port }}
+    -DtlsConfiguration.keyAlias=${KEY_ALIAS}
+    -DtlsConfiguration.keyPassword=${SERVICE_PASSWORD}
+    -DtlsConfiguration.keyStore=${KEYSTORE}
+    -DtlsConfiguration.keyStorePassword=${KEYSTORE_PASSWORD}
+    -DtlsConfiguration.trustStore=${SERVICE_TRUSTSTORE}
+    -DtlsConfiguration.trustStorePassword=${SERVICE_PASSWORD}
+    -Dzosmf.host=${ZOWE_ZOSMF_HOST}
+    -Dzosmf.port=${ZOWE_ZOSMF_PORT}
+    -Dzosmf.serviceId={{ zosmf_service_id }}
+  args:
+    chdir: "{{ zowe_apiml_integration_tests_root_dir }}"
+  environment:
   delegate_to: localhost
 
 # ============================================================================
