@@ -32,7 +32,7 @@ zowe_mvs_api_port: 8547
 zowe_zlux_port: 8544
 
 # default folder of the integration tests
-zowe_apiml_integration_tests_root_dir: ../tests/sanity/test/apiml/integration
+zowe_apiml_integration_tests_root_dir: ../tests/sanity/test/apiml/integration/integration-tests
 
 # default folder of the E2E tests
 zowe_apiml_e2e_tests_root_dir: ../tests/sanity/test/apiml/e2e
