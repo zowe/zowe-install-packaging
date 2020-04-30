@@ -1,0 +1,174 @@
+buildscript {
+    repositories {
+        maven {
+            setUrl('https://plugins.gradle.org/m2/')
+        }
+    }
+    dependencies {
+        classpath 'com.adarshr:gradle-test-logger-plugin:1.4.0'
+    }
+}
+
+apply plugin: 'com.adarshr.test-logger'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile libraries.http_client
+    compile libraries.eureka_client
+    compile libraries.jackson_dataformat_yaml
+    compile libraries.jackson_databind
+    compile libraries.json_path
+    compile libraries.spring_boot_starter_websocket
+    compile libraries.spring_boot_starter_actuator
+    compile libraries.json
+    compile libraries.jjwt
+    compile(project(':apiml-security-common'))
+    compile(project(':zaas-client'))
+
+    testCompile libraries.junit
+    testCompile libraries.hamcrest
+    testCompile libraries.rest_assured
+    testCompile libraries.awaitility
+    testCompile libraries.logback_classic
+    testCompile libraries.powermock_api_mockito2
+    testCompile libraries.power_mock_junit4
+    testCompile libraries.power_mock_junit4_rule
+    testCompile libraries.lombok
+    testAnnotationProcessor libraries.lombok
+    testCompile libraries.jsoup
+    testCompile libraries.rest_assured
+    testCompile(libraries.jackson_core)
+    testCompile(libraries.jackson_databind)
+    testCompile libraries.jackson_dataformat_yaml
+    testCompile libraries.javax_servlet_api
+    testCompile libraries.nimbusJoseJwt
+    runtime libraries.jjwt_impl
+    runtime libraries.jjwt_jackson
+}
+
+jar {
+    baseName = "integration-tests"
+}
+
+test.enabled = false
+
+apply plugin : 'java'
+
+test {
+    testLogging.showStandardStreams = true
+}
+
+task startUpCheck(type: Test) {
+    group 'integration test'
+    description "Check that the API Mediation Layer is up and runnig"
+
+    systemProperties System.properties
+    useJUnitPlatform {
+        includeTags 'StartupCheck'
+    }
+    outputs.upToDateWhen { false }
+}
+
+task runWebsocketTests(type: Test) {
+    group "integration test"
+    description "Runs tests for WebSockets"
+
+    systemProperties System.properties
+    useJUnitPlatform {
+        includeTags 'WebsocketTest'
+    }
+    outputs.upToDateWhen { false }
+}
+
+task runIntegrationTests(type: Test) {
+    group "Integration tests"
+    description "Run only tests without long tests"
+
+    dependsOn startUpCheck
+    systemProperties System.properties
+    useJUnitPlatform {
+        excludeTags(
+            'StartupCheck',
+            'SlowTests',
+            'AdditionalLocalTest'
+        )
+    }
+}
+
+task runLocalIntegrationTests(type: Test) {
+    group "Integration tests"
+    description "Run integration tests that are not dependent on mainframe"
+
+    dependsOn startUpCheck
+    systemProperties System.getProperties()
+    useJUnitPlatform {
+        excludeTags(
+            'StartupCheck',
+            'SlowTests',
+            'MainframeDependentTests',
+            'AdditionalLocalTest'
+        )
+    }
+    outputs.upToDateWhen { false }
+}
+
+task runAllLocalIntegrationTests(type: Test) {
+    group "Integration tests"
+    description "Run integration tests for additional local services"
+
+    dependsOn startUpCheck
+    systemProperties System.getProperties()
+    useJUnitPlatform {
+        excludeTags(
+            'StartupCheck',
+            'SlowTests',
+            'MainframeDependentTests'
+        )
+    }
+    outputs.upToDateWhen { false }
+}
+
+task runAllIntegrationTests(type: Test) {
+    group "Integration tests"
+    description "Run all integration tests"
+
+    dependsOn startUpCheck
+    systemProperties System.properties
+    useJUnitPlatform {
+        excludeTags(
+            'StartupCheck',
+            'AdditionalLocalTest'
+        )
+    }
+    outputs.upToDateWhen { false }
+}
+
+task runTestWithoutStartupCheck(type: Test) {
+    group "Integration tests"
+    description "Run integration test without startup check"
+
+    useJUnitPlatform()
+
+    systemProperties System.properties
+
+    outputs.upToDateWhen { false }
+}
+
+task runAllIntegrationTestsForZoweTesting(type: Test) {
+    group "Integration tests"
+    description "Run all integration tests for Zowe testing"
+
+    dependsOn startUpCheck
+    systemProperties System.properties
+    useJUnitPlatform {
+        excludeTags(
+            'StartupCheck',
+            'AdditionalLocalTest',
+            'TestsNotMeantForZowe'
+        )
+    }
+    outputs.upToDateWhen { false }
+}

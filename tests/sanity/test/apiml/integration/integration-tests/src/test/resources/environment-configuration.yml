@@ -1,0 +1,32 @@
+credentials:
+    # Mainframe credentials are required - see /integration-tests/README.md for instructions
+    user: user
+    password: user
+gatewayServiceConfiguration:
+    scheme: https
+    host: localhost
+    port: 10010
+    instances: 1
+discoveryServiceConfiguration:
+    scheme: https
+    user: user
+    password: user
+    host: localhost
+    port: 10011
+    instances: 1
+discoverableClientConfiguration:
+    applId: ZOWEAPPL
+tlsConfiguration:
+    keyAlias: localhost
+    keyPassword: password
+    keyStoreType: PKCS12
+    keyStore: ../keystore/localhost/localhost.keystore.p12
+    keyStorePassword: password
+    trustStoreType: PKCS12
+    trustStore: ../keystore/localhost/localhost.truststore.p12
+    trustStorePassword: password
+zosmfServiceConfiguration:
+    scheme: https
+    host: river.zowe.org
+    port: 10443
+    serviceId: zosmf
