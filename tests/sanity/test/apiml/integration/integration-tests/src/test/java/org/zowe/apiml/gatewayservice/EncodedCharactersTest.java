@@ -14,7 +14,6 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.zowe.apiml.util.categories.TestsNotMeantForZowe;
 import org.zowe.apiml.util.config.ConfigReader;
 import org.zowe.apiml.util.config.GatewayServiceConfiguration;
 
@@ -41,20 +40,6 @@ public class EncodedCharactersTest {
         scheme = serviceConfiguration.getScheme();
         host = serviceConfiguration.getHost();
         port = serviceConfiguration.getPort();
-    }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void shouldCallDiscoverableServiceWithEncodedCharacterAndAllow() {
-        final String encodedURI = "/api/v1/discoverableclient/wor%2fld/greeting";
-
-        given()
-            .urlEncodingEnabled(false)
-            .when()
-            .get(String.format("%s://%s:%s%s", scheme, host, port, encodedURI))
-            .then()
-            .body("content", is("Hello, wor/ld!"))
-            .statusCode(is(SC_OK));
     }
 
     @Test

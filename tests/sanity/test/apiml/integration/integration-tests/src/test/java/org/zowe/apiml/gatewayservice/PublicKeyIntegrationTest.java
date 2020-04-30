@@ -63,30 +63,4 @@ public class PublicKeyIntegrationTest {
         }
     }
 
-    @Test
-    public void testAllPublicKeys() throws ParseException {
-        String response = given()
-            .when()
-            .get(GATEWAY_URL + ALL_PUBLIC_KEY_ENDPOINT)
-        .then()
-            .statusCode(is(SC_OK))
-            .extract().body().asString();
-        JWKSet jwkSet = JWKSet.parse(response);
-
-        verifyKeys(jwkSet, 2);
-    }
-
-    @Test
-    public void testCurrentPublicKeys() throws ParseException {
-        String response = given()
-            .when()
-            .get(GATEWAY_URL + CURRENT_PUBLIC_KEY_ENDPOINT)
-            .then()
-            .statusCode(is(SC_OK))
-            .extract().body().asString();
-        JWKSet jwkSet = JWKSet.parse(response);
-
-        verifyKeys(jwkSet, 1);
-    }
-
 }

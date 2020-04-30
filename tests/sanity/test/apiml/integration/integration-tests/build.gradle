@@ -26,7 +26,6 @@ dependencies {
     compile libraries.json
     compile libraries.jjwt
     compile(project(':apiml-security-common'))
-    compile(project(':zaas-client'))
 
     testCompile libraries.junit
     testCompile libraries.hamcrest
@@ -161,7 +160,6 @@ task runAllIntegrationTestsForZoweTesting(type: Test) {
     group "Integration tests"
     description "Run all integration tests for Zowe testing"
 
-    dependsOn startUpCheck
     systemProperties System.properties
     useJUnitPlatform {
         excludeTags(

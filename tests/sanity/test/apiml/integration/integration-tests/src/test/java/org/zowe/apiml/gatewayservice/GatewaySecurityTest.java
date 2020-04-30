@@ -60,28 +60,6 @@ public class GatewaySecurityTest {
     }
 
     @Test
-    public void loginToGatewayAndAccessProtectedEndpointWithBasicAuthentication() {
-        given()
-            .auth().preemptive().basic(USERNAME, PASSWORD)
-        .when()
-            .get(String.format("%s://%s:%d%s", SCHEME, HOST, PORT, PROTECTED_ENDPOINT))
-        .then()
-            .statusCode(is(SC_OK));
-    }
-
-    @Test
-    public void loginToGatewayAndAccessProtectedEndpointWithCookie() {
-        String token = SecurityUtils.gatewayToken(USERNAME, PASSWORD);
-
-        given()
-            .cookie(COOKIE, token)
-        .when()
-            .get(String.format("%s://%s:%d%s", SCHEME, HOST, PORT, PROTECTED_ENDPOINT))
-        .then()
-            .statusCode(is(SC_OK));
-    }
-
-    @Test
     public void accessProtectedEndpointWithInvalidToken() {
         String invalidToken = "badToken";
 

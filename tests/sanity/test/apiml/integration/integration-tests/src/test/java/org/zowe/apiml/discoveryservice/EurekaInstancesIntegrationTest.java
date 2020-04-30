@@ -18,7 +18,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.zowe.apiml.gatewayservice.SecurityUtils;
-import org.zowe.apiml.util.categories.TestsNotMeantForZowe;
 import org.zowe.apiml.util.config.ConfigReader;
 import org.zowe.apiml.util.config.DiscoveryServiceConfiguration;
 
@@ -135,31 +134,6 @@ public class EurekaInstancesIntegrationTest {
         .then()
             .statusCode(is(HttpStatus.SC_UNAUTHORIZED))
             .header(HttpHeaders.WWW_AUTHENTICATE, containsString(DISCOVERY_REALM));
-    }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void testApplicationInfoEndpoints_whenProvidedBasicAuthentication() throws Exception {
-        RestAssured.useRelaxedHTTPSValidation();
-        given()
-            .auth().basic(username, password)
-        .when()
-            .get(getDiscoveryUriWithPath("/application/beans"))
-        .then()
-            .statusCode(is(HttpStatus.SC_OK));
-    }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void testApplicationInfoEndpoints_whenProvidedToken() throws Exception {
-        RestAssured.useRelaxedHTTPSValidation();
-        String jwtToken = SecurityUtils.gatewayToken(username, password);
-        given()
-            .cookie(COOKIE, jwtToken)
-        .when()
-            .get(getDiscoveryUriWithPath("/application/beans"))
-        .then()
-            .statusCode(is(HttpStatus.SC_OK));
     }
 
     // /discovery endpoints
@@ -315,44 +289,6 @@ public class EurekaInstancesIntegrationTest {
 
         expectedHeaders.forEach((key, value) -> assertThat(responseHeaders, hasEntry(key, value)));
         forbiddenHeaders.forEach(h -> assertThat(responseHeaders, not(hasKey(h))));
-    }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void shouldSeeEurekaReplicasIfRegistered() throws Exception {
-        final int instances = discoveryServiceConfiguration.getInstances();
-        //@formatter:off
-        RestAssured.config = RestAssured.config().sslConfig(getConfiguredSslConfig());
-        String xml =
-            given()
-                .auth().basic(username, password)
-            .when()
-                .get(getDiscoveryUriWithPath("/eureka/status"))
-            .then()
-                .statusCode(is(HttpStatus.SC_OK))
-                .extract().body().asString();
-        //@formatter:on
-
-        xml = xml.replaceAll("com.netflix.eureka.util.StatusInfo", "StatusInfo");
-
-        String availableReplicas = XmlPath.from(xml).getString("StatusInfo.applicationStats.available-replicas");
-        String registeredReplicas = XmlPath.from(xml).getString("StatusInfo.applicationStats.registered-replicas");
-        String unavailableReplicas = XmlPath.from(xml).getString("StatusInfo.applicationStats.unavailable-replicas");
-        List<String> servicesList = Arrays.asList(registeredReplicas.split(","));
-        if (instances == 1) {
-            assertEquals("", registeredReplicas);
-            assertEquals("", availableReplicas);
-            assertEquals("", unavailableReplicas);
-        } else {
-            if (availableReplicas.charAt(availableReplicas.length() - 1) == ',') {
-                availableReplicas = availableReplicas.substring(0, availableReplicas.length() - 1);
-            }
-            assertNotEquals("", registeredReplicas);
-            assertNotEquals("", availableReplicas);
-            assertEquals("", unavailableReplicas);
-            assertEquals(registeredReplicas, availableReplicas);
-            assertEquals(servicesList.size(), instances - 1);
-        }
     }
 
     private URI getDiscoveryUriWithPath(String path) throws Exception {

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.zowe.apiml.security.common.ticket.TicketRequest;
 import org.zowe.apiml.security.common.ticket.TicketResponse;
-import org.zowe.apiml.util.categories.TestsNotMeantForZowe;
 import org.zowe.apiml.util.config.ConfigReader;
 import org.zowe.apiml.util.config.DiscoverableClientConfiguration;
 import org.zowe.apiml.util.config.EnvironmentConfiguration;
@@ -58,117 +57,10 @@ public class PassTicketTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    @Test
-    @TestsNotMeantForZowe
-    public void accessServiceWithCorrectPassTicket() {
-        String jwt = gatewayToken();
-        given()
-            .cookie(GATEWAY_TOKEN_COOKIE_NAME, jwt)
-        .when()
-            .get(
-                String.format("%s://%s:%d%s%s", SCHEME, HOST, PORT, DISCOVERABLECLIENT_PASSTICKET_BASE_PATH, PASSTICKET_TEST_ENDPOINT)
-            )
-        .then()
-            .statusCode(is(SC_OK));
-    }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void accessServiceWithIncorrectApplId() {
-        String jwt = gatewayToken();
-        given()
-            .cookie(GATEWAY_TOKEN_COOKIE_NAME, jwt)
-        .when()
-            .get(String.format("%s://%s:%d%s%s?applId=XBADAPPL",
-                SCHEME, HOST, PORT, DISCOVERABLECLIENT_PASSTICKET_BASE_PATH, PASSTICKET_TEST_ENDPOINT))
-            .then()
-                .statusCode(is(SC_INTERNAL_SERVER_ERROR))
-                .body("message", containsString("Error on evaluation of PassTicket"));
-    }
-
-    //@formatter:off
-    @Test
-    @TestsNotMeantForZowe
-    public void accessServiceWithIncorrectToken() {
-        String jwt = "nonsense";
-        String expectedMessage = "Token is not valid";
-
-        given()
-            .cookie(GATEWAY_TOKEN_COOKIE_NAME, jwt)
-        .when()
-            .get(String.format("%s://%s:%d%s%s", SCHEME, HOST, PORT, DISCOVERABLECLIENT_PASSTICKET_BASE_PATH, PASSTICKET_TEST_ENDPOINT))
-        .then()
-            .statusCode(is(SC_UNAUTHORIZED));
-    }
 
     /*
      * /ticket endpoint tests
      */
-
-    @Test
-    @TestsNotMeantForZowe
-    public void doTicketWithValidCookieAndCertificate() {
-        RestAssured.config = RestAssured.config().sslConfig(getConfiguredSslConfig());
-        String jwt = gatewayToken();
-        log.info(APPLICATION_NAME);
-        TicketRequest ticketRequest = new TicketRequest(APPLICATION_NAME);
-
-        // Generate ticket
-        TicketResponse ticketResponse = given()
-            .contentType(JSON)
-            .body(ticketRequest)
-            .cookie(COOKIE, jwt)
-        .when()
-            .post(String.format("%s://%s:%d%s", SCHEME, HOST, PORT, TICKET_ENDPOINT))
-        .then()
-            .statusCode(is(SC_OK))
-            .extract().body().as(TicketResponse.class);
-
-        assertEquals(jwt, ticketResponse.getToken());
-        assertEquals(USERNAME, ticketResponse.getUserId());
-        assertEquals(APPLICATION_NAME, ticketResponse.getApplicationName());
-
-        // Validate ticket
-        given()
-             .auth().preemptive().basic(USERNAME, ticketResponse.getTicket())
-             .param("appliId", APPLICATION_NAME)
-        .when()
-            .get(String.format("%s://%s:%d%s%s", SCHEME, HOST, PORT, DISCOVERABLECLIENT_BASE_PATH, PASSTICKET_TEST_ENDPOINT))
-        .then()
-            .statusCode(is(SC_OK));
-    }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void doTicketWithValidHeaderAndCertificate() {
-        RestAssured.config = RestAssured.config().sslConfig(getConfiguredSslConfig());
-        String jwt = gatewayToken();
-        TicketRequest ticketRequest = new TicketRequest(APPLICATION_NAME);
-
-        //Generate ticket
-        TicketResponse ticketResponse = given()
-            .contentType(JSON)
-            .body(ticketRequest)
-            .header("Authorization", "Bearer " + jwt)
-        .when()
-            .post(String.format("%s://%s:%d%s", SCHEME, HOST, PORT, TICKET_ENDPOINT))
-        .then()
-            .statusCode(is(SC_OK))
-            .extract().body().as(TicketResponse.class);
-
-        assertEquals(jwt, ticketResponse.getToken());
-        assertEquals(USERNAME, ticketResponse.getUserId());
-        assertEquals(APPLICATION_NAME, ticketResponse.getApplicationName());
-
-        // Validate ticket
-        given()
-            .auth().preemptive().basic(USERNAME, ticketResponse.getTicket())
-            .param("appliId", APPLICATION_NAME)
-        .when()
-            .get(String.format("%s://%s:%d%s%s", SCHEME, HOST, PORT, DISCOVERABLECLIENT_BASE_PATH, PASSTICKET_TEST_ENDPOINT))
-        .then()
-            .statusCode(is(SC_OK));
-    }
 
     @Test
     public void doTicketWithInvalidMethod() {
@@ -272,27 +164,5 @@ public class PassTicketTest {
             .statusCode(is(SC_BAD_REQUEST))
             .body("messages.find { it.messageNumber == 'ZWEAG140E' }.messageContent", equalTo(expectedMessage));
     }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void doTicketWithInvalidApplicationName() {
-        String expectedMessage = "The generation of the PassTicket failed. Reason: Unable to generate PassTicket. Verify that the secured signon (PassTicket) function and application ID is configured properly by referring to Using PassTickets in z/OS Security Server RACF Security Administrator's Guide.";
-
-        RestAssured.config = RestAssured.config().sslConfig(getConfiguredSslConfig());
-        String jwt = gatewayToken();
-        TicketRequest ticketRequest = new TicketRequest(UNKNOWN_APPLID);
-
-        given()
-            .contentType(JSON)
-            .body(ticketRequest)
-            .cookie(COOKIE, jwt)
-        .when()
-            .post(String.format("%s://%s:%d%s", SCHEME, HOST, PORT, TICKET_ENDPOINT))
-        .then()
-            .statusCode(is(SC_BAD_REQUEST))
-            .body("messages.find { it.messageNumber == 'ZWEAG141E' }.messageContent", equalTo(expectedMessage));
-
-    }
-    //@formatter:on
 
 }

@@ -21,7 +21,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.zowe.apiml.util.categories.TestsNotMeantForZowe;
 import org.zowe.apiml.util.config.ConfigReader;
 import org.zowe.apiml.util.config.GatewayServiceConfiguration;
 import org.zowe.apiml.util.http.HttpClientUtils;
@@ -98,46 +97,6 @@ public class ApiCatalogEndpointIntegrationTest {
         assertNotNull(apiCatalogSwagger, definitions.get("APIContainer"));
         assertNotNull(apiCatalogSwagger, definitions.get("APIService"));
         assertNotNull(apiCatalogSwagger, definitions.get("TimeZone"));
-    }
-
-    @Test
-    @TestsNotMeantForZowe
-    public void whenDiscoveryClientApiDoc_thenResponseOK() throws Exception {
-        final HttpResponse response = getResponse(GET_DISCOVERABLE_CLIENT_API_DOC_ENDPOINT, HttpStatus.SC_OK);
-
-        // When
-        final String jsonResponse = EntityUtils.toString(response.getEntity());
-
-        String apiCatalogSwagger = "\n**************************\n" +
-            "Integration Test: Discoverable Client Swagger" +
-            "\n**************************\n" +
-            jsonResponse +
-            "\n**************************\n";
-        DocumentContext jsonContext = JsonPath.parse(jsonResponse);
-
-        LinkedHashMap swaggerInfo = jsonContext.read("$.info");
-        String swaggerHost = jsonContext.read("$.host");
-        String swaggerBasePath = jsonContext.read("$.basePath");
-        LinkedHashMap paths = jsonContext.read("$.paths");
-        LinkedHashMap definitions = jsonContext.read("$.definitions");
-        LinkedHashMap externalDoc = jsonContext.read("$.externalDocs");
-
-        // Then
-        assertTrue(apiCatalogSwagger, swaggerInfo.get("description").toString().contains("API"));
-        assertEquals(apiCatalogSwagger, baseHost, swaggerHost);
-        assertEquals(apiCatalogSwagger, "/api/v1/discoverableclient", swaggerBasePath);
-        assertEquals(apiCatalogSwagger, "External documentation", externalDoc.get("description"));
-
-        assertFalse(apiCatalogSwagger, paths.isEmpty());
-        assertNotNull(apiCatalogSwagger, paths.get("/greeting"));
-
-        assertFalse(apiCatalogSwagger, definitions.isEmpty());
-
-        assertNotNull(apiCatalogSwagger, definitions.get("ApiMessage"));
-        assertNotNull(apiCatalogSwagger, definitions.get("ApiMessageView"));
-        assertNotNull(apiCatalogSwagger, definitions.get("Greeting"));
-        assertNotNull(apiCatalogSwagger, definitions.get("Pet"));
-        assertNotNull(apiCatalogSwagger, definitions.get("RedirectLocation"));
     }
 
     @Test
