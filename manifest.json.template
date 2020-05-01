@@ -91,7 +91,7 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.licenses": {
-      "version": "1.10.0"
+      "version": "1.11.0"
     }
   },
   "sourceDependencies": [{
