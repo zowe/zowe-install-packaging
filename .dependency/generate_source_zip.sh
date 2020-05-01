@@ -97,7 +97,7 @@ for repo in $ZOWE_SOURCE_DEPENDENCIES; do
     echo "[${SCRIPT_NAME}]   - [ERROR] failed to find tag hash, exit with ${EXIT_CODE}"
     exit 1
   fi
-  if [ "$REPO_HASH" == "null" ]; then
+  if [ "$REPO_HASH" = "null" ]; then
     echo "[${SCRIPT_NAME}]   - [ERROR] failed to find tag hash, hash found as null"
     exit 1
   fi
