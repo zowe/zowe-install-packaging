@@ -21,24 +21,52 @@ SCRIPT_NAME=$(basename "$0")
 SCRIPT_PWD=$(cd "$(dirname "$0")" && pwd)
 ROOT_PWD=$(cd "$SCRIPT_PWD" && cd .. && pwd)
 cd "$ROOT_PWD"
-WORK_DIR=tmp/source_zip
+WORK_BRANCH=master
+ZOWE_MANIFEST="https://raw.githubusercontent.com/zowe/zowe-install-packaging/${WORK_BRANCH}/manifest.json.template"
+WORK_DIR=.release
+ZIP_DIR="${WORK_DIR}/source_zip"
+
+################################################################################
+echo "[${SCRIPT_NAME}] check github authentication"
+GITHUB_AUTH_HEADER=
+if [ -n "$GITHUB_TOKEN" ]; then
+  echo "[${SCRIPT_NAME}] - found GITHUB_TOKEN"
+  GITHUB_AUTH_HEADER="-H \"Authorization: token ${GITHUB_TOKEN}\""
+elif [ -n "$GITHUB_USERNAME" -a -n "$GITHUB_PASSWORD" ]; then
+  echo "[${SCRIPT_NAME}] - found GITHUB_USERNAME and GITHUB_PASSWORD"
+  GITHUB_AUTH_HEADER="-u \"${GITHUB_USERNAME}:${GITHUB_PASSWORD}\""
+else
+  echo "[${SCRIPT_NAME}] - [WARNING] no github authentication found, may found error of github api limitation."
+fi
+echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] prepare working directory"
 cd "$ROOT_PWD"
-rm -fr "$WORK_DIR"
-mkdir -p "$WORK_DIR"
+rm -f $WORK_DIR/zowe_sources-*
+rm -fr "$ZIP_DIR"
+mkdir -p "$ZIP_DIR"
 echo
 
 ################################################################################
-ZOWE_VERSION=$(jq -r '.version' manifest.json.template)
+echo "[${SCRIPT_NAME}] download manifest.json"
+curl -s ${GITHUB_AUTH_HEADER} "${ZOWE_MANIFEST}" > "${WORK_DIR}/manifest.json.template"
+if [ -f "${WORK_DIR}/manifest.json.template" ]; then
+  echo "[${SCRIPT_NAME}] - ${WORK_DIR}/manifest.json.template downloaded"
+else
+  echo "[${SCRIPT_NAME}][ERROR] - failed to download ${WORK_DIR}/manifest.json.template"
+  exit 2
+fi
+echo
+
+################################################################################
+ZOWE_VERSION=$(jq -r '.version' "${WORK_DIR}/manifest.json.template")
 echo "[${SCRIPT_NAME}] Zowe version is ${ZOWE_VERSION}"
-rm -f "zowe_sources-${ZOWE_VERSION}.zip"
 echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] write README.md"
-cat > "${WORK_DIR}/README.md" << EOF
+cat > "${ZIP_DIR}/README.md" << EOF
 # Source files for the Zowe project - version ${ZOWE_VERSION}
 
 Included in this zip file are the source files used to build the Zowe ${ZOWE_VERSION} Release.
@@ -57,24 +85,25 @@ echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] download source code"
-ZOWE_SOURCE_DEPENDENCIES=$(jq -r '.sourceDependencies[] | .entries[] | .repository + "," + .tag' manifest.json.template)
+ZOWE_SOURCE_DEPENDENCIES=$(jq -r '.sourceDependencies[] | .entries[] | .repository + "," + .tag' "${WORK_DIR}/manifest.json.template")
 for repo in $ZOWE_SOURCE_DEPENDENCIES; do
   REPO_NAME=$(echo $repo | awk -F, '{print $1}')
   REPO_TAG=$(echo $repo | awk -F, '{print $2}')
   echo "[${SCRIPT_NAME}] - $REPO_NAME $REPO_TAG"
   echo "[${SCRIPT_NAME}]   - checking https://api.github.com/repos/zowe/${REPO_NAME}/git/refs/tags/${REPO_TAG}"
-  REPO_HASH=$(curl -s "https://api.github.com/repos/zowe/${REPO_NAME}/git/refs/tags/${REPO_TAG}" | jq -r '.object.sha')
-  if [ "$?" != "0" ]; then
-    echo "[${SCRIPT_NAME}]   - [ERROR] failed to find tag hash"
+  REPO_HASH=$(curl -s ${GITHUB_AUTH_HEADER} "https://api.github.com/repos/zowe/${REPO_NAME}/git/refs/tags/${REPO_TAG}" | jq -r '.object.sha')
+  EXIT_CODE=$?
+  if [ "$EXIT_CODE" != "0" ]; then
+    echo "[${SCRIPT_NAME}]   - [ERROR] failed to find tag hash, exit with ${EXIT_CODE}"
     exit 1
   fi
   if [ "$REPO_HASH" == "null" ]; then
-    echo "[${SCRIPT_NAME}]   - [ERROR] failed to find tag hash"
+    echo "[${SCRIPT_NAME}]   - [ERROR] failed to find tag hash, hash found as null"
     exit 1
   fi
   echo "[${SCRIPT_NAME}]   - found $REPO_HASH"
   REPO_HASH_SHORT=$(echo $REPO_HASH | cut -c 1-8)
-  curl -s "https://codeload.github.com/zowe/${REPO_NAME}/zip/${REPO_TAG}" --output "${WORK_DIR}/${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip"
+  curl -s "https://codeload.github.com/zowe/${REPO_NAME}/zip/${REPO_TAG}" --output "${ZIP_DIR}/${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip"
   if [ "$?" != "0" ]; then
     echo "[${SCRIPT_NAME}]   - [ERROR] failed to download source."
     exit 1
@@ -87,16 +116,16 @@ echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] source folder prepared:"
-find "${WORK_DIR}" -print
+find "${ZIP_DIR}" -print
 echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] zip source"
-zip -9 -v -D -j "zowe_sources-${ZOWE_VERSION}.zip" $WORK_DIR/*
-if [ -f "zowe_sources-${ZOWE_VERSION}.zip" ]; then
-  echo "[${SCRIPT_NAME}] - zowe_sources-${ZOWE_VERSION}.zip created"
+zip -9 -v -D -j "${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip" $ZIP_DIR/*
+if [ -f "${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip" ]; then
+  echo "[${SCRIPT_NAME}] - ${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip created"
 else
-  echo "[${SCRIPT_NAME}][ERROR] - failed to create zowe_sources-${ZOWE_VERSION}.zip"
+  echo "[${SCRIPT_NAME}][ERROR] - failed to create ${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip"
   exit 2
 fi
 echo
