@@ -20,7 +20,7 @@ Run `npm install` to install dependencies.
 Example command:
 
 ```
-ANSIBLE_HOST=my-server \
+TEST_SERVER=my-server \
   SSH_HOST=test-server-host-name \
   SSH_PORT=22 \
   SSH_USER=********* \

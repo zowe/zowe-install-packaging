@@ -7,13 +7,13 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
 # $1 - should not be bound to a port currently
 PORT=$1
-MATCHES=`onetstat -a | grep -c $PORT`
+MATCHES=`onetstat -P $PORT | grep -c $PORT`
 if [[ $MATCHES > 0 ]]
 then
-    . ${ROOT_DIR}/scripts/utils/error.sh "Port $PORT is already in use by process `netstat -a -P $PORT | grep Listen`"
+    . ${ROOT_DIR}/scripts/utils/error.sh "Port $PORT is already in use by process `onetstat -P $PORT | grep Listen`"
 fi

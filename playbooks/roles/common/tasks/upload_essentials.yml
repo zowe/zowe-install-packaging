@@ -1,0 +1,38 @@
+# ============================================================================
+- name: Check if work_dir_remote has a value
+  fail:
+    msg: work_dir_remote is required
+  when: work_dir_remote is not defined or work_dir_remote is none or work_dir_remote == ''
+
+- name: Check if MD5Checksum.java exists on zOS
+  raw: test -f "{{ work_dir_remote }}/MD5Checksum.java"
+  ignore_errors: True
+  register: zowe_install_md5checksum_exists
+
+- name: Transfer MD5Checksum.java to zOS
+  when: zowe_install_md5checksum_exists is failed
+  block:
+  - name: Copy MD5Checksum.java to local tmp folder
+    copy:
+      src: MD5Checksum.java
+      dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
+    delegate_to: localhost
+
+  - import_role:
+      name: common
+      tasks_from: upload_file
+    vars:
+      filename_to_upload: MD5Checksum.java
+      file_upload_method: scp
+      file_upload_hashcheck: false
+
+  - name: Add executive permission to MD5Checksum.java
+    raw: chmod a+x "{{ work_dir_remote }}/MD5Checksum.java"
+
+- name: Compile MD5Checksum.java
+  raw: >-
+    touch {{ zos_uss_user_profile }} && \
+    . {{ zos_uss_user_profile }} \
+    {{ zowe_environment_variable_overrides | default('') }} && \
+    cd "{{ work_dir_remote }}" && \
+    javac MD5Checksum.java
