@@ -31,7 +31,7 @@ const PRE_INSTALLED_APPS = [
   'USS Explorer',
   'TN3270',
   'VT Terminal',
-  // 'User Tasks/Workflows',
+  'User Tasks/Workflows',
   // 'IFrame',
   // 'ZOS Subsystems',
   'API Catalog',
