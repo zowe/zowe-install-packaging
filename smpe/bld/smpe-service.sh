@@ -893,7 +893,7 @@ SED="$SED;s/#ptf1/$sysmod1/"
 SED="$SED;s/#fmid/$FMID/"
 SED="$SED;s/#rework/$julian7 ($yyyymmdd)/"
 SED="$SED;s/#vrm/$VERSION/"
-SED="$SED;s/#branch/$BRANCH (build $BUILD)/"
+SED="$SED;s%#branch%$BRANCH (build $BUILD)%"
 SED="$SED;s/#req/$coreq/"
 _sed $log/$html
 
