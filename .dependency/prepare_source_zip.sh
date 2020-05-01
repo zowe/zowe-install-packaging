@@ -38,7 +38,7 @@ elif [ -n "$GITHUB_USERNAME" -a -n "$GITHUB_PASSWORD" ]; then
 else
   echo "[${SCRIPT_NAME}] - [WARNING] no github authentication found, may found error of github api limitation."
 fi
-curl $GITHUB_AUTH_HEADER https://api.github.com/rate_limit
+/bin/sh -c "curl -s $GITHUB_AUTH_HEADER https://api.github.com/rate_limit"
 echo
 
 ################################################################################
@@ -51,7 +51,7 @@ echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] download manifest.json"
-curl -s ${GITHUB_AUTH_HEADER} "${ZOWE_MANIFEST}" > "${WORK_DIR}/manifest.json.template"
+/bin/sh -c "curl -s ${GITHUB_AUTH_HEADER} \"${ZOWE_MANIFEST}\"" > "${WORK_DIR}/manifest.json.template"
 if [ -f "${WORK_DIR}/manifest.json.template" ]; then
   echo "[${SCRIPT_NAME}] - ${WORK_DIR}/manifest.json.template downloaded"
 else
@@ -92,7 +92,7 @@ for repo in $ZOWE_SOURCE_DEPENDENCIES; do
   REPO_TAG=$(echo $repo | awk -F, '{print $2}')
   echo "[${SCRIPT_NAME}] - $REPO_NAME $REPO_TAG"
   echo "[${SCRIPT_NAME}]   - checking https://api.github.com/repos/zowe/${REPO_NAME}/git/refs/tags/${REPO_TAG}"
-  REPO_HASH=$(curl -s ${GITHUB_AUTH_HEADER} "https://api.github.com/repos/zowe/${REPO_NAME}/git/refs/tags/${REPO_TAG}" | jq -r '.object.sha')
+  REPO_HASH=$(/bin/sh -c "curl -s ${GITHUB_AUTH_HEADER} \"https://api.github.com/repos/zowe/${REPO_NAME}/git/refs/tags/${REPO_TAG}\"" | jq -r '.object.sha')
   EXIT_CODE=$?
   if [ "$EXIT_CODE" != "0" ]; then
     echo "[${SCRIPT_NAME}]   - [ERROR] failed to find tag hash, exit with ${EXIT_CODE}"
@@ -104,7 +104,7 @@ for repo in $ZOWE_SOURCE_DEPENDENCIES; do
   fi
   echo "[${SCRIPT_NAME}]   - found $REPO_HASH"
   REPO_HASH_SHORT=$(echo $REPO_HASH | cut -c 1-8)
-  curl -s "https://codeload.github.com/zowe/${REPO_NAME}/zip/${REPO_TAG}" --output "${ZIP_DIR}/zowe-${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip"
+  /bin/sh -c "curl -s ${GITHUB_AUTH_HEADER} \"https://codeload.github.com/zowe/${REPO_NAME}/zip/${REPO_TAG}\" --output \"${ZIP_DIR}/zowe-${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip\""
   if [ "$?" != "0" ]; then
     echo "[${SCRIPT_NAME}]   - [ERROR] failed to download source."
     exit 1
