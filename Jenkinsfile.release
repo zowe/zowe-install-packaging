@@ -351,9 +351,6 @@ node('ibm-jenkins-slave-nvm') {
     isSkippable   : true,
     stage         : {
       sh './.dependency/generate_source_zip.sh'
-
-      // move to .release folder
-      sh 'mv zowe_sources-*.zip .release'
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
@@ -553,7 +550,7 @@ echo ===============================================
       gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
     },
     timeout: [time: 10, unit: 'MINUTES']
-  }
+  )
 
   pipeline.createStage(
     name          : "Message",
