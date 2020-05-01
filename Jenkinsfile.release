@@ -347,6 +347,18 @@ node('ibm-jenkins-slave-nvm') {
   )
 
   pipeline.createStage(
+    name          : "Generate Source Build",
+    isSkippable   : true,
+    stage         : {
+      sh './.dependency/generate_source_zip.sh'
+
+      // move to .release folder
+      sh 'mv zowe_sources-*.zip .release'
+    },
+    timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
     name          : "Promote",
     isSkippable   : true,
     stage         : {
@@ -419,6 +431,12 @@ echo ===============================================
     stage         : {
       def signing = lib.package.Signing.new(this)
       def uploadArtifacts = readJSON(text:'{"files":[]}')
+
+      // pload zowe_sources
+      uploadArtifacts['files'].push([
+        "pattern" : '.release/zowe_sources-*.zip',
+        "target"  : releaseFilePath + '/'
+      ])
 
       releaseArtifacts.each { artifact, info ->
         echo ">>> Signing ${info['target']} ..."
