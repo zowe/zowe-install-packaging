@@ -539,7 +539,7 @@ echo ===============================================
           "\"target\":\"${pathPromotePtfTmp}/smpe-promote.tar\",",
           "\"flat\":true",
           "}]",
-        ].join("")
+        ].join(""),
         'expected'    : 1
       ])
 
