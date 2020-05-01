@@ -10,6 +10,9 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+export UTILS_DIR=$(cd $(dirname $0);pwd)
+. ${UTILS_DIR}/file-utils.sh
+
 set_install_log_file_from_full_path() {
   export LOG_FILE=$1
   touch ${LOG_FILE}
@@ -36,8 +39,7 @@ get_install_log_directory() {
     fi
   fi
 
-  # If the value starts with a ~ for the home variable then evaluate it
-  INSTALL_LOG_DIR=`sh -c "echo $INSTALL_LOG_DIR"`
+  get_full_path "${INSTALL_LOG_DIR}" INSTALL_LOG_DIR
 
   if { [[ ! -d "${INSTALL_LOG_DIR}" ]] || [[ ! -r "${INSTALL_LOG_DIR}" ]] }
   then	
@@ -59,16 +61,8 @@ set_install_log_directory() {
     else
       LOG_DIRECTORY="~/zowe/logs"
     fi
-  else
-    # If the path is relative, then expand it
-    if [[ "$LOG_DIRECTORY" != /* ]]
-    then
-      LOG_DIRECTORY=$PWD/$LOG_DIRECTORY
-    fi
   fi
-
-  # If the value starts with a ~ for the home variable then evaluate it
-  LOG_DIRECTORY=`sh -c "echo $LOG_DIRECTORY"`
+  get_full_path "${LOG_DIRECTORY}" LOG_DIRECTORY
 
   if ! mkdir -p ${LOG_DIRECTORY}
   then
@@ -81,4 +75,15 @@ set_install_log_directory() {
   fi
 
   export LOG_DIRECTORY
+}
+
+validate_log_file_not_in_root_dir() {
+  LOG_DIR=$1
+  ROOT_DIR=$2
+  validate_file_not_in_directory "${LOG_DIR}" "${ROOT_DIR}"
+  if [[ $? -ne 0 ]]
+  then
+    echo "It looks like the log directory chosen ${LOG_DIR} was within the zowe runtime install directory ${ROOT_DIR}. The install directory is designed to be read only. Please re-run with the additional parameter '-l <log_dir>' specifying a writable log_dir outside of the install directory"
+    exit 1
+  fi
 }

@@ -58,10 +58,12 @@ chmod a+rwx $TEMP_DIR
 . ${INSTALL_DIR}/bin/utils/setup-log-dir.sh
 if [[ -z "${LOG_FILE}" ]]
 then
-  set_install_log_directory ${LOG_DIRECTORY}
+  set_install_log_directory "${LOG_DIRECTORY}"
+  validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
   set_install_log_file "zowe-install"
 else
-  set_install_log_file_from_full_path $LOG_FILE
+  set_install_log_file_from_full_path "${LOG_FILE}"
+  validate_log_file_not_in_root_dir "${LOG_FILE}" "${ZOWE_ROOT_DIR}"
 fi
 
 if [ -z "$ZOWE_VERSION" ]; then
