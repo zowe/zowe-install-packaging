@@ -120,16 +120,5 @@ find "${ZIP_DIR}" -print
 echo
 
 ################################################################################
-echo "[${SCRIPT_NAME}] zip source"
-zip -9 -v -D -j "${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip" $ZIP_DIR/*
-if [ -f "${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip" ]; then
-  echo "[${SCRIPT_NAME}] - ${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip created"
-else
-  echo "[${SCRIPT_NAME}][ERROR] - failed to create ${WORK_DIR}/zowe_sources-${ZOWE_VERSION}.zip"
-  exit 2
-fi
-echo
-
-################################################################################
 echo "[${SCRIPT_NAME}] done."
 exit 0

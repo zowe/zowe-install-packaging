@@ -350,7 +350,18 @@ node('ibm-jenkins-slave-nvm') {
     name          : "Generate Source Build",
     isSkippable   : true,
     stage         : {
-      sh './.dependency/generate_source_zip.sh'
+      // files should be downloaded to .release/source_zip
+      withCredentials([
+        usernamePassword(
+          credentialsId: lib.Constants.DEFAULT_GITHUB_ROBOT_CREDENTIAL,
+          passwordVariable: 'GITHUB_PASSWORD',
+          usernameVariable: 'GITHUB_USERNAME'
+        )
+      ]) {
+        sh './.dependency/prepare_source_zip.sh'
+      }
+      // zip files
+      zip dir: '.release/source_zip', glob: '', zipFile: ".release/zowe_sources-${params.ZOWE_RELEASE_VERSION}.zip"
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
