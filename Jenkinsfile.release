@@ -124,7 +124,7 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.build(
     name          : "Validate",
     timeout       : [time: 5, unit: 'MINUTES'],
-    isSkippable   : false,
+    isSkippable   : true,
     operation     : {
       if (!params.ZOWE_BUILD_NAME) {
         error "ZOWE_BUILD_NAME is required to promote build."
