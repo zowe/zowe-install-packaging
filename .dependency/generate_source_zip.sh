@@ -103,12 +103,12 @@ for repo in $ZOWE_SOURCE_DEPENDENCIES; do
   fi
   echo "[${SCRIPT_NAME}]   - found $REPO_HASH"
   REPO_HASH_SHORT=$(echo $REPO_HASH | cut -c 1-8)
-  curl -s "https://codeload.github.com/zowe/${REPO_NAME}/zip/${REPO_TAG}" --output "${ZIP_DIR}/${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip"
+  curl -s "https://codeload.github.com/zowe/${REPO_NAME}/zip/${REPO_TAG}" --output "${ZIP_DIR}/zowe-${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip"
   if [ "$?" != "0" ]; then
     echo "[${SCRIPT_NAME}]   - [ERROR] failed to download source."
     exit 1
   else
-    echo "[${SCRIPT_NAME}]   - ${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip downloaded"
+    echo "[${SCRIPT_NAME}]   - zowe-${REPO_NAME}-${REPO_TAG}-${REPO_HASH_SHORT}.zip downloaded"
   fi
   sleep 2
 done
