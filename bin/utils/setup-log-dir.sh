@@ -10,8 +10,11 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-export UTILS_DIR=$(cd $(dirname $0);pwd)
-. ${UTILS_DIR}/file-utils.sh
+# Try and source the file utils if it exists
+if [[ -f "${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh" ]]
+then
+. ${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh
+fi
 
 set_install_log_file_from_full_path() {
   export LOG_FILE=$1

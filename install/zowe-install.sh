@@ -56,6 +56,7 @@ mkdir -p $TEMP_DIR
 chmod a+rwx $TEMP_DIR 
 
 . ${INSTALL_DIR}/bin/utils/setup-log-dir.sh
+. ${INSTALL_DIR}/bin/utils/file-utils.sh #source this here as setup-log-dir can't get it from root as it isn't install yet
 if [[ -z "${LOG_FILE}" ]]
 then
   set_install_log_directory "${LOG_DIRECTORY}"
