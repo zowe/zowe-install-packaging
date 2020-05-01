@@ -240,7 +240,7 @@ EOF
 echo "Created ${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh">> $LOG_FILE
 
 #Init app-server config so that it is owned by the person who ran this, not some stc
-cd ${ROOT_DIR}/components/app-server/share/zlux-app-server/lib
+cd ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/lib
 NODE_BIN=${NODE_HOME}/bin/node
 nodeVersion="$(${NODE_BIN} --version)"
 nodeMajorVersion=$(echo ${nodeVersion} | cut -c2-3)
@@ -250,7 +250,7 @@ then
   export _TAG_REDIR_IN=txt
   export _TAG_REDIR_OUT=txt
 fi
-PATH=${NODE_HOME}/bin:$PATH NODE_PATH=../..:../../zlux-server-framework/node_modules:$NODE_PATH __UNTAGGED_READ_MODE=V6 ${NODE_BIN} initInstance.js
+INSTANCE_DIR=${INSTANCE_DIR} PATH=${NODE_HOME}/bin:$PATH NODE_PATH=../..:../../zlux-server-framework/node_modules:$NODE_PATH __UNTAGGED_READ_MODE=V6 ${NODE_BIN} initInstance.js
 
 # Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
 # If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
