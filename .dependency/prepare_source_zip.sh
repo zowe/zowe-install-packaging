@@ -27,7 +27,7 @@ WORK_DIR=.release
 ZIP_DIR="${WORK_DIR}/source_zip"
 
 ################################################################################
-echo "[${SCRIPT_NAME}] check github authentication"
+echo "[${SCRIPT_NAME}] check github authentication and rate limit"
 GITHUB_AUTH_HEADER=
 if [ -n "$GITHUB_TOKEN" ]; then
   echo "[${SCRIPT_NAME}] - found GITHUB_TOKEN"
@@ -38,6 +38,7 @@ elif [ -n "$GITHUB_USERNAME" -a -n "$GITHUB_PASSWORD" ]; then
 else
   echo "[${SCRIPT_NAME}] - [WARNING] no github authentication found, may found error of github api limitation."
 fi
+curl $GITHUB_AUTH_HEADER https://api.github.com/rate_limit
 echo
 
 ################################################################################
