@@ -543,6 +543,13 @@ echo ===============================================
       ])
 
       // download smpe-promote zip
+      echo [
+          "[{",
+          "\"pattern\":\"${smpePtfPromoteTarPath}\",",
+          "\"target\":\"${pathPromotePtfTmp}/smpe-promote.tar\",",
+          "\"flat\":true",
+          "}]",
+        ].join("")
       pipeline.artifactory.download([
         'specContent' : [
           "[{",
