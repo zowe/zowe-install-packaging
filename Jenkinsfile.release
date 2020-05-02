@@ -570,7 +570,7 @@ echo ===============================================
       // show change status
       echo gitPromotePtf.command('git status')
       // commit all changes
-      gitPromotePtf.commit()
+      gitPromotePtf.commit("Promote PTF after release v${params.ZOWE_RELEASE_VERSION}")
       // push before creating PR
       gitPromotePtf.push()
 
