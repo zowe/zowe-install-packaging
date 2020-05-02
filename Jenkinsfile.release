@@ -569,7 +569,8 @@ echo ===============================================
 
       // show change status
       echo gitPromotePtf.command('git status')
-
+      // commit all changes
+      gitPromotePtf.commit()
       // push before creating PR
       gitPromotePtf.push()
 
