@@ -570,6 +570,9 @@ echo ===============================================
       // show change status
       echo gitPromotePtf.command('git status')
 
+      // push before creating PR
+      gitPromotePtf.push()
+
       // create PR
       gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
     },
