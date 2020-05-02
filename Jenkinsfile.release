@@ -560,7 +560,7 @@ echo ===============================================
       // run smpe-promote.sh
       def pwd = sh(script: 'pwd', returnStdout: true).trim()
       dir(pathPromotePtfGit) {
-        sh "../smpe/bld/smpe-promote.sh -d -g -p \"$(pwd)/${pathPromotePtfTmp}/smpe-promote.tar\""
+        sh "../smpe/bld/smpe-promote.sh -d -g -p \"${pwd}/${pathPromotePtfTmp}/smpe-promote.tar\""
       }
 
       // show change status
