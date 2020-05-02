@@ -571,7 +571,7 @@ echo ===============================================
       echo gitPromotePtf.command('git status')
 
       // create PR
-      // gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
+      gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
