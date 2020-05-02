@@ -562,7 +562,7 @@ echo ===============================================
       dir("${pathPromotePtfGit}/smpe/bld") {
         // use current branch version smpe-promote.sh
         sh "cp smpe-promote.sh smpe-promote.sh.bak && cp \"${pwd}/smpe/bld/smpe-promote.sh\" ."
-        sh "./smpe-promote.sh -d -g -p \"${pwd}/${pathPromotePtfTmp}/smpe-promote.tar\""
+        sh "./smpe-promote.sh -d -p \"${pwd}/${pathPromotePtfTmp}/smpe-promote.tar\""
         sh "mv smpe-promote.sh.bak smpe-promote.sh"
         // revert smpe-promote.sh, don't commit in this PR
       }
