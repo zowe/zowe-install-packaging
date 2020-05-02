@@ -543,7 +543,7 @@ echo ===============================================
       ])
 
       // show change status
-      gitPromotePtf.command("git check -b users/robot/promote-ptf-from-${currentBuild.number}")
+      gitPromotePtf.command("git checkout -b users/robot/promote-ptf-from-${currentBuild.number}")
 
       // download smpe-promote zip
       pipeline.artifactory.download([
