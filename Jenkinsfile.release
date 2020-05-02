@@ -523,12 +523,9 @@ echo ===============================================
     name          : "Promote PTF",
     isSkippable   : true,
     shouldExecute : {
-      return true
-      // return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision'] && smpePtfPromoteTarPath
+      return isFormalRelease && releaseArtifacts['zowe'] && releaseArtifacts['zowe']['revision'] && smpePtfPromoteTarPath
     },
     stage         : {
-      smpePtfPromoteTarPath = 'libs-snapshot-local/org/zowe/1.11.0-SNAPSHOT/smpe-promote-1.11.0-snapshot-807-20200501195808.tar'
-
       def gitPromotePtf = lib.scm.GitHub.new(this)
       def pathPromotePtfGit = '.promote-ptf'
       def pathPromotePtfTmp = '.tmp-promote-ptf'
