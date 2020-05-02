@@ -558,13 +558,15 @@ echo ===============================================
       ])
 
       // run smpe-promote.sh
-      sh "./${pathPromotePtfGit}/smpe/bld/smpe-promote.sh -d -g -p \"\$(pwd)/${pathPromotePtfTmp}/smpe-promote.tar\""
+      dir(pathPromotePtfGit) {
+        sh "../smpe/bld/smpe-promote.sh -d -g -p \"\$(pwd)/${pathPromotePtfTmp}/smpe-promote.tar\""
+      }
 
       // show change status
       gitPromotePtf.command('git status')
 
       // create PR
-      gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
+      // gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
     },
     timeout: [time: 10, unit: 'MINUTES']
   )

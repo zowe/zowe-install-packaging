@@ -112,7 +112,7 @@ echo " "
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
-function main      # dummy function to simplify program flow parsing
+main()      # dummy function to simplify program flow parsing
 {
   echo
 }
