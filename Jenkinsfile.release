@@ -575,7 +575,8 @@ echo ===============================================
       gitPromotePtf.push()
 
       // create PR
-      gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
+      def pullRequestId = gitPromotePtf.createPullRequest('staging', 'Automatically Promote PTF after release by zowe robot')
+      echo "Pull request #${pullRequestId} is created."
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
