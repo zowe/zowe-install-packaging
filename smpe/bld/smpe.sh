@@ -230,7 +230,7 @@ chmod +x  $utilsDir/zowe-checksum-runtime.sh
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
 # save checksums
 cp   $utilsDir/hash/RefRuntimeHash.txt $ROOT/.. # for publication
-cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication
+cp   $utilsDir/HashFiles.class         $ROOT/.. # for publication
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
