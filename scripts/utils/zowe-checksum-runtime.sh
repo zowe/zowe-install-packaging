@@ -51,7 +51,7 @@ EndOfUsage
 exit
 fi
 
-cd $hashPath
+cd $hashPath/..
 javac HashFiles.java 
 cd $runtimePath
 
@@ -60,14 +60,14 @@ find . -name ./SMPE -prune \
     -o -name "./ZWE*" -prune \
     -o -type f -print > $hashPath/files.in # exclude SMPE
 # create the main set of hash files
-java -cp $hashPath HashFiles $hashPath/files.in > $hashPath/RefRuntimeHash.txt
+java -cp $hashPath/.. HashFiles $hashPath/files.in > $hashPath/RefRuntimeHash.txt
 echo RefRuntimeHash RC=$?
 
-# create the single hash of those hash files     
-cd $hashPath
-echo RefRuntimeHash.txt > files.in
-java HashFiles files.in > RefRuntimeHashHash.txt
-echo RefRuntimeHashHash RC=$?
+# # create the single hash of those hash files     
+# cd $hashPath
+# echo RefRuntimeHash.txt > files.in
+# java HashFiles files.in > RefRuntimeHashHash.txt
+# echo RefRuntimeHashHash RC=$?
 
 # Publish via Jenkinsfile:
 
