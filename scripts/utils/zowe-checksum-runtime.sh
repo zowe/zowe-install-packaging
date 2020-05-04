@@ -63,7 +63,7 @@ find . -name ./SMPE -prune \
     -o -type f -print > $hashPath/files.in # exclude SMPE
 # create the main set of hash files
 java -cp $hashPath/.. HashFiles $hashPath/files.in > $hashPath/RefRuntimeHash.txt
-echo RefRuntimeHash RC=$?
+echo HashFiles RC=$?
 
 # # create the single hash of those hash files     
 # cd $hashPath
@@ -81,4 +81,4 @@ echo RefRuntimeHash RC=$?
 #     ]
 #   )
 
-rm files.in
+rm $hashPath/files.in
