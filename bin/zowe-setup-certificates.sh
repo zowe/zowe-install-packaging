@@ -148,7 +148,7 @@ echo "Creating certificates and keystores... DONE"
 JWT_ALIAS="jwtsecret"
 APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
-if [[ "${SETUP_APIML_SSO}" == "true" ]]; then
+if [[ -z "${PKCS11_TOKEN_NAME}" ]] && [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   if [[ -f ${APIML_PUBLIC_KEY} ]]
   then
     chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
