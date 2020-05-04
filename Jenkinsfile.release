@@ -528,7 +528,7 @@ echo ===============================================
     stage         : {
       def gitPromotePtf = lib.scm.GitHub.new(this)
       def pathPromotePtfGit = '.promote-ptf'
-      def pathPromotePtfTmp = '.tmp-promote-ptf'
+      def pathPromotePtfTmp = '.release/promote-ptf'
 
       // clone staging branch
       gitPromotePtf.cloneRepository([
