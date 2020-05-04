@@ -215,6 +215,14 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # result (final): $mvsI                           # MVS & MVS SMPE data
 # result (final): $ussI                                 # USS SMPE data
 
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+echo ROOT = $ROOT
+ls $ROOT
+# Generate reference hash keys of runtime files
+mkdir $here/content/*/scripts/utils/hash
+$here/content/*/scripts/utils/zowe-checksum-runtime.sh $ROOT $here/content/*/scripts/utils/hash
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
 # split installed product in smaller chunks and pax them
 opts="-i $input"                                   # add reference file
 _stopAt smpe-split.sh $debug -c $YAML $opts
