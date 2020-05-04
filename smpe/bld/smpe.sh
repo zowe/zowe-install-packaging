@@ -220,7 +220,7 @@ echo ROOT = $ROOT
 zoweVRM=`ls $ROOT/../content`
 echo VRM = $zoweVRM
 echo "-- JAD input: scripts/utils directory"
-utilsDir=$ROOT/../content/zoweVRM/scripts/utils
+utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
 ls                $utilsDir
 echo "-- JAD output: installed runtime directory"
 stageDir=$ROOT/stage
