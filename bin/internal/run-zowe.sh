@@ -13,12 +13,7 @@
 checkForErrorsFound() {
   if [[ $ERRORS_FOUND > 0 ]]
   then
-    # if -v passed in any validation failures abort
-    if [[ ! -z "$VALIDATE_ABORTS" ]]
-    then
-      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
-      exit $ERRORS_FOUND
-    fi
+      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
   fi
 }
 
@@ -26,8 +21,6 @@ checkForErrorsFound() {
 while getopts "c:v" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
-    v)
-      VALIDATE_ABORTS=1;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -138,6 +131,12 @@ do
 done
 
 checkForErrorsFound
+
+if [[ "${VALIDATE_ONLY}" == "true" ]]
+then
+  echo "Validation complete - VALIDATE_ONLY mode set to true, so Zowe will not start."
+  exit $ERRORS_FOUND
+fi
 
 mkdir -p ${WORKSPACE_DIR}/backups
 # Make accessible to group so owning user can edit?
