@@ -30,14 +30,6 @@
       "ipAddresses": ["127.0.0.1"],
       //to be a replacement for zssPort
       "port": 8542
-    },
-     "jwt": {
-      "enabled": true,
-      "fallback": false,
-      "key": {
-        "token": "TOKEN.NAME",
-        "label": "KEY_LABEL"
-      }
     }
   },
   //Zowe cross memory server name
