@@ -41,7 +41,7 @@ get_install_log_directory() {
 
   if { [[ ! -d "${INSTALL_LOG_DIR}" ]] || [[ ! -r "${INSTALL_LOG_DIR}" ]] }
   then	
-    echo "The directory ${INSTALL_LOG_DIR} was not readable. Please use call the script with the additional parameter '-l <log_dir>' specifying the directory that the install logs were created in"
+    echo "The directory ${INSTALL_LOG_DIR} was not readable. Please use call the script with the additional parameter '-l <log_dir>' specifying the directory that the install and setup log(s) were created in"
     exit 1
   fi
   export INSTALL_LOG_DIR
