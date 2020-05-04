@@ -13,7 +13,7 @@ const debug = require('debug')('zowe-sanity-test:install:installed-utils');
 const SSH = require('node-ssh');
 const ssh = new SSH();
 
-describe.only('verify installed utils', function() {
+describe('verify installed utils', function() {
   before('prepare SSH connection', function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
