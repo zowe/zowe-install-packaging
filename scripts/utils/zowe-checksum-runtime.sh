@@ -1,4 +1,3 @@
-
 #!/bin/sh
 #######################################################################
 # This program and the accompanying materials are made available
@@ -50,6 +49,9 @@ $SCRIPT runtimePath hashPath
 EndOfUsage
 exit
 fi
+
+runtimePath=$1
+hashPath=$2
 
 cd $hashPath/..
 javac HashFiles.java 

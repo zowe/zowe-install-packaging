@@ -221,14 +221,15 @@ zoweVRM=`ls $ROOT/../content`
 echo VRM = $zoweVRM
 echo "-- JAD input: scripts/utils directory"
 utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
-ls                $utilsDir
+ls       $utilsDir
 echo "-- JAD output: installed runtime directory"
 stageDir=$ROOT/stage
-ls                 $stageDir
+ls       $stageDir
 
 # Generate reference hash keys of runtime files
 
 mkdir $utilsDir/hash # create work directory
+chmod +wx $utilsDir/hash
 chmod +x $utilsDir/zowe-checksum-runtime.sh
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
 echo RefRuntimeHash.txt
