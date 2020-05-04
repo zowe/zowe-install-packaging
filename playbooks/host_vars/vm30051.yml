@@ -1,0 +1,10 @@
+---
+ansible_ssh_host: vm30051.svl.ibm.com
+ansible_user:
+ansible_password:
+
+################################################################################
+# variables for zowe uninstallation and installation
+zowe_smpe_volser: V30512
+zowe_external_domain_name: vm30051.svl.ibm.com
+zowe_external_ip_address: 9.30.243.191
