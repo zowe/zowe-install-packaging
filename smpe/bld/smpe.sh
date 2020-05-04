@@ -216,26 +216,21 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # result (final): $ussI                                 # USS SMPE data
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-echo ROOT = $ROOT
-zoweVRM=`ls $ROOT/../content`
-echo VRM = $zoweVRM
-echo "-- JAD input: scripts/utils directory"
-utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
-ls       $utilsDir
-echo "-- JAD output: installed runtime directory"
-stageDir=$ROOT/stage
-ls       $stageDir
-
 # Generate reference hash keys of runtime files
 
+# The scripts to do this are in the scripts/utils directory
+zoweVRM=`ls $ROOT/../content`
+utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
+# The hash is calculated on the installed runtime directory created by smpe-install.sh above
+stageDir=$ROOT/stage
 mkdir $utilsDir/hash # create work directory
 chmod +wx $utilsDir/hash
-chmod +x $utilsDir/zowe-checksum-runtime.sh
+chmod +x  $utilsDir/zowe-checksum-runtime.sh
+# calculate the checksums of stageDir
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
-echo head of RefRuntimeHash.txt
-head $utilsDir/hash/RefRuntimeHash.txt
+# save checksums
 cp   $utilsDir/hash/RefRuntimeHash.txt $ROOT/.. # for publication
-echo 
+cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
