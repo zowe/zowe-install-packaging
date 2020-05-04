@@ -217,14 +217,20 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 echo ROOT = $ROOT
-echo -- JAD input 
-ls $ROOT/..
-ls $ROOT/../content/*/scripts/utils
-echo -- JAD output
-ls $ROOT/stage 
+zoweVRM=`ls $ROOT/../content`
+echo VRM = $zoweVRM
+echo "-- JAD input: scripts/utils directory"
+utilsDir=$ROOT/../content/zoweVRM/scripts/utils
+ls                $utilsDir
+echo "-- JAD output: installed runtime directory"
+stageDir=$ROOT/stage
+ls                 $stageDir
+
 # Generate reference hash keys of runtime files
-mkdir $ROOT/../content/*/scripts/utils/hash
-$ROOT/../content/*/scripts/utils/zowe-checksum-runtime.sh $ROOT/stage $ROOT/../content/*/scripts/utils/hash
+
+mkdir $utilsDir/hash # create work directory
+chmod +x $utilsDir/zowe-checksum-runtime.sh
+$utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
