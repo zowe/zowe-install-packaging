@@ -232,8 +232,9 @@ mkdir $utilsDir/hash # create work directory
 chmod +wx $utilsDir/hash
 chmod +x $utilsDir/zowe-checksum-runtime.sh
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
-echo RefRuntimeHash.txt
+echo head of RefRuntimeHash.txt
 head $utilsDir/hash/RefRuntimeHash.txt
+cp   $utilsDir/hash/RefRuntimeHash.txt $ROOT/.. # for publication
 echo 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
