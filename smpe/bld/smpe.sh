@@ -218,12 +218,13 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 echo ROOT = $ROOT
 echo -- JAD input 
-ls $ROOT/../scripts
+ls $ROOT/..
+ls $ROOT/../content/*/scripts/utils
 echo -- JAD output
 ls $ROOT/stage 
 # Generate reference hash keys of runtime files
-mkdir $ROOT/../scripts/utils/hash
-$ROOT/../scripts/utils/zowe-checksum-runtime.sh $ROOT/stage $ROOT/../scripts/utils/hash
+mkdir $ROOT/../content/*/scripts/utils/hash
+$ROOT/../content/*/scripts/utils/zowe-checksum-runtime.sh $ROOT/stage $ROOT/../content/*/scripts/utils/hash
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
