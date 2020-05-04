@@ -231,6 +231,9 @@ ls                 $stageDir
 mkdir $utilsDir/hash # create work directory
 chmod +x $utilsDir/zowe-checksum-runtime.sh
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
+echo RefRuntimeHash.txt
+head $utilsDir/hash/RefRuntimeHash.txt
+echo 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
