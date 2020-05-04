@@ -62,8 +62,28 @@ node('ibm-jenkins-slave-dind') {
       test_files: 'dist/__tests__/basic/install-ptf.js',
     ],
     'bundle: multiple node versions': [
-      test_files: 'dist/__tests__/extented/node-versions/',
+      test_files: 'dist/__tests__/extended/node-versions/',
       jenkins_primary_lock: 'marist',
+    ],
+    'bundle: convenience build on multiple security systems': [
+      test_files: 'dist/__tests__/extended/security-systems/convenience/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
+    ],
+    'bundle: smpe fmid on multiple security systems': [
+      test_files: 'dist/__tests__/extended/security-systems/fmid/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
+    ],
+    'bundle: smpe ptf on multiple security systems': [
+      test_files: 'dist/__tests__/extended/security-systems/ptf/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
+    ],
+    'bundle: all extended tests': [
+      test_files: 'dist/__tests__/extended/',
+      jenkins_primary_lock: 'marist',
+      jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
   ]
 
@@ -90,7 +110,7 @@ node('ibm-jenkins-slave-dind') {
     choice(
       name: 'TEST_SCOPE',
       choices: TEST_SCOPES.keySet().collect(),
-      description: 'Choose scope of test',
+      description: 'Choose scope of test. PLEASE NOTE: a test scope bundle usually ignores the value of TEST_SERVER.',
       trim: true
     ),
     // >>>>>>>> parameters of artifactory
@@ -123,7 +143,7 @@ node('ibm-jenkins-slave-dind') {
     // >>>>>>>> parametters for test cases
     choice(
       name: 'NODE_VERSION',
-      choices: ['v8.16.0', 'v6.17.0', 'v8.16.2', 'v8.17.0', 'v12.13.0', 'v12.14.1'],
+      choices: ['v8.16.0', 'v6.17.0', 'v8.16.2', 'v8.17.0', 'v12.13.0', 'v12.14.1', 'v12.16.1'],
       description: 'This option is only valid for Marist server. The installation will set NODE_HOME to /ZOWE/node/node-{{version}}-os390-s390x.',
       trim: true
     ),
@@ -154,6 +174,8 @@ node('ibm-jenkins-slave-dind') {
         }
       }
 
+      // Use zowe artifactory	
+      sh "npm config set registry https://zowe.jfrog.io/zowe/api/npm/npm-release/"
       // upgrade npm
       sh 'npm install -g npm'
 

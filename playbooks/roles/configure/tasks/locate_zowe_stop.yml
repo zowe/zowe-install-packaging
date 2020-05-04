@@ -1,0 +1,48 @@
+---
+# This task finds the zowe-stop.sh in known folders
+
+# Variables:
+# - zowe_instance_dir
+# - zowe_root_dir
+# Output:
+# - zowe_stop_path
+
+# validate variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_root_dir
+    - zowe_instance_dir
+
+- name: Locate zowe-stop.sh
+  block:
+  - name: Init zowe_stop_path variable
+    set_fact:
+      zowe_stop_path: ""
+  - name: Check if zowe-stop.sh is located at instanceDir
+    raw: test -f {{ zowe_instance_dir }}/bin/zowe-stop.sh && echo "{{ zowe_instance_dir }}/bin/zowe-stop.sh" | tr -d '\n'
+    register: zowe_stop_at_instancedir
+    ignore_errors: yes
+    when: zowe_stop_path == ""
+  - name: Set zowe_stop_path to {{ zowe_stop_at_instancedir.stdout }}
+    set_fact:
+      zowe_stop_path: "{{ zowe_stop_at_instancedir.stdout }}"
+    when: zowe_stop_path == "" and zowe_stop_at_instancedir.stdout != ''
+  - name: Check if zowe-stop.sh is located at rootDir
+    raw: test -f {{ zowe_root_dir }}/scripts/zowe-stop.sh && echo "{{ zowe_root_dir }}/scripts/zowe-stop.sh" | tr -d '\n'
+    register: zowe_stop_at_rootdir
+    ignore_errors: yes
+    when: zowe_stop_path == ""
+  - name: Set zowe_stop_path to {{ zowe_stop_at_rootdir.stdout }}
+    set_fact:
+      zowe_stop_path: "{{ zowe_stop_at_rootdir.stdout }}"
+    when: zowe_stop_path == "" and zowe_stop_at_rootdir.stdout != ''
+  - name: Show zowe_stop_path value
+    debug:
+      var: zowe_stop_path
+  - name: Check if zowe_stop_path has a value
+    fail:
+      msg: Cannot find zowe-stop.sh
+    when: zowe_stop_path == ""

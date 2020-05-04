@@ -10,11 +10,16 @@
 
 import {
   checkMandatoryEnvironmentVariables,
-  installAndVerifyConvenienceBuild,
-} from '../../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
+  installAndVerifySmpeFmid,
+} from '../../../../utils';
+import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../../constants';
 
-const testSuiteName = 'Test convenience build installation with node.js v8';
+/**
+ * Define this test should run in a specific worker
+ *
+ * @worker marist-3
+ */
+const testSuiteName = 'Test SMPE FMID installation with Top Secret';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -24,13 +29,12 @@ describe(testSuiteName, () => {
   });
 
   test('install and verify', async () => {
-    await installAndVerifyConvenienceBuild(
+    await installAndVerifySmpeFmid(
       testSuiteName,
-      // hard code to use marist-1 which we have uploaded correct versions in
-      'marist-1',
+      // hard code to use marist-3 which we started with Top Secret
+      'marist-3',
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zos_node_home': '/ZOWE/node/node-v8.16.0-os390-s390x',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);

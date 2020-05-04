@@ -55,10 +55,10 @@
     "implementationDefaults": {
       //each type has an object which describes which implementation to use based on some criteria to find which is best for the task. For now, just "plugins" will
       //be used to state that you want a particular plugin.
-      "zosmf": {
+      //"zosmf": {
       // zosmf plugin needs to be configured to target a zosmf instance. configure before using.
       // "plugins": ["org.zowe.zlux.auth.zosmf"]
-      },
+      //},
 
       "zss": {
         "plugins": ["org.zowe.zlux.auth.zss"]
