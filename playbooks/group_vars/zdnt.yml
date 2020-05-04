@@ -11,7 +11,7 @@ zowe_external_ip_address: 37.58.118.251
 zowe_root_dir: /zaas1/zowe/runtime
 zowe_instance_dir: /zaas1/zowe/instance
 zowe_keystore_dir: /zaas1/zowe/keystore
-zowe_logs_dir: /zaas1/zowe/logs
+zowe_install_logs_dir: /zaas1/zowe/logs
 zowe_dataset_prefix: TSTRADM.ZWE
 zowe_apiml_verify_certficates_of_services: false
 zowe_proclib_dsname: ZAAS1.PROCLIB
