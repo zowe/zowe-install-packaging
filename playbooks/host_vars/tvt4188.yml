@@ -1,0 +1,11 @@
+---
+ansible_ssh_host: tvt4188.svl.ibm.com
+ansible_user:
+ansible_password:
+
+################################################################################
+# variables for zowe uninstallation and installation
+zowe_smpe_volser: T41882
+
+zowe_external_domain_name: tvt4188.svl.ibm.com
+zowe_external_ip_address: 9.30.241.209
