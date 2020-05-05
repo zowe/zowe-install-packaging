@@ -10,6 +10,8 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+#TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
+
 # Takes in two parameters - the file that should be expanded and a string of the variable name that should be set in return
 get_full_path() {
   file=$1
@@ -44,5 +46,27 @@ validate_file_not_in_directory() {
   if [[ ${file} == "${directory}"* ]]
   then
     return 1
+  fi
+}
+
+validate_directory_is_accessible() {
+  directory=$1
+  if [[ ! -d ${directory} ]]
+  then
+    print_error_message "Directory '${directory}' doesn't exist, or is not accessible to ${USER}. If the directory exists, check all the parent directories have traversal permission (execute)"
+    return 1
+  fi
+  return 0
+}
+
+# Note requires #ROOT_DIR to be set to use errror.sh, otherwise falls back to stderr
+print_error_message() {
+  message=$1
+  error_path=${ROOT_DIR}/scripts/utils/error.sh
+  if [[ -f "${error_path}" ]]
+  then
+    . ${error_path} $message
+  else 
+    echo $message 1>&2
   fi
 }

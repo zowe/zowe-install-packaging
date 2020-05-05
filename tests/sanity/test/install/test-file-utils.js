@@ -13,7 +13,9 @@ const debug = require('debug')('zowe-sanity-test:install:installed-utils');
 const SSH = require('node-ssh');
 const ssh = new SSH();
 
-describe('verify installed utils', function() {
+const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
+
+describe.only('verify installed utils', function() { //TODO NOW - remove only
   before('prepare SSH connection', function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
@@ -90,7 +92,6 @@ describe('verify installed utils', function() {
     });
 
     function test_get_full_path(input, expected) {
-      const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
       return ssh.execCommand(`. ${file_utils_path} && get_full_path "${input}" actual && echo \${actual}`)
         .then(function(result) {
           expect(result.stdout).to.equal(expected);
@@ -141,13 +142,57 @@ describe('verify installed utils', function() {
 
     function test_validate_file_not_in_directory(file, directory, expected_valid) {
       const expected_rc = expected_valid ? 0 : 1;
-      const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
       return ssh.execCommand(`. ${file_utils_path} && validate_file_not_in_directory "${file}" "${directory}"`)
         .then(function(result) {
           expect(result.stderr).to.be.empty;
           expect(result.code).to.equal(expected_rc);
         });
     }
+  });
+
+  describe('validate_directory_is_accessible', function() {
+
+    let temp_dir = 'temp_' + Math.floor(Math.random() * 10e6);
+    let inaccessible_dir = `${temp_dir}/inaccessible`;
+    before('set up test directory', function() {
+      return ssh.execCommand(`mkdir -p ${inaccessible_dir} && chmod a-x ${temp_dir}`)
+        .then(function(result) {
+          expect(result.stderr).to.be.empty;
+          expect(result.code).to.equal(0);
+        });
+    });
+
+    it('test home directory is accessible', async function() {
+      const directory = home_dir;
+      await test_validate_directory_is_accessible(directory, true);
+    });
+
+    it('test junk directory is not accessible', async function() {
+      const directory = '/junk/rubbish/madeup';
+      await test_validate_directory_is_accessible(directory, false);
+    });
+
+    it('test non-traversable directory is not accessible', async function() {
+      await test_validate_directory_is_accessible(inaccessible_dir, false);
+    });
+
+    function test_validate_directory_is_accessible(directory, expected_valid) {
+      const expected_rc = expected_valid ? 0 : 1;
+      const expected_err = expected_valid ? '' : `Directory '${directory}' doesn't exist, or is not accessible to ${process.env.SSH_USER.toUpperCase()}. If the directory exists, check all the parent directories have traversal permission (execute)`;
+      return ssh.execCommand(`. ${file_utils_path} && validate_directory_is_accessible "${directory}"`)
+        .then(function(result) {
+          expect(result.stderr).to.have.string(expected_err);
+          expect(result.code).to.equal(expected_rc);
+        });
+    }
+
+    after('clean up test directory', function() {
+      return ssh.execCommand(`chmod 770 ${temp_dir} && rm -rf ${temp_dir}`)
+        .then(function(result) {
+          expect(result.stderr).to.be.empty;
+          expect(result.code).to.equal(0);
+        });
+    });
   });
 
   after('dispose SSH connection', function() {
