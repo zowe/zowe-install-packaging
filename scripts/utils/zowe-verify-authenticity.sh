@@ -19,16 +19,18 @@
 #         - Downloaded from zowe.org:
 #           •	HashFiles.class (binary)
 #           •	RefRuntimeHash.txt (list of files with hash keys)
-#           •	RefRuntimeHashHash.txt (hash of the above list)
+#  
 # Note about SMP/E
 #         - The directory SMPE in the runtime folder is excluded from this check
 #           The SMPE directory and contents must not be present in the supplied
-#           RefRuntimeHash.txt file, or they will be flagged as missing
+#           RefRuntimeHash.txt file, or they will be flagged here as missing
 
-# Outputs - Lists of runtime files missing, extra and different from official version
+# Outputs - Lists of runtime files missing, extra 
+#           and different from official Ref version
 #           
 # Uses    - java class Hashfiles.class
 SCRIPT=zowe-verify-authenticity.sh
+echo $SCRIPT started
 
 if [[ $# -ne 2 ]]   
 then
@@ -80,7 +82,7 @@ do
 done 
 
 # Verify hash file directory contents minimally
-for file in HashFiles.class RefRuntimeHash.txt RefRuntimeHashHash.txt
+for file in HashFiles.class RefRuntimeHash.txt 
 do
     ls -l $hashPath | grep " $file$" 1> /dev/null 2>/dev/null
     if [[ $? -ne 0 ]]
@@ -120,13 +122,6 @@ then
 fi
 
 cd $hashPath
-echo CustRuntimeHash.txt > files.in  # put one file name in list of files to be hashed
-java HashFiles files.in > CustRuntimeHashHash.txt
-if [[ $? -ne 0 ]]
-then
-    echo Error: Failed to generate hash file from CustRuntimeHash.txt
-    # exit 1
-fi
 
 # sort the results to make comparison easier
 sort CustRuntimeHash.txt > CustRuntimeHash.sort
@@ -170,10 +165,10 @@ done < file3
 echo Info: End of list
 echo
 
-echo Info: differences in overall hash
-comm -3 RefRuntimeHashHash.txt CustRuntimeHashHash.txt
-echo
-echo "Info: Customer  runtime hash file is available in " $hashPath/CustRuntimeHash.txt 
-echo "Info: Reference runtime hash file is available in " $hashPath/RefRuntimeHash.txt 
+echo "Info: Customer  runtime hash file is available in " 
+ls $hashPath/CustRuntimeHash.* 
+echo "Info: Reference runtime hash file is available in " 
+ls $hashPath/RefRuntimeHash.* 
 
-rm files.in CustRuntimeHash.sort RefRuntimeHash.sort file3
+rm files.in file3 # temp work files
+echo $SCRIPT ended
