@@ -226,10 +226,8 @@ stageDir=$ROOT/stage
 zoweVRM=`ls $ROOT/../content`
 utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
 mkdir $utilsDir/hash # create work directory
-ls -ld    $utilsDir/hash
-chmod +wx $utilsDir/hash
 ls -l     $utilsDir/zowe-checksum-runtime.sh
-chmod +x  $utilsDir/zowe-checksum-runtime.sh
+chmod +x  $utilsDir/zowe-checksum-runtime.sh # make script executable
 
 # calculate the checksums of stageDir
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
@@ -240,7 +238,7 @@ cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication
 
 # verify the checksums of stageDir, to check zowe-verify-authenticity.sh
 ls -l    $utilsDir/zowe-verify-authenticity.sh
-chmod +x $utilsDir/zowe-verify-authenticity.sh
+chmod +x $utilsDir/zowe-verify-authenticity.sh # make script executable
 $utilsDir/zowe-verify-authenticity.sh $stageDir $utilsDir/hash
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
