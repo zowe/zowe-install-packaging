@@ -13,8 +13,6 @@ const debug = require('debug')('zowe-sanity-test:install:installed-utils');
 const SSH = require('node-ssh');
 const ssh = new SSH();
 
-const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
-
 describe.only('verify installed utils', function() { //TODO NOW - remove only
   before('prepare SSH connection', function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
@@ -91,13 +89,9 @@ describe.only('verify installed utils', function() { //TODO NOW - remove only
       await test_get_full_path(input, expected);
     });
 
-    function test_get_full_path(input, expected) {
-      return ssh.execCommand(`. ${file_utils_path} && get_full_path "${input}" actual && echo \${actual}`)
-        .then(function(result) {
-          expect(result.stdout).to.equal(expected);
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(0);
-        });
+    async function test_get_full_path(input, expected_stdout) {
+      const command = `get_full_path "${input}" actual && echo \${actual}`;
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, 0, expected_stdout, '');
     }
   });
 
@@ -134,33 +128,34 @@ describe.only('verify installed utils', function() { //TODO NOW - remove only
     });
 
     //TODO zip #1325 - until we can evaluate ../ this will fail
-    xit('test relative sibling is valid', async function() {
+    it.skip('test relative sibling is valid', async function() {
       const file = '/home/zowe/root/../test';
       const directory = '/home/zowe/root/';
       await test_validate_file_not_in_directory(file, directory, true);
     });
 
-    function test_validate_file_not_in_directory(file, directory, expected_valid) {
+    async function test_validate_file_not_in_directory(file, directory, expected_valid) {
+      const command = `validate_file_not_in_directory "${file}" "${directory}"`;
       const expected_rc = expected_valid ? 0 : 1;
-      return ssh.execCommand(`. ${file_utils_path} && validate_file_not_in_directory "${file}" "${directory}"`)
-        .then(function(result) {
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(expected_rc);
-        });
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', '');
     }
   });
 
-  describe('validate_directory_is_accessible', function() {
+  describe('validate_directory_is_accessible and writable', function() {
 
     let temp_dir = 'temp_' + Math.floor(Math.random() * 10e6);
     let inaccessible_dir = `${temp_dir}/inaccessible`;
     before('set up test directory', function() {
-      return ssh.execCommand(`mkdir -p ${inaccessible_dir} && chmod a-x ${temp_dir}`)
+      return ssh.execCommand(`mkdir -p ${inaccessible_dir} && chmod a-x ${temp_dir} && chmod a-w ${temp_dir}`)
         .then(function(result) {
           expect(result.stderr).to.be.empty;
           expect(result.code).to.equal(0);
         });
     });
+
+    function get_inaccessible_message(directory) {
+      return `Directory '${directory}' doesn't exist, or is not accessible to ${process.env.SSH_USER.toUpperCase()}. If the directory exists, check all the parent directories have traversal permission (execute)`;
+    }
 
     it('test home directory is accessible', async function() {
       const directory = home_dir;
@@ -176,14 +171,35 @@ describe.only('verify installed utils', function() { //TODO NOW - remove only
       await test_validate_directory_is_accessible(inaccessible_dir, false);
     });
 
-    function test_validate_directory_is_accessible(directory, expected_valid) {
+    async function test_validate_directory_is_accessible(directory, expected_valid) {
+      const command = `validate_directory_is_accessible "${directory}"`;
       const expected_rc = expected_valid ? 0 : 1;
-      const expected_err = expected_valid ? '' : `Directory '${directory}' doesn't exist, or is not accessible to ${process.env.SSH_USER.toUpperCase()}. If the directory exists, check all the parent directories have traversal permission (execute)`;
-      return ssh.execCommand(`. ${file_utils_path} && validate_directory_is_accessible "${directory}"`)
-        .then(function(result) {
-          expect(result.stderr).to.have.string(expected_err);
-          expect(result.code).to.equal(expected_rc);
-        });
+      const expected_err = expected_valid ? '' : get_inaccessible_message(directory);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    }
+
+    it('test home directory is writable', async function() {
+      const directory = home_dir;
+      await test_validate_directory_is_writable(directory, true);
+    });
+
+    it('test junk directory shows as not accessible on writable check', async function() {
+      const directory = '/junk/rubbish/madeup';
+      const command = `validate_directory_is_writable "${directory}"`;
+      const expected_rc = 1;
+      const expected_err = get_inaccessible_message(directory);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    });
+
+    it('test non-writable directory is not writable', async function() {
+      await test_validate_directory_is_writable(temp_dir, false);
+    });
+
+    async function test_validate_directory_is_writable(directory, expected_valid) {
+      const command = `validate_directory_is_writable "${directory}"`;
+      const expected_rc = expected_valid ? 0 : 1;
+      const expected_err = expected_valid ? '' : `Directory '${directory}' does not have write access`;
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
 
     after('clean up test directory', function() {
@@ -194,6 +210,21 @@ describe.only('verify installed utils', function() { //TODO NOW - remove only
         });
     });
   });
+  
+  async function test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
+    const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
+    command = `. ${file_utils_path} && ${command}`;
+    await test_ssh_command_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr);
+  }
+
+  function test_ssh_command_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
+    return ssh.execCommand(command)
+      .then(function(result) {
+        expect(result.code).to.equal(expected_rc);
+        expect(result.stdout).to.have.string(expected_stdout);
+        expect(result.stderr).to.have.string(expected_stderr);
+      });
+  }
 
   after('dispose SSH connection', function() {
     ssh.dispose();

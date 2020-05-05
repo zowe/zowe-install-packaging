@@ -59,6 +59,22 @@ validate_directory_is_accessible() {
   return 0
 }
 
+validate_directory_is_writable() {
+  directory=$1
+  validate_directory_is_accessible $directory
+  accessible_rc=$?
+  if [[ ${accessible_rc} -eq 0 ]]
+  then	
+    if [[ ! -w ${directory} ]]
+    then	
+      print_error_message "Directory '${directory}' does not have write access"	
+      return 1
+    fi
+  else
+    return accessible_rc
+  fi
+}
+
 # Note requires #ROOT_DIR to be set to use errror.sh, otherwise falls back to stderr
 print_error_message() {
   message=$1
