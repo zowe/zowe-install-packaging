@@ -218,19 +218,30 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # Generate reference hash keys of runtime files
 
-# The scripts to do this are in the scripts/utils directory
-zoweVRM=`ls $ROOT/../content`
-utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
 # The hash is calculated on the installed runtime directory created by smpe-install.sh above
 stageDir=$ROOT/stage
+
+# The scripts and program to do this are in the scripts/utils directory
+zoweVRM=`ls $ROOT/../content`
+utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
 mkdir $utilsDir/hash # create work directory
+ls -l     $utilsDir/hash
 chmod +wx $utilsDir/hash
+ls -l     $utilsDir/zowe-checksum-runtime.sh
 chmod +x  $utilsDir/zowe-checksum-runtime.sh
+
 # calculate the checksums of stageDir
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
-# save checksums
+
+# save checksums and executable
 cp   $utilsDir/hash/RefRuntimeHash.txt $ROOT/.. # for publication
 cp   $utilsDir/HashFiles.class         $ROOT/.. # for publication
+
+# verify the checksums of stageDir, to check zowe-verify-authenticity.sh
+ls -l    $utilsDir/zowe-verify-authenticity.sh
+chmod +x $utilsDir/zowe-verify-authenticity.sh
+$utilsDir/zowe-verify-authenticity.sh $stageDir $utilsDir/hash
+
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
