@@ -15,6 +15,7 @@ const axios = require('axios');
 
 let request, username, password;
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
+const ZOSMF_TOKEN = 'LtpaToken2';
 
 // allow self signed certs
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -30,9 +31,12 @@ let login = async () => {
   expect(response.headers).to.have.property('set-cookie');
   expect(response.data).to.be.empty;
 
-  // Retrieve the Api ML authentication cookie
+  return findCookieInResponse(response, APIML_AUTH_COOKIE);
+};
+
+let findCookieInResponse = (response, cookieName) => {
   let cookiesSetByServer = response.headers['set-cookie'];
-  let authenticationCookie = cookiesSetByServer.filter(cookieRow => cookieRow.startsWith(APIML_AUTH_COOKIE));
+  let authenticationCookie = cookiesSetByServer.filter(cookieRow => cookieRow.startsWith(cookieName));
   if(authenticationCookie.length === 0) {
     throw new Error("The authentication was unsuccessful");
   }
@@ -61,38 +65,69 @@ describe('test api mediation layer zosmf authentication', function() {
     debug(`Explorer server URL: ${baseUrl}`);
   });
 
-  it('should be able to get data from ZOSM/f with valid basic header', async () => {
-    const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-    const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
-      headers: {
-        'Authorization': `Basic ${token}`,
-        'X-CSRF-ZOSMF-HEADER': '*'
-      }
+  describe('should be able to get data from ZOSM/f ', () => {
+    it('with valid basic header', async () => {
+      const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
+      const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
+        headers: {
+          'Authorization': `Basic ${token}`,
+          'X-CSRF-ZOSMF-HEADER': '*'
+        }
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.data).to.not.be.empty;
     });
 
-    expect(response.status).to.equal(200);
-    expect(response.data).to.not.be.empty;
-  });
+    it('with valid cookie', async () => {
+      const authenticationCookie = await login();
 
-  it('should be able to get data from ZOSM/f with valid cookie', async () => {
-    const authenticationCookie = await login();
+      const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
+        headers: {
+          'Cookie': authenticationCookie,
+          'X-CSRF-ZOSMF-HEADER': '*'
+        }
+      });
 
-    const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
-      headers: {
-        'Cookie': authenticationCookie,
-        'X-CSRF-ZOSMF-HEADER': '*'
-      }
+      expect(response.status).to.equal(200);
+      expect(response.data).to.not.be.empty;
     });
 
-    expect(response.status).to.equal(200);
-    expect(response.data).to.not.be.empty;
-  });
+    it('with valid LTPA cookie', async () => {
+      const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
+      const loginResponse = await request.get('/api/v1/zosmf/info', {
+        headers: {
+          'Authorization': `Basic ${token}`,
+          'X-CSRF-ZOSMF-HEADER': '*'
+        }
+      });
 
-  it('should be able to get data from ZOSM/f with valid LTPA cookie', () => {
+      const ltpaCookie = findCookieInResponse(loginResponse, ZOSMF_TOKEN);
+      const response = await request.get('/api/v1/zosmf/info', {
+        headers: {
+          'Cookie': ltpaCookie,
+          'X-CSRF-ZOSMF-HEADER': '*'
+        }
+      });
 
-  });
+      expect(response.status).to.equal(200);
+      expect(response.data).to.not.be.empty;
+    });
 
-  it('should be able to get data from ZOSM/f with valid JWT token', () => {
+    it('with valid JWT token via Bearer', async () => {
+      const authenticationCookie = await login();
+      const justCookie = authenticationCookie.split(';')[0];
+      const tokenValue = justCookie.split('=')[1];
 
+      const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
+        headers: {
+          'Authorization': `Bearer ${tokenValue}`,
+          'X-CSRF-ZOSMF-HEADER': '*'
+        }
+      });
+
+      expect(response.status).to.equal(200);
+      expect(response.data).to.not.be.empty;
+    });
   });
 });
