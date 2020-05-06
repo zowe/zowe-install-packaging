@@ -68,6 +68,38 @@ describe.only('verify zowe-variable-utils', function() { //TODO NOW - remove onl
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
   });
+
+  const validate_zowe_prefix = 'validate_zowe_prefix';
+  describe(`verify ${validate_zowe_prefix}`, function() {
+
+    it('test empty prefix validated false', async function() {
+      const command = `${validate_zowe_prefix}`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 1, '', 'ZOWE_PREFIX is empty');
+    });
+
+    it('test variable length 2 is valid', async function() {
+      await test_validate_zowe_prefix('Z1', true);
+    });
+
+    it('test default variable is valid', async function() {
+      await test_validate_zowe_prefix('ZWE1', true);
+    });
+
+    it('test variable length 6 is valid', async function() {
+      await test_validate_zowe_prefix('ZWESJH', true);
+    });
+
+    it('test variable length 7 is not valid', async function() {
+      await test_validate_zowe_prefix('ZWE1234', false);
+    });
+
+    async function test_validate_zowe_prefix(prefix, expected_valid) {
+      const command = `export ZOWE_PREFIX=${prefix} && ${validate_zowe_prefix}`;
+      const expected_rc = expected_valid ? 0 : 1;
+      const expected_err = expected_valid ? '' : `ZOWE_PREFIX '${prefix}' should be less than 7 characters`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    }
+  });
   
   async function test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
     const variable_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/zowe-variable-utils.sh';

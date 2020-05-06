@@ -12,7 +12,7 @@
 
 #TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
 
-# Takes in two parameters - the file and the directory we want to check it isn't in
+# Takes in two parameters - the name of the variable (for error messaging) and the value
 validate_variable_is_set() {
   variable_name=$1
   value=$2
@@ -20,6 +20,24 @@ validate_variable_is_set() {
   then
     print_error_message "${variable_name} is empty"
     exit 1
+  fi
+}
+
+# ZOWE_PREFIX + instance - should be <=6 char long and exist.
+# TODO - any lower bound (other than 0)?
+# Requires ZOWE_PREFIX to be set as a shell variable
+validate_zowe_prefix() {
+  validate_variable_is_set "ZOWE_PREFIX" "${ZOWE_PREFIX}"
+  prefix_set_rc=$?
+  if [[ ${prefix_set_rc} -eq 0 ]]
+  then
+    PREFIX_LENGTH=${#ZOWE_PREFIX}
+    if [[ $PREFIX_LENGTH > 6 ]]
+    then
+      print_error_message "ZOWE_PREFIX '${ZOWE_PREFIX}' should be less than 7 characters"
+      exit 1
+    fi
+    return prefix_set_rc
   fi
 }
 
