@@ -8,7 +8,7 @@ This repository includes Zowe installation script and pipelines to build Zowe.
   - [Build information](#build-information)
   - [Binary Dependencies](#binary-dependencies)
   - [Source Dependencies](#source-dependencies)
-  - [Point of Contact](#point-of-contact)
+  - [Point of Contacts](#point-of-contacts)
 - [Build Pipeline](#build-pipeline)
   - [Generate Customized Zowe Build](#generate-customized-zowe-build)
 - [Automate Install / Uninstall of Zowe with Ansible](#automate-install--uninstall-of-zowe-with-ansible)
@@ -94,9 +94,9 @@ To check for each release, what source code from repositories will be used, you 
 - check the `sourceDependencies` section. In the above case, it's line #96.
 - In the above example, you will see Zowe release v1.4.0 is using https://github.com/zowe/imperative repository tag [v2.4.9](https://github.com/zowe/imperative/tree/v2.4.9).
 
-### Point of Contact
+### Point of Contacts
 
-For each Zowe component, we have a point of contact in case if we want to confirm the versions defined in the `manifest.json.template`:
+For each Zowe component, we have point of contact(s) in case if we want to confirm the versions defined in the `manifest.json.template`:
 
 - API Mediation Layer: Petr Plavjanik, Mark Ackert
   * Binary Dependencies
@@ -137,7 +137,7 @@ For each Zowe component, we have a point of contact in case if we want to confir
     - vt-ng2
     - zlux-editor
     - zlux-workflow
-- Explorer APIs / Plugins; Jordan Cain
+- Explorer APIs / UI Plugins: Jordan Cain
   * Binary Dependencies
     - org.zowe.explorer.data.sets
     - org.zowe.explorer.jobs
