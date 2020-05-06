@@ -14,7 +14,7 @@ const SSH = require('node-ssh');
 const ssh = new SSH();
 
 ///TODO - NOW - refactor out into shared function?
-describe.only('verify zowe-variable-utils', function() { //TODO NOW - remove only
+describe('verify zowe-variable-utils', function() { //TODO NOW - remove only
   before('prepare SSH connection', function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
@@ -109,7 +109,6 @@ describe.only('verify zowe-variable-utils', function() { //TODO NOW - remove onl
 
   // TODO NOW - refactor out into shared file
   function test_ssh_command_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
-    console.log(command);
     return ssh.execCommand(command)
       .then(function(result) {
         expect(result.code).to.equal(expected_rc);
