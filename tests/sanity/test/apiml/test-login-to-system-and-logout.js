@@ -44,10 +44,12 @@ let findCookieInResponse = (response, cookieName) => {
 };
 
 let assertIfLogged = async (token, logged) => {
+  // TODO the logout seems to not work so the query return always 200 on the second times is called.
   let status = logged ? 200 : 401;
   const response = await request.get('/api/v1/gateway/auth/query', {
     headers: {
       'Authorization': `Bearer ${token}`,
+      'X-CSRF-ZOSMF-HEADER': '*'
     }
   }).catch((err) => {
     expect(err.response.status).to.equal(401);
@@ -89,10 +91,10 @@ describe('test api mediation layer logout functionality', function() {
 
     let response = await request.post('/api/v1/gateway/auth/logout', {
       headers: {
-        APIML_AUTH_COOKIE: tokenValue
+        Cookie: `${authenticationCookie}`,
       }
     });
     expect(response.status).to.equal(204);
-    await assertIfLogged(justCookie, false);
+    await assertIfLogged(tokenValue, false);
   });
 });
