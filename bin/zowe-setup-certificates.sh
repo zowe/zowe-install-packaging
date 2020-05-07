@@ -15,6 +15,8 @@
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 # - ZOWE_KEYRING - specify zowe keyring that keeps zowe certificates, if not specified USS keystore
 #                  files will be created.
+# - GENERATE_CERTS_FOR_KEYRING - If you used ZWEKRING jcl to configure certificates and the keyring
+#                                then set this variable to false (defaults to false)
 
 # process input parameters.
 while getopts "l:p:" opt; do
@@ -101,12 +103,16 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
     if [[ -z "${ZOWE_KEYRING}" ]]; then
       ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
         --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
-    else
+      RC=$?
+      echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+    elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
       ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-keystore ${KEYSTORE_PREFIX} \
         --service-alias ${KEYSTORE_ALIAS} --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --local-ca-filename ${LOCAL_CA_PREFIX}
+      RC=$?
+      echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+    else
+      echo "Generating certificates for the keyring is skipped."
     fi
-    RC=$?
-    echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
   else
     (>&2 echo "Zowe Install setup configuration is invalid; check your zowe-setup-certificates.env file.")
     (>&2 echo "Some external apiml certificate fields are supplied...Fields must be filled out in full or left completely blank.")
@@ -126,14 +132,17 @@ else
       --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
       --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX} \
       --external-ca-filename ${EXTERNAL_CA_PREFIX}
-  else
+    RC=$?
+    echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+  elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} \
       --service-storetype "JCERACFKS" --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} \
       --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX}  --local-ca-filename ${LOCAL_CA_PREFIX}
+    RC=$?
+    echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+  else
+    echo "Generating certificates for the keyring is skipped."
   fi
-  RC=$?
-
-  echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
 fi
 
 if [ "$RC" -ne "0" ]; then
@@ -149,6 +158,7 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
       --service-keystore ${KEYSTORE_PREFIX}
   else
+    export GENERATE_CERTS_FOR_KEYRING;
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zowe-userid ${ZOWE_USER_ID} \
       --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
       --service-keystore ${KEYSTORE_PREFIX}

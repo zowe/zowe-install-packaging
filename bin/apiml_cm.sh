@@ -619,7 +619,11 @@ case $ACTION in
         trust
         ;;
     trust-zosmf)
-        trust_zosmf
+        if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" == "false" ]]; then
+            echo "Trust z/OSMF action is skipped for keyring setup."
+        else
+            trust_zosmf
+        fi
         zosmf_jwt_public_key
         ;;
     cert-key-export)
