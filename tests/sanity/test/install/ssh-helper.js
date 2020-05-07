@@ -55,7 +55,7 @@ const executeCommandWithNoError = async(command) => {
 };
 
 const executeCommand = async (command) => {
-  const result = await ssh.execCommand(command)
+  const result = await ssh.execCommand(command);
   const rc = result.code;
   const stdout = result.stdout;
   const stderr = result.stderr;
