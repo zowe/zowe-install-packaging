@@ -8,7 +8,6 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-const _ = require('lodash');
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:apiml:gateway');
 const axios = require('axios');
@@ -37,7 +36,7 @@ let findCookieInResponse = (response, cookieName) => {
   let cookiesSetByServer = response.headers['set-cookie'];
   let authenticationCookie = cookiesSetByServer.filter(cookieRow => cookieRow.startsWith(cookieName));
   if(authenticationCookie.length === 0) {
-    throw new Error("The authentication was unsuccessful");
+    throw new Error('The authentication was unsuccessful');
   }
 
   return authenticationCookie[0];
@@ -67,7 +66,7 @@ describe('test mvs with authentication via gateway', function() {
   it('Get jobs for the current SSH User via gateway', async () => {
     const authenticationCookie = await login();
 
-    const response = await request.get(`/api/v2/datasets/sys1.p*`, {
+    const response = await request.get('/api/v2/datasets/sys1.p*', {
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
