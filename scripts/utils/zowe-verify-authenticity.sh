@@ -71,7 +71,7 @@ hashPath=$PWD/$hashPath
 fi
 
 # Verify runtime directory contents minimally
-for dir in bin components scripts
+for dir in bin components scripts manifest.json
 do
     ls -l $runtimePath | grep " $dir$" 1> /dev/null 2>/dev/null
     if [[ $? -ne 0 ]]
@@ -103,7 +103,7 @@ fi
 echo Info: Gathering files ...
 
 cd $runtimePath
-find . -name ./SMPE -prune \
+find . -name ./SMPE   -prune \
     -o -name "./ZWE*" -prune \
     -o -type f -print > $hashPath/files.in # exclude SMPE
 if [[ $? -ne 0 ]]
@@ -141,28 +141,33 @@ echo "Info: Number of files extra     = " $nExtra
 nMissing=`comm -23 RefRuntimeHash.sort CustRuntimeHash.sort | wc -l`
 echo "Info: Number of files missing   = " $nMissing
 
-echo Info: List of matching files with different hashes
-echo
-i=0
-while read file hash
-do
-    if [[ $file = $oldfile ]]
-    then
-        echo $file $hash
-        echo $oldfile $oldhash
-        echo
-        let "i=i+1" 
-        if [[ $i -gt $maxDiffs ]]
+if [[ `cat file3 | wc -l` -gt 0 ]]
+then
+    echo Info: List of matching files with different hashes
+    echo
+    i=0
+    while read file hash
+    do
+        if [[ $file = $oldfile ]]
         then
-            echo Info: More than $maxDiffs differences, no further differences are listed
-            break
-        fi 
-    fi
-    oldfile=$file
-    oldhash=$hash
-done < file3
+            echo $file $hash
+            echo $oldfile $oldhash
+            echo
+            let "i=i+1" 
+            if [[ $i -gt $maxDiffs ]]
+            then
+                echo Info: More than $maxDiffs differences, no further differences are listed
+                break
+            fi 
+        fi
+        oldfile=$file
+        oldhash=$hash
+    done < file3
 
-echo Info: End of list
+    echo Info: End of list
+
+fi
+
 echo
 
 echo "Info: Customer  runtime hash file is available in " 
