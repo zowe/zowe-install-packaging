@@ -84,12 +84,6 @@ if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
   fi
 fi
 
-# build keyring-util program
-if [[ -n "${ZOWE_KEYRING}" ]]; then
-  xlc -q64 -o ${KEYSTORE_DIRECTORY}/keyring-util ${ZOWE_ROOT_DIR}/bin/utils/keyring-util/keyring-util.c >> $LOG_FILE
-  rm ${KEYSTORE_DIRECTORY}/keyring-util.o 2> /dev/null
-fi
-
 echo "Creating certificates and keystores... STARTED"
 # set up parameters for apiml_cm.sh script
 KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"

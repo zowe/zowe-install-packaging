@@ -86,7 +86,7 @@ function pkeytool {
 
 function clean_keyring {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        KEYRING_UTIL=`dirname ${SERVICE_KEYSTORE}`/../keyring-util
+        KEYRING_UTIL=${BASE_DIR}/utils/keyring-util/keyring-util
         echo "Removing ${ZOWE_USERID}/${ZOWE_KEYRING} keyring"
         $KEYRING_UTIL delring ${ZOWE_USERID} ${ZOWE_KEYRING}
     fi
@@ -95,7 +95,7 @@ function clean_keyring {
 function clean_local_ca {
     rm -f ${LOCAL_CA_FILENAME}.keystore.p12 ${LOCAL_CA_FILENAME}.cer
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        KEYRING_UTIL=`dirname ${LOCAL_CA_FILENAME}`/../keyring-util
+        KEYRING_UTIL=${BASE_DIR}/utils/keyring-util/keyring-util
         echo "Disconnecting ${LOCAL_CA_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         $KEYRING_UTIL delcert ${ZOWE_USERID} ${ZOWE_KEYRING} ${LOCAL_CA_ALIAS}
         echo "Removing ${LOCAL_CA_ALIAS} certificate from RACF database"
@@ -106,7 +106,7 @@ function clean_local_ca {
 function clean_service {
     rm -f ${SERVICE_KEYSTORE}.p12 ${SERVICE_KEYSTORE}.csr ${SERVICE_KEYSTORE}_signed.cer ${SERVICE_TRUSTSTORE}.p12
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        KEYRING_UTIL=`dirname ${SERVICE_KEYSTORE}`/../keyring-util
+        KEYRING_UTIL=${BASE_DIR}/utils/keyring-util/keyring-util
         echo "Disconnecting ${SERVICE_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         $KEYRING_UTIL delcert ${ZOWE_USERID} ${ZOWE_KEYRING} ${SERVICE_ALIAS}
         echo "Disconnecting ${JWT_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
