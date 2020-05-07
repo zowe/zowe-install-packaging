@@ -268,10 +268,7 @@ function import_external_certificate {
 
 function export_service_certificate {
     echo "Export service certificate to the PEM format"
-    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} -rfc -file ${SERVICE_KEYSTORE}.cer \
-          -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-    else
+    if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
         pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storetype ${SERVICE_STORETYPE} -storepass ${SERVICE_PASSWORD} -rfc -file ${SERVICE_KEYSTORE}.cer
     fi
 
@@ -340,10 +337,7 @@ EOF
     echo "cat returned $?"
     javac ${TEMP_DIR}/ExportPrivateKey.java
     echo "javac returned $?"
-    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        java -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
-             -cp ${TEMP_DIR} ExportPrivateKey safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} ${SERVICE_STORETYPE} "" ${SERVICE_ALIAS} "" ${SERVICE_KEYSTORE}.key
-    else
+    if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
         java -cp ${TEMP_DIR} ExportPrivateKey ${SERVICE_KEYSTORE}.p12 ${SERVICE_STORETYPE} ${SERVICE_PASSWORD} ${SERVICE_ALIAS} ${SERVICE_PASSWORD} ${SERVICE_KEYSTORE}.key
     fi
     echo "java returned $?"
