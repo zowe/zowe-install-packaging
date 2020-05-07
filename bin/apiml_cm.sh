@@ -87,6 +87,7 @@ function pkeytool {
 function clean_keyring {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         KEYRING_UTIL=${BASE_DIR}/utils/keyring-util/keyring-util
+        chmod +x $KEYRING_UTIL
         echo "Removing ${ZOWE_USERID}/${ZOWE_KEYRING} keyring"
         $KEYRING_UTIL delring ${ZOWE_USERID} ${ZOWE_KEYRING}
     fi
@@ -96,6 +97,7 @@ function clean_local_ca {
     rm -f ${LOCAL_CA_FILENAME}.keystore.p12 ${LOCAL_CA_FILENAME}.cer
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         KEYRING_UTIL=${BASE_DIR}/utils/keyring-util/keyring-util
+        chmod +x $KEYRING_UTIL
         echo "Disconnecting ${LOCAL_CA_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         $KEYRING_UTIL delcert ${ZOWE_USERID} ${ZOWE_KEYRING} ${LOCAL_CA_ALIAS}
         echo "Removing ${LOCAL_CA_ALIAS} certificate from RACF database"
@@ -107,6 +109,7 @@ function clean_service {
     rm -f ${SERVICE_KEYSTORE}.p12 ${SERVICE_KEYSTORE}.csr ${SERVICE_KEYSTORE}_signed.cer ${SERVICE_TRUSTSTORE}.p12
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         KEYRING_UTIL=${BASE_DIR}/utils/keyring-util/keyring-util
+        chmod +x $KEYRING_UTIL
         echo "Disconnecting ${SERVICE_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         $KEYRING_UTIL delcert ${ZOWE_USERID} ${ZOWE_KEYRING} ${SERVICE_ALIAS}
         echo "Disconnecting ${JWT_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
@@ -270,10 +273,9 @@ function export_service_certificate {
     echo "Export service certificate to the PEM format"
     if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
         pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storetype ${SERVICE_STORETYPE} -storepass ${SERVICE_PASSWORD} -rfc -file ${SERVICE_KEYSTORE}.cer
-    fi
-
-    if [ `uname` = "OS/390" ]; then
-        iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.cer > ${SERVICE_KEYSTORE}.cer-ebcdic
+        if [ `uname` = "OS/390" ]; then
+          iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.cer > ${SERVICE_KEYSTORE}.cer-ebcdic
+        fi
     fi
 }
 
