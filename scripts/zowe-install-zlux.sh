@@ -60,6 +60,7 @@ cd ${ZSS_COMPONENT_DIR}
 pax -r -px -f $INSTALL_DIR/files/zss.pax bin
 extattr +p bin/zssServer
 cp -r ${ZSS_COMPONENT_DIR}/bin/z* ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/bin
+extattr +p ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/bin/zssServer
 cd ${APP_SERVER_COMPONENT_DIR}/share
 
 chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ 2>/dev/null
