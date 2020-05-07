@@ -48,32 +48,26 @@ const cleanUpConnection = () => {
 
 // Runs the command, ensures rc = 0 and there is no stderr and returns stdout value
 const executeCommandWithNoError = async(command) => {
-  let _stdout;
-  await executeCommand(command, (rc, stdout, stderr) => {
-    expect(rc).to.equal(0);
-    expect(stderr).to.be.empty;
-    _stdout = stdout;
-  });
-  return _stdout;
+  const {rc, stdout, stderr} = await executeCommand(command);
+  expect(rc).to.equal(0);
+  expect(stderr).to.be.empty;
+  return stdout;
 };
 
-const executeCommand = (command, callback = () => {}) => {
-  return ssh.execCommand(command)
-    .then(function(result) {
-      const rc = result.code;
-      const stdout = result.stdout;
-      const stderr = result.stderr;
-      debug(`Executed '${command}'\nrc:${rc}\nstdout:'${stdout}'\nstderr:'${stderr}'`);
-      callback(rc, stdout, stderr);
-    });
+const executeCommand = async (command) => {
+  const result = await ssh.execCommand(command)
+  const rc = result.code;
+  const stdout = result.stdout;
+  const stderr = result.stderr;
+  debug(`Executed '${command}'\nrc:${rc}\nstdout:'${stdout}'\nstderr:'${stderr}'`);
+  return {rc, stdout, stderr};
 };
 
 const testCommand = async(command, expected_rc, expected_stdout, expected_stderr) => {
-  await executeCommand(command, (rc, stdout, stderr) => {
-    expect(rc).to.equal(expected_rc);
-    expect(stdout).to.have.string(expected_stdout);
-    expect(stderr).to.have.string(expected_stderr);
-  });
+  const {rc, stdout, stderr} = await executeCommand(command);
+  expect(rc).to.equal(expected_rc);
+  expect(stdout).to.have.string(expected_stdout);
+  expect(stderr).to.have.string(expected_stderr);
 };
 
 // export constants and methods
