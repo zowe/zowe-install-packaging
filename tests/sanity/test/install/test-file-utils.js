@@ -13,7 +13,7 @@ const debug = require('debug')('zowe-sanity-test:install:installed-utils');
 const SSH = require('node-ssh');
 const ssh = new SSH();
 
-describe('verify file-utils', function() {
+describe.only('verify file-utils', function() {
   before('prepare SSH connection', function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
@@ -146,7 +146,7 @@ describe('verify file-utils', function() {
     let temp_dir = 'temp_' + Math.floor(Math.random() * 10e6);
     let inaccessible_dir = `${temp_dir}/inaccessible`;
     before('set up test directory', function() {
-      return ssh.execCommand(`mkdir -p ${inaccessible_dir} && chmod a-x ${temp_dir} && chmod a-w ${temp_dir}`)
+      return ssh.execCommand(`mkdir -p ${inaccessible_dir} && chmod a-wx ${temp_dir}`)
         .then(function(result) {
           expect(result.stderr).to.be.empty;
           expect(result.code).to.equal(0);
@@ -168,8 +168,18 @@ describe('verify file-utils', function() {
     });
 
     it('test non-traversable directory is not accessible', async function() {
+      await debug_command(`ls -al ${temp_dir}`);
+      await debug_command(`ls -al .`);
+      await debug_command(`ls -al ${inaccessible_dir}`);
       await test_validate_directory_is_accessible(inaccessible_dir, false);
     });
+
+    async function debug_command(command) {
+      ssh.execCommand(command)
+        .then(function(result) {
+          console.log(`Executed '${command}'\nrc:${result.code}\nstdout:'${result.stdout}'\nstderr:'${result.stderr}'`)
+        });
+    }
 
     async function test_validate_directory_is_accessible(directory, expected_valid) {
       const command = `validate_directory_is_accessible "${directory}"`;
@@ -218,6 +228,7 @@ describe('verify file-utils', function() {
   }
 
   function test_ssh_command_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
+    console.log(command);
     return ssh.execCommand(command)
       .then(function(result) {
         expect(result.code).to.equal(expected_rc);
