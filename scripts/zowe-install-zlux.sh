@@ -65,7 +65,5 @@ cd ${APP_SERVER_COMPONENT_DIR}/share
 chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ 2>/dev/null
 cp zlux-app-server/bin/start.sh zlux-app-server/bin/configure.sh ${APP_SERVER_COMPONENT_DIR}/bin
 chmod -R a-w zlux-app-server/ 2>/dev/null
-chmod 750 ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/defaults/serverConfig
-chmod 740 ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/defaults/serverConfig/*
 cd $INSTALL_DIR
 echo "</zowe-install-zlux.sh>" >> $LOG_FILE
