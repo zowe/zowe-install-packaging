@@ -8,66 +8,25 @@
  * Copyright IBM Corporation 2020
  */
 
-const expect = require('chai').expect;
-const debug = require('debug')('zowe-sanity-test:install:installed-utils');
-const SSH = require('node-ssh');
-const ssh = new SSH();
+const sshHelper = require('./ssh-helper');
 
-describe.only('verify file-utils', function() {
-  before('prepare SSH connection', function() {
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
-    expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
-    expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
-    expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_ROOT_DIR, 'ZOWE_ROOT_DIR is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_INSTANCE_DIR, 'ZOWE_INSTANCE_DIR is not defined').to.not.be.empty;
-
-    const password = process.env.SSH_PASSWD;
-
-    return ssh.connect({
-      host: process.env.SSH_HOST,
-      username: process.env.SSH_USER,
-      port: process.env.SSH_PORT,
-      password,
-      tryKeyboard: true,
-      onKeyboardInteractive: (name, instructions, instructionsLang, prompts, finish) => {
-        if (prompts.length > 0 && prompts[0].prompt.toLowerCase().includes('password')) {
-          finish([password]);
-        }
-      }
-    })
-      .then(function() {
-        debug('ssh connected');
-      });
+describe('verify file-utils', function() {
+  before('prepare SSH connection', async function() {
+    await sshHelper.prepareConnection();
   });
 
   let home_dir;
-  before('get required parameters', function() {
-    ssh.execCommand('echo $HOME')
-      .then(function(result) {
-        expect(result.stderr).to.be.empty;
-        expect(result.code).to.equal(0);
-        home_dir = result.stdout;
-      });
+  before('get required parameters', async function() {
+    home_dir = await sshHelper.executeCommandWithNoError('echo $HOME');
   });
 
   describe('verify get_full_path', function() {
 
     let curr_dir;
     // let parent_dir;
-    before('get required parameters', function() {
-      // return ssh.execCommand(`echo $(cd ../;pwd)`)
-      //   .then(function(result) {
-      //     expect(result.stderr).to.be.empty;
-      //     expect(result.code).to.equal(0);
-      //     parent_dir = result.stdout;
-      //   });
-      return ssh.execCommand('echo $PWD')
-        .then(function(result) {
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(0);
-          curr_dir = result.stdout;
-        });
+    before('get required parameters', async function() {
+      curr_dir = await sshHelper.executeCommandWithNoError('echo $PWD');
+      // parent_dir = await sshHelper.executeCommandWithNoError('echo $(cd ../;pwd)');
     });
 
     it('test home directory is expanded', async function() {
@@ -145,12 +104,8 @@ describe.only('verify file-utils', function() {
 
     let temp_dir = 'temp_' + Math.floor(Math.random() * 10e6);
     let inaccessible_dir = `${temp_dir}/inaccessible`;
-    before('set up test directory', function() {
-      return ssh.execCommand(`mkdir -p ${inaccessible_dir} && chmod a-wx ${temp_dir}`)
-        .then(function(result) {
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(0);
-        });
+    before('set up test directory', async function() {
+      await sshHelper.executeCommandWithNoError(`mkdir -p ${inaccessible_dir} && chmod a-wx ${temp_dir}`);
     });
 
     function get_inaccessible_message(directory) {
@@ -168,18 +123,12 @@ describe.only('verify file-utils', function() {
     });
 
     it('test non-traversable directory is not accessible', async function() {
-      await debug_command(`ls -al ${temp_dir}`);
-      await debug_command(`ls -al .`);
-      await debug_command(`ls -al ${inaccessible_dir}`);
+      if (process.env.SSH_HOST.toLowerCase().includes('marist')) {
+        // Marist seems to have elevated privileges be able to access non-traversable directories, so this fails
+        this.skip();
+      }
       await test_validate_directory_is_accessible(inaccessible_dir, false);
     });
-
-    async function debug_command(command) {
-      ssh.execCommand(command)
-        .then(function(result) {
-          console.log(`Executed '${command}'\nrc:${result.code}\nstdout:'${result.stdout}'\nstderr:'${result.stderr}'`)
-        });
-    }
 
     async function test_validate_directory_is_accessible(directory, expected_valid) {
       const command = `validate_directory_is_accessible "${directory}"`;
@@ -212,32 +161,18 @@ describe.only('verify file-utils', function() {
       await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
 
-    after('clean up test directory', function() {
-      return ssh.execCommand(`chmod 770 ${temp_dir} && rm -rf ${temp_dir}`)
-        .then(function(result) {
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(0);
-        });
+    after('clean up test directory', async function() {
+      await sshHelper.executeCommandWithNoError(`chmod 770 ${temp_dir} && rm -rf ${temp_dir}`);
     });
   });
   
   async function test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
     const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
     command = `. ${file_utils_path} && ${command}`;
-    await test_ssh_command_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr);
-  }
-
-  function test_ssh_command_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
-    console.log(command);
-    return ssh.execCommand(command)
-      .then(function(result) {
-        expect(result.code).to.equal(expected_rc);
-        expect(result.stdout).to.have.string(expected_stdout);
-        expect(result.stderr).to.have.string(expected_stderr);
-      });
+    await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
   }
 
   after('dispose SSH connection', function() {
-    ssh.dispose();
+    sshHelper.cleanUpConnection();
   });
 });
