@@ -31,17 +31,17 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/scripts/utils"
     script_filename: ./zowe-install-xmem.sh
-    script_parameters: "-d \"{{ zowe_dataset_prefix }}\" -b \"{{ zowe_xmem_loadlib }}\" -a \"{{ zowe_xmem_parmlib }}\" -r \"{{ zowe_xmem_proclib }}\"  -l \"{{ zowe_logs_dir }}\""
+    script_parameters: "-d \"{{ zowe_dataset_prefix }}\" -b \"{{ zowe_xmem_loadlib }}\" -a \"{{ zowe_xmem_parmlib }}\" -r \"{{ zowe_xmem_proclib }}\"  -l \"{{ zowe_install_logs_dir }}\""
 
 - name: Show content of ZSS proc {{ zowe_xmem_proclib_member_zss }}
   raw: cat "//'{{ zowe_xmem_proclib }}({{ zowe_xmem_proclib_member_zss }})'"
 
 - name: List log dir
-  raw: ls -l "{{ zowe_logs_dir }}"
+  raw: ls -l "{{ zowe_install_logs_dir }}"
   ignore_errors: True
 
 - name: Show install xmem log
-  raw: find {{ zowe_logs_dir }} -name "zowe-install-xmem-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  raw: find {{ zowe_install_logs_dir }} -name "zowe-install-xmem-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
 
 # ============================================================================
