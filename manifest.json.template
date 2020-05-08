@@ -12,8 +12,8 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.11.0-STAGING",
-      "artifact": "*.pax"
+      "version": "1.11.0-S-S-115-S-S-S",
+      "artifact": "zlux-core-1.11.0-20200508.230107.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "~1.11.0-STAGING",
