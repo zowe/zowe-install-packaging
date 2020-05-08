@@ -15,13 +15,7 @@
         "isHttps": false
       },
       "enabled": false
-    },
-    "childProcesses": [
-      {
-        "path": "../bin/zssServer.sh",
-        "once": true
-      }
-    ]
+    }
   },
   "agent": {
     //host is for zlux to know, not zss
