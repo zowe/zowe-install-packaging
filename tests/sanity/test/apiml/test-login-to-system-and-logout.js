@@ -23,7 +23,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let logged = async (headers, expectedStatus) => {
   let status;
   try {
-    const response = await request.get('/api/v1/gateway/auth/query', {
+    const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
       headers: headers
     });
     status = response.status;

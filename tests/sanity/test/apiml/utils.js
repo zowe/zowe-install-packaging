@@ -52,7 +52,8 @@ let verifyAndSetupEnvironment = () => {
     timeout: 30000,
     headers: {
       'Connection': 'Keep-Alive',
-      'Accept-Encoding': 'gzip,deflate'
+      'Accept-Encoding': 'gzip,deflate',
+      'X-CSRF-ZOSMF-HEADER': '*'
     }
   });
   debug(`Explorer server URL: ${baseUrl}`);
