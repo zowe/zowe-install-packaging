@@ -16,6 +16,7 @@ const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 
 let login = async () => {
+  console.log('Making request to: ', '/api/v1/apicatalog/auth/login');
   let response = await request.post('/api/v1/apicatalog/auth/login', {
     username, password
   });
@@ -55,11 +56,6 @@ let verifyAndSetupEnvironment = () => {
       'Accept-Encoding': 'gzip,deflate',
       'X-CSRF-ZOSMF-HEADER': '*'
     }
-  });
-
-  axios.interceptors.request.use(request => {
-    console.log('Starting Request', request.method, ' ', request.url, ' ', request.baseURL);
-    return request
   });
   debug(`Explorer server URL: ${baseUrl}`);
   username = process.env.SSH_USER;
