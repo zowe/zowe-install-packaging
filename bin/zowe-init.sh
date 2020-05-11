@@ -193,7 +193,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-        full_hostname=`$ping_bin $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
+        full_hostname=`$ping_bin -A ipv4 $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
         if [[ $? -eq 0 && -n "$full_hostname" ]]
         then
             ZOWE_EXPLORER_HOST=$full_hostname
@@ -274,7 +274,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IP_ADDRESS=`$ping_bin $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
+          ZOWE_IP_ADDRESS=`$ping_bin -A ipv4 $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
           if [[ ! -n "$ZOWE_IP_ADDRESS" ]]
           then
                echo Error: $ping_bin $hn command failed to find IP
