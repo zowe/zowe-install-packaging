@@ -23,11 +23,14 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let logged = async (headers, expectedStatus) => {
   let status;
   try {
+    testUtils.log('URL: ' + '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
     const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
       headers: headers
     });
+    testUtils.logResponse(response);
     status = response.status;
   } catch(err) {
+    testUtils.logResponse(err.response);
     status = err.response.status;
   }
 
@@ -35,9 +38,11 @@ let logged = async (headers, expectedStatus) => {
 };
 
 let logout = async (headers) => {
+  testUtils.log('URL: ' + '/api/v1/gateway/auth/logout');
   const response = await request.post('/api/v1/gateway/auth/logout', {},{
     headers: headers
   });
+  testUtils.logResponse(response);
   expect(response.status).to.equal(204);
 };
 

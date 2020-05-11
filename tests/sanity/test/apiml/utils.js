@@ -8,6 +8,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
+const _ = require('lodash');
 const debug = require('debug')('zowe-sanity-test:apiml:gateway');
 const axios = require('axios');
 const expect = require('chai').expect;
@@ -19,6 +20,8 @@ let login = async () => {
   let response = await request.post('/api/v1/apicatalog/auth/login', {
     username, password
   });
+
+  logResponse(response);
 
   // Validate the response at least basically
   expect(response.status).to.be.oneOf([200, 204]);
@@ -62,8 +65,19 @@ let verifyAndSetupEnvironment = () => {
   return request;
 };
 
+let logResponse = (res) => {
+  const conciseRes = _.pick(res, ['status', 'statusText', 'headers', 'data']);
+  debug('response', conciseRes);
+};
+
+let log = (message) => {
+  debug('API ML Tests ' + message);
+};
+
 module.exports = {
+  log,
   login,
+  logResponse,
   findCookieInResponse,
   verifyAndSetupEnvironment
 };
