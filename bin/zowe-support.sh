@@ -10,13 +10,27 @@
 # Copyright IBM Corporation 2019, 2020
 ################################################################################
 
+while getopts "l:" opt; do
+  case $opt in
+    l) INSTALL_LOG_DIR=$OPTARG;;
+    \?)
+      echo "Invalid option: -$opt" >&2
+      exit 1
+      ;;
+  esac
+done
+shift $(($OPTIND-1))
+
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 
-INSTALL_LOG_DIRECTORY=${ROOT_DIR}/install_log/
-LOGS_DIRECTORY=${INSTANCE_DIR}/logs
+# Get the log directory either from -l, or from default locations setting INSTALL_LOG_DIR
+. ${ROOT_DIR}/bin/utils/setup-log-dir.sh
+get_install_log_directory ${INSTALL_LOG_DIR}
+
+RUNTIME_LOG_DIR=${INSTANCE_DIR}/logs
 
 DATE=`date +%Y-%m-%d-%H-%M-%S`
-SUPPORT_ARCHIVE_LOCATION=$LOGS_DIRECTORY
+SUPPORT_ARCHIVE_LOCATION=$RUNTIME_LOG_DIR
 SUPPORT_ARCHIVE_NAME="zowe_support_${DATE}.pax"
 SUPPORT_ARCHIVE=${SUPPORT_ARCHIVE_LOCATION}/${SUPPORT_ARCHIVE_NAME}
 SUPPORT_ARCHIVE_LOG="${SUPPORT_ARCHIVE_LOCATION}/zowe_support_${DATE}.log"
@@ -53,7 +67,7 @@ function add_to_pax {
             SUBSTITUTION=""
         ;;
     esac
-    pax -wva -o saveext ${SUBSTITUTION} -s#${ROOT_DIR}#ROOT_DIR# -s#${INSTANCE_DIR}#INSTANCE_DIR# -s#${KEYSTORE_DIRECTORY}#KEYSTORE_DIR# -s#${TMPDIR:-/tmp}#TEMP_DIR# -f ${SUPPORT_ARCHIVE}  $1 2>&1 | tee -a ${SUPPORT_ARCHIVE_LOG}
+    pax -wva -o saveext ${SUBSTITUTION} -s#${ROOT_DIR}#ROOT_DIR# -s#${INSTANCE_DIR}#INSTANCE_DIR# -s#${INSTALL_LOG_DIR}#INSTALL_LOG_DIR# -s#${KEYSTORE_DIRECTORY}#KEYSTORE_DIR# -s#${TMPDIR:-/tmp}#TEMP_DIR# -f ${SUPPORT_ARCHIVE}  $1 2>&1 | tee -a ${SUPPORT_ARCHIVE_LOG}
 }
 
 function add_file_to_pax_if_found {
@@ -104,19 +118,19 @@ done < ${TEMP_DIR}/jobname.jobid.$$.list
 rm     ${TEMP_DIR}/jobname.jobid.$$.list
 
 # Collect install logs
-if [[ -d ${INSTALL_LOG_DIRECTORY} ]];then
-    write_to_log "Collecting installation log files from ${INSTALL_LOG_DIRECTORY}:"
-    add_to_pax ${INSTALL_LOG_DIRECTORY} installation_log *.log
+if [[ -d ${INSTALL_LOG_DIR} ]];then
+    write_to_log "Collecting installation log files from ${INSTALL_LOG_DIR}:"
+    add_to_pax ${INSTALL_LOG_DIR} installation_log *.log
 else
-    write_to_log "Directory ${INSTALL_LOG_DIRECTORY} was not found."
+    write_to_log "Directory ${INSTALL_LOG_DIR} was not found."
 fi
 
 # Collect rest of logs
-if [[ -d ${LOGS_DIRECTORY} ]];then
-    write_to_log "Collecting instance log files from ${LOGS_DIRECTORY}:"
-    add_to_pax ${LOGS_DIRECTORY} instance_logs *.log
+if [[ -d ${RUNTIME_LOG_DIR} ]];then
+    write_to_log "Collecting instance log files from ${RUNTIME_LOG_DIR}:"
+    add_to_pax ${RUNTIME_LOG_DIR} instance_logs *.log
 else
-    write_to_log "Directory ${LOGS_DIRECTORY} was not found."
+    write_to_log "Directory ${RUNTIME_LOG_DIR} was not found."
 fi
 
 # Collect api-definitions
