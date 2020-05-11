@@ -141,7 +141,7 @@ echo "Info: Number of files extra     = " $nExtra
 nMissing=`comm -23 RefRuntimeHash.sort CustRuntimeHash.sort | wc -l`
 echo "Info: Number of files missing   = " $nMissing
 
-if [[ `cat file3 | wc -l` -gt 0 ]]
+if [[ `cat file3 | wc -l` -gt 0 ]] # skip if no files are different
 then
     echo Info: List of matching files with different hashes
     echo
