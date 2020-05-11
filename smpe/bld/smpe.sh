@@ -223,7 +223,7 @@ echo "Generate reference hash keys of runtime files"
 stageDir=$ROOT/stage
 
 # The scripts and program to do this are in the scripts/utils directory
-zoweVRM=`ls $ROOT/../content`
+zoweVRM=`ls $ROOT/../content`  # The vrm directory (e.g. zowe-1.9.0) is the only entry under 'content'
 utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
 mkdir $utilsDir/hash # create work directory
 ls -l     $utilsDir/zowe-checksum-runtime.sh
@@ -233,7 +233,7 @@ chmod +x  $utilsDir/zowe-checksum-runtime.sh # make script executable
 $utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
 
 # save checksums and executable
-cp   $utilsDir/hash/RefRuntimeHash.txt $ROOT/.. # for publication
+cp   $utilsDir/hash/RefRuntimeHash.txt $ROOT/.. # for publication - needs to be conv. to ASCII
 cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication
 
 # verify the checksums of stageDir, to check zowe-verify-authenticity.sh
