@@ -78,6 +78,9 @@ LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 
+# Fix node.js piles up in IPC message queue
+. ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
+
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
