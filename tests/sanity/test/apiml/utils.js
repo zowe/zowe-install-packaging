@@ -16,7 +16,6 @@ const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 
 let login = async () => {
-  console.log('Making request to: ', '/api/v1/apicatalog/auth/login');
   let response = await request.post('/api/v1/apicatalog/auth/login', {
     username, password
   });

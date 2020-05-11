@@ -23,7 +23,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let logged = async (headers, expectedStatus) => {
   let status;
   try {
-    console.log('Making request to: ', '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
     const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
       headers: headers
     });
@@ -36,7 +35,6 @@ let logged = async (headers, expectedStatus) => {
 };
 
 let logout = async (headers) => {
-  console.log('Making request to: ', '/api/v1/gateway/auth/logout');
   const response = await request.post('/api/v1/gateway/auth/logout', {},{
     headers: headers
   });
