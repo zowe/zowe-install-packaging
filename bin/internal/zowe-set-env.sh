@@ -16,16 +16,6 @@ export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 export _BPXK_AUTOCVT="ON"
 
-# node.js instance is not fully cleaned up when exits. As time going, the message
-# queue will be full and any node.js command will generate this error:
-#
-# msgget: EDC5133I No space left on device. (errno2=0x07050305)
-# CEE5207E The signal SIGABRT was received.
-# Ended with rc=131
-#
-# FIXME: this is a temporary workaround suggested by node.js team.
-export __IPC_CLEANUP=1
-
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 umask 0002                                       # similar to chmod 755
