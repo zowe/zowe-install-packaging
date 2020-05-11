@@ -56,6 +56,11 @@ let verifyAndSetupEnvironment = () => {
       'X-CSRF-ZOSMF-HEADER': '*'
     }
   });
+
+  axios.interceptors.request.use(request => {
+    console.log('Starting Request', request.method, ' ', request.url, ' ', request.baseURL);
+    return request
+  });
   debug(`Explorer server URL: ${baseUrl}`);
   username = process.env.SSH_USER;
   password = process.env.SSH_PASSWD;
