@@ -33,8 +33,8 @@ then
 fi
 
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
-set_log_directory ${LOG_DIRECTORY}
-set_log_file "zowe-setup-certificates"
+set_install_log_directory ${LOG_DIRECTORY}
+set_install_log_file "zowe-setup-certificates"
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 

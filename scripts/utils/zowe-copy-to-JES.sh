@@ -66,10 +66,10 @@ SCRIPT="$(basename $0)"
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
 if [[ -z "${LOG_FILE}" ]]
 then
-  set_log_directory ${LOG_DIRECTORY}
-  set_log_file "zowe-copy-to-jes"
+  set_install_log_directory ${LOG_DIRECTORY}
+  set_install_log_file "zowe-copy-to-jes"
 else
-  set_log_file_from_full_path $LOG_FILE
+  set_install_log_file_from_full_path $LOG_FILE
 fi
 
 echo "<$SCRIPT>" | tee -a ${LOG_FILE}
