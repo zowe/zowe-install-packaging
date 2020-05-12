@@ -56,6 +56,7 @@ validate_node_home() {
   fi
 }
 
+# TODO - how do we ensure the other file are available/do some mocking?
 validate_node_home_not_empty() {
   . zowe-variable-utils.sh
   validate_variable_is_set "NODE_HOME" "${NODE_HOME}"
