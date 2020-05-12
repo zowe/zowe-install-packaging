@@ -52,23 +52,28 @@ fi
 runtimePath=$1
 hashPath=$2
 
-# Allow for ~ in path
-runtimePath=`sh -c "echo ${runtimePath}"` 
-# If the path is relative, then expand it
-if [[ "$runtimePath" != /* ]]
-then
-# Relative path
-runtimePath=$PWD/$runtimePath
-fi
+# # Allow for ~ in path
+# runtimePath=`sh -c "echo ${runtimePath}"` 
+# # If the path is relative, then expand it
+# if [[ "$runtimePath" != /* ]]
+# then
+# # Relative path
+# runtimePath=$PWD/$runtimePath
+# fi
+
+# # Allow for ~ in path
+# hashPath=`sh -c "echo ${hashPath}"` 
+# # If the path is relative, then expand it
+# if [[ "$hashPath" != /* ]]
+# then
+# # Relative path
+# hashPath=$PWD/$hashPath
+# fi
 
 # Allow for ~ in path
-hashPath=`sh -c "echo ${hashPath}"` 
 # If the path is relative, then expand it
-if [[ "$hashPath" != /* ]]
-then
-# Relative path
-hashPath=$PWD/$hashPath
-fi
+runtimePath=$(cd runtimePath;pwd)
+hashPath=$(cd hashPath;pwd)
 
 # Verify runtime directory contents minimally
 for dir in bin components scripts manifest.json
@@ -150,8 +155,8 @@ then
     do
         if [[ $file = $oldfile ]]
         then
-            echo $file $hash
-            echo $oldfile $oldhash
+            echo $file # $hash
+            # echo $oldfile $oldhash
             echo
             let "i=i+1" 
             if [[ $i -gt $maxDiffs ]]
@@ -165,14 +170,27 @@ then
     done < file3
 
     echo Info: End of list
-
+    echo
 fi
 
-echo
+if [[ $nExtra -gt 0 ]]
+then
+    echo Info: First 10 extra files 
+    comm -13 RefRuntimeHash.sort CustRuntimeHash.sort | head | awk '{ print $1 }'
+    echo
+fi
 
-echo "Info: Customer  runtime hash file is available in " 
+
+if [[ $nMissing -gt 0 ]]
+then
+    echo Info: First 10 missing files 
+    comm -23 RefRuntimeHash.sort CustRuntimeHash.sort | head | awk '{ print $1 }'
+    echo
+fi
+
+echo "Info: Customer  runtime hash files are available in " 
 ls $hashPath/CustRuntimeHash.* 
-echo "Info: Reference runtime hash file is available in " 
+echo "Info: Reference runtime hash files are available in " 
 ls $hashPath/RefRuntimeHash.* 
 
 rm files.in file3 # temp work files
