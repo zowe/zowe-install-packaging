@@ -15,13 +15,7 @@
         "isHttps": false
       },
       "enabled": false
-    },
-    "childProcesses": [
-      {
-        "path": "../bin/zssServer.sh",
-        "once": true
-      }
-    ]
+    }
   },
   "agent": {
     //host is for zlux to know, not zss
@@ -46,7 +40,7 @@
 
   "dataserviceAuthentication": {
     //this specifies the default authentication type for dataservices that didn't specify which type to use. These dataservices therefore should not expect a particular type of authentication to be used.
-    "defaultAuthentication": "zss",
+    "defaultAuthentication": "saf",
     //enable this to use role-based access control (RBAC) for Zowe dataservice endpoints
     "rbac": false,
     
@@ -60,9 +54,9 @@
       // "plugins": ["org.zowe.zlux.auth.zosmf"]
       //},
 
-      "zss": {
-        "plugins": ["org.zowe.zlux.auth.zss"]
-      } 
+      "saf": {
+        "plugins": ["org.zowe.zlux.auth.safsso"]
+      }
       
     }
   }
