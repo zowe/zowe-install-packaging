@@ -25,7 +25,7 @@ describe('test mvs with authentication via gateway', function() {
     const uuid = testUtils.uuid();
     const authenticationCookie = await testUtils.login(uuid);
 
-    testUtils.log(uuid, ` URL: /api/v2/datasets/sys1.p*`);
+    testUtils.log(uuid, ' URL: /api/v2/datasets/sys1.p*');
     const response = await request.get('/api/v2/datasets/sys1.p*', {
       headers: {
         'Cookie': authenticationCookie,
