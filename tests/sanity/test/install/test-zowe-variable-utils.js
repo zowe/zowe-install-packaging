@@ -46,7 +46,7 @@ describe('verify zowe-variable-utils', function() {
   describe(`verify ${validate_zowe_prefix}`, function() {
 
     it('test empty prefix validated false', async function() {
-      const command = `${validate_zowe_prefix}`;
+      const command = `export ZOWE_PREFIX="" && ${validate_zowe_prefix}`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 1, '', 'ZOWE_PREFIX is empty');
     });
 

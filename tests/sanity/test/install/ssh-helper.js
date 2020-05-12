@@ -77,7 +77,7 @@ const expectStringMatchExceptEmpty = async (actual, expected) => {
   } else {
     expect(actual).to.have.string(expected);
   }
-}
+};
 
 // export constants and methods
 module.exports = {
