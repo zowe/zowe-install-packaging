@@ -66,9 +66,18 @@ const executeCommand = async (command) => {
 const testCommand = async(command, expected_rc, expected_stdout, expected_stderr) => {
   const {rc, stdout, stderr} = await executeCommand(command);
   expect(rc).to.equal(expected_rc);
-  expect(stdout).to.have.string(expected_stdout);
-  expect(stderr).to.have.string(expected_stderr);
+  expectStringMatchExceptEmpty(stdout, expected_stdout);
+  expectStringMatchExceptEmpty(stderr, expected_stderr);
 };
+
+// If a string is specified we want to check that that was part of the actual, but if it was empty we want to check that we actually got empty, so that we can't match on any error
+const expectStringMatchExceptEmpty = async (actual, expected) => {
+  if (expected === '') {
+    expect(actual).to.be.empty;
+  } else {
+    expect(actual).to.have.string(expected);
+  }
+}
 
 // export constants and methods
 module.exports = {
