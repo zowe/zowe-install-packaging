@@ -71,7 +71,7 @@ describe('test api mediation layer logout functionality', function() {
 
   it('should login to the system and properly logout using Cookie', async () => {
     const uuid = testUtils.uuid();
-    const authenticationCookie = await testUtils.login();
+    const authenticationCookie = await testUtils.login(uuid);
     const authorizationHeaders = {
       'Cookie': authenticationCookie
     };

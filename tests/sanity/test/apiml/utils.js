@@ -17,8 +17,8 @@ const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 
 let login = async (uuid) => {
-  log(uuid, 'URL: /api/v1/apicatalog/auth/login');
-  let response = await request.post('/api/v1/apicatalog/auth/login', {
+  log(uuid, 'URL: /api/v1/gateway/auth/login');
+  let response = await request.post('/api/v1/gateway/auth/login', {
     username, password
   });
 
@@ -51,9 +51,10 @@ let verifyAndSetupEnvironment = () => {
   expect(environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
   const baseUrl = `https://${environment.SSH_HOST}:${environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
+  const SECOND = 1000;
   request = axios.create({
     baseURL: baseUrl,
-    timeout: 30000,
+    timeout: 120 * SECOND,
     headers: {
       'Connection': 'Keep-Alive',
       'Accept-Encoding': 'gzip,deflate',
