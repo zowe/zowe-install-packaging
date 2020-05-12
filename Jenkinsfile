@@ -11,7 +11,7 @@
  */
 
 
-node('ibm-jenkins-slave-nvm-wip') {
+node('ibm-jenkins-slave-nvm') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
