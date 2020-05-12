@@ -193,7 +193,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-        full_hostname=`$ping_bin $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
+        full_hostname=`$ping_bin -A ipv4 $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
         if [[ $? -eq 0 && -n "$full_hostname" ]]
         then
             ZOWE_EXPLORER_HOST=$full_hostname
@@ -236,7 +236,7 @@ ip=$2
 # 4 - ip parameter or hostname parameter is an empty string
 
 # Does PING of hostname yield correct IP?
-$ping_bin $hostname | grep $ip 1> /dev/null
+$ping_bin -A ipv4 $hostname | grep $ip 1> /dev/null
 if [[ $? -eq 0 ]]
 then
         # echo ip $ip is OK
@@ -274,7 +274,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IP_ADDRESS=`$ping_bin $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
+          ZOWE_IP_ADDRESS=`$ping_bin -A ipv4 $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
           if [[ ! -n "$ZOWE_IP_ADDRESS" ]]
           then
                echo Error: $ping_bin $hn command failed to find IP
