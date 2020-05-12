@@ -56,12 +56,24 @@ mkdir -p $TEMP_DIR
 chmod a+rwx $TEMP_DIR 
 
 . ${INSTALL_DIR}/bin/utils/setup-log-dir.sh
+. ${INSTALL_DIR}/bin/utils/file-utils.sh #source this here as setup-log-dir can't get it from root as it isn't install yet
+
+if [[ -z "$INSTALL_TARGET" ]]
+then
+  echo "-i parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+else
+  get_full_path ${INSTALL_TARGET} ZOWE_ROOT_DIR
+fi
+
 if [[ -z "${LOG_FILE}" ]]
 then
-  set_install_log_directory ${LOG_DIRECTORY}
+  set_install_log_directory "${LOG_DIRECTORY}"
+  validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
   set_install_log_file "zowe-install"
 else
-  set_install_log_file_from_full_path $LOG_FILE
+  set_install_log_file_from_full_path "${LOG_FILE}"
+  validate_log_file_not_in_root_dir "${LOG_FILE}" "${ZOWE_ROOT_DIR}"
 fi
 
 if [ -z "$ZOWE_VERSION" ]; then
@@ -72,19 +84,6 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-if [[ -z "$INSTALL_TARGET" ]]
-then
-  echo "-i parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
-  exit 1
-else
-  # If the value starts with a ~ for the home variable then evaluate it
-  ZOWE_ROOT_DIR=`sh -c "echo $INSTALL_TARGET"`
-  # If the path is relative, then expand it
-  if [[ "$ZOWE_ROOT_DIR" != /* ]]
-  then
-    ZOWE_ROOT_DIR=$PWD/$ZOWE_ROOT_DIR
-  fi
-fi
 
 if [[ -z "$DSN_PREFIX" ]]
 then
