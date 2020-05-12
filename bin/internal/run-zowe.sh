@@ -13,12 +13,7 @@
 checkForErrorsFound() {
   if [[ $ERRORS_FOUND > 0 ]]
   then
-    # if -v passed in any validation failures abort
-    if [[ ! -z "$VALIDATE_ABORTS" ]]
-    then
-      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${ROOT_DIR}/scripts/internal/run-zowe.sh and re-launch Zowe"
-      exit $ERRORS_FOUND
-    fi
+      echo "$ERRORS_FOUND errors were found during validatation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
   fi
 }
 
@@ -26,8 +21,6 @@ checkForErrorsFound() {
 while getopts "c:v" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
-    v)
-      VALIDATE_ABORTS=1;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -78,6 +71,9 @@ LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 
+# Fix node.js piles up in IPC message queue
+. ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
+
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
@@ -97,15 +93,11 @@ then
 fi
 
 #Explorers may be present, but have a prereq on gateway, not desktop
-#ZSS exists within app-server, may desire a distinct component later on
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
+  LAUNCH_COMPONENTS=zss,app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
-#ZSS could be included separate to app-server, and vice-versa
-#But for simplicity of this script we have app-server prereq zss in DESKTOP
-#And zss & app-server sharing WORKSPACE_DIR
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
 then
@@ -138,6 +130,12 @@ do
 done
 
 checkForErrorsFound
+
+if [[ "${VALIDATE_ONLY}" == "true" ]]
+then
+  echo "Validation complete - VALIDATE_ONLY mode set to true, so Zowe will not start."
+  exit $ERRORS_FOUND
+fi
 
 mkdir -p ${WORKSPACE_DIR}/backups
 # Make accessible to group so owning user can edit?
