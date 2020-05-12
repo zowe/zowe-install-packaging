@@ -37,6 +37,7 @@ validate_zowe_prefix() {
       print_error_message "ZOWE_PREFIX '${ZOWE_PREFIX}' should be less than 7 characters"
       return 1
     fi
+  else
     return prefix_set_rc
   fi
 }
