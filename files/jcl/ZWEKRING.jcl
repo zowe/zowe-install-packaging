@@ -45,7 +45,11 @@
 //*    updating the SET statements CN=, OU=, O=, L=, SP= and C=.
 //*
 //* 9) Customize the commands in the DD statement that matches your
-//*     security product so that they meet your system requirements.
+//*    security product so that they meet your system requirements.
+//*    Especially focus on the part that is adding all certificates
+//*    of the CA chain of the Zowe certificate to the key ring.
+//*    Similarly, add the root CA of the z/OSMF certificate to the
+//*    keyring.
 //*
 //* Note(s):
 //*
