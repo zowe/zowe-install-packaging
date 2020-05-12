@@ -25,7 +25,7 @@ shift $(($OPTIND-1))
 
 # Get the log directory either from -l, or from default locations setting INSTALL_LOG_DIR
 . ${ROOT_DIR}/bin/utils/setup-log-dir.sh
-get_install_log_directory ${INSTALL_LOG_DIR}
+get_install_log_directory "${INSTALL_LOG_DIR}"
 
 RUNTIME_LOG_DIR=${INSTANCE_DIR}/logs
 
