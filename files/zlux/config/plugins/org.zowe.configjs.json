@@ -1,4 +1,5 @@
 {
   "identifier": "org.zowe.configjs",
-  "pluginLocation": "../../zlux-server-framework/plugins/config"
+  "pluginLocation": "components/app-server/share/zlux-server-framework/plugins/config",
+  "relativeTo": "$ROOT_DIR"
 }
