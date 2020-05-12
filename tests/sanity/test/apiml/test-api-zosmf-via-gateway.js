@@ -149,5 +149,5 @@ describe('test api mediation layer zosmf api', function() {
     });
 
     expect(response.status).to.equal(204);
-  })
+  });
 });
