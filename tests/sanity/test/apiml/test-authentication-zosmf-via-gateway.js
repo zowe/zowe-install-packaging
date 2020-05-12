@@ -57,6 +57,9 @@ describe('test api mediation layer zosmf authentication', function() {
       testUtils.logResponse(uuid, response);
 
       assertNotEmptyValidResponse(response);
+      await testUtils.logout(uuid, {
+        'Cookie': authenticationCookie
+      });
     });
 
     it('with valid LTPA cookie', async () => {
@@ -95,6 +98,9 @@ describe('test api mediation layer zosmf authentication', function() {
       testUtils.logResponse(uuid, response);
 
       assertNotEmptyValidResponse(response);
+      await testUtils.logout(uuid, {
+        'Authorization': `Bearer ${tokenValue}`,
+      });
     });
   });
 });

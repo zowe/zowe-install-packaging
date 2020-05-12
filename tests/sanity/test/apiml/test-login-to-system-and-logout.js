@@ -37,18 +37,9 @@ let logged = async (uuid, headers, expectedStatus) => {
   expect(status).to.equal(expectedStatus);
 };
 
-let logout = async (uuid, headers) => {
-  testUtils.log(uuid, 'URL: ' + '/api/v1/gateway/auth/logout');
-  const response = await request.post('/api/v1/gateway/auth/logout', {},{
-    headers: headers
-  });
-  testUtils.logResponse(uuid, response);
-  expect(response.status).to.equal(204);
-};
-
 let assertLogout = async (uuid, authorizationHeaders) => {
   await logged(uuid, authorizationHeaders, HttpStatus.SUCCESS);
-  await logout(uuid, authorizationHeaders);
+  await testUtils.logout(uuid, authorizationHeaders);
   await logged(uuid, authorizationHeaders, HttpStatus.UNAUTHORIZED);
 };
 

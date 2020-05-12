@@ -136,4 +136,18 @@ describe('test api mediation layer zosmf api', function() {
         expect(err).to.be.null;
       });
   });
+
+  it('should logout', async () => {
+    if (!cookies || !cookies[APIML_AUTH_COOKIE]) {
+      this.skip();
+    }
+
+    const response = await REQ.post('/api/v1/gateway/auth/logout', {},{
+      headers: {
+        'Cookie':  APIML_AUTH_COOKIE + cookies[APIML_AUTH_COOKIE]
+      }
+    });
+
+    expect(response.status).to.equal(204);
+  })
 });

@@ -36,5 +36,8 @@ describe('test mvs with authentication via gateway', function() {
 
     expect(response.status).to.equal(200);
     expect(response.data).to.not.be.empty;
+    await testUtils.logout(uuid, {
+      'Cookie': authenticationCookie
+    });
   });
 });

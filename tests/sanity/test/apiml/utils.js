@@ -43,6 +43,16 @@ let findCookieInResponse = (response, cookieName) => {
   return authenticationCookie[0];
 };
 
+let logout = async (uuid, headers) => {
+  log(uuid, 'URL: ' + '/api/v1/gateway/auth/logout');
+  const response = await request.post('/api/v1/gateway/auth/logout', {},{
+    headers: headers
+  });
+  logResponse(uuid, response);
+
+  expect(response.status).to.equal(204);
+};
+
 let verifyAndSetupEnvironment = () => {
   const environment = process.env;
   expect(environment.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
@@ -86,6 +96,7 @@ function uuid() {
 module.exports = {
   log,
   login,
+  logout,
   logResponse,
   findCookieInResponse,
   verifyAndSetupEnvironment,
