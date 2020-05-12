@@ -19,7 +19,7 @@ validate_variable_is_set() {
   if [[ -z "${value}" ]]
   then
     print_error_message "${variable_name} is empty"
-    exit 1
+    return 1
   fi
 }
 
@@ -35,7 +35,7 @@ validate_zowe_prefix() {
     if [[ $PREFIX_LENGTH > 6 ]]
     then
       print_error_message "ZOWE_PREFIX '${ZOWE_PREFIX}' should be less than 7 characters"
-      exit 1
+      return 1
     fi
     return prefix_set_rc
   fi
