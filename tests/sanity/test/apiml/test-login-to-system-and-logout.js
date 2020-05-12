@@ -20,36 +20,36 @@ const HttpStatus = {
 // allow self signed certs
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-let logged = async (headers, expectedStatus) => {
+let logged = async (uuid, headers, expectedStatus) => {
   let status;
   try {
-    testUtils.log('URL: ' + '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
+    testUtils.log(uuid, 'URL: ' + '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
     const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
       headers: headers
     });
-    testUtils.logResponse(response);
+    testUtils.logResponse(uuid, response);
     status = response.status;
   } catch(err) {
-    testUtils.logResponse(err.response);
+    testUtils.logResponse(uuid, err.response);
     status = err.response.status;
   }
 
   expect(status).to.equal(expectedStatus);
 };
 
-let logout = async (headers) => {
-  testUtils.log('URL: ' + '/api/v1/gateway/auth/logout');
+let logout = async (uuid, headers) => {
+  testUtils.log(uuid, 'URL: ' + '/api/v1/gateway/auth/logout');
   const response = await request.post('/api/v1/gateway/auth/logout', {},{
     headers: headers
   });
-  testUtils.logResponse(response);
+  testUtils.logResponse(uuid, response);
   expect(response.status).to.equal(204);
 };
 
-let assertLogout = async (authorizationHeaders) => {
-  await logged(authorizationHeaders, HttpStatus.SUCCESS);
-  await logout(authorizationHeaders);
-  await logged(authorizationHeaders, HttpStatus.UNAUTHORIZED);
+let assertLogout = async (uuid, authorizationHeaders) => {
+  await logged(uuid, authorizationHeaders, HttpStatus.SUCCESS);
+  await logout(uuid, authorizationHeaders);
+  await logged(uuid, authorizationHeaders, HttpStatus.UNAUTHORIZED);
 };
 
 describe('test api mediation layer logout functionality', function() {
@@ -58,22 +58,24 @@ describe('test api mediation layer logout functionality', function() {
   });
 
   it('should login to the system and properly logout with Bearer', async () => {
-    const authenticationCookie = await testUtils.login();
+    const uuid = testUtils.uuid();
+    const authenticationCookie = await testUtils.login(uuid);
     const jwtToken = authenticationCookie.split(';')[0]
       .split('=')[1];
     const authorizationHeaders = {
       'Authorization': 'Bearer ' + jwtToken
     };
 
-    await assertLogout(authorizationHeaders);
+    await assertLogout(uuid, authorizationHeaders);
   });
 
   it('should login to the system and properly logout using Cookie', async () => {
+    const uuid = testUtils.uuid();
     const authenticationCookie = await testUtils.login();
     const authorizationHeaders = {
       'Cookie': authenticationCookie
     };
 
-    await assertLogout(authorizationHeaders);
+    await assertLogout(uuid, authorizationHeaders);
   });
 });

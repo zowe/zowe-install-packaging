@@ -16,12 +16,13 @@ const expect = require('chai').expect;
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 
-let login = async () => {
+let login = async (uuid) => {
+  log(uuid, 'URL: /api/v1/apicatalog/auth/login');
   let response = await request.post('/api/v1/apicatalog/auth/login', {
     username, password
   });
 
-  logResponse(response);
+  logResponse(uuid, response);
 
   // Validate the response at least basically
   expect(response.status).to.be.oneOf([200, 204]);
@@ -65,19 +66,27 @@ let verifyAndSetupEnvironment = () => {
   return request;
 };
 
-let logResponse = (res) => {
+let logResponse = (uuid, res) => {
   const conciseRes = _.pick(res, ['status', 'statusText', 'headers', 'data']);
-  debug('response', conciseRes);
+  debug(uuid + ' response', conciseRes);
 };
 
-let log = (message) => {
-  debug('API ML Tests ' + message);
+let log = (uuid, message) => {
+  debug(uuid + ' API ML Tests ' + message);
 };
+
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 module.exports = {
   log,
   login,
   logResponse,
   findCookieInResponse,
-  verifyAndSetupEnvironment
+  verifyAndSetupEnvironment,
+  uuid
 };

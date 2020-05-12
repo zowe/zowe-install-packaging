@@ -22,14 +22,17 @@ describe('test mvs with authentication via gateway', function() {
   });
 
   it('Get jobs for the current SSH User via gateway', async () => {
-    const authenticationCookie = await testUtils.login();
+    const uuid = testUtils.uuid();
+    const authenticationCookie = await testUtils.login(uuid);
 
+    testUtils.log(uuid, ` URL: /api/v2/datasets/sys1.p*`);
     const response = await request.get('/api/v2/datasets/sys1.p*', {
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
       }
     });
+    testUtils.logResponse(uuid, response);
 
     expect(response.status).to.equal(200);
     expect(response.data).to.not.be.empty;

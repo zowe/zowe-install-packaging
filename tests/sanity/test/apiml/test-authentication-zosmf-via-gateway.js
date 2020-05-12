@@ -44,14 +44,17 @@ describe('test api mediation layer zosmf authentication', function() {
     });
 
     it('with valid cookie', async () => {
-      const authenticationCookie = await testUtils.login();
+      const uuid = testUtils.uuid();
+      const authenticationCookie = await testUtils.login(uuid);
 
+      testUtils.log(uuid, '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
       const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
         headers: {
           'Cookie': authenticationCookie,
           'X-CSRF-ZOSMF-HEADER': '*'
         }
       });
+      testUtils.logResponse(uuid, response);
 
       assertNotEmptyValidResponse(response);
     });
@@ -77,16 +80,19 @@ describe('test api mediation layer zosmf authentication', function() {
     });
 
     it('with valid JWT token via Bearer', async () => {
-      const authenticationCookie = await testUtils.login();
+      const uuid = testUtils.uuid();
+      const authenticationCookie = await testUtils.login(uuid);
       const justCookie = authenticationCookie.split(';')[0];
       const tokenValue = justCookie.split('=')[1];
 
+      testUtils.log(uuid, '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
       const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
         headers: {
           'Authorization': `Bearer ${tokenValue}`,
           'X-CSRF-ZOSMF-HEADER': '*'
         }
       });
+      testUtils.logResponse(uuid, response);
 
       assertNotEmptyValidResponse(response);
     });

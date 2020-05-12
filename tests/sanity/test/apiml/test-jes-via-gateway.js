@@ -22,15 +22,18 @@ describe('test jes with authentication via gateway', function() {
   });
 
   it('Get jobs for the current SSH User via gateway', async () => {
-    const authenticationCookie = await testUtils.login();
+    const uuid = testUtils.uuid();
+    const authenticationCookie = await testUtils.login(uuid);
 
     const username = process.env.SSH_USER;
+    testUtils.log(uuid, ` URL: /api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`);
     const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
       }
     });
+    testUtils.logResponse(uuid, response);
 
     expect(response.status).to.equal(200);
     expect(response.data).to.not.be.empty;
