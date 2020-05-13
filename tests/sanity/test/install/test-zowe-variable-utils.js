@@ -30,7 +30,7 @@ describe('verify zowe-variable-utils', function() {
 
     it('test set variable is set', async function() {
       const variable_name = 'test_set_variable';
-      const command = `export ${variable_name}="true" && ${validate_variable_is_set} "${variable_name}" "\${${variable_name}}"`;
+      const command = `export ${variable_name}="true" && ${validate_variable_is_set} "${variable_name}"`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
     });
 
