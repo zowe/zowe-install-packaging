@@ -75,7 +75,8 @@ validate_directory_is_writable() {
   fi
 }
 
-# Note requires #ROOT_DIR to be set to use errror.sh, otherwise falls back to stderr
+# TODO LATER - refactor this into shared script
+# Note requires #ROOT_DIR to be set to use error.sh, otherwise falls back to stderr
 print_error_message() {
   message=$1
   error_path=${ROOT_DIR}/scripts/utils/error.sh

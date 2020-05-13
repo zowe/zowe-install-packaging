@@ -236,7 +236,7 @@ ip=$2
 # 4 - ip parameter or hostname parameter is an empty string
 
 # Does PING of hostname yield correct IP?
-$ping_bin $hostname | grep $ip 1> /dev/null
+$ping_bin -A ipv4 $hostname | grep $ip 1> /dev/null
 if [[ $? -eq 0 ]]
 then
         # echo ip $ip is OK

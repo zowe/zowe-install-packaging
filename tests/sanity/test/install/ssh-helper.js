@@ -8,8 +8,6 @@
  * Copyright IBM Corporation 2020
  */
 
-
-//TODO - make this a superclass?
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:install:ssh-helper');
 const SSH = require('node-ssh');
