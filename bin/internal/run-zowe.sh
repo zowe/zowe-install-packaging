@@ -123,7 +123,7 @@ do
   VALIDATE_SCRIPT=${LAUNCH_COMPONENT}/validate.sh
   if [[ -x ${VALIDATE_SCRIPT} ]]
   then
-    $(. ${VALIDATE_SCRIPT})
+    . ${VALIDATE_SCRIPT}
     retval=$?
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
