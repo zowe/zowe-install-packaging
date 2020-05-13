@@ -71,30 +71,83 @@ describe.only('verify node-utils', function() { //TODO NOW - remove only
         await sshHelper.executeCommandWithNoError(`mkdir -p ${node_home}/bin && touch ${node_home}/bin/node && chmod u+x ${node_home}/bin/node`);
       });
 
-      it('test node home with incorrect bin/node throws error', async function() {
-        await test_validate_node_home(node_home, 1, '', `NODE_HOME: ${node_home}/bin/node is not functioning correctly:`);
-      });
-
       after('dispose dummy node', async function() {
         await sshHelper.executeCommandWithNoError(`rm -rf ${temp_dir}`);
       });
+
+      it('test node home with incorrect bin/node throws error', async function() {
+        await test_validate_node_home(node_home, 1, '', `NODE_HOME: ${node_home}/bin/node is not functioning correctly:`);
+      });
     });
 
-    // it('test node added to path if bin missing', async function() {
-    //   const path_pre_addition = '/junk_path2/node';
-    //   const node_home = '/junk_path2/node';
-    //   await test_node_added_to_path(node_home, true, path_pre_addition);
-    // });
-
-    // it('test node not added to path if already there', async function() {
-    //   const path_pre_addition = '/junk_path3/node/bin';
-    //   const node_home = '/junk_path3/node';
-    //   await test_node_added_to_path(node_home, false, path_pre_addition);
-    // });
+    it('test real node home okay', async function() {
+      // We can't rely on all systems to have a valid node home, so just run against Marist for now?
+      if (! process.env.SSH_HOST.toLowerCase().includes('marist')) {
+        this.skip();
+      }
+      await test_validate_node_home(start_node_home, 0, 'OK: Node is working\nOK: Node is at a supported version', '');
+    });
 
     async function test_validate_node_home(node_home, expected_rc, expected_stdout, expected_stderr) {
       const command = `export NODE_HOME=${node_home} && ${validate_node_home}`;
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr);
+    }
+  });
+
+  const check_node_version = 'check_node_version';
+  describe(`verify ${check_node_version}`, function() {
+
+    it('test pre-v6 fails', async function() {
+      await test_node_version('v4.0.0', false);
+    });
+
+    it('test pre-v6.14 fails', async function() {
+      await test_node_version('v6.13.1', false);
+    });
+
+    it('test pre-v6.14.4 fails', async function() {
+      await test_node_version('v6.14.3', false);
+    });
+
+    it('test v6.14.4 passes', async function() {
+      await test_node_version('v6.14.4', true);
+    });
+
+    it('test v6.17.0 passes', async function() {
+      await test_node_version('v6.17.0', true);
+    });
+
+    it('test v8.16.0 passes', async function() {
+      await test_node_version('v8.16.0', true);
+    });
+
+    it('test v8.16.1 fails with special message', async function() {
+      const command = `${check_node_version} "v8.16.1"`;
+      const expected_err = 'Node Version 8.16.1 is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details';
+      await test_node_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
+    });
+
+    it('test v8.16.2 passes', async function() {
+      await test_node_version('v8.16.2', true);
+    });
+
+    it('test v8.17.0 passes', async function() {
+      await test_node_version('v8.17.0', true);
+    });
+
+    it('test v12.13.0 passes', async function() {
+      await test_node_version('v12.13.0', true);
+    });
+
+    it('test v12.16.1 passes', async function() {
+      await test_node_version('v12.16.1', true);
+    });
+    
+    async function test_node_version(version, expected_valid) {
+      const command = `${check_node_version} "${version}"`;
+      const expected_rc = expected_valid ? 0 : 1;
+      const expected_err = expected_valid ? '' : `Node Version ${version} is less than the minimum level required of v6.14.4`;
+      await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
   });
   

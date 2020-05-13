@@ -49,34 +49,62 @@ validate_node_home() {
     return 1
   fi
 
-  NODE_OK=`${NODE_HOME}/bin/node -e "console.log('ok')" 2>&1`
-  if [[ ${NODE_OK} == "ok" ]]
+  node_ok=`${NODE_HOME}/bin/node -e "console.log('ok')" 2>&1`
+  if [[ ${node_ok} == "ok" ]]
   then
     echo "OK: Node is working"
   else
-    print_error_message "NODE_HOME: ${NODE_HOME}/bin/node is not functioning correctly: ${NODE_OK}"
+    print_error_message "NODE_HOME: ${NODE_HOME}/bin/node is not functioning correctly: ${node_ok}"
     return 1
   fi
 
-  NODE_MIN_VERSION=6.14
-  NODE_VERSION=`${NODE_HOME}/bin/node --version` 
-  NODE_VERSION_TRIMMED=`${NODE_HOME}/bin/node --version | sed 's/^.\{1\}//' | cut -d. -f1,2 2>&1`
-  if [[ $NODE_VERSION = "v8.16.1" ]];
+  node_version=`${NODE_HOME}/bin/node --version`
+  check_node_version_number "${node_version}"
+  node_version_rc=$?
+  if [[ ${node_version_rc} -eq 0 ]]
   then
-    print_error_message "NODE Version 8.16.1 is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details";
-  elif [[ `echo "$NODE_VERSION_TRIMMED $NODE_MIN_VERSION" | awk '{print ($1 < $2)}'` == 1 ]];
-  then
-    print_error_message "NODE Version ${NODE_VERSION_TRIMMED} is less than minimum level required of ${NODE_MIN_VERSION}";
-  else
-    echo "OK: Node is at a supported version"
+    echo "OK: Node ${node_version} is a supported version"
   fi
-
+  return ${node_version_rc}
 }
 
 validate_node_home_not_empty() {
   . ${utils_dir}/zowe-variable-utils.sh
   validate_variable_is_set "NODE_HOME" "${NODE_HOME}"
   return $?
+}
+
+# Given a node version from the `node --version` command, checks if it is valid
+check_node_version() {
+  node_version=$1
+
+  if [[ ${node_version} == "v8.16.1" ]]
+  then
+    print_error_message "Node Version 8.16.1 is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details"
+    return 1
+  fi
+
+  node_major_version=$(echo ${node_version} | cut -d '.' -f 1 | cut -d 'v' -f 2)
+  node_minor_version=$(echo ${node_version} | cut -d '.' -f 2)
+  node_fix_version=$(echo ${node_version} | cut -d '.' -f 3)
+  
+  too_low=""
+  if [[ ${node_major_version} -lt 6 ]]
+  then
+    too_low="true"
+  elif [[ ${node_major_version} -eq 6 ]] && [[ $node_minor_version -lt 14 ]]
+  then
+    too_low="true"
+  elif [[ ${node_major_version} -eq 6 ]] && [[ $node_minor_version -eq 14 ]] && [[ $node_fix_version -lt 4 ]]
+  then
+    too_low="true"
+  fi
+
+  if [[ ${too_low} == "true" ]]
+  then
+    print_error_message "Node Version ${node_version} is less than the minimum level required of v6.14.4"
+    return 1
+  fi
 }
 
 # TODO - refactor this into shared script?
