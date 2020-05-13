@@ -10,7 +10,7 @@
 
 const sshHelper = require('./ssh-helper');
 
-describe.only('verify node-utils', function() { //TODO NOW - remove only
+describe('verify node-utils', function() {
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
