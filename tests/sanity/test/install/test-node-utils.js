@@ -144,7 +144,8 @@ describe('verify node-utils', function() {
       const command = `${check_node_version} "${version}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_err = expected_valid ? '' : `Node Version ${version} is less than the minimum level required of v6.14.4`;
-      await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+      // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+      await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_err, expected_err);
     }
   });
   
