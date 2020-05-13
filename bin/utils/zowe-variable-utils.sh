@@ -12,6 +12,23 @@
 
 #TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
 
+# Try and work out where we are even if sourced
+if [[ -n ${ZOWE_ROOT_DIR} ]]
+then
+  export utils_dir="${ZOWE_ROOT_DIR}/bin/utils"
+elif [[ -n ${ROOT_DIR} ]]
+then
+  export utils_dir="${ROOT_DIR}/bin/utils"
+elif [[ $0 == "zowe-variable-utils.sh" ]] #Not called by source
+then
+  export utils_dir=$(cd $(dirname $0);pwd)
+else
+  echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-install-directory' before running." 1>&2
+fi
+
+# Source common util functions
+. ${utils_dir}/common.sh
+
 # Takes in two parameters - the name of the variable (for error messaging) and the value
 validate_variable_is_set() {
   variable_name=$1

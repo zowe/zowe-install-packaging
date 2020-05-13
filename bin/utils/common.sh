@@ -7,10 +7,19 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019, 2020
+# Copyright IBM Corporation 2020
 ################################################################################
 
-# PLEASE NOTE - this is script is planned for removal - please use node-utils.sh instead
+print_error_message() {
+  message=$1
+  #output an error and add to the count
+  if [ -z "${ERRORS_FOUND}" ];
+  then
+    ERRORS_FOUND=0
+  fi
 
-. ${ROOT_DIR}/bin/utils/node-utils.sh
-validate_node_home
+  # echo error to standard out and err
+  echo "Error ${ERRORS_FOUND}: ${message}"
+  echo "Error ${ERRORS_FOUND}: ${message}" 1>&2
+  let "ERRORS_FOUND=${ERRORS_FOUND}+1"
+}

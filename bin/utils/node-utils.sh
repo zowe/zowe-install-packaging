@@ -26,6 +26,9 @@ else
   echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-install-directory' before running." 1>&2
 fi
 
+# Source common util functions
+. ${utils_dir}/common.sh
+
 ensure_node_is_on_path() {
   if [[ ":$PATH:" != *":$NODE_HOME/bin:"* ]]
   then
