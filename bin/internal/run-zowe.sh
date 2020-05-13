@@ -121,9 +121,9 @@ for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
 
   VALIDATE_SCRIPT=${LAUNCH_COMPONENT}/validate.sh
-  if [[ -f ${VALIDATE_SCRIPT} ]]
+  if [[ -x ${VALIDATE_SCRIPT} ]]
   then
-    $(. ${VALIDATE_SCRIPT})
+    . ${VALIDATE_SCRIPT}
     retval=$?
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
