@@ -13,17 +13,11 @@
 # - KEYSTORE - The keystore to use for SSL certificates
 # - KEYSTORE_PASSWORD - The password to access the keystore supplied by KEYSTORE
 # - KEY_ALIAS - The alias of the key within the keystore
-if [[ -z "${KEYSTORE}" ]]
-then 
-    . ${ROOT_DIR}/scripts/utils/error.sh "KEYSTORE is empty"
-fi
-if [[ -z "${KEYSTORE_PASSWORD}" ]]
-then 
-    . ${ROOT_DIR}/scripts/utils/error.sh "KEYSTORE_PASSWORD is empty"
-fi
-if [[ -z "${KEY_ALIAS}" ]]
-then 
-    . ${ROOT_DIR}/scripts/utils/error.sh "KEY_ALIAS is empty"
-fi
 
-. ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${STATIC_DEF_CONFIG_DIR}
+. ${ROOT_DIR}/bin/utils/zowe-variable-utils.sh
+validate_variable_is_set "KEYSTORE"
+validate_variable_is_set "KEYSTORE_PASSWORD"
+validate_variable_is_set "KEY_ALIAS"
+
+. ${ROOT_DIR}/bin/utils/file-utils.sh
+validate_directory_is_writable ${STATIC_DEF_CONFIG_DIR}

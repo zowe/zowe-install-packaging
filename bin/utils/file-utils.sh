@@ -10,7 +10,9 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-# Takes in two parameters - the file that should be expanded and a string of the variable name that should be set in return
+#TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
+
+# Takes in the file that should be expanded and echos out the result, which the caller needs to read
 get_full_path() {
   file=$1
   # If the value starts with a ~ for the home variable then evaluate it
@@ -20,13 +22,13 @@ get_full_path() {
   then
     file=$PWD/$file
   fi
-  eval $2="${file}"
+  echo $file
 }
 
 # Takes in two parameters - the file and the directory we want to check it isn't in
 # Returns 0 if valid, 1 if not
 validate_file_not_in_directory() {
-  get_full_path $1 file
+  file=$(get_full_path "$1")
   directory=$2
 
   #zip-1172: Ensure trailing slash on root-dir to stop sibiling matches
@@ -44,5 +46,44 @@ validate_file_not_in_directory() {
   if [[ ${file} == "${directory}"* ]]
   then
     return 1
+  fi
+}
+
+validate_directory_is_accessible() {
+  directory=$1
+  if [[ ! -d ${directory} ]]
+  then
+    print_error_message "Directory '${directory}' doesn't exist, or is not accessible to ${USER}. If the directory exists, check all the parent directories have traversal permission (execute)"
+    return 1
+  fi
+  return 0
+}
+
+validate_directory_is_writable() {
+  directory=$1
+  validate_directory_is_accessible $directory
+  accessible_rc=$?
+  if [[ ${accessible_rc} -eq 0 ]]
+  then	
+    if [[ ! -w ${directory} ]]
+    then	
+      print_error_message "Directory '${directory}' does not have write access"	
+      return 1
+    fi
+  else
+    return accessible_rc
+  fi
+}
+
+# TODO LATER - refactor this into shared script
+# Note requires #ROOT_DIR to be set to use error.sh, otherwise falls back to stderr
+print_error_message() {
+  message=$1
+  error_path=${ROOT_DIR}/scripts/utils/error.sh
+  if [[ -f "${error_path}" ]]
+  then
+    . ${error_path} $message
+  else 
+    echo $message 1>&2
   fi
 }

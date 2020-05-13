@@ -42,7 +42,7 @@ get_install_log_directory() {
     fi
   fi
 
-  get_full_path "${INSTALL_LOG_DIR}" INSTALL_LOG_DIR
+  INSTALL_LOG_DIR=$(get_full_path "${INSTALL_LOG_DIR}")
 
   if { [[ ! -d "${INSTALL_LOG_DIR}" ]] || [[ ! -r "${INSTALL_LOG_DIR}" ]] }
   then	
@@ -65,7 +65,7 @@ set_install_log_directory() {
       LOG_DIRECTORY="~/zowe/logs"
     fi
   fi
-  get_full_path "${LOG_DIRECTORY}" LOG_DIRECTORY
+  LOG_DIRECTORY=$(get_full_path "${LOG_DIRECTORY}")
 
   if ! mkdir -p ${LOG_DIRECTORY}
   then
