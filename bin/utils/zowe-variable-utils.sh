@@ -12,10 +12,10 @@
 
 #TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
 
-# Takes in two parameters - the name of the variable (for error messaging) and the value
+# Takes in a single parameter - the name of the variable
 validate_variable_is_set() {
   variable_name=$1
-  value=$2
+  eval "value=\"\$${variable_name}\""
   if [[ -z "${value}" ]]
   then
     print_error_message "${variable_name} is empty"
@@ -27,7 +27,7 @@ validate_variable_is_set() {
 # TODO - any lower bound (other than 0)?
 # Requires ZOWE_PREFIX to be set as a shell variable
 validate_zowe_prefix() {
-  validate_variable_is_set "ZOWE_PREFIX" "${ZOWE_PREFIX}"
+  validate_variable_is_set "ZOWE_PREFIX"
   prefix_set_rc=$?
   if [[ ${prefix_set_rc} -eq 0 ]]
   then
