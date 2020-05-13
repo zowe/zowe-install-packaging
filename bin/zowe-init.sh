@@ -328,7 +328,7 @@ case $rc in
     4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
     ;; 
 esac
-if [[ $rc -ne 0 ]]
+if [[ $rc -ne 0 && ! -n "$ZOWE_EXPLORER_HOST" ]] # if error AND hostname is blank
 then
     echo "    Defaulting hostname to value of ZOWE_IP_ADDRESS $ZOWE_IP_ADDRESS" 
     export ZOWE_EXPLORER_HOST=$ZOWE_IP_ADDRESS                
