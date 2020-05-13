@@ -43,7 +43,7 @@ then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
   exit 1
 else
-  get_full_path ${INSTANCE_DIR} INSTANCE_DIR
+  INSTANCE_DIR=$(get_full_path "${INSTANCE_DIR}")
 fi
 
 # Check instance-dir not inside root dir

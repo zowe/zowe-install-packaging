@@ -10,6 +10,8 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+#TODO LATER - do we want to provide a ENV_VAR flag that toggles whether errors are printed or not?
+
 print_error_message() {
   message=$1
   #output an error and add to the count

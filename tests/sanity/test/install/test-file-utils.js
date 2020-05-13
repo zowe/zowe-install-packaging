@@ -49,7 +49,7 @@ describe('verify file-utils', function() {
     });
 
     async function test_get_full_path(input, expected_stdout) {
-      const command = `get_full_path "${input}" actual && echo \${actual}`;
+      const command = `get_full_path "${input}"`;
       await test_file_utils_function_has_expected_rc_stdout_stderr(command, 0, expected_stdout, '');
     }
   });

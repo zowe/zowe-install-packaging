@@ -10,8 +10,6 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-#TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
-
 # TODO LATER - anyway to do this better?
 # Try and work out where we are even if sourced
 if [[ -n ${INSTALL_DIR} ]]
@@ -34,7 +32,7 @@ fi
 # Source common util functions
 . ${utils_dir}/common.sh
 
-# Takes in two parameters - the file that should be expanded and a string of the variable name that should be set in return
+# Takes in the file that should be expanded and echos out the result, which the caller needs to read
 get_full_path() {
   file=$1
   # If the value starts with a ~ for the home variable then evaluate it
@@ -44,13 +42,13 @@ get_full_path() {
   then
     file=$PWD/$file
   fi
-  eval $2="${file}"
+  echo $file
 }
 
 # Takes in two parameters - the file and the directory we want to check it isn't in
 # Returns 0 if valid, 1 if not
 validate_file_not_in_directory() {
-  get_full_path $1 file
+  file=$(get_full_path "$1")
   directory=$2
 
   #zip-1172: Ensure trailing slash on root-dir to stop sibiling matches

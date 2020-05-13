@@ -10,8 +10,6 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-#TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
-
 # TODO LATER - anyway to do this better?
 # Try and work out where we are even if sourced
 if [[ -n ${INSTALL_DIR} ]]
