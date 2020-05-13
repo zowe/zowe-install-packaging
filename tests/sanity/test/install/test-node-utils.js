@@ -121,7 +121,7 @@ describe('verify node-utils', function() {
     it('test v8.16.1 fails with special message', async function() {
       const command = `${check_node_version} "v8.16.1"`;
       const expected_err = 'Node Version 8.16.1 is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details';
-      await test_node_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
+      await test_node_utils_function_has_expected_rc_stdout_stderr(command, 1, expected_err, expected_err);
     });
 
     it('test v8.16.2 passes', async function() {
