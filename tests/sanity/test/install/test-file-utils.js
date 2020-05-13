@@ -122,11 +122,8 @@ describe('verify file-utils', function() {
       await test_validate_directory_is_accessible(directory, false);
     });
 
-    it('test non-traversable directory is not accessible', async function() {
-      if (process.env.SSH_HOST.toLowerCase().includes('marist')) {
-        // Marist seems to have elevated privileges be able to access non-traversable directories, so this fails
-        this.skip();
-      }
+    // Marist seems to have elevated privileges be able to access non-traversable directories, so this fails
+    it.skip('test non-traversable directory is not accessible', async function() {
       await test_validate_directory_is_accessible(inaccessible_dir, false);
     });
 
