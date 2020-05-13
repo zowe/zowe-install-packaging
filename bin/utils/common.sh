@@ -20,7 +20,9 @@ print_error_message() {
     ERRORS_FOUND=0
   fi
 
-  # echo error to standard out and err
+  # echo error to standard out and err - this was requested so that the errors go into STDOUT of the job
+  # and save people going into STDERR (and make it inline with the rest of the logs), but it does result
+  # in double outputting when called from shell environment, so maybe we should reconsider?
   echo "Error ${ERRORS_FOUND}: ${message}"
   echo "Error ${ERRORS_FOUND}: ${message}" 1>&2
   let "ERRORS_FOUND=${ERRORS_FOUND}+1"
