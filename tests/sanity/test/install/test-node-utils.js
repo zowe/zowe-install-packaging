@@ -62,24 +62,6 @@ describe('verify node-utils', function() {
       await test_validate_node_home(node_home, 1, '', `NODE_HOME: ${node_home}/bin does not point to a valid install of Node`);
     });
 
-    describe('with a dummy bin/node created', async function() { //TODO NOW - remove only
-      let home_dir, temp_dir, node_home;
-      before('create dummy node', async function() {
-        home_dir = await sshHelper.executeCommandWithNoError('echo $HOME');
-        temp_dir = `${home_dir}/delete_1234`;
-        node_home = `${temp_dir}/node`;
-        await sshHelper.executeCommandWithNoError(`mkdir -p ${node_home}/bin && touch ${node_home}/bin/node && chmod u+x ${node_home}/bin/node`);
-      });
-
-      after('dispose dummy node', async function() {
-        await sshHelper.executeCommandWithNoError(`rm -rf ${temp_dir}`);
-      });
-
-      it('test node home with incorrect bin/node throws error', async function() {
-        await test_validate_node_home(node_home, 1, '', `NODE_HOME: ${node_home}/bin/node is not functioning correctly:`);
-      });
-    });
-
     // I don't think we can rely on a system to have a valid node home of the right version, so skip for now
     it.skip('test real node home okay', async function() {
       await test_validate_node_home(start_node_home, 0, 'OK: Node is working\nOK: Node is at a supported version', '');
@@ -144,8 +126,34 @@ describe('verify node-utils', function() {
       const command = `${check_node_version} "${version}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_err = expected_valid ? '' : `Node Version ${version} is less than the minimum level required of v6.14.4`;
+      const expected_out = expected_valid ? `Node version ${version} is supported` : expected_err;
       // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
-      await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_err, expected_err);
+      await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, expected_err);
+    }
+  });
+
+  const check_node_functional = 'check_node_functional';
+  describe(`verify ${check_node_functional}`, function() {
+
+    let home_dir, temp_dir, node_home;
+    before('create dummy node', async function() {
+      home_dir = await sshHelper.executeCommandWithNoError('echo $HOME');
+      temp_dir = `${home_dir}/delete_1234`;
+      node_home = `${temp_dir}/node`;
+      await sshHelper.executeCommandWithNoError(`mkdir -p ${node_home}/bin && touch ${node_home}/bin/node && chmod u+x ${node_home}/bin/node`);
+    });
+
+    after('dispose dummy node', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${temp_dir}`);
+    });
+
+    it('test node home with incorrect bin/node throws error', async function() {
+      await test_check_node_functional(node_home, 1, `NODE_HOME: ${node_home}/bin/node is not functioning correctly:`);
+    });
+
+    async function test_check_node_functional(node_home, expected_rc, expected_stderr) {
+      const command = `export NODE_HOME=${node_home} && ${check_node_functional}`;
+      await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stderr, expected_stderr);
     }
   });
   

@@ -85,23 +85,17 @@ validate_node_home() {
     return 1
   fi
 
-  node_ok=`${NODE_HOME}/bin/node -e "console.log('ok')" 2>&1`
-  if [[ ${node_ok} == "ok" ]]
-  then
-    echo "OK: Node is working"
-  else
-    print_error_message "NODE_HOME: ${NODE_HOME}/bin/node is not functioning correctly: ${node_ok}"
-    return 1
-  fi
-
   node_version=`${NODE_HOME}/bin/node --version`
   check_node_version "${node_version}"
   node_version_rc=$?
-  if [[ ${node_version_rc} -eq 0 ]]
+  if [[ ${node_version_rc} -ne 0 ]]
   then
-    echo "OK: Node ${node_version} is a supported version"
+    return ${node_version_rc}
   fi
-  return ${node_version_rc}
+
+  check_node_functional
+  node_functional_rc=$?
+  return ${node_functional_rc}
 }
 
 validate_node_home_not_empty() {
@@ -139,6 +133,20 @@ check_node_version() {
   if [[ ${too_low} == "true" ]]
   then
     print_error_message "Node Version ${node_version} is less than the minimum level required of v6.14.4"
+    return 1
+  else
+    log_message "Node version ${node_version} is supported"
+  fi
+}
+
+check_node_functional() {
+  log_message "Validating if node bin is functional..."
+  node_ok=`${NODE_HOME}/bin/node -e "console.log('ok')" 2>&1`
+  if [[ ${node_ok} == "ok" ]]
+  then
+    log_message "Node bin is functional"
+  else
+    print_error_message "NODE_HOME: ${NODE_HOME}/bin/node is not functioning correctly: ${node_ok}"
     return 1
   fi
 }

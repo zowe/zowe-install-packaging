@@ -10,7 +10,7 @@
 
 const sshHelper = require('./ssh-helper');
 
-describe.only('verify utils/common', function() {
+describe('verify utils/common', function() {
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
@@ -49,7 +49,7 @@ describe.only('verify utils/common', function() {
     });
   });
 
-  const log_message = 'log_message_if_applicable';
+  const log_message = 'log_message';
   describe(`verify ${log_message}`, function() {
 
     it('test log message with no log_file', async function() {

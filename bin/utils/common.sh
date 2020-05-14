@@ -34,8 +34,8 @@ print_message() {
   echo "${message}"
 }
 
-# If LOG_FILE is an writable file then output to it, otherwise echo instead?
-log_message_if_applicable() {
+# If LOG_FILE is an writable file then output to it, otherwise echo instead
+log_message() {
   message=$1
   if [[ -n "${LOG_FILE}" ]] && [[ -w "${LOG_FILE}" ]];
   then
