@@ -62,6 +62,26 @@ describe('verify node-utils', function() {
       await test_validate_node_home(node_home, 1, '', `NODE_HOME: ${node_home}/bin does not point to a valid install of Node`);
     });
 
+    describe('node --version error caught with dummy node', async function() {
+      const rc = 13;
+      const error = 'This is not a real node version';
+      let temp_dir, node_home;
+      before('create dummy node', async function() {
+        temp_dir = `~/delete_1234`;
+        node_home = `${temp_dir}/node`;
+        await sshHelper.executeCommandWithNoError(`mkdir -p ${node_home}/bin && echo "echo ${error} 1>&2\nexit ${rc}" > ${node_home}/bin/node && chmod u+x ${node_home}/bin/node`);
+      });
+  
+      after('dispose dummy node', async function() {
+        await sshHelper.executeCommandWithNoError(`rm -rf ${temp_dir}`);
+      });
+  
+      it('test node home with incorrect bin/node throws error', async function() {
+        const expected_err = `Node version check failed with return code: ${rc}, error: ${error}`;
+        await test_validate_node_home(node_home, 1, expected_err, expected_err);
+      });
+    });
+
     // I don't think we can rely on a system to have a valid node home of the right version, so skip for now
     it.skip('test real node home okay', async function() {
       await test_validate_node_home(start_node_home, 0, 'OK: Node is working\nOK: Node is at a supported version', '');
@@ -125,9 +145,8 @@ describe('verify node-utils', function() {
     async function test_node_version(version, expected_valid) {
       const command = `${check_node_version} "${version}"`;
       const expected_rc = expected_valid ? 0 : 1;
+      const expected_out = expected_valid ? `Node version ${version} is supported` : '';
       const expected_err = expected_valid ? '' : `Node Version ${version} is less than the minimum level required of v6.14.4`;
-      const expected_out = expected_valid ? `Node version ${version} is supported` : expected_err;
-      // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, expected_err);
     }
   });
@@ -160,6 +179,10 @@ describe('verify node-utils', function() {
   async function test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
     const node_utils_path = process.env.ZOWE_ROOT_DIR + '/bin/utils/node-utils.sh';
     command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${node_utils_path} && ${command}`;
+    // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+    if (expected_stderr != '') {
+      expected_stdout = expected_stderr;
+    }
     await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
   }
 

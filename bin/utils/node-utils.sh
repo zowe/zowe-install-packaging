@@ -85,7 +85,14 @@ validate_node_home() {
     return 1
   fi
 
-  node_version=`${NODE_HOME}/bin/node --version`
+  node_version=$(${NODE_HOME}/bin/node --version 2>&1 ) # Capture stderr to stdout, so we can print below if error
+  node_version_rc=$?
+  if [[ ${node_version_rc} -ne 0 ]]
+  then
+    print_error_message "Node version check failed with return code: ${node_version_rc}, error: ${node_version}"
+    return 1
+  fi
+
   check_node_version "${node_version}"
   node_version_rc=$?
   if [[ ${node_version_rc} -ne 0 ]]

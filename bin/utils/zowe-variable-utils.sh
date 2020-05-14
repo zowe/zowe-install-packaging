@@ -61,16 +61,3 @@ validate_zowe_prefix() {
     return prefix_set_rc
   fi
 }
-
-# TODO LATER - refactor this into shared script
-# Note requires #ROOT_DIR to be set to use error.sh, otherwise falls back to stderr
-print_error_message() {
-  message=$1
-  error_path=${ROOT_DIR}/scripts/utils/error.sh
-  if [[ -f "${error_path}" ]]
-  then
-    . ${error_path} $message
-  else 
-    echo $message 1>&2
-  fi
-}

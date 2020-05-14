@@ -77,6 +77,10 @@ describe('verify zowe-variable-utils', function() {
   async function test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
     const variable_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/zowe-variable-utils.sh';
     command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${variable_utils_path} && ${command}`;
+    // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+    if (expected_stderr != '') {
+      expected_stdout = expected_stderr;
+    }
     await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
   }
 
