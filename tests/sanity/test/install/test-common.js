@@ -10,15 +10,9 @@
 
 const sshHelper = require('./ssh-helper');
 
-describe('verify utils/common', function() {
+describe.only('verify utils/common', function() {
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
-  });
-
-  let start_path, start_node_home;
-  before('get required parameters', async function() {
-    start_path = await sshHelper.executeCommandWithNoError('echo $PATH');
-    start_node_home = await sshHelper.executeCommandWithNoError('echo $NODE_HOME');
   });
 
   const print_error_message = 'print_error_message';
@@ -43,6 +37,16 @@ describe('verify utils/common', function() {
       // Currently we output errors to stdout and stderr
       await test_common_function_has_expected_rc_stdout_stderr(command, 0, expected_message, expected_message);
     }
+  });
+
+  const print_message = 'print_message';
+  describe(`verify ${print_message}`, function() {
+
+    it('test single message', async function() {
+      const message = 'this is a printed message';
+      const command = `${print_message} "${message}"`;
+      await test_common_function_has_expected_rc_stdout_stderr(command, 0, message, '');
+    });
   });
 
   const log_message = 'log_message_if_applicable';
@@ -88,11 +92,6 @@ describe('verify utils/common', function() {
     command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${common_utils_path} && ${command}`;
     await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
   }
-
-  after('restore env', async function() {
-    await sshHelper.executeCommandWithNoError(`export PATH=${start_path}`);
-    await sshHelper.executeCommandWithNoError(`export NODE_HOME=${start_node_home}`);
-  });
 
   after('dispose SSH connection', function() {
     sshHelper.cleanUpConnection();

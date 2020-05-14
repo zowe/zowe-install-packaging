@@ -10,8 +10,6 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-#TODO NOW - test this file
-
 #TODO LATER - do we want to provide a ENV_VAR flag that toggles whether errors are printed or not?
 
 print_error_message() {
@@ -25,9 +23,15 @@ print_error_message() {
   # echo error to standard out and err - this was requested so that the errors go into STDOUT of the job
   # and save people going into STDERR (and make it inline with the rest of the logs), but it does result
   # in double outputting when called from shell environment, so maybe we should reconsider?
-  echo "Error ${ERRORS_FOUND}: ${message}"
   echo "Error ${ERRORS_FOUND}: ${message}" 1>&2
+  print_message "Error ${ERRORS_FOUND}: ${message}"
   let "ERRORS_FOUND=${ERRORS_FOUND}+1"
+}
+
+# In future we can add timestamps/message ids here
+print_message() {
+  message=$1
+  echo "${message}"
 }
 
 # If LOG_FILE is an writable file then output to it, otherwise echo instead?
