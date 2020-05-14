@@ -163,7 +163,8 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
     export GENERATE_CERTS_FOR_KEYRING;
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zowe-userid ${ZOWE_USER_ID} \
       --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-      --service-keystore ${KEYSTORE_PREFIX}
+      --service-keystore ${KEYSTORE_PREFIX} --service-password ${KEYSTORE_PASSWORD} \
+      --service-truststore ${TRUSTSTORE_PREFIX}
   fi
   RC=$?
 

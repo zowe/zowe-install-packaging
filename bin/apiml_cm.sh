@@ -394,11 +394,11 @@ function new_self_signed_service {
 
 function trust {
     echo "Import a certificate to the truststore:"
-    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
+    pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
+
+    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
         keytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
             -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-    else
-        pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE}
     fi
 }
 
@@ -621,11 +621,7 @@ case $ACTION in
         trust
         ;;
     trust-zosmf)
-        if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" == "false" ]]; then
-            echo "Trust z/OSMF action is skipped for keyring setup."
-        else
-            trust_zosmf
-        fi
+        trust_zosmf
         zosmf_jwt_public_key
         ;;
     cert-key-export)
