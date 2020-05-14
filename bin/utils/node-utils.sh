@@ -95,7 +95,7 @@ validate_node_home() {
   fi
 
   node_version=`${NODE_HOME}/bin/node --version`
-  check_node_version_number "${node_version}"
+  check_node_version "${node_version}"
   node_version_rc=$?
   if [[ ${node_version_rc} -eq 0 ]]
   then
