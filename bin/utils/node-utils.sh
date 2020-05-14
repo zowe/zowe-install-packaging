@@ -32,7 +32,7 @@ fi
 # Source common util functions
 . ${utils_dir}/common.sh
 
-#TODO NOW - how to test well given interaction and guesses?
+# TODO - how to test well given interaction and guess?
 # Interactive function that checks if the current NODE_HOME is valid and if not requests a user enters the node home path via command line
 prompt_node_home() {
   # If NODE_HOME not set, guess a default value
