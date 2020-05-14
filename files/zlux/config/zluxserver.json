@@ -15,6 +15,12 @@
         "isHttps": false
       },
       "enabled": false
+    },
+    "headers": {
+      "X-frame-Options": {
+        "override": true,
+        "value": "sameorigin"
+      }
     }
   },
   "agent": {
