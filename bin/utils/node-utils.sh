@@ -51,7 +51,6 @@ prompt_node_home() {
       read rep
       if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
       then
-        export NODE_HOME=$NODE_HOME
         loop=0
       else
         echo "Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
@@ -59,6 +58,7 @@ prompt_node_home() {
       fi
     fi
   done
+  export NODE_HOME=$NODE_HOME
   echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
 }
 
