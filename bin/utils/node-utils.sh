@@ -43,18 +43,18 @@ prompt_node_home() {
   loop=1
   while [ ${loop} -eq 1 ]
   do
+    loop=0 # only want to re-run if user re-prompts
     validate_node_home # Note - this outputs messages for errors found
     node_valid_rc=$?
     if [[ ${node_valid_rc} -ne 0 ]]
     then
       echo "Press Y or y to accept current node home '${NODE_HOME}', or Enter to choose another location"
       read rep
-      if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
+      if [ "$rep" != "Y" ] && [ "$rep" != "y" ]
       then
-        loop=0
-      else
         echo "Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
         read NODE_HOME
+        loop=1
       fi
     fi
   done
