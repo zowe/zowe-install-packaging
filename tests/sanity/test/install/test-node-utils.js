@@ -67,7 +67,7 @@ describe('verify node-utils', function() {
       const error = 'This is not a real node version';
       let temp_dir, node_home;
       before('create dummy node', async function() {
-        temp_dir = `~/delete_1234`;
+        temp_dir = '~/delete_1234';
         node_home = `${temp_dir}/node`;
         await sshHelper.executeCommandWithNoError(`mkdir -p ${node_home}/bin && echo "echo ${error} 1>&2\nexit ${rc}" > ${node_home}/bin/node && chmod u+x ${node_home}/bin/node`);
       });
