@@ -146,7 +146,7 @@ locateJavaHome ${JAVA_HOME}
 if [[ ${SKIP_NODE} != 1 ]]
 then
   . ${ZOWE_ROOT_DIR}/bin/utils/node-utils.sh
-  prompt_node_home
+  prompt_for_node_home_if_required
 fi
 
 ###identify ping
