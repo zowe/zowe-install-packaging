@@ -32,6 +32,36 @@ fi
 # Source common util functions
 . ${utils_dir}/common.sh
 
+#TODO NOW - how to test well given interaction and guesses?
+# Interactive function that checks if the current NODE_HOME is valid and if not requests a user enters the node home path via command line
+prompt_node_home() {
+  # If NODE_HOME not set, guess a default value
+  if [[ -z ${NODE_HOME} ]]
+  then
+    NODE_HOME="/usr/lpp/IBM/cnj/IBM/node-latest-os390-s390x"
+  fi
+  loop=1
+  while [ ${loop} -eq 1 ]
+  do
+    validate_node_home # Note - this outputs messages for errors found
+    node_valid_rc=$?
+    if [[ ${node_valid_rc} -ne 0 ]]
+    then
+      echo "Press Y or y to accept current node home '${NODE_HOME}', or Enter to choose another location"
+      read rep
+      if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
+      then
+        export NODE_HOME=$NODE_HOME
+        loop=0
+      else
+        echo "Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
+        read NODE_HOME
+      fi
+    fi
+  done
+  echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
+}
+
 ensure_node_is_on_path() {
   if [[ ":$PATH:" != *":$NODE_HOME/bin:"* ]]
   then

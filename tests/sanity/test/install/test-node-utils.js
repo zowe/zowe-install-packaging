@@ -150,8 +150,8 @@ describe('verify node-utils', function() {
   });
   
   async function test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
-    const variable_utils_path = process.env.ZOWE_ROOT_DIR + '/bin/utils/node-utils.sh';
-    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${variable_utils_path} && ${command}`;
+    const node_utils_path = process.env.ZOWE_ROOT_DIR + '/bin/utils/node-utils.sh';
+    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${node_utils_path} && ${command}`;
     await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
   }
 

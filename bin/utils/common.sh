@@ -10,12 +10,14 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+#TODO NOW - test this file
+
 #TODO LATER - do we want to provide a ENV_VAR flag that toggles whether errors are printed or not?
 
 print_error_message() {
   message=$1
   #output an error and add to the count
-  if [ -z "${ERRORS_FOUND}" ];
+  if [[ -z "${ERRORS_FOUND}" ]];
   then
     ERRORS_FOUND=0
   fi
@@ -26,4 +28,15 @@ print_error_message() {
   echo "Error ${ERRORS_FOUND}: ${message}"
   echo "Error ${ERRORS_FOUND}: ${message}" 1>&2
   let "ERRORS_FOUND=${ERRORS_FOUND}+1"
+}
+
+# If LOG_FILE is an writable file then output to it, otherwise echo instead?
+log_message_if_applicable() {
+  message=$1
+  if [[ -n "${LOG_FILE}" ]] && [[ -w "${LOG_FILE}" ]];
+  then
+    echo ${message} >> $LOG_FILE 
+  else
+    echo ${message}
+  fi
 }
