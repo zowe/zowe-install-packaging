@@ -1,4 +1,5 @@
 {
   "identifier": "org.zowe.zlux.sample.react",
-  "pluginLocation": "../../sample-react-app"
+  "pluginLocation": "components/app-server/share/sample-react-app",
+  "relativeTo": "$ROOT_DIR"
 }
