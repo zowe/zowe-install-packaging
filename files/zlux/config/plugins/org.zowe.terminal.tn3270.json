@@ -1,5 +1,4 @@
 {
   "identifier": "org.zowe.terminal.tn3270",
-  "pluginLocation": "components/app-server/share/tn3270-ng2",
-  "relativeTo": "$ROOT_DIR"
+  "pluginLocation": "../../tn3270-ng2"
 }

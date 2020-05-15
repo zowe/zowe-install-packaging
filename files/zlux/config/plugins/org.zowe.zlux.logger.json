@@ -1,5 +1,4 @@
 {
   "identifier": "org.zowe.zlux.logger",
-  "pluginLocation": "components/app-server/share/zlux-shared/src/logging",
-  "relativeTo": "$ROOT_DIR"
+  "pluginLocation": "../../zlux-shared/src/logging"
 }
