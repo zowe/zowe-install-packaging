@@ -1,4 +1,5 @@
 {
   "identifier": "org.zowe.zlux.sample.iframe",
-  "pluginLocation": "../../sample-iframe-app"
+  "pluginLocation": "components/app-server/share/sample-iframe-app",
+  "relativeTo": "$ROOT_DIR"
 }
