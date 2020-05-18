@@ -59,13 +59,13 @@ prompt_node_home() {
     fi
   done
   export NODE_HOME=$NODE_HOME
-  echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
+  log_message "  NODE_HOME variable value=${NODE_HOME}"
 }
 
 ensure_node_is_on_path() {
   if [[ ":$PATH:" != *":$NODE_HOME/bin:"* ]]
   then
-    echo "Appending NODE_HOME/bin to the PATH..."
+    print_message "Appending NODE_HOME/bin to the PATH..."
     export PATH=$PATH:$NODE_HOME/bin
   fi
 }
