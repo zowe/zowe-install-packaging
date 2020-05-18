@@ -107,7 +107,7 @@ validate_node_home() {
 
 validate_node_home_not_empty() {
   . ${utils_dir}/zowe-variable-utils.sh
-  validate_variable_is_set "NODE_HOME" "${NODE_HOME}"
+  validate_variable_is_set "NODE_HOME"
   return $?
 }
 
