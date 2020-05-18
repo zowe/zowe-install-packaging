@@ -4,6 +4,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## Recent Changes
 
+- Edit default plugin references to point to $ROOT_DIR env var
+
 2020-05-08 Timothy Gerstel <tgerstel@rocketsoftware.com>
 
   - Set up SSO in a standard install of Zowe via new environment variables set
