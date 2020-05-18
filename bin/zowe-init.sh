@@ -135,13 +135,8 @@ else
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
-if [[ -z ${JAVA_HOME} ]]
-then
-    JAVA_HOME=/usr/lpp/java/J8.0_64
-else
-    echo "  JAVA_HOME variable value="${JAVA_HOME} >> $LOG_FILE
-fi
-locateJavaHome ${JAVA_HOME}
+. ${ZOWE_ROOT_DIR}/bin/utils/java-utils.sh
+prompt_java_home_if_required
 
 if [[ ${SKIP_NODE} != 1 ]]
 then
