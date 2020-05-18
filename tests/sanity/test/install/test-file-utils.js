@@ -122,7 +122,7 @@ describe('verify file-utils', function() {
       await test_validate_directory_is_accessible(directory, false);
     });
 
-    // Marist seems to have elevated privileges be able to access non-traversable directories, so this fails
+    // zip-1377 Marist seems to have elevated privileges be able to access non-traversable directories, so this fails
     it.skip('test non-traversable directory is not accessible', async function() {
       await test_validate_directory_is_accessible(inaccessible_dir, false);
     });
@@ -147,7 +147,8 @@ describe('verify file-utils', function() {
       await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     });
 
-    it('test non-writable directory is not writable', async function() {
+    // zip-1377 Marist's ACF2 and TS id seems to have elevated privileges be able to write non-writable directories, so this fails
+    it.skip('test non-writable directory is not writable', async function() {
       await test_validate_directory_is_writable(temp_dir, false);
     });
 
