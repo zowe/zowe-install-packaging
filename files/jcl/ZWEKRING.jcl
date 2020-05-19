@@ -46,17 +46,13 @@
 //*
 //* 9) Customize the commands in the DD statement that matches your
 //*    security product so that they meet your system requirements.
-//*    Especially focus on the part that is adding all certificates
-//*    of the CA chain of the Zowe certificate to the key ring.
-//*    Similarly, add the root CA of the z/OSMF certificate to the
-//*    keyring.
 //*
 //* Note(s):
 //*
 //* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
 //*    TO ALTER SECURITY DEFINITIONS
 //*
-//* 2. Assumption: signing CAs of the Zowe external certificate are
+//* 2. Assumption: signing CA chain of the Zowe external certificate is
 //*    added to RACF database under the CERTAUTH userid.
 //*
 //* 3. If the Zowe certificate is imported from a data set then
@@ -82,6 +78,14 @@
 //         SET   DSNAME=
 //*      * Password for the PKCS12 data set
 //         SET PKCSPASS=
+//*      * Name/Label of the intermediate CA of the Zowe certificate
+//*      * Ignore if not applicable
+//         SET ITRMZWCA=
+//*      * Name/Label of the root CA of the Zowe certificate
+//*      * Ignore if not applicable
+//         SET ROOTZWCA=
+//*      * Name/Label of the root CA of the z/OSMF certificate
+//         SET ROOTZFCA=
 //*      * Zowe's local CA common name
 //         SET       CN='Zowe Development Instances'
 //*      * Zowe's local CA organizational unit
@@ -193,20 +197,23 @@
 
 /* Connect all CAs of the Zowe certificate's signing chain with the  */
 /* keyring ......................................................... */
-/* Add or remove the command(s) according to your requirements ..... */
+/* Add or remove commands according to the Zowe certificate's        */
+/* signing CA chain ................................................ */
    RACDCERT CONNECT(CERTAUTH +
-            LABEL('>>>provide label of root CA<<<') +
-            RING(&ZOWERING.)) +
+            LABEL('&ITRMZWCA.') +
+            RING(&ZOWERING.) USAGE(CERTAUTH)) +
             ID(&ZOWEUSER.)
    RACDCERT CONNECT(CERTAUTH +
-            LABEL('>>>provide label of intermediate CA<<<') +
-            RING(&ZOWERING.)) +
+            LABEL('&ROOTZWCA.') +
+            RING(&ZOWERING.) USAGE(CERTAUTH)) +
             ID(&ZOWEUSER.)
 
-/* Connect root CA that signs z/OSMF certificate with the keyring .. */
+/* Connect root CA that signed z/OSMF certificate with the keyring.  */
+/* If z/OSMF is using self-signed certificate then specify directly  */
+/* the z/OSMF certificate to be connected with the keyring.          */
    RACDCERT CONNECT(CERTAUTH +
-            LABEL('>>>provide label of zosmf's root CA<<<') +
-            RING(&ZOWERING.)) +
+            LABEL('&ROOTZFCA.') +
+            RING(&ZOWERING.) USAGE(CERTAUTH)) +
             ID(&ZOWEUSER.)
 
 /* Create jwtsecret .................................................*/
@@ -337,16 +344,19 @@ $$
 
 /* Connect all CAs of the Zowe certificate's signing chain with the  */
 /* keyring ......................................................... */
-/* Add or remove the command(s) according to your requirements ..... */
+/* Add or remove commands according to the Zowe certificate's        */
+/* signing CA chain ................................................ */
    TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
-       RINGDATA(CERTAUTH,>>>set DIGICERT name of root CA<<<)
+       RINGDATA(CERTAUTH,&ITRMZWCA.) USAGE(CERTAUTH)
 
    TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
-       RINGDATA(CERTAUTH,>>>set DIGICERT name of intermediate CA<<<)
+       RINGDATA(CERTAUTH,&ROOTZWCA.) USAGE(CERTAUTH)
 
-/* Connect root CA that signs z/OSMF certificate with the keyring .. */
+/* Connect root CA that signed z/OSMF certificate with the keyring.  */
+/* If z/OSMF is using self-signed certificate then specify directly  */
+/* the z/OSMF certificate to be connected with the keyring.          */
    TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
-       RINGDATA(CERTAUTH,>>>set DIGICERT name of zosmf's root CA<<<)
+       RINGDATA(CERTAUTH,&ROOTZFCA.) USAGE(CERTAUTH)
 
 /* Create jwtsecret .................................................*/
    TSS GENCERT(&ZOWEUSER.) +
