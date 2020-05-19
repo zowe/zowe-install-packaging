@@ -63,7 +63,7 @@ describe(`test ${APP_TO_TEST}`, function() {
       process.env.SSH_USER, 	
       process.env.SSH_PASSWD, 	
       `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
-      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/explorer-jes`	
+      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/explorer-mvs`	
     );
 
     // load MVD login page
@@ -119,7 +119,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     let treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
 
     // replace qualifier
-    const qualifier = await getElement(treeContent, 'input#path');
+    const qualifier = await getElement(treeContent, 'input#datasets-qualifier-field');
     expect(qualifier).to.be.an('object');
     await qualifier.clear();
     await qualifier.sendKeys(TEST_DATASET_PATTERN + Key.ENTER);
@@ -127,7 +127,7 @@ describe(`test ${APP_TO_TEST}`, function() {
 
     // wait for results
     await driver.sleep(1000);
-    await waitUntilElementIsGone(driver, 'div[role=progressbar]', treeContent);
+    await waitUntilElementIsGone(driver, 'svg#loading-icon', treeContent);
     debug('page reloaded');
 
     // save screenshot

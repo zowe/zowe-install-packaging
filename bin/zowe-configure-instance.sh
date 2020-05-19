@@ -37,36 +37,20 @@ fi
 
 . ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
 
+. ${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh
 if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
   exit 1
 else
-  # If the value starts with a ~ for the home variable then evaluate it
-  INSTANCE_DIR=`sh -c "echo ${INSTANCE_DIR}"` 
-  # If the path is relative, then expand it
-  if [[ "$INSTANCE_DIR" != /* ]]
-  then
-    # Relative path
-    INSTANCE_DIR=$PWD/$INSTANCE_DIR
-  fi
+  INSTANCE_DIR=$(get_full_path "${INSTANCE_DIR}")
 fi
 
-#zip-1172: Ensure trailing slash on root-dir to stop sibiling matches
-echo "${ZOWE_ROOT_DIR}" | grep '/$' 1> /dev/null
+# Check instance-dir not inside root dir
+validate_file_not_in_directory "${INSTANCE_DIR}" "${ZOWE_ROOT_DIR}"
 if [[ $? -ne 0 ]]
 then
-  ZOWE_ROOT_DIR="${ZOWE_ROOT_DIR}/"
-fi
-echo "${INSTANCE_DIR}" | grep '/$' 1> /dev/null
-if [[ $? -ne 0 ]]
-then
-  INSTANCE_DIR="${INSTANCE_DIR}/"
-fi
-
-if [[ ${INSTANCE_DIR} == "${ZOWE_ROOT_DIR}"* ]]
-then
-  echo "The instance directory chosen ${INSTANCE_DIR} was within the zowe runtime install directory ${ZOWE_ROOT_DIR}. This will cause the instance directory to be overwritten when an upgrade is applied. Please choose an alternative instance directory and re-run 'zowe-configure-instance.sh -c <Instance directory>'"
+  echo "It looks like the instance directory chosen ${INSTANCE_DIR} was within the zowe runtime install directory ${ZOWE_ROOT_DIR}. This will cause the instance directory to be overwritten when an upgrade is applied. Please choose an alternative instance directory and re-run 'zowe-configure-instance.sh -c <Instance directory>'"
   exit 1
 fi
 
