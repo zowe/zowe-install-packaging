@@ -50,7 +50,7 @@ describe('verify node-utils', function() {
   });
 
   const validate_node_home = 'validate_node_home';
-  describe(`verify ${ensure_node_is_on_path}`, function() {
+  describe(`verify ${validate_node_home}`, function() {
 
     it('test empty node home throws error', async function() {
       const node_home = '';
