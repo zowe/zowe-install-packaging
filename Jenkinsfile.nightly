@@ -52,7 +52,7 @@ node('ibm-jenkins-slave-nvm') {
 
   // we want to run daily on master branch
   if (isStagingBranch) {
-    pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 2 * * *")]))
+    pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 23 * * *")]))
   }
 
   pipeline.setup(
@@ -181,7 +181,7 @@ node('ibm-jenkins-slave-nvm') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
-             "TEST_SCOPE: convenience build\n" +
+             "TEST_SCOPE: bundle: convenience build on multiple security systems\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
@@ -195,7 +195,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'convenience build'),
+          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -238,7 +238,7 @@ node('ibm-jenkins-slave-nvm') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
-             "TEST_SCOPE: smpe ptf\n" +
+             "TEST_SCOPE: bundle: smpe ptf on multiple security systems\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'\n" +
              "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
@@ -252,7 +252,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'smpe ptf'),
+          string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -283,7 +283,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'HOURS']
+    timeout: [time: 4, unit: 'HOURS']
   )
 
   pipeline.createStage(
