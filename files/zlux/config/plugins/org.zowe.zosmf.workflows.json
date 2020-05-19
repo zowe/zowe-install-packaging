@@ -1,5 +1,6 @@
 {
   "identifier": "org.zowe.zosmf.workflows",
-  "pluginLocation": "../../zlux-workflow"
+  "pluginLocation": "components/app-server/share/zlux-workflow",
+  "relativeTo": "$ROOT_DIR"
 }
 

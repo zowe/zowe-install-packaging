@@ -48,35 +48,6 @@ getZosmfHttpsPort() {
     export ZOWE_ZOSMF_PORT
 }
 
-promptNodeHome(){
-loop=1
-while [ $loop -eq 1 ]
-do
-    if [[ "$NODE_HOME" == "" ]]
-    then
-        echo "    NODE_HOME was not set "
-        echo "    Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
-        read NODE_HOME
-    fi
-    if [[ -f $NODE_HOME/"./bin/node" ]] 
-    then
-        export NODE_HOME=$NODE_HOME
-        loop=0
-    else
-        echo "        No /bin/node found in directory "$NODE_HOME
-        echo "        Press Y or y to accept location, or Enter to choose another location"
-        read rep
-        if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-        then
-            export NODE_HOME=$NODE_HOME
-            loop=0
-        else
-            NODE_HOME=
-        fi
-    fi
-done
-}
-
 javaVersion=-1
 locateJavaHome() {
     getJavaVersion $1
@@ -172,15 +143,10 @@ else
 fi
 locateJavaHome ${JAVA_HOME}
 
-if [[ -z ${NODE_HOME} ]]
-then
-    NODE_HOME="/usr/lpp/IBM/cnj/IBM/node-latest-os390-s390x"
-else
-    echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
-fi
 if [[ ${SKIP_NODE} != 1 ]]
 then
-    promptNodeHome ${NODE_HOME}
+  . ${ZOWE_ROOT_DIR}/bin/utils/node-utils.sh
+  prompt_for_node_home_if_required
 fi
 
 ###identify ping
@@ -193,7 +159,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-        full_hostname=`$ping_bin $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
+        full_hostname=`$ping_bin -A ipv4 $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
         if [[ $? -eq 0 && -n "$full_hostname" ]]
         then
             ZOWE_EXPLORER_HOST=$full_hostname
@@ -236,7 +202,7 @@ ip=$2
 # 4 - ip parameter or hostname parameter is an empty string
 
 # Does PING of hostname yield correct IP?
-$ping_bin $hostname | grep $ip 1> /dev/null
+$ping_bin -A ipv4 $hostname | grep $ip 1> /dev/null
 if [[ $? -eq 0 ]]
 then
         # echo ip $ip is OK
@@ -274,7 +240,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IP_ADDRESS=`$ping_bin $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
+          ZOWE_IP_ADDRESS=`$ping_bin -A ipv4 $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
           if [[ ! -n "$ZOWE_IP_ADDRESS" ]]
           then
                echo Error: $ping_bin $hn command failed to find IP
