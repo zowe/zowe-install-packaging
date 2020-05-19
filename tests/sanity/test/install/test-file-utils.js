@@ -166,7 +166,11 @@ describe('verify file-utils', function() {
   
   async function test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
     const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
-    command = `. ${file_utils_path} && ${command}`;
+    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${file_utils_path} && ${command}`;
+    // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+    if (expected_stderr != '') {
+      expected_stdout = expected_stderr;
+    }
     await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
   }
 

@@ -10,7 +10,27 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-#TODO LATER - provide flag that toggles all functions to error if they exit non-zero?
+# TODO LATER - anyway to do this better?
+# Try and work out where we are even if sourced
+if [[ -n ${INSTALL_DIR} ]]
+then
+  export utils_dir="${INSTALL_DIR}/bin/utils"
+elif [[ -n ${ZOWE_ROOT_DIR} ]]
+then
+  export utils_dir="${ZOWE_ROOT_DIR}/bin/utils"
+elif [[ -n ${ROOT_DIR} ]]
+then
+  export utils_dir="${ROOT_DIR}/bin/utils"
+elif [[ $0 == "file-utils.sh" ]] #Not called by source
+then
+  export utils_dir=$(cd $(dirname $0);pwd)
+else
+  echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-install-directory' before running." 1>&2
+  exit 1
+fi
+
+# Source common util functions
+. ${utils_dir}/common.sh
 
 # Takes in the file that should be expanded and echos out the result, which the caller needs to read
 get_full_path() {
@@ -72,18 +92,5 @@ validate_directory_is_writable() {
     fi
   else
     return accessible_rc
-  fi
-}
-
-# TODO LATER - refactor this into shared script
-# Note requires #ROOT_DIR to be set to use error.sh, otherwise falls back to stderr
-print_error_message() {
-  message=$1
-  error_path=${ROOT_DIR}/scripts/utils/error.sh
-  if [[ -f "${error_path}" ]]
-  then
-    . ${error_path} $message
-  else 
-    echo $message 1>&2
   fi
 }
