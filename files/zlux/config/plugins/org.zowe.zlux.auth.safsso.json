@@ -1,4 +1,5 @@
 {
   "identifier": "org.zowe.zlux.auth.safsso",
-  "pluginLocation": "../../zlux-server-framework/plugins/sso-auth"
+  "pluginLocation": "components/app-server/share/zlux-server-framework/plugins/sso-auth",
+  "relativeTo": "$ROOT_DIR"
 }
