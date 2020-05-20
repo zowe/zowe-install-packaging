@@ -33,8 +33,9 @@ then
 fi
 
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
-set_log_directory ${LOG_DIRECTORY}
-set_log_file "zowe-setup-certificates"
+set_install_log_directory "${LOG_DIRECTORY}"
+validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
+set_install_log_file "zowe-setup-certificates"
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
@@ -145,6 +146,29 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
 fi
 echo "Creating certificates and keystores... DONE"
 
+JWT_ALIAS="jwtsecret"
+APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
+P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
+if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
+  if [[ -f ${APIML_PUBLIC_KEY} ]]
+  then
+    chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
+    if ! keytool -importcert -file ${APIML_PUBLIC_KEY} -keystore ${P12_PUBLIC_KEY} -storetype pkcs12 -storepass ${KEYSTORE_PASSWORD} -trustcacerts -noprompt >> $LOG_FILE 2>&1 ; then
+      echo "Unable to convert ${APIML_PUBLIC_KEY} to PKCS#12. See $LOG_FILE for more details."
+    else
+      UPPER_KEY_LABEL=$(echo "${PKCS11_TOKEN_LABEL}" | tr '[:lower:]' '[:upper:]')
+      if ! echo "${KEYSTORE_PASSWORD}" | gskkyman -i -t ${PKCS11_TOKEN_NAME} -l ${UPPER_KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
+        echo "Unable to store ${P12_PUBLIC_KEY} in token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}. See $LOG_FILE for more details."
+      else
+        echo "Successfully loaded ${APIML_PUBLIC_KEY} into token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}."
+      fi
+      rm ${P12_PUBLIC_KEY} 2> /dev/null
+    fi
+  else
+    echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
+  fi
+fi
+
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
@@ -159,8 +183,11 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
   KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
   ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+  SETUP_APIML_SSO=${SETUP_APIML_SSO}
+  SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
+  PKCS11_TOKEN_NAME=${PKCS11_TOKEN_NAME}
+  PKCS11_TOKEN_LABEL=${UPPER_KEY_LABEL}
 EOF
-
 # set up privileges and ownership
 chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."

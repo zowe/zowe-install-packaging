@@ -7,18 +7,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-DIRECTORY=$1
-USERID=`whoami`
+# PLEASE NOTE - this is script is planned for removal - please use file-utils.sh instead
 
-$(. ${ROOT_DIR}/scripts/utils/validate-directory-is-accessible.sh ${DIRECTORY})
-AUTH_RETURN_CODE=$?
-if [[ $AUTH_RETURN_CODE == "0" ]];
-then	
-	if [[ ! -w ${DIRECTORY} ]]
-	then	
-	  . ${ROOT_DIR}/scripts/utils/error.sh "Directory '${DIRECTORY}' does not have write access"	
-	fi
-fi
+. ${ROOT_DIR}/bin/utils/file-utils.sh
+validate_directory_is_writable $1

@@ -7,15 +7,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-DIRECTORY=$1
-USERID=`whoami`
+# PLEASE NOTE - this is script is planned for removal - please use file-utils.sh instead
 
-if [[ ! -d ${DIRECTORY} ]]
-then	
-  . ${ROOT_DIR}/scripts/utils/error.sh "Directory '${DIRECTORY}' doesn't exist, or is not accessible to ${USERID}. If the directory exists, check all the parent directories have traversal permission (execute)"
-  return 1
-fi
-return 0
+. ${ROOT_DIR}/bin/utils/file-utils.sh
+validate_directory_is_accessible $1
