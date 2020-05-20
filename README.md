@@ -98,7 +98,7 @@ To check for each release, what source code from repositories will be used, you 
 
 For each Zowe component, we have point of contact(s) in case if we want to confirm the versions defined in the `manifest.json.template`:
 
-- API Mediation Layer: Petr Plavjanik, Mark Ackert
+- API Mediation Layer: Elliot Jalley, Mark Ackert
   * Binary Dependencies
     - org.zowe.apiml.sdk.zowe-install
   * Source Dependencies
@@ -164,7 +164,7 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - zowe-cli-scs-plugin
     - zowe-cli-ftp-plugin
     - zowe-cli-ims-plugin
-- Explorer (Visual Studio Code Extension): Jessielaine Punongbayan, Mark Ackert
+- Explorer (Visual Studio Code Extension): Fernando Rijo Cedeno, Mark Ackert
   * Source Dependencies
     - vscode-extension-for-zowe
 - License: Mark Ackert
