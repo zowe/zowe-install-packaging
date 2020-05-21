@@ -215,9 +215,9 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # result (final): $mvsI                           # MVS & MVS SMPE data
 # result (final): $ussI                                 # USS SMPE data
 
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . . .
 # Generate reference hash keys of runtime files
-echo "Generate reference hash keys of runtime files"
+echo "----- Generate reference hash keys of runtime files -----"
 
 # The hash is calculated on the installed runtime directory created by smpe-install.sh above
 stageDir=$ROOT/stage
@@ -230,36 +230,32 @@ zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
 utilsDir=$ROOT/../content/$zoweVRM/scripts/utils 
 mkdir $utilsDir/hash # create work directory
 cp        $ROOT/../content/$zoweVRM/files/HashFiles.java $utilsDir/hash
-# ls -l     $binDir/zowe-checksum-runtime.sh
-# chmod +x  $binDir/zowe-checksum-runtime.sh # make script executable
 
-# calculate the checksums of stageDir
+# Compile the hash program and calculate the checksums of stageDir
 $binDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash 
-
-# save checksums and HashFiles executable
 
 # save derived runtime hash file under ROOT_DIR/fingerprint
 mkdir -p $stageDir/fingerprint
 cp   $utilsDir/hash/RefRuntimeHash.txt $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
 # convert derived runtime hash file to ASCII and publish on JFrog
-iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/../RefRuntimeHash.txt 
+iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/../RefRuntimeHash.txt # base filename is not versioned
 
-# save compiled hash program under ROOT_DIR/bin/internal
-cp   $utilsDir/hash/HashFiles.class    $binDir/internal
+# save compiled hash program 
+cp   $utilsDir/hash/HashFiles.class    $stageDir/fingerprint # not to ... $binDir/internal
 cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication on JFrog
 
 # verify the checksums of ROOT_DIR, to check zowe-verify-authenticity.sh
-# ls -l    $binDir/zowe-verify-authenticity.sh
-# chmod +x $binDir/zowe-verify-authenticity.sh # make script executable
 $binDir/zowe-verify-authenticity.sh 
 if [[ $? -ne 0 ]]
 then
-  echo Contents of zowe-verify-authenticity.log 
-  cat ~/zowe/fingerprint/*.log  # fragile, because '-l  outputPath' was not specified, so script chose location of log
+  echo Exit code from zowe-verify-authenticity.sh was non-zero
+  echo "---------- Contents of zowe-verify-authenticity.log ----------"
+  cat ~/zowe/fingerprint/*.log  # fragile, because '-l outputPath' was not specified, so script chose location of log
+else  
+  echo Exit code from zowe-verify-authenticity.sh was zero
 fi
 
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
 opts="-i $input"                                   # add reference file
