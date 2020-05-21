@@ -118,7 +118,7 @@ then
         echo Error: Default hashPath `dirname $0`/../fingerprint $notD
         exit 1
     fi 
-    refPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
+    hashPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
 fi
 
 
