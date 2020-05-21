@@ -221,25 +221,36 @@ echo "Generate reference hash keys of runtime files"
 
 # The hash is calculated on the installed runtime directory created by smpe-install.sh above
 stageDir=$ROOT/stage
+binDir=$stageDir/bin 
 
-# The scripts and program to do this are in the scripts/utils directory
+# The scripts to do this are in the 'bin' directory
+# The program to do this is in the 'files' directory
 zoweVRM=`ls $ROOT/../content`  # The vrm directory (e.g. zowe-1.9.0) is the only entry under 'content'
-utilsDir=$ROOT/../content/$zoweVRM/scripts/utils
+zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
+utilsDir=$ROOT/../content/$zoweVRM/scripts/utils 
 mkdir $utilsDir/hash # create work directory
-ls -l     $utilsDir/zowe-checksum-runtime.sh
-chmod +x  $utilsDir/zowe-checksum-runtime.sh # make script executable
+cp        $ROOT/../content/$zoweVRM/files/HashFiles.java $utilsDir/hash
+ls -l     $binDir/zowe-checksum-runtime.sh
+chmod +x  $binDir/zowe-checksum-runtime.sh # make script executable
 
 # calculate the checksums of stageDir
-$utilsDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
+$binDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash 
 
-# save checksums and executable
-cp   $utilsDir/hash/RefRuntimeHash.txt $ROOT/.. # for publication - needs to be conv. to ASCII
-cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication
+# save checksums and HashFiles executable
 
-# verify the checksums of stageDir, to check zowe-verify-authenticity.sh
-ls -l    $utilsDir/zowe-verify-authenticity.sh
-chmod +x $utilsDir/zowe-verify-authenticity.sh # make script executable
-$utilsDir/zowe-verify-authenticity.sh $stageDir $utilsDir/hash
+# save derived runtime hash file under ROOT_DIR/fingerprint
+cp   $utilsDir/hash/RefRuntimeHash.txt $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
+# convert derived runtime hash file to ASCII and publish on JFrog
+iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/../RefRuntimeHash-$zoweReleaseNumber.txt 
+
+# save compiled hash program under ROOT_DIR/bin/internal
+cp   $utilsDir/hash/HashFiles.class    $binDir/internal
+cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication on JFrog
+
+# verify the checksums of ROOT_DIR, to check zowe-verify-authenticity.sh
+ls -l    $binDir/zowe-verify-authenticity.sh
+chmod +x $binDir/zowe-verify-authenticity.sh # make script executable
+$binDir/zowe-verify-authenticity.sh 
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
