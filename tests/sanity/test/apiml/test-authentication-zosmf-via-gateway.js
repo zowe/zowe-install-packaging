@@ -30,7 +30,7 @@ describe('test api mediation layer zosmf authentication', function() {
     password = environment.SSH_PASSWD;
   });
 
-  describe('should be able to get data from ZOSM/f ', () => {
+  describe('should be able to get data from z/OSMF ', () => {
     it('with valid basic header', async () => {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
       const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
