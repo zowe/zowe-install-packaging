@@ -37,6 +37,10 @@
       "versions": ["*"]
     },
     {
+      "identifier": "org.zowe.zlux.auth.safsso",
+      "versions": ["*"]
+    },
+    {
       "identifier": "org.zowe.zlux.bootstrap",
       "versions": ["*"]
     },

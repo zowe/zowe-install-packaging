@@ -7,23 +7,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-# JAVA_HOME Should exist, be version 8+ and be on path
-if [[ -n "${JAVA_HOME}" ]]
-then 
-    ls ${JAVA_HOME}/bin | grep java$ > /dev/null    # pick a file to check
-    if [[ $? -ne 0 ]]
-    then
-        . ${ROOT_DIR}/scripts/utils/error.sh "JAVA_HOME does not point to a valid install of Java"
-    else
-      JAVA_VERSION=`${JAVA_HOME}/bin/java -version 2>&1 | grep ^"java version"`
-      if [[ "$JAVA_VERSION" < "java version \"1.8" ]]
-      then 
-        . ${ROOT_DIR}/scripts/utils/error.sh "$JAVA_VERSION is less than minimum level required of 1.8"
-      fi
-    fi
-else 
-    . ${ROOT_DIR}/scripts/utils/error.sh "JAVA_HOME is empty"
-fi
+# PLEASE NOTE - this is script is planned for removal - please use node-utils.sh instead
+
+. ${ROOT_DIR}/bin/utils/java-utils.sh
+validate_java_home
