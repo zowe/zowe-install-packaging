@@ -4,6 +4,13 @@ ansible_user:
 ansible_password:
 
 ################################################################################
+zowe_extra_environment_variables:
+  # SVL image has an error when executing netstat
+  # EZZ2376I Could not determine TCPIPjobname, using default of 'INET'
+  # EZZ2377I Could not establish affinity with INET (1011/11B3005A) - can not provide the requested option information
+  # to fix it, this variable is required
+  RESOLVER_CONFIG: "\"//'USER.PARMLIB(TCPDATA)'\""
+
 # variables for zowe uninstallation and installation
 zowe_smpe_volser: T60192
 
