@@ -2,8 +2,11 @@
 
 ansible_port: 22
 
+
 ################################################################################
 # variables for zowe uninstallation and installation
+# server tn3270 port
+zowe_zlux_terminal_telnet_port: 623
 
 # optional, this is the folder where we store Zowe FMIDs on the z/OS server
 zowe_fmids_dir_remote: /opt/zowe/zowe-fmids
@@ -12,6 +15,7 @@ zowe_root_dir: /opt/zowe/runtime
 zowe_instance_dir: /opt/zowe/zowe-instance-dir
 zowe_keystore_dir: /opt/zowe/keystore
 zowe_logs_dir: /opt/zowe/logs
+zowe_install_logs_dir: /opt/zowe/logs
 
 zowe_dataset_prefix: IBMUSER.ZWE
 zowe_apiml_verify_certficates_of_services: false
