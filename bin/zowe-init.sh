@@ -48,35 +48,6 @@ getZosmfHttpsPort() {
     export ZOWE_ZOSMF_PORT
 }
 
-promptNodeHome(){
-loop=1
-while [ $loop -eq 1 ]
-do
-    if [[ "$NODE_HOME" == "" ]]
-    then
-        echo "    NODE_HOME was not set "
-        echo "    Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
-        read NODE_HOME
-    fi
-    if [[ -f $NODE_HOME/"./bin/node" ]] 
-    then
-        export NODE_HOME=$NODE_HOME
-        loop=0
-    else
-        echo "        No /bin/node found in directory "$NODE_HOME
-        echo "        Press Y or y to accept location, or Enter to choose another location"
-        read rep
-        if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-        then
-            export NODE_HOME=$NODE_HOME
-            loop=0
-        else
-            NODE_HOME=
-        fi
-    fi
-done
-}
-
 javaVersion=-1
 locateJavaHome() {
     getJavaVersion $1
@@ -172,15 +143,10 @@ else
 fi
 locateJavaHome ${JAVA_HOME}
 
-if [[ -z ${NODE_HOME} ]]
-then
-    NODE_HOME="/usr/lpp/IBM/cnj/IBM/node-latest-os390-s390x"
-else
-    echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
-fi
 if [[ ${SKIP_NODE} != 1 ]]
 then
-    promptNodeHome ${NODE_HOME}
+  . ${ZOWE_ROOT_DIR}/bin/utils/node-utils.sh
+  prompt_for_node_home_if_required
 fi
 
 ###identify ping
