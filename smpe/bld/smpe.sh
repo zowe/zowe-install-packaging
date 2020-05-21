@@ -242,7 +242,7 @@ $binDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
 mkdir -p $stageDir/fingerprint
 cp   $utilsDir/hash/RefRuntimeHash.txt $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
 # convert derived runtime hash file to ASCII and publish on JFrog
-iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/../RefRuntimeHash-$zoweReleaseNumber.txt 
+iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/..  # /RefRuntimeHash-$zoweReleaseNumber.txt 
 
 # save compiled hash program under ROOT_DIR/bin/internal
 cp   $utilsDir/hash/HashFiles.class    $binDir/internal
@@ -252,6 +252,11 @@ cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication on JFrog
 # ls -l    $binDir/zowe-verify-authenticity.sh
 # chmod +x $binDir/zowe-verify-authenticity.sh # make script executable
 $binDir/zowe-verify-authenticity.sh 
+if [[ $? -ne 0 ]]
+then
+  cat ~/zowe/fingerprint/*.log  # fragile, because '-l  outputPath' was not specified, so script chose location of log
+fi
+
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 

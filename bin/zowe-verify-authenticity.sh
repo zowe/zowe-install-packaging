@@ -361,11 +361,14 @@ echo >> $LOG_FILE
 if [[ $nDiff -eq 0 && $nExtra -eq 0 && $nMissing -eq 0 ]]
 then
     echo Info: Verification PASSED | tee -a $LOG_FILE
+    RC=0
 else
     echo Error: Verification FAILED | tee -a $LOG_FILE
+    RC=1
 fi
 
 echo Info:  Result files and script log are in directory $outputPath
 
 echo $SCRIPT.sh ended
 echo "</$SCRIPT.sh>" >> $LOG_FILE
+exit $RC
