@@ -39,8 +39,10 @@ fi
 # identify this script
 SCRIPT="$(basename $0)"
 
-. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh ${LOG_DIRECTORY}
-set_log_file "zowe-install-proc"
+. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+set_install_log_directory ${LOG_DIRECTORY}
+validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
+set_install_log_file "zowe-install-proc"
 
 echo "<$SCRIPT>" >> ${LOG_FILE}
 echo started from `pwd` >> ${LOG_FILE}
@@ -82,7 +84,7 @@ do
   fi
 done
 
-./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member} -l ${LOG_DIRECTORY}
+./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member} -f ${LOG_FILE}
 rc=$?
 echo "rc from zowe-copy-to-JES.sh is ${rc}" >> ${LOG_FILE}
 
