@@ -34,7 +34,7 @@ fi
 
 # TODO - how to test well given interaction and guess?
 # Interactive function that checks if the current NODE_HOME is valid and if not requests a user enters the node home path via command line
-prompt_node_home() {
+prompt_for_node_home_if_required() {
   # If NODE_HOME not set, guess a default value
   if [[ -z ${NODE_HOME} ]]
   then
