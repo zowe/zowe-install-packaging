@@ -25,8 +25,8 @@ elif [[ $0 == "node-utils.sh" ]] #Not called by source
 then
   export utils_dir=$(cd $(dirname $0);pwd)
 else
-  echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-install-directory' before running." 1>&2
-  exit 1
+  echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-root-directory>' before running." 1>&2
+  return 1
 fi
 
 # Source common util functions
