@@ -48,66 +48,6 @@ getZosmfHttpsPort() {
     export ZOWE_ZOSMF_PORT
 }
 
-javaVersion=-1
-locateJavaHome() {
-    getJavaVersion $1
-    if [ "$javaVersion" -ge "18" ]
-        then
-            echo "   java version $version found at " $1 >> $LOG_FILE
-            export JAVA_HOME=$1
-        else
-            if [ "$javaVersion" = "-1" ]
-            then
-                echo "    No executable file found in $1/bin/java"
-            else
-                echo "    The version of java at $1 is $version, and must be Java 8, or newer"
-            fi
-            loop=1
-            while [ $loop -eq 1 ]
-            do
-                echo "    Please enter home directory where Java 8, or newer is installed.  This is the a directory that contains /bin/java"
-                read JAVA_HOME
-                getJavaVersion $JAVA_HOME
-                if [ "$javaVersion" = "-1" ]
-                    then
-                        echo "        No executable file found in $JAVA_HOME/bin/java"
-                        echo "        Press Y or y to accept location, or Enter to choose another location"
-                        read rep
-                        if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-                            then
-                                export JAVA_HOME
-                                loop=0
-                        fi
-                    else
-                        if [ "$javaVersion" -lt "18" ]
-                            then
-                                echo "        The version of java at $JAVA_HOME is $version, and must be Java 8, or newer"
-                                echo "        Press Y or y to accept location, or Enter to choose another location"
-                                read rep
-                                if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-                                    then
-                                        export JAVA_HOME
-                                        loop=0
-                                fi
-                            else
-                                export JAVA_HOME
-                                loop=0
-                        fi
-                fi
-            done
-    fi
-}
-
-getJavaVersion() {
-    java_bin="$1/bin/java"
-    if [[ -x $java_bin ]]; then
-        version=$("$java_bin" -version 2>&1 | sed -n ';s/.* version "\(.*\)\.\(.*\)\..*"/\1\2/p;')
-        javaVersion=$version
-    else
-        javaVersion=-1
-    fi
-}
-
 getPing_bin() {
 #  Identifies name of ping command if ping is not available oping is used
 #  populates ping_bin variable with ping or oping
@@ -135,13 +75,8 @@ else
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
-if [[ -z ${JAVA_HOME} ]]
-then
-    JAVA_HOME=/usr/lpp/java/J8.0_64
-else
-    echo "  JAVA_HOME variable value="${JAVA_HOME} >> $LOG_FILE
-fi
-locateJavaHome ${JAVA_HOME}
+. ${ZOWE_ROOT_DIR}/bin/utils/java-utils.sh
+prompt_java_home_if_required
 
 if [[ ${SKIP_NODE} != 1 ]]
 then
