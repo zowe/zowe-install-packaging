@@ -53,7 +53,6 @@ runtimePath=$1
 hashPath=$2
 
 cd $hashPath
-cp ../HashFiles.java .
 javac HashFiles.java 
 
 # Create a list of files to be hashed.  Exclude SMPE.

@@ -230,8 +230,8 @@ zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
 utilsDir=$ROOT/../content/$zoweVRM/scripts/utils 
 mkdir $utilsDir/hash # create work directory
 cp        $ROOT/../content/$zoweVRM/files/HashFiles.java $utilsDir/hash
-ls -l     $binDir/zowe-checksum-runtime.sh
-chmod +x  $binDir/zowe-checksum-runtime.sh # make script executable
+# ls -l     $binDir/zowe-checksum-runtime.sh
+# chmod +x  $binDir/zowe-checksum-runtime.sh # make script executable
 
 # calculate the checksums of stageDir
 $binDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash 
@@ -239,6 +239,7 @@ $binDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash
 # save checksums and HashFiles executable
 
 # save derived runtime hash file under ROOT_DIR/fingerprint
+mkdir -p $stageDir/fingerprint
 cp   $utilsDir/hash/RefRuntimeHash.txt $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
 # convert derived runtime hash file to ASCII and publish on JFrog
 iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/../RefRuntimeHash-$zoweReleaseNumber.txt 
@@ -248,8 +249,8 @@ cp   $utilsDir/hash/HashFiles.class    $binDir/internal
 cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication on JFrog
 
 # verify the checksums of ROOT_DIR, to check zowe-verify-authenticity.sh
-ls -l    $binDir/zowe-verify-authenticity.sh
-chmod +x $binDir/zowe-verify-authenticity.sh # make script executable
+# ls -l    $binDir/zowe-verify-authenticity.sh
+# chmod +x $binDir/zowe-verify-authenticity.sh # make script executable
 $binDir/zowe-verify-authenticity.sh 
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
