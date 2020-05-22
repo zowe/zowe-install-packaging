@@ -288,7 +288,7 @@ describe('test MVD login page', function() {
     expect(popup).to.be.an('object');
 
     // check popup menu items
-    const menuItems = await getElements(popup, '.launch-widget-row > p');
+    const menuItems = await getElements(popup, '.launch-widget-row > .app-label');
     expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length);
     for (let item of menuItems) {
       const text = await item.getText();
@@ -305,7 +305,7 @@ describe('test MVD login page', function() {
     // widget should exist
     const widget = await getElement(driver, 'rs-com-launchbar-widget');
     expect(widget).to.be.an('object');
-    const clock = await getElement(widget, '.launchbar-clock');
+    const clock = await getElement(widget, '.clock');
     expect(clock).to.be.an('object');
     const userIcon = await getElement(widget, '.launchbar-tray-icon.user');
     expect(userIcon).to.be.an('object');

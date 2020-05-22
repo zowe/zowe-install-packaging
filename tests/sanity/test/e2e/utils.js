@@ -505,7 +505,7 @@ const launchApp = async(driver, appName) => {
   const menuItems = await getElements(popup, '.launch-widget-row');
   let app;
   for (let item of menuItems) {
-    const itemTitle = await getElement(item, 'p');
+    const itemTitle = await getElement(item, '.app-label');
     const text = await itemTitle.getText();
     debug(`[launchApp] found menu item ${text}`);
     if (text === appName) {
