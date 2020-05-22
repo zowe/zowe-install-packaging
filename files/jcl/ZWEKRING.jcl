@@ -99,6 +99,13 @@
 //*      * Zowe's local CA country
 //         SET        C='CZ'
 //*
+//* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*                     12345678
+//         SET   STCGRP=          * group for Zowe started tasks
+//*                     12345678
+//*
+//* end ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*
 //*********************************************************************
 //*
 //* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
@@ -145,8 +152,8 @@
 /*                                                                   */
 /* Options:                                                          */
 /*   1. Zowe's certificate is already loaded in RACF database        */
-/*       (assuming under &ZOWEUSER ACID)                             */
-/*      ACTION: No action required                                   */
+/*      ACTION: Modify the CONNECT(ID(&ZOWEUSER.) ...) keyword       */
+/*              below to match the owner of the desired certificate  */
 /*                                                                   */
 /*   2. Import external Zowe's certificate from a data set in PKCS12 */
 /*      format                                                       */
@@ -255,7 +262,133 @@ $$
 //*
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 ACF
-//* TODO
+//
+* Create the keyring
+  SET PROFILE(USER) DIVISION(KEYRING)
+  INSERT &ZOWEUSER..ZOWERING RINGNAME(&ZOWERING.)
+  F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
+
+* Create Zowe's local CA authority
+  SET PROFILE(USER) DIVISION(CERTDATA)
+  GENCERT CERTAUTH.ZOWECA LABEL(localca) SIZE(2048)   +
+          SUBJSDN(CN='&CN. CA'                        +
+                  OU='&OU.'                           +
+                   O='&O.'                            +
+                   L='&L.'                            +
+                  SP='&SP.'                           +
+                  C='&C.')                            +
+  EXPIRE(05/01/30)                                    +
+  KEYUSAGE(CERTSIGN)
+*
+* Connect Zowe's local CA authority to the keyring ................ */
+  SET PROFILE(USER) DIVISION(CERTDATA)
+  CONNECT CERTDATA(CERTAUTH.ZOWECA) RINGNAME(&ZOWERING.)    +
+  KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+  CHKCERT CERTAUTH.ZOWECA
+
+* ATTENTION!                                                        */
+* Configure certificate for Zowe .................................. */
+* Select one of three options which is the most suitable for your   */
+* environment and follow the appropriate action                     */
+*                                                                   */
+* Options:                                                          */
+*   1. Zowe's certificate is already loaded in RACF database        */
+*      ACTION: Modify the CERTDATA(&ZOWEUSER..ZOWECERT) keyword     */
+*              below to match the desired certificate for Zowe      */
+*                                                                   */
+*   2. Import external Zowe's certificate from a data set in PKCS12 */
+*      format                                                       */
+*      ACTION: Uncomment the "Option 1" block below                 */
+*                                                                   */
+*   3. Generate Zowe's certificate that will be signed by the       */
+*      Zowe's local CA                                              */
+*      ACTION: Uncomment the "Option 2" block below                 */
+*                                                                   */
+* ***************************************************************** */
+*                                                                   */
+* Option 1 - BEGINNING ............................................ */
+* Import external certificate from data set ....................... */
+
+*  SET PROFILE(USER) DIV(CERTDATA)
+*  INSERT &ZOWEUSER..ZOWECERT         +
+*         DSNAME('&DSNAME.')          +
+*         LABEL(&LABEL.)              +
+*         PASSWORD('&PKCSPASS.')      +
+*         TRUST
+
+* Option 1 - END .................................................. */
+* ................................................................. */
+* Option 2 - BEGINNING ............................................ */
+* Create a certificate signed by local zowe's CA .................. */
+*  SET PROFILE(USER) DIV(CERTDATA)
+*  GENCERT &ZOWEUSER..ZOWECERT      +
+*           SUBJSDN(CN='&CN. certificate' +
+*                   OU='&OU.'       +
+*                    O='&O.'        +
+*                    L='&L.'        +
+*                   SP='&SP.'       +
+*                   C='&C.')        +
+*          SIZE(2048)               +
+*          EXPIRE(05/01/30)         +
+*          LABEL('&LABEL.')         +
+*          KEYUSAGE(HANDSHAKE,DATAENCRYPT,DOCSIGN)    +
+*          ALTNAME(IP='127.0.0.1' DOMAIN='localhost') +
+*          SIGNWITH(CERTAUTH.ZOWECA)
+
+* Option 2 - END ................................................... */
+
+* Connect a Zowe's certificate with the keyring .................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) RINGNAME(&ZOWERING.) +
+   KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
+   CHKCERT &ZOWEUSER..ZOWECERT
+
+* Connect all CAs of the Zowe certificate's signing chain with the   */
+* keyring .......................................................... */
+* Add or remove commands according to the Zowe certificate's         */
+* signing CA chain ................................................. */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(CERTAUTH.&ITRMZWCA.) RINGNAME(&ZOWERING.) +
+   KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+
+   CONNECT CERTDATA(CERTAUTH.&ROOTZWCA.) RINGNAME(&ZOWERING.) +
+   KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+
+* Connect root CA that signed z/OSMF certificate with the keyring.   */
+* If z/OSMF is using self-signed certificate then specify directly   */
+* the z/OSMF certificate to be connected with the keyring.           */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(CERTAUTH.&ROOTZFCA.) RINGNAME(&ZOWERING.) +
+   KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+
+* Create jwtsecret
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   GENCERT &ZOWEUSER..ZOWEJWT                         +
+           SUBJSDN(CN='&CN. JWT'                      +
+                   OU='&OU.'                          +
+                    O='&O.'                           +
+                    L='&L.'                           +
+                   SP='&SP.'                          +
+                   C='&C.')                           +
+           SIZE(2048)                                 +
+           LABEL(jwtsecret)                           +
+           EXPIRE(05/01/30)
+
+* Connect jwtsecret to the keyring ................................
+  SET PROFILE(USER) DIVISION(CERTDATA)
+  CONNECT CERTDATA(&ZOWEUSER..ZOWEJWT) RINGNAME(&ZOWERING.) +
+  KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL)
+  CHKCERT &ZOWEUSER..ZOWEJWT
+
+* Allow ZOWEUSER to access keyring ................................
+  SET RESOURCE(FAC)
+  RECKEY IRR ADD(DIGTCERT.LISTRING ROLE(&STCGRP) +
+  SERVICE(READ) ALLOW)
+  F ACF2,REBUILD(FAC)
+
+* List the keyring ................................................
+  SET PROFILE(USER) DIVISION(KEYRING)
+  LIST &ZOWEUSER..ZOWERING
 $$
 //*
 //*********************************************************************
@@ -294,8 +427,8 @@ $$
 /*                                                                   */
 /* Options:                                                          */
 /*   1. Zowe's certificate is already loaded in RACF database        */
-/*       (assuming under &ZOWEUSER ACID)                             */
-/*      ACTION: No action required                                   */
+/*      ACTION: Modify the RINGDATA(&ZOWEUSER.,ZOWECERT) keyword     */
+/*              below to match the desired certificate for Zowe      */
 /*                                                                   */
 /*   2. Import external Zowe's certificate from a data set in PKCS12 */
 /*      format                                                       */
