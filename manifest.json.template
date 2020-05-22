@@ -73,11 +73,10 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.apiml.sdk.zowe-install": {
-      "version": "~1.4.0-SNAPSHOT",
-      "artifact": "zowe-install-*.zip",
-      "target": ".pax/mediation/",
-      "explode": "true",
-      "excludePatterns": ["*PR*.zip"]
+       "version": "1.13.0",
+       "artifact": "libs-snapshot-local/org/zowe/apiml/sdk/zowe-install/1.13.0-PR-664-SNAPSHOT/zowe-install-1.13.0-PR-664-20200522.071407-1.zip",
+       "target": ".pax/mediation/",
+       "explode": "true"
     },
     "org.zowe.licenses": {
       "version": "1.10.0"
