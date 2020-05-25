@@ -20,6 +20,8 @@ import { TEST_TIMEOUT_SMPE_PTF } from '../../../../constants';
  *
  * @worker marist-1
  */
+// hard code to use marist-1 which we started with RACF
+const testServer = 'marist-1';
 const testSuiteName = 'Test SMPE PTF installation with RACF';
 describe(testSuiteName, () => {
   beforeAll(() => {
@@ -32,8 +34,7 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifySmpePtf(
       testSuiteName,
-      // hard code to use marist-1 which we started with RACF
-      'marist-1',
+      testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
       }
@@ -41,6 +42,6 @@ describe(testSuiteName, () => {
   }, TEST_TIMEOUT_SMPE_PTF);
 
   afterAll(async () => {
-    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+    await showZoweRuntimeLogs(testServer);
   })
 });

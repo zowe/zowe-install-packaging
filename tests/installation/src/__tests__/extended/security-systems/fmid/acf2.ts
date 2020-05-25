@@ -20,6 +20,8 @@ import { TEST_TIMEOUT_SMPE_FMID } from '../../../../constants';
  *
  * @worker marist-2
  */
+// hard code to use marist-2 which we started with ACF2
+const testServer = 'marist-2';
 const testSuiteName = 'Test SMPE FMID installation with ACF2';
 describe(testSuiteName, () => {
   beforeAll(() => {
@@ -32,8 +34,7 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifySmpeFmid(
       testSuiteName,
-      // hard code to use marist-2 which we started with ACF2
-      'marist-2',
+      testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
       }
@@ -41,6 +42,6 @@ describe(testSuiteName, () => {
   }, TEST_TIMEOUT_SMPE_FMID);
 
   afterAll(async () => {
-    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+    await showZoweRuntimeLogs(testServer);
   })
 });
