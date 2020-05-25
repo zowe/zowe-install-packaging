@@ -13,7 +13,7 @@ import {
   installAndVerifySmpePtf,
   showZoweRuntimeLogs,
 } from '../../../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../../constants';
+import { TEST_TIMEOUT_SMPE_PTF } from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker
@@ -32,13 +32,13 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifySmpePtf(
       testSuiteName,
-      // hard code to use marist-1 which we started with ACF2
+      // hard code to use marist-1 which we started with RACF
       'marist-1',
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
       }
     );
-  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+  }, TEST_TIMEOUT_SMPE_PTF);
 
   afterAll(async () => {
     await showZoweRuntimeLogs(process.env.TEST_SERVER);

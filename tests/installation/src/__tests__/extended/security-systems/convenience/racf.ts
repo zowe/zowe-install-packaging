@@ -32,7 +32,7 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifyConvenienceBuild(
       testSuiteName,
-      // hard code to use marist-1 which we started with ACF2
+      // hard code to use marist-1 which we started with RACF
       'marist-1',
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
