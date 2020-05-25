@@ -149,6 +149,12 @@
   SETROPTS RACLIST(FACILITY) REFRESH
   SETROPTS RACLIST(UNIXPRIV) REFRESH
 
+/* REMOVE AUX SERVER PERMISIONS .................................... */
+
+/* remove permit to use XMEM Cross Memory server                     */
+  RLIST  FACILITY ZWES.IS ALL
+  PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&AUXUSER.)
+
 /* REMOVE STARTED TASKS ............................................ */
 
 /* remove userid for ZOWE main server                                */
@@ -258,15 +264,16 @@ SET CONTROL(GSO)
 DELETE STC.&AUXSTC.
 F ACF2,REFRESH(STC)
 *
+* Revoke access to XMEM
+RECKEY ZWES DEL(IS ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+*
 * Remove Zowe main server
 *
 SET RESOURCE(FAC)
 RECKEY BPX2 DEL(DAEMON ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
 RECKEY BPX2 DEL(SERVER ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
 RECKEY BPX2 DEL(JOBNAME ROLE(&STCGRP.) SERVICE(READ) ALLOW)
-* Remove Zowe main server
-RECKEY ZWES DEL(IS ROLE(&STCGRP.) SERVICE(READ) ALLOW)
-F ACF2,REBUILD(FAC)
 * Remove UNI
 *
 SET RESOURCE(UNI)
@@ -312,6 +319,12 @@ TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.JOBNAME)
 /* remove permit to write persistent data                            */
 TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
 TSS REVOKE(&ZOWEUSER) UNIXPRIV(SUPERUSER.FILESYS)
+
+/* REMOVE AUX SERVER PERMISIONS .................................... */
+
+/* remove permit to use XMEM Cross Memory server                     */
+TSS WHOHAS IBMFAC(ZWES.IS)
+TSS REVOKE(&AUXUSER) IBMFAC(ZWES.IS)
 
 /* REMOVE STARTED TASKS ............................................ */
 

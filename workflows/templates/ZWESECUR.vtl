@@ -317,13 +317,22 @@
   RLIST STARTED &XMEMSTC..* ALL STDATA
   RLIST STARTED &AUXSTC..*  ALL STDATA
 
+/* DEFINE XMEM SECURITY RESOURCES .................................. */
+
+/* define xmem security profile                                      */
+  RLIST   FACILITY ZWES.IS ALL
+  RDEFINE FACILITY ZWES.IS UACC(NONE)
+
+/* DEFINE AUX SERVER PERMISIONS .................................... */
+
+/* permit AUX STC to use XMEM cross memory server                    */
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&AUXUSER.)
+  SETROPTS RACLIST(FACILITY) REFRESH
+
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use XMEM cross memory server           */
-  RLIST   FACILITY ZWES.IS ALL
-  RDEFINE FACILITY ZWES.IS UACC(NONE)
   PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
-
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* permit Zowe main server to create a user's security environment   */
@@ -482,19 +491,24 @@ GROUP(&STCGRP.) +
 STCID(&AUXSTC.)
 F ACF2,REFRESH(STC)
 *
-* DEFINE ZOWE SERVER PERMISIONS ...................................
+* DEFINE XMEM SECURITY RESOURCES ..................................
 *
-* define a role holding the permissions and add &ZOWEUSER to it
+* define a role holding the permissions, add &AUXUSER and
+* &ZOWEUSER to it
 *
 SET X(ROL)
-INSERT &STCGRP. INCLUDE(&ZOWEUSER.) ROLE
+INSERT &STCGRP. INCLUDE(&AUXUSER.,&ZOWEUSER.) ROLE
 F ACF2,NEWXREF,TYPE(ROL)
 *
-* permit Zowe main server to use XMEM cross memory server
+* DEFINE STC SERVER PERMISIONS ....................................
+*
+* permit AUX and Zowe main server to use XMEM cross memory server
 *
 SET RESOURCE(FAC)
 RECKEY ZWES ADD(IS SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
+*
+* DEFINE ZOWE SERVER PERMISIONS ...................................
 *
 * permit Zowe main server to create a user's security environment
 * ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes
@@ -621,6 +635,17 @@ $$
   TSS ADD(STC) PROCNAME(&AUXSTC.) ACID(&AUXUSER.)
   TSS ADD(&AUXUSER.) FAC(STC)
 
+/* DEFINE XMEM SECURITY RESOURCES .................................. */
+
+/* define xmem security profile                                      */
+  TSS ADD(&FACACID.) IBMFAC(ZWES.IS)
+
+/* DEFINE AUX SERVER PERMISIONS .................................... */
+
+/* permit AUX STC to use XMEM cross memory server                    */
+  TSS WHOHAS IBMFAC(ZWES.IS)
+  TSS PERMIT(&AUXUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
+
 #if($ibmTemplate != 'YES')
 /* The ZOWESTC started task is a multi-user address space therefore */
 /* a TSS FACILITY needs to be defined and assigned to the started    */
@@ -652,7 +677,6 @@ $$
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use XMEM cross memory server           */
-  TSS ADD(&FACACID.) IBMFAC(ZWES.IS)
   TSS WHOHAS IBMFAC(ZWES.IS)
   TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
 
