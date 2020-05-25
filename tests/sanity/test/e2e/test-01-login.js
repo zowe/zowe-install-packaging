@@ -23,6 +23,7 @@ const {
   getElement,
   getElementText,
   waitUntilElement,
+  waitUntilElementIsVisible,
   saveScreenshot,
   getDefaultDriver,
 } = require('./utils');
@@ -333,16 +334,15 @@ describe('test MVD login page', function() {
     expect(signoutText).to.equal('Log out');
 
     await driver.sleep(3000);
+    // logged out
     await signout.click();
     await waitUntilElement(driver, '.login-button');
+    // wait for login panel to show up
+    await waitUntilElementIsVisible(driver, 'div.login-panel');
 
     // save screenshot
     const file2 = await saveScreenshot(driver, testName, 'user-logout');
     addContext(this, file2);
-
-    // logged out
-    const loginPanel = await getElement(driver, 'div.login-panel');
-    expect(loginPanel).to.be.an('object');
   });
 
 
