@@ -77,7 +77,7 @@
 //*      * Name of the data set containing Zowe's certificate (PKCS12)
 //         SET   DSNAME=
 //*      * Password for the PKCS12 data set
-//         SET PKCSPASS=
+//         SET PKCSPASS=''
 //*      * Name/Label of the intermediate CA of the Zowe certificate
 //*      * Ignore if not applicable
 //         SET ITRMZWCA=
@@ -330,9 +330,9 @@ ACF
 *                   C='&C.')        +
 *          SIZE(2048)               +
 *          EXPIRE(05/01/30)         +
-*          LABEL('&LABEL.')         +
-*          KEYUSAGE(HANDSHAKE,DATAENCRYPT,DOCSIGN)    +
-*          ALTNAME(IP='127.0.0.1' DOMAIN='localhost') +
+*          LABEL(&LABEL.)         +
+*          KEYUSAGE(HANDSHAKE DATAENCRYPT DOCSIGN)    +
+*          ALTNAME(IP=127.0.0.1 DOMAIN='localhost') +
 *          SIGNWITH(CERTAUTH.ZOWECA)
 
 * Option 2 - END ................................................... */
