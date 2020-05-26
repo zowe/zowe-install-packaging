@@ -43,7 +43,7 @@ $SCRIPT runtimePath hashPath
     Parm name       Sample value    Meaning
     ---------       ------------    -------
  1  runtimePath     /usr/lpp/zowe   root directory for the executables used by Zowe at run time
- 2  hashPath        scripts/utils   writable work directory where you want the reference hash key files and program created
+ 2  hashPath        scripts/utils   writable work directory where you want the reference hash key file and program created
 
 EndOfUsage
 exit
@@ -54,13 +54,14 @@ hashPath=$2
 
 cd $hashPath
 javac HashFiles.java 
+cp    HashFiles.class    $runtimePath/bin/internal # must be in runtime before you hash runtime.  
 
 # Create a list of files to be hashed.  Exclude SMPE.
 cd $runtimePath
 find . -name ./SMPE   -prune \
     -o -name "./ZWE*" -prune \
     -o -type f -print > $hashPath/files.in 
-# create the set of hash files
+# create the set of hashes
 java -cp $hashPath HashFiles $hashPath/files.in > $hashPath/RefRuntimeHash.txt
 echo HashFiles RC=$?
 

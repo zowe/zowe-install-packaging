@@ -240,8 +240,8 @@ cp   $utilsDir/hash/RefRuntimeHash.txt $stageDir/fingerprint/RefRuntimeHash-$zow
 # convert derived runtime hash file to ASCII and publish on JFrog
 iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/../RefRuntimeHash.txt # base filename is not versioned
 
-# save compiled hash program 
-cp   $utilsDir/hash/HashFiles.class    $stageDir/fingerprint # not to ... $binDir/internal
+# Publish compiled hash program 
+# cp   $utilsDir/hash/HashFiles.class    $binDir/internal  #  $stageDir/fingerprint
 cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication on JFrog
 
 # verify the checksums of ROOT_DIR, to check zowe-verify-authenticity.sh
@@ -253,6 +253,12 @@ then
   cat ~/zowe/fingerprint/*.log  # fragile, because '-l outputPath' was not specified, so script chose location of log
 else  
   echo Exit code from zowe-verify-authenticity.sh was zero
+fi
+
+# Don't continue to build the SMP/E package unless "$BUILD_SMPE" = "yes".
+if [ "$BUILD_SMPE" != "yes" ]; then
+  echo "[$SCRIPT_NAME] not building SMP/E package, exiting."
+  exit 0
 fi
 
 # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
