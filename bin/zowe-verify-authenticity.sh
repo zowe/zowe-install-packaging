@@ -106,19 +106,19 @@ fi
 # hash path
 if [[ ! -n "$hashPath" ]]
 then
-    # if [[ ! -d `dirname $0`/../bin/internal ]]
-    # then
-    #     echo Error: Default hashPath `dirname $0`/../bin/internal $notD
-    #     exit 1
-    # fi 
-    # hashPath=$(cd `dirname $0`;cd ../bin/internal;pwd)
-
-    if [[ ! -d `dirname $0`/../fingerprint ]]
+    if [[ ! -d `dirname $0`/../bin/internal ]]
     then
-        echo Error: Default hashPath `dirname $0`/../fingerprint $notD
+        echo Error: Default hashPath `dirname $0`/../bin/internal $notD
         exit 1
     fi 
-    hashPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
+    hashPath=$(cd `dirname $0`;cd ../bin/internal;pwd)
+
+    # if [[ ! -d `dirname $0`/../fingerprint ]]
+    # then
+    #     echo Error: Default hashPath `dirname $0`/../fingerprint $notD
+    #     exit 1
+    # fi 
+    # hashPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
 fi
 
 
