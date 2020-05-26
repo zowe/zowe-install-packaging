@@ -448,6 +448,52 @@ const waitUntilElementIsGone = async(driver, selector, parent) => {
 };
 
 /**
+ * Wait until element with css selector are visible from web page
+ *
+ * NOTE: This method may exit with driver.wait timeout.
+ *
+ * @param  {WebDriver}  driver    Selenium WebDriver
+ * @param  {String}     selector  css selector
+ * @param  {WebElement} parent    optional, parent element where to find css selector
+ * @return {Boolean}              true if the element is visible
+ */
+const waitUntilElementIsVisible = async(driver, selector, parent) => {
+  if (!parent) {
+    parent = driver;
+  }
+
+  await driver.sleep(500);
+  try {
+    await driver.wait(
+      async() => {
+        const elementsDisplayed = await getElement(parent, selector, true);
+        if (elementsDisplayed) {
+          return true;
+        }
+
+        await driver.sleep(DEFAULT_ELEMENT_CHECK_INTERVAL); // not too fast
+        return false;
+      },
+      DEFAULT_PAGE_LOADING_TIMEOUT
+    );
+  } catch (e) {
+    const errName = e && e.name;
+    if (errName === 'TimeoutError') {
+      // try to save screenshot for debug purpose
+      await driver.switchTo().defaultContent();
+      await saveScreenshot(driver, testName, 'wait-until-element-is-visible');
+
+      expect(errName).to.not.equal('TimeoutError');
+    } else {
+      expect(e).to.be.null;
+    }
+  }
+  await driver.sleep(500);
+
+  return true;
+};
+
+/**
  * Wait until element with css selector is loaded
  *
  * NOTE: This method may exit with driver.wait timeout.
@@ -505,7 +551,7 @@ const launchApp = async(driver, appName) => {
   const menuItems = await getElements(popup, '.launch-widget-row');
   let app;
   for (let item of menuItems) {
-    const itemTitle = await getElement(item, 'p');
+    const itemTitle = await getElement(item, '.app-label');
     const text = await itemTitle.getText();
     debug(`[launchApp] found menu item ${text}`);
     if (text === appName) {
@@ -617,6 +663,7 @@ module.exports = {
   waitUntilElements,
   waitUntilElement,
   waitUntilElementIsGone,
+  waitUntilElementIsVisible,
   waitUntilIframe,
   loginMVD,
   launchApp,

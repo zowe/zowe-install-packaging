@@ -12,9 +12,15 @@
       "server": {
         "hostname": "localhost",
         "port": 10011,
-        "isHttps": false
+        "isHttps": true
       },
       "enabled": false
+    },
+    "headers": {
+      "X-frame-Options": {
+        "override": true,
+        "value": "sameorigin"
+      }
     }
   },
   "agent": {
@@ -44,16 +50,10 @@
     //enable this to use role-based access control (RBAC) for Zowe dataservice endpoints
     "rbac": false,
     
-    //each authentication type may have more than one implementing plugin. define defaults and fallbacks below as well
-    //any types that have no implementers are ignored, and any implementations specified here that are not known to the server are also ignored.
+    //each authentication type may have more than one implementing plugin, but the specification below just describes the priority of them. Every one that is found in the pluginsDir is loaded.
     "implementationDefaults": {
       //each type has an object which describes which implementation to use based on some criteria to find which is best for the task. For now, just "plugins" will
       //be used to state that you want a particular plugin.
-      //"zosmf": {
-      // zosmf plugin needs to be configured to target a zosmf instance. configure before using.
-      // "plugins": ["org.zowe.zlux.auth.zosmf"]
-      //},
-
       "saf": {
         "plugins": ["org.zowe.zlux.auth.safsso"]
       }

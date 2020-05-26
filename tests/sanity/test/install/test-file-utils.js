@@ -8,66 +8,25 @@
  * Copyright IBM Corporation 2020
  */
 
-const expect = require('chai').expect;
-const debug = require('debug')('zowe-sanity-test:install:installed-utils');
-const SSH = require('node-ssh');
-const ssh = new SSH();
+const sshHelper = require('./ssh-helper');
 
-describe('verify installed utils', function() {
-  before('prepare SSH connection', function() {
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
-    expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
-    expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
-    expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_ROOT_DIR, 'ZOWE_ROOT_DIR is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_INSTANCE_DIR, 'ZOWE_INSTANCE_DIR is not defined').to.not.be.empty;
-
-    const password = process.env.SSH_PASSWD;
-
-    return ssh.connect({
-      host: process.env.SSH_HOST,
-      username: process.env.SSH_USER,
-      port: process.env.SSH_PORT,
-      password,
-      tryKeyboard: true,
-      onKeyboardInteractive: (name, instructions, instructionsLang, prompts, finish) => {
-        if (prompts.length > 0 && prompts[0].prompt.toLowerCase().includes('password')) {
-          finish([password]);
-        }
-      }
-    })
-      .then(function() {
-        debug('ssh connected');
-      });
+describe('verify file-utils', function() {
+  before('prepare SSH connection', async function() {
+    await sshHelper.prepareConnection();
   });
 
   let home_dir;
-  before('get required parameters', function() {
-    ssh.execCommand('echo $HOME')
-      .then(function(result) {
-        expect(result.stderr).to.be.empty;
-        expect(result.code).to.equal(0);
-        home_dir = result.stdout;
-      });
+  before('get required parameters', async function() {
+    home_dir = await sshHelper.executeCommandWithNoError('echo $HOME');
   });
 
   describe('verify get_full_path', function() {
 
     let curr_dir;
     // let parent_dir;
-    before('get required parameters', function() {
-      // return ssh.execCommand(`echo $(cd ../;pwd)`)
-      //   .then(function(result) {
-      //     expect(result.stderr).to.be.empty;
-      //     expect(result.code).to.equal(0);
-      //     parent_dir = result.stdout;
-      //   });
-      return ssh.execCommand('echo $PWD')
-        .then(function(result) {
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(0);
-          curr_dir = result.stdout;
-        });
+    before('get required parameters', async function() {
+      curr_dir = await sshHelper.executeCommandWithNoError('echo $PWD');
+      // parent_dir = await sshHelper.executeCommandWithNoError('echo $(cd ../;pwd)');
     });
 
     it('test home directory is expanded', async function() {
@@ -89,14 +48,9 @@ describe('verify installed utils', function() {
       await test_get_full_path(input, expected);
     });
 
-    function test_get_full_path(input, expected) {
-      const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
-      return ssh.execCommand(`. ${file_utils_path} && get_full_path "${input}" actual && echo \${actual}`)
-        .then(function(result) {
-          expect(result.stdout).to.equal(expected);
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(0);
-        });
+    async function test_get_full_path(input, expected_stdout) {
+      const command = `get_full_path "${input}"`;
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, 0, expected_stdout, '');
     }
   });
 
@@ -133,24 +87,94 @@ describe('verify installed utils', function() {
     });
 
     //TODO zip #1325 - until we can evaluate ../ this will fail
-    xit('test relative sibling is valid', async function() {
+    it.skip('test relative sibling is valid', async function() {
       const file = '/home/zowe/root/../test';
       const directory = '/home/zowe/root/';
       await test_validate_file_not_in_directory(file, directory, true);
     });
 
-    function test_validate_file_not_in_directory(file, directory, expected_valid) {
+    async function test_validate_file_not_in_directory(file, directory, expected_valid) {
+      const command = `validate_file_not_in_directory "${file}" "${directory}"`;
       const expected_rc = expected_valid ? 0 : 1;
-      const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
-      return ssh.execCommand(`. ${file_utils_path} && validate_file_not_in_directory "${file}" "${directory}"`)
-        .then(function(result) {
-          expect(result.stderr).to.be.empty;
-          expect(result.code).to.equal(expected_rc);
-        });
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', '');
     }
   });
 
+  describe('validate_directory_is_accessible and writable', function() {
+
+    let temp_dir = 'temp_' + Math.floor(Math.random() * 10e6);
+    let inaccessible_dir = `${temp_dir}/inaccessible`;
+    before('set up test directory', async function() {
+      await sshHelper.executeCommandWithNoError(`mkdir -p ${inaccessible_dir} && chmod a-wx ${temp_dir}`);
+    });
+
+    function get_inaccessible_message(directory) {
+      return `Directory '${directory}' doesn't exist, or is not accessible to ${process.env.SSH_USER.toUpperCase()}. If the directory exists, check all the parent directories have traversal permission (execute)`;
+    }
+
+    it('test home directory is accessible', async function() {
+      const directory = home_dir;
+      await test_validate_directory_is_accessible(directory, true);
+    });
+
+    it('test junk directory is not accessible', async function() {
+      const directory = '/junk/rubbish/madeup';
+      await test_validate_directory_is_accessible(directory, false);
+    });
+
+    // zip-1377 Marist seems to have elevated privileges be able to access non-traversable directories, so this fails
+    it.skip('test non-traversable directory is not accessible', async function() {
+      await test_validate_directory_is_accessible(inaccessible_dir, false);
+    });
+
+    async function test_validate_directory_is_accessible(directory, expected_valid) {
+      const command = `validate_directory_is_accessible "${directory}"`;
+      const expected_rc = expected_valid ? 0 : 1;
+      const expected_err = expected_valid ? '' : get_inaccessible_message(directory);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    }
+
+    it('test home directory is writable', async function() {
+      const directory = home_dir;
+      await test_validate_directory_is_writable(directory, true);
+    });
+
+    it('test junk directory shows as not accessible on writable check', async function() {
+      const directory = '/junk/rubbish/madeup';
+      const command = `validate_directory_is_writable "${directory}"`;
+      const expected_rc = 1;
+      const expected_err = get_inaccessible_message(directory);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    });
+
+    // zip-1377 Marist's ACF2 and TS id seems to have elevated privileges be able to write non-writable directories, so this fails
+    it.skip('test non-writable directory is not writable', async function() {
+      await test_validate_directory_is_writable(temp_dir, false);
+    });
+
+    async function test_validate_directory_is_writable(directory, expected_valid) {
+      const command = `validate_directory_is_writable "${directory}"`;
+      const expected_rc = expected_valid ? 0 : 1;
+      const expected_err = expected_valid ? '' : `Directory '${directory}' does not have write access`;
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    }
+
+    after('clean up test directory', async function() {
+      await sshHelper.executeCommandWithNoError(`chmod 770 ${temp_dir} && rm -rf ${temp_dir}`);
+    });
+  });
+  
+  async function test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
+    const file_utils_path = process.env.ZOWE_ROOT_DIR+'/bin/utils/file-utils.sh';
+    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${file_utils_path} && ${command}`;
+    // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+    if (expected_stderr != '') {
+      expected_stdout = expected_stderr;
+    }
+    await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
+  }
+
   after('dispose SSH connection', function() {
-    ssh.dispose();
+    sshHelper.cleanUpConnection();
   });
 });

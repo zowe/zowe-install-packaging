@@ -1,4 +1,5 @@
 {
   "identifier": "org.zowe.editor",
-  "pluginLocation": "../../zlux-editor"
+  "pluginLocation": "components/app-server/share/zlux-editor",
+  "relativeTo": "$ROOT_DIR"
 }
