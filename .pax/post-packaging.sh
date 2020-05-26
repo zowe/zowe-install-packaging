@@ -24,10 +24,18 @@ set -x
 SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
 
-if [ "$BUILD_SMPE" != "yes" ]; then
-  echo "[$SCRIPT_NAME] not building SMP/E package, skipping."
-  exit 0
-fi
+echo "[$SCRIPT_NAME] BUILD_SMPE = $BUILD_SMPE" # debug
+# Always call 'smpe/bld/smpe.sh', to create fingerprint.
+# Hence the test below is commented out.  
+
+# if [ "$BUILD_SMPE" != "yes" ]; then
+#   echo "[$SCRIPT_NAME] not building SMP/E package, skipping."
+#   exit 0
+# fi
+
+# Tell 'smpe/bld/smpe.sh' to quit after install, if SMP/E build is not required
+export BUILD_SMPE
+
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
@@ -199,6 +207,14 @@ echo
 # display all files left behind by SMPE build
 echo "[$SCRIPT_NAME] content of ${SMPE_BUILD_ROOT}...."
 find ${SMPE_BUILD_ROOT} -print
+
+# The call to 'smpe/bld/smpe.sh' above quits after 'install.sh',
+# unless "$BUILD_SMPE" = "yes".  If that's the case, then quit
+# the current script too.  
+if [ "$BUILD_SMPE" != "yes" ]; then
+  echo "[$SCRIPT_NAME] not building SMP/E package, exiting."
+  exit 0
+fi
 
 # see if SMPE build completed successfully
 # MUST be done AFTER tasks that must always run after SMPE build
