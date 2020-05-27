@@ -234,15 +234,34 @@ cp        $ROOT/../content/$zoweVRM/files/HashFiles.java $utilsDir/hash
 # Compile the hash program and calculate the checksums of stageDir
 $binDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash 
 
-# save derived runtime hash file under ROOT_DIR/fingerprint
+# save derived runtime hash file 
+# 1. for SMP/E:  under ROOT_DIR/fingerprint
 mkdir -p $stageDir/fingerprint
 cp   $utilsDir/hash/RefRuntimeHash.txt $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
+# 2. for pax:    under ROOT
+unPaxDir=$utilsDir/hash/unPax
+mkdir -p $unPaxDir
+echo CWD 244 is `pwd`
+
+cd $unPaxDir
+      pax -ppx -rf  $ROOT.pax
+      mkdir fingerprint
+      cp $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt fingerprint
+      pax -w -f  $ROOT.pax *
+      rm -r $unPaxDir
+
+echo CWD 252 is `pwd`
+
+cd $here
+echo CWD 255 is `pwd`
+
 # convert derived runtime hash file to ASCII and publish on JFrog
 iconv -f IBM-1047 -t ISO8859-1 $utilsDir/hash/RefRuntimeHash.txt > $ROOT/../RefRuntimeHash.txt # base filename is not versioned
 
 # Publish compiled hash program 
 # cp   $utilsDir/hash/HashFiles.class    $binDir/internal  #  $stageDir/fingerprint
-cp   $utilsDir/hash/HashFiles.class    $ROOT/.. # for publication on JFrog
+cp   $utilsDir/hash/HashFiles.class         $ROOT/.. # for publication on JFrog
+cp   $binDir/zowe-verify-authenticity.sh    $ROOT/.. # for publication on JFrog
 
 # verify the checksums of ROOT_DIR, to check zowe-verify-authenticity.sh
 $binDir/zowe-verify-authenticity.sh 
