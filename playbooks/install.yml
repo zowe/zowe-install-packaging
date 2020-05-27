@@ -44,7 +44,8 @@
       vars:
         filename_to_upload: "{{ zowe_build_file }}"
         file_upload_method: sftp
-        file_upload_hashcheck: true
+        # file_upload_hashcheck: true
+        file_upload_hashcheck: false 
 
   # ============================================================================
   # if zowe_build_local is set, upload to z/OS
@@ -63,7 +64,8 @@
       vars:
         filename_to_upload: "{{ zowe_build_file }}"
         file_upload_method: sftp
-        file_upload_hashcheck: true
+        # file_upload_hashcheck: true
+        file_upload_hashcheck: false 
 
   # ============================================================================
   # Install Zowe
