@@ -11,14 +11,17 @@
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifySmpeFmid,
+  showZoweRuntimeLogs,
 } from '../../../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../../constants';
+import { TEST_TIMEOUT_SMPE_FMID } from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker
  *
  * @worker marist-3
  */
+// hard code to use marist-3 which we started with Top Secret
+const testServer = 'marist-3';
 const testSuiteName = 'Test SMPE FMID installation with Top Secret';
 describe(testSuiteName, () => {
   beforeAll(() => {
@@ -31,11 +34,14 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifySmpeFmid(
       testSuiteName,
-      // hard code to use marist-3 which we started with Top Secret
-      'marist-3',
+      testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
       }
     );
-  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+  }, TEST_TIMEOUT_SMPE_FMID);
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(testServer);
+  })
 });

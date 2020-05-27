@@ -11,6 +11,7 @@
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifyConvenienceBuild,
+  showZoweRuntimeLogs,
 } from '../../../../utils';
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../../constants';
 
@@ -19,6 +20,8 @@ import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../../constants';
  *
  * @worker marist-2
  */
+// hard code to use marist-2 which we started with ACF2
+const testServer = 'marist-2';
 const testSuiteName = 'Test convenience build installation with ACF2';
 describe(testSuiteName, () => {
   beforeAll(() => {
@@ -31,11 +34,14 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifyConvenienceBuild(
       testSuiteName,
-      // hard code to use marist-2 which we started with ACF2
-      'marist-2',
+      testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(testServer);
+  })
 });

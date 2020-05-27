@@ -18,6 +18,8 @@ zowe_instance_dir: ~/.zowe/instance
 zowe_job_prefix: ZWE
 # instance id. This will be put into zowe job name after {{ zowe_job_prefix }}
 zowe_instance_id: 1
+# default z/OSMF port
+zos_zosmf_port: 10443
 # APIML ports
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
