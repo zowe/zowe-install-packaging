@@ -41,14 +41,14 @@ describe('verify network-utils', function() {
   describe(`verify ${validate_port_is_available}`, function() {
 
     it('test zosmf port is not available', async function() {
-      await test_network_added_to_path(process.env.ZOSMF_PORT, 'IZUSVR1');
+      await test_port_available(process.env.ZOSMF_PORT, 'IZUSVR1');
     });
 
     it('test unbound port is available', async function() {
-      await test_network_added_to_path(unbound_port);
+      await test_port_available(unbound_port);
     });
 
-    async function test_network_added_to_path(port, expected_process = undefined) {
+    async function test_port_available(port, expected_process = undefined) {
       let command = `${validate_port_is_available} ${port}`;
       const expected_rc = expected_process ? 1 : 0;
       const expected_err = expected_process ? `Port ${port} is already in use by process ${expected_process}` : '';
