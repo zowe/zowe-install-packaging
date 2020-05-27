@@ -214,6 +214,8 @@ find ${SMPE_BUILD_ROOT} -print
 if [ "$BUILD_SMPE" != "yes" ]; then
   echo "[$SCRIPT_NAME] not building SMP/E package, exiting."
   exit 0
+else 
+  echo "[$SCRIPT_NAME] continue building SMP/E package."
 fi
 
 # see if SMPE build completed successfully
