@@ -8,6 +8,7 @@ This repository includes Zowe installation script and pipelines to build Zowe.
   - [Build information](#build-information)
   - [Binary Dependencies](#binary-dependencies)
   - [Source Dependencies](#source-dependencies)
+  - [Point of Contacts](#point-of-contacts)
 - [Build Pipeline](#build-pipeline)
   - [Generate Customized Zowe Build](#generate-customized-zowe-build)
 - [Automate Install / Uninstall of Zowe with Ansible](#automate-install--uninstall-of-zowe-with-ansible)
@@ -64,7 +65,7 @@ Here is an example of component definition:
 
 `org.zowe.explorer.jobs` is the component ID, which also tell the pipeline to pick the component from Artifactory path `<repo>/org/zowe/explorer/jobs/`. `version` defines which version we should pick. In this case, we should pick the max version matches `0.2.*-STAGING` and `>= 0.2.8-STAGING`. So version `0.2.10-STAGING` is a good match if it exists.
 
-For details of **how to define a component**, please check examples and explanations from https://www.zowe.org/jenkins-library/jenkins_shared_library/artifact/JFrogArtifactory.html#interpretArtifactDefinition(java.lang.String,%20java.util.Map,%20java.util.Map).
+For details of **how to define a component**, please check examples and explanations from https://zowe.github.io/jenkins-library/jenkins_shared_library/artifact/JFrogArtifactory.html#interpretArtifactDefinition(java.lang.String,%20java.util.Map,%20java.util.Map).
 
 ### Source Dependencies
 
@@ -92,6 +93,83 @@ To check for each release, what source code from repositories will be used, you 
 - find and check file `manifest.json.template`. In the above case, it links to [v1.4.0/manifest.json.template](https://github.com/zowe/zowe-install-packaging/blob/v1.4.0/manifest.json.template).
 - check the `sourceDependencies` section. In the above case, it's line #96.
 - In the above example, you will see Zowe release v1.4.0 is using https://github.com/zowe/imperative repository tag [v2.4.9](https://github.com/zowe/imperative/tree/v2.4.9).
+
+### Point of Contacts
+
+For each Zowe component, we have point of contact(s) in case if we want to confirm the versions defined in the `manifest.json.template`:
+
+- API Mediation Layer: Elliot Jalley, Mark Ackert
+  * Binary Dependencies
+    - org.zowe.apiml.sdk.zowe-install
+  * Source Dependencies
+    - api-layer
+- zLux, ZSS and Cross Memory Server: James Struga
+  * Binary Dependencies
+    - org.zowe.zlux.sample-angular-app
+    - org.zowe.zlux.sample-iframe-app
+    - org.zowe.zlux.sample-react-app
+    - org.zowe.zlux.tn3270-ng2
+    - org.zowe.zlux.vt-ng2
+    - org.zowe.zlux.zlux-core
+    - org.zowe.zlux.zlux-editor
+    - org.zowe.zlux.zlux-workflow
+    - org.zowe.zlux.zosmf-auth
+    - org.zowe.zlux.zss-auth
+    - org.zowe.zss
+  * Source Dependencies
+    - zlux-app-manager
+    - zlux-app-server
+    - zlux-file-explorer
+    - zlux-grid
+    - zlux-platform
+    - zlux-server-framework
+    - zlux-shared
+    - zlux-widgets
+    - zlux-build
+    - zss
+    - zowe-common-c
+    - zss-auth
+    - zosmf-auth
+    - tn3270-ng2
+    - sample-angular-app
+    - sample-iframe-app
+    - sample-react-app
+    - vt-ng2
+    - zlux-editor
+    - zlux-workflow
+- Explorer APIs / UI Plugins: Jordan Cain
+  * Binary Dependencies
+    - org.zowe.explorer.data.sets
+    - org.zowe.explorer.jobs
+    - org.zowe.explorer-jes
+    - org.zowe.explorer-mvs
+    - org.zowe.explorer-uss
+  * Source Dependencies
+    - data-sets
+    - jobs
+    - explorer-api-common
+    - explorer-jes
+    - explorer-mvs
+    - explorer-uss
+    - orion-editor-component
+    - explorer-ui-server
+- CLI: Fernando Rijo Cedeno, Mark Ackert
+  * Source Dependencies
+    - imperative
+    - zowe-cli
+    - zowe-cli-cics-plugin
+    - zowe-cli-db2-plugin
+    - perf-timing
+    - zowe-cli-mq-plugin
+    - zowe-cli-scs-plugin
+    - zowe-cli-ftp-plugin
+    - zowe-cli-ims-plugin
+- Explorer (Visual Studio Code Extension): Fernando Rijo Cedeno, Mark Ackert
+  * Source Dependencies
+    - vscode-extension-for-zowe
+- License: Mark Ackert
+  * Binary Dependencies
+    - org.zowe.licenses
 
 ## Build Pipeline
 

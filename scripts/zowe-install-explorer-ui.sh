@@ -62,7 +62,7 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
 
   if [[ -f ${EXPLORER_UI_VALIDATE_SCRIPT} ]]
   then
-    cp ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
+    mv ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
   fi
 
   rm -rf $EXPLORER_INSTALL_FOLDER/bin/scripts
