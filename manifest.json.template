@@ -67,24 +67,24 @@
       "artifact": "zss-1.12.0-rc-51-20200522022849.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "org.zowe.explorer-mvs": {
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "org.zowe.explorer-uss": {
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "org.zowe.apiml.sdk.zowe-install": {
-      "version": "1.11.0",
+      "version": "1.12.0",
       "artifact": "zowe-install-*.zip",
       "target": ".pax/mediation/",
       "explode": "true",
@@ -98,14 +98,14 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.6.0",
+        "tag": "v4.6.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.11.0",
+        "tag": "v1.12.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -170,7 +170,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.11.0",
+        "tag": "v6.13.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -212,7 +212,7 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v1.0.2",
+        "tag": "v1.1.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -226,7 +226,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.0",
+        "tag": "v1.0.1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -240,7 +240,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.0",
+        "tag": "v1.0.1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -254,28 +254,28 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.0",
+        "tag": "v1.0.1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "v1.1.1",
+        "tag": "v1.1.2",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v1.0.0",
+        "tag": "v1.0.1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v1.0.0",
+        "tag": "v1.0.1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -349,7 +349,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.5.0",
+        "tag": "v1.5.1",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     }

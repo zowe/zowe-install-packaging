@@ -10,9 +10,7 @@
 # Copyright IBM Corporation 2019
 ################################################################################
 
-#Make sure Node is available on the PATH
-if [[ ":$PATH:" != *":$NODE_HOME/bin:"* ]];
-then
-  echo "Appending NODE_HOME/bin to the PATH..."
-  export PATH=$PATH:$NODE_HOME/bin
-fi
+# PLEASE NOTE - this is script is planned for removal - please use node-utils.sh instead
+
+. ${ROOT_DIR}/bin/utils/node-utils.sh
+ensure_node_is_on_path

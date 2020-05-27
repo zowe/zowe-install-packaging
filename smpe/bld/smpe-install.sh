@@ -164,7 +164,7 @@ echo "-- installing product in $stage & $mvsI"
 opts=""
 opts="$opts -h $mvsI"                          # target HLQ
 opts="$opts -i $stage"                         # target directory
-opts="$opts -l $log"                           # install log
+opts="$opts -f $log/$logFile"                  # install log
 test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
 _cmd $extract/$prodScript $debug $opts </dev/null
 
