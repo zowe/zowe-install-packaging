@@ -19,7 +19,6 @@ const {
   saveScreenshot,
   getDefaultDriver,
   waitUntilElement,
-  getElement,
   loginMVD,
   launchApp,
   locateApp,
