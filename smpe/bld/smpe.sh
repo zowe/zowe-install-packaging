@@ -245,13 +245,21 @@ mkdir -p $unPaxDir
   echo CWD 245 is `pwd`
   saveDir=`pwd`
   cd $unPaxDir
+    echo CWD 248 is `pwd`
     ls -l $ROOT.pax
+    echo result of ls -l before unpax:
     pax -ppx -rf  $ROOT.pax
-    ls 
+    echo result of ls -l after unpax:
+    ls -l
+    cd zowe-*
     mkdir fingerprint
     cp $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt fingerprint
     ls fingerprint
     ls * 
+    cd ..
+    echo list of files in `pwd`
+    ls *
+    echo paxing now 
     pax -w -f  $ROOT.pax *
   cd $saveDir
 rm -r $unPaxDir
