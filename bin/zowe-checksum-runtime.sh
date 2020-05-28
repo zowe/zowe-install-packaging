@@ -52,6 +52,11 @@ fi
 runtimePath=$1
 hashPath=$2
 
+echo runtimePath
+ls $runtimePath
+echo hashPath
+ls $hashPath
+
 cd $hashPath
 javac HashFiles.java 
 cp    HashFiles.class    $runtimePath/bin/internal # must be in runtime before you hash runtime.  
