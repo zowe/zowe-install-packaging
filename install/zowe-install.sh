@@ -11,7 +11,7 @@
 ################################################################################
 
 if [ $# -lt 3 ]; then
-  echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
+  echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-u <For UNIX installations no -h needed>] [-l <log_directory>]"
   exit 1
 fi
 
