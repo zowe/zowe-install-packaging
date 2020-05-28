@@ -174,20 +174,7 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
 chmod +x content/templates/*.rex
 
-# # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
-# # Generate reference hash keys of runtime files
-# echo "----- Generate reference hash keys of runtime files -----"
-# utilsDir=content/zowe-$ZOWE_VERSION/scripts/utils 
-# mkdir $utilsDir/hash # create work directory
-# cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
 
-# # Compile the hash program and calculate the checksums of stageDir
-# content/zowe-$ZOWE_VERSION/bin/zowe-checksum-runtime.sh content/zowe-$ZOWE_VERSION $utilsDir/hash 
-
-
-# rm -r $utilsDir/hash # delete work directory
-
-# # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # prepare for SMPE
 echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."
@@ -196,6 +183,49 @@ mv ./content/smpe  .
 # workflow customization
 echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
+
+# # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
+
+# this is the script where we want to create the fingerprint.
+# to do this, we will create a runtime directory, somewhat like smpe.sh does,
+# i.e. by running zowe-install.sh
+
+# I need to move the fingerprint code out of smpe.sh and into here.
+
+# for the moment, I will let smpe.sh continue to create its own runtime folder, but this 
+# will be removed later for efficiency.
+
+# note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
+# to delete them, amend catchall-packaging.sh in this directory.
+
+# # Generate reference hash keys of runtime files
+echo "----- Generate reference hash keys of runtime files -----"
+echo Installing Zowe in temporary runtime directory
+mkdir zowe-runtime-dir 
+echo USER = $USER
+echo USERNAME = $USERNAME
+echo LOGNAME = $LOGNAME
+echo ROOT = $ROOT # do we have the ROOT to publish to?
+userid=${USER:-${USERNAME:-${LOGNAME}}}
+./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.TRUNTIME # [-l <log_directory>]
+
+utilsDir=content/zowe-$ZOWE_VERSION/scripts/utils 
+mkdir $utilsDir/hash # create work directory
+cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
+
+# Compile the hash program and calculate the checksums of runtime
+./content/zowe-$ZOWE_VERSION/bin/zowe-checksum-runtime.sh zowe-runtime-dir $utilsDir/hash 
+
+# save derived runtime hash file 
+# 1. :  under ROOT_DIR/fingerprint
+mkdir -p content/zowe-$ZOWE_VERSION/fingerprint
+cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
+
+rm -r $utilsDir/hash # delete work directory
+rm -r zowe-runtime-dir # delete runtime directory.  Don't do this when smpe.sh does not create its own.  
+
+# # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
+
 
 #1. create SMP/E workflow & JCL
 WORKFLOW_PATH="./smpe/pax/USS"
