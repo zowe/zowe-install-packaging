@@ -152,7 +152,7 @@ then
 else
   create_new_instance
 fi
-
+echo 8
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 
@@ -237,7 +237,7 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@ ${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh">> $LOG_FILE
-
+echo 9
 # Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
 # If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
 chmod 775 ${INSTANCE_DIR}
@@ -248,7 +248,7 @@ if [[ $RETURN_CODE != "0" ]]; then
 fi
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
-
+echo 10
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
 echo "   (or in SDSF directly issue the command /S ZWESVSTC,INSTANCE='${INSTANCE_DIR}')"
@@ -256,3 +256,4 @@ echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
 echo "  (or in SDSF directly the command /C ZWESVSTC)"
 
 echo "zowe-configure-instance.sh completed">> $LOG_FILE
+echo 11
