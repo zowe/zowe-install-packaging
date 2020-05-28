@@ -10,12 +10,12 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 2 ]; then
   echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
   exit 1
 fi
 
-while getopts "f:h:i:l:d" opt; do
+while getopts "f:h:i:l:d:u" opt; do
   case $opt in
     d) # enable debug mode
       # future use, accept parm to stabilize SMPE packaging
@@ -25,6 +25,7 @@ while getopts "f:h:i:l:d" opt; do
     h) DSN_PREFIX=$OPTARG;;
     i) INSTALL_TARGET=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
+    u) UNIX_INSTALL=true;;
     \?)
       echo "Invalid option: -$opt" >&2
       exit 1
@@ -84,13 +85,17 @@ fi
 
 echo "Install started at: "`date` >> $LOG_FILE
 
-
-if [[ -z "$DSN_PREFIX" ]]
+if [[ -z "$UNIX_INSTALL" ]]
 then
-  echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
-  exit 1
+  if [[ -z "$DSN_PREFIX" ]]
+  then
+    echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+    exit 1
+  else
+    ZOWE_DSN_PREFIX=$DSN_PREFIX
+  fi
 else
-  ZOWE_DSN_PREFIX=$DSN_PREFIX
+  echo "Test two"
 fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
@@ -154,8 +159,16 @@ chmod -R 755 $ZOWE_ROOT_DIR/bin
 
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
+
+if [[ -z "$UNIX_INSTALL" ]]
+then
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
+else
+  echo "Test two"
+fi
+
+
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into"
 echo "  directory " $ZOWE_ROOT_DIR
