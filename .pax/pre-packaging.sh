@@ -209,7 +209,7 @@ echo ROOT = $ROOT # do we have the ROOT to publish to?
 userid=${USER:-${USERNAME:-${LOGNAME}}}
 ./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.TRUNTIME # [-l <log_directory>]
 
-utilsDir=./content/zowe-$ZOWE_VERSION/scripts/utils 
+utilsDir=`pwd`/content/zowe-$ZOWE_VERSION/scripts/utils 
 mkdir $utilsDir/hash # create work directory
 cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
 
