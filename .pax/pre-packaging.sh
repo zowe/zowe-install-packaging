@@ -174,6 +174,21 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
 chmod +x content/templates/*.rex
 
+# # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
+# # Generate reference hash keys of runtime files
+# echo "----- Generate reference hash keys of runtime files -----"
+# utilsDir=content/zowe-$ZOWE_VERSION/scripts/utils 
+# mkdir $utilsDir/hash # create work directory
+# cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
+
+# # Compile the hash program and calculate the checksums of stageDir
+# content/zowe-$ZOWE_VERSION/bin/zowe-checksum-runtime.sh content/zowe-$ZOWE_VERSION $utilsDir/hash 
+
+
+# rm -r $utilsDir/hash # delete work directory
+
+# # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
+
 # prepare for SMPE
 echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."
 mv ./content/smpe  .
