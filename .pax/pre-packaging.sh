@@ -219,7 +219,7 @@ cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
 # save derived runtime hash file 
 # 1. :  under ROOT_DIR/fingerprint
 mkdir -p content/zowe-$ZOWE_VERSION/fingerprint
-cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
+cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/RefRuntimeHash-$ZOWE_VERSION.txt 
 
 rm -r $utilsDir/hash # delete work directory
 rm -r zowe-runtime-dir # delete runtime directory.  Don't do this when smpe.sh does not create its own.  
