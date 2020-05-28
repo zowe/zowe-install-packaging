@@ -140,11 +140,11 @@ echo "Created instance directory ${INSTANCE_DIR}" >> $LOG_FILE
 # get a list of variables, from the template instance and the existing config to see which ones are missing and add them to the instance
 TEMPLATE=${ZOWE_ROOT_DIR}/scripts/instance.template.env
 INSTANCE=${INSTANCE_DIR}/instance.env
-
+echo a
 # Try and work out the variables that we can
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
 echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
-
+echo b
 # Check if instance .env already exists
 if [[ -f "${INSTANCE}" ]]
 then
@@ -152,6 +152,7 @@ then
 else
   create_new_instance
 fi
+echo c
 echo 8
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
