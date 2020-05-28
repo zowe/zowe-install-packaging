@@ -152,8 +152,9 @@
 /*                                                                   */
 /* Options:                                                          */
 /*   1. Zowe's certificate is already loaded in RACF database        */
-/*      ACTION: Modify the CONNECT(ID(&ZOWEUSER.) ...) keyword       */
-/*              below to match the owner of the desired certificate  */
+/*      ACTION: Modify the CONNECT(ID(&ZOWEUSER.) LABEL('&LABEL.')   */
+/*              command below to match the owner of the desired      */
+/*              certificate                                          */
 /*                                                                   */
 /*   2. Import external Zowe's certificate from a data set in PKCS12 */
 /*      format                                                       */
