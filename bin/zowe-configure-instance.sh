@@ -111,17 +111,30 @@ echo "Creating zowe instance in ${INSTANCE_DIR}"
 echo "test"
 echo $JAVA_HOME
 $(mkdir -p ${INSTANCE_DIR}/bin/internal)
+echo 1
+
 DIRECTORY_CREATE_RC=$?
+echo 2
+
 if [[ $DIRECTORY_CREATE_RC != "0" ]]
 then
   echo "We could not create the instance directory and sub-directories in ${INSTANCE_DIR}. Please check permissions and re-run."
   exit 1
 fi
+echo 3
 
 LOG_DIR=${INSTANCE_DIR}/logs
+echo 4
+
 mkdir -p ${LOG_DIR}
+echo 5
+
 chmod 777 ${LOG_DIR}
+echo 6
+
 export LOG_FILE=${LOG_DIR}/"configure-`date +%Y-%m-%d-%H-%M-%S`.log"
+echo 7
+
 echo "Created instance directory ${INSTANCE_DIR}" >> $LOG_FILE
 
 # get a list of variables, from the template instance and the existing config to see which ones are missing and add them to the instance
