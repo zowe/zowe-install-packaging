@@ -224,8 +224,8 @@ binDir=$stageDir/bin
 
 # # The scripts to do this are in the 'bin' directory
 # # The program to do this is in the 'files' directory
-# zoweVRM=`ls $ROOT/../content`  # The vrm directory (e.g. zowe-1.9.0) is the only entry under 'content'
-# zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
+zoweVRM=`ls $ROOT/../content`  # The vrm directory (e.g. zowe-1.9.0) is the only entry under 'content'
+zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
 # utilsDir=$ROOT/../content/$zoweVRM/scripts/utils 
 # mkdir $utilsDir/hash # create work directory
 # cp        $ROOT/../content/$zoweVRM/files/HashFiles.java $utilsDir/hash
@@ -264,19 +264,21 @@ binDir=$stageDir/bin
 # rm -r $unPaxDir
 # # end of update-pax-in-place      
 
+echo stageDir
+ls  $stageDir
 # convert derived runtime hash file to ASCII and publish on JFrog
 iconv -f IBM-1047 -t ISO8859-1 $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt > $ROOT/../RefRuntimeHash.txt # base filename is not versioned
 
 # Publish compiled hash program 
 # cp   $utilsDir/hash/HashFiles.class    $binDir/internal  #  $stageDir/fingerprint
-cp   $stageDir/scripts/utils/HashFiles.class         $ROOT/.. # for publication on JFrog
-cp   $binDir/zowe-verify-authenticity.sh    $ROOT/.. # for publication on JFrog
+cp   $stageDir/bin/internal/HashFiles.class         $ROOT/.. # for publication on JFrog
+cp   $binDir/zowe-verify-authenticity.sh            $ROOT/.. # for publication on JFrog
 
 # verify the checksums of ROOT_DIR, to check zowe-verify-authenticity.sh
 $binDir/zowe-verify-authenticity.sh # No parameters!
 if [[ $? -ne 0 ]]
 then
-  echo Exit code from zowe-verify-authenticity.sh was non-zero
+  echo Error: Exit code from zowe-verify-authenticity.sh was non-zero
   echo "---------- Contents of zowe-verify-authenticity.log ----------"
   cat ~/zowe/fingerprint/*.log  # fragile, because '-l outputPath' was not specified, so script chose location of log
 else  
