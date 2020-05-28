@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 3 ]; then
   echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
   exit 1
 fi
@@ -94,8 +94,6 @@ then
   else
     ZOWE_DSN_PREFIX=$DSN_PREFIX
   fi
-else
-  echo "Test two"
 fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
@@ -164,8 +162,6 @@ if [[ -z "$UNIX_INSTALL" ]]
 then
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
-else
-  echo "Test two"
 fi
 
 
