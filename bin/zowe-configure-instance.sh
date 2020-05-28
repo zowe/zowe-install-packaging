@@ -108,6 +108,8 @@ check_existing_instance_for_updates() {
 }
 
 echo "Creating zowe instance in ${INSTANCE_DIR}"
+echo "test"
+echo $JAVA_HOME
 $(mkdir -p ${INSTANCE_DIR}/bin/internal)
 DIRECTORY_CREATE_RC=$?
 if [[ $DIRECTORY_CREATE_RC != "0" ]]
