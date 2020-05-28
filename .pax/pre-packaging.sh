@@ -214,7 +214,7 @@ mkdir $utilsDir/hash # create work directory
 cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
 
 # Compile the hash program and calculate the checksums of runtime
-./content/zowe-$ZOWE_VERSION/bin/zowe-checksum-runtime.sh zowe-runtime-dir $utilsDir/hash 
+./content/zowe-$ZOWE_VERSION/bin/zowe-checksum-runtime.sh `pwd`/zowe-runtime-dir $utilsDir/hash 
 
 # save derived runtime hash file 
 # 1. :  under ROOT_DIR/fingerprint
