@@ -61,7 +61,7 @@ cd $hashPath
 javac HashFiles.java 
 cp    HashFiles.class    $runtimePath/bin/internal # must be in runtime before you hash runtime.  
 
-# Create a list of files to be hashed.  Exclude SMPE.
+# Create a list of files to be hashed.  Exclude SMPE.  And fingerprint.  
 cd $runtimePath
 ls fingerprint/* 2> /dev/null # is there an existing fingerprint?
 if [[ $? -eq 0 ]]
@@ -76,15 +76,6 @@ find . -name ./SMPE             -prune \
 # create the set of hashes
 java -cp $hashPath HashFiles $hashPath/files.in > $hashPath/RefRuntimeHash.txt
 echo HashFiles RC=$?
-
-# Publish via Jenkinsfile:
-
-#   pipeline.publish(
-#     artifacts: [
-#       '$hashPath/HashFiles.class',
-#       '$hashPath/RefRuntimeHash.txt'
-#     ]
-#   )
 
 rm $hashPath/files.in
 echo $SCRIPT ended
