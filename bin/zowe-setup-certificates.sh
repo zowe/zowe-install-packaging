@@ -101,12 +101,17 @@ echo "once"
 # If all external fields are not zero [valid string], use external setup method.
 
 if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
+  echo "y1"
   if [[ -z "${EXTERNAL_CERTIFICATE}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
+    echo "y2"
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
       --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
+    echo "y3"
     RC=$?
+    echo "y4"
     echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
   else
+    echo "y5"
     (>&2 echo "Zowe Install setup configuration is invalid; check your zowe-setup-certificates.env file.")
     (>&2 echo "Some external apiml certificate fields are supplied...Fields must be filled out in full or left completely blank.")
     (>&2 echo "See $LOG_FILE for more details.")
@@ -114,21 +119,26 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
     exit 1
   fi
 else
+  echo "y6"
   EXT_CA_PARM=""
   for CA in ${EXTERNAL_CERTIFICATE_AUTHORITIES}; do
+      echo "y7"
       EXT_CA_PARM="${EXT_CA_PARM} --external-ca ${CA} "
   done
-
+  echo "y8"
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
     --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
     --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX} \
     --external-ca-filename ${EXTERNAL_CA_PREFIX}
+  echo "y9"
   RC=$?
+  echo "y10 $RC"
 
   echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
 fi
 echo "dose"
 if [ "$RC" -ne "0" ]; then
+    echo "y $RC"
     (>&2 echo "apiml_cm.sh --action setup has failed. See $LOG_FILE for more details")
     echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
     exit 1

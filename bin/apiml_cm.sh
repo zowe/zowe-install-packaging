@@ -10,13 +10,19 @@
 # https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.security.component.80.doc/security-component/keytoolDocs/keytool_overview.html
 #
 
+echo "x1"
+
 if [ `uname` = "OS/390" ]; then
     export IBM_JAVA_OPTIONS="-Dfile.encoding=IBM-1047"
 fi
 
+echo "x2"
+
 BASE_DIR=$(dirname "$0")
 PARAMS="$@"
 PWD=`pwd`
+
+echo "x3"
 
 function usage {
     echo "APIML Certificate Management"
@@ -33,6 +39,8 @@ function usage {
     echo ""
     echo "  Called with: ${PARAMS}"
 }
+
+echo "x4"
 
 ACTION=
 V=
@@ -62,9 +70,13 @@ ZOSMF_CERTIFICATE=
 ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
 
+echo "x5"
+
 if [ -z ${TEMP_DIR+x} ]; then
     TEMP_DIR=${TMPDIR:-/tmp}
 fi
+
+echo "x6"
 
 function pkeytool {
     ARGS=$@
@@ -81,13 +93,19 @@ function pkeytool {
     fi
 }
 
+echo "x7"
+
 function clean_local_ca {
     rm -f ${LOCAL_CA_FILENAME}.keystore.p12 ${LOCAL_CA_FILENAME}.cer
 }
 
+echo "x8"
+
 function clean_service {
     rm -f ${SERVICE_KEYSTORE}.p12 ${SERVICE_KEYSTORE}.csr ${SERVICE_KEYSTORE}_signed.cer ${SERVICE_TRUSTSTORE}.p12
 }
+
+echo "x9"
 
 function create_certificate_authority {
     echo "Generate keystore with the local CA private key and local CA public certificate:"
@@ -105,6 +123,8 @@ function create_certificate_authority {
     fi
 }
 
+echo "x10"
+
 function add_external_ca {
     echo "Adding external Certificate Authorities:"
     if [ -n "${EXTERNAL_CA}" ]; then
@@ -121,6 +141,8 @@ function add_external_ca {
     fi
 }
 
+echo "x11"
+
 function create_service_certificate_and_csr {
     if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
     then
@@ -134,6 +156,8 @@ function create_service_certificate_and_csr {
     fi
 }
 
+echo "x12"
+
 function create_self_signed_service {
     if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
     then
@@ -144,6 +168,8 @@ function create_self_signed_service {
     fi
 }
 
+echo "x13"
+
 function sign_csr_using_local_ca {
     echo "Sign the CSR using the Certificate Authority:"
     pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
@@ -152,10 +178,14 @@ function sign_csr_using_local_ca {
         -validity ${SERVICE_VALIDITY}
 }
 
+echo "x14"
+
 function import_local_ca_certificate {
     echo "Import the local Certificate Authority to the truststore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
+
+echo "x15"
 
 function import_external_ca_certificates {
     if ls ${EXTERNAL_CA_FILENAME}.*.cer 1> /dev/null 2>&1; then
@@ -169,6 +199,8 @@ function import_external_ca_certificates {
     fi
 }
 
+echo "x16"
+
 function import_signed_certificate {
     echo "Import the Certificate Authority to the keystore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
@@ -176,6 +208,8 @@ function import_signed_certificate {
     echo "Import the signed CSR to the keystore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${SERVICE_KEYSTORE}_signed.cer -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
+
+echo "x17"
 
 function import_external_certificate {
     echo "Import the external Certificate Authorities to the keystore:"
@@ -195,6 +229,8 @@ function import_external_certificate {
     fi
 }
 
+echo "x18"
+
 function export_service_certificate {
     echo "Export service certificate to the PEM format"
     pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storetype PKCS12 -storepass ${SERVICE_PASSWORD} -rfc -file ${SERVICE_KEYSTORE}.cer
@@ -203,6 +239,8 @@ function export_service_certificate {
         iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.cer > ${SERVICE_KEYSTORE}.cer-ebcdic
     fi
 }
+
+echo "x19"
 
 function export_service_private_key {
     echo "Exporting service private key"
@@ -262,6 +300,8 @@ EOF
     rm ${TEMP_DIR}/ExportPrivateKey.java ${TEMP_DIR}/ExportPrivateKey.class
 }
 
+echo "x20"
+
 function setup_local_ca {
     clean_local_ca
     create_certificate_authority
@@ -270,12 +310,16 @@ function setup_local_ca {
     ls -l ${LOCAL_CA_FILENAME}*
 }
 
+echo "x21"
+
 function new_service_csr {
     clean_service
     create_service_certificate_and_csr
     echo "Listing generated files for service:"
     ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
 }
+
+echo "x22"
 
 function new_service {
     clean_service
@@ -294,6 +338,8 @@ function new_service {
     ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
 }
 
+echo "x23"
+
 function new_self_signed_service {
     clean_service
     create_self_signed_service
@@ -304,10 +350,14 @@ function new_self_signed_service {
     ls -l ${SERVICE_KEYSTORE}*
 }
 
+echo "x24"
+
 function trust {
     echo "Import a certificate to the truststore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
+
+echo "x25"
 
 function jwt_key_gen_and_export {
     echo "Generates key pair for JWT token secret and exports the public key"
@@ -316,6 +366,8 @@ function jwt_key_gen_and_export {
     pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} \
     -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
+
+echo "x26"
 
 function zosmf_jwt_public_key {
     echo "Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
@@ -332,6 +384,8 @@ function zosmf_jwt_public_key {
         org.springframework.boot.loader.PropertiesLauncher \
         https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
+
+echo "x27"
 
 function trust_zosmf {
   echo ${ZOSMF_CERTIFICATE}
@@ -395,6 +449,8 @@ function trust_zosmf {
     done
   fi
 }
+
+echo "x28"
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -480,6 +536,8 @@ while [ "$1" != "" ]; do
     shift
 done
 
+echo "x29"
+
 case $ACTION in
     clean)
         clean_local_ca
@@ -520,3 +578,4 @@ case $ACTION in
         usage
         exit 1
 esac
+echo "x30"
