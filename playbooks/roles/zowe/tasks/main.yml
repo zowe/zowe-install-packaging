@@ -37,7 +37,7 @@
     script_parameters: "-i \"{{ zowe_root_dir }}\" -h \"{{ zowe_dataset_prefix }}\" -l \"{{ zowe_install_logs_dir }}\""
 
 - name: Check fingerprint is correct
-    raw: >-
+  raw: >-
     touch {{ zos_uss_user_profile }} && \
     . {{ zos_uss_user_profile }} \
     {{ zowe_environment_variable_overrides | default('') }} && \
