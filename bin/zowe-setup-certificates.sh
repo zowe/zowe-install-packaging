@@ -34,8 +34,11 @@ then
 fi
 echo "tres"
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+echo aa
 set_install_log_directory "${LOG_DIRECTORY}"
+echo bb
 validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
+echo cc
 set_install_log_file "zowe-setup-certificates"
 echo "cuatro"
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
