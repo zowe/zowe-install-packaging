@@ -94,6 +94,10 @@ if [ ! -f zowe.pax ]; then
   echo "[$SCRIPT_NAME][ERROR] Cannot find Zowe package."
   exit 1
 fi
+
+echo List of zowe.pax
+ls -l zowe.pax
+
 if [ ! -f smpe.pax ]; then
   echo "[$SCRIPT_NAME][ERROR] Cannot find SMP/e package."
   exit 1
