@@ -159,7 +159,7 @@ echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 # if it exists in the INSTALL_DIR
 if [[ -d $INSTALL_DIR/fingerprint ]]
 then
-  echo Fingerprint exists in install directory
+  echo OK: Fingerprint exists in install directory and will be copied to runtime 
   ls -l $INSTALL_DIR/fingerprint/*
   mkdir -p  $ZOWE_ROOT_DIR/fingerprint
   chmod a+x $ZOWE_ROOT_DIR/fingerprint
@@ -167,8 +167,8 @@ then
   cp $INSTALL_DIR/fingerprint/* $ZOWE_ROOT_DIR/fingerprint
   chmod a+r $ZOWE_ROOT_DIR/fingerprint/*
 else
-  echo No fingerprint in install directory 
-  echo "No fingerprint in install directory "$INSTALL_DIR >> $LOG_FILE
+  echo OK: No fingerprint, create it with zowe-checksum-runtime.sh  
+  echo "OK: No fingerprint in install directory "$INSTALL_DIR >> $LOG_FILE
 fi
 
 
