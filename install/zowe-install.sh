@@ -149,11 +149,21 @@ cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 
 # Create the /fingerprint directory in the runtime directory
-mkdir -p  $ZOWE_ROOT_DIR/fingerprint
-chmod a+x $ZOWE_ROOT_DIR/fingerprint
-echo "Copying `ls $INSTALL_DIR/fingerprint/*` into "$ZOWE_ROOT_DIR/fingerprint >> $LOG_FILE
-cp $INSTALL_DIR/fingerprint $ZOWE_ROOT_DIR/fingerprint
-chmod a+r $ZOWE_ROOT_DIR/fingerprint/*
+# if it exists in the INSTALL_DIR
+if [[ -d $INSTALL_DIR/fingerprint ]]
+then
+  echo Fingerprint exists in install directory
+  ls -l $INSTALL_DIR/fingerprint/*
+  mkdir -p  $ZOWE_ROOT_DIR/fingerprint
+  chmod a+x $ZOWE_ROOT_DIR/fingerprint
+  echo "Copying `ls $INSTALL_DIR/fingerprint/*` into "$ZOWE_ROOT_DIR/fingerprint >> $LOG_FILE
+  cp $INSTALL_DIR/fingerprint/* $ZOWE_ROOT_DIR/fingerprint
+  chmod a+r $ZOWE_ROOT_DIR/fingerprint/*
+else
+  echo No fingerprint in install directory 
+  echo "No fingerprint in install directory "$INSTALL_DIR >> $LOG_FILE
+fi
+
 
 mkdir -p ${ZOWE_ROOT_DIR}/bin
 cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
@@ -180,6 +190,9 @@ chmod -R 755 ${ZOWE_ROOT_DIR}
 
 # remove the working directory
 rm -rf $TEMP_DIR
+
+echo "---- Final directory listing of ZOWE_ROOT_DIR "$ZOWE_ROOT_DIR >> $LOG_FILE
+ls -l $ZOWE_ROOT_DIR >> $LOG_FILE
 
 echo "zowe-install.sh completed. In order to use Zowe:"
 if [[ ${NEW_INSTALL} == "true" ]]

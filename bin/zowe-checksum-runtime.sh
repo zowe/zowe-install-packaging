@@ -52,9 +52,9 @@ fi
 runtimePath=$1
 hashPath=$2
 
-echo runtimePath
+echo List of runtimePath contents
 ls $runtimePath
-echo hashPath
+echo List of hashPath contents
 ls $hashPath
 
 cd $hashPath
@@ -63,8 +63,15 @@ cp    HashFiles.class    $runtimePath/bin/internal # must be in runtime before y
 
 # Create a list of files to be hashed.  Exclude SMPE.
 cd $runtimePath
-find . -name ./SMPE   -prune \
-    -o -name "./ZWE*" -prune \
+ls fingerprint/* 2> /dev/null # is there an existing fingerprint?
+if [[ $? -eq 0 ]]
+then
+    echo $SCRIPT Warning: fingerprint already exists
+fi
+
+find . -name ./SMPE             -prune \
+    -o -name "./ZWE*"           -prune \
+    -o -name ./fingerprint      -prune \
     -o -type f -print > $hashPath/files.in 
 # create the set of hashes
 java -cp $hashPath HashFiles $hashPath/files.in > $hashPath/RefRuntimeHash.txt
