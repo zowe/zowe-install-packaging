@@ -52,6 +52,7 @@ validate_java_home() {
   fi
 
   ls ${JAVA_HOME}/bin | grep java$ > /dev/null
+  echo "here $?"
   if [[ $? -ne 0 ]];
   then
     print_error_message "JAVA_HOME: ${JAVA_HOME}/bin does not point to a valid install of Java"
@@ -77,8 +78,11 @@ validate_java_home() {
 }
 echo five
 validate_java_home_not_empty() {
+  echo "do we get here?"
   . ${utils_dir}/zowe-variable-utils.sh
   validate_variable_is_set "JAVA_HOME"
+  echo "this $JAVA_HOME"
+  echo $?
   return $?
 }
 echo six
