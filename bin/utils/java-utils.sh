@@ -12,6 +12,7 @@
 
 # TODO LATER - anyway to do this better?
 # Try and work out where we are even if sourced
+echo one
 if [[ -n ${INSTALL_DIR} ]]
 then
   export utils_dir="${INSTALL_DIR}/bin/utils"
@@ -28,10 +29,10 @@ else
   echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-root-directory>' before running." 1>&2
   return 1
 fi
-
+echo two 
 # Source common util functions
 . ${utils_dir}/common.sh
-
+echo three
 ensure_java_is_on_path() {
   if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]]
   then
@@ -39,7 +40,7 @@ ensure_java_is_on_path() {
     export PATH=$PATH:$JAVA_HOME/bin
   fi
 }
-
+echo four
 validate_java_home() {
   validate_java_home_not_empty
   java_empty_rc=$?
@@ -72,13 +73,13 @@ validate_java_home() {
     return ${java_version_rc}
   fi
 }
-
+echo five
 validate_java_home_not_empty() {
   . ${utils_dir}/zowe-variable-utils.sh
   validate_variable_is_set "JAVA_HOME"
   return $?
 }
-
+echo six
 # Given a java version string from the `java -version` command, checks if it is valid
 check_java_version() {
   java_version_output=$1
@@ -104,7 +105,7 @@ check_java_version() {
     log_message "Java version ${java_version} is supported"
   fi
 }
-
+echo seven
 # TODO - how to test well given interaction and guess?
 # Interactive function that checks if the current JAVA_HOME is valid and if not requests a user enters the java home path via command line
 prompt_java_home_if_required() {
@@ -134,3 +135,4 @@ prompt_java_home_if_required() {
   export JAVA_HOME=$JAVA_HOME
   log_message "  JAVA_HOME variable value=${JAVA_HOME}"
 }
+echo eight
