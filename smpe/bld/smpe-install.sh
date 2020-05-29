@@ -143,6 +143,8 @@ _super chown -R $(id -u) $extract
 
 # remember original extract location
 orig=$extract
+echo original extract location $orig contains
+ls -l $orig 
 
 # step into possible leading dirs in archive
 #..Assumes that if there are multiple input pax files, they all share
@@ -161,6 +163,9 @@ test "$alter" && _cmd $alter $debug ZOWE PRE $extract -
 
 # install product
 echo "-- installing product in $stage & $mvsI"
+echo The extract $extract contains
+ls -l $extract
+
 opts=""
 opts="$opts -h $mvsI"                          # target HLQ
 opts="$opts -i $stage"                         # target directory

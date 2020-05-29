@@ -264,8 +264,8 @@ zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
 # rm -r $unPaxDir
 # # end of update-pax-in-place      
 
-echo stageDir
-ls  $stageDir
+echo List of stageDir files  
+ls  -l $stageDir
 # convert derived runtime hash file to ASCII and publish on JFrog
 iconv -f IBM-1047 -t ISO8859-1 $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt > $ROOT/../RefRuntimeHash.txt # base filename is not versioned
 

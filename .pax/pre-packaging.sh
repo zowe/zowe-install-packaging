@@ -216,10 +216,10 @@ cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
 # Compile the hash program and calculate the checksums of runtime
 ./content/zowe-$ZOWE_VERSION/bin/zowe-checksum-runtime.sh `pwd`/zowe-runtime-dir $utilsDir/hash 
 
-# save derived runtime hash file 
-# 1. :  under ROOT_DIR/fingerprint
+# save derived runtime hash file and class into the source tree that will be PAXed
 mkdir -p content/zowe-$ZOWE_VERSION/fingerprint
 cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/RefRuntimeHash-$ZOWE_VERSION.txt 
+cp   $utilsDir/hash/HashFiles.class    content/zowe-$ZOWE_VERSION/bin/internal
 
 rm -r $utilsDir/hash # delete work directory
 rm -r zowe-runtime-dir # delete runtime directory.  Don't do this when smpe.sh does not create its own.  
@@ -242,5 +242,8 @@ _createWorkflow "./templates"
 
 #3. clean up working files
 rm -rf "./templates"
+
+echo "[$SCRIPT_NAME] date and time just before creating PAX file"
+date 
 
 echo "[$SCRIPT_NAME] done"
