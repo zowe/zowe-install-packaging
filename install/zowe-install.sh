@@ -148,6 +148,13 @@ cp $INSTALL_DIR/scripts/ocopyshr.sh $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.sh
 cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.clist
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 
+# Create the /fingerprint directory in the runtime directory
+mkdir -p  $ZOWE_ROOT_DIR/fingerprint
+chmod a+x $ZOWE_ROOT_DIR/fingerprint
+echo "Copying `ls $INSTALL_DIR/fingerprint/*` into "$ZOWE_ROOT_DIR/fingerprint >> $LOG_FILE
+cp $INSTALL_DIR/fingerprint $ZOWE_ROOT_DIR/fingerprint
+chmod a+r $ZOWE_ROOT_DIR/fingerprint/*
+
 mkdir -p ${ZOWE_ROOT_DIR}/bin
 cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/bin
