@@ -186,25 +186,21 @@ mv ./content/templates  .
 
 # # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
 
-# this is the script where we want to create the fingerprint.
-# to do this, we will create a runtime directory, somewhat like smpe.sh does,
-# i.e. by running zowe-install.sh
+# This is the script where we create the fingerprint in the zowe.pax file.
+# To do this, we will create a runtime directory, somewhat like smpe.sh does today,
+# by running zowe-install.sh
 
-# I need to move the fingerprint code out of smpe.sh and into here.
-
-# for the moment, I will let smpe.sh continue to create its own runtime folder, but this 
+# For the moment, I will let smpe.sh continue to create its own runtime folder, but this 
 # will be removed later for efficiency.
 
-# note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
-# to delete them, amend catchall-packaging.sh in this directory.
+# Note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
+# TODO
+# To delete them, amend catchall-packaging.sh in this directory.
 
 # # Generate reference hash keys of runtime files
 echo "----- Generate reference hash keys of runtime files -----"
 echo Installing Zowe in temporary runtime directory
 mkdir zowe-runtime-dir 
-echo USER = $USER
-echo USERNAME = $USERNAME
-echo LOGNAME = $LOGNAME
 echo ROOT = $ROOT # do we have the ROOT to publish to?
 userid=${USER:-${USERNAME:-${LOGNAME}}}
 ./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.TRUNTIME # [-l <log_directory>]
@@ -222,8 +218,9 @@ cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/Re
 cp   $utilsDir/hash/HashFiles.class    content/zowe-$ZOWE_VERSION/bin/internal
 
 rm -r $utilsDir/hash # delete work directory
-rm -r zowe-runtime-dir # delete runtime directory.  Don't do this when smpe.sh does not create its own.  
+rm -r zowe-runtime-dir # delete runtime directory.  TODO: Don't do this when smpe.sh does not create its own.  
 
+echo "----- Hash keys of runtime files were generated -----"
 # # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
 
 
@@ -242,8 +239,5 @@ _createWorkflow "./templates"
 
 #3. clean up working files
 rm -rf "./templates"
-
-echo "[$SCRIPT_NAME] date and time just before creating PAX file"
-date 
 
 echo "[$SCRIPT_NAME] done"

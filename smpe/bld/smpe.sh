@@ -216,7 +216,6 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # result (final): $ussI                                 # USS SMPE data
 
 # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . . .
-# Generate reference hash keys of runtime files
 echo "----- Check and publish reference hash keys of runtime files -----"
 
 stageDir=$ROOT/stage
@@ -226,59 +225,22 @@ binDir=$stageDir/bin
 # # The program to do this is in the 'files' directory
 zoweVRM=`ls $ROOT/../content`  # The vrm directory (e.g. zowe-1.9.0) is the only entry under 'content'
 zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
-# utilsDir=$ROOT/../content/$zoweVRM/scripts/utils 
-# mkdir $utilsDir/hash # create work directory
-# cp        $ROOT/../content/$zoweVRM/files/HashFiles.java $utilsDir/hash
-
-# # Compile the hash program and calculate the checksums of stageDir
-# $binDir/zowe-checksum-runtime.sh $stageDir $utilsDir/hash 
-
-# # save derived runtime hash file 
-# # 1. for SMP/E:  under ROOT_DIR/fingerprint
-# mkdir -p $stageDir/fingerprint
-# cp   $utilsDir/hash/RefRuntimeHash.txt $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt 
-# 2. for pax:    under ROOT in the pax file - 
-# # update pax file in place
-# unPaxDir=$utilsDir/hash/unPax
-# mkdir -p $unPaxDir
-#   echo CWD 245 is `pwd`
-#   saveDir=`pwd`
-#   cd $unPaxDir
-#     echo CWD 248 is `pwd`
-#     ls -l $ROOT.pax
-#     echo result of ls -l before unpax:
-#     pax -ppx -rf  $ROOT.pax
-#     echo result of ls -l after unpax:
-#     ls -l
-#     cd zowe-*
-#     mkdir fingerprint
-#     cp $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt fingerprint
-#     ls fingerprint
-#     ls * 
-#     cd ..
-#     echo list of files in `pwd`
-#     ls *
-#     echo paxing now 
-#     pax -w -f  $ROOT.pax *
-#   cd $saveDir
-# rm -r $unPaxDir
-# # end of update-pax-in-place      
 
 echo List of stageDir files  
 ls  -l $stageDir
 # convert derived runtime hash file to ASCII and publish on JFrog
 iconv -f IBM-1047 -t ISO8859-1 $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt > $ROOT/../RefRuntimeHash.txt # base filename is not versioned
 
-# Publish compiled hash program 
-# cp   $utilsDir/hash/HashFiles.class    $binDir/internal  #  $stageDir/fingerprint
+# Publish compiled hash program and script
 cp   $stageDir/bin/internal/HashFiles.class         $ROOT/.. # for publication on JFrog
 cp   $binDir/zowe-verify-authenticity.sh            $ROOT/.. # for publication on JFrog
 
-# verify the checksums of ROOT_DIR, to check zowe-verify-authenticity.sh
+# verify the checksums of ROOT_DIR, to self-check zowe-verify-authenticity.sh
 $binDir/zowe-verify-authenticity.sh # No parameters!
-if [[ $? -ne 0 ]]
+zoweVerifyAuthenticityRC=$?
+if [[ $zoweVerifyAuthenticityRC -ne 0 ]]
 then
-  echo Error: Exit code from zowe-verify-authenticity.sh was non-zero
+  echo Error: Exit code from zowe-verify-authenticity.sh was $zoweVerifyAuthenticityRC
   echo "---------- Contents of zowe-verify-authenticity.log ----------"
   cat ~/zowe/fingerprint/*.log  # fragile, because '-l outputPath' was not specified, so script chose location of log
 else  
