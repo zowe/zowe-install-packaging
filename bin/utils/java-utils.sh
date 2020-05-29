@@ -66,9 +66,10 @@ validate_java_home() {
     return 1
   fi
   echo "one $java_version_output"
+  echo $(${JAVA_HOME}/bin/java -version)
 
   # As we know the java -version command works then strip out the line we need
-  java_version_output=$(${JAVA_HOME}/bin/java -version 2>&1 | grep ^"java version")
+  java_version_output=$(${JAVA_HOME}/bin/java -version 2>&1 | grep ^"openjdk version")
   echo "two $java_version_output"
 
   check_java_version "${java_version_output}"
