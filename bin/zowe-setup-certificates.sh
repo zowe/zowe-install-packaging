@@ -15,6 +15,7 @@
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
 # process input parameters.
+echo "uno"
 while getopts "l:p:" opt; do
   case $opt in
     l) LOG_DIRECTORY=$OPTARG;;
@@ -26,24 +27,24 @@ while getopts "l:p:" opt; do
   esac
 done
 shift $(($OPTIND-1))
-
+echo "dos"
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
-
+echo "tres"
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
 set_install_log_directory "${LOG_DIRECTORY}"
 validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
 set_install_log_file "zowe-setup-certificates"
-
+echo "cuatro"
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
 echo "Loading default variables from ${DEFAULT_CERTIFICATES_CONFIG_FILE} file."
 . ${DEFAULT_CERTIFICATES_CONFIG_FILE}
-
+echo "cinco"
 if [[ -z ${CERTIFICATES_CONFIG_FILE} ]]
 then
   echo "-p parameter not set. Using default ${DEFAULT_CERTIFICATES_CONFIG_FILE} file instead."
@@ -58,15 +59,15 @@ else
     exit 1
   fi
 fi
-
+echo "seis"
 ZOWE_EXPLORER_HOST=${HOSTNAME}
 ZOWE_IP_ADDRESS=${IPADDRESS}
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
-
+echo "siete"
 ZOWE_CERT_ENV_NAME=zowe-certificates.env
 LOCAL_KEYSTORE_SUBDIR=local_ca
-
+echo "ocho"
 # create keystore directories
 if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
   if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then
@@ -74,14 +75,14 @@ if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
     exit 1;
   fi
 fi
-
+echo "nueve"
 if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
   if ! mkdir -p ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}; then
     echo "Unable to create ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} directory."
     exit 1;
   fi
 fi
-
+echo "diez"
 echo "Creating certificates and keystores... STARTED"
 # set up parameters for apiml_cm.sh script
 KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"
@@ -89,7 +90,7 @@ TRUSTSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.tru
 EXTERNAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca
 LOCAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/localca
 SAN="SAN=dns:${ZOWE_EXPLORER_HOST},ip:${ZOWE_IP_ADDRESS},dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
-
+echo "once"
 # If any external certificate fields are zero [blank], do not use the external setup method.
 # If all external certificate fields are zero [blank], create everything from scratch.
 # If all external fields are not zero [valid string], use external setup method.
@@ -121,13 +122,13 @@ else
 
   echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
 fi
-
+echo "dose"
 if [ "$RC" -ne "0" ]; then
     (>&2 echo "apiml_cm.sh --action setup has failed. See $LOG_FILE for more details")
     echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
     exit 1
 fi
-
+echo "trese"
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
     --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
@@ -145,7 +146,7 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   fi
 fi
 echo "Creating certificates and keystores... DONE"
-
+echo "catorse"
 JWT_ALIAS="jwtsecret"
 APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
@@ -168,11 +169,11 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
     echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
   fi
 fi
-
+echo "quince"
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
-
+echo "dieciseis"
 cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   KEY_ALIAS=${KEYSTORE_ALIAS}
   KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
@@ -188,6 +189,7 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   PKCS11_TOKEN_NAME=${PKCS11_TOKEN_NAME}
   PKCS11_TOKEN_LABEL=${UPPER_KEY_LABEL}
 EOF
+echo "diecisiete"
 # set up privileges and ownership
 chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
@@ -205,5 +207,5 @@ if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
 else
   echo "Owner of the ${KEYSTORE_DIRECTORY} changed successfully to the ${ZOWE_USER_ID} owner."
 fi
-
+echo "dieciocho"
 echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
