@@ -65,9 +65,11 @@ validate_java_home() {
     print_error_message "Java version check failed with return code: ${java_version_rc}, error: ${java_version_output}"
     return 1
   fi
+  echo "one $java_version_output"
 
   # As we know the java -version command works then strip out the line we need
   java_version_output=$(${JAVA_HOME}/bin/java -version 2>&1 | grep ^"java version")
+  echo "two $java_version_output"
 
   check_java_version "${java_version_output}"
   java_version_rc=$?
@@ -93,6 +95,7 @@ check_java_version() {
   echo ${java_version_output}
   echo ${java_version}
   echo $JAVA_HOME
+  echo "tthhrreee"
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
   echo ${java_minor_version}
