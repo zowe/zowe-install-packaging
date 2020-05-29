@@ -75,6 +75,7 @@ else
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 echo E
+echo $JAVA_HOME
 . ${ZOWE_ROOT_DIR}/bin/utils/java-utils.sh
 echo WHICH ONE
 prompt_java_home_if_required
