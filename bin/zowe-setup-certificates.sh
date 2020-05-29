@@ -14,6 +14,17 @@
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
 
+function detectExternalRootCA {
+    for file in ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca.*.cer-ebcdic; do
+      CERTIFICATE_OWNER=`keytool -printcert -file $file | grep -e Owner: | cut -d ":" -f 2-`
+      CERTIFICATE_ISSUER=`keytool -printcert -file $file | grep -e Issuer: | cut -d ":" -f 2-`
+      if [[ $CERTIFICATE_OWNER == $CERTIFICATE_ISSUER ]]; then
+        EXTERNAL_ROOT_CA=$file;
+        break;
+      fi
+    done
+}
+
 # process input parameters.
 while getopts "l:p:" opt; do
   case $opt in
@@ -169,6 +180,10 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   fi
 fi
 
+# detect external root CA
+EXTERNAL_ROOT_CA=
+detectExternalRootCA;
+
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
@@ -182,6 +197,7 @@ cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
   KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
   KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
+  EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
   ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
   SETUP_APIML_SSO=${SETUP_APIML_SSO}
   SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
