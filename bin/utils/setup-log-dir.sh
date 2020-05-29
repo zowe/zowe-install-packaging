@@ -10,24 +10,26 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+echo 1
+
 # Try and source the file utils if it exists
 if [[ -f "${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh" ]]
 then
 . ${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh
 fi
-
+echo 2
 set_install_log_file_from_full_path() {
   export LOG_FILE=$1
   touch ${LOG_FILE}
   chmod a+rw ${LOG_FILE}
   echo "Log file created: ${LOG_FILE}"
 }
-
+echo 3
 set_install_log_file() {
   LOG_FILE_PREFIX=$1
   set_install_log_file_from_full_path "${LOG_DIRECTORY}/${LOG_FILE_PREFIX}-`date +%Y-%m-%d-%H-%M-%S`.log"
 }
-
+echo 4
 get_install_log_directory() {
   INSTALL_LOG_DIR=$1
   
@@ -51,7 +53,7 @@ get_install_log_directory() {
   fi
   export INSTALL_LOG_DIR
 }
-
+echo 5
 set_install_log_directory() {
   LOG_DIRECTORY=$1
 
@@ -79,7 +81,7 @@ set_install_log_directory() {
 
   export LOG_DIRECTORY
 }
-
+echo 6
 validate_log_file_not_in_root_dir() {
   LOG_DIR=$1
   ROOT_DIR=$2
@@ -90,3 +92,4 @@ validate_log_file_not_in_root_dir() {
     exit 1
   fi
 }
+echo 7
