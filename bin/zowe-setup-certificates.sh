@@ -33,7 +33,9 @@ then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 echo "tres"
+echo "boo"
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+echo "doo"
 echo aa
 set_install_log_directory "${LOG_DIRECTORY}"
 echo bb
