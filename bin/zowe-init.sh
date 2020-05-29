@@ -76,6 +76,7 @@ else
 fi
 echo E
 . ${ZOWE_ROOT_DIR}/bin/utils/java-utils.sh
+echo WHICH ONE
 prompt_java_home_if_required
 echo F
 if [[ ${SKIP_NODE} != 1 ]]
