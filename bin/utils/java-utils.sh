@@ -84,15 +84,15 @@ echo six
 check_java_version() {
   java_version_output=$1
   java_version=$(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g")
-
+  echo ${java_version_output}
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
-
+  echo ${java_minor_version}
   too_low=""
   if [[ ${java_major_version} -lt 1 ]] #Should never get here
   then
     too_low="true"
-  elif [[ ${java_major_version} -eq 1 ]] && [[ ${java_minor_version} -lt 8 ]]
+  elif [[ ${java_major_version} -eq 1 ]] && [[ ${java_minor_version} -le 8 ]]
   then
     too_low="true"
   fi
