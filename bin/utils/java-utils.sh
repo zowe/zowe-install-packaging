@@ -42,6 +42,8 @@ ensure_java_is_on_path() {
 }
 echo four
 validate_java_home() {
+  echo "TEST javahome"
+  echo $JAVA_HOME
   validate_java_home_not_empty
   java_empty_rc=$?
   if [[ ${java_empty_rc} -ne 0 ]]
@@ -85,6 +87,8 @@ check_java_version() {
   java_version_output=$1
   java_version=$(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g")
   echo ${java_version_output}
+  echo ${java_version}
+  echo $JAVA_HOME
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
   echo ${java_minor_version}
