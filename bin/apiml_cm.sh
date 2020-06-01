@@ -497,7 +497,8 @@ while [ "$1" != "" ]; do
                                 echo "log 1"
                                 export LOG=$1
                                 echo "log 2"
-                                echo 5>&1
+                                echo $5
+                                echo $1
                                 exec 5>&1 >>$LOG
                                 echo "log 3"
                                 ;;
