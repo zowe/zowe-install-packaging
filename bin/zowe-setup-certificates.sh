@@ -145,6 +145,13 @@ if [ "$RC" -ne "0" ]; then
 fi
 echo "trese"
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
+  echo $ZOWE_ROOT_DIR
+  echo $LOG_FILE
+  echo $KEYSTORE_PASSWORD
+  echo $TRUSTSTORE_PREFIX
+  echo $ZOSMF_CERTIFICATE
+  echo $KEYSTORE_PREFIX
+  
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
     --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
     --service-keystore ${KEYSTORE_PREFIX}
