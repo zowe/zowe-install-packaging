@@ -500,6 +500,7 @@ while [ "$1" != "" ]; do
                                 echo $5
                                 echo $1
                                 exec 5>&1 >>$LOG
+                                bash cat $LOG
                                 echo "log 3"
                                 ;;
         --local-ca-filename )   shift
