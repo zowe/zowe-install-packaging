@@ -494,8 +494,11 @@ while [ "$1" != "" ]; do
                                 LOCAL_CA_ALIAS=$1
                                 ;;
         --log )                 shift
+                                echo "log 1"
                                 export LOG=$1
+                                echo "log 2"
                                 exec 5>&1 >>$LOG
+                                echo "log 3"
                                 ;;
         --local-ca-filename )   shift
                                 LOCAL_CA_FILENAME=$1
