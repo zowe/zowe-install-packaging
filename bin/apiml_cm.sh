@@ -405,13 +405,16 @@ function trust_zosmf {
     # First, print out ZOSMF certificates fingerprints for a user to check
     # We call keytool directly because the pkeytool messes the output that we want to display
     if [[ "$LOG" != "" ]]; then
+      echo "Here"
       echo "z/OSMF certificate fingerprint:" >&5
       keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5' >&5
     else
+      echo "There"
       echo "z/OSMF certificate fingerprint:"
       keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5'
     fi
     # keytool should work here but we check RC just in case
+    echo "Out here"
     echo "z/OSMF certificate fingerprint: keytool returned: $RC"
     RC=$?
     if [ "$RC" -ne "0" ]; then
