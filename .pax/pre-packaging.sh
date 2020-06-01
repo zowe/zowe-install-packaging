@@ -190,8 +190,9 @@ mv ./content/templates  .
 # To do this, we will create a runtime directory, somewhat like smpe.sh does today,
 # by running zowe-install.sh
 
-# For the moment, I will let smpe.sh continue to create its own runtime folder, but this 
+# For the moment, I will let smpe.sh continue to create its own runtime folder, but this creation
 # will be removed later for efficiency.
+# Note that smpe.sh is where we publish the fingerprint.  This should be moved back into here.
 
 # Note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
 # TODO
