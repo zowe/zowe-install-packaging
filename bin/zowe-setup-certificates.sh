@@ -149,7 +149,7 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
     --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
     --service-keystore ${KEYSTORE_PREFIX}
   RC=$?
-
+  echo $RC
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See $LOG_FILE for more details")
