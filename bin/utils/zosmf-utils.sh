@@ -32,7 +32,7 @@ fi
 # Source common util functions
 . ${utils_dir}/common.sh
 
-get_zosmf_port() {
+prompt_zosmf_port_if_required() {
   zosmf_port_list=`netstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }'` 
   extract_zosmf_port "${zosmf_port_list}"
   extract_rc=$?

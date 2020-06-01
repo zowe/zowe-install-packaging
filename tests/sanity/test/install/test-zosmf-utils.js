@@ -20,7 +20,7 @@ describe.only('verify zosmf-utils', function() { //TODO NOW remove only
     expect(process.env.ZOSMF_PORT, 'ZOSMF_PORT is not defined').to.not.be.empty;
   });
 
-  const get_zosmf_port = 'get_zosmf_port';
+  const get_zosmf_port = 'prompt_zosmf_port_if_required';
   describe(`verify ${get_zosmf_port}`, function() {
 
     it('test that we get the correct port', async function() {
