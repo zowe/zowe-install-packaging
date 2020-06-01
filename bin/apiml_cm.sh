@@ -388,6 +388,7 @@ function zosmf_jwt_public_key {
 echo "x27"
 
 function trust_zosmf {
+  echo "Please say we get here"
   echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
     echo "Getting certificates from z/OSMF host"
