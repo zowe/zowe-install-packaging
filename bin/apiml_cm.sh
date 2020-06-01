@@ -477,8 +477,9 @@ function trust_zosmf {
 }
 
 echo "x28"
-
+echo $1
 while [ "$1" != "" ]; do
+    echo $1
     echo "Do we get here atleast?"
     case $1 in
         -a | --action )         shift
