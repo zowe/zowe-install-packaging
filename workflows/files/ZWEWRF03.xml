@@ -434,7 +434,9 @@ EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
         <template>
             <inlineTemplate substitution="true">set -x
 cd "${instance-zowe_install_path}/scripts/utils"
-sh zowe-install-proc.sh "${instance-zowe_runtime_hlq}" "${instance-procedure_library}"
+NODE_HOME=${instance-NODE_HOME}
+JAVA_HOME=${instance-JAVA_HOME}
+sh zowe-install-proc.sh -d "${instance-zowe_runtime_hlq}" -r "${instance-procedure_library}"
 exit $?</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
