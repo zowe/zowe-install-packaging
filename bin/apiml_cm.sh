@@ -10,19 +10,16 @@
 # https://www.ibm.com/support/knowledgecenter/en/SSYKE2_8.0.0/com.ibm.java.security.component.80.doc/security-component/keytoolDocs/keytool_overview.html
 #
 
-echo "x1"
 
 if [ `uname` = "OS/390" ]; then
     export IBM_JAVA_OPTIONS="-Dfile.encoding=IBM-1047"
 fi
 
-echo "x2"
 
 BASE_DIR=$(dirname "$0")
 PARAMS="$@"
 PWD=`pwd`
 
-echo "x3"
 
 function usage {
     echo "APIML Certificate Management"
@@ -40,7 +37,6 @@ function usage {
     echo "  Called with: ${PARAMS}"
 }
 
-echo "x4"
 
 ACTION=
 V=
@@ -70,16 +66,13 @@ ZOSMF_CERTIFICATE=
 ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
 
-echo "x5"
 
 if [ -z ${TEMP_DIR+x} ]; then
     TEMP_DIR=${TMPDIR:-/tmp}
 fi
 
-echo "x6"
 
 function pkeytool {
-    echo "Does 1"
     ARGS=$@
     echo "Calling keytool $ARGS"
     if [ "$LOG" != "" ]; then
@@ -94,24 +87,18 @@ function pkeytool {
     fi
 }
 
-echo "x7"
 
 function clean_local_ca {
-    echo "Does 2"
     rm -f ${LOCAL_CA_FILENAME}.keystore.p12 ${LOCAL_CA_FILENAME}.cer
 }
 
-echo "x8"
 
 function clean_service {
-    echo "Does 3"
     rm -f ${SERVICE_KEYSTORE}.p12 ${SERVICE_KEYSTORE}.csr ${SERVICE_KEYSTORE}_signed.cer ${SERVICE_TRUSTSTORE}.p12
 }
 
-echo "x9"
 
 function create_certificate_authority {
-    echo "Does 4"
     echo "Generate keystore with the local CA private key and local CA public certificate:"
     pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
         -dname "${LOCAL_CA_DNAME}" -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 -validity ${LOCAL_CA_VALIDITY} \
@@ -127,10 +114,8 @@ function create_certificate_authority {
     fi
 }
 
-echo "x10"
 
 function add_external_ca {
-    echo "Does 5"
     echo "Adding external Certificate Authorities:"
     if [ -n "${EXTERNAL_CA}" ]; then
         I=1
@@ -146,10 +131,8 @@ function add_external_ca {
     fi
 }
 
-echo "x11"
 
 function create_service_certificate_and_csr {
-    echo "Does 6"
     if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
     then
         echo "Generate service private key and service:"
@@ -162,10 +145,8 @@ function create_service_certificate_and_csr {
     fi
 }
 
-echo "x12"
 
 function create_self_signed_service {
-    echo "Does 7"
     if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
     then
         echo "Generate service private key and service:"
@@ -175,7 +156,6 @@ function create_self_signed_service {
     fi
 }
 
-echo "x13"
 
 function sign_csr_using_local_ca {
     echo "Does 8"
@@ -186,7 +166,6 @@ function sign_csr_using_local_ca {
         -validity ${SERVICE_VALIDITY}
 }
 
-echo "x14"
 
 function import_local_ca_certificate {
     echo "Does 9"
@@ -194,10 +173,8 @@ function import_local_ca_certificate {
     pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
 
-echo "x15"
 
 function import_external_ca_certificates {
-    echo "Does 10"
     if ls ${EXTERNAL_CA_FILENAME}.*.cer 1> /dev/null 2>&1; then
         echo "Import the external Certificate Authorities to the truststore:"
         I=1
@@ -209,10 +186,8 @@ function import_external_ca_certificates {
     fi
 }
 
-echo "x16"
 
 function import_signed_certificate {
-    echo "Does 11"
     echo "Import the Certificate Authority to the keystore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 
@@ -220,10 +195,8 @@ function import_signed_certificate {
     pkeytool -importcert $V -trustcacerts -noprompt -file ${SERVICE_KEYSTORE}_signed.cer -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
 
-echo "x17"
 
 function import_external_certificate {
-    echo "Does 12"
     echo "Import the external Certificate Authorities to the keystore:"
     if ls ${EXTERNAL_CA_FILENAME}.*.cer 1> /dev/null 2>&1; then
         I=1
@@ -241,10 +214,8 @@ function import_external_certificate {
     fi
 }
 
-echo "x18"
 
 function export_service_certificate {
-    echo "Does 13"
     echo "Export service certificate to the PEM format"
     pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storetype PKCS12 -storepass ${SERVICE_PASSWORD} -rfc -file ${SERVICE_KEYSTORE}.cer
 
@@ -253,10 +224,8 @@ function export_service_certificate {
     fi
 }
 
-echo "x19"
 
 function export_service_private_key {
-    echo "Does 14"
     echo "Exporting service private key"
     echo "TEMP_DIR=$TEMP_DIR"
     cat <<EOF >$TEMP_DIR/ExportPrivateKey.java
@@ -314,10 +283,8 @@ EOF
     rm ${TEMP_DIR}/ExportPrivateKey.java ${TEMP_DIR}/ExportPrivateKey.class
 }
 
-echo "x20"
 
 function setup_local_ca {
-    echo "Does 15"
     clean_local_ca
     create_certificate_authority
     add_external_ca
@@ -325,20 +292,16 @@ function setup_local_ca {
     ls -l ${LOCAL_CA_FILENAME}*
 }
 
-echo "x21"
 
 function new_service_csr {
-    echo "Does 16"
     clean_service
     create_service_certificate_and_csr
     echo "Listing generated files for service:"
     ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
 }
 
-echo "x22"
 
 function new_service {
-    echo "Does 17"
     clean_service
     if [ -n "${EXTERNAL_CERTIFICATE}" ]; then
         import_external_certificate
@@ -355,10 +318,8 @@ function new_service {
     ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
 }
 
-echo "x23"
 
 function new_self_signed_service {
-    echo "Does 18"
     clean_service
     create_self_signed_service
     import_local_ca_certificate
@@ -368,18 +329,14 @@ function new_self_signed_service {
     ls -l ${SERVICE_KEYSTORE}*
 }
 
-echo "x24"
 
 function trust {
-    echo "Does 19"
     echo "Import a certificate to the truststore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
 
-echo "x25"
 
 function jwt_key_gen_and_export {
-    echo "Does 20"
     echo "Generates key pair for JWT token secret and exports the public key"
     pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 \
     -dname "${SERVICE_DNAME}" -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
@@ -387,10 +344,8 @@ function jwt_key_gen_and_export {
     -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
 
-echo "x26"
 
 function zosmf_jwt_public_key {
-    echo "Does 21"
     echo "Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
     java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
@@ -406,12 +361,8 @@ function zosmf_jwt_public_key {
         https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
 
-echo "x27"
 
 function trust_zosmf {
-  echo "Does 22"
-  echo "Please say we get here"
-  echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
     echo "Getting certificates from z/OSMF host"
     CER_DIR=`dirname ${SERVICE_TRUSTSTORE}`/temp
@@ -476,11 +427,7 @@ function trust_zosmf {
   fi
 }
 
-echo "x28"
-echo $1
 while [ "$1" != "" ]; do
-    echo $1
-    echo "Do we get here atleast?"
     case $1 in
         -a | --action )         shift
                                 ACTION=$1
@@ -494,14 +441,9 @@ while [ "$1" != "" ]; do
                                 LOCAL_CA_ALIAS=$1
                                 ;;
         --log )                 shift
-                                echo "log 1"
                                 export LOG=$1
-                                echo "log 2"
-                                echo $5
-                                echo $1
                                 exec 5>&1 >>$LOG
                                 bash cat $LOG
-                                echo "log 3"
                                 ;;
         --local-ca-filename )   shift
                                 LOCAL_CA_FILENAME=$1
@@ -570,7 +512,6 @@ while [ "$1" != "" ]; do
     shift
 done
 
-echo "x29"
 
 case $ACTION in
     clean)
@@ -612,4 +553,3 @@ case $ACTION in
         usage
         exit 1
 esac
-echo "x30"
