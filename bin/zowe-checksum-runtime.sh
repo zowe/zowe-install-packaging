@@ -17,7 +17,7 @@
 # Method  : Create a hash of every file in the driver 
 # Inputs  - pathname of Zowe runtime driver on the build's z/OS system
 #         - pathname where the source of HashFiles.java is kept
-#           This is currently zowe-install-packaging/scripts/utils
+#           This is currently zowe-install-packaging/files
 # Note about SMP/E
 #         - The directory SMPE in the runtime folder is excluded from this check
 #           The SMPE directory and contents must not be present in the generated
