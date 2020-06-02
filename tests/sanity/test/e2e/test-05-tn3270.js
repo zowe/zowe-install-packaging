@@ -18,6 +18,7 @@ const {
   saveScreenshot,
   getDefaultDriver,
   waitUntilElement,
+  getElement,
   loginMVD,
   launchApp,
   locateApp,
@@ -73,8 +74,10 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug('app viewport is ready');
 
     // wait for page is loaded
-    const canvas = await waitUntilElement(driver, 'com-rs-mvd-tn3270 .tn3270 textarea#Input', viewport);
+    const canvas = await waitUntilElement(driver, 'com-rs-mvd-tn3270 .tn3270 canvas#Canvas', viewport);
     expect(canvas).to.be.an('object');
+    const canvasInput = await waitUntilElement(driver, 'com-rs-mvd-tn3270 .tn3270 textarea#Input', viewport);
+    expect(canvasInput).to.be.an('object');
     // we don't know what's in canvas, just wait for a while
     await driver.sleep(5000);
     debug('app is fully loaded');
@@ -82,6 +85,10 @@ describe(`test ${APP_TO_TEST}`, function() {
     // save screenshot
     const file2 = await saveScreenshot(driver, testName, 'app-loaded');
     addContext(this, file2);
+
+    // it shouldn't show any error message
+    const errorLabel = await getElement(viewport, 'com-rs-mvd-tn3270 .tn3270-parent .toolbar .error-label', true);
+    expect(errorLabel).to.not.be.an('object');
   });
 
 
