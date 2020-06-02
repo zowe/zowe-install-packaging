@@ -174,8 +174,6 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
 chmod +x content/templates/*.rex
 
-
-
 # prepare for SMPE
 echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."
 mv ./content/smpe  .

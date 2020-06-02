@@ -39,10 +39,6 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-*.txt`);
   });
 
-  // it('fingerprint is authentic', async function() {
-  //   await sshHelper.executeCommandWithNoError(`${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
-  // });
-
   after('dispose SSH connection', function() {
     sshHelper.cleanUpConnection();
   });
