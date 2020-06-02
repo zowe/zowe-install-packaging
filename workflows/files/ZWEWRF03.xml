@@ -325,6 +325,8 @@ valid values are blank('') for telnet, or 'tls'</description>
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
+export NODE_HOME=${instance-NODE_HOME}
+export JAVA_HOME=${instance-JAVA_HOME}
 sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
