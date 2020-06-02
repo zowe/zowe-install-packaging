@@ -25,7 +25,7 @@ SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
 
 echo "[$SCRIPT_NAME] BUILD_SMPE = $BUILD_SMPE" # debug
-# Always call 'smpe/bld/smpe.sh', to create fingerprint.
+# Always call 'smpe/bld/smpe.sh', to check and publish fingerprint.
 # Hence the test below is commented out.  
 
 # if [ "$BUILD_SMPE" != "yes" ]; then
@@ -94,9 +94,6 @@ if [ ! -f zowe.pax ]; then
   echo "[$SCRIPT_NAME][ERROR] Cannot find Zowe package."
   exit 1
 fi
-
-echo List of zowe.pax
-ls -l zowe.pax
 
 if [ ! -f smpe.pax ]; then
   echo "[$SCRIPT_NAME][ERROR] Cannot find SMP/e package."

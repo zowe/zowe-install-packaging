@@ -75,12 +75,12 @@ $SCRIPT.sh runtimePath hashPath
  
     Parm name       Sample value    Meaning
     ---------       ------------    -------
--r  runtimePath     /usr/lpp/zowe   root directory of the executables used by Zowe at run time
--h  hashPath        /usr/lpp/zowe/bin/internal          directory of the hash key program
--f  refPath         /usr/lpp/zowe/fingerprint           directory of the reference hash key file
--l  outputPath      ~/zowe/fingerprint             output directory where log and work files like 
-                                                   CustRuntimeHash.txt will be written.
-                                                   This directory Will be created if it does not exist.
+-r  runtimePath     /usr/lpp/zowe               Root directory of the executables used by Zowe at run time
+-h  hashPath        /usr/lpp/zowe/bin/internal  Directory of the hash key program
+-f  refPath         /usr/lpp/zowe/fingerprint   Directory of the reference hash key file
+-l  outputPath      ~/zowe/fingerprint          Output directory where log and work files like 
+                                                CustRuntimeHash.txt will be written.
+                                                This directory Will be created if it does not exist.
 
 EndOfUsage
       exit 1
@@ -112,13 +112,6 @@ then
         exit 1
     fi 
     hashPath=$(cd `dirname $0`;cd ../bin/internal;pwd)
-
-    # if [[ ! -d `dirname $0`/../fingerprint ]]
-    # then
-    #     echo Error: Default hashPath `dirname $0`/../fingerprint $notD
-    #     exit 1
-    # fi 
-    # hashPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
 fi
 
 
@@ -250,12 +243,6 @@ then
     exit 1
 fi 
 
-echo Info: JAVA_HOME = $JAVA_HOME
-echo " ++ Checking JAVA_HOME ++"
-ls -l $JAVA_HOME/bin/java
-ls -l /usr/lpp/java/J8.0_64/bin/java
-# JAVA_HOME=/usr/lpp/java/J8.0_64 ### THIS MUST BE DONE PROPERLY BY THE AUTOMATION OUTSIDE THIS SCRIPT
-# PATH=$PATH:$JAVA_HOME
 echo Info: Checking java version >> $LOG_FILE
 java -version 2>> $LOG_FILE
 if [[ $? -ne 0 ]]

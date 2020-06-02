@@ -143,8 +143,6 @@ _super chown -R $(id -u) $extract
 
 # remember original extract location
 orig=$extract
-echo original extract location $orig contains
-ls -l $orig 
 
 # step into possible leading dirs in archive
 #..Assumes that if there are multiple input pax files, they all share
