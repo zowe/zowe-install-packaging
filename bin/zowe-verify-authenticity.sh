@@ -252,6 +252,7 @@ fi
 
 echo " ++ Forcing JAVA_HOME ++"
 JAVA_HOME=/usr/lpp/java/J8.0_64 ### THIS MUST BE DONE PROPERLY BY THE AUTOMATION OUTSIDE THIS SCRIPT
+PATH=$PATH:$JAVA_HOME
 echo Info: Checking java version >> $LOG_FILE
 java -version 2>> $LOG_FILE
 if [[ $? -ne 0 ]]
