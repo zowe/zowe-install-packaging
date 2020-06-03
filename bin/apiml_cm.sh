@@ -160,6 +160,12 @@ function create_self_signed_service {
 function sign_csr_using_local_ca {
     echo "Does 8"
     echo "Sign the CSR using the Certificate Authority:"
+    echo $SERVICE_KEYSTORE
+    echo $LOCAL_CA_FILENAME
+    echo $LOCAL_CA_ALIAS
+    echo $LOCAL_CA_PASSWORD
+    echo $SERVICE_EXT
+    echo $SERVICE_VALIDITY
     pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
         -alias ${LOCAL_CA_ALIAS} -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 \
         -ext ${SERVICE_EXT} -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
