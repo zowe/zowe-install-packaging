@@ -100,6 +100,8 @@ check_java_version() {
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
   echo ${java_minor_version}
+  echo "yeeter"
+  echo ${java_major_version}
   too_low=""
   if [[ ${java_major_version} -lt 1 ]] #Should never get here
   then
