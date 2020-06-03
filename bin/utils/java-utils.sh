@@ -106,7 +106,7 @@ check_java_version() {
   if [[ ${java_major_version} -lt 1 ]] #Should never get here
   then
     too_low="true"
-  elif [[ ${java_major_version} -eq 1 ]] && [[ ${java_minor_version} -le 8 ]]
+  elif [[ ${java_major_version} -eq 1 ]] && [[ ${java_minor_version} -lt 8 ]]
   then
     too_low="true"
   fi
