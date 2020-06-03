@@ -63,6 +63,8 @@ cp    HashFiles.class    $runtimePath/bin/internal # must be in runtime before y
 
 # Create a list of files to be hashed.  Exclude SMPE.  And fingerprint.  
 cd $runtimePath
+. bin/internal/zowe-set-env.sh # ensure we have tagging behaviour set correctly
+
 ls fingerprint/* 2> /dev/null # is there an existing fingerprint?
 if [[ $? -eq 0 ]]
 then

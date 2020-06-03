@@ -233,6 +233,8 @@ fi
 echo Info: Gathering files ... | tee -a $LOG_FILE
 
 cd $runtimePath
+. bin/internal/zowe-set-env.sh # ensure we have tagging behaviour set correctly
+
 find . -name ./SMPE          -prune \
     -o -name "./ZWE*"        -prune \
     -o -name ./fingerprint   -prune \
