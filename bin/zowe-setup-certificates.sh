@@ -16,6 +16,9 @@
 
 function detectExternalRootCA {
     for file in ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca.*.cer-ebcdic; do
+      if [[ ! -f $file ]]; then
+        break;
+      fi
       CERTIFICATE_OWNER=`keytool -printcert -file $file | grep -e Owner: | cut -d ":" -f 2-`
       CERTIFICATE_ISSUER=`keytool -printcert -file $file | grep -e Issuer: | cut -d ":" -f 2-`
       if [[ $CERTIFICATE_OWNER == $CERTIFICATE_ISSUER ]]; then
