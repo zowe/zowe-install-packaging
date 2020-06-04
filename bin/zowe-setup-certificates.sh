@@ -131,7 +131,7 @@ fi
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
     --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-    --service-keystore ${KEYSTORE_PREFIX}
+    --service-keystore ${KEYSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
   RC=$?
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
