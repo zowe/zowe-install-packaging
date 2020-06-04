@@ -251,7 +251,7 @@ export async function installAndVerifySmpeFmid(testcase: string, serverId: strin
  * @param  {Object}    extraVars
  */
 export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
-  debug(`installAndVerifySmpeFmid(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
+  debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
   const resultFmid = await runAnsiblePlaybook(
