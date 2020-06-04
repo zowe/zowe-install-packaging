@@ -325,8 +325,52 @@ valid values are blank('') for telnet, or 'tls'</description>
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
-export NODE_HOME=${instance-NODE_HOME}
+# global config
+export ROOT_DIR=${instance-zowe_install_path}
+export ZOWE_PREFIX=${instance-ZOWE_PREFIX}
+export ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
+
+# Comma separated list of components should start from [GATEWAY,DESKTOP]
+export LAUNCH_COMPONENT_GROUPS=${instance-LAUNCH_COMPONENT_GROUPS}
+
 export JAVA_HOME=${instance-JAVA_HOME}
+export NODE_HOME=${instance-NODE_HOME}
+
+# z/OS MF config
+export ZOSMF_PORT=${instance-ZOSMF_PORT}
+export ZOSMF_HOST=${instance-ZOSMF_HOST}
+
+export ZOWE_EXPLORER_HOST=${instance-ZOWE_EXPLORER_HOST}
+export ZOWE_IP_ADDRESS=${instance-ZOWE_IP_ADDRESS}
+
+# keystore config
+export KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
+
+# APIML variables
+export CATALOG_PORT=${instance-CATALOG_PORT}
+export DISCOVERY_PORT=${instance-DISCOVERY_PORT}
+export GATEWAY_PORT=${instance-GATEWAY_PORT}
+export APIML_ENABLE_SSO=${instance-APIML_ENABLE_SSO}
+
+# explorer variables
+export JOBS_API_PORT=${instance-JOBS_API_PORT}
+export FILES_API_PORT=${instance-FILES_API_PORT}
+export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
+export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
+export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+
+# Zowe Desktop/app framework variables
+export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
+export ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
+export ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+export ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
+export ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
+export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+
+# Extender variables
+export ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
+export EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
+
 sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
@@ -436,8 +480,53 @@ EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
         <template>
             <inlineTemplate substitution="true">set -x
 cd "${instance-zowe_install_path}/scripts/utils"
-export NODE_HOME=${instance-NODE_HOME}
+
+# global config
+export ROOT_DIR=${instance-zowe_install_path}
+export ZOWE_PREFIX=${instance-ZOWE_PREFIX}
+export ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
+
+# Comma separated list of components should start from [GATEWAY,DESKTOP]
+export LAUNCH_COMPONENT_GROUPS=${instance-LAUNCH_COMPONENT_GROUPS}
+
 export JAVA_HOME=${instance-JAVA_HOME}
+export NODE_HOME=${instance-NODE_HOME}
+
+# z/OS MF config
+export ZOSMF_PORT=${instance-ZOSMF_PORT}
+export ZOSMF_HOST=${instance-ZOSMF_HOST}
+
+export ZOWE_EXPLORER_HOST=${instance-ZOWE_EXPLORER_HOST}
+export ZOWE_IP_ADDRESS=${instance-ZOWE_IP_ADDRESS}
+
+# keystore config
+export KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
+
+# APIML variables
+export CATALOG_PORT=${instance-CATALOG_PORT}
+export DISCOVERY_PORT=${instance-DISCOVERY_PORT}
+export GATEWAY_PORT=${instance-GATEWAY_PORT}
+export APIML_ENABLE_SSO=${instance-APIML_ENABLE_SSO}
+
+# explorer variables
+export JOBS_API_PORT=${instance-JOBS_API_PORT}
+export FILES_API_PORT=${instance-FILES_API_PORT}
+export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
+export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
+export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+
+# Zowe Desktop/app framework variables
+export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
+export ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
+export ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+export ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
+export ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
+export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+
+# Extender variables
+export ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
+export EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
+
 sh zowe-install-proc.sh -d "${instance-zowe_runtime_hlq}" -r "${instance-procedure_library}"
 exit $?</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
