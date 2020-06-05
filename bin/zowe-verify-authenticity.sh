@@ -323,7 +323,6 @@ then
             let "i=i+1" 
             if [[ $i -gt $maxDiffs ]]
             then
-                echo Info: More than $maxDiffs differences, no further differences are listed >> $LOG_FILE
                 break
             fi 
         fi
