@@ -190,7 +190,7 @@
 /*          SIZE(2048) +
 /*          NOTAFTER(DATE(2030-05-01)) +
 /*          WITHLABEL('&LABEL.') +
-/*          KEYUSAGE(HANDSHAKE,DATAENCRYPT,DOCSIGN) +
+/*          KEYUSAGE(HANDSHAKE) +
 /*          ALTNAME(IP(127.0.0.1) +
 /*            DOMAIN('localhost')) +
 /*          SIGNWITH(CERTAUTH LABEL('localca'))
@@ -336,7 +336,7 @@ ACF
 *          SIZE(2048)               +
 *          EXPIRE(05/01/30)         +
 *          LABEL(&LABEL.)         +
-*          KEYUSAGE(HANDSHAKE DATAENCRYPT DOCSIGN)    +
+*          KEYUSAGE(HANDSHAKE)    +
 *          ALTNAME(IP=127.0.0.1 DOMAIN='localhost') +
 *          SIGNWITH(CERTAUTH.ZOWECA)
 
@@ -475,7 +475,7 @@ $$
 /*      KEYSIZE(2048) +
 /*      NADATE(05/01/30) +
 /*      LABLCERT(&LABEL.) +
-/*      KEYUSAGE('HANDSHAKE DATAENCRYPT DOCSIGN') +
+/*      KEYUSAGE('HANDSHAKE') +
 /*      ALTNAME('DOMAIN=localhost') +
 /*      SIGNWITH(CERTAUTH,ZOWECA)
 
