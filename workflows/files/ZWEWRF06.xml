@@ -5,7 +5,7 @@
     <workflowInfo>
         <workflowID scope="none" >configure_xmem</workflowID>
         <workflowDefaultName>Configure Cross Memory Server</workflowDefaultName>
-        <workflowDescription>This workflow is used to configure the cross memory server</workflowDescription>
+        <workflowDescription>This workflow is used to configure the Cross Memory Server</workflowDescription>
         <workflowVersion>#ZOWE_VERSION#</workflowVersion>
         <vendor>ZOWE</vendor>
         <General/>
@@ -54,7 +54,7 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     <variable name="proclib" scope="instance" visibility="public">
         <label>Procedure Library</label>
         <abstract>Please specify the procedure library for the started task</abstract>
-        <description>Specify the PROCLIB data set name that will be used to store the XMEM STC</description>
+        <description>Specify the PROCLIB data set name that will be used to store the XMEM STC JCL</description>
         <category>Installation</category>
         <string valueMustBeChoice="false" multiLine="false">
             <validationType>DSNAME</validationType>
@@ -62,8 +62,8 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     </variable>
     <variable name="parmlib" scope="instance" visibility="public">
         <label>Parameter Library</label>
-        <abstract>Please specify the active PARMLIB</abstract>
-        <description>Please specify the active system PARMLIB that will be used to specify the execution of the STC.</description>
+        <abstract>Please specify the PARMLIB of your active SCHEDxx member</abstract>
+        <description>Please specify the active system PARMLIB where your active SCHEDxx member resides in.</description>
         <category>Parmlib</category>
         <string valueMustBeChoice="false" multiLine="false">
             <validationType>DSNAME</validationType>
@@ -71,7 +71,7 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     </variable>
     <variable name="sched" scope="instance" visibility="public">
         <label>Scheduler member</label>
-        <abstract>Please specify the currently used scheduler member</abstract>
+        <abstract>Please specify the name of the active SCHEDxx member</abstract>
         <description>Please specify the scheduler member that is currently used in the specified PARMLIB.</description>
         <category>Parmlib</category>
         <string valueMustBeChoice="false" multiLine="false">
@@ -101,7 +101,7 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     </step>
     <step name="allocate_xmem" optional="false">
         <title>Allocate Cross Memory Server Data Sets</title>
-        <description>Allocates the data sets for the cross memory server.</description>
+        <description>Allocates the data sets for the Cross Memory Server.</description>
         <prereqStep name="define_variables"/>
         <!--variableValues-->
         <!-- condition -->
