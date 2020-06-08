@@ -166,6 +166,8 @@ function sign_csr_using_local_ca {
     echo $LOCAL_CA_PASSWORD
     echo $SERVICE_EXT
     echo $SERVICE_VALIDITY
+    SERVICE_EXT='SAN=dns:localhost,ip:0.0.0.0,dns:localhost.localdomain,dns:localhost,ip:127.0.0.1'
+
     pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
         -alias ${LOCAL_CA_ALIAS} -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 \
         -ext ${SERVICE_EXT} -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
