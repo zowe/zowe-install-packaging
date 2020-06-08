@@ -407,14 +407,18 @@ function jwt_key_gen_and_export {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
           -dname "${SERVICE_DNAME}" -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-        pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
-          -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+        export_jwt_from_keyring
     else
         pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 \
         -dname "${SERVICE_DNAME}" -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
         pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} \
         -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
     fi
+}
+
+function export_jwt_from_keyring {
+        pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
+          -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 }
 
 function zosmf_jwt_public_key {
@@ -622,6 +626,9 @@ case $ACTION in
         ;;
     trust-zosmf)
         trust_zosmf
+        if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" == "false" ]]; then
+          export_jwt_from_keyring
+        fi
         zosmf_jwt_public_key
         ;;
     cert-key-export)
