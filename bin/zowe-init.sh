@@ -87,6 +87,8 @@ fi
 ###identify ping
 getPing_bin
 
+
+ZOWE_EXPLORER_HOST_INITIAL=$ZOWE_EXPLORER_HOST
 if [[ $ZOWE_EXPLORER_HOST == "" ]]
 then
     # ZOWE_EXPLORER_HOST=$(hostname -c)
@@ -229,7 +231,7 @@ case $rc in
     4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
     ;; 
 esac
-if [[ $rc -ne 0 ]]
+if [[ $rc -ne 0 && ! -n "$ZOWE_EXPLORER_HOST_INITIAL" ]] # if error AND hostname was blank at entry
 then
     echo "    Defaulting hostname to value of ZOWE_IP_ADDRESS $ZOWE_IP_ADDRESS" 
     export ZOWE_EXPLORER_HOST=$ZOWE_IP_ADDRESS                
