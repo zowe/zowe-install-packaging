@@ -11,7 +11,7 @@
 const expect = require('chai').expect;
 const sshHelper = require('./ssh-helper');
 
-describe.only('verify zosmf-utils', function() { //TODO NOW remove only
+describe('verify zosmf-utils', function() {
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
