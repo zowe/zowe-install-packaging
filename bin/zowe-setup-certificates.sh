@@ -39,6 +39,8 @@ validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
 set_install_log_file "zowe-setup-certificates"
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
+echo "We set up the logs properly"
+
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
 echo "Loading default variables from ${DEFAULT_CERTIFICATES_CONFIG_FILE} file."
@@ -57,6 +59,9 @@ else
     exit 1
   fi
 fi
+
+echo "We load the default values"
+
 ZOWE_EXPLORER_HOST=${HOSTNAME}
 ZOWE_IP_ADDRESS=${IPADDRESS}
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
@@ -76,6 +81,7 @@ if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
     exit 1;
   fi
 fi
+echo "We create the keystore directories but it looks like the statement is below is never printed so probably won't ever get here"
 echo "Creating certificates and keystores... STARTED"
 # set up parameters for apiml_cm.sh script
 KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"
