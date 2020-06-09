@@ -166,6 +166,7 @@ function sign_csr_using_local_ca {
     echo $LOCAL_CA_PASSWORD
     echo $SERVICE_EXT
     echo $SERVICE_VALIDITY
+    echo "Hardcoding DNS name here since not getting set properly"
     SERVICE_EXT='SAN=dns:localhost,ip:0.0.0.0,dns:localhost.localdomain,dns:localhost,ip:127.0.0.1'
 
     pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
@@ -176,7 +177,6 @@ function sign_csr_using_local_ca {
 
 
 function import_local_ca_certificate {
-    echo "Does 9"
     echo "Import the local Certificate Authority to the truststore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
@@ -387,16 +387,13 @@ function trust_zosmf {
     # First, print out ZOSMF certificates fingerprints for a user to check
     # We call keytool directly because the pkeytool messes the output that we want to display
     if [[ "$LOG" != "" ]]; then
-      echo "Here"
       echo "z/OSMF certificate fingerprint:" >&5
       keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5' >&5
     else
-      echo "There"
       echo "z/OSMF certificate fingerprint:"
       keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5'
     fi
     # keytool should work here but we check RC just in case
-    echo "Out here"
     echo "z/OSMF certificate fingerprint: keytool returned: $RC"
     RC=$?
     if [ "$RC" -ne "0" ]; then

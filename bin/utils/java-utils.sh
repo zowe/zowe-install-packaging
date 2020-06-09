@@ -12,7 +12,6 @@
 
 # TODO LATER - anyway to do this better?
 # Try and work out where we are even if sourced
-echo one
 if [[ -n ${INSTALL_DIR} ]]
 then
   export utils_dir="${INSTALL_DIR}/bin/utils"
@@ -29,10 +28,8 @@ else
   echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-root-directory>' before running." 1>&2
   return 1
 fi
-echo two 
 # Source common util functions
 . ${utils_dir}/common.sh
-echo three
 ensure_java_is_on_path() {
   if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]]
   then
@@ -40,7 +37,6 @@ ensure_java_is_on_path() {
     export PATH=$PATH:$JAVA_HOME/bin
   fi
 }
-echo four
 validate_java_home() {
   echo "TEST javahome"
   echo $JAVA_HOME
@@ -52,7 +48,6 @@ validate_java_home() {
   fi
 
   ls ${JAVA_HOME}/bin | grep java$ > /dev/null
-  echo "here $?"
   if [[ $? -ne 0 ]];
   then
     print_error_message "JAVA_HOME: ${JAVA_HOME}/bin does not point to a valid install of Java"
@@ -65,12 +60,9 @@ validate_java_home() {
     print_error_message "Java version check failed with return code: ${java_version_rc}, error: ${java_version_output}"
     return 1
   fi
-  echo "one $java_version_output"
-  echo $(${JAVA_HOME}/bin/java -version)
 
   # As we know the java -version command works then strip out the line we need
   java_version_output=$(${JAVA_HOME}/bin/java -version 2>&1 | grep ^"openjdk version")
-  echo "two $java_version_output"
 
   check_java_version "${java_version_output}"
   java_version_rc=$?
@@ -79,29 +71,17 @@ validate_java_home() {
     return ${java_version_rc}
   fi
 }
-echo five
 validate_java_home_not_empty() {
-  echo "do we get here?"
   . ${utils_dir}/zowe-variable-utils.sh
   validate_variable_is_set "JAVA_HOME"
-  echo "this $JAVA_HOME"
-  echo $?
   return $?
 }
-echo six
 # Given a java version string from the `java -version` command, checks if it is valid
 check_java_version() {
   java_version_output=$1
   java_version=$(echo ${java_version_output} | sed -e "s/openjdk version //g"| sed -e "s/\"//g")
-  echo ${java_version_output}
-  echo ${java_version}
-  echo $JAVA_HOME
-  echo "tthhrreee"
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
-  echo ${java_minor_version}
-  echo "yeeter"
-  echo ${java_major_version}
   too_low=""
   if [[ ${java_major_version} -lt 1 ]] #Should never get here
   then
@@ -119,7 +99,6 @@ check_java_version() {
     log_message "Java version ${java_version} is supported"
   fi
 }
-echo seven
 # TODO - how to test well given interaction and guess?
 # Interactive function that checks if the current JAVA_HOME is valid and if not requests a user enters the java home path via command line
 prompt_java_home_if_required() {
@@ -149,4 +128,3 @@ prompt_java_home_if_required() {
   export JAVA_HOME=$JAVA_HOME
   log_message "  JAVA_HOME variable value=${JAVA_HOME}"
 }
-echo eight

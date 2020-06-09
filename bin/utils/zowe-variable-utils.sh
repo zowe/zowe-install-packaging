@@ -34,9 +34,6 @@ fi
 
 # Takes in a single parameter - the name of the variable
 validate_variable_is_set() {
-  echo "do we get $1"
-  echo "what about $JAVA_HOME"
-  echo "and also $variable_name"
   variable_name=$1
   eval "value=\"\$${variable_name}\""
   if [[ -z "${value}" ]]

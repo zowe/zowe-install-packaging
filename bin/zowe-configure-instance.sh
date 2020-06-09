@@ -51,7 +51,6 @@ validate_file_not_in_directory "${INSTANCE_DIR}" "${ZOWE_ROOT_DIR}"
 if [[ $? -ne 0 ]]
 then
   echo "It looks like the instance directory chosen ${INSTANCE_DIR} was within the zowe runtime install directory ${ZOWE_ROOT_DIR}. This will cause the instance directory to be overwritten when an upgrade is applied. Please choose an alternative instance directory and re-run 'zowe-configure-instance.sh -c <Instance directory>'"
-  exit 1
 fi
 
 echo_and_log() {
@@ -108,32 +107,23 @@ check_existing_instance_for_updates() {
 }
 
 echo "Creating zowe instance in ${INSTANCE_DIR}"
-echo "test"
-echo $JAVA_HOME
 $(mkdir -p ${INSTANCE_DIR}/bin/internal)
-echo 1
 
 DIRECTORY_CREATE_RC=$?
-echo 2
 
 if [[ $DIRECTORY_CREATE_RC != "0" ]]
 then
   echo "We could not create the instance directory and sub-directories in ${INSTANCE_DIR}. Please check permissions and re-run."
   exit 1
 fi
-echo 3
 
 LOG_DIR=${INSTANCE_DIR}/logs
-echo 4
 
 mkdir -p ${LOG_DIR}
-echo 5
 
 chmod 777 ${LOG_DIR}
-echo 6
 
 export LOG_FILE=${LOG_DIR}/"configure-`date +%Y-%m-%d-%H-%M-%S`.log"
-echo 7
 
 echo "Created instance directory ${INSTANCE_DIR}" >> $LOG_FILE
 
@@ -144,7 +134,6 @@ echo a
 # Try and work out the variables that we can
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
 echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
-echo b
 # Check if instance .env already exists
 if [[ -f "${INSTANCE}" ]]
 then
@@ -152,8 +141,6 @@ then
 else
   create_new_instance
 fi
-echo c
-echo 8
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 
@@ -238,7 +225,6 @@ export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@ ${INSTANCE_DIR}
 EOF
 echo "Created ${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh">> $LOG_FILE
-echo 9
 # Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
 # If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
 chmod 775 ${INSTANCE_DIR}
@@ -249,7 +235,6 @@ if [[ $RETURN_CODE != "0" ]]; then
 fi
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
-echo 10
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
 echo "   (or in SDSF directly issue the command /S ZWESVSTC,INSTANCE='${INSTANCE_DIR}')"
@@ -257,4 +242,3 @@ echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh
 echo "  (or in SDSF directly the command /C ZWESVSTC)"
 
 echo "zowe-configure-instance.sh completed">> $LOG_FILE
-echo 11

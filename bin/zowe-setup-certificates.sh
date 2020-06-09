@@ -26,7 +26,6 @@ while getopts "l:p:" opt; do
   esac
 done
 shift $(($OPTIND-1))
-echo "dos"
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
@@ -69,14 +68,12 @@ if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
     exit 1;
   fi
 fi
-echo "nueve"
 if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
   if ! mkdir -p ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}; then
     echo "Unable to create ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} directory."
     exit 1;
   fi
 fi
-echo "diez"
 echo "Creating certificates and keystores... STARTED"
 # set up parameters for apiml_cm.sh script
 KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"
@@ -121,13 +118,6 @@ if [ "$RC" -ne "0" ]; then
     exit 1
 fi
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
-  echo $ZOWE_ROOT_DIR
-  echo $LOG_FILE
-  echo $KEYSTORE_PASSWORD
-  echo $TRUSTSTORE_PREFIX
-  echo $ZOSMF_CERTIFICATE
-  echo $KEYSTORE_PREFIX
-
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
     --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
     --service-keystore ${KEYSTORE_PREFIX}
