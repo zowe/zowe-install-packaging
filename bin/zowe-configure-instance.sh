@@ -51,6 +51,7 @@ validate_file_not_in_directory "${INSTANCE_DIR}" "${ZOWE_ROOT_DIR}"
 if [[ $? -ne 0 ]]
 then
   echo "It looks like the instance directory chosen ${INSTANCE_DIR} was within the zowe runtime install directory ${ZOWE_ROOT_DIR}. This will cause the instance directory to be overwritten when an upgrade is applied. Please choose an alternative instance directory and re-run 'zowe-configure-instance.sh -c <Instance directory>'"
+  exit 1
 fi
 
 echo_and_log() {
