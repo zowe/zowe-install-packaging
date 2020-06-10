@@ -5,19 +5,19 @@
 ****************************************************************
 * Timing: post-APPLY                                           *
 ****************************************************************
-* Part: zowe-instance.env                                      *
+* Part: instance.env                                           *
 *       zowe-setup-certificate.env                             *
 ****************************************************************
-New variables are added to zowe-instance.env and 
+New variables are added to instance.env and 
 zowe-setup-certificate.env.
 
-zowe-instance.env
+instance.env
 - ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXPLORER_HOST}:*,
     ${ZOWE_IP_ADDRESS}:*"
   # comma seperated list of hosts allowed to embed explorers
 
 Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c 
-<PATH_TO_INSTANCE_DIR> again with an updated zowe-instance.env
+<PATH_TO_INSTANCE_DIR> again with an updated instance.env
 to pick up the new definitions.
 
 zowe-setup-certificate.env
