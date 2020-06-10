@@ -82,7 +82,6 @@ check_existing_instance_for_updates() {
   ROOT_DIR_MATCH=$(grep -c ROOT_DIR=${ZOWE_ROOT_DIR} ${INSTANCE})
   if [[ ${ROOT_DIR_MATCH} -ne 1 ]]
   then
-    echo "Didn't contain ${ZOWE_ROOT_DIR}"
     TEMP_INSTANCE="${TMPDIR:-/tmp}/instance.env"
     cat "${INSTANCE}" | sed -e "s%ROOT_DIR=.*\$%ROOT_DIR=${ZOWE_ROOT_DIR}%" > "${TEMP_INSTANCE}"
     cat "${TEMP_INSTANCE}" > "${INSTANCE}"
