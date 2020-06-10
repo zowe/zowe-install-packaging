@@ -33,7 +33,7 @@ fi
 . ${utils_dir}/common.sh
 
 prompt_zosmf_port_if_required() {
-  zosmf_port_list=`netstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }'` 
+  zosmf_port_list=`onetstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }'` 
   extract_zosmf_port "${zosmf_port_list}"
   extract_rc=$?
   if [[ ${extract_rc} -ne 0 ]]
