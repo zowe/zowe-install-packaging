@@ -26,13 +26,13 @@
 
 - name: Patch keyring for apiml
   raw: >-
-    cat "{{ work_dir_remote }}/components/api-mediation/bin/start.sh" | \
+    cat "{{ zowe_root_dir }}/components/api-mediation/bin/start.sh" | \
     sed -e "s+\\\${KEYSTORE_PASSWORD}+password+" | \
     sed -e "s+\\\${KEYSTORE_TYPE}+JCERACFKS+" | \
     sed -e "s+\\\${KEYSTORE}+safkeyring:////ZWESVUSR/ZoweKeyring+" | \
     sed -e "s+\\\${TRUSTSTORE}+safkeyring:////ZWESVUSR/ZoweKeyring+" | \
     sed -e "s+\\\${KEY_ALIAS}+ZOWE+" \
-    > "{{ work_dir_remote }}/components/api-mediation/bin/start.sh"
+    > "{{ zowe_root_dir }}/components/api-mediation/bin/start.sh"
 
 - name: Show apiml run script
   raw: cat "{{ work_dir_remote }}/components/api-mediation/bin/start.sh"
