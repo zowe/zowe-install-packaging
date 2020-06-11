@@ -35,7 +35,7 @@
     > "{{ zowe_root_dir }}/components/api-mediation/bin/start.sh"
 
 - name: Show apiml run script
-  raw: cat "{{ work_dir_remote }}/components/api-mediation/bin/start.sh"
+  raw: cat "{{ zowe_root_dir }}/components/api-mediation/bin/start.sh"
 
 - name: Start Zowe
   raw: "{{ zowe_start_path }}"
