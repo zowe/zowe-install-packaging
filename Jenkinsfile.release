@@ -157,7 +157,7 @@ node('ibm-jenkins-slave-nvm') {
       echo "Checking if ${params.ZOWE_RELEASE_VERSION} already exists in Artifactory ..."
       def versionOnArtifactory
       try {
-        versionOnArtifactory = pipeline.artifactory.getArtifact(releaseFilePath)
+        versionOnArtifactory = pipeline.artifactory.getArtifact(releaseFilePath + "/*")
       } catch (e) {
         // ignore errors
       }
