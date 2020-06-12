@@ -35,7 +35,9 @@ _Please note, currently package.json doesn't include *Babel JS*, which means all
 
 ### Prepare NPM Packages
 
-Run `npm install` to install dependencies.
+We have a dependency on NPM registry of Zowe Artifactory. You will need to configure npm registry to be `https://zowe.jfrog.io/zowe/api/npm/npm-release/`. This should have been handled by the `.npmrc` file in this folder.
+
+With correct npm registry, you can run `npm install` to install all dependencies.
 
 ### Prerequisite For E2E UI Test
 
@@ -361,41 +363,25 @@ Then you can hold the test case to make it wait for you.
 
 This section will provide brief example how to add new test cases to run SSH command on testing server.
 
-- We have imported [node-ssh](https://www.npmjs.com/package/node-ssh) dependency which can make SSH connection to the server.
-- Use `ssh.connect` to make connection, then use `ssh.execCommand` to execute command on remote server.
+- We have created a helper class `ssh-helper.js` to assist with new ssh tests.
+- You should follow the pattern of establishing a connection, using one of the test methods, then making sure the connection is correctly disposed.
 
 For example:
 
 ```javascript
-// import chai expect
-const expect = require('chai').expect;
-// import node-ssh
-const SSH = require('node-ssh');
-const ssh = new SSH();
+const sshHelper = require('./ssh-helper');
 
 describe('my test suite', function() {
-  before('establish ssh connection', function() {
-    // establish ssh connection
-    return ssh.connect({
-      host: ssh_host,
-      port: ssh_port,
-      username,
-      password,
-      tryKeyboard: true,
-      onKeyboardInteractive: (name, instructions, instructionsLang, prompts, finish) => {
-        if (prompts.length > 0 && prompts[0].prompt.toLowerCase().includes('password')) {
-          finish([password]);
-        }
-      }
-    });
+  before('establish ssh connection', async function() {
+    await sshHelper.prepareConnection();
   });
 
-  it('should succeed on my command', function() {
-    return ssh.execCommand('pwd')
-      .then(function(result) {
-        expect(result.stderr).to.be.empty;
-        expect(result.code).to.equal(0);
-      });
+  it('should succeed on my command', async function() {
+    await sshHelper.executeCommandWithNoError('pwd');
+  });
+
+  after('dispose SSH connection', function() {
+    sshHelper.cleanUpConnection();
   });
 });
 ```

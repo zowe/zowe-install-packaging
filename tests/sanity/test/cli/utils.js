@@ -39,25 +39,36 @@ const execZoweCli = async(command) => {
   let keyringExists = false;
 
   try {
-    keyringExists = await exec('which gnome-keyring-daemon');
-    if (keyringExists && keyringExists.stdout && keyringExists.stdout.trim() !== '') {
-      keyringExists = await exec('which dbus-launch');
-      if (keyringExists && keyringExists.stdout && keyringExists.stdout.trim() !== '') {
-        keyringExists = true;
-      }
+    const gnomeKeyringDaemonExists = await exec('which gnome-keyring-daemon');
+    if (!gnomeKeyringDaemonExists || !gnomeKeyringDaemonExists.stdout || gnomeKeyringDaemonExists.stdout.trim() === '') {
+      throw new Error('gnome-keyring-daemon not found');
     }
+    const dbusLaunchExists = await exec('which dbus-launch');
+    if (!dbusLaunchExists || !dbusLaunchExists.stdout || dbusLaunchExists.stdout.trim() === '') {
+      throw new Error('dbus-launch not found');
+    }
+    const checkPermission = await exec('echo "jenkins" | gnome-keyring-daemon --unlock');
+    if (!checkPermission || checkPermission.stderr.trim() !== '') {
+      // if failed, the stderr has a value of "/usr/bin/gnome-keyring-daemon: Operation not permitted"
+      throw new Error('cannot unlock gnome-keyring-daemon');
+    }
+    keyringExists = true;
   } catch (e) {
     keyringExists = false;
   }
 
   try {
     if (keyringExists) {
+      debug(`run cli with dbus-launch: ${command}`);
+
       const fn = path.join(__dirname, wrapperFileName);
 
       await writeFile(fn, wrapperFileContent + command);
       await chmod(fn, 0o755);
       result = await exec(`dbus-launch ${fn}`);
     } else {
+      debug(`run cli directly: ${command}`);
+
       result = await exec(command);
     }
   } catch (e) {

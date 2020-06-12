@@ -11,7 +11,7 @@
  */
 
 
-node('ibm-jenkins-slave-dind') {
+node('ibm-jenkins-slave-nvm') {
   String INSTALL_TEST_PATH = 'tests/installation'
   String SANITY_TEST_PATH = 'tests/sanity'
 
@@ -174,12 +174,8 @@ node('ibm-jenkins-slave-dind') {
         }
       }
 
-      // Use zowe artifactory	
-      sh "npm config set registry https://zowe.jfrog.io/zowe/api/npm/npm-release/"
       // upgrade npm
       sh 'npm install -g npm'
-
-      // install ansible (we put in base image)
     }
   )
 

@@ -48,95 +48,6 @@ getZosmfHttpsPort() {
     export ZOWE_ZOSMF_PORT
 }
 
-promptNodeHome(){
-loop=1
-while [ $loop -eq 1 ]
-do
-    if [[ "$NODE_HOME" == "" ]]
-    then
-        echo "    NODE_HOME was not set "
-        echo "    Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
-        read NODE_HOME
-    fi
-    if [[ -f $NODE_HOME/"./bin/node" ]] 
-    then
-        export NODE_HOME=$NODE_HOME
-        loop=0
-    else
-        echo "        No /bin/node found in directory "$NODE_HOME
-        echo "        Press Y or y to accept location, or Enter to choose another location"
-        read rep
-        if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-        then
-            export NODE_HOME=$NODE_HOME
-            loop=0
-        else
-            NODE_HOME=
-        fi
-    fi
-done
-}
-
-javaVersion=-1
-locateJavaHome() {
-    getJavaVersion $1
-    if [ "$javaVersion" -ge "18" ]
-        then
-            echo "   java version $version found at " $1 >> $LOG_FILE
-            export JAVA_HOME=$1
-        else
-            if [ "$javaVersion" = "-1" ]
-            then
-                echo "    No executable file found in $1/bin/java"
-            else
-                echo "    The version of java at $1 is $version, and must be Java 8, or newer"
-            fi
-            loop=1
-            while [ $loop -eq 1 ]
-            do
-                echo "    Please enter home directory where Java 8, or newer is installed.  This is the a directory that contains /bin/java"
-                read JAVA_HOME
-                getJavaVersion $JAVA_HOME
-                if [ "$javaVersion" = "-1" ]
-                    then
-                        echo "        No executable file found in $JAVA_HOME/bin/java"
-                        echo "        Press Y or y to accept location, or Enter to choose another location"
-                        read rep
-                        if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-                            then
-                                export JAVA_HOME
-                                loop=0
-                        fi
-                    else
-                        if [ "$javaVersion" -lt "18" ]
-                            then
-                                echo "        The version of java at $JAVA_HOME is $version, and must be Java 8, or newer"
-                                echo "        Press Y or y to accept location, or Enter to choose another location"
-                                read rep
-                                if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-                                    then
-                                        export JAVA_HOME
-                                        loop=0
-                                fi
-                            else
-                                export JAVA_HOME
-                                loop=0
-                        fi
-                fi
-            done
-    fi
-}
-
-getJavaVersion() {
-    java_bin="$1/bin/java"
-    if [[ -x $java_bin ]]; then
-        version=$("$java_bin" -version 2>&1 | sed -n ';s/.* version "\(.*\)\.\(.*\)\..*"/\1\2/p;')
-        javaVersion=$version
-    else
-        javaVersion=-1
-    fi
-}
-
 getPing_bin() {
 #  Identifies name of ping command if ping is not available oping is used
 #  populates ping_bin variable with ping or oping
@@ -164,28 +75,20 @@ else
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
-if [[ -z ${JAVA_HOME} ]]
-then
-    JAVA_HOME=/usr/lpp/java/J8.0_64
-else
-    echo "  JAVA_HOME variable value="${JAVA_HOME} >> $LOG_FILE
-fi
-locateJavaHome ${JAVA_HOME}
+. ${ZOWE_ROOT_DIR}/bin/utils/java-utils.sh
+prompt_java_home_if_required
 
-if [[ -z ${NODE_HOME} ]]
-then
-    NODE_HOME="/usr/lpp/IBM/cnj/IBM/node-latest-os390-s390x"
-else
-    echo "  NODE_HOME variable value="${NODE_HOME} >> $LOG_FILE
-fi
 if [[ ${SKIP_NODE} != 1 ]]
 then
-    promptNodeHome ${NODE_HOME}
+  . ${ZOWE_ROOT_DIR}/bin/utils/node-utils.sh
+  prompt_for_node_home_if_required
 fi
 
 ###identify ping
 getPing_bin
 
+
+ZOWE_EXPLORER_HOST_INITIAL=$ZOWE_EXPLORER_HOST
 if [[ $ZOWE_EXPLORER_HOST == "" ]]
 then
     # ZOWE_EXPLORER_HOST=$(hostname -c)
@@ -193,7 +96,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-        full_hostname=`$ping_bin $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
+        full_hostname=`$ping_bin -A ipv4 $hn|sed -n 's/.* host \(.*\) (.*/\1/p'`
         if [[ $? -eq 0 && -n "$full_hostname" ]]
         then
             ZOWE_EXPLORER_HOST=$full_hostname
@@ -208,6 +111,10 @@ then
     then
         echo "    Please enter the ZOWE_EXPLORER_HOST of this system"
         read ZOWE_EXPLORER_HOST
+        if [[ ! -n "$ZOWE_EXPLORER_HOST" ]]
+        then
+            echo Info: User entered blank ZOWE_EXPLORER_HOST
+        fi
     fi 
     export ZOWE_EXPLORER_HOST
 else    
@@ -232,7 +139,7 @@ ip=$2
 # 4 - ip parameter or hostname parameter is an empty string
 
 # Does PING of hostname yield correct IP?
-$ping_bin $hostname | grep $ip 1> /dev/null
+$ping_bin -A ipv4 $hostname | grep $ip 1> /dev/null
 if [[ $? -eq 0 ]]
 then
         # echo ip $ip is OK
@@ -270,7 +177,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IP_ADDRESS=`$ping_bin $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
+          ZOWE_IP_ADDRESS=`$ping_bin -A ipv4 $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
           if [[ ! -n "$ZOWE_IP_ADDRESS" ]]
           then
                echo Error: $ping_bin $hn command failed to find IP
@@ -296,49 +203,42 @@ then
     
     if [[ $rc -ne 0 ]]  # ask the user to enter the external IP
     then
-            echo "    Please enter the ZOWE_IP_ADDRESS of this system"
-            read ZOWE_IP_ADDRESS_INPUT
-            if [[ ! -n "$ZOWE_IP_ADDRESS_INPUT" ]]
-            then
-               echo Error: User entered blank ZOWE_IP_ADDRESS    # leave ZOWE_IP_ADDRESS unchanged,
-               echo Info: Using ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS  # as discovered above
-            else
-               echo Info: User entered ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT
-               ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT             # take what the user entered
-            fi
-            checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IP_ADDRESS
-            case $? in
-                0)  echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IP_ADDRESS >> $LOG_FILE
-                ;;
-                1)  echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IP_ADDRESS"
-                ;;
-                2)  echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IP_ADDRESS"
-                ;;
-                3)  echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
-                ;;  
-                4)  echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
-                ;;   
-            esac
+        echo "    Please enter the ZOWE_IP_ADDRESS of this system"
+        read ZOWE_IP_ADDRESS_INPUT
+        if [[ ! -n "$ZOWE_IP_ADDRESS_INPUT" ]]
+        then
+            echo Error: User entered blank ZOWE_IP_ADDRESS    # leave ZOWE_IP_ADDRESS unchanged,
+            echo Info: Using ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS  # as discovered above
+        else
+            echo Info: User entered ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT
+            ZOWE_IP_ADDRESS=$ZOWE_IP_ADDRESS_INPUT             # take what the user entered
+        fi
     fi  
-
     export ZOWE_IP_ADDRESS
-else
-    checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IP_ADDRESS
+fi 
 
-    case $? in
-        0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IP_ADDRESS >> $LOG_FILE
-        ;;
-        1)        echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IP_ADDRESS"
-        ;;
-        2)        echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IP_ADDRESS"
-        ;;
-        3)        echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
-        ;;
-        4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
-        ;; 
-    esac
-    echo "  ZOWE_IP_ADDRESS variable value="$ZOWE_IP_ADDRESS >> $LOG_FILE
+checkHostnameResolves $ZOWE_EXPLORER_HOST $ZOWE_IP_ADDRESS
+rc=$?
+case $rc in
+    0)        echo OK resolved $ZOWE_EXPLORER_HOST to $ZOWE_IP_ADDRESS >> $LOG_FILE
+    ;;
+    1)        echo warning : "$ping_bin $ZOWE_EXPLORER_HOST did not match stated IP address $ZOWE_IP_ADDRESS"
+    ;;
+    2)        echo error : "dig found hostname $ZOWE_EXPLORER_HOST and IP but IP did not match $ZOWE_IP_ADDRESS"
+    ;;
+    3)        echo warning : "dig could not find IP of hostname $ZOWE_EXPLORER_HOST"
+    ;;
+    4)        echo error : ZOWE_EXPLORER_HOST or ZOWE_IP_ADDRESS is an empty string
+    ;; 
+esac
+if [[ $rc -ne 0 && ! -n "$ZOWE_EXPLORER_HOST_INITIAL" ]] # if error AND hostname was blank at entry
+then
+    echo "    Defaulting hostname to value of ZOWE_IP_ADDRESS $ZOWE_IP_ADDRESS" 
+    export ZOWE_EXPLORER_HOST=$ZOWE_IP_ADDRESS                
 fi
+
+echo "  ZOWE_IP_ADDRESS    variable value="$ZOWE_IP_ADDRESS
+echo "  ZOWE_EXPLORER_HOST variable value="$ZOWE_EXPLORER_HOST
 
 if [[ $ZOWE_ZOSMF_HOST == "" ]]
 then

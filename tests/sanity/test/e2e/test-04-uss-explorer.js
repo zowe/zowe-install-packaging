@@ -64,7 +64,7 @@ describe(`test ${APP_TO_TEST}`, function() {
       process.env.SSH_USER, 	
       process.env.SSH_PASSWD, 	
       `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
-      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/explorer-jes`	
+      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/explorer-uss`	
     );
 
     // load MVD login page
