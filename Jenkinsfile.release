@@ -91,7 +91,8 @@ node('ibm-jenkins-slave-nvm') {
       name: 'ZOWE_CLI_BUILD_NUMBER',
       description: 'REQUIRED if ZOWE_CLI_BUILD_RC_PATH is empty. Zowe CLI successful build number',
       defaultValue: '',
-      trim: true
+      trim: true,
+      required: true
     ),
     string(
       name: 'ZOWE_RELEASE_VERSION',
