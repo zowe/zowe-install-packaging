@@ -18,6 +18,8 @@ zowe_instance_dir: ~/.zowe/instance
 zowe_job_prefix: ZWE
 # instance id. This will be put into zowe job name after {{ zowe_job_prefix }}
 zowe_instance_id: 1
+# default z/OSMF port
+zos_zosmf_port: 10443
 # APIML ports
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
@@ -68,3 +70,6 @@ zowe_external_domain_name:
 # optional, no default value
 # required for zD&T (external IP is different from internal IP)
 zowe_external_ip_address:
+
+# property added to instance.env for extender test - Note this variable is for PTF installation verification purpose, not used by any extensions. You are safe to ignore.
+zowe_extender_test_property: EXAMPLE_EXTENDER_PROPERTY=TEST123
