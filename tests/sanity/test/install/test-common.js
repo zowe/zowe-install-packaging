@@ -32,13 +32,6 @@ describe('verify utils/common', function() {
       await test_common_function_has_expected_rc_stdout_stderr(command, 0, expected_err, expected_err);
     });
 
-    it('ZWE_PRINT_ERRORS=false suppresses messages', async function() {
-      const error = 'Hidden message';
-      // Note: because ssh_helper creates a new session each time the export won't effect other tests
-      const command = `export ZWE_PRINT_ERRORS=false && ${print_error_message} "${error}"`;
-      await test_common_function_has_expected_rc_stdout_stderr(command, 0, '', '');
-    });
-
     async function test_print_error_message(message, expected_message) {
       const command = `${print_error_message} "${message}"`;
       // Currently we output errors to stdout and stderr
