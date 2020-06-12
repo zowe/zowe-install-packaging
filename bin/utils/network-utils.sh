@@ -36,7 +36,7 @@ fi
 validate_port_is_available() {
   port=$1
   netstat_report=$(onetstat -c SERVER -P ${port} | grep Listen)
-  if [[ ${netstat_report} != "" ]]
+  if [[ -n ${netstat_report} ]]
   then
     print_error_message "Port ${port} is already in use by process ${netstat_report}"
     return 1
