@@ -33,7 +33,7 @@ fi
 . ${utils_dir}/common.sh
 
 prompt_zosmf_port_if_required() {
-  zosmf_port_list=`onetstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }'` 
+  zosmf_port_list=$(onetstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }')
   extract_zosmf_port "${zosmf_port_list}"
   extract_rc=$?
   if [[ ${extract_rc} -ne 0 ]]
@@ -79,11 +79,11 @@ extract_zosmf_port() {
   export ZOWE_ZOSMF_PORT=${zosmf_port_list}
 }
 
-# Expects the following to be exported
-# - ZOSMF_PORT - The SSL port z/OSMF is listening on.
-# - ZOSMF_HOST - The hostname, or IP Address z/OSMF can be reached
+# Takes 2 parameters - zosmfhost, zosmfport
 validate_zosmf_host_and_port() {
-  if [[ -z "${ZOSMF_HOST}" || -z "${ZOSMF_PORT}" ]]
+  zosmf_host=$1
+  zosmf_port=$2
+  if [[ -z "${zosmf_host}" || -z "${zosmf_port}" ]]
   then 
     print_error_message "ZOSMF_HOST and ZOSMF_PORT are not both set"
     return 1
@@ -93,7 +93,7 @@ validate_zosmf_host_and_port() {
     then
       log_message "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
     else
-      http_response_code=$(${NODE_HOME}/bin/node ${ROOT_DIR}/scripts/utils/zosmfHttpRequest.js ${ZOSMF_HOST} ${ZOSMF_PORT})
+      http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/zosmfHttpRequest.js ${ZOSMF_HOST} ${ZOSMF_PORT})
       check_zosmf_info_response_code "${http_response_code}"
       return $?
     fi
