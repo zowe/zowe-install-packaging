@@ -75,11 +75,11 @@ ${process.env.ZOSMF_PORT}`;
     });
 
     it('test empty zosmf_host throws error', async function() {
-      await test_validate_zosmf_host_and_port('', process.env.ZOSMF_PORT, 1, '', 'ZOSMF_HOST and ZOSMF_PORT are not both set');
+      await test_validate_zosmf_host_and_port('', process.env.ZOSMF_PORT, 1, '', 'The z/OSMF host was not set');
     });
 
     it('test empty zosmf_port throws error', async function() {
-      await test_validate_zosmf_host_and_port(process.env.SSH_HOST, '', 1, '', 'ZOSMF_HOST and ZOSMF_PORT are not both set');
+      await test_validate_zosmf_host_and_port(process.env.SSH_HOST, '', 1, '', 'The z/OSMF port was not set');
     });
 
     it('test empty node home logs a warning', async function() {
@@ -89,7 +89,7 @@ ${process.env.ZOSMF_PORT}`;
     });
 
     async function test_validate_zosmf_host_and_port(zosmf_host, zosmf_port, expected_rc, expected_stdout, expected_stderr, pre_command = '') {
-      const command = `${pre_command} export ZOSMF_HOST=${zosmf_host} && export ZOSMF_PORT=${zosmf_port} && ${validate_zosmf_host_and_port}`;
+      const command = `${pre_command} ${validate_zosmf_host_and_port} "${zosmf_host}" "${zosmf_port}"`;
       await test_zosmf_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr);
     }
   });
