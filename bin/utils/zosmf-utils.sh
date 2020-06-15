@@ -72,7 +72,6 @@ extract_zosmf_port() {
         break
       fi
     done
-    export IFS="$OLDIFS"
   fi
 
   if [[ ${number_of_matches} -ne 1 ]]

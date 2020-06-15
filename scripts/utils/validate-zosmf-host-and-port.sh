@@ -13,4 +13,4 @@
 # PLEASE NOTE - this is script is planned for removal - please use zosmf-utils.sh instead
 
 . ${ROOT_DIR}/bin/utils/zosmf-utils.sh
-"${ZOSMF_HOST}" "${ZOSMF_PORT}"
+validate_zosmf_host_and_port "${ZOSMF_HOST}" "${ZOSMF_PORT}"
