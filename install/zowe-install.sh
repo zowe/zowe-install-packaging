@@ -160,7 +160,7 @@ then
   cp $INSTALL_DIR/fingerprint/* $ZOWE_ROOT_DIR/fingerprint
   chmod a+r $ZOWE_ROOT_DIR/fingerprint/*
 else
-  echo OK: No fingerprint, create it with zowe-checksum-runtime.sh  
+  echo OK: No fingerprint, create it with zowe-generate-checksum.sh  
   echo "OK: No fingerprint in install directory "$INSTALL_DIR >> $LOG_FILE
 fi
 

@@ -10,7 +10,7 @@
 # Copyright Contributors to the Zowe Project. 2020
 #######################################################################
 
-#	zowe-checksum-runtime.sh
+#	zowe-generate-checksum.sh
 # 
 
 # Function: Create the checksum files of the runtime directory files.
@@ -29,7 +29,7 @@
 #           •	RefRuntimeHash.txt (list of files with hash keys)
 #           
 # Uses    - java compiler
-SCRIPT=zowe-checksum-runtime.sh
+SCRIPT=zowe-generate-checksum.sh
 echo $SCRIPT started
 
 if [[ $# -ne 2 ]]   
