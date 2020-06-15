@@ -202,14 +202,13 @@ echo Installing Zowe in temporary runtime directory
 mkdir zowe-runtime-dir 
 echo ROOT = $ROOT # do we have the ROOT to publish to?
 userid=${USER:-${USERNAME:-${LOGNAME}}}
-./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.TRUNTIME # [-l <log_directory>]
-
+./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.T$(($$ % 10000000)) # temp DSN based on PID
 utilsDir=`pwd`/content/zowe-$ZOWE_VERSION/scripts/utils 
 mkdir $utilsDir/hash # create work directory
 cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
 
 # Compile the hash program and calculate the checksums of runtime
-./content/zowe-$ZOWE_VERSION/bin/zowe-checksum-runtime.sh `pwd`/zowe-runtime-dir $utilsDir/hash 
+./content/zowe-$ZOWE_VERSION/bin/zowe-generate-checksum.sh `pwd`/zowe-runtime-dir $utilsDir/hash 
 
 # save derived runtime hash file and class into the source tree that will be PAXed
 mkdir -p content/zowe-$ZOWE_VERSION/fingerprint

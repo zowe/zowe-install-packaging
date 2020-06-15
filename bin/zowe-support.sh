@@ -142,6 +142,17 @@ else
     write_to_log "Directory ${API_DEFS_DIRECTORY} was not found."
 fi
 
+if [[ -d $ROOT_DIR/fingerprint ]]
+then 
+    write_to_log "Collecting fingerprint"
+    for RefRuntimeHash in `ls ${ROOT_DIR}/fingerprint`
+    do
+        add_file_to_pax_if_found "${ROOT_DIR}/fingerprint/$RefRuntimeHash"
+    done 
+    $ROOT_DIR/bin/zowe-verify-authenticity.sh -l $SUPPORT_ARCHIVE_LOCATION
+    add_file_to_pax_if_found "${SUPPORT_ARCHIVE_LOCATION}/zowe-verify-authenticity.log"
+fi
+
 # TODO - collect all the rest of workspace directory?
 add_file_to_pax_if_found "${INSTANCE_DIR}/instance.env"
 add_file_to_pax_if_found "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
