@@ -190,7 +190,6 @@ mv ./content/templates  .
 
 # For the moment, I will let smpe.sh continue to create its own runtime folder, but this creation
 # will be removed later for efficiency.
-# Note that smpe.sh is where we publish the fingerprint.  This should be moved back into here.
 
 # Note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
 # TODO
@@ -200,9 +199,13 @@ mv ./content/templates  .
 echo "----- Generate reference hash keys of runtime files -----"
 echo Installing Zowe in temporary runtime directory
 mkdir zowe-runtime-dir 
-echo ROOT = $ROOT # do we have the ROOT to publish to?
 userid=${USER:-${USERNAME:-${LOGNAME}}}
-./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.T$(($$ % 10000000)) # temp DSN based on PID
+tempDSNlevel=T$(($$ % 10000000)) # the lower 7 digits of the PID
+./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.$tempDSNlevel # temp DSN based on PID
+for szweDSN in SZWESAMP SZWEAUTH # delete temp DSNs 
+do
+  tsocmd delete $userid.$tempDSNlevel.$szweDSN # 1> /dev/null 2> /dev/null
+done
 utilsDir=`pwd`/content/zowe-$ZOWE_VERSION/scripts/utils 
 mkdir $utilsDir/hash # create work directory
 cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
