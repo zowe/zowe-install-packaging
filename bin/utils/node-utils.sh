@@ -115,7 +115,7 @@ validate_node_home_not_empty() {
 check_node_version() {
   node_version=$1
   current_year=$(date +"%Y")
-  current_month=$(date +"%M")
+  current_month=$(date +"%m")
 
   if [[ ${node_version} == "v8.16.1" ]]
   then
