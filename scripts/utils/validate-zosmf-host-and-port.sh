@@ -7,30 +7,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-# - ZOSMF_PORT - The SSL port z/OSMF is listening on.
-# - ZOSMF_HOST - The IP Address z/OSMF can be reached
+# PLEASE NOTE - this is script is planned for removal - please use zosmf-utils.sh instead
 
-# SH: Note - if node is not available then will continue with a warning
-if [[ -z "${ZOSMF_HOST}" || -z "${ZOSMF_PORT}" ]]
-then 
-    . ${ROOT_DIR}/scripts/utils/error.sh "ZOSMF_HOST and ZOSMF_PORT are not both set"
-else
-  if [ ! -z "$NODE_HOME" ];
-  then
-    RESPONSE_CODE=`node ${ROOT_DIR}/scripts/utils/zosmfHttpRequest.js ${ZOSMF_HOST} ${ZOSMF_PORT}`
-    if [[ -z "${RESPONSE_CODE}" ]]
-    then
-      echo "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
-    else
-      if [[ $RESPONSE_CODE != 200 ]]
-      then
-        . ${ROOT_DIR}/scripts/utils/error.sh "Could not contact z/OS MF on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info' - $RESPONSE_CODE"
-      fi
-    fi
-  else
-    echo "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
-  fi
-fi
+. ${ROOT_DIR}/bin/utils/zosmf-utils.sh
+validate_zosmf_host_and_port "${ZOSMF_HOST}" "${ZOSMF_PORT}"

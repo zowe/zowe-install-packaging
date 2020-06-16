@@ -61,11 +61,16 @@ const executeCommand = async (command) => {
   return {rc, stdout, stderr};
 };
 
-const testCommand = async(command, expected_rc, expected_stdout, expected_stderr) => {
+const testCommand = async(command, expected_rc, expected_stdout, expected_stderr, exact_match = false) => {
   const {rc, stdout, stderr} = await executeCommand(command);
   expect(rc).to.equal(expected_rc);
-  await expectStringMatchExceptEmpty(stdout, expected_stdout);
-  await expectStringMatchExceptEmpty(stderr, expected_stderr);
+  if (exact_match) {
+    expect(stdout).to.equal(expected_stdout);
+    expect(stderr).to.equal(expected_stderr);
+  } else {
+    await expectStringMatchExceptEmpty(stdout, expected_stdout);
+    await expectStringMatchExceptEmpty(stderr, expected_stderr);
+  }
 };
 
 // If a string is specified we want to check that that was part of the actual, but if it was empty we want to check that we actually got empty, so that we can't match on any error
