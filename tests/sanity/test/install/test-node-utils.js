@@ -9,6 +9,8 @@
  */
 
 const sshHelper = require('./ssh-helper');
+var currentDate = new Date();
+var node6SupportEndDate = new Date('2020-09-1');
 
 describe('verify node-utils', function() {
   before('prepare SSH connection', async function() {
@@ -109,11 +111,27 @@ describe('verify node-utils', function() {
     });
 
     it('test v6.14.4 passes', async function() {
-      await test_node_version('v6.14.4', true);
+      const command = `${check_node_version} "v6.14.4"`;
+      const expected_rc = 0;
+      if (currentDate > node6SupportEndDate) {
+        let expected_out = "Warning: Zowe is no longer offering support for Node v6. Please use a higher version.";
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+      } else {
+        let expected_out = "Zowe will be ending support for Node v6 in September 2020.";
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+      }
     });
 
     it('test v6.17.0 passes', async function() {
-      await test_node_version('v6.17.0', true);
+      const command = `${check_node_version} "v6.17.0"`;
+      const expected_rc = 0;
+      if (currentDate > node6SupportEndDate) {
+        let expected_out = "Warning: Zowe is no longer offering support for Node v6. Please use a higher version.";
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+      } else {
+        let expected_out = "Zowe will be ending support for Node v6 in September 2020.";
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+      }
     });
 
     it('test v8.16.0 passes', async function() {
@@ -122,7 +140,7 @@ describe('verify node-utils', function() {
 
     it('test v8.16.1 fails with special message', async function() {
       const command = `${check_node_version} "v8.16.1"`;
-      const expected_err = 'Node Version 8.16.1 is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details';
+      const expected_err = 'Node v8.16.1 specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details.';
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, 1, expected_err, expected_err);
     });
 
@@ -145,8 +163,8 @@ describe('verify node-utils', function() {
     async function test_node_version(version, expected_valid) {
       const command = `${check_node_version} "${version}"`;
       const expected_rc = expected_valid ? 0 : 1;
-      const expected_out = expected_valid ? `Node version ${version} is supported` : '';
-      const expected_err = expected_valid ? '' : `Node Version ${version} is less than the minimum level required of v6.14.4`;
+      const expected_out = expected_valid ? `Node ${version} is supported.` : '';
+      const expected_err = expected_valid ? '' : `Node ${version} is less than the minimum level required of v6.14.4`;
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, expected_err);
     }
   });
