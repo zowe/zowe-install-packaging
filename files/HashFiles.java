@@ -40,10 +40,10 @@ public class HashFiles  // input is a filename; file contains a list of filename
        try
        {
            content = new String ( Files.readAllBytes( Paths.get(filePath) ) );
-       }
-       catch (IOException e)
-       {
-           e.printStackTrace();
+       
+       } catch (IOException e) {
+           System.err.println("IOException reading file " + filePath); 
+           System.err.println(e.getMessage()); 
        }
 
        return content;
