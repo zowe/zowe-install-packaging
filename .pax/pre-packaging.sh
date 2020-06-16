@@ -204,7 +204,7 @@ tempDSNlevel=T$(($$ % 10000000)) # the lower 7 digits of the PID
 ./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.$tempDSNlevel # temp DSN based on PID
 for szweDSN in SZWESAMP SZWEAUTH # delete temp DSNs 
 do
-  tsocmd delete $userid.$tempDSNlevel.$szweDSN # 1> /dev/null 2> /dev/null
+  tsocmd delete $tempDSNlevel.$szweDSN # 1> /dev/null 2> /dev/null
 done
 utilsDir=`pwd`/content/zowe-$ZOWE_VERSION/scripts/utils 
 mkdir $utilsDir/hash # create work directory
