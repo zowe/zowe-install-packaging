@@ -1,3 +1,62 @@
+++HOLD(UO01945) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(20164)
+  COMMENT(
+  ****************************************************************
+  * Affected function: Zowe configuration                        *
+  ****************************************************************
+  * Description: redo configuration                              *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: instance.env                                           *
+  *       zowe-setup-certificate.env                             *
+  ****************************************************************
+  New variables are added to instance.env and 
+  zowe-setup-certificate.env.
+  
+  instance.env
+  - ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXPLORER_HOST}:*,
+      ${ZOWE_IP_ADDRESS}:*"
+    # comma seperated list of hosts allowed to embed explorers
+  
+  Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c 
+  <PATH_TO_INSTANCE_DIR> again with an updated instance.env
+  to pick up the new definitions.
+  
+  zowe-setup-certificate.env
+  - SSO_FALLBACK_TO_NATIVE_AUTH=true
+    # If APIML SSO token not present, Zowe components are allowed
+      to attempt authentication with other user-provided data
+  - PKCS11_TOKEN_NAME=
+    # optional - PKCS#11 token name for SSO. Must already exist
+  - PKCS11_TOKEN_LABEL= 
+    # optional - PKCS#11 token label for SSO. Must not exist
+  
+  Run <ROOT_DIR>/bin/zowe-setup-certificates.sh again with an 
+  updated zowe-setup-certificate.env to pick up the new 
+  definitions.
+  
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: stop servers                                    *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Stop the Zowe servers before installing this update.
+   
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: start servers                                   *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Start the Zowe servers after installing this update.
+  ).
 ++HOLD(UO01942) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(20122)
   COMMENT(
   ****************************************************************
