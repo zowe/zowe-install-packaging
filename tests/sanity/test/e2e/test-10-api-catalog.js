@@ -19,7 +19,6 @@ const {
   saveScreenshot,
   getDefaultDriver,
   waitUntilElement,
-  getElement,
   loginMVD,
   launchApp,
   locateApp,
@@ -75,30 +74,6 @@ describe(`test ${APP_TO_TEST}`, function() {
     // to avoid StaleElementReferenceError, find the iframes context again
     await switchToIframeAppContext(driver, APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
 
-    // wait for login form to be loaded
-    const loginForm = await waitUntilElement(driver, '#login-form');
-    expect(loginForm).to.be.an('object');
-    debug('login form is ready');
-
-    // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'app-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
-
-    // the form should have already been pre-filled
-    const username = await getElement(driver, '#login-form input#username');
-    expect(username).to.be.an('object');
-    await username.clear();
-    await username.sendKeys(process.env.SSH_USER);
-
-    const password = await getElement(driver, '#login-form input#password');
-    expect(password).to.be.an('object');
-    await password.clear();
-    await password.sendKeys(process.env.SSH_PASSWD);
-
-    const loginButton = await getElement(driver, '#login-form button[type=submit]');
-    expect(loginButton).to.be.an('object');
-    await driver.sleep(10 * 1000);
-    loginButton.click();
-
     // wait for page is loaded
     try {
       const searchBox = await waitUntilElement(driver, '.search-bar');
@@ -115,15 +90,15 @@ describe(`test ${APP_TO_TEST}`, function() {
       }
     }
 
+    // save screenshot
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'app-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+
     const productNameText = await getElementText(driver, '.product-name');
     expect(productNameText).to.equal(APP_TO_TEST);
 
     // TODO: check listed "Available APIs"
 
     debug('page is fully loaded');
-
-    // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'login-successfully', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
   });
 
   after('quit webdriver', async function() {
