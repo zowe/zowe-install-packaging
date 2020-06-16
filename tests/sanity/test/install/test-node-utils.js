@@ -10,7 +10,7 @@
 
 const sshHelper = require('./ssh-helper');
 var currentDate = new Date();
-var node6SupportEndDate = new Date('2020-09-1');
+var node6SupportEndDate = new Date('2020-09-30');
 
 describe('verify node-utils', function() {
   before('prepare SSH connection', async function() {
