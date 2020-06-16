@@ -216,7 +216,7 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # result (final): $ussI                                 # USS SMPE data
 
 # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . . .
-echo "----- Check and publish reference hash keys of runtime files -----"
+echo "----- Check reference hash keys of runtime files -----"
 
 stageDir=$ROOT/stage
 binDir=$stageDir/bin 
@@ -228,12 +228,6 @@ zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
 
 echo List of stageDir files  
 ls  -l $stageDir
-# convert derived runtime hash file to ASCII and publish on JFrog
-iconv -f IBM-1047 -t ISO8859-1 $stageDir/fingerprint/RefRuntimeHash-$zoweReleaseNumber.txt > $ROOT/../RefRuntimeHash.txt # base filename is not versioned
-
-# Publish compiled hash program and script
-cp   $stageDir/bin/internal/HashFiles.class         $ROOT/.. # for publication on JFrog
-cp   $binDir/zowe-verify-authenticity.sh            $ROOT/.. # for publication on JFrog
 
 # verify the checksums of ROOT_DIR, to self-check zowe-verify-authenticity.sh
 $binDir/zowe-verify-authenticity.sh # No parameters!
@@ -246,13 +240,6 @@ then
 else  
   echo Exit code from zowe-verify-authenticity.sh was zero
 fi
-
-# Don't continue to build the SMP/E package unless "$BUILD_SMPE" = "yes".
-if [ "$BUILD_SMPE" != "yes" ]; then
-  echo "[$SCRIPT_NAME] not building SMP/E package, exiting."
-  exit 0
-fi
-
 # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
