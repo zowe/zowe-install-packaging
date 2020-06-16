@@ -114,10 +114,12 @@ validate_node_home_not_empty() {
 # Given a node version from the `node --version` command, checks if it is valid
 check_node_version() {
   node_version=$1
+  current_year=$(date +"%Y")
+  current_month=$(date +"%M")
 
   if [[ ${node_version} == "v8.16.1" ]]
   then
-    print_error_message "Node Version 8.16.1 is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details"
+    print_error_message "Node v8.16.1 specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
     return 1
   fi
 
@@ -126,6 +128,7 @@ check_node_version() {
   node_fix_version=$(echo ${node_version} | cut -d '.' -f 3)
   
   too_low=""
+  too_low_support=""
   if [[ ${node_major_version} -lt 6 ]]
   then
     too_low="true"
@@ -135,14 +138,26 @@ check_node_version() {
   elif [[ ${node_major_version} -eq 6 ]] && [[ $node_minor_version -eq 14 ]] && [[ $node_fix_version -lt 4 ]]
   then
     too_low="true"
+  elif [[ ${node_major_version} -eq 6 ]] && [[ ${current_year} -gt 2020 ]]
+  then
+    too_low_support="true"
+  elif [[ ${node_major_version} -eq 6 ]] && [[ ${current_month} -gt 9 ]] #Still 2020, but after September
+  then
+    too_low_support="true"
   fi
 
   if [[ ${too_low} == "true" ]]
   then
-    print_error_message "Node Version ${node_version} is less than the minimum level required of v6.14.4"
+    print_error_message "Node ${node_version} is less than the minimum level required of v6.14.4"
     return 1
+  elif [[ ${too_low_support} == "true" ]]
+  then
+    log_message "Warning: Zowe is no longer offering support for Node v6. Please use a higher version."
+  elif [[ ${node_major_version} -eq 6 ]]
+  then
+    log_message "Zowe will be ending support for Node v6 in September 2020."
   else
-    log_message "Node version ${node_version} is supported"
+    log_message "Node ${node_version} is supported."
   fi
 }
 
