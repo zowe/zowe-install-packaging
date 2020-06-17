@@ -10,8 +10,6 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-ZWE_PRINT_ERRORS="true" # Override in scripts to prevent errors being printed - don't forget to reset after!
-
 print_error_message() {
   message=$1
   #output an error and add to the count
@@ -20,14 +18,11 @@ print_error_message() {
     ERRORS_FOUND=0
   fi
 
-  if [[ ${ZWE_PRINT_ERRORS} != "false" ]]
-  then
-    # echo error to standard out and err - this was requested so that the errors go into STDOUT of the job
-    # and save people going into STDERR (and make it inline with the rest of the logs), but it does result
-    # in double outputting when called from shell environment, so maybe we should reconsider?
-    echo "Error ${ERRORS_FOUND}: ${message}" 1>&2
-    print_message "Error ${ERRORS_FOUND}: ${message}"
-  fi
+  # echo error to standard out and err - this was requested so that the errors go into STDOUT of the job
+  # and save people going into STDERR (and make it inline with the rest of the logs), but it does result
+  # in double outputting when called from shell environment, so maybe we should reconsider?
+  echo "Error ${ERRORS_FOUND}: ${message}" 1>&2
+  print_message "Error ${ERRORS_FOUND}: ${message}"
 
   let "ERRORS_FOUND=${ERRORS_FOUND}+1"
 }

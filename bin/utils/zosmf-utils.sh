@@ -33,7 +33,7 @@ fi
 . ${utils_dir}/common.sh
 
 prompt_zosmf_port_if_required() {
-  zosmf_port_list=`netstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }'` 
+  zosmf_port_list=$(onetstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }')
   extract_zosmf_port "${zosmf_port_list}"
   extract_rc=$?
   if [[ ${extract_rc} -ne 0 ]]
@@ -54,12 +54,15 @@ extract_zosmf_port() {
     number_of_matches=$(echo "${zosmf_port_list}" | wc -l)
   fi
   
+  # TODO - tidy up later - we currently have 2 different names for the zosmf variables during and after install
+  if [[ -n "${ZOSMF_HOST}" ]]
+  then
+     ZOSMF_HOST=${ZOWE_ZOSMF_HOST}
+  fi
+
   # Zip 1124 - in z/OS 2.4 some people have reported 2 ports for z/OS MF. If we know host name at this point, try to work out which is correct
   if [[ ${number_of_matches} -gt 1 ]] && [[ -n "${ZOSMF_HOST}" ]] && [[ -n "${NODE_HOME}" ]];
   then
-    OLDIFS="$IFS"
-    IFS="
-    "
     for port in ${zosmf_port_list}; do
       http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/zosmfHttpRequest.js ${ZOSMF_HOST} ${port})
       if [[ ${http_response_code} == 200 ]]
@@ -69,7 +72,6 @@ extract_zosmf_port() {
         break
       fi
     done
-    export IFS="$OLDIFS"
   fi
 
   if [[ ${number_of_matches} -ne 1 ]]
@@ -79,24 +81,30 @@ extract_zosmf_port() {
   export ZOWE_ZOSMF_PORT=${zosmf_port_list}
 }
 
-# Expects the following to be exported
-# - ZOSMF_PORT - The SSL port z/OSMF is listening on.
-# - ZOSMF_HOST - The hostname, or IP Address z/OSMF can be reached
+# Takes 2 parameters - zosmfhost, zosmfport
 validate_zosmf_host_and_port() {
-  if [[ -z "${ZOSMF_HOST}" || -z "${ZOSMF_PORT}" ]]
+  zosmf_host=$1
+  zosmf_port=$2
+  if [[ -z "${zosmf_host}" ]]
   then 
-    print_error_message "ZOSMF_HOST and ZOSMF_PORT are not both set"
+    print_error_message "The z/OSMF host was not set"
     return 1
+  fi
+
+  if [[ -z "${zosmf_port}" ]]
+  then 
+    print_error_message "The z/OSMF port was not set"
+    return 1
+  fi
+
+  # SH: Note - if node is not available then will continue with a warning
+  if [ -z "${NODE_HOME}" ];
+  then
+    log_message "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
   else
-    # SH: Note - if node is not available then will continue with a warning
-    if [ -z "${NODE_HOME}" ];
-    then
-      log_message "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
-    else
-      http_response_code=$(${NODE_HOME}/bin/node ${ROOT_DIR}/scripts/utils/zosmfHttpRequest.js ${ZOSMF_HOST} ${ZOSMF_PORT})
-      check_zosmf_info_response_code "${http_response_code}"
-      return $?
-    fi
+    http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/zosmfHttpRequest.js ${zosmf_host} ${zosmf_port})
+    check_zosmf_info_response_code "${http_response_code}"
+    return $?
   fi
 }
 
