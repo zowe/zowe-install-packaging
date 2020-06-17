@@ -23,7 +23,7 @@
 # and if they can't be found prompt for them before setting them
 
 echo "<zowe-init.sh>" >> $LOG_FILE
-echo A
+
 # process input parameters.
 OPTIND=1
 while getopts "s" opt; do
@@ -36,7 +36,7 @@ while getopts "s" opt; do
   esac
 done
 shift "$(($OPTIND-1))"
-echo B
+
 getZosmfHttpsPort() {
     ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
     if [[ "$ZOWE_ZOSMF_PORT" == "" ]]
@@ -47,7 +47,7 @@ getZosmfHttpsPort() {
     fi
     export ZOWE_ZOSMF_PORT
 }
-echo C
+
 getPing_bin() {
 #  Identifies name of ping command if ping is not available oping is used
 #  populates ping_bin variable with ping or oping
@@ -66,7 +66,7 @@ getPing_bin() {
         fi
     fi
 }
-echo D
+
 # Run the main shell script logic
 if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then
@@ -75,12 +75,10 @@ then
 else 
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
-echo E
-echo $JAVA_HOME
+
 . ${ZOWE_ROOT_DIR}/bin/utils/java-utils.sh
-echo WHICH ONE
 prompt_java_home_if_required
-echo F
+
 if [[ ${SKIP_NODE} != 1 ]]
 then
   . ${ZOWE_ROOT_DIR}/bin/utils/node-utils.sh

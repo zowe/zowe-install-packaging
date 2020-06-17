@@ -118,9 +118,7 @@ check_existing_instance_for_updates() {
 
 echo "Creating zowe instance in ${INSTANCE_DIR}"
 $(mkdir -p ${INSTANCE_DIR}/bin/internal)
-
 DIRECTORY_CREATE_RC=$?
-
 if [[ $DIRECTORY_CREATE_RC != "0" ]]
 then
   echo "We could not create the instance directory and sub-directories in ${INSTANCE_DIR}. Please check permissions and re-run."
@@ -128,19 +126,15 @@ then
 fi
 
 LOG_DIR=${INSTANCE_DIR}/logs
-
 mkdir -p ${LOG_DIR}
-
 chmod 777 ${LOG_DIR}
-
 export LOG_FILE=${LOG_DIR}/"configure-`date +%Y-%m-%d-%H-%M-%S`.log"
-
 echo "Created instance directory ${INSTANCE_DIR}" >> $LOG_FILE
 
 # get a list of variables, from the template instance and the existing config to see which ones are missing and add them to the instance
 TEMPLATE=${ZOWE_ROOT_DIR}/scripts/instance.template.env
 INSTANCE=${INSTANCE_DIR}/instance.env
-echo a
+
 # Try and work out the variables that we can
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
 echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
