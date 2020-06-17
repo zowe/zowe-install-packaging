@@ -28,8 +28,10 @@ else
   echo "Could not work out the path to the utils directory. Please 'export ZOWE_ROOT_DIR=<zowe-root-directory>' before running." 1>&2
   return 1
 fi
+
 # Source common util functions
 . ${utils_dir}/common.sh
+
 ensure_java_is_on_path() {
   if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]]
   then
@@ -37,9 +39,8 @@ ensure_java_is_on_path() {
     export PATH=$PATH:$JAVA_HOME/bin
   fi
 }
+
 validate_java_home() {
-  echo "TEST javahome"
-  echo $JAVA_HOME
   validate_java_home_not_empty
   java_empty_rc=$?
   if [[ ${java_empty_rc} -ne 0 ]]
@@ -71,17 +72,20 @@ validate_java_home() {
     return ${java_version_rc}
   fi
 }
+
 validate_java_home_not_empty() {
   . ${utils_dir}/zowe-variable-utils.sh
   validate_variable_is_set "JAVA_HOME"
   return $?
 }
+
 # Given a java version string from the `java -version` command, checks if it is valid
 check_java_version() {
   java_version_output=$1
   java_version=$(echo ${java_version_output} | sed -e "s/openjdk version //g"| sed -e "s/\"//g")
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
+
   too_low=""
   if [[ ${java_major_version} -lt 1 ]] #Should never get here
   then
@@ -99,6 +103,7 @@ check_java_version() {
     log_message "Java version ${java_version} is supported"
   fi
 }
+
 # TODO - how to test well given interaction and guess?
 # Interactive function that checks if the current JAVA_HOME is valid and if not requests a user enters the java home path via command line
 prompt_java_home_if_required() {

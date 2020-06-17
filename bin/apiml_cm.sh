@@ -338,6 +338,7 @@ function zosmf_jwt_public_key {
 }
 
 function trust_zosmf {
+  echo ${ZOSMF_CERTIFICATE}
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
     echo "Getting certificates from z/OSMF host"
     CER_DIR=`dirname ${SERVICE_TRUSTSTORE}`/temp
@@ -415,7 +416,6 @@ while [ "$1" != "" ]; do
         --log )                 shift
                                 export LOG=$1
                                 exec 5>&1 >>$LOG
-                                bash cat $LOG
                                 ;;
         --local-ca-filename )   shift
                                 LOCAL_CA_FILENAME=$1
