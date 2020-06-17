@@ -155,13 +155,10 @@ chmod -R 755 $ZOWE_ROOT_DIR/bin
 
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
-
 if [ `uname` = "OS/390" ]; then
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
 fi
-
-
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into"
 echo "  directory " $ZOWE_ROOT_DIR
