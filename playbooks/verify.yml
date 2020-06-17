@@ -23,3 +23,12 @@
   # Run sanity test
   - import_role:
       name: verify
+
+  - name: Check fingerprint is correct
+    raw: >-
+        touch {{ zos_uss_user_profile }} && \
+        . {{ zos_uss_user_profile }} \
+        {{ zowe_environment_variable_overrides | default('') }} && \
+        cd "{{ zowe_root_dir }}" && \
+        bin/zowe-verify-authenticity.sh -l "{{ zowe_install_logs_dir }}"
+    ignore_errors: False
