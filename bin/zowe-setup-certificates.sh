@@ -36,6 +36,7 @@ fi
 set_install_log_directory "${LOG_DIRECTORY}"
 validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
 set_install_log_file "zowe-setup-certificates"
+
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
 # Load default values
@@ -62,6 +63,7 @@ ZOWE_EXPLORER_HOST=${HOSTNAME}
 ZOWE_IP_ADDRESS=${IPADDRESS}
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
+
 ZOWE_CERT_ENV_NAME=zowe-certificates.env
 LOCAL_KEYSTORE_SUBDIR=local_ca
 
@@ -170,6 +172,7 @@ fi
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
+
 cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
   KEY_ALIAS=${KEYSTORE_ALIAS}
   KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
