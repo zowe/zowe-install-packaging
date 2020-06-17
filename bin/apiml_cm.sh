@@ -14,11 +14,9 @@ if [ `uname` = "OS/390" ]; then
     export IBM_JAVA_OPTIONS="-Dfile.encoding=IBM-1047"
 fi
 
-
 BASE_DIR=$(dirname "$0")
 PARAMS="$@"
 PWD=`pwd`
-
 
 function usage {
     echo "APIML Certificate Management"
@@ -35,7 +33,6 @@ function usage {
     echo ""
     echo "  Called with: ${PARAMS}"
 }
-
 
 ACTION=
 V=
@@ -65,11 +62,9 @@ ZOSMF_CERTIFICATE=
 ALIAS="alias"
 CERTIFICATE="no-certificate-specified"
 
-
 if [ -z ${TEMP_DIR+x} ]; then
     TEMP_DIR=${TMPDIR:-/tmp}
 fi
-
 
 function pkeytool {
     ARGS=$@
@@ -86,16 +81,13 @@ function pkeytool {
     fi
 }
 
-
 function clean_local_ca {
     rm -f ${LOCAL_CA_FILENAME}.keystore.p12 ${LOCAL_CA_FILENAME}.cer
 }
 
-
 function clean_service {
     rm -f ${SERVICE_KEYSTORE}.p12 ${SERVICE_KEYSTORE}.csr ${SERVICE_KEYSTORE}_signed.cer ${SERVICE_TRUSTSTORE}.p12
 }
-
 
 function create_certificate_authority {
     echo "Generate keystore with the local CA private key and local CA public certificate:"
@@ -113,7 +105,6 @@ function create_certificate_authority {
     fi
 }
 
-
 function add_external_ca {
     echo "Adding external Certificate Authorities:"
     if [ -n "${EXTERNAL_CA}" ]; then
@@ -130,7 +121,6 @@ function add_external_ca {
     fi
 }
 
-
 function create_service_certificate_and_csr {
     if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
     then
@@ -144,7 +134,6 @@ function create_service_certificate_and_csr {
     fi
 }
 
-
 function create_self_signed_service {
     if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
     then
@@ -155,16 +144,9 @@ function create_self_signed_service {
     fi
 }
 
-
 function sign_csr_using_local_ca {
-    echo "Does 8"
-    echo "Sign the CSR using the Certificate Authority:"
-    echo $SERVICE_KEYSTORE
-    echo $LOCAL_CA_FILENAME
-    echo $LOCAL_CA_ALIAS
-    echo $LOCAL_CA_PASSWORD
-    echo $SERVICE_EXT
-    echo $SERVICE_VALIDITY
+
+    ##This still needs to be fixed
     echo "Hardcoding DNS name here since not getting set properly"
     SERVICE_EXT='SAN=dns:waldevgizaud001.dev.rocketsoftware.com,ip:0.0.0.0,dns:localhost.localdomain,dns:localhost,ip:127.0.0.1'
 
@@ -174,12 +156,10 @@ function sign_csr_using_local_ca {
         -validity ${SERVICE_VALIDITY}
 }
 
-
 function import_local_ca_certificate {
     echo "Import the local Certificate Authority to the truststore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
-
 
 function import_external_ca_certificates {
     if ls ${EXTERNAL_CA_FILENAME}.*.cer 1> /dev/null 2>&1; then
@@ -193,7 +173,6 @@ function import_external_ca_certificates {
     fi
 }
 
-
 function import_signed_certificate {
     echo "Import the Certificate Authority to the keystore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${LOCAL_CA_FILENAME}.cer -alias ${LOCAL_CA_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
@@ -201,7 +180,6 @@ function import_signed_certificate {
     echo "Import the signed CSR to the keystore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${SERVICE_KEYSTORE}_signed.cer -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
-
 
 function import_external_certificate {
     echo "Import the external Certificate Authorities to the keystore:"
@@ -221,7 +199,6 @@ function import_external_certificate {
     fi
 }
 
-
 function export_service_certificate {
     echo "Export service certificate to the PEM format"
     pkeytool -exportcert -alias ${SERVICE_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storetype PKCS12 -storepass ${SERVICE_PASSWORD} -rfc -file ${SERVICE_KEYSTORE}.cer
@@ -230,7 +207,6 @@ function export_service_certificate {
         iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.cer > ${SERVICE_KEYSTORE}.cer-ebcdic
     fi
 }
-
 
 function export_service_private_key {
     echo "Exporting service private key"
@@ -290,7 +266,6 @@ EOF
     rm ${TEMP_DIR}/ExportPrivateKey.java ${TEMP_DIR}/ExportPrivateKey.class
 }
 
-
 function setup_local_ca {
     clean_local_ca
     create_certificate_authority
@@ -299,14 +274,12 @@ function setup_local_ca {
     ls -l ${LOCAL_CA_FILENAME}*
 }
 
-
 function new_service_csr {
     clean_service
     create_service_certificate_and_csr
     echo "Listing generated files for service:"
     ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
 }
-
 
 function new_service {
     clean_service
@@ -325,7 +298,6 @@ function new_service {
     ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
 }
 
-
 function new_self_signed_service {
     clean_service
     create_self_signed_service
@@ -336,12 +308,10 @@ function new_self_signed_service {
     ls -l ${SERVICE_KEYSTORE}*
 }
 
-
 function trust {
     echo "Import a certificate to the truststore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore ${SERVICE_TRUSTSTORE}.p12 -storepass ${SERVICE_PASSWORD} -storetype PKCS12
 }
-
 
 function jwt_key_gen_and_export {
     echo "Generates key pair for JWT token secret and exports the public key"
@@ -350,7 +320,6 @@ function jwt_key_gen_and_export {
     pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} \
     -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
-
 
 function zosmf_jwt_public_key {
     echo "Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
@@ -367,7 +336,6 @@ function zosmf_jwt_public_key {
         org.springframework.boot.loader.PropertiesLauncher \
         https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
 }
-
 
 function trust_zosmf {
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
@@ -515,7 +483,6 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
-
 
 case $ACTION in
     clean)
