@@ -26,12 +26,11 @@ while getopts "l:p:" opt; do
   esac
 done
 shift $(($OPTIND-1))
+
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
-
-echo "We get to this file"
 
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
 set_install_log_directory "${LOG_DIRECTORY}"
@@ -39,12 +38,11 @@ validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
 set_install_log_file "zowe-setup-certificates"
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
-echo "We set up the logs properly"
-
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
 echo "Loading default variables from ${DEFAULT_CERTIFICATES_CONFIG_FILE} file."
 . ${DEFAULT_CERTIFICATES_CONFIG_FILE}
+
 if [[ -z ${CERTIFICATES_CONFIG_FILE} ]]
 then
   echo "-p parameter not set. Using default ${DEFAULT_CERTIFICATES_CONFIG_FILE} file instead."
@@ -60,14 +58,13 @@ else
   fi
 fi
 
-echo "We load the default values"
-
 ZOWE_EXPLORER_HOST=${HOSTNAME}
 ZOWE_IP_ADDRESS=${IPADDRESS}
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
 ZOWE_CERT_ENV_NAME=zowe-certificates.env
 LOCAL_KEYSTORE_SUBDIR=local_ca
+
 # create keystore directories
 if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
   if ! mkdir -p ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}; then
@@ -75,13 +72,14 @@ if [ ! -d ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR} ]; then
     exit 1;
   fi
 fi
+
 if [ ! -d ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} ]; then
   if ! mkdir -p ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}; then
     echo "Unable to create ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS} directory."
     exit 1;
   fi
 fi
-echo "We create the keystore directories but it looks like the statement is below is never printed so probably won't ever get here"
+
 echo "Creating certificates and keystores... STARTED"
 # set up parameters for apiml_cm.sh script
 KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keystore"
@@ -112,6 +110,7 @@ else
   for CA in ${EXTERNAL_CERTIFICATE_AUTHORITIES}; do
       EXT_CA_PARM="${EXT_CA_PARM} --external-ca ${CA} "
   done
+
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
     --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
     --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX} \
@@ -120,16 +119,19 @@ else
 
   echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
 fi
+
 if [ "$RC" -ne "0" ]; then
     (>&2 echo "apiml_cm.sh --action setup has failed. See $LOG_FILE for more details")
     echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
     exit 1
 fi
+
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
     --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
     --service-keystore ${KEYSTORE_PREFIX}
   RC=$?
+
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
   if [ "$RC" -ne "0" ]; then
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See $LOG_FILE for more details")
@@ -141,6 +143,7 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   fi
 fi
 echo "Creating certificates and keystores... DONE"
+
 JWT_ALIAS="jwtsecret"
 APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
@@ -163,6 +166,7 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
     echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
   fi
 fi
+
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
@@ -198,4 +202,5 @@ if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
 else
   echo "Owner of the ${KEYSTORE_DIRECTORY} changed successfully to the ${ZOWE_USER_ID} owner."
 fi
+
 echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
