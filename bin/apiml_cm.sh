@@ -148,7 +148,7 @@ function sign_csr_using_local_ca {
 
     ##This still needs to be fixed
     echo "Hardcoding DNS name here since not getting set properly"
-    SERVICE_EXT='SAN=dns:waldevgizaud001.dev.rocketsoftware.com,ip:0.0.0.0,dns:localhost.localdomain,dns:localhost,ip:127.0.0.1,dns:10.117.112.103'
+    SERVICE_EXT='SAN=dns:waldevgizaud001.dev.rocketsoftware.com,ip:0.0.0.0,dns:localhost.localdomain,dns:localhost,ip:127.0.0.1,dns:10.117.112.103,ip:10.117.112.103'
 
     pkeytool -gencert $V -infile ${SERVICE_KEYSTORE}.csr -outfile ${SERVICE_KEYSTORE}_signed.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
         -alias ${LOCAL_CA_ALIAS} -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 \
