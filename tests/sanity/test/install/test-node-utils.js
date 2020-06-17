@@ -114,11 +114,11 @@ describe('verify node-utils', function() {
       const command = `${check_node_version} "v6.14.4"`;
       const expected_rc = 0;
       if (currentDate > node6SupportEndDate) {
-        let expected_out = "Warning: Zowe is no longer offering support for Node v6. Please use a higher version.";
-        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+        let expected_out = 'Warning: Zowe is no longer offering support for Node v6. Please use a higher version.';
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, '');
       } else {
-        let expected_out = "Zowe will be ending support for Node v6 in September 2020.";
-        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+        let expected_out = 'Zowe will be ending support for Node v6 in September 2020.';
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, '');
       }
     });
 
@@ -126,11 +126,11 @@ describe('verify node-utils', function() {
       const command = `${check_node_version} "v6.17.0"`;
       const expected_rc = 0;
       if (currentDate > node6SupportEndDate) {
-        let expected_out = "Warning: Zowe is no longer offering support for Node v6. Please use a higher version.";
-        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+        let expected_out = 'Warning: Zowe is no longer offering support for Node v6. Please use a higher version.';
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, '');
       } else {
-        let expected_out = "Zowe will be ending support for Node v6 in September 2020.";
-        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, "");
+        let expected_out = 'Zowe will be ending support for Node v6 in September 2020.';
+        await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, '');
       }
     });
 
