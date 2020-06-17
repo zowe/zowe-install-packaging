@@ -39,6 +39,13 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-*.txt`);
   });
 
+  // # verify the checksums of ROOT_DIR, to self-check zowe-verify-authenticity.sh
+  // $binDir/zowe-verify-authenticity.sh # No parameters!
+
+  it('fingerprint should match', async function() {
+    await sshHelper.executeCommandWithNoError(`${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
+  });
+
   after('dispose SSH connection', function() {
     sshHelper.cleanUpConnection();
   });

@@ -24,7 +24,7 @@
   - import_role:
       name: verify
 
-  - name: Check fingerprint is correct
+  - name: Verify fingerprint is correct
     raw: >-
         touch {{ zos_uss_user_profile }} && \
         . {{ zos_uss_user_profile }} \

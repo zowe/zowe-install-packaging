@@ -36,16 +36,6 @@
     script_filename: ./zowe-install.sh
     script_parameters: "-i \"{{ zowe_root_dir }}\" -h \"{{ zowe_dataset_prefix }}\" -l \"{{ zowe_install_logs_dir }}\""
 
-# the use of zos_uss_user_profile here is a workaround, needed because otherwise JAVA_HOME is not set
-- name: Check fingerprint is correct
-  raw: >-
-    touch {{ zos_uss_user_profile }} && \
-    . {{ zos_uss_user_profile }} \
-    {{ zowe_environment_variable_overrides | default('') }} && \
-    cd "{{ zowe_root_dir }}" && \
-    bin/zowe-verify-authenticity.sh -l "{{ zowe_install_logs_dir }}"
-  ignore_errors: False
-
 - name: List log dir
   raw: ls -l "{{ zowe_install_logs_dir }}"
   ignore_errors: True
@@ -53,3 +43,4 @@
 - name: Show installation log
   raw: find {{ zowe_install_logs_dir }} -name "zowe-install-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
+  
