@@ -10,25 +10,30 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+echo "We get to this file"
+
 # Try and source the file utils if it exists
 if [[ -f "${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh" ]]
 then
 . ${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh
 fi
 
+echo "file util is called and executed"
+
 set_install_log_file_from_full_path() {
+  echo "setup install log file from full path"
   export LOG_FILE=$1
   touch ${LOG_FILE}
   chmod a+rw ${LOG_FILE}
   echo "Log file created: ${LOG_FILE}"
 }
-
 set_install_log_file() {
+  echo "set install log file"
   LOG_FILE_PREFIX=$1
   set_install_log_file_from_full_path "${LOG_DIRECTORY}/${LOG_FILE_PREFIX}-`date +%Y-%m-%d-%H-%M-%S`.log"
 }
-
 get_install_log_directory() {
+  echo "get install log directory"
   INSTALL_LOG_DIR=$1
   
   # If log directory not specified on input try /global/zowe/logs then ~/zowe/logs
@@ -44,15 +49,15 @@ get_install_log_directory() {
 
   INSTALL_LOG_DIR=$(get_full_path "${INSTALL_LOG_DIR}")
 
-  if { [[ ! -d "${INSTALL_LOG_DIR}" ]] || [[ ! -r "${INSTALL_LOG_DIR}" ]] }
+  if [[ ! -d "${INSTALL_LOG_DIR}" ]] || [[ ! -r "${INSTALL_LOG_DIR}" ]]
   then	
     echo "The directory ${INSTALL_LOG_DIR} was not readable. Please use call the script with the additional parameter '-l <log_dir>' specifying the directory that the install and setup log(s) were created in"
     exit 1
   fi
   export INSTALL_LOG_DIR
 }
-
 set_install_log_directory() {
+  echo "set install log directory"
   LOG_DIRECTORY=$1
 
   # If log directory not specified on input try /global/zowe/logs then ~/zowe/logs
@@ -79,8 +84,8 @@ set_install_log_directory() {
 
   export LOG_DIRECTORY
 }
-
 validate_log_file_not_in_root_dir() {
+  echo "validate log file not in root dir"
   LOG_DIR=$1
   ROOT_DIR=$2
   validate_file_not_in_directory "${LOG_DIR}" "${ROOT_DIR}"
