@@ -149,6 +149,7 @@ echo "Creating certificates and keystores... DONE"
 JWT_ALIAS="jwtsecret"
 APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
+echo "pkcs11_token_name: ${PKCS11_TOKEN_NAME} label: ${PKCS11_TOKEN_LABEL}"
 if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   if [[ -f ${APIML_PUBLIC_KEY} ]]
   then
