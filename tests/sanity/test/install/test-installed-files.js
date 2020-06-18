@@ -40,10 +40,11 @@ describe('verify installed files', function() {
   });
 
   // # verify the checksums of ROOT_DIR, to self-check zowe-verify-authenticity.sh
-  // $binDir/zowe-verify-authenticity.sh # No parameters!
+  // $binDir/zowe-verify-authenticity.sh # No parameters! 
+  // You need to 'source' the profile to get JAVA_HOME
 
   it('fingerprint should match', async function() {
-    await sshHelper.executeCommandWithNoError(`${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
+    await sshHelper.executeCommandWithNoError(`. ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
   });
 
   after('dispose SSH connection', function() {
