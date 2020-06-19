@@ -46,7 +46,7 @@ test "$debug" && echo && echo "> $me $@"
 # output:
 # - $2 is created if $1 exists
 # ---------------------------------------------------------------------
-function _iconv
+_iconv()
 {
 if test "$1" = "-d"                            # delete $2 if it exists
 then
@@ -66,7 +66,7 @@ test -f "$1" && _cmd --save "$2" iconv -f ISO8859-1 -t IBM-1047 "$1"
 # $2: if $1 = --save or --repl then target receiving stdout
 # $@: command with arguments to execute
 # ---------------------------------------------------------------------
-function _cmd
+_cmd()
 {
 test "$debug" && echo
 if test "$1" = "--null"
@@ -101,7 +101,7 @@ fi    #
 # ---------------------------------------------------------------------
 # --- display script usage information
 # ---------------------------------------------------------------------
-function _displayUsage
+_displayUsage()
 {
 echo " "
 echo " $me"
@@ -112,7 +112,7 @@ echo " "
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
-function main      # dummy function to simplify program flow parsing
+main()      # dummy function to simplify program flow parsing
 {
   echo
 }
