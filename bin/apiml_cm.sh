@@ -434,7 +434,8 @@ function zosmf_jwt_public_key {
         -cp ${BASE_DIR}/../components/api-mediation/gateway-service.jar \
         -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
         org.springframework.boot.loader.PropertiesLauncher \
-        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem "${LOCAL_CA_ALIAS}" \
+        ${LOCAL_CA_FILENAME}.keystore.p12 PKCS12 ${LOCAL_CA_PASSWORD} ${LOCAL_CA_PASSWORD}
 }
 
 function trust_zosmf {
