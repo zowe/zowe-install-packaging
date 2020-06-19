@@ -12,11 +12,11 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.12.0-STAGING",
+      "version": "~1.13.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zss-auth": {
-      "version": "~1.12.0-STAGING",
+      "version": "~1.13.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -40,15 +40,15 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~1.12.0-STAGING",
+      "version": "~1.13.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-workflow": {
-      "version": "~1.12.0-STAGING",
+      "version": "~1.13.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zosmf-auth": {
-      "version": "~1.12.0-STAGING",
+      "version": "~1.13.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
