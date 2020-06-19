@@ -18,6 +18,20 @@
 # - GENERATE_CERTS_FOR_KEYRING - If you used ZWEKRING jcl to configure certificates and the keyring
 #                                then set this variable to false (defaults to false)
 
+function detectExternalRootCA {
+    for file in ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca.*.cer-ebcdic; do
+      if [[ ! -f $file ]]; then
+        break;
+      fi
+      CERTIFICATE_OWNER=`keytool -printcert -file $file | grep -e Owner: | cut -d ":" -f 2-`
+      CERTIFICATE_ISSUER=`keytool -printcert -file $file | grep -e Issuer: | cut -d ":" -f 2-`
+      if [[ $CERTIFICATE_OWNER == $CERTIFICATE_ISSUER ]]; then
+        EXTERNAL_ROOT_CA=$file;
+        break;
+      fi
+    done
+}
+
 # process input parameters.
 while getopts "l:p:" opt; do
   case $opt in
@@ -158,13 +172,13 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
       --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-      --service-keystore ${KEYSTORE_PREFIX}
+      --service-keystore ${KEYSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
   else
     export GENERATE_CERTS_FOR_KEYRING;
     ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zowe-userid ${ZOWE_USER_ID} \
       --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
       --service-keystore ${KEYSTORE_PREFIX} --service-password ${KEYSTORE_PASSWORD} \
-      --service-truststore ${TRUSTSTORE_PREFIX}
+      --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
   fi
   RC=$?
 
@@ -191,6 +205,7 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
     if ! keytool -importcert -file ${APIML_PUBLIC_KEY} -keystore ${P12_PUBLIC_KEY} -storetype pkcs12 -storepass ${KEYSTORE_PASSWORD} -trustcacerts -noprompt >> $LOG_FILE 2>&1 ; then
       echo "Unable to convert ${APIML_PUBLIC_KEY} to PKCS#12. See $LOG_FILE for more details."
     else
+      keytool -importcert -file ${LOCAL_CA_PREFIX}.cer -alias localca -keystore ${P12_PUBLIC_KEY} -storetype pkcs12 -storepass ${KEYSTORE_PASSWORD} -trustcacerts -noprompt >> $LOG_FILE 2>&1
       UPPER_KEY_LABEL=$(echo "${PKCS11_TOKEN_LABEL}" | tr '[:lower:]' '[:upper:]')
       if ! echo "${KEYSTORE_PASSWORD}" | gskkyman -i -t ${PKCS11_TOKEN_NAME} -l ${UPPER_KEY_LABEL} -p ${P12_PUBLIC_KEY} >> $LOG_FILE 2>&1 ; then
         echo "Unable to store ${P12_PUBLIC_KEY} in token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}. See $LOG_FILE for more details."
@@ -203,6 +218,10 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
     echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
   fi
 fi
+
+# detect external root CA
+EXTERNAL_ROOT_CA=
+detectExternalRootCA;
 
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
@@ -218,6 +237,7 @@ if [[ -z "${ZOWE_KEYRING}" ]]; then
     KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
     KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
     KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
+    EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
     ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
     SETUP_APIML_SSO=${SETUP_APIML_SSO}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
@@ -233,6 +253,7 @@ else
     KEYSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
     KEYSTORE_TYPE="JCERACFKS"
     TRUSTSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
+    EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
     ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
     SETUP_APIML_SSO=${SETUP_APIML_SSO}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
