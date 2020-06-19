@@ -44,8 +44,18 @@ describe('verify installed files', function() {
   // You need to 'source' the profile to get JAVA_HOME
 
   it('fingerprint should match', async function() {
-    await sshHelper.executeCommandWithNoError(`. ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
+    await sshHelper.executeCommandWithNoError(`. ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh > ~/zowe-verify-authenticity.txt`);
   });
+
+  var chai = require('chai');
+  var chaiFiles = require('chai-files');
+  chai.use(chaiFiles);
+  var expect = chai.expect;
+  var file = chaiFiles.file;
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files different =  0');
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files extra     =  0');
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files missing   =  0');
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Verification PASSED');
 
   after('dispose SSH connection', function() {
     sshHelper.cleanUpConnection();
