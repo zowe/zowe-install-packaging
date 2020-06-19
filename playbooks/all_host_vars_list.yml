@@ -27,7 +27,7 @@ zowe_instance_id: 1
 zowe_job_prefix: ZWE
 zowe_jobs_api_port: 8545
 zowe_jobs_explorer_port: 8546
-zowe_keystore_alias: localhost
+zowe_keystore_alias: ZOWE
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_install_logs_dir: ~/.zowe/logs
 zowe_keystore_password: password

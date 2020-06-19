@@ -47,7 +47,7 @@ zowe_external_certficate_alias:
 zowe_external_certficate_authorities:
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_keystore_password: password
-zowe_keystore_alias: localhost
+zowe_keystore_alias: ZOWE
 zowe_proclib_dsname: auto
 zowe_proclib_membername: ZWESVSTC
 zowe_runtime_user: ZWESVUSR
