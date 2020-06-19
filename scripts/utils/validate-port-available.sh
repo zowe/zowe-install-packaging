@@ -10,10 +10,7 @@
 # Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-# $1 - should not be bound to a port currently
-PORT=$1
-MATCHES=`onetstat -P $PORT | grep -c $PORT`
-if [[ $MATCHES > 0 ]]
-then
-    . ${ROOT_DIR}/scripts/utils/error.sh "Port $PORT is already in use by process `onetstat -P $PORT | grep Listen`"
-fi
+# PLEASE NOTE - this is script is planned for removal - please use node-utils.sh instead
+
+. ${ROOT_DIR}/bin/utils/network-utils.sh
+validate_port_is_available $1
