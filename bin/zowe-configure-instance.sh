@@ -43,7 +43,7 @@ then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
   exit 1
 else
-  get_full_path ${INSTANCE_DIR} INSTANCE_DIR
+  INSTANCE_DIR=$(get_full_path "${INSTANCE_DIR}")
 fi
 
 # Check instance-dir not inside root dir
@@ -77,6 +77,15 @@ create_new_instance() {
 
 check_existing_instance_for_updates() {
   echo_and_log "Checking existing ${INSTANCE} for updated properties"
+
+  #zip 1414 - replace root_dir if install has moved
+  ROOT_DIR_MATCH=$(grep -c ROOT_DIR=${ZOWE_ROOT_DIR} ${INSTANCE})
+  if [[ ${ROOT_DIR_MATCH} -ne 1 ]]
+  then
+    TEMP_INSTANCE="${TMPDIR:-/tmp}/instance.env"
+    cat "${INSTANCE}" | sed -e "s%ROOT_DIR=.*\$%ROOT_DIR=${ZOWE_ROOT_DIR}%" > "${TEMP_INSTANCE}"
+    cat "${TEMP_INSTANCE}" > "${INSTANCE}"
+  fi
 
   while read -r line
   do

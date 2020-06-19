@@ -33,7 +33,7 @@ describe(`test zLux server https://${process.env.SSH_HOST}:${process.env.ZOWE_ZL
   });
 
   describe('GET /', function() {
-    it('should redirect to /ZLUX/plugins/org.zowe.zlux.bootstrap/web/', function() {
+    it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', function() {
       const req = {
         method: 'get',
         url: '/',
@@ -51,7 +51,7 @@ describe(`test zLux server https://${process.env.SSH_HOST}:${process.env.ZOWE_ZL
           expect(res.status).to.equal(302);
           expect(res).to.have.property('headers');
           expect(res.headers).to.have.property('location');
-          expect(res.headers.location).to.equal('/ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
+          expect(res.headers.location).to.equal('./ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
         });
     });
 

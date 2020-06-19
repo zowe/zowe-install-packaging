@@ -10,9 +10,7 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-#Make sure Java is available on the PATH
-if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]];
-then
-  echo "Appending JAVA_HOME/bin to the PATH..."
-  export PATH=$PATH:$JAVA_HOME/bin
-fi
+# PLEASE NOTE - this is script is planned for removal - please use node-utils.sh instead
+
+. ${ROOT_DIR}/bin/utils/java-utils.sh
+ensure_java_is_on_path

@@ -7,17 +7,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-# Configure and start require:
-# - ZOWE_PREFIX + instance - should be <=6 char long and exist
-#TODO - any lower bound (other than 0)?
-PREFIX_LENGTH=${#ZOWE_PREFIX}
-if [[ -z $ZOWE_PREFIX ]]
-then
-  . ${ROOT_DIR}/scripts/utils/error.sh  "ZOWE_PREFIX is not set"
-elif [[ $PREFIX_LENGTH > 6 ]]
-then
-  . ${ROOT_DIR}/scripts/utils/error.sh  "ZOWE_PREFIX '$ZOWE_PREFIX' should be less than 7 characters"
-fi
+# PLEASE NOTE - this is script is planned for removal - please use zowe-variable-utils.sh instead
+
+. ${ROOT_DIR}/bin/utils/zowe-variable-utils.sh
+validate_zowe_prefix

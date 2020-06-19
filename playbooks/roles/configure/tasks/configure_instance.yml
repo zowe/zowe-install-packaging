@@ -24,6 +24,7 @@
     sed -e "s+^ZOWE_EXPLORER_HOST=.*\$+ZOWE_EXPLORER_HOST={{ zowe_external_domain_name }}+" | \
     sed -e "s+^ZOWE_PREFIX=.*\$+ZOWE_PREFIX={{ zowe_job_prefix }}+" | \
     sed -e "s+^ZOWE_INSTANCE=.*\$+ZOWE_INSTANCE={{ zowe_instance_id }}+" | \
+    sed -e "s+^ZOSMF_PORT=.*\$+ZOSMF_PORT={{ zos_zosmf_port }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^CATALOG_PORT=.*\$+CATALOG_PORT={{ zowe_apiml_catalog_port }}+" | \
     sed -e "s+^DISCOVERY_PORT=.*\$+DISCOVERY_PORT={{ zowe_apiml_discovery_port }}+" | \

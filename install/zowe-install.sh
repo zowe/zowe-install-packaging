@@ -63,7 +63,7 @@ then
   echo "-i parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
   exit 1
 else
-  get_full_path ${INSTALL_TARGET} ZOWE_ROOT_DIR
+  ZOWE_ROOT_DIR=$(get_full_path ${INSTALL_TARGET})
 fi
 
 if [[ -z "${LOG_FILE}" ]]

@@ -12,37 +12,6 @@
 
 # Verify that the Zowe pre-reqs are in place before you install Zowe on z/OS
 
-#From zowe-init.sh - work out how to refactor?
-promptNodeHome(){
-loop=1
-while [ $loop -eq 1 ]
-do
-    if [[ "$NODE_HOME" == "" ]]
-    then
-        echo "    NODE_HOME was not set "
-        echo "    Please enter a path to where node is installed.  This is the a directory that contains /bin/node "
-        read NODE_HOME
-    fi
-    if [[ -f $NODE_HOME/"./bin/node" ]] 
-    then
-        export NODE_HOME=$NODE_HOME
-        loop=0
-    else
-        echo "        No /bin/node found in directory "$NODE_HOME
-        echo "        Press Y or y to accept location, or Enter to choose another location"
-        read rep
-        if [ "$rep" = "Y" ] || [ "$rep" = "y" ]
-        then
-            export NODE_HOME=$NODE_HOME
-            loop=0
-        else
-            NODE_HOME=
-        fi
-    fi
-done
-}
-
-
 export UNPAX_DIR=$(cd $(dirname $0)/../;pwd)
 
 echo Script zowe-check-prereqs.sh started
@@ -103,22 +72,19 @@ else
   fi
 fi
 
-
-
-# Check Node is installed and working
-# IBM SDK for Node.js z/OS Version 6.14.4 or later.
+# Check Node is installed, working and the version is compatible
 echo
 echo Checking Node version...
 
+export ROOT_DIR=${UNPAX_DIR} #Set root so the utils scripts can work
+. ${ROOT_DIR}/bin/utils/node-utils.sh
 if [[ -z ${NODE_HOME} ]]
 then
-  promptNodeHome
+  prompt_for_node_home_if_required
 fi
 
-export ROOT_DIR=${UNPAX_DIR} #Set root so the validate scripts can work
 . ${UNPAX_DIR}/bin/internal/zowe-set-env.sh
-. ${UNPAX_DIR}/scripts/utils/configure-node.sh 1> /dev/null
-. ${UNPAX_DIR}/scripts/utils/validate-node.sh 2>&1
+ensure_node_is_on_path 1> /dev/null
+validate_node_home
 
-echo
 echo Script zowe-check-prereqs.sh ended
