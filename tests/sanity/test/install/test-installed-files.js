@@ -44,7 +44,7 @@ describe('verify installed files', function() {
   // You need to 'source' the profile to get JAVA_HOME
 
   it('fingerprint should match', async function() {
-    await sshHelper.executeCommandWithNoError(`. ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh > ~/zowe-verify-authenticity.txt`);
+    await sshHelper.executeCommandWithNoError(`. ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh | tee ~/zowe-verify-authenticity.txt`);
   });
 
   var chai = require('chai');
