@@ -24,6 +24,9 @@
   vars:
     opercmd: "S {{ zowe_xmem_stc_name }}"
 
+- name: Show apiml run script
+  raw: cat "{{ zowe_root_dir }}/components/api-mediation/bin/start.sh"
+
 - name: Start Zowe
   raw: "{{ zowe_start_path }}"
 
