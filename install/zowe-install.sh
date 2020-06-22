@@ -86,13 +86,13 @@ echo "Install started at: "`date` >> $LOG_FILE
 
 
 if [ `uname` = "OS/390" ]; then
-if [[ -z "$DSN_PREFIX" ]]	  if [[ -z "$DSN_PREFIX" ]]
-then	  then
-  echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"	    echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
-  exit 1	    exit 1
-else	  else
-  ZOWE_DSN_PREFIX=$DSN_PREFIX	    ZOWE_DSN_PREFIX=$DSN_PREFIX
-  fi
+if [[ -z "$DSN_PREFIX" ]]
+then
+  echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
+  exit 1
+else
+  ZOWE_DSN_PREFIX=$DSN_PREFIX
+fi
 fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
