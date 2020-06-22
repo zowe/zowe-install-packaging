@@ -54,3 +54,12 @@
     ZOWE_EXPLORER_DATASETS_PORT: "{{ zowe_mvs_api_port }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
   delegate_to: localhost
+
+- name: Roles verify tasks Verify fingerprint is correct
+  raw: >-
+      touch {{ zos_uss_user_profile }} && \
+      . {{ zos_uss_user_profile }} \
+      {{ zowe_environment_variable_overrides | default('') }} && \
+      cd "{{ zowe_root_dir }}" && \
+      bin/zowe-verify-authenticity.sh -l "{{ zowe_install_logs_dir }}"
+  ignore_errors: False  
