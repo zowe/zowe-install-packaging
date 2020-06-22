@@ -9,12 +9,7 @@
  */
 
 const sshHelper = require('./ssh-helper');
-
-const chai = require('chai');
-const chaiFiles = require('chai-files');
-chai.use(chaiFiles);
-const expect = chai.expect;
-const file = chaiFiles.file;
+const expect = require('chai').expect 
 
 describe('verify installed files', function() {
   before('prepare SSH connection', async function() {
@@ -50,13 +45,17 @@ describe('verify installed files', function() {
   // You need to 'source' the profile to get JAVA_HOME
 
   it('fingerprint should match', async function() {
-    await sshHelper.executeCommandWithNoError(`. ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh | tee ~/zowe-verify-authenticity.txt`);
+    let fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
+    debug('fingerprint show result:', fingerprintStdout);
+    addContext(this, {
+      title: 'fingerprint show result',
+      value: fingerprintStdout
+    });
+    expect(fingerprintStdout).to.contain('Number of files different =  0');
+    expect(fingerprintStdout).to.contain('Number of files extra     =  0');
+    expect(fingerprintStdout).to.contain('Number of files missing   =  0');
+    expect(fingerprintStdout).to.contain('Verification PASSED');
   });
-
-  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files different =  0');
-  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files extra     =  0');
-  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files missing   =  0');
-  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Verification PASSED');
 
   after('dispose SSH connection', function() {
     sshHelper.cleanUpConnection();
