@@ -442,3 +442,14 @@ This could be caused by incompatible GechoDriver and Firefox. Here is more detai
     //   .setPreference('marionette.logging', 'ALL');
   } else if (browserType === 'chrome') {
 ```
+### Error: JAVA_HOME is not set
+
+You may receive this error when you run install test cases:
+
+```
+  zowe-verify-authenticity.sh
+   Info: Checking java version
+   Warning: java not in PATH
+   Error: JAVA_HOME is not set
+```
+The script `zowe-verify-authenticity.sh` is invoked by `test-installed-files.js`.  If JAVA_HOME is not available, or set in `.profile`, then this test will fail.
