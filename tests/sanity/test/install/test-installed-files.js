@@ -10,6 +10,12 @@
 
 const sshHelper = require('./ssh-helper');
 
+  var chai = require('chai');
+  var chaiFiles = require('chai-files');
+  chai.use(chaiFiles);
+  var expect = chai.expect;
+  var file = chaiFiles.file;
+
 describe('verify installed files', function() {
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
@@ -47,15 +53,10 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`. ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh | tee ~/zowe-verify-authenticity.txt`);
   });
 
-  // var chai = require('chai');
-  // var chaiFiles = require('chai-files');
-  // chai.use(chaiFiles);
-  // var expect = chai.expect;
-  // var file = chaiFiles.file;
-  // expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files different =  0');
-  // expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files extra     =  0');
-  // expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files missing   =  0');
-  // expect(file('~/zowe-verify-authenticity.txt')).to.contain('Verification PASSED');
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files different =  0');
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files extra     =  0');
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Number of files missing   =  0');
+  expect(file('~/zowe-verify-authenticity.txt')).to.contain('Verification PASSED');
 
   after('dispose SSH connection', function() {
     sshHelper.cleanUpConnection();
