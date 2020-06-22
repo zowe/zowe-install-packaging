@@ -337,7 +337,7 @@ ACF
 *          EXPIRE(05/01/30)         +
 *          LABEL(&LABEL.)         +
 *          KEYUSAGE(HANDSHAKE)    +
-*          ALTNAME(IP=127.0.0.1 DOMAIN='localhost') +
+*          ALTNAME(IP=127.0.0.1 DOMAIN=localhost) +
 *          SIGNWITH(CERTAUTH.ZOWECA)
 
 * Option 2 - END ................................................... */
@@ -391,7 +391,7 @@ ACF
   SERVICE(READ) ALLOW)
 
 * Uncomment this command if SITE acid owns the Zowe certificate
-*  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&STCGRP) +
+*  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&`STCGRP`) +
 *  SERVICE(CONTROL) ALLOW)
 
   F ACF2,REBUILD(FAC)
