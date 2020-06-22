@@ -10,11 +10,11 @@
 
 const sshHelper = require('./ssh-helper');
 
-  var chai = require('chai');
-  var chaiFiles = require('chai-files');
-  chai.use(chaiFiles);
-  var expect = chai.expect;
-  var file = chaiFiles.file;
+const chai = require('chai');
+const chaiFiles = require('chai-files');
+chai.use(chaiFiles);
+const expect = chai.expect;
+const file = chaiFiles.file;
 
 describe('verify installed files', function() {
   before('prepare SSH connection', async function() {
