@@ -81,7 +81,7 @@
     },
     "org.zowe.keyring-utilities": {
       "version": "~1.0.2-SNAPSHOT",
-      "artifact": "keyring-util",
+      "artifact": "keyring-util-*",
       "target": "bin/utils/keyring-util/keyring-util",
       "explode": "false",
       "flat": "true",
