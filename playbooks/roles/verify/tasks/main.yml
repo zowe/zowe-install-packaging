@@ -54,3 +54,12 @@
     ZOWE_EXPLORER_DATASETS_PORT: "{{ zowe_mvs_api_port }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
   delegate_to: localhost
+
+# ============================================================================
+- name: Test zowe-support.sh
+  import_role:
+    name: zos
+    tasks_from: run_script
+  vars:
+    script_chdir: "{{ zowe_root_dir }}/bin"
+    script_filename: ./zowe-support.sh
