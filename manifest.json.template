@@ -75,16 +75,16 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "org.zowe.explorer-mvs": {
-      "version": "1.0.1"
+      "version": "1.0.3"
     },
     "org.zowe.explorer-uss": {
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     "org.zowe.apiml.sdk.zowe-install": {
-      "version": "1.12.2",
+      "version": "1.13.0",
       "artifact": "zowe-install-*.zip",
       "target": ".pax/mediation/",
       "explode": "true",
@@ -105,7 +105,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.12.2",
+        "tag": "v1.13.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -226,7 +226,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.1",
+        "tag": "v1.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -240,21 +240,21 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.1",
+        "tag": "v1.0.2",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-        "tag": "v0.2.11",
+        "tag": "v0.2.12",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.1",
+        "tag": "v1.0.2",
         "destinations": ["Zowe PAX"]
       }]
     }, {
