@@ -47,7 +47,7 @@ describe('verify installed files', function() {
   // You need to 'source' the profile to get JAVA_HOME
 
   it('fingerprint should match', async function() {
-    let fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
+    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
     debug('fingerprint show result:', fingerprintStdout);
     addContext(this, {
       title: 'fingerprint show result',
