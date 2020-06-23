@@ -63,7 +63,7 @@ validate_java_home() {
   fi
 
   # As we know the java -version command works then strip out the line we need
-  java_version_output=$(${JAVA_HOME}/bin/java -version 2>&1 | grep ^"openjdk version")
+  java_version_output=$(${JAVA_HOME}/bin/java -version 2>&1 | grep ^"openjdk version") || $(${JAVA_HOME}/bin/java -version 2>&1 | grep ^"java version")
 
   check_java_version "${java_version_output}"
   java_version_rc=$?
@@ -82,7 +82,7 @@ validate_java_home_not_empty() {
 # Given a java version string from the `java -version` command, checks if it is valid
 check_java_version() {
   java_version_output=$1
-  java_version=$(echo ${java_version_output} | sed -e "s/openjdk version //g"| sed -e "s/\"//g")
+  java_version=$(echo ${java_version_output} | sed -e "s/openjdk version //g"| sed -e "s/\"//g") || $(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g")
 
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
