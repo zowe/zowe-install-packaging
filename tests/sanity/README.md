@@ -452,4 +452,5 @@ You may receive this error when you run install test cases:
    Warning: java not in PATH
    Error: JAVA_HOME is not set
 ```
-The script `zowe-verify-authenticity.sh` is invoked by `test-installed-files.js`.  If JAVA_HOME is not available, or set in `.profile`, then this test will fail.
+The script `zowe-verify-authenticity.sh` is invoked by `test-installed-files.js`.  If JAVA_HOME is not available, 
+or not set in `.profile`, then this test will fail.
