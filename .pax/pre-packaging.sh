@@ -157,6 +157,15 @@ fi
 echo "[$SCRIPT_NAME] content current directory: ls -A $(pwd)/"
 ls -A "$(pwd)/" || true
 
+# move keyring-util to bin/utils/keyring-util
+KEYRING_UTIL_SRC="./keyring-util"
+KEYRING_UTIL_DEST="./content/zowe-$ZOWE_VERSION/bin/utils/keyring-util"
+mkdir -p $KEYRING_UTIL_DEST
+cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
+
+# cleanup working files
+rm -rf "$KEYRING_UTIL_SRC"
+
 # create mediation PAX
 echo "[$SCRIPT_NAME] create mediation pax"
 cd mediation
