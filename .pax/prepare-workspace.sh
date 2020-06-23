@@ -154,7 +154,7 @@ mv ${ASCII_DIR}/files/scripts/files-api*.sh \
    ${CONTENT_DIR}/files/scripts/
 
 # move keyring-util to bin/utils/keyring-util
-KEYRING_UTIL_SRC="./keyring-util"
+KEYRING_UTIL_SRC="${PAX_WORKSPACE_DIR}/keyring-util"
 KEYRING_UTIL_DEST="${CONTENT_DIR}/bin/utils/keyring-util"
 mkdir -p "$KEYRING_UTIL_DEST"
 cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
