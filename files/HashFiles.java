@@ -15,17 +15,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class HashFiles  // input is a filename; file contains a list of filenames to be hashed
-{
+public class HashFiles {
+
+// input is a filename; file contains a list of filenames to be hashed
    
-   public static long RSHash(String str)
-   {
+   public static long RSHash(String str) {
       int b     = 378551;
       int a     = 63689;
       long hash = 0;
 
-      for(int i = 0; i < str.length(); i++)
-      {
+      for(int i = 0; i < str.length(); i++) {
          hash = hash * a + str.charAt(i);
          a    = a * b;
       }
@@ -33,12 +32,10 @@ public class HashFiles  // input is a filename; file contains a list of filename
       return hash;
    }
 
-   public static String readAllBytesJava7(String filePath)
-   {
+   public static String readAllBytesJava7(String filePath) {
        String content = "";
 
-       try
-       {
+       try {
            content = new String ( Files.readAllBytes( Paths.get(filePath) ) );
        
        } catch (IOException e) {
@@ -49,14 +46,12 @@ public class HashFiles  // input is a filename; file contains a list of filename
        return content;
    }
    
-   public static void main(String args[]) throws IOException
-   {
+   public static void main(String args[]) throws IOException {
       File file=new File(args[0]);    
       FileReader fr=new FileReader(file);   
       BufferedReader br=new BufferedReader(fr);  
       String line;  
-      while((line=br.readLine())!=null)  
-      {  
+      while((line=br.readLine())!=null) {  
         String key = readAllBytesJava7( line ) ;
         System.out.println(line + " " + RSHash  (key));
       }  
