@@ -23,6 +23,7 @@ set -x
 
 # expected workspace layout:
 # ./.pax/mediation/
+# ./.pax/keyring-util/
 # ./bin/
 # ./files/
 # ./install/
@@ -152,6 +153,15 @@ mv ${ASCII_DIR}/files/scripts/jobs-api*.sh \
 mv ${ASCII_DIR}/files/scripts/files-api*.sh \
    ${CONTENT_DIR}/files/scripts/
 
+# move keyring-util to bin/utils/keyring-util
+KEYRING_UTIL_SRC="${PAX_WORKSPACE_DIR}/keyring-util"
+KEYRING_UTIL_DEST="${CONTENT_DIR}/bin/utils/keyring-util"
+mkdir -p "$KEYRING_UTIL_DEST"
+cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
+
+# cleanup working files
+rm -rf "$KEYRING_UTIL_SRC"
+
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
 mv "${CONTENT_DIR}/files/zowe_licenses_full.zip" \
@@ -199,5 +209,5 @@ echo "[$SCRIPT_NAME] done"
 # ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/
 # ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/
 # ${PAX_WORKSPACE_DIR}/mediation/  # already present
-
+# ${PAX_WORKSPACE_DIR}/keyring-util/  # already present
 # ascii/* will move into content/, translated to ebcdic

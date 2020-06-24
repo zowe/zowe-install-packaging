@@ -1,6 +1,8 @@
 The keyring-util's source code can be found in the 
 https://github.com/zowe/keyring-utilities
 
+The binary will be placed here by artifactory during build process.
+
 # keyring-util
 
 The keyring-util program leverages
