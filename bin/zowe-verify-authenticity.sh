@@ -175,6 +175,7 @@ fi
 # Create log
 echo Create log in verify-auth ...
 . ${runtimePath}/bin/utils/setup-log-dir.sh
+. ${runtimePath}/bin/utils/file-utils.sh
 set_install_log_directory "${outputPath}"
 validate_log_file_not_in_root_dir "${outputPath}" "${runtimePath}"
 set_install_log_file "$SCRIPT.log" # It's not really an install log, merely a log.
