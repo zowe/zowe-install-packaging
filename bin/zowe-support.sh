@@ -150,6 +150,8 @@ then
         add_file_to_pax_if_found "${ROOT_DIR}/fingerprint/$RefRuntimeHash"
     done 
     $ROOT_DIR/bin/zowe-verify-authenticity.sh -l $SUPPORT_ARCHIVE_LOCATION
+    echo SUPPORT_ARCHIVE_LOCATION
+    ls ${SUPPORT_ARCHIVE_LOCATION}
     add_file_to_pax_if_found "${SUPPORT_ARCHIVE_LOCATION}/zowe-verify-authenticity.log"
 fi
 
