@@ -126,50 +126,63 @@ then
     refPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
 fi
 
-# Create outputPath directory for log and other new files
-umask 0022
-if [[ ! -n "$outputPath" ]]
-then # create output directory in default location, suffixed 'fingerprint'
-    for dir in /global/zowe/log ~/zowe ${TMPDIR:-/tmp}
-    do
-        mkdir -p $dir/fingerprint 1> /dev/null 2>/dev/null 
-        if [[ $? -eq 0 ]]
-        then
-            outputPath=$dir/fingerprint
-            break
-        fi
-    done
-    if [[ ! -n "$outputPath" ]] # still failed to create a directory
-    then
-        echo Error: Cannot create default outputPath directory 
-        exit 1
-    fi
-else # create specified directory
-    mkdir -p $outputPath 1> /dev/null 2>/dev/null 
-    if [[ $? -ne 0 ]]
-    then
-        echo Error: Cannot create specified outputPath directory $outputPath 
-        exit 1
-    fi     
-fi
-outputPath=$(cd $outputPath;pwd)    # expand tilde and relative pathnames
+# # Create outputPath directory for log and other new files
+# umask 0022
+# if [[ ! -n "$outputPath" ]]
+# then # create output directory in default location, suffixed 'fingerprint'
+#     for dir in /global/zowe/log ~/zowe ${TMPDIR:-/tmp}
+#     do
+#         mkdir -p $dir/fingerprint 1> /dev/null 2>/dev/null 
+#         if [[ $? -eq 0 ]]
+#         then
+#             outputPath=$dir/fingerprint
+#             break
+#         fi
+#     done
+#     if [[ ! -n "$outputPath" ]] # still failed to create a directory
+#     then
+#         echo Error: Cannot create default outputPath directory 
+#         exit 1
+#     fi
+# else # create specified directory
+#     mkdir -p $outputPath 1> /dev/null 2>/dev/null 
+#     if [[ $? -ne 0 ]]
+#     then
+#         echo Error: Cannot create specified outputPath directory $outputPath 
+#         exit 1
+#     fi     
+# fi
+# outputPath=$(cd $outputPath;pwd)    # expand tilde and relative pathnames
 
 
-# is outputPath contained in runtime?
-echo $outputPath | grep ^$runtimePath  1> /dev/null 2> /dev/null
-if [[ $? -eq 0 ]]
-then
-    echo Error: outputPath $outputPath must not be in runtimePath $runtimePath
-    exit 1
-fi
+# # is outputPath contained in runtime?
+# echo $outputPath | grep ^$runtimePath  1> /dev/null 2> /dev/null
+# if [[ $? -eq 0 ]]
+# then
+#     echo Error: outputPath $outputPath must not be in runtimePath $runtimePath
+#     exit 1
+# fi
 
-LOG_FILE=$outputPath/$SCRIPT.log
-touch $LOG_FILE
-if [[ $? -ne 0 ]]
-then
-    echo Error: Cannot write to $outputPath
-    exit 1
-fi
+# LOG_FILE=$outputPath/$SCRIPT.log
+# touch $LOG_FILE
+# if [[ $? -ne 0 ]]
+# then
+#     echo Error: Cannot write to $outputPath
+#     exit 1
+# fi
+
+# <<<<
+# Create log
+echo Create log in verify-auth ...
+. ${runtimePath}/bin/utils/setup-log-dir.sh
+. ${runtimePath}/bin/utils/file-utils.sh #source this here as setup-log-dir can't get it from root as it isn't install yet
+echo LOG_DIRECTORY = $LOG_DIRECTORY
+set_install_log_directory "${LOG_DIRECTORY}"
+validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${runtimePath}"
+set_install_log_file "fingerprint" # It's not really an install log, merely a log.
+
+# >>>>
+
 
 echo Info: Logging to $LOG_FILE
 echo "<$SCRIPT.sh>"                 >  $LOG_FILE
