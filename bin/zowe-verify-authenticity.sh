@@ -175,6 +175,7 @@ fi
 # Create log
 echo Create log in verify-auth ...
 . ${runtimePath}/bin/utils/setup-log-dir.sh
+ROOT_DIR=${runtimePath} # tell sourced script its location
 . ${runtimePath}/bin/utils/file-utils.sh
 set_install_log_directory "${outputPath}"
 validate_log_file_not_in_root_dir "${outputPath}" "${runtimePath}"
