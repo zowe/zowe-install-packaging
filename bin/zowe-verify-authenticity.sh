@@ -176,13 +176,13 @@ fi
 echo Create log in verify-auth ...
 . ${runtimePath}/bin/utils/setup-log-dir.sh
 . ${runtimePath}/bin/utils/file-utils.sh #source this here as setup-log-dir can't get it from root as it isn't install yet
+get_install_log_directory
 echo LOG_DIRECTORY = $LOG_DIRECTORY
 set_install_log_directory "${LOG_DIRECTORY}"
 validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${runtimePath}"
 set_install_log_file "fingerprint" # It's not really an install log, merely a log.
 
 # >>>>
-
 
 echo Info: Logging to $LOG_FILE
 echo "<$SCRIPT.sh>"                 >  $LOG_FILE
