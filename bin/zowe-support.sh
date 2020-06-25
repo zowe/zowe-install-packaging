@@ -152,7 +152,10 @@ then
     $ROOT_DIR/bin/zowe-verify-authenticity.sh -l $SUPPORT_ARCHIVE_LOCATION
     echo SUPPORT_ARCHIVE_LOCATION
     ls ${SUPPORT_ARCHIVE_LOCATION}
-    add_file_to_pax_if_found "${SUPPORT_ARCHIVE_LOCATION}/zowe-verify-authenticity.log"
+    for logFileName in `ls ${SUPPORT_ARCHIVE_LOCATION}/zowe-verify-authenticity-*.log`
+    do
+        add_file_to_pax_if_found "${logFileName}"
+    done
 fi
 
 # TODO - collect all the rest of workspace directory?
