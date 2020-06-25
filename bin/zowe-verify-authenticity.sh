@@ -211,29 +211,9 @@ then
     exit 1
 fi 
 
-echo Info: Checking java version >> $LOG_FILE
-java -version 2>> $LOG_FILE
-if [[ $? -ne 0 ]]
-then
-    echo "Warning: java not in PATH" | tee -a $LOG_FILE
-    if [[ -n "$JAVA_HOME" ]]
-    then
-        echo Info: JAVA_HOME = $JAVA_HOME  >> $LOG_FILE
-        $JAVA_HOME/bin/java -version 2>> $LOG_FILE
-        if [[ $? -ne 0 ]]
-        then
-            echo "Error: Cannot find java version in $JAVA_HOME/bin" | tee -a $LOG_FILE
-            exit 1
-        else
-            javaPrefix=$JAVA_HOME/bin/
-        fi
-    else
-        echo "Error: JAVA_HOME is not set" | tee -a $LOG_FILE
-        exit 1
-    fi
-else
-    javaPrefix=  # java is in $PATH
-fi
+# Checking java version
+. ${runtimePath}/bin/utils/java-utils.sh
+prompt_java_home_if_required
 
 echo Info: Calculating hashes ... | tee -a $LOG_FILE
 
