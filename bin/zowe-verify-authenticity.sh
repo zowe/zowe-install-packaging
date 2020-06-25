@@ -126,65 +126,18 @@ then
     refPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
 fi
 
-# # Create outputPath directory for log and other new files
-# umask 0022
-# if [[ ! -n "$outputPath" ]]
-# then # create output directory in default location, suffixed 'fingerprint'
-#     for dir in /global/zowe/log ~/zowe ${TMPDIR:-/tmp}
-#     do
-#         mkdir -p $dir/fingerprint 1> /dev/null 2>/dev/null 
-#         if [[ $? -eq 0 ]]
-#         then
-#             outputPath=$dir/fingerprint
-#             break
-#         fi
-#     done
-#     if [[ ! -n "$outputPath" ]] # still failed to create a directory
-#     then
-#         echo Error: Cannot create default outputPath directory 
-#         exit 1
-#     fi
-# else # create specified directory
-#     mkdir -p $outputPath 1> /dev/null 2>/dev/null 
-#     if [[ $? -ne 0 ]]
-#     then
-#         echo Error: Cannot create specified outputPath directory $outputPath 
-#         exit 1
-#     fi     
-# fi
-# outputPath=$(cd $outputPath;pwd)    # expand tilde and relative pathnames
-
-
-# # is outputPath contained in runtime?
-# echo $outputPath | grep ^$runtimePath  1> /dev/null 2> /dev/null
-# if [[ $? -eq 0 ]]
-# then
-#     echo Error: outputPath $outputPath must not be in runtimePath $runtimePath
-#     exit 1
-# fi
-
-# LOG_FILE=$outputPath/$SCRIPT.log
-# touch $LOG_FILE
-# if [[ $? -ne 0 ]]
-# then
-#     echo Error: Cannot write to $outputPath
-#     exit 1
-# fi
-
-# <<<<
 # Create log
-echo Create log in verify-auth ...
 . ${runtimePath}/bin/utils/setup-log-dir.sh
 ROOT_DIR=${runtimePath} # tell sourced script its location
 . ${runtimePath}/bin/utils/file-utils.sh
 set_install_log_directory "${outputPath}"
 outputPath=$LOG_DIRECTORY # set_install_log_directory sets its result in $LOG_DIRECTORY
 validate_log_file_not_in_root_dir "${outputPath}" "${runtimePath}"
-set_install_log_file "$SCRIPT.log" # It's not really an install log, merely a log.
+set_install_log_file "$SCRIPT" # It's not really an install log, merely a log.
 
 # >>>>
 
-echo Info: Logging to $LOG_FILE in ${outputPath}
+echo Info: Logging to directory ${outputPath}
 echo "<$SCRIPT.sh>"                 >  $LOG_FILE
 
 echo `date`                         >> $LOG_FILE
