@@ -226,21 +226,21 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.3",
+        "tag": "v1.0.4",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "v0.0.11",
+        "tag": "v0.0.12",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.2",
+        "tag": "v1.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -254,7 +254,7 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.2",
+        "tag": "v1.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
