@@ -217,7 +217,7 @@ prompt_java_home_if_required
 
 echo Info: Calculating hashes ... | tee -a $LOG_FILE
 
-${javaPrefix}java -cp $hashPath HashFiles $outputPath/files.in > $outputPath/CustRuntimeHash.txt
+java -cp $hashPath HashFiles $outputPath/files.in > $outputPath/CustRuntimeHash.txt
 if [[ $? -ne 0 ]]
 then
     echo Error: Failed to generate hash files from $runtimePath | tee -a $LOG_FILE
