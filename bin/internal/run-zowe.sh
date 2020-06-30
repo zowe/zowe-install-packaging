@@ -95,7 +95,7 @@ fi
 #Explorers may be present, but have a prereq on gateway, not desktop
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
+  LAUNCH_COMPONENTS=zss,app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
 
