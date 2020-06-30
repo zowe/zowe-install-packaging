@@ -10,9 +10,15 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-if [ $# -lt 2 ]; then
-  echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
-  exit 1
+if [ `uname` = "OS/390" ]; then
+  if [ $# -lt 4 ]; then
+    echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
+    exit 1
+  fi
+else
+  if [ $# -lt 2 ]; then
+    echo  "Usage: $0 -i <zowe_install_path> [-l <log_directory>]"
+  fi
 fi
 
 while getopts "f:h:i:l:d" opt; do
