@@ -1,0 +1,5 @@
+{
+  "identifier": "org.zowe.zlux.sample.angular",
+  "pluginLocation": "components/app-server/share/sample-angular-app",
+  "relativeTo": "$ROOT_DIR"
+}
