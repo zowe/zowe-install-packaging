@@ -85,9 +85,10 @@ validate_java_home_not_empty() {
 check_java_version() {
   java_version_output=$1
   echo "JAVA_VERSION_OUTPUT: ${java_version_output}"
-  java_version=$(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g")
-  if [[ $java_version = "" ]]; then
+  if [[ ${java_version_output} =~ .*"openjdk".* ]]; then
     java_version=$(echo ${java_version_output} | sed -e "s/openjdk version //g"| sed -e "s/\"//g")
+  else
+    java_version=$(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g")
   fi
   
   echo "java version parsed: ${java_version}"
