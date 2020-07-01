@@ -82,8 +82,7 @@ validate_java_home_not_empty() {
 # Given a java version string from the `java -version` command, checks if it is valid
 check_java_version() {
   java_version_output=$1
-  java_version=$(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g")
-  java_version=$java_version && [[ ${java_version} == "" ]] && $(echo ${java_version_output} | sed -e "s/openjdk version //g"| sed -e "s/\"//g")
+  java_version=$(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g") || $(echo ${java_version_output} | sed -e "s/java version //g"| sed -e "s/\"//g")
 
   java_major_version=$(echo ${java_version} | cut -d '.' -f 1)
   java_minor_version=$(echo ${java_version} | cut -d '.' -f 2)
