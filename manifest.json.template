@@ -80,7 +80,7 @@
        "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.keyring-utilities": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "artifact": "keyring-util-*",
       "target": ".pax/keyring-util/keyring-util",
       "explode": "false",
