@@ -35,7 +35,9 @@ _Please note, currently package.json doesn't include *Babel JS*, which means all
 
 ### Prepare NPM Packages
 
-Run `npm install` to install dependencies.
+We have a dependency on NPM registry of Zowe Artifactory. You will need to configure npm registry to be `https://zowe.jfrog.io/zowe/api/npm/npm-release/`. This should have been handled by the `.npmrc` file in this folder.
+
+With correct npm registry, you can run `npm install` to install all dependencies.
 
 ### Prerequisite For E2E UI Test
 

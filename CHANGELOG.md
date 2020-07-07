@@ -2,7 +2,16 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
-## Recent Changes
+## `1.13.0`
+
+#### Minor enchancements/defect fixes
+- Updated zowe-configure-instance upgrade to update ROOT_DIR [#1414](https://github.com/zowe/zowe-install-packaging/pull/1414)
+- Update port validation logic to reduce false negatives [#1399](https://github.com/zowe/zowe-install-packaging/pull/1399)
+- Update install and configure to tolerate ZERT Network Analyzer better [#1124](https://github.com/zowe/zowe-install-packaging/pull/1124)
+
+
+
+## `1.12.0`
 
 - Edit default plugin references to point to $ROOT_DIR env var
 

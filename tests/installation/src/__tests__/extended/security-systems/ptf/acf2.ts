@@ -11,14 +11,17 @@
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifySmpePtf,
+  showZoweRuntimeLogs,
 } from '../../../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../../constants';
+import { TEST_TIMEOUT_SMPE_PTF } from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker
  *
  * @worker marist-2
  */
+// hard code to use marist-2 which we started with ACF2
+const testServer = 'marist-2';
 const testSuiteName = 'Test SMPE PTF installation with ACF2';
 describe(testSuiteName, () => {
   beforeAll(() => {
@@ -31,11 +34,14 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifySmpePtf(
       testSuiteName,
-      // hard code to use marist-2 which we started with ACF2
-      'marist-2',
+      testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
       }
     );
-  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+  }, TEST_TIMEOUT_SMPE_PTF);
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(testServer);
+  })
 });
