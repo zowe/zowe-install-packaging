@@ -26,5 +26,8 @@ tmp/
 # zowe jobs output
 output/
 
+# release temporary folder
+.release/
+
 # workflow folder
 files/workflows/

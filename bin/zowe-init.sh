@@ -37,17 +37,6 @@ while getopts "s" opt; do
 done
 shift "$(($OPTIND-1))"
 
-getZosmfHttpsPort() {
-    ZOWE_ZOSMF_PORT=`netstat -b -E IZUSVR1 2>/dev/null|grep .*Listen | awk '{ print $4 }'`
-    if [[ "$ZOWE_ZOSMF_PORT" == "" ]]
-    then
-        echo "    Unable to detect z/OS MF HTTPS port"
-        echo "    Please enter the HTTPS port of z/OS MF server on this system"
-        read ZOWE_ZOSMF_PORT
-    fi
-    export ZOWE_ZOSMF_PORT
-}
-
 getPing_bin() {
 #  Identifies name of ping command if ping is not available oping is used
 #  populates ping_bin variable with ping or oping
@@ -70,7 +59,8 @@ getPing_bin() {
 # Run the main shell script logic
 if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then
-    getZosmfHttpsPort
+  . ${ZOWE_ROOT_DIR}/bin/utils/zosmf-utils.sh
+  prompt_zosmf_port_if_required
 else 
     echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi

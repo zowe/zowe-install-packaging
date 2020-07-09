@@ -513,6 +513,7 @@ test "$debug" && echo "< _headers"
 # --- merge PTF header, MCS metadata, and parts
 # IBM: max PTF size is 5,000,000 * 80 bytes (including SMP/E metadata)
 #      5mio FB80 lines requires 7,164 tracks
+#      (15 tracks/cylinder and +/- 0.8 MB/cylinder: max +/- 380 MB/PTF)
 # output:
 # - $ptf/$ptfHLQ.$sysmodName  PTF(s)
 # - $ptf/$tracks              track count per PTF
