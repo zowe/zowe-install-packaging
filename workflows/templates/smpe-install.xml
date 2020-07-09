@@ -387,10 +387,10 @@
 		</template>
 	</step>
 	<step name="ZWE6DDEF" optional="false">
-		<title>DDEF Creation</title>
-		<description>This step creates the DDEF entries</description>
+		<title>DDDEF Creation</title>
+		<description>This step creates the DDDEF entries</description>
 		<prereqStep name="define_variables"/>
-		<instructions substitution="false">This step creates the DDEF entries</instructions>
+		<instructions substitution="false">This step creates the DDDEF entries</instructions>
 		<weight>1</weight>
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
