@@ -10,9 +10,9 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-
+/* could also use dind node */
 node('ibm-jenkins-slave-nvm') {
-  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library@docker").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
@@ -24,6 +24,11 @@ node('ibm-jenkins-slave-nvm') {
     booleanParam(
       name: 'BUILD_SMPE',
       description: 'If we want to build SMP/e package.',
+      defaultValue: false
+    ),
+    booleanParam(
+      name: 'BUILD_DOCKER',
+      description: 'If we want to build Docker package.',
       defaultValue: false
     ),
     booleanParam(
@@ -131,7 +136,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
           extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
-          keepTempFolder      : params.KEEP_TEMP_FOLDER
+          keepTempFolder      : params.KEEP_TEMP_FOLDER,
+          buildDocker      : (params.BUILD_SMPE ? 'yes' : '')
       )
       if (params.BUILD_SMPE) {
         // rename SMP/e build with correct FMID name
