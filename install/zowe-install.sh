@@ -10,9 +10,15 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-if [ $# -lt 4 ]; then
-  echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
-  exit 1
+if [ `uname` = "OS/390" ]; then
+  if [ $# -lt 4 ]; then
+    echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
+    exit 1
+  fi
+else
+  if [ $# -lt 2 ]; then
+    echo  "Usage: $0 -i <zowe_install_path> [-l <log_directory>]"
+  fi
 fi
 
 while getopts "f:h:i:l:d" opt; do
@@ -85,12 +91,14 @@ fi
 echo "Install started at: "`date` >> $LOG_FILE
 
 
+if [ `uname` = "OS/390" ]; then
 if [[ -z "$DSN_PREFIX" ]]
 then
   echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
   exit 1
 else
   ZOWE_DSN_PREFIX=$DSN_PREFIX
+fi
 fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
@@ -154,8 +162,10 @@ chmod -R 755 $ZOWE_ROOT_DIR/bin
 
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
+if [ `uname` = "OS/390" ]; then
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
+fi
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into"
 echo "  directory " $ZOWE_ROOT_DIR
