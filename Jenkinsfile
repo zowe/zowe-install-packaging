@@ -11,7 +11,7 @@
  */
 
 /* could also use dind node */
-node('ibm-jenkins-slave-nvm') {
+node('ibm-jenkins-slave-dind') {
   def lib = library("jenkins-library@docker").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
