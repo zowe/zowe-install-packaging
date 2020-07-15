@@ -147,9 +147,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     isSkippable: true,
     stage : {
       sh """
-            git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git
-            && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts
-            && ln -s ${WORKSPACE}/.pax/zowe.pax ./zowe.pax
+            git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
+            && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
+            && ln -s ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
             && docker build -f Dockerfile -t zowe/docker:latest .
          """
     }
