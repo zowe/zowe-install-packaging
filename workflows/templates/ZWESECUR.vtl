@@ -230,13 +230,13 @@
 /*   enabled.                                                        */
 
 /* group for administrators                                          */
-/* replace AUTOGID with GID(ADMINGID.) if AUTOGID is not enabled    */
+/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID is not enabled    */
   LISTGRP  &ADMINGRP. OMVS
   ADDGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
 
 /* uncomment to add existing user IDs to the &ADMINGRP group         */
-/* CONNECT (userid,userid,...) GROUP(ADMINGRP.) AUTH(USE)           */
+/* CONNECT (userid,userid,...) GROUP(&ADMINGRP.) AUTH(USE)           */
 
 /* DEFINE STARTED TASK ............................................. */
 
@@ -247,7 +247,7 @@
 /* comment out if STCGRP matches ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
-/* replace AUTOGID with GID(STCGID.) if AUTOGID is not enabled      */
+/* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled      */
   LISTGRP  &STCGRP. OMVS
   ADDGROUP &STCGRP. OMVS(AUTOGID) -
    DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
@@ -255,7 +255,7 @@
 /* */
 
 /* userid for ZOWE main server                                       */
-/* replace AUTOUID with UID(ZOWEUID.) if AUTOUID is not enabled     */
+/* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled     */
   LISTUSER &ZOWEUSER. OMVS
   ADDUSER  &ZOWEUSER. -
    NOPASSWORD -
@@ -265,7 +265,7 @@
    DATA('ZOWE MAIN SERVER')
 
 /* userid for XMEM cross memory server                               */
-/* replace AUTOUID with UID(XMEMUID.) if AUTOUID is not enabled     */
+/* replace AUTOUID with UID(&XMEMUID.) if AUTOUID is not enabled     */
   LISTUSER &XMEMUSER. OMVS
   ADDUSER  &XMEMUSER. -
    NOPASSWORD -
@@ -277,7 +277,7 @@
 /* comment out if AUXUSER matches XMEMUSER (default), expect       */
 /*   warning messages otherwise                                      */
 /* userid for XMEM auxilary cross memory server                      */
-/* replace AUTOUID with UID(AUXUID.) if AUTOUID is not enabled      */
+/* replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled      */
   LISTUSER &AUXUSER. OMVS
   ADDUSER  &AUXUSER. -
    NOPASSWORD -
@@ -428,7 +428,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 * comment out if STCGRP matches ADMINGRP (default), expect
 *   warning messages otherwise
 * group for started tasks
-* replace AUTOGID with GID(STCGID.) if AUTOGID is not enabled
+* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
 INSERT &STCGRP. AUTOGID
@@ -437,7 +437,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 *****
 *
 * userid for ZOWE main server
-* replace AUTOUID with UID(ZOWEUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &ZOWEUSER. STC GROUP(&STCGRP.)
@@ -446,7 +446,7 @@ INSERT &ZOWEUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 * userid for XMEM cross memory server
-* replace AUTOUID with UID(XMEMUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(&XMEMUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &XMEMUSER. STC GROUP(&STCGRP.)
@@ -457,7 +457,7 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * comment out if AUXUSER matches XMEMUSER (default), expect
 *   warning messages otherwise
 * userid for XMEM auxilary cross memory server
-* replace AUTOUID with UID(AUXUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &AUXUSER. STC GROUP(&STCGRP.)
