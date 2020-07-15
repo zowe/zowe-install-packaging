@@ -146,8 +146,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout: [ time: 60, unit: 'MINUTES' ],
     isSkippable: true,
     stage : {
-      sh """ls -ltr ./.pax"""
-      sh """docker build https://github.com/1000TurquoisePogs/zowe-dockerfiles.git#s390x:dockerfiles/zowe-release/amd64/zowe-v1-lts --build-arg PAX_FILE=./.pax/zowe.pax"""
+      sh """docker build https://github.com/1000TurquoisePogs/zowe-dockerfiles.git#s390x:dockerfiles/zowe-release/amd64/zowe-v1-lts"""
     }
   )
 
