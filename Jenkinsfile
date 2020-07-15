@@ -12,7 +12,7 @@
 
 /* could also use dind node */
 node('ibm-jenkins-slave-dind') {
-  def lib = library("jenkins-library@docker").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
@@ -143,6 +143,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         // rename SMP/e build with correct FMID name
         sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
       }
+    }
+  )
+
+  pipeline.createStage(
+    name: "Build Docker",
+    timeout: [ time: 60, unit: 'MINUTES' ],
+    isSkippable: true,
+    stage : {
+      sh """docker build https://github.com/1000TurquoisePogs/zowe-dockerfiles.git#s390x:dockerfiles/zowe-release/amd64/zowe-v1-lts --build-arg PAX_FILE=./.pax/zowe.pax"""
     }
   )
 
