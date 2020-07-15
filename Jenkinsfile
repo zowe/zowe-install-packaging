@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-/* could also use dind node */
+/* dind node is required for building docker */
 node('ibm-jenkins-slave-dind') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
@@ -24,11 +24,6 @@ node('ibm-jenkins-slave-dind') {
     booleanParam(
       name: 'BUILD_SMPE',
       description: 'If we want to build SMP/e package.',
-      defaultValue: false
-    ),
-    booleanParam(
-      name: 'BUILD_DOCKER',
-      description: 'If we want to build Docker package.',
       defaultValue: false
     ),
     booleanParam(
@@ -154,6 +149,18 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       sh """docker build https://github.com/1000TurquoisePogs/zowe-dockerfiles.git#s390x:dockerfiles/zowe-release/amd64/zowe-v1-lts --build-arg PAX_FILE=./.pax/zowe.pax"""
     }
   )
+
+  /*
+  pipeline.createStage(
+    name: "Publish Docker",
+    timeout: [ time: 10, unit: 'MINUTES' ],
+    isSkippable: true,
+    stage : {
+      sh """docker build https://github.com/1000TurquoisePogs/zowe-dockerfiles.git#s390x:dockerfiles/zowe-release/amd64/zowe-v1-lts --build-arg PAX_FILE=./.pax/zowe.pax"""
+    }
+  )
+  */
+
 
   // define we need publish stage
   pipeline.publish(
