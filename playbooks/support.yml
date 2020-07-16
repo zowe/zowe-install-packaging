@@ -1,0 +1,21 @@
+---
+- name: Run Zowe Support Script
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # run support script.  rest of this yml is a guess.
+  # See: new folder under tests/sanity/test/support/ 
+  # FIXME
+
+  - name: Run support script
+    raw: echo "bin/zowe-support.sh"
+
+  # ============================================================================
+  # Show something
+  - import_role:
+      name: configure
+      tasks_from: show_logs
