@@ -161,6 +161,9 @@ test "$alter" && _cmd $alter $debug ZOWE PRE $extract -
 
 # install product
 echo "-- installing product in $stage & $mvsI"
+echo The extract $extract contains
+ls -l $extract
+
 opts=""
 opts="$opts -h $mvsI"                          # target HLQ
 opts="$opts -i $stage"                         # target directory
