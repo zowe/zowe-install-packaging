@@ -8,9 +8,9 @@
  * Copyright IBM Corporation 2018, 2020
  */
 
- /* WORK IN PROGRESS.  DO NOT MERGE */
- /* This is to test that zowe-support.sh produces the correct output */
- /* CODE BELOW HERE IS A PLACEHOLDER */
+/* WORK IN PROGRESS.  DO NOT MERGE */
+/* This is to test that zowe-support.sh produces the correct output */
+/* CODE BELOW HERE IS A PLACEHOLDER */
 
 const sshHelper = require('./ssh-helper');
 const expect = require('chai').expect;
