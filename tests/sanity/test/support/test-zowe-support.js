@@ -30,13 +30,20 @@ describe('verify zowe-support.sh', function() {
     await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_INSTANCE_DIR}/bin/zowe-support.sh`);
   });
 
-  it('fingerprint directory should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -d ${process.env.ZOWE_ROOT_DIR}/fingerprint`);
-  });
+//   params.ZOWE_RELEASE_VERSION ==~ 
+//   /* "${params.ZOWE_RELEASE_VERSION} */
 
-  it('fingerprint RefRuntimeHash-*.txt should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-*.txt`);
-  });
+  if (params.ZOWE_RELEASE_VERSION >= "1.14.0") {
+    it('fingerprint directory should exist', async function() {
+        await sshHelper.executeCommandWithNoError(`test -d ${process.env.ZOWE_ROOT_DIR}/fingerprint`);
+      });
+    
+    it('fingerprint RefRuntimeHash-*.txt should exist', async function() {
+        await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-*.txt`);
+      });
+  } else {
+    debug(`No fingerprint: release is prior to 1.14.0`);
+  }
 
   it('Support should produce output', async function() {
     const supportStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-support.sh`);
