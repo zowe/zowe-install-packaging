@@ -162,7 +162,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
              && cp ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
              && ls -ltr . \
-             && docker build -f Dockerfile -t ${dockeruser}/zowe-v1-lts:amd64 .
+             && docker build -f Dockerfile.jenkins -t ${dockeruser}/zowe-v1-lts:amd64 .
              """
         }
       }
@@ -183,7 +183,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         )]){
         sh """
              docker login -u ${USERNAME} -p ${PASSWORD} \
-             && docker push -t ${USERNAME}/zowe-v1-lts:amd64
+             && docker push ${USERNAME}/zowe-v1-lts:amd64
            """
         }
       }
