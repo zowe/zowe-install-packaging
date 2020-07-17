@@ -1,0 +1,17 @@
+****************************************************************
+* Affected function: security definitions                      *
+****************************************************************
+* Description: permit &AUXUSER READ access to ZWES.IS          *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: SZWESAMP(ZWESECUR & ZWENOSEC)                          *
+****************************************************************
+This change updates the security definitions (ZWESECUR JCL and 
+workflow) to allow the AUX server to use the XMEM cross memory 
+server. The ZWENOSEC JCL is updated to remove this permit.
+ 
+Update your existing customized ZWESECUR JCL to duplicate this 
+change, and execute the command applicable to your security 
+environment to grant this permit.
+ 
