@@ -27,6 +27,11 @@ node('ibm-jenkins-slave-dind') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_DOCKER',
+      description: 'If we want to build docker image.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -143,29 +148,48 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
   pipeline.createStage(
     name: "Build Docker",
-    timeout: [ time: 60, unit: 'MINUTES' ],
+    timeout: [ time: 120, unit: 'MINUTES' ],
     isSkippable: true,
     stage : {
-      sh """
-            git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
-            && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
-            && cp ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
-            && ls -ltr . \
-            && docker build -f Dockerfile -t zowe/docker:latest .
-         """
+      if (params.BUILD_DOCKER) {
+        withCredentials([
+          credentialsId: 'DockerGizaUser',
+          usernameVariable: 'dockeruser',
+          passwordVariable: 'unused'
+        ]){
+          sh """
+             git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
+             && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
+             && cp ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
+             && ls -ltr . \
+             && docker build -f Dockerfile -t ${dockeruser}/zowe-v1-lts:amd64 .
+             """
+        }
+      }
     }
   )
 
-  /*
+  
   pipeline.createStage(
     name: "Publish Docker",
-    timeout: [ time: 10, unit: 'MINUTES' ],
+    timeout: [ time: 20, unit: 'MINUTES' ],
     isSkippable: true,
     stage : {
-      sh """docker build https://github.com/1000TurquoisePogs/zowe-dockerfiles.git#s390x:dockerfiles/zowe-release/amd64/zowe-v1-lts --build-arg PAX_FILE=./.pax/zowe.pax"""
+      if (params.BUILD_DOCKER) {
+        withCredentials([
+          credentialsId: 'DockerGizaUser',
+          usernameVariable: 'USERNAME',
+          passwordVariable: 'PASSWORD'
+        ]){
+        sh """
+             docker login -u ${USERNAME} -p ${PASSWORD} \
+             && docker push -t ${USERNAME}/zowe-v1-lts:amd64
+           """
+        }
+      }
     }
   )
-  */
+  
 
 
   // define we need publish stage
