@@ -152,11 +152,11 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     isSkippable: true,
     stage : {
       if (params.BUILD_DOCKER) {
-        withCredentials([
+        withCredentials([usernamePassword(
           credentialsId: 'DockerGizaUser',
           usernameVariable: 'dockeruser',
           passwordVariable: 'unused'
-        ]){
+        )]){
           sh """
              git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
              && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
@@ -176,11 +176,11 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     isSkippable: true,
     stage : {
       if (params.BUILD_DOCKER) {
-        withCredentials([
+        withCredentials([usernamePassword(
           credentialsId: 'DockerGizaUser',
           usernameVariable: 'USERNAME',
           passwordVariable: 'PASSWORD'
-        ]){
+        )]){
         sh """
              docker login -u ${USERNAME} -p ${PASSWORD} \
              && docker push -t ${USERNAME}/zowe-v1-lts:amd64
