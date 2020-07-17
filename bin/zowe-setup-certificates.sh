@@ -73,8 +73,12 @@ else
   fi
 fi
 
-ZOWE_EXPLORER_HOST=${HOSTNAME}
-ZOWE_IP_ADDRESS=${IPADDRESS}
+# tolerate HOSTNAME, IPADDRESS to have multiple values
+HOSTNAME_FIRST=$(echo $HOSTNAME  | tr "," "\n" | sed '/^[[:space:]]*$/d' | head -1)
+IPADDRESS_FIRST=$(echo $IPADDRESS  | tr "," "\n" | sed '/^[[:space:]]*$/d' | head -1)
+# ZOWE_EXPLORER_HOST only accept one domain name
+ZOWE_EXPLORER_HOST=${HOSTNAME_FIRST}
+ZOWE_IP_ADDRESS=${IPADDRESS_FIRST}
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
 
@@ -102,7 +106,29 @@ KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keyst
 TRUSTSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.truststore"
 EXTERNAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca
 LOCAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/localca
-SAN="SAN=dns:${ZOWE_EXPLORER_HOST},ip:${ZOWE_IP_ADDRESS},dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
+# we may get domain name from ZOWE_EXPLORER_HOST if HOSTNAME is not defined
+# compare and copy it back to HOSTNAME if needed
+HOSTNAME_LC=$(echo $HOSTNAME | tr '[:upper:]' '[:lower:]')
+ZOWE_EXPLORER_HOST_LC=$(echo $ZOWE_EXPLORER_HOST | tr '[:upper:]' '[:lower:]')
+if [[ ",$HOSTNAME_LC," != *",$ZOWE_EXPLORER_HOST_LC,"* ]]; then
+  HOSTNAME_LC="${HOSTNAME_LC},${ZOWE_EXPLORER_HOST_LC}"
+fi
+IPADDRESS_LC=$(echo $IPADDRESS | tr '[:upper:]' '[:lower:]')
+ZOWE_IP_ADDRESS_LC=$(echo $ZOWE_IP_ADDRESS | tr '[:upper:]' '[:lower:]')
+if [[ ",$IPADDRESS_LC," != *",$ZOWE_IP_ADDRESS_LC,"* ]]; then
+  IPADDRESS_LC="${IPADDRESS_LC},${ZOWE_IP_ADDRESS_LC}"
+fi
+# add all domains/ips to SAN
+SAN="SAN="
+HOSTNAME_ARRAY=$(echo $HOSTNAME_LC  | tr "," "\n" | sed '/^[[:space:]]*$/d')
+for item in $HOSTNAME_ARRAY; do
+  SAN="${SAN}dns:${item},"
+done
+IPADDRESS_ARRAY=$(echo $IPADDRESS_LC  | tr "," "\n" | sed '/^[[:space:]]*$/d')
+for item in $IPADDRESS_ARRAY; do
+  SAN="${SAN}ip:${item},"
+done
+SAN="${SAN}dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
 # If any external certificate fields are zero [blank], do not use the external setup method.
 # If all external certificate fields are zero [blank], create everything from scratch.
