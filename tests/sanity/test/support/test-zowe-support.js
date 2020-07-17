@@ -12,9 +12,9 @@
 /* This is to test that zowe-support.sh produces the correct output */
 /* CODE BELOW HERE IS A PLACEHOLDER */
 
-const sshHelper = require('./ssh-helper');
+const sshHelper = require('../install/ssh-helper');  /* it's in an adjacent directory */
 const expect = require('chai').expect;
-const debug = require('debug')('zowe-sanity-test:install:installed-files');
+const debug = require('debug')('zowe-sanity-test:support:output');
 const addContext = require('mochawesome/addContext'); 
 
 describe('verify zowe-support.sh', function() {
@@ -45,7 +45,7 @@ describe('verify zowe-support.sh', function() {
     debug(`No fingerprint: release is prior to 1.14.0`);
   }
 
-  it('Support should produce output', async function() {
+  it('Support script should produce this output', async function() {
     const supportStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-support.sh`);
     debug('support show result:', supportStdout);
     addContext(this, {
