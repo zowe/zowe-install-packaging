@@ -7,7 +7,7 @@
 //*
 //* SPDX-License-Identifier: EPL-2.0
 //*
-//* Copyright Contributors to the Zowe Project. 2018, 2020
+//* Copyright Contributors to the Zowe Project. 2020, 2020
 //*
 //*********************************************************************
 //*
@@ -25,15 +25,15 @@
 //* 2) Update the SET PRODUCT= statement to match your security
 //*    product.
 //*
-//* 3) Update the SET ZOWEUSER= statement to match the desired
-//*    user ID for the ZOWE started task.
+//* 3) Update the SET ZOWEUSER= statement to match the existing
+//*    user ID for the Zowe started task.
 //*
 //* 4) Update the SET ZOWERING= statement to match the desired
-//*    name of the keyring owned by the ZOWEUSER.
+//*    name of the keyring owned by the &ZOWEUSER user ID.
 //*
 //* 5) Update the SET LABEL= statement with the name of the Zowe
-//*    certificate that will be added to the RACF database or that
-//*    is already stored in the RACF database.
+//*    certificate that will be added to the security database or
+//*    that is already stored in the security database.
 //*
 //* 6) Update the SET DSNAME= statement if you plan to import the Zowe
 //*    certificate from a data set in PKCS12 format.
@@ -53,7 +53,7 @@
 //*    TO ALTER SECURITY DEFINITIONS
 //*
 //* 2. Assumption: signing CA chain of the Zowe external certificate is
-//*    added to RACF database under the CERTAUTH userid.
+//*    added to the security database under the CERTAUTH userid.
 //*
 //* 3. If the Zowe certificate is imported from a data set then
 //*    the certificate has to be in PKCS12 format and has to
@@ -297,7 +297,7 @@ ACF
 * environment and follow the appropriate action                     */
 *                                                                   */
 * Options:                                                          */
-*   1. Zowe's certificate is already loaded in RACF database        */
+*   1. Zowe's certificate is already loaded in ACF2 database        */
 *      ACTION: Modify the CERTDATA(&ZOWEUSER..ZOWECERT) keyword     */
 *              below to match the desired certificate for Zowe      */
 *                                                                   */
@@ -436,7 +436,7 @@ $$
 /* environment and follow the appropriate action                     */
 /*                                                                   */
 /* Options:                                                          */
-/*   1. Zowe's certificate is already loaded in RACF database        */
+/*   1. Zowe's certificate is already loaded in TSS database         */
 /*      ACTION: Modify the RINGDATA(&ZOWEUSER.,ZOWECERT) keyword     */
 /*              below to match the desired certificate for Zowe      */
 /*                                                                   */
