@@ -126,7 +126,7 @@
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "pr-230",
+          "tag": "staging",
           "destinations": ["Zowe PAX"]
         },
         {
