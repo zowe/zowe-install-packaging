@@ -160,6 +160,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           sh """
              git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
              && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
+             && mkdir utils \
+             && cp ../../../../utils/* ./utils \
              && cp ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
              && ls -ltr . \
              && docker build -f Dockerfile.jenkins -t ${dockeruser}/zowe-v1-lts:amd64 .
