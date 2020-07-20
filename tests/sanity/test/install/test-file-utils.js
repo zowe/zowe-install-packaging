@@ -100,12 +100,41 @@ describe('verify file-utils', function() {
     }
   });
 
+  const validate_file_is_accessible = 'validate_file_is_accessible';
+  describe(`verify ${validate_file_is_accessible}`, function() {
+
+    function get_inaccessible_message(file) {
+      return `File '${file}' doesn't exist, or is not accessible to ${process.env.SSH_USER.toUpperCase()}. If the file exists, check all the parent directories have traversal permission (execute)`;
+    }
+
+    it('test start script is accessible', async function() {
+      const file = `${process.env.ZOWE_INSTANCE_DIR}/bin/zowe-start.sh`;
+      await test_validate_file_is_accessible(file, true);
+    });
+
+    it('test junk file is not accessible', async function() {
+      const directory = '/junk/rubbish/madeup';
+      await test_validate_file_is_accessible(directory, false);
+    });
+
+    async function test_validate_file_is_accessible(file, expected_valid) {
+      const command = `${validate_file_is_accessible} "${file}"`;
+      const expected_rc = expected_valid ? 0 : 1;
+      const expected_err = expected_valid ? '' : get_inaccessible_message(file);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    }
+  });
+
   describe('validate_directory_is_accessible and writable', function() {
 
     let temp_dir = 'temp_' + Math.floor(Math.random() * 10e6);
     let inaccessible_dir = `${temp_dir}/inaccessible`;
     before('set up test directory', async function() {
       await sshHelper.executeCommandWithNoError(`mkdir -p ${inaccessible_dir} && chmod a-wx ${temp_dir}`);
+    });
+
+    after('clean up test directory', async function() {
+      await sshHelper.executeCommandWithNoError(`chmod 770 ${temp_dir} && rm -rf ${temp_dir}`);
     });
 
     function get_inaccessible_message(directory) {
@@ -158,9 +187,46 @@ describe('verify file-utils', function() {
       const expected_err = expected_valid ? '' : `Directory '${directory}' does not have write access`;
       await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
+  });
+
+  const count_children_in_directory = 'count_children_in_directory';
+  describe(`verify ${count_children_in_directory}`, function() {
+
+    let temp_dir = 'temp_' + Math.floor(Math.random() * 10e6);
+    let dir_with_no_children = `${temp_dir}/no_children`;
+    let dir_with_1_child =  `${temp_dir}/has_child`;
+    let dir_with_3_children =  `${temp_dir}/has_children`;
+    before('set up test directory', async function() {
+      await sshHelper.executeCommandWithNoError(`mkdir -p "${dir_with_no_children}" && mkdir -p "${dir_with_1_child}" && touch "${dir_with_1_child}/child" && mkdir -p "${dir_with_3_children}" && touch "${dir_with_3_children}/child1" && touch "${dir_with_3_children}/child2" && touch "${dir_with_3_children}/child3"`);
+    });
 
     after('clean up test directory', async function() {
       await sshHelper.executeCommandWithNoError(`chmod 770 ${temp_dir} && rm -rf ${temp_dir}`);
+    });
+
+    it('test directory which doesn\'t exist has 0 children', async function() {
+      await test_count_children_in_directory('/junk/rubbish/madeup', 0);
+    });
+
+    it('test directory with no children has 0 children', async function() {
+      await test_count_children_in_directory(dir_with_no_children, 0);
+    });
+
+    it('test directory with a child has 1 children', async function() {
+      await test_count_children_in_directory(dir_with_1_child, 1);
+    });
+
+    it('test directory with 3 children has 3 children', async function() {
+      await test_count_children_in_directory(dir_with_3_children, 3);
+    });
+
+    async function test_count_children_in_directory(directory, expected_children) {
+      const command = `${count_children_in_directory} "${directory}"`;
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_children, '', '');
+    }
+
+    after('clean up test directory', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${temp_dir}`);
     });
   });
   
