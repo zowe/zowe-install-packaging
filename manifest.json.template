@@ -64,9 +64,9 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.3-PR-202",
+      "version": "1.0.3-ROLLBACK-UI-SERVER",
       "repository": "libs-snapshot-local",
-      "artifact": "explorer-jes-1.0.3-pr-202-2-20200720143808.pax"
+      "artifact": "explorer-jes-1.0.3-rollback-ui-server-1-20200720223641.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "1.0.4"
