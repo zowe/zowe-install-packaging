@@ -64,13 +64,15 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-STAGING"
+      "version": "1.0.3-PR-202",
+      "repository": "libs-snapshot-local",
+      "artifact": "explorer-jes-1.0.3-pr-202-2-20200720143808.pax"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-STAGING"
+      "version": "1.0.4"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-STAGING"
+      "version": "1.0.3"
     },
     "org.zowe.apiml.sdk.zowe-install": {
        "version": "~1.14.0-SNAPSHOT",
