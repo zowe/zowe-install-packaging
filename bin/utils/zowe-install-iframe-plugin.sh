@@ -103,8 +103,8 @@ chtag -tc 1047 ${plugin_dir}/web/index.html
 cat <<EOF >${plugin_dir}/pluginDefinition.json
 {
   "identifier": "$id",
-  "apiversion": "${version}",
-  "pluginversion": "${version}",
+  "apiVersion": "${version}",
+  "pluginVersion": "${version}",
   "pluginType": "application",
   "webContent": {
     "framework": "iframe",
