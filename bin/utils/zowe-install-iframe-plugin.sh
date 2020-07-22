@@ -11,6 +11,7 @@
 ################################################################################
 
 # SJH: Note this script prefers using getopts arguments for more flexibility, but tolerates some parameters being passed directly for backwards compatibility.
+# Deprecated usage is: $0 PLUGIN_ID PLUGIN_SHORTNAME PLUGIN_DIRECTORY URL TILE_IMAGE_PATH
 
 #default version to 1.0.0 if not supplied
 version="1.0.0"
@@ -40,9 +41,6 @@ then
   tile_image_path=$5
 fi
 
-# Do parameter validation and print usage
-# check parms
-# TODO - create a function for these?
 missing_parms=
 if [[ -z ${id} ]]
 then
