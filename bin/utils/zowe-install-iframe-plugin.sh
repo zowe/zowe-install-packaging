@@ -11,12 +11,12 @@
 ################################################################################
 
 # SJH: Note this script prefers using getopts arguments for more flexibility, but tolerates some parameters being passed directly for backwards compatibility.
-# Deprecated usage is: $0 PLUGIN_ID PLUGIN_SHORTNAME PLUGIN_DIRECTORY URL TILE_IMAGE_PATH
+# Deprecated usage is: $0 PLUGIN_ID PLUGIN_SHORTNAME URL PLUGIN_DIRECTORY TILE_IMAGE_PATH
 
 #default version to 1.0.0 if not supplied
 version="1.0.0"
 
-while getopts "d:i:s:t:u:v:" opt; do
+while getopts "d:i:s:t:u:v:z" opt; do
   case $opt in
     d) plugin_dir=$OPTARG;;
     i) id=$OPTARG;;
@@ -24,6 +24,7 @@ while getopts "d:i:s:t:u:v:" opt; do
     t) tile_image_path=$OPTARG;;
     u) url=$OPTARG;;
     v) version=$OPTARG;;
+    z) unit_test_mode="true";;
     \?)
       echo "Invalid option: -$opt" >&2
       exit 1
@@ -71,6 +72,13 @@ Usage: $0 -i <plugin_id> -s <plugin_short_name> -u <url> -d <plugin_directory> -
   eg. $0 -i "org.zowe.plugin.example" -s "Example plugin" -u "https://zowe.org:443/about-us/" -d "/zowe/component/plugin" -t "/zowe_plugin/artifacts/tile_image.png" -v "1.0.0"
 EndOfUsage
 exit 1
+fi
+
+# Used to test input processing
+if [[ "${unit_test_mode}" == "true" ]]
+then
+  echo "i:${id} s:\"${shortname}\" u:${url} d:${plugin_dir} t:${tile_image_path} v:[${version}]"
+  exit 4
 fi
 
 # remove any previous plugin files
