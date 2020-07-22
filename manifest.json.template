@@ -338,7 +338,7 @@
       "componentGroup": "Keyring Utilities",
       "entries": [{
         "repository": "keyring-utilities",
-        "tag": "v1.0.3",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     },
