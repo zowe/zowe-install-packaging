@@ -66,7 +66,7 @@ Usage: ${install_iframe_path} -i <plugin_id> -s <plugin_short_name> -u <url> -d 
   eg. ${install_iframe_path} -i "org.zowe.plugin.example" -s "Example plugin" -u "https://zowe.org:443/about-us/" -d "/zowe/component/plugin" -t "/zowe_plugin/artifacts/tile_image.png" -v "1.0.0"`;
     }
 
-    function get_expected_output(id, short_name, url, directory, tile_image, version = "1.0.0") {
+    function get_expected_output(id, short_name, url, directory, tile_image, version = '1.0.0') {
       return `i:${id} s:"${short_name}" u:${url} d:${directory} t:${tile_image} v:[${version}]`;
     }
   });
