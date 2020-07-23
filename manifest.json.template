@@ -335,6 +335,14 @@
       }]
     },
     {
+      "componentGroup": "Keyring Utilities",
+      "entries": [{
+        "repository": "keyring-utilities",
+        "tag": "master",
+        "destinations": ["Zowe PAX"]
+      }]
+    },
+    {
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
