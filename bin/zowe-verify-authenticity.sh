@@ -10,14 +10,14 @@
 # Copyright Contributors to the Zowe Project. 2020
 #######################################################################
 
-#	zowe-verify-authenticity.sh
+# zowe-verify-authenticity.sh
 
 # Function: Verify the authenticity of a Zowe runtime driver
 # Method  : Create a hash of every file in the driver and compare them 
 #           to the hashes of the official version.  
-# Inputs  -	pathname of Zowe runtime driver on your z/OS system
-#         -	HashFiles.class (binary)
-#         -	RefRuntimeHash-v.r.m.txt (list of files with hash keys)
+# Inputs  - pathname of Zowe runtime driver on your z/OS system
+#         - HashFiles.class (binary)
+#         - RefRuntimeHash-v.r.m.txt (list of files with hash keys)
 #  
 # SMP/E   - The directory SMPE in the runtime folder is excluded from this check
 #           The SMPE directory and contents must not be present in the supplied
@@ -37,7 +37,7 @@ SCRIPT=zowe-verify-authenticity
 echo $SCRIPT.sh started
 notD="does not exist or is not a directory"
 
-while getopts "h:r:f:l:" opt; do
+while getopts "h:r:f:l:L:" opt; do
   case $opt in
     r) runtimePath=$OPTARG
         if [[ ! -d $runtimePath ]]
@@ -65,6 +65,8 @@ while getopts "h:r:f:l:" opt; do
         ;;
     l) outputPath=$OPTARG
         ;;
+    L) LOG_FILE=$OPTARG  #Internal - used in the smpe-packaging build
+        ;;
     \?)
       echo "Invalid option: -$opt" >&2
       echo; echo $SCRIPT.sh Usage:
@@ -73,8 +75,8 @@ $SCRIPT.sh runtimePath hashPath
 
    Parameter subsitutions:
  
-    Parm name       Sample value    Meaning
-    ---------       ------------    -------
+    Parmname       Sample value                Meaning
+    ---------       ------------                -------
 -r  runtimePath     /usr/lpp/zowe               Root directory of the executables used by Zowe at run time
 -h  hashPath        /usr/lpp/zowe/bin/internal  Directory of the hash key program
 -f  refPath         /usr/lpp/zowe/fingerprint   Directory of the reference hash key file
@@ -102,7 +104,6 @@ then
     runtimePath=$(cd `dirname $0`;cd ..;pwd)
 fi
 
-
 # hash path
 if [[ ! -n "$hashPath" ]]
 then
@@ -113,7 +114,6 @@ then
     fi 
     hashPath=$(cd `dirname $0`;cd ../bin/internal;pwd)
 fi
-
 
 # ref path
 if [[ ! -n "$refPath" ]]
@@ -126,19 +126,39 @@ then
     refPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
 fi
 
+# out path - default set by set_install_log_directory()
+
+# Verify runtime scripts
+for file in bin/utils/setup-log-dir.sh  bin/utils/file-utils.sh
+do
+    if [[ ! -f $runtimePath/$file  ]]
+    then
+        echo Error: runtimePath $runtimePath does not contain $file
+        exit 1
+    fi 
+done 
+
 # Create log
+ZOWE_ROOT_DIR=${runtimePath} # tell sourced script its location
 . ${runtimePath}/bin/utils/setup-log-dir.sh
-ROOT_DIR=${runtimePath} # tell sourced script its location
 . ${runtimePath}/bin/utils/file-utils.sh
-set_install_log_directory "${outputPath}"
-outputPath=$LOG_DIRECTORY # set_install_log_directory sets its result in $LOG_DIRECTORY
-validate_log_file_not_in_root_dir "${outputPath}" "${runtimePath}"
-set_install_log_file "$SCRIPT" # It's not really an install log, merely a log.
+if [[ -z "${LOG_FILE}" ]]
+then
+  set_install_log_directory "${outputPath}"
+  outputPath=$LOG_DIRECTORY # set_install_log_directory sets its result in $LOG_DIRECTORY
+  validate_log_file_not_in_root_dir "${outputPath}" "${runtimePath}"
+  set_install_log_file "$SCRIPT" # It's not really an install log, merely a log.
+else
+  test -z "${outputPath}" && outputPath=`dirname ${LOG_FILE}`
+  set_install_log_file_from_full_path "${LOG_FILE}"
+  validate_log_file_not_in_root_dir "${LOG_FILE}" "${ZOWE_ROOT_DIR}"
+fi
 
 # >>>>
 
-echo Info: Logging to directory ${outputPath}
-echo "<$SCRIPT.sh>"                 >  $LOG_FILE
+echo Info: Logging to directory `dirname ${LOG_FILE}`
+touch ${LOG_FILE}
+echo "<$SCRIPT.sh>"                 >> $LOG_FILE
 
 echo `date`                         >> $LOG_FILE
 echo "runtimePath = $runtimePath"   >> $LOG_FILE
