@@ -7,35 +7,43 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2020
 #######################################################################
 
 #% Wrapper to drive Zowe SMP/E packaging.
 #%
 #% Invocation arguments:
-#% -?            show this help message
-#% -a alter.sh   execute script before install to alter setup    #debug
-#% -b branch     GitHub branch used for this build
-#% -B build      GitHub build number for this branch
-#% -c smpe.yaml  use the specified config file
-#% -d            enable debug messages
-#% -E success    exit with RC 0, create file on successful completion
-#% -f fileCount  expected number of input (build output) files
-#% -h hlq        use the specified high level qualifier
-#%               ignored when -c is specified
-#% -i inputFile  reference file listing non-SMPE distribution files
-#% -P            fail build if APAR/USERMOD is created instead of PTF
-#% -p version    product version
-#% -r rootDir    use the specified root directory
-#%               ignored when -c is specified
-#% -s stopAt.sh  stop before this sub-script is invoked          #debug
-#% -V volume     allocate data sets on specified volume(s)
-#% -v vrm        FMID 3-char version/release/modification (position 5-7)
-#%               ignored when -c is specified
-#% -1 fmidChar1  first FMID character (position 1)
-#%               ignored when -c is specified
-#% -2 fmidId     FMID 3-character ID code (position 2-4)
-#%               ignored when -c is specified
+#% -?              show this help message
+#% -a alter.sh     execute script before install to alter setup  #debug
+#%                 mutualy exclusive with -I
+#% -b branch       GitHub branch used for this build
+#% -B build        GitHub build number for this branch
+#% -c smpe.yaml    use the specified config file
+#% -d              enable debug messages
+#% -E success      exit with RC 0, create file on successful completion
+#% -f fileCount    expected number of input (build output) files
+#% -h hlq          use the specified high level qualifier
+#%                 ignored when -c is specified
+#% -H installHlq   use the specified pre-installed product install MVS
+#%                 requires -I and -L to be specified
+#% -i inputFile    file holding input names (build output archives)
+#% -I installDir   use the specified pre-installed product install USS
+#%                 requires -L to be specified
+#%                 mutualy exclusive with -a
+#% -L install.log  use the specified pre-installed product install log
+#%                 requires -I to be specified
+#% -P              fail build if APAR/USERMOD is created instead of PTF
+#% -p version      product version
+#% -r rootDir      use the specified root directory
+#%                 ignored when -c is specified
+#% -s stopAt.sh    stop before this sub-script is invoked        #debug
+#% -V volume       allocate data sets on specified volume(s)
+#% -v vrm          FMID 3-char version/release/modification (pos 5-7)
+#%                 ignored when -c is specified
+#% -1 fmidChar1    first FMID character (position 1)
+#%                 ignored when -c is specified
+#% -2 fmidId       FMID 3-character ID code (position 2-4)
+#%                 ignored when -c is specified
 #%
 #% either -c or -v is required
 #% -i is always required
@@ -46,12 +54,14 @@
 #% (smpe-gimzip.sh)
 #% TSO PE GIM.PGM.GIMZIP       CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
+#% (zowe-install-zlux.sh)
+#% TSO PE BPX.FILEATTR.PROGCTL CL(FACILITY) ACCESS(READ) ID(userid)
+#% TSO SETR RACLIST(FACILITY) REFRESH
 
-# TODO verify this permit requirement
 # (zowe-install-zlux.sh)
 # TSO PE BPX.FILEATTR.PROGCTL CL(FACILITY) ACCESS(READ) ID(userid)
 
-# see smpe-install.sh for info on -a, -f, -i
+# see smpe-install.sh for info on -a, -f, -H, -i, -I, -L
 
 cfgScript=get-config.sh        # script to read smpe.yaml config data
 here=$(cd $(dirname $0);pwd)   # script location
@@ -96,20 +106,20 @@ test "$debug" && echo
 if test "$1" = "--null"
 then         # stdout -> null, stderr -> stdout (without going to null)
   shift
-  test "$debug" && echo "$@ 2>&1 >/dev/null"
-                         $@ 2>&1 >/dev/null
+  test "$debug" && echo "$@ 2>&1 1>/dev/null"
+                         $@ 2>&1 1>/dev/null
 elif test "$1" = "--save"
 then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 >> $sAvE"
-                         $@ 2>&1 >> $sAvE
+  test "$debug" && echo "$@ 2>&1 1>>$sAvE"
+                         $@ 2>&1 1>>$sAvE
 elif test "$1" = "--repl"
 then         # stdout -> >$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "$@ 2>&1 > $sAvE"
-                         $@ 2>&1 > $sAvE
+  test "$debug" && echo "$@ 2>&1 1>$sAvE"
+                         $@ 2>&1 1>$sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
   test "$debug" && echo "$@ 2>&1"
                          $@ 2>&1
@@ -149,23 +159,26 @@ _cmd umask 0022                                  # similar to chmod 755
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset alter BUILD BRANCH YAML SuCcEsS count HLQ input reqPTF VERSION \
-      ROOT stopAt VOLSER VRM fmid1 fmid2
+unset alter BUILD BRANCH YAML SuCcEsS count HLQ preInstHlq input \
+  preInstDir preInstLog reqPTF VERSION ROOT stopAt VOLSER VRM fmid1 fmid2
 # do NOT unset debug errorRC
 errorRC=8  # default RC 8 on error
 
 # get startup arguments
-while getopts a:B:b:c:E:f:h:i:p:r:s:V:v:1:2:?dP opt
+while getopts a:B:b:c:E:f:h:H:i:I:L:p:r:s:V:v:1:2:?dP opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
   B)   export BUILD="-B $OPTARG";;
   b)   export BRANCH="-b $OPTARG";;
   c)   export YAML="$OPTARG";;
   d)   export debug="-d";;
-  E)   export SuCcEsS="$OPTARG"; export errorRC="0";; 
+  E)   export SuCcEsS="$OPTARG"; export errorRC="0";;
   f)   export count="$OPTARG";;
   h)   export HLQ="$OPTARG";;
+  H)   export preInstHlq="$OPTARG";;
   i)   export input="$OPTARG";;
+  I)   export preInstDir="$OPTARG";;
+  L)   export preInstLog="$OPTARG";;
   P)   export reqPTF="-P";;
   p)   export VERSION="-p $OPTARG";;
   r)   export ROOT="$OPTARG";;
@@ -193,13 +206,7 @@ then
   test ! "$IgNoRe_ErRoR" && exit $errorRC                        # EXIT
 fi    #
 
-# validate startup arguments
-if test ! -f "$input"
-then
-  _displayUsage
-  echo "** ERROR $me -i $input is not a file"
-  test ! "$IgNoRe_ErRoR" && exit $errorRC                        # EXIT
-fi    #
+# validate startup arguments done by called scripts
 
 # skip testing stopAt
 
@@ -209,38 +216,14 @@ fi    #
 opts="-i $input"                                   # add reference file
 test "$alter" && opts="$opts -a $alter"                  # add override
 test "$count" && opts="$opts -f $count"              # add sanity check
+test "$preInstHlq" && opts="$opts -H $preInstHlq"   # add pre-installed
+test "$preInstDir" && opts="$opts -I $preInstDir"   # add pre-installed
+test "$preInstLog" && opts="$opts -L $preInstLog"   # add pre-installed
 _stopAt smpe-install.sh $debug -c $YAML $opts
 _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # result (intermediate): $stage                              # USS data
 # result (final): $mvsI                           # MVS & MVS SMPE data
 # result (final): $ussI                                 # USS SMPE data
-
-# . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . . .
-echo "----- Check reference hash keys of runtime files -----"
-
-stageDir=$ROOT/stage
-binDir=$stageDir/bin 
-
-# # The scripts to do this are in the 'bin' directory
-# # The program to do this is in the 'files' directory
-zoweVRM=`ls $ROOT/../content`  # The vrm directory (e.g. zowe-1.9.0) is the only entry under 'content'
-zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
-
-echo List of stageDir files  
-ls  -l $stageDir
-
-# verify the checksums of ROOT_DIR, to self-check zowe-verify-authenticity.sh
-$binDir/zowe-verify-authenticity.sh # No parameters!
-zoweVerifyAuthenticityRC=$?
-if [[ $zoweVerifyAuthenticityRC -ne 0 ]]
-then
-  echo Error: Exit code from zowe-verify-authenticity.sh was $zoweVerifyAuthenticityRC
-  echo "---------- Contents of zowe-verify-authenticity.log ----------"
-  cat ~/zowe/fingerprint/*.log  # fragile, because '-l outputPath' was not specified, so script chose location of log
-else  
-  echo Exit code from zowe-verify-authenticity.sh was zero
-fi
-# . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # split installed product in smaller chunks and pax them
 opts="-i $input"                                   # add reference file

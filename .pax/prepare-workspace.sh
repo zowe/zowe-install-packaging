@@ -18,11 +18,24 @@
 #
 # runs on Jenkins server, before sending data to z/OS
 #
+# In an earlier step, the build pipeline added data from the different
+# repo's to zowe-install-packaging. This script regroups this data in
+# preparation for sending it to z/OS to finalize packaging.
+# 
+# This script places binaries in $CONTENT_DIR, and text files in
+# $ASCII_DIR, both located in $ROOT_DIR/.pax/. Anything outside .pax/ 
+# will not be sent to z/OS, and thus not be in the build result.
+# 
+# The next step in the build pipeline will 
+# 1. send the content of .pax/ to z/OS
+# 2. convert content of $ASCII_DIR/ to EBCDIC
+# 3. move converted EBCDIC data into $CONTENT_DIR
+# 4. call .pax/pre-packaging.sh
+#
 #######################################################################
 set -x
 
-# expected workspace layout:
-# ./.pax/mediation/
+# the following directories ($ROOT_DIR/*) are used as input:
 # ./bin/
 # ./files/
 # ./install/
@@ -54,7 +67,7 @@ do
       > "$wf_to/$wf_file"
   # remove raw workflow file if requested
   test -n "$1" && rm "$wf_from/$wf_file"
-done
+done    #
 
 return 0
 }    # _customizeWorkflow
@@ -65,6 +78,7 @@ return 0
 # $wf_to: target location (customized workfiles)
 # ---------------------------------------------------------------------
 _templateWorkflow () {
+echo "[${SCRIPT_NAME}] creating workflow/JCL templates in $wf_to ..."
 wf_temp="${PAX_WORKSPACE_DIR}/ascii/wf_temp"  # temp dir for sed
 mkdir -p "$wf_temp"
 mkdir -p "$wf_to"
@@ -86,9 +100,13 @@ return 0
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
-SCRIPT_NAME=$(basename "$0")  # $0=./.pax/prepare-workspace.sh
+# $0=./.pax/prepare-workspace.sh
+SCRIPT_NAME=$(basename "$0")  
 BASE_DIR=$(dirname "$0")      # <something>/.pax
+
 PAX_WORKSPACE_DIR=.pax
+cd $BASE_DIR; cd ..  # in 2 steps to handle symlinks
+ROOT_DIR=$(pwd)      # <something>
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
@@ -97,15 +115,12 @@ else
   echo "[$SCRIPT_NAME] working on Zowe v${ZOWE_VERSION} ..."
 fi
 
-cd $BASE_DIR
-cd ..
-ROOT_DIR=$(pwd)
-
 # show what's already present
-echo "[${SCRIPT_NAME}] content \$PAX_WORKSPACE_DIR: ls -A ${PAX_WORKSPACE_DIR}/"
-ls -A "${PAX_WORKSPACE_DIR}/" || true
+echo "[${SCRIPT_NAME}] content \$ROOT_DIR: find ."
+find . || true
 
 # workspace path abbreviations, relative to $ROOT_DIR
+# naming of $ASCII_DIR and $CONTENT_DIR must be near-identical
 ASCII_DIR="${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 CONTENT_DIR="${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}"
 
@@ -186,14 +201,17 @@ mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
 cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
 
 # copy source for workflows with matching JCL -- build usage only
+# note that "workflows" is no longer part of target path name
 wf_from="workflows/templates"
 wf_to="${PAX_WORKSPACE_DIR}/ascii/templates"
 _templateWorkflow
-cp workflows/*.rex "$wf_to"                               # add tooling
+# add tooling (now mixed with template data)
+cp workflows/*.rex "$wf_to"
 
 echo "[$SCRIPT_NAME] done"
 
 # result:
+# ${PAX_WORKSPACE_DIR}/
 # ${PAX_WORKSPACE_DIR}/ascii/smpe/
 # ${PAX_WORKSPACE_DIR}/ascii/templates/
 # ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/

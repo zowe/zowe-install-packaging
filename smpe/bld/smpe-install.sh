@@ -12,20 +12,22 @@
 
 #% stage Zowe product for SMP/E packaging
 #%
-#% -?                 show this help message
-#% -a alter.sh        execute script before/after install to alter setup
-#%                    ignored when -p is specified
-#% -c smpe.yaml       use the specified config file
-#% -d                 enable debug messages
-#% -f fileCount       expected number of input (build output) files
-#%                    ignored when -p is specified
-#% -i inputReference  file holding input names (build output archives)
-#%                    mutualy exclusive with -p
-#% -p inputDir        pre-installed input for this script        #debug
-#%                    mutualy exclusive with -i
+#% -?              show this help message
+#% -a alter.sh     execute script before/after install to alter setup
+#%                 mutualy exclusive with -I
+#% -c smpe.yaml    use the specified config file
+#% -d              enable debug messages
+#% -f fileCount    expected number of input (build output) files
+#% -H installHlq   use the specified pre-installed product install MVS
+#%                 requires -I and -L to be specified
+#% -i inputFile    file holding input names (build output archives)
+#% -I installDir   use the specified pre-installed product install USS
+#%                 requires -H and -L to be specified
+#%                 mutualy exclusive with -a
+#% -L install.log  use the specified pre-installed product install log
+#%                 requires -H and -I to be specified
 #%
-#% either -i or -p is required
-#% -c is required
+#% -c and -i are required
 #%
 #% caller needs these RACF permits:
 #% ($0)
@@ -34,7 +36,9 @@
 #% TSO PE BPX.FILEATTR.PROGCTL CL(FACILITY) ACCESS(READ) ID(userid)
 #% TSO SETR RACLIST(FACILITY) REFRESH
 
-# -p is intended for testing the rest of the pipeline without re-install
+# -H/I/L reuses an existing non-SMP/E product install
+#        caller must ensure it matches the product pax mentioned in
+#        -i inputFile
 # -a is intended for temporary updates to the product before install
 #    alterScript must accept these invocation arguments:
 #      -d         (optional) enable debug messages
@@ -59,6 +63,7 @@
 # more definitions in main()
 removeInstall=0                # 1 if install removes installed files
 smpeFilter="/smpe"             # regex to find SMP/E archive name
+fpScript=bin/zowe-verify-authenticity.sh  # product fingerprint script
 prodScript=install/zowe-install.sh  # product install script
 smpeScript=zowe-install-smpe.sh  # SMP/E-member install script
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
@@ -82,15 +87,15 @@ test "$debug" && echo && echo "> _findInput $@"
 unset in_pax in_other in_smpe
 
 # get name of files being referenced
-for f in $(cat $in)
+for f in $(cat $input)
 do
-  test "$debug" && echo "$in references $f"
+  test "$debug" && echo "$input references $f"
 
   # does referenced file exist?
   if test ! -f "$f" -o ! -r "$f"
   then
     _displayUsage
-    echo "** ERROR $me -r $in references faulty input: $f"
+    echo "** ERROR $me -r $input references faulty input: $f"
     echo "ls -ld \"$f\""; ls -ld "$f"
     test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
   fi    #
@@ -110,7 +115,7 @@ done    # for f
 # ensure we have all input
 if test "$count" && test $count -ne $(echo $in_pax $in_other $in_smpe | wc -w)
 then
-  echo "** ERROR $me $count files must be listed in $in"
+  echo "** ERROR $me $count files must be listed in $input"
   echo "(pax)   $in_pax"
   echo "(smpe)  $in_smpe"
   echo "(other) $in_other"
@@ -124,6 +129,46 @@ echo "-- input (other): $in_other"
 
 test "$debug" && echo "< _findInput"
 }    # _findInput
+
+# ---------------------------------------------------------------------
+# --- verify fingerprint of product runtime directory files
+# ---------------------------------------------------------------------
+function _checkFingerprint
+{
+test "$debug" && echo && echo "> _checkFingerprint $@"
+
+# verify the fingerprints
+echo "-- verify reference hash keys of $stage"
+_cmdLog $stage/$fpScript -L $log/$logFile
+
+test "$debug" && echo "< _checkFingerprint"
+}    # _checkFingerprint
+
+# ---------------------------------------------------------------------
+# --- stage a pre-installed product install
+# ---------------------------------------------------------------------
+function _preInstalled
+{
+test "$debug" && echo && echo "> _preInstalled $@"
+
+echo "-- reusing an existing install"
+# 1. reuse existing log file
+_cmd mv $preInstLog $log/$logFile
+
+# 2. reuse exisiting directory structure
+_cmd mv $preInstDir $stage
+_cmd ls -A $stage
+
+# 3. reuse existing data sets
+for dsn in $preInstDsn
+do
+  LLQ=${dsn##*.}                         # keep from last . (exclusive)
+  _cmd2 --null tsocmd "RENAME '${dsn}' '${mvsI}.$LLQ'"
+  echo "${mvsI}.$LLQ"
+done    # for dsn
+
+test "$debug" && echo "< _preInstalled"
+}    # _preInstalled
 
 # ---------------------------------------------------------------------
 # --- explode product build output & install it
@@ -169,7 +214,7 @@ opts="$opts -h $mvsI"                          # target HLQ
 opts="$opts -i $stage"                         # target directory
 opts="$opts -f $log/$logFile"                  # install log
 test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
-_cmd $extract/$prodScript $debug $opts </dev/null
+_cmdLog $extract/$prodScript $debug $opts </dev/null
 
 # allow caller to alter product after install                    #debug
 test "$alter" && _cmd $alter $debug ZOWE POST $extract $stage
@@ -235,7 +280,7 @@ opts="$opts -c $YAML"                          # config data
 opts="$opts -s $here/$cfgScript"               # script to read config
 opts="$opts -f $log/$logFile"                  # install log
 test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
-_cmd $extract/$smpeScript $debug $opts
+_cmdLog $extract/$smpeScript $debug $opts
 
 # allow caller to alter product after install                    #debug
 test "$alter" && _cmd $alter $debug SMPE POST $extract $stage
@@ -342,6 +387,30 @@ test "$debug" && echo "< _explode"
 }    # _explode
 
 # ---------------------------------------------------------------------
+# --- _cmd(), plus show $log/$logFile on error
+# $@: see _cmd()
+# ---------------------------------------------------------------------
+function _cmdLog
+{
+# remember and remove IgNoRe_ErRoR
+unset SeT_IgNoRe_ErRoR
+test -n "$IgNoRe_ErRoR" && SeT_IgNoRe_ErRoR=$IgNoRe_ErRoR
+unset IgNoRe_ErRoR
+
+# execute command
+_cmd $@
+
+# restore IgNoRe_ErRoR and show log on error
+test -n "$IgNoRe_ErRoR" && IgNoRe_ErRoR=$SeT_IgNoRe_ErRoR
+if test $sTaTuS -ne 0
+then
+  echo "install log $log/$logFile:"
+  cat $log/$logFile | sed 's/^/: /' 2>&1
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+}    # _cmdLog
+
+# ---------------------------------------------------------------------
 # --- show & execute command as UID 0, and bail with message on error
 #     stderr is routed to stdout to preserve the order of messages
 # $1: if --null then trash stdout, parm is removed when present
@@ -357,36 +426,35 @@ test "$debug" && echo
 if test "$1" = "--null"
 then         # stdout -> null, stderr -> stdout (without going to null)
   shift
-  test "$debug" && echo "echo \"$@\" | su 2>&1 >/dev/null"
-                         echo  "$@"  | su 2>&1 >/dev/null
+  test "$debug" && echo "echo \"$@\" | su 2>&1 1>/dev/null"
+                         echo  "$@"  | su 2>&1 1>/dev/null
 elif test "$1" = "--save"
 then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "echo \"$@\" | su 2>&1 >> $sAvE"
-                         echo  "$@"  | su 2>&1 >> $sAvE
+  test "$debug" && echo "echo \"$@\" | su 2>&1 1>>$sAvE"
+                         echo  "$@"  | su 2>&1 1>>$sAvE
 elif test "$1" = "--repl"
 then         # stdout -> >$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "echo \"$@\" | su 2>&1 > $sAvE"
-                         echo  "$@"  | su 2>&1 > $sAvE
+  test "$debug" && echo "echo \"$@\" | su 2>&1 1>$sAvE"
+                         echo  "$@"  | su 2>&1 1>$sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
   test "$debug" && echo "echo \"$@\" | su 2>&1"
                          echo  "$@"  | su 2>&1
 fi    #
-status=$?
-
-if test $status -ne 0
+sTaTuS=$?
+if test $sTaTuS -ne 0
 then
-    echo "** ERROR $me '$@' ended with status $sTaTuS"
+  echo "** ERROR $me '$@' ended with status $sTaTuS"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 }    # _super
 
 # ---------------------------------------------------------------------
 # --- show & execute command, and bail with message on error
-#     stderr is always trashed
+#     stderr is trapped and only shown on error
 # $1: if --null then trash stdout, parm is removed when present
 # $1: if --save then append stdout to $2, parms are removed when present
 # $1: if --repl then save stdout to $2, parms are removed when present
@@ -395,33 +463,38 @@ fi    #
 # ---------------------------------------------------------------------
 function _cmd2
 {
+sTdErRsAvE=${TMPDIR:-/tmp}/$me.cmd.stderr.$RANDOM
 test "$debug" && echo
 if test "$1" = "--null"
-then                                 # stdout -> null, stderr -> null
+then                                  # stdout -> null, stderr -> saved
   shift
-  test "$debug" && echo "\"$@\" 2>/dev/null >/dev/null"
-                          "$@"  2>/dev/null >/dev/null
+  test "$debug" && echo "\"$@\" 2>$sTdErRsAvE 1>/dev/null"
+                          "$@"  2>$sTdErRsAvE 1>/dev/null
 elif test "$1" = "--save"
-then                                 # stdout -> >>$2, stderr -> null
+then                                  # stdout -> >>$2, stderr -> saved
   sAvE=$2
   shift 2
-  test "$debug" && echo "\"$@\" 2>/dev/null >> $sAvE"
-                          "$@"  2>/dev/null >> $sAvE
+  test "$debug" && echo "\"$@\" 2>$sTdErRsAvE 1>>$sAvE"
+                          "$@"  2>$sTdErRsAvE 1>>$sAvE
 elif test "$1" = "--repl"
-then                                 # stdout -> >$2, stderr -> null
+then                                  # stdout -> >$2, stderr -> saved
   sAvE=$2
   shift 2
-  test "$debug" && echo "\"$@\" 2>/dev/null > $sAvE"
-                          "$@"  2>/dev/null > $sAvE
-else                                 # stdout -> stdout, stderr -> null
-  test "$debug" && echo "\"$@\" 2>/dev/null"
-                          "$@"  2>/dev/null
+  test "$debug" && echo "\"$@\" 2>$sTdErRsAvE 1>$sAvE"
+                          "$@"  2>$sTdErRsAvE 1>$sAvE
+else                                  # stderr -> saved
+  test "$debug" && echo "\"$@\" 2>$sTdErRsAvE"
+                          "$@"  2>$sTdErRsAvE
 fi    #
 sTaTuS=$?
 if test $sTaTuS -ne 0
 then
-    echo "** ERROR $me '$@' ended with status $sTaTuS"
+  echo "** ERROR $me '$@' ended with status $sTaTuS"
+  cat $sTdErRsAvE | sed 's/^/: /' 2>&1
+  rm -f sTdErRsAvE
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+else
+  rm -f sTdErRsAvE
 fi    #
 }    # _cmd2
 
@@ -440,20 +513,20 @@ test "$debug" && echo
 if test "$1" = "--null"
 then         # stdout -> null, stderr -> stdout (without going to null)
   shift
-  test "$debug" && echo "\"$@\" 2>&1 >/dev/null"
-                          "$@"  2>&1 >/dev/null
+  test "$debug" && echo "\"$@\" 2>&1 1>/dev/null"
+                          "$@"  2>&1 1>/dev/null
 elif test "$1" = "--save"
 then         # stdout -> >>$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "\"$@\" 2>&1 >> $sAvE"
-                          "$@"  2>&1 >> $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 1>>$sAvE"
+                          "$@"  2>&1 1>>$sAvE
 elif test "$1" = "--repl"
 then         # stdout -> >$2, stderr -> stdout (without going to $2)
   sAvE=$2
   shift 2
-  test "$debug" && echo "\"$@\" 2>&1 > $sAvE"
-                          "$@"  2>&1 > $sAvE
+  test "$debug" && echo "\"$@\" 2>&1 1>$sAvE"
+                          "$@"  2>&1 1>$sAvE
 else         # stderr -> stdout, caller can add >/dev/null to trash all
   test "$debug" && echo "\"$@\" 2>&1"
                           "$@"  2>&1
@@ -496,18 +569,20 @@ echo "-- startup arguments: $@"
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # clear input variables
-unset alter YAML count in preInst
+unset alter YAML count preInstHlq input preInstDir preInstLog
 # do NOT unset debug
 
 # get startup arguments
-while getopts a:c:f:i:p:?d opt
+while getopts a:c:f:H:i:I:L:?d opt
 do case "$opt" in
   a)   alter="$OPTARG";;
   c)   YAML="$OPTARG";;
   d)   debug="-d";;
   f)   count="$OPTARG";;
-  i)   in="$OPTARG";;
-  p)   preInst="$OPTARG";;
+  H)   preInstHlq="$OPTARG";;
+  i)   input="$OPTARG";;
+  I)   preInstDir="$OPTARG";;
+  L)   preInstLog="$OPTARG";;
   [?]) _displayUsage
        test $opt = '?' || echo "** ERROR $me faulty startup argument: $@"
        test ! "$IgNoRe_ErRoR" && exit 8;;                        # EXIT
@@ -521,7 +596,14 @@ if test $rc -ne 0
 then
   # error details already reported
   echo "** ERROR $me '. $here/$cfgScript' ended with status $rc"
-  test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+if test -n "$alter" -a -n "$preInstDir"
+then
+  _displayUsage
+  echo "** ERROR $me -a and -I are mutually exclusive"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
 fi    #
 
 if test "$(echo $count | sed 's/[[:digit:]]//g')"
@@ -541,23 +623,74 @@ then
   fi    #
 fi    #
 
-if test "$in"
-then                                          # validate reference file
-  unset $preInst          # remove installed directory name if provided
-
-  if test ! -r "$in"
-  then
-    _displayUsage
-    echo "** ERROR $me faulty value for -i: $in"
-    echo "ls -ld \"$in\""; ls -ld "$in"
-    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
-  fi    #
-elif test ! -d "$preInst" -o ! -r "$preInst" # validate input directory
+if test ! -r "$input"
 then
   _displayUsage
-  echo "** ERROR $me faulty value for -p: $preInst"
-  echo "ls -ld \"$preInst\""; ls -ld "$preInst"
+  echo "** ERROR $me faulty value for -i: $input"
+  echo "ls -ld \"$input\""; ls -ld "$input"
   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
+
+if test "$preInstHlq"
+then
+  if test -z "$preInstDir" -o -z "$preInstLog"
+  then
+    _displayUsage
+    echo "** ERROR $me -H requires -I and -L"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+
+  # show everything in debug mode
+  test "$debug" && $here/$csiScript -d "$preInstHlq.**"
+  # get data set list (no debug mode to avoid debug messages)
+  preInstDsn=$($here/$csiScript "$preInstHlq.**")
+  # returns 0 for match, 1 for no match, 8 for error
+  if test $? -gt 1
+  then
+    _displayUsage
+    echo "** ERROR $me faulty value for -p: $preInstDir"
+    echo "$preInstDsn"                   # variable holds error message
+    preInstDsn=''                      # in case we continue processing
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+else
+  unset preInstDsn  # to be safe
+fi    #
+
+if test "$preInstDir"
+then
+  if test -z "$preInstHlq" -o -z "$preInstLog"
+  then
+    _displayUsage
+    echo "** ERROR $me -I requires -H and -L"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+
+  if test ! -d "$preInstDir" -o ! -r "$preInstDir"
+  then
+    _displayUsage
+    echo "** ERROR $me faulty value for -p: $preInstDir"
+    echo "ls -ld \"$preInstDir\""; ls -ld "$preInstDir"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+fi    #
+
+if test "$preInstLog"
+then
+  if test -z "$preInstHlq" -o -z "$preInstDir"
+  then
+    _displayUsage
+    echo "** ERROR $me -L requires -H and -I"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
+
+  if test ! -r "$preInstLog"
+  then
+    _displayUsage
+    echo "** ERROR $me faulty value for -p: $preInstLog"
+    echo "ls -ld \"$preInstLog\""; ls -ld "$preInstLog"
+    test ! "$IgNoRe_ErRoR" && exit 8                             # EXIT
+  fi    #
 fi    #
 
 # validate envvars (inherited or set by -c)
@@ -578,7 +711,8 @@ logFile=${mask}.${date}.${tail}                      # install log name
 # show input/output details, lined up with input/output shown elsewhere
 echo "-- output USS:    $stage"
 echo "-- output MVS:    $mvsI"
-echo "-- input:         $in$preInst"      # only one has data, not both
+echo "-- input:         $input"
+test "$preInstDir" && echo "-- input exist:   $preInstDir"
 
 # create log directory
 _cmd mkdir -p $log
@@ -586,7 +720,7 @@ _cmd mkdir -p $log
 # remove output of previous run
 test -d $stage && _super rm -rf $stage  # always delete stage directory
 test -d $extract && _super rm -rf $extract           # same for extract
-if test "$in"                     # only delete data sets on re-install
+if test -z "$preInstDir"            # only delete data sets on new install
 then
   # show everything in debug mode
   test "$debug" && $here/$csiScript -d "${mvsI}.**"
@@ -608,20 +742,22 @@ fi    # delete data sets
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # stage data
-if test "$in"
+_findInput
+# 1. product install - creates $stage, must run before other _install*
+if test -z "$preInstDir"
 then
-  _findInput
-  _install            # creates $stage, must run before other _install*
-  _installSMPE
-  _installOther
-  _clearLog
+  _install
 else
-  # continue testing SMP/E tooling with broken product build     #debug
-  echo "-- cloning data from $preInst to $stage"
-  _cmd mkdir -p $stage
-  _cmd cd $preInst
-  _cmd pax -rw -px * $stage/   # use pax to copy with extattr preserved
+  _preInstalled
 fi    #
+_checkFingerprint         # must be on a clean product install, no SMPE
+# 2. add SMP/E files & members to product install
+_installSMPE
+# 3. add optional other files to product install
+_installOther
+
+# clean up on repeated builds
+_clearLog
 
 # ensure we can access everything
 _super chown -R $(id -u) $stage

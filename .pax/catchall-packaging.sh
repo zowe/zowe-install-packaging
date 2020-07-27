@@ -21,11 +21,18 @@
 #######################################################################
 set -x
 
+# ---------------------------------------------------------------------
+# --- main --- main --- main --- main --- main --- main --- main ---
+# ---------------------------------------------------------------------
+# $0=./catchall-packaging.sh
 SCRIPT_NAME=$(basename "$0")
-CURR_PWD=$(pwd)
+BASE_DIR=$(dirname "$0")      # <something>
+cd $BASE_DIR
+ROOT_DIR=$(pwd)               # <something>
 
 # if KEEP_TEMP_FOLDER is true, catchall-packaging.sh won't be executed.
 # remove data sets, unless build option requested to keep temp stuff
+# keep in sync with post-packaging.sh
 if [ -f cleanup-smpe-packaging-datasets.txt ]; then
   for dsprefix in $(cat cleanup-smpe-packaging-datasets.txt); do
     if [ -n "${dsprefix}" ]; then

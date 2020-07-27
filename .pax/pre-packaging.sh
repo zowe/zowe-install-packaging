@@ -18,14 +18,29 @@
 #
 # runs on z/OS, before creating zowe.pax
 #
+# In an earlier step, the build pipeline sent all data to z/OS and
+# ensured all text files were converted to EBCDIC. Most data resides
+# in ./content/.
+#
+# This script does last-minute tweaks to the data to be packaged,
+# ensuring that ./content/ only holds data that must go in zowe.pax.
+# It ends by installing Zowe and create a fingerprint for the runtime
+# directory. The post-packaging.sh script is responsible for cleanup.
+#
+# The next step in the build pipeline will
+# 1. create zowe.pax
+# 2. call .pax/post-packaging.sh
+#
 #######################################################################
 set -x
 
-# expected workspace layout:
+# the following directories ($ROOT_DIR/*) are used as input:
 # ./content/smpe/
 # ./content/templates/
 # ./content/zowe-${ZOWE_VERSION}/
 # ./mediation/
+# Note: ./content/zowe-*/ also holds data prepare-workspace.sh placed 
+#       in ascii/zowe-*
 
 # ---------------------------------------------------------------------
 # --- create JCL files
@@ -36,6 +51,8 @@ set -x
 # ---------------------------------------------------------------------
 function _createJCL
 {
+# note: using precompiled version of vtl-cli store on z/OS host 
+# source in https://github.com/plavjanik/vtl-cli
 VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
 
 if [ -f "$1/$2.vtl" ]; then
@@ -46,7 +63,7 @@ elif [ -d "$1/$2" ]; then
   vtlPath="$1/${2:-.}"
 else
   echo "[$SCRIPT_NAME] $1/$2.vtl not found"
-  exit 1
+  exit 1                                                         # EXIT
 fi
 
 for vtlEntry in $vtlList
@@ -64,7 +81,7 @@ do
 #      YAML="${vtlPath}/${vtlBase}.yml"
     else
       echo "[$SCRIPT_NAME] ${vtlPath}/${vtlBase}.properties not found"
-      exit 1
+      exit 1                                                     # EXIT
     fi
 
     echo "[$SCRIPT_NAME] creating $JCL"
@@ -88,8 +105,8 @@ done
 # ---------------------------------------------------------------------
 function _createWorkflow
 {
-here=$(pwd)
-CREAXML_PATH="${here}/templates"   # tools, path must be absolute
+# note: prepare-workspace.sh placed the workflow tools here  
+CREAXML_PATH="${ROOT_DIR}/templates"     # tools, path must be absolute
 
 if [ -f "$1/$2.xml" ]; then
   xmlList="$2.xml"                             # process just this file
@@ -99,7 +116,7 @@ elif [ -d "$1/$2" ]; then
   xmlPath="$1/${2:-.}"
 else
   echo "[$SCRIPT_NAME] $1/$2.xml not found"
-  exit 1
+  exit 1                                                         # EXIT
 fi
 
 for xmlEntry in $xmlList
@@ -107,7 +124,7 @@ do
   if [ "${xmlEntry##*.}" = "xml" ]       # keep from last . (exclusive)
   then
     xmlBase="${xmlEntry%.*}"            # keep up to last . (exclusive)
-    XML="${here}/${WORKFLOW_PATH}/${xmlBase}.xml"   # use absolute path
+    XML="${ROOT_DIR}/${WORKFLOW_PATH}/${xmlBase}.xml" # use absolute path
 
     if [ -d ${xmlBase} ]; then
       # TODO ensure workflow yaml has all variables of JCL yamls
@@ -133,7 +150,7 @@ do
 #      YAML="${xmlPath}/${xmlBase}.yml"
     else
       echo "[$SCRIPT_NAME] ${xmlPath}/${xmlBase}.properties not found"
-      exit 1
+      exit 1                                                     # EXIT
     fi
     cp "${YAML}" "${WORKFLOW_PATH}/${xmlBase}.properties"
   fi    # xml found
@@ -141,10 +158,85 @@ done
 }    # _createWorkflow
 
 # ---------------------------------------------------------------------
+# --- create fingerprint of Zowe's runtime directory files
+# ---------------------------------------------------------------------
+function _createFingerprint
+{
+# Here we create the fingerprint embedded in the zowe.pax file.
+# To do this, we will create a runtime directory, and install Zowe. 
+# Next we calculate and save the fingerprint of the installed USS files.
+
+# keep in ${ROOT_DIR} so pipeline variable $KEEP_TEMP_FOLDER applies
+INST_SOURCE=${ROOT_DIR}/content/zowe-${ZOWE_VERSION}
+INST_TARGET=${ROOT_DIR}/zowe-runtime
+INST_WORK=${ROOT_DIR}/zowe-work   # keep in sync with post-packaging.sh
+INST_PASS=${INST_WORK}/zowe-install.txt   # sync with post-packaging.sh
+mkdir -p ${INST_TARGET} ${INST_WORK}
+
+userid=${USER:-${USERNAME:-${LOGNAME}}}
+mlq=T$(($$ % 10000000))                 # the lower 7 digits of the PID
+INST_HLQ=${userid}.${mlq}
+
+echo "[$SCRIPT_NAME] install Zowe in temporary runtime directory"
+# Note: 
+# - SMP/E build will reuse this install in post-packaging.sh, 
+#   cleanup is done by catchall-packaging.sh
+# - do not create ${INST_PASS} when SMP/E build must use  "-a alter.sh"
+#   to tweak the Zowe install before packaging
+
+# install Zowe
+${INST_SOURCE}/install/zowe-install.sh \
+  -h ${INST_HLQ} \
+  -i ${INST_TARGET} \
+  -l ${INST_WORK}
+echo "[$SCRIPT_NAME] install RC=$?" # TODO I've seen this script continue
+# after install had RC 1, and "#!/bin/sh -e" was in effect
+
+inst_log="$(ls ${INST_WORK}/zowe-install-*.log)"
+echo "[$SCRIPT_NAME] show install log"
+cat $inst_log
+
+# save info to pass to post-packaging.sh
+touch ${INST_PASS}
+echo "inst_hlq=${INST_HLQ}"     >> ${INST_PASS} # sync with post-packaging.sh
+echo "inst_root=${INST_TARGET}" >> ${INST_PASS} # sync with post-packaging.sh
+echo "inst_log=$inst_log"       >> ${INST_PASS} # sync with post-packaging.sh
+
+echo "[$SCRIPT_NAME] generate reference hash keys of runtime files"
+
+# copy tools
+cp ${INST_SOURCE}/files/HashFiles.java ${INST_WORK}/
+
+# compile the hash program and calculate the checksums of runtime
+${INST_SOURCE}/bin/zowe-generate-checksum.sh \
+  ${INST_TARGET} \
+  ${INST_WORK}
+
+# save derived runtime hash file and class into the source tree that will be PAXed
+mkdir -p ${INST_SOURCE}/fingerprint
+cp ${INST_WORK}/RefRuntimeHash.txt \
+   ${INST_SOURCE}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt
+cp ${INST_WORK}/HashFiles.class \
+   ${INST_SOURCE}/bin/internal/
+
+# save derived runtime hash file and class into the runtime dir for inclusion by SMP/E build
+mkdir -p ${INST_TARGET}/fingerprint
+cp ${INST_WORK}/RefRuntimeHash.txt \
+   ${INST_TARGET}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt
+cp ${INST_WORK}/HashFiles.class \
+   ${INST_TARGET}/bin/internal/
+
+echo "[$SCRIPT_NAME] cleanup after generating Hash keys done in catchall-packaging.sh"
+}    # _createFingerprint
+
+# ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
-SCRIPT_NAME=$(basename "$0")  # $0=./pre-packaging.sh
-BASE_DIR=$(dirname "$0")      # <something>/.pax
+# $0=./pre-packaging.sh
+SCRIPT_NAME=$(basename "$0")  
+BASE_DIR=$(dirname "$0")      # <something>
+cd $BASE_DIR
+ROOT_DIR=$(pwd)               # <something>
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
@@ -154,25 +246,36 @@ else
 fi
 
 # show what's already present
-echo "[$SCRIPT_NAME] content current directory: ls -A $(pwd)/"
-ls -A "$(pwd)/" || true
+echo "[${SCRIPT_NAME}] content \$ROOT_DIR: find ."
+find . || true
 
 # create mediation PAX
 echo "[$SCRIPT_NAME] create mediation pax"
-cd mediation
-MEDIATION_PATH="../content/zowe-$ZOWE_VERSION/files"
+cd ./mediation
+MEDIATION_PATH=$ROOT_DIR/content/zowe-$ZOWE_VERSION/files
+# TODO do we really want to use a fixed package VRM?
 pax -x os390 -w -f ${MEDIATION_PATH}/api-mediation-package-0.8.4.pax *
-cd ..
+cd $ROOT_DIR
 # clean up working files
-rm -rf "./mediation"
+rm -rf ./mediation
+
+# TODO correct upstream
+# fix wrong name for File Explorer API: data-sets-api-server-*.jar -> files-api-server-*.jar
+echo "[$SCRIPT_NAME] correct File Explorer API jar name"
+cd ./content/zowe-$ZOWE_VERSION/files
+jar=$(ls -t data-sets-api-server-*.jar 2>/dev/null | head -1)
+if [ -f "$jar" ]; then 
+  mv ${jar} files${jar#data-sets} 
+fi  
+cd $ROOT_DIR
 
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
-chmod +x content/zowe-$ZOWE_VERSION/bin/*.sh
-chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
-chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
-chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
-chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
-chmod +x content/templates/*.rex
+chmod +x ./content/zowe-$ZOWE_VERSION/bin/*.sh
+chmod +x ./content/zowe-$ZOWE_VERSION/scripts/*.sh
+chmod +x ./content/zowe-$ZOWE_VERSION/scripts/opercmd
+chmod +x ./content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
+chmod +x ./content/zowe-$ZOWE_VERSION/install/*.sh
+chmod +x ./content/templates/*.rex
 
 # prepare for SMPE
 echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."
@@ -181,49 +284,6 @@ mv ./content/smpe  .
 # workflow customization
 echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
-
-# # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
-
-# This is the script where we create the fingerprint in the zowe.pax file.
-# To do this, we will create a runtime directory, somewhat like smpe.sh does today,
-# by running zowe-install.sh
-
-# For the moment, I will let smpe.sh continue to create its own runtime folder, but this creation
-# will be removed later for efficiency.
-
-# Note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
-# TODO
-# To delete them, amend catchall-packaging.sh in this directory.
-
-# # Generate reference hash keys of runtime files
-echo "----- Generate reference hash keys of runtime files -----"
-echo Installing Zowe in temporary runtime directory
-mkdir zowe-runtime-dir 
-userid=${USER:-${USERNAME:-${LOGNAME}}}
-tempDSNlevel=T$(($$ % 10000000)) # the lower 7 digits of the PID
-./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.$tempDSNlevel # temp DSN based on PID
-for szweDSN in SZWESAMP SZWEAUTH # delete temp DSNs 
-do
-  tsocmd delete $tempDSNlevel.$szweDSN # 1> /dev/null 2> /dev/null
-done
-utilsDir=`pwd`/content/zowe-$ZOWE_VERSION/scripts/utils 
-mkdir $utilsDir/hash # create work directory
-cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
-
-# Compile the hash program and calculate the checksums of runtime
-./content/zowe-$ZOWE_VERSION/bin/zowe-generate-checksum.sh `pwd`/zowe-runtime-dir $utilsDir/hash 
-
-# save derived runtime hash file and class into the source tree that will be PAXed
-mkdir -p content/zowe-$ZOWE_VERSION/fingerprint
-cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/RefRuntimeHash-$ZOWE_VERSION.txt 
-cp   $utilsDir/hash/HashFiles.class    content/zowe-$ZOWE_VERSION/bin/internal
-
-rm -r $utilsDir/hash # delete work directory
-rm -r zowe-runtime-dir # delete runtime directory.  TODO: Don't do this when smpe.sh does not create its own.  
-
-echo "----- Hash keys of runtime files were generated -----"
-# # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
-
 
 #1. create SMP/E workflow & JCL
 WORKFLOW_PATH="./smpe/pax/USS"
@@ -240,5 +300,10 @@ _createWorkflow "./templates"
 
 #3. clean up working files
 rm -rf "./templates"
+
+# end of workflow customization
+
+# MUST BE LAST - create fingerprint of Zowe's runtime directory files
+_createFingerprint
 
 echo "[$SCRIPT_NAME] done"

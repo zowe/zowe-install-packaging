@@ -18,28 +18,92 @@
 #
 # runs on z/OS, after creating zowe.pax
 #
+# In an earlier step, the build pipeline created zowe.pax, and left
+# us an installed Zowe.
+#
+# This script preps for future processing in catchall-packaging.sh
+# and does SMP/E packaging related work.
+#
+# The next step in the build pipeline will
+# 1. upload zowe.pax and SMP/E related files to Artifactory
+# 2. remove all temp data, partilly done by catchall-packaging.sh
+#
 #######################################################################
 set -x
 
-SCRIPT_NAME=$(basename "$0")
-CURR_PWD=$(pwd)
+# ---------------------------------------------------------------------
+# --- get data passed from pre-packaging.sh
+# creates $inst_hlq $inst_root $inst_log, might be NULL
+# ---------------------------------------------------------------------
+function _getPassedIn
+{
+echo "[$SCRIPT_NAME] getting data from pre-packaging.sh"
+INST_WORK=${ROOT_DIR}/zowe-work    # keep in sync with pre-packaging.sh
+INST_PASS=${INST_WORK}/zowe-install.txt # in sync with pre-packaging.sh
+scripts=${INST_WORK}               # keep in sync with pre-packaging.sh
+unset inst_hlq inst_root inst_log || true  # sync with pre-packaging.sh
 
+if [ ! -f ${INST_PASS} ]; then
+  echo "[${SCRIPT_NAME}] pre-packaging.sh did not create ${INST_PASS}"
+else
+  # get $inst_hlq $inst_root $inst_log
+  for var in $(< ${INST_PASS})
+  do
+    eval $var
+  done    # for var
+
+  # show what pre-packaging.sh left us
+  echo "[${SCRIPT_NAME}] content \$inst_root: ls -A $inst_root"
+  ls -A $inst_root 2>&1 || true
+  echo "[${SCRIPT_NAME}] inst_log=$inst_log"
+  echo "[${SCRIPT_NAME}] inst_hlq=$inst_hlq"
+fi    # ${INST_PASS} exists
+}    # _getPassedIn
+
+# ---------------------------------------------------------------------
+# --- main --- main --- main --- main --- main --- main --- main ---
+# ---------------------------------------------------------------------
+# $0=./post-packaging.sh
+SCRIPT_NAME=$(basename "$0")
+BASE_DIR=$(dirname "$0")      # <something>
+cd $BASE_DIR
+ROOT_DIR=$(pwd)               # <something>
+
+# get data passed from pre-packaging.sh
+_getPassedIn
+# you can now use $inst_hlq $inst_root $inst_log, might be NULL
+
+# write data set HLQs we want catchall-packaging.sh to clean up
+if [ "$inst_hlq" ]; then
+  # keep in sync with catchall-packaging.sh
+  echo "$inst_hlq" > ${ROOT_DIR}/cleanup-smpe-packaging-datasets.txt
+fi    #
+
+# continue processing ?
 if [ "$BUILD_SMPE" != "yes" ]; then
   echo "[$SCRIPT_NAME] not building SMP/E package, skipping."
-  exit 0
+  exit 0                                                         # EXIT
 fi
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
-  exit 1
+  exit 1                                                         # EXIT
 else
   echo "[$SCRIPT_NAME] working on Zowe v${ZOWE_VERSION} ..."
 fi
 
+# show what's already present
+#echo "[${SCRIPT_NAME}] content \$ROOT_DIR: find ."
+#find . || true                            # includes installed product
+echo "[${SCRIPT_NAME}] content \$ROOT_DIR: ls -A ."
+ls -A . || true
+
 # define constants for this build
-SMPE_BUILD_ROOT=${CURR_PWD}/zowe
+# keep in ${ROOT_DIR} so pipeline variable $KEEP_TEMP_FOLDER applies
+SMPE_BUILD_ROOT=${ROOT_DIR}/zowe
 SMPE_BUILD_LOG_DIR=${SMPE_BUILD_ROOT}/logs # keep in sync with default log dir in smpe/bld/get-config.sh
 SMPE_BUILD_SHIP_DIR=${SMPE_BUILD_ROOT}/ship # keep in sync with default ship dir in smpe/bld/get-config.sh
+SMPE_BUILD_HLQ=${USER:-${USERNAME:-${LOGNAME}}}
 # random MLQ must begin with letter, @, #, or $, max 8 char
 RANDOM_MLQ=ZWE$RANDOM  # RANDOM gives a random number between 0 & 32767
 INPUT_TXT=input.txt
@@ -52,44 +116,41 @@ FMID=AZWE${FMID_VERSION}
 # define constants specific for Marist server
 # to package on another server, we may need different settings
 export TMPDIR=/ZOWE/tmp
-SMPE_BUILD_HLQ=ZOWEAD3
 SMPE_BUILD_VOLSER=ZOWE02
 
-# write data sets list we want to clean up
-echo "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" > ${CURR_PWD}/cleanup-smpe-packaging-datasets.txt
-
 # add rx permission to all smpe files
-chmod -R 755 smpe
+chmod -R 755 ${ROOT_DIR}/smpe
 
 # create smpe.pax
-cd ${CURR_PWD}/smpe/pax
+cd ${ROOT_DIR}/smpe/pax
 echo "files to be pax'd"
 ls -lER .
-pax -x os390 -w -f ../../smpe.pax *
-cd ${CURR_PWD}
+pax -x os390 -w -f ${ROOT_DIR}/smpe.pax *
+cd ${ROOT_DIR}
 
 # extract last build log
-LAST_BUILD_LOG=$(ls -1 ${CURR_PWD}/smpe/smpe-build-logs* || true)
+LAST_BUILD_LOG=$(ls -1 ${ROOT_DIR}/smpe/smpe-build-logs* || true)
 if [ -n "${LAST_BUILD_LOG}" ]; then
   mkdir -p "${SMPE_BUILD_LOG_DIR}"
   cd "${SMPE_BUILD_LOG_DIR}"
   pax -rf "${LAST_BUILD_LOG}" *
-  cd "${CURR_PWD}"
+  cd "${ROOT_DIR}"
 fi
 
 # display all files, including input pax files & extracted log files
-echo "[$SCRIPT_NAME] content of $CURR_PWD...."
-find . -print
+relative_root=$(echo $inst_root | sed "s!${ROOT_DIR}!.!")
+echo "[$SCRIPT_NAME] content of ${ROOT_DIR}.... (excluding installed components)"
+find . -print | grep -v "$relative_root/components/"
 
 # find input pax files
-if [ ! -f zowe.pax ]; then
+if [ ! -f ${ROOT_DIR}/zowe.pax ]; then
   echo "[$SCRIPT_NAME][ERROR] Cannot find Zowe package."
-  exit 1
+  exit 1                                                         # EXIT
 fi
 
-if [ ! -f smpe.pax ]; then
-  echo "[$SCRIPT_NAME][ERROR] Cannot find SMP/e package."
-  exit 1
+if [ ! -f ${ROOT_DIR}/smpe.pax ]; then
+  echo "[$SCRIPT_NAME][ERROR] Cannot find SMP/E package."
+  exit 1                                                         # EXIT
 fi
 
 # get build info from manifest.json
@@ -135,12 +196,13 @@ BUILD_NUMBER=$(sed -n '/ "build": {/,/ },/p' $manifest \
 
 # SMPE build expects a text file specifying the files it must process
 echo "[$SCRIPT_NAME] preparing ${INPUT_TXT} ..."
-echo "${SMPE_BUILD_ROOT}.pax" > "${INPUT_TXT}"
-echo "${CURR_PWD}/smpe.pax" >> "${INPUT_TXT}"
+touch "${INPUT_TXT}"
+echo "${ROOT_DIR}/zowe.pax" >> "${INPUT_TXT}"
+echo "${ROOT_DIR}/smpe.pax" >> "${INPUT_TXT}"
 echo "[$SCRIPT_NAME] content of ${INPUT_TXT}:"
 cat "${INPUT_TXT}"
 
-mkdir -p ${SMPE_BUILD_ROOT}
+mkdir -p ${SMPE_BUILD_ROOT} ${SMPE_BUILD_LOG_DIR}
 
 echo
 echo "+-------------------------+"
@@ -154,19 +216,22 @@ echo
 
 # start SMPE build
 #% required
-#% -h hlq        use the specified high level qualifier
-#% -i inputFile  reference file listing input files to process
-#% -r rootDir    use the specified root directory
-#% -v vrm        FMID 3-character version/release/modification
+#% -h hlq          use the specified high level qualifier
+#% -i inputFile    reference file listing input files to process
+#% -r rootDir      use the specified root directory
+#% -v vrm          FMID 3-character version/release/modification
 #% optional
-#% -a alter.sh   execute script before/after install to alter setup
-#% -b branch     GitHub branch used for this build
-#% -B build      GitHub build number for this branch
-#% -d            enable debug messages
-#% -E success    exit with RC 0, create file on successful completion
-#% -p version    product version
-#% -P            fail build if APAR/USERMOD is created instead of PTF
-#% -V volume     allocate data sets on specified volume(s)
+#% -a alter.sh     execute script before/after install to alter setup
+#% -b branch       GitHub branch used for this build
+#% -B build        GitHub build number for this branch
+#% -d              enable debug messages
+#% -E success      exit with RC 0, create file on successful completion
+#% -H installHlq   use the specified pre-installed product install MVS
+#% -I installDir   use the specified pre-installed product install USS
+#% -L install.log  use the specified pre-installed product install log
+#% -p version      product version
+#% -P              fail build if APAR/USERMOD is created instead of PTF
+#% -V volume       allocate data sets on specified volume(s)
 
 external=""
 echo "BRANCH_NAME=$BRANCH_NAME"
@@ -176,16 +241,19 @@ test -n "$BUILD_NUMBER" && external="$external -B $BUILD_NUMBER"
 echo "ZOWE_VERSION=$ZOWE_VERSION"
 test -n "$ZOWE_VERSION" && external="$external -p $ZOWE_VERSION"
 
-${CURR_PWD}/smpe/bld/smpe.sh \
-  -a ${CURR_PWD}/smpe/bld/alter.sh \
-  -d \
-  -E "${SMPE_BUILD_SHIP_DIR}/success" \
-  -V "${SMPE_BUILD_VOLSER}" \
-  -h "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" \
-  -i "${CURR_PWD}/${INPUT_TXT}" \
-  -r "${SMPE_BUILD_ROOT}" \
-  -v ${FMID_VERSION} \
-  $external
+opt=""
+test -z "${inst_root}" && opt="$opt -a ${ROOT_DIR}/smpe/bld/alter.sh"
+opt="$opt -d"
+opt="$opt -E ${SMPE_BUILD_SHIP_DIR}/success"
+opt="$opt -V ${SMPE_BUILD_VOLSER}"
+opt="$opt -h ${SMPE_BUILD_HLQ}.${RANDOM_MLQ}"
+opt="$opt -i ${ROOT_DIR}/${INPUT_TXT}"
+test -n "${inst_hlq}" && opt="$opt -H ${inst_hlq}"
+test -n "${inst_root}" && opt="$opt -I ${inst_root}"
+test -n "${inst_log}" && opt="$opt -L ${inst_log}"
+opt="$opt -r ${SMPE_BUILD_ROOT}"
+opt="$opt -v ${FMID_VERSION}"
+${ROOT_DIR}/smpe/bld/smpe.sh  $opt $external
 
 echo
 echo "+----------------------+"
@@ -198,28 +266,28 @@ echo "+----------------------+"
 echo
 
 # display all files left behind by SMPE build
-echo "[$SCRIPT_NAME] content of ${SMPE_BUILD_ROOT}...."
-find ${SMPE_BUILD_ROOT} -print
+echo "[$SCRIPT_NAME] content of ${SMPE_BUILD_ROOT}.... (excluding installed components)"
+find ${SMPE_BUILD_ROOT} -print | grep -v "/components/"
 
 # see if SMPE build completed successfully
 # MUST be done AFTER tasks that must always run after SMPE build
 if [ ! -f "${SMPE_BUILD_SHIP_DIR}/success" ]; then
   echo "[$SCRIPT_NAME][ERROR] SMPE build did not complete successfully"
-  exit 1
+  exit 1                                                         # EXIT
 fi
 
 # TODO we no longer need the uppercase tempdir, so this should be obsolete
 # remove tmp folder
-UC_CURR_PWD=$(echo "${CURR_PWD}" | tr [a-z] [A-Z])
-if [ "${UC_CURR_PWD}" != "${CURR_PWD}" ]; then
-  # CURR_PWD will be removed after build automatically, we just need to delete
+UC_ROOT_DIR=$(echo "${ROOT_DIR}" | tr [a-z] [A-Z])
+if [ "${UC_ROOT_DIR}" != "${ROOT_DIR}" ]; then
+  # ROOT_DIR will be removed after build automatically, we just need to delete
   # the extra temp folder in uppercase created by GIMZIP
-  rm -fr "${UC_CURR_PWD}"
+  rm -fr "${UC_ROOT_DIR}"
 fi
 
 # save current build log directory, will be placed in artifactory
 cd "${SMPE_BUILD_LOG_DIR}"
-pax -w -f "${CURR_PWD}/smpe-build-logs.pax.Z" *
+pax -w -f "${ROOT_DIR}/smpe-build-logs.pax.Z" *
 
 # find the final build results
 cd "${SMPE_BUILD_SHIP_DIR}"
@@ -246,18 +314,18 @@ fi
 
 # if ptf-bucket.txt exists then publish PTF, otherwise publish FMID
 cd "${SMPE_BUILD_SHIP_DIR}"
-if [ -f ${CURR_PWD}/smpe/bld/service/ptf-bucket.txt ]; then       # PTF
-  cp  ${SMPE_PTF_ZIP} ${CURR_PWD}/zowe-smpe.zip
+if [ -f ${ROOT_DIR}/smpe/bld/service/ptf-bucket.txt ]; then       # PTF
+  cp  ${SMPE_PTF_ZIP} ${ROOT_DIR}/zowe-smpe.zip
   # do not alter existing PD in docs, wipe content of the new one
   rm "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
   touch "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}"
 else                                                             # FMID
-  cp ${SMPE_FMID_ZIP} ${CURR_PWD}/zowe-smpe.zip
+  cp ${SMPE_FMID_ZIP} ${ROOT_DIR}/zowe-smpe.zip
   # doc build pipeline must pick up PD for inclusion
 fi
 
 # stage build output for upload to artifactory
-cd "${CURR_PWD}"
+cd "${ROOT_DIR}"
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_FMID_ZIP}"  fmid.zip
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PD_HTM}" pd.htm
 mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PROMOTE_TAR}" ${SMPE_PROMOTE_TAR}
@@ -271,8 +339,9 @@ iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 echo "[$SCRIPT_NAME] done"
 
 # files to be uploaded to artifactory:
-# ${CURR_PWD}/smpe-build-logs.pax.Z
-# ${CURR_PWD}/zowe-smpe.zip          -> goes to zowe.org
-# ${CURR_PWD}/fmid.zip
-# ${CURR_PWD}/pd.htm                 -> can be a null file
-# ${CURR_PWD}/smpe-promote.tar       -> can be a null file
+# ${ROOT_DIR}/smpe-build-logs.pax.Z
+# ${ROOT_DIR}/zowe.pax               -> goes to zowe.org
+# ${ROOT_DIR}/zowe-smpe.zip          -> goes to zowe.org
+# ${ROOT_DIR}/fmid.zip
+# ${ROOT_DIR}/pd.htm                 -> can be a null file
+# ${ROOT_DIR}/smpe-promote.tar       -> can be a null file
