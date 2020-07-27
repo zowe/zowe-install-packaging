@@ -1,0 +1,4 @@
+smpe/bld/smpe-install.sh
+  replace removal of input with "touch/find ! -newer" approach
+smpe/pax/zowe-install-smpe.sh
+  replace removal of input with "touch/find ! -newer" approach
