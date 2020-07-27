@@ -11,6 +11,9 @@
 //* Change #hlq to the HLQ used to upload the ++SYSMOD.
 //* (optional) Uncomment and change #volser to specify a volume.
 //*
+//* IBM: max PTF size is 5,000,000 * 80 bytes (including SMPE metadata)
+//*      5mio FB80 lines requires 7,164 tracks
+//*
 //         SET HLQ=#hlq
 //         SET FMID=#fmid
 //         SET SYSMOD1=#sysmod1
@@ -25,7 +28,7 @@
 //            UNIT=SYSALLDA,
 //            VOL=SER=#volser,
 //*            BLKSIZE=6160,
-//            SPACE=(TRK,(5423,15))
+//            SPACE=(TRK,(7164,5))
 //TMP0002  DD DSN=&HLQ..ZOWE.&FMID..&SYSMOD2,
 //            DISP=(NEW,CATLG,DELETE),
 //            DSORG=PS,
@@ -34,5 +37,5 @@
 //            UNIT=SYSALLDA,
 //            VOL=SER=#volser,
 //*            BLKSIZE=6160,
-//            SPACE=(TRK,(3270,15))
+//            SPACE=(TRK,(7164,5))
 //*
