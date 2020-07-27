@@ -1,0 +1,67 @@
+****************************************************************
+* Affected function: customization                             *
+****************************************************************
+* Description: Add configuration workflows                     *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: $ZOWE_ROOT_DIR/workflows/*                             *
+****************************************************************
+z/OSMF workflows are now availble for some configuration tasks.
+These workflows are available in the workflows subdirectory of
+your product install, for example /usr/lpp/zowe/workflows.
+
+* ZWESECUR.xml - Configure z/OS Security Manager
+  matches JCL SZWESAMP(ZWESECUR)
+* ZWEWRF05.xml - Configure Zowe certificates
+* ZWEWRF06.xml - Configure Cross Memory Server
+* ZWEWRF03.xml - Create Instance Directory and Started Tasks
+    
+More details are avialable in the online documentation:
+https://docs.zowe.org/stable/user-guide/configure-zowe-zosmf-wor
+kflow.html#configure-zowe-with-z-osmf-workflows
+
+****************************************************************
+* Affected function: SAF security definitions                  *
+****************************************************************
+* Description: Permit AUXUSER to access XMEM server            *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: SZWESAMP(ZWESECUR & ZWENOSEC)                          *
+****************************************************************
+Permit AUX STC to use XMEM cross memory server.
+
+The user AUXUSER that runs the cross memory server STC ZWESASTC
+must have READ access to the ZWES.IS CLASS before you start the
+XMEM server STC ZWESISTC.
+
+This change updates the security definitions (ZWESECUR JCL and
+workflow) to permit the AUX server to use the XMEM cross memory
+server. The ZWENOSEC JCL is updated to remove this permit.
+
+Update your existing customized ZWESECUR JCL to duplicate this
+change, and execute the command applicable to your security
+environment to grant this permit.
+
+SAF control statements to achieve this, and to un-do it, are
+provided for RACF, ACF/2 and TSS as additions to the following
+files:
+
+ $ZOWE_ROOT_DIR/workflows/ZWESECUR.xml
+ hlq.SZWESAMP(ZWESECUR)
+ hlq.SZWESAMP(ZWENOSEC)
+
+For RACF, these statements are repeated here for your
+convenience:
+
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&AUXUSER.)
+  SETROPTS RACLIST(FACILITY) REFRESH
+
+For ACF2 and TSS, please refer to the stated files.
+
+Since ZWESISTC is required for many Zowe services, you must shut
+down the Zowe server ZWESVSTC and the XMEM server ZWESISTC
+before you APPLY this PTF, then run the SAF commands provided as 
+described above, before restarting the ZWESISTC and ZWESVSTC 
+servers.
