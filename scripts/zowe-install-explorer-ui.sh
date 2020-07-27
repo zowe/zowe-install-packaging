@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2018, 2020
 ################################################################################
 
 #********************************************************************
@@ -18,7 +18,19 @@
 
 echo "<zowe-explorer-ui-install.sh>" >> $LOG_FILE
 
-# TODO add back uss and mvs
+# install explorer-ui-server
+cd $INSTALL_DIR
+EXPLORER_SERVER_PAX=$PWD/$(ls -t ./files/explorer-ui-server-*.pax | head -1)
+EXPLORER_INSTALL_FOLDER=${ZOWE_ROOT_DIR}/components/explorer-ui-server
+echo "  Installing explorer-ui-server into ${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
+umask 0002
+mkdir -p "${EXPLORER_INSTALL_FOLDER}"
+cd ${EXPLORER_INSTALL_FOLDER}
+echo "  Unpax of ${EXPLORER_SERVER_PAX} into ${PWD}" >> $LOG_FILE
+pax -rf ${EXPLORER_SERVER_PAX} -ppx
+chmod -R 755 .
+
+
 UI_PLUGIN_LIST="jes mvs uss"
 for COMPONENT_ID in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_UPPERCASE=$(echo $COMPONENT_ID | tr '[a-z]' '[A-Z]')
