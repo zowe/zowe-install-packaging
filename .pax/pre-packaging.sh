@@ -182,8 +182,27 @@ echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."
 mv ./content/smpe  .
 
 # workflow customization
+# >>>
 echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
+
+#1. create SMP/E workflow & JCL
+WORKFLOW_PATH="./smpe/pax/USS"
+JCL_PATH="./smpe/pax/MVS"
+_createWorkflow "./templates" "smpe-install"
+# adjust names as these files will be known by SMP/E
+mv -f "$WORKFLOW_PATH/smpe-install.xml" "$WORKFLOW_PATH/ZWEWRF01.xml"
+mv -f "$WORKFLOW_PATH/smpe-install.properties" "$WORKFLOW_PATH/ZWEYML01.yml"
+
+#2. create all other workflow & JCL, must be last in workflow creation
+WORKFLOW_PATH="./content/zowe-$ZOWE_VERSION/files/workflows"
+JCL_PATH="./content/zowe-$ZOWE_VERSION/files/jcl"
+_createWorkflow "./templates"
+
+#3. clean up working files
+rm -rf "./templates"
+
+# <<<
 
 # # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
 
@@ -226,22 +245,5 @@ rm -r zowe-runtime-dir # delete runtime directory.  TODO: Don't do this when smp
 
 echo "----- Hash keys of runtime files were generated -----"
 # # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
-
-
-#1. create SMP/E workflow & JCL
-WORKFLOW_PATH="./smpe/pax/USS"
-JCL_PATH="./smpe/pax/MVS"
-_createWorkflow "./templates" "smpe-install"
-# adjust names as these files will be known by SMP/E
-mv -f "$WORKFLOW_PATH/smpe-install.xml" "$WORKFLOW_PATH/ZWEWRF01.xml"
-mv -f "$WORKFLOW_PATH/smpe-install.properties" "$WORKFLOW_PATH/ZWEYML01.yml"
-
-#2. create all other workflow & JCL, must be last in workflow creation
-WORKFLOW_PATH="./content/zowe-$ZOWE_VERSION/files/workflows"
-JCL_PATH="./content/zowe-$ZOWE_VERSION/files/jcl"
-_createWorkflow "./templates"
-
-#3. clean up working files
-rm -rf "./templates"
 
 echo "[$SCRIPT_NAME] done"
