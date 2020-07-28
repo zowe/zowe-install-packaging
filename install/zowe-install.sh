@@ -171,6 +171,9 @@ else
   echo "OK: No fingerprint in install directory $INSTALL_DIR, create it with zowe-generate-checksum.sh" >> $LOG_FILE
 fi
 
+mkdir -p ${ZOWE_ROOT_DIR}/workflows
+cp -r $INSTALL_DIR/files/workflows/. $ZOWE_ROOT_DIR/workflows/
+
 mkdir -p ${ZOWE_ROOT_DIR}/bin
 cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/bin
