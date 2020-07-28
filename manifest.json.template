@@ -64,7 +64,7 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.2"
+      "version": "~1.0.3-PR-207"
     },
     "org.zowe.explorer-mvs": {
       "version": "1.0.2"
@@ -73,7 +73,7 @@
       "version": "1.0.3"
     },
     "org.zowe.explorer-ui-server": {
-      "version": "~0.2.14-USERS-STEVENH-BUILD-PAX"
+      "version": "~0.2.13-PR-37"
     },
     "org.zowe.apiml.sdk.zowe-install": {
        "version": "~1.16.0-SNAPSHOT",
