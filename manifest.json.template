@@ -64,9 +64,7 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.3-PR-207",
-      "repository": "libs-snapshot-local",
-      "artifact": "explorer-jes-1.0.3-pr-207-5-20200728140926.pax"
+      "version": "~1.0.3-PR-207"
     },
     "org.zowe.explorer-mvs": {
       "version": "1.0.2"
