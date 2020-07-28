@@ -16,7 +16,7 @@ your product install, for example /usr/lpp/zowe/workflows.
 * ZWEWRF05.xml - Configure Zowe certificates
 * ZWEWRF06.xml - Configure Cross Memory Server
 * ZWEWRF03.xml - Create Instance Directory and Started Tasks
-    
+
 More details are avialable in the online documentation:
 https://docs.zowe.org/stable/user-guide/configure-zowe-zosmf-wor
 kflow.html#configure-zowe-with-z-osmf-workflows
@@ -62,8 +62,8 @@ For ACF2 and TSS, please refer to the stated files.
 
 Since ZWESISTC is required for many Zowe services, you must shut
 down the Zowe server ZWESVSTC and the XMEM server ZWESISTC
-before you APPLY this PTF, then run the SAF commands provided as 
-described above, before restarting the ZWESISTC and ZWESVSTC 
+before you APPLY this PTF, then run the SAF commands provided as
+described above, before restarting the ZWESISTC and ZWESVSTC
 servers.
 
 ****************************************************************
@@ -75,29 +75,29 @@ servers.
 ****************************************************************
 * Part: instance.env                                           *
 ****************************************************************
-If you are upgrading to Zowe 1.14 or higher from a previous 
-release, and the value of ZOWE_EXPLORER_HOST does not match the 
-host and domain that you put into your browser to access Zowe, 
-then you must update your configuration due to updated 
-referrer-based security. 
+If you are upgrading to Zowe 1.14 or higher from a previous
+release, and the value of ZOWE_EXPLORER_HOST does not match the
+host and domain that you put into your browser to access Zowe,
+then you must update your configuration due to updated
+referrer-based security.
 
 You can either:
 
-Define ZWE_EXTERNAL_HOSTS equal to a comma-separated list of 
+Define ZWE_EXTERNAL_HOSTS equal to a comma-separated list of
 hosts names you use to access Zowe from your browser,
 
 or:
 
-Define ZWE_REFERRER_HOSTS the same way, for the values to be 
+Define ZWE_REFERRER_HOSTS the same way, for the values to be
 applied specifically for referrer purposes.
 
 New variables are added to instance.env :
-  
+
 ZWE_EXTERNAL_HOSTS=host1,host2,...
-# comma-separated list of hosts names you use to access Zowe 
+# comma-separated list of hosts names you use to access Zowe
 # from your browser
 
 ZWE_REFERRER_HOSTS=host1,host2,...
-# comma-separated list of hosts names you use to access Zowe 
-# from your browser, where the value is to be applied 
+# comma-separated list of hosts names you use to access Zowe
+# from your browser, where the value is to be applied
 # specifically for referrer purposes
