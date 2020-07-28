@@ -14,13 +14,22 @@
 	</workflowInfo>
 	<variable name="ibmTemplate" scope="instance" visibility="public">
 		<label>Original IBM JCLs in steps</label>
-		<abstract>Specifies whether steps should contain original IBM JCLs (keep NO to run properly with zosmf)</abstract>
-		<description>IBM have JCLs not ready for automatic execution. &lt;br&gt;Modifications were done to run properly automatically under zosmf workflow.&lt;br&gt; If you specify YES, you would have to update every step context manually before step execution.</description>
-		<category>Internal</category>
+		<abstract>Specifies whether steps should contain original IBM JCLs (keep NO to run properly with z/osmf)</abstract>
+		<description>IBM have JCLs not ready for automatic execution. &lt;br&gt;Modifications were done to run properly automatically under zosmf workflow.&lt;br&gt; If you specify YES, you would have to update and modify every step context manually before step execution.</description>
+		<category>Internal z/osmf setup</category>
 		<string valueMustBeChoice="true" multiLine="false">
 			<choice>YES</choice>
 			<choice>NO</choice>
 			<default>NO</default>
+		</string>
+	</variable>
+	<variable name="hlq" scope="instance" visibility="public">
+		<label>SMPMCS High Level Qualifier</label>
+		<abstract>Change hlq to the high level qualifier(s) of the SMPMCS and REL files (hlq.ZOWE.AZWE001.SMPMCS)</abstract>
+		<description>Change hlq to the high level qualifier(s) of the SMPMCS and&lt;br&gt;REL files, as specified when uploading the files to the host&lt;br&gt;(as described in the program directory).</description>
+		<category>SMPMCS and REL files</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<validationType>DSNAME</validationType>
 		</string>
 	</variable>
 	<variable name="jobCard" scope="instance" visibility="public">
@@ -63,7 +72,7 @@
 		<label>CSI Volume Serial</label>
 		<abstract>Change csivol to the volser for the CSI and SMP/E data sets, if you choose not to use the defau..</abstract>
 		<description>Change csivol to the volser for the CSI and SMP/E data sets,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use.</description>
-		<category>General</category>
+		<category>CSI</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>VOLSER</validationType>
 		</string>
@@ -72,7 +81,7 @@
 		<label>Storage Class</label>
 		<abstract>If required, change storclass for the SMS-managed CSI and SMP/E data sets.</abstract>
 		<description>If required, change storclass for the SMS-managed CSI and SMP/E data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
-		<category>General</category>
+		<category>CSI</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
@@ -81,7 +90,7 @@
 		<label>Data Class</label>
 		<abstract>If required, change dataclass for SMS-managed CSI and SMP/E data sets. Use the DATACLAS parameter..</abstract>
 		<description>If required, change dataclass for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
-		<category>General</category>
+		<category>CSI</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
@@ -90,7 +99,7 @@
 		<label>Management Class</label>
 		<abstract>You can change management class for SMS-managed CSI and SMP/E data sets. Use the MGMTCLAS par..</abstract>
 		<description>You can change management class for&lt;br&gt;SMS-managed CSI and SMP/E data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
-		<category>General</category>
+		<category>CSI</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
@@ -98,7 +107,7 @@
 	<variable name="tzone" scope="instance" visibility="public">
 		<label>Target Library Zone</label>
 		<abstract>Change tzone to your CSI target zone name...</abstract>
-		<description>Change tzone to your CSI target zone name.</description>
+		<description>Change tzone to your CSI target zone name. (Example value is CAIT)</description>
 		<category>Target Library</category>
 		<string multiLine="false" valueMustBeChoice="false">
 		</string>
@@ -107,7 +116,7 @@
 		<label>CSI High Level Qualifier</label>
 		<abstract>Change csihlq to the high level qualifier for the CSI and other SMP/E data sets. The maximum le..</abstract>
 		<description>Change csihlq to the high level qualifier for the CSI and&lt;br&gt;other SMP/E data sets. The maximum length is 35 characters.</description>
-		<category>General</category>
+		<category>CSI</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSNAME</validationType>
 		</string>
@@ -115,20 +124,11 @@
 	<variable name="dzone" scope="instance" visibility="public">
 		<label>Distribution Library Zone</label>
 		<abstract>Change dzone to your CSI distribution zone name...</abstract>
-		<description>Change dzone to your CSI distribution zone name.</description>
+		<description>Change dzone to your CSI distribution zone name. (Example value is CAID)</description>
 		<category>Distribution Library</category>
 		<string multiLine="false" valueMustBeChoice="false">
 		</string>
-	</variable>
-	<variable name="hlq" scope="instance" visibility="public">
-		<label>SMPMCS High Level Qualifier</label>
-		<abstract>Change ${hlq} to the high level qualifier(s) of the SMPMCS andREL files, as specified when upl..</abstract>
-		<description>Change ${hlq} to the high level qualifier(s) of the SMPMCS and&lt;br&gt;REL files, as specified when uploading the files to the host&lt;br&gt;(as described in the program directory).</description>
-		<category>General</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<validationType>DSNAME</validationType>
-		</string>
-	</variable>
+	</variable>	
 	<variable name="thlq" scope="instance" visibility="public">
 		<label>Target Library High Level Qualifier</label>
 		<abstract>Change thlq to the appropriate high level qualifier(s) for the target data sets. The maximum le..</abstract>
@@ -223,24 +223,25 @@
 		<label>File System Data Set Name</label>
 		<abstract>Change the string fsdsn to the appropriate data set name for the file system that will be creat..</abstract>
 		<description>Change the string fsdsn to the appropriate data set name&lt;br&gt;for the file system that will be created.</description>
-		<category>General</category>
+		<category>CSIZFS</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSNAME</validationType>
 		</string>
 	</variable>
 	<variable name="pathPrefix" scope="instance" visibility="public">
-		<label>Path Prefix</label>
-		<abstract>Change the string &quot;-PathPrefix-&quot; to the appropriate high level directory name with leading and ..</abstract>
-		<description>Change the string &quot;-PathPrefix-&quot; to the appropriate&lt;br&gt;high level directory name with leading and trailing &quot;/&quot;. For&lt;br&gt;users installing in the root this would be &quot;/&quot;. For others,&lt;br&gt;the high level directory may be something like &quot;/service/&quot;,&lt;br&gt;or a more meaningful name. &lt;br&gt;Please note that the replacement string is case sensitive.</description>
-		<category>General</category>
+		<label>Mountpoint Path Prefix</label>
+		<abstract>Change Mountpoint &quot;-PathPrefix-&quot; to high level directory name with leading and trailing &quot;/&quot;</abstract>
+		<description>Change the string Mountpoint &quot;-PathPrefix-&quot; to the appropriate&lt;br&gt;high level directory name with leading and trailing &quot;/&quot;. For&lt;br&gt;users installing in the root this would be &quot;/&quot;. For others,&lt;br&gt;the high level directory may be something like &quot;/service/&quot;,&lt;br&gt;or a more meaningful name. &lt;br&gt;Please note that the replacement string is case sensitive.</description>
+		<category>CSIZFS</category>
 		<string multiLine="false" valueMustBeChoice="false">
 		</string>
 	</variable>
 	<variable name="dsprefix" scope="instance" visibility="public">
 		<label>Data Set Prefix</label>
-		<abstract>If you are APPLYing this function for the first time, change dsprefix to the value specified fo..</abstract>
-		<description>If you are APPLYing this function for the first time, change&lt;br&gt;dsprefix to the value specified for DSPREFIX in the OPTIONS&lt;br&gt;entry of the GLOBAL zone. &lt;br&gt;If you used the optional ZWE1SMPE job to define the CSI,&lt;br&gt;the dsprefix value will match the CSI high level qualifier. &lt;br&gt;&lt;br&gt;Otherwise keep this with default and set thlq and tvol (or tsclass)</description>
-		<category>General</category>
+		<abstract>If you are APPLYing this function for the first time, it is your prefix.AZWE001.F1</abstract>
+		<description>If you are APPLYing this function for the first time, change&lt;br&gt;dsprefix to the value specified for DSPREFIX in the OPTIONS&lt;br&gt;entry of the GLOBAL zone. &lt;br&gt;If you used the optional ZWE1SMPE job to define the CSI,&lt;br&gt;the dsprefix value will match the CSI high level qualifier.
+		(prefix.AZWE001.F1) &lt;br&gt;&lt;br&gt;Otherwise keep this with default and set thlq and tvol (or tsclass)</description>
+		<category>AZWE001 prefix</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSNAME</validationType>
 		</string>
@@ -249,7 +250,7 @@
 		<label>File System Volume</label>
 		<abstract>Change fsvol to the volser for the file system, if you choose not to use the default of letting..</abstract>
 		<description>Change fsvol to the volser for the file system,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use. &lt;br&gt;if you have SMS-management, keep this with default #fsvol&lt;br&gt;and set storage class (possibli management and data class)</description>
-		<category>General</category>
+		<category>CSIZFS</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>VOLSER</validationType>
 		</string>
@@ -258,7 +259,7 @@
 		<label>File System Storage Class</label>
 		<abstract>Change storclass for the SMS-managed file system data sets. SMS uses the attributes in the storag..</abstract>
 		<description>Change storclass for the SMS-managed file system data sets. &lt;br&gt;SMS uses the attributes in the storage class&lt;br&gt;for the storage service level of the data set. &lt;br&gt;Note that installation-written ACS routines may select&lt;br&gt;a management class and data class and can&lt;br&gt;override the specified storage class.</description>
-		<category>General</category>
+		<category>CSIZFS</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
@@ -267,7 +268,7 @@
 		<label>File System Data Class</label>
 		<abstract>You can change dataclass for the SMS-managed file system data sets. Use the DATACLAS parameter t..</abstract>
 		<description>You can change dataclass for&lt;br&gt;SMS-managed file system data sets. &lt;br&gt;Use the DATACLAS parameter to specify a data class&lt;br&gt;for a new data set. The storage administrator at your&lt;br&gt;installation defines the names of the data classes&lt;br&gt;you can code on the DATACLAS parameter.</description>
-		<category>General</category>
+		<category>CSIZFS</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
@@ -276,39 +277,40 @@
 		<label>File System Management Class</label>
 		<abstract>You can change management class for SMS-managed file system data sets. Use the MGMTCLAS param..</abstract>
 		<description>You can change management class for&lt;br&gt;SMS-managed file system data sets. &lt;br&gt;Use the MGMTCLAS parameter to specify a management class&lt;br&gt;for a new SMS-managed data set.</description>
-		<category>General</category>
+		<category>CSIZFS</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<validationType>DSMEMBERNAME</validationType>
 		</string>
-	</variable>
+	</variable>	
 	<step name="define_variables" optional="false">
 		<title>Define Variables</title>
 		<description>Step to define the variables</description>
+		<variableValue name="hlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dsprefix" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="csihlq" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="csivol" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="storclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dataclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="mgmtclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="tzone" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="csihlq" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="dzone" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="hlq" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsdsn" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="pathPrefix" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsvol" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="tzone" noPromptIfSet="false" required="false" scope="instance"/>		
 		<variableValue name="thlq" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="tvol" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="tsclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="tdclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="tmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dzone" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dhlq" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dvol" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="dsclass" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="ddclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="dmclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="dhlq" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="fsdsn" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="pathPrefix" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="dsprefix" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="fsvol" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="fsclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="fdclass" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="fmclass" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="dmclass" noPromptIfSet="false" required="false" scope="instance"/>	
+		<variableValue name="ibmTemplate" noPromptIfSet="true" required="false" scope="instance"/>
 		<instructions substitution="false">Run this step to initialize variable values</instructions>
 		<weight>1</weight>
 		<autoEnable>true</autoEnable>
@@ -385,10 +387,10 @@
 		</template>
 	</step>
 	<step name="ZWE6DDEF" optional="false">
-		<title>DDEF Creation</title>
-		<description>This step creates the DDEF entries</description>
+		<title>DDDEF Creation</title>
+		<description>This step creates the DDDEF entries</description>
 		<prereqStep name="define_variables"/>
-		<instructions substitution="false">This step creates the DDEF entries</instructions>
+		<instructions substitution="false">This step creates the DDDEF entries</instructions>
 		<weight>1</weight>
 		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
