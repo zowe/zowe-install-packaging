@@ -46,7 +46,8 @@ fi
 
 # identify this script
 SCRIPT="$(basename $0)"
-here=$(cd $(dirname $0);pwd)   # script location
+# sub-scripts expect the current directory matches their location
+cd ${ZOWE_ROOT_DIR}/scripts/utils   
 
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
 set_install_log_directory ${LOG_DIRECTORY}
@@ -162,7 +163,7 @@ ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${authlib} ${parmlib} are used to replace DSNs in PROCLIB members
-$here/zowe-copy-to-JES.sh \
+./zowe-copy-to-JES.sh \
   -s ${samplib} \
   -i ${ZWEXASTC} \
   -r ${proclib} \
@@ -172,7 +173,7 @@ $here/zowe-copy-to-JES.sh \
   -f ${LOG_FILE}
 aux_rc=$?
 echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
-$here/zowe-copy-to-JES.sh \
+./zowe-copy-to-JES.sh \
   -s ${samplib} \
   -i ${ZWEXMSTC} \
   -r ${proclib} \
