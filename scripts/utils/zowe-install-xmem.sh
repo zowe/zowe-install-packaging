@@ -68,17 +68,18 @@ fi
 
 if [[ -n ${missing_parms} ]]
 then
+USER=${LOGNAME:-{userid}}
 echo Parameters supplied were $@ >> ${LOG_FILE}
 echo "Some required parameters were not supplied:${missing_parms}"
 cat <<EndOfUsage
-Usage  $SCRIPT -d <dataSetPrefix> -a <parmlib> [-r <proclib>]
-Opt flag    Parm name     Value e.g.              Meaning
---------    ---------     ----------              -------
-   -d       dataSetPrefix {userid}.ZWE            Data set prefix of source library .SZWESAMP where members ZWESASTC, ZWESIP00 and ZWESISTC are located.
-   -a       parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWESIP00 will be placed.
-                          (ommited)               ${dataSetPrefix}.SZWESAMP(ZWESIP00) will be used.
-   -r       proclib       USER.PROCLIB            DSN of target PROCLIB where members ZWESASTC and ZWESISTC will be placed.
-                          (omitted)               PROCLIB will be selected from JES PROCLIB concatenation.
+Usage  $SCRIPT -d <dataSetPrefix> [-a <parmlib>] [-r <proclib>]
+-d  Data set prefix of source library SZWESAMP, e.g. ${USER}.ZWE.
+-a  DSN of target PARMLIB where the configuration will be placed, e.g.
+    ${USER}.ZWE.CUST.PARMLIB. If ommited then the sample 
+    ${dataSetPrefix}.SZWESAMP(ZWESIP00) will be used.
+-r  DSN of target PROCLIB where started task JCL will be placed, e.g.
+    USER.PROCLIB. If ommited then the PROCLIB will be selected from the
+    active JES PROCLIB concatenation.
 EndOfUsage
 script_exit 1
 fi
