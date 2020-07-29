@@ -75,7 +75,7 @@ echo Parameters supplied were $@ >> ${LOG_FILE}
 echo "Some required parameters were not supplied:${missing_parms}"
 cat <<EndOfUsage
 
-Usage  $SCRIPT -d <dataSetPrefix> [-a <parmlib>] [-r <proclib>]
+Usage  $SCRIPT -d <hlq> [-a <parmlib>] [-r <proclib>] [-l <logDir>]
 
 -d  Data set prefix of source library SZWESAMP, e.g. ${USER}.ZWE.
 -a  (optional) DSN of an existing target PARMLIB where the configuration 
@@ -84,6 +84,9 @@ Usage  $SCRIPT -d <dataSetPrefix> [-a <parmlib>] [-r <proclib>]
 -r  (optional) DSN of an existing target PROCLIB where started task JCL 
     will be placed, e.g. USER.PROCLIB. If ommited then the PROCLIB will 
     be selected from the active JES PROCLIB concatenation.
+-l  (optional) Directory where to place the log file. If ommited then
+    the log file will be placed in /global/zowe/logs. If it is not 
+    writeable then ~/zowe/logs is used as directory.
 EndOfUsage
 script_exit 1
 fi
