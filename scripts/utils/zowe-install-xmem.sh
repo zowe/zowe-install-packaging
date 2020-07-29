@@ -1,32 +1,27 @@
 #!/bin/sh
-################################################################################
-# This program and the accompanying materials are made available under the terms of the
-# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
 # https://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
 #
 # Copyright IBM Corporation 2019, 2020
-################################################################################
+#######################################################################
 
 # Function: Copy cross-memory server artefacts to the required locations
-# ZWE.SZWEAUTH:
-#
-#     ZWESAUX   --> LOADLIB
-#     ZWESIS01  --> LOADLIB
-#
 # ZWE.SZWESAMP:
 #
 #     ZWESASTC  --> PROCLIB
-#     ZWESIP00  --> PARMLIB
+#     ZWESIP00  --> PARMLIB (optional)
 #     ZWESISTC  --> PROCLIB
 
 # Needs ./zowe-copy-to-JES.sh for PROCLIB
 
-while getopts "a:b:d:l:r:" opt; do
+while getopts "a:d:l:r:" opt; do
   case $opt in
     a) parmlib=$OPTARG;;
-    b) loadlib=$OPTARG;;
     d) data_set_prefix=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
     r) proclib=$OPTARG;;
@@ -51,6 +46,8 @@ fi
 
 # identify this script
 SCRIPT="$(basename $0)"
+# sub-scripts expect the current directory matches their location
+cd ${ZOWE_ROOT_DIR}/scripts/utils   
 
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
 set_install_log_directory ${LOG_DIRECTORY}
@@ -66,56 +63,59 @@ if [[ -z ${data_set_prefix} ]]
 then
   missing_parms=${missing_parms}" -d"
 fi
-if [[ -z ${loadlib} ]]
-then
-  missing_parms=${missing_parms}" -b"
-fi
-if [[ -z ${parmlib} ]]
-then
-  missing_parms=${missing_parms}" -a"
-fi
+#if [[ -z ${parmlib} ]]  # default is SZWESAMP
+#then
+#  missing_parms=${missing_parms}" -a"
+#fi
 
 if [[ -n ${missing_parms} ]]
 then
+USER=${LOGNAME:-{userid}}
 echo Parameters supplied were $@ >> ${LOG_FILE}
 echo "Some required parameters were not supplied:${missing_parms}"
 cat <<EndOfUsage
-Usage  $SCRIPT -d <dataSetPrefix> -b <loadlib> -a <parmlib> [-r <proclib>]
-Opt flag    Parm name     Value e.g.              Meaning
---------    ---------     ----------              -------
-   -d       dataSetPrefix {userid}.ZWE            Data set prefix of source library .SZWEAUTH where members ZWESIS01,ZWESAUX are located
-                                                    and of source library .SZWESAMP where members ZWESASTC, ZWESIP00 and ZWESISTC are located.
-   -b       loadlib       {hlq}.ZIS.SZISLOAD      DSN of target LOADLIB where members ZWESIS01,ZWESAUX will be placed. 
-                            
-   -a       parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWESIP00 will be placed. 
-          
-   -r       proclib       USER.PROCLIB            DSN of target PROCLIB where members ZWESASTC and ZWESISTC will be placed. 
-                          (omitted)               PROCLIB will be selected from JES PROCLIB concatenation.
+
+Usage  $SCRIPT -d <hlq> [-a <parmlib>] [-r <proclib>] [-l <logDir>]
+
+-d  Data set prefix of source library SZWESAMP, e.g. ${USER}.ZWE.
+-a  (optional) DSN of an existing target PARMLIB where the configuration 
+    file will be placed, e.g. ${USER}.ZWE.CUST.PARMLIB. If ommited 
+    then the sample {dataSetPrefix}.SZWESAMP(ZWESIP00) will be used.
+-r  (optional) DSN of an existing target PROCLIB where started task JCL 
+    will be placed, e.g. USER.PROCLIB. If ommited then the PROCLIB will 
+    be selected from the active JES PROCLIB concatenation.
+-l  (optional) Directory where to place the log file. If ommited then
+    the log file will be placed in /global/zowe/logs. If it is not 
+    writeable then ~/zowe/logs is used as directory.
 EndOfUsage
 script_exit 1
 fi
 
 authlib=`echo ${data_set_prefix}.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
-loadlib=`echo ${loadlib} | tr '[:lower:]' '[:upper:]'`
 samplib=`echo ${data_set_prefix}.SZWESAMP | tr '[:lower:]' '[:upper:]'`
-parmlib=`echo ${parmlib} | tr '[:lower:]' '[:upper:]'`
- 
+
+if [[ -z ${parmlib} ]]
+then
+  parmlib=$samplib
+else
+  parmlib=`echo ${parmlib} | tr '[:lower:]' '[:upper:]'`
+fi
+
 if [[ -z ${proclib} ]]
 then
   proclib=auto
 else
   proclib=`echo ${proclib} | tr '[:lower:]' '[:upper:]'`
-fi 
+fi
 
 echo    "authlib =" $authlib >> $LOG_FILE
-echo    "loadlib =" $loadlib >> $LOG_FILE
 echo    "samplib =" $samplib >> $LOG_FILE
 echo    "parmlib =" $parmlib >> $LOG_FILE
 echo    "proclib =" $proclib >> $LOG_FILE
 
-for dsname in $authlib $loadlib $samplib $parmlib $proclib
+for dsname in $authlib $samplib $parmlib $proclib
 do
-  if [[ $proclib = auto ]] 
+  if [[ $proclib = auto ]]
   then
     continue  # do not check DSN=auto
   fi
@@ -134,32 +134,7 @@ do
   fi
 done
 
-# AUTHLIB  - - - - - - - - - - - - - - - - 
-ZWESAUX=ZWESAUX
-ZWESIS01=ZWESIS01
-
-for loadmodule in $ZWESAUX $ZWESIS01
-do 
-
-  tsocmd listds "'$authlib' members" 2>> $LOG_FILE | grep "  $loadmodule$" 1>> $LOG_FILE 2>> $LOG_FILE
-  if [[ $? -ne 0 ]]
-  then
-    echo $loadmodule not found in \"$authlib\" | tee -a ${LOG_FILE}
-    script_exit 5
-  fi
-
-  echo "Copying load module ${loadmodule}" | tee -a ${LOG_FILE}
-  if cp -X "//'${authlib}(${loadmodule})'"  "//'${loadlib}(${loadmodule})'" 
-  then
-    echo "Info:  module ${loadmodule} has been successfully copied to dataset ${loadlib}" | tee -a ${LOG_FILE}
-    rc=0
-  else
-    echo "Error:  module ${loadmodule} has not been copied to dataset ${loadlib}" | tee -a ${LOG_FILE}
-    script_exit 6
-  fi
-done
-
-# PARMLIB  - - - - - - - - - - - - - - - - 
+# PARMLIB  - - - - - - - - - - - - - - - -
 # parmlib       {hlq}.ZIS.PARMLIB       DSN of target PARMLIB where member ZWEXMP00 goes
 # The suffix (last 2 digits) can be adjusted in the STC JCL, but the prefix must be ZWESIP
 ZWEXMP00=ZWESIP00  # for ZWESIS01
@@ -170,26 +145,45 @@ ZWEXMP00=ZWESIP00  # for ZWESIS01
     script_exit 7
   fi
 
-  echo "Copying SAMPLIB member ${ZWEXMP00}" | tee -a ${LOG_FILE}
-  if cp "//'${samplib}(${ZWEXMP00})'"  "//'${parmlib}(${ZWEXMP00})'" 
+  if [[ $samplib = $parmlib ]]
   then
-    echo "Info:  member ${ZWEXMP00} has been successfully copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
-    # rc=0
+    echo "Using SAMPLIB member ${samplib}(${ZWEXMP00})" | tee -a ${LOG_FILE}
   else
-    echo "Error:  member ${ZWEXMP00} has not been copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
-    echo "Check if PARMLIB dataset ${parmlib} is in use by xmem server or another job or user" | tee -a ${LOG_FILE}
-    script_exit 8
+    echo "Copying SAMPLIB member ${ZWEXMP00}" | tee -a ${LOG_FILE}
+    if cp "//'${samplib}(${ZWEXMP00})'"  "//'${parmlib}(${ZWEXMP00})'"
+    then
+      echo "Info:  member ${ZWEXMP00} has been successfully copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
+      # rc=0
+    else
+      echo "Error:  member ${ZWEXMP00} has not been copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
+      echo "Check if PARMLIB dataset ${parmlib} is in use by xmem server or another job or user" | tee -a ${LOG_FILE}
+      script_exit 8
+    fi
   fi
 
-# PROCLIB  - - - - - - - - - - - - - - - - 
+# PROCLIB  - - - - - - - - - - - - - - - -
 ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
-# the extra parms ${loadlib} ${parmlib} are used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${loadlib} -a ${parmlib} -f ${LOG_FILE}
+# the extra parms ${authlib} ${parmlib} are used to replace DSNs in PROCLIB members
+./zowe-copy-to-JES.sh \
+  -s ${samplib} \
+  -i ${ZWEXASTC} \
+  -r ${proclib} \
+  -o ${ZWEXASTC} \
+  -b ${authlib} \
+  -a ${parmlib} \
+  -f ${LOG_FILE}
 aux_rc=$?
 echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${loadlib} -a ${parmlib} -f ${LOG_FILE}
+./zowe-copy-to-JES.sh \
+  -s ${samplib} \
+  -i ${ZWEXMSTC} \
+  -r ${proclib} \
+  -o ${ZWEXMSTC} \
+  -b ${authlib} \
+  -a ${parmlib} \
+  -f ${LOG_FILE}
 xmem_rc=$?
 echo "ZWEXMSTC rc from zowe-copy-to-JES.sh is ${xmem_rc}" >> ${LOG_FILE}
 
