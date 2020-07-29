@@ -101,3 +101,31 @@ ZWE_REFERRER_HOSTS=host1,host2,...
 # comma-separated list of hosts names you use to access Zowe
 # from your browser, where the value is to be applied
 # specifically for referrer purposes
+
+****************************************************************
+* Affected function: STC JCL                                   *
+****************************************************************
+* Description: Update data set names                           *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: SZWESAMP(ZWESASTC, ZWESISTC)                           *
+****************************************************************
+Before Zowe 1.14, the zowe-install-xmem.sh setup script copied
+the SZWEAUTH load library and created started task JCLs
+ZWESASTC and ZWESISTC that reference this copy. The related
+configuration documentation instructed you to APF authorize this
+copied data set.
+From Zowe 1.14 on, the ZWESASTC and ZWESISTC started tasks are
+expected to use load library SZWEAUTH itself, not a (possibly 
+outdated) copy.
+
+Update your active ZWESASTC and ZWESISTC PROCLIB members to use
+//STEPLIB  DD DISP=SHR,DSN={zowe_hlq}.SZWEAUTH
+Also update your active PARMLIB(PROGxx) member to make 
+{zowe_hlq}.SZWEAUTH APF authorized.
+  APF ADD DSN={zowe_hlq}.SZWEAUTH  SMS
+You can dynamically mark the SZWEAUTH libary as APF authorized 
+(until next IPL) using an operator command
+  SETPROG APF ADD,DSN={zowe_hlq}.SZWEAUTH,SMS
+
