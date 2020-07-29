@@ -46,6 +46,7 @@ fi
 
 # identify this script
 SCRIPT="$(basename $0)"
+here=$(cd $(dirname $0);pwd)   # script location
 
 . ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
 set_install_log_directory ${LOG_DIRECTORY}
@@ -77,8 +78,8 @@ Usage  $SCRIPT -d <dataSetPrefix> [-a <parmlib>] [-r <proclib>]
 
 -d  Data set prefix of source library SZWESAMP, e.g. ${USER}.ZWE.
 -a  (optional) DSN of an existing target PARMLIB where the configuration 
-    will be placed, e.g. ${USER}.ZWE.CUST.PARMLIB. If ommited then the 
-    sample {dataSetPrefix}.SZWESAMP(ZWESIP00) will be used.
+    file will be placed, e.g. ${USER}.ZWE.CUST.PARMLIB. If ommited 
+    then the sample {dataSetPrefix}.SZWESAMP(ZWESIP00) will be used.
 -r  (optional) DSN of an existing target PROCLIB where started task JCL 
     will be placed, e.g. USER.PROCLIB. If ommited then the PROCLIB will 
     be selected from the active JES PROCLIB concatenation.
@@ -161,10 +162,24 @@ ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
 # the extra parms ${authlib} ${parmlib} are used to replace DSNs in PROCLIB members
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXASTC} -r ${proclib} -o ${ZWEXASTC} -b ${authlib} -a ${parmlib} -f ${LOG_FILE}
+$here/zowe-copy-to-JES.sh \
+  -s ${samplib} \
+  -i ${ZWEXASTC} \
+  -r ${proclib} \
+  -o ${ZWEXASTC} \
+  -b ${authlib} \
+  -a ${parmlib} \
+  -f ${LOG_FILE}
 aux_rc=$?
 echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
-./zowe-copy-to-JES.sh -s ${samplib} -i ${ZWEXMSTC} -r ${proclib} -o ${ZWEXMSTC} -b ${authlib} -a ${parmlib} -f ${LOG_FILE}
+$here/zowe-copy-to-JES.sh \
+  -s ${samplib} \
+  -i ${ZWEXMSTC} \
+  -r ${proclib} \
+  -o ${ZWEXMSTC} \
+  -b ${authlib} \
+  -a ${parmlib} \
+  -f ${LOG_FILE}
 xmem_rc=$?
 echo "ZWEXMSTC rc from zowe-copy-to-JES.sh is ${xmem_rc}" >> ${LOG_FILE}
 
