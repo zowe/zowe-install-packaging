@@ -215,6 +215,33 @@ _cmd $here/smpe-install.sh $debug -c $YAML $opts
 # result (final): $mvsI                           # MVS & MVS SMPE data
 # result (final): $ussI                                 # USS SMPE data
 
+# . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . . .
+echo "----- Check reference hash keys of runtime files -----"
+
+stageDir=$ROOT/stage
+binDir=$stageDir/bin 
+
+# # The scripts to do this are in the 'bin' directory
+# # The program to do this is in the 'files' directory
+zoweVRM=`ls $ROOT/../content`  # The vrm directory (e.g. zowe-1.9.0) is the only entry under 'content'
+zoweReleaseNumber=`echo $zoweVRM | sed -n 's/^zowe-\(.*\)$/\1/p'`
+
+echo List of stageDir files  
+ls  -l $stageDir
+
+# verify the checksums of ROOT_DIR, to self-check zowe-verify-authenticity.sh
+$binDir/zowe-verify-authenticity.sh # No parameters!
+zoweVerifyAuthenticityRC=$?
+if [[ $zoweVerifyAuthenticityRC -ne 0 ]]
+then
+  echo Error: Exit code from zowe-verify-authenticity.sh was $zoweVerifyAuthenticityRC
+  echo "---------- Contents of zowe-verify-authenticity.log ----------"
+  cat ~/zowe/fingerprint/*.log  # fragile, because '-l outputPath' was not specified, so script chose location of log
+else  
+  echo Exit code from zowe-verify-authenticity.sh was zero
+fi
+# . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
+
 # split installed product in smaller chunks and pax them
 opts="-i $input"                                   # add reference file
 _stopAt smpe-split.sh $debug -c $YAML $opts
