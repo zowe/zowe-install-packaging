@@ -12,12 +12,12 @@
     </workflowInfo>
     <variable name="zowe_install_path" scope="instance" visibility="public">
         <label>Install Path</label>
-        <abstract>Path for the Zowe runtime</abstract>
+        <abstract>Path for the Zowe runtime installation</abstract>
         <description>Specify the path that was used for the ZOWE runtime installation</description>
         <category>Installation</category>
         <string valueMustBeChoice="false" multiLine="false">
             <regularExpression>~?(\/[^\/]+)+</regularExpression>
-            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+            <errorMessage>Specify proper full USS path ending without a trailing slash.</errorMessage>
         </string>
     </variable>
     <variable name="zowe_dsn_prefix" scope="instance" visibility="public">
@@ -31,8 +31,8 @@
     </variable>
     <variable name="xmem_prefix" scope="instance" visibility="public">
         <label>Cross Memory Server DSN Prefix</label>
-        <abstract>Please specify the HLQ that will be used for the Cross Memory Server</abstract>
-        <description>High Level Qualifier that will be used to install and configure the Cross Memory Server</description>
+        <abstract>Specify the HLQ that will be used for the Cross Memory Server</abstract>
+        <description>High Level Qualifier that will be used to configure the Cross Memory Server</description>
         <category>Installation</category>
         <string valueMustBeChoice="false" multiLine="false">
             <validationType>DSNAME</validationType>
@@ -40,8 +40,8 @@
     </variable>
     <variable name="xmem_dasd" scope="instance" visibility="public">
         <label>Cross Memory Server DASD</label>
-        <abstract>Please specify the DASD that will be used for the Cross Memory Server data sets.</abstract>
-        <description>Please specify the DASD that will be used for the Cross Memory Server data sets.
+        <abstract>Specify the DASD that will be used for the Cross Memory Server data sets.</abstract>
+        <description>Specify the DASD that will be used for the Cross Memory Server data sets.
 Specify the DASD in either of the following formats:
 VOL=SER=&lt;i&gt;volume&lt;/i&gt; for non-SMS managed data sets
 STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description>
@@ -53,8 +53,8 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     </variable>
     <variable name="proclib" scope="instance" visibility="public">
         <label>Procedure Library</label>
-        <abstract>Please specify the procedure library for the started task</abstract>
-        <description>Specify the PROCLIB data set name that will be used to store the Cross Memory Server STC JCL</description>
+        <abstract>Specify the procedure library for the started task</abstract>
+        <description>Specify the PROCLIB data set name that will be used to store the customized Cross Memory Server STC JCL</description>
         <category>Installation</category>
         <string valueMustBeChoice="false" multiLine="false">
             <validationType>DSNAME</validationType>
@@ -62,8 +62,8 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     </variable>
     <variable name="parmlib" scope="instance" visibility="public">
         <label>Parameter Library</label>
-        <abstract>Please specify the PARMLIB of your active SCHEDxx member</abstract>
-        <description>Please specify the active system PARMLIB where your active SCHEDxx member resides in.</description>
+        <abstract>Specify the PARMLIB of your active SCHEDxx member</abstract>
+        <description>Specify the active system PARMLIB where your active SCHEDxx member resides in.</description>
         <category>Parmlib</category>
         <string valueMustBeChoice="false" multiLine="false">
             <validationType>DSNAME</validationType>
@@ -71,8 +71,8 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     </variable>
     <variable name="sched" scope="instance" visibility="public">
         <label>Scheduler member</label>
-        <abstract>Please specify the name of the active SCHEDxx member</abstract>
-        <description>Please specify the scheduler member that is currently used in the specified PARMLIB.</description>
+        <abstract>Specify the name of the active SCHEDxx member</abstract>
+        <description>Specify the scheduler member that is currently used in the specified PARMLIB.</description>
         <category>Parmlib</category>
         <string valueMustBeChoice="false" multiLine="false">
             <validationType>DSMEMBERNAME</validationType>
@@ -117,10 +117,10 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
 //    DSNTYPE=LIBRARY,SPACE=(CYL,(10,5,5)),
 //    DCB=(RECFM=U),
 //    ${instance-xmem_dasd}
-//PARMLIB1 DD DISP=(NEW,CATLG,DELETE),
+//PARMLIB1 DD DISP=(MOD,CATLG,DELETE),
 //    DSN=${instance-xmem_prefix}.PARMLIB,
-//    DCB=(LRECL=80,RECFM=FB),SPACE=(CYL,(5,3,5)),
-//    ${instance-xmem_dasd}</inlineTemplate>
+//    DCB=(LRECL=80,RECFM=FB),SPACE=(TRK,(5,5,5)),
+//    UNIT=SYSALLDA</inlineTemplate>
             <submitAs maxRc="0">JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
