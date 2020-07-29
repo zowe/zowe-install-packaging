@@ -42,6 +42,19 @@ if ! [ -z "$PLUGIN_DIR_OVERRIDE" ]; then
   PLUGIN_DIR=$PLUGIN_DIR_OVERRIDE
 fi
 
+URL_SANITIZED="$URL"
+HAS_MULTIPLE_DOMAINS=
+if [[ $ZWE_EXTERNAL_HOSTS == *,* ]]; then
+  HAS_MULTIPLE_DOMAINS=yes
+fi
+if [[ $HAS_MULTIPLE_DOMAINS == "yes" ]] || [[ $URL == http://* ]] || [[ $URL == https://* ]]; then
+  # remove protocol/host/port from url
+  # REASON: with multiple domains, if the user cannot resolve domain we hardcoded
+  #         in the url, he will not be able to use the iframe plugin.
+  # IMPORTANT: after changing this, Desktop can only be accessed with gateway port
+  URL_SANITIZED="/$(echo $URL | cut -d/ -f4-)"
+fi
+
 # remove any previous plugin files
 rm -rf $PLUGIN_DIR/web/assets
 rm -f $PLUGIN_DIR/web/index.html
@@ -58,7 +71,7 @@ cat <<EOF >$PLUGIN_DIR/web/index.html
     <body>
         <iframe 
             id="zluxIframe"
-            src="$URL"; 
+            src="${URL_SANITIZED}"; 
             style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
             Your browser doesn't support iframes
         </iframe>
