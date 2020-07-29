@@ -31,7 +31,7 @@
     </variable>
     <variable name="xmem_prefix" scope="instance" visibility="public">
         <label>Cross Memory Server DSN Prefix</label>
-        <abstract>Please specify the HLQ that will be used for the XMEM</abstract>
+        <abstract>Please specify the HLQ that will be used for the Cross Memory Server</abstract>
         <description>High Level Qualifier that will be used to install and configure the Cross Memory Server</description>
         <category>Installation</category>
         <string valueMustBeChoice="false" multiLine="false">
@@ -40,8 +40,8 @@
     </variable>
     <variable name="xmem_dasd" scope="instance" visibility="public">
         <label>Cross Memory Server DASD</label>
-        <abstract>Please specify the DASD that will be used for the XMEM data sets.</abstract>
-        <description>Please specify the DASD that will be used for the XMEM data sets.
+        <abstract>Please specify the DASD that will be used for the Cross Memory Server data sets.</abstract>
+        <description>Please specify the DASD that will be used for the Cross Memory Server data sets.
 Specify the DASD in either of the following formats:
 VOL=SER=&lt;i&gt;volume&lt;/i&gt; for non-SMS managed data sets
 STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description>
@@ -54,7 +54,7 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
     <variable name="proclib" scope="instance" visibility="public">
         <label>Procedure Library</label>
         <abstract>Please specify the procedure library for the started task</abstract>
-        <description>Specify the PROCLIB data set name that will be used to store the XMEM STC JCL</description>
+        <description>Specify the PROCLIB data set name that will be used to store the Cross Memory Server STC JCL</description>
         <category>Installation</category>
         <string valueMustBeChoice="false" multiLine="false">
             <validationType>DSNAME</validationType>
@@ -105,7 +105,7 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
         <prereqStep name="define_variables"/>
         <!--variableValues-->
         <!-- condition -->
-        <instructions substitution="false">Use this step to allocate the data sets required for XMEM</instructions>
+        <instructions substitution="false">Use this step to allocate the data sets required for Cross Memory Server</instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
         <autoEnable>true</autoEnable>
@@ -150,7 +150,7 @@ exit $?</inlineTemplate>
     </step>
     <step name="apf_auth" optional="false">
         <title>APF Authorize Load Library</title>
-        <description>This step will dynamically APF authorize the XMEM LOADLIB</description>
+        <description>This step will dynamically APF authorize the Cross Memory Server LOADLIB</description>
         <prereqStep name="copy_artifacts"/>
         <!--variableValues-->
         <!-- condition -->
@@ -176,7 +176,7 @@ If you want the APF, to be permanent, add following library to your system autho
     <step name="modify_scheduler" optional="false">
         <title>Modify Scheduler</title>
         <description>Modifies the current SCHEDnn PARMLIB member
-to run XMEM Server to run in key 4 and be non-swappable</description>
+to run Cross Memory Server Server to run in key 4 and be non-swappable</description>
         <prereqStep name="copy_artifacts"/>
         <!--variableValues-->
         <!-- condition -->
@@ -223,7 +223,7 @@ to run XMEM Server to run in key 4 and be non-swappable</description>
         </rest>
     </step>
     <step name="start_xmem" optional="false">
-        <title>Start the XMEM server</title>
+        <title>Start the Cross Memory Server server</title>
         <description>This step starts the Cross Memory Server</description>
         <prereqStep name="reload_scheduler"/>
         <!--variableValues-->
