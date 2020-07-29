@@ -72,14 +72,16 @@ USER=${LOGNAME:-{userid}}
 echo Parameters supplied were $@ >> ${LOG_FILE}
 echo "Some required parameters were not supplied:${missing_parms}"
 cat <<EndOfUsage
+
 Usage  $SCRIPT -d <dataSetPrefix> [-a <parmlib>] [-r <proclib>]
+
 -d  Data set prefix of source library SZWESAMP, e.g. ${USER}.ZWE.
--a  DSN of target PARMLIB where the configuration will be placed, e.g.
-    ${USER}.ZWE.CUST.PARMLIB. If ommited then the sample 
-    ${dataSetPrefix}.SZWESAMP(ZWESIP00) will be used.
--r  DSN of target PROCLIB where started task JCL will be placed, e.g.
-    USER.PROCLIB. If ommited then the PROCLIB will be selected from the
-    active JES PROCLIB concatenation.
+-a  (optional) DSN of target PARMLIB where the configuration will be 
+    placed, e.g. ${USER}.ZWE.CUST.PARMLIB. If ommited then the sample 
+    {dataSetPrefix}.SZWESAMP(ZWESIP00) will be used.
+-r  (optional) DSN of target PROCLIB where started task JCL will be 
+    placed, e.g. USER.PROCLIB. If ommited then the PROCLIB will be 
+    selected from the active JES PROCLIB concatenation.
 EndOfUsage
 script_exit 1
 fi
