@@ -86,12 +86,14 @@ has_multiple_domains=
 if [[ $ZWE_EXTERNAL_HOSTS == *,* ]]; then
   has_multiple_domains=yes
 fi
-if [[ $has_multiple_domains == "yes" ]] || [[ $url == http://* ]] || [[ $url == https://* ]]; then
-  # remove protocol/host/port from url
-  # REASON: with multiple domains, if the user cannot resolve domain we hardcoded
-  #         in the url, he will not be able to use the iframe plugin.
-  # IMPORTANT: after changing this, Desktop can only be accessed with gateway port
-  url_sanitized="/$(echo $url | cut -d/ -f4-)"
+if [[ $has_multiple_domains == "yes" ]]; then
+  if [[ $url == http://* ]] || [[ $url == https://* ]]; then
+    # remove protocol/host/port from url
+    # REASON: with multiple domains, if the user cannot resolve domain we hardcoded
+    #         in the url, he will not be able to use the iframe plugin.
+    # IMPORTANT: after changing this, Desktop can only be accessed with gateway port
+    url_sanitized="/$(echo $url | cut -d/ -f4-)"
+  fi
 fi
 
 # remove any previous plugin files
