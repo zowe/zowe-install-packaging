@@ -197,7 +197,7 @@ do
 # split
     _export split   ptfLines   maxPtfLines   5000000        # permanent
     _export split   ptfPercent maxPtfPercent 90             # permanent
-    _export split   deltaLines maxDeltaLines 30000          # permanent
+    _export split   deltaLines maxDeltaLines 100000         # permanent
     _export split   outUSS     ussI          ${ROOT}/BLD    # pass
     _export split   mvs        mvs           ${ROOT}/mvs    # internal
     _export split   split      split         ${ROOT}/split  # internal

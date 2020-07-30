@@ -69,6 +69,16 @@ validate_file_not_in_directory() {
   fi
 }
 
+validate_file_is_accessible() {
+  file=$1
+  if [[ ! -f ${file} ]]
+  then
+    print_error_message "File '${file}' doesn't exist, or is not accessible to ${USER}. If the file exists, check all the parent directories have traversal permission (execute)"
+    return 1
+  fi
+  return 0
+}
+
 validate_directory_is_accessible() {
   directory=$1
   if [[ ! -d ${directory} ]]
@@ -93,4 +103,20 @@ validate_directory_is_writable() {
   else
     return accessible_rc
   fi
+}
+
+# If directory doesn't exist then return 0
+count_children_in_directory() {
+  directory=$1
+  if [[ -d ${directory} ]]
+  then
+    directory_list_lines=`ls -al ${directory} | wc -l`
+    # Has total line, parent and self ref
+    if [[ ${directory_list_lines} -gt 3 ]]
+    then
+      let "children=${directory_list_lines}-3"
+      return ${children}
+    fi
+  fi
+  return 0
 }
