@@ -29,15 +29,6 @@
             <validationType>DSNAME</validationType>
         </string>
     </variable>
-    <variable name="xmem_prefix" scope="instance" visibility="public">
-        <label>Cross Memory Server DSN Prefix</label>
-        <abstract>Specify the HLQ that will be used for the Cross Memory Server</abstract>
-        <description>High Level Qualifier that will be used to configure the Cross Memory Server</description>
-        <category>Installation</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <validationType>DSNAME</validationType>
-        </string>
-    </variable>
     <variable name="xmem_dasd" scope="instance" visibility="public">
         <label>Cross Memory Server DASD</label>
         <abstract>Specify the DASD that will be used for the Cross Memory Server data sets.</abstract>
@@ -86,7 +77,6 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
         <!-- pre-requisite step -->
         <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="zowe_dsn_prefix" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="xmem_prefix" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="xmem_dasd" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="proclib" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="parmlib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -113,12 +103,12 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
         <template>
             <inlineTemplate substitution="true">//ALLOCDSS EXEC PGM=IEFBR14
 //LOADLIB1 DD DISP=(NEW,CATLG,DELETE),
-//    DSN=${instance-xmem_prefix}.LOADLIB,
+//    DSN=${instance-zowe_dsn_prefix}.LOADLIB,
 //    DSNTYPE=LIBRARY,SPACE=(CYL,(10,5,5)),
 //    DCB=(RECFM=U),
 //    ${instance-xmem_dasd}
 //PARMLIB1 DD DISP=(MOD,CATLG,DELETE),
-//    DSN=${instance-xmem_prefix}.PARMLIB,
+//    DSN=${instance-zowe_dsn_prefix}.PARMLIB,
 //    DCB=(LRECL=80,RECFM=FB),SPACE=(TRK,(5,5,5)),
 //    UNIT=SYSALLDA</inlineTemplate>
             <submitAs maxRc="0">JCL</submitAs>
@@ -141,7 +131,7 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
             <inlineTemplate substitution="true">set -x
 
 cd "${instance-zowe_install_path}/scripts/utils"
-sh zowe-install-xmem.sh "${instance-zowe_dsn_prefix}" "${instance-xmem_prefix}.LOADLIB" "${instance-xmem_prefix}.PARMLIB" "${instance-proclib}"
+sh zowe-install-xmem.sh "${instance-zowe_dsn_prefix}" "${instance-zowe_dsn_prefix}.LOADLIB" "${instance-zowe_dsn_prefix}.PARMLIB" "${instance-proclib}"
 exit $?</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
@@ -155,7 +145,7 @@ exit $?</inlineTemplate>
         <!--variableValues-->
         <!-- condition -->
         <instructions substitution="true">Run this step to dynamically APF authorize the load library.
-If you want the APF, to be permanent, add following library to your system authorization: ${instance-xmem_prefix}.LOADLIB</instructions>
+If you want the APF, to be permanent, add following library to your system authorization: ${instance-zowe_dsn_prefix}.LOADLIB</instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
         <autoEnable>true</autoEnable>
@@ -168,7 +158,7 @@ If you want the APF, to be permanent, add following library to your system autho
 #elseif(${instance-xmem_dasd.startsWith("VOL=SER=")})
 #set($dasd = "VOLUME=${instance-xmem_dasd.substring(8)}")
 #end
-{"cmd":"SETPROG APF,ADD,DSNAME=${instance-xmem_prefix}.LOADLIB,${dasd}"}</requestBody>
+{"cmd":"SETPROG APF,ADD,DSNAME=${instance-zowe_dsn_prefix}.LOADLIB,${dasd}"}</requestBody>
             <expectedStatusCode>200</expectedStatusCode>
             <!-- REST mappings -->
         </rest>
