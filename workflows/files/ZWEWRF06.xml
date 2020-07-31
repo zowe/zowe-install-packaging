@@ -51,25 +51,6 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
             <validationType>DSNAME</validationType>
         </string>
     </variable>
-    <variable name="parmlib" scope="instance" visibility="public">
-        <label>Parameter Library</label>
-        <abstract>Specify the PARMLIB of your active SCHEDxx member</abstract>
-        <description>Specify the active system PARMLIB where your active SCHEDxx member resides in.</description>
-        <category>Parmlib</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <validationType>DSNAME</validationType>
-        </string>
-    </variable>
-    <variable name="sched" scope="instance" visibility="public">
-        <label>Scheduler member</label>
-        <abstract>Specify the name of the active SCHEDxx member</abstract>
-        <description>Specify the scheduler member that is currently used in the specified PARMLIB.</description>
-        <category>Parmlib</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <validationType>DSMEMBERNAME</validationType>
-            <default>SCHED00</default>
-        </string>
-    </variable>
     <!--atCreate-->
     <step name="define_variables" optional="false">
         <title>Define Variables</title>
@@ -79,8 +60,6 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
         <variableValue name="zowe_dsn_prefix" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="xmem_dasd" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="proclib" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="parmlib" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="sched" scope="instance" noPromptIfSet="false" required="true"/>
         <!-- condition -->
         <instructions substitution="false">Run this step to define the variables for the workflow execution.</instructions>
         <weight>1</weight>
@@ -163,59 +142,9 @@ If you want the APF, to be permanent, add following library to your system autho
             <!-- REST mappings -->
         </rest>
     </step>
-    <step name="modify_scheduler" optional="false">
-        <title>Modify Scheduler</title>
-        <description>Modifies the current SCHEDnn PARMLIB member
-to run Cross Memory Server Server to run in key 4 and be non-swappable</description>
-        <prereqStep name="copy_artifacts"/>
-        <!--variableValues-->
-        <!-- condition -->
-        <instructions substitution="false">Run this step to modify the SCHEDnn PARMLIB member</instructions>
-        <weight>1</weight>
-        <skills>z/OS System Programmer</skills>
-        <autoEnable>true</autoEnable>
-        <canMarkAsFailed>false</canMarkAsFailed>
-        <template>
-            <inlineTemplate substitution="true">//CONFIGSH EXEC PGM=IEBGENER
-//SYSPRINT DD SYSOUT=*
-//SYSIN    DD DUMMY
-//SYSUT1   DD DISP=SHR,
-//    DSN=${instance-parmlib}(${instance-sched})
-//         DD DISP=SHR,
-//    DSN=${instance-zowe_dsn_prefix}.SZWESAMP(ZWESISCH)
-//SYSUT2   DD DISP=SHR,
-//    DSN=${instance-parmlib}(${instance-sched})</inlineTemplate>
-            <submitAs maxRc="0">JCL</submitAs>
-            <maxLrecl>1024</maxLrecl>
-            <!-- zosmfOutput -->
-        </template>
-    </step>
-    <step name="reload_scheduler" optional="false">
-        <title>Reload Scheduler Settings</title>
-        <description>This step will make the previous changes effective immediately</description>
-        <prereqStep name="modify_scheduler"/>
-        <!--variableValues-->
-        <!-- condition -->
-        <instructions substitution="false">Run this step to reload the scheduler settings</instructions>
-        <weight>1</weight>
-        <skills>z/OS System Programmer</skills>
-        <autoEnable>true</autoEnable>
-        <canMarkAsFailed>false</canMarkAsFailed>
-        <rest>
-            <httpMethod>PUT</httpMethod>
-            <uriPath substitution="true">/zosmf/restconsoles/consoles/${_step-stepOwnerUpper}</uriPath>
-            <requestBody substitution="true">#if(${instance-sched.startsWith("SCHED")})
-#set($SCH_ID = '${instance-sched.substring(5)}')
-{"cmd":"SET SCH=${SCH_ID}"}
-#end</requestBody>
-            <expectedStatusCode>200</expectedStatusCode>
-            <!-- REST mappings -->
-        </rest>
-    </step>
     <step name="start_xmem" optional="false">
         <title>Start the Cross Memory Server server</title>
         <description>This step starts the Cross Memory Server</description>
-        <prereqStep name="reload_scheduler"/>
         <!--variableValues-->
         <!-- condition -->
         <instructions substitution="false">Run this step to start the Cross Memory Server.
