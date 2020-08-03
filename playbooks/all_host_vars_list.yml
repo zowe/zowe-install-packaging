@@ -49,6 +49,7 @@ zowe_test_password:
 zowe_test_user:
 zowe_user_profile: ~/.zowe_profile
 zowe_uss_explorer_port: 8550
+# this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib:
 zowe_xmem_parmlib:
 zowe_xmem_proclib:

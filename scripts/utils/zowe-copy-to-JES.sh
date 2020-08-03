@@ -137,14 +137,18 @@ then
   script_exit 6
 fi
 
-echo Check name of ${input_member} PROC | tee -a ${LOG_FILE}
-cat "//'$samplib(${input_member})'" | grep -i "^//${input_member} *PROC" 1>> $LOG_FILE 2>> $LOG_FILE
-if [[ $? -ne 0 ]]
-then
-  echo Did not find PROC name \"${input_member}\" in "$samplib(${input_member})" | tee -a ${LOG_FILE}
-  echo PROC statement is : | tee -a ${LOG_FILE}
-  cat "//'$samplib(${input_member})'" | grep "^//[^ *][^ ]*  *PROC" | tee -a ${LOG_FILE}
-fi
+# https://github.com/zowe/zowe-install-packaging/issues/1550
+# Comment out this test for now, and revisit later.
+# Intend is the ensure we have the correct codepage.
+# TODO Move to build pipeline and test for // as first chars of first line.
+#echo Check name of ${input_member} PROC | tee -a ${LOG_FILE}
+#cat "//'$samplib(${input_member})'" | grep -i "^//${input_member} *PROC" 1>> $LOG_FILE 2>> $LOG_FILE
+#if [[ $? -ne 0 ]]
+#then
+#  echo Did not find PROC name \"${input_member}\" in "$samplib(${input_member})" | tee -a ${LOG_FILE}
+#  echo PROC statement is : | tee -a ${LOG_FILE}
+#  cat "//'$samplib(${input_member})'" | grep "^//[^ *][^ ]*  *PROC" | tee -a ${LOG_FILE}
+#fi
 
 if [[ $# -eq 4 ]]
 then

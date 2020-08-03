@@ -58,6 +58,7 @@ zowe_auto_create_user_group: false
 # these are default variables for cross memory configuration
 zowe_xmem_proclib:
 zowe_xmem_parmlib:
+# this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib:
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_proclib_member_aux: ZWESASTC
