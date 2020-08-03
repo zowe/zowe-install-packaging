@@ -29,17 +29,22 @@
             <validationType>DSNAME</validationType>
         </string>
     </variable>
-    <variable name="xmem_dasd" scope="instance" visibility="public">
-        <label>Cross Memory Server DASD</label>
-        <abstract>Specify the DASD that will be used for the Cross Memory Server data sets.</abstract>
-        <description>Specify the DASD that will be used for the Cross Memory Server data sets.
-Specify the DASD in either of the following formats:
-VOL=SER=&lt;i&gt;volume&lt;/i&gt; for non-SMS managed data sets
-STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description>
-        <category>Installation</category>
+    <variable name="xmem_volume" scope="instance" visibility="public">
+        <label>Cross Memory Server Volume</label>
+        <abstract>Fill in the VOLUME for the data sets</abstract>
+        <description>Use this variable to fill in the VOLUME used for the data set creation (if needed)</description>
+        <category>DASD</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <choice>VOL=SER=??????</choice>
-            <choice>STORCLAS=????????</choice>
+            <validationType>VOLSER</validationType>
+        </string>
+    </variable>
+    <variable name="xmem_storclas" scope="instance" visibility="public">
+        <label>Cross Memory Server Storage Class</label>
+        <abstract>Fill in the Storage Class for SMS managed PDS</abstract>
+        <description>Fill in the Storage Class for SMS managed PDS (if needed)</description>
+        <category>DASD</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSMEMBERNAME</validationType>
         </string>
     </variable>
     <variable name="proclib" scope="instance" visibility="public">
@@ -58,7 +63,8 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
         <!-- pre-requisite step -->
         <variableValue name="zowe_install_path" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="zowe_dsn_prefix" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="xmem_dasd" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="xmem_volume" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="xmem_storclas" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="proclib" scope="instance" noPromptIfSet="false" required="true"/>
         <!-- condition -->
         <instructions substitution="false">Run this step to define the variables for the workflow execution.</instructions>
@@ -84,13 +90,23 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
 //LOADLIB1 DD DISP=(NEW,CATLG,DELETE),
 //    DSN=${instance-zowe_dsn_prefix}.LOADLIB,
 //    DSNTYPE=LIBRARY,SPACE=(CYL,(10,5,5)),
-//    DCB=(RECFM=U),
-//    ${instance-xmem_dasd}
+#if(${instance-xmem_volume} and $!{instance-xmem_volume} != "")
+//    VOL=SER=${instance-xmem_volume},
+#end
+#if(${instance-xmem_storclas} and $!{instance-xmem_storclas} != "")
+//    STORCLAS=${instance-xmem_storclas},
+#end
+//    DCB=(RECFM=U)
 //PARMLIB1 DD DISP=(MOD,CATLG,DELETE),
 //    DSN=${instance-zowe_dsn_prefix}.PARMLIB,
 //    DCB=(LRECL=80,RECFM=FB),SPACE=(TRK,(5,5,5)),
-//    UNIT=SYSALLDA,
-//    ${instance-xmem_dasd}</inlineTemplate>
+#if(${instance-xmem_volume} and $!{instance-xmem_volume} != "")
+//    VOL=SER=${instance-xmem_volume},
+#end
+#if(${instance-xmem_storclas} and $!{instance-xmem_storclas} != "")
+//    STORCLAS=${instance-xmem_storclas},
+#end
+//    UNIT=SYSALLDA</inlineTemplate>
             <submitAs maxRc="0">JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
@@ -134,6 +150,7 @@ exit $?</inlineTemplate>
         <canMarkAsFailed>true</canMarkAsFailed>
         <!--template-->
     </step>
+    <!-- TODO: Add automatic volume retrieval -->
     <step name="apf_auth" optional="false">
         <title>APF Authorize Load Library</title>
         <description>This step will dynamically APF authorize the Cross Memory Server LOADLIB</description>
