@@ -158,7 +158,7 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "rc,
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
