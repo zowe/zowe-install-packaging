@@ -89,7 +89,8 @@ STORCLAS=&lt;i&gt;storage_class&lt;/i&gt; for SMS managed data sets</description
 //PARMLIB1 DD DISP=(MOD,CATLG,DELETE),
 //    DSN=${instance-zowe_dsn_prefix}.PARMLIB,
 //    DCB=(LRECL=80,RECFM=FB),SPACE=(TRK,(5,5,5)),
-//    UNIT=SYSALLDA</inlineTemplate>
+//    UNIT=SYSALLDA,
+//    ${instance-xmem_dasd}</inlineTemplate>
             <submitAs maxRc="0">JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
@@ -116,6 +117,22 @@ exit $?</inlineTemplate>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
         </template>
+    </step>
+    <step name="ppt_entries" optional="false">
+        <title>Add PPT entries to the system PARMLIB</title>
+        <description>Follow the instructions to add the PTT entries to the system parmlib</description>
+        <prereqStep name="copy_artifacts"/>
+        <!-- condition -->
+        <!--variableValues-->
+        <instructions substitution="false"><![CDATA[<p>The cross memory server and its auxiliary address spaces must run in key 4 and be non-swappable. For the server to start in this environment, add the following PPT entries for the server and address spaces to the SCHEDxx member of the system PARMLIB.</p> <div class="language- extra-class"><pre class="language-text"><code>PPT PGMNAME(ZWESIS01) KEY(4) NOSWAP
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>PPT PGMNAME(ZWESAUX) KEY(4) NOSWAP
+</code></pre></div><p>The PDS member <code>SZWESAMP(ZWESISCH)</code> contains the PPT lines for reference.</p> <p>Then, issue the following command to make the SCHEDxx changes effective:</p> <div class="language- extra-class"><pre class="language-text"><code>/SET SCH=xx
+</code></pre><p>More info <a href="https://docs.zowe.org/stable/user-guide/configure-xmem-server.html#step-2-add-ppt-entries-to-the-system-parmlib">here</a>, step 2.</p>]]></instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>false</autoEnable>
+        <canMarkAsFailed>true</canMarkAsFailed>
+        <!--template-->
     </step>
     <step name="apf_auth" optional="false">
         <title>APF Authorize Load Library</title>
