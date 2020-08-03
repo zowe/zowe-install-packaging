@@ -42,7 +42,7 @@
 //*    the PKCS12 data set.
 //*
 //* 8) Specify the distinguished name of the Zowe's local CA by
-//*    updating the SET statements CN=, OU=, O=, L=, SP= and C=.
+//*    updating the SET statements CN=, OU=, O=, L=, SP=, C=, and LOCALCA=.
 //*
 //* 9) Customize the commands in the DD statement that matches your
 //*    security product so that they meet your system requirements.
@@ -73,7 +73,7 @@
 //*      * Keyring for the Zowe userid
 //         SET ZOWERING='ZoweKeyring'
 //*      * Zowe's certificate label
-//         SET    LABEL=''
+//         SET    LABEL='ZoweCert'
 //*      * Name of the data set containing Zowe's certificate (PKCS12)
 //         SET   DSNAME=
 //*      * Password for the PKCS12 data set
@@ -98,6 +98,8 @@
 //         SET       SP='Prague'
 //*      * Zowe's local CA country
 //         SET        C='CZ'
+//       * Zowe's local CA name
+//         SET        LOCALCA='localca'
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*                     12345678
@@ -135,12 +137,12 @@
              C('&C.')) +
            SIZE(2048) +
            NOTAFTER(DATE(2030-05-01)) +
-           WITHLABEL('localca') +
+           WITHLABEL(&LOCALCA) +
            KEYUSAGE(CERTSIGN)
   SETROPTS RACLIST(DIGTCERT) REFRESH
 
 /* Connect Zowe's local CA authority to the keyring ................ */
-  RACDCERT CONNECT(CERTAUTH LABEL('localca') +
+  RACDCERT CONNECT(CERTAUTH LABEL(&LOCALCA) +
            RING(&ZOWERING.)) +
            ID(&ZOWEUSER.)
 
@@ -155,14 +157,17 @@
 /*      ACTION: Modify the CONNECT(ID(&ZOWEUSER.) LABEL('&LABEL.')   */
 /*              command below to match the owner of the desired      */
 /*              certificate                                          */
+/*              Comment the "Option 2" block below                   */
 /*                                                                   */
 /*   2. Import external Zowe's certificate from a data set in PKCS12 */
 /*      format                                                       */
 /*      ACTION: Uncomment the "Option 1" block below                 */
+/*              Comment the "Option2" block below
 /*                                                                   */
 /*   3. Generate Zowe's certificate that will be signed by the       */
 /*      Zowe's local CA                                              */
-/*      ACTION: Uncomment the "Option 2" block below                 */
+/*      ACTION: This is the default behavior if you submit           */
+/*              this file umodified                                  */
 /*                                                                   */
 /* ***************************************************************** */
 /*                                                                   */
@@ -179,22 +184,22 @@
 /* ................................................................. */
 /* Option 2 - BEGINNING ............................................ */
 /* Create a certificate signed by local zowe's CA .................. */
-/* RACDCERT GENCERT ID(&ZOWEUSER.) +
-/*          SUBJECTSDN( +
-/*            CN('&CN. certificate') +
-/*            OU('&OU.') +
-/*            O('&O.') +
-/*            L('&L.') +
-/*            SP('&SP.') +
-/*            C('&C.')) +
-/*          SIZE(2048) +
-/*          NOTAFTER(DATE(2030-05-01)) +
-/*          WITHLABEL('&LABEL.') +
-/*          KEYUSAGE(HANDSHAKE) +
-/*          ALTNAME(IP(127.0.0.1) +
-/*            DOMAIN('localhost')) +
-/*          SIGNWITH(CERTAUTH LABEL('localca'))
-/* SETROPTS RACLIST(DIGTCERT) REFRESH
+    RACDCERT GENCERT ID(&ZOWEUSER.) +
+            SUBJECTSDN( +
+                CN('&CN. certificate') +
+                OU('&OU.') +
+                O('&O.') +
+                L('&L.') +
+                SP('&SP.') +
+                C('&C.')) +
+            SIZE(2048) +
+            NOTAFTER(DATE(2030-05-01)) +
+            WITHLABEL('&LABEL.') +
+            KEYUSAGE(HANDSHAKE) +
+            ALTNAME(IP(127.0.0.1) +
+                DOMAIN('localhost')) +
+            SIGNWITH(CERTAUTH LABEL(&LOCALCA))
+    SETROPTS RACLIST(DIGTCERT) REFRESH
 
 /* Option 2 - END .................................................. */
 
@@ -275,7 +280,7 @@ ACF
 
 * Create Zowe's local CA authority
   SET PROFILE(USER) DIVISION(CERTDATA)
-  GENCERT CERTAUTH.ZOWECA LABEL(localca) SIZE(2048)   +
+  GENCERT CERTAUTH.ZOWECA LABEL(&LOCALCA) SIZE(2048)   +
           SUBJSDN(CN='&CN. CA'                        +
                   OU='&OU.'                           +
                    O='&O.'                            +
@@ -422,7 +427,7 @@ $$
           C="&C." ') +
         KEYSIZE(2048) +
         NADATE(05/01/30) +
-        LABLCERT(localca) +
+        LABLCERT(&LOCALCA) +
         KEYUSAGE('CERTSIGN')
 
 /* Connect Zowe's local CA authority to the keyring ................ */
