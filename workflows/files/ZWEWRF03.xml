@@ -194,6 +194,51 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>false</default>
         </boolean>
     </variable>
+    <variable name="JOBS_API_PORT" scope="instance" visibility="public">
+        <label>Jobs API Port</label>
+        <abstract>Port that the jobs API service will use</abstract>
+        <description>Port that the jobs API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8545</default>
+        </integer>
+    </variable>
+    <variable name="FILES_API_PORT" scope="instance" visibility="public">
+        <label>Files API Port</label>
+        <abstract>Port that the files API service will use</abstract>
+        <description>Port that the files API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8547</default>
+        </integer>
+    </variable>
+    <variable name="JES_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>JES-explorer UI Port</label>
+        <abstract>Port that the jes-explorer UI service will use</abstract>
+        <description>Port that the jes-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8546</default>
+        </integer>
+    </variable>
+    <variable name="MVS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>MVS-explorer UI Port</label>
+        <abstract>Port that the mvs-explorer UI service will use</abstract>
+        <description>Port that the mvs-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8548</default>
+        </integer>
+    </variable>    
+    <variable name="USS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>USS-explorer UI Port</label>
+        <abstract>Port that the uss-explorer UI service will use</abstract>
+        <description>Port that the uss-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8548</default>
+        </integer>
+    </variable>
     <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX Server HTTPS Port</label>
         <abstract>Zowe ZLUX Server HTTPS Port</abstract>
@@ -298,6 +343,11 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="DISCOVERY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="GATEWAY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="APIML_ENABLE_SSO" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="JOBS_API_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="FILES_API_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="JES_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="false" required="true"/>       
+        <variableValue name="MVS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="false" required="true"/>       
+        <variableValue name="USS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="false" required="true"/>       
         <variableValue name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_ZSS_SERVER_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" noPromptIfSet="false" required="true"/>
