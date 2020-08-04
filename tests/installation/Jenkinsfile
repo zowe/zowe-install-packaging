@@ -17,9 +17,6 @@ node('ibm-jenkins-slave-nvm') {
   // WHAT NODE VERSION WE WANT CLIENT SIDE TO USE
   String CLIENT_NODE_VERSION = 'v12.18.3'
   String NVM_INIT_SCRIPT = '/home/jenkins/.nvm/nvm.sh'
-  def nvmShell(script) {
-    sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\n${script}"
-  }
 
   // Test server configurations:
   // - ansible host id
@@ -184,7 +181,7 @@ node('ibm-jenkins-slave-nvm') {
       sh ". ${NVM_INIT_SCRIPT}\nnvm install ${CLIENT_NODE_VERSION}"
 
       // upgrade npm
-      nvmShell 'npm install -g npm'
+      sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm install -g npm"
     }
   )
 
@@ -192,10 +189,10 @@ node('ibm-jenkins-slave-nvm') {
     operation: {
       ansiColor('xterm') {
         dir(INSTALL_TEST_PATH) {
-          nvmShell "npm install && npm run build"
+          sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm install && npm run build"
         }
         dir(SANITY_TEST_PATH) {
-          nvmShell "npm install"
+          sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm install"
         }
       }
     }
@@ -207,10 +204,10 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       ansiColor('xterm') {
         dir(INSTALL_TEST_PATH) {
-          nvmShell "npm run lint"
+          sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm run lint"
         }
         dir(SANITY_TEST_PATH) {
-          nvmShell "npm run lint"
+          sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm run lint"
         }
       }
     },
@@ -251,7 +248,7 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       ansiColor('xterm') {
         // install CLI
-        nvmShell 'npm install -g .tmp/cli/zowe-cli*.tgz'
+        sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm install -g .tmp/cli/zowe-cli*.tgz"
       }
     },
     timeout: [time: 10, unit: 'MINUTES']
@@ -316,9 +313,9 @@ node('ibm-jenkins-slave-nvm') {
       withCredentials(serverCredentials) {
       withEnv(testEnvVars) {
         try {
-          nvmShell "npm test -- --testPathPattern \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
+          sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm test -- --testPathPattern \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
         } finally {
-          nvmShell 'npm run merge-reports'
+          sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${CLIENT_NODE_VERSION}\nset -x\nnpm run merge-reports"
         }
       } // end of withEnv
       } // end of withCredentials
