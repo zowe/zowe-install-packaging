@@ -56,6 +56,18 @@
             <validationType>DSNAME</validationType>
         </string>
     </variable>
+    <variable name="temp_folder" scope="instance" visibility="public">
+        <label>Temporary Folder</label>
+        <abstract>USS folder used to store temporary data</abstract>
+        <description>This folder will be used to store data required for the workflow execution</description>
+        <category>Installation</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>\/([^\/ ]+\/)+</regularExpression>
+            <errorMessage>USS folder path should start and end with slash.</errorMessage>
+            <!-- Specify choices here -->
+            <default>/tmp/</default>
+        </string>
+    </variable>
     <!--atCreate-->
     <step name="define_variables" optional="false">
         <title>Define Variables</title>
@@ -150,7 +162,38 @@ exit $?</inlineTemplate>
         <canMarkAsFailed>true</canMarkAsFailed>
         <!--template-->
     </step>
-    <!-- TODO: Add automatic volume retrieval -->
+    <step name="volume_retrieve" optional="true">
+        <title>Retrieve the LOADLIB volume</title>
+        <description>Automatically retrieves VOLUME for non-SMS LOADLIB</description>
+        <prereqStep name="copy_artifacts"/>
+        <condition>
+            <expression>"1"=="1"</expression>
+            <description>This step is skipped if VOLUME or Storage Class are known</description>
+            <targetStateSet>
+                <extendStateExpression>
+                    <description>Checking VOLUME and Storage Class</description>
+                    <expression>(${instance-xmem_volume} and $!{instance-xmem_volume} != "") or (${instance-xmem_storclas} and $!{instance-xmem_storclas} != "")</expression>
+                    <targetState>skipped</targetState>
+                </extendStateExpression>
+            </targetStateSet>
+        </condition>
+        <!--variableValues-->
+        <instructions substitution="false">Run this step to retrieve the actual VOLUME of the LOADLIB</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">set -e
+mkdir -p ${instance-temp_folder}
+listing=$(tsocmd "LISTDS ('${instance-zowe_dsn_prefix}.LOADLIB')")
+volume=$(echo $listing|tr ' ' '\n'|sed -n "/--VOLUMES--/{n;p;}")
+echo "xmem_volume=$volume"&gt;${_output}</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <output needResolveConflicts="false" substitution="true">${instance-temp_folder}/volume</output>
+        </template>
+    </step>
     <step name="apf_auth" optional="false">
         <title>APF Authorize Load Library</title>
         <description>This step will dynamically APF authorize the Cross Memory Server LOADLIB</description>
@@ -166,10 +209,10 @@ If you want the APF, to be permanent, add following library to your system autho
         <rest>
             <httpMethod>PUT</httpMethod>
             <uriPath substitution="true">/zosmf/restconsoles/consoles/${_step-stepOwnerUpper}</uriPath>
-            <requestBody substitution="true">#if(${instance-xmem_dasd.startsWith("STORCLAS")})
+            <requestBody substitution="true">#if(${instance-xmem_storclas} and $!{instance-xmem_storclas} != "")
 #set($dasd = "SMS")
-#elseif(${instance-xmem_dasd.startsWith("VOL=SER=")})
-#set($dasd = "VOLUME=${instance-xmem_dasd.substring(8)}")
+#else
+#set($dasd = "VOLUME=${instance-xmem_volume}")
 #end
 {"cmd":"SETPROG APF,ADD,DSNAME=${instance-zowe_dsn_prefix}.LOADLIB,${dasd}"}</requestBody>
             <expectedStatusCode>200</expectedStatusCode>
