@@ -139,7 +139,7 @@
             <inlineTemplate substitution="true">set -x
 
 cd "${instance-zowe_install_path}/scripts/utils"
-sh zowe-install-xmem.sh "${instance-zowe_dsn_prefix}" "${instance-zowe_dsn_prefix}.LOADLIB" "${instance-zowe_dsn_prefix}.PARMLIB" "${instance-proclib}"
+sh zowe-install-xmem.sh -d "${instance-zowe_dsn_prefix}" -b "${instance-zowe_dsn_prefix}.LOADLIB" -a "${instance-zowe_dsn_prefix}.PARMLIB" -r "${instance-proclib}"
 exit $?</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
