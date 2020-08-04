@@ -57,7 +57,7 @@ describe('verify utils/common', function() {
       await test_log_message(message, message);
     });
 
-    describe('with a log file created', async function() { //TODO NOW - remove only
+    describe('with a log file created', async function() {
       const temp_dir = '~/delete_1234';
       const log_file = `${temp_dir}/log.txt`;
       before('create log file', async function() {

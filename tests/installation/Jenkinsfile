@@ -174,12 +174,8 @@ node('ibm-jenkins-slave-nvm') {
         }
       }
 
-      // Use zowe artifactory	
-      sh "npm config set registry https://zowe.jfrog.io/zowe/api/npm/npm-release/"
       // upgrade npm
       sh 'npm install -g npm'
-
-      // install ansible (we put in base image)
     }
   )
 
@@ -300,11 +296,11 @@ node('ibm-jenkins-slave-nvm') {
       }
       if (TEST_SCOPES[params.TEST_SCOPE].containsKey('jenkins_extra_locks')) {
         TEST_SCOPES[params.TEST_SCOPE]['jenkins_extra_locks'].each {
-          lockExtraResources.add([label: "zowe-install-test-${it}".toString()])
+          lockExtraResources.add([resource: "zowe-install-test-${it}".toString()])
         }
       }
 
-      lock(label: lockResources, extra: lockExtraResources) {
+      lock(resource: lockResources, extra: lockExtraResources) {
       // timestamps {
       dir(INSTALL_TEST_PATH) {
       ansiColor('xterm') {

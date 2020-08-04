@@ -15,12 +15,18 @@ river
 tvt4188
 tvt6019
 tvt6080
+tvt5064
 
 [vm]
 vm30051
 
+[ext]
+tivlp46
+wlag
+
 [zoweNode:children]
 tvt
 vm
+ext
 
 

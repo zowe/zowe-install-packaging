@@ -43,3 +43,4 @@
 - name: Show installation log
   raw: find {{ zowe_install_logs_dir }} -name "zowe-install-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
+  
