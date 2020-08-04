@@ -12,10 +12,11 @@
 
 // Provide possibility to specify node.js version in Jenkins agent
 // this value should match the Jenkins node we are using
-def NVM_INIT_SCRIPT = '/home/jenkins/.nvm/nvm.sh'
+String NVM_INIT_SCRIPT = '/home/jenkins/.nvm/nvm.sh'
 def nvmShell(nodeVersion, script) {
   if (nodeVersion != "") {
-    sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm use ${nodeVersion}\nset -x\n${script}"
+    // NVM_INIT_SCRIPT is not reachbale here
+    sh "set +x\n. /home/jenkins/.nvm/nvm.sh\nnvm use ${nodeVersion}\nset -x\n${script}"
   } else {
     sh script
   }
