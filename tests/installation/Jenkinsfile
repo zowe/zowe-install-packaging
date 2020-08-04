@@ -195,7 +195,7 @@ node('ibm-jenkins-slave-nvm') {
         sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm install ${params.CLIENT_NODE_VERSION}\nset -x\necho \"node version is\"\nnode -v"
       }
       // show node version
-      sh "node.js version in build agent is:"
+      sh 'echo "node.js version in build agent is:"'
       nvmShell params.CLIENT_NODE_VERSION, "node -v"
 
       // upgrade npm
