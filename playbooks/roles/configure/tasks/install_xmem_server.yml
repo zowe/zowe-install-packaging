@@ -1,18 +1,6 @@
 ---
 # ============================================================================
-# Create loadlib is doesn't exist
-- import_role:
-    name: zos
-    tasks_from: is_dataset_exist
-  vars:
-    dataset: "{{ zowe_xmem_loadlib }}"
-
-- name: Create {{ zowe_xmem_loadlib }}
-  raw: tsocmd "allocate da('{{ zowe_xmem_loadlib }}') dsntype(library) dsorg(po) recfm(u) blksize(6144) space(10,2) tracks new"
-  when: not dataset_exists
-
-# ============================================================================
-# Create loadlib is doesn't exist
+# Create parmlib is doesn't exist
 - import_role:
     name: zos
     tasks_from: is_dataset_exist
@@ -31,7 +19,7 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/scripts/utils"
     script_filename: ./zowe-install-xmem.sh
-    script_parameters: "-d \"{{ zowe_dataset_prefix }}\" -b \"{{ zowe_xmem_loadlib }}\" -a \"{{ zowe_xmem_parmlib }}\" -r \"{{ zowe_xmem_proclib }}\"  -l \"{{ zowe_install_logs_dir }}\""
+    script_parameters: "-d \"{{ zowe_dataset_prefix }}\" -a \"{{ zowe_xmem_parmlib }}\" -r \"{{ zowe_xmem_proclib }}\"  -l \"{{ zowe_install_logs_dir }}\""
 
 - name: Show content of ZSS proc {{ zowe_xmem_proclib_member_zss }}
   raw: cat "//'{{ zowe_xmem_proclib }}({{ zowe_xmem_proclib_member_zss }})'"
@@ -45,14 +33,14 @@
   ignore_errors: True
 
 # ============================================================================
-# Add XMEM loadlib to APF list
+# Add XMEM auth lib SZWEAUTH to APF list
 - import_role:
     name: zos
     tasks_from: is_dataset_sms
   vars:
-    dataset: "{{ zowe_xmem_loadlib }}"
+    dataset: "{{ zowe_dataset_prefix }}.SZWEAUTH"
 
-- name: Add loadlib (SMS) to APF list
+- name: Add auth lib SZWEAUTH (SMS) to APF list
   when: dataset_is_sms
   block:
   - name: update APF list
@@ -60,33 +48,33 @@
       name: zos
       tasks_from: opercmd
     vars:
-      opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},SMS"
+      opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_dataset_prefix }}.SZWEAUTH,SMS"
   
   - name: Check if APF updating response has CSV410I
     fail:
-      msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
+      msg: "Failed to add {{ zowe_dataset_prefix }}.SZWEAUTH to APF list: {{ opercmd_result.stdout }}"
     when: 'not "CSV410I" in opercmd_result.stdout'
 
-- name: Add loadlib (non-SMS) to APF list
+- name: Add auth lib SZWEAUTH (non-SMS) to APF list
   when: not dataset_is_sms
   block:
   - import_role:
       name: zos
       tasks_from: get_dataset_volume
     vars:
-      dataset: "{{ zowe_xmem_loadlib }}"
+      dataset: "{{ zowe_dataset_prefix }}.SZWEAUTH"
 
   - name: update APF list
     import_role:
       name: zos
       tasks_from: opercmd
     vars:
-      opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_xmem_loadlib }},VOLUME={{ dataset_volume }}"
+      opercmd: "SETPROG APF,ADD,DSNAME={{ zowe_dataset_prefix }}.SZWEAUTH,VOLUME={{ dataset_volume }}"
   
   - name: Check if APF updating response has CSV410I
     fail:
-      msg: "Failed to add {{ zowe_xmem_loadlib }} to APF list: {{ opercmd_result.stdout }}"
+      msg: "Failed to add {{ zowe_dataset_prefix }}.SZWEAUTH to APF list: {{ opercmd_result.stdout }}"
     when: 'not "CSV410I" in opercmd_result.stdout'
 
 - debug:
-    msg: "data set {{ zowe_xmem_loadlib }} is added to APF list"
+    msg: "data set {{ zowe_dataset_prefix }}.SZWEAUTH is added to APF list"

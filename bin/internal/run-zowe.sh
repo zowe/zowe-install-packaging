@@ -38,6 +38,11 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/interna
 
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 
+if [[ "${USER}" == "IZUSVR" ]]
+then
+  echo "WARNING: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
+fi
+
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 . ${ROOT_DIR}/scripts/utils/validate-directory-is-writable.sh ${INSTANCE_DIR}
 checkForErrorsFound
