@@ -236,7 +236,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         <description>Port that the uss-explorer UI service will use</description>
         <category>Explorer variables</category>
         <integer>
-            <default>8548</default>
+            <default>8550</default>
         </integer>
     </variable>
     <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
@@ -376,7 +376,7 @@ valid values are blank('') for telnet, or 'tls'</description>
         <template>
             <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
 # global config
-export ROOT_DIR=${instance-zowe_install_path}
+export ZOWE_ROOT_DIR=${instance-zowe_install_path}
 export ZOWE_PREFIX=${instance-ZOWE_PREFIX}
 export ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
 
@@ -532,7 +532,7 @@ EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
 cd "${instance-zowe_install_path}/scripts/utils"
 
 # global config
-export ROOT_DIR=${instance-zowe_install_path}
+export ZOWE_ROOT_DIR=${instance-zowe_install_path}
 export ZOWE_PREFIX=${instance-ZOWE_PREFIX}
 export ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
 
