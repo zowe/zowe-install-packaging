@@ -20,13 +20,13 @@ tvt5064
 [vm]
 vm30051
 
-[ext]
+[zowe-ext]
 tivlp46
 wlag
 
 [zoweNode:children]
 tvt
 vm
-ext
+zowe-ext
 
 
