@@ -19,14 +19,6 @@
       "version": "~1.14.0-STAGING",
       "artifact": "*.pax"
     },
-    "org.zowe.zlux.sample-angular-app": {
-      "version": "~1.14.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.sample-iframe-app": {
-      "version": "~1.14.0-STAGING",
-      "artifact": "*.pax"
-    },
     "org.zowe.zlux.sample-react-app": {
       "version": "~1.14.0-STAGING",
       "artifact": "*.pax"
