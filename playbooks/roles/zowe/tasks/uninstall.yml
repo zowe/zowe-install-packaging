@@ -125,6 +125,26 @@
   - zowe_xmem_loadlib_volume.stdout != '*SMS*'
 
 # ============================================================================
+- name: Check APF settings of {{ zowe_dataset_prefix }}.SZWEAUTH
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'D PROG,APF,DSNAME={{ zowe_dataset_prefix }}.SZWEAUTH' | grep '[0-9]\{1,\} \{1,\}[0-9a-zA-Z*]\{1,\} \{1,\}{{ zowe_dataset_prefix }}.SZWEAUTH' | awk '{print $2}' | tr -d '\n'
+  register: zowe_dataset_authlib_volume
+  ignore_errors: true
+
+- name: Delete APF settings of {{ zowe_dataset_prefix }}.SZWEAUTH for SMS volume
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_dataset_prefix }}.SZWEAUTH,SMS'
+  when: zowe_dataset_authlib_volume.stdout == 'SMS' or zowe_dataset_authlib_volume.stdout == '*SMS*'
+
+- name: Delete APF settings of {{ zowe_dataset_prefix }}.SZWEAUTH for non-SMS volume
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_dataset_prefix }}.SZWEAUTH,VOLUME={{ zowe_dataset_authlib_volume.stdout }}'
+  when:
+  - zowe_dataset_authlib_volume.stdout != ''
+  - zowe_dataset_authlib_volume.stdout != 'SMS'
+  - zowe_dataset_authlib_volume.stdout != '*SMS*'
+
+# ============================================================================
 - name: Delete members of loadlib/parmlib data sets
   raw: (tsocmd listds "'{{ item[0] }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1' | grep '^{{ item[1] }}$') && echo "Deleting {{ item[0] }}({{ item[1] }}) ..." && tsocmd DELETE "'{{ item[0] }}({{ item[1] }})'"
   loop: "{{ [zowe_xmem_loadlib, zowe_xmem_parmlib]|product([zowe_known_loadlib_members, zowe_known_parmlib_members]|flatten)|list }}"
