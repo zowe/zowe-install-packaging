@@ -2,6 +2,15 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `1.14.0`
+<!--Add the PR or issue number to the entry if applicable.-->
+### New features and enhancements
+
+- Added the fingerprint tool (script and files) to verify the authenticity of the contents of ROOT_DIR ([#1316](https://github.com/zowe/zowe-install-packaging/pull/1316)).  Reference fingerprint files for prior releases were uploaded as a single PAX file ([#1553](https://github.com/zowe/zowe-install-packaging/pull/1553)).
+
+### Bug fixes
+
+
 ## `1.13.0`
 
 #### Minor enchancements/defect fixes
