@@ -5,7 +5,7 @@
 ****************************************************************
 * Timing: post-APPLY                                           *
 ****************************************************************
-* Part: $ZOWE_ROOT_DIR/workflows/*                             *
+* Part: $ZOWE_ROOT_DIR/workflows/ZWE*                          *
 ****************************************************************
 z/OSMF workflows are now availble for some configuration tasks.
 These workflows are available in the workflows subdirectory of
