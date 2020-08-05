@@ -17,7 +17,7 @@ your product install, for example /usr/lpp/zowe/workflows.
 * ZWEWRF06.xml - Configure Cross Memory Server
 * ZWEWRF03.xml - Create Instance Directory and Started Tasks
 
-More details are avialable in the online documentation:
+More details are available in the online documentation:
 https://docs.zowe.org/stable/user-guide/configure-zowe-zosmf-wor
 kflow.html#configure-zowe-with-z-osmf-workflows
 
