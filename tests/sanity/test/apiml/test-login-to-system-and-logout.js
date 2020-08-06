@@ -17,6 +17,9 @@ const HttpStatus = {
   UNAUTHORIZED: 401
 };
 
+// allow self signed certs
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 let logged = async (uuid, headers, expectedStatus) => {
   let status;
   try {
@@ -51,9 +54,6 @@ let assertLogout = async (uuid, authorizationHeaders) => {
 
 describe('test api mediation layer logout functionality', function() {
   before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
     request = testUtils.verifyAndSetupEnvironment();
   });
 

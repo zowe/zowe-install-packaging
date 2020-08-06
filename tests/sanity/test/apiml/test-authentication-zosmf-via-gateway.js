@@ -14,6 +14,9 @@ const testUtils = require('./utils');
 let request, username, password;
 const ZOSMF_TOKEN = 'LtpaToken2';
 
+// allow self signed certs
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 let assertNotEmptyValidResponse = (response) => {
   expect(response.status).to.equal(200);
   expect(response.data).to.not.be.empty;
@@ -21,9 +24,6 @@ let assertNotEmptyValidResponse = (response) => {
 
 describe('test api mediation layer zosmf authentication', function() {
   before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
     request = testUtils.verifyAndSetupEnvironment();
     const environment = process.env;
     username = environment.SSH_USER;
