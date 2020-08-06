@@ -16,11 +16,11 @@ const addContext = require('mochawesome/addContext');
 
 let REQ;
 
-// allow self signed certs
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 describe(`test zLux server https://${process.env.SSH_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
   before('verify environment variables', function() {
+    // allow self signed certs
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
