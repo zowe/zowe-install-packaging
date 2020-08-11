@@ -2,6 +2,16 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## '1.14.0'
+
+#### Minor enchancements/defect fixes
+- Allow multiple domains (names/IP Addresses) when generating certificates [#1511](https://github.com/zowe/zowe-install-packaging/issues/1511).  This also includes SMP/E `HOLDDATA` for the affect function `Zowe Configuration`
+- Documentation changed so that SZWEAUTH PDSE load library members should not be copied elsewhere, but instead the original instalation target SZWEAUTH PDSE should be APF authorized and used as runtime load library.  This also includes SMP/E `HOLDDATA` for the affected function `STC JCL` as well as changes to the documentation chapters [Installing and configuring the Zowe cross memory server (ZWESISTC)](https://docs.zowe.org/stable/user-guide/configure-xmem-server.html#step-1-copy(-the-cross-memory-proclib-and-load-library) and [nstalling and starting the Zowe started task (ZWESVSTC)](https://docs.zowe.org/stable/user-guide/configure-zowe-server.html).  A new documentation chapter [Installing and configuring Zowe z/OS components using scripts](https://docs.zowe.org/stable/user-guide/scripted-configure-server.html) has been added.
+- Allow verification of a Zowe driver for authenticity/provenance.     ,  and for pre-1.14 releases available separately as [#1552](https://github.com/zowe/zowe-install-packaging/issues/1552).
+- Inclusion of z/OSMF workflows for Zowe z/OS configuration [#1527](https://github.com/zowe/zowe-install-packaging/issues/1527)
+- Warning check if `ZWESVSTC` runs under user ID `IZUSVR` [#1534](https://github.com/zowe/zowe-install-packaging/issues/1534)
+
+
 ## `1.13.0`
 
 #### Minor enchancements/defect fixes
