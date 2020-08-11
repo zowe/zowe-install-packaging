@@ -168,7 +168,7 @@
         },
         {
           "repository": "zowe-common-c",
-          "tag": "rc",
+          "tag": "zss-v1.14.0",
           "destinations": ["Zowe PAX"]
         }
       ]
