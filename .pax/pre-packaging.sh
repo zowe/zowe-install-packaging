@@ -174,11 +174,15 @@ chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
 chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
 chmod +x content/templates/*.rex
 
+echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
+chmod +x content/zowe-$ZOWE_VERSION/bin/utils/keyring-util/keyring-util
+
 # prepare for SMPE
 echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."
 mv ./content/smpe  .
 
 # workflow customization
+# >>>
 echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
 
@@ -197,5 +201,49 @@ _createWorkflow "./templates"
 
 #3. clean up working files
 rm -rf "./templates"
+
+# <<<
+
+# # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
+
+# This is the script where we create the fingerprint in the zowe.pax file.
+# To do this, we will create a runtime directory, somewhat like smpe.sh does today,
+# by running zowe-install.sh
+
+# For the moment, I will let smpe.sh continue to create its own runtime folder, but this creation
+# will be removed later for efficiency.
+
+# Note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
+# TODO
+# To delete them, amend catchall-packaging.sh in this directory.
+
+# # Generate reference hash keys of runtime files
+echo "----- Generate reference hash keys of runtime files -----"
+echo Installing Zowe in temporary runtime directory
+mkdir zowe-runtime-dir 
+userid=${USER:-${USERNAME:-${LOGNAME}}}
+tempDSNlevel=T$(($$ % 10000000)) # the lower 7 digits of the PID
+./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.$tempDSNlevel # temp DSN based on PID
+for szweDSN in SZWESAMP SZWEAUTH # delete temp DSNs 
+do
+  tsocmd delete $tempDSNlevel.$szweDSN # 1> /dev/null 2> /dev/null
+done
+utilsDir=`pwd`/content/zowe-$ZOWE_VERSION/scripts/utils 
+mkdir $utilsDir/hash # create work directory
+cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
+
+# Compile the hash program and calculate the checksums of runtime
+./content/zowe-$ZOWE_VERSION/bin/zowe-generate-checksum.sh `pwd`/zowe-runtime-dir $utilsDir/hash 
+
+# save derived runtime hash file and class into the source tree that will be PAXed
+mkdir -p content/zowe-$ZOWE_VERSION/fingerprint
+cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/RefRuntimeHash-$ZOWE_VERSION.txt 
+cp   $utilsDir/hash/HashFiles.class    content/zowe-$ZOWE_VERSION/bin/internal
+
+rm -r $utilsDir/hash # delete work directory
+rm -r zowe-runtime-dir # delete runtime directory.  TODO: Don't do this when smpe.sh does not create its own.  
+
+echo "----- Hash keys of runtime files were generated -----"
+# # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
 
 echo "[$SCRIPT_NAME] done"
