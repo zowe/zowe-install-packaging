@@ -292,7 +292,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zosmf-auth",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
