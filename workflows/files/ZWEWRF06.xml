@@ -172,7 +172,7 @@ exit $?</inlineTemplate>
             <targetStateSet>
                 <extendStateExpression>
                     <description>Checking VOLUME and Storage Class</description>
-                    <expression>(${instance-xmem_volume} and $!{instance-xmem_volume} != "") or (${instance-xmem_storclas} and $!{instance-xmem_storclas} != "")</expression>
+                    <expression>(${instance-xmem_volume} &amp;&amp; ${instance-xmem_volume} != "") || (${instance-xmem_storclas} &amp;&amp; ${instance-xmem_storclas} != "")</expression>
                     <targetState>skipped</targetState>
                 </extendStateExpression>
             </targetStateSet>
