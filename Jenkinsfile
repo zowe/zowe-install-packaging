@@ -190,7 +190,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           sh 'mkdir -p utils && cp ../../../../utils/* ./utils'
           // download zowe pax to docker build agent
           pipeline.artifactory.download(
-            specContent: "{\"files\":[{\"pattern\": \"${zowePaxUploaded}\",\"target\":\"zowe.pax\"}]}",
+            specContent: "{\"files\":[{\"pattern\": \"${zowePaxUploaded}\",\"target\":\"zowe.pax\",\"flat\":\"true\"}]}",
             expected: 1
           )
           // show files
