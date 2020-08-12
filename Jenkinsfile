@@ -167,23 +167,41 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     },
     stage : {
       sh 'echo ">>>>>>>>>>>>>>>>>> parent-node: " && pwd && ls -la'
+      // this is a hack to find the zowe.pax upload
+      // FIXME: ideally this should be reachable from pipeline property
+      def zowePaxUploaded = sh(
+          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target",
+          returnStdout: true
+        ).trim()
+      echo "zowePaxUploaded=${zowePaxUploaded}"
+      if (zowePaxUploaded == "") {
+        sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
+        error "Couldn't find zowe.pax uploaded."
+      }
       node('ibm-jenkins-slave-dind') {
-        sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -la'
+        // checkout source code to docker build agent
+        checkout scm
+        // checkout repository with dockerfile
+        // FIXME: this dockerfile should be merged into current repo to avoid
+        //        version synchronizing issues
+        sh 'git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git'
+        dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts') {
+          // copy utils to docker build folder
+          sh 'mkdir -p utils && cp ../../../../utils/* ./utils'
+          // download zowe pax to docker build agent
+          pipeline.artifactory.download(spec: zowePaxUploaded, expected: 1)
+          sh 'mv zowe*.pax zowe.pax'
+          // show files
+          sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -ltr .'
 
-        withCredentials([usernamePassword(
-          credentialsId: 'DockerGizaUser',
-          usernameVariable: 'dockeruser',
-          passwordVariable: 'unused'
-        )]){
-          sh """
-             git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
-             && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
-             && mkdir utils \
-             && cp ../../../../utils/* ./utils \
-             && cp ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
-             && ls -ltr . \
-             && docker build -f Dockerfile.jenkins -t ${dockeruser}/zowe-v1-lts:amd64 .
-             """
+          withCredentials([usernamePassword(
+            credentialsId: 'DockerGizaUser',
+            usernameVariable: 'dockeruser',
+            passwordVariable: 'unused'
+          )]){
+            // build docker image
+            sh "docker build -f Dockerfile.jenkins -t ${dockeruser}/zowe-v1-lts:amd64 ."
+          }
         }
       }
     }
