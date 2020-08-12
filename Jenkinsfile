@@ -27,6 +27,11 @@ node('ibm-jenkins-slave-nvm') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_DOCKER',
+      description: 'If we want to build docker image.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -151,6 +156,39 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/AZWE*'
     ]
   )
+
+  // 
+  pipeline.createStage(
+    name: "Build Docker",
+    timeout: [ time: 120, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_DOCKER
+    },
+    stage : {
+      sh 'echo ">>>>>>>>>>>>>>>>>> parent-node: " && pwd && ls -la'
+      node('ibm-jenkins-slave-dind') {
+        sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -la'
+
+        withCredentials([usernamePassword(
+          credentialsId: 'DockerGizaUser',
+          usernameVariable: 'dockeruser',
+          passwordVariable: 'unused'
+        )]){
+          sh """
+             git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
+             && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
+             && mkdir utils \
+             && cp ../../../../utils/* ./utils \
+             && cp ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
+             && ls -ltr . \
+             && docker build -f Dockerfile.jenkins -t ${dockeruser}/zowe-v1-lts:amd64 .
+             """
+        }
+      }
+    }
+  )
+
 
   pipeline.end()
 }
