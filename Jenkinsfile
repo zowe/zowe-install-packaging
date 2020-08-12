@@ -170,7 +170,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // this is a hack to find the zowe.pax upload
       // FIXME: ideally this should be reachable from pipeline property
       def zowePaxUploaded = sh(
-          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target",
+          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
           returnStdout: true
         ).trim()
       echo "zowePaxUploaded=${zowePaxUploaded}"
