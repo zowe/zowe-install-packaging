@@ -336,6 +336,7 @@ public class ExportPrivateKey {
     }
 }
 EOF
+    echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     echo "cat returned $?"
     javac ${TEMP_DIR}/ExportPrivateKey.java
     echo "javac returned $?"
