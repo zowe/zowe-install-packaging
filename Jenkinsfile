@@ -166,7 +166,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       return params.BUILD_DOCKER
     },
     stage : {
-      sh 'echo ">>>>>>>>>>>>>>>>>> parent-node: " && pwd && ls -la'
       // this is a hack to find the zowe.pax upload
       // FIXME: ideally this should be reachable from pipeline property
       def zowePaxUploaded = sh(
@@ -198,11 +197,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
           withCredentials([usernamePassword(
             credentialsId: 'DockerGizaUser',
-            usernameVariable: 'dockeruser',
-            passwordVariable: 'unused'
+            usernameVariable: 'USERNAME',
+            passwordVariable: 'PASSWORD'
           )]){
             // build docker image
-            sh "docker build -f Dockerfile.jenkins -t ${dockeruser}/zowe-v1-lts:amd64 ."
+            sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
+            // publish
+            sh "docker login -u ${USERNAME} -p ${PASSWORD} && docker push ${USERNAME}/zowe-v1-lts:amd64"
           }
         }
       }
