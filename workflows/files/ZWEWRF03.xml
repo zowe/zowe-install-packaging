@@ -374,7 +374,7 @@ valid values are blank('') for telnet, or 'tls'</description>
         <autoEnable>true</autoEnable>
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
-            <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
+            <inlineTemplate substitution="true">cd ${instance-zowe_install_path}/bin
 # global config
 export ZOWE_ROOT_DIR=${instance-zowe_install_path}
 export ZOWE_PREFIX=${instance-ZOWE_PREFIX}
@@ -422,7 +422,7 @@ export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
 export ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
 export EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
 
-sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTemplate>
+sh ./zowe-configure-instance.sh -c ${instance-zowe_instance_path}</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
@@ -531,7 +531,7 @@ EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">set -x
-cd "${instance-zowe_install_path}/scripts/utils"
+cd ${instance-zowe_install_path}/scripts/utils
 
 # global config
 export ZOWE_ROOT_DIR=${instance-zowe_install_path}
@@ -614,7 +614,7 @@ To learn more about the task and how to stop it, please refer to the documentati
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">set -x
-cd "${instance-zowe_instance_path}/bin"
+cd ${instance-zowe_instance_path}/bin
 sh ./zowe-start.sh
 exit $?</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
