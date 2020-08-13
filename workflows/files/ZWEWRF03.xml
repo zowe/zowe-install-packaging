@@ -194,6 +194,51 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>false</default>
         </boolean>
     </variable>
+    <variable name="JOBS_API_PORT" scope="instance" visibility="public">
+        <label>Jobs API Port</label>
+        <abstract>Port that the jobs API service will use</abstract>
+        <description>Port that the jobs API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8545</default>
+        </integer>
+    </variable>
+    <variable name="FILES_API_PORT" scope="instance" visibility="public">
+        <label>Files API Port</label>
+        <abstract>Port that the files API service will use</abstract>
+        <description>Port that the files API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8547</default>
+        </integer>
+    </variable>
+    <variable name="JES_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>JES-explorer UI Port</label>
+        <abstract>Port that the jes-explorer UI service will use</abstract>
+        <description>Port that the jes-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8546</default>
+        </integer>
+    </variable>
+    <variable name="MVS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>MVS-explorer UI Port</label>
+        <abstract>Port that the mvs-explorer UI service will use</abstract>
+        <description>Port that the mvs-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8548</default>
+        </integer>
+    </variable>    
+    <variable name="USS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>USS-explorer UI Port</label>
+        <abstract>Port that the uss-explorer UI service will use</abstract>
+        <description>Port that the uss-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <default>8550</default>
+        </integer>
+    </variable>
     <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX Server HTTPS Port</label>
         <abstract>Zowe ZLUX Server HTTPS Port</abstract>
@@ -298,6 +343,11 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="DISCOVERY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="GATEWAY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="APIML_ENABLE_SSO" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="JOBS_API_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="FILES_API_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="JES_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="false" required="true"/>       
+        <variableValue name="MVS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="false" required="true"/>       
+        <variableValue name="USS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="false" required="true"/>       
         <variableValue name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_ZSS_SERVER_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" noPromptIfSet="false" required="true"/>
@@ -324,9 +374,9 @@ valid values are blank('') for telnet, or 'tls'</description>
         <autoEnable>true</autoEnable>
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
-            <inlineTemplate substitution="true">cd "${instance-zowe_install_path}/bin"
+            <inlineTemplate substitution="true">cd ${instance-zowe_install_path}/bin
 # global config
-export ROOT_DIR=${instance-zowe_install_path}
+export ZOWE_ROOT_DIR=${instance-zowe_install_path}
 export ZOWE_PREFIX=${instance-ZOWE_PREFIX}
 export ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
 
@@ -358,6 +408,7 @@ export FILES_API_PORT=${instance-FILES_API_PORT}
 export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
 export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
 export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+export ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*"
 
 # Zowe Desktop/app framework variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
@@ -371,7 +422,7 @@ export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
 export ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
 export EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
 
-sh ./zowe-configure-instance.sh -c "${instance-zowe_instance_path}"</inlineTemplate>
+sh ./zowe-configure-instance.sh -c ${instance-zowe_instance_path}</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
@@ -437,6 +488,7 @@ FILES_API_PORT=${instance-FILES_API_PORT}
 JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
 MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
 USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*"
 
 # Zowe Desktop/app framework variables
 ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
@@ -479,10 +531,10 @@ EXTERNAL_COMPONENTS=${instance-EXTERNAL_COMPONENTS}
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">set -x
-cd "${instance-zowe_install_path}/scripts/utils"
+cd ${instance-zowe_install_path}/scripts/utils
 
 # global config
-export ROOT_DIR=${instance-zowe_install_path}
+export ZOWE_ROOT_DIR=${instance-zowe_install_path}
 export ZOWE_PREFIX=${instance-ZOWE_PREFIX}
 export ZOWE_INSTANCE=${instance-ZOWE_INSTANCE}
 
@@ -514,6 +566,7 @@ export FILES_API_PORT=${instance-FILES_API_PORT}
 export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
 export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
 export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+export ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*"
 
 # Zowe Desktop/app framework variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
@@ -561,7 +614,7 @@ To learn more about the task and how to stop it, please refer to the documentati
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">set -x
-cd "${instance-zowe_instance_path}/bin"
+cd ${instance-zowe_instance_path}/bin
 sh ./zowe-start.sh
 exit $?</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
