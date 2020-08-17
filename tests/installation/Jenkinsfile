@@ -96,6 +96,9 @@ node('ibm-jenkins-slave-nvm') {
       jenkins_primary_lock: 'marist',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
+    'generate api documentation': [
+      test_files: 'dist/__tests__/basic/install-api-gen.js',
+    ],
   ]
 
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
@@ -345,6 +348,13 @@ node('ibm-jenkins-slave-nvm') {
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 360, unit: 'MINUTES'],
+  )
+
+  pipeline.publish(
+    name        : "API Definitions",
+    operation   : {
+      
+    }
   )
 
   pipeline.end()
