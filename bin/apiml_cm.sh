@@ -423,6 +423,22 @@ function export_jwt_from_keyring {
 
 function zosmf_jwt_public_key {
     echo "Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+
+    # If Zowe local CA keystore file does not exist (e.g. is defined in a keyring) then we have to create another CA
+    # whose sole purpose is to help forging a fake certificate that encapsulates JWT token from z/OSMF so that it can be
+    # connected with PKCS11 token.
+    if [[ ! -f ${LOCAL_CA_FILENAME}.keystore.p12 ]]; then
+        echo "Generate keystore with the CA private key and CA public certificate:"
+        pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
+            -dname "${LOCAL_CA_DNAME}" -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 -validity ${LOCAL_CA_VALIDITY} \
+            -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
+        chmod 600 ${LOCAL_CA_FILENAME}.keystore.p12
+
+        echo "Export the CA public certificate:"
+        pkeytool -export $V -alias ${LOCAL_CA_ALIAS} -file ${LOCAL_CA_FILENAME}.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 -rfc \
+            -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12
+    fi
+
     java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
