@@ -98,7 +98,7 @@
 //         SET       SP='Prague'
 //*      * Zowe's local CA country
 //         SET        C='CZ'
-//       * Zowe's local CA name
+//*      * Zowe's local CA name
 //         SET        LOCALCA='localca'
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
