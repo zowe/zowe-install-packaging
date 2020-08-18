@@ -10,9 +10,15 @@
 # Copyright IBM Corporation 2018, 2020
 ################################################################################
 
-if [ $# -lt 4 ]; then
-  echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
-  exit 1
+if [ `uname` = "OS/390" ]; then
+  if [ $# -lt 4 ]; then
+    echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
+    exit 1
+  fi
+else
+  if [ $# -lt 2 ]; then
+    echo  "Usage: $0 -i <zowe_install_path> [-l <log_directory>]"
+  fi
 fi
 
 while getopts "f:h:i:l:d" opt; do
@@ -63,7 +69,7 @@ then
   echo "-i parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
   exit 1
 else
-  get_full_path ${INSTALL_TARGET} ZOWE_ROOT_DIR
+  ZOWE_ROOT_DIR=$(get_full_path ${INSTALL_TARGET})
 fi
 
 if [[ -z "${LOG_FILE}" ]]
@@ -85,6 +91,7 @@ fi
 echo "Install started at: "`date` >> $LOG_FILE
 
 
+if [ `uname` = "OS/390" ]; then
 if [[ -z "$DSN_PREFIX" ]]
 then
   echo "-h parameter not set. Usage: $0 -i zowe_install_path -h zowe_dsn_prefix"
@@ -92,26 +99,26 @@ then
 else
   ZOWE_DSN_PREFIX=$DSN_PREFIX
 fi
+fi
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
 NEW_INSTALL="true"
 
 # warn about any prior installation
-if [[ -d $ZOWE_ROOT_DIR ]]; then
-    directoryListLines=`ls -al $ZOWE_ROOT_DIR | wc -l`
-    # Has total line, parent and self ref
-    if [[ $directoryListLines -gt 3 ]]; then
-        if [[ -f "${ZOWE_ROOT_DIR}/manifest.json" ]]
-        then
-            OLD_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-            NEW_INSTALL="false"
-            echo "  $ZOWE_ROOT_DIR contains version ${OLD_VERSION}. Updating this install to version ${ZOWE_VERSION}."
-            echo "  Backing up previous Zowe runtime files to ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak."
-            mv ${ZOWE_ROOT_DIR} ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak
-        fi
+count_children_in_directory ${ZOWE_ROOT_DIR}
+root_dir_existing_children=$?
+if [[ ${root_dir_existing_children} -gt 0 ]]; then
+    if [[ -f "${ZOWE_ROOT_DIR}/manifest.json" ]]
+    then
+        OLD_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+        NEW_INSTALL="false"
+        echo "  $ZOWE_ROOT_DIR contains version ${OLD_VERSION}. Updating this install to version ${ZOWE_VERSION}."
+        echo "  Backing up previous Zowe runtime files to ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak."
+        mv ${ZOWE_ROOT_DIR} ${ZOWE_ROOT_DIR}.${OLD_VERSION}.bak
     fi
 fi
+
 mkdir -p $ZOWE_ROOT_DIR
 chmod a+rx $ZOWE_ROOT_DIR
 
@@ -148,14 +155,35 @@ cp $INSTALL_DIR/scripts/ocopyshr.sh $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.sh
 cp $INSTALL_DIR/scripts/ocopyshr.clist $ZOWE_ROOT_DIR/scripts/internal/ocopyshr.clist
 echo "Copying the run-zowe.sh into "$ZOWE_ROOT_DIR/scripts/internal >> $LOG_FILE
 
+# Create the /fingerprint directory in the ZOWE_ROOT_DIR runtime directory,
+# if it exists in the INSTALL_DIR driectory
+if [[ -d $INSTALL_DIR/fingerprint ]]
+then
+  echo "OK: Fingerprint exists in install directory $INSTALL_DIR and will be copied to runtime" >> $LOG_FILE
+  ls -l $INSTALL_DIR/fingerprint/*  >> $LOG_FILE
+  mkdir -p  $ZOWE_ROOT_DIR/fingerprint
+  chmod a+x $ZOWE_ROOT_DIR/fingerprint
+  echo "Copying `ls $INSTALL_DIR/fingerprint/*` into "$ZOWE_ROOT_DIR/fingerprint >> $LOG_FILE
+  cp $INSTALL_DIR/fingerprint/* $ZOWE_ROOT_DIR/fingerprint
+  chmod a+r $ZOWE_ROOT_DIR/fingerprint/*
+else
+  echo "OK: No fingerprint"
+  echo "OK: No fingerprint in install directory $INSTALL_DIR, create it with zowe-generate-checksum.sh" >> $LOG_FILE
+fi
+
+mkdir -p ${ZOWE_ROOT_DIR}/workflows
+cp -r $INSTALL_DIR/files/workflows/. $ZOWE_ROOT_DIR/workflows/
+
 mkdir -p ${ZOWE_ROOT_DIR}/bin
 cp -r $INSTALL_DIR/bin/. $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/bin
 
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
+if [ `uname` = "OS/390" ]; then
 echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
+fi
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into"
 echo "  directory " $ZOWE_ROOT_DIR
@@ -173,6 +201,9 @@ chmod -R 755 ${ZOWE_ROOT_DIR}
 
 # remove the working directory
 rm -rf $TEMP_DIR
+
+echo "---- Final directory listing of ZOWE_ROOT_DIR "$ZOWE_ROOT_DIR >> $LOG_FILE
+ls -l $ZOWE_ROOT_DIR >> $LOG_FILE
 
 echo "zowe-install.sh completed. In order to use Zowe:"
 if [[ ${NEW_INSTALL} == "true" ]]

@@ -1,4 +1,5 @@
 {
   "identifier": "org.zowe.zlux.appmanager.app.propview",
-  "pluginLocation": "../../zlux-app-manager/system-apps/app-prop-viewer"
+  "pluginLocation": "components/app-server/share/zlux-app-manager/system-apps/app-prop-viewer",
+  "relativeTo": "$ROOT_DIR"
 }

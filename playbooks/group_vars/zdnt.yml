@@ -16,6 +16,7 @@ zowe_dataset_prefix: TSTRADM.ZWE
 zowe_apiml_verify_certficates_of_services: false
 zowe_proclib_dsname: ZAAS1.PROCLIB
 zowe_xmem_proclib: ZAAS1.PROCLIB
+# this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib: TSTRADM.LOADLIB
 zowe_xmem_parmlib: TSTRADM.PARMLIB
 # variables for zowe smpe uninstallation and installation
