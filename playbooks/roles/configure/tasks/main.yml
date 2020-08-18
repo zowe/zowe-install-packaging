@@ -68,7 +68,6 @@
 - import_role:
     name: configure
     tasks_from: create_keyring
-    when: zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
      
 # ============================================================================
 # Setup certificates for USS keystore (self-signed)
