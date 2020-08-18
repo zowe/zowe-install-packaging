@@ -1,0 +1,27 @@
+---
+# this playbook runs SZWESAMP(ZWEKRING)
+- name: Remove ZWEKRING.jcl if exists
+  raw: >-
+    rm -f "{{ work_dir_remote }}/ZWEKRING.jcl"
+
+- name: Copy SZWESAMP(ZWEKRING) to USS
+  raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWEKRING)'" "{{ work_dir_remote }}/ZWEKRING.jcl"
+
+- name: Check ZWEKRING.jcl changes
+  raw: >-
+    grep -e "^// *SET " \
+        -e ADDGROUP \
+        -e ALTGROUP \
+        -e ADDUSER \
+        "{{ work_dir_remote }}/ZWEKRING.jcl"
+
+- name: Run ZWEKRING.jcl
+  import_role:
+    name: zos
+    tasks_from: run_jcl
+  vars:
+    jcl_filename: "{{ work_dir_remote }}/ZWEKRING.jcl"
+
+- name: Remove ZWEKRING.jcl  if exists
+  raw: >-
+    rm -f "{{ work_dir_remote }}/ZWEKRING.jcl"
