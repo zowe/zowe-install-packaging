@@ -226,11 +226,11 @@ const loginMVD = async(driver, url, username, password) => {
   const loginForm = await getElement(driver, 'form.login-form');
   expect(loginForm).to.be.an('object');
   // fill in login form
-  const usernameInput = await getElement(loginForm, 'input#usernameInput');
+  const usernameInput = await getElement(loginForm, 'input#ZAP_LoginPage_Username');
   expect(usernameInput).to.be.an('object');
   await usernameInput.clear();
   await usernameInput.sendKeys(username);
-  const passwordInput = await getElement(loginForm, 'input#passwordInput');
+  const passwordInput = await getElement(loginForm, 'input#ZAP_LoginPage_Password');
   expect(passwordInput).to.be.an('object');
   await passwordInput.clear();
   await passwordInput.sendKeys(password);
