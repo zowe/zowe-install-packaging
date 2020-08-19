@@ -17,21 +17,12 @@
     sed -e "s+^ZOWE_GROUP_ID=.*\$+ZOWE_GROUP_ID={{ zowe_runtime_group }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.env"
     
-- name: Show zowe-setup-certificates.env
-  raw: cat "{{ work_dir_remote }}/zowe-setup-certificates.env"
-
 - name: Update zowe-setup-certificates.env to use keyring mode (if applicable)
   raw: >-
     cat "{{ work_dir_remote }}/zowe-setup-certificates.env" | \
     sed -e "s+^ZOWE_KEYRING=.*\$+ZOWE_KEYRING={{ zowe_keyring_alias }}+" \
-    > "{{ work_dir_remote }}/zowe-setup-certificates.tmp"
-  when: zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
-
-- name: Show zowe-setup-certificates.tmp
-  raw: cat "{{ work_dir_remote }}/zowe-setup-certificates.tmp"
-
-- name: Replace zowe-setup-certificates.env with tmp (if applicable)
-  raw: mv "{{ work_dir_remote }}/zowe-setup-certificates.tmp" "{{ work_dir_remote }}/zowe-setup-certificates.env"
+    > "{{ work_dir_remote }}/zowe-setup-certificates.tmp" && \
+    mv "{{ work_dir_remote }}/zowe-setup-certificates.tmp" "{{ work_dir_remote }}/zowe-setup-certificates.env"
   when: zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 - name: Show zowe-setup-certificates.env
