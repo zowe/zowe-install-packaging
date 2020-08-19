@@ -19,7 +19,7 @@
     
 - name: Show zowe_keyring_alias value
   debug:
-  msg: zowe_keyring_alias is set to {{ zowe_keyring_alias }}
+    var: zowe_keyring_alias
 
 - name: Update zowe-setup-certificates.env to use keyring mode (if applicable)
   raw: >-
