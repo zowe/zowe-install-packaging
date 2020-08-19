@@ -20,6 +20,7 @@
 - name: Update zowe-setup-certificates.env to use keyring mode (if applicable)
   raw: >-
     cat "{{ work_dir_remote }}/zowe-setup-certificates.env" | \
+    sed -e "s+^KEYSTORE_ALIAS=.*\$+KEYSTORE_ALIAS={{ zowe_keyring_certname }}+" | \
     sed -e "s+^ZOWE_KEYRING=.*\$+ZOWE_KEYRING={{ zowe_keyring_alias }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.tmp" && \
     mv "{{ work_dir_remote }}/zowe-setup-certificates.tmp" "{{ work_dir_remote }}/zowe-setup-certificates.env"
