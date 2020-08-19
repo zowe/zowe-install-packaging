@@ -137,12 +137,12 @@
              C('&C.')) +
            SIZE(2048) +
            NOTAFTER(DATE(2030-05-01)) +
-           WITHLABEL(&LOCALCA) +
+           WITHLABEL('&LOCALCA') +
            KEYUSAGE(CERTSIGN)
   SETROPTS RACLIST(DIGTCERT) REFRESH
 
 /* Connect Zowe's local CA authority to the keyring ................ */
-  RACDCERT CONNECT(CERTAUTH LABEL(&LOCALCA) +
+  RACDCERT CONNECT(CERTAUTH LABEL('&LOCALCA') +
            RING(&ZOWERING.)) +
            ID(&ZOWEUSER.)
 
@@ -198,7 +198,7 @@
             KEYUSAGE(HANDSHAKE) +
             ALTNAME(IP(127.0.0.1) +
                 DOMAIN('localhost')) +
-            SIGNWITH(CERTAUTH LABEL(&LOCALCA))
+            SIGNWITH(CERTAUTH LABEL('&LOCALCA'))
     SETROPTS RACLIST(DIGTCERT) REFRESH
 
 /* Option 2 - END .................................................. */
