@@ -16,6 +16,10 @@
     sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
     sed -e "s+^ZOWE_GROUP_ID=.*\$+ZOWE_GROUP_ID={{ zowe_runtime_group }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.env"
+    
+- name: Show zowe_keyring_alias value
+  debug:
+  msg: zowe_keyring_alias is set to {{ zowe_keyring_alias }}
 
 - name: Update zowe-setup-certificates.env to use keyring mode (if applicable)
   raw: >-
