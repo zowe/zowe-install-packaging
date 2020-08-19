@@ -99,7 +99,7 @@
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">//ALLOCDSS EXEC PGM=IEFBR14
-//LOADLIB1 DD DISP=(NEW,CATLG,DELETE),
+//LOADLIB1 DD DISP=(MOD,CATLG,DELETE),
 //    DSN=${instance-zowe_dsn_prefix}.LOADLIB,
 //    DSNTYPE=LIBRARY,SPACE=(CYL,(10,5,5)),
 #if(${instance-xmem_volume} and $!{instance-xmem_volume} != "")
@@ -225,12 +225,13 @@ If you want the APF, to be permanent, add following library to your system autho
         <!--variableValues-->
         <!-- condition -->
         <instructions substitution="false">Run this step to start the Cross Memory Server.
+<![CDATA[
+You can also do it manually with the following operator command:
+<code>S ZWESISTC,REUSASID=YES</code>
 
-You can also do it manually with the following command:
-/S ZWESISTC,REUSASID=YES
-
-To stop the Cross Memory Server use:
-/P ZWESISTC
+To stop the Cross Memory Server use this operator command:
+<code>P ZWESISTC</code>
+]]>
 </instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
