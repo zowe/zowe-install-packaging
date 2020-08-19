@@ -279,10 +279,15 @@ function export_service_certificate {
     fi
 }
 
+# This check/code duplication is due to com.ibm.crypto.provider being need for z/os keyring support and
+# does not exist on other operating systems and will fail in docker or in development environments.
+# And Java does not support conditional import.
 function export_service_private_key {
     echo "Exporting service private key"
     echo "TEMP_DIR=$TEMP_DIR"
-    cat <<EOF >$TEMP_DIR/ExportPrivateKey.java
+
+    if [ `uname` = "OS/390" ]; then
+        cat <<EOF >$TEMP_DIR/ExportPrivateKey.java
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -336,11 +341,64 @@ public class ExportPrivateKey {
     }
 }
 EOF
+    else
+        cat <<EOF >$TEMP_DIR/ExportPrivateKey.java
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.security.Key;
+import java.security.KeyStore;
+import java.util.Base64;
+
+public class ExportPrivateKey {
+    private File keystoreFile;
+    private String keyStoreType;
+    private char[] keyStorePassword;
+    private char[] keyPassword;
+    private String alias;
+    private File exportedFile;
+
+    public void export() throws Exception {
+        KeyStore keystore = KeyStore.getInstance(keyStoreType);
+        keystore.load(new FileInputStream(keystoreFile), keyStorePassword);
+        Key key = keystore.getKey(alias, keyPassword);
+        String encoded = Base64.getEncoder().encodeToString(key.getEncoded());
+        FileWriter fw = new FileWriter(exportedFile);
+        fw.write("-----BEGIN PRIVATE KEY-----");
+        for (int i = 0; i < encoded.length(); i++) {
+            if (((i % 64) == 0) && (i != (encoded.length() - 1))) {
+                fw.write("\n");
+            }
+            fw.write(encoded.charAt(i));
+        }
+        fw.write("\n");
+        fw.write("-----END PRIVATE KEY-----\n");
+        fw.close();
+    }
+
+    public static void main(String args[]) throws Exception {
+        ExportPrivateKey export = new ExportPrivateKey();
+        export.keystoreFile = new File(args[0]);
+        export.keyStoreType = args[1];
+        export.keyStorePassword = args[2].toCharArray();
+        export.alias = args[3];
+        export.keyPassword = args[4].toCharArray();
+        export.exportedFile = new File(args[5]);
+        export.export();
+    }
+}
+EOF
+    fi
     echo "cat returned $?"
     javac ${TEMP_DIR}/ExportPrivateKey.java
     echo "javac returned $?"
-    if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
-        java -cp ${TEMP_DIR} ExportPrivateKey ${SERVICE_KEYSTORE}.p12 ${SERVICE_STORETYPE} ${SERVICE_PASSWORD} ${SERVICE_ALIAS} ${SERVICE_PASSWORD} ${SERVICE_KEYSTORE}.key
+    if [ `uname` = "OS/390" ]; then
+        if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
+            java -cp ${TEMP_DIR} ExportPrivateKey ${SERVICE_KEYSTORE}.p12 ${SERVICE_STORETYPE} ${SERVICE_PASSWORD} ${SERVICE_ALIAS} ${SERVICE_PASSWORD} ${SERVICE_KEYSTORE}.key
+        fi
+    else
+        java -cp ${TEMP_DIR} ExportPrivateKey ${SERVICE_KEYSTORE}.p12 PKCS12 ${SERVICE_PASSWORD} ${SERVICE_ALIAS} ${SERVICE_PASSWORD} ${SERVICE_KEYSTORE}.key
     fi
     echo "java returned $?"
     rm ${TEMP_DIR}/ExportPrivateKey.java ${TEMP_DIR}/ExportPrivateKey.class
@@ -423,6 +481,22 @@ function export_jwt_from_keyring {
 
 function zosmf_jwt_public_key {
     echo "Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+
+    # If Zowe local CA keystore file does not exist (e.g. is defined in a keyring) then we have to create another CA
+    # whose sole purpose is to help forging a fake certificate that encapsulates JWT token from z/OSMF so that it can be
+    # connected with PKCS11 token.
+    if [[ ! -f ${LOCAL_CA_FILENAME}.keystore.p12 ]]; then
+        echo "Generate keystore with the CA private key and CA public certificate:"
+        pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
+            -dname "${LOCAL_CA_DNAME}" -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12 -validity ${LOCAL_CA_VALIDITY} \
+            -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
+        chmod 600 ${LOCAL_CA_FILENAME}.keystore.p12
+
+        echo "Export the CA public certificate:"
+        pkeytool -export $V -alias ${LOCAL_CA_ALIAS} -file ${LOCAL_CA_FILENAME}.cer -keystore ${LOCAL_CA_FILENAME}.keystore.p12 -rfc \
+            -keypass ${LOCAL_CA_PASSWORD} -storepass ${LOCAL_CA_PASSWORD} -storetype PKCS12
+    fi
+
     java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
