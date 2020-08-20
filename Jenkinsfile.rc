@@ -39,7 +39,7 @@ node('ibm-jenkins-slave-nvm') {
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
 
-  pipeline.admins.add("jackjia", "markackert", "RoAvill2)
+  pipeline.admins.add("jackjia", "markackert", "RoAvill2")
 
   // we have extra parameters for the pipeline
   pipeline.addBuildParameter(
