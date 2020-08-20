@@ -21,7 +21,7 @@ const apiDefinitionsMap = [
   { 'name': 'jobs', 'port': process.env.ZOWE_EXPLORER_JOBS_PORT },
   //TODO zlux api? {'name': 'zlux', 'port': process.env.ZOWE_ZLUX_HTTPS_PORT},
   //TODO zosmf api? {'name': 'zosmf', 'port': process.env.ZOSMF_PORT},
-  { 'name': 'apiml', 'port': process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT }
+  //TODO catalog and gateway api? { 'name': 'apiml', 'port': process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT }
 ];
 
 describe(testSuiteName, () => {
