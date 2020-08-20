@@ -203,7 +203,7 @@ node('ibm-jenkins-slave-nvm') {
       nvmShell params.CLIENT_NODE_VERSION, "npm install -g npm"
     }
   )
-
+/*
   pipeline.build(
     operation: {
       ansiColor('xterm') {
@@ -348,14 +348,16 @@ node('ibm-jenkins-slave-nvm') {
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 360, unit: 'MINUTES'],
-  )
+  )*/
 
   pipeline.createStage(
     name          : "API Documentation Check In",
     isSkippable   : true,
     stage         : {
       ansiColor('xterm') {
-        sh 'echo "carson here"'
+        if (env.BRANCH_NAME == 'PR-1596') {
+          sh 'git add ./api_definitions && git commit -s -m"Check in api_definitions"'
+        }
       }
     },
     timeout: [time: 10, unit: 'MINUTES']
