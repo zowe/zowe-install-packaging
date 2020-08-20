@@ -17,11 +17,11 @@ const debug = require('debug')('zowe-sanity-test:api-doc-gen');
 const testSuiteName = 'Generate api documentation';
 const apiDefFolderPath = '../../api_definitions';
 const apiDefinitionsMap = [
-  {'name': 'datasets', 'port': process.env.ZOWE_EXPLORER_DATASETS_PORT},
-  {'name': 'jobs', 'port': process.env.ZOWE_EXPLORER_JOBS_PORT},
+  { 'name': 'datasets', 'port': process.env.ZOWE_EXPLORER_DATASETS_PORT },
+  { 'name': 'jobs', 'port': process.env.ZOWE_EXPLORER_JOBS_PORT },
   //TODO zlux api? {'name': 'zlux', 'port': process.env.ZOWE_ZLUX_HTTPS_PORT},
   //TODO zosmf api? {'name': 'zosmf', 'port': process.env.ZOSMF_PORT},
-  {'name': 'apiml', 'port': process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}
+  { 'name': 'apiml', 'port': process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT }
 ];
 
 describe(testSuiteName, () => {
@@ -38,11 +38,21 @@ describe(testSuiteName, () => {
 
   it('Generate Swagger API files', async () => {
     // Acquire API definitions and store in api_definitions directory
-    for (let apiDef of apiDefinitionsMap) {
-      let url = `https://${process.env.SSH_HOST}:${apiDef.port}/v2/api-docs`;
-      debug(`Capture API Swagger definition for ${apiDef.name} at ${url}`);
-      let res = await request(url);
-      await exec(`echo ${res.body} > ${apiDefFolderPath}/${apiDef.name}.json`);
-    }
+    await cleanApiDefDirectory();
+    await captureApiDefinitions();
   });
 });
+
+async function cleanApiDefDirectory() {
+  debug('Clean api_definitions directory.');
+  await exec(`rm -r ${apiDefFolderPath}/*`);
+}
+
+async function captureApiDefinitions() {
+  for (let apiDef of apiDefinitionsMap) {
+    let url = `https://${process.env.SSH_HOST}:${apiDef.port}/v2/api-docs`;
+    debug(`Capture API Swagger definition for ${apiDef.name} at ${url}`);
+    let res = await request(url);
+    await exec(`echo ${res.body} > ${apiDefFolderPath}/${apiDef.name}.json`);
+  }
+}
