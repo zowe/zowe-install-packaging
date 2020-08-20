@@ -14,6 +14,8 @@ const request = util.promisify(require('request'));
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:api-doc-gen');
 
+const illegalCharacterRegex = /'/gm;
+const isolatedDoubleBackSlashRegex = /(?<!\\\\)\\\\(?!\\\\)/gm;
 const testSuiteName = 'Generate api documentation';
 const apiDefFolderPath = '../../api_definitions';
 const apiDefinitionsMap = [
@@ -45,7 +47,7 @@ describe(testSuiteName, () => {
 
 async function cleanApiDefDirectory() {
   debug('Clean api_definitions directory.');
-  await exec(`rm -r ${apiDefFolderPath}/*`);
+  await exec(`if [ -d "$${apiDefFolderPath}" ]; then rm -R $${apiDefFolderPath}/*; fi`);
 }
 
 async function captureApiDefinitions() {
@@ -53,6 +55,7 @@ async function captureApiDefinitions() {
     let url = `https://${process.env.SSH_HOST}:${apiDef.port}/v2/api-docs`;
     debug(`Capture API Swagger definition for ${apiDef.name} at ${url}`);
     let res = await request(url);
-    await exec(`echo ${res.body} > ${apiDefFolderPath}/${apiDef.name}.json`);
+    let swaggerJsonString = res.body.replace(illegalCharacterRegex, '').replace(isolatedDoubleBackSlashRegex, '');
+    await exec(`echo '${swaggerJsonString}' > ${apiDefFolderPath}/${apiDef.name}.json`);
   }
 }
