@@ -21,6 +21,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_RELEASE_PATH = '/org/zowe/nightly/cli'
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
+  def ZOWE_CLI_ARTIFACT_PATH = 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*.zip'
 
   def isRcBranch = env && env.BRANCH_NAME == 'rc'
 
@@ -129,7 +130,7 @@ node('ibm-jenkins-slave-nvm') {
 
         // run build
         def build_result = build(
-          job: '/zowe-install-packaging/staging',
+          job: '/zowe-install-packaging/rc',
           parameters: [
             booleanParam(name: 'BUILD_SMPE', value: true),
           ],
@@ -194,14 +195,11 @@ node('ibm-jenkins-slave-nvm') {
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
-          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
-          booleanParam(name: 'Skip Stage: Lint', value: true),
-          booleanParam(name: 'Skip Stage: Audit', value: true),
-          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*')
         ]
         if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
-          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
         }
         // FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
@@ -209,7 +207,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/staging',
+            job: '/zowe-install-test/rc',
             parameters: testParameters,
             propagate: false
           )
