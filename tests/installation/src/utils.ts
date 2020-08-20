@@ -252,12 +252,12 @@ async function verifyZowe(testcase: string, serverId: string, verifyPlaybook: st
  * @param  {Object}    extraVars
  */
 export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
-  /*await installZowe(testcase, serverId, 'install.yml', extraVars);
+  await installZowe(testcase, serverId, 'install.yml', extraVars);
 
   // sleep extra 2 minutes
   debug(`wait extra 2 min before sanity test`);
   await sleep(120000);
-  */
+  
   await verifyZowe(testcase, serverId, 'api-generation.yml');
 };
 

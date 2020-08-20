@@ -356,7 +356,7 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       ansiColor('xterm') {
         if (env.BRANCH_NAME == 'PR-1596') {
-          she "git add ./api_definitions"
+          sh "git add ./api_definitions"
           try {
             sh "git commit -s -m\"Check in api_definitions\""
           } catch (error) {

@@ -117,7 +117,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     },
     allowMissingJunit : true
   )
-/*
+
   pipeline.packaging(
     name          : "zowe",
     timeout       : [time: 90, unit: 'MINUTES'],
@@ -138,7 +138,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
       }
     }
-  )*/
+  )
 
   // define we need publish stage
   pipeline.publish(
