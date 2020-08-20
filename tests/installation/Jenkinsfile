@@ -356,7 +356,11 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       ansiColor('xterm') {
         if (env.BRANCH_NAME == 'PR-1596') {
-          sh "git add ./api_definitions && git commit -s -m\"Check in api_definitions\" && git push origin HEAD:${env.CHANGE_BRANCH}"
+          try {
+            sh "git add ./api_definitions && git commit -s -m\"Check in api_definitions\" && git push origin HEAD:${env.CHANGE_BRANCH}"
+          } catch (error) {
+            echo "Swallowing error in git check-in. This is done to avoid build failure when there are no changes to commit." 
+          }
         }
       }
     },
