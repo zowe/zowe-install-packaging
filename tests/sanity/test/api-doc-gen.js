@@ -43,8 +43,6 @@ describe(testSuiteName, () => {
       debug(`Capture API Swagger definition for ${apiDef.name} at ${url}`);
       let res = await request(url);
       await exec(`echo ${res.body} > ${apiDefFolderPath}/${apiDef.name}.json`);
-      let s = await exec(`cat ${apiDefFolderPath}/${apiDef.name}.json`);
-      debug(s);
     }
   });
 });

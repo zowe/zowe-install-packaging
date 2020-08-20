@@ -183,6 +183,8 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
  * @param  {Object}    extraVars
  */
 async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+  debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
+
   installZowe(testcase, installPlaybook, serverId, extraVars);
 
   // sleep extra 2 minutes
@@ -190,23 +192,6 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   await sleep(120000);
 
   verifyZowe(testcase, serverId, 'verify.yml');
-};
-
-/**
- * Install Zowe and generate Swagger API definition files
- *
- * @param  {String}    testcase 
- * @param  {String}    serverId
- * @param  {Object}    extraVars
- */
-async function installZoweAndGenerateApiFiles(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
-  await installZowe(testcase, serverId, 'install-for-api-doc.yml', extraVars);
-
-  // sleep extra 2 minutes
-  debug(`wait extra 2 min before sanity test`);
-  await sleep(120000);
-
-  await verifyZowe(testcase, serverId, 'api-generation.yml');
 };
 
 /**
@@ -218,8 +203,6 @@ async function installZoweAndGenerateApiFiles(testcase: string, serverId: string
  * @param  {Object}    extraVars
  */
 async function installZowe(testcase: string, serverId: string, installPlaybook: string, extraVars: { [key: string]: string } = {}): Promise<void> {
-  debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
-
   debug(`run ${installPlaybook} on ${serverId}`);
   const resultInstall = await runAnsiblePlaybook(
     testcase,
@@ -269,7 +252,13 @@ async function verifyZowe(testcase: string, serverId: string, verifyPlaybook: st
  * @param  {Object}    extraVars
  */
 export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
-  await installZoweAndGenerateApiFiles(testcase, serverId, extraVars);
+  /*await installZowe(testcase, serverId, 'install.yml', extraVars);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+  */
+  await verifyZowe(testcase, serverId, 'api-generation.yml');
 };
 
 /**

@@ -350,11 +350,15 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 360, unit: 'MINUTES'],
   )
 
-  pipeline.publish(
-    name        : "API Definitions",
-    operation   : {
-      
-    }
+  pipeline.createStage(
+    name          : "API Documentation Check In",
+    isSkippable   : true,
+    stage         : {
+      ansiColor('xterm') {
+        sh 'echo "carson here"'
+      }
+    },
+    timeout: [time: 10, unit: 'MINUTES']
   )
 
   pipeline.end()
