@@ -18,9 +18,11 @@ const illegalCharacterRegex = /'/gm;
 const isolatedDoubleBackSlashRegex = /(?<!\\\\)\\\\(?!\\\\)/gm;
 const testSuiteName = 'Generate api documentation';
 const apiDefFolderPath = '../../api_definitions';
+const apiDefinitionsScheme = 'https';
 const apiDefinitionsMap = [
-  { 'name': 'datasets', 'port': process.env.ZOWE_EXPLORER_DATASETS_PORT },
-  { 'name': 'jobs', 'port': process.env.ZOWE_EXPLORER_JOBS_PORT }
+  { name: 'datasets', port: process.env.ZOWE_EXPLORER_DATASETS_PORT },
+  { name: 'jobs', port: process.env.ZOWE_EXPLORER_JOBS_PORT },
+  { name: 'gateway', port: process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, swaggerJsonPath: '/api-doc' }
 ];
 
 describe(testSuiteName, () => {
@@ -49,7 +51,8 @@ async function cleanApiDefDirectory() {
 
 async function captureApiDefinitions() {
   for (let apiDef of apiDefinitionsMap) {
-    let url = `https://${process.env.SSH_HOST}:${apiDef.port}/v2/api-docs`;
+    let url = apiDef.swaggerJsonPath ? `${apiDefinitionsScheme}://${process.env.SSH_HOST}:${apiDef.port}${apiDef.swaggerJsonPath}`
+      : `${apiDefinitionsScheme}://${process.env.SSH_HOST}:${apiDef.port}/v2/api-docs`;
     debug(`Capture API Swagger definition for ${apiDef.name} at ${url}`);
 
     let res = await request(url);
