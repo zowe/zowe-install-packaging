@@ -11,7 +11,7 @@
 import * as util from 'util';
 import { spawn, SpawnOptions } from 'child_process';
 import * as crypto from 'crypto';
-import { pathExistsSync, ensureDirSync, copySync, removeSync } from 'fs-extra';
+import { pathExistsSync, ensureDirSync, copySync, removeSync  } from 'fs-extra';
 import * as path from 'path';
 import Debug from 'debug';
 const debug = Debug('zowe-install-test:utils');
@@ -86,13 +86,13 @@ export function cleanupSanityTestReportDir(): void {
  * @param {Object} extraVars      Object
  * @param {String} serverId       String
  */
-export function importDefaultExtraVars(extraVars: { [key: string]: string }, serverId: string): void {
-  const defaultMapping: { [key: string]: string[] } = {
-    'ansible_ssh_host': ['SSH_HOST'],
-    'ansible_port': ['SSH_PORT'],
-    'ansible_user': ['SSH_USER'],
-    'ansible_password': ['SSH_PASSWORD'],
-    'zos_node_home': ['ZOS_NODE_HOME'],
+export function importDefaultExtraVars(extraVars: {[key: string]: string}, serverId: string): void {
+  const defaultMapping: {[key: string]: string[]} = {
+    'ansible_ssh_host'           : ['SSH_HOST'],
+    'ansible_port'               : ['SSH_PORT'],
+    'ansible_user'               : ['SSH_USER'],
+    'ansible_password'           : ['SSH_PASSWORD'],
+    'zos_node_home'              : ['ZOS_NODE_HOME'],
     'zowe_sanity_test_debug_mode': ['SANITY_TEST_DEBUG'],
   };
   const serverIdSanitized = serverId.replace(/[^A-Za-z0-9]/g, '_').toUpperCase();
@@ -127,7 +127,7 @@ type PlaybookResponse = {
  * @param  {Object}    extraVars
  * @param  {String}    verbose
  */
-export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: { [key: string]: string } = {}, verbose = '-v'): Promise<PlaybookResponse> {
+export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: string} = {}, verbose = '-v'): Promise<PlaybookResponse> {
   return new Promise((resolve, reject) => {
     const result: PlaybookResponse = {
       reportHash: calculateHash(testcase),
@@ -182,27 +182,9 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
-  installZowe(testcase, installPlaybook, serverId, extraVars);
-
-  // sleep extra 2 minutes
-  debug(`wait extra 2 min before sanity test`);
-  await sleep(120000);
-
-  verifyZowe(testcase, 'verify.yml', serverId);
-};
-
-/**
- * Install Zowe
- *
- * @param  {String}    testcase 
- * @param  {String}    serverId
- * @param  {String}    installPlaybook
- * @param  {Object}    extraVars
- */
-async function installZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
   debug(`run ${installPlaybook} on ${serverId}`);
   const resultInstall = await runAnsiblePlaybook(
     testcase,
@@ -212,25 +194,20 @@ async function installZowe(testcase: string, installPlaybook: string, serverId: 
   );
 
   expect(resultInstall.code).toBe(0);
-}
 
-/**
- * Verify Zowe
- *
- * @param  {String}    testcase 
- * @param  {String}    serverId
- * @param  {String}    verifyPlaybook
- */
-async function verifyZowe(testcase: string, verifyPlaybook: string, serverId: string) {
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run ${verifyPlaybook} on ${serverId}`);
+  debug(`run verify.yml on ${serverId}`);
   let resultVerify;
   try {
     resultVerify = await runAnsiblePlaybook(
       testcase,
-      verifyPlaybook,
+      'verify.yml',
       serverId
     );
   } catch (e) {
@@ -242,7 +219,7 @@ async function verifyZowe(testcase: string, verifyPlaybook: string, serverId: st
   copySanityTestReport(resultVerify.reportHash);
 
   expect(resultVerify.code).toBe(0);
-}
+};
 
 /**
  * Install and verify convenience build
@@ -251,7 +228,7 @@ async function verifyZowe(testcase: string, verifyPlaybook: string, serverId: st
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
 };
 
@@ -262,7 +239,7 @@ export async function installAndVerifyConvenienceBuild(testcase: string, serverI
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install-fmid.yml', serverId, extraVars);
 }
 
@@ -273,34 +250,100 @@ export async function installAndVerifySmpeFmid(testcase: string, serverId: strin
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
-  await installZowe(testcase, 'install-fmid.yml', serverId, { 'zowe_build_remote': ZOWE_FMID });
-  await installZowe(testcase, 'install-ptf.yml', serverId, extraVars);
+  debug(`run install-fmid.yml on ${serverId}`);
+  const resultFmid = await runAnsiblePlaybook(
+    testcase,
+    'install-fmid.yml',
+    serverId,
+    {
+      'zowe_build_remote': ZOWE_FMID
+    }
+  );
+
+  expect(resultFmid.code).toBe(0);
+
+  debug(`run install-ptf.yml on ${serverId}`);
+  const resultPtf = await runAnsiblePlaybook(
+    testcase,
+    'install-ptf.yml',
+    serverId,
+    extraVars
+  );
+
+  expect(resultPtf.code).toBe(0);
 
   // sleep extra 2 minutes
   debug(`wait extra 2 min before sanity test`);
   await sleep(120000);
 
-  await verifyZowe(testcase, 'verify.yml', serverId);
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  debug(`run verify.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify.yml',
+      serverId
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
 };
 
 /**
- * Install Zowe and capture API Swagger definitions
- *
- * @param  {String}    testcase 
- * @param  {String}    serverId
- * @param  {Object}    extraVars
+ * Install Zowe and generate Swagger API definitions
+ * @param testcase
+ * @param serverId 
+ * @param extraVars 
  */
-export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
-  await installZowe(testcase, 'install.yml', serverId, extraVars);
+export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndGenerateApiDocs(${testcase}, install.yml, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  debug(`run install.yml on ${serverId}`);
+  const resultInstall = await runAnsiblePlaybook(
+    testcase,
+    'install.yml',
+    serverId,
+    extraVars
+  );
+
+  expect(resultInstall.code).toBe(0);
 
   // sleep extra 2 minutes
   debug(`wait extra 2 min before sanity test`);
   await sleep(120000);
 
-  await verifyZowe(testcase, 'api-generation.yml', serverId);
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  debug(`run api-generation.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'api-generation.yml',
+      serverId
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
 };
 
 /**
@@ -309,7 +352,7 @@ export async function installAndGenerateApiDocs(testcase: string, serverId: stri
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function showZoweRuntimeLogs(serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   debug(`showZoweRuntimeLogs(${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run show_logs on ${serverId}`);
