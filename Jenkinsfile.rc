@@ -264,7 +264,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/staging',
+            job: '/zowe-install-test/rc',
             parameters: testParameters,
             propagate: false
           )
@@ -277,6 +277,60 @@ node('ibm-jenkins-slave-nvm') {
     },
     allowMissingJunit : true,
     timeout: [time: 4, unit: 'HOURS']
+  )
+
+  pipeline.test(
+    name              : "Multiple Node Versions",
+    shouldExecute : {
+      return sourceRegBuildInfo && sourceRegBuildInfo['path']
+    },
+    operation         : {
+      if (params.TEST_RUN) {
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SCOPE: bundle: multiple node versions\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
+             "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
+      } else {
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*')
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
+        }
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
+        //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
+        //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        // }
+        def test_result = build(
+            job: '/zowe-install-test/rc',
+            parameters: testParameters,
+            propagate: false
+          )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          testRegBuildErrorUrl = test_result.absoluteUrl
+          echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 2, unit: 'HOURS']
   )
 
   pipeline.createStage(
