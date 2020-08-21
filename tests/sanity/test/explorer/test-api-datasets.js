@@ -124,4 +124,33 @@ describe('test explorer server datasets api', function() {
         expect(res.data.records).to.be.a('string');
       });
   });
+
+  it(`returns the current user's TSO userid`, function() {
+    const _this = this;
+
+    const req = {
+      method: 'get',
+      url: '/api/v1/datasets/username',
+      auth: {
+        username,
+        password,
+      }
+    };
+    debug('request', req);
+
+    return REQ.request(req)
+      .then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res.data).to.be.an('object');
+        expect(res.data).to.have.property('username');
+        expect(res.data.username).to.be.a('string');
+      });
+  });
 });
