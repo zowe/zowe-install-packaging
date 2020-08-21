@@ -98,6 +98,7 @@ node('ibm-jenkins-slave-nvm') {
     ],
     'generate api documentation': [
       test_files: 'dist/__tests__/basic/install-api-gen.js',
+      jenkins_primary_lock: 'marist',
     ],
   ]
 
