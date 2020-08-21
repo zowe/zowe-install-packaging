@@ -8,6 +8,10 @@
 - name: Copy SZWESAMP(ZWEKRING) to USS
   raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWEKRING)'" "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
 
+- name: Show ip zowe_external_ip_address
+  debug:
+    var: zowe_external_ip_address
+
 - name: Update ZWEKRING.jcl with configurations
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
@@ -29,8 +33,3 @@
     tasks_from: run_jcl
   vars:
     jcl_filename: "{{ work_dir_remote }}/ZWEKRING.jcl"
-
-- name: Remove ZWEKRING.jcl if exists
-  raw: >-
-    rm -f "{{ work_dir_remote }}/ZWEKRING.jcl"
-    rm -f "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
