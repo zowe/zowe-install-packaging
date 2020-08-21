@@ -191,7 +191,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   debug(`wait extra 2 min before sanity test`);
   await sleep(120000);
 
-  verifyZowe(testcase, serverId, 'verify.yml');
+  verifyZowe(testcase, 'verify.yml', serverId);
 };
 
 /**
@@ -202,7 +202,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
  * @param  {String}    installPlaybook
  * @param  {Object}    extraVars
  */
-async function installZowe(testcase: string, serverId: string, installPlaybook: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+async function installZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
   debug(`run ${installPlaybook} on ${serverId}`);
   const resultInstall = await runAnsiblePlaybook(
     testcase,
@@ -221,7 +221,7 @@ async function installZowe(testcase: string, serverId: string, installPlaybook: 
  * @param  {String}    serverId
  * @param  {String}    verifyPlaybook
  */
-async function verifyZowe(testcase: string, serverId: string, verifyPlaybook: string) {
+async function verifyZowe(testcase: string, verifyPlaybook: string, serverId: string) {
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
@@ -276,14 +276,14 @@ export async function installAndVerifySmpeFmid(testcase: string, serverId: strin
 export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
   debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
-  await installZowe(testcase, serverId, 'install-fmid.yml', {'zowe_build_remote': ZOWE_FMID});
+  await installZowe(testcase, 'install-fmid.yml', serverId, { 'zowe_build_remote': ZOWE_FMID });
   await installZowe(testcase, 'install-ptf.yml', serverId, extraVars);
 
   // sleep extra 2 minutes
   debug(`wait extra 2 min before sanity test`);
   await sleep(120000);
 
-  await verifyZowe(testcase, serverId, 'verify.yml');
+  await verifyZowe(testcase, 'verify.yml', serverId);
 };
 
 /**
@@ -294,13 +294,13 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
  * @param  {Object}    extraVars
  */
 export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
-  await installZowe(testcase, serverId, 'install.yml', extraVars);
+  await installZowe(testcase, 'install.yml', serverId, extraVars);
 
   // sleep extra 2 minutes
   debug(`wait extra 2 min before sanity test`);
   await sleep(120000);
-  
-  await verifyZowe(testcase, serverId, 'api-generation.yml');
+
+  await verifyZowe(testcase, 'api-generation.yml', serverId);
 };
 
 /**
