@@ -1,5 +1,5 @@
 ---
-# This playbook runs sanity test on an existing Zowe instance
+# This playbook runs the api generation test on Zowe
 
 # ============================================================================
 # validate variables
@@ -8,7 +8,7 @@
     tasks_from: validate_variables
   vars:
     variable_list:
-    - zowe_sanity_test_root_dir
+    - zowe_api_gen_dir
     - zowe_root_dir
     - zowe_instance_dir
     - zos_zosmf_port
@@ -27,17 +27,17 @@
   delegate_to: localhost
 
 # ============================================================================
-- name: Prepare sanity test folder
+- name: Prepare api gen test folder
   command: npm install --no-audit
   args:
-    chdir: "{{ zowe_sanity_test_root_dir }}"
+    chdir: "{{ zowe_api_gen_dir }}"
   delegate_to: localhost
 
 # ============================================================================
 - name: capture API information
   command: npm test {{ zowe_api_generation_testcases  }}
   args:
-    chdir: "{{ zowe_sanity_test_root_dir }}"
+    chdir: "{{ zowe_api_gen_dir }}"
   environment:
     ZOWE_ROOT_DIR: "{{ zowe_root_dir }}"
     ZOWE_INSTANCE_DIR: "{{ zowe_instance_dir }}"
@@ -52,5 +52,5 @@
     ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT: "{{ zowe_apiml_gateway_port }}"
     ZOWE_EXPLORER_JOBS_PORT: "{{ zowe_jobs_api_port }}"
     ZOWE_EXPLORER_DATASETS_PORT: "{{ zowe_mvs_api_port }}"
-    DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
+    DEBUG: "{{ zowe_api_gen_debug_mode | default('') }}"
   delegate_to: localhost
