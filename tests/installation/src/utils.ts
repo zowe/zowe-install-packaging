@@ -251,23 +251,6 @@ async function verifyZowe(testcase: string, serverId: string, verifyPlaybook: st
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
-  await installZowe(testcase, serverId, 'install.yml', extraVars);
-
-  // sleep extra 2 minutes
-  debug(`wait extra 2 min before sanity test`);
-  await sleep(120000);
-  
-  await verifyZowe(testcase, serverId, 'api-generation.yml');
-};
-
-/**
- * Install and verify convenience build
- *
- * @param  {String}    testcase 
- * @param  {String}    serverId
- * @param  {Object}    extraVars
- */
 export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
 };
@@ -293,52 +276,31 @@ export async function installAndVerifySmpeFmid(testcase: string, serverId: strin
 export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
   debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
-  debug(`run install-fmid.yml on ${serverId}`);
-  const resultFmid = await runAnsiblePlaybook(
-    testcase,
-    'install-fmid.yml',
-    serverId,
-    {
-      'zowe_build_remote': ZOWE_FMID
-    }
-  );
-
-  expect(resultFmid.code).toBe(0);
-
-  debug(`run install-ptf.yml on ${serverId}`);
-  const resultPtf = await runAnsiblePlaybook(
-    testcase,
-    'install-ptf.yml',
-    serverId,
-    extraVars
-  );
-
-  expect(resultPtf.code).toBe(0);
+  await installZowe(testcase, serverId, 'install-fmid.yml', {'zowe_build_remote': ZOWE_FMID});
+  await installZowe(testcase, 'install-ptf.yml', serverId, extraVars);
 
   // sleep extra 2 minutes
   debug(`wait extra 2 min before sanity test`);
   await sleep(120000);
 
-  // clean up sanity test folder
-  cleanupSanityTestReportDir();
+  await verifyZowe(testcase, serverId, 'verify.yml');
+};
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
-  }
-  expect(resultVerify).toHaveProperty('reportHash');
+/**
+ * Install Zowe and capture API Swagger definitions
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: { [key: string]: string } = {}): Promise<void> {
+  await installZowe(testcase, serverId, 'install.yml', extraVars);
 
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+  
+  await verifyZowe(testcase, serverId, 'api-generation.yml');
 };
 
 /**
