@@ -3,16 +3,24 @@
 - name: Remove ZWEKRING.jcl if exists
   raw: >-
     rm -f "{{ work_dir_remote }}/ZWEKRING.jcl"
+    rm -f "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
 
 - name: Copy SZWESAMP(ZWEKRING) to USS
-  raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWEKRING)'" "{{ work_dir_remote }}/ZWEKRING.jcl"
+  raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWEKRING)'" "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
+
+- name: Update ZWEKRING.jcl with configurations
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
+    sed -e "s%ALTNAME(IP(127.0.0.1) +%ALTNAME(IP({{ ansible_default_ipv4.address }}) +%" | \
+    sed -e "s%DOMAIN('localhost')) +%DOMAIN('{{ zowe_external_domain_name }})) +%" | \
+    sed -e "s%ALTNAME(IP=127.0.0.1 DOMAIN=localhost) +%ALTNAME(IP={{ ansible_default_ipv4.address }} DOMAIN={{ zowe_external_domain_name }}) +%" \
+    > "{{ work_dir_remote }}/ZWEKRING.jcl"
 
 - name: Check ZWEKRING.jcl changes
   raw: >-
     grep -e "^// *SET " \
-        -e ADDGROUP \
-        -e ALTGROUP \
-        -e ADDUSER \
+        -e ALTNAME \
+        -e DOMAIN \
         "{{ work_dir_remote }}/ZWEKRING.jcl"
 
 - name: Run ZWEKRING.jcl
@@ -22,6 +30,7 @@
   vars:
     jcl_filename: "{{ work_dir_remote }}/ZWEKRING.jcl"
 
-- name: Remove ZWEKRING.jcl  if exists
+- name: Remove ZWEKRING.jcl if exists
   raw: >-
     rm -f "{{ work_dir_remote }}/ZWEKRING.jcl"
+    rm -f "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
