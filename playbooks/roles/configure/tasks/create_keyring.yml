@@ -8,12 +8,17 @@
 - name: Copy SZWESAMP(ZWEKRING) to USS
   raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWEKRING)'" "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
 
+- name: Show IP
+  debug:
+    var: hostvars[inventory_hostname]['ansible_default_ipv4']['address']
+
+
 - name: Update ZWEKRING.jcl with configurations
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
-    sed -e "s%ALTNAME(IP(127.0.0.1) +%ALTNAME(IP({{ ansible_default_ipv4.address }}) +%" | \
+    sed -e "s%ALTNAME(IP(127.0.0.1) +%ALTNAME(IP({{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}) +%" | \
     sed -e "s%DOMAIN('localhost')) +%DOMAIN('{{ zowe_external_domain_name }})) +%" | \
-    sed -e "s%ALTNAME(IP=127.0.0.1 DOMAIN=localhost) +%ALTNAME(IP={{ ansible_default_ipv4.address }} DOMAIN={{ zowe_external_domain_name }}) +%" \
+    sed -e "s%ALTNAME(IP=127.0.0.1 DOMAIN=localhost) +%ALTNAME(IP={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} DOMAIN={{ zowe_external_domain_name }}) +%" \
     > "{{ work_dir_remote }}/ZWEKRING.jcl"
 
 - name: Check ZWEKRING.jcl changes
