@@ -14,7 +14,7 @@
 
 - name: Set ip addresss
   raw: cat "{{ zowe_instance_dir }}/instance.env" | grep ZOWE_IP_ADDRESS= | cut -d'=' -f2
-  when: zowe_external_ip_address is undefined or zowe_external_ip_address|length == 0
+  when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
   register: zowe_external_ip_address
 
 - name: Show ip zowe_external_ip_address
