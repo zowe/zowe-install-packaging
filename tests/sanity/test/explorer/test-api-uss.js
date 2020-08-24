@@ -19,30 +19,39 @@ let testDir;
 const DIR_TO_TEST = 'uss_explorer';
 const FILE_TO_TEST = 'pluginDefinition.json';
 
-// NOTICE for skipping test: the endpoint has been removed after migration
-describe.skip('test explorer server uss files api', function() {
-  before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// allow self signed certs
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+// NOTICE for skipping test: the endpoint has been removed after migration
+describe('test explorer server uss files api', function() {
+  before('verify environment variables', function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ROOT_DIR, 'ZOWE_ROOT_DIR is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_EXPLORER_SERVER_HTTPS_PORT, 'ZOWE_EXPLORER_SERVER_HTTPS_PORT is not defined').to.not.be.empty;
+    // expect(process.env.ZOWE_EXPLORER_SERVER_HTTPS_PORT, 'ZOWE_EXPLORER_SERVER_HTTPS_PORT is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
+
+    // REQ = axios.create({
+    //   baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_EXPLORER_SERVER_HTTPS_PORT}`,
+    //   timeout: 30000,
+    // });
 
     REQ = axios.create({
-      baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_EXPLORER_SERVER_HTTPS_PORT}`,
+      baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
       timeout: 30000,
     });
+
     username = process.env.SSH_USER;
     password = process.env.SSH_PASSWD;
-    debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_EXPLORER_SERVER_HTTPS_PORT}`);
+
+    // debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_EXPLORER_SERVER_HTTPS_PORT}`);
+    debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
 
     testDir = process.env.ZOWE_ROOT_DIR;
   });
 
-  it(`should be able to list content of directory ${DIR_TO_TEST}`, function() {
+  it.skip(`should be able to list content of directory ${DIR_TO_TEST}`, function() {
     const _this = this;
 
     const req = {
@@ -77,7 +86,7 @@ describe.skip('test explorer server uss files api', function() {
       });
   });
 
-  it(`should be able to get content of file ${DIR_TO_TEST}/${FILE_TO_TEST}`, function() {
+  it.skip(`should be able to get content of file ${DIR_TO_TEST}/${FILE_TO_TEST}`, function() {
     const _this = this;
 
     const req = {
@@ -107,6 +116,41 @@ describe.skip('test explorer server uss files api', function() {
           JSON.parse(res.data.content);
           debug('content parse successfully');
         }).to.not.throw;
+      });
+  });
+
+  it('Gets a list of files and directories for a given path', function() {
+    const _this = this;
+
+    const req = {
+      method: 'get',
+      url: `/api/v1/unixfiles?path=${process.env.ZOWE_INSTANCE_DIR}`,
+      auth: {
+        username,
+        password,
+      }
+    };
+    debug('request', req);
+
+    return REQ.request(req)
+      .then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res.data).to.be.an('object');
+        expect(res.data).to.have.property('type');
+        expect(res.data.type).to.be.a('string');
+        expect(res.data).to.have.property('owner');
+        expect(res.data.owner).to.be.a('string');
+        expect(res.data).to.have.property('group');
+        expect(res.data.group).to.be.a('string');
+        expect(res.data).to.have.property('permissionsSymbolic');
+        expect(res.data.permissionsSymbolic).to.be.a('string');
       });
   });
 });
