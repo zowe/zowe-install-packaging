@@ -30,7 +30,7 @@
     var: zowe_external_ip_address_output.stdout
 
 - set_fact:
-    zowe_external_ip_address: "{{ zowe_external_ip_address_output.stdout }}"
+    zowe_external_ip_address: "{{ zowe_external_ip_address_output.stdout | trim }}"
   when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
   
 - name: Show ip zowe_external_ip_address
