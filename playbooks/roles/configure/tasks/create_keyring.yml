@@ -21,6 +21,9 @@
   when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
   register: zowe_external_ip_address
 
+- set_fact:
+  zowe_external_ip_address= {{ zowe_external_ip_address.stdout }}
+
 - name: Show ip zowe_external_ip_address
   debug:
     var: zowe_external_ip_address
