@@ -19,10 +19,18 @@
 - name: Set ip address
   raw: dig +short $(hostname) | sed -n 2p
   when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
-  register: zowe_external_ip_address
+  register: zowe_external_ip_address_output
+
+- name: Show ip zowe_external_ip_address_output
+  debug:
+    var: zowe_external_ip_address_output
+
+- name: Show ip zowe_external_ip_address_output.stdout
+  debug:
+    var: zowe_external_ip_address_output.stdout
 
 - set_fact:
-    zowe_external_ip_address= {{ zowe_external_ip_address.stdout }}
+    zowe_external_ip_address= {{ zowe_external_ip_address_output.stdout }}
 
 - name: Show ip zowe_external_ip_address
   debug:
