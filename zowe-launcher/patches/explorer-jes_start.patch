@@ -1,0 +1,12 @@
+22a23,29
+> stop_jobs()
+> {
+>   kill -15 $pid
+> }
+> 
+> trap 'stop_jobs' INT
+> 
+42a50,52
+> pid=$?
+> 
+> wait

@@ -1,0 +1,17 @@
+38a39,45
+> stop_jobs()
+> {
+>   kill -15 $disc_pid $cat_pid $gateway_pid
+> }
+> 
+> trap 'stop_jobs' INT
+> 
+77a85
+> disc_pid=$?
+105a114
+> cat_pid=$?
+136a146,149
+> gateway_pid=$?
+> 
+> wait
+> 

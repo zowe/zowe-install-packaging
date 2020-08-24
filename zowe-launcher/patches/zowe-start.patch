@@ -1,0 +1,5 @@
+6,7c6
+< ${ROOT_DIR}/scripts/internal/opercmd "S ZWESVSTC,INSTANCE='"${INSTANCE_DIR}"',JOBNAME=${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
+< echo Start command issued, check SDSF job log ...
+---
+> /bin/sh ${INSTANCE_DIR}/bin/internal/run-zowe.sh

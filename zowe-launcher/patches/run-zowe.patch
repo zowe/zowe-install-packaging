@@ -1,0 +1,16 @@
+77c77
+< LAUNCH_COMPONENTS=""
+---
+> LAUNCH_COMPONENTS=$ZOWE_INIT_COMPONENTS
+104d103
+<   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+116a116,120
+> if [[ $LAUNCH_COMPONENTS == *"app-server"* ]]
+> then
+>   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+> fi
+> 
+187c191
+<   . ${LAUNCH_COMPONENT}/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
+---
+>   . ${LAUNCH_COMPONENT}/start.sh 
