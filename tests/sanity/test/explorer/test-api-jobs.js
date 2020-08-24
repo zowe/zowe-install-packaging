@@ -32,6 +32,7 @@ describe('test explorer server jobs api', function() {
       baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
       timeout: 30000,
     });
+    
     username = process.env.SSH_USER;
     password = process.env.SSH_PASSWD;
     debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
@@ -69,6 +70,35 @@ describe('test explorer server jobs api', function() {
         expect(res.data.items).to.have.lengthOf(1);
         expect(res.data.items[0]).to.have.any.keys('jobName', 'jobId', 'owner', 'status', 'type', 'subsystem');
         expect(res.data.items[0].jobName).to.equal(ZOWE_JOB_NAME);
+      });
+  });
+
+  it('returns the current user\'s TSO userid', function() {
+    const _this = this;
+
+    const req = {
+      method: 'get',
+      url: '/api/v1/jobs/username',
+      auth: {
+        username,
+        password,
+      }
+    };
+    debug('request', req);
+
+    return REQ.request(req)
+      .then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res.data).to.be.an('object');
+        expect(res.data).to.have.property('username');
+        expect(res.data.username).to.be.a('string');
       });
   });
 });
