@@ -41,17 +41,17 @@
 
 #define MIN_UPTIME_SECS 90
 
-typedef struct ZlTime {
+typedef struct zl_time_t {
   char value[32];
-} ZlTime;
+} zl_time_t;
 
-static ZlTime gettime(void) {
+static zl_time_t gettime(void) {
 
   time_t t = time(NULL);
   const char *format = "%Y-%m-%d %H:%M:%S";
 
   struct tm lt;
-  ZlTime result;
+  zl_time_t result;
 
   localtime_r(&t, &lt);
 
@@ -60,11 +60,11 @@ static ZlTime gettime(void) {
   return result;
 }
 
-typedef struct ZlConfig {
+typedef struct zl_config_t {
   bool debug_mode;
-} ZlConfig;
+} zl_config_t;
 
-typedef struct ZlComp {
+typedef struct zl_comp_t {
 
   char name[32];
   char bin[_POSIX_PATH_MAX + 1];
@@ -78,44 +78,43 @@ typedef struct ZlComp {
 
   pthread_t comm_thid;
 
-} ZlComp;
+} zl_comp_t;
 
-enum ZLEvent {
+enum zl_event_t {
   ZL_EVENT_NONE = 0,
   ZL_EVENT_TERM,
   ZL_EVENT_COMP_RESTART,
 };
 
-// TODO globals are bad, make this a context struct and pass around
 struct {
 
   pthread_t console_thid;
 
 #define MAX_CHILD_COUNT 128
 
-  ZlComp children[MAX_CHILD_COUNT];
-  size_t count;
+  zl_comp_t children[MAX_CHILD_COUNT];
+  size_t child_count;
 
-  ZlConfig config;
+  zl_config_t config;
 
   bool is_term;
 
-  enum ZLEvent event_type;
+  enum zl_event_t event_type;
   void *event_data;
   pthread_cond_t event_cv;
   pthread_mutex_t event_lock;
 
   char workdir[_POSIX_PATH_MAX + 1];
 
-} context = {0};
+} zl_context = {0};
 
 #define INFO(fmt, ...)  printf("%s INFO:  "fmt, gettime().value, ##__VA_ARGS__)
 #define WARN(fmt, ...)  printf("%s WARN:  "fmt, gettime().value, ##__VA_ARGS__)
-#define DEBUG(fmt, ...) if (context.config.debug_mode) \
+#define DEBUG(fmt, ...) if (zl_context.config.debug_mode) \
   printf("%s DEBUG: "fmt, gettime().value, ##__VA_ARGS__)
 #define ERROR(fmt, ...) printf("%s ERROR: "fmt, gettime().value, ##__VA_ARGS__)
 
-static int init_context(const struct ZlConfig *cfg) {
+static int init_context(const struct zl_config_t *cfg) {
 
   const char *workdir = getenv("WORKDIR");
   if (workdir == NULL) {
@@ -130,36 +129,36 @@ static int init_context(const struct ZlConfig *cfg) {
   }
 
   size_t dir_len = dir_end - dir_start + 1;
-  if (dir_len > sizeof(context.workdir) - 1) {
+  if (dir_len > sizeof(zl_context.workdir) - 1) {
     ERROR("WORKDIR env too large\n");
     return -1;
   }
 
-  memset(context.workdir, 0, sizeof(context.workdir));
-  memcpy(context.workdir, dir_start, dir_len);
-  context.config = *cfg;
+  memset(zl_context.workdir, 0, sizeof(zl_context.workdir));
+  memcpy(zl_context.workdir, dir_start, dir_len);
+  zl_context.config = *cfg;
 
-  if (chdir(context.workdir)) {
+  if (chdir(zl_context.workdir)) {
     ERROR("working directory not changed - %s\n", strerror(errno));
     return -1;
   }
 
-  if (pthread_cond_init(&context.event_cv, NULL) != 0) {
+  if (pthread_cond_init(&zl_context.event_cv, NULL) != 0) {
     ERROR("pthread_cond_init() error - %s\n", strerror(errno));
     return -1;
   }
 
-  if (pthread_mutex_init(&context.event_lock, NULL) != 0) {
+  if (pthread_mutex_init(&zl_context.event_lock, NULL) != 0) {
     ERROR("pthread_mutex_init() error - %s\n", strerror(errno));
     return -1;
   }
 
-  DEBUG("work directory is \'%s\'\n", context.workdir);
+  DEBUG("work directory is \'%s\'\n", zl_context.workdir);
 
   return 0;
 }
 
-static int init_component(const char *cfg_line, ZlComp *result) {
+static int init_component(const char *cfg_line, zl_comp_t *result) {
 
   /* TODO parsing of parameters is not overly robust, improve */
 
@@ -251,10 +250,10 @@ static int load_cfg(void) {
     }
 
     DEBUG("handling line \'%s\'\n", line);
-    ZlComp comp = {0};
+    zl_comp_t comp = {0};
     if (!init_component(line, &comp)) {
-      if (context.count != MAX_CHILD_COUNT) {
-        context.children[context.count++] = comp;
+      if (zl_context.child_count != MAX_CHILD_COUNT) {
+        zl_context.children[zl_context.child_count++] = comp;
       } else {
         ERROR("max component number reached, ignoring the rest\n");
         break;
@@ -270,13 +269,13 @@ static int load_cfg(void) {
   return 0;
 }
 
-static int send_event(enum ZLEvent event_type, void *event_data);
+static int send_event(enum zl_event_t event_type, void *event_data);
 
 static void *handle_comp_comm(void *args) {
 
   INFO("starting a component communication thread\n");
 
-  ZlComp *comp = args;
+  zl_comp_t *comp = args;
 
   while (true) {
 
@@ -302,7 +301,7 @@ static void *handle_comp_comm(void *args) {
             comp->name, comp->pid, strerror(errno));
       break;
     } else {
-//      DEBUG("waitpid RC = 0 for %s(%d)\n", comp->name, comp->pid);
+      DEBUG("waitpid RC = 0 for %s(%d)\n", comp->name, comp->pid);
     }
 
     char msg[1024];
@@ -325,7 +324,7 @@ static void *handle_comp_comm(void *args) {
       } else if (msg_len == -1 && errno == EAGAIN) {
         sleep(1);
         retries_left--;
-//        DEBUG("waiting for next message from %s(%d)\n", comp->name, comp->pid);
+        DEBUG("waiting for next message from %s(%d)\n", comp->name, comp->pid);
       } else {
         ERROR("cannot read output from comp %s(%d) failed - %s\n",
               comp->name, comp->pid, strerror(errno));
@@ -338,7 +337,7 @@ static void *handle_comp_comm(void *args) {
   return NULL;
 }
 
-static int start_component(ZlComp *comp) {
+static int start_component(zl_comp_t *comp) {
 
   if (comp->pid != -1) {
     ERROR("cannot start component %s - already running\n", comp->name);
@@ -347,7 +346,7 @@ static int start_component(ZlComp *comp) {
 
   DEBUG("about to start component %s\n", comp->name);
 
-  size_t workdir_len = strlen(context.workdir);
+  size_t workdir_len = strlen(zl_context.workdir);
   size_t bin_len = strlen(comp->bin);
 
   if (workdir_len + bin_len > _POSIX_PATH_MAX) {
@@ -356,7 +355,7 @@ static int start_component(ZlComp *comp) {
   }
 
   char full_path[_POSIX_PATH_MAX + 1 + 1] = {0};
-  strcpy(full_path, context.workdir);
+  strcpy(full_path, zl_context.workdir);
   strcat(full_path, "/");
   strcat(full_path, comp->bin);
 
@@ -429,8 +428,8 @@ static int start_components(void) {
 
   int rc = 0;
 
-  for (size_t i = 0; i < context.count; i++) {
-    if (start_component(&context.children[i])) {
+  for (size_t i = 0; i < zl_context.child_count; i++) {
+    if (start_component(&zl_context.children[i])) {
       rc = -1;
     }
   }
@@ -444,7 +443,7 @@ static int start_components(void) {
   return rc;
 }
 
-static int stop_component(ZlComp *comp) {
+static int stop_component(zl_comp_t *comp) {
 
   if (comp->pid == -1) {
     return 0;
@@ -481,8 +480,8 @@ static int stop_components(void) {
 
   int rc = 0;
 
-  for (size_t i = 0; i < context.count; i++) {
-    if (stop_component(&context.children[i])) {
+  for (size_t i = 0; i < zl_context.child_count; i++) {
+    if (stop_component(&zl_context.children[i])) {
       rc = -1;
     }
   }
@@ -496,11 +495,11 @@ static int stop_components(void) {
   return 0;
 }
 
-static ZlComp *find_comp(const char *name) {
+static zl_comp_t *find_comp(const char *name) {
 
-  for (size_t i = 0; i < context.count; i++) {
-    if (!strcmp(name, context.children[i].name)) {
-      return &context.children[i];
+  for (size_t i = 0; i < zl_context.child_count; i++) {
+    if (!strcmp(name, zl_context.children[i].name)) {
+      return &zl_context.children[i];
     }
   }
 
@@ -513,7 +512,7 @@ static ZlComp *find_comp(const char *name) {
 
 static int handle_start(const char *comp_name) {
 
-  ZlComp *comp = find_comp(comp_name);
+  zl_comp_t *comp = find_comp(comp_name);
   if (comp == NULL) {
     WARN("component %s not found\n", comp_name);
     return -1;
@@ -527,7 +526,7 @@ static int handle_start(const char *comp_name) {
 
 static int handle_stop(const char *comp_name) {
 
-  ZlComp *comp = find_comp(comp_name);
+  zl_comp_t *comp = find_comp(comp_name);
   if (comp == NULL) {
     WARN("component %s not found\n", comp_name);
     return -1;
@@ -541,9 +540,9 @@ static int handle_stop(const char *comp_name) {
 static int handle_disp(void) {
 
   INFO("launcher has the following components:\n");
-  for (size_t i = 0; i < context.count; i++) {
-    INFO("    name = %16.16s, PID = %d\n", context.children[i].name,
-         context.children[i].pid);
+  for (size_t i = 0; i < zl_context.child_count; i++) {
+    INFO("    name = %16.16s, PID = %d\n", zl_context.children[i].name,
+         zl_context.children[i].pid);
   }
 
   return 0;
@@ -636,7 +635,7 @@ static int start_console_tread(void) {
 
   INFO("starting console thread\n");
 
-  if (pthread_create(&context.console_thid, NULL, handle_console, NULL) != 0) {
+  if (pthread_create(&zl_context.console_thid, NULL, handle_console, NULL) != 0) {
     ERROR("pthread_created() for console listener - %s\n", strerror(errno));
     return -1;
   }
@@ -646,7 +645,7 @@ static int start_console_tread(void) {
 
 static int stop_console_thread(void) {
 
-  if (pthread_join(context.console_thid, NULL) != 0) {
+  if (pthread_join(zl_context.console_thid, NULL) != 0) {
     ERROR("pthread_join() for console listener - %s\n", strerror(errno));
     return -1;
   }
@@ -683,9 +682,9 @@ static int strcmp_pad(const char *s1, const char *s2) {
 
 }
 
-static ZlConfig read_config(int argc, char **argv) {
+static zl_config_t read_config(int argc, char **argv) {
 
-  ZlConfig result = {0};
+  zl_config_t result = {0};
 
   char *debug_value = getenv(CONFIG_DEBUG_MODE_KEY);
 
@@ -696,7 +695,7 @@ static ZlConfig read_config(int argc, char **argv) {
   return result;
 }
 
-static int restart_component(ZlComp *comp) {
+static int restart_component(zl_comp_t *comp) {
 
   int stop_rc = stop_component(comp);
   if (stop_rc) {
@@ -708,15 +707,15 @@ static int restart_component(ZlComp *comp) {
 
 static void monitor_events(void) {
 
-  if (pthread_mutex_lock(&context.event_lock) != 0) {
+  if (pthread_mutex_lock(&zl_context.event_lock) != 0) {
     ERROR("monitor_events: pthread_mutex_lock() error - %s\n", strerror(errno));
     return;
   }
 
   while (true) {
 
-    while (context.event_type == ZL_EVENT_NONE) {
-      if (pthread_cond_wait(&context.event_cv, &context.event_lock) !=0) {
+    while (zl_context.event_type == ZL_EVENT_NONE) {
+      if (pthread_cond_wait(&zl_context.event_cv, &zl_context.event_lock) !=0) {
         ERROR("monitor_events: pthread_cond_wait() error - %s\n",
               strerror(errno));
         return;
@@ -724,26 +723,26 @@ static void monitor_events(void) {
     }
 
     DEBUG("event with type %d and data 0x%p has been received\n",
-          context.event_type, context.event_data);
+          zl_context.event_type, zl_context.event_data);
 
-    if (context.event_type == ZL_EVENT_TERM) {
+    if (zl_context.event_type == ZL_EVENT_TERM) {
       break;
-    } else if (context.event_type == ZL_EVENT_COMP_RESTART) {
-      int restart_rc = restart_component(context.event_data);
+    } else if (zl_context.event_type == ZL_EVENT_COMP_RESTART) {
+      int restart_rc = restart_component(zl_context.event_data);
       if (restart_rc) {
         ERROR("component not restarted, rc = %d\n", restart_rc);
       }
     } else {
-      ERROR("unknown event type %d\n", context.event_type);
+      ERROR("unknown event type %d\n", zl_context.event_type);
       break;
     }
 
-    context.event_type = ZL_EVENT_NONE;
-    context.event_data = NULL;
+    zl_context.event_type = ZL_EVENT_NONE;
+    zl_context.event_data = NULL;
 
   }
 
-  if (pthread_mutex_unlock(&context.event_lock) != 0) {
+  if (pthread_mutex_unlock(&zl_context.event_lock) != 0) {
     ERROR("monitor_events: pthread_mutex_unlock() error - %s\n",
           strerror(errno));
     return;
@@ -751,25 +750,25 @@ static void monitor_events(void) {
 
 }
 
-static int send_event(enum ZLEvent event_type, void *event_data) {
+static int send_event(enum zl_event_t event_type, void *event_data) {
 
-  if (pthread_mutex_lock(&context.event_lock) != 0) {
+  if (pthread_mutex_lock(&zl_context.event_lock) != 0) {
     ERROR("send_event: pthread_mutex_lock() error - %s\n", strerror(errno));
     return -1;
   }
 
-  context.event_type = event_type;
-  context.event_data = event_data;
+  zl_context.event_type = event_type;
+  zl_context.event_data = event_data;
 
-  if (pthread_cond_signal(&context.event_cv) != 0) {
+  if (pthread_cond_signal(&zl_context.event_cv) != 0) {
     ERROR("send_event: pthread_cond_signal() error - %s\n", strerror(errno));
     return -1;
   }
 
   DEBUG("event with type %d and data 0x%p has been sent\n",
-        context.event_type, context.event_data);
+        zl_context.event_type, zl_context.event_data);
 
-  if (pthread_mutex_unlock(&context.event_lock) != 0) {
+  if (pthread_mutex_unlock(&zl_context.event_lock) != 0) {
     ERROR("send_event: pthread_mutex_unlock() error - %s\n", strerror(errno));
     return -1;
   }
@@ -781,7 +780,7 @@ int main(int argc, char **argv) {
 
   INFO("Zowe Launcher starting\n");
 
-  ZlConfig config = read_config(argc, argv);
+  zl_config_t config = read_config(argc, argv);
 
   if (init_context(&config)) {
     exit(EXIT_FAILURE);
