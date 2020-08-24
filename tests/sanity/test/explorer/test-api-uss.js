@@ -14,7 +14,7 @@ const debug = require('debug')('zowe-sanity-test:explorer:api-uss');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 
-let REQ, username, password;
+let REQ, username, password, testDir;
 
 describe('test explorer server uss files api', function() {
   before('verify environment variables', function() {
