@@ -15,11 +15,7 @@ const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 
 let REQ, username, password;
-let testDir;
-const DIR_TO_TEST = 'uss_explorer';
-const FILE_TO_TEST = 'pluginDefinition.json';
 
-// NOTICE for skipping test: the endpoint has been removed after migration
 describe('test explorer server uss files api', function() {
   before('verify environment variables', function() {
     // allow self signed certs
