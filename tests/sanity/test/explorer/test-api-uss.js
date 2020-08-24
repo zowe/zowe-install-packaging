@@ -14,7 +14,7 @@ const debug = require('debug')('zowe-sanity-test:explorer:api-uss');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 
-let REQ, username, password, testDir;
+let REQ, username, password;
 
 describe('test explorer server uss files api', function() {
   before('verify environment variables', function() {
@@ -36,8 +36,6 @@ describe('test explorer server uss files api', function() {
     password = process.env.SSH_PASSWD;
 
     debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
-
-    testDir = process.env.ZOWE_ROOT_DIR;
   });
 
   it('Gets a list of files and directories for a given path', function() {
