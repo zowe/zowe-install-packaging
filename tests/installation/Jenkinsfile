@@ -356,14 +356,14 @@ node('ibm-jenkins-slave-nvm') {
     isSkippable   : true,
     stage         : {
       ansiColor('xterm') {
-        if (env.BRANCH_NAME == 'PR-1596' && params.TEST_SCOPE == 'generate api documentation') {
+        if (env.BRANCH_NAME == 'master' && params.TEST_SCOPE == 'generate api documentation') {
           withCredentials([usernamePassword(credentialsId: 'zowe-robot-github', usernameVariable: 'ZOWE_GITHUB_USERID', passwordVariable: 'ZOWE_GITHUB_APIKEY')]) {
             // Set up api_definitions directory in local docs repository
             sh script:'''
                 #!/bin/sh
                 git clone https://github.com/zowe/docs-site.git
                 cd ./docs-site
-                git checkout user/carsoncook/api-doc-test
+                git checkout docs-staging
 
                 if [ -d \"./api_definitions\" ]; then rm -rf ./api_definitions; fi
                 mv ../api_definitions .
