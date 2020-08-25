@@ -49,6 +49,13 @@ node('ibm-jenkins-slave-nvm') {
       description: 'Test run will skip test cases and will not send out Slack message.',
       defaultValue: isRcBranch ? false : true
     )
+    string(
+      name: 'ZOWE_RELEASE_VERSION',
+      description: 'REQUIRED. Zowe release version without prefix v. For example, 0.9.0',
+      defaultValue: 'vx.xx.x',
+      trim: true,
+      required: true
+    )
   )
 
   pipeline.setup(
@@ -347,9 +354,10 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_BUILD_NAME: '${ZOWE_BUILD_NAME}'\n" +
              "ZOWE_BUILD_NUMBER: ''\n" +
              "ZOWE_CLI_BUILD_REPOSITORY: '${ZOWE_CLI_BUILD_REPOSITORY}'\n" +
-             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
-             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
-             "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
+             "ZOWE_CLI_BUILD_PATH: '*'\n" +
+             "ZOWE_CLI_BUILD_NAME: 'ZOWE_CLI_BUILD_NAME'\n" +
+             "ZOWE_CLI_BUILD_NUMBER: '*'\n" +
+             "ZOWE_RELEASE_VERSION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
              "Skip Stage: Lint: true\n" +
              "Skip Stage: Audit: true\n" +
