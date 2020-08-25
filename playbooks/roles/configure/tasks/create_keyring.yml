@@ -8,10 +8,6 @@
 - name: Copy SZWESAMP(ZWEKRING) to USS
   raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWEKRING)'" "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
 
-- name: Show ip zowe_external_ip_address
-  debug:
-    var: zowe_external_ip_address
-
 - name: Set ip address
   raw: dig +short $(hostname) | sed -n 2p
   when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
