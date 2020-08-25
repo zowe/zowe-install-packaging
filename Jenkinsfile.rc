@@ -333,6 +333,22 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 2, unit: 'HOURS']
   )
 
+  pipeline.createStage(
+    name          : "Load Build Info",
+    isSkippable   : true,
+    shouldExecute : {
+      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path']
+    },
+    stage         : {
+      sourceRegBuildInfo_p = pipeline.artifactory.getArtifact([
+        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
+        'build-name'   : ZOWE_BUILD_NAME,
+        'build-number' : sourceSmpeBuildInfo['build.number']
+      ])
+    },
+    timeout: [time: 2, unit: 'MINUTES']
+  )
+
   // INSERT CODE TO RUN PROMOTE BUILD HERE
   pipeline.test(
     name              : "Promote publish",
@@ -345,7 +361,7 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_BUILD_REPOSITORY: 'libs-snapshot-local'\n" +
              "ZOWE_BUILD_PATH: '*'\n" +
              "ZOWE_BUILD_NAME: '${ZOWE_BUILD_NAME}'\n" +
-             "ZOWE_BUILD_NUMBER: ''\n" +
+             "ZOWE_BUILD_NUMBER: '${sourceRegBuildInfo_p['build.number']}'\n" +
              "ZOWE_CLI_BUILD_REPOSITORY: '${ZOWE_CLI_BUILD_REPOSITORY}'\n" +
              "ZOWE_CLI_BUILD_PATH: '*'\n" +
              "ZOWE_CLI_BUILD_NAME: 'ZOWE_CLI_BUILD_NAME'\n" +
@@ -374,7 +390,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/rc',
+            job: '/zowe-promote-publish/staging',
             parameters: testParameters,
             propagate: false
           )
