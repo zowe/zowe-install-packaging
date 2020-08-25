@@ -294,6 +294,7 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "NODE_VERSION: ''\n" +
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
              "Skip Stage: Lint: true\n" +
@@ -305,6 +306,7 @@ node('ibm-jenkins-slave-nvm') {
           string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'NODE_VERSION', value: 'v8.16.0'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*')
         ]
