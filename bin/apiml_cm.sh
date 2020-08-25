@@ -127,10 +127,6 @@ function create_certificate_authority {
         pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
             -dname "${LOCAL_CA_DNAME}" -storetype ${SERVICE_STORETYPE} -validity ${LOCAL_CA_VALIDITY} \
             -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-
-        echo "Export local CA public certificate:"
-        pkeytool -export $V -alias ${LOCAL_CA_ALIAS} -file ${LOCAL_CA_FILENAME}.cer -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -rfc \
-            -storetype ${SERVICE_STORETYPE} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
         echo "Generate keystore with the local CA private key and local CA public certificate:"
         pkeytool -genkeypair $V -alias ${LOCAL_CA_ALIAS} -keyalg RSA -keysize 2048 -keystore ${LOCAL_CA_FILENAME}.keystore.p12 \
