@@ -48,7 +48,7 @@ node('ibm-jenkins-slave-nvm') {
       name: 'TEST_RUN',
       description: 'Test run will skip test cases and will not send out Slack message.',
       defaultValue: isRcBranch ? false : true
-    )
+    ),
     string(
       name: 'ZOWE_RELEASE_VERSION',
       description: 'REQUIRED. Zowe release version without prefix v. For example, 0.9.0',
