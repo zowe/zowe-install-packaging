@@ -38,22 +38,6 @@ describe('test explorer server uss files api', function() {
     debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
   });
 
-  it(`should be able to list content of directory ${DIR_TO_TEST}`, function() {
-    const _this = this;
-
-    const req = {
-      method: 'get',
-      url: '/api/v1/uss/files/' + encodeURIComponent(testDir + '/' + DIR_TO_TEST),
-      auth: {
-        username,
-        password,
-      }
-    };
-    debug('request', req);
-
-    debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
-  });
-
   it('Gets a list of files and directories for a given path', function() {
     const _this = this;
 
