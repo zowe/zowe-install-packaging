@@ -15,9 +15,6 @@ const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 
 let REQ, username, password;
-let testDir;
-const DIR_TO_TEST = 'uss_explorer';
-const FILE_TO_TEST = 'pluginDefinition.json';
 
 // NOTICE for skipping test: the endpoint has been removed after migration
 describe.skip('test explorer server uss files api', function() {
@@ -37,9 +34,14 @@ describe.skip('test explorer server uss files api', function() {
     });
     username = process.env.SSH_USER;
     password = process.env.SSH_PASSWD;
+<<<<<<< HEAD
     debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_EXPLORER_SERVER_HTTPS_PORT}`);
 
     testDir = process.env.ZOWE_ROOT_DIR;
+=======
+
+    debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
+>>>>>>> 14764e39... Push api_definitions to docs-site
   });
 
   it(`should be able to list content of directory ${DIR_TO_TEST}`, function() {
