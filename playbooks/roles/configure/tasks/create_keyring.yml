@@ -46,23 +46,3 @@
     tasks_from: run_jcl
   vars:
     jcl_filename: "{{ work_dir_remote }}/ZWEKRING.jcl"
-
-- name: Update ZWEKRING.jcl with localhost configurations
-  raw: >-
-    cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
-    sed -e "s%SET ZOWERING='ZoweKeyring'%SET ZOWERING='ZoweKeyring_Local'%" | \
-    sed -e "s%SET    LABEL='ZoweCert'%SET    LABEL='ZoweCert_Local'%" \
-    > "{{ work_dir_remote }}/ZWEKRING.jcl"
-
-- name: Check ZWEKRING.jcl changes
-  raw: >-
-    grep -e "^// *SET " \
-        -e ZOWERING \
-        "{{ work_dir_remote }}/ZWEKRING.jcl"
-
-- name: Run ZWEKRING.jcl
-  import_role:
-    name: zos
-    tasks_from: run_jcl
-  vars:
-    jcl_filename: "{{ work_dir_remote }}/ZWEKRING.jcl"

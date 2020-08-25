@@ -18,8 +18,7 @@ import {
     KEYSTORE_MODE_KEYRING,
   } from '../../../constants';
   
-  // hard code to use marist-1 which we have uploaded correct versions in
-  const testServer = 'marist-1';
+  const testServer = 'marist-2';
   const testSuiteName = 'Test convenience build installation with keystore pointing to a keyring';
   describe(testSuiteName, () => {
     beforeAll(() => {
