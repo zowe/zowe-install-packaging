@@ -334,7 +334,7 @@ node('ibm-jenkins-slave-nvm') {
   )
 
   pipeline.createStage(
-    name          : "Load Build Info",
+    name          : "Reload Build Info",
     isSkippable   : true,
     shouldExecute : {
       return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path']
