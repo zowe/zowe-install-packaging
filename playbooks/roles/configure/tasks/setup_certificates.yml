@@ -24,7 +24,7 @@
     sed -e "s+^ZOWE_KEYRING=.*\$+ZOWE_KEYRING={{ zowe_keyring_alias }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.tmp" && \
     mv "{{ work_dir_remote }}/zowe-setup-certificates.tmp" "{{ work_dir_remote }}/zowe-setup-certificates.env"
-  when: zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
+  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 - name: Show zowe-setup-certificates.env
   raw: cat "{{ work_dir_remote }}/zowe-setup-certificates.env"
