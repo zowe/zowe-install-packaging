@@ -234,7 +234,7 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 2, unit: 'MINUTES']
   )
 
-/*
+
   pipeline.createStage(
     name          : "Download Zowe",
     isSkippable   : true,
@@ -349,7 +349,7 @@ node('ibm-jenkins-slave-nvm') {
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 360, unit: 'MINUTES'],
-  )*/
+  )
 
   pipeline.createStage(
     name          : "API Documentation Check In",

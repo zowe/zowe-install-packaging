@@ -40,14 +40,14 @@ describe(testSuiteName, () => {
 
   it('Generate Swagger API files', async () => {
     // Acquire API definitions and store in api_definitions directory
-    await cleanApiDefDirectory();
+    await createApiDefDirectory();
     await captureApiDefinitions();
   });
 });
 
-async function cleanApiDefDirectory() {
-  debug('Clean api_definitions directory.');
-  await exec(`if [ -d "$${apiDefFolderPath}" ]; then rm -R $${apiDefFolderPath}/*; fi`);
+async function createApiDefDirectory() {
+  debug('Create api_definitions directory.');
+  await exec(`mkdir ${apiDefFolderPath}`);
 }
 
 async function captureApiDefinitions() {
