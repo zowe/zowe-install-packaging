@@ -265,6 +265,13 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   fi
 fi
 
+# If a keyring is used to hold certificates then make sure the local_ca directory doesn't contain
+# any "localca" certificates. A certificate may have been created in the directory to help forging a certificate
+# that encapsulates JWT token from z/OSMF. The certificate is not needed anymore at this stage and can be deleted.
+if [ -n "${ZOWE_KEYRING}" ]; then
+  rm ${LOCAL_CA_PREFIX}* 2> /dev/null
+fi
+
 # detect external root CA
 EXTERNAL_ROOT_CA=
 detectExternalRootCA;
