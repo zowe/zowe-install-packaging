@@ -24,16 +24,17 @@
 - name: Update ZWEKRING.jcl with configurations
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
-    sed -e "s%ALTNAME(IP(127.0.0.1) +%ALTNAME(IP({{ zowe_external_ip_address }}) +%" | \
-    sed -e "s%DOMAIN('localhost')) +%DOMAIN('{{ zowe_external_domain_name }}')) +%" | \
-    sed -e "s%ALTNAME(IP=127.0.0.1 DOMAIN=localhost) +%ALTNAME(IP={{ zowe_external_ip_address }} DOMAIN={{ zowe_external_domain_name }}) +%" \
+    sed -e "s%SET HOSTNAME=''%SET HOSTNAME='{{ zowe_external_domain_name }}'%" | \
+    sed -e "s%SET IPADDRES=''%SET IPADDRES='{{ zowe_external_ip_address }}'%" | \
+    sed -e "s%SET    LABEL='localhost'%SET    LABEL='{{ zowe_keyring_certname }}'%" \
     > "{{ work_dir_remote }}/ZWEKRING.jcl"
 
 - name: Check ZWEKRING.jcl changes
   raw: >-
     grep -e "^// *SET " \
-        -e ALTNAME \
-        -e DOMAIN \
+        -e HOSTNAME \
+        -e IPADDRES \
+        -e LABEL \
         "{{ work_dir_remote }}/ZWEKRING.jcl"
 
 - name: Run ZWEKRING.jcl
