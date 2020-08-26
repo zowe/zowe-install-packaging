@@ -367,30 +367,24 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_CLI_BUILD_REPOSITORY: '${ZOWE_CLI_BUILD_REPOSITORY}'\n" +
              "ZOWE_CLI_BUILD_PATH: '*'\n" +
              "ZOWE_CLI_BUILD_NAME: 'ZOWE_CLI_BUILD_NAME'\n" +
-             "ZOWE_CLI_BUILD_NUMBER: '*'\n" +
+             "ZOWE_CLI_BUILD_NUMBER: 'ADD ME!'\n" +
              "ZOWE_RELEASE_VERSION: 'zowe-install-test:*'\n" +
-             "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
-             "Skip Stage: Lint: true\n" +
-             "Skip Stage: Audit: true\n" +
-             "Skip Stage: SonarQube Scan: true"
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
-          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
-          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
-          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
-          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*')
+          string(name: 'ZOWE_BUILD_REPOSITORY', value: 'libs-snapshot-local'),
+          string(name: 'ZOWE_BUILD_PATH', value: '*'),
+          string(name: 'ZOWE_BUILD_NAME', value: "${ZOWE_BUILD_NAME}"),
+          string(name: 'ZOWE_BUILD_NUMBER', value: "${sourceRegBuildInfo_p[build.number]}"),
+          string(name: 'ZOWE_RELEASE_VERSION', value: "${ZOWE_RELEASE_VERSION}"),
         ]
         if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
-          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
-          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
+          testParameters.add(string(name: 'ZOWE_CLI_BUILD_REPOSITORY', value: "${ZOWE_CLI_BUILD_REPOSITORY}"))
+          testParameters.add(string(name: 'ZOWE_CLI_BUILD_PATH', value: "*"))
+          testParameters.add(string(name: 'ZOWE_CLI_BUILD_NAME', value: "${ZOWE_CLI_BUILD_NAME}"))
+          testParameters.add(string(name: 'ZOWE_CLI_BUILD_NUMBER', value: "ADD ME"))
         }
-        // FIXME: add back after those 2 parameters are added to zowe-install-test
-        // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
-        //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
-        //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
-        // }
+
         def test_result = build(
             job: '/zowe-promote-publish/staging',
             parameters: testParameters,
