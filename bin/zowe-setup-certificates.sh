@@ -269,7 +269,7 @@ fi
 # any "localca" certificates. A certificate may have been created in the directory to help forging a certificate
 # that encapsulates JWT token from z/OSMF. The certificate is not needed anymore at this stage and can be deleted.
 if [ -n "${ZOWE_KEYRING}" ]; then
-  rm ${LOCAL_CA_PREFIX}* 2> /dev/null
+  rm -f ${LOCAL_CA_PREFIX}*
 fi
 
 # detect external root CA
