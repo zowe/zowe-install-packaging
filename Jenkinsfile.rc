@@ -327,7 +327,7 @@ node('ibm-jenkins-slave-nvm') {
           )
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
-          testRegBuildErrorUrl = test_result.absoluteUrl
+          testNodeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
         }
       }
@@ -434,6 +434,13 @@ node('ibm-jenkins-slave-nvm') {
         slackColor = 'warning'
         message = message + "\n\n" +
                   "!!WARNING!! Smoke test FAILED on the SMP/e build! Check test result here: " +
+                  testSmpeBuildErrorUrl + "\n"
+      }
+
+      if (testNodeBuildErrorUrl) {
+        slackColor = 'warning'
+        message = message + "\n\n" +
+                  "!!WARNING!! Smoke test FAILED on the multiple node build! Check test result here: " +
                   testSmpeBuildErrorUrl + "\n"
       }
 
