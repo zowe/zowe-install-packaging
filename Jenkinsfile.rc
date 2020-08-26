@@ -368,7 +368,7 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_CLI_BUILD_PATH: '*'\n" +
              "ZOWE_CLI_BUILD_NAME: 'ZOWE_CLI_BUILD_NAME'\n" +
              "ZOWE_CLI_BUILD_NUMBER: 'sourceSmpeBuildInfo['build.number']'\n" +
-             "ZOWE_RELEASE_VERSION: 'zowe-install-test:*'\n" +
+             "ZOWE_RELEASE_VERSION: 'zowe-install-test:*'\n"
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
