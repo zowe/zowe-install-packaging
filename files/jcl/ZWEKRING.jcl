@@ -84,7 +84,7 @@
 //*      * Keyring for the Zowe userid
 //         SET ZOWERING='ZoweKeyring'
 //*      * Zowe's certificate label
-//         SET    LABEL='ZoweCert'
+//         SET    LABEL='localhost'
 //*      * Name of the data set containing Zowe's certificate (PKCS12)
 //         SET   DSNAME=
 //*      * Password for the PKCS12 data set
