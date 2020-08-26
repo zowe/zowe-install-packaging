@@ -35,4 +35,7 @@ export const TEST_TIMEOUT_SMPE_FMID: number = 90 * 60 * 1000;
 // 120 minutes timeout for installation ptf
 export const TEST_TIMEOUT_SMPE_PTF: number = 120 * 60 * 1000;
 
+export const KEYSTORE_MODE_KEYSTORE: string = 'KEYSTORE_MODE_KEYSTORE';
+export const KEYSTORE_MODE_KEYRING: string = 'KEYSTORE_MODE_KEYRING';
+
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);
