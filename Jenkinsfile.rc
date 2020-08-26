@@ -13,7 +13,7 @@
 node('ibm-jenkins-slave-nvm') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
-  def SLACK_CHANNEL = '#zowe-build'
+  def SLACK_CHANNEL = '#zowe-cicd, #zowe-build, #zowe-dev'
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
   def ZOWE_RELEASE_PATH = '/org/zowe/nightly'
   def ZOWE_BUILD_NAME = 'zowe-install-packaging :: rc'
@@ -410,17 +410,17 @@ node('ibm-jenkins-slave-nvm') {
       currentBuild.description = "${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']}".toString()
 
       def slackColor = 'good'
-      def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
+      def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as RELEASE_VERSION. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n"
       if (cliSourceBuildInfo && cliTargetFullPath) {
         message += "\n\n" +
-                    "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                    "The CLI Core Package is published here:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
       }
       if (cliPluginsSourceBuildInfo && cliPluginsTargetFullPath) {
         message += "\n\n" +
-                    "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                    "The CLI Plugins Package is published here:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliPluginsTargetFullPath}"
       }
       if (testRegBuildErrorUrl) {
