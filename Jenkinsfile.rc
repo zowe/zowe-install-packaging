@@ -413,7 +413,7 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 2, unit: 'HOURS']
   )
 
-  /*pipeline.createStage(
+  pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
     stage         : {
