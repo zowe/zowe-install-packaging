@@ -42,10 +42,17 @@
 //*    the PKCS12 data set.
 //*
 //* 8) Specify the distinguished name of the Zowe's local CA by
-//*    updating the SET statements CN=, OU=, O=, L=, SP=, C=, and LOCALCA=.
+//*    updating the SET statements CN=, OU=, O=, L=, SP=, C=, and
+//*    LOCALCA=.
 //*
-//* 9) Customize the commands in the DD statement that matches your
-//*    security product so that they meet your system requirements.
+//* 9) Update the SET HOSTNAME= variable to match the hostname where
+//*    Zowe is to run.
+//*
+//* 10) Update the SET IPADDRES= variable to match the IP address
+//*     where Zowe is to run.
+//*
+//* 11) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
 //*
 //* Note(s):
 //*
@@ -70,10 +77,14 @@
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //*                     12345678
 //*
+//*      * Hostname of the system where Zowe is to run
+//         SET HOSTNAME=''
+//*      * IP address of the system where Zowe is to run
+//         SET IPADDRES=''
 //*      * Keyring for the Zowe userid
 //         SET ZOWERING='ZoweKeyring'
 //*      * Zowe's certificate label
-//         SET    LABEL='ZoweCert'
+//         SET    LABEL='localhost'
 //*      * Name of the data set containing Zowe's certificate (PKCS12)
 //         SET   DSNAME=
 //*      * Password for the PKCS12 data set
@@ -162,12 +173,12 @@
 /*   2. Import external Zowe's certificate from a data set in PKCS12 */
 /*      format                                                       */
 /*      ACTION: Uncomment the "Option 1" block below                 */
-/*              Comment the "Option2" block below
+/*              Comment the "Option2" block below                    */
 /*                                                                   */
 /*   3. Generate Zowe's certificate that will be signed by the       */
 /*      Zowe's local CA                                              */
 /*      ACTION: This is the default behavior if you submit           */
-/*              this file umodified                                  */
+/*              this file unmodified                                 */
 /*                                                                   */
 /* ***************************************************************** */
 /*                                                                   */
@@ -196,8 +207,8 @@
             NOTAFTER(DATE(2030-05-01)) +
             WITHLABEL('&LABEL.') +
             KEYUSAGE(HANDSHAKE) +
-            ALTNAME(IP(127.0.0.1) +
-                DOMAIN('localhost')) +
+            ALTNAME(IP(&IPADDRES) +
+                DOMAIN('&HOSTNAME')) +
             SIGNWITH(CERTAUTH LABEL('&LOCALCA'))
     SETROPTS RACLIST(DIGTCERT) REFRESH
 
@@ -305,14 +316,17 @@ ACF
 *   1. Zowe's certificate is already loaded in ACF2 database        */
 *      ACTION: Modify the CERTDATA(&ZOWEUSER..ZOWECERT) keyword     */
 *              below to match the desired certificate for Zowe      */
+*              Comment the "Option 2" block below                   */
 *                                                                   */
 *   2. Import external Zowe's certificate from a data set in PKCS12 */
 *      format                                                       */
 *      ACTION: Uncomment the "Option 1" block below                 */
+*              Comment the "Option2" block below                    */
 *                                                                   */
 *   3. Generate Zowe's certificate that will be signed by the       */
 *      Zowe's local CA                                              */
-*      ACTION: Uncomment the "Option 2" block below                 */
+*      ACTION: This is the default behavior if you submit           */
+*              this file unmodified                                 */
 *                                                                   */
 * ***************************************************************** */
 *                                                                   */
@@ -330,20 +344,20 @@ ACF
 * ................................................................. */
 * Option 2 - BEGINNING ............................................ */
 * Create a certificate signed by local zowe's CA .................. */
-*  SET PROFILE(USER) DIV(CERTDATA)
-*  GENCERT &ZOWEUSER..ZOWECERT      +
-*           SUBJSDN(CN='&CN. certificate' +
-*                   OU='&OU.'       +
-*                    O='&O.'        +
-*                    L='&L.'        +
-*                   SP='&SP.'       +
-*                   C='&C.')        +
-*          SIZE(2048)               +
-*          EXPIRE(05/01/30)         +
-*          LABEL(&LABEL.)         +
-*          KEYUSAGE(HANDSHAKE)    +
-*          ALTNAME(IP=127.0.0.1 DOMAIN=localhost) +
-*          SIGNWITH(CERTAUTH.ZOWECA)
+   SET PROFILE(USER) DIV(CERTDATA)
+   GENCERT &ZOWEUSER..ZOWECERT      +
+            SUBJSDN(CN='&CN. certificate' +
+                    OU='&OU.'       +
+                     O='&O.'        +
+                     L='&L.'        +
+                    SP='&SP.'       +
+                    C='&C.')        +
+           SIZE(2048)               +
+           EXPIRE(05/01/30)         +
+           LABEL(&LABEL.)         +
+           KEYUSAGE(HANDSHAKE)    +
+           ALTNAME(IP=&IPADDRES DOMAIN=&HOSTNAME) +
+           SIGNWITH(CERTAUTH.ZOWECA)
 
 * Option 2 - END ................................................... */
 
@@ -444,15 +458,17 @@ $$
 /*   1. Zowe's certificate is already loaded in TSS database         */
 /*      ACTION: Modify the RINGDATA(&ZOWEUSER.,ZOWECERT) keyword     */
 /*              below to match the desired certificate for Zowe      */
+/*              Comment the "Option 2" block below                   */
 /*                                                                   */
 /*   2. Import external Zowe's certificate from a data set in PKCS12 */
 /*      format                                                       */
 /*      ACTION: Uncomment the "Option 1" block below                 */
+/*              Comment the "Option2" block below                    */
 /*                                                                   */
 /*   3. Generate Zowe's certificate that will be signed by the       */
 /*      Zowe's local CA                                              */
-/*      ACTION: Uncomment the "Option 2" block below                 */
-/*                                                                   */
+/*      ACTION: This is the default behavior if you submit           */
+/*              this file unmodified                                 */
 /* ***************************************************************** */
 /*                                                                   */
 /* Option 1 - BEGINNING ............................................ */
@@ -468,21 +484,21 @@ $$
 /* ................................................................. */
 /* Option 2 - BEGINNING ............................................ */
 /* Create a certificate signed by local zowe's CA .................. */
-/*  TSS GENCERT(&ZOWEUSER.) +
-/*      DIGICERT(ZOWECERT) +
-/*      SUBJECTN( +
-/*        'CN="&CN. certificate" +
-/*        OU="&OU." +
-/*        O="&O." +
-/*        L="&L." +
-/*        SP="&SP." +
-/*        C="&C." ') +
-/*      KEYSIZE(2048) +
-/*      NADATE(05/01/30) +
-/*      LABLCERT(&LABEL.) +
-/*      KEYUSAGE('HANDSHAKE') +
-/*      ALTNAME('DOMAIN=localhost') +
-/*      SIGNWITH(CERTAUTH,ZOWECA)
+   TSS GENCERT(&ZOWEUSER.) +
+       DIGICERT(ZOWECERT) +
+       SUBJECTN( +
+         'CN="&CN. certificate" +
+         OU="&OU." +
+         O="&O." +
+         L="&L." +
+         SP="&SP." +
+         C="&C." ') +
+       KEYSIZE(2048) +
+       NADATE(05/01/30) +
+       LABLCERT(&LABEL.) +
+       KEYUSAGE('HANDSHAKE') +
+       ALTNAME('DOMAIN=&HOSTNAME') +
+       SIGNWITH(CERTAUTH,ZOWECA)
 
 /* Option 2 - END .................................................. */
 
