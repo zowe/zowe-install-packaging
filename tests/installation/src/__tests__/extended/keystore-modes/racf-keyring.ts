@@ -16,6 +16,7 @@ import {
   import { 
     TEST_TIMEOUT_CONVENIENCE_BUILD, 
     KEYSTORE_MODE_KEYRING,
+    SECURITY_SYSTEM_RACF,
   } from '../../../constants';
   
   const testServer = 'marist-1';
@@ -35,6 +36,7 @@ import {
         {
           'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
           'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
+          'zos_security_system': SECURITY_SYSTEM_RACF,
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);
