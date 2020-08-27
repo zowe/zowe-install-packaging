@@ -24,6 +24,7 @@
 - name: Update ZWEKRING.jcl with configurations
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
+    sed -e "s%SET  PRODUCT=RACF%SET HOSTNAME={{ zos_security_system }}%" | \
     sed -e "s%SET HOSTNAME=''%SET HOSTNAME='{{ zowe_external_domain_name }}'%" | \
     sed -e "s%SET IPADDRES=''%SET IPADDRES='{{ zowe_external_ip_address }}'%" | \
     sed -e "s%SET    LABEL='localhost'%SET    LABEL='{{ zowe_keyring_certname }}'%" \
@@ -32,6 +33,7 @@
 - name: Check ZWEKRING.jcl changes
   raw: >-
     grep -e "^// *SET " \
+        -e PRODUCT \
         -e HOSTNAME \
         -e IPADDRES \
         -e LABEL \

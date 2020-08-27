@@ -16,11 +16,11 @@ import {
   import { 
     TEST_TIMEOUT_CONVENIENCE_BUILD, 
     KEYSTORE_MODE_KEYRING,
-    SECURITY_SYSTEM_RACF,
+    SECURITY_SYSTEM_TSS,
   } from '../../../constants';
   
-  const testServer = 'marist-1';
-  const testSuiteName = 'Test convenience build installation with keystore pointing to a RACF keyring';
+  const testServer = 'marist-3';
+  const testSuiteName = 'Test convenience build installation with keystore pointing to a TSS keyring';
   describe(testSuiteName, () => {
     beforeAll(() => {
       // validate variables
@@ -36,7 +36,7 @@ import {
         {
           'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
           'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
-          'zos_security_system': SECURITY_SYSTEM_RACF,
+          'zos_security_system': SECURITY_SYSTEM_TSS,
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);
