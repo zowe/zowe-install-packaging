@@ -19,7 +19,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
   def ZOWE_CLI_ARTIFACT_PATH = 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*.zip'
-  def ZOWE_RELEASE_VERSION = 'v1.15.0'
+  def ZOWE_RELEASE_VERSION = 'v1.15.0-RC1'
   def ZOWE_NODE_VERSION = 'v8.16.0'
   def ZOWE_TEST_SERVER = 'marist'
 
