@@ -32,6 +32,7 @@ node('ibm-jenkins-slave-nvm') {
 
   def testRegBuildErrorUrl
   def testSmpeBuildErrorUrl
+  def testNodeBuildErrorUrl
 
   def targetSmpeFullPath
   def targetRegFullPath
