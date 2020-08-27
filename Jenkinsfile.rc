@@ -23,6 +23,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
   def ZOWE_CLI_ARTIFACT_PATH = 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*.zip'
   def ZOWE_RELEASE_VERSION = 'v1.15.0'
+  def ZOWE_NODE_VERSION = 'v8.16.0'
 
   def isRcBranch = env && env.BRANCH_NAME == 'rc'
 
@@ -181,9 +182,10 @@ node('ibm-jenkins-slave-nvm') {
              "TEST_SCOPE: bundle: convenience build on multiple security systems\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
-             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${ZOWE_CLI_ARTIFACT_PATH}'\n" +
              "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "NODE_VERSION: '${ZOWE_NODE_VERSION}'\n"
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
              "Skip Stage: Lint: true\n" +
@@ -195,11 +197,12 @@ node('ibm-jenkins-slave-nvm') {
           string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'NODE_VERSION', value: "${ZOWE_NODE_VERSION}"),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*')
         ]
         if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
-          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
         }
         /* FIXME: add back after those 2 parameters are added to zowe-install-test
@@ -236,7 +239,7 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'\n" +
              "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
-             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${ZOWE_CLI_ARTIFACT_PATH}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
@@ -256,7 +259,7 @@ node('ibm-jenkins-slave-nvm') {
           booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
         ]
         if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
-          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
         /* FIXME: add back after those 2 parameters are added to zowe-install-test
@@ -292,10 +295,10 @@ node('ibm-jenkins-slave-nvm') {
              "TEST_SCOPE: bundle: multiple node versions\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
-             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${ZOWE_CLI_ARTIFACT_PATH}'\n" +
              "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
-             "NODE_VERSION: ''\n" +
+             "NODE_VERSION: '${ZOWE_NODE_VERSION}'\n" +
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
              "Skip Stage: Lint: true\n" +
@@ -307,12 +310,12 @@ node('ibm-jenkins-slave-nvm') {
           string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
-          string(name: 'NODE_VERSION', value: 'v8.16.0'),
+          string(name: 'NODE_VERSION', value: "${ZOWE_NODE_VERSION}"),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*')
         ]
         if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
-          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
         }
         /* FIXME: add back after those 2 parameters are added to zowe-install-test
@@ -368,7 +371,7 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_CLI_BUILD_REPOSITORY: '${ZOWE_CLI_BUILD_REPOSITORY}'\n" +
              "ZOWE_CLI_BUILD_PATH: '*'\n" +
              "ZOWE_CLI_BUILD_NAME: 'ZOWE_CLI_BUILD_NAME'\n" +
-             "ZOWE_CLI_BUILD_NUMBER: 'sourceSmpeBuildInfo['build.number']'\n" +
+             "ZOWE_CLI_BUILD_NUMBER: '${sourceSmpeBuildInfo['build.number']}'\n" +
              "ZOWE_RELEASE_VERSION: 'zowe-install-test:*'\n"
       } else {
         def testParameters = [
