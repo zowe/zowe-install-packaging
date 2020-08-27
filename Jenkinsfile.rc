@@ -481,14 +481,14 @@ node('ibm-jenkins-slave-nvm') {
       def source = "Build #${sourceRegBuildInfo_p[build.number]}"
 
       def smpeMessage = ''
-      if (releaseArtifacts['smpe-zip'] && releaseArtifacts['smpe-zip']['target']) {
+      /*if (releaseArtifacts['smpe-zip'] && releaseArtifacts['smpe-zip']['target']) {
 smpeMessage = """
 
 SMP/e build:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-zip']['target']}
 
 """
-      }
+      }*/
 
       def successMsg = """
 *************************************************************************************************
