@@ -355,6 +355,10 @@ node('ibm-jenkins-slave-nvm') {
         'build-name'   : ZOWE_BUILD_NAME,
         'build-number' : sourceSmpeBuildInfo['build.number']
       ])
+      cliSourceBuildInfo_p = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+          'build-name'   : ZOWE_CLI_BUILD_NAME
+        ])
     },
     timeout: [time: 2, unit: 'MINUTES']
   )
@@ -375,7 +379,7 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_CLI_BUILD_REPOSITORY: '${ZOWE_CLI_BUILD_REPOSITORY}'\n" +
              "ZOWE_CLI_BUILD_PATH: '*'\n" +
              "ZOWE_CLI_BUILD_NAME: '${ZOWE_CLI_BUILD_NAME}'\n" +
-             "ZOWE_CLI_BUILD_NUMBER: '${sourceSmpeBuildInfo['build.number']}'\n" +
+             "ZOWE_CLI_BUILD_NUMBER: '${cliSourceBuildInfo_p['build.number']}'\n" +
              "ZOWE_RELEASE_VERSION: 'zowe-install-test:*'\n"
       } else {
         def testParameters = [
@@ -390,7 +394,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_BUILD_REPOSITORY', value: "${ZOWE_CLI_BUILD_REPOSITORY}"))
           testParameters.add(string(name: 'ZOWE_CLI_BUILD_PATH', value: "*"))
           testParameters.add(string(name: 'ZOWE_CLI_BUILD_NAME', value: "${ZOWE_CLI_BUILD_NAME}"))
-          testParameters.add(string(name: 'ZOWE_CLI_BUILD_NUMBER', value: "${sourceSmpeBuildInfo[build.number]}"))
+          testParameters.add(string(name: 'ZOWE_CLI_BUILD_NUMBER', value: "${cliSourceBuildInfo_p[build.number]}"))
         }
 /*
         def test_result = build(
