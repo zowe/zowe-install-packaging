@@ -14,16 +14,14 @@ node('ibm-jenkins-slave-nvm') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def SLACK_CHANNEL = '#zowe-cicd, #zowe-build, #zowe-dev'
-  def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
-  def ZOWE_RELEASE_PATH = '/org/zowe/nightly'
   def ZOWE_BUILD_NAME = 'zowe-install-packaging :: rc'
   def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
-  def ZOWE_CLI_RELEASE_PATH = '/org/zowe/nightly/cli'
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
   def ZOWE_CLI_ARTIFACT_PATH = 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*.zip'
   def ZOWE_RELEASE_VERSION = 'v1.15.0'
   def ZOWE_NODE_VERSION = 'v8.16.0'
+  def ZOWE_TEST_SERVER = 'marist'
 
   def isRcBranch = env && env.BRANCH_NAME == 'rc'
 
@@ -179,6 +177,7 @@ node('ibm-jenkins-slave-nvm') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SERVER: '${ZOWE_TEST_SERVER}'\n" +
              "TEST_SCOPE: bundle: convenience build on multiple security systems\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
@@ -194,6 +193,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SERVER', value "${ZOWE_TEST_SERVER}"),
           string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
@@ -235,6 +235,7 @@ node('ibm-jenkins-slave-nvm') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SERVER: '${ZOWE_TEST_SERVER}'\n" +
              "TEST_SCOPE: bundle: smpe ptf on multiple security systems\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'\n" +
              "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
@@ -249,6 +250,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SERVER', value "${ZOWE_TEST_SERVER}"),
           string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
@@ -292,6 +294,7 @@ node('ibm-jenkins-slave-nvm') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SERVER: '${ZOWE_TEST_SERVER}'\n" +
              "TEST_SCOPE: bundle: multiple node versions\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
@@ -307,6 +310,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SERVER', value "${ZOWE_TEST_SERVER}"),
           string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
