@@ -414,7 +414,7 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 2, unit: 'HOURS']
   )
 
-  pipeline.createStage(
+  /*pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
     stage         : {
@@ -470,7 +470,47 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     timeout: [time: 2, unit: 'MINUTES']
+  )*/
+
+  pipeline.createStage(
+    name          : "Message",
+    isSkippable   : true,
+    stage         : {
+      // update build description with release version
+      currentBuild.description = "${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']}".toString()
+      def source = "Build #${sourceRegBuildInfo_p[build.number]}"
+
+      def smpeMessage = ''
+      if (releaseArtifacts['smpe-zip'] && releaseArtifacts['smpe-zip']['target']) {
+smpeMessage = """
+
+SMP/e build:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-zip']['target']}
+
+"""
+      }
+
+      def successMsg = """
+*************************************************************************************************
+
+${source} is promoted as Zowe v${ZOWE_RELEASE_VERSION}, you can download from:
+
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
+${smpeMessage}
+The CLI Core Package is published here:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
+
+The CLI Plugins Package is published here:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli-plugins']['target']}
+
+*************************************************************************************************
+      """
+      echo successMsg
+    },
+    timeout: [time: 2, unit: 'MINUTES']
   )
+
+
 
   pipeline.end()
 }
