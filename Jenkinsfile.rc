@@ -206,7 +206,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
         }
-        / FIXME: add back after those 2 parameters are added to zowe-install-test
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
         //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
@@ -265,7 +265,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
-        / FIXME: add back after those 2 parameters are added to zowe-install-test
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
         //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
@@ -364,7 +364,6 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 2, unit: 'MINUTES']
   )
 
-  // INSERT CODE TO RUN PROMOTE BUILD HERE
   pipeline.test(
     name              : "Promote publish",
     shouldExecute : {
