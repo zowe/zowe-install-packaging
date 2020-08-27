@@ -422,7 +422,7 @@ node('ibm-jenkins-slave-nvm') {
       currentBuild.description = "${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']}".toString()
 
       def slackColor = 'good'
-      def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as RELEASE_VERSION. You can download from:\n\n" +
+      def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as '${ZOWE_RELEASE_VERSION}. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n"
       if (cliSourceBuildInfo && cliTargetFullPath) {
