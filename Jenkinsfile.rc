@@ -469,7 +469,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     timeout: [time: 2, unit: 'MINUTES']
-  )*/
+  )
 
   pipeline.end()
 }
