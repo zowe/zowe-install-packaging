@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "1.14.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.14.0-20200805.162927.pax"
+      "artifact": "zlux-core-1.14.0-20200807.161747.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "1.14.0-RC",
@@ -118,12 +118,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "rc",
+          "tag": "v1.14.0",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "rc",
+          "tag": "v1.14.0",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -138,17 +138,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "rc",
+          "tag": "v1.14.0",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "rc",
+          "tag": "v1.14.0",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "rc",
+          "tag": "v1.14.0",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -158,17 +158,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "rc",
+          "tag": "v1.14.0",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "rc",
+          "tag": "v1.14.0",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "rc",
+          "tag": "zss-v1.14.0",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -176,7 +176,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.20.0",
+        "tag": "v6.19.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -218,7 +218,7 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v1.1.0",
+        "tag": "v1.2.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -288,11 +288,11 @@
       "componentGroup": "Zowe Application Framework Authentication Handlers",
       "entries": [{
         "repository": "zss-auth",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zosmf-auth",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -300,14 +300,14 @@
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -315,7 +315,7 @@
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -323,7 +323,7 @@
       "componentGroup": "Zowe Desktop Sample React Application",
       "entries": [{
         "repository": "sample-react-app",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -331,7 +331,7 @@
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -339,7 +339,7 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -347,7 +347,7 @@
       "componentGroup": "Zowe Desktop Workflows Plugin-in",
       "entries": [{
         "repository": "zlux-workflow",
-        "tag": "rc",
+        "tag": "v1.14.0",
         "destinations": ["Zowe PAX"]
       }]
     },
