@@ -79,12 +79,6 @@ set_install_log_file "zowe-setup-certificates"
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
-# KEYSTORE ALIAS si overloaded to be used as certificate label for keyring scenario
-if [[ -z ${ZOWE_KEYRING} ]]
-then
-  KEYSTORE_ALIAS=${ZOWE_CERTIFICATE_LABEL}
-fi
-
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
 echo "Loading default variables from ${DEFAULT_CERTIFICATES_CONFIG_FILE} file."
