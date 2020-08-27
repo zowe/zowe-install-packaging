@@ -183,7 +183,6 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${ZOWE_CLI_ARTIFACT_PATH}'\n" +
-             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
              "NODE_VERSION: '${ZOWE_NODE_VERSION}'\n"
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
@@ -239,7 +238,6 @@ node('ibm-jenkins-slave-nvm') {
              "TEST_SERVER: '${ZOWE_TEST_SERVER}'\n" +
              "TEST_SCOPE: bundle: smpe ptf on multiple security systems\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceSmpeBuildInfo.path}'\n" +
-             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${ZOWE_CLI_ARTIFACT_PATH}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
@@ -300,7 +298,6 @@ node('ibm-jenkins-slave-nvm') {
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${ZOWE_CLI_ARTIFACT_PATH}'\n" +
-             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
              "NODE_VERSION: '${ZOWE_NODE_VERSION}'\n" +
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
