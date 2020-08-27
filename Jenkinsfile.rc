@@ -129,7 +129,7 @@ node('ibm-jenkins-slave-nvm') {
       if (!sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']) {
         echo "Building new driver ..."
 
-        run build
+        /* run build
         def build_result = build(
           job: '/zowe-install-packaging/rc',
           parameters: [
@@ -140,7 +140,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "Build result: ${build_result.result}"
         if (build_result.result != 'SUCCESS') {
           error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
-        }
+        } */
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
@@ -206,7 +206,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
         }
-        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        /* FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
         //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
@@ -220,7 +220,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-        }
+        }*/
       }
     },
     allowMissingJunit : true,
@@ -265,7 +265,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
-        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        /* FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
         //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
@@ -279,7 +279,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-        }
+        }*/
       }
     },
     allowMissingJunit : true,
@@ -323,7 +323,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
         }
-        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        /* FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
         //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
@@ -337,7 +337,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testNodeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-        }
+        }*/
       }
     },
     allowMissingJunit : true,
@@ -364,6 +364,7 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 2, unit: 'MINUTES']
   )
 
+  // INSERT CODE TO RUN PROMOTE BUILD HERE
   pipeline.test(
     name              : "Promote publish",
     shouldExecute : {
@@ -396,7 +397,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_BUILD_NAME', value: "${ZOWE_CLI_BUILD_NAME}"))
           testParameters.add(string(name: 'ZOWE_CLI_BUILD_NUMBER', value: "${cliSourceBuildInfo_p[build.number]}"))
         }
-
+/*
         def test_result = build(
             job: '/zowe-promote-publish/staging',
             parameters: testParameters,
@@ -406,14 +407,14 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-        }
+        }*/
       }
     },
     allowMissingJunit : true,
     timeout: [time: 2, unit: 'HOURS']
   )
 
-  /*pipeline.createStage(
+  pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
     stage         : {
@@ -469,7 +470,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     timeout: [time: 2, unit: 'MINUTES']
-  )*/
+  )
 
   pipeline.end()
 }
