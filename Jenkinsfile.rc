@@ -262,7 +262,7 @@ node('ibm-jenkins-slave-nvm') {
         ]
         if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
-          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: "${ZOWE_CLI_BUILD_NAME}"))
         }
         // FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
