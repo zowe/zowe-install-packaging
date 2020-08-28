@@ -457,14 +457,14 @@ node('ibm-jenkins-slave-nvm') {
            message + "\n" +
            "*************************************************************************************************"
 
-      def slackMessage = "${message}\n\nCheck pipeline detail: ${env.BUILD_URL}"
+      /*def slackMessage = "${message}\n\nCheck pipeline detail: ${env.BUILD_URL}"
       if (params.TEST_RUN) {
         echo "Slack message in ${slackColor}:\n${slackMessage}"
       } else {
         slackSend channel: SLACK_CHANNEL,
                   color: slackColor,
                   message: slackMessage
-      }
+      }*/
     },
     timeout: [time: 2, unit: 'MINUTES']
   )
