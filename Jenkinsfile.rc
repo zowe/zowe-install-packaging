@@ -263,7 +263,7 @@ node('ibm-jenkins-slave-nvm') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: "${ZOWE_CLI_ARTIFACT_PATH}"))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
-        /* FIXME: add back after those 2 parameters are added to zowe-install-test
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
         // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
         //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
@@ -277,7 +277,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-        }*/
+        }
       }
     },
     allowMissingJunit : true,
