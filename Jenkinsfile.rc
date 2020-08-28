@@ -398,29 +398,7 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 2, unit: 'HOURS']
   )
 
-
-
-  pipeline.createStage(
-    name          : "Reload Build Info",
-    isSkippable   : true,
-    shouldExecute : {
-      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path']
-    },
-    stage         : {
-      sourceRegBuildInfo_p = pipeline.artifactory.getArtifact([
-        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
-        'build-name'   : ZOWE_BUILD_NAME,
-        'build-number' : sourceSmpeBuildInfo['build.number']
-      ])
-      cliSourceBuildInfo_p = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
-        ])
-    },
-    timeout: [time: 2, unit: 'MINUTES']
-  )
-
-  // INSERT CODE TO RUN PROMOTE BUILD HERE
+  /* INSERT CODE TO RUN PROMOTE BUILD HERE
   pipeline.test(
     name              : "Promote publish",
     shouldExecute : {
@@ -463,14 +441,14 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-        }*/
+        }
       }
     },
     allowMissingJunit : true,
     timeout: [time: 2, unit: 'HOURS']
-  )
+  )*/
 
-  pipeline.createStage(
+  /*pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
     stage         : {
@@ -523,10 +501,10 @@ node('ibm-jenkins-slave-nvm') {
         slackSend channel: SLACK_CHANNEL,
                   color: slackColor,
                   message: slackMessage
-      }*/
+      }
     },
     timeout: [time: 2, unit: 'MINUTES']
-  )
+  )*/
 
   pipeline.end()
 }
