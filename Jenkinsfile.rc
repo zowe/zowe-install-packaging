@@ -253,6 +253,7 @@ node('ibm-jenkins-slave-nvm') {
           string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'NODE_VERSION', value: "${ZOWE_NODE_VERSION}"),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
