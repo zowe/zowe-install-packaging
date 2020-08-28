@@ -10,6 +10,17 @@
  * Copyright IBM Corporation 2020
  */
 
+// Provide possibility to specify node.js version in Jenkins agent
+// this value should match the Jenkins node we are using
+String NVM_INIT_SCRIPT = '/home/jenkins/.nvm/nvm.sh'
+def nvmShell(nodeVersion, script) {
+  if (nodeVersion != "") {
+    // NVM_INIT_SCRIPT is not reachbale here
+    sh "set +x\n. /home/jenkins/.nvm/nvm.sh\nnvm use ${nodeVersion}\nset -x\n${script}"
+  } else {
+    sh script
+  }
+}
 
 node('ibm-jenkins-slave-nvm') {
   String INSTALL_TEST_PATH = 'tests/installation'
@@ -85,6 +96,14 @@ node('ibm-jenkins-slave-nvm') {
       jenkins_primary_lock: 'marist',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
+    'bundle: multiple keystore modes': [
+      test_files: 'dist/__tests__/extended/keystore-modes',
+      jenkins_primary_lock: 'marist',
+    ],
+    'generate api documentation': [
+      test_files: 'dist/__tests__/basic/install-api-gen.js',
+      jenkins_primary_lock: 'marist',
+    ]
   ]
 
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
@@ -144,7 +163,13 @@ node('ibm-jenkins-slave-nvm') {
     choice(
       name: 'NODE_VERSION',
       choices: ['v8.16.0', 'v6.17.0', 'v8.16.2', 'v8.17.0', 'v12.13.0', 'v12.14.1', 'v12.16.1'],
-      description: 'This option is only valid for Marist server. The installation will set NODE_HOME to /ZOWE/node/node-{{version}}-os390-s390x.',
+      description: 'This option is only valid for Marist server and specify node.js version on z/OS side. The installation will set NODE_HOME to /ZOWE/node/node-{{version}}-os390-s390x.',
+      trim: true
+    ),
+    string(
+      name: 'CLIENT_NODE_VERSION',
+      description: 'Overwrite the default node.js version running in Jenkins agent. Optional, leave it enmpty to use default version. Input value like "v12.18.3" to use a specific version.',
+      defaultValue: '',
       trim: true
     ),
     string(
@@ -174,8 +199,13 @@ node('ibm-jenkins-slave-nvm') {
         }
       }
 
+      // install specified node.js version onto build agent
+      if (params.CLIENT_NODE_VERSION != "") {
+        sh "set +x\n. ${NVM_INIT_SCRIPT}\nnvm install ${params.CLIENT_NODE_VERSION}"
+      }
+
       // upgrade npm
-      sh 'npm install -g npm'
+      nvmShell params.CLIENT_NODE_VERSION, "npm install -g npm"
     }
   )
 
@@ -183,10 +213,10 @@ node('ibm-jenkins-slave-nvm') {
     operation: {
       ansiColor('xterm') {
         dir(INSTALL_TEST_PATH) {
-          sh "npm install && npm run build"
+          nvmShell params.CLIENT_NODE_VERSION, "npm install && npm run build"
         }
         dir(SANITY_TEST_PATH) {
-          sh "npm install"
+          nvmShell params.CLIENT_NODE_VERSION, "npm install"
         }
       }
     }
@@ -198,10 +228,10 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       ansiColor('xterm') {
         dir(INSTALL_TEST_PATH) {
-          sh "npm run lint"
+          nvmShell params.CLIENT_NODE_VERSION, "npm run lint"
         }
         dir(SANITY_TEST_PATH) {
-          sh "npm run lint"
+          nvmShell params.CLIENT_NODE_VERSION, "npm run lint"
         }
       }
     },
@@ -242,7 +272,7 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       ansiColor('xterm') {
         // install CLI
-        sh 'npm install -g .tmp/cli/zowe-cli*.tgz'
+        nvmShell params.CLIENT_NODE_VERSION, "npm install -g .tmp/cli/zowe-cli*.tgz"
       }
     },
     timeout: [time: 10, unit: 'MINUTES']
@@ -307,9 +337,9 @@ node('ibm-jenkins-slave-nvm') {
       withCredentials(serverCredentials) {
       withEnv(testEnvVars) {
         try {
-          sh "npm test -- --testPathPattern \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
+          nvmShell params.CLIENT_NODE_VERSION, "npm test -- --testPathPattern \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
         } finally {
-          sh 'npm run merge-reports'
+          nvmShell params.CLIENT_NODE_VERSION, "npm run merge-reports"
         }
       } // end of withEnv
       } // end of withCredentials
@@ -323,6 +353,43 @@ node('ibm-jenkins-slave-nvm') {
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 360, unit: 'MINUTES'],
+  )
+
+  pipeline.createStage(
+    name          : "API Documentation Check In",
+    isSkippable   : true,
+    stage         : {
+      ansiColor('xterm') {
+        if (env.BRANCH_NAME == 'master' && params.TEST_SCOPE == 'generate api documentation') {
+          withCredentials([usernamePassword(credentialsId: 'zowe-robot-github', usernameVariable: 'ZOWE_GITHUB_USERID', passwordVariable: 'ZOWE_GITHUB_APIKEY')]) {
+            // Set up api_definitions directory in local docs repository
+            sh script:'''
+                #!/bin/sh
+                git clone https://github.com/zowe/docs-site.git
+                cd ./docs-site
+                git checkout docs-staging
+
+                if [ -d \"./api_definitions\" ]; then rm -rf ./api_definitions; fi
+                mv ../api_definitions .
+            '''
+            
+            // Check in api-definitions to docs-staging
+            sh "cd ./docs-site && git add ./api_definitions"
+            try {
+              // Set up config to allow commit to be signed for docs-site repository
+              sh "cd ./docs-site && git config user.email \"zowe.robot@gmail.com\" && git config user.name \"zowe-robot\" && git commit -s -m\"Check in api_definitions\""
+            } catch (error) {
+              echo "Swallowing error in git commit for api_definitions. This is done to avoid build failure when there are no changes to commit." 
+            }
+            sh "cd ./docs-site && git push https://${ZOWE_GITHUB_USERID}:${ZOWE_GITHUB_APIKEY}@github.com/zowe/docs-site.git"
+          }
+
+          // Clean up
+          sh "rm -rf docs-site"
+        }
+      }
+    },
+    timeout: [time: 10, unit: 'MINUTES']
   )
 
   pipeline.end()

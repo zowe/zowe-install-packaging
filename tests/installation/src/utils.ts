@@ -302,6 +302,51 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
 };
 
 /**
+ * Install Zowe and generate Swagger API definitions
+ * @param testcase
+ * @param serverId 
+ * @param extraVars 
+ */
+export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndGenerateApiDocs(${testcase}, install.yml, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  debug(`run install.yml on ${serverId}`);
+  const resultInstall = await runAnsiblePlaybook(
+    testcase,
+    'install.yml',
+    serverId,
+    extraVars
+  );
+
+  expect(resultInstall.code).toBe(0);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  debug(`run api-generation.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'api-generation.yml',
+      serverId
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
+};
+
+/**
  * Show all Zowe runtime logs
  *
  * @param  {String}    serverId

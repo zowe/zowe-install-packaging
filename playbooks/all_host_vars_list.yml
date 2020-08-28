@@ -31,6 +31,8 @@ zowe_keystore_alias: localhost
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_install_logs_dir: ~/.zowe/logs
 zowe_keystore_password: password
+zowe_keyring_alias: ZoweKeyring
+zowe_keyring_certname: ZoweCert
 zowe_mvs_api_port: 8547
 zowe_mvs_explorer_port: 8548
 zowe_proclib_dsname: auto
