@@ -129,7 +129,7 @@ node('ibm-jenkins-slave-nvm') {
       if (!sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']) {
         echo "Building new driver ..."
 
-        /* run build
+        // run build
         def build_result = build(
           job: '/zowe-install-packaging/rc',
           parameters: [
@@ -140,7 +140,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "Build result: ${build_result.result}"
         if (build_result.result != 'SUCCESS') {
           error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
-        } */
+        }
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
