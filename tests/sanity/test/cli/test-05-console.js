@@ -34,6 +34,14 @@ describe('cli console', function() {
 
     expect(result.stderr).to.be.empty;
     expect(result.stdout).to.have.string('Profile created successfully');
+
+    try {
+      // Temporary Fix for random TSO/E address space failure
+      result = await execZoweCli(`zowe zos-console issue command "D IPLINFO" --zosmf-profile ${defaultZOSMFProfileName}`);
+    }
+    catch(error) {
+      // Do Nothing
+    }
   });
 
   it('command should return the IPL information for the system', async function() {
