@@ -37,7 +37,7 @@ describe('cli console', function() {
 
     try {
       // Temporary Fix for random TSO/E address space failure
-      result = await execZoweCli(`zowe zos-console issue command "D IPLINFO" --zosmf-profile ${defaultZOSMFProfileName}`);
+      await execZoweCli(`zowe zos-console issue command "D IPLINFO" --zosmf-profile ${defaultZOSMFProfileName}`);
     }
     catch(error) {
       // Do Nothing
