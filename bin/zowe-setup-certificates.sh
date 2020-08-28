@@ -265,6 +265,13 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   fi
 fi
 
+# If a keyring is used to hold certificates then make sure the local_ca directory doesn't contain
+# any "localca" certificates. A certificate may have been created in the directory to help forging a certificate
+# that encapsulates JWT token from z/OSMF. The certificate is not needed anymore at this stage and can be deleted.
+if [ -n "${ZOWE_KEYRING}" ]; then
+  rm -f ${LOCAL_CA_PREFIX}*
+fi
+
 # detect external root CA
 EXTERNAL_ROOT_CA=
 detectExternalRootCA;
@@ -309,7 +316,7 @@ EOF
 fi
 
 # set up privileges and ownership
-chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
+chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/* 2> /dev/null # In some keystore scenarios these directories might be empty, so supress error
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
 if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
   echo "Unable to change the current owner of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_USER_ID} owner. See $LOG_FILE for more details."
