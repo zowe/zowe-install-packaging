@@ -99,9 +99,8 @@
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true">//ALLOCDSS EXEC PGM=IEFBR14
-//LOADLIB1 DD DISP=(MOD,CATLG,DELETE),
-//    DSN=${instance-zowe_dsn_prefix}.LOADLIB,
-//    DSNTYPE=LIBRARY,SPACE=(CYL,(10,5,5)),
+//LOADLIB1 DD DISP=SHR,
+//    DSN=${instance-zowe_dsn_prefix}.SZWEAUTH
 #if(${instance-xmem_volume} and $!{instance-xmem_volume} != "")
 //    VOL=SER=${instance-xmem_volume},
 #end
@@ -139,7 +138,7 @@
             <inlineTemplate substitution="true">set -x
 
 cd "${instance-zowe_install_path}/scripts/utils"
-sh zowe-install-xmem.sh -d "${instance-zowe_dsn_prefix}" -b "${instance-zowe_dsn_prefix}.LOADLIB" -a "${instance-zowe_dsn_prefix}.PARMLIB" -r "${instance-proclib}"
+sh zowe-install-xmem.sh -d "${instance-zowe_dsn_prefix}" -a "${instance-zowe_dsn_prefix}.PARMLIB" -r "${instance-proclib}"
 exit $?</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
@@ -186,7 +185,7 @@ exit $?</inlineTemplate>
         <template>
             <inlineTemplate substitution="true">set -e
 mkdir -p ${instance-temp_folder}
-listing=$(tsocmd "LISTDS ('${instance-zowe_dsn_prefix}.LOADLIB')")
+listing=$(tsocmd "LISTDS ('${instance-zowe_dsn_prefix}.SZWEAUTH')")
 volume=$(echo $listing|tr ' ' '\n'|sed -n "/--VOLUMES--/{n;p;}")
 echo "xmem_volume=$volume"&gt;${_output}</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
@@ -201,7 +200,7 @@ echo "xmem_volume=$volume"&gt;${_output}</inlineTemplate>
         <!--variableValues-->
         <!-- condition -->
         <instructions substitution="true">Run this step to dynamically APF authorize the load library.
-If you want the APF, to be permanent, add following library to your system authorization: ${instance-zowe_dsn_prefix}.LOADLIB</instructions>
+If you want the APF, to be permanent, add following library to your system authorization: ${instance-zowe_dsn_prefix}.SZWEAUTH</instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
         <autoEnable>true</autoEnable>
@@ -214,7 +213,7 @@ If you want the APF, to be permanent, add following library to your system autho
 #else
 #set($dasd = "VOLUME=${instance-xmem_volume}")
 #end
-{"cmd":"SETPROG APF,ADD,DSNAME=${instance-zowe_dsn_prefix}.LOADLIB,${dasd}"}</requestBody>
+{"cmd":"SETPROG APF,ADD,DSNAME=${instance-zowe_dsn_prefix}.SZWEAUTH,${dasd}"}</requestBody>
             <expectedStatusCode>200</expectedStatusCode>
             <!-- REST mappings -->
         </rest>
