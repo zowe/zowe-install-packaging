@@ -96,6 +96,14 @@ node('ibm-jenkins-slave-nvm') {
       jenkins_primary_lock: 'marist',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
+    'bundle: multiple keystore modes': [
+      test_files: 'dist/__tests__/extended/keystore-modes',
+      jenkins_primary_lock: 'marist',
+    ],
+    'generate api documentation': [
+      test_files: 'dist/__tests__/basic/install-api-gen.js',
+      jenkins_primary_lock: 'marist',
+    ]
   ]
 
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
@@ -345,6 +353,43 @@ node('ibm-jenkins-slave-nvm') {
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 360, unit: 'MINUTES'],
+  )
+
+  pipeline.createStage(
+    name          : "API Documentation Check In",
+    isSkippable   : true,
+    stage         : {
+      ansiColor('xterm') {
+        if (env.BRANCH_NAME == 'master' && params.TEST_SCOPE == 'generate api documentation') {
+          withCredentials([usernamePassword(credentialsId: 'zowe-robot-github', usernameVariable: 'ZOWE_GITHUB_USERID', passwordVariable: 'ZOWE_GITHUB_APIKEY')]) {
+            // Set up api_definitions directory in local docs repository
+            sh script:'''
+                #!/bin/sh
+                git clone https://github.com/zowe/docs-site.git
+                cd ./docs-site
+                git checkout docs-staging
+
+                if [ -d \"./api_definitions\" ]; then rm -rf ./api_definitions; fi
+                mv ../api_definitions .
+            '''
+            
+            // Check in api-definitions to docs-staging
+            sh "cd ./docs-site && git add ./api_definitions"
+            try {
+              // Set up config to allow commit to be signed for docs-site repository
+              sh "cd ./docs-site && git config user.email \"zowe.robot@gmail.com\" && git config user.name \"zowe-robot\" && git commit -s -m\"Check in api_definitions\""
+            } catch (error) {
+              echo "Swallowing error in git commit for api_definitions. This is done to avoid build failure when there are no changes to commit." 
+            }
+            sh "cd ./docs-site && git push https://${ZOWE_GITHUB_USERID}:${ZOWE_GITHUB_APIKEY}@github.com/zowe/docs-site.git"
+          }
+
+          // Clean up
+          sh "rm -rf docs-site"
+        }
+      }
+    },
+    timeout: [time: 10, unit: 'MINUTES']
   )
 
   pipeline.end()
