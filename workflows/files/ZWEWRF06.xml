@@ -101,13 +101,6 @@
             <inlineTemplate substitution="true">//ALLOCDSS EXEC PGM=IEFBR14
 //LOADLIB1 DD DISP=SHR,
 //    DSN=${instance-zowe_dsn_prefix}.SZWEAUTH
-#if(${instance-xmem_volume} and $!{instance-xmem_volume} != "")
-//    VOL=SER=${instance-xmem_volume},
-#end
-#if(${instance-xmem_storclas} and $!{instance-xmem_storclas} != "")
-//    STORCLAS=${instance-xmem_storclas},
-#end
-//    DCB=(RECFM=U)
 //PARMLIB1 DD DISP=(MOD,CATLG,DELETE),
 //    DSN=${instance-zowe_dsn_prefix}.PARMLIB,
 //    DCB=(LRECL=80,RECFM=FB),SPACE=(TRK,(5,5,5)),
