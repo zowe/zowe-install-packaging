@@ -232,7 +232,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         // checkout repository with dockerfile
         // FIXME: this dockerfile should be merged into current repo to avoid
         //        version synchronizing issues
-        sh 'git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git'
+        sh 'git clone --branch master https://github.com/zowe/zowe-dockerfiles.git'
         dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts') {
           // copy utils to docker build folder
           sh 'mkdir -p utils && cp ../../../../utils/* ./utils'
@@ -254,6 +254,26 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             // publish
             sh "docker login -u ${USERNAME} -p ${PASSWORD} && docker push ${USERNAME}/zowe-v1-lts:amd64"
           }
+        }
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name: "Publish Docker",
+    timeout: [ time: 20, unit: 'MINUTES' ],
+    isSkippable: true,
+    stage : {
+      if (params.BUILD_DOCKER) {
+        withCredentials([usernamePassword(
+          credentialsId: 'DockerGizaUser',
+          usernameVariable: 'USERNAME',
+          passwordVariable: 'PASSWORD'
+        )]){
+        sh """
+             docker login -u ${USERNAME} -p ${PASSWORD} \
+             && docker push ${USERNAME}/zowe-v1-lts:amd64
+           """
         }
       }
     }
