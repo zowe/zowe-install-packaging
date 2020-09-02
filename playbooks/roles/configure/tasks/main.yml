@@ -64,7 +64,13 @@
     tasks_from: create_security_defn
 
 # ============================================================================
-# Setup certificates
+# Run ZWEKRING
+- import_role:
+    name: configure
+    tasks_from: create_keyring
+     
+# ============================================================================
+# Setup certificates for USS keystore (self-signed)
 - import_role:
     name: configure
     tasks_from: setup_certificates

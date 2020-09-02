@@ -19,11 +19,11 @@ const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
 const TEST_DATASET_NAME = 'SYS1.LINKLIB';
 const TEST_DATASET_MEMBER_NAME = 'ACCOUNT';
 
-// allow self signed certs
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 describe('test explorer server datasets api', function() {
   before('verify environment variables', function() {
+    // allow self signed certs
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
@@ -122,6 +122,35 @@ describe('test explorer server datasets api', function() {
         expect(res.data).to.be.an('object');
         expect(res.data).to.have.property('records');
         expect(res.data.records).to.be.a('string');
+      });
+  });
+
+  it('returns the current user\'s TSO userid', function() {
+    const _this = this;
+
+    const req = {
+      method: 'get',
+      url: '/api/v1/datasets/username',
+      auth: {
+        username,
+        password,
+      }
+    };
+    debug('request', req);
+
+    return REQ.request(req)
+      .then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res.data).to.be.an('object');
+        expect(res.data).to.have.property('username');
+        expect(res.data.username).to.be.a('string');
       });
   });
 });

@@ -230,13 +230,13 @@
 /*   enabled.                                                        */
 
 /* group for administrators                                          */
-/* replace AUTOGID with GID(ADMINGID.) if AUTOGID is not enabled    */
+/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled */
   LISTGRP  &ADMINGRP. OMVS
   ADDGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
 
 /* uncomment to add existing user IDs to the &ADMINGRP group         */
-/* CONNECT (userid,userid,...) GROUP(ADMINGRP.) AUTH(USE)           */
+/* CONNECT (userid,userid,...) GROUP(&ADMINGRP.) AUTH(USE) */
 
 /* DEFINE STARTED TASK ............................................. */
 
@@ -247,7 +247,7 @@
 /* comment out if STCGRP matches ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
-/* replace AUTOGID with GID(STCGID.) if AUTOGID is not enabled      */
+/* replace AUTOGID with GID(&STCGID.) if AUTOGID not enabled */
   LISTGRP  &STCGRP. OMVS
   ADDGROUP &STCGRP. OMVS(AUTOGID) -
    DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
@@ -255,7 +255,7 @@
 /* */
 
 /* userid for ZOWE main server                                       */
-/* replace AUTOUID with UID(ZOWEUID.) if AUTOUID is not enabled     */
+/* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID not enabled */
   LISTUSER &ZOWEUSER. OMVS
   ADDUSER  &ZOWEUSER. -
    NOPASSWORD -
@@ -265,7 +265,7 @@
    DATA('ZOWE MAIN SERVER')
 
 /* userid for XMEM cross memory server                               */
-/* replace AUTOUID with UID(XMEMUID.) if AUTOUID is not enabled     */
+/* replace AUTOUID with UID(&XMEMUID.) if AUTOUID not enabled */
   LISTUSER &XMEMUSER. OMVS
   ADDUSER  &XMEMUSER. -
    NOPASSWORD -
@@ -277,7 +277,7 @@
 /* comment out if AUXUSER matches XMEMUSER (default), expect       */
 /*   warning messages otherwise                                      */
 /* userid for XMEM auxilary cross memory server                      */
-/* replace AUTOUID with UID(AUXUID.) if AUTOUID is not enabled      */
+/* replace AUTOUID with UID(&AUXUID.) if AUTOUID not enabled */
   LISTUSER &AUXUSER. OMVS
   ADDUSER  &AUXUSER. -
    NOPASSWORD -
@@ -428,7 +428,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 * comment out if STCGRP matches ADMINGRP (default), expect
 *   warning messages otherwise
 * group for started tasks
-* replace AUTOGID with GID(STCGID.) if AUTOGID is not enabled
+* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
 INSERT &STCGRP. AUTOGID
@@ -437,7 +437,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 *****
 *
 * userid for ZOWE main server
-* replace AUTOUID with UID(ZOWEUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &ZOWEUSER. STC GROUP(&STCGRP.)
@@ -446,7 +446,7 @@ INSERT &ZOWEUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 * userid for XMEM cross memory server
-* replace AUTOUID with UID(XMEMUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(&XMEMUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &XMEMUSER. STC GROUP(&STCGRP.)
@@ -457,7 +457,7 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * comment out if AUXUSER matches XMEMUSER (default), expect
 *   warning messages otherwise
 * userid for XMEM auxilary cross memory server
-* replace AUTOUID with UID(AUXUID.) if AUTOUID is not enabled
+* replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled
 *
 SET LID
 INSERT &AUXUSER. STC GROUP(&STCGRP.)
@@ -520,11 +520,11 @@ F ACF2,REBUILD(FAC)
 *            it on a production system.
 *
 SET RESOURCE(FAC)
-RECKEY BPX2 ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
-RECKEY BPX2 ADD(SERVER SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
+RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
+RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
 *
 * Allow STCGRP role access to BPX.JOBNAME
-RECKEY BPX2 ADD(JOBNAME SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 ** comment out to not use SUPERUSER.FILESYS, see JCL comments
@@ -576,7 +576,7 @@ $$
   TSS ADD(&ADMINGRP.) GID(&ADMINGID.)
 
 /* uncomment to add existing user IDs to the &ADMINGRP group         */
-/* TSS ADD(userid) GROUP(&ADMINGRP.)                                 */
+/* TSS ADD(userid) GROUP(&ADMINGRP.) */
 
 /* DEFINE STARTED TASK ............................................. */
 
