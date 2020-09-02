@@ -146,54 +146,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     }
   )
 
-  pipeline.createStage(
-    name: "Build Docker",
-    timeout: [ time: 120, unit: 'MINUTES' ],
-    isSkippable: true,
-    stage : {
-      if (params.BUILD_DOCKER) {
-        withCredentials([usernamePassword(
-          credentialsId: 'DockerGizaUser',
-          usernameVariable: 'dockeruser',
-          passwordVariable: 'unused'
-        )]){
-          sh """
-             git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git \
-             && cd zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts \
-             && mkdir utils \
-             && cp ../../../../utils/* ./utils \
-             && cp ${WORKSPACE}/.pax/zowe.pax ./zowe.pax \
-             && ls -ltr . \
-             && docker build -f Dockerfile.jenkins -t ${dockeruser}/zowe-v1-lts:amd64 .
-             """
-        }
-      }
-    }
-  )
-
-  
-  pipeline.createStage(
-    name: "Publish Docker",
-    timeout: [ time: 20, unit: 'MINUTES' ],
-    isSkippable: true,
-    stage : {
-      if (params.BUILD_DOCKER) {
-        withCredentials([usernamePassword(
-          credentialsId: 'DockerGizaUser',
-          usernameVariable: 'USERNAME',
-          passwordVariable: 'PASSWORD'
-        )]){
-        sh """
-             docker login -u ${USERNAME} -p ${PASSWORD} \
-             && docker push ${USERNAME}/zowe-v1-lts:amd64
-           """
-        }
-      }
-    }
-  )
-  
-
-
   // define we need publish stage
   pipeline.publish(
     artifacts: [
