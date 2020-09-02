@@ -185,10 +185,11 @@ echo "Created ${INSTANCE_DIR}/bin/internal/read-keystore.sh">> $LOG_FILE
 cat <<EOF >${INSTANCE_DIR}/bin/internal/run-zowe.sh
 #!/bin/sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
-if [!-z "${EXTERNAL_INSTANCE}" ]
+
+if [[ ! -z "\${EXTERNAL_INSTANCE}" ]]
 then
   INTERNAL_INSTANCE=$INSTANCE_DIR
-  INSTANCE_DIR=$EXTERNAL_INSTANCE
+  INSTANCE_DIR=\$EXTERNAL_INSTANCE
 fi
 . \${INSTANCE_DIR}/bin/internal/read-instance.sh
 # Validate keystore directory accessible before we try and use it
@@ -233,7 +234,7 @@ cat <<EOF >${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh
 #!/bin/sh
 export INSTANCE_DIR=\$(cd \$(dirname \$0)/../../;pwd)
 . \${INSTANCE_DIR}/bin/internal/read-instance.sh
-. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@ ${INSTANCE_DIR}
+. \${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \$@
 EOF
 echo "Created ${INSTANCE_DIR}/bin/utils/zowe-install-iframe-plugin.sh">> $LOG_FILE
 

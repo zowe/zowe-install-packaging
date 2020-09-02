@@ -92,13 +92,13 @@ describe('test MVD login page', function() {
     const loginForm = await getElement(driver, 'form.login-form');
     expect(loginForm).to.be.an('object');
     // fill in login form
-    const usernameInput = await getElement(loginForm, 'input#usernameInput');
+    const usernameInput = await getElement(loginForm, 'input#ZAP_LoginPage_Username');
     expect(usernameInput).to.be.an('object');
     await usernameInput.clear();
     await driver.sleep(2000);
     await usernameInput.sendKeys(process.env.SSH_USER);
     await driver.sleep(2000);
-    const passwordInput = await getElement(loginForm, 'input#passwordInput');
+    const passwordInput = await getElement(loginForm, 'input#ZAP_LoginPage_Password');
     expect(passwordInput).to.be.an('object');
     await passwordInput.clear();
     await driver.sleep(2000);
@@ -171,13 +171,13 @@ describe('test MVD login page', function() {
     const loginForm = await getElement(driver, 'form.login-form');
     expect(loginForm).to.be.an('object');
     // fill in login form
-    const usernameInput = await getElement(loginForm, 'input#usernameInput');
+    const usernameInput = await getElement(loginForm, 'input#ZAP_LoginPage_Username');
     expect(usernameInput).to.be.an('object');
     await usernameInput.clear();
     await driver.sleep(2000);
     await usernameInput.sendKeys(process.env.SSH_USER);
     await driver.sleep(2000);
-    const passwordInput = await getElement(loginForm, 'input#passwordInput');
+    const passwordInput = await getElement(loginForm, 'input#ZAP_LoginPage_Password');
     expect(passwordInput).to.be.an('object');
     await passwordInput.clear();
     await driver.sleep(2000);

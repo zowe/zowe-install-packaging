@@ -1,0 +1,32 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+# work folder on local, we will store some temporary files here
+work_dir_local: .tmp
+
+# ==============================================================================
+# Variables should be verified and overwrittern.
+# ==============================================================================
+# if run test in debug mode. for example, set to "test:*"
+zowe_api_gen_debug_mode: ""
+# only run subset of test cases
+zowe_api_generation_testcases: "test/api-doc-gen.js"
+# folder holding api generation test
+zowe_api_gen_dir: ../tests/sanity
+
+# default z/OSMF port
+zos_zosmf_port: 10443
+
+# default zowe runtime root directory
+zowe_root_dir: ~/zowe
+# instanceDir
+zowe_instance_dir: ~/.zowe/instance
+# zowe job prefix.
+zowe_job_prefix: ZWE
+zowe_proclib_membername: ZWESVSTC
+# ports will be tested
+zowe_apiml_gateway_port: 7554
+zowe_jobs_api_port: 8545
+zowe_mvs_api_port: 8547
+zowe_zlux_port: 8544

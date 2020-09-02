@@ -13,8 +13,14 @@
 # - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
+# - ZOWE_KEYRING - specify zowe keyring that keeps zowe certificates, if not specified USS keystore
+#                  files will be created.
+# - GENERATE_CERTS_FOR_KEYRING - If you used ZWEKRING jcl to configure certificates and the keyring
+#                                then set this variable to false (defaults to false)
 
 function detectExternalRootCA {
+  echo "Detecting external root CA... STARTED"
+  if [[ -z "${ZOWE_KEYRING}" ]]; then
     for file in ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca.*.cer-ebcdic; do
       if [[ ! -f $file ]]; then
         break;
@@ -26,6 +32,24 @@ function detectExternalRootCA {
         break;
       fi
     done
+  else
+    # Assumption: External certificate contains its chain of trust. The root certificate is the last one in the list
+    #             that we get using the commands just below:
+    var_keytool_cmd="keytool -list -storetype JCERACFKS -keystore safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING} \
+      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider"
+    var_CA_chain_length=`$var_keytool_cmd -alias $KEYSTORE_ALIAS -v | grep -c -e Owner:`
+    if [[ $var_CA_chain_length -lt 2 ]]; then
+      echo "The $KEYSTORE_ALIAS certificate is self-signed or does not contain its CA chain. If the certificate is externally signed \
+and its root CA is connected to the same keyring then you can manually set the EXTERNAL_ROOT_CA env variable with the \
+root CA label in the ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} file."
+    else
+      var_root_CA_DN=`$var_keytool_cmd -alias $KEYSTORE_ALIAS -v | grep -e Issuer: | tail -n 1 | cut -d ":" -f 2-`
+      var_root_CA_alias=`$var_keytool_cmd -v | grep -e "Owner:$var_root_CA_DN" -P 5 | grep -e "Alias name:" | cut -d ":" -f 2-`
+      EXTERNAL_ROOT_CA=`echo ${var_root_CA_alias} | tr -d '[:space:]'`
+      echo "A label of the external root CA in the keyring: $EXTERNAL_ROOT_CA"
+    fi
+  fi
+  echo "Detecting external root CA... DONE"
 }
 
 # process input parameters.
@@ -40,6 +64,8 @@ while getopts "l:p:" opt; do
   esac
 done
 shift $(($OPTIND-1))
+
+umask 0027
 
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
@@ -73,8 +99,12 @@ else
   fi
 fi
 
-ZOWE_EXPLORER_HOST=${HOSTNAME}
-ZOWE_IP_ADDRESS=${IPADDRESS}
+# tolerate HOSTNAME, IPADDRESS to have multiple values
+HOSTNAME_FIRST=$(echo $HOSTNAME  | tr "," "\n" | sed '/^[[:space:]]*$/d' | head -1)
+IPADDRESS_FIRST=$(echo $IPADDRESS  | tr "," "\n" | sed '/^[[:space:]]*$/d' | head -1)
+# ZOWE_EXPLORER_HOST only accept one domain name
+ZOWE_EXPLORER_HOST=${HOSTNAME_FIRST}
+ZOWE_IP_ADDRESS=${IPADDRESS_FIRST}
 . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 . ${ZOWE_ROOT_DIR}/scripts/utils/configure-java.sh
 
@@ -102,7 +132,29 @@ KEYSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.keyst
 TRUSTSTORE_PREFIX="${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/${KEYSTORE_ALIAS}.truststore"
 EXTERNAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca
 LOCAL_CA_PREFIX=${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/localca
-SAN="SAN=dns:${ZOWE_EXPLORER_HOST},ip:${ZOWE_IP_ADDRESS},dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
+# we may get domain name from ZOWE_EXPLORER_HOST if HOSTNAME is not defined
+# compare and copy it back to HOSTNAME if needed
+HOSTNAME_LC=$(echo $HOSTNAME | tr '[:upper:]' '[:lower:]')
+ZOWE_EXPLORER_HOST_LC=$(echo $ZOWE_EXPLORER_HOST | tr '[:upper:]' '[:lower:]')
+if [[ ",$HOSTNAME_LC," != *",$ZOWE_EXPLORER_HOST_LC,"* ]]; then
+  HOSTNAME_LC="${HOSTNAME_LC},${ZOWE_EXPLORER_HOST_LC}"
+fi
+IPADDRESS_LC=$(echo $IPADDRESS | tr '[:upper:]' '[:lower:]')
+ZOWE_IP_ADDRESS_LC=$(echo $ZOWE_IP_ADDRESS | tr '[:upper:]' '[:lower:]')
+if [[ ",$IPADDRESS_LC," != *",$ZOWE_IP_ADDRESS_LC,"* ]]; then
+  IPADDRESS_LC="${IPADDRESS_LC},${ZOWE_IP_ADDRESS_LC}"
+fi
+# add all domains/ips to SAN
+SAN="SAN="
+HOSTNAME_ARRAY=$(echo $HOSTNAME_LC  | tr "," "\n" | sed '/^[[:space:]]*$/d')
+for item in $HOSTNAME_ARRAY; do
+  SAN="${SAN}dns:${item},"
+done
+IPADDRESS_ARRAY=$(echo $IPADDRESS_LC  | tr "," "\n" | sed '/^[[:space:]]*$/d')
+for item in $IPADDRESS_ARRAY; do
+  SAN="${SAN}ip:${item},"
+done
+SAN="${SAN}dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
 # If any external certificate fields are zero [blank], do not use the external setup method.
 # If all external certificate fields are zero [blank], create everything from scratch.
@@ -110,15 +162,25 @@ SAN="SAN=dns:${ZOWE_EXPLORER_HOST},ip:${ZOWE_IP_ADDRESS},dns:localhost.localdoma
 
 if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
   if [[ -z "${EXTERNAL_CERTIFICATE}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
-    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
-      --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
-    RC=$?
-    echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+    if [[ -z "${ZOWE_KEYRING}" ]]; then
+      ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
+        --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
+      RC=$?
+      echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+    elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
+      ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-keystore ${KEYSTORE_PREFIX} \
+        --service-alias ${KEYSTORE_ALIAS} --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --local-ca-filename ${LOCAL_CA_PREFIX}
+      RC=$?
+      echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+    else
+      echo "Generating certificates for the keyring is skipped."
+    fi
   else
     (>&2 echo "Zowe Install setup configuration is invalid; check your zowe-setup-certificates.env file.")
     (>&2 echo "Some external apiml certificate fields are supplied...Fields must be filled out in full or left completely blank.")
     (>&2 echo "See $LOG_FILE for more details.")
     echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+    rm ${KEYSTORE_PREFIX}* ${TRUSTSTORE_PREFIX}* ${EXTERNAL_CA_PREFIX}* ${LOCAL_CA_PREFIX}* 2> /dev/null
     exit 1
   fi
 else
@@ -127,25 +189,43 @@ else
       EXT_CA_PARM="${EXT_CA_PARM} --external-ca ${CA} "
   done
 
-  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
-    --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
-    --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX} \
-    --external-ca-filename ${EXTERNAL_CA_PREFIX}
-  RC=$?
-
-  echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+  if [[ -z "${ZOWE_KEYRING}" ]]; then
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --service-password ${KEYSTORE_PASSWORD} \
+      --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} ${EXT_CA_PARM} \
+      --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX} --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX} \
+      --external-ca-filename ${EXTERNAL_CA_PREFIX}
+    RC=$?
+    echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+  elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action setup --service-ext ${SAN} --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} \
+      --service-storetype "JCERACFKS" --external-certificate ${EXTERNAL_CERTIFICATE} --external-certificate-alias ${EXTERNAL_CERTIFICATE_ALIAS} \
+      --service-alias ${KEYSTORE_ALIAS} --service-keystore ${KEYSTORE_PREFIX}  --local-ca-filename ${LOCAL_CA_PREFIX}
+    RC=$?
+    echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
+  else
+    echo "Generating certificates for the keyring is skipped."
+  fi
 fi
 
 if [ "$RC" -ne "0" ]; then
     (>&2 echo "apiml_cm.sh --action setup has failed. See $LOG_FILE for more details")
     echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+    rm ${KEYSTORE_PREFIX}* ${TRUSTSTORE_PREFIX}* ${EXTERNAL_CA_PREFIX}* ${LOCAL_CA_PREFIX}* 2> /dev/null
     exit 1
 fi
 
 if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
-  ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
-    --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-    --service-keystore ${KEYSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
+  if [[ -z "${ZOWE_KEYRING}" ]]; then
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf \
+      --service-password ${KEYSTORE_PASSWORD} --service-truststore ${TRUSTSTORE_PREFIX} --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+      --service-keystore ${KEYSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
+  else
+    export GENERATE_CERTS_FOR_KEYRING;
+    ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action trust-zosmf --zowe-userid ${ZOWE_USER_ID} \
+      --zowe-keyring ${ZOWE_KEYRING} --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+      --service-keystore ${KEYSTORE_PREFIX} --service-password ${KEYSTORE_PASSWORD} \
+      --service-truststore ${TRUSTSTORE_PREFIX} --local-ca-filename ${LOCAL_CA_PREFIX}
+  fi
   RC=$?
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> $LOG_FILE
@@ -155,6 +235,7 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
       (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
       echo "</zowe-setup-certificates.sh>" >> $LOG_FILE
+      rm ${KEYSTORE_PREFIX}* ${TRUSTSTORE_PREFIX}* ${EXTERNAL_CA_PREFIX}* ${LOCAL_CA_PREFIX}* 2> /dev/null
       exit 1
   fi
 fi
@@ -184,6 +265,13 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   fi
 fi
 
+# If a keyring is used to hold certificates then make sure the local_ca directory doesn't contain
+# any "localca" certificates. A certificate may have been created in the directory to help forging a certificate
+# that encapsulates JWT token from z/OSMF. The certificate is not needed anymore at this stage and can be deleted.
+if [ -n "${ZOWE_KEYRING}" ]; then
+  rm -f ${LOCAL_CA_PREFIX}*
+fi
+
 # detect external root CA
 EXTERNAL_ROOT_CA=
 detectExternalRootCA;
@@ -192,24 +280,43 @@ detectExternalRootCA;
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
 rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
 
-cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
-  KEY_ALIAS=${KEYSTORE_ALIAS}
-  KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
-  KEYSTORE=${KEYSTORE_PREFIX}.p12
-  KEYSTORE_TYPE="PKCS12"
-  TRUSTSTORE=${TRUSTSTORE_PREFIX}.p12
-  KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
-  KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
-  KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
-  EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
-  ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
-  SETUP_APIML_SSO=${SETUP_APIML_SSO}
-  SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
-  PKCS11_TOKEN_NAME=${PKCS11_TOKEN_NAME}
-  PKCS11_TOKEN_LABEL=${UPPER_KEY_LABEL}
+if [[ -z "${ZOWE_KEYRING}" ]]; then
+  cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
+    KEY_ALIAS=${KEYSTORE_ALIAS}
+    KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+    KEYSTORE=${KEYSTORE_PREFIX}.p12
+    KEYSTORE_TYPE="PKCS12"
+    TRUSTSTORE=${TRUSTSTORE_PREFIX}.p12
+    KEYSTORE_KEY=${KEYSTORE_PREFIX}.key
+    KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
+    KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
+    EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
+    ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+    SETUP_APIML_SSO=${SETUP_APIML_SSO}
+    SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
+    PKCS11_TOKEN_NAME=${PKCS11_TOKEN_NAME}
+    PKCS11_TOKEN_LABEL=${UPPER_KEY_LABEL}
 EOF
+else
+  cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
+    KEY_ALIAS=${KEYSTORE_ALIAS}
+    KEYSTORE_PASSWORD="password"
+    KEYRING_OWNER="${ZOWE_USER_ID}"
+    KEYRING_NAME="${ZOWE_KEYRING}"
+    KEYSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
+    KEYSTORE_TYPE="JCERACFKS"
+    TRUSTSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
+    EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
+    ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+    SETUP_APIML_SSO=${SETUP_APIML_SSO}
+    SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
+    PKCS11_TOKEN_NAME=${PKCS11_TOKEN_NAME}
+    PKCS11_TOKEN_LABEL=${UPPER_KEY_LABEL}
+EOF
+fi
+
 # set up privileges and ownership
-chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/*
+chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/* 2> /dev/null # In some keystore scenarios these directories might be empty, so supress error
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
 if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
   echo "Unable to change the current owner of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_USER_ID} owner. See $LOG_FILE for more details."
