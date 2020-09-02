@@ -203,8 +203,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           )]){
             // build docker image
             sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
-            // publish
-            sh "docker login -u ${USERNAME} -p ${PASSWORD} && docker push ${USERNAME}/zowe-v1-lts:amd64"
           }
         }
       }
