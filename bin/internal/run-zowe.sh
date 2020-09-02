@@ -97,10 +97,27 @@ then
   LAUNCH_COMPONENTS=api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
 fi
 
+if [ `uname` = "OS/390" ]; then
+  if [[ $LAUNCH_COMPONENT_GROUPS == *"ZSS"* ]]
+  then
+    LAUNCH_COMPONENTS=zss,${LAUNCH_COMPONENTS} #zss should run before app-server to reduce the polling period when app-server tries to find it.
+  fi
+fi
+
 #Explorers may be present, but have a prereq on gateway, not desktop
 if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
 then
-  LAUNCH_COMPONENTS=zss,app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
+  #In each below, put app-server before other components, so any extender plugins can use its config
+  if [ `uname` = "OS/390" ]; then
+    if [[ $LAUNCH_COMPONENTS == *"zss"* ]]
+    then
+      LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS}
+    else
+      LAUNCH_COMPONENTS=zss,app-server,${LAUNCH_COMPONENTS}
+    fi
+  else
+    LAUNCH_COMPONENTS=app-server,${LAUNCH_COMPONENTS}
+  fi
   PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
 fi
 
