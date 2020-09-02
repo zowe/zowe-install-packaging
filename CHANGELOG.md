@@ -3,6 +3,11 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `1.16.0`
+
+### New features and enhancements
+- ZSS can now be started completely independent from the Application Framework server by specifying the LAUNCH_COMPONENT_GROUP "ZSS". If not specified but DESKTOP is, zss will still be included as a prereq to app-server.
+
 ## `1.14.0`
 
 ### New features and enhancements
