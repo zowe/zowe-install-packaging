@@ -188,7 +188,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           sh 'git clone --branch master https://github.com/zowe/zowe-dockerfiles.git'
           dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts') {
             // copy utils to docker build folder
-            sh 'mkdir -p utils && cp ../../../../utils/* ./utils'
+            sh 'mkdir -p utils && cp -r ../../../../utils/* ./utils'
             // download zowe pax to docker build agent
             pipeline.artifactory.download(
               specContent: "{\"files\":[{\"pattern\": \"${zowePaxUploaded}\",\"target\":\"zowe.pax\",\"flat\":\"true\"}]}",
