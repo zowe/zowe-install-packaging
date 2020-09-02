@@ -89,7 +89,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 18
+        expected    : 19
       )
 
       // we want build log pulled in for SMP/e build
@@ -205,6 +205,60 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/AZWE*'
     ]
   )
+
+  // 
+  pipeline.createStage(
+    name: "Build Docker",
+    timeout: [ time: 120, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_DOCKER
+    },
+    stage : {
+      // this is a hack to find the zowe.pax upload
+      // FIXME: ideally this should be reachable from pipeline property
+      def zowePaxUploaded = sh(
+          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
+          returnStdout: true
+        ).trim()
+      echo "zowePaxUploaded=${zowePaxUploaded}"
+      if (zowePaxUploaded == "") {
+        sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
+        error "Couldn't find zowe.pax uploaded."
+      }
+      node('ibm-jenkins-slave-dind') {
+        // checkout source code to docker build agent
+        checkout scm
+        // checkout repository with dockerfile
+        // FIXME: this dockerfile should be merged into current repo to avoid
+        //        version synchronizing issues
+        sh 'git clone --branch s390x https://github.com/1000TurquoisePogs/zowe-dockerfiles.git'
+        dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts') {
+          // copy utils to docker build folder
+          sh 'mkdir -p utils && cp ../../../../utils/* ./utils'
+          // download zowe pax to docker build agent
+          pipeline.artifactory.download(
+            specContent: "{\"files\":[{\"pattern\": \"${zowePaxUploaded}\",\"target\":\"zowe.pax\",\"flat\":\"true\"}]}",
+            expected: 1
+          )
+          // show files
+          sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -ltr .'
+
+          withCredentials([usernamePassword(
+            credentialsId: 'DockerGizaUser',
+            usernameVariable: 'USERNAME',
+            passwordVariable: 'PASSWORD'
+          )]){
+            // build docker image
+            sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
+            // publish
+            sh "docker login -u ${USERNAME} -p ${PASSWORD} && docker push ${USERNAME}/zowe-v1-lts:amd64"
+          }
+        }
+      }
+    }
+  )
+
 
   pipeline.end()
 }
