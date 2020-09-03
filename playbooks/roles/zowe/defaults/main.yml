@@ -109,6 +109,7 @@ zowe_known_keyring_names:
 - ZoweKeyring
 zowe_known_keyring_personal_certificates:
 - ZoweCert
+- ZoweCert_Local
 - jwtsecret
 zowe_known_keyring_certauth_certificates:
 - localca
