@@ -43,5 +43,5 @@
   ignore_errors: True 
 
 - name: List user's RACF certificates
-  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }})""
+  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }})"
   ignore_errors: True 
