@@ -135,8 +135,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
           extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
-          keepTempFolder      : params.KEEP_TEMP_FOLDER,
-          buildDocker      : (params.BUILD_SMPE ? 'yes' : '')
+          keepTempFolder      : params.KEEP_TEMP_FOLDER
       )
       if (params.BUILD_SMPE) {
         // rename SMP/e build with correct FMID name
