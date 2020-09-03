@@ -10,8 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-/* dind node is required for building docker */
-node('ibm-jenkins-slave-dind') {
+node('ibm-jenkins-slave-nvm') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
