@@ -9,8 +9,12 @@ This project targets to use Ansible to uninstall / install Zowe.
   - [Convenience Build](#convenience-build)
   - [SMPE FMID](#smpe-fmid)
   - [SMPE PTF](#smpe-ptf)
-  - [Other Build Variables](#other-build-variables)
+  - [Uninstall Zowe](#uninstall-zowe)
+- [Other Predefined Playbooks](#other-predefined-playbooks)
   - [Sanity Test a Zowe Instance](#sanity-test-a-zowe-instance)
+  - [Start and Stop a Zowe Instance](#start-and-stop-a-zowe-instance)
+  - [Show Zowe Logs](#show-zowe-logs)
+- [Other Build Variables](#other-build-variables)
 
 ## Prepare Environment
 
@@ -36,16 +40,6 @@ You also need Java installed on z/OS. The `JAVA_HOME` should be defined in the u
 - Verify Variables
   ```
   $ ansible all -m debug -a "var=hostvars"
-  ```
-- Check if Ansible is usable on the target host
-  ```
-  $ ansible <server> -m ping
-  ```
-
-  For example:
-
-  ```
-  $ ansible marist-1 -m ping
   ```
 
 ## Install (Uninstall) Zowe
@@ -146,10 +140,15 @@ If you want to install a Zowe from a URL, you can run the playbook with variable
 $ ansible-playbook -l <server> install-ptf.yml -v --extra-vars "zowe_build_url=https://zowe.jfrog.io/zowe/libs-release-local/org/zowe/1.10.0/zowe-smpe-package-1.10.0.zip"
 ```
 
-### Other Build Variables
+### Uninstall Zowe
 
-- **zos_java_home**: customize your Java version by specifying the full path to your Java folder.
-- **zos_node_home**: customize your node.js version by specifying the full path to your node.js folder.
+You can uninstall and cleanup the host by running `uninstall.yml` playbook.
+
+```
+$ ansible-playbook -l <server> uninstall.yml -v
+```
+
+## Other Predefined Playbooks
 
 ### Sanity Test a Zowe Instance
 
@@ -160,3 +159,30 @@ $ ansible-playbook -l <server> verify.yml -v
 ```
 
 _To run this playbook, you need node.js v8+ and npm installed on your computer._
+
+### Start and Stop a Zowe Instance
+
+You can use `start.yml` or `stop.yml` playbooks to start or stop an existing Zowe instance.
+
+```
+$ ansible-playbook -l <server> start.yml -v
+```
+
+### Show Zowe Logs
+
+You can display Zowe logs by running `show-logs.yml` playbook. This playbook will display Zowe job (usually it should be `ZWE1SV`) log, Cross Memory Server job (usually it should be `ZWESISTC`) log and also all USS log files in the `logs` folder under Zowe instance directory.
+
+```
+$ ansible-playbook -l <server> show-logs.yml -v
+```
+
+## Other Build Variables
+
+- **zowe_build_local**: An optional string to define where is the Zowe package on your local computer.
+- **zowe_build_url**: An optional URL string to define where to download Zowe package.
+- **zowe_build_remote**: An optional string to define the FMID you want to install and the FMID has been pre-uploaded to your target server `zowe_fmids_dir_remote` folder.
+- **zos_java_home**: An optional string to customize your Java version by specifying the full path to your Java folder.
+- **zos_node_home**: An optional string to customize your node.js version by specifying the full path to your node.js folder.
+- **zowe_auto_create_user_group**: A boolean value to enable or disable creating Zowe user and group. Default value is `false`.
+- **zowe_configure_skip_zwesecur**: A boolean value to skip running `ZWESECUR` job when configure Zowe instance.
+- **zos_keystore_mode**: An optional string to configure Zowe instance to store certificates into Keyring instead of keystore. Valid values are `<empty>` (default value) or `KEYSTORE_MODE_KEYRING`.
