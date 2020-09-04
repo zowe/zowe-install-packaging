@@ -156,6 +156,11 @@
   ignore_errors: True
 
 # ============================================================================
+- import_role:
+    name: zowe
+    tasks_from: uninstall_keyring  
+
+# ============================================================================
 - name: Remove installation folders
   raw: echo rm -fr {{ item }} | su
   loop:
