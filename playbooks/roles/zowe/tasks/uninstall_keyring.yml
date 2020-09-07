@@ -1,0 +1,47 @@
+---
+# Delete Keyrings and certificates we've created
+
+#TODO - zip 1610 - update to support acf2 and tss
+
+# ============================================================================
+# check variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_runtime_user
+    - zowe_known_keyring_names
+    - zowe_known_keyring_personal_certificates
+    - zowe_known_keyring_certauth_certificates
+
+# ============================================================================
+
+- name: Remove Zowe RACF personal certficates from keyrings
+  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) REMOVE(LABEL('{{ item[0] }}') RING({{ item[1] }}))"
+  loop: "{{ zowe_known_keyring_personal_certificates |product(zowe_known_keyring_names)|list }}"
+  ignore_errors: True
+
+- name: Remove Zowe RACF certauth certficates from keyrings
+  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) REMOVE(CERTAUTH LABEL('{{ item[0] }}') RING({{ item[1] }}))"
+  loop: "{{ zowe_known_keyring_certauth_certificates |product(zowe_known_keyring_names)|list }}"
+  ignore_errors: True
+
+- name: Deleting Zowe RACF keyrings
+  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) DELRING({{ item }})"
+  loop: "{{ zowe_known_keyring_names }}"
+  ignore_errors: True
+
+- name: Remove Zowe RACF personal certficates
+  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) DELETE(LABEL('{{ item }}')"
+  loop: "{{ zowe_known_keyring_personal_certificates }}"
+  ignore_errors: True 
+
+- name: Remove Zowe RACF certauth certficates
+  raw: tsocmd "RACDCERT CERTAUTH DELETE(LABEL('{{ item }}')"
+  loop: "{{ zowe_known_keyring_certauth_certificates }}"
+  ignore_errors: True 
+
+- name: List user's RACF certificates
+  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }})"
+  ignore_errors: True 
