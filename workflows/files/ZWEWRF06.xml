@@ -78,6 +78,7 @@
         <variableValue name="xmem_volume" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="xmem_storclas" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="proclib" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="temp_folder" scope="instance" noPromptIfSet="false" required="false"/>
         <!-- condition -->
         <instructions substitution="false">Run this step to define the variables for the workflow execution.</instructions>
         <weight>1</weight>
