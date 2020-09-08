@@ -65,3 +65,4 @@ zowe_zlux_terminal_telnet_port: 23
 zowe_zlux_terminal_telnet_security_type:
 zowe_zosmf_certificate:
 zowe_zss_port: 8542
+zos_security_system: RACF
