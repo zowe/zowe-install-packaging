@@ -16,11 +16,11 @@ const addContext = require('mochawesome/addContext');
 
 let REQ;
 
-// allow self signed certs
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 describe('test explorer server docs', function() {
   before('verify environment variables', function() {
+    // allow self signed certs
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.ZOWE_EXPLORER_JOBS_PORT, 'ZOWE_EXPLORER_JOBS_PORT is not defined').to.not.be.empty;
 

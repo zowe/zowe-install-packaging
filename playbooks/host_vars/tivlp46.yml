@@ -4,6 +4,7 @@ ansible_user:
 ansible_password:
 
 ################################################################################
+
 zowe_fmids_dir_remote: /var/zowe/zowe-fmids
 work_dir_remote: /var/zowe/ansible
 zowe_root_dir: /var/zowe/runtime

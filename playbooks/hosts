@@ -17,16 +17,15 @@ tvt6019
 tvt6080
 tvt5064
 
-[vm]
-vm30051
-
-[ext]
+[zowe-ext]
 tivlp46
 wlag
+
+[vm]
+vm30051
 
 [zoweNode:children]
 tvt
 vm
-ext
-
+zowe-ext
 

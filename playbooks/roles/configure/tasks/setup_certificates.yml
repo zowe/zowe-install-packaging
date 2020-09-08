@@ -16,6 +16,15 @@
     sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
     sed -e "s+^ZOWE_GROUP_ID=.*\$+ZOWE_GROUP_ID={{ zowe_runtime_group }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.env"
+    
+- name: Update zowe-setup-certificates.env to use keyring mode (if applicable)
+  raw: >-
+    cat "{{ work_dir_remote }}/zowe-setup-certificates.env" | \
+    sed -e "s+^KEYSTORE_ALIAS=.*\$+KEYSTORE_ALIAS={{ zowe_keyring_certname }}+" | \
+    sed -e "s+^ZOWE_KEYRING=.*\$+ZOWE_KEYRING={{ zowe_keyring_alias }}+" \
+    > "{{ work_dir_remote }}/zowe-setup-certificates.tmp" && \
+    mv "{{ work_dir_remote }}/zowe-setup-certificates.tmp" "{{ work_dir_remote }}/zowe-setup-certificates.env"
+  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 - name: Show zowe-setup-certificates.env
   raw: cat "{{ work_dir_remote }}/zowe-setup-certificates.env"
@@ -37,5 +46,5 @@
   raw: find {{ zowe_install_logs_dir }} -name "zowe-setup-certificates-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
 
-- name: List certifactes directory
+- name: List certificates directory
   raw: ls -l "{{ zowe_keystore_dir }}"

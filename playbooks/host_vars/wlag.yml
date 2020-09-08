@@ -1,7 +1,5 @@
 ---
 ansible_ssh_host: wlag.svl.ibm.com
-ansible_user: cljia
-ansible_password: abb78tty
 
 ################################################################################
 zowe_fmids_dir_remote: /var/zowe/zowe-fmids
@@ -28,6 +26,10 @@ zowe_smpe_hlq_tzone: ZOE.SMPE
 zowe_smpe_hlq_dzone: ZOE.SMPE
 zowe_smpe_dir_prefix: /var/zowe/runtime
 
+ansible_user:
+ansible_password:
+
+################################################################################
 zowe_extra_environment_variables:
   # SVL image has an error when executing netstat
   # EZZ2376I Could not determine TCPIPjobname, using default of 'INET'
