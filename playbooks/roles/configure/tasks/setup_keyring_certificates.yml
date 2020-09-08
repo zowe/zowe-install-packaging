@@ -28,7 +28,7 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./zowe-setup-certificates.sh
-    script_parameters: "-p \"{{ work_dir_remote }}/zowe-keyring-setup-certificates.env\"  -l \"{{ zowe_install_logs_dir }}\""
+    script_parameters: "-p \"{{ work_dir_remote }}/zowe-setup-keyring-certificates.env\"  -l \"{{ zowe_install_logs_dir }}\""
 
 - name: List log dir
   raw: ls -l "{{ zowe_install_logs_dir }}"
