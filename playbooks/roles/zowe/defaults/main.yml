@@ -101,3 +101,14 @@ zowe_xmem_parmlib:
 zowe_xmem_loadlib:
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_proclib_member_aux: ZWESASTC
+
+################################################################################
+# keyring certificate variables.
+# this should list all keyring names we ever used
+zowe_known_keyring_names:
+- ZoweKeyring
+zowe_known_keyring_personal_certificates:
+- ZoweCert
+- jwtsecret
+zowe_known_keyring_certauth_certificates:
+- localca

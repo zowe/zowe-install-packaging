@@ -10,39 +10,27 @@
 
 import {
     checkMandatoryEnvironmentVariables,
-    installAndVerifyConvenienceBuild,
-    showZoweRuntimeLogs,
-  } from '../../../utils';
-  import { 
-    TEST_TIMEOUT_CONVENIENCE_BUILD, 
-    KEYSTORE_MODE_KEYRING,
-    SECURITY_SYSTEM_RACF,
-  } from '../../../constants';
+    installAndGenerateApiDocs,
+  } from '../../utils';
+  import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
   
-  const testServer = 'marist-1';
-  const testSuiteName = 'Test convenience build installation with keystore pointing to a RACF keyring';
+  const testSuiteName = 'Test convenience build installation';
   describe(testSuiteName, () => {
     beforeAll(() => {
       // validate variables
       checkMandatoryEnvironmentVariables([
+        'TEST_SERVER',
         'ZOWE_BUILD_LOCAL',
       ]);
     });
   
-    test('install and verify', async () => {
-      await installAndVerifyConvenienceBuild(
+    test('install and generate api documentation', async () => {
+      await installAndGenerateApiDocs(
         testSuiteName,
-        testServer,
+        process.env.TEST_SERVER,
         {
           'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-          'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
-          'zos_security_system': SECURITY_SYSTEM_RACF,
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);
-  
-    afterAll(async () => {
-      await showZoweRuntimeLogs(testServer);
-    })
   });
-  
