@@ -2,8 +2,9 @@
 # this playbook runs bin/zowe-setup-certificates.sh to setup certificates for Zowe in Keyring mode 
 
 - name: Validate that we were in keyring mode
-  - fail: msg="Error. This play should only be run when in keyring mode"
-    when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+  fail:
+    msg: "Error. This play should only be run when in keyring mode"
+  when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
 - name: Prepare zowe-setup-keyring-certificates.env
   raw: >-
