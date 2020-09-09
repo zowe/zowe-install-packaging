@@ -552,6 +552,7 @@ function trust_zosmf {
       {$(expr `grep -c -e '-----END CERTIFICATE-----' ${CER_DIR}/${TEMP_CERT_FILE}` - 1)}
     for entry in ${CER_DIR}/${ALIAS}*; do
       [ -e "$entry" ] || continue
+      [ -s "$entry" ] || continue
       CERTIFICATE=${entry}
       entry=${entry##*/}
       ALIAS=${entry%.cer}
