@@ -62,6 +62,7 @@
 - import_role:
     name: configfmid
     tasks_from: create_security_defn
+  when: not zowe_configure_skip_zwesecur
 
 # ============================================================================
 # Setup certificates
