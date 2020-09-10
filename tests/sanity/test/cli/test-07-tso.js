@@ -13,7 +13,7 @@ const debug = require('debug')('zowe-sanity-test:cli:tso');
 // const addContext = require('mochawesome/addContext');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const { execZoweCli, defaultZOSMFProfileName, createDefaultZOSMFProfile } = require('./utils');
+const { execZoweCli, createDefaultZOSMFProfile } = require('./utils');
 
 describe('cli runs tso commands', function() {
   before('verify environment variables', async function() {
@@ -39,7 +39,7 @@ describe('cli runs tso commands', function() {
   });
 
   it('returns the status of current running jobs', async function() {
-    const acctNum = await exec(`zowe zos-uss issue ssh "tsocmd 'lu ibmuser noracf tso' && exit 0" | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"`);
+    const acctNum = await exec('zowe zos-uss issue ssh "tsocmd \'lu ibmuser noracf tso\' && exit 0" | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"');
 
     expect(acctNum).to.have.property('stdout');
     expect(acctNum).to.have.property('stderr');

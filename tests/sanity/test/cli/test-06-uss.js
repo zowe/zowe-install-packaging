@@ -51,6 +51,6 @@ describe('cli perform ssh commands with zos-uss', function() {
     
     expect(result.stderr).to.be.empty;
 
-    expect(result.stdout).to.have.string("instance.env");
+    expect(result.stdout).to.have.string('instance.env');
   });
 });

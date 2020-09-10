@@ -8,11 +8,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-const _ = require('lodash');
 const expect = require('chai').expect;
-const debug = require('debug')('zowe-sanity-test:explorer:api-uss');
-const axios = require('axios');
-const addContext = require('mochawesome/addContext');
 const utils = require('./utils');
 
 let REQ;
@@ -25,7 +21,7 @@ describe('test explorer server uss files api', function() {
     REQ = utils.verifyAndSetupEnvironment();
   });
 
-  it(`Gets a list of files and directories for a given path (v2 API)`, async() => {
+  it('Gets a list of files and directories for a given path (v2 API)', async() => {
     const uuid = utils.uuid();
     const authenticationCookie = await utils.login(uuid);
 

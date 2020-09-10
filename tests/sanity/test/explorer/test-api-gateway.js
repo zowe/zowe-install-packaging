@@ -35,7 +35,7 @@ describe('test explorer server datasets api', function() {
     debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
   });
 
-  it(`should return the version information of the API Mediation Layer and Zowe`, function() {
+  it('should return the version information of the API Mediation Layer and Zowe', function() {
     const _this = this;
 
     const req = {
@@ -58,7 +58,7 @@ describe('test explorer server datasets api', function() {
         
         expect(res).to.have.property('status');
         expect(res.status).to.equal(200);
-        expect(res.data).to.have.property('apiml')
+        expect(res.data).to.have.property('apiml');
         expect(res.data.apiml).to.have.property('version');
         expect(res.data.apiml).to.have.property('buildNumber');
         expect(res.data.apiml).to.have.property('commitHash');

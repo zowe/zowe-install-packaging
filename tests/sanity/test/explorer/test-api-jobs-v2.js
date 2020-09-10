@@ -8,11 +8,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-const _ = require('lodash');
 const expect = require('chai').expect;
-const debug = require('debug')('zowe-sanity-test:explorer:api-jobs');
-const axios = require('axios');
-const addContext = require('mochawesome/addContext');
 const utils = require('./utils');
 
 const { ZOWE_JOB_NAME } = require('../constants');
