@@ -100,7 +100,8 @@ const execZoweCli = async(command) => {
 };
 
 // default z/OSMF CLI profile name, separated by process pid
-const defaultZOSMFProfileName = `zowe-install-test-${process.pid}`;
+const defaultZOSMFProfileName = `zowe-install-test-ZOSMF-${process.pid}`;
+const defaultUSSProfileName = `zowe-install-test-USS-${process.pid}`;
 
 /**
  * Create z/OSMF CLI profile
@@ -135,9 +136,42 @@ const createDefaultZOSMFProfile = async(hostname, port, username, password, prof
   return await execZoweCli(command.join(' '));
 };
 
+/**
+ * Create USS profile
+ *
+ * @param  {String} hostname  USS hostname
+ * @param  {String} port      USS port
+ * @param  {String} username  username
+ * @param  {String} password  password
+ * @param  {String} profile   profile name, optional
+ * @return {Object}         exec result object with stdout, stderr properties
+ */
+const createDefaultUSSProfile = async(hostname, username, password, port, profile) => {
+  const command = [
+    'zowe',
+    'profiles',
+    'create',
+    'ssh-profile',
+    profile || defaultUSSProfileName,
+    '--host',
+    hostname,
+    '--port',
+    port || '22',
+    '--user',
+    username,
+    '--pass',
+    password,
+    '--overwrite',
+  ];
+
+  return await execZoweCli(command.join(' '));
+};
+
 // export constants and methods
 module.exports = {
   execZoweCli,
   defaultZOSMFProfileName,
+  defaultUSSProfileName,
   createDefaultZOSMFProfile,
+  createDefaultUSSProfile,
 };
