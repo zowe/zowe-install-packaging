@@ -59,6 +59,6 @@ describe('cli runs tso commands', function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.have.string('This System is Running');
+    expect(result.stdout).to.have.string('LOGON IN PROGRESS');
   });
 });
