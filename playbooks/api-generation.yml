@@ -1,0 +1,25 @@
+---
+- name: Generate API Documentation
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  # ============================================================================
+  # prepare ansible environment for install
+  - import_role:
+      name: common
+  - import_role:
+      name: zos
+
+  # ============================================================================
+  # Check if instance is SMPE install, if so, we need to update zowe_root_dir
+  - import_role:
+      name: zos
+      tasks_from: detect_zowe_instance
+
+  # ============================================================================
+  # Start Zowe
+  - import_role:
+      name: api-generation

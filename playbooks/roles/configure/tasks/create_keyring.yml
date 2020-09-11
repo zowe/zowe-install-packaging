@@ -1,0 +1,45 @@
+---
+# this playbook runs SZWESAMP(ZWEKRING)
+- name: Remove ZWEKRING.jcl if exists
+  raw: >-
+    rm -f "{{ work_dir_remote }}/ZWEKRING.jcl"
+    rm -f "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
+
+- name: Copy SZWESAMP(ZWEKRING) to USS
+  raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWEKRING)'" "{{ work_dir_remote }}/ZWEKRING.raw.jcl"
+
+- name: Set ip address
+  raw: dig +short $(hostname) | sed -n 2p
+  when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
+  register: zowe_external_ip_address_output
+
+- set_fact:
+    zowe_external_ip_address: "{{ zowe_external_ip_address_output.stdout | trim}}"
+  when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
+  
+- name: Show ip zowe_external_ip_address
+  debug:
+    var: zowe_external_ip_address
+
+- name: Update ZWEKRING.jcl with configurations
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
+    sed -e "s%SET HOSTNAME=''%SET HOSTNAME='{{ zowe_external_domain_name }}'%" | \
+    sed -e "s%SET IPADDRES=''%SET IPADDRES='{{ zowe_external_ip_address }}'%" | \
+    sed -e "s%SET    LABEL='localhost'%SET    LABEL='{{ zowe_keyring_certname }}'%" \
+    > "{{ work_dir_remote }}/ZWEKRING.jcl"
+
+- name: Check ZWEKRING.jcl changes
+  raw: >-
+    grep -e "^// *SET " \
+        -e HOSTNAME \
+        -e IPADDRES \
+        -e LABEL \
+        "{{ work_dir_remote }}/ZWEKRING.jcl"
+
+- name: Run ZWEKRING.jcl
+  import_role:
+    name: zos
+    tasks_from: run_jcl
+  vars:
+    jcl_filename: "{{ work_dir_remote }}/ZWEKRING.jcl"

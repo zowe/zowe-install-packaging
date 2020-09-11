@@ -36,6 +36,15 @@ echo 'jenkins' | gnome-keyring-daemon --unlock
 const execZoweCli = async(command) => {
   let result;
 
+  // To suppress the warning message of:
+  //
+  // (node:69716) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment
+  // variable to \'0\' makes TLS connections and HTTPS requests insecure by
+  // disabling certificate verification.
+  //
+  // showing in stderr.
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+
   let keyringExists = false;
 
   try {
