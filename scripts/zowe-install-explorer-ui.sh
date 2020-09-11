@@ -21,7 +21,7 @@ echo "<zowe-explorer-ui-install.sh>" >> $LOG_FILE
 # install explorer-ui-server
 cd $INSTALL_DIR
 EXPLORER_SERVER_PAX=$PWD/$(ls -t ./files/explorer-ui-server-*.pax | head -1)
-EXPLORER_INSTALL_FOLDER=${ZOWE_ROOT_DIR}/components/explorer-ui-server
+EXPLORER_INSTALL_FOLDER=${ZOWE_ROOT_DIR}/shared/explorer-ui-server
 echo "  Installing explorer-ui-server into ${EXPLORER_INSTALL_FOLDER} ..."  >> $LOG_FILE
 umask 0002
 mkdir -p "${EXPLORER_INSTALL_FOLDER}"
