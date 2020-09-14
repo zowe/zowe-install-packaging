@@ -79,6 +79,7 @@ set_install_log_file "zowe-setup-certificates"
 
 echo "<zowe-setup-certificates.sh>" >> $LOG_FILE
 
+
 # Load default values
 DEFAULT_CERTIFICATES_CONFIG_FILE=${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.env
 echo "Loading default variables from ${DEFAULT_CERTIFICATES_CONFIG_FILE} file."
@@ -97,6 +98,11 @@ else
     echo "${CERTIFICATES_CONFIG_FILE} file does not exist."
     exit 1
   fi
+fi
+
+# Backwards compatible overloading of KEYSTORE_ALIAS to be ZOWE_CERTIFICATE_LABEL
+if [[ -z ${KEYSTORE_ALIAS}]] then
+  KEYSTORE_ALIAS=${ZOWE_CERTIFICATE_LABEL}
 fi
 
 # tolerate HOSTNAME, IPADDRESS to have multiple values
