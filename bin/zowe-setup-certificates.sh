@@ -102,7 +102,7 @@ fi
 
 echo "DEbug KEYSTORE_ALIAS: ${KEYSTORE_ALIAS}"
 # Backwards compatible overloading of KEYSTORE_ALIAS to be ZOWE_CERTIFICATE_LABEL
-if [[ -z ${KEYSTORE_ALIAS} ]] then
+if [[ -n ${ZOWE_CERTIFICATE_LABEL} ]] then
   KEYSTORE_ALIAS=${ZOWE_CERTIFICATE_LABEL}
 fi
 echo "DEbug2 KEYSTORE_ALIAS: ${KEYSTORE_ALIAS}"
