@@ -100,12 +100,10 @@ else
   fi
 fi
 
-echo "DEbug KEYSTORE_ALIAS: ${KEYSTORE_ALIAS}"
 # Backwards compatible overloading of KEYSTORE_ALIAS to be ZOWE_CERTIFICATE_LABEL
 if [[ -n ${ZOWE_CERTIFICATE_LABEL} ]] then
   KEYSTORE_ALIAS=${ZOWE_CERTIFICATE_LABEL}
 fi
-echo "DEbug2 KEYSTORE_ALIAS: ${KEYSTORE_ALIAS}"
 
 # tolerate HOSTNAME, IPADDRESS to have multiple values
 HOSTNAME_FIRST=$(echo $HOSTNAME  | tr "," "\n" | sed '/^[[:space:]]*$/d' | head -1)

@@ -28,8 +28,8 @@ import {
         'ZOWE_BUILD_LOCAL',
       ]);
     });
-    //TODO - remove skip before merge
-    test.skip('install and verify', async () => {
+
+    test('install and verify', async () => {
       await installAndVerifyConvenienceBuild(
         testSuiteName,
         testServer,

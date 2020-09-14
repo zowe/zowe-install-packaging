@@ -3,7 +3,7 @@
 # Constants
 # ==============================================================================
 # 360 * 10 seconds = 1hour
-wait_for_zowe_service_retries: 30
+wait_for_zowe_service_retries: 360
 # Every 10 seconds
 wait_for_zowe_service_delay: 10
 # If we clean up history job output befor starting new
