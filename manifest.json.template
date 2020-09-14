@@ -64,16 +64,16 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.3-PR-207"
+      "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-mvs": {
-      "version": "1.0.2"
+      "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-uss": {
-      "version": "1.0.3"
+      "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-ui-server": {
-      "version": "~0.2.13-PR-37"
+      "version": "~0.0.0-STAGING"
     },
     "org.zowe.apiml.sdk.zowe-install": {
        "version": "~1.16.0-SNAPSHOT",
