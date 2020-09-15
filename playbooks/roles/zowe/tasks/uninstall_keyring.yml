@@ -1,0 +1,23 @@
+---
+# Delete Keyrings and certificates we've created
+
+#TODO - zip 1610 - update to support acf2 and tss
+
+# ============================================================================
+# check variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_runtime_user
+    - zowe_known_keyring_names
+    - zowe_known_keyring_personal_certificates
+    - zowe_known_keyring_certauth_certificates
+
+# ============================================================================
+
+- import_role:
+    name: zowe
+    tasks_from: uninstall_keyring_racf
+  when: zos_security_system == 'RACF'
