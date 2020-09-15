@@ -72,6 +72,9 @@
     "org.zowe.explorer-uss": {
       "version": "~1.0.0-STAGING"
     },
+    "org.zowe.explorer-ui-server": {
+      "version": "~0.2.0-STAGING"
+    },
     "org.zowe.apiml.sdk.zowe-install": {
        "version": "~1.16.0-SNAPSHOT",
        "artifact": "zowe-install-*.zip",
