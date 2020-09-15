@@ -13,11 +13,11 @@ const testUtils = require('./utils');
 
 let request;
 
-// allow self signed certs
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 describe('test jes with authentication via gateway', function() {
   before('verify environment variables', function() {
+    // allow self signed certs
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
     request = testUtils.verifyAndSetupEnvironment();
   });
 
