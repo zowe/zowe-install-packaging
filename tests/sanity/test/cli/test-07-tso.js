@@ -39,7 +39,7 @@ describe('cli runs tso commands', function() {
     expect(ussprofile.stderr).to.be.empty;
     expect(ussprofile.stdout).to.have.string('Profile created successfully');
 
-    acctNum = await exec(`zowe zos-uss issue ssh "tsocmd \'lu ibmuser noracf tso\' && exit 0" --ssh-profile ${defaultUSSProfileName} | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"`);
+    acctNum = await exec('zowe zos-uss issue ssh "tsocmd \'lu ibmuser noracf tso\' && exit 0" --ssh-profile ' + defaultUSSProfileName + ' | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"');
 
     expect(acctNum).to.have.property('stdout');
     expect(acctNum).to.have.property('stderr');
