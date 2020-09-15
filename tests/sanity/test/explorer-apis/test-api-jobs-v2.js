@@ -9,24 +9,32 @@
  */
 
 const expect = require('chai').expect;
-const utils = require('./utils');
+const utils = require('../apiml/utils');
+
+const { ZOWE_JOB_NAME } = require('../constants');
 
 let REQ;
 
-describe('test explorer server uss files api', function() {
+describe('test explorer server jobs api', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+    // sets up a request variable and retrieves the authentication needed for v2 APIs
     REQ = utils.verifyAndSetupEnvironment();
   });
 
-  it('Gets a list of files and directories for a given path (v2 API)', async() => {
+  it(`should be able to list jobs and have a job ${ZOWE_JOB_NAME} (v2 API)`, async() => {
     const uuid = utils.uuid();
     const authenticationCookie = await utils.login(uuid);
 
-    utils.log(uuid, ' URL: /api/v2/unixfiles?path=' + process.env.ZOWE_INSTANCE_DIR);
-    const res = await REQ.get(`/api/v2/unixfiles?path=${process.env.ZOWE_INSTANCE_DIR}`, {
+    utils.log(uuid, ' URL: /api/v2/jobs');
+    const res = await REQ.get('/api/v2/jobs', {
+      params: {
+        prefix: `${ZOWE_JOB_NAME}*`,
+        owner: 'ZWE*',
+        status: 'ACTIVE',
+      },
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
@@ -36,14 +44,9 @@ describe('test explorer server uss files api', function() {
 
     expect(res).to.have.property('status');
     expect(res.status).to.equal(200);
-    expect(res.data).to.be.an('object');
-    expect(res.data).to.have.property('type');
-    expect(res.data.type).to.be.a('string');
-    expect(res.data).to.have.property('owner');
-    expect(res.data.owner).to.be.a('string');
-    expect(res.data).to.have.property('group');
-    expect(res.data.group).to.be.a('string');
-    expect(res.data).to.have.property('permissionsSymbolic');
-    expect(res.data.permissionsSymbolic).to.be.a('string');
+    expect(res.data.items).to.be.an('array');
+    expect(res.data.items).to.have.lengthOf(1);
+    expect(res.data.items[0]).to.have.any.keys('jobName', 'jobId', 'owner', 'status', 'type', 'subsystem');
+    expect(res.data.items[0].jobName).to.equal(ZOWE_JOB_NAME);
   });
 });

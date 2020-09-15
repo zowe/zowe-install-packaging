@@ -9,7 +9,7 @@
  */
 
 const expect = require('chai').expect;
-const utils = require('./utils');
+const utils = require('../apiml/utils');
 
 let REQ;
 const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
