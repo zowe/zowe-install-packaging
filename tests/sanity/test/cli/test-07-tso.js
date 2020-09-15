@@ -13,7 +13,8 @@ const debug = require('debug')('zowe-sanity-test:cli:tso');
 // const addContext = require('mochawesome/addContext');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const { execZoweCli, defaultUSSProfileName, defaultTSOProfileName, createDefaultUSSProfile, createDefaultTSOProfile } = require('./utils');
+const { execZoweCli, defaultZOSMFProfileName, defaultUSSProfileName, defaultTSOProfileName,
+  createDefaultZOSMFProfile, createDefaultUSSProfile, createDefaultTSOProfile } = require('./utils');
 
 let acctNum;
 
@@ -23,7 +24,23 @@ describe('cli runs tso commands', function() {
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
+    expect(process.env.ZOSMF_PORT, 'SSH_PORT is not defined').to.not.be.empty;
 
+    const zosmfprofile = await createDefaultZOSMFProfile(
+      process.env.SSH_HOST,
+      process.env.ZOSMF_PORT,
+      process.env.SSH_USER,
+      process.env.SSH_PASSWD
+    );
+
+    debug('result:', zosmfprofile);
+
+    expect(zosmfprofile).to.have.property('stdout');
+    expect(zosmfprofile).to.have.property('stderr');
+
+    expect(zosmfprofile.stderr).to.be.empty;
+    expect(zosmfprofile.stdout).to.have.string('Profile created successfully');
+    
     const ussprofile = await createDefaultUSSProfile(
       process.env.SSH_HOST,
       process.env.SSH_USER,
@@ -39,7 +56,7 @@ describe('cli runs tso commands', function() {
     expect(ussprofile.stderr).to.be.empty;
     expect(ussprofile.stdout).to.have.string('Profile created successfully');
 
-    acctNum = await exec('zowe zos-uss issue ssh "tsocmd \'lu ibmuser noracf tso\' && exit 0" --ssh-profile ' + defaultUSSProfileName + ' | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"');
+    acctNum = await exec('zowe zos-uss issue ssh "tsocmd \'lu ' + process.env.SSH_USER + ' noracf tso\' && exit 0" --ssh-profile ' + defaultUSSProfileName + ' | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"');
 
     expect(acctNum).to.have.property('stdout');
     expect(acctNum).to.have.property('stderr');
@@ -61,7 +78,7 @@ describe('cli runs tso commands', function() {
   });
 
   it('returns the status of current running jobs', async function() {
-    const result = await execZoweCli('zowe zos-tso issue command "status" --a '+ acctNum.stdout + ' --tso-profile ' + defaultTSOProfileName);
+    const result = await execZoweCli('zowe zos-tso issue command "status" --tso-profile ' + defaultTSOProfileName + ' --zosmf-profile ' + defaultZOSMFProfileName);
 
     debug('result:', result);
     // addContext(this, {
