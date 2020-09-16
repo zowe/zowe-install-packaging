@@ -29,8 +29,7 @@ describe(testSuiteName, () => {
     ]);
   });
 
-  //marist-3 doesn't currently have permission to run ZWEKRING.jcl 
-  test.skip('install and verify', async () => {
+  test('install and verify', async () => {
     await installAndVerifyConvenienceBuild(
       testSuiteName,
       testServer,
