@@ -114,6 +114,8 @@ zowe_known_keyring_certauth_certificates:
 - localca
 
 # TSS keyring has extra certificate properties
+zowe_known_tss_keyring_names:
+- ZOWERING
 zowe_known_keyring_personal_digicerts:
 - ZOWECERT
 - ZOWEJWT

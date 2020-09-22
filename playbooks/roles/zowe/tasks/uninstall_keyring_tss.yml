@@ -14,10 +14,11 @@
   ignore_errors: True
 
 - name: Deleting Zowe TSS keyrings
-  raw: tsocmd "TSS REM({{ zowe_runtime_user }}) DELRING({{ item }})"
-  loop: "{{ zowe_known_keyring_names }}"
+  raw: tsocmd "TSS REM({{ zowe_runtime_user }}) KEYRING({{ item }})"
+  loop: "{{ zowe_known_tss_keyring_names }}"
   ignore_errors: True
 
-- name: List user's TSS certificates
-  raw: tsocmd "TSS LIST({{ zowe_runtime_user }})"
+- name: List keyrings's TSS certificates
+  raw: tsocmd "TSS LIST({{ zowe_runtime_user }}) KEYRING({{ item }})"
+  loop: "{{ zowe_known_tss_keyring_names }}"
   ignore_errors: True 
