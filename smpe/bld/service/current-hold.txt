@@ -1,0 +1,20 @@
+****************************************************************
+* Affected function: Zowe z/OSMF pre req                       *
+****************************************************************
+* Description: Install required z/OSMF PTF                     *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: z/OSMF install                                         *
+****************************************************************
+
+Zowe API Mediation Layer Authentication service cannot function
+fully unless z/OSMF JWT support is available. Ensure PTFs
+associated with APAR PH12143: NEW FUNCTION - z/OSMF JWT support
+https://www.ibm.com/support/pages/apar/PH12143 are applied, 
+Applicable component levels
+R230 PSY UI66511   UP19/12/11 P F912  
+R240 PSY UI66512   UP19/12/11 P F912 
+
+Without the z/OSMF JWT support available warnings will appear in
+the Zowe logs when the required functions are called.
