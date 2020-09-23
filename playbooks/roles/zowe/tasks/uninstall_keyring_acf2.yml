@@ -5,8 +5,7 @@
 # build up jcl as we go then run at the end
 
 - name: Remove ACFNOKYR.jcl if exists
-  raw: >-
-    rm -f "{{ work_dir_remote }}/ACFNOKYR.jcl"
+  raw: rm -f "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
 - name: create initial ACFNOKYR.jcl
   raw: echo "//ACFNOKYR JOB\n//RUN      EXEC PGM=IKJEFT01,REGION=0M\n//SYSTSPRT DD SYSOUT=*\n//SYSTSIN  DD DDNAME=ACF2\n//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY\nACF\n  SET PROFILE(USER) DIVISION(CERTDATA)" > "{{ work_dir_remote }}/ACFNOKYR.jcl"
@@ -33,7 +32,7 @@
 - name: Print ACFNOKYR.jcl
   raw: cat "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
-  - name: Run ACFNOKYR.jcl
+- name: Run ACFNOKYR.jcl
   import_role:
     name: zos
     tasks_from: run_jcl
