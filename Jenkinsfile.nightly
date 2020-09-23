@@ -16,7 +16,7 @@ node('ibm-jenkins-slave-nvm') {
   def SLACK_CHANNEL = '#zowe-build'
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
   def ZOWE_RELEASE_PATH = '/org/zowe/nightly'
-  def ZOWE_BUILD_NAME = 'zowe-install-packaging :: staging'
+  def ZOWE_BUILD_NAME = 'zowe-install-packaging :: rc'
   def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
   def ZOWE_CLI_RELEASE_PATH = '/org/zowe/nightly/cli'
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
