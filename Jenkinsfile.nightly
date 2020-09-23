@@ -222,7 +222,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-          currentBuild.result == 'UNSTABLE'
+          currentBuild.result = 'UNSTABLE'
         }
       }
     },
@@ -280,7 +280,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-          currentBuild.result == 'UNSTABLE'
+          currentBuild.result = 'UNSTABLE'
         }
       }
     },
