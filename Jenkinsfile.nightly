@@ -88,7 +88,7 @@ node('ibm-jenkins-slave-nvm') {
         long currentTimestampInt = currentTimestamp as Long
         def timeElapse = (currentTimestampInt * 1000 - buildTimestampInt) / (3600 * 1000)
         echo "Build #${buildNumber} is ${timeElapse} hours ago"
-        if (timeElapse < 22) { // how many hours we consider it's too old?
+        if (timeElapse < 1) { // how many hours we consider it's too old?
           echo "Will skip re-build."
           sourceSmpeBuildInfo = latestBuild
         } else {
