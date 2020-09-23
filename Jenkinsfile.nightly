@@ -288,7 +288,7 @@ node('ibm-jenkins-slave-nvm') {
     timeout: [time: 4, unit: 'HOURS']
   )
 
-  pipeline.createStage(
+  /*pipeline.createStage(
     name          : "Promote",
     isSkippable   : true,
     shouldExecute : {
@@ -321,9 +321,9 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     timeout: [time: 10, unit: 'MINUTES']
-  )
+  )*/
 
-  pipeline.createStage(
+  /*pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
     stage         : {
@@ -372,7 +372,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     timeout: [time: 2, unit: 'MINUTES']
-  )
+  )*/
 
   pipeline.end()
 }
