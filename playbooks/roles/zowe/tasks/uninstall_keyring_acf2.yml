@@ -8,7 +8,6 @@
   raw: >-
     rm -f "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
-
 - name: create initial ACFNOKYR.jcl
   raw: cat <<EOF > "{{ work_dir_remote }}/ACFNOKYR.jcl"
 //ACFNOKYR JOB
