@@ -214,7 +214,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/users/roavill2/add-fail-nightly',
+            job: '/zowe-install-test/users%2Froavill2%2Fadd-fail-nightly',
             parameters: testParameters,
             propagate: false
           )
@@ -272,7 +272,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/users/roavill2/add-fail-nightly',
+            job: '/zowe-install-test/users%2Froavill2%2Fadd-fail-nightly',
             parameters: testParameters,
             propagate: false
           )
