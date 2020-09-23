@@ -18,7 +18,7 @@ const { execZoweCli, defaultZOSMFProfileName, defaultUSSProfileName, defaultTSOP
 
 let acctNum;
 
-describe('cli runs tso commands', function() {
+describe.skip('cli runs tso commands', function() {
   before('verify environment variables', async function() {
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
@@ -56,7 +56,7 @@ describe('cli runs tso commands', function() {
     expect(ussprofile.stderr).to.be.empty;
     expect(ussprofile.stdout).to.have.string('Profile created successfully');
 
-    acctNum = await exec('zowe zos-uss issue ssh "tsocmd \'lu ' + process.env.SSH_USER + ' noracf tso\' && exit 0" --ssh-profile ' + defaultUSSProfileName + ' | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"');
+    acctNum = await exec('zowe zos-uss issue ssh "tsocmd \'lu ' + process.env.SSH_USER + ' tso\' && exit 0" --ssh-profile ' + defaultUSSProfileName + ' | grep "ACCTNUM" | cut -f2 -d "=" | tr -d " \t\r\n"');
 
     expect(acctNum).to.have.property('stdout');
     expect(acctNum).to.have.property('stderr');
