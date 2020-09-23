@@ -1,0 +1,59 @@
+---
+# Delete acf Keyrings and certificates we've created
+# ============================================================================
+
+# build up jcl as we go then run at the end
+
+- name: Remove ACFNOKYR.jcl if exists
+  raw: >-
+    rm -f "{{ work_dir_remote }}/ACFNOKYR.jcl"
+
+
+- name: create initial ACFNOKYR.jcl
+  raw: cat <<EOF > "{{ work_dir_remote }}/ACFNOKYR.jcl"
+//ACFNOKYR JOB
+//RUN      EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+  SET PROFILE(USER) DIVISION(CERTDATA)
+EOF
+
+- name: Add remove Zowe ACF2 personal certficates statement(s) to JCL
+  raw: echo "  DELETE &ZOWEUSER..{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+  loop: "{{ zowe_known_keyring_personal_digicerts }}"
+
+- name: Add remove Zowe ACF2 certauth certficates statement(s) to JCL
+  raw: echo "  DELETE CERTAUTH.{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+  loop: "{{ zowe_known_keyring_certauth_digicerts }}"
+
+- name: Add set keying division ACF2 statement to JCL
+  raw: echo "  SET PROFILE(USER) DIVISION(KEYRING)" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+
+- name: Add delete Zowe ACF2 keyrings statement(s) to JCL
+  raw: echo "  DELETE &ZOWEUSER..{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+  loop: "{{ zowe_known_tss_keyring_names }}"
+  ignore_errors: True
+
+- name: finalise ACFNOKYR.jcl
+  raw: cat <<EOF >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+F ACF2,REBUILD(FAC)
+
+* List the keyring ................................................
+  SET PROFILE(USER) DIVISION(KEYRING)
+  LIST &ZOWEUSER..ZOWERING
+
+END
+$$
+EOF
+
+- name: Print ACFNOKYR.jcl
+  raw: cat "{{ work_dir_remote }}/ACFNOKYR.jcl"
+
+  - name: Run ACFNOKYR.jcl
+  import_role:
+    name: zos
+    tasks_from: run_jcl
+  vars:
+    jcl_filename: "{{ work_dir_remote }}/ACFNOKYR.jcl"
