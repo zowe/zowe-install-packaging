@@ -9,15 +9,7 @@
     rm -f "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
 - name: create initial ACFNOKYR.jcl
-  raw: cat <<EOF > "{{ work_dir_remote }}/ACFNOKYR.jcl"
-//ACFNOKYR JOB
-//RUN      EXEC PGM=IKJEFT01,REGION=0M
-//SYSTSPRT DD SYSOUT=*
-//SYSTSIN  DD DDNAME=ACF2
-//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
-ACF
-  SET PROFILE(USER) DIVISION(CERTDATA)
-EOF
+  raw: echo "//ACFNOKYR JOB\n//RUN      EXEC PGM=IKJEFT01,REGION=0M\n//SYSTSPRT DD SYSOUT=*\n//SYSTSIN  DD DDNAME=ACF2\n//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY\nACF\n  SET PROFILE(USER) DIVISION(CERTDATA)" > "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
 - name: Add remove Zowe ACF2 personal certficates statement(s) to JCL
   raw: echo "  DELETE &ZOWEUSER..{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
@@ -36,16 +28,7 @@ EOF
   ignore_errors: True
 
 - name: finalise ACFNOKYR.jcl
-  raw: cat <<EOF >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
-F ACF2,REBUILD(FAC)
-
-* List the keyring ................................................
-  SET PROFILE(USER) DIVISION(KEYRING)
-  LIST &ZOWEUSER..ZOWERING
-
-END
-$$
-EOF
+  raw: echo "F ACF2,REBUILD(FAC)\n\n* List the keyring ................................................\n  SET PROFILE(USER) DIVISION(KEYRING)\n  LIST &ZOWEUSER..ZOWERING\n\nEND\n$$" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
 - name: Print ACFNOKYR.jcl
   raw: cat "{{ work_dir_remote }}/ACFNOKYR.jcl"
