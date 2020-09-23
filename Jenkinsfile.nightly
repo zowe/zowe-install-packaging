@@ -132,7 +132,7 @@ node('ibm-jenkins-slave-nvm') {
       if (!sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']) {
         echo "Building new driver ..."
 
-        // run build
+        /* run build
         def build_result = build(
           job: '/zowe-install-packaging/staging',
           parameters: [
@@ -143,7 +143,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "Build result: ${build_result.result}"
         if (build_result.result != 'SUCCESS') {
           error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
-        }
+        }*/
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
@@ -196,7 +196,7 @@ node('ibm-jenkins-slave-nvm') {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
           string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
-          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
@@ -222,6 +222,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          currentBuild.result == 'UNSTABLE'
         }
       }
     },
@@ -279,6 +280,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          currentBuild.result == 'UNSTABLE'
         }
       }
     },
