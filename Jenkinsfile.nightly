@@ -329,10 +329,6 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
-    shouldExecute : {
-      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] &&
-             sourceRegBuildInfo && sourceRegBuildInfo['path']
-    },
     stage         : {
       // update build description with build ID
       currentBuild.description = "${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']}".toString()
