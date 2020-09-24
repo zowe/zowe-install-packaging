@@ -27,7 +27,7 @@
   ignore_errors: True
 
 - name: finalise ACFNOKYR.jcl
-  raw: echo "F ACF2,REBUILD(FAC)\n\n* List the keyring ................................................\n  SET PROFILE(USER) DIVISION(KEYRING)\n  LIST &ZOWEUSER..ZOWERING\n\nEND\n$$" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+  raw: echo "F ACF2,REBUILD(FAC)\n\n* List the keyring ................................................\n  SET PROFILE(USER) DIVISION(KEYRING)\n  LIST &ZOWEUSER..ZOWERING\n\nEND\n\$\$" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
 - name: Print ACFNOKYR.jcl
   raw: cat "{{ work_dir_remote }}/ACFNOKYR.jcl"
