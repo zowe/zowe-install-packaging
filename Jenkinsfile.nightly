@@ -133,7 +133,7 @@ node('ibm-jenkins-slave-nvm') {
       if (!sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']) {
         echo "Building new driver ..."
 
-        /* run build
+        // run build
         def build_result = build(
           job: '/zowe-install-packaging/staging',
           parameters: [
@@ -144,7 +144,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "Build result: ${build_result.result}"
         if (build_result.result != 'SUCCESS') {
           error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
-        }*/
+        }
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
@@ -196,7 +196,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple 5ecurity systems'),
+          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -215,7 +215,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/users%2Froavill2%2Fadd-fail-nightly',
+            job: '/zowe-install-test/staging',
             parameters: testParameters,
             propagate: false
           )
@@ -255,7 +255,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple 5ecurity systems'),
+          string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -274,7 +274,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/users%2Froavill2%2Fadd-fail-nightly',
+            job: '/zowe-install-test/staging',
             parameters: testParameters,
             propagate: false
           )
@@ -299,7 +299,7 @@ node('ibm-jenkins-slave-nvm') {
              sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     stage         : {
-      /* promote Zowe nightly build
+      // promote Zowe nightly build
       targetSmpeFullPath = pipeline.artifactory.promote([
         'source'     : sourceSmpeBuildInfo,
         'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
@@ -321,7 +321,7 @@ node('ibm-jenkins-slave-nvm') {
           'source'     : cliPluginsSourceBuildInfo,
           'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
         ])
-      }*/
+      }
     },
     timeout: [time: 10, unit: 'MINUTES']
   )
@@ -375,13 +375,13 @@ node('ibm-jenkins-slave-nvm') {
         currentBuild.result = 'UNSTABLE'
         echo "${slackMessage}"
       }
-      /*if (params.TEST_RUN) {
+      if (params.TEST_RUN) {
         echo "Slack message in ${slackColor}:\n${slackMessage}"
       } else {
         slackSend channel: SLACK_CHANNEL,
                   color: slackColor,
                   message: slackMessage
-      }*/
+      }
     },
     timeout: [time: 2, unit: 'MINUTES']
   )
