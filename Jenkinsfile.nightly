@@ -176,7 +176,7 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.test(
     name              : "Zowe Regular Build",
     shouldExecute : {
-      return sourceRegBuildInfo && sourceRegBuildInfo['path'] && IS_BUILD_UNSTABLE
+      return sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     operation         : {
       if (params.TEST_RUN) {
@@ -235,7 +235,7 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.test(
     name              : "Zowe SMP/e Build",
     shouldExecute : {
-      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] && IS_BUILD_UNSTABLE
+      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path']
     },
     operation         : {
       if (params.TEST_RUN) {
@@ -331,8 +331,7 @@ node('ibm-jenkins-slave-nvm') {
     isSkippable   : true,
     shouldExecute : {
       return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] &&
-             sourceRegBuildInfo && sourceRegBuildInfo['path'] &&
-             IS_BUILD_UNSTABLE
+             sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     stage         : {
       // update build description with build ID
