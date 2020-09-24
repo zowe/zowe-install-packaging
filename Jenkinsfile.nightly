@@ -21,6 +21,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_RELEASE_PATH = '/org/zowe/nightly/cli'
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
+  def IS_BUILD_UNSTABLE = false
 
   def isStagingBranch = env && env.BRANCH_NAME == 'staging'
 
@@ -132,7 +133,7 @@ node('ibm-jenkins-slave-nvm') {
       if (!sourceSmpeBuildInfo || !sourceSmpeBuildInfo['path']) {
         echo "Building new driver ..."
 
-        // run build
+        /* run build
         def build_result = build(
           job: '/zowe-install-packaging/staging',
           parameters: [
@@ -143,7 +144,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "Build result: ${build_result.result}"
         if (build_result.result != 'SUCCESS') {
           error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
-        }
+        }*/
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
@@ -175,7 +176,7 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.test(
     name              : "Zowe Regular Build",
     shouldExecute : {
-      return sourceRegBuildInfo && sourceRegBuildInfo['path']
+      return sourceRegBuildInfo && sourceRegBuildInfo['path'] && IS_BUILD_UNSTABLE
     },
     operation         : {
       if (params.TEST_RUN) {
@@ -195,7 +196,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple 5ecurity systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -214,7 +215,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/staging',
+            job: '/zowe-install-test/users%2Froavill2%2Fadd-fail-nightly',
             parameters: testParameters,
             propagate: false
           )
@@ -222,7 +223,8 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-          currentBuild.result = 'UNSTABLE'
+          IS_BUILD_UNSTABLE = true
+          echo "IS_BUILD_UNSTABLE = ${IS_BUILD_UNSTABLE}"
         }
       }
     },
@@ -233,7 +235,7 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.test(
     name              : "Zowe SMP/e Build",
     shouldExecute : {
-      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path']
+      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] && IS_BUILD_UNSTABLE
     },
     operation         : {
       if (params.TEST_RUN) {
@@ -253,7 +255,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
+          string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple 5ecurity systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -272,7 +274,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/staging',
+            job: '/zowe-install-test/users%2Froavill2%2Fadd-fail-nightly',
             parameters: testParameters,
             propagate: false
           )
@@ -280,7 +282,8 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-          currentBuild.result = 'UNSTABLE'
+          IS_BUILD_UNSTABLE = true
+          echo "IS_BUILD_UNSTABLE = ${IS_BUILD_UNSTABLE}"
         }
       }
     },
@@ -326,6 +329,11 @@ node('ibm-jenkins-slave-nvm') {
   pipeline.createStage(
     name          : "Message",
     isSkippable   : true,
+    shouldExecute : {
+      return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] &&
+             sourceRegBuildInfo && sourceRegBuildInfo['path'] &&
+             IS_BUILD_UNSTABLE
+    },
     stage         : {
       // update build description with build ID
       currentBuild.description = "${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']}".toString()
@@ -363,6 +371,10 @@ node('ibm-jenkins-slave-nvm') {
            "*************************************************************************************************"
 
       def slackMessage = "${message}\n\nCheck pipeline detail: ${env.BUILD_URL}"
+      if (IS_BUILD_UNSTABLE = true) {
+        echo "is_build_unstable=true"
+        currentBuild.result = 'UNSTABLE'
+      }
       if (params.TEST_RUN) {
         echo "Slack message in ${slackColor}:\n${slackMessage}"
       } else {
