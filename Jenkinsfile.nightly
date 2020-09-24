@@ -371,7 +371,7 @@ node('ibm-jenkins-slave-nvm') {
            "*************************************************************************************************"
 
       def slackMessage = "${message}\n\nCheck pipeline detail: ${env.BUILD_URL}"
-      if (IS_BUILD_UNSTABLE = true) {
+      if (IS_BUILD_UNSTABLE) {
         echo "is_build_unstable=true"
         currentBuild.result = 'UNSTABLE'
       }
