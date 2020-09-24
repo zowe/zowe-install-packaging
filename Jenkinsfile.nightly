@@ -224,7 +224,6 @@ node('ibm-jenkins-slave-nvm') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
-          echo "IS_BUILD_UNSTABLE = ${IS_BUILD_UNSTABLE}"
         }
       }
     },
@@ -283,7 +282,6 @@ node('ibm-jenkins-slave-nvm') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
-          echo "IS_BUILD_UNSTABLE = ${IS_BUILD_UNSTABLE}"
         }
       }
     },
@@ -367,9 +365,7 @@ node('ibm-jenkins-slave-nvm') {
 
       def slackMessage = "${message}\n\nCheck pipeline detail: ${env.BUILD_URL}"
       if (IS_BUILD_UNSTABLE) {
-        echo "is_build_unstable=true"
         currentBuild.result = 'UNSTABLE'
-        echo "${slackMessage}"
       }
       if (params.TEST_RUN) {
         echo "Slack message in ${slackColor}:\n${slackMessage}"
