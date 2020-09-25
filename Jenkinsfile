@@ -88,7 +88,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 19
+        expected    : 20
       )
 
       // we want build log pulled in for SMP/e build

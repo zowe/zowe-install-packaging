@@ -21,3 +21,13 @@
     name: zowe
     tasks_from: uninstall_keyring_racf
   when: zos_security_system == 'RACF'
+
+- import_role:
+    name: zowe
+    tasks_from: uninstall_keyring_acf2
+  when: zos_security_system == 'ACF2'
+
+- import_role:
+    name: zowe
+    tasks_from: uninstall_keyring_tss
+  when: zos_security_system == 'TSS'
