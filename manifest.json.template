@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -12,59 +12,48 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.15.0-20200828.165810.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.zss-auth": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zss-auth-1.15.0-20200827.225853.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "sample-angular-app-1.15.0-20200827.230325.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "sample-iframe-app-1.15.0-20200827.225718.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "sample-react-app-1.15.0-20200827.225820.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "tn3270-ng2-1.15.0-20200827.225957.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "vt-ng2-1.15.0-20200827.230106.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zlux-editor-1.15.0-20200827.230517.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-workflow": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zlux-workflow-1.15.0-20200827.230255.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.zosmf-auth": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zosmf-auth-1.15.0-20200827.225853.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "1.15.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zss-1.15.0-rc-57-20200827225241.pax"
+      "version": "~1.16.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "1.0.3",
@@ -82,6 +71,9 @@
     },
     "org.zowe.explorer-uss": {
       "version": "1.0.5"
+    },
+    "org.zowe.explorer-ui-server": {
+      "version": "~0.2.0-STAGING"
     },
     "org.zowe.apiml.sdk.zowe-install": {
       "version": "1.15.0",
