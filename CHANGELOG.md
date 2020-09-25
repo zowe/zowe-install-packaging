@@ -6,6 +6,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ### New features and enhancements
 - Moved explorer-ui-server out of explorers into new `shared` folder under Zowe Runtime Directory. It involved following PRs (https://github.com/zowe/zowe-install-packaging/pull/1545), (https://github.com/zowe/explorer-jes/pull/207), (https://github.com/zowe/explorer-ui-server/pull/37). Thanks @stevenhorsman, @nakulmanchanda, @jackjia-ibm
+- Created `zowe-setup-keyring-certificates.env` and removed the overloaded properties from `zowe-setup-certificates.env` to try and clarify the user experience when setting up certificates in the keyring and USS keystore modes. [#1603](https://github.com/zowe/zowe-install-packaging/issues/1603)
+
 
 ## `1.14.0`
 
