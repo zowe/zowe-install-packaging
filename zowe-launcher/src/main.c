@@ -76,6 +76,12 @@ typedef struct zl_comp_t {
   int fail_cnt;
   time_t start_time;
 
+  enum {
+    ZL_COMP_AS_SHARE_NO,
+    ZL_COMP_AS_SHARE_YES,
+    ZL_COMP_AS_SHARE_MUST,
+  } share_as;
+
   pthread_t comm_thid;
 
 } zl_comp_t;
@@ -158,6 +164,67 @@ static int init_context(const struct zl_config_t *cfg) {
   return 0;
 }
 
+/**
+ * @brief Extract the component option name and value from options in
+ * the "key1=value1,key2=value2" format
+ * @param opt_str Option string
+ * @param opt_name Result option name
+ * @param opt_name_len Result option name length
+ * @param opt_val Result option value string
+ * @param opt_val_len Result option value string length
+ */
+static void get_comp_opt(const char *opt_str,
+                         const char **opt_name, size_t *opt_name_len,
+                         const char **opt_val, size_t *opt_val_len) {
+
+  *opt_name = "";
+  *opt_name_len = 0;
+  *opt_val = "";
+  *opt_val_len = 0;
+
+  if (opt_str == NULL) {
+    return ;
+  }
+
+  size_t opt_str_len = 0;
+  const char *next_opt_comma = strchr(opt_str, ',');
+  if (next_opt_comma) {
+    opt_str_len = next_opt_comma - opt_str;
+  } else {
+    opt_str_len = strlen(opt_str);
+  }
+
+  const char *eq = strchr(opt_str, '=');
+
+  *opt_name = opt_str;
+  if (eq) {
+    *opt_name_len = eq - opt_str;
+  } else {
+    *opt_name_len = opt_str_len;
+    return;
+  }
+
+  const char *val = eq + 1;
+  size_t val_len = 0;
+  if (next_opt_comma) {
+    val_len = next_opt_comma - val;
+  } else {
+    val_len = opt_str + opt_str_len - val;
+  }
+
+  // strip trailing spaces in case that's the last option
+  for (size_t i = val_len - 1; i != 0; i--) {
+    if (val[i] != ' ') {
+      break;
+    }
+    val_len--;
+  }
+
+  *opt_val = val;
+  *opt_val_len = val_len;
+
+}
+
 static int init_component(const char *cfg_line, zl_comp_t *result) {
 
   /* TODO parsing of parameters is not overly robust, improve */
@@ -192,23 +259,54 @@ static int init_component(const char *cfg_line, zl_comp_t *result) {
   memset(result->name, 0, sizeof(result->name));
   memset(result->bin, 0, sizeof(result->bin));
   result->pid = -1;
+  result->share_as = ZL_COMP_AS_SHARE_NO;
 
   memcpy(result->name, comp_start, comp_len);
   memcpy(result->bin, bin_start, bin_len);
 
   // any options?
-  if (*bin_end == ',') {
-    const char *opt_start = bin_end + 1;
-    const char *opt_end   = strchr(bin_end, '=');
-    if (opt_end && !strncmp(opt_start, "restart", opt_end - opt_start)) {
-      result->restart_cnt = atoi(opt_end + 1);
+  const char *opt_next = bin_end;
+  while (opt_next && *opt_next == ',') {
+
+    opt_next++;
+    const char *opt_name; size_t opt_name_len;
+    const char *opt_val; size_t opt_val_len;
+    get_comp_opt(opt_next, &opt_name, &opt_name_len, &opt_val, &opt_val_len);
+
+    if (!strncmp(opt_name, "restart", opt_name_len)) {
+      result->restart_cnt = atoi(opt_val);
+    } else if (!strncmp(opt_name, "share_as", opt_name_len)) {
+      if (!strncmp(opt_val, "no", opt_val_len)) {
+        result->share_as = ZL_COMP_AS_SHARE_NO;
+      } else if (!strncmp(opt_val, "yes", opt_val_len)) {
+        result->share_as = ZL_COMP_AS_SHARE_YES;
+      } else if (!strncmp(opt_val, "must", opt_val_len)) {
+        result->share_as = ZL_COMP_AS_SHARE_MUST;
+      }
     }
+
+    opt_next = strchr(opt_next, ',');
   }
 
-  INFO("new component init'd \'%s\', \'%s\', restart_cnt=%d\n",
-       result->name, result->bin, result->restart_cnt);
+  INFO("new component init'd \'%s\', \'%s\', restart_cnt=%d, share_as=%d\n",
+       result->name, result->bin, result->restart_cnt, result->share_as);
 
   return 0;
+}
+
+static const char *get_shareas_env(const zl_comp_t *comp) {
+
+  switch (comp->share_as) {
+  case ZL_COMP_AS_SHARE_NO:
+    return "_BPX_SHAREAS=NO";
+  case ZL_COMP_AS_SHARE_YES:
+    return "_BPX_SHAREAS=YES";
+  case ZL_COMP_AS_SHARE_MUST:
+    return "_BPX_SHAREAS=MUST";
+  default:
+    return "_BPX_SHAREAS=NO";
+  }
+
 }
 
 static bool is_commented_out(const char *line) {
@@ -400,7 +498,8 @@ static int start_component(zl_comp_t *comp) {
   DEBUG("%s fd_map[0]=%d, fd_map[1]=%d, fd_map[2]=%d\n",
         comp->name, fd_map[0], fd_map[1], fd_map[2]);
 
-  comp->pid = spawn(full_path, fd_count, fd_map, &inherit, NULL, NULL);
+  const char *c_envp[2] = {get_shareas_env(comp), NULL};
+  comp->pid = spawn(full_path, fd_count, fd_map, &inherit, NULL, c_envp);
   if (comp->pid == -1) {
     ERROR("spawn() failed for %s - %s\n", comp->name, strerror(errno));
     return -1;
