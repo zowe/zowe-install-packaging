@@ -69,12 +69,21 @@
 - import_role:
     name: configure
     tasks_from: create_keyring
+  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
      
 # ============================================================================
 # Setup certificates for USS keystore (self-signed)
 - import_role:
     name: configure
     tasks_from: setup_certificates
+  when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+
+# ============================================================================
+# Setup certificates for keyring (self-signed)
+- import_role:
+    name: configure
+    tasks_from: setup_keyring_certificates
+  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 # ============================================================================
 # Configure Zowe Instance

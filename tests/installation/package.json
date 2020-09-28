@@ -27,5 +27,10 @@
     "test": "jest --no-colors --runInBand",
     "merge-reports": "node dist/merge-test-reports.js",
     "lint": "eslint ."
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./src/__tests__/beforeTests.js"
+    ]
   }
 }

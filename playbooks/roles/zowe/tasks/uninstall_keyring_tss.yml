@@ -2,7 +2,6 @@
 # Delete tss Keyrings and certificates we've created
 # ============================================================================
 
-# TODO - certificate names correct?
 - name: Remove Zowe TSS personal certficates
   raw: tsocmd "TSS REM({{ zowe_runtime_user }}) DIGICERT({{ item }})"
   loop: "{{ zowe_known_keyring_personal_digicerts }}"
