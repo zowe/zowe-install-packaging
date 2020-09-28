@@ -2,6 +2,13 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `1.17.0`
+
+### New features and enhancements
+- ZSS can now be started completely independent from the Application Framework server by specifying the LAUNCH_COMPONENT_GROUP "ZSS". If not specified but DESKTOP is, zss will still be included as a prereq to app-server.
+- Zowe Instance Configuration script (zowe-configure-instance.sh) can now skip checking for node by passing in the -s flag since node may not needed if the launch components don't require node
+- run-zowe.sh can also skip the checking for node by settting the environment variable SKIP_NODE=1 for the cases where the launch components specified don't require node
+
 ## `1.16.0`
 
 ### New features and enhancements
