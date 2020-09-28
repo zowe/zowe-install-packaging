@@ -3,6 +3,13 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## '1.16.0`
+
+### New features and enhancements
+- In 1.15 the JCL member `ZWEKRING` was added to the sample PDS library `SZWESAMP`.  This member contains commands to create a keyring that can contain the Zowe certificate(s) and a local certificate authority. In 1.16 the JCL member `ZWENOKYR` was added to `SZWESAMP` that contains the inverse commands, so it can be used to remove the keyring, the Zowe certificate(s) and the certificate authority.
+- In 1.15 `ZWEKRING` and the supporting code in the Zowe runtimes to work with certificates held in keyrings was provided in beta format for early technical preview. for RACF only  In 1.16 the commands in `ZWEKRING`, `ZWENOKYR` and the accompanying code in the Zowe runtimes for working with keyrings and certificates in RACF, TopSecret, and ACF/2 are now a supported piece of functionality.    
+- To provide more documentation for the configuration scenarios around Zowe certificates, and the relationship to a Zowe instance directory and Zowe runtime the documentation chapter, see [Toplogy for the Zowe z/OS launch process](./installandconfig.md#topology-of-the-zowe-z/os-launch-process).
+
 ## `1.14.0`
 
 ### New features and enhancements
