@@ -8,6 +8,7 @@
 work_dir_remote:
 zos_java_home:
 zos_node_home:
+zos_keystore_mode:
 zos_zosmf_port: 10443
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
@@ -15,6 +16,7 @@ zowe_apiml_enable_sso: false
 zowe_apiml_gateway_port: 7554
 zowe_apiml_verify_certficates_of_services: true
 zowe_auto_create_user_group: false
+zowe_configure_skip_zwesecur: false
 zowe_dataset_prefix:
 zowe_external_certficate:
 zowe_external_certficate_alias:
@@ -65,3 +67,4 @@ zowe_zlux_terminal_telnet_port: 23
 zowe_zlux_terminal_telnet_security_type:
 zowe_zosmf_certificate:
 zowe_zss_port: 8542
+zos_security_system: RACF

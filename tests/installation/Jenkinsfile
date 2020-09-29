@@ -97,7 +97,7 @@ node('ibm-jenkins-slave-nvm') {
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: multiple keystore modes': [
-      test_files: 'dist/__tests__/extended/keystore-modes',
+      test_files: 'dist/__tests__/extended/keystore-modes/',
       jenkins_primary_lock: 'marist',
     ],
     'generate api documentation': [
@@ -369,12 +369,12 @@ node('ibm-jenkins-slave-nvm') {
                 cd ./docs-site
                 git checkout docs-staging
 
-                if [ -d \"./api_definitions\" ]; then rm -rf ./api_definitions; fi
-                mv ../api_definitions .
+                if [ -d \"./docs/api_definitions\" ]; then rm -rf ./docs/api_definitions; fi
+                mv ../api_definitions ./docs
             '''
             
             // Check in api-definitions to docs-staging
-            sh "cd ./docs-site && git add ./api_definitions"
+            sh "cd ./docs-site && git add ./docs/api_definitions"
             try {
               // Set up config to allow commit to be signed for docs-site repository
               sh "cd ./docs-site && git config user.email \"zowe.robot@gmail.com\" && git config user.name \"zowe-robot\" && git commit -s -m\"Check in api_definitions\""
