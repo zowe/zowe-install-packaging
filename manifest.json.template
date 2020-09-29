@@ -67,11 +67,11 @@
       "artifact": "zss-1.16.0-rc-58-20200928122202.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~1.0.0-STAGING",
+      "version": "1.0.3",
       "explode": "true"
     },
     "org.zowe.explorer.data.sets": {
-      "version": "~1.0.0-STAGING",
+      "version": "1.0.3",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
@@ -84,102 +84,92 @@
       "version": "1.0.6"
     },
     "org.zowe.apiml.sdk.zowe-install": {
-       "version": "~1.17.0-SNAPSHOT",
-       "artifact": "zowe-install-*.zip",
+       "version": "1.16.0",
+       "artifact": "zowe-install-1.16.0.zip",
        "target": ".pax/mediation/",
        "explode": "true",
-       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.3",
-      "artifact": "keyring-util-*",
+      "artifact": "keyring-util-1.0.3",
       "target": ".pax/keyring-util/keyring-util",
       "explode": "false",
       "flat": "true",
-      "excludePatterns": ["*PR*"]
    },
     "org.zowe.licenses": {
-      "version": "1.10.0"
+      "version": "1.15.0"
     }
   },
   "sourceDependencies": [
     {
-      "componentGroup": "Zowe Keyring Utilities",
-      "entries": [{
-        "repository": "keyring-utilities",
-        "tag": "master",
-        "destinations": ["Zowe PAX"]
-      }]
-    },
-    {
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "master",
+        "tag": "v4.8.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "master",
+        "tag": "v1.16.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-file-explorer",
-          "tag": "master",
+          "tag": "v1.0.1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-grid",
-          "tag": "master",
+          "tag": "v0.0.5",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-platform",
-          "tag": "v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-widgets",
-          "tag": "master",
+          "tag": "v0.0.4",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-build",
-          "tag": "v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v1.16.0",
+          "tag": "rc",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -187,56 +177,56 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "master",
+        "tag": "v6.23.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "master",
+        "tag": "v4.0.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "master",
+        "tag": "v4.0.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Performance Timing Utility",
       "entries": [{
         "repository": "perf-timing",
-        "tag": "master",
+        "tag": "v1.0.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg MQ Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-mq-plugin",
-        "tag": "master",
+        "tag": "v2.0.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Secure Credential Store Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-scs-plugin",
-        "tag": "master",
+        "tag": "v4.1.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "master",
+        "tag": "v1.2.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ims-plugin",
-        "tag": "master",
+        "tag": "v2.0.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -250,7 +240,7 @@
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "staging",
+        "tag": "v0.0.12",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -278,32 +268,32 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "staging",
+        "tag": "v1.1.4",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "staging",
+        "tag": "v1.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "staging",
+        "tag": "v1.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Application Framework Authentication Handlers",
       "entries": [{
         "repository": "zss-auth",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zosmf-auth",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -311,14 +301,14 @@
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -326,7 +316,7 @@
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -334,7 +324,7 @@
       "componentGroup": "Zowe Desktop Sample React Application",
       "entries": [{
         "repository": "sample-react-app",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -342,7 +332,7 @@
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -350,7 +340,7 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -358,7 +348,7 @@
       "componentGroup": "Zowe Desktop Workflows Plugin-in",
       "entries": [{
         "repository": "zlux-workflow",
-        "tag": "v1.16.0",
+        "tag": "rc",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -366,7 +356,7 @@
       "componentGroup": "Keyring Utilities",
       "entries": [{
         "repository": "keyring-utilities",
-        "tag": "master",
+        "tag": "v1.0.3",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -374,7 +364,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "master",
+        "tag": "1.9.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     }
