@@ -12,7 +12,6 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-<<<<<<< HEAD
       "version": "1.16.0-RC",
       "repository": "libs-snapshot-local",
       "artifact": "zlux-core-1.16.0-20200928.124442.pax"
@@ -66,50 +65,6 @@
       "version": "1.16.0-RC",
       "repository": "libs-snapshot-local",
       "artifact": "zss-1.16.0-rc-58-20200928122202.pax"
-=======
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zss-auth": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.sample-angular-app": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.sample-iframe-app": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.sample-react-app": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.tn3270-ng2": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.vt-ng2": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zlux-editor": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zlux-workflow": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zosmf-auth": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zss": {
-      "version": "~1.16.0-STAGING",
-      "artifact": "*.pax"
->>>>>>> origin/staging
     },
     "org.zowe.explorer.jobs": {
       "version": "~1.0.0-STAGING",
@@ -120,7 +75,6 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-<<<<<<< HEAD
       "version": "1.0.6"
     },
     "org.zowe.explorer-mvs": {
@@ -128,18 +82,6 @@
     },
     "org.zowe.explorer-uss": {
       "version": "1.0.6"
-=======
-      "version": "~1.0.0-STAGING"
-    },
-    "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-STAGING"
-    },
-    "org.zowe.explorer-uss": {
-      "version": "~1.0.0-STAGING"
-    },
-    "org.zowe.explorer-ui-server": {
-      "version": "~0.2.0-STAGING"
->>>>>>> origin/staging
     },
     "org.zowe.apiml.sdk.zowe-install": {
        "version": "~1.17.0-SNAPSHOT",
@@ -187,20 +129,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-<<<<<<< HEAD
           "tag": "v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-<<<<<<< HEAD
           "tag": "v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         },
         {
@@ -215,29 +149,17 @@
         },
         {
           "repository": "zlux-platform",
-<<<<<<< HEAD
           "tag": "v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-<<<<<<< HEAD
           "tag": "v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-<<<<<<< HEAD
           "tag": "v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         },
         {
@@ -247,29 +169,17 @@
         },
         {
           "repository": "zlux-build",
-<<<<<<< HEAD
           "tag": "v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-<<<<<<< HEAD
           "tag": "v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-<<<<<<< HEAD
           "tag": "zss-v1.16.0",
-=======
-          "tag": "staging",
->>>>>>> origin/staging
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -333,11 +243,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-<<<<<<< HEAD
         "tag": "v1.0.7",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -351,33 +257,21 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-<<<<<<< HEAD
         "tag": "v1.0.6",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-<<<<<<< HEAD
         "tag": "v0.2.15",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-<<<<<<< HEAD
         "tag": "v1.0.6",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -405,19 +299,11 @@
       "componentGroup": "Zowe Application Framework Authentication Handlers",
       "entries": [{
         "repository": "zss-auth",
-<<<<<<< HEAD
         "tag": "v1.16.0",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zosmf-auth",
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }, {
-        "repository": "zosmf-auth",
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -425,22 +311,14 @@
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-<<<<<<< HEAD
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-<<<<<<< HEAD
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -448,11 +326,7 @@
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-<<<<<<< HEAD
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -460,11 +334,7 @@
       "componentGroup": "Zowe Desktop Sample React Application",
       "entries": [{
         "repository": "sample-react-app",
-<<<<<<< HEAD
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -472,11 +342,7 @@
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
-<<<<<<< HEAD
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -484,11 +350,7 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-<<<<<<< HEAD
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -496,11 +358,7 @@
       "componentGroup": "Zowe Desktop Workflows Plugin-in",
       "entries": [{
         "repository": "zlux-workflow",
-<<<<<<< HEAD
         "tag": "v1.16.0",
-=======
-        "tag": "staging",
->>>>>>> origin/staging
         "destinations": ["Zowe PAX"]
       }]
     },
