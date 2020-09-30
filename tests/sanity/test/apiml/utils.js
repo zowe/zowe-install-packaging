@@ -16,12 +16,7 @@ const expect = require('chai').expect;
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 
-let login = async (uuid) => {
-  log(uuid, 'URL: /api/v1/gateway/auth/login');
-  let response = await request.post('/api/v1/gateway/auth/login', {
-    username, password
-  });
-
+function validateResponse(uuid, response) {
   logResponse(uuid, response);
 
   // Validate the response at least basically
@@ -29,6 +24,27 @@ let login = async (uuid) => {
   expect(response.headers).to.be.an('object');
   expect(response.headers).to.have.property('set-cookie');
   expect(response.data).to.be.empty;
+}
+
+let login = async (uuid) => {
+  log(uuid, 'URL: /api/v1/gateway/auth/login');
+  let response = await request.post('/api/v1/gateway/auth/login', {
+    username, password
+  });
+
+  validateResponse(uuid, response);
+
+  return findCookieInResponse(response, APIML_AUTH_COOKIE);
+};
+
+let loginWithCertificate = async (uuid) => {
+  let x509Certificate = process.env.ZOWE_CLIENT_CERT;
+  log(uuid, 'URL: /api/v1/gateway/auth/login');
+  let response = await request.post('/api/v1/gateway/auth/login', {
+    x509Certificate
+  });
+
+  validateResponse(uuid, response);
 
   return findCookieInResponse(response, APIML_AUTH_COOKIE);
 };
@@ -89,5 +105,6 @@ module.exports = {
   logResponse,
   findCookieInResponse,
   verifyAndSetupEnvironment,
-  uuid
+  uuid,
+  loginWithCertificate
 };

@@ -45,6 +45,7 @@
     SSH_PORT: "{{ ansible_port }}"
     SSH_USER: "{{ ansible_user }}"
     SSH_PASSWD: "{{ ansible_password }}"
+    ZOWE_CLIENT_CERT: "{{ zowe_client_certificate }}"
     ZOSMF_PORT: "{{ zos_zosmf_port }}"
     ZOWE_DS_MEMBER: "{{ zowe_proclib_membername }}"
     ZOWE_JOB_PREFIX: "{{ zowe_job_prefix }}"
