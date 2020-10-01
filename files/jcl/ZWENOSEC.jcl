@@ -146,6 +146,9 @@
   RLIST  UNIXPRIV SUPERUSER.FILESYS ALL
   PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE ID(&ZOWEUSER.)
 
+/* remove permit to use identity mapping service                     */
+  PERMIT IRR.RUSERMAP CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+
   SETROPTS RACLIST(FACILITY) REFRESH
   SETROPTS RACLIST(UNIXPRIV) REFRESH
 
@@ -281,6 +284,10 @@ F ACF2,REBUILD(FAC)
 SET RESOURCE(UNI)
 DELETE SUPERUSER.FILESYS
 *
+/** Remove STCGRP role permission to use identity mapping service        */
+SET RESOURCE(FAC)
+RECKEY IRR.RUSERMAP DEL(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+
 F ACF2,REBUILD(UNI)
 *  Remove  data set protection
 SET RULE
@@ -321,6 +328,9 @@ TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.JOBNAME)
 /* remove permit to write persistent data                            */
 TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
 TSS REVOKE(&ZOWEUSER) UNIXPRIV(SUPERUSER.FILESYS)
+
+/** remove permit Zowe main server to use identity mapping service   */
+TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP)
 
 /* REMOVE AUX SERVER PERMISIONS .................................... */
 

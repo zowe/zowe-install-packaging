@@ -365,6 +365,10 @@
 
    SETROPTS RACLIST(UNIXPRIV) REFRESH
 
+/** permit Zowe main server to use identity mapping service          */
+  PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+
+  SETROPTS RACLIST(FACILITY) REFRESH
 /* show results .................................................... */
   RLIST   FACILITY ZWES.IS           ALL
   RLIST   FACILITY BPX.DAEMON        ALL
@@ -540,6 +544,11 @@ $ROLESET
 STORE
 * SET RESOURCE(UNI)
 * RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+
+/** Allow STCGRP role to use identity mapping service               */
+SET RESOURCE(FAC)
+RECKEY IRR.RUSERMAP ADD(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+
   F ACF2,REBUILD(UNI)
 *
 * DEFINE ZOWE DATA SET PROTECTION .................................
@@ -703,6 +712,9 @@ $$
   TSS ADD(&FACACID.) UNIXPRIV(SUPERUSE)
   TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
   TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
+
+/** permit Zowe main server to use identity mapping service          */
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP) ACC(READ)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
