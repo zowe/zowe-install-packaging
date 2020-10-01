@@ -284,7 +284,7 @@ F ACF2,REBUILD(FAC)
 SET RESOURCE(UNI)
 DELETE SUPERUSER.FILESYS
 *
-/** Remove STCGRP role permission to use identity mapping service        */
+/* Remove STCGRP role permission to use identity mapping service   */
 SET RESOURCE(FAC)
 RECKEY IRR.RUSERMAP DEL(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 
@@ -329,7 +329,7 @@ TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.JOBNAME)
 TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
 TSS REVOKE(&ZOWEUSER) UNIXPRIV(SUPERUSER.FILESYS)
 
-/** remove permit Zowe main server to use identity mapping service   */
+/* remove permit Zowe main server to use identity mapping service   */
 TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP)
 
 /* REMOVE AUX SERVER PERMISIONS .................................... */
