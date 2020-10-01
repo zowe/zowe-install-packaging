@@ -139,6 +139,7 @@ check_node_version() {
   then
     too_low="true"
   elif [[ ${node_major_version} -eq 6 ]]
+  then
     too_low_support="true"
   fi
 
