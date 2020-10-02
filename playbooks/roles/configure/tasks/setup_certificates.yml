@@ -37,5 +37,5 @@
   raw: find {{ zowe_install_logs_dir }} -name "zowe-setup-certificates-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
 
-- name: List certifactes directory
+- name: List certificates directory
   raw: ls -l "{{ zowe_keystore_dir }}"
