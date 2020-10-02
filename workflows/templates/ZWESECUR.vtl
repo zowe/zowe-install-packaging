@@ -714,7 +714,8 @@ $$
   TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
 
 /** permit Zowe main server to use identity mapping service          */
-  TSS PER(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP) ACC(READ)
+  TSS WHOHAS IBMFAC(IRR.RUSERMAP)
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP) ACCESS(READ)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
