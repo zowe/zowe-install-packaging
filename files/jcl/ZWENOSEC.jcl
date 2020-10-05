@@ -284,11 +284,14 @@ F ACF2,REBUILD(FAC)
 SET RESOURCE(UNI)
 DELETE SUPERUSER.FILESYS
 *
-/* Remove STCGRP role permission to use identity mapping service   */
-SET RESOURCE(FAC)
-RECKEY IRR.RUSERMAP DEL(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 
 F ACF2,REBUILD(UNI)
+
+/* Remove STCGRP role permission to use identity mapping service   */
+SET RESOURCE(FAC)
+RECKEY IRR DEL(RUSERMAP ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
 *  Remove  data set protection
 SET RULE
 LIST &HLQ.
