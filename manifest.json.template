@@ -64,7 +64,7 @@
     "org.zowe.zss": {
       "version": "1.16.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-1.16.0-rc-58-20200928122202.pax"
+      "artifact": "zss-1.16.0-rc-60-20201006155219.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "1.0.3",
