@@ -35,15 +35,15 @@ describe('test zss x509 certificate mapping via zss endpoint', function() {
 
     const username = process.env.SSH_USER;
     console.log(authenticationCookie);
-    // testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
-    // const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {
-    //   headers: {
-    //     'Cookie': authenticationCookie,
-    //     'X-CSRF-ZOSMF-HEADER': '*'
-    //   }
-    // });
-    // testUtils.logResponse(uuid, response);
-    //
-    // assertNotEmptyValidResponse(response);
+    testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
+    const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {
+      headers: {
+        'Cookie': authenticationCookie,
+        'X-CSRF-ZOSMF-HEADER': '*'
+      }
+    });
+    testUtils.logResponse(uuid, response);
+
+    assertNotEmptyValidResponse(response);
   });
 });

@@ -39,10 +39,12 @@ let login = async (uuid) => {
 };
 
 let loginWithCertificate = async (uuid, cert) => {
+
+  // TODO what about the call via login. Do I also need key?
   const httpsAgent = new https.Agent({
     rejectUnauthorized: false, // (NOTE: this will disable client verification)
     cert: fs.readFileSync(cert),
-    key: fs.readFileSync('/Users/at670475/IntelliJProjects/ca_repo/ca-api-layer/keystore/ca3x/apiml.keystore.key'),
+    // key: fs.readFileSync('/Users/at670475/IntelliJProjects/ca_repo/ca-api-layer/keystore/ca3x/apiml.keystore.key'),
   });
   let x509Certificate = new FormData();
   //fs.createReadStream(process.env.ZOWE_CLIENT_CERT)
