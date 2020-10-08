@@ -38,4 +38,8 @@ export const TEST_TIMEOUT_SMPE_PTF: number = 120 * 60 * 1000;
 export const KEYSTORE_MODE_KEYSTORE: string = 'KEYSTORE_MODE_KEYSTORE';
 export const KEYSTORE_MODE_KEYRING: string = 'KEYSTORE_MODE_KEYRING';
 
+export const SECURITY_SYSTEM_RACF: string = 'RACF';
+export const SECURITY_SYSTEM_ACF2: string = 'ACF2';
+export const SECURITY_SYSTEM_TSS: string = 'TSS';
+
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);

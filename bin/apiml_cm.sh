@@ -275,6 +275,15 @@ function export_service_certificate {
     fi
 }
 
+function import_external_certificate_to_truststore {
+    if [[ -n "${EXTERNAL_CERTIFICATE}" ]] && [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
+        echo "Import external certificate to the truststore"
+        CERTIFICATE=${SERVICE_KEYSTORE}.cer
+        ALIAS=extca0
+        trust
+    fi
+}
+
 # This check/code duplication is due to com.ibm.crypto.provider being need for z/os keyring support and
 # does not exist on other operating systems and will fail in docker or in development environments.
 # And Java does not support conditional import.
@@ -430,6 +439,7 @@ function new_service {
     import_external_ca_certificates
     export_service_certificate
     export_service_private_key
+    import_external_certificate_to_truststore
     echo "Listing generated files for service:"
     if [[ "${SERVICE_STORETYPE}" != "JCERACFKS" ]]; then
         ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
@@ -551,7 +561,7 @@ function trust_zosmf {
     csplit -s -k -f ${CER_DIR}/${ALIAS} ${CER_DIR}/${TEMP_CERT_FILE} /-----END\ CERTIFICATE-----/1 \
       {$(expr `grep -c -e '-----END CERTIFICATE-----' ${CER_DIR}/${TEMP_CERT_FILE}` - 1)}
     for entry in ${CER_DIR}/${ALIAS}*; do
-      [ -e "$entry" ] || continue
+      [ -s "$entry" ] || continue
       CERTIFICATE=${entry}
       entry=${entry##*/}
       ALIAS=${entry%.cer}
