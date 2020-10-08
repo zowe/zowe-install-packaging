@@ -8,7 +8,7 @@
 
 - name: Transfer Client certificate to zOS
   block:
-    - name: Copy MD5Checksum.java to local tmp folder
+    - name: Copy APIML_External_Certificate_Authority.cer to local tmp folder
       copy:
         src: APIML_External_Certificate_Authority.cer
         dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
