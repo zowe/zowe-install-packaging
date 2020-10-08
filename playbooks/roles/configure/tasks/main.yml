@@ -88,8 +88,8 @@
 
 - import_role:
     name: configure
-    tasks_from: configure_client_certificates_in_RACF
-  when: zos_security_system == 'RACF'
+    tasks_from: configure_client_certificates
+
 
 # ============================================================================
 # Setup certificates for keyring (self-signed)
