@@ -6,7 +6,7 @@
     msg: work_dir_remote is required
   when: work_dir_remote is not defined or work_dir_remote is none or work_dir_remote == ''
 
-- name: Transfer Client certificate to zOS
+- name: Transfer Certificate Authority to zOS
   block:
     - name: Copy APIML_External_Certificate_Authority.cer to local tmp folder
       copy:
@@ -22,11 +22,30 @@
         file_upload_method: scp
         file_upload_hashcheck: false
 
-    - name: CAT if certificate exists on zOS
-      raw: cat "{{ work_dir_remote }}/APIML_External_Certificate_Authority.cer"
-
-    - name: Check if certificate exists on zOS
+    - name: Check if Certificate Authority exists on zOS
       raw: test -f "{{ work_dir_remote }}/APIML_External_Certificate_Authority.cer"
+      ignore_errors: True
+      register: file_exist
+      failed_when: file_exist.rc != 0
+
+- name: Transfer client certificate to zOS
+  block:
+    - name: Copy USER-cert.cer to local tmp folder
+      copy:
+        src: USER-cert.cer
+        dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
+      delegate_to: localhost
+
+    - import_role:
+        name: common
+        tasks_from: upload_file
+      vars:
+        filename_to_upload: USER-cert.cer
+        file_upload_method: scp
+        file_upload_hashcheck: false
+
+    - name: Check if client certificate exists on zOS
+      raw: test -f "{{ work_dir_remote }}/USER-cert.cer"
       ignore_errors: True
       register: file_exist
       failed_when: file_exist.rc != 0

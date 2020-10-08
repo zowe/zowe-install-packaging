@@ -39,11 +39,7 @@
     - zowe_zlux_terminal_ssh_port
     - zowe_zlux_terminal_telnet_port
 
-# ============================================================================
-# Setup client certificates (self-signed)
-- import_role:
-    name: configure
-    tasks_from: setup_client_certificates
+
 
 # ============================================================================
 - name: Show Zowe manifest
@@ -83,6 +79,17 @@
     name: configure
     tasks_from: setup_certificates
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+
+# ============================================================================
+# Setup client certificates
+- import_role:
+    name: configure
+    tasks_from: upload_client_certificates
+
+- import_role:
+    name: configure
+    tasks_from: configure_client_certificates_in_RACF
+  when: zos_security_system == 'RACF'
 
 # ============================================================================
 # Setup certificates for keyring (self-signed)
