@@ -4,8 +4,8 @@
 - name: Import client certificate to security systems
   block:
     - name: Import certificate to RACF
-      shell: >
-        echo "{{ work_dir_remote }}/USER-cert.ebcdic" "//'{{ zowe_dataset_prefix }}.CERT.USER'" \
+      raw: |-
+        iconv -f UTF-8 -t IBM1047 USER-cert.cer > USER-cert.ebcdic \
         cp "{{ work_dir_remote }}/USER-cert.ebcdic" "//'{{ zowe_dataset_prefix }}.CERT.USER'" \
         tsocmd "racdcert add('{{ zowe_dataset_prefix }}.CERT.USER') id({{ zowe_runtime_user }}) withlabel('API ML Client') trust" \
         tsocmd "SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH" \
