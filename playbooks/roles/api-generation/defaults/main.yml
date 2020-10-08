@@ -32,4 +32,6 @@ zowe_mvs_api_port: 8547
 zowe_zlux_port: 8544
 
 # x509 certificate used for the client certificate auth though ZSS
-zowe_client_certificate: /Users/at670475/Downloads/cert.der
+zowe_client_certificate:
+# default ZSS port
+zowe_zss_port: 8542

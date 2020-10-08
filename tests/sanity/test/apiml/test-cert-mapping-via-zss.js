@@ -18,21 +18,24 @@ let assertNotEmptyValidResponse = (response) => {
   expect(response.data).to.not.be.empty;
 };
 
-describe('test zss x509 certificate mapping via gateway', function() {
+describe('test zss x509 certificate mapping via zss endpoint', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-    request = testUtils.verifyAndSetupEnvironment();
+    request = testUtils.verifyAndSetupEnvironmentForZss();
   });
 
   it('with valid certificate', async () => {
+
+    let x509Certificate = process.env.ZOWE_CLIENT_CERT;
     const uuid = testUtils.uuid();
-    let x509Cert = process.env.ZOWE_CLIENT_CERT;
-    const authenticationCookie = await testUtils.loginWithCertificate(uuid, x509Cert);
-    console.log(authenticationCookie)
+    testUtils.log(uuid, 'URL: /certificate/x509/map');
+    let authenticationCookie = await request.post('/certificate/x509/map', x509Certificate);
+
     const username = process.env.SSH_USER;
-    testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
+    console.log(authenticationCookie);
+    // testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
     // const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {
     //   headers: {
     //     'Cookie': authenticationCookie,
