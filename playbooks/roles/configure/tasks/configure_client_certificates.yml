@@ -24,8 +24,8 @@
     - name: Import certificate to ACF2
       raw: |-
         tsocmd "SET PROFILE({{ zowe_runtime_user }}) DIV(CERTDATA)"
-        tsocmd "INSERT {{ zowe_runtime_user }}.ZWECC DSNAME('{{ zowe_dataset_prefix }}.CERT.USER') LABEL('API ML Client certificate') TRUST"
         tsocmd "CHKCERT {{ zowe_runtime_user }}.ZWECC"
+        tsocmd "INSERT {{ zowe_runtime_user }}.ZWECC DSNAME('{{ zowe_dataset_prefix }}.CERT.USER') LABEL('API ML Client certificate') TRUST"
       ignore_errors: True
       when: zos_security_system == 'RACF'
 
