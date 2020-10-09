@@ -28,4 +28,3 @@
         tsocmd "INSERT {{ zowe_runtime_user }}.ZWECC DSNAME('{{ zowe_dataset_prefix }}.CERT.USER') LABEL('API ML Client certificate') TRUST"
       ignore_errors: True
       when: zos_security_system == 'RACF'
-
