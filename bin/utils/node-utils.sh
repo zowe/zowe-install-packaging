@@ -138,10 +138,7 @@ check_node_version() {
   elif [[ ${node_major_version} -eq 6 ]] && [[ $node_minor_version -eq 14 ]] && [[ $node_fix_version -lt 4 ]]
   then
     too_low="true"
-  elif [[ ${node_major_version} -eq 6 ]] && [[ ${current_year} -gt 2020 ]]
-  then
-    too_low_support="true"
-  elif [[ ${node_major_version} -eq 6 ]] && [[ ${current_month} -gt 9 ]] #Still 2020, but after September
+  elif [[ ${node_major_version} -eq 6 ]]
   then
     too_low_support="true"
   fi
@@ -153,9 +150,6 @@ check_node_version() {
   elif [[ ${too_low_support} == "true" ]]
   then
     log_message "Warning: Zowe is no longer offering support for Node v6. Please use a higher version."
-  elif [[ ${node_major_version} -eq 6 ]]
-  then
-    log_message "Zowe will be ending support for Node v6 in September 2020."
   else
     log_message "Node ${node_version} is supported."
   fi

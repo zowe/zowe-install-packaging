@@ -85,6 +85,7 @@ check_existing_instance_for_updates() {
     TEMP_INSTANCE="${TMPDIR:-/tmp}/instance.env"
     cat "${INSTANCE}" | sed -e "s%ROOT_DIR=.*\$%ROOT_DIR=${ZOWE_ROOT_DIR}%" > "${TEMP_INSTANCE}"
     cat "${TEMP_INSTANCE}" > "${INSTANCE}"
+    rm -f "${TEMP_INSTANCE}"
   fi
 
   while read -r line
