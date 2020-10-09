@@ -30,7 +30,6 @@ describe('test zss x509 certificate mapping via gateway', function() {
     const uuid = testUtils.uuid();
     let x509Cert = process.env.ZOWE_CLIENT_CERT;
     const authenticationCookie = await testUtils.loginWithCertificate(uuid, x509Cert);
-    console.log(authenticationCookie)
     const username = process.env.SSH_USER;
     testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
     const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {

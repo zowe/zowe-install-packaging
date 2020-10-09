@@ -34,7 +34,6 @@ describe('test zss x509 certificate mapping via zss endpoint', function() {
     let authenticationCookie = await request.post('/certificate/x509/map', x509Certificate);
 
     const username = process.env.SSH_USER;
-    console.log(authenticationCookie);
     testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
     const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {
       headers: {

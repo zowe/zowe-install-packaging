@@ -111,7 +111,6 @@ let verifyAndSetupEnvironmentForZss = () => {
   expect(environment.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
   expect(environment.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
   expect(environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
-  console.log(environment.ZOWE_ZSS_PORT)
   const baseUrl = `http://${environment.SSH_HOST}:${environment.ZOWE_ZSS_PORT}`;
   const SECOND = 1000;
   request = axios.create({
