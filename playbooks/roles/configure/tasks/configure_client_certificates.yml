@@ -16,13 +16,16 @@
 
     - name: Import certificate to TSS
       raw: |-
-
-
+        tsocmd "TSS ADDTO({{ zowe_runtime_user }}) DIGICERT(ZWECC) LABLCERT('API ML Client certificate') DCDSN('{{ zowe_dataset_prefix }}.CERT.USER') TRUST"
+        tsocmd "TSS LIST({{ zowe_runtime_user }}) DIGICERT(ALL)"
       ignore_errors: True
       when: zos_security_system == 'TSS'
 
     - name: Import certificate to ACF2
       raw: |-
-
+        tsocmd "SET PROFILE({{ zowe_runtime_user }}) DIV(CERTDATA)"
+        tsocmd "INSERT {{ zowe_runtime_user }}.ZWECC DSNAME('{{ zowe_dataset_prefix }}.CERT.USER') LABEL('API ML Client certificate') TRUST"
+        tsocmd "CHKCERT {{ zowe_runtime_user }}.ZWECC"
       ignore_errors: True
       when: zos_security_system == 'ACF2'
+
