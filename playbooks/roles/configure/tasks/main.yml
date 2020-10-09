@@ -38,6 +38,7 @@
     - zowe_zss_xmem_name
     - zowe_zlux_terminal_ssh_port
     - zowe_zlux_terminal_telnet_port
+    - zos_security_system
 
 
 
