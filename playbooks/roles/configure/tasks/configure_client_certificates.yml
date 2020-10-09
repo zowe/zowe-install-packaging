@@ -3,6 +3,8 @@
 
 - name: Import client certificate to security systems
   block:
+    - name: Copy certificate to dataset
+      raw: cp "{{ work_dir_remote }}/USER-cert.cer" "//'{{ zowe_dataset_prefix }}.CERT.USER'"
 
     - name: Import certificate to RACF
       raw: |-
@@ -10,19 +12,20 @@
         tsocmd "SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH"
         tsocmd "RACDCERT LIST ID({{ zowe_runtime_user }})"
       ignore_errors: True
-      when: zos_security_system == 'ACF2'
+
 
     - name: Import certificate to TSS
       raw: |-
         tsocmd "TSS ADDTO({{ zowe_runtime_user }}) DIGICERT(ZWECC) LABLCERT('API ML Client certificate') DCDSN('{{ zowe_dataset_prefix }}.CERT.USER') TRUST"
         tsocmd "TSS LIST({{ zowe_runtime_user }}) DIGICERT(ALL)"
       ignore_errors: True
-      when: zos_security_system == 'TSS'
+
 
     - name: Import certificate to ACF2
       raw: |-
-        cp "{{ work_dir_remote }}/USER-cert.cer" "//'{{ zowe_dataset_prefix }}.CERT.USER'"
         tsocmd "ACF"
         tsocmd "SET PROFILE({{ zowe_runtime_user }}) DIV(CERTDATA)"
+        tsocmd "CHKCERT {{ zowe_runtime_user }}.ZWECC"
+        tsocmd "INSERT {{ zowe_runtime_user }}.ZWECC DSNAME('{{ zowe_dataset_prefix }}.CERT.USER') LABEL('API ML Client certificate') TRUST"
       ignore_errors: True
-      when: zos_security_system == 'RACF'
+      when: zos_security_system == 'ACF2'
