@@ -3,8 +3,6 @@
 
 - name: Import client certificate to security systems
   block:
-    - name: Copy certificate to dataset
-      raw: cp "{{ work_dir_remote }}/USER-cert.cer" "//'{{ zowe_dataset_prefix }}.CERT.USER'"
 
     - name: Import certificate to RACF
       raw: |-
@@ -24,6 +22,7 @@
     - name: Import certificate to ACF2
       raw: |-
         tsocmd "ACF"
+        cp "{{ work_dir_remote }}/USER-cert.cer" "//'{{ zowe_dataset_prefix }}.CERT.USER'"
         tsocmd "SET PROFILE({{ zowe_runtime_user }}) DIV(CERTDATA)"
         tsocmd "CHKCERT {{ zowe_runtime_user }}.ZWECC"
         tsocmd "INSERT {{ zowe_runtime_user }}.ZWECC DSNAME('{{ zowe_dataset_prefix }}.CERT.USER') LABEL('API ML Client certificate') TRUST"
