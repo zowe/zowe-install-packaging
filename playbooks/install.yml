@@ -13,6 +13,15 @@
   # prepare ansible environment for install
   - import_role:
       name: common
+    # ============================================================================
+    # Setup client certificates
+  - import_role:
+      name: configure
+      tasks_from: upload_client_certificates
+
+  - import_role:
+      name: configure
+      tasks_from: configure_client_certificates
 
   - import_role:
       name: zos
