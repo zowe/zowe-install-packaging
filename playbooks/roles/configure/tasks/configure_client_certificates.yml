@@ -23,6 +23,7 @@
 
     - name: Import certificate to ACF2
       raw: |-
+        tsocmd "ACF"
         tsocmd "SET PROFILE({{ zowe_runtime_user }}) DIV(CERTDATA)"
         tsocmd "CHKCERT {{ zowe_runtime_user }}.ZWECC"
         tsocmd "INSERT {{ zowe_runtime_user }}.ZWECC DSNAME('{{ zowe_dataset_prefix }}.CERT.USER') LABEL('API ML Client certificate') TRUST"
