@@ -77,3 +77,6 @@ zowe_external_ip_address:
 
 # property added to instance.env for extender test - Note this variable is for PTF installation verification purpose, not used by any extensions. You are safe to ignore.
 zowe_extender_test_property: EXAMPLE_EXTENDER_PROPERTY=TEST123
+
+# x509 certificate used for the client certificate auth though ZSS
+zowe_client_certificate: "{{ work_dir_remote }}"/USER-cert.cer
