@@ -21,8 +21,8 @@
 
     - name: Import certificate to ACF2
       raw: |-
-        echo "import certificate"
         cp "{{ work_dir_remote }}/USER-cert.cer" "//'{{ zowe_dataset_prefix }}.CERT.USER'"
-        echo "upload finished"
+        tsocmd "ACF"
+        tsocmd "SET PROFILE({{ zowe_runtime_user }}) DIV(CERTDATA)"
       ignore_errors: True
       when: zos_security_system == 'RACF'
