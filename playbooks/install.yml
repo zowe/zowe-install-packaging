@@ -16,15 +16,6 @@
 
   - import_role:
       name: zos
-    # ============================================================================
-    # Setup client certificates
-  - import_role:
-      name: configure
-      tasks_from: upload_client_certificates
-
-  - import_role:
-      name: configure
-      tasks_from: configure_client_certificates
 
   # ============================================================================
   # uninstall zowe
@@ -74,7 +65,15 @@
         filename_to_upload: "{{ zowe_build_file }}"
         file_upload_method: sftp
         file_upload_hashcheck: true
+    # ============================================================================
+    # Setup client certificates
+  - import_role:
+      name: configure
+      tasks_from: upload_client_certificates
 
+  - import_role:
+      name: configure
+      tasks_from: configure_client_certificates
   # ============================================================================
   # Install Zowe
   - import_role:
