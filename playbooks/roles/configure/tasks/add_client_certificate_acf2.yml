@@ -36,7 +36,7 @@
 - name: Check ZWECCADD.jcl changes
   raw: cat "{{ work_dir_remote }}/ZWECCADD.jcl"
 
-- name: Run ZWEKRING.jcl
+- name: Run ZWECCADD.jcl
   import_role:
     name: zos
     tasks_from: run_jcl
