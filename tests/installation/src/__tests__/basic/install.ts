@@ -13,7 +13,7 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
+import {SECURITY_SYSTEM_ACF2, TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
 
 const testSuiteName = 'Test convenience build installation';
 describe(testSuiteName, () => {
@@ -31,6 +31,7 @@ describe(testSuiteName, () => {
       process.env.TEST_SERVER,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zos_security_system': SECURITY_SYSTEM_ACF2,
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
