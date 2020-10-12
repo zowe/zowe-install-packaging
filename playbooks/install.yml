@@ -13,6 +13,10 @@
   # prepare ansible environment for install
   - import_role:
       name: common
+
+  - import_role:
+      name: common
+      task_from: debug
     # ============================================================================
     # Setup client certificates
   - import_role:
