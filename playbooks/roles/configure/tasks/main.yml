@@ -7,6 +7,7 @@
     tasks_from: validate_variables
   vars:
     variable_list:
+    - inventory_hostname
     - work_dir_remote
     - zowe_root_dir
     - zowe_instance_dir
