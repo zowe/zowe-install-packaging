@@ -30,5 +30,4 @@ zowe_apiml_gateway_port: 7554
 zowe_jobs_api_port: 8545
 zowe_mvs_api_port: 8547
 zowe_zlux_port: 8544
-zowe_client_certificate: "{{ work_dir_remote }}"/USER-cert.cer"
 

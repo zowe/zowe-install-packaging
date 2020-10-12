@@ -38,24 +38,16 @@ let login = async (uuid) => {
   return findCookieInResponse(response, APIML_AUTH_COOKIE);
 };
 
-let loginWithCertificate = async (uuid, cert) => {
-
-  // TODO what about the call via login. Do I also need key?
+let loginWithCertificate = async () => {
   const httpsAgent = new https.Agent({
     rejectUnauthorized: false, // (NOTE: this will disable client verification)
-    cert: fs.readFileSync(cert),
-    // key: fs.readFileSync('/Users/at670475/IntelliJProjects/ca_repo/ca-api-layer/keystore/ca3x/apiml.keystore.key'),
+    cert: fs.readFileSync('test/apiml/files/USER-cert.cer'),
+    key: fs.readFileSync('test/apiml/files/USER-PRIVATEKEY.key'),
   });
-  let x509Certificate = new FormData();
-  //fs.createReadStream(process.env.ZOWE_CLIENT_CERT)
-  x509Certificate.append('cert', fs.createReadStream(process.env.ZOWE_CLIENT_CERT));
-  // console.log(x509Certificate);
 
   log(uuid, 'URL: /api/v1/gateway/auth/login');
-  let response = await request.post('/api/v1/gateway/auth/login', x509Certificate,
-    // headers: {'Content-Type': 'application/x-x509-ca-cert' }
+  let response = await request.post('/api/v1/gateway/auth/login', {},
     {httpsAgent}
-
   );
   validateResponse(uuid, response);
 
