@@ -1,0 +1,18 @@
+---
+# Delete tss security config we've created reverting ZWESECUR.jcl
+# ============================================================================
+
+- name: Deleting started tasks
+  raw: tsocmd 'TSS REMOVE(STC) PROCNAME({{ item }})'
+  loop: "{{ zowe_known_started_tasks }}"
+  ignore_errors: True
+
+- name: Remove zowe user from facility profiles
+  raw: tsocmd 'TSS REVOKE({{ item[0] }}) IBMFAC({{ item[1] }})'
+  loop: "{{ zowe_known_runtime_users |product(zowe_known_facility_profiles)|list }}"
+  ignore_errors: True
+
+  - name: Remove xmem user from facility profiles
+  raw: tsocmd 'TSS REVOKE({{ item[0] }}) IBMFAC({{ item[1] }})'
+  loop: "{{ zowe_known_xmem_stc_users |product(zowe_known_facility_profiles)|list }}"
+  ignore_errors: True

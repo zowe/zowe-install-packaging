@@ -1,0 +1,31 @@
+---
+  # Delete acf2 security config we've created reverting ZWESECUR.jcl
+  
+  # build up jcl as we go then run at the end
+  
+  - name: Remove ACFNOSEC.jcl if exists
+    raw: rm -f "{{ work_dir_remote }}/ACFNOSEC.jcl"
+  
+  - name: create initial ACFNOSEC.jcl
+    raw: echo "//ACFNOSEC JOB\n//RUN      EXEC PGM=IKJEFT01,REGION=0M\n//SYSTSPRT DD SYSOUT=*\n//SYSTSIN  DD DDNAME=ACF2\n//ACF2     DD DATA,DLM=\$\$,SYMBOLS=JCLONLY\nACF" > "{{ work_dir_remote }}/ACFNOSEC.jcl"
+  
+  - name: Add remove ACF2 started tasks statement(s) to JCL
+    raw: echo "SET CONTROL(GSO)\nDELETE STC.{{ item }}\nF ACF2,REFRESH(STC)" >> "{{ work_dir_remote }}/ACFNOSEC.jcl"
+    loop: "{{ zowe_known_started_tasks }}"
+  
+  # ZWENOSEC.jcl doesn't seem to have any equivalent statement for the ZWES.IS facility
+  
+  - name: finalise ACFNOSEC.jcl
+    raw: echo "\$\$" >> "{{ work_dir_remote }}/ACFNOSEC.jcl"
+  
+  - name: Print ACFNOSEC.jcl
+    raw: cat "{{ work_dir_remote }}/ACFNOSEC.jcl"
+  
+  # Try printing before running 
+  # - name: Run ACFNOSEC.jcl
+  #   import_role:
+  #     name: zos
+  #     tasks_from: run_jcl
+  #   vars:
+  #     jcl_filename: "{{ work_dir_remote }}/ACFNOSEC.jcl"
+  

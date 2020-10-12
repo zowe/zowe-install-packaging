@@ -74,6 +74,14 @@ zowe_known_loadlib_members:
 zowe_known_parmlib_members:
 - ZWESIP00
 
+# this should list all known zowe runtime server user ids we ever setup during install
+zowe_known_runtime_users:
+- ZWESVUSR
+    
+# this should list all known cross memory server user ids we ever setup during install
+zowe_known_xmem_stc_users:
+- ZWESIUSR
+
 # default zowe profile
 # this profile is abandoned after v1.7.0
 zowe_user_profile: ~/.zowe_profile

@@ -51,23 +51,10 @@
   loop: "{{ zowe_known_jobnames }}"
   ignore_errors: True
 
-- name: Deleting started tasks
-  raw: tsocmd 'RDELETE STARTED ({{ item }})'
-  loop: "{{ zowe_known_started_tasks }}"
-  ignore_errors: True
-
-- name: Deleting facility profiles
-  raw: tsocmd 'RDELETE FACILITY ({{ item }})'
-  loop: "{{ zowe_known_facility_profiles }}"
-  ignore_errors: True
-
-- name: Refresh STARTED
-  raw: tsocmd 'SETR RACLIST(STARTED) REFRESH'
-  ignore_errors: True
-
-- name: Refresh FACILITY
-  raw: tsocmd 'SETR RACLIST(FACILITY) REF'
-  ignore_errors: True
+# ============================================================================
+- import_role:
+  name: zowe
+  tasks_from: uninstall_security_config  
 
 # ============================================================================
 - name: Test if we have {{ zos_uss_user_profile }}
