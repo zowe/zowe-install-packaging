@@ -9,7 +9,6 @@
  */
 
 const _ = require('lodash');
-const FormData = require('form-data');
 const debug = require('debug')('zowe-sanity-test:apiml:gateway');
 const axios = require('axios');
 const expect = require('chai').expect;
