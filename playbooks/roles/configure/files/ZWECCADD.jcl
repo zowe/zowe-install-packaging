@@ -20,7 +20,7 @@
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //*                     12345678
 //*      * Name of the data set containing Zowe's certificate (PKCS12)
-//         SET   DSNAME=
+//         SET   DSNAME=ZOWE
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //         SET   STCGRP=          * group for Zowe started tasks
@@ -42,11 +42,10 @@
 //*
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 ACF
-//
-* Import client certificate
-  SET PROFILE(&ZOWEUSER.) DIV(CERTDATA)
-  INSERT &ZOWEUSER..ZOWECERT DSNAME('&DSNAME.') LABEL('API ML Client certificate') TRUST
-  CHKCERT &ZOWEUSER..ZOWECERT
+  SET PROFILE(USER) DIV(CERTDATA)
+  INSERT &ZOWEUSER..ZOWECC DSNAME('&DSNAME.') +
+          LABEL(AMLCLIENTCERT) TRUST
+  CHKCERT &ZOWEUSER..ZOWECC
 $$
 //*
 

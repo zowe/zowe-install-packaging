@@ -22,6 +22,7 @@
       ignore_errors: True
       when: zos_security_system == 'DONTRUN'
 
-    - import_role:
-      name: configure
-      tasks_from: add_client_certificate_acf2
+    - name: Import certificate to ACF2
+      import_role:
+        name: configure
+        tasks_from: add_client_certificate_acf2
