@@ -13,7 +13,10 @@ import {
   installAndVerifySmpePtf,
   showZoweRuntimeLogs,
 } from '../../../../utils';
-import { TEST_TIMEOUT_SMPE_PTF } from '../../../../constants';
+import { 
+  TEST_TIMEOUT_SMPE_PTF,
+  SECURITY_SYSTEM_RACF,
+} from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker
@@ -37,6 +40,7 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zos_security_system': SECURITY_SYSTEM_RACF,
       }
     );
   }, TEST_TIMEOUT_SMPE_PTF);
