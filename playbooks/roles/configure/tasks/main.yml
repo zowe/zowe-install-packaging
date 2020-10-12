@@ -39,6 +39,7 @@
     - zowe_zlux_terminal_ssh_port
     - zowe_zlux_terminal_telnet_port
     - zos_security_system
+    - zowe_external_certficate_authorities
 
 
 
