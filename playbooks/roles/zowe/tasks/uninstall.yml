@@ -53,8 +53,8 @@
 
 # ============================================================================
 - import_role:
-  name: zowe
-  tasks_from: uninstall_security_config  
+    name: zowe
+    tasks_from: uninstall_security_config  
 
 # ============================================================================
 - name: Test if we have {{ zos_uss_user_profile }}
