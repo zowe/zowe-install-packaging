@@ -9,9 +9,9 @@
  */
 
 import {
-    checkMandatoryEnvironmentVariables,
-    installAndGenerateApiDocs,
-  } from '../../utils';
+  checkMandatoryEnvironmentVariables, identifySecuritySystem,
+  installAndGenerateApiDocs,
+} from '../../utils';
   import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
   
   const testSuiteName = 'Test convenience build installation';
@@ -25,11 +25,13 @@ import {
     });
   
     test('install and generate api documentation', async () => {
+      const security_system = identifySecuritySystem();
       await installAndGenerateApiDocs(
         testSuiteName,
         process.env.TEST_SERVER,
         {
           'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+          'zos_security_system': security_system,
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);
