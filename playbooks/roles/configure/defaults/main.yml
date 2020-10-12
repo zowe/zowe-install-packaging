@@ -50,7 +50,7 @@ zowe_zlux_terminal_telnet_security_type:
 zowe_zosmf_certificate:
 zowe_external_certficate:
 zowe_external_certficate_alias:
-zowe_external_certficate_authorities: "{{ work_dir_remote }}/APIML_External_Certificate_Authority.cer"
+zowe_external_certficate_authorities:
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_log_dir: ~/.zowe/logs
 zowe_keystore_password: password
