@@ -31,6 +31,7 @@ describe(testSuiteName, () => {
       process.env.TEST_SERVER,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'vlastni_vlariablu' : process.env.TEST_SERVER,
         'zos_security_system': SECURITY_SYSTEM_ACF2,
       }
     );
