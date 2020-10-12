@@ -9,40 +9,39 @@
  */
 
 import {
-    checkMandatoryEnvironmentVariables,
-    installAndVerifyConvenienceBuild,
-    showZoweRuntimeLogs,
-  } from '../../../utils';
-  import { 
-    TEST_TIMEOUT_CONVENIENCE_BUILD, 
-    KEYSTORE_MODE_KEYRING,
-    SECURITY_SYSTEM_ACF2,
-  } from '../../../constants';
-  
-  const testServer = 'marist-2';
-  const testSuiteName = 'Test convenience build installation with keystore pointing to an ACF2 keyring';
-  describe(testSuiteName, () => {
-    beforeAll(() => {
-      // validate variables
-      checkMandatoryEnvironmentVariables([
-        'ZOWE_BUILD_LOCAL',
-      ]);
-    });
+  checkMandatoryEnvironmentVariables,
+  installAndVerifyConvenienceBuild,
+  showZoweRuntimeLogs,
+} from '../../../utils';
+import {
+  TEST_TIMEOUT_CONVENIENCE_BUILD,
+  KEYSTORE_MODE_KEYRING,
+  SECURITY_SYSTEM_ACF2,
+} from '../../../constants';
 
-    test('install and verify', async () => {
-      await installAndVerifyConvenienceBuild(
-        testSuiteName,
-        testServer,
-        {
-          'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-          'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
-          'zos_security_system': SECURITY_SYSTEM_ACF2,
-        }
-      );
-    }, TEST_TIMEOUT_CONVENIENCE_BUILD);
-  
-    afterAll(async () => {
-      await showZoweRuntimeLogs(testServer);
-    })
+const testServer = 'marist-2';
+const testSuiteName = 'Test convenience build installation with keystore pointing to an ACF2 keyring';
+describe(testSuiteName, () => {
+  beforeAll(() => {
+    // validate variables
+    checkMandatoryEnvironmentVariables([
+      'ZOWE_BUILD_LOCAL',
+    ]);
   });
-  
+
+  test('install and verify', async () => {
+    await installAndVerifyConvenienceBuild(
+      testSuiteName,
+      testServer,
+      {
+        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
+        'zos_security_system': SECURITY_SYSTEM_ACF2,
+      }
+    );
+  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(testServer);
+  })
+});
