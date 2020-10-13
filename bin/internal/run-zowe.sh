@@ -98,19 +98,25 @@ fi
 ${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
 checkForErrorsFound
 
-if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
+# If ZWE_LAUNCH_COMPONENTS set it takes precedence over LAUNCH_COMPONENT_GROUPS
+if [[ -n "${ZWE_LAUNCH_COMPONENTS}" ]]
 then
-  LAUNCH_COMPONENTS=api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss #TODO this is WIP - component ids not finalised at the moment
-fi
+  LAUNCH_COMPONENTS=${ZWE_LAUNCH_COMPONENTS}
+else
+  if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
+  then
+    LAUNCH_COMPONENTS=api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
+  fi
 
-#Explorers may be present, but have a prereq on gateway, not desktop
-if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
-then
-  LAUNCH_COMPONENTS=zss,app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
-  PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
-elif [[ $LAUNCH_COMPONENT_GROUPS == *"ZSS"* ]]
-then
-  LAUNCH_COMPONENTS=zss,${LAUNCH_COMPONENTS}
+  #Explorers may be present, but have a prereq on gateway, not desktop
+  if [[ $LAUNCH_COMPONENT_GROUPS == *"DESKTOP"* ]]
+  then
+    LAUNCH_COMPONENTS=zss,app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
+    PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+  elif [[ $LAUNCH_COMPONENT_GROUPS == *"ZSS"* ]]
+  then
+    LAUNCH_COMPONENTS=zss,${LAUNCH_COMPONENTS}
+  fi
 fi
 
 if [[ $LAUNCH_COMPONENTS == *"api-mediation"* ]]
