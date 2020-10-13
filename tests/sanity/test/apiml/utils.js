@@ -40,8 +40,8 @@ let login = async (uuid) => {
 let loginWithCertificate = async () => {
   const httpsAgent = new https.Agent({
     rejectUnauthorized: false, // (NOTE: this will disable client verification)
-    cert: fs.readFileSync('test/apiml/files/USER-cert.cer'),
-    key: fs.readFileSync('test/apiml/files/USER-PRIVATEKEY.key'),
+    cert: fs.readFileSync('../../playbooks/roles/configure/files/USER-cert.cer'),
+    key: fs.readFileSync('../../playbooks/roles/configure/files/USER-PRIVATEKEY.key'),
   });
 
   log(uuid, 'URL: /api/v1/gateway/auth/login');
