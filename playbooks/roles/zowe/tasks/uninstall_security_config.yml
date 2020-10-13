@@ -10,11 +10,11 @@
     tasks_from: validate_variables
   vars:
     variable_list:
-      # TODO - fix list
-    - zowe_runtime_user
-    - zowe_known_keyring_names
-    - zowe_known_keyring_personal_certificates
-    - zowe_known_keyring_certauth_certificates
+    - work_dir_remote
+    - zowe_known_runtime_users
+    - zowe_known_started_tasks
+    - zowe_known_facility_profiles
+    - zowe_known_xmem_stc_users
 
 # ============================================================================
 
