@@ -31,12 +31,12 @@ zowe_known_xmem_jobnames:
 
 # this should list all known started tasks we ever setup during install
 zowe_known_started_tasks:
-- ZWESIS*.*
-- ZOWESVR.*
-- ZWESVSTC.*
-- ZWESISTC.*
-- ZWESASTC.*
-- ZWES*.*
+- ZWESIS*
+- ZOWESVR
+- ZWESVSTC
+- ZWESISTC
+- ZWESASTC
+- ZWES*
 
 # this should list all known facility profiles we ever setup during install
 zowe_known_facility_profiles:

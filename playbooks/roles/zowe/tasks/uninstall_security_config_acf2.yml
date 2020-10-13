@@ -21,11 +21,10 @@
   - name: Print ACFNOSEC.jcl
     raw: cat "{{ work_dir_remote }}/ACFNOSEC.jcl"
   
-  # Try printing before running 
-  # - name: Run ACFNOSEC.jcl
-  #   import_role:
-  #     name: zos
-  #     tasks_from: run_jcl
-  #   vars:
-  #     jcl_filename: "{{ work_dir_remote }}/ACFNOSEC.jcl"
+  - name: Run ACFNOSEC.jcl
+    import_role:
+      name: zos
+      tasks_from: run_jcl
+    vars:
+      jcl_filename: "{{ work_dir_remote }}/ACFNOSEC.jcl"
   
