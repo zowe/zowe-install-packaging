@@ -114,3 +114,4 @@
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./apiml_cm.sh
     script_parameters: "--action trust --service-password {{ zowe_keystore_password }} --service-truststore {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore --service-storetype PKCS12 --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias apiml"
+  when: zowe_keystore_dir is defined
