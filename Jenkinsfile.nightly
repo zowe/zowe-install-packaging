@@ -21,6 +21,7 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_CLI_RELEASE_PATH = '/org/zowe/nightly/cli'
   def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
   def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
+  def IS_BUILD_UNSTABLE = false
 
   def isStagingBranch = env && env.BRANCH_NAME == 'staging'
 
@@ -222,6 +223,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          IS_BUILD_UNSTABLE = true
         }
       }
     },
@@ -279,6 +281,7 @@ node('ibm-jenkins-slave-nvm') {
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          IS_BUILD_UNSTABLE = true
         }
       }
     },
@@ -361,6 +364,9 @@ node('ibm-jenkins-slave-nvm') {
            "*************************************************************************************************"
 
       def slackMessage = "${message}\n\nCheck pipeline detail: ${env.BUILD_URL}"
+      if (IS_BUILD_UNSTABLE) {
+        currentBuild.result = 'UNSTABLE'
+      }
       if (params.TEST_RUN) {
         echo "Slack message in ${slackColor}:\n${slackMessage}"
       } else {

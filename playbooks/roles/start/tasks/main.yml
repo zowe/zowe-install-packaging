@@ -22,7 +22,7 @@
     name: zos
     tasks_from: opercmd
   vars:
-    opercmd: "S {{ zowe_xmem_stc_name }}"
+    opercmd: "S {{ zowe_xmem_stc_name }},REUSASID=YES"
 
 - name: Start Zowe
   raw: "{{ zowe_start_path }}"

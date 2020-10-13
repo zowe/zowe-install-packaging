@@ -12,6 +12,9 @@ file_upload_method: sftp
 # if we perform hash (MD5) check before uploading the file
 file_upload_hashcheck: false
 
+# default the security system to RACF. Should be one of RACF, ACF2, or TSS
+zos_security_system: RACF
+
 # optional, default to ansible_ssh_host
 # required for zD&T (external IP is different from internal IP)
 zowe_external_domain_name:

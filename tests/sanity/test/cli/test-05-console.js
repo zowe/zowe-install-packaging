@@ -13,7 +13,7 @@ const debug = require('debug')('zowe-sanity-test:cli:console');
 // const addContext = require('mochawesome/addContext');
 const { execZoweCli, defaultZOSMFProfileName, createDefaultZOSMFProfile } = require('./utils');
 
-describe('cli console', function() {
+describe.skip('cli console', function() {
   before('verify environment variables', async function() {
     expect(process.env.ZOSMF_PORT, 'ZOSMF_PORT is not defined').to.not.be.empty;
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;

@@ -1,5 +1,11 @@
 ---
 # this playbook runs SZWESAMP(ZWEKRING)
+
+- name: Validate that we were in keyring mode
+  fail:
+    msg: "Error. This play should only be run when in keyring mode"
+  when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+
 - name: Remove ZWEKRING.jcl if exists
   raw: >-
     rm -f "{{ work_dir_remote }}/ZWEKRING.jcl"
@@ -24,6 +30,7 @@
 - name: Update ZWEKRING.jcl with configurations
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
+    sed -e "s%SET  PRODUCT=RACF%SET PRODUCT={{ zos_security_system }}%" | \
     sed -e "s%SET HOSTNAME=''%SET HOSTNAME='{{ zowe_external_domain_name }}'%" | \
     sed -e "s%SET IPADDRES=''%SET IPADDRES='{{ zowe_external_ip_address }}'%" | \
     sed -e "s%SET    LABEL='localhost'%SET    LABEL='{{ zowe_keyring_certname }}'%" \
@@ -32,6 +39,7 @@
 - name: Check ZWEKRING.jcl changes
   raw: >-
     grep -e "^// *SET " \
+        -e PRODUCT \
         -e HOSTNAME \
         -e IPADDRES \
         -e LABEL \

@@ -16,3 +16,5 @@ zowe_smpe_volser: T41882
 
 zowe_external_domain_name: tvt4188.svl.ibm.com
 zowe_external_ip_address: 9.30.241.209
+zowe_zlux_terminal_telnet_port: 992
+zowe_zlux_terminal_telnet_security_type: tls
