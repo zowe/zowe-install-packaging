@@ -60,6 +60,24 @@ echo_and_log() {
   echo "$1" >> ${LOG_FILE}
 }
 
+get_zowe_version() {
+  export ZOWE_VERSION=$(cat $ZOWE_ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+}
+
+# Install-time user input like DSN, if can be determined at this point, should be put into instance for later use
+get_install_user_vars() {
+  get_zowe_version  
+  for file in /tmp/zowe/$ZOWE_VERSION/install-*.env; do
+    if [[ -f $file ]]; then
+      ROOT_DIR_VAL=$(cat $file | grep "^ROOT_DIR=" | cut -d'=' -f2)
+      if [[ ROOT_DIR_VAL == ZOWE_ROOT_DIR ]]; then            
+        . $file
+        break;
+      fi
+    fi
+  done       
+}
+
 create_new_instance() {
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
@@ -69,6 +87,8 @@ create_new_instance() {
     -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
     -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
     -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
+    -e "s#{{zwes_zis_parmlib}}#${ZOWE_DSN_PREFIX}.SAMPLIB#" \
+    -e "s#{{zwes_zis_loadlib}}#${ZOWE_DSN_PREFIX}.SZWEAUTH#" \
     "${TEMPLATE}" \
     > "${INSTANCE}"
 
@@ -108,7 +128,9 @@ check_existing_instance_for_updates() {
       -e "s#{{zosmf_port}}#${ZOWE_ZOSMF_PORT}#" \
       -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
       -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
-      -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#")
+      -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
+      -e "s#{{zwes_zis_parmlib}}#${ZOWE_DSN_PREFIX}.SAMPLIB#" \
+      -e "s#{{zwes_zis_loadlib}}#${ZOWE_DSN_PREFIX}.SZWEAUTH#")
 
     echo_and_log "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND"
     echo "\n$LINES_TO_APPEND" >> $INSTANCE
@@ -145,6 +167,9 @@ else
   . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
 fi
 echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
+
+# If possible, retrieve what is known about install user vars
+get_install_user_vars
 
 # Check if instance .env already exists
 if [[ -f "${INSTANCE}" ]]
