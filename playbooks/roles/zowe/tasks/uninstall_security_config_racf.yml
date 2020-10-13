@@ -3,8 +3,8 @@
 # ============================================================================
 
 - name: Deleting started tasks
-  raw: tsocmd 'RDELETE STARTED ({{ item }})'
-  loop: "{{ zowe_known_started_tasks }}.*"
+  raw: tsocmd 'RDELETE STARTED ({{ item }}.*)'
+  loop: "{{ zowe_known_started_tasks }}"
   ignore_errors: True
 
 - name: Deleting facility profiles
