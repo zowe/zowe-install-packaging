@@ -101,7 +101,8 @@ else
 fi
 
 # Backwards compatible overloading of KEYSTORE_ALIAS to be ZOWE_CERTIFICATE_LABEL
-if [[ -n ${ZOWE_CERTIFICATE_LABEL} ]] then
+if [[ -n ${ZOWE_CERTIFICATE_LABEL} ]];
+then
   KEYSTORE_ALIAS=${ZOWE_CERTIFICATE_LABEL}
 fi
 
