@@ -100,9 +100,10 @@
 - import_role:
     name: configure
     tasks_from: change_permissions
-    vars:
-      permissions: 777
-      file_url: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore.p12"
+  vars:
+    permissions: 777
+    file_url: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore.p12"
+
 # ============================================================================
 # Add external API ML CA to the truststore
 - name: Add the external CA to the truststore
@@ -118,9 +119,9 @@
 - import_role:
     name: configure
     tasks_from: change_permissions
-    vars:
-      permissions: 500
-      file_url: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore.p12"
+  vars:
+    permissions: 500
+    file_url: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore.p12"
 # ============================================================================
 # Configure Zowe Instance
 - import_role:
