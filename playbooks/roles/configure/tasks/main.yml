@@ -97,7 +97,12 @@
     tasks_from: setup_keyring_certificates
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
-
+- import_role:
+    name: configure
+    tasks_from: change_permissions
+    vars:
+      permissions: 777
+      file_url: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore"
 # ============================================================================
 # Add external API ML CA to the truststore
 - name: Add the external CA to the truststore
@@ -110,6 +115,12 @@
     script_parameters: "--action trust --service-password {{ zowe_keystore_password }} --service-truststore {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore --service-storetype PKCS12 --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias apiml"
   when: zowe_keystore_dir is defined
 
+- import_role:
+    name: configure
+    tasks_from: change_permissions
+    vars:
+      permissions: 500
+      file_url: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore"
 # ============================================================================
 # Configure Zowe Instance
 - import_role:
