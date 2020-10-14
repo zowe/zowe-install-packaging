@@ -21,9 +21,6 @@
 - name: Show zowe-setup-certificates.env
   raw: cat "{{ work_dir_remote }}/zowe-setup-certificates.env"
 
-- name: Remove keystore locking from zowe-setup-certificates.sh
-  raw: awk -v RS="\0" -v ORS="" '{gsub(/#\sset\sup\sprivileges\sand\sownership.*?\n\n/,"#The keystore locking part has been removed\n\n")}7' "{{ zowe_root_dir }}/zowe-setup-certificates.sh" > zowe-setup-certificates-nolock.sh
-
 - name: Show zowe-setup-certificates-nolock.sh
   raw: cat "{{ work_dir_remote }}/zowe-setup-certificates-nolock.sh"
 
