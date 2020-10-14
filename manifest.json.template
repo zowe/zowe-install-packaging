@@ -367,7 +367,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "1.9.0",
+        "tag": "v1.9.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     }
