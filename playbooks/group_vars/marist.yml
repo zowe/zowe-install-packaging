@@ -26,3 +26,5 @@ zowe_smpe_volser: ZOWE02
 zowe_zlux_terminal_telnet_port: 623
 # optional, this is the folder where we store Zowe FMIDs on the z/OS server
 zowe_fmids_dir_remote: /ZOWE/zowe-fmids
+
+zowe_lock_keystore: false
