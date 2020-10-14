@@ -13,7 +13,7 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../utils';
-import {SECURITY_SYSTEM_ACF2, TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
+import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
 
 const testSuiteName = 'Test convenience build installation';
 describe(testSuiteName, () => {
