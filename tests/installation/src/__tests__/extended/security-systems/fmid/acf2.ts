@@ -13,7 +13,7 @@ import {
   installAndVerifySmpeFmid,
   showZoweRuntimeLogs,
 } from '../../../../utils';
-import {SECURITY_SYSTEM_ACF2, TEST_TIMEOUT_SMPE_FMID} from '../../../../constants';
+import {TEST_TIMEOUT_SMPE_FMID} from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker
@@ -37,7 +37,6 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zos_security_system': SECURITY_SYSTEM_ACF2,
       }
     );
   }, TEST_TIMEOUT_SMPE_FMID);

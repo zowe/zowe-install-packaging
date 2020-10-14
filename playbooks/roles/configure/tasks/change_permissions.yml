@@ -1,5 +1,0 @@
----
-# Set permissions for file
-
-- name: Set {{ permissions }} permissions for {{ file_url }}
-  raw: sudo chmod {{ permissions }} {{ file_url }}

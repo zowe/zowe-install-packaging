@@ -45,4 +45,3 @@ describe(testSuiteName, () => {
     await showZoweRuntimeLogs(testServer);
   })
 });
-  

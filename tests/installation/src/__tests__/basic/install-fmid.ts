@@ -9,7 +9,7 @@
  */
 
 import {
-  checkMandatoryEnvironmentVariables, identifySecuritySystem,
+  checkMandatoryEnvironmentVariables,
   installAndVerifySmpeFmid,
   showZoweRuntimeLogs,
 } from '../../utils';
@@ -26,13 +26,11 @@ describe(testSuiteName, () => {
   });
 
   test('install and verify', async () => {
-    const security_system = identifySecuritySystem();
     await installAndVerifySmpeFmid(
       testSuiteName,
       process.env.TEST_SERVER,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zos_security_system': security_system,
       }
     );
   }, TEST_TIMEOUT_SMPE_FMID);

@@ -368,13 +368,4 @@ export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: st
   }
 };
 
-export function identifySecuritySystem(): string {
-  switch (process.env.TEST_SERVER) {
-    case 'marist-3':
-      return SECURITY_SYSTEM_TSS
-    case 'marist-2':
-      return SECURITY_SYSTEM_ACF2
-    default:
-      return SECURITY_SYSTEM_RACF
-  }
 }
