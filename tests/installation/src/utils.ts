@@ -367,5 +367,3 @@ export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: st
     debug(`showZoweRuntimeLogs failed: ${e}`);
   }
 };
-
-}
