@@ -165,7 +165,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     }
 
     // find status dropdown
-    const filterStatusDropdown = await getElement(treeContent, '#filter-status-field div[label=Status]');
+    const filterStatusDropdown = await getElement(treeContent, '#filter-status-field');
     expect(filterStatusDropdown).to.be.an('object');
     await filterStatusDropdown.click();
     debug('filter form updated');
