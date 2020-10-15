@@ -42,17 +42,17 @@
 
 # ============================================================================
 # Wait for Zowe services be started
-- name: Wait for Desktop port {{ zowe_zlux_port }} to be available
-  uri:
-    url: "https://{{ zowe_external_domain_name }}:{{ zowe_zlux_port }}"
-    follow_redirects: all
-    method: GET
-    validate_certs: false
-  register: _result
-  until: _result.status == 200
-  retries: "{{ wait_for_zowe_service_retries | int }}"
-  delay: "{{ wait_for_zowe_service_delay | int }}"
-  delegate_to: localhost
+#- name: Wait for Desktop port {{ zowe_zlux_port }} to be available
+#  uri:
+#    url: "https://{{ zowe_external_domain_name }}:{{ zowe_zlux_port }}"
+#    follow_redirects: all
+#    method: GET
+#    validate_certs: false
+#  register: _result
+#  until: _result.status == 200
+#  retries: "{{ wait_for_zowe_service_retries | int }}"
+#  delay: "{{ wait_for_zowe_service_delay | int }}"
+#  delegate_to: localhost
 
 - name: Wait for Jobs API port {{ zowe_jobs_api_port }} to be available
   uri:
