@@ -82,9 +82,20 @@
 
 # ============================================================================
 # Setup client certificates
+
+# Upload client certificate
 - import_role:
     name: configure
-    tasks_from: upload_client_certificates
+    tasks_from: upload_certificate
+  vars:
+    filename: USER-cert.cer
+
+# Upload client CA certificate
+- import_role:
+    name: configure
+    tasks_from: upload_certificate
+  vars:
+    filename: APIML_External_Certificate_Authority.cer
 
 - import_role:
     name: configure

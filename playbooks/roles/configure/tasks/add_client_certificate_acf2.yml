@@ -1,5 +1,5 @@
 ---
-# this playbook runs SZWESAMP(ZWEKRING)
+# Transfer and submit ZWECCADD JCL to map client certificate to user in ACF2
 
 - name: Remove ZWECCADD.jcl if exists
   raw: rm -f "{{ work_dir_remote }}/ZWECCADD.jcl"
