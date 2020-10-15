@@ -322,18 +322,23 @@ else
 EOF
 fi
 
-declare -i permissions=777
-# set up privileges and ownership
-if [${ZOWE_LOCK_KEYSTORE} = true] ; then
+if [[ "${ZOWE_LOCK_KEYSTORE}" == "true"]] ; then
   permissions=500
+else
+  permissions=570
 fi
+
+# set up privileges and ownership
 chmod -R $permissions ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/* 2> /dev/null # In some keystore scenarios these directories might be empty, so supress error
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
+
 if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
   echo "Unable to change the current owner of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_USER_ID} owner. See $LOG_FILE for more details."
   echo "Trying to change a group of the ${KEYSTORE_DIRECTORY}."
-  if [${ZOWE_LOCK_KEYSTORE} = true] ; then
+  if [[ "${ZOWE_LOCK_KEYSTORE}" == "true"]] ; then
     permissions=550
+  else
+    permissions=750
   fi
   chmod -R $permissions ${KEYSTORE_DIRECTORY}
   if ! chgrp -R ${ZOWE_GROUP_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
