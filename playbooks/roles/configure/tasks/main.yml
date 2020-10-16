@@ -40,7 +40,6 @@
     - zowe_zlux_terminal_telnet_port
     - zos_security_system
     - zowe_lock_keystore
-    - zos_keystore_mode
 
 # ============================================================================
 - name: Show Zowe manifest
