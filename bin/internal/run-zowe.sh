@@ -194,6 +194,4 @@ done
 for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   . ${LAUNCH_COMPONENT}/start.sh & #app-server/start.sh doesn't run in background, so blocks other components from starting
-  echo "Running start.sh and printing variables"
-  sh env
 done

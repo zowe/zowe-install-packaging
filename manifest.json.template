@@ -76,10 +76,11 @@
       "version": "~0.2.0-STAGING"
     },
     "org.zowe.apiml.sdk.zowe-install": {
-       "version": "1.17.0-PR-894-SNAPSHOT",
-       "artifact": "zowe-install-1.17.0-PR-894-20201016.144028-3.zip",
+       "version": "~1.17.0-SNAPSHOT",
+       "artifact": "zowe-install-*.zip",
        "target": ".pax/mediation/",
-       "explode": "true"
+       "explode": "true",
+       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.3",
