@@ -122,10 +122,6 @@
     script_parameters: "--action trust --service-password {{ zowe_keystore_password }} --service-truststore {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore --service-storetype PKCS12 --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
-- name: Export vars for adding CA to the keyring
-  raw: export GENERATE_CERTS_FOR_KEYRING=true
-  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
-
 - name: Add the external CA to the keyring
   import_role:
     name: zos
