@@ -31,7 +31,6 @@
     - zowe_apiml_allow_encoded_slashes
     - zowe_apiml_prefer_ip_address
     - zowe_apiml_gateway_timeout_millis
-    - zowe_apiml_security_auth_zosmf_service_id
     - zowe_apiml_security_x509_enabled
     - zowe_apiml_security_zosmf_applid
     - zowe_jobs_api_port
