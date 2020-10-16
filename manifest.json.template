@@ -79,8 +79,7 @@
        "version": "1.17.0-PR-894-SNAPSHOT",
        "artifact": "zowe-install-*.zip",
        "target": ".pax/mediation/",
-       "explode": "true",
-       "excludePatterns": ["*PR*.zip"]
+       "explode": "true"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.3",
