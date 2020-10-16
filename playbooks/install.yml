@@ -13,28 +13,6 @@
   # prepare ansible environment for install
   - import_role:
       name: common
-  # Upload client CA certificate
-  - import_role:
-      name: common
-      tasks_from: validate_variables
-    vars:
-      variable_list:
-        - zos_keystore_mode
-
-  - import_role:
-      name: configure
-      tasks_from: upload_certificate
-    vars:
-      filename: APIML_External_Certificate_Authority.cer
-  - name: Add the external CA to the keyring
-    import_role:
-      name: zos
-      tasks_from: run_script
-    vars:
-      script_chdir: "{{ zowe_root_dir }}/bin"
-      script_filename: ./apiml_cm.sh
-      script_parameters: "--action trust-keyring --zowe-keyring {{ zowe_keyring_alias }} --zowe-userid {{ zowe_runtime_user }} --service-storetype JCERACFKS --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
-    when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
   - import_role:
       name: zos
