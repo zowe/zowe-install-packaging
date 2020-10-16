@@ -40,6 +40,7 @@
     - zowe_zlux_terminal_telnet_port
     - zos_security_system
     - zowe_lock_keystore
+    - zos_keystore_mode
 
 # ============================================================================
 - name: Show Zowe manifest
@@ -132,7 +133,7 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./apiml_cm.sh
-    script_parameters: "--action trust --zowe-keyring {{ zowe_keyring_alias }} --zowe-userid {{ zowe_runtime_user }} --service-storetype JCERACFKS --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
+    script_parameters: "--action trust-keyring --zowe-keyring {{ zowe_keyring_alias }} --zowe-userid {{ zowe_runtime_user }} --service-storetype JCERACFKS --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 # ============================================================================
