@@ -30,11 +30,6 @@
     sed -e "s+^DISCOVERY_PORT=.*\$+DISCOVERY_PORT={{ zowe_apiml_discovery_port }}+" | \
     sed -e "s+^GATEWAY_PORT=.*\$+GATEWAY_PORT={{ zowe_apiml_gateway_port }}+" | \
     sed -e "s+^APIML_ENABLE_SSO=.*\$+APIML_ENABLE_SSO={{ zowe_apiml_enable_sso|string|lower }}+" | \
-    sed -e "s+^APIML_ALLOW_ENCODED_SLASHES=.*\$+APIML_ALLOW_ENCODED_SLASHES={{ zowe_apiml_allow_encoded_slashes|string|lower }}+" | \
-    sed -e "s+^APIML_PREFER_IP_ADDRESS=.*\$+APIML_PREFER_IP_ADDRESS={{ zowe_apiml_prefer_ip_address|string|lower }}+" | \
-    sed -e "s+^APIML_GATEWAY_TIMEOUT_MILLIS=.*\$+APIML_GATEWAY_TIMEOUT_MILLIS={{ zowe_apiml_gateway_timeout_millis }}+" | \
-    sed -e "s+^APIML_SECURITY_X509_ENABLED=.*\$+APIML_SECURITY_X509_ENABLED={{ zowe_apiml_security_x509_enabled|string|lower }}+" | \
-    sed -e "s+^APIML_SECURITY_ZOSMF_APPLID=.*\$+APIML_SECURITY_ZOSMF_APPLID={{ zowe_apiml_security_zosmf_applid|string|lower }}+" | \
     sed -e "s+^JOBS_API_PORT=.*\$+JOBS_API_PORT={{ zowe_jobs_api_port }}+" | \
     sed -e "s+^FILES_API_PORT=.*\$+FILES_API_PORT={{ zowe_mvs_api_port }}+" | \
     sed -e "s+^JES_EXPLORER_UI_PORT=.*\$+JES_EXPLORER_UI_PORT={{ zowe_jobs_explorer_port }}+" | \
