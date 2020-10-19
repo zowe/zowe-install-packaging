@@ -81,8 +81,7 @@
        "artifact": "zowe-install-*.zip",
        "repository": "libs-snapshot-local",
        "target": ".pax/mediation/",
-       "explode": "true",
-       "excludePatterns": ["*PR*.zip"]
+       "explode": "true"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.3",
