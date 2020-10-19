@@ -9,9 +9,9 @@
  */
 
 import {
-    checkMandatoryEnvironmentVariables,
-    installAndGenerateApiDocs,
-  } from '../../utils';
+  checkMandatoryEnvironmentVariables,
+  installAndGenerateApiDocs,
+} from '../../utils';
   import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
   
   const testSuiteName = 'Test convenience build installation';

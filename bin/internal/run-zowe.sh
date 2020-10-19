@@ -81,12 +81,18 @@ ZOWE_DESKTOP=${ZOWE_PREFIX}DT
 
 # Make sure Java and Node are available on the Path
 . ${ROOT_DIR}/scripts/utils/configure-java.sh
+if [[ ${SKIP_NODE} != 1 ]]
+then
 . ${ROOT_DIR}/scripts/utils/configure-node.sh
 checkForErrorsFound
+fi
 
 #Temp - whilst desktop components don't have validate scripts
+if [[ ${SKIP_NODE} != 1 ]]
+then
 . ${ROOT_DIR}/scripts/utils/validate-node.sh
 checkForErrorsFound
+fi
 
 # Validate keystore directory accessible
 ${ROOT_DIR}/scripts/utils/validate-keystore-directory.sh
@@ -107,6 +113,9 @@ else
   then
     LAUNCH_COMPONENTS=zss,app-server,${LAUNCH_COMPONENTS} #Make app-server the first component, so any extender plugins can use its config
     PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+  elif [[ $LAUNCH_COMPONENT_GROUPS == *"ZSS"* ]]
+  then
+    LAUNCH_COMPONENTS=zss,${LAUNCH_COMPONENTS}
   fi
 fi
 

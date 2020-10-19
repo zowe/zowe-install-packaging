@@ -13,8 +13,10 @@
   # prepare ansible environment for install
   - import_role:
       name: common
+
   - import_role:
       name: zos
+
 
   # ============================================================================
   # uninstall zowe

@@ -13,7 +13,7 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../../constants';
+import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker
