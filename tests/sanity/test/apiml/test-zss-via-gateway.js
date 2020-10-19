@@ -28,7 +28,7 @@ describe('test zss x509 certificate mapping via gateway', function() {
   it('obtain JWT for certificate', async () => {
     const authenticationCookie = await testUtils.loginWithCertificate();
     expect(authenticationCookie).to.not.be.empty;
-  })
+  });
 
   it('call endpoint with valid certificate', async () => {
     const uuid = testUtils.uuid();
