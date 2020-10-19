@@ -81,3 +81,5 @@ zowe_external_domain_name:
 # optional, no default value
 # required for zD&T (external IP is different from internal IP)
 zowe_external_ip_address:
+# Restrict permissions to keystores after the certificate setup script
+zowe_lock_keystore: false
