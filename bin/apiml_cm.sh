@@ -28,6 +28,7 @@ function usage {
     echo "     - new-service - adds new service signed by local CA or external CA"
     echo "     - trust - adds a public certificate of a service to APIML truststore"
     echo "     - trust-zosmf - adds public certificates from z/OSMF to APIML truststore"
+    echo "     - trust-keyring - adds a public certificate of a service to APIML keyring"
     echo "     - clean - removes files created by setup"
     echo "     - jwt-keygen - generates and exports JWT key pair"
     echo ""
@@ -466,6 +467,13 @@ function trust {
     fi
 }
 
+function trust_keyring {
+    echo "Import a certificate to the keyring:"
+
+    keytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
+            -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+}
+
 function jwt_key_gen_and_export {
     echo "Generates key pair for JWT token secret and exports the public key"
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
@@ -704,6 +712,9 @@ case $ACTION in
         ;;
     trust)
         trust
+        ;;
+    trust-keyring)
+        trust_keyring
         ;;
     trust-zosmf)
         trust_zosmf
