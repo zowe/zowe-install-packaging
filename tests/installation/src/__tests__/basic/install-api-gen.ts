@@ -30,6 +30,7 @@ import {
         process.env.TEST_SERVER,
         {
           'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+          'zowe_lock_keystore': 'false',
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);
