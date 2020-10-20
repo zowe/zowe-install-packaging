@@ -26,13 +26,14 @@ describe('test zss x509 certificate mapping via gateway', function() {
     request = testUtils.verifyAndSetupEnvironment();
   });
   it('obtain JWT for certificate', async () => {
-    const authenticationCookie = await testUtils.loginWithCertificate();
+    const uuid = testUtils.uuid();
+    const authenticationCookie = await testUtils.loginWithCertificate(uuid);
     expect(authenticationCookie).to.not.be.empty;
   });
 
   it('call endpoint with valid certificate', async () => {
     const uuid = testUtils.uuid();
-    const authenticationCookie = await testUtils.loginWithCertificate();
+    const authenticationCookie = await testUtils.loginWithCertificate(uuid);
     const username = process.env.SSH_USER;
     testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
     const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {

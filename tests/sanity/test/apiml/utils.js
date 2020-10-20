@@ -38,14 +38,13 @@ let login = async (uuid) => {
   return findCookieInResponse(response, APIML_AUTH_COOKIE);
 };
 
-let loginWithCertificate = async () => {
+let loginWithCertificate = async (uuid) => {
+  log(uuid, 'login with certificate URL: /api/v1/gateway/auth/login');
   const httpsAgent = new https.Agent({
     rejectUnauthorized: false, // (NOTE: this will disable client verification)
     cert: fs.readFileSync('../../playbooks/roles/configure/files/USER-cert.cer'),
     key: fs.readFileSync('../../playbooks/roles/configure/files/USER-PRIVATEKEY.key'),
   });
-
-  log(uuid, 'URL: /api/v1/gateway/auth/login');
   let response = await request.post('/api/v1/gateway/auth/login', {},
     {httpsAgent}
   );
