@@ -47,7 +47,7 @@ let loginWithCertificate = async (uuid) => {
   });
   let response = await request.post('/api/v1/gateway/auth/login', {},
     {httpsAgent}
-  );
+  )
   validateResponse(uuid, response);
 
   return findCookieInResponse(response, APIML_AUTH_COOKIE);

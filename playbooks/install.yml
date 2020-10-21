@@ -15,6 +15,10 @@
       name: common
 
   - import_role:
+      name: configure
+      tasks_from: configure_zss
+
+  - import_role:
       name: zos
 
 
