@@ -10,6 +10,7 @@
 # - ZOSMF_CERTIFICATE - Public certificates of z/OSMF - multiple certificates delimited with space has to be enclosed with quotes ("path/cer1 path/cer2")
 
 # - KEYSTORE_DIRECTORY - Location for generated certificates (defaults to /global/zowe/keystore)
+# - ZOWE_LOCALCA_LABEL - This variable has to be set to the LOCALCA variable's value specified in the ZWEKRING JCL.
 # - KEYSTORE_PASSWORD - a password that is used to secure EXTERNAL_CERTIFICATE keystore and
 #                       that will be also used to secure newly generated keystores for API Mediation.
 # - ZOWE_USER_ID - zowe user id to set up ownership of the generated certificates
@@ -98,6 +99,12 @@ else
     echo "${CERTIFICATES_CONFIG_FILE} file does not exist."
     exit 1
   fi
+fi
+
+# Set a default value if the variable is not defined
+if [[ -z ${ZOWE_LOCALCA_LABEL} ]];
+then
+  ZOWE_LOCALCA_LABEL=localca
 fi
 
 # Backwards compatible overloading of KEYSTORE_ALIAS to be ZOWE_CERTIFICATE_LABEL
@@ -314,6 +321,7 @@ else
     KEYSTORE_TYPE="JCERACFKS"
     TRUSTSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
     EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
+    LOCAL_CA=${ZOWE_LOCALCA_LABEL}
     ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
     SETUP_APIML_SSO=${SETUP_APIML_SSO}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
