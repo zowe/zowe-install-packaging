@@ -3,17 +3,16 @@
 
 - name: SSO setup
   block:
-    - name: Check if setup exists
-      raw: tsocmd "RLIST CRYPTOZ *"
 
     - name: Define profile
-      raw: tsocmd "RDEFINE CRYPTOZ {{ zowe_runtime_user }}.SSOJWTKN"
+      raw: |-
+        tsocmd "RDEFINE CRYPTOZ SO.SSOJWTKN"
+        tsocmd "RDEFINE CRYPTOZ USER.SSOJWTKN"
 
     - name: Add READ access
-      raw: tsocmd "PERMIT {{ zowe_runtime_user }}.SSOJWTKN ACCESS(UPDATE) CLASS(CRYPTOZ) ID({{ zowe_runtime_user }})"
-
-    - name: Check if setup exists
-      raw: tsocmd "RLIST CRYPTOZ *"
+      raw: |-
+        tsocmd "PERMIT SO.SSOJWTKN ACCESS(UPDATE) CLASS(CRYPTOZ) ID({{ zowe_runtime_user }})"
+        tsocmd "PERMIT USER.SSOJWTKN ACCESS(UPDATE) CLASS(CRYPTOZ) ID({{ zowe_runtime_user }})"
 
     - name: Activate profile
       raw: |-
