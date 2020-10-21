@@ -31,6 +31,7 @@
     sed -e "s+^GATEWAY_PORT=.*\$+GATEWAY_PORT={{ zowe_apiml_gateway_port }}+" | \
     sed -e "s+^APIML_ENABLE_SSO=.*\$+APIML_ENABLE_SSO={{ zowe_apiml_enable_sso|string|lower }}+" | \
     sed -e "s+^APIML_ALLOW_ENCODED_SLASHES=.*\$+APIML_ALLOW_ENCODED_SLASHES={{ zowe_apiml_allow_encoded_slashes|string|lower }}+" | \
+    sed -e "s+^APIML_CORS_ENABLED=.*\$+APIML_CORS_ENABLED={{ zowe_apiml_cors_enabled|string|lower }}+" | \
     sed -e "s+^APIML_PREFER_IP_ADDRESS=.*\$+APIML_PREFER_IP_ADDRESS={{ zowe_apiml_prefer_ip_address|string|lower }}+" | \
     sed -e "s+^APIML_GATEWAY_TIMEOUT_MILLIS=.*\$+APIML_GATEWAY_TIMEOUT_MILLIS={{ zowe_apiml_gateway_timeout_millis }}+" | \
     sed -e "s+^APIML_SECURITY_X509_ENABLED=.*\$+APIML_SECURITY_X509_ENABLED={{ zowe_apiml_security_x509_enabled|string|lower }}+" | \
