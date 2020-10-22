@@ -1,9 +1,7 @@
 ---
 # allow APIML to generate psstickets
 
-- name: Import client certificate to security systems
-  block:
-    - name: Allow generate passtickets
+- name: Allow generate passtickets
       raw: |-
         tsocmd "PERMIT IZUDFLT CL(APPL) ACCESS(READ) ID(ZWESVUSR)"
         tsocmd "RDEFINE PTKTDATA IZUDFLT SSIGNON(KEYMASKED(66f4f9331e095436)) APPLDATA('NO REPLAY PROTECTION') UACC(NONE)"
@@ -11,5 +9,4 @@
         tsocmd "PERMIT IRRPTAUTH.IZUDFLT.* CL(PTKTDATA) ID(ZWESVUSR) ACCESS(UPDATE)"
         tsocmd "SETROPTS RACLIST(APPL) REFRESH"
         tsocmd "SETROPTS RACLIST(PTKTDATA) REFRESH"
-      ignore_errors: True
 
