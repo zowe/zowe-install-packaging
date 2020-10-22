@@ -196,7 +196,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -ltr .'
 
             withCredentials([usernamePassword(
-              credentialsId: 'DockerGizaUser',
+              credentialsId: 'ZoweDockerhub',
               usernameVariable: 'USERNAME',
               passwordVariable: 'PASSWORD'
             )]){
