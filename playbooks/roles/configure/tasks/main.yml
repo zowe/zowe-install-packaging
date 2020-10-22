@@ -96,6 +96,7 @@
     tasks_from: upload_certificate
   vars:
     filename: USER-cert.cer
+    method: scp
 
 # Upload client CA certificate
 - import_role:
@@ -103,6 +104,7 @@
     tasks_from: upload_certificate
   vars:
     filename: APIML_External_Certificate_Authority.cer
+    method: scp
 
 # Upload client CA certificate in PKCS12
 - import_role:
@@ -110,6 +112,7 @@
     tasks_from: upload_certificate
   vars:
     filename: APIML_External_Certificate_Authority.p12
+    method: sftp
 
 - import_role:
     name: configure
