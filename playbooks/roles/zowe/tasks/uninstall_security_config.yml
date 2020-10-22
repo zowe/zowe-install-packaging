@@ -1,8 +1,6 @@
 ---
 # Delete Keyrings and certificates we've created
 
-#TODO - zip 1610 - update to support acf2 and tss
-
 # ============================================================================
 # check variables
 - import_role:
@@ -15,6 +13,7 @@
     - zowe_known_started_tasks
     - zowe_known_facility_profiles
     - zowe_known_xmem_stc_users
+    - zos_security_system
 
 # ============================================================================
 
