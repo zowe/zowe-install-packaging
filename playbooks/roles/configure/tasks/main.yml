@@ -146,7 +146,7 @@
 #  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 - name: Add the external CA to the keyring
-  raw: {{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password
+  raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password"
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 # ============================================================================
