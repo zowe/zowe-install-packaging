@@ -13,10 +13,9 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import {
-  TEST_TIMEOUT_CONVENIENCE_BUILD,
+import { 
+  TEST_TIMEOUT_CONVENIENCE_BUILD, 
   KEYSTORE_MODE_KEYRING,
-  SECURITY_SYSTEM_ACF2,
 } from '../../../constants';
 
 const testServer = 'marist-2';
@@ -36,7 +35,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
-        'zos_security_system': SECURITY_SYSTEM_ACF2,
+        'zowe_lock_keystore': 'false',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
