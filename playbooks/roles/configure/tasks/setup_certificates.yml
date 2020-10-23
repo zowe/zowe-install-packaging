@@ -15,6 +15,8 @@
     sed -e "s+^KEYSTORE_ALIAS=.*\$+KEYSTORE_ALIAS={{ zowe_keystore_alias }}+" | \
     sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
     sed -e "s+^ZOWE_GROUP_ID=.*\$+ZOWE_GROUP_ID={{ zowe_runtime_group }}+" | \
+    sed -e "s+^PKCS11_TOKEN_NAME=.*\$+PKCS11_TOKEN_NAME={{ zowe_token_name }}+" | \
+    sed -e "s+^PKCS11_TOKEN_LABEL=.*\$+PKCS11_TOKEN_LABEL={{ zowe_token_name }}+" | \
     sed -e "s+^ZOWE_LOCK_KEYSTORE=.*\$+ZOWE_LOCK_KEYSTORE={{ zowe_lock_keystore }}+" \
     > "{{ work_dir_remote }}/zowe-setup-certificates.env"
 
