@@ -164,11 +164,12 @@
 /* environment and follow the appropriate action                     */
 /*                                                                   */
 /* Options:                                                          */
-/*   1. Zowe's certificate is already loaded in RACF database        */
-/*      ACTION: Modify the CONNECT(ID(&ZOWEUSER.) LABEL('&LABEL.')   */
-/*              command below to match the owner of the desired      */
-/*              certificate                                          */
-/*              Comment the "Option 2" block below                   */
+/*  1. Zowe's certificate is already loaded in RACF database         */
+/*     ACTION: a. Modify the following snippet                       */
+/*          CONNECT(ID(&ZOWEUSER.) +                                 */
+/*            LABEL('&LABEL.') +                                     */
+/*             below to match the owner of the desired certificate   */
+/*             b. Comment the "Option 2" block below                 */
 /*                                                                   */
 /*   2. Import external Zowe's certificate from a data set in PKCS12 */
 /*      format                                                       */
@@ -215,7 +216,8 @@
 /* Option 2 - END .................................................. */
 
 /* Connect a Zowe's certificate with the keyring ................... */
-   RACDCERT CONNECT(ID(&ZOWEUSER.) LABEL('&LABEL.') +
+   RACDCERT CONNECT(ID(&ZOWEUSER.) +
+              LABEL('&LABEL.') +
               RING(&ZOWERING.) USAGE(PERSONAL) DEFAULT) +
               ID(&ZOWEUSER.)
 

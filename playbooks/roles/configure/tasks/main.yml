@@ -28,6 +28,13 @@
     - zowe_apiml_discovery_port
     - zowe_apiml_gateway_port
     - zowe_apiml_enable_sso
+    - zowe_apiml_allow_encoded_slashes
+    - zowe_apiml_cors_enabled
+    - zowe_apiml_prefer_ip_address
+    - zowe_apiml_gateway_timeout_millis
+    - zowe_apiml_security_x509_enabled
+    - zowe_apiml_security_zosmf_applid
+    - zowe_apiml_security_auth_provider
     - zowe_jobs_api_port
     - zowe_mvs_api_port
     - zowe_jobs_explorer_port
