@@ -38,7 +38,7 @@ describe(testSuiteName, () => {
         'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
         'zos_security_system': SECURITY_SYSTEM_TSS,
         'zowe_lock_keystore': 'false',
-        'zowe_token_name': 'zowe_token_name',
+        'zowe_token_name': 'ZOWE_TOKEN',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
