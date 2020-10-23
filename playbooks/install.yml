@@ -15,10 +15,6 @@
       name: common
 
   - import_role:
-      name: configure
-      tasks_from: passticket_setup
-
-  - import_role:
       name: zos
 
 

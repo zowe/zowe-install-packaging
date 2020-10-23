@@ -73,9 +73,6 @@
     tasks_from: create_security_defn
   when: not zowe_configure_skip_zwesecur
 
-- import_role:
-    name: configure
-    tasks_from: passticket_setup
 # ============================================================================
 # Run ZWEKRING
 - import_role:
