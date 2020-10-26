@@ -70,8 +70,13 @@
   - import_role:
       name: zowe
 
+
   # ============================================================================
   # Configure Zowe
+  - name: Reset zowe_launch_components for docker install
+    set_fact:
+      zowe_launch_components: “zss”
+  
   - import_role:
       name: configure
 

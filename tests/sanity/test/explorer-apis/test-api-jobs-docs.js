@@ -22,13 +22,13 @@ describe('test explorer server docs', function() {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
     expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_EXPLORER_JOBS_PORT, 'ZOWE_EXPLORER_JOBS_PORT is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
     REQ = axios.create({
-      baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_EXPLORER_JOBS_PORT}`,
+      baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
       timeout: 30000,
     });
-    debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_EXPLORER_JOBS_PORT}`);
+    debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/jobs`);
   });
 
   it('should be able to access Swagger UI (/swagger-ui.html)', function() {
