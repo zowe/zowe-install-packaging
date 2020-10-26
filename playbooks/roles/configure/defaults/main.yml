@@ -102,3 +102,5 @@ zowe_external_domain_name:
 zowe_external_ip_address:
 # Restrict permissions to keystore/truststore after the certificate setup script
 zowe_lock_keystore: true
+#
+zowe_launch_components: api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss,zss,app-server

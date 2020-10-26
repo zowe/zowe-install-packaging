@@ -1,0 +1,19 @@
+---
+# ============================================================================
+# Docker Pull & Run
+
+- name: Pull docker image
+  raw: docker pull {{zowe_docker_image}}:{{zowe_docker_tag}}
+  delegate_to: localhosl
+
+- name: start docker
+  raw: >- 
+    docker run --rm --env ZOWE_EXPLORER_HOST=localhost \
+      --env ZOWE_IP_ADDRESS=0.0.0.0 \
+      --env ZOSMF_HOST={{ansible_ssh_host}} \
+      --env ZOSMF_PORT={{zos_zosmf_port}} \
+      --env ZWED_agent_host={{ansible_ssh_host}} \
+      --env ZWED_agent_http_port={{zowe_zss_port}} \
+      -p 7554:7554 \
+      ompzowe/zowe-v1-lts:amd64
+  delegate_to: localhost

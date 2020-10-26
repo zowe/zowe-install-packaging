@@ -1,0 +1,12 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+# zowe docker image
+zowe_docker_image: ompzowe/zowe-v1-lts
+zowe_docker_tag: amd64
+# default z/OSMF port
+zos_zosmf_port: 10443
+zowe_zss_port: 8542
+docker_root_dir: /root
+zowe_launch_components: zss

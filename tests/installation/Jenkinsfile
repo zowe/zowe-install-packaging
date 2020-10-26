@@ -72,6 +72,9 @@ node('ibm-jenkins-slave-nvm') {
     'smpe ptf': [
       test_files: 'dist/__tests__/basic/install-ptf.js',
     ],
+    'docker build': [
+      test_files: 'dist/__tests__/basic/install-docker.js',
+    ],
     'bundle: multiple node versions': [
       test_files: 'dist/__tests__/extended/node-versions/',
       jenkins_primary_lock: 'marist',
