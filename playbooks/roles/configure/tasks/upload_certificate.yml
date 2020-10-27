@@ -10,6 +10,7 @@
       - work_dir_local
       - inventory_hostname
       - filename
+      - method
 
 - name: Check if work_dir_remote has a value
   fail:
@@ -29,7 +30,7 @@
         tasks_from: upload_file
       vars:
         filename_to_upload: "{{ filename }}"
-        file_upload_method: scp
+        file_upload_method: "{{ method }}"
         file_upload_hashcheck: false
 
     - name: Check if {{ filename }} exists on zOS
