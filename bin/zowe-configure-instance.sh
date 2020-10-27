@@ -21,6 +21,8 @@ while getopts "c:g:s" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
     g) ZOWE_GROUP=$OPTARG;;
+    l) ZWES_ZIS_PLUGIN_LOADLIB=$OPTARG;;
+    p) ZIS_PARMFILE=$OPTARG;;
     s) SKIP_NODE=1;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -88,6 +90,7 @@ create_new_instance() {
     -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
     -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
     -e "s#{{zwes_zis_parmlib}}#${ZOWE_DSN_PREFIX}.SAMPLIB#" \
+    -e "s#{{zwes_zis_pluginlib}}#${ZOWE_DSN_PREFIX}.SZWEPLUG#" \
     -e "s#{{zwes_zis_loadlib}}#${ZOWE_DSN_PREFIX}.SZWEAUTH#" \
     "${TEMPLATE}" \
     > "${INSTANCE}"
@@ -130,6 +133,7 @@ check_existing_instance_for_updates() {
       -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
       -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
       -e "s#{{zwes_zis_parmlib}}#${ZOWE_DSN_PREFIX}.SAMPLIB#" \
+      -e "s#{{zwes_zis_pluginlib}}#${ZOWE_DSN_PREFIX}.SZWEPLUG#" \
       -e "s#{{zwes_zis_loadlib}}#${ZOWE_DSN_PREFIX}.SZWEAUTH#")
 
     echo_and_log "Missing properties that will be appended to $INSTANCE:\n$LINES_TO_APPEND"
@@ -169,7 +173,15 @@ fi
 echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
 
 # If possible, retrieve what is known about install user vars
-get_install_user_vars
+if [ -d "/tmp/zowe/${ZOWE_VERSION}" ]
+then
+  get_install_user_vars
+fi
+
+if [ -z "$ZWES_ZIS_PLUGIN_LOADLIB" ] || [ -z "$ZIS_PARMFILE" ]
+then
+  echo "Warning: parameters needed for ZIS plugin install are missing. Re-run this script with parameters -l <ZIS_PLUGIN_LOADLIB> -p <ZIS_PARMFILE> to fix."
+fi
 
 # Check if instance .env already exists
 if [[ -f "${INSTANCE}" ]]
@@ -181,6 +193,9 @@ fi
 
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
+
+#Make install zis present per-instance for convenience
+cp ${ZOWE_ROOT_DIR}/components/zss/bin/zis-plugin-install.sh ${INSTANCE_DIR}/bin/install-zis-plugin.sh
 
 cat <<EOF >${INSTANCE_DIR}/bin/internal/read-instance.sh
 #!/bin/sh

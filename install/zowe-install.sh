@@ -181,13 +181,13 @@ chmod -R 755 $ZOWE_ROOT_DIR/bin
 chmod -R 755 $ZOWE_ROOT_DIR/scripts/internal
 
 if [ `uname` = "OS/390" ]; then
-echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
+echo "Creating MVS artefacts SZWEAUTH, SZWESAMP and SZWEPLUG" >> $LOG_FILE
 . $INSTALL_DIR/scripts/zowe-install-MVS.sh
 fi
 
 echo "Zowe ${ZOWE_VERSION} runtime install completed into"
 echo "  directory " $ZOWE_ROOT_DIR
-echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP " and " ${ZOWE_DSN_PREFIX}.SZWEAUTH
+echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP ", " ${ZOWE_DSN_PREFIX}.SZWEAUTH " and " ${ZOWE_DSN_PREFIX}.SZWEPLUG
 echo "The install script zowe-install.sh does not need to be re-run as it completed successfully"
 separator
 

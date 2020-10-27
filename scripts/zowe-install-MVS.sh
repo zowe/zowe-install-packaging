@@ -11,6 +11,7 @@
 #######################################################################
 
 sizeAUTH='space(30,15) tracks'
+sizePLUGIN='space(30,15) tracks'
 sizeSAMP='space(15,15) tracks'
 members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl ZWEKRING.jcl ZWENOKYR.jcl'
 
@@ -56,11 +57,14 @@ then
 # Statements below must not exceed col 80
 #----------------------------------------------------------------------------80|
 cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG <<EndOfZWESIPRG
-/* issue this console command to authorize the loadlib temporarily */
+/* issue this console command to authorize the loadlib 
+   and plugin loadlib temporarily */
 SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEAUTH,VOLUME=${volume}
+SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEPLUG,VOLUME=${volume}
 /* Add this statement to SYS1.PARMLIB(PROGxx) or equivalent
-   to authorize the loadlib permanently */
+   to authorize the loadlib and plugin loadlib permanently */
 APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume})
+APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEPLUG) VOLUME(${volume})
 EndOfZWESIPRG
 #----------------------------------------------------------------------------80|
 fi
@@ -131,6 +135,18 @@ then
 else
     echo "  $script failed to create ${ZOWE_DSN_PREFIX}.SZWESAMP, RC=$rc" >> $LOG_FILE
 fi
+
+# 3. {datasetprefix}.SZWEPLUG
+# TODO replace by allocate-dataset.sh call to resuse VOLSER support
+tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEAUTH') " \
+    "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760)" \
+    "unit(sysallda) $sizeAUTH" >> $LOG_FILE 2>&1
+rc=$?
+if test $rc -eq 0
+then
+    echo "  ${ZOWE_DSN_PREFIX}.SZWEPLUG successfully created" >> $LOG_FILE
+else
+    echo "  $script failed to create ${ZOWE_DSN_PREFIX}.SZWEPLUG, RC=$rc" >> $LOG_FILE    
 
 rm -rf $TEMP_DIR/${script%%.*}
 

@@ -24,6 +24,7 @@ while getopts "a:d:l:r:" opt; do
     a) parmlib=$OPTARG;;
     d) data_set_prefix=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
+    p) pluginlib=$OPTARG;;
     r) proclib=$OPTARG;;
     \?)
       echo "Invalid option: -$opt" >&2
@@ -93,6 +94,7 @@ fi
 
 authlib=`echo ${data_set_prefix}.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
 samplib=`echo ${data_set_prefix}.SZWESAMP | tr '[:lower:]' '[:upper:]'`
+pluglib=`echo ${data_set_prefix}.SZWEPLUG | tr '[:lower:]' '[:upper:]'`
 
 if [[ -z ${parmlib} ]]
 then
@@ -108,12 +110,20 @@ else
   proclib=`echo ${proclib} | tr '[:lower:]' '[:upper:]'`
 fi
 
+if [[ -z ${pluginlib} ]]
+then
+  pluginlib=$pluglib
+else
+  pluginlib=`echo ${pluginlib} | tr '[:lower:]' '[:upper:]'`
+fi  
+
 echo    "authlib =" $authlib >> $LOG_FILE
 echo    "samplib =" $samplib >> $LOG_FILE
 echo    "parmlib =" $parmlib >> $LOG_FILE
+echo    "pluginlib =" $pluginlib >> $LOG_FILE
 echo    "proclib =" $proclib >> $LOG_FILE
 
-for dsname in $authlib $samplib $parmlib $proclib
+for dsname in $authlib $samplib $parmlib $proclib $pluginlib
 do
   if [[ $proclib = auto ]]
   then
@@ -173,6 +183,7 @@ ZWEXMSTC=ZWESISTC  # for ZWESIS01
   -o ${ZWEXASTC} \
   -b ${authlib} \
   -a ${parmlib} \
+  -p ${pluginlib} \
   -f ${LOG_FILE}
 aux_rc=$?
 echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
@@ -183,6 +194,7 @@ echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
   -o ${ZWEXMSTC} \
   -b ${authlib} \
   -a ${parmlib} \
+  -p ${pluginlib} \
   -f ${LOG_FILE}
 xmem_rc=$?
 echo "ZWEXMSTC rc from zowe-copy-to-JES.sh is ${xmem_rc}" >> ${LOG_FILE}

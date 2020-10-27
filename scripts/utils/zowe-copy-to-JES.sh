@@ -37,6 +37,7 @@ while getopts "a:b:f:i:l:o:r:s:" opt; do
     i) input_member=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
     o) output_member=$OPTARG;;
+    p_ pluginlib=$OPTARG;;
     r) proclib=$OPTARG;;
     s) samplib=$OPTARG;;
     \?)
@@ -165,11 +166,14 @@ else
   # Edit the JCL in flight using parms 5 and 6 ...
   # These strings are in ZWESISTC
       # ZWES.SISLOAD
-      # ZWES.SISSAMP 
+      # ZWES.SISSAMP
+      # ZWES.PLUGLOAD
   # These strings are in ZWESASTC
       # zis-loadlib
+      # ZWES.PLUGLOAD
   #
   sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
+      -e "s/ZWES.PLUGLOAD/${pluglib}/g" \
       -e "s/ZWES.SISSAMP/${parmlib}/g" \
       -e "s/zis-loadlib/${loadlib}/g" \
       "//'$samplib(${input_member})'" > $TEMP_DIR/$samplib.${input_member}.jcl
