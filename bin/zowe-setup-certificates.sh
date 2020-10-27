@@ -305,8 +305,8 @@ if [[ -z "${ZOWE_KEYRING}" ]]; then
     KEYSTORE_CERTIFICATE=${KEYSTORE_PREFIX}.cer-ebcdic
     KEYSTORE_CERTIFICATE_AUTHORITY=${LOCAL_CA_PREFIX}.cer-ebcdic
     EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
+    EXTERNAL_CERTIFICATE_AUTHORITIES=${EXTERNAL_CERTIFICATE_AUTHORITIES}
     ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
-    SETUP_APIML_SSO=${SETUP_APIML_SSO}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
     PKCS11_TOKEN_NAME=${PKCS11_TOKEN_NAME}
     PKCS11_TOKEN_LABEL=${UPPER_KEY_LABEL}
@@ -321,22 +321,34 @@ else
     KEYSTORE_TYPE="JCERACFKS"
     TRUSTSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
     EXTERNAL_ROOT_CA=${EXTERNAL_ROOT_CA}
+    EXTERNAL_CERTIFICATE_AUTHORITIES=${EXTERNAL_CERTIFICATE_AUTHORITIES}
     LOCAL_CA=${ZOWE_LOCALCA_LABEL}
     ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
-    SETUP_APIML_SSO=${SETUP_APIML_SSO}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
     PKCS11_TOKEN_NAME=${PKCS11_TOKEN_NAME}
     PKCS11_TOKEN_LABEL=${UPPER_KEY_LABEL}
 EOF
 fi
 
+if [[ "${ZOWE_LOCK_KEYSTORE}" == "true" ]]; then
+  permissions=500
+else
+  permissions=570
+fi
+
 # set up privileges and ownership
-chmod -R 500 ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/* 2> /dev/null # In some keystore scenarios these directories might be empty, so supress error
+chmod -R $permissions ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/* 2> /dev/null # In some keystore scenarios these directories might be empty, so supress error
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
+
 if ! chown -R ${ZOWE_USER_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
   echo "Unable to change the current owner of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_USER_ID} owner. See $LOG_FILE for more details."
   echo "Trying to change a group of the ${KEYSTORE_DIRECTORY}."
-  chmod -R 550 ${KEYSTORE_DIRECTORY}
+  if [[ "${ZOWE_LOCK_KEYSTORE}" == "true" ]]; then
+    permissions=550
+  else
+    permissions=750
+  fi
+  chmod -R $permissions ${KEYSTORE_DIRECTORY}
   if ! chgrp -R ${ZOWE_GROUP_ID} ${KEYSTORE_DIRECTORY} >> $LOG_FILE 2>&1 ; then
     echo "Unable to change the group of the ${KEYSTORE_DIRECTORY} directory to the ${ZOWE_GROUP_ID} group. See $LOG_FILE for more details."
     echo "Please change the owner or the group of the ${KEYSTORE_DIRECTORY} manually so that keystores are protected correctly!"
