@@ -227,6 +227,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
               }
             }
 
+            pipeline.publish(
+              artifacts: [
+                'zowe-v1-lts.amd64.tar'
+              ]
+            )
+
+            
             //pipeline.artifactory.upload(
             //  pattern: 'zowe-v1-lts.amd64.tar',
             //  target: 
