@@ -21,17 +21,20 @@
 //* 1) Add job name and job parameters to the JOB statement, to
 //*    meet your system requirements.
 //*
-//* 2) Change #dsname to the VSAM KSDS data set name.
+//* 2) Change all #dsname to the VSAM KSDS data set name.
 //*
-//* 3) If your installation supports VSAM RLS, you can un-comment
-//*    STORCLAS and comment out VOLUME to use your VSAM storage
-//*    class. You will need to change #storclas or #volume to
-//*    match your settings.
+//* 3) If your installation supports VSAM RLS, you can:
+//*    a). un-comment STORCLAS and change #storclas to match
+//*        your storage class setting,
+//*    b). remove VOLUME,
+//*    c). un-comment LOG and/or change the option of LOG to UNDO
+//*        or ALL to make VSAM recoverable or non-recoverable,
+//*    d). remove SHAREOPTIONS.
+//*    Otherwise please check item 4).
 //*
-//* 4) If your installation supports VSAM RLS, you should also
-//*    un-comment LOG and comment out SHAREOPTIONS. You may want
-//*    to change the option of LOG to UNDO or ALL to make VSAM
-//*    recoverable or non-recoverable.
+//* 4) If your installation does NOT supports VSAM RLS, you can:
+//*    a). remove STORCLAS,
+//*    b). remove LOG.
 //*
 //********************************************************************
 //S1    EXEC PGM=IDCAMS,REGION=0M
@@ -39,10 +42,10 @@
 //SYSIN   DD *
   DEFINE CLUSTER -
     (NAME(#dsname) -
-//* STORCLAS(#storclas) -
+/*  STORCLAS(#storclas) -
     VOLUME(#volume) -
     REC(80 20) -
-//* LOG(NONE) -
+/*  LOG(NONE) -
     SHAREOPTIONS(2 3) -
     INDEXED) -
     DATA(NAME(#dsname.DATA) -
