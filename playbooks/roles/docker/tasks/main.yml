@@ -15,5 +15,6 @@
       --env ZWED_agent_host={{ansible_ssh_host}} \
       --env ZWED_agent_http_port={{zowe_zss_port}} \
       -p 7554:7554 \
+      -p 8544:8544 \
       ompzowe/zowe-v1-lts:amd64
   delegate_to: localhost
