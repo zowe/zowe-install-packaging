@@ -75,7 +75,7 @@
   # Configure Zowe
   - name: Reset zowe_launch_components for docker install
     set_fact:
-      zowe_launch_components: “zss”
+      zowe_launch_components: zss,app-server
   
   - import_role:
       name: configure

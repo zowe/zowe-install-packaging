@@ -109,7 +109,7 @@
 
 - name: Wait for being able to login to ZSS
   uri:
-    url: "http://{{ zowe_external_domain_name }}:{{ zowe_zss_port }}/auth"
+    url: "https://{{ zowe_external_domain_name }}:{{ zowe_zlux_port }}/auth"
     follow_redirects: none
     method: POST
     body_format: json
@@ -121,7 +121,7 @@
     - 200
     - 204
   register: _result
-  until: _result.status == 204
+  until: _result.status == 200
   retries: "{{ wait_for_zowe_service_retries | int }}"
   delay: "{{ wait_for_zowe_service_delay | int }}"
   when: '"zss" in zowe_launch_components'

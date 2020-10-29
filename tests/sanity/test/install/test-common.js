@@ -22,7 +22,7 @@ const isNonZosHost = (nonZosHost)? true:false;
   const print_error_message = 'print_error_message';
   describe(`verify ${print_error_message}`, function() {
 
-    it.only('test single message', async function() {
+    it('test single message', async function() {
       const error = 'Oh, no - something went wrong';
       const expected_err = `Error 0: ${error}`;
       await test_print_error_message(error, expected_err);
