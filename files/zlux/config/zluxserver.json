@@ -23,9 +23,24 @@
       }
     }
   },
+  "logLevels": {
+    "_zss.httpAuthTrace": 5,
+    "_zss.traceLevel": 5,
+    "_zsf.auth": 5
+  },
   "agent": {
     //host is for zlux to know, not zss
     "host": "localhost",
+    "jwt": {
+      "token": "ZWETOKEN",
+      "enabled": true,
+      "key": {
+        "label": "ZWTLEBL",
+        "token": "ZWETOKEN"
+      },
+      "fallback": true,
+      "label": "ZWTLEBL"
+    },
     "http": {
       "ipAddresses": ["127.0.0.1"],
       //to be a replacement for zssPort
