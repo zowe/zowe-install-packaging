@@ -208,11 +208,11 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
               // build docker image
               sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
             }
-            sh "docker save -o zowe-v1-lts.amd64.tar ompzowe/zowe-v1-lts"
+            sh "docker save -o zowe-v1-lts.amd64.tar ompzowe/zowe-v1-lts:amd64"
             // show files
             sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
+            pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
 
-            
             if (params.PUBLISH_DOCKER) {
               withCredentials([usernamePassword(
                 credentialsId: 'ZoweDockerhub',
@@ -226,18 +226,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
                  """
               }
             }
-
-            pipeline.publish(
-              artifacts: [
-                'zowe-v1-lts.amd64.tar'
-              ]
-            )
-
-            
-            //pipeline.artifactory.upload(
-            //  pattern: 'zowe-v1-lts.amd64.tar',
-            //  target: 
-            //)
           }
         }
       }
