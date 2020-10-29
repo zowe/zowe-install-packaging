@@ -6,15 +6,22 @@
   raw: docker pull {{zowe_docker_image}}:{{zowe_docker_tag}}
   delegate_to: localhost
 
-- name: start docker
+- name: start docker in detached mode
   raw: >- 
-    docker run --rm --env ZOWE_EXPLORER_HOST=localhost \
+    docker run -d --rm --env ZOWE_EXPLORER_HOST=localhost \
       --env ZOWE_IP_ADDRESS=0.0.0.0 \
       --env ZOSMF_HOST={{ansible_ssh_host}} \
       --env ZOSMF_PORT={{zos_zosmf_port}} \
       --env ZWED_agent_host={{ansible_ssh_host}} \
       --env ZWED_agent_http_port={{zowe_zss_port}} \
+      -p 7553:7553 \
       -p 7554:7554 \
       -p 8544:8544 \
       ompzowe/zowe-v1-lts:amd64
+  delegate_to: localhost
+
+# has replaced with wait-for-zowe task defined in role start
+- name: Sleep for 300 seconds and continue with play - after docker start
+  wait_for:
+    timeout: 300
   delegate_to: localhost
