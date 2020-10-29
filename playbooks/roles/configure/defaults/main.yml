@@ -16,8 +16,9 @@ zowe_known_xmem_proc_stcs:
 work_dir_remote:
 # default zowe runtime root directory
 zowe_root_dir: ~/zowe
-# if we are running this instance in sysplex
-zowe_sysplex: false
+# if your z/OS system has VSAM RLS (record level sharing) enabled.
+# usually this value should be true in Parallel Sysplex.
+zos_vsam_rls: false
 # dataset prefix where zowe will be installed
 zowe_dataset_prefix:
 # instanceDir

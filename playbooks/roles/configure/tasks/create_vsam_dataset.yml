@@ -1,11 +1,11 @@
 ---
-# this task will create VSAM data set for Caching Service by executing one
-# of these JCL: SZWESAMP(ZWECSVMP), SZWESAMP(ZWECSVPX)
+# this task will create VSAM data set for Caching Service by executing JCL
+#   SZWESAMP(ZWECSVSM)
 # this task supposed to run after configure_instance.yml so it will update
 # value of ZWE_CACHING_SERVICE_VSAM_DATASET in instance.env.
 
 # Variables:
-# - zowe_sysplex
+# - zos_vsam_rls
 # - zowe_caching_service_port
 # - zowe_caching_service_persistent
 # - zowe_caching_service_vsam_dsprefix
@@ -18,43 +18,47 @@
     tasks_from: validate_variables
   vars:
     variable_list:
-    - zowe_sysplex
+    - zos_vsam_rls
     - zowe_caching_service_port
     - zowe_caching_service_persistent
     - zowe_caching_service_vsam_dsprefix
+
+- name: Check if zowe_caching_vsam_storage_class or zowe_caching_vsam_volume has a value
+  fail:
+    msg: zowe_caching_vsam_storage_class or zowe_caching_vsam_volume is required
+  when: (zowe_caching_vsam_storage_class is none or zowe_caching_vsam_storage_class == '') and (zowe_caching_vsam_volume is none or zowe_caching_vsam_volume == '')
 
 - name: Remove ZWECSVSM.jcl or ZWECSVSM.raw.jcl if exists
   raw: >-
     rm -f "{{ work_dir_remote }}/ZWECSVSM.raw.jcl";
     rm -f "{{ work_dir_remote }}/ZWECSVSM.jcl"
 
-- name: Prepare JCL for Monoplex
-  when: not zowe_sysplex
-  block:
-  - name: Check if zowe_caching_vsam_volume has a value
-    fail:
-      msg: zowe_caching_vsam_volume is required
-    when: zowe_caching_vsam_volume is not defined or zowe_caching_vsam_volume is none or zowe_caching_vsam_volume == ''
-  - name: Copy SZWESAMP(ZWECSVMP) to USS
-    raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWECSVMP)'" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl"
+- name: Copy SZWESAMP(ZWECSVSM) to USS
+  raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWECSVSM)'" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl"
 
-- name: Prepare JCL for Parallel Sysplex
-  when: zowe_sysplex
-  block:
-  - name: Check if zowe_caching_vsam_storage_class has a value
-    fail:
-      msg: zowe_caching_vsam_storage_class is required
-    when: zowe_caching_vsam_storage_class is not defined or zowe_caching_vsam_storage_class is none or zowe_caching_vsam_storage_class == ''
-  - name: Copy SZWESAMP(ZWECSVPX) to USS
-    raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWECSVPX)'" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl"
-
-- name: Update ZWECSVSM.jcl with configurations
+- name: Update dsname in ZWECSVSM.jcl
   raw: >-
     cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
-    sed -e "s+DSNAME=+DSNAME='{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}'+"{{ zowe_instance_id }} | \
-    sed -e "s+VOLUME=+VOLUME={{ zowe_caching_vsam_volume }}+" | \
-    sed -e "s+STORCLAS=+STORCLAS={{ zowe_caching_vsam_storage_class }}+" \
+    sed -e "37,999s/#dsname/{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}/g" | \
+    sed -e "37,999s/#storclas/{{ zowe_caching_vsam_storage_class }}/g" | \
+    sed -e "37,999s/#volume/{{ zowe_caching_vsam_volume }}/" \
     > "{{ work_dir_remote }}/ZWECSVSM.jcl"
+
+- name: Enable storage class in ZWECSVSM.jcl if zowe_caching_vsam_storage_class is set
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
+    sed -e "s+//* +STORCLAS\(+    STORCLAS\(+" \
+    sed -e "s+//^ +VOLUME\(+//* VOLUME\(+" \
+    > "{{ work_dir_remote }}/ZWECSVSM.jcl"
+  when: zowe_caching_vsam_storage_class is not none and zowe_caching_vsam_storage_class != ''
+
+- name: Enable LOG and disable SHAREOPTIONS in ZWECSVSM.jcl if VSAM RLS is enabled
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
+    sed -e "s+//* +LOG\(+    LOG\(+" \
+    sed -e "s+//^ +SHAREOPTIONS\(+//* SHAREOPTIONS\(+" \
+    > "{{ work_dir_remote }}/ZWECSVSM.jcl"
+  when: zos_vsam_rls
 
 - name: Run ZWECSVSM.jcl
   import_role:
@@ -68,9 +72,7 @@
     rm -f "{{ work_dir_remote }}/ZWECSVSM.raw.jcl";
     rm -f "{{ work_dir_remote }}/ZWECSVSM.jcl"
 
-- name: Replace instance.env with settings
-
-- name: Update instance.env
+- name: Update instance.env for caching service
   raw: >-
     cat "{{ zowe_instance_dir }}/instance.env" | \
     sed -e "s+^ZWE_CACHING_SERVICE_PORT=.*\$+ZWE_CACHING_SERVICE_PORT={{ zowe_caching_service_port }}+" | \
