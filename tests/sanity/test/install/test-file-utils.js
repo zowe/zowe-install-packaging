@@ -10,7 +10,11 @@
 
 const sshHelper = require('./ssh-helper');
 
-describe('verify file-utils', function() {
+const nonZosHost = process.env.ZOWE_NONZOS_HOST;
+const isNonZosHost = (nonZosHost)? true:false;
+
+(isNonZosHost ? describe.skip : describe)('verify file-utils', function() {
+
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });

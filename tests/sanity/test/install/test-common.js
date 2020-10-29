@@ -10,7 +10,11 @@
 
 const sshHelper = require('./ssh-helper');
 
-describe('verify utils/common', function() {
+const nonZosHost = process.env.ZOWE_NONZOS_HOST;
+const isNonZosHost = (nonZosHost)? true:false;
+
+(isNonZosHost ? describe.skip : describe)('verify utils/common', function() {
+
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
@@ -18,7 +22,7 @@ describe('verify utils/common', function() {
   const print_error_message = 'print_error_message';
   describe(`verify ${print_error_message}`, function() {
 
-    it('test single message', async function() {
+    it.only('test single message', async function() {
       const error = 'Oh, no - something went wrong';
       const expected_err = `Error 0: ${error}`;
       await test_print_error_message(error, expected_err);

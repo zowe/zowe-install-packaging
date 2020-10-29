@@ -72,7 +72,7 @@ node('ibm-jenkins-slave-dind') {
     'smpe ptf': [
       test_files: 'dist/__tests__/basic/install-ptf.js',
     ],
-    'docker build': [
+    'test docker': [
       test_files: 'dist/__tests__/basic/install-docker.js',
     ],
     'bundle: multiple node versions': [

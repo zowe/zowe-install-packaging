@@ -1,0 +1,892 @@
+AzureAD+NakulManchanda@LAPTOP-6M63Q791 MINGW64 /c/zowe/explorer-componentisation/zowe-install-packaging/tests/sanity (staging)
+$  /usr/bin/env 'NODE_OPTIONS=--require "c:/Users/NakulManchanda/AppData/Local/Programs/Microsoft VS Code/resources/app/extensions/ms-vscode.js-debug/src/bootloader.bundle.js" --inspect-publish-uid=http' 'VSCODE_INSPECTOR_OPTIONS={"inspectorIpc":"\\\\.\\pipe\\node-cdp.3848-7.sock","deferredMode":false,"waitForDebugger":"","execPath":"C:\\Program Files\\nodejs\\node.exe","onlyEntrypoint":false,"autoAttachMode":"always","fileCallback":"C:\\Users\\NAKULM~1\\AppData\\Local\\Temp\\node-debug-callback-a4585c92f71459e5"}' "C:\\Program Files\\nodejs\\node.exe" .\\node_modules\\mocha\\bin\\_mocha
+Debugger attached.
+
+
+
+  Generate api documentation
+  Generate api documentation
+      1) Generate Swagger API files
+    1) Generate Swagger API files  
+
+
+  Suite duration: 0.034 s, Tests: 1
+
+  test explorer server datasets api
+  test explorer server datasets api
+(node:20272) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+      [ok] should return the version information of the API Mediation Layer and Zowe: 588ms
+    [ok] should return the version information of the API Mediation Layer and Zowe (588ms)
+
+
+  Suite duration: 0.594 s, Tests: 1
+
+  test api mediation layer zosmf api
+  test api mediation layer zosmf api
+      [ok] should be able to login to z/OS: 335ms
+    [ok] should be able to login to z/OS (335ms)
+      [ok] should be able to get z/OS Info via the gateway port and endpoint (/api/v1/zosmf/info): 150ms
+    [ok] should be able to get z/OS Info via the gateway port and endpoint (/api/v1/zosmf/info) (150ms)
+
+
+  Suite duration: 0.5 s, Tests: 2
+  test api mediation layer zosmf authentication
+
+  test api mediation layer zosmf authentication should be able to get data from z/OSMF
+    should be able to get data from z/OSMF
+      [ok] with valid basic header: 171ms
+      [ok] with valid basic header (171ms)
+      [ok] with valid cookie: 463ms
+      [ok] with valid cookie (463ms)
+      [ok] with valid LTPA cookie: 286ms
+      [ok] with valid LTPA cookie (286ms)
+      [ok] with valid JWT token via Bearer: 421ms
+      [ok] with valid JWT token via Bearer (421ms)
+
+
+  Suite duration: 1.421 s, Tests: 4
+
+  test api mediation layer logout functionality
+  test api mediation layer logout functionality
+      [ok] should login to the system and properly logout with Bearer: 692ms
+    [ok] should login to the system and properly logout with Bearer (692ms)
+      [ok] should login to the system and properly logout using Cookie: 765ms
+    [ok] should login to the system and properly logout using Cookie (765ms)
+
+
+  Suite duration: 1.486 s, Tests: 2
+
+  cli version
+  cli version
+      1) command should return version without error
+    2) command should return version without error
+
+
+  Suite duration: 3.652 s, Tests: 1
+
+  cli check zosmf status
+  cli check zosmf status
+      1) "before all" hook: verify environment variables for "should be able to return zosmf status"
+    3) "before all" hook: verify environment variables for "should be able to return zosmf status"
+
+
+  Suite duration: 3.403 s, Tests: 1
+
+  cli list jobs of ZWE*
+  cli list jobs of ZWE*
+      1) "before all" hook: verify environment variables for "should have an active job ZWE4SV"
+    4) "before all" hook: verify environment variables for "should have an active job ZWE4SV"
+
+
+  Suite duration: 3.44 s, Tests: 1
+
+  cli list data sets of SYS1.LINKLIB*
+  cli list data sets of SYS1.LINKLIB*
+      1) "before all" hook: verify environment variables for "should have an data set of SYS1.LINKLIB"
+    5) "before all" hook: verify environment variables for "should have an data set of SYS1.LINKLIB"
+
+
+  Suite duration: 3.837 s, Tests: 1
+
+  cli console
+  cli console
+      - command should return the IPL information for the system
+    - command should return the IPL information for the system
+      - command should return the universal time and date
+    - command should return the universal time and date
+
+
+  Suite duration: 0.097 s, Tests: 2
+
+  cli perform ssh commands with zos-uss
+  cli perform ssh commands with zos-uss
+      1) "before all" hook: verify environment variables for "checks to see if instance.env exists in zowe-instance-dir"
+    6) "before all" hook: verify environment variables for "checks to see if instance.env exists in zowe-instance-dir"
+
+
+  Suite duration: 3.39 s, Tests: 1
+
+  cli runs tso commands
+  cli runs tso commands
+      - returns the status of current running jobs
+    - returns the status of current running jobs
+
+
+  Suite duration: 0.005 s, Tests: 1
+
+  test MVD login page
+  test MVD login page
+(node:20272) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_000_login.png]]
+      [ok] should redirect to login page: 5200ms
+    [ok] should redirect to login page (5200ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_001_login-wrong-password-submitted.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_002_login-wrong-password-returned.png]]
+      [ok] should show error with wrong login password: 13884ms
+    [ok] should show error with wrong login password (13884ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_003_before-login.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_004_login-successfully.png]]
+      [ok] should login successfully with correct password: 28009ms
+    [ok] should login successfully with correct password (28009ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_005_apps-menu-popped.png]]
+      [ok] should be able to popup apps menu: 4493ms
+    [ok] should be able to popup apps menu (4493ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_006_user-info-popped.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-01-login_007_user-logout.png]]
+      [ok] should be able to logout: 8900ms
+    [ok] should be able to logout (8900ms)
+
+
+  Suite duration: 67.035 s, Tests: 5
+
+  test JES Explorer
+  test JES Explorer
+Loading page: https://laptop-6m63q791:7554/ui/v1/explorer-jes
+Page title: JES Explorer
+Authentication endpoint: https://laptop-6m63q791:7554/api/v1/gateway/auth/login
+Loading page: https://laptop-6m63q791:7554/ui/v1/explorer-jes
+Page title: JES Explorer
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-02-jes-explorer_008_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-02-jes-explorer_009_app-loaded.png]]
+      [ok] should launch app correctly: 13450ms
+    [ok] should launch app correctly (13450ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-02-jes-explorer_010_reset-filter.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-02-jes-explorer_011_zowe-job-loaded.png]]
+      [ok] should be able to list ZWE* jobs and should include ZWE4SV: 5331ms
+    [ok] should be able to list ZWE* jobs and should include ZWE4SV (5331ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-02-jes-explorer_012_jcl-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-02-jes-explorer_013_jcl-loaded.png]]
+      [ok] should be able to load content of ZWE4SV JESJCL: 3118ms
+    [ok] should be able to load content of ZWE4SV JESJCL (3118ms)
+
+
+  Suite duration: 31.038 s, Tests: 3
+
+  test MVS Explorer
+  test MVS Explorer
+Loading page: https://laptop-6m63q791:7554/ui/v1/explorer-mvs
+Page title: MVS Explorer
+Authentication endpoint: https://laptop-6m63q791:7554/api/v1/gateway/auth/login
+Loading page: https://laptop-6m63q791:7554/ui/v1/explorer-mvs
+Page title: MVS Explorer
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-03-mvs-explorer_014_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-03-mvs-explorer_015_app-loaded.png]]
+      [ok] should launch app correctly: 4312ms
+    [ok] should launch app correctly (4312ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-03-mvs-explorer_016_ds-list-loaded.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-03-mvs-explorer_017_ds-members-loaded.png]]
+      [ok] should be able to list SYS1.LINKLIB* data sets: 5783ms
+    [ok] should be able to list SYS1.LINKLIB* data sets (5783ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-03-mvs-explorer_018_ds-content-loaded.png]]
+      [ok] should be able to load content of SYS1.LINKLIB(ACCOUNT) data set member: 1780ms
+    [ok] should be able to load content of SYS1.LINKLIB(ACCOUNT) data set member (1780ms)
+
+
+  Suite duration: 21.037 s, Tests: 3
+
+  test USS Explorer
+  test USS Explorer
+Loading page: https://laptop-6m63q791:7554/ui/v1/explorer-uss
+Page title: USS Explorer
+Authentication endpoint: https://laptop-6m63q791:7554/api/v1/gateway/auth/login
+Loading page: https://laptop-6m63q791:7554/ui/v1/explorer-uss
+Page title: USS Explorer
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-04-uss-explorer_019_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-04-uss-explorer_020_app-loaded.png]]
+      [ok] should launch app correctly: 4333ms
+    [ok] should launch app correctly (4333ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-04-uss-explorer_021_file-list-loaded.png]]
+      1) should be able to list Zowe installation folder
+    7) should be able to list Zowe installation folder
+      - should be able to load content of scripts/instance.template.env file
+    - should be able to load content of scripts/instance.template.env file
+
+
+  Suite duration: 16.026 s, Tests: 3
+
+  test TN3270
+  test TN3270
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-05-tn3270_022_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-05-tn3270_023_app-loaded.png]]
+      1) should launch app correctly
+    8) should launch app correctly
+
+
+  Suite duration: 14.788 s, Tests: 1
+
+  test VT Terminal
+  test VT Terminal
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-06-vt_024_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-06-vt_025_app-loaded.png]]
+      [ok] should launch app correctly: 21981ms
+    [ok] should launch app correctly (21981ms)
+
+
+  Suite duration: 29.652 s, Tests: 1
+
+  test IFrame Sample
+  test IFrame Sample
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-07-iframe_026_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-07-iframe_027_app-loaded.png]]
+      [ok] should launch app correctly: 1912ms
+    [ok] should launch app correctly (1912ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-07-iframe_028_test-app-launched.png]]
+      [ok] should be able to launch "TN3270" app: 11068ms
+    [ok] should be able to launch "TN3270" app (11068ms)
+
+
+  Suite duration: 20.625 s, Tests: 2
+
+  test ZOS Subsystems
+  test ZOS Subsystems
+      - should launch app correctly
+    - should launch app correctly
+
+
+  Suite duration: 0.022 s, Tests: 1
+
+  test Editor
+  test Editor
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-09-editor_029_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-09-editor_030_app-loaded.png]]
+      [ok] should launch app correctly: 3532ms
+    [ok] should launch app correctly (3532ms)
+
+
+  Suite duration: 10.884 s, Tests: 1
+
+  test API Catalog
+  test API Catalog
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-10-api-catalog_031_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-10-api-catalog_032_app-loaded.png]]
+      [ok] should launch app correctly: 2897ms
+    [ok] should launch app correctly (2897ms)
+
+
+  Suite duration: 10.649 s, Tests: 1
+
+  test User Tasks/Workflows
+  test User Tasks/Workflows
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-11-workflows_033_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-11-workflows_034_app-loaded.png]]
+      [ok] should launch app correctly: 2733ms
+    [ok] should launch app correctly (2733ms)
+
+
+  Suite duration: 9.96 s, Tests: 1
+
+  test Sample Angular App
+  test Sample Angular App
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-12-angular-sample_035_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-12-angular-sample_036_app-loaded.png]]
+      [ok] should launch app correctly: 1954ms
+    [ok] should launch app correctly (1954ms)
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-12-angular-sample_037_test-app-launched.png]]
+      [ok] should be able to launch "TN3270" app: 10451ms
+    [ok] should be able to launch "TN3270" app (10451ms)
+
+
+  Suite duration: 19.702 s, Tests: 2
+
+  test Sample React App
+  test Sample React App
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-13-react-sample_038_app-loading.png]]
+[[ATTACHMENT|FIREFOX_81.0_WINDOWS_test-13-react-sample_039_app-loaded.png]]
+      [ok] should launch app correctly: 1951ms
+    [ok] should launch app correctly (1951ms)
+      1) should be able to launch "TN3270" app
+    9) should be able to launch "TN3270" app
+
+
+  Suite duration: 9.721 s, Tests: 2
+
+  test explorer server docs
+  test explorer server docs
+      1) should be able to access Swagger UI (/swagger-ui.html)
+    10) should be able to access Swagger UI (/swagger-ui.html)
+      2) should be able to access Swagger JSON file (/v2/api-docs)
+    11) should be able to access Swagger JSON file (/v2/api-docs)
+
+
+  Suite duration: 4.267 s, Tests: 2
+
+  test explorer server datasets api
+  test explorer server datasets api
+      [ok] should be able to list data sets of SYS1.LINKLIB*: 498ms
+    [ok] should be able to list data sets of SYS1.LINKLIB* (498ms)
+      [ok] should be able to get members of data set SYS1.LINKLIB: 457ms
+    [ok] should be able to get members of data set SYS1.LINKLIB (457ms)
+      [ok] should be able to get content of data set SYS1.LINKLIB: 379ms
+    [ok] should be able to get content of data set SYS1.LINKLIB (379ms)
+      [ok] returns the current user's TSO userid: 182ms
+    [ok] returns the current user's TSO userid (182ms)
+
+
+  Suite duration: 1.575 s, Tests: 4
+
+  test explorer server datasets api
+  test explorer server datasets api
+      [ok] should be able to list data sets of SYS1.LINKLIB* (v2 API): 546ms
+    [ok] should be able to list data sets of SYS1.LINKLIB* (v2 API) (546ms)
+      [ok] should be able to get members of data set SYS1.LINKLIB (v2 API): 588ms
+    [ok] should be able to get members of data set SYS1.LINKLIB (v2 API) (588ms)
+      [ok] should be able to get content of data set SYS1.LINKLIB (v2 API): 487ms
+    [ok] should be able to get content of data set SYS1.LINKLIB (v2 API) (487ms)
+
+
+  Suite duration: 1.714 s, Tests: 3
+
+  test explorer server docs
+  test explorer server docs
+      1) should be able to access Swagger UI (/swagger-ui.html)
+    12) should be able to access Swagger UI (/swagger-ui.html)
+      2) should be able to access Swagger JSON file (/v2/api-docs)
+    13) should be able to access Swagger JSON file (/v2/api-docs)
+
+
+  Suite duration: 4.181 s, Tests: 2
+
+  test explorer server jobs api
+  test explorer server jobs api
+      [ok] should be able to list jobs and have a job ZWE4SV: 384ms
+    [ok] should be able to list jobs and have a job ZWE4SV (384ms)
+      [ok] returns the current user's TSO userid: 189ms
+    [ok] returns the current user's TSO userid (189ms)
+
+
+  Suite duration: 0.649 s, Tests: 2
+
+  test explorer server jobs api
+  test explorer server jobs api
+      [ok] should be able to list jobs and have a job ZWE4SV (v2 API): 515ms
+    [ok] should be able to list jobs and have a job ZWE4SV (v2 API) (515ms)
+
+
+  Suite duration: 0.627 s, Tests: 1
+
+  test explorer server uss files api
+  test explorer server uss files api
+      1) Gets a list of files and directories for a given path
+    14) Gets a list of files and directories for a given path
+
+
+  Suite duration: 0.376 s, Tests: 1
+
+  test explorer server uss files api
+  test explorer server uss files api
+      1) Gets a list of files and directories for a given path (v2 API)
+    15) Gets a list of files and directories for a given path (v2 API)
+
+
+  Suite duration: 0.732 s, Tests: 1
+  verify utils/common
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify utils/common"
+
+  Suite duration: 0.051 s, Tests: 1
+    16) "before all" hook: prepare SSH connection in "verify utils/common"
+
+  verify file-utils
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify file-utils"
+
+  Suite duration: 0.008 s, Tests: 1
+    17) "before all" hook: prepare SSH connection in "verify file-utils"
+
+  verify zowe-install-iframe-plugin.sh
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify zowe-install-iframe-plugin.sh"
+
+  Suite duration: 0.024 s, Tests: 1
+    18) "before all" hook: prepare SSH connection in "verify zowe-install-iframe-plugin.sh"
+
+
+  verify installed files
+  verify installed files
+      1) "before all" hook: prepare SSH connection for "installed folder should exist"
+    19) "before all" hook: prepare SSH connection for "installed folder should exist"
+
+
+  Suite duration: 2.091 s, Tests: 1
+  verify java-utils
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify java-utils"
+
+  Suite duration: 0.034 s, Tests: 1
+    20) "before all" hook: prepare SSH connection in "verify java-utils"
+
+  Non-test failures
+      1) "after all" hook: restore env in "verify java-utils"
+
+  Suite duration: 0.002 s, Tests: 1
+    21) "after all" hook: restore env in "verify java-utils"
+
+  verify network-utils
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify network-utils"
+
+  Suite duration: 0.039 s, Tests: 1
+    22) "before all" hook: prepare SSH connection in "verify network-utils"
+
+  verify node-utils
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify node-utils"
+
+  Suite duration: 0.048 s, Tests: 1
+    23) "before all" hook: prepare SSH connection in "verify node-utils"
+
+  Non-test failures
+      1) "after all" hook: restore env in "verify node-utils"
+
+  Suite duration: 0.002 s, Tests: 1
+    24) "after all" hook: restore env in "verify node-utils"
+
+  test zLux server https://laptop-6m63q791:8544
+
+  test zLux server https://laptop-6m63q791:8544 GET /
+    GET /
+      [ok] should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/: 14ms
+      [ok] should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/
+      [ok] should return ok: 23ms
+      [ok] should return ok
+
+  Suite duration: 0.067 s, Tests: 2
+
+  test zLux server https://laptop-6m63q791:8544 GET /ZLUX/plugins
+    GET /ZLUX/plugins
+      [ok] /org.zowe.explorer-jes/web/index.html should return ok: 13ms
+      [ok] /org.zowe.explorer-jes/web/index.html should return ok
+      [ok] /org.zowe.explorer-mvs/web/index.html should return ok: 12ms
+      [ok] /org.zowe.explorer-mvs/web/index.html should return ok
+      [ok] /org.zowe.explorer-uss/web/index.html should return ok: 22ms
+      [ok] /org.zowe.explorer-uss/web/index.html should return ok
+
+
+  Suite duration: 0.225 s, Tests: 3
+  verify zosmf-utils
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify zosmf-utils"
+
+  Suite duration: 0.035 s, Tests: 1
+    25) "before all" hook: prepare SSH connection in "verify zosmf-utils"
+
+  verify zowe-variable-utils
+
+  Non-test failures
+      1) "before all" hook: prepare SSH connection in "verify zowe-variable-utils"
+
+  Suite duration: 0.017 s, Tests: 1
+    26) "before all" hook: prepare SSH connection in "verify zowe-variable-utils"
+
+
+  45 passing (5m)
+  5 pending
+  26 failing
+
+  1) Generate api documentation
+       Generate Swagger API files:
+     Error: Command failed: mkdir ../../api_definitions
+The syntax of the command is incorrect.
+
+      at ChildProcess.exithandler (child_process.js:303:12)
+      at maybeClose (internal/child_process.js:1021:16)
+      at Process.ChildProcess._handle.onexit (internal/child_process.js:286:5)
+      at Process.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  2) cli version
+       command should return version without error:
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-01-version.js:30:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  3) cli check zosmf status
+       "before all" hook: verify environment variables for "should be able to return zosmf status":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-02-zosmf.js:35:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  4) cli list jobs of ZWE*
+       "before all" hook: verify environment variables for "should have an active job ZWE4SV":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-03-jobs.js:39:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  5) cli list data sets of SYS1.LINKLIB*
+       "before all" hook: verify environment variables for "should have an data set of SYS1.LINKLIB":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-04-files.js:45:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  6) cli perform ssh commands with zos-uss
+       "before all" hook: verify environment variables for "checks to see if instance.env exists in zowe-instance-dir":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-06-uss.js:36:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  7) test USS Explorer
+       should be able to list Zowe installation folder:
+     AssertionError: expected false to be an array
+      at Context.<anonymous> (test\e2e\test-04-uss-explorer.js:140:25)
+      at runMicrotasks (<anonymous>)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  8) test TN3270
+       should launch app correctly:
+     AssertionError: expected { Object (driver_, id_) } not to be an object
+      at Context.<anonymous> (test\e2e\test-05-tn3270.js:91:34)
+      at runMicrotasks (<anonymous>)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  9) test Sample React App
+       should be able to launch "TN3270" app:
+     AssertionError: expected false to be an object
+      at Context.<anonymous> (test\e2e\test-13-react-sample.js:112:23)
+      at runMicrotasks (<anonymous>)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  10) test explorer server docs
+       should be able to access Swagger UI (/swagger-ui.html):
+     Error: connect ECONNREFUSED 9.85.137.148:8547
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  11) test explorer server docs
+       should be able to access Swagger JSON file (/v2/api-docs):
+     Error: connect ECONNREFUSED 9.85.137.148:8547
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  12) test explorer server docs
+       should be able to access Swagger UI (/swagger-ui.html):
+     Error: connect ECONNREFUSED 9.85.137.148:8545
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  13) test explorer server docs
+       should be able to access Swagger JSON file (/v2/api-docs):
+     Error: connect ECONNREFUSED 9.85.137.148:8545
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  14) test explorer server uss files api
+       Gets a list of files and directories for a given path:
+     Error: Request failed with status code 400
+      at createError (node_modules\axios\lib\core\createError.js:16:15)
+      at settle (node_modules\axios\lib\core\settle.js:17:12)
+      at IncomingMessage.handleStreamEnd (node_modules\axios\lib\adapters\http.js:236:11)
+      at endReadableNT (_stream_readable.js:1220:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
+
+  15) test explorer server uss files api
+       Gets a list of files and directories for a given path (v2 API):
+     Error: Request failed with status code 400
+      at createError (node_modules\axios\lib\core\createError.js:16:15)
+      at settle (node_modules\axios\lib\core\settle.js:17:12)
+      at Unzip.handleStreamEnd (node_modules\axios\lib\adapters\http.js:236:11)
+      at endReadableNT (_stream_readable.js:1220:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
+
+  16) verify utils/common
+       "before all" hook: prepare SSH connection in "verify utils/common":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  17) verify file-utils
+       "before all" hook: prepare SSH connection in "verify file-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  18) verify zowe-install-iframe-plugin.sh
+       "before all" hook: prepare SSH connection in "verify zowe-install-iframe-plugin.sh":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  19) verify installed files
+       "before all" hook: prepare SSH connection for "installed folder should exist":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  20) verify java-utils
+       "before all" hook: prepare SSH connection in "verify java-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  21) verify java-utils
+       "after all" hook: restore env in "verify java-utils":
+     Error: Not connected
+      at Client.exec (node_modules\ssh2\lib\client.js:714:11)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:220:22
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:219:16)
+      at Generator.next (<anonymous>)
+      at step (node_modules\node-ssh\lib\index.js:39:191)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:39:437
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:39:99)
+      at SSH.execCommand (node_modules\node-ssh\lib\index.js:241:22)
+      at executeCommand (test\install\ssh-helper.js:56:28)
+      at Object.executeCommandWithNoError (test\install\ssh-helper.js:49:38)
+      at Context.<anonymous> (test\install\test-java-utils.js:129:21)
+      at processImmediate (internal/timers.js:456:21)
+      at process.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  22) verify network-utils
+       "before all" hook: prepare SSH connection in "verify network-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  23) verify node-utils
+       "before all" hook: prepare SSH connection in "verify node-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  24) verify node-utils
+       "after all" hook: restore env in "verify node-utils":
+     Error: Not connected
+      at Client.exec (node_modules\ssh2\lib\client.js:714:11)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:220:22
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:219:16)
+      at Generator.next (<anonymous>)
+      at step (node_modules\node-ssh\lib\index.js:39:191)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:39:437
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:39:99)
+      at SSH.execCommand (node_modules\node-ssh\lib\index.js:241:22)
+      at executeCommand (test\install\ssh-helper.js:56:28)
+      at Object.executeCommandWithNoError (test\install\ssh-helper.js:49:38)
+      at Context.<anonymous> (test\install\test-node-utils.js:196:21)
+      at processImmediate (internal/timers.js:456:21)
+      at process.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  25) verify zosmf-utils
+       "before all" hook: prepare SSH connection in "verify zosmf-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  26) verify zowe-variable-utils
+       "before all" hook: prepare SSH connection in "verify zowe-variable-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+
+
+
+  45 passing (5m)
+  5 pending
+  26 failing
+
+  1) Generate api documentation
+       Generate Swagger API files:
+     Error: Command failed: mkdir ../../api_definitions
+The syntax of the command is incorrect.
+
+      at ChildProcess.exithandler (child_process.js:303:12)
+      at maybeClose (internal/child_process.js:1021:16)
+      at Process.ChildProcess._handle.onexit (internal/child_process.js:286:5)
+      at Process.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  2) cli version
+       command should return version without error:
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-01-version.js:30:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  3) cli check zosmf status
+       "before all" hook: verify environment variables for "should be able to return zosmf status":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-02-zosmf.js:35:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  4) cli list jobs of ZWE*
+       "before all" hook: verify environment variables for "should have an active job ZWE4SV":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-03-jobs.js:39:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  5) cli list data sets of SYS1.LINKLIB*
+       "before all" hook: verify environment variables for "should have an data set of SYS1.LINKLIB":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-04-files.js:45:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  6) cli perform ssh commands with zos-uss
+       "before all" hook: verify environment variables for "checks to see if instance.env exists in zowe-instance-dir":
+     AssertionError: expected 'Debugger attached.\r\nWaiting for the debugger to disconnect...\r\n' to be empty
+      at Context.<anonymous> (test\cli\test-06-uss.js:36:32)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  7) test USS Explorer
+       should be able to list Zowe installation folder:
+     AssertionError: expected false to be an array
+      at Context.<anonymous> (test\e2e\test-04-uss-explorer.js:140:25)
+      at runMicrotasks (<anonymous>)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  8) test TN3270
+       should launch app correctly:
+     AssertionError: expected { Object (driver_, id_) } not to be an object
+      at Context.<anonymous> (test\e2e\test-05-tn3270.js:91:34)
+      at runMicrotasks (<anonymous>)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  9) test Sample React App
+       should be able to launch "TN3270" app:
+     AssertionError: expected false to be an object
+      at Context.<anonymous> (test\e2e\test-13-react-sample.js:112:23)
+      at runMicrotasks (<anonymous>)
+      at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+  10) test explorer server docs
+       should be able to access Swagger UI (/swagger-ui.html):
+     Error: connect ECONNREFUSED 9.85.137.148:8547
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  11) test explorer server docs
+       should be able to access Swagger JSON file (/v2/api-docs):
+     Error: connect ECONNREFUSED 9.85.137.148:8547
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  12) test explorer server docs
+       should be able to access Swagger UI (/swagger-ui.html):
+     Error: connect ECONNREFUSED 9.85.137.148:8545
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  13) test explorer server docs
+       should be able to access Swagger JSON file (/v2/api-docs):
+     Error: connect ECONNREFUSED 9.85.137.148:8545
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  14) test explorer server uss files api
+       Gets a list of files and directories for a given path:
+     Error: Request failed with status code 400
+      at createError (node_modules\axios\lib\core\createError.js:16:15)
+      at settle (node_modules\axios\lib\core\settle.js:17:12)
+      at IncomingMessage.handleStreamEnd (node_modules\axios\lib\adapters\http.js:236:11)
+      at endReadableNT (_stream_readable.js:1220:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
+
+  15) test explorer server uss files api
+       Gets a list of files and directories for a given path (v2 API):
+     Error: Request failed with status code 400
+      at createError (node_modules\axios\lib\core\createError.js:16:15)
+      at settle (node_modules\axios\lib\core\settle.js:17:12)
+      at Unzip.handleStreamEnd (node_modules\axios\lib\adapters\http.js:236:11)
+      at endReadableNT (_stream_readable.js:1220:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
+
+  16) verify utils/common
+       "before all" hook: prepare SSH connection in "verify utils/common":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  17) verify file-utils
+       "before all" hook: prepare SSH connection in "verify file-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  18) verify zowe-install-iframe-plugin.sh
+       "before all" hook: prepare SSH connection in "verify zowe-install-iframe-plugin.sh":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  19) verify installed files
+       "before all" hook: prepare SSH connection for "installed folder should exist":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  20) verify java-utils
+       "before all" hook: prepare SSH connection in "verify java-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  21) verify java-utils
+       "after all" hook: restore env in "verify java-utils":
+     Error: Not connected
+      at Client.exec (node_modules\ssh2\lib\client.js:714:11)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:220:22
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:219:16)
+      at Generator.next (<anonymous>)
+      at step (node_modules\node-ssh\lib\index.js:39:191)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:39:437
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:39:99)
+      at SSH.execCommand (node_modules\node-ssh\lib\index.js:241:22)
+      at executeCommand (test\install\ssh-helper.js:56:28)
+      at Object.executeCommandWithNoError (test\install\ssh-helper.js:49:38)
+      at Context.<anonymous> (test\install\test-java-utils.js:129:21)
+      at processImmediate (internal/timers.js:456:21)
+      at process.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  22) verify network-utils
+       "before all" hook: prepare SSH connection in "verify network-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  23) verify node-utils
+       "before all" hook: prepare SSH connection in "verify node-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  24) verify node-utils
+       "after all" hook: restore env in "verify node-utils":
+     Error: Not connected
+      at Client.exec (node_modules\ssh2\lib\client.js:714:11)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:220:22
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:219:16)
+      at Generator.next (<anonymous>)
+      at step (node_modules\node-ssh\lib\index.js:39:191)
+      at C:\zowe\explorer-componentisation\zowe-install-packaging\tests\sanity\node_modules\node-ssh\lib\index.js:39:437
+      at new Promise (<anonymous>)
+      at SSH.<anonymous> (node_modules\node-ssh\lib\index.js:39:99)
+      at SSH.execCommand (node_modules\node-ssh\lib\index.js:241:22)
+      at executeCommand (test\install\ssh-helper.js:56:28)
+      at Object.executeCommandWithNoError (test\install\ssh-helper.js:49:38)
+      at Context.<anonymous> (test\install\test-node-utils.js:196:21)
+      at processImmediate (internal/timers.js:456:21)
+      at process.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  25) verify zosmf-utils
+       "before all" hook: prepare SSH connection in "verify zosmf-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+  26) verify zowe-variable-utils
+       "before all" hook: prepare SSH connection in "verify zowe-variable-utils":
+     Error: connect ECONNREFUSED 9.85.137.148:22
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
+      at TCPConnectWrap.callbackTrampoline (internal/async_hooks.js:120:14)
+
+
+
+Waiting for the debugger to disconnect...

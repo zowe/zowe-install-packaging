@@ -13,7 +13,11 @@ const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:install:installed-files');
 const addContext = require('mochawesome/addContext'); 
 
-describe('verify installed files', function() {
+const nonZosHost = process.env.ZOWE_NONZOS_HOST;
+const isNonZosHost = (nonZosHost)? true:false;
+
+(isNonZosHost ? describe.skip : describe)('verify installed files', function() {
+
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });

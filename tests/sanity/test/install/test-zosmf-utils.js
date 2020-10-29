@@ -11,7 +11,11 @@
 const expect = require('chai').expect;
 const sshHelper = require('./ssh-helper');
 
-describe('verify zosmf-utils', function() {
+const nonZosHost = process.env.ZOWE_NONZOS_HOST;
+const isNonZosHost = (nonZosHost)? true:false;
+
+(isNonZosHost ? describe.skip : describe)('verify zosmf-utils', function() {
+  
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });

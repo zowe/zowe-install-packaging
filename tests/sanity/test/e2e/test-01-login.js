@@ -30,11 +30,12 @@ const {
 let driver;
 
 let loginSuccessfully = false;
+const targetHost = process.env.ZOWE_NONZOS_HOST || process.env.SSH_HOST;
 
 describe('test MVD login page', function() {
 
   before('verify environment variable and load login page', async function() {
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
+    expect(targetHost, 'targetHost is empty, define ZOWE_NONZOS_HOST || SSH_HOST').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ZLUX_HTTPS_PORT, 'ZOWE_ZLUX_HTTPS_PORT is not defined').to.not.be.empty;
@@ -45,7 +46,7 @@ describe('test MVD login page', function() {
 
     // load MVD login page
     debug('loading login page');
-    await driver.get(`https://${process.env.SSH_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`);
+    await driver.get(`https://${targetHost}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`);
     try {
       await driver.wait(
         async() => {

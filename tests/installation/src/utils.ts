@@ -266,8 +266,7 @@ async function installAndVerifyDockerZowe(testcase: string, installPlaybook: str
   copySanityTestReport(resultVerify.reportHash);
 
   expect(resultVerify.code).toBe(0);
-}+
-+
+}
 
 /**
  * Install and verify convenience build

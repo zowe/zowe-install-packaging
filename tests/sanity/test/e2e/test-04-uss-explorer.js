@@ -46,10 +46,11 @@ const MVD_EXPLORER_TREE_SECTION = 'div.tree-card div.node';
 let appLaunched = false;
 let testDirIndex = -1;
 
+const targetHost = process.env.ZOWE_NONZOS_HOST || process.env.SSH_HOST;
 
 describe(`test ${APP_TO_TEST}`, function() {
   before('verify environment variable and load login page', async function() {
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
+    expect(targetHost, 'targetHost is empty, define ZOWE_NONZOS_HOST || SSH_HOST').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ROOT_DIR, 'ZOWE_ROOT_DIR is not defined').to.not.be.empty;
@@ -63,14 +64,14 @@ describe(`test ${APP_TO_TEST}`, function() {
     await setApimlAuthTokenCookie(driver, 	
       process.env.SSH_USER, 	
       process.env.SSH_PASSWD, 	
-      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
-      `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/explorer-uss`	
+      `https://${targetHost}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
+      `https://${targetHost}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/explorer-uss`	
     );
 
     // load MVD login page
     await loginMVD(
       driver,
-      `https://${process.env.SSH_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`,
+      `https://${targetHost}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
     );
