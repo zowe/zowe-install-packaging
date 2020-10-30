@@ -103,4 +103,4 @@
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
 
 - name: Show caching service settings in instance.env
-  raw: cat "{{ zowe_instance_dir }}/instance.env | grep ZWE_CACHING_SERVICE_"
+  raw: cat "{{ zowe_instance_dir }}/instance.env" | grep ZWE_CACHING_SERVICE_
