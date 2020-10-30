@@ -15,6 +15,7 @@ node('ibm-jenkins-slave-nvm') {
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
+  def zowePaxUploaded
 
   pipeline.admins.add("jackjia", "stevenh", "joewinchester", "markackert")
 
@@ -172,7 +173,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (params.BUILD_DOCKER) {
         // this is a hack to find the zowe.pax upload
         // FIXME: ideally this should be reachable from pipeline property
-        def zowePaxUploaded = sh(
+        zowePaxUploaded = sh(
           script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
           returnStdout: true
         ).trim()
@@ -253,10 +254,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (params.BUILD_DOCKER) {
         // this is a hack to find the zowe.pax upload
         // FIXME: ideally this should be reachable from pipeline property
-        def zowePaxUploaded = sh(
-          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
-          returnStdout: true
-        ).trim()
         echo "zowePaxUploaded=${zowePaxUploaded}"
         if (zowePaxUploaded == "") {
           sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
@@ -288,8 +285,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             )]){
               // build docker image
               sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
+              sh "docker save -o zowe-v1-lts.amd64.tar ${USERNAME}/zowe-v1-lts:amd64"
             }
-            sh "docker save -o zowe-v1-lts.amd64.tar ${USERNAME}/zowe-v1-lts:amd64"
             // show files
             sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
             pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
