@@ -43,3 +43,6 @@
 
 - name: List certificates directory
   raw: ls -l "{{ zowe_keystore_dir }}"
+
+- name: Print jwt secret
+  raw: cat "{{ zowe_keystore_dir }}/localhost/localhost.keystore.jwtsecret.pem"

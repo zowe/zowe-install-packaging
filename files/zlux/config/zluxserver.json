@@ -35,11 +35,11 @@
       "token": "ZWETOKEN",
       "enabled": true,
       "key": {
-        "label": "ZWTLEBL",
+        "label": "ZWELBEL",
         "token": "ZWETOKEN"
       },
       "fallback": true,
-      "label": "ZWTLEBL"
+      "label": "ZWELBEL"
     },
     "http": {
       "ipAddresses": ["127.0.0.1"],
