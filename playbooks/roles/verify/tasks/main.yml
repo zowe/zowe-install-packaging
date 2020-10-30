@@ -45,7 +45,7 @@
     SSH_USER: "{{ ansible_user }}"
     SSH_PASSWD: "{{ ansible_password }}"
     ZOSMF_PORT: "{{ zos_zosmf_port }}"
-    ZOWE_NONZOS_HOST : "{{ zowe_nonzos_host }}"
+    ZOWE_NONZOS_HOST : "{{ zowe_nonzos_host | default('') }}"
     ZOWE_DS_MEMBER: "{{ zowe_proclib_membername }}"
     ZOWE_JOB_PREFIX: "{{ zowe_job_prefix }}"
     ZOWE_INSTANCE_ID: "{{ zowe_instance_id }}"

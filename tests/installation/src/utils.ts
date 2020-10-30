@@ -255,7 +255,8 @@ async function installAndVerifyDockerZowe(testcase: string, installPlaybook: str
     resultVerify = await runAnsiblePlaybook(
       testcase,
       'verify.yml',
-      serverId
+      serverId,
+      extraVars
     );
   } catch (e) {
     resultVerify = e;
