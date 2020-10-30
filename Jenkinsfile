@@ -200,28 +200,33 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
           sshCommand remote: Z_SERVER, command: \
           """
-             mkdir -p zowe-build/${env.BUILD_NUMBER} &&
-             cd zowe-build/${env.BUILD_NUMBER} &&
+             mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
+             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              git clone --branch master https://github.com/zowe/zowe-dockerfiles.git
 
           """
-          sshPut remote: Z_SERVER, from: ".pax/zowe.pax", into: "zowe-build/${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts"
+          sshPut remote: Z_SERVER, from: ".pax/zowe.pax", into: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts"
           sshCommand remote: Z_SERVER, command: \
           """
-             cd zowe-build/${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
+             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
              mkdir -p utils && cp -r ../../../../utils/* ./utils &&
-             docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:s390x .
+             sudo docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:s390x . &&
+             sudo docker save -o zowe-v1-lts.s390x.tar ${USERNAME}/zowe-v1-lts:s390x &&
+             sudo chmod 777 * &&
+             echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.s390x.tar
           """
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts", into: "zowe-v1-lts.s390x.tar"
+          pipeline.uploadArtifacts([ 'zowe-v1-lts.s390x.tar' ])
           if (params.PUBLISH_DOCKER) {
             sshCommand remote: Z_SERVER, command: \
             """
-               docker login -u ${USERNAME} -p ${PASSWORD} &&
-               docker push ${USERNAME}/zowe-v1-lts:s390x
+               sudo docker login -u ${USERNAME} -p ${PASSWORD} &&
+               sudo docker push ${USERNAME}/zowe-v1-lts:s390x
             """
           }
           sshCommand remote: Z_SERVER, command: \
           """
-             rm -r zowe-build/${BUILD}
+             rm -r zowe-build/${env.BRANCH_NAME}_${BUILD}
           """
           //TODO need way to cleanup docker to save space, dont know how to auto-yes here
           //              docker system prune -y
@@ -277,7 +282,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
               // build docker image
               sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
             }
-            sh "docker save -o zowe-v1-lts.amd64.tar ompzowe/zowe-v1-lts:amd64"
+            sh "docker save -o zowe-v1-lts.amd64.tar ${USERNAME}/zowe-v1-lts:amd64"
             // show files
             sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
             pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
