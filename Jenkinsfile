@@ -161,16 +161,27 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     ]
   )
 
-  // 
   pipeline.createStage(
     name: "Build zLinux Docker",
-    timeout: [ time: 120, unit: 'MINUTES' ],
+    timeout: [ time: 60, unit: 'MINUTES' ],
     isSkippable: true,
     showExecute: {
       return params.BUILD_DOCKER
     },
     stage : {
       if (params.BUILD_DOCKER) {
+        // this is a hack to find the zowe.pax upload
+        // FIXME: ideally this should be reachable from pipeline property
+        def zowePaxUploaded = sh(
+          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
+          returnStdout: true
+        ).trim()
+        echo "zowePaxUploaded=${zowePaxUploaded}"
+        if (zowePaxUploaded == "") {
+          sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
+          error "Couldn't find zowe.pax uploaded."
+        }
+        
         withCredentials([
           usernamePassword(
             credentialsId: 'ZoweDockerhub',
@@ -203,19 +214,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              git clone --branch master https://github.com/zowe/zowe-dockerfiles.git
-
-          """
-          sshPut remote: Z_SERVER, from: ".pax/zowe.pax", into: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts"
-          sshCommand remote: Z_SERVER, command: \
-          """
-             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
+             cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
+             wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../../../../utils/* ./utils &&
              sudo docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:s390x . &&
              sudo docker save -o zowe-v1-lts.s390x.tar ${USERNAME}/zowe-v1-lts:s390x &&
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.s390x.tar
           """
-          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts", into: "zowe-v1-lts.s390x.tar"
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts/zowe-v1-lts.s390x.tar", into: "zowe-v1-lts.s390x.tar"
           pipeline.uploadArtifacts([ 'zowe-v1-lts.s390x.tar' ])
           if (params.PUBLISH_DOCKER) {
             sshCommand remote: Z_SERVER, command: \
@@ -226,7 +233,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           }
           sshCommand remote: Z_SERVER, command: \
           """
-             rm -r zowe-build/${env.BRANCH_NAME}_${BUILD}
+             rm -rf zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
           """
           //TODO need way to cleanup docker to save space, dont know how to auto-yes here
           //              docker system prune -y
