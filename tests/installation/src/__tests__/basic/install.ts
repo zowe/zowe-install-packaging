@@ -33,7 +33,7 @@ describe(testSuiteName, () => {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_lock_keystore': 'false',
         'zowe_token_name': 'ZWETOKEN',
-        'zowe_token_label': 'ZWELBEL',
+        'zowe_token_label': 'ZWLZSSBL',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);

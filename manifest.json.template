@@ -54,7 +54,7 @@
     "org.zowe.zss": {
       "version": "1.17.0-PR-227",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-1.17.0-pr-227-5-20201030103226.pax"
+      "artifact": "zss-1.17.0-pr-227-6-20201030133329.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "~1.0.0-STAGING",
