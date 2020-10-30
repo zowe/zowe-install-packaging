@@ -163,7 +163,75 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
   // 
   pipeline.createStage(
-    name: "Build Docker",
+    name: "Build zLinux Docker",
+    timeout: [ time: 120, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_DOCKER
+    },
+    stage : {
+      if (params.BUILD_DOCKER) {
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'ZoweDockerhub',
+            usernameVariable: 'USERNAME',
+            passwordVariable: 'PASSWORD'
+          ),
+          sshUserPrivateKey(
+            credentialsId: 'zlinux-docker',
+            keyFileVariable: 'KEYFILE',
+            usernameVariable: 'ZUSER',
+            passphraseVariable: 'PASSPHRASE'
+          ),
+          string(
+            credentialsId: 'zlinux-host',
+            variable: 'ZHOST'
+          )
+        ]){
+          def Z_SERVER = [
+            name         : ZHOST,
+            host         : ZHOST,
+            port         : 22,
+            user         : ZUSER,
+            identityFile : KEYFILE,
+            passphrase   : PASSPHRASE,
+            allowAnyHosts: true
+          ]
+
+          sshCommand remote: Z_SERVER, command: \
+          """
+             mkdir -p zowe-build/${env.BUILD_NUMBER} &&
+             cd zowe-build/${env.BUILD_NUMBER} &&
+             git clone --branch master https://github.com/zowe/zowe-dockerfiles.git
+
+          """
+          sshPut remote: Z_SERVER, from: ".pax/zowe.pax", into: "zowe-build/${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts"
+          sshCommand remote: Z_SERVER, command: \
+          """
+             cd zowe-build/${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
+             mkdir -p utils && cp -r ../../../../utils/* ./utils &&
+             docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:s390x .
+          """
+          if (params.PUBLISH_DOCKER) {
+            sshCommand remote: Z_SERVER, command: \
+            """
+               docker login -u ${USERNAME} -p ${PASSWORD} &&
+               docker push ${USERNAME}/zowe-v1-lts:s390x
+            """
+          }
+          sshCommand remote: Z_SERVER, command: \
+          """
+             rm -r zowe-build/${BUILD}
+          """
+          //TODO need way to cleanup docker to save space, dont know how to auto-yes here
+          //              docker system prune -y
+        }
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name: "Build Linux Docker",
     timeout: [ time: 120, unit: 'MINUTES' ],
     isSkippable: true,
     showExecute: {
@@ -182,6 +250,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
           error "Couldn't find zowe.pax uploaded."
         }
+
         node('ibm-jenkins-slave-dind') {
           // checkout source code to docker build agent
           checkout scm
