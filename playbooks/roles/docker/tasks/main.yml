@@ -2,6 +2,11 @@
 # ============================================================================
 # Docker Pull & Run
 
+- name: Reset variables
+  set_fact:
+    container_id_response:
+    container_id:
+
 - name: Pull docker image
   raw: docker pull {{zowe_docker_image}}:{{zowe_docker_tag}}
   delegate_to: localhost
@@ -18,10 +23,19 @@
       -p 7554:7554 \
       -p 8544:8544 \
       ompzowe/zowe-v1-lts:amd64
+  register: container_id_response
   delegate_to: localhost
+
+- name: Set container_id
+  set_fact:
+    container_id: "{{ container_id_response.stdout_lines[1] }}"
 
 # has replaced with wait-for-zowe task defined in role start
 - name: Sleep for 300 seconds and continue with play - after docker start
   wait_for:
     timeout: 300
+  delegate_to: localhost
+
+- name: print docker logs
+  raw: docker logs {{container_id}}
   delegate_to: localhost
