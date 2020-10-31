@@ -4,7 +4,6 @@
 
 - name: Reset variables
   set_fact:
-    container_id_response:
     container_id:
 
 - name: Pull docker image
@@ -28,7 +27,7 @@
 
 - name: Set container_id
   set_fact:
-    container_id: "{{ container_id_response.stdout_lines[1] }}"
+    container_id: "{{ container_id_response.stdout_lines[0] }}"
 
 # has replaced with wait-for-zowe task defined in role start
 - name: Sleep for 300 seconds and continue with play - after docker start
@@ -36,6 +35,11 @@
     timeout: 300
   delegate_to: localhost
 
-- name: print docker logs
+- name: get docker logs
   raw: docker logs {{container_id}}
   delegate_to: localhost
+  register: container_logs
+
+- name: print docker logs
+  debug:
+    var: container_logs
