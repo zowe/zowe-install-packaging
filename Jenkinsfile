@@ -31,6 +31,11 @@ node('ibm-jenkins-slave-nvm') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'PUBLISH_DOCKER',
+      description: 'If we want to publish docker image to dockerhub.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -202,11 +207,24 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             )]){
               // build docker image
               sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
-              // publish
-              sh """
+            }
+            sh "docker save -o zowe-v1-lts.amd64.tar ompzowe/zowe-v1-lts:amd64"
+            // show files
+            sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
+            pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
+
+            if (params.PUBLISH_DOCKER) {
+              withCredentials([usernamePassword(
+                credentialsId: 'ZoweDockerhub',
+                usernameVariable: 'USERNAME',
+                passwordVariable: 'PASSWORD'
+              )]){
+                // publish
+                sh """
                  docker login -u ${USERNAME} -p ${PASSWORD} \
                  && docker push ${USERNAME}/zowe-v1-lts:amd64
                  """
+              }
             }
           }
         }
