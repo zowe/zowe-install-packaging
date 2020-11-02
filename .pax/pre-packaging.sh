@@ -161,7 +161,7 @@ ls -A "$(pwd)/" || true
 echo "[$SCRIPT_NAME] create mediation pax"
 cd mediation
 MEDIATION_PATH="../content/zowe-$ZOWE_VERSION/files"
-pax -x os390 -w -f ${MEDIATION_PATH}/api-mediation-package-0.8.4.pax *
+pax -x os390 -w -f ${MEDIATION_PATH}/api-mediation-package.pax *
 cd ..
 # clean up working files
 rm -rf "./mediation"
