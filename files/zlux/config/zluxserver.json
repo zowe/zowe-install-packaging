@@ -32,14 +32,12 @@
     //host is for zlux to know, not zss
     "host": "localhost",
     "jwt": {
-      "token": "ZWETOKEN",
       "enabled": true,
       "key": {
-        "label": "SOZWLBLE",
+        "label": "SOZWLBLI",
         "token": "ZWETOKEN"
       },
-      "fallback": true,
-      "label": "SOZWLBLE"
+      "fallback": true
     },
     "http": {
       "ipAddresses": ["127.0.0.1"],
