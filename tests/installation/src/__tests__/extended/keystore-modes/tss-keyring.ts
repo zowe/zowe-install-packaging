@@ -42,6 +42,7 @@ describe(testSuiteName, () => {
         'zowe_lock_keystore': 'false',
         'zowe_token_name': ZOWE_TOKEN_NAME,
         'zowe_token_label': ZOWE_TOKEN_LABEL,
+        'zowe_apiml_verify_certficates_of_services': 'true',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
