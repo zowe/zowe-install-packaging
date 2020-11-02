@@ -161,8 +161,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/AZWE*'
     ]
   )
-
-  def dockerArtifacts = []
   
   pipeline.createStage(
     name: "Build zLinux Docker",
@@ -226,7 +224,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.s390x.tar
           """
           sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts/zowe-v1-lts.s390x.tar", into: "zowe-v1-lts.s390x.tar"
-          dockerArtifacts.add( 'zowe-v1-lts.s390x.tar' )
+          pipeline.uploadArtifacts([ 'zowe-v1-lts.s390x.tar' ])
           if (params.PUBLISH_DOCKER) {
             sshCommand remote: Z_SERVER, command: \
             """
@@ -290,7 +288,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             }
             // show files
             sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
-            dockerArtifacts.add( 'zowe-v1-lts.amd64.tar' )
+            pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
 
             if (params.PUBLISH_DOCKER) {
               withCredentials([usernamePassword(
@@ -311,19 +309,5 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     }
   )
 
-  pipeline.createStage(
-    name: "Docker Artifactory Upload",
-    timeout: [ time: 30, unit: 'MINUTES' ],
-    isSkippable: true,
-    showExecute: {
-      return params.BUILD_DOCKER
-    },
-    stage: {
-      if (params.BUILD_DOCKER) {
-        pipeline.uploadArtifacts(dockerArtifacts);
-      }
-    }
-  )
-  
   pipeline.end()
 }
