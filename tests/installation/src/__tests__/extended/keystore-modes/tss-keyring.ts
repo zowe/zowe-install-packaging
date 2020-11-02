@@ -13,10 +13,9 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import {
-  TEST_TIMEOUT_CONVENIENCE_BUILD,
+import { 
+  TEST_TIMEOUT_CONVENIENCE_BUILD, 
   KEYSTORE_MODE_KEYRING,
-  SECURITY_SYSTEM_TSS,
   ZOWE_TOKEN_NAME,
   ZOWE_TOKEN_LABEL,
 } from '../../../constants';
@@ -38,7 +37,6 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
-        'zos_security_system': SECURITY_SYSTEM_TSS,
         'zowe_lock_keystore': 'false',
         'zowe_token_name': ZOWE_TOKEN_NAME,
         'zowe_token_label': ZOWE_TOKEN_LABEL,
