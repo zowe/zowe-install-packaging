@@ -475,7 +475,7 @@ function trust_keyring {
 }
 
 function jwt_key_gen_and_export {
-    echo "Generates key pair for JWT token secret and exports the public key"
+    echo "Generates key pair for JWT secret and exports the public key"
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
           -dname "${SERVICE_DNAME}" -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
@@ -489,6 +489,7 @@ function jwt_key_gen_and_export {
 }
 
 function export_jwt_from_keyring {
+        echo "Export JWT secret from keyring"
         pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
           -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 }
