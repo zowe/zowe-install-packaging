@@ -42,4 +42,7 @@ export const SECURITY_SYSTEM_RACF: string = 'RACF';
 export const SECURITY_SYSTEM_ACF2: string = 'ACF2';
 export const SECURITY_SYSTEM_TSS: string = 'TSS';
 
+export const ZOWE_TOKEN_NAME: string = 'ZWETOKEN';
+export const ZOWE_TOKEN_LABEL: string = 'SOZWLBLII';
+
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);

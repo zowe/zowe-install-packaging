@@ -13,11 +13,13 @@ import {
     installAndVerifyConvenienceBuild,
     showZoweRuntimeLogs,
   } from '../../../utils';
-  import { 
-    TEST_TIMEOUT_CONVENIENCE_BUILD, 
-    KEYSTORE_MODE_KEYRING,
-    SECURITY_SYSTEM_RACF,
-  } from '../../../constants';
+  import {
+  TEST_TIMEOUT_CONVENIENCE_BUILD,
+  KEYSTORE_MODE_KEYRING,
+  SECURITY_SYSTEM_RACF,
+    ZOWE_TOKEN_NAME,
+    ZOWE_TOKEN_LABEL,
+} from '../../../constants';
   
   const testServer = 'marist-1';
   const testSuiteName = 'Test convenience build installation with keystore pointing to a RACF keyring';
@@ -38,7 +40,8 @@ import {
           'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
           'zos_security_system': SECURITY_SYSTEM_RACF,
           'zowe_lock_keystore': 'false',
-          'zowe_token_name': 'ZOWE_TOKEN',
+          'zowe_token_name': ZOWE_TOKEN_NAME,
+          'zowe_token_label': ZOWE_TOKEN_LABEL,
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);
