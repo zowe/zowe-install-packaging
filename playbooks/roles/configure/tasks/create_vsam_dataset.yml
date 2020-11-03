@@ -23,10 +23,19 @@
     - zowe_caching_service_persistent
     - zowe_caching_service_vsam_dsprefix
 
-- name: Check if zowe_caching_vsam_storage_class or zowe_caching_vsam_volume has a value
+- name: Check if zowe_caching_vsam_storage_class has a value
   fail:
-    msg: zowe_caching_vsam_storage_class or zowe_caching_vsam_volume is required
-  when: (zowe_caching_vsam_storage_class is none or zowe_caching_vsam_storage_class == '') and (zowe_caching_vsam_volume is none or zowe_caching_vsam_volume == '')
+    msg: zowe_caching_vsam_storage_class is required
+  when: zos_vsam_rls and (zowe_caching_vsam_storage_class is not defined or zowe_caching_vsam_storage_class is none or zowe_caching_vsam_storage_class == '')
+
+- name: Check if zowe_caching_vsam_volume has a value
+  fail:
+    msg: zowe_caching_vsam_volume is required
+  when: not zos_vsam_rls and (zowe_caching_vsam_volume is not defined or zowe_caching_vsam_volume is none or zowe_caching_vsam_volume == '')
+
+- name: Set caching service vsam data set name
+  set_fact:
+    zowe_caching_service_vsam_dsname: "{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}"
 
 - name: Remove ZWECSVSM.jcl or ZWECSVSM.raw.jcl if exists
   raw: >-
@@ -39,44 +48,18 @@
 - name: Update dsname in ZWECSVSM.jcl
   raw: >-
     cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
-    sed -e "40,999s/#dsname/{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}/g" | \
-    sed -e "40,999s/#storclas/{{ zowe_caching_vsam_storage_class }}/g" | \
-    sed -e "40,999s/#volume/{{ zowe_caching_vsam_volume }}/" \
+    sed -e "48,999s/#dsname/{{ zowe_caching_service_vsam_dsname }}/g" | \
+    sed -e "48,999s/#storclas/{{ zowe_caching_vsam_storage_class }}/g" | \
+    sed -e "48,999s/#volume/{{ zowe_caching_vsam_volume }}/" \
     > "{{ work_dir_remote }}/ZWECSVSM.jcl"
 
-- name: Enable storage class in ZWECSVSM.jcl if zowe_caching_vsam_storage_class is set
+- name: Set ZWEVSVSM job MODE configuration
   raw: >-
     mv "{{ work_dir_remote }}/ZWECSVSM.jcl" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" && \
     cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
-    sed -e "s|^/\* \{1,\}STORCLAS|    STORCLAS|" |  \
-    sed -e "/^ \{1,\}VOLUME/d" \
-    > "{{ work_dir_remote }}/ZWECSVSM.jcl"
-  when: zowe_caching_vsam_storage_class is not none and zowe_caching_vsam_storage_class != ''
-
-- name: Enable volume in ZWECSVSM.jcl if zowe_caching_vsam_volume is set
-  raw: >-
-    mv "{{ work_dir_remote }}/ZWECSVSM.jcl" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" && \
-    cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
-    sed -e "/\/\* \{1,\}STORCLAS/d" \
-    > "{{ work_dir_remote }}/ZWECSVSM.jcl"
-  when: zowe_caching_vsam_volume is not none and zowe_caching_vsam_volume != ''
-
-- name: Enable LOG and remove SHAREOPTIONS in ZWECSVSM.jcl if VSAM RLS is enabled
-  raw: >-
-    mv "{{ work_dir_remote }}/ZWECSVSM.jcl" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" && \
-    cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
-    sed -e "s|^/\* \{1,\}LOG|    LOG|" | \
-    sed -e "/^ \{1,\}SHAREOPTIONS/d" \
+    sed -e "s|SET \{1,\}MODE=NONRLS|SET MODE=RLS|" \
     > "{{ work_dir_remote }}/ZWECSVSM.jcl"
   when: zos_vsam_rls
-
-- name: Enable SHAREOPTIONS and remove LOG in ZWECSVSM.jcl if VSAM RLS is not enabled
-  raw: >-
-    mv "{{ work_dir_remote }}/ZWECSVSM.jcl" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" && \
-    cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
-    sed -e "/\/\* \{1,\}LOG/d" \
-    > "{{ work_dir_remote }}/ZWECSVSM.jcl"
-  when: not zos_vsam_rls
 
 - name: Display ZWECSVSM jcl
   raw: cat "{{ work_dir_remote }}/ZWECSVSM.jcl"
@@ -98,7 +81,7 @@
     cat "{{ zowe_instance_dir }}/instance.env" | \
     sed -e "s+^ZWE_CACHING_SERVICE_PORT=.*\$+ZWE_CACHING_SERVICE_PORT={{ zowe_caching_service_port }}+" | \
     sed -e "s+^ZWE_CACHING_SERVICE_PERSISTENT=.*\$+ZWE_CACHING_SERVICE_PERSISTENT={{ zowe_caching_service_persistent }}+" | \
-    sed -e "s+^ZWE_CACHING_SERVICE_VSAM_DATASET=.*\$+ZWE_CACHING_SERVICE_VSAM_DATASET={{ zowe_dataset_prefix }}\.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}+" \
+    sed -e "s+^ZWE_CACHING_SERVICE_VSAM_DATASET=.*\$+ZWE_CACHING_SERVICE_VSAM_DATASET={{ zowe_caching_service_vsam_dsname }}+" \
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
 
