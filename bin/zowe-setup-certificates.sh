@@ -260,7 +260,7 @@ APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
 if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   if [[ -f ${APIML_PUBLIC_KEY} ]]
-  if  [[ "${EXPORT_JWS_KEYRING}" != "false"]] && [[ "${VERIFY_CERTIFICATES}" != "true" ]]; then
+  if [[ "${EXPORT_JWS_KEYRING}" != "false" ]] && [[ "${VERIFY_CERTIFICATES}" != "true" ]]; then
       ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action jwt-keygen \
        --service-storetype "JCERACFKS" --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} \
        --service-keystore ${KEYSTORE_PREFIX} --service-ext ${SAN} --local-ca-filename ${LOCAL_CA_PREFIX}
