@@ -64,7 +64,7 @@ node('ibm-jenkins-slave-nvm') {
   // - jenkins_extra_locks: should be a list of strings
   Map TEST_SCOPES = [
     'convenience build': [
-      test_files: 'dist/__tests__/basic/install.js',
+      test_files: 'dist/__tests__/extended/keystore-modes/racf-keyring.ts',
     ],
     'smpe fmid': [
       test_files: 'dist/__tests__/basic/install-fmid.js',
