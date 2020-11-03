@@ -16,7 +16,6 @@ import {
 import { 
   TEST_TIMEOUT_CONVENIENCE_BUILD, 
   KEYSTORE_MODE_KEYRING,
-  SECURITY_SYSTEM_TSS,
 } from '../../../constants';
 
 const testServer = 'marist-3';
@@ -36,7 +35,6 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
-        'zos_security_system': SECURITY_SYSTEM_TSS,
         'zowe_lock_keystore': 'false',
       }
     );
