@@ -23,6 +23,7 @@
 - name: Update ZWESECUR.jcl with configurations
   raw: >-
     cat "{{ work_dir_remote }}/ZWESECUR.raw.jcl" | \
+    sed -e "s+SET  PRODUCT=RACF+SET PRODUCT={{ zos_security_system }}+" | \
     sed -e "s+ADMINGRP=ZWEADMIN+ADMINGRP={{ zowe_runtime_group }}+" | \
     sed -e "s+ZOWEUSER=ZWESVUSR+ZOWEUSER={{ zowe_runtime_user }}+" | \
     sed -e "s+ZSSUSER=ZWESIUSR+ZSSUSER={{ zowe_xmem_stc_user }}+" | \
