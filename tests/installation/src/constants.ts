@@ -39,6 +39,6 @@ export const KEYSTORE_MODE_KEYSTORE = 'KEYSTORE_MODE_KEYSTORE';
 export const KEYSTORE_MODE_KEYRING = 'KEYSTORE_MODE_KEYRING';
 
 export const ZOWE_TOKEN_NAME: string = 'ZWETOKEN';
-export const ZOWE_TOKEN_LABEL: string = 'SOZWLBLVI';
+export const ZOWE_TOKEN_LABEL: string = 'SOZWLBLVII';
 
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);
