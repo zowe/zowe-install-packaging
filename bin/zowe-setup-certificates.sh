@@ -262,6 +262,8 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   if [[ -f ${APIML_PUBLIC_KEY} ]]
   if [[ "${EXPORT_JWS_KEYRING}" != "false" ]] && [[ "${VERIFY_CERTIFICATES}" != "true" ]]; then
       keyring-util EXPORT ZWESVUSR ZoweKeyring jwtsecret >> $LOG_FILE
+      echo "$(ls)" >> $LOG_FILE
+      echo "$(pwd)" >> $LOG_FILE
   fi
   then
     chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
