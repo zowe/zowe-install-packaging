@@ -261,18 +261,7 @@ P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
 if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   if [[ -f ${APIML_PUBLIC_KEY} ]]
   if [[ "${EXPORT_JWS_KEYRING}" != "false" ]] && [[ "${VERIFY_CERTIFICATES}" != "true" ]]; then
-      ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action jwt-keygen \
-       --service-storetype "JCERACFKS" --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} \
-       --service-keystore ${KEYSTORE_PREFIX} --service-ext ${SAN} --local-ca-filename ${LOCAL_CA_PREFIX}
-      RC=$?
-      if [[ $RC != 0 ]];then
-         ${ZOWE_ROOT_DIR}/bin/apiml_cm.sh --verbose --log $LOG_FILE --action export-jwt-from-keyring \
-           --service-storetype "JCERACFKS" --zowe-userid ${ZOWE_USER_ID} --zowe-keyring ${ZOWE_KEYRING} \
-           --service-keystore ${KEYSTORE_PREFIX} --service-ext ${SAN} --local-ca-filename ${LOCAL_CA_PREFIX}
-        RC=$?
-        echo "apiml_cm.sh --action export-jwt-from-keyring: $RC" >> $LOG_FILE
-      fi
-      echo "apiml_cm.sh --action jwt-keygen returned: $RC" >> $LOG_FILE
+      keyring-util EXPORT ZWESVUSR ZoweKeyring jwtsecret >> $LOG_FILE
   fi
   then
     chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
