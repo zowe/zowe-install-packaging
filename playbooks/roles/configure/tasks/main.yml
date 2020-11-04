@@ -90,12 +90,6 @@
 - name: List zowe token certificates
   raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
 
-- name: Unbind jwtsecret from zowe token
-  raw: tsocmd "RACDCERT UNBIND(TOKEN(ZWETOKEN) SEQNUM(0000001F)) FORCE"
-
-- name: List zowe token certificates
-  raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
-
 - name: Bind jwtsecret to profile
   raw: tsocmd "RACDCERT BIND(TOKEN(ZWETOKEN) ID(ZWESVUSR) LABEL('jwtsecret'))"
 
