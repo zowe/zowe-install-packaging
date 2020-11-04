@@ -314,19 +314,19 @@ ACF
 
 * Create Zowe's local CA authority
   SET PROFILE(USER) DIVISION(CERTDATA)
-  GENCERT CERTAUTH.ZOWECA LABEL(&LOCALCA) SIZE(2048)   +
-          SUBJSDN(CN='&CN. CA'                        +
-                  OU='&OU.'                           +
-                   O='&O.'                            +
-                   L='&L.'                            +
-                  SP='&SP.'                           +
-                  C='&C.')                            +
-  EXPIRE(05/01/30)                                    +
+  GENCERT CERTAUTH.ZOWECA LABEL(&LOCALCA) SIZE(2048) +
+          SUBJSDN(CN='&CN. CA' +
+                  OU='&OU.' +
+                   O='&O.' +
+                   L='&L.' +
+                  SP='&SP.' +
+                  C='&C.') +
+  EXPIRE(05/01/30) +
   KEYUSAGE(CERTSIGN)
 *
 * Connect Zowe's local CA authority to the keyring ................ */
   SET PROFILE(USER) DIVISION(CERTDATA)
-  CONNECT CERTDATA(CERTAUTH.ZOWECA) RINGNAME(&ZOWERING.)    +
+  CONNECT CERTDATA(CERTAUTH.ZOWECA) RINGNAME(&ZOWERING.) +
   KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
   CHKCERT CERTAUTH.ZOWECA
 
@@ -369,10 +369,10 @@ ACF
 * Import external certificate from data set ....................... */
 
 *  SET PROFILE(USER) DIV(CERTDATA)
-*  INSERT &ZOWEUSER..ZOWECERT         +
-*         DSNAME('&DSNAME.')          +
-*         LABEL(&LABEL.)              +
-*         PASSWORD('&PKCSPASS.')      +
+*  INSERT &ZOWEUSER..ZOWECERT +
+*         DSNAME('&DSNAME.') +
+*         LABEL(&LABEL.) +
+*         PASSWORD('&PKCSPASS.') +
 *         TRUST
 *
 * Connect a Zowe's certificate with the keyring                     */
@@ -386,17 +386,17 @@ ACF
 * Option 3 - BEGINNING ............................................ */
 * Create a certificate signed by local zowe's CA .................. */
    SET PROFILE(USER) DIV(CERTDATA)
-   GENCERT &ZOWEUSER..ZOWECERT      +
+   GENCERT &ZOWEUSER..ZOWECERT +
             SUBJSDN(CN='&CN. certificate' +
-                    OU='&OU.'       +
-                     O='&O.'        +
-                     L='&L.'        +
-                    SP='&SP.'       +
-                    C='&C.')        +
-           SIZE(2048)               +
-           EXPIRE(05/01/30)         +
-           LABEL(&LABEL.)         +
-           KEYUSAGE(HANDSHAKE)    +
+                    OU='&OU.' +
+                     O='&O.' +
+                     L='&L.' +
+                    SP='&SP.' +
+                    C='&C.') +
+           SIZE(2048) +
+           EXPIRE(05/01/30) +
+           LABEL(&LABEL.) +
+           KEYUSAGE(HANDSHAKE) +
            ALTNAME(IP=&IPADDRES DOMAIN=&HOSTNAME) +
            SIGNWITH(CERTAUTH.ZOWECA)
 
@@ -430,15 +430,15 @@ ACF
 
 * Create jwtsecret
    SET PROFILE(USER) DIVISION(CERTDATA)
-   GENCERT &ZOWEUSER..ZOWEJWT                         +
-           SUBJSDN(CN='&CN. JWT'                      +
-                   OU='&OU.'                          +
-                    O='&O.'                           +
-                    L='&L.'                           +
-                   SP='&SP.'                          +
-                   C='&C.')                           +
-           SIZE(2048)                                 +
-           LABEL(jwtsecret)                           +
+   GENCERT &ZOWEUSER..ZOWEJWT +
+           SUBJSDN(CN='&CN. JWT' +
+                   OU='&OU.' +
+                    O='&O.' +
+                    L='&L.' +
+                   SP='&SP.' +
+                   C='&C.') +
+           SIZE(2048) +
+           LABEL(jwtsecret) +
            EXPIRE(05/01/30)
 
 * Connect jwtsecret to the keyring ................................
