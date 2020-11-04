@@ -87,6 +87,9 @@
     tasks_from: setup_certificates
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
+- name: List zowe token certificates
+  raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
+
 # ============================================================================
 # Setup client certificates
 
