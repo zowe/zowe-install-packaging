@@ -6,7 +6,7 @@
   raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
 # Unbind from token before removing
 - name: Unbind jwtsecret from zowe token
-  raw: tsocmd "RACDCERT UNBIND(TOKEN(ZWETOKEN) ID(ZOWEAD3) LABEL('jwtsecret')) FORCE"
+  raw: tsocmd "RACDCERT UNBIND(TOKEN(ZWETOKEN) ID({{ zowe_runtime_user }}) LABEL('jwtsecret')) FORCE"
   ignore_errors: True
 
 - name: List zowe token certificates
