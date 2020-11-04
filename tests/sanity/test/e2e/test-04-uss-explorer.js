@@ -47,8 +47,10 @@ let appLaunched = false;
 let testDirIndex = -1;
 
 const targetHost = process.env.ZOWE_NONZOS_HOST || process.env.SSH_HOST;
+const nonZosHost = process.env.ZOWE_NONZOS_HOST;
+const isNonZosHost = (nonZosHost)? true:false;
 
-describe(`test ${APP_TO_TEST}`, function() {
+(isNonZosHost ? describe.skip : describe)(`test ${APP_TO_TEST}`, function() {
   before('verify environment variable and load login page', async function() {
     expect(targetHost, 'targetHost is empty, define ZOWE_NONZOS_HOST || SSH_HOST').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
