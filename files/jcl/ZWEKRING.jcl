@@ -165,25 +165,36 @@
 /*                                                                   */
 /* Options:                                                          */
 /*  1. Zowe's certificate is already loaded in RACF database         */
-/*     ACTION: a. Modify the following snippet                       */
-/*          CONNECT(ID(&ZOWEUSER.) +                                 */
-/*            LABEL('&LABEL.') +                                     */
-/*             below to match the owner of the desired certificate   */
-/*             b. Comment the "Option 2" block below                 */
+/*     ACTION: a. Uncomment the "Option 1" block below and modify the*/
+/*             following snippet below                               */
+/*                CONNECT(SITE | ID(userid) +                        */
+/*                LABEL('certlabel') +                               */
+/*             to match the owner of the desired certificate.        */
+/*             b. Comment out the "Option 3" block below             */
 /*                                                                   */
-/*   2. Import external Zowe's certificate from a data set in PKCS12 */
-/*      format                                                       */
-/*      ACTION: Uncomment the "Option 1" block below                 */
-/*              Comment the "Option2" block below                    */
+/*  2. Import external Zowe's certificate from a data set in PKCS12  */
+/*     format                                                        */
+/*     ACTION: a. Uncomment the "Option 2" block below               */
+/*             b. Comment out the "Option 3" block below             */
 /*                                                                   */
-/*   3. Generate Zowe's certificate that will be signed by the       */
-/*      Zowe's local CA                                              */
-/*      ACTION: This is the default behavior if you submit           */
-/*              this file unmodified                                 */
+/*  3. Generate Zowe's certificate that will be signed by the        */
+/*     Zowe's local CA                                               */
+/*     ACTION: This is the default behavior if you submit            */
+/*             this file unmodified                                  */
 /*                                                                   */
 /* ***************************************************************** */
 /*                                                                   */
 /* Option 1 - BEGINNING ............................................ */
+/* Connect a Zowe's certificate with the keyring                     */
+/*  RACDCERT CONNECT(SITE | ID(userid) +
+/*           LABEL('certlabel') +
+/*           RING(&ZOWERING.) +
+/*           USAGE(PERSONAL) DEFAULT) +
+/*           ID(&ZOWEUSER.)
+
+/* Option 1 - END .................................................. */
+/* ................................................................. */
+/* Option 2 - BEGINNING ............................................ */
 /* Import external certificate from data set ....................... */
 /* RACDCERT ADD('&DSNAME.') +
 /*          ID(&ZOWEUSER.) +
@@ -192,9 +203,16 @@
 /*          TRUST
 /* SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH
 
-/* Option 1 - END .................................................. */
+/* Connect a Zowe's certificate with the keyring                     */
+/*  RACDCERT CONNECT(ID(&ZOWEUSER.) +
+/*           LABEL('&LABEL.') +
+/*           RING(&ZOWERING.) +
+/*           USAGE(PERSONAL) DEFAULT) +
+/*           ID(&ZOWEUSER.)
+
+/* Option 2 - END .................................................. */
 /* ................................................................. */
-/* Option 2 - BEGINNING ............................................ */
+/* Option 3 - BEGINNING ............................................ */
 /* Create a certificate signed by local zowe's CA .................. */
     RACDCERT GENCERT ID(&ZOWEUSER.) +
             SUBJECTSDN( +
@@ -213,13 +231,16 @@
             SIGNWITH(CERTAUTH LABEL('&LOCALCA'))
     SETROPTS RACLIST(DIGTCERT) REFRESH
 
-/* Option 2 - END .................................................. */
+/* Connect a Zowe's certificate with the keyring                     */
+    RACDCERT CONNECT(ID(&ZOWEUSER.) +
+             LABEL('&LABEL.') +
+             RING(&ZOWERING.) +
+             USAGE(PERSONAL) DEFAULT) +
+             ID(&ZOWEUSER.)
 
-/* Connect a Zowe's certificate with the keyring ................... */
-   RACDCERT CONNECT(ID(&ZOWEUSER.) +
-              LABEL('&LABEL.') +
-              RING(&ZOWERING.) USAGE(PERSONAL) DEFAULT) +
-              ID(&ZOWEUSER.)
+/* Option 3 - END .................................................. */
+
+/* A common part for all options starts here ....................... */
 
 /* Connect all CAs of the Zowe certificate's signing chain with the  */
 /* keyring ......................................................... */
@@ -309,30 +330,42 @@ ACF
   KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
   CHKCERT CERTAUTH.ZOWECA
 
+* ***************************************************************** */
 * ATTENTION!                                                        */
 * Configure certificate for Zowe .................................. */
 * Select one of three options which is the most suitable for your   */
 * environment and follow the appropriate action                     */
 *                                                                   */
 * Options:                                                          */
-*   1. Zowe's certificate is already loaded in ACF2 database        */
-*      ACTION: Modify the CERTDATA(&ZOWEUSER..ZOWECERT) keyword     */
-*              below to match the desired certificate for Zowe      */
-*              Comment the "Option 2" block below                   */
+*  1. Zowe's certificate is already loaded in ACF2 database         */
+*     ACTION: a. Uncomment the "Option 1" block below and modify the*/
+*             following snippet in the uncommented block            */
+*              CONNECT CERTDATA(SITECERT.digicert | userid.digicert)*/
+*             to match the owner of the desired certificate.        */
+*             b. Comment out the "Option 3" block below             */
 *                                                                   */
-*   2. Import external Zowe's certificate from a data set in PKCS12 */
-*      format                                                       */
-*      ACTION: Uncomment the "Option 1" block below                 */
-*              Comment the "Option2" block below                    */
+*  2. Import external Zowe's certificate from a data set in PKCS12  */
+*     format                                                        */
+*     ACTION: a. Uncomment the "Option 2" block below               */
+*             b. Comment out the "Option 3" block below             */
 *                                                                   */
-*   3. Generate Zowe's certificate that will be signed by the       */
-*      Zowe's local CA                                              */
-*      ACTION: This is the default behavior if you submit           */
-*              this file unmodified                                 */
+*  3. Generate Zowe's certificate that will be signed by the        */
+*     Zowe's local CA                                               */
+*     ACTION: This is the default behavior if you submit            */
+*             this file unmodified                                  */
 *                                                                   */
 * ***************************************************************** */
 *                                                                   */
 * Option 1 - BEGINNING ............................................ */
+* Connect a Zowe's certificate with the keyring                      */
+*  SET PROFILE(USER) DIVISION(CERTDATA)
+*  CONNECT CERTDATA(SITECERT.digicert | userid.digicert) +
+*  KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
+*  CHKCERT &ZOWEUSER..ZOWECERT
+
+* Option 1 - END .................................................. */
+* ................................................................. */
+* Option 2 - BEGINNING ............................................ */
 * Import external certificate from data set ....................... */
 
 *  SET PROFILE(USER) DIV(CERTDATA)
@@ -341,10 +374,16 @@ ACF
 *         LABEL(&LABEL.)              +
 *         PASSWORD('&PKCSPASS.')      +
 *         TRUST
+*
+* Connect a Zowe's certificate with the keyring                     */
+*  SET PROFILE(USER) DIVISION(CERTDATA)
+*  CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) +
+*  KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
+*  CHKCERT &ZOWEUSER..ZOWECERT
 
-* Option 1 - END .................................................. */
+* Option 2 - END .................................................. */
 * ................................................................. */
-* Option 2 - BEGINNING ............................................ */
+* Option 3 - BEGINNING ............................................ */
 * Create a certificate signed by local zowe's CA .................. */
    SET PROFILE(USER) DIV(CERTDATA)
    GENCERT &ZOWEUSER..ZOWECERT      +
@@ -361,13 +400,15 @@ ACF
            ALTNAME(IP=&IPADDRES DOMAIN=&HOSTNAME) +
            SIGNWITH(CERTAUTH.ZOWECA)
 
-* Option 2 - END ................................................... */
-
-* Connect a Zowe's certificate with the keyring .................... */
+* Connect a Zowe's certificate with the keyring                      */
    SET PROFILE(USER) DIVISION(CERTDATA)
-   CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) RINGNAME(&ZOWERING.) +
+   CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) +
    KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
    CHKCERT &ZOWEUSER..ZOWECERT
+
+* Option 3 - END ................................................... */
+
+* A common part for all options starts here ........................ */
 
 * Connect all CAs of the Zowe certificate's signing chain with the   */
 * keyring .......................................................... */
@@ -457,23 +498,34 @@ $$
 /* environment and follow the appropriate action                     */
 /*                                                                   */
 /* Options:                                                          */
-/*   1. Zowe's certificate is already loaded in TSS database         */
-/*      ACTION: Modify the RINGDATA(&ZOWEUSER.,ZOWECERT) keyword     */
-/*              below to match the desired certificate for Zowe      */
-/*              Comment the "Option 2" block below                   */
+/*  1. Zowe's certificate is already loaded in TSS database         */
+/*     ACTION: a. Uncomment the "Option 1" block below and modify the*/
+/*             following snippet in the uncommented block            */
+/*                RINGDATA(CERTSITE|userid,digicert)                 */
+/*             to match the owner of the desired certificate.        */
+/*             b. Comment out the "Option 3" block below             */
 /*                                                                   */
-/*   2. Import external Zowe's certificate from a data set in PKCS12 */
-/*      format                                                       */
-/*      ACTION: Uncomment the "Option 1" block below                 */
-/*              Comment the "Option2" block below                    */
+/*  2. Import external Zowe's certificate from a data set in PKCS12  */
+/*     format                                                        */
+/*     ACTION: a. Uncomment the "Option 2" block below               */
+/*             b. Comment out the "Option 3" block below             */
 /*                                                                   */
-/*   3. Generate Zowe's certificate that will be signed by the       */
-/*      Zowe's local CA                                              */
-/*      ACTION: This is the default behavior if you submit           */
-/*              this file unmodified                                 */
+/*  3. Generate Zowe's certificate that will be signed by the        */
+/*     Zowe's local CA                                               */
+/*     ACTION: This is the default behavior if you submit            */
+/*             this file unmodified                                  */
+/*                                                                   */
 /* ***************************************************************** */
 /*                                                                   */
 /* Option 1 - BEGINNING ............................................ */
+/* Connect a Zowe's certificate with the keyring                     */
+/* TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) +
+/*     RINGDATA(CERTSITE|userid,digicert) +
+/*     USAGE(PERSONAL) DEFAULT
+
+/* Option 1 - END .................................................. */
+/* ................................................................. */
+/* Option 2 - BEGINNING ............................................ */
 /* Import external certificate from data set ....................... */
 /* TSS ADD(&ZOWEUSER.) +
 /*      DIGICERT(ZOWECERT) +
@@ -482,9 +534,14 @@ $$
 /*      PKCSPASS('&PKCSPASS.') +
 /*      TRUST
 
-/* Option 1 - END .................................................. */
+/* Connect a Zowe's certificate with the keyring                     */
+/* TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) +
+/*     RINGDATA(&ZOWEUSER.,ZOWECERT) +
+/*     USAGE(PERSONAL) DEFAULT
+
+/* Option 2 - END .................................................. */
 /* ................................................................. */
-/* Option 2 - BEGINNING ............................................ */
+/* Option 3 - BEGINNING ............................................ */
 /* Create a certificate signed by local zowe's CA .................. */
    TSS GENCERT(&ZOWEUSER.) +
        DIGICERT(ZOWECERT) +
@@ -502,11 +559,14 @@ $$
        ALTNAME('DOMAIN=&HOSTNAME') +
        SIGNWITH(CERTAUTH,ZOWECA)
 
-/* Option 2 - END .................................................. */
+/* Connect a Zowe's certificate with the keyring                     */
+   TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) +
+       RINGDATA(&ZOWEUSER.,ZOWECERT) +
+       USAGE(PERSONAL) DEFAULT
 
-/* Connect a Zowe's certificate with the keyring ................... */
-   TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
-       RINGDATA(&ZOWEUSER.,ZOWECERT) USAGE(PERSONAL) DEFAULT
+/* Option 3 - END .................................................. */
+
+/* A common part for all options starts here ....................... */
 
 /* Connect all CAs of the Zowe certificate's signing chain with the  */
 /* keyring ......................................................... */
