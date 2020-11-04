@@ -18,6 +18,7 @@
       --env ZOSMF_PORT={{zos_zosmf_port}} \
       --env ZWED_agent_host={{ansible_ssh_host}} \
       --env ZWED_agent_http_port={{zowe_zss_port}} \
+      --env ZOWE_ZLUX_TELNET_PORT={{zowe_zlux_terminal_telnet_port}} \
       -p 7553:7553 \
       -p 7554:7554 \
       -p 8544:8544 \
