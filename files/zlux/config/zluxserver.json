@@ -34,7 +34,7 @@
     "jwt": {
       "enabled": true,
       "key": {
-        "label": "SOZWLBLVII",
+        "label": "jwtsecret",
         "token": "ZWETOKEN"
       },
       "fallback": true

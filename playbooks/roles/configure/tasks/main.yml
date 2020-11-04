@@ -87,6 +87,9 @@
     tasks_from: setup_certificates
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
+- name: Bind jwtsecret to profile
+  raw: tsocmd "RACDCERT BIND(TOKEN(ZWETOKEN) ID(ZWESVUSR) LABEL('jwtsecret'))"
+
 # ============================================================================
 # Setup client certificates
 
