@@ -148,3 +148,9 @@
 - import_role:
     name: configure
     tasks_from: configure_instance
+
+# ============================================================================
+# Create VSAM data set for this instance
+- import_role:
+    name: configure
+    tasks_from: create_vsam_dataset
