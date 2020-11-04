@@ -314,19 +314,19 @@ ACF
 
 * Create Zowe's local CA authority
   SET PROFILE(USER) DIVISION(CERTDATA)
-  GENCERT CERTAUTH.ZOWECA LABEL(&LOCALCA) SIZE(2048) +
-          SUBJSDN(CN='&CN. CA' +
-                  OU='&OU.' +
-                   O='&O.' +
-                   L='&L.' +
-                  SP='&SP.' +
-                  C='&C.') +
-  EXPIRE(05/01/30) +
+  GENCERT CERTAUTH.ZOWECA LABEL(&LOCALCA) SIZE(2048) -
+          SUBJSDN(CN='&CN. CA' -
+                  OU='&OU.' -
+                   O='&O.' -
+                   L='&L.' -
+                  SP='&SP.' -
+                  C='&C.') -
+  EXPIRE(05/01/30) -
   KEYUSAGE(CERTSIGN)
 *
 * Connect Zowe's local CA authority to the keyring ................ */
   SET PROFILE(USER) DIVISION(CERTDATA)
-  CONNECT CERTDATA(CERTAUTH.ZOWECA) RINGNAME(&ZOWERING.) +
+  CONNECT CERTDATA(CERTAUTH.ZOWECA) RINGNAME(&ZOWERING.) -
   KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
   CHKCERT CERTAUTH.ZOWECA
 
@@ -359,7 +359,7 @@ ACF
 * Option 1 - BEGINNING ............................................ */
 * Connect a Zowe's certificate with the keyring                      */
 *  SET PROFILE(USER) DIVISION(CERTDATA)
-*  CONNECT CERTDATA(SITECERT.digicert | userid.digicert) +
+*  CONNECT CERTDATA(SITECERT.digicert | userid.digicert) -
 *  KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
 *  CHKCERT &ZOWEUSER..ZOWECERT
 
@@ -369,15 +369,15 @@ ACF
 * Import external certificate from data set ....................... */
 
 *  SET PROFILE(USER) DIV(CERTDATA)
-*  INSERT &ZOWEUSER..ZOWECERT +
-*         DSNAME('&DSNAME.') +
-*         LABEL(&LABEL.) +
-*         PASSWORD('&PKCSPASS.') +
+*  INSERT &ZOWEUSER..ZOWECERT -
+*         DSNAME('&DSNAME.') -
+*         LABEL(&LABEL.) -
+*         PASSWORD('&PKCSPASS.') -
 *         TRUST
 *
 * Connect a Zowe's certificate with the keyring                     */
 *  SET PROFILE(USER) DIVISION(CERTDATA)
-*  CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) +
+*  CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) -
 *  KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
 *  CHKCERT &ZOWEUSER..ZOWECERT
 
@@ -386,23 +386,23 @@ ACF
 * Option 3 - BEGINNING ............................................ */
 * Create a certificate signed by local zowe's CA .................. */
    SET PROFILE(USER) DIV(CERTDATA)
-   GENCERT &ZOWEUSER..ZOWECERT +
-            SUBJSDN(CN='&CN. certificate' +
-                    OU='&OU.' +
-                     O='&O.' +
-                     L='&L.' +
-                    SP='&SP.' +
-                    C='&C.') +
-           SIZE(2048) +
-           EXPIRE(05/01/30) +
-           LABEL(&LABEL.) +
-           KEYUSAGE(HANDSHAKE) +
-           ALTNAME(IP=&IPADDRES DOMAIN=&HOSTNAME) +
+   GENCERT &ZOWEUSER..ZOWECERT -
+            SUBJSDN(CN='&CN. certificate' -
+                    OU='&OU.' -
+                     O='&O.' -
+                     L='&L.' -
+                    SP='&SP.' -
+                    C='&C.') -
+           SIZE(2048) -
+           EXPIRE(05/01/30) -
+           LABEL(&LABEL.) -
+           KEYUSAGE(HANDSHAKE) -
+           ALTNAME(IP=&IPADDRES DOMAIN=&HOSTNAME) -
            SIGNWITH(CERTAUTH.ZOWECA)
 
 * Connect a Zowe's certificate with the keyring                      */
    SET PROFILE(USER) DIVISION(CERTDATA)
-   CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) +
+   CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) -
    KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
    CHKCERT &ZOWEUSER..ZOWECERT
 
@@ -415,45 +415,45 @@ ACF
 * Add or remove commands according to the Zowe certificate's         */
 * signing CA chain ................................................. */
    SET PROFILE(USER) DIVISION(CERTDATA)
-   CONNECT CERTDATA(CERTAUTH.&ITRMZWCA.) RINGNAME(&ZOWERING.) +
+   CONNECT CERTDATA(CERTAUTH.&ITRMZWCA.) RINGNAME(&ZOWERING.) -
    KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
 
-   CONNECT CERTDATA(CERTAUTH.&ROOTZWCA.) RINGNAME(&ZOWERING.) +
+   CONNECT CERTDATA(CERTAUTH.&ROOTZWCA.) RINGNAME(&ZOWERING.) -
    KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
 
 * Connect root CA that signed z/OSMF certificate with the keyring.   */
 * If z/OSMF is using self-signed certificate then specify directly   */
 * the z/OSMF certificate to be connected with the keyring.           */
    SET PROFILE(USER) DIVISION(CERTDATA)
-   CONNECT CERTDATA(CERTAUTH.&ROOTZFCA.) RINGNAME(&ZOWERING.) +
+   CONNECT CERTDATA(CERTAUTH.&ROOTZFCA.) RINGNAME(&ZOWERING.) -
    KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
 
 * Create jwtsecret
    SET PROFILE(USER) DIVISION(CERTDATA)
-   GENCERT &ZOWEUSER..ZOWEJWT +
-           SUBJSDN(CN='&CN. JWT' +
-                   OU='&OU.' +
-                    O='&O.' +
-                    L='&L.' +
-                   SP='&SP.' +
-                   C='&C.') +
-           SIZE(2048) +
-           LABEL(jwtsecret) +
+   GENCERT &ZOWEUSER..ZOWEJWT -
+           SUBJSDN(CN='&CN. JWT' -
+                   OU='&OU.' -
+                    O='&O.' -
+                    L='&L.' -
+                   SP='&SP.' -
+                   C='&C.') -
+           SIZE(2048) -
+           LABEL(jwtsecret) -
            EXPIRE(05/01/30)
 
 * Connect jwtsecret to the keyring ................................
   SET PROFILE(USER) DIVISION(CERTDATA)
-  CONNECT CERTDATA(&ZOWEUSER..ZOWEJWT) RINGNAME(&ZOWERING.) +
+  CONNECT CERTDATA(&ZOWEUSER..ZOWEJWT) RINGNAME(&ZOWERING.) -
   KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL)
   CHKCERT &ZOWEUSER..ZOWEJWT
 
 * Allow ZOWEUSER to access keyring ................................
   SET RESOURCE(FAC)
-  RECKEY IRR ADD(DIGTCERT.LISTRING ROLE(&STCGRP) +
+  RECKEY IRR ADD(DIGTCERT.LISTRING ROLE(&STCGRP) -
   SERVICE(READ) ALLOW)
 
 * Uncomment this command if SITE acid owns the Zowe certificate
-*  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&STCGRP) +
+*  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&STCGRP) -
 *  SERVICE(CONTROL) ALLOW)
 
   F ACF2,REBUILD(FAC)
