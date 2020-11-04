@@ -16,6 +16,9 @@ zowe_known_xmem_proc_stcs:
 work_dir_remote:
 # default zowe runtime root directory
 zowe_root_dir: ~/zowe
+# if your z/OS system has VSAM RLS (record level sharing) enabled.
+# usually this value should be true in Parallel Sysplex.
+zos_vsam_rls: false
 # dataset prefix where zowe will be installed
 zowe_dataset_prefix:
 # instanceDir
@@ -46,6 +49,14 @@ zowe_mvs_api_port: 8547
 zowe_jobs_explorer_port: 8546
 zowe_mvs_explorer_port: 8548
 zowe_uss_explorer_port: 8550
+# caching service
+zowe_caching_service_port: 7555
+zowe_caching_service_persistent: VSAM
+# the final data set name will be: {zowe_job_prefix}.{zowe_caching_service_vsam_dsprefix}{zowe_instance_id}
+# for example: IBMUSER.ZWE.CACHE1
+zowe_caching_service_vsam_dsprefix: CACHE
+zowe_caching_vsam_storage_class:
+zowe_caching_vsam_volume:
 # zlux ports
 zowe_zlux_port: 8544
 zowe_zss_port: 8542
