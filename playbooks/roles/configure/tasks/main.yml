@@ -90,6 +90,11 @@
 - name: List zowe token certificates
   raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
 
+- name: Bind jwtsecret to profile
+  raw: tsocmd "RACDCERT BIND(TOKEN(ZWETOKEN) ID(ZWESVUSR) LABEL('jwtsecret'))"
+
+- name: List zowe token certificates
+  raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
 # ============================================================================
 # Setup client certificates
 
