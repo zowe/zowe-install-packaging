@@ -37,6 +37,7 @@ set -x
 function _createJCL
 {
 VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
+# vtl-cli source: https://github.com/plavjanik/vtl-cli
 
 if [ -f "$1/$2.vtl" ]; then
   vtlList="$2.vtl"                             # process just this file
