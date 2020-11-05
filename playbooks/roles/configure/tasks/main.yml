@@ -127,7 +127,7 @@
     name: configure
     tasks_from: configure_client_certificates
   vars:
-    certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}/.keystore.jwtsecret.p12"
+    certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.p12"
     dataset: JWTSCRT
     label: jwtsecret
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
