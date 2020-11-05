@@ -485,7 +485,7 @@ function jwt_key_gen_and_export {
         -dname "${SERVICE_DNAME}" -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
         pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} \
         -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
-        keytool -exportcert -keystore ${SERVICE_KEYSTORE}.p12 -alias ${JWT_ALIAS} -rfc -storepass ${SERVICE_PASSWORD} -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer
+        keytool -exportcert -keystore ${SERVICE_KEYSTORE}.p12 -alias ${JWT_ALIAS} -rfc -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer
     fi
 }
 
