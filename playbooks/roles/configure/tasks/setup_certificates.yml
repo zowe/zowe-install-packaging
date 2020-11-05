@@ -32,6 +32,7 @@
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./zowe-setup-certificates.sh
     script_parameters: "-p \"{{ work_dir_remote }}/zowe-setup-certificates.env\"  -l \"{{ zowe_install_logs_dir }}\""
+  ignore_errors: True
 
 - name: List log dir
   raw: ls -l "{{ zowe_install_logs_dir }}"
