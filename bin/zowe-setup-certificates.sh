@@ -257,18 +257,12 @@ echo "Creating certificates and keystores... DONE"
 
 JWT_ALIAS="jwtsecret"
 APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
-P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
+P11_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p11"
 if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   if [[ -f ${APIML_PUBLIC_KEY} ]]
-
   then
     chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
-    if ! keytool -importcert -file ${APIML_PUBLIC_KEY} -keystore ${P12_PUBLIC_KEY} -storetype pkcs12 -storepass ${KEYSTORE_PASSWORD} -trustcacerts -noprompt >> $LOG_FILE 2>&1 ; then
-      echo "Unable to convert ${APIML_PUBLIC_KEY} to PKCS#12. See $LOG_FILE for more details."
-    else
-      keytool -importcert -file ${LOCAL_CA_PREFIX}.cer -alias localca -keystore ${P12_PUBLIC_KEY} -storetype pkcs12 -storepass ${KEYSTORE_PASSWORD} -trustcacerts -noprompt >> $LOG_FILE 2>&1
-      echo "P12_PUBLIC_KEY ${P12_PUBLIC_KEY}" >> $LOG_FILE
-    fi
+    openssl x509 -outform pem -in ${APIML_PUBLIC_KEY} -out ${P11_PUBLIC_KEY} >> $LOG_FILE
   else
     echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
   fi
