@@ -87,14 +87,7 @@
     tasks_from: setup_certificates
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
-- name: List zowe token certificates
-  raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
 
-- name: Bind jwtsecret to profile
-  raw: tsocmd "RACDCERT BIND(TOKEN(ZWETOKEN) ID(ZWESVUSR) LABEL('jwtsecret'))"
-
-- name: List zowe token certificates
-  raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
 # ============================================================================
 # Setup client certificates
 
@@ -125,14 +118,38 @@
 - import_role:
     name: configure
     tasks_from: configure_client_certificates
+  vars:
+    certificate: {{ work_dir_remote }}/USER-cert.cer
+    dataset: USER
+    label: API ML Client
 
-
+- import_role:
+    name: configure
+    tasks_from: configure_client_certificates
+  vars:
+    certificate: {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}/.keystore.jwtsecret.p12
+    dataset: JWTSCRT
+    label: jwtsecret
+  when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 # ============================================================================
 # Setup certificates for keyring (self-signed)
 - import_role:
     name: configure
     tasks_from: setup_keyring_certificates
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
+
+
+- name: List zowe token certificates
+  raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"
+  when: zos_security_system == 'RACF'
+
+- name: Bind jwtsecret to profile
+  raw: tsocmd "RACDCERT BIND(TOKEN({{ zowe_token_name }}) ID({{ zowe_runtime_user }}) LABEL('{{ zowe_token_label }}'))"
+  when: zos_security_system == 'RACF'
+
+- name: List zowe token certificates
+  raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"
+  when: zos_security_system == 'RACF'
 
 # ============================================================================
 # Add external API ML CA to the truststore
