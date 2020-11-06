@@ -150,8 +150,6 @@ cp -R shared/scripts/* "${ASCII_DIR}/scripts"
 mkdir -p "${CONTENT_DIR}/files/scripts"
 mv ${ASCII_DIR}/files/scripts/jobs-api*.sh \
    ${CONTENT_DIR}/files/scripts/
-mv ${ASCII_DIR}/files/scripts/files-api*.sh \
-   ${CONTENT_DIR}/files/scripts/
 
 # move keyring-util to bin/utils/keyring-util
 KEYRING_UTIL_SRC="${PAX_WORKSPACE_DIR}/keyring-util"
