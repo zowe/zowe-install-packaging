@@ -99,6 +99,7 @@
     method: scp
 
 # Upload client CA certificate
+# This certificate will be configured in task Add the external CA to the truststore
 - import_role:
     name: configure
     tasks_from: upload_certificate
@@ -107,6 +108,7 @@
     method: scp
 
 # Upload client CA certificate in PKCS12
+# This certificate will be configured in task Add the external CA to the keyring
 - import_role:
     name: configure
     tasks_from: upload_certificate

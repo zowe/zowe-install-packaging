@@ -260,6 +260,7 @@ APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
 if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   if [[ -f ${APIML_PUBLIC_KEY} ]] && [[ "${SSO_USE_GSKKYMAN}" != "false" ]]
+  then
     echo "using gskkyman ${SSO_USE_GSKKYMAN}" >> $LOG_FILE
   else
     echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
