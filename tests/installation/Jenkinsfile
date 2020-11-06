@@ -330,7 +330,7 @@ node('ibm-jenkins-slave-nvm') {
         }
       }
 
-      lock(resource: lockResources, extra: lockExtraResources) {
+      // lock(resource: lockResources, extra: lockExtraResources) {
       // timestamps {
       dir(INSTALL_TEST_PATH) {
       ansiColor('xterm') {
@@ -346,7 +346,7 @@ node('ibm-jenkins-slave-nvm') {
       } // end of ansiColor
       } // end of dir
       // end of timestamps
-      } // end of lock
+      //} // end of lock
     },
     junit         : "${INSTALL_TEST_PATH}/reports/junit.xml",
     htmlReports   : [
