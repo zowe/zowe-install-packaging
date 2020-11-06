@@ -1,0 +1,12 @@
+---
+- name: Debug test
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    # ============================================================================
+    # Run sanity test
+    - import_role:
+        name: verify2

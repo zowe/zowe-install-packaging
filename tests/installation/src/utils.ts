@@ -185,40 +185,16 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
 async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
-  debug(`run ${installPlaybook} on ${serverId}`);
+  debug(`run debug.yml on ${serverId}`);
   const resultInstall = await runAnsiblePlaybook(
     testcase,
-    installPlaybook,
+    'debug.yml',
     serverId,
     extraVars
   );
 
   expect(resultInstall.code).toBe(0);
 
-  // sleep extra 2 minutes
-  debug(`wait extra 2 min before sanity test`);
-  await sleep(120000);
-
-  // clean up sanity test folder
-  cleanupSanityTestReportDir();
-
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
-  }
-  expect(resultVerify).toHaveProperty('reportHash');
-
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
 };
 
 /**
