@@ -29,7 +29,7 @@ export const INSTALL_TEST_REPORTS_DIR: string = path.resolve(INSTALL_TEST_ROOT_D
 export const SANITY_TEST_REPORTS_DIR: string = path.resolve(SANITY_TEST_ROOT_DIR, TEST_REPORTS_DIR);
 
 // 45 minutes timeout for install conv. build
-export const TEST_TIMEOUT_CONVENIENCE_BUILD: number = 45 * 60 * 1000;
+export const TEST_TIMEOUT_CONVENIENCE_BUILD: number = 60 * 60 * 1000;
 // 90 minutes timeout for installation fmid
 export const TEST_TIMEOUT_SMPE_FMID: number = 90 * 60 * 1000;
 // 120 minutes timeout for installation ptf
