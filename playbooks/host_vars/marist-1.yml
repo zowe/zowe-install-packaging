@@ -1,0 +1,2 @@
+---
+zowe_sanity_test_testcases: "./test/**/!(api-doc-gen.js)"
