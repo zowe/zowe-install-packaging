@@ -17,7 +17,8 @@ zowe_uss_explorer_port: 53017
 zowe_zlux_port: 53011
 zowe_zss_port: 53012
 zowe_smpe_volser: D3IME1
-
+# caching service volume
+zowe_caching_vsam_volume: D3IME1
 
 zowe_extra_environment_variables:
   # TVT image has an error when executing netstat

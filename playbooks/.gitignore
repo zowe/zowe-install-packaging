@@ -13,3 +13,5 @@
 # test playbooks
 test*
 
+# ignore some hosts
+host_vars/vm30101.yml
