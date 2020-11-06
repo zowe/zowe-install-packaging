@@ -91,3 +91,6 @@ zowe_external_domain_name:
 zowe_external_ip_address:
 # Restrict permissions to keystore/truststore after the certificate setup script
 zowe_lock_keystore: true
+# If this is true, installation script will use gskkyman tool to add certificate to token for SSO. Otherwise,
+# certificate must be add and bind with correct tso commands. For RACF, use RACDCERT ADD and BIND.
+sso_use_gskkyman: true
