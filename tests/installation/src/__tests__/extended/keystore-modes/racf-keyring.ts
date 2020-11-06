@@ -40,7 +40,7 @@ import {
           'zowe_lock_keystore': 'false',
           'zowe_token_name': ZOWE_TOKEN_NAME,
           'zowe_token_label': ZOWE_TOKEN_LABEL,
-          'export_jws_keyring' : 'true',
+          'sso_use_gskkyman': 'false',
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);

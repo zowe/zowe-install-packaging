@@ -12,9 +12,11 @@ import {
   checkMandatoryEnvironmentVariables,
   installAndGenerateApiDocs,
 } from '../../utils';
-  import {TEST_TIMEOUT_CONVENIENCE_BUILD,
-    ZOWE_TOKEN_LABEL,
-    ZOWE_TOKEN_NAME} from '../../constants';
+  import {
+    SSO_USE_GSKKYMAN, TEST_TIMEOUT_CONVENIENCE_BUILD,
+  ZOWE_TOKEN_LABEL,
+  ZOWE_TOKEN_NAME
+} from '../../constants';
   
   const testSuiteName = 'Test convenience build installation';
   describe(testSuiteName, () => {
@@ -35,6 +37,7 @@ import {
           'zowe_lock_keystore': 'false',
           'zowe_token_name': ZOWE_TOKEN_NAME,
           'zowe_token_label': ZOWE_TOKEN_LABEL,
+          'sso_use_gskkyman': SSO_USE_GSKKYMAN,
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);
