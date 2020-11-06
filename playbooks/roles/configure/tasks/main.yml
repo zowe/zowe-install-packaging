@@ -27,7 +27,6 @@
     - zowe_apiml_catalog_port
     - zowe_apiml_discovery_port
     - zowe_apiml_gateway_port
-    - zowe_apiml_enable_sso
     - zowe_apiml_allow_encoded_slashes
     - zowe_apiml_cors_enabled
     - zowe_apiml_prefer_ip_address
@@ -137,11 +136,6 @@
     name: configure
     tasks_from: setup_keyring_certificates
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
-
-
-- name: List zowe token certificates
-  raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"
-  when: zos_security_system == 'RACF'
 
 - name: Bind jwtsecret to profile
   raw: tsocmd "RACDCERT BIND(TOKEN({{ zowe_token_name }}) ID({{ zowe_runtime_user }}) LABEL('{{ zowe_token_label }}'))"
