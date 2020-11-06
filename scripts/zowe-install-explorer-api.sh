@@ -19,7 +19,7 @@
 echo "<zowe-explorer-api-install.sh>" >> $LOG_FILE
 
 
-EXPLORER_API_LIST="jobs-api data-sets-api"
+EXPLORER_API_LIST="jobs-api"
 for COMPONENT_ID in $EXPLORER_API_LIST; do
   cd $INSTALL_DIR
   EXPLORER_API_JAR=$PWD/$(ls -t ./files/${COMPONENT_ID}-server-*.jar | head -1)
@@ -70,5 +70,9 @@ for COMPONENT_ID in $EXPLORER_API_LIST; do
   fi
   chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
 done
+
+FILES_API_ZIP=$INSTALL_DIR/$(ls -t ./files/data-sets-server-*.zip | head -1)
+cd "${ZOWE_ROOT_DIR}/components/files-api/"
+jar -xf "${FILES_API_ZIP}"
 
 echo "</zowe-explorer-api-install.sh>" >> $LOG_FILE
