@@ -36,7 +36,7 @@
 
 # ============================================================================
 - name: test Zowe instance
-  command: npm test {{ zowe_sanity_test_testcases | default('') }}
+  command: npm test -- {{ zowe_sanity_test_testcases | default('') }}
   args:
     chdir: "{{ zowe_sanity_test_root_dir }}"
   environment:
