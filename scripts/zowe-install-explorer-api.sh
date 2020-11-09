@@ -71,8 +71,13 @@ for COMPONENT_ID in $EXPLORER_API_LIST; do
   chmod -R 755 "${ZOWE_ROOT_DIR}/components/${COMPONENT_ID}/bin"
 done
 
-FILES_API_ZIP=$INSTALL_DIR/$(ls -t ./files/data-sets-server-*.zip | head -1)
-cd "${ZOWE_ROOT_DIR}/components/files-api/"
+cd $INSTALL_DIR
+FILES_API_ZIP=$PWD/$(ls -t ./files/data-sets-server-*.zip | head -1)
+FILE_API_DIR="${ZOWE_ROOT_DIR}/components/files-api"
+echo "  Installing ${FILES_API_ZIP} into ${FILE_API_DIR}" >> $LOG_FILE
+mkdir -p "${FILE_API_DIR}"
+cd "${FILE_API_DIR}"
 jar -xf "${FILES_API_ZIP}"
+$INSTALL_DIR/scripts/tag-files.sh "${FILE_API_DIR}"
 
 echo "</zowe-explorer-api-install.sh>" >> $LOG_FILE
