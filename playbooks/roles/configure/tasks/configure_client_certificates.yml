@@ -38,6 +38,3 @@
       import_role:
         name: configure
         tasks_from: add_client_certificate_acf2
-      vars:
-        dataset: "{{ dataset }}"
-        label: "{{ label }}"
