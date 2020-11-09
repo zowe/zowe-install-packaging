@@ -62,9 +62,9 @@
       "artifact": "zosmf-auth-1.17.0-20201108.235615.pax"
     },
     "org.zowe.zss": {
-      "version": "1.16.0-RC",
+      "version": "1.17.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-1.16.0-rc-60-20201006155219.pax"
+      "artifact": "zss-1.17.0-rc-61-20201109155110.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "1.0.3",
@@ -167,12 +167,12 @@
         },
         {
           "repository": "zss",
-          "tag": "v1.16.0",
+          "tag": "v1.17.0",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v1.16.0",
+          "tag": "zss-v1.17.0",
           "destinations": ["Zowe PAX"]
         }
       ]
