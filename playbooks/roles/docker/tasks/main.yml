@@ -1,46 +1,10 @@
 ---
-# ============================================================================
 # Docker Pull & Run
+- import_role:
+    name: docker
+    tasks_from: docker-pull
 
-- name: Reset variables
-  set_fact:
-    container_id:
-
-- name: Pull docker image
-  raw: docker pull {{zowe_docker_image}}:{{zowe_docker_tag}}
-  delegate_to: localhost
-
-- name: start docker in detached mode
-  raw: >- 
-    docker run -d --rm --env ZOWE_EXPLORER_HOST=localhost \
-      --env ZOWE_IP_ADDRESS=0.0.0.0 \
-      --env ZOSMF_HOST={{ansible_ssh_host}} \
-      --env ZOSMF_PORT={{zos_zosmf_port}} \
-      --env ZWED_agent_host={{ansible_ssh_host}} \
-      --env ZWED_agent_http_port={{zowe_zss_port}} \
-      --env ZOWE_ZLUX_TELNET_PORT={{zowe_zlux_terminal_telnet_port}} \
-      -p 7553:7553 \
-      -p 7554:7554 \
-      -p 8544:8544 \
-      ompzowe/zowe-v1-lts:amd64
-  register: container_id_response
-  delegate_to: localhost
-
-- name: Set container_id
-  set_fact:
-    container_id: "{{ container_id_response.stdout_lines[0] }}"
-
-# has replaced with wait-for-zowe task defined in role start
-- name: Sleep for 300 seconds and continue with play - after docker start
-  wait_for:
-    timeout: 300
-  delegate_to: localhost
-
-- name: get docker logs
-  raw: docker logs {{container_id}}
-  delegate_to: localhost
-  register: container_logs
-
-- name: print docker logs
-  debug:
-    var: container_logs
+# Docker Start
+- import_role:
+    name: docker
+    tasks_from: docker-start

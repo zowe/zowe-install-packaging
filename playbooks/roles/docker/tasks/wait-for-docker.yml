@@ -1,0 +1,61 @@
+---
+# has replaced with wait-for-zowe task defined in role start
+- name: Reset variables
+  set_fact:
+    wait_for_zowe_service_retries: 360
+    # Every 10 seconds
+    wait_for_zowe_service_delay: 10
+
+- name: Wait for APIML port {{zowe_apiml_gateway_port}} to be available
+  uri:
+    url: "https://localhost:{{zowe_apiml_gateway_port}}"
+    follow_redirects: none
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+
+- name: Wait for being able to login to App Server
+  uri:
+    url: "https://localhost:{{zowe_zlux_port}}/auth"
+    follow_redirects: none
+    method: POST
+    body_format: json
+    body: 
+      username: "{{ zowe_test_user }}"
+      password: "{{ zowe_test_password }}"
+    validate_certs: false
+    status_code:
+    - 200
+    - 204
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+  # hide log to avoid exposing zowe_test_user and zowe_test_password
+  no_log: True
+
+- name: Wait for being able to login to API Catalog
+  uri:
+    url: "https://localhost:{{zowe_apiml_gateway_port}}/api/v1/apicatalog/auth/login"
+    follow_redirects: none
+    method: POST
+    body_format: json
+    body: 
+      username: "{{ zowe_test_user }}"
+      password: "{{ zowe_test_password }}"
+    validate_certs: false
+    status_code:
+    - 200
+    - 204
+  register: _result
+  until: _result.status == 204
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+  # hide log to avoid exposing zowe_test_user and zowe_test_password
+  no_log: True

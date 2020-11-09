@@ -1,0 +1,8 @@
+---
+- name: get docker logs
+  raw: docker logs {{container_id}}
+  when: container_id is defined
+  delegate_to: localhost
+
+- fail: msg="docker logs require container_id"
+  when: container_id is not defined

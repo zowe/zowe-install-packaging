@@ -1,0 +1,4 @@
+---
+- name: Pull docker image
+  raw: docker pull {{zowe_docker_image}}:{{zowe_docker_tag}}
+  delegate_to: localhost
