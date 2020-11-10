@@ -40,5 +40,5 @@ export const KEYSTORE_MODE_KEYRING = 'KEYSTORE_MODE_KEYRING';
 
 export const ZOWE_TOKEN_NAME: string = 'ZWETOKEN';
 export const ZOWE_TOKEN_LABEL: string = 'jwtsecret';
-export const ZOWE_APIML_SECURITY_X509_ENABLED: string = 'true';
+export const ZOWE_APIML_SECURITY_X509_ENABLED: string = 'thisIsNotBoolean';
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);
