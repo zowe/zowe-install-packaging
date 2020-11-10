@@ -8,7 +8,7 @@
 
 - name: Wait for APIML port {{zowe_apiml_gateway_port}} to be available
   uri:
-    url: "https://localhost:{{zowe_apiml_gateway_port}}"
+    url: "https://{{ zowe_external_domain_name | default('localhost') }}:{{zowe_apiml_gateway_port}}"
     follow_redirects: none
     method: GET
     validate_certs: false
@@ -20,7 +20,7 @@
 
 - name: Wait for being able to login to App Server
   uri:
-    url: "https://localhost:{{zowe_zlux_port}}/auth"
+    url: "https://{{ zowe_external_domain_name | default('localhost') }}:{{zowe_zlux_port}}/auth"
     follow_redirects: none
     method: POST
     body_format: json
@@ -41,7 +41,7 @@
 
 - name: Wait for being able to login to API Catalog
   uri:
-    url: "https://localhost:{{zowe_apiml_gateway_port}}/api/v1/apicatalog/auth/login"
+    url: "https://{{ zowe_external_domain_name | default('localhost') }}:{{zowe_apiml_gateway_port}}/api/v1/apicatalog/auth/login"
     follow_redirects: none
     method: POST
     body_format: json

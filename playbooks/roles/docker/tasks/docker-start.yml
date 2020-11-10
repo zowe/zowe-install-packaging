@@ -1,7 +1,7 @@
 ---
 - name: start docker in detached mode
   raw: >- 
-    docker run -d --rm --env ZOWE_EXPLORER_HOST='localhost' \
+    docker run -d --rm --env ZOWE_EXPLORER_HOST={{ zowe_external_domain_name | default('localhost') }} \
       --env ZOWE_IP_ADDRESS=0.0.0.0 \
       --env ZOSMF_HOST={{zowe_external_domain_name}} \
       --env ZOSMF_PORT={{zos_zosmf_port}} \
