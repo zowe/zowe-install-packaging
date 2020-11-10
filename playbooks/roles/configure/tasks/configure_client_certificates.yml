@@ -12,9 +12,6 @@
           - label
           - certificate
 
-    - name: Print certificate
-      raw: cat "{{ certificate }}"
-
     - name: Copy certificate to dataset
       raw: cp "{{ certificate }}" "//'{{ zowe_dataset_prefix }}.CERT.{{ dataset }}'"
 

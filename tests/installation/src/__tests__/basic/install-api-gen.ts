@@ -13,7 +13,8 @@ import {
   installAndGenerateApiDocs,
 } from '../../utils';
   import {
-    SSO_USE_GSKKYMAN, TEST_TIMEOUT_CONVENIENCE_BUILD,
+  SSO_USE_GSKKYMAN,
+  TEST_TIMEOUT_CONVENIENCE_BUILD, ZOWE_APIML_SECURITY_X509_ENABLED,
   ZOWE_TOKEN_LABEL,
   ZOWE_TOKEN_NAME
 } from '../../constants';
@@ -38,6 +39,7 @@ import {
           'zowe_token_name': ZOWE_TOKEN_NAME,
           'zowe_token_label': ZOWE_TOKEN_LABEL,
           'sso_use_gskkyman': SSO_USE_GSKKYMAN,
+          'zowe_apiml_security_x509_enabled': ZOWE_APIML_SECURITY_X509_ENABLED,
         }
       );
     }, TEST_TIMEOUT_CONVENIENCE_BUILD);

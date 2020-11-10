@@ -13,11 +13,11 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import { 
-  TEST_TIMEOUT_CONVENIENCE_BUILD, 
+import {
+  TEST_TIMEOUT_CONVENIENCE_BUILD,
   KEYSTORE_MODE_KEYRING,
   ZOWE_TOKEN_NAME,
-  ZOWE_TOKEN_LABEL,
+  ZOWE_TOKEN_LABEL, ZOWE_APIML_SECURITY_X509_ENABLED,
 } from '../../../constants';
 
 const testServer = 'marist-3';
@@ -40,7 +40,7 @@ describe(testSuiteName, () => {
         'zowe_lock_keystore': 'false',
         'zowe_token_name': ZOWE_TOKEN_NAME,
         'zowe_token_label': ZOWE_TOKEN_LABEL,
-        'sso_use_gskkyman': 'false',
+        'zowe_apiml_security_x509_enabled': ZOWE_APIML_SECURITY_X509_ENABLED,
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
