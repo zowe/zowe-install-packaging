@@ -76,9 +76,8 @@
       "version": "~0.2.0-STAGING"
     },
     "org.zowe.apiml.sdk.zowe-install": {
-      "version": "~1.18.0-SNAPSHOT",
-      "artifact": "zowe-install-*.zip",
-       "repository": "libs-snapshot-local",
+       "version": "~1.18.0-SNAPSHOT",
+       "artifact": "zowe-install-*.zip",
        "target": ".pax/mediation/",
        "explode": "true"
     },
