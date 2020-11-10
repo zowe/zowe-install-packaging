@@ -28,6 +28,8 @@ During build, .pax/pre-packaging.sh will:
 - create the workflow, for example as zowe-<vrm>/files/workflows/<id>.xml
 - create the variable definitions, for example as zowe-<vrm>/files/workflows/<id>.properties
 
+Note: JCL creation relies on an external tool, vtl-cli, https://github.com/plavjanik/vtl-cli
+
 ---
 
 Do this for workflows that share source with multiple shipped JCL:
