@@ -13,7 +13,7 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import {SSO_USE_GSKKYMAN,
+import {
   TEST_TIMEOUT_CONVENIENCE_BUILD,
   ZOWE_TOKEN_LABEL,
   ZOWE_TOKEN_NAME} from '../../../constants';
@@ -39,7 +39,6 @@ describe(testSuiteName, () => {
         'zowe_lock_keystore': 'false',
         'zowe_token_name': ZOWE_TOKEN_NAME,
         'zowe_token_label': ZOWE_TOKEN_LABEL,
-        'sso_use_gskkyman': SSO_USE_GSKKYMAN,
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);

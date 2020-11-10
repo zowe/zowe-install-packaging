@@ -14,8 +14,8 @@ import {
   showZoweRuntimeLogs,
 } from '../../utils';
 import {
-  SSO_USE_GSKKYMAN,
-  TEST_TIMEOUT_SMPE_FMID, ZOWE_APIML_SECURITY_X509_ENABLED,
+  TEST_TIMEOUT_SMPE_FMID,
+  ZOWE_APIML_SECURITY_X509_ENABLED,
   ZOWE_TOKEN_LABEL,
   ZOWE_TOKEN_NAME
 } from '../../constants';
@@ -39,7 +39,6 @@ describe(testSuiteName, () => {
         'zowe_lock_keystore': 'false',
         'zowe_token_name': ZOWE_TOKEN_NAME,
         'zowe_token_label': ZOWE_TOKEN_LABEL,
-        'sso_use_gskkyman': SSO_USE_GSKKYMAN,
         'zowe_apiml_security_x509_enabled': ZOWE_APIML_SECURITY_X509_ENABLED,
       }
     );
