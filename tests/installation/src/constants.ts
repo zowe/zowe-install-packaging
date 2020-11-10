@@ -29,17 +29,13 @@ export const INSTALL_TEST_REPORTS_DIR: string = path.resolve(INSTALL_TEST_ROOT_D
 export const SANITY_TEST_REPORTS_DIR: string = path.resolve(SANITY_TEST_ROOT_DIR, TEST_REPORTS_DIR);
 
 // 45 minutes timeout for install conv. build
-export const TEST_TIMEOUT_CONVENIENCE_BUILD: number = 45 * 60 * 1000;
+export const TEST_TIMEOUT_CONVENIENCE_BUILD: number = 60 * 60 * 1000;
 // 90 minutes timeout for installation fmid
 export const TEST_TIMEOUT_SMPE_FMID: number = 90 * 60 * 1000;
 // 120 minutes timeout for installation ptf
 export const TEST_TIMEOUT_SMPE_PTF: number = 120 * 60 * 1000;
 
-export const KEYSTORE_MODE_KEYSTORE: string = 'KEYSTORE_MODE_KEYSTORE';
-export const KEYSTORE_MODE_KEYRING: string = 'KEYSTORE_MODE_KEYRING';
-
-export const SECURITY_SYSTEM_RACF: string = 'RACF';
-export const SECURITY_SYSTEM_ACF2: string = 'ACF2';
-export const SECURITY_SYSTEM_TSS: string = 'TSS';
+export const KEYSTORE_MODE_KEYSTORE = 'KEYSTORE_MODE_KEYSTORE';
+export const KEYSTORE_MODE_KEYRING = 'KEYSTORE_MODE_KEYRING';
 
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);

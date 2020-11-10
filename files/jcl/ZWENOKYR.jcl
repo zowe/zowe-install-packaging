@@ -95,10 +95,10 @@
 /* Delete jwtsecret certificate .....................................*/
   RACDCERT DELETE(LABEL('jwtsecret')) ID(&ZOWEUSER.)
 
-/* Delete &LABEL certificate ........................................*/
+/* Delete LABEL certificate ........................................*/
   RACDCERT DELETE(LABEL('&LABEL.')) ID(&ZOWEUSER.)
 
-/* Delete &LOCALCA certificate ......................................*/
+/* Delete LOCALCA certificate ......................................*/
   RACDCERT DELETE(LABEL('&LOCALCA.')) CERTAUTH
 
 /* Delete keyring ...................................................*/
@@ -133,10 +133,10 @@ ACF
   SET PROFILE(USER) DIVISION(CERTDATA)
   DELETE &ZOWEUSER..ZOWEJWT
 
-* Delete &LABEL certificate ........................................*/
+* Delete LABEL certificate ........................................*/
   DELETE &ZOWEUSER..ZOWECERT
 
-* Delete &LOCALCA certificate ......................................*/
+* Delete LOCALCA certificate ......................................*/
   DELETE CERTAUTH.ZOWECA
 
 * Delete keyring ...................................................*/
@@ -163,10 +163,10 @@ $$
 /* Delete jwtsecret certificate .....................................*/
    TSS REM(&ZOWEUSER.) DIGICERT(ZOWEJWT)
 
-/* Delete &LABEL certificate ........................................*/
+/* Delete LABEL certificate ........................................*/
    TSS REM(&ZOWEUSER.) DIGICERT(ZOWECERT)
 
-/* Delete &LOCALCA certificate ......................................*/
+/* Delete LOCALCA certificate ......................................*/
    TSS REM(CERTAUTH) DIGICERT(ZOWECA)
 
 /* Delete keyring ...................................................*/
