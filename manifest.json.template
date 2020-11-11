@@ -79,7 +79,8 @@
        "version": "~1.18.0-SNAPSHOT",
        "artifact": "zowe-install-*.zip",
        "target": ".pax/mediation/",
-       "explode": "true"
+       "explode": "true",
+       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
