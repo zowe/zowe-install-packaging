@@ -29,7 +29,7 @@ for component_id in ${explorer_api_list}; do
   mkdir -p "${component_dir}"
   cd "${component_dir}"
   jar -xf "${component_zip}"
-  ${INSTALL_DIR}/scripts/tag-files.sh "${component_dir}"
+  ${INSTALL_DIR}/scripts/tag-files.sh "${component_dir}" 1>/dev/null
   chmod -R 755 "${component_dir}/bin"
 done
 
