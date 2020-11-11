@@ -51,5 +51,11 @@
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
 
+- name: Add ZSS configuration to instance.env
+  when: zos_security_system == 'RACF'
+  raw: |-
+    echo "ZWED_agent_jwt_key_token=ZWETOKEN" >> "{{ zowe_instance_dir }}/instance.env"
+    echo "ZWED_agent_jwt_key_label=jwtsecret" >> "{{ zowe_instance_dir }}/instance.env"
+
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"
