@@ -23,11 +23,6 @@
       }
     }
   },
-  "logLevels": {
-    "_zss.httpAuthTrace": 5,
-    "_zss.traceLevel": 5,
-    "_zsf.auth": 5
-  },
   "agent": {
     //host is for zlux to know, not zss
     "host": "localhost",
