@@ -56,8 +56,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~1.0.3-USERS-STEVENH-ADD-MANIFEST",
-      "explode": "true"
+      "version": "~1.0.3-USERS-STEVENH-ADD-MANIFEST"
     },
     "org.zowe.explorer.files": {
       "version": "~1.0.3-USERS-STEVENH-ADD-MANIFEST"
