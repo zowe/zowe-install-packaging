@@ -35,6 +35,7 @@ zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
 zowe_apiml_verify_certficates_of_services: true
 # APIML configuration properties
+zowe_apiml_enable_sso: false
 zowe_apiml_allow_encoded_slashes: true
 zowe_apiml_cors_enabled: false
 zowe_apiml_prefer_ip_address: true

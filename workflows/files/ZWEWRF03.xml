@@ -185,6 +185,15 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>7554</default>
         </integer>
     </variable>
+    <variable name="APIML_ENABLE_SSO" scope="instance" visibility="public">
+      <label>API Mediation Layer Single Sign-On</label>
+      <abstract>Do you want to enable Single Sign-On?</abstract>
+      <description>Check this option to enable the Single Sign-On.</description>
+      <category>API Mediation Layer</category>
+      <boolean>
+        <default>false</default>
+      </boolean>
+    </variable>
     <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX Server HTTPS Port</label>
         <abstract>Zowe ZLUX Server HTTPS Port</abstract>
