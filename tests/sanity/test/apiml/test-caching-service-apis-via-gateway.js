@@ -8,7 +8,6 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-const _ = require('lodash');
 const expect = require('chai').expect;
 let request;
 let key = 'testKey';
