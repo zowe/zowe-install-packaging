@@ -2,13 +2,7 @@
 
 # Delete racf Keyrings and certificates we've created
 # ============================================================================
-- name: List zowe token certificates
-  raw: tsocmd "RACDCERT LISTTOKEN(ZWETOKEN)"
-  ignore_errors: True
 
-- name: Unbind jwtsecret from zowe token
-  raw: tsocmd "RACDCERT UNBIND(TOKEN(ZWETOKEN) SEQNUM(0000004E)) FORCE"
-  ignore_errors: True
 # Unbind from token before removing
 - name: Unbind jwtsecret from zowe token
   raw: tsocmd "RACDCERT UNBIND(TOKEN({{ zowe_token_name }}) ID({{ zowe_runtime_user }}) LABEL('{{ zowe_token_label }}')) FORCE"
