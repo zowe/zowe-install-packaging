@@ -56,6 +56,8 @@
   raw: |-
     echo "ZWED_agent_jwt_key_token=ZWETOKEN" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_key_label=jwtsecret" >> "{{ zowe_instance_dir }}/instance.env"
+    echo "ZWED_agent_jwt_token_name=ZWETOKEN" >> "{{ zowe_instance_dir }}/instance.env"
+    echo "ZWED_agent_jwt_token_label=jwtsecret" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_fallback=true" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_enabled=true" >> "{{ zowe_instance_dir }}/instance.env"
 
