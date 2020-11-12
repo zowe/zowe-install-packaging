@@ -18,25 +18,24 @@ let REQ, username, password;
 const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
 const TEST_DATASET_NAME = 'SYS1.LINKLIB';
 const TEST_DATASET_MEMBER_NAME = 'ACCOUNT';
-const targetHost = process.env.ZOWE_NONZOS_HOST || process.env.SSH_HOST;
 
 describe('test explorer server datasets api', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   
-    expect(targetHost, 'targetHost is empty, define ZOWE_NONZOS_HOST || SSH_HOST').to.not.be.empty;
+    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
     REQ = axios.create({
-      baseURL: `https://${targetHost}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
+      baseURL: `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
       timeout: 30000,
     });
     username = process.env.SSH_USER;
     password = process.env.SSH_PASSWD;
-    debug(`Explorer server URL: https://${targetHost}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
+    debug(`Explorer server URL: https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
   });
 
   it(`should be able to list data sets of ${TEST_DATASET_PATTERN}`, function() {

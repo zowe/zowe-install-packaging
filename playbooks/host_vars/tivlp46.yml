@@ -25,5 +25,5 @@ zowe_smpe_volser: TIVLP1
 # caching service volume
 zowe_caching_vsam_volume: TIVLP1
 
-zowe_external_domain_name: tivlp46.svl.ibm.com
+
 zowe_external_ip_address: 9.30.237.20

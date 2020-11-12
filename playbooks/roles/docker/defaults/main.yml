@@ -10,3 +10,4 @@ zos_zosmf_port: 10443
 zowe_zss_port: 8542
 docker_root_dir: /root
 zowe_launch_components: zss
+zowe_sanity_test_testcases: '-- --config .mocharc-docker.yml'

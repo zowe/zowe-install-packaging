@@ -14,3 +14,9 @@
   set_fact:
     zowe_external_domain_name: "{{ ansible_ssh_host|default('') }}"
   when: zowe_external_domain_name == '' or zowe_external_domain_name is none
+
+- name: Update zowe_zos_host from ansible_ssh_host if it's not defined
+  no_log: True
+  set_fact:
+    zowe_zos_host: "{{ ansible_ssh_host|default('') }}"
+  when: zowe_zos_host == '' or zowe_zos_host is none

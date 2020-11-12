@@ -46,13 +46,12 @@ let findCookieInResponse = (response, cookieName) => {
 
 let verifyAndSetupEnvironment = () => {
   const environment = process.env;
-  const targetHost = environment.ZOWE_NONZOS_HOST || environment.SSH_HOST;
-  expect(targetHost, 'targetHost is empty, define ZOWE_NONZOS_HOST || SSH_HOST').to.not.be.empty;
+  expect(environment.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
   expect(environment.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
   expect(environment.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
   expect(environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
-  const baseUrl = `https://${targetHost}:${environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
+  const baseUrl = `https://${process.env.ZOWE_EXTERNAL_HOST}:${environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
   const SECOND = 1000;
   request = axios.create({
     baseURL: baseUrl,

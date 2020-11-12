@@ -29,11 +29,10 @@ const APP_ID_TO_LAUNCH = 'org.zowe.terminal.tn3270';
 const APP_NAME_TO_LAUNCH = 'TN3270';
 
 let appLaunched = false;
-const targetHost = process.env.ZOWE_NONZOS_HOST || process.env.SSH_HOST;
 
 describe(`test ${APP_TO_TEST}`, function() {
   before('verify environment variable and load login page', async function() {
-    expect(targetHost, 'targetHost is empty, define ZOWE_NONZOS_HOST || SSH_HOST').to.not.be.empty;
+    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ZLUX_HTTPS_PORT, 'ZOWE_ZLUX_HTTPS_PORT is not defined').to.not.be.empty;
@@ -45,7 +44,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     // load MVD login page
     await loginMVD(
       driver,
-      `https://${targetHost}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`,
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
     );

@@ -40,12 +40,12 @@
   environment:
     ZOWE_ROOT_DIR: "{{ zowe_root_dir }}"
     ZOWE_INSTANCE_DIR: "{{ zowe_instance_dir }}"
+    ZOWE_EXTERNAL_HOST: "{{ zowe_external_domain_name }}"
     SSH_HOST: "{{ ansible_ssh_host }}"
     SSH_PORT: "{{ ansible_port }}"
     SSH_USER: "{{ ansible_user }}"
     SSH_PASSWD: "{{ ansible_password }}"
     ZOSMF_PORT: "{{ zos_zosmf_port }}"
-    ZOWE_NONZOS_HOST : "{{ zowe_nonzos_host | default('') }}"
     ZOWE_DS_MEMBER: "{{ zowe_proclib_membername }}"
     ZOWE_JOB_PREFIX: "{{ zowe_job_prefix }}"
     ZOWE_INSTANCE_ID: "{{ zowe_instance_id }}"

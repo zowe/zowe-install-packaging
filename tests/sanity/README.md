@@ -52,6 +52,7 @@ Example command:
 ```
 ZOWE_ROOT_DIR=/path/to/zowe \
   ZOWE_INSTANCE_DIR=/path/to/zowe/instanceDir \
+  ZOWE_EXTERNAL_HOST=test-server \
   SSH_HOST=test-server \
   SSH_PORT=12022 \
   SSH_USER=********* \
@@ -94,6 +95,7 @@ To show debugging information on your local, you can add `DEBUG=zowe-sanity-test
 ```
 ZOWE_ROOT_DIR=/path/to/zowe \
   ZOWE_INSTANCE_DIR=/path/to/zowe/instanceDir \
+  ZOWE_EXTERNAL_HOST=test-server \
   SSH_HOST=test-server \
   SSH_PORT=12022 \
   SSH_USER=********* \

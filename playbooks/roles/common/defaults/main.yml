@@ -18,6 +18,7 @@ zos_security_system: RACF
 # optional, default to ansible_ssh_host
 # required for zD&T (external IP is different from internal IP)
 zowe_external_domain_name:
+zowe_zos_host:
 # optional, no default value
 # required for zD&T (external IP is different from internal IP)
 zowe_external_ip_address:
