@@ -853,8 +853,8 @@ test "$sysmodType" = "++PTF" -a -f $service/$prevHold && \
 if test -f $ptf/tmp
 then
   SED=""           # substitute characters with special meaning in HTML
-  SED="$SED;s~<~&lt;~"     # we assume there is no "~" in the hold data
-  SED="$SED;s~>~&gt;~"
+  SED="$SED;s~<~\&lt;~g"   # we assume there is no "~" in the hold data
+  SED="$SED;s~>~\&gt;~g"
   _cmd --save $log/$html sed "$SED" $ptf/tmp
 else
   _cmd --save $log/$html echo none
