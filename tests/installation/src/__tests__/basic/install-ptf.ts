@@ -13,9 +13,7 @@ import {
   installAndVerifySmpePtf,
   showZoweRuntimeLogs,
 } from '../../utils';
-import {
-  TEST_TIMEOUT_SMPE_PTF,
-} from '../../constants';
+import { TEST_TIMEOUT_SMPE_PTF } from '../../constants';
 
 const testSuiteName = 'Test SMPE PTF installation';
 describe(testSuiteName, () => {

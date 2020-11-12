@@ -13,9 +13,7 @@ import {
   installAndVerifySmpePtf,
   showZoweRuntimeLogs,
 } from '../../../../utils';
-import {
-  TEST_TIMEOUT_SMPE_PTF
-} from '../../../../constants';
+import {TEST_TIMEOUT_SMPE_PTF} from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker

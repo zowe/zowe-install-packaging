@@ -13,9 +13,7 @@ import {
   installAndVerifySmpeFmid,
   showZoweRuntimeLogs,
 } from '../../../../utils';
-import {
-  TEST_TIMEOUT_SMPE_FMID
-} from '../../../../constants';
+import {TEST_TIMEOUT_SMPE_FMID} from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker

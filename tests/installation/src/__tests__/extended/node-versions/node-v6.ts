@@ -13,9 +13,7 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import {
-  TEST_TIMEOUT_CONVENIENCE_BUILD
-} from '../../../constants';
+import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
 // hard code to use marist-1 which we have uploaded correct versions in
 const testServer = 'marist-1';
