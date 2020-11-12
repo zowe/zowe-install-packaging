@@ -14,9 +14,8 @@ import {
   showZoweRuntimeLogs,
 } from '../../../../utils';
 import {
-  TEST_TIMEOUT_SMPE_PTF,
-  ZOWE_TOKEN_LABEL,
-  ZOWE_TOKEN_NAME} from '../../../../constants';
+  TEST_TIMEOUT_SMPE_PTF
+} from '../../../../constants';
 
 /**
  * Define this test should run in a specific worker
@@ -41,8 +40,6 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_lock_keystore': 'false',
-        'zowe_token_name': ZOWE_TOKEN_NAME,
-        'zowe_token_label': ZOWE_TOKEN_LABEL,
       }
     );
   }, TEST_TIMEOUT_SMPE_PTF);

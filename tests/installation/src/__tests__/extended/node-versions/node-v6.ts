@@ -14,9 +14,8 @@ import {
   showZoweRuntimeLogs,
 } from '../../../utils';
 import {
-  TEST_TIMEOUT_CONVENIENCE_BUILD,
-  ZOWE_TOKEN_LABEL,
-  ZOWE_TOKEN_NAME} from '../../../constants';
+  TEST_TIMEOUT_CONVENIENCE_BUILD
+} from '../../../constants';
 
 // hard code to use marist-1 which we have uploaded correct versions in
 const testServer = 'marist-1';
@@ -37,8 +36,6 @@ describe(testSuiteName, () => {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zos_node_home': '/ZOWE/node/node-v6.17.0-os390-s390x',
         'zowe_lock_keystore': 'false',
-        'zowe_token_name': ZOWE_TOKEN_NAME,
-        'zowe_token_label': ZOWE_TOKEN_LABEL,
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);

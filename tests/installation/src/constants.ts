@@ -38,7 +38,4 @@ export const TEST_TIMEOUT_SMPE_PTF: number = 120 * 60 * 1000;
 export const KEYSTORE_MODE_KEYSTORE = 'KEYSTORE_MODE_KEYSTORE';
 export const KEYSTORE_MODE_KEYRING = 'KEYSTORE_MODE_KEYRING';
 
-export const ZOWE_TOKEN_NAME: string = 'ZWETOKEN';
-export const ZOWE_TOKEN_LABEL: string = 'jwtsecret';
-export const ZOWE_APIML_SECURITY_X509_ENABLED: string = 'true';
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);

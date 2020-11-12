@@ -16,9 +16,6 @@ import {
 import {
   TEST_TIMEOUT_CONVENIENCE_BUILD,
   KEYSTORE_MODE_KEYRING,
-  ZOWE_TOKEN_NAME,
-  ZOWE_TOKEN_LABEL,
-  ZOWE_APIML_SECURITY_X509_ENABLED,
 } from '../../../constants';
 
 const testServer = 'marist-3';
@@ -39,8 +36,6 @@ describe(testSuiteName, () => {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
         'zowe_lock_keystore': 'false',
-        'zowe_token_name': ZOWE_TOKEN_NAME,
-        'zowe_token_label': ZOWE_TOKEN_LABEL,
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
