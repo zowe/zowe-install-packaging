@@ -1,0 +1,5 @@
+---
+- name: remove docker if running
+  raw: >-
+    docker rm -f $(docker ps -a -q --filter ancestor={{zowe_docker_image}}:{{zowe_docker_tag}})
+  delegate_to: localhost
