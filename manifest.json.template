@@ -56,10 +56,10 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~1.0.0"
+      "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer.files": {
-      "version": "~1.0.0"
+      "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-jes": {
       "version": "~1.0.0-STAGING"
