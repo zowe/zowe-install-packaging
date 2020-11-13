@@ -17,7 +17,6 @@ zowe_sanity_test_root_dir: ../tests/sanity
 
 # default z/OSMF port
 zos_zosmf_port: 10443
-zowe_nonzos_host:
 
 # default zowe runtime root directory
 zowe_root_dir: ~/zowe

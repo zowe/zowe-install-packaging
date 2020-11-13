@@ -58,7 +58,6 @@ ZOWE_ROOT_DIR=/path/to/zowe \
   SSH_USER=********* \
   SSH_PASSWD=********* \
   ZOSMF_PORT=10443 \
-  ZOWE_NONZOS_HOST= \
   ZOWE_DS_MEMBER=ZWESVSTC \
   ZOWE_JOB_PREFIX=ZWE \
   ZOWE_INSTANCE_ID=1 \
@@ -90,27 +89,7 @@ const debug = require('debug')('zowe-sanity-test:my-testsuite:my-testcase');
 debug('result:', result);
 ```
 
-To show debugging information on your local, you can add `DEBUG=zowe-sanity-test:*` to the test command:
-
-```
-ZOWE_ROOT_DIR=/path/to/zowe \
-  ZOWE_INSTANCE_DIR=/path/to/zowe/instanceDir \
-  ZOWE_EXTERNAL_HOST=test-server \
-  SSH_HOST=test-server \
-  SSH_PORT=12022 \
-  SSH_USER=********* \
-  SSH_PASSWD=********* \
-  ZOSMF_PORT=10443 \
-  ZOSMF_HOST=test-server \
-  ZOWE_NONZOS_HOST= \
-  ZOWE_DS_MEMBER=ZWESVSTC \
-  ZOWE_JOB_PREFIX=ZWE \
-  ZOWE_INSTANCE_ID=1 \
-  ZOWE_ZLUX_HTTPS_PORT=8544 \
-  ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554 \
-  DEBUG=zowe-sanity-test:* \
-  npm test
-```
+To show debugging information on your local, you can add `DEBUG=zowe-sanity-test:*` to the test command.
 
 In Jenkins Pipeline, we have pre-defined build parameter `TEST_CASE_DEBUG_INFORMATION`, which can enable to show debugging information. For example, give `TEST_CASE_DEBUG_INFORMATION` value `zowe-sanity-test:*` will show all test debugging information.
 
@@ -400,8 +379,10 @@ When you start test on Windows, you may see this error: `'ZOWE_ROOT_DIR' is not 
 Run `npm install -g cross-env` and then run command
 
 ```
-cross-env ZOWE_ROOT_DIR=/path/to/zowe ZOWE_INSTANCE_DIR=/path/to/zowe/instanceDir SSH_HOST=test-server SSH_PORT=12022 SSH_USER=********* SSH_PASSWD=********* ZOSMF_PORT=10443 ZOWE_DS_MEMBER=ZWESVSTC ZOWE_JOB_PREFIX=ZWE ZOWE_ZLUX_HTTPS_PORT=8544 ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554 npm test
+cross-env ZOWE_ROOT_DIR=/path/to/zowe <...> npm test
 ```
+
+You can add any environment variables defined in [Start Test](#start-test) section.
 
 to start test.
 

@@ -29,7 +29,7 @@ You also need Java installed on z/OS. The `JAVA_HOME` should be defined in the u
 - Check variables defined for each group, for example: [group_vars/marist.yml](group_vars/marist.yml).
 - Check variables defined for each host or create a host variable YAML for your server. For example: [host_vars/river-0.yml](host_vars/river-0.yml).
 - Setup `ansible_password` or `ansible_ssh_private_key_file` for your host you are working on.
-- Verify values of `zowe_external_domain_name`, `zowe_external_ip_address`, `zowe_test_user` and `zowe_test_password` for your host.
+- Verify values of `zowe_zos_host`, `zowe_external_domain_name`, `zowe_external_ip_address`, `zowe_test_user` and `zowe_test_password` for your host.
 
 ### Other verifications or tools
 

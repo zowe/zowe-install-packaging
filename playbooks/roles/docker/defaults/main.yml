@@ -2,12 +2,22 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
+# 360 * 10 seconds = 1hour
+wait_for_zowe_service_retries: 360
+# Every 10 seconds
+wait_for_zowe_service_delay: 10
 # zowe docker image
 zowe_docker_image: ompzowe/zowe-v1-lts
 zowe_docker_tag: amd64
+
+# ==============================================================================
+# Constants
+# ==============================================================================
+# default z/OSMF port. Optional, default value is ansible_ssh_host
+zos_zosmf_host:
 # default z/OSMF port
 zos_zosmf_port: 10443
+zowe_zss_https: False
 zowe_zss_port: 8542
-docker_root_dir: /root
 zowe_launch_components: zss
 zowe_sanity_test_testcases: '-- --config .mocharc-docker.yml'

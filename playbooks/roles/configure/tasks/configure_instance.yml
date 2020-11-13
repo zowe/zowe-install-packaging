@@ -22,9 +22,10 @@
 - name: Update instance.env
   raw: >-
     cat "{{ zowe_instance_dir }}/instance.env" | \
-    sed -e "s+^ZOWE_EXPLORER_HOST=.*\$+ZOWE_EXPLORER_HOST={{ zowe_external_domain_name }}+" | \
+    sed -e "s+^ZOWE_EXPLORER_HOST=.*\$+ZOWE_EXPLORER_HOST={{ zowe_zos_host }}+" | \
     sed -e "s+^ZOWE_PREFIX=.*\$+ZOWE_PREFIX={{ zowe_job_prefix }}+" | \
     sed -e "s+^ZOWE_INSTANCE=.*\$+ZOWE_INSTANCE={{ zowe_instance_id }}+" | \
+    sed -e "s+^ZOSMF_HOST=.*\$+ZOSMF_PORT={{ zos_zosmf_host }}+" | \
     sed -e "s+^ZOSMF_PORT=.*\$+ZOSMF_PORT={{ zos_zosmf_port }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^CATALOG_PORT=.*\$+CATALOG_PORT={{ zowe_apiml_catalog_port }}+" | \
@@ -52,9 +53,6 @@
     sed -e "s+^ZWE_LAUNCH_COMPONENTS=.*\$+ZWE_LAUNCH_COMPONENTS={{ zowe_launch_components }}+" \
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
-
-- name: Make zss available externally
-  raw: echo "ZWED_agent_http_ipAddresses=0.0.0.0"  >> "{{ zowe_instance_dir }}/instance.env"
 
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"

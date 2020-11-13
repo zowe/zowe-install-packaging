@@ -46,10 +46,7 @@ const MVD_EXPLORER_TREE_SECTION = 'div.tree-card div.node';
 let appLaunched = false;
 let testDirIndex = -1;
 
-const nonZosHost = process.env.ZOWE_NONZOS_HOST;
-const isNonZosHost = (nonZosHost)? true:false;
-
-(isNonZosHost ? describe.skip : describe)(`test ${APP_TO_TEST}`, function() {
+describe(`test ${APP_TO_TEST}`, function() {
   before('verify environment variable and load login page', async function() {
     expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
