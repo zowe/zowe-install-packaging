@@ -215,7 +215,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/staging',
+            job: '/zowe-install-test/users%2Froavill2%2Frc-improvements',
             parameters: testParameters,
             propagate: false
           )
@@ -257,7 +257,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
+          string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple 5ecurity systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -276,7 +276,7 @@ node('ibm-jenkins-slave-nvm') {
         //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         // }
         def test_result = build(
-            job: '/zowe-install-test/staging',
+            job: '/zowe-install-test/users%2Froavill2%2Frc-improvements',
             parameters: testParameters,
             propagate: false
           )
@@ -289,10 +289,13 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'HOURS']
+    timeout: [time: 4, unit: 'SECONDS']
+    if timeout{
+      IS_BUILD_UNSTABLE = true
+    }
   )
 
-  pipeline.createStage(
+  /*pipeline.createStage(
     name          : "Promote",
     isSkippable   : true,
     shouldExecute : {
@@ -379,7 +382,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     timeout: [time: 2, unit: 'MINUTES']
-  )
+  )*/
 
   pipeline.end()
 }
