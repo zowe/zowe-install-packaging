@@ -33,6 +33,7 @@ describe(testSuiteName, () => {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         // we start docker container on localhost
         'zowe_external_domain_name': 'localhost',
+        'zowe_sanity_test_testcases': '-- --config .mocharc-docker.yml',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
