@@ -228,7 +228,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'HOURS']
+    timeout: [time: 2, unit: 'HOURS'],
     echo "***Shouldn't time out - don't want to see this"
   )
 
@@ -287,7 +287,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'SECONDS']
+    timeout: [time: 4, unit: 'SECONDS'],
     echo "***Timed out - want to see this"
   )
 
