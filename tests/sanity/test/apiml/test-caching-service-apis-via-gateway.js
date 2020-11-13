@@ -37,6 +37,9 @@ let getToken = async () => {
 
 describe('test caching service via gateway', function() {
   before('verify environment variables', function () {
+    if (process.env.ZOWE_CACHING_SERVICE_START == 'false') {
+      this.skip();
+    }
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     request = testUtils.verifyAndSetupEnvironment();
