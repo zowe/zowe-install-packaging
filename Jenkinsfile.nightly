@@ -228,7 +228,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'SECONDS']
+    timeout: [time: 2, unit: 'SECONDS'],
     if (timeout) {
       IS_BUILD_UNSTABLE = true
     }
@@ -289,7 +289,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'SECONDS']
+    timeout: [time: 4, unit: 'SECONDS'],
     if timeout{
       IS_BUILD_UNSTABLE = true
     }
