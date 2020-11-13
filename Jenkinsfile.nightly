@@ -228,8 +228,10 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'SECONDS'],
-    if (timeout) {
+    try {
+      timeout: [time: 2, unit: 'SECONDS']
+    }
+    catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException) {
       IS_BUILD_UNSTABLE = true
     }
   )
@@ -289,8 +291,10 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'SECONDS'],
-    if timeout{
+    try {
+      timeout: [time: 4, unit: 'SECONDS']
+    }
+    catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException) {
       IS_BUILD_UNSTABLE = true
     }
   )
