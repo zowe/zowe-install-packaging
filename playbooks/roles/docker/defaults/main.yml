@@ -11,7 +11,7 @@ zowe_docker_image: ompzowe/zowe-v1-lts
 zowe_docker_tag: amd64
 
 # ==============================================================================
-# Constants
+# Variables should be verified and overwrittern.
 # ==============================================================================
 # default z/OSMF port. Optional, default value is ansible_ssh_host
 zos_zosmf_host:
