@@ -196,7 +196,7 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple 5ecurity systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -228,7 +228,10 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'HOURS']
+    timeout: [time: 2, unit: 'SECONDS']
+    if (timeout) {
+      IS_BUILD_UNSTABLE = true
+    }
   )
 
   pipeline.test(
