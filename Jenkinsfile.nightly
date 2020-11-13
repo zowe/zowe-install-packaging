@@ -228,12 +228,10 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    try {
-      timeout: [time: 2, unit: 'SECONDS']
+    timeout: [time: 2, unit: 'SECONDS'] {
+      echo "Timed out..."
     }
-    catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException) {
-      IS_BUILD_UNSTABLE = true
-    }
+
   )
 
   pipeline.test(
@@ -291,11 +289,8 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    try {
-      timeout: [time: 4, unit: 'SECONDS']
-    }
-    catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException) {
-      IS_BUILD_UNSTABLE = true
+    timeout: [time: 4, unit: 'SECONDS'] {
+      echo "Timed out..."
     }
   )
 
