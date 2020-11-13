@@ -483,7 +483,7 @@ function jwt_key_gen_and_export {
     else
         pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 \
         -dname "${SERVICE_DNAME}" -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
-        keytool -exportcert -keystore ${SERVICE_KEYSTORE}.p12 -alias ${JWT_ALIAS} -rfc -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer
+        pkeytool -exportcert -keystore ${SERVICE_KEYSTORE}.p12 -alias ${JWT_ALIAS} -rfc -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer
 
         if [ `uname` = "OS/390" ]; then
           iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer > ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem

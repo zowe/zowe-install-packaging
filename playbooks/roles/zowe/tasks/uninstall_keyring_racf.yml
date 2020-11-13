@@ -9,12 +9,6 @@
 - name: List zowe token certificates
   raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"
   ignore_errors: True
-- name: Create zowe token
-  raw: tsocmd "RACDCERT ADDTOKEN({{ zowe_token_name }})"
-
-- name: List zowe token certificates
-  raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"
-  ignore_errors: True
 - name: Remove Zowe RACF personal certficates from keyrings
   raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) REMOVE(LABEL('{{ item[0] }}') RING({{ item[1] }}))"
   loop: "{{ zowe_known_keyring_personal_certificates |product(zowe_known_keyring_names)|list }}"
