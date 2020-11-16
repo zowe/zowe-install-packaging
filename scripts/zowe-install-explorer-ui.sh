@@ -30,8 +30,7 @@ echo "  Unpax of ${EXPLORER_SERVER_PAX} into ${PWD}" >> $LOG_FILE
 pax -rf ${EXPLORER_SERVER_PAX} -ppx
 chmod -R 755 .
 
-
-UI_PLUGIN_LIST="jes mvs uss"
+UI_PLUGIN_LIST="mvs uss"
 for COMPONENT_ID in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_UPPERCASE=$(echo $COMPONENT_ID | tr '[a-z]' '[A-Z]')
 
@@ -54,33 +53,34 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   echo "  Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
   pax -rf $EXPLORER_PLUGIN_PAX -ppx
 
-  EXPLORER_UI_START_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-start.sh
-  EXPLORER_UI_CONFIGURE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-configure.sh
-  EXPLORER_UI_VALIDATE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-validate.sh
+  if [ "${COMPONENT_ID}" != "jes" ]; then
+    EXPLORER_UI_START_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-start.sh
+    EXPLORER_UI_CONFIGURE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-configure.sh
+    EXPLORER_UI_VALIDATE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-validate.sh
 
-  if [ ! -f $EXPLORER_UI_START_SCRIPT ]; then
-    echo "  Error: Explorer ${COMPONENT_ID} ui start script (start-explorer-${COMPONENT_ID}-ui-server.sh) missing"
-    echo "  Installation terminated"
-    exit 0
+    if [ ! -f $EXPLORER_UI_START_SCRIPT ]; then
+      echo "  Error: Explorer ${COMPONENT_ID} ui start script (start-explorer-${COMPONENT_ID}-ui-server.sh) missing"
+      echo "  Installation terminated"
+      exit 0
+    fi
+
+    # copy start script
+    mv ${EXPLORER_UI_START_SCRIPT} start.sh
+
+    if [[ -f ${EXPLORER_UI_CONFIGURE_SCRIPT} ]]
+    then
+      mv ${EXPLORER_UI_CONFIGURE_SCRIPT} configure.sh
+    fi
+
+    if [[ -f ${EXPLORER_UI_VALIDATE_SCRIPT} ]]
+    then
+      mv ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
+    fi
+
+    rm -rf $EXPLORER_INSTALL_FOLDER/bin/scripts
   fi
-
-  # copy start script
-  mv ${EXPLORER_UI_START_SCRIPT} start.sh
-
-  if [[ -f ${EXPLORER_UI_CONFIGURE_SCRIPT} ]]
-  then
-    mv ${EXPLORER_UI_CONFIGURE_SCRIPT} configure.sh
-  fi
-
-  if [[ -f ${EXPLORER_UI_VALIDATE_SCRIPT} ]]
-  then
-    mv ${EXPLORER_UI_VALIDATE_SCRIPT} validate.sh
-  fi
-
-  rm -rf $EXPLORER_INSTALL_FOLDER/bin/scripts
 
   chmod -R 755 "${ZOWE_ROOT_DIR}/components/explorer-${COMPONENT_ID}/bin"
-
 done
 
 echo "</zowe-explorer-ui-install.sh>" >> $LOG_FILE
