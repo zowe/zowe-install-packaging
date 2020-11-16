@@ -48,14 +48,14 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   umask 0002
   mkdir -p "${EXPLORER_INSTALL_FOLDER}/bin"
   
-  if [ "${COMPONENT_ID}" == "jes" ]; then
+  if [[ "${COMPONENT_ID}" == "jes" ]]; then
     # unpax package
     cd "${EXPLORER_INSTALL_FOLDER}"
     echo "  Alt: Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
     pax -rf $EXPLORER_PLUGIN_PAX -ppx
   fi
 
-  if [ "${COMPONENT_ID}" != "jes" ]; then
+  if [[ "${COMPONENT_ID}" != "jes" ]]; then
       # unpax package
     cd "${EXPLORER_INSTALL_FOLDER}/bin"
     echo "  Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
