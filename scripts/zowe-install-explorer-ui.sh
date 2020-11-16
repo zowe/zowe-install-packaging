@@ -30,7 +30,7 @@ echo "  Unpax of ${EXPLORER_SERVER_PAX} into ${PWD}" >> $LOG_FILE
 pax -rf ${EXPLORER_SERVER_PAX} -ppx
 chmod -R 755 .
 
-UI_PLUGIN_LIST="mvs uss"
+UI_PLUGIN_LIST="jes mvs uss"
 for COMPONENT_ID in $UI_PLUGIN_LIST; do
   EXPLORER_PLUGIN_UPPERCASE=$(echo $COMPONENT_ID | tr '[a-z]' '[A-Z]')
 
@@ -48,12 +48,24 @@ for COMPONENT_ID in $UI_PLUGIN_LIST; do
   umask 0002
   mkdir -p "${EXPLORER_INSTALL_FOLDER}/bin"
   
+  if [ "${COMPONENT_ID}" == "jes*" ]; then
+    # unpax package
+    cd "${EXPLORER_INSTALL_FOLDER}"
+    echo "  Alt: Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
+    pax -rf $EXPLORER_PLUGIN_PAX -ppx
+  fi
+
   # unpax package
   cd "${EXPLORER_INSTALL_FOLDER}/bin"
   echo "  Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
   pax -rf $EXPLORER_PLUGIN_PAX -ppx
 
-  if [ "${COMPONENT_ID}" != "jes" ]; then
+  if [ "${COMPONENT_ID}" != "jes*" ]; then
+      # unpax package
+    cd "${EXPLORER_INSTALL_FOLDER}/bin"
+    echo "  Unpax of ${EXPLORER_PLUGIN_PAX} into ${PWD}" >> $LOG_FILE
+    pax -rf $EXPLORER_PLUGIN_PAX -ppx
+
     EXPLORER_UI_START_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-start.sh
     EXPLORER_UI_CONFIGURE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-configure.sh
     EXPLORER_UI_VALIDATE_SCRIPT=$EXPLORER_INSTALL_FOLDER/bin/scripts/explorer-${COMPONENT_ID}-validate.sh
