@@ -222,7 +222,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
           testRegBuildErrorUrl = test_result.absoluteUrl
-          echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          echo "***Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
         }
         echo "${test_result.timestamp}"
@@ -235,7 +235,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'SECONDS']
+    timeout: [time: 30, unit: 'SECONDS']
   )
 
   pipeline.test(
@@ -284,7 +284,7 @@ node('ibm-jenkins-slave-nvm') {
             parameters: testParameters,
             propagate: false
           )
-        echo "Test result: ${test_result.result}"
+        echo "***Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
@@ -293,7 +293,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'SECONDS']
+    timeout: [time: 30, unit: 'SECONDS']
   )
 
   /*pipeline.createStage(
