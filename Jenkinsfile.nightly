@@ -225,11 +225,17 @@ node('ibm-jenkins-slave-nvm') {
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
         }
+        echo "${test_result.timestamp}"
+        echo "${test_result.Timed}"
+        echo "${test_result.timeElapse}"
+        echo "${test_result.result}"
+        if (test.result.result = timeout) {
+          IS_BUILD_UNSTABLE = true
+        }
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'HOURS'],
-    echo "***Shouldn't time out - don't want to see this"
+    timeout: [time: 2, unit: 'SECONDS']
   )
 
   pipeline.test(
@@ -287,8 +293,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'SECONDS'],
-    echo "***Timed out - want to see this"
+    timeout: [time: 4, unit: 'SECONDS']
   )
 
   /*pipeline.createStage(
