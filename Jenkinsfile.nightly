@@ -229,7 +229,7 @@ node('ibm-jenkins-slave-nvm') {
         echo "${test_result.Timed}"
         echo "${test_result.timeElapse}"
         echo "${test_result.result}"
-        if (test.result.result = timeout) {
+        if (test.result.result == timeout) {
           IS_BUILD_UNSTABLE = true
         }
       }
