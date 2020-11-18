@@ -40,7 +40,7 @@ for component_id in ${ui_components}; do
   # TODO - do we need this section. Can we unify it, or derive this from the manifest?
   if [[ "${component_id}" == "explorer-ui-server " ]]; then
     chmod -R 755 "${component_directory}"
-  elif
+  else
     chmod -R 755 "${component_directory}/bin"
   fi
 done
