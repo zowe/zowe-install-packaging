@@ -62,16 +62,16 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-USERS-STEVENH-ADD-MANIFEST"
+      "version": "~1.0.0-PR-234"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-USERS-STEVENH-ADD-MANIFEST"
+      "version": "~1.0.0-PR-157"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-USERS-STEVENH-ADD-MANIFEST"
+      "version": "~1.0.0-PR-105"
     },
     "org.zowe.explorer-ui-server": {
-      "version": "~0.2.0-USERS-STEVENH-ADD-MANIFEST"
+      "version": "~0.2.0-PR-47"
     },
     "org.zowe.apiml.sdk.zowe-install": {
        "version": "~1.18.0-SNAPSHOT",
