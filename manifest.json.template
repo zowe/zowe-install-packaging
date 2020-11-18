@@ -62,7 +62,7 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-STAGING4"
+      "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-mvs": {
       "version": "~1.0.0-STAGING"
