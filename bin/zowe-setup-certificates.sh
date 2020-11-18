@@ -256,11 +256,10 @@ fi
 echo "Creating certificates and keystores... DONE"
 
 JWT_ALIAS="jwtsecret"
-DONT_RUN="true"
 APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
 P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
 if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
-  if [[ -f ${APIML_PUBLIC_KEY} ]] && [[ "${DONT_RUN}" != "true" ]]
+  if [[ -f ${APIML_PUBLIC_KEY} ]]
   then
     chtag -tc ISO8859-1 ${APIML_PUBLIC_KEY}
     if ! keytool -importcert -file ${APIML_PUBLIC_KEY} -keystore ${P12_PUBLIC_KEY} -storetype pkcs12 -storepass ${KEYSTORE_PASSWORD} -trustcacerts -noprompt >> $LOG_FILE 2>&1 ; then
