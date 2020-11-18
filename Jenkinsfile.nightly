@@ -228,7 +228,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 2, unit: 'HOURS']
+    timeout: [time: 3, unit: 'HOURS']
   )
 
   pipeline.test(
@@ -286,7 +286,7 @@ node('ibm-jenkins-slave-nvm') {
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'HOURS']
+    timeout: [time: 5, unit: 'HOURS']
   )
 
   pipeline.createStage(
