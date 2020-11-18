@@ -37,16 +37,5 @@ for component_id in ${ui_components}; do
   cd "${component_directory}"
   echo "  Unpax of ${component_pax} into ${PWD}" >> $LOG_FILE
   pax -rf ${component_pax} -ppx
-
-  # TODO - do we need this section. Can we unify it, or derive this from the manifest?
-  # if [[ "${component_id}" == "explorer-ui-server " ]]; then
-  #   chmod -R 755 "${component_directory}"
-  # else
-  #   chmod -R 755 "${component_directory}/bin"
-  # fi
-  echo "  ${component_directory} permissions"  >> $LOG_FILE
-  ls -al "${component_directory}"  >> $LOG_FILE
-
-
 done
 echo "</zowe-explorer-ui-install.sh>" >> $LOG_FILE
