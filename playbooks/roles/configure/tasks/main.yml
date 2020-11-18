@@ -139,15 +139,10 @@
     tasks_from: setup_keyring_certificates
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
-- name: Configure Zowe JWT token
+- import_role:
+    name: configure
+    tasks_from: configure_sso_token.yml
   when: zowe_apiml_security_x509_enabled and zos_security_system == 'RACF'
-  block:
-    - name: Create zowe token
-      raw: tsocmd "RACDCERT ADDTOKEN({{ zowe_token_name }})"
-    - name: Bind jwtsecret to profile
-      raw: tsocmd "RACDCERT BIND(TOKEN({{ zowe_token_name }}) ID({{ zowe_runtime_user }}) LABEL('{{ zowe_token_label }}'))"
-    - name: List zowe token certificates
-      raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"
 
 # ============================================================================
 # Add external API ML CA to the truststore
