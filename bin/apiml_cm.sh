@@ -487,6 +487,8 @@ function jwt_key_gen_and_export {
 
         if [ `uname` = "OS/390" ]; then
           iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer > ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+        else
+          mv ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
         fi
     fi
 }
