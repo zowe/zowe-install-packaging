@@ -50,11 +50,11 @@
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
 
+# This is TEMPORARY workaround because of missing security setup on some servers and problem with ZSS configuration,
+# remove once this is fixed
 - name: Add ZSS configuration to instance.env
   when: zos_security_system == 'RACF'
   raw: |-
-    echo "ZWED_agent_jwt_key_token=ZWETOKEN" >> "{{ zowe_instance_dir }}/instance.env"
-    echo "ZWED_agent_jwt_key_label=jwtsecret" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_token_name=ZWETOKEN" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_token_label=jwtsecret" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_fallback=true" >> "{{ zowe_instance_dir }}/instance.env"
