@@ -32,6 +32,7 @@ let assertStatusNoContent = (response) => {
 
 let getToken = async () => {
   const uuid = testUtils.uuid();
+  testUtils.log(uuid, 'ZOWE_CACHING_SERVICE_START value ' + process.env.ZOWE_CACHING_SERVICE_START);
   return await testUtils.login(uuid);
 };
 
