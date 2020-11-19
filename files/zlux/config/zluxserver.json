@@ -28,8 +28,8 @@
     "host": "localhost",
     "jwt": {
       "token": {
-        "name": 0,
-        "label": 0
+        "name": "",
+        "label": ""
       },
       "fallback": true
     },
