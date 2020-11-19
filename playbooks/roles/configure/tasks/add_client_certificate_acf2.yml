@@ -6,6 +6,14 @@
 
 - name: Transfer ZWECCADD.jcl to zOS
   block:
+    - import_role:
+        name: common
+        tasks_from: validate_variables
+      vars:
+        variable_list:
+          - dataset
+          - label
+
     - name: Copy ZWECCADD.jcl to local tmp folder
       copy:
         src: ZWECCADD.jcl
@@ -30,7 +38,8 @@
   raw: >-
     cat "{{ work_dir_remote }}/ZWECCADD.jcl" | \
     sed -e "s+ZOWEUSER=ZWESVUSR+ZOWEUSER={{ zowe_runtime_user }}+" | \
-    sed -e "s+DSNAME=ZOWE+DSNAME={{ zowe_dataset_prefix }}.CERT.USER+" \
+    sed -e "s+LABEL=AMLCLIENTCERT+LABEL={{ label }}+" | \
+    sed -e "s+DSNAME=ZOWE+DSNAME={{ zowe_dataset_prefix }}.CERT.{{ dataset }}+" \
     > "{{ work_dir_remote }}/ZWECCADD.jcl"
 
 - name: Check ZWECCADD.jcl changes

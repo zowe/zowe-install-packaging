@@ -27,7 +27,6 @@
     - zowe_apiml_catalog_port
     - zowe_apiml_discovery_port
     - zowe_apiml_gateway_port
-    - zowe_apiml_enable_sso
     - zowe_jobs_api_port
     - zowe_mvs_api_port
     - zowe_jobs_explorer_port

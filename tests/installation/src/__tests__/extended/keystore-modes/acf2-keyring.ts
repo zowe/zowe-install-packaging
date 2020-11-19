@@ -13,8 +13,8 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import { 
-  TEST_TIMEOUT_CONVENIENCE_BUILD, 
+import {
+  TEST_TIMEOUT_CONVENIENCE_BUILD,
   KEYSTORE_MODE_KEYRING,
 } from '../../../constants';
 
