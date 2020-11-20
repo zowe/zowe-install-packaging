@@ -76,7 +76,7 @@ describe('verify network-utils', function() {
       const variable_name = 'a_host';
       const variable_value = 'http://www.rubbish.junk';
       const command = `export ${variable_name}="${variable_value}" && ${validate_host_is_resolvable} "${variable_name}"`;
-      const expected_err = `${variable_name} '${variable_value}' does not resolve`
+      const expected_err = `${variable_name} '${variable_value}' does not resolve`;
       await test_network_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
     });
 
