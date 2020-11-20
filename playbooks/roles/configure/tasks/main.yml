@@ -115,7 +115,7 @@
   vars:
     filename: APIML_External_Certificate_Authority.p12
     method: sftp
-  when: zowe_apiml_security_x509_enabled == "true"
+  when: zowe_apiml_security_x509_enabled
 
 - import_role:
     name: configure
@@ -124,7 +124,7 @@
     certificate: "{{ work_dir_remote }}/USER-cert.cer"
     dataset: USER
     label: API ML Client
-  when: zowe_apiml_security_x509_enabled == "true"
+  when: zowe_apiml_security_x509_enabled
 
 - import_role:
     name: configure
@@ -133,13 +133,13 @@
     certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.pem"
     dataset: JWTSCRT
     label: jwtsecret
-  when: zowe_apiml_security_x509_enabled == "true" and zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+  when:  zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING' and zowe_apiml_security_x509_enabled
 # ============================================================================
 # Setup certificates for keyring (self-signed)
 - import_role:
     name: configure
     tasks_from: setup_keyring_certificates
-  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
+  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING' and zowe_apiml_security_x509_enabled
 
 - import_role:
     name: configure
