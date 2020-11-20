@@ -11,7 +11,7 @@
 const expect = require('chai').expect;
 const sshHelper = require('./ssh-helper');
 
-describe('verify network-utils', function() {
+describe('verify network-utils', function() { //TODO NOW - remove
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
@@ -54,6 +54,32 @@ describe('verify network-utils', function() {
       const expected_err = expected_process ? `Port ${port} is already in use by process ${expected_process}` : '';
       await test_network_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
+  });
+
+  const validate_host_is_resolvable = 'validate_host_is_resolvable';
+  describe(`verify ${validate_host_is_resolvable}`, function() {
+
+    it('test ssh host is resolvable', async function() {
+      const variable_name = 'ssh_host';
+      const command = `export ${variable_name}="${process.env.SSH_HOST}" && ${validate_host_is_resolvable} "${variable_name}"`;
+      await test_network_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+    });
+
+    it('test unset host port is not resolvable', async function() {
+      const variable_name = 'test_unset_variable';
+      const command = `${validate_host_is_resolvable} "${variable_name}"`;
+      const expected_err = `${variable_name} is empty`;
+      await test_network_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
+    });
+
+    it('test junk host port is not resolvable', async function() {
+      const variable_name = 'a_host';
+      const variable_value = 'http://www.rubbish.junk';
+      const command = `export ${variable_name}="${variable_value}" && ${validate_host_is_resolvable} "${variable_name}"`;
+      const expected_err = `${variable_name} '${variable_value}' does not resolve`
+      await test_network_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
+    });
+
   });
 
   async function test_network_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
