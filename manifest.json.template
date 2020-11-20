@@ -92,6 +92,14 @@
        "version": "~1.18.0-PR-939-SNAPSHOT",
        "artifact": "gateway-*.zip"
     },
+    "org.zowe.keyring-utilities": {
+      "version": "1.0.4",
+      "artifact": "keyring-util-*",
+      "target": ".pax/keyring-util/keyring-util",
+      "explode": "false",
+      "flat": "true",
+      "excludePatterns": ["*PR*"]
+   },
     "org.zowe.licenses": {
       "version": "1.10.0"
     }
