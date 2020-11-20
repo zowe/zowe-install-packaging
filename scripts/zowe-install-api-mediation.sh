@@ -7,12 +7,12 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2018, 2020
 ################################################################################
 
 #********************************************************************
 # Expected globals:
-# $JAVA_HOME
+# $INSTALL_DIR
 # $ZOWE_ROOT_DIR
 
 API_MEDIATION_DIR=$ZOWE_ROOT_DIR"/components/api-mediation"
@@ -42,5 +42,18 @@ pax -rf $API_MEDIATION_PAX -ppx
 chmod a+rx "${API_MEDIATION_DIR}"/*.jar 
 chmod -R 751 "${API_MEDIATION_DIR}/bin"
 chmod -R 751 "${API_MEDIATION_DIR}/assets"
+
+explorer_api_list="api-catalog discovery gateway"
+for component_id in ${explorer_api_list}; do
+  cd ${INSTALL_DIR}
+  component_zip=$PWD/$(ls -t ./files/${component_id}-*.zip | head -1)
+  component_dir="${ZOWE_ROOT_DIR}/components/${component_id}"
+  
+  echo "  Installing ${component_zip} into ${component_zip}" >> $LOG_FILE
+  mkdir -p "${component_dir}"
+  cd "${component_dir}"
+  jar -xf "${component_zip}"
+  ${INSTALL_DIR}/scripts/tag-files.sh "${component_dir}" 1>/dev/null
+done
 
 echo "</zowe-api-mediation-install.sh>" >> $LOG_FILE

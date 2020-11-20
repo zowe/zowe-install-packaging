@@ -30,7 +30,6 @@ for component_id in ${explorer_api_list}; do
   cd "${component_dir}"
   jar -xf "${component_zip}"
   ${INSTALL_DIR}/scripts/tag-files.sh "${component_dir}" 1>/dev/null
-  chmod -R 755 "${component_dir}/bin"
 done
 
 echo "</zowe-explorer-api-install.sh>" >> $LOG_FILE

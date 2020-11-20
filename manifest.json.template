@@ -80,14 +80,18 @@
        "explode": "true",
        "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.keyring-utilities": {
-      "version": "1.0.4",
-      "artifact": "keyring-util-*",
-      "target": ".pax/keyring-util/keyring-util",
-      "explode": "false",
-      "flat": "true",
-      "excludePatterns": ["*PR*"]
-   },
+    "org.zowe.apiml.sdk.api-catalog-package": {
+       "version": "~1.18.0-PR-939-SNAPSHOT",
+       "artifact": "api-catalog-*.zip"
+    },
+    "org.zowe.apiml.sdk.discovery-package": {
+       "version": "~1.18.0-PR-939-SNAPSHOT",
+       "artifact": "discovery-*.zip"
+    },
+    "org.zowe.apiml.sdk.gateway-package": {
+       "version": "~1.18.0-PR-939-SNAPSHOT",
+       "artifact": "gateway-*.zip"
+    },
     "org.zowe.licenses": {
       "version": "1.10.0"
     }
