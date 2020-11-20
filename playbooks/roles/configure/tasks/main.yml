@@ -97,7 +97,7 @@
   vars:
     filename: USER-cert.cer
     method: scp
-  when: zowe_apiml_security_x509_enabled
+  when: zowe_apiml_security_x509_enabled == "true"
 # Upload client CA certificate
 # This certificate will be configured in task Add the external CA to the truststore
 - import_role:
@@ -106,7 +106,7 @@
   vars:
     filename: APIML_External_Certificate_Authority.cer
     method: scp
-  when: zowe_apiml_security_x509_enabled
+  when: zowe_apiml_security_x509_enabled == "true"
 # Upload client CA certificate in PKCS12
 # This certificate will be configured in task Add the external CA to the keyring
 - import_role:
@@ -115,7 +115,7 @@
   vars:
     filename: APIML_External_Certificate_Authority.p12
     method: sftp
-  when: zowe_apiml_security_x509_enabled
+  when: zowe_apiml_security_x509_enabled == "true"
 
 - import_role:
     name: configure
@@ -124,7 +124,7 @@
     certificate: "{{ work_dir_remote }}/USER-cert.cer"
     dataset: USER
     label: API ML Client
-  when: zowe_apiml_security_x509_enabled
+  when: zowe_apiml_security_x509_enabled == "true"
 
 - import_role:
     name: configure
@@ -133,7 +133,7 @@
     certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.pem"
     dataset: JWTSCRT
     label: jwtsecret
-  when: zowe_apiml_security_x509_enabled and zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+  when: zowe_apiml_security_x509_enabled == "true" and zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 # ============================================================================
 # Setup certificates for keyring (self-signed)
 - import_role:
@@ -156,11 +156,11 @@
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./apiml_cm.sh
     script_parameters: "--action trust --service-password {{ zowe_keystore_password }} --service-truststore {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore --service-storetype PKCS12 --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
-  when: zowe_apiml_security_x509_enabled and zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+  when: zowe_apiml_security_x509_enabled == "true" and zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
 - name: Add the external CA to the keyring
   raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca CERTAUTH {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password"
-  when: zowe_apiml_security_x509_enabled and zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
+  when: zowe_apiml_security_x509_enabled == "true" and zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
 # ============================================================================
 # Configure Zowe Instance
