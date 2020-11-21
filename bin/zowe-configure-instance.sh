@@ -17,10 +17,11 @@ fi
 
 ZOWE_GROUP=ZWEADMIN
 
-while getopts "c:g:" opt; do
+while getopts "c:g:s" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
     g) ZOWE_GROUP=$OPTARG;;
+    s) SKIP_NODE=1;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -85,6 +86,7 @@ check_existing_instance_for_updates() {
     TEMP_INSTANCE="${TMPDIR:-/tmp}/instance.env"
     cat "${INSTANCE}" | sed -e "s%ROOT_DIR=.*\$%ROOT_DIR=${ZOWE_ROOT_DIR}%" > "${TEMP_INSTANCE}"
     cat "${TEMP_INSTANCE}" > "${INSTANCE}"
+    rm -f "${TEMP_INSTANCE}"
   fi
 
   while read -r line
@@ -136,7 +138,12 @@ TEMPLATE=${ZOWE_ROOT_DIR}/scripts/instance.template.env
 INSTANCE=${INSTANCE_DIR}/instance.env
 
 # Try and work out the variables that we can
-. ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+if [[ ${SKIP_NODE} != 1 ]]
+then
+  . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh
+else
+  . ${ZOWE_ROOT_DIR}/bin/zowe-init.sh -s
+fi
 echo "Ran zowe-init.sh from ${ZOWE_ROOT_DIR}/bin/zowe-init.sh" >> $LOG_FILE
 
 # Check if instance .env already exists

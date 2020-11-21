@@ -13,5 +13,5 @@
 # test playbooks
 test*
 
-# marist hosts
-host_vars/marist-*.yml
+# ignore some hosts
+host_vars/vm30101.yml
