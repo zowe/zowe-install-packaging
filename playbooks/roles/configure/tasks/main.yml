@@ -97,7 +97,6 @@
   vars:
     filename: USER-cert.cer
     method: scp
-
 # Upload client CA certificate
 # This certificate will be configured in task Add the external CA to the truststore
 - import_role:
@@ -130,8 +129,8 @@
   vars:
     certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.pem"
     dataset: JWTSCRT
-    label: jwtsecret
-  when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+    label: "{{ zowe_token_label }}"
+  when:  zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 # ============================================================================
 # Setup certificates for keyring (self-signed)
 - import_role:
@@ -141,7 +140,7 @@
 
 - import_role:
     name: configure
-    tasks_from: configure_sso_token.yml
+    tasks_from: configure_sso_token
   when: zowe_apiml_security_x509_enabled and zos_security_system == 'RACF'
 
 # ============================================================================
