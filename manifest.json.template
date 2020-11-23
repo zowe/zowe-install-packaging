@@ -73,13 +73,6 @@
     "org.zowe.explorer-ui-server": {
       "version": "~0.2.0-STAGING"
     },
-    "org.zowe.apiml.sdk.zowe-install": {
-       "version": "~1.18.0-SNAPSHOT",
-       "artifact": "zowe-install-*.zip",
-       "target": ".pax/mediation/",
-       "explode": "true",
-       "excludePatterns": ["*PR*.zip"]
-    },
     "org.zowe.apiml.sdk.api-catalog-package": {
        "version": "~1.18.0-PR-939-SNAPSHOT",
        "artifact": "api-catalog-*.zip"
@@ -91,6 +84,10 @@
     "org.zowe.apiml.sdk.gateway-package": {
        "version": "~1.18.0-PR-939-SNAPSHOT",
        "artifact": "gateway-*.zip"
+    },
+        "org.zowe.apiml.sdk.gateway-package": {
+       "version": "~1.18.0-PR-939-SNAPSHOT",
+       "artifact": "caching-service-*.zip"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
