@@ -85,7 +85,7 @@
        "version": "~1.18.0-PR-939-SNAPSHOT",
        "artifact": "gateway-*.zip"
     },
-        "org.zowe.apiml.sdk.gateway-package": {
+    "org.zowe.apiml.sdk.caching-service-package": {
        "version": "~1.18.0-PR-939-SNAPSHOT",
        "artifact": "caching-service-*.zip"
     },
