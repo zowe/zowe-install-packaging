@@ -21,7 +21,7 @@ echo "<zowe-explorer-components.sh>" >> $LOG_FILE
 component_list="jobs-api files-api api-catalog discovery gateway caching-service"
 for component_id in ${component_list}; do
   cd ${INSTALL_DIR}
-  component_zip=$PWD/$(ls -t ./files/${component_id}-*.zip | head -1)
+  component_zip=$PWD/$(ls -t ./files/${component_id}*.zip | head -1)
   component_dir="${ZOWE_ROOT_DIR}/components/${component_id}"
   
   echo "  Installing ${component_zip} into ${component_zip}" >> $LOG_FILE
