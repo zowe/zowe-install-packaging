@@ -105,6 +105,18 @@
 
 - name: Wait for APIML Caching service to be available
   uri:
+    url: "https://{{ zowe_external_domain_name }}:{{ zowe_caching_service_port }}/cachingservice/api/v1/cache"
+    follow_redirects: none
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  delegate_to: localhost
+
+- name: Wait for APIML Caching service via Gateway to be available
+  uri:
     url: "https://{{ zowe_external_domain_name }}:{{ zowe_apiml_gateway_port }}/api/v1/cachingservice/cache"
     follow_redirects: none
     method: GET
