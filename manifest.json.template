@@ -56,10 +56,10 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.3-USERS-STEVENH-RENAME-OUTPUT"
     },
     "org.zowe.explorer.files": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.3-USERS-STEVENH-RENAME-OUTPUT"
     },
     "org.zowe.explorer-jes": {
       "version": "~1.0.0-STAGING"

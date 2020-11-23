@@ -127,13 +127,10 @@ cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
 chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
 
 # Install the API Mediation Layer
-. $INSTALL_DIR/scripts/zowe-install-api-mediation.sh
+. $INSTALL_DIR/scripts/zowe-install-components.sh
 
 # Install the zLUX server
 . $INSTALL_DIR/scripts/zowe-install-zlux.sh
-
-# Install the Explorer API
-. $INSTALL_DIR/scripts/zowe-install-explorer-api.sh
 
 # Install Explorer UI plugins
 . $INSTALL_DIR/scripts/zowe-install-explorer-ui.sh
