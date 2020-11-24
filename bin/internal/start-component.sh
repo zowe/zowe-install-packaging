@@ -13,42 +13,42 @@
 ################################################################################
 # This script will start a Zowe component.
 #
-# This script take one parameter as component ID. For backward compatible purpose,
-# the parameter can also be a directory to the component lifecycle script folder.
+# This script take these parameters
+# - c:    INSTANCE_DIR
+# - t:    one component ID. For backward compatible purpose, the parameter can
+#         also be a directory to the component lifecycle script folder.
 #
 # Zowe Launcher may use this script to start a component, so there may no any
 # environment variables prepared.
 #
 # For example:
-# $ bin/internal/start-component.sh "discovery"
+# $ bin/internal/start-component.sh \
+#        -c "/path/to/my/zowe/instance" \
+#        -t "discovery"
 ################################################################################
 
-LAUNCH_COMPONENT=$0
+# if the user passes INSTANCE_DIR from command line parameter "-c"
+while getopts "c:t:" opt; do
+  case $opt in
+    c) INSTANCE_DIR=$OPTARG;;
+    t) LAUNCH_COMPONENT=$OPTARG;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
 
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd) #we are in <ROOT_DIR>/bin/internal/run-zowe.sh
-# reload environment if not loaded
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh
+########################################################
+# prepare environment variables
+export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
 
-# find component lifecycle scripts directory
-component_lifecycle_dir=
-if [ -d "${LAUNCH_COMPONENT}" ]; then
-  component_lifecycle_dir=$LAUNCH_COMPONENT
-else
-  if [ -d "${ROOT_DIR}/components/${LAUNCH_COMPONENT}" ]; then
-    # this is a Zowe build-in component
-    if [ -d "${ROOT_DIR}/components/${LAUNCH_COMPONENT}/bin" ]; then
-      component_lifecycle_dir="${ROOT_DIR}/components/${LAUNCH_COMPONENT}/bin"
-    fi
-  elif [ ! -z "${ZWE_EXTENSION_DIR}" ]; then
-    if [ -d "${ZWE_EXTENSION_DIR}/${LAUNCH_COMPONENT}" ]; then
-      # this is an extension installed/linked in ZWE_EXTENSION_DIR
-      if [ -d "${ZWE_EXTENSION_DIR}/${LAUNCH_COMPONENT}/bin" ]; then
-        component_lifecycle_dir="${ZWE_EXTENSION_DIR}/${LAUNCH_COMPONENT}/bin"
-      fi
-    fi
-  fi
-fi
-
-if [ ! -z "${component_lifecycle_dir}" -a -f "${component_lifecycle_dir}/start.sh" ]; then
-  . ${LAUNCH_COMPONENT}/start.sh
+########################################################
+# find component root directory and execute start script
+component_dir=$(find_component_directory "${LAUNCH_COMPONENT}")
+# FIXME: change here to read manifest `commands.start` entry
+START_SCRIPT=${component_dir}/bin/start.sh
+if [ ! -z "${component_dir}" -a -x "${START_SCRIPT}" ]; then
+  . ${START_SCRIPT}
 fi

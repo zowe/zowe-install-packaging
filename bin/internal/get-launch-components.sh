@@ -15,9 +15,28 @@
 #
 # These environment variables should have already been loaded:
 # - INSTANCE_DIR
-# - ROOT_DIR
-# - <Anything else defined in instance.env and zowe-certificates.env>
+#
+# Note: the INSTANCE_DIR can be predefined as global variable, or can be passed
+#       from command line "-c" parameter.
 ################################################################################
 
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh
+# if the user passes INSTANCE_DIR from command line parameter "-c"
+while getopts "c:" opt; do
+  case $opt in
+    c) INSTANCE_DIR=$OPTARG;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# validate INSTANCE_DIR which is required
+if [[ -z ${INSTANCE_DIR} ]]; then
+  echo "INSTANCE_DIR is not defined. You can either pass the value with -c parameter or define it as global environment variable." >&2
+  exit 1
+fi
+
+# suppress any output to make sure this script only output LAUNCH_COMPONENTS
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" 1> /dev/null 2>&1
 echo "${LAUNCH_COMPONENTS}"

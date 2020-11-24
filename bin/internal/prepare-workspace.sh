@@ -13,40 +13,70 @@
 ################################################################################
 # This script will run component `validate` and `configure` step if they are defined.
 #
-# This script take one parameter which is a list of component IDs separated by comma.
+# This script take these parameters
+# - c:    INSTANCE_DIR
+# - t:    a list of component IDs separated by comma
 #
 # For example:
-# $ bin/internal/prepare-workspace.sh "discovery,explorer-jes,jobs"
+# $ bin/internal/prepare-workspace.sh \
+#        -c "/path/to/my/zowe/instance" \
+#        -t "discovery,explorer-jes,jobs"
 ################################################################################
 
-# this script only take one parameter
-LAUNCH_COMPONENTS=$1
+# if the user passes INSTANCE_DIR from command line parameter "-c"
+while getopts "c:t:" opt; do
+  case $opt in
+    c) INSTANCE_DIR=$OPTARG;;
+    t) LAUNCH_COMPONENTS=$OPTARG;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
 
+########################################################
+# prepare environment variables
+export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
+
+########################################################
 # Validate component properties if script exists
 ERRORS_FOUND=0
-for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for component_id in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-
-  VALIDATE_SCRIPT=${LAUNCH_COMPONENT}/validate.sh
-  if [[ -x ${VALIDATE_SCRIPT} ]]
-  then
+  component_dir=$(find_component_directory "${component_id}")
+  # FIXME: change here to read manifest `commands.validate` entry
+  VALIDATE_SCRIPT=${component_dir}/bin/validate.sh
+  if [ ! -z "${component_dir}" -a -x "${VALIDATE_SCRIPT}" ]; then
     . ${VALIDATE_SCRIPT}
     retval=$?
     let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
   fi
 done
-
+# exit if there are errors found
 checkForErrorsFound
 
-if [[ "${VALIDATE_ONLY}" == "true" ]]
-then
-  echo "Validation complete - VALIDATE_ONLY mode set to true, so Zowe will not start."
-  exit $ERRORS_FOUND
-fi
-
-mkdir -p ${WORKSPACE_DIR}/backups
+########################################################
+# Prepare workspace directory
+mkdir -p ${WORKSPACE_DIR}
 # Make accessible to group so owning user can edit?
 chmod -R 771 ${WORKSPACE_DIR}
+
+# Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
+cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
+
+# Keep config dir for zss within permissions it accepts
+# FIXME: this should be moved to zlux/bin/configure.sh
+if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
+then
+  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
+  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/*
+fi
+
+########################################################
+# Prepare workspace directory - manage active_configuration.cfg
+mkdir -p ${WORKSPACE_DIR}/backups
 
 #Backup previous directory if it exists
 if [[ -f ${WORKSPACE_DIR}"/active_configuration.cfg" ]]
@@ -55,18 +85,18 @@ then
   mv ${WORKSPACE_DIR}/active_configuration.cfg ${WORKSPACE_DIR}/backups/backup_configuration.${PREVIOUS_DATE}.cfg
 fi
 
-# Keep config dir for zss within permissions it accepts
-if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
-then
-  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
-  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/*
-fi
-
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
 ZOWE_VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 cp ${INSTANCE_DIR}/instance.env ${WORKSPACE_DIR}/active_configuration.cfg
+echo <<EOF >> ${WORKSPACE_DIR}/active_configuration.cfg
+
+# === zowe-certificates.env
+EOF
+cat ${KEYSTORE_DIRECTORY}/zowe-certificates.env >> ${WORKSPACE_DIR}/active_configuration.cfg
 cat <<EOF >> ${WORKSPACE_DIR}/active_configuration.cfg
+
+# === extra information
 VERSION=${ZOWE_VERSION}
 CREATION_DATE=${NOW}
 ROOT_DIR=${ROOT_DIR}
@@ -74,16 +104,14 @@ STATIC_DEF_CONFIG_DIR=${STATIC_DEF_CONFIG_DIR}
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}
 EOF
 
-
-# Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
-cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
-
+########################################################
 # Run setup/configure on components if script exists
-for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for component_id in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
-  CONFIGURE_SCRIPT=${LAUNCH_COMPONENT}/configure.sh
-  if [[ -f ${CONFIGURE_SCRIPT} ]]
-  then
+  component_dir=$(find_component_directory "${component_id}")
+  # FIXME: change here to read manifest `commands.configure` entry
+  CONFIGURE_SCRIPT=${component_dir}/bin/configure.sh
+  if [ ! -z "${component_dir}" -a -x "${CONFIGURE_SCRIPT}" ]; then
     . ${CONFIGURE_SCRIPT}
   fi
 done

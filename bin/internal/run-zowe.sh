@@ -14,8 +14,7 @@
 # This script will start Zowe.
 ################################################################################
 
-# If -v passed in any validation failure result in the script exiting, other they are logged and continue
-while getopts "c:v" opt; do
+while getopts "c:" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
     \?)
@@ -25,25 +24,18 @@ while getopts "c:v" opt; do
   esac
 done
 
-if [[ -z ${INSTANCE_DIR} ]]
-then
-  echo "-c parameter not set. Please re-launch ensuring the INSTANCE paramater is passed into the job"
-  exit 1
-fi
-
 # export this to other scripts
 export INSTANCE_DIR
-# find runtime directory
+# find runtime directory to locate the scripts
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh
-. ${ROOT_DIR}/bin/internal/global-validate.sh
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
+. ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}"
 
-LAUNCH_COMPONENTS=$(${ROOT_DIR}/bin/internal/get-launch-components.sh)
-. ${ROOT_DIR}/bin/internal/prepare-workspace.sh "${LAUNCH_COMPONENTS}"
+LAUNCH_COMPONENTS=$(${ROOT_DIR}/bin/internal/get-launch-components.sh -c "${INSTANCE_DIR}")
+. ${ROOT_DIR}/bin/internal/prepare-workspace.sh -c "${INSTANCE_DIR}" -t "${LAUNCH_COMPONENTS}"
 
 # FIXME: Zowe Launcher can take responsibility from here
-for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
-do
-  . ${ROOT_DIR}/bin/internal/start-component.sh "${LAUNCH_COMPONENTS}" &
+for LAUNCH_COMPONENT in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g"); do
+  . ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -t "${LAUNCH_COMPONENTS}" &
 done
