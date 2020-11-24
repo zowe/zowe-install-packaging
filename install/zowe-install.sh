@@ -62,7 +62,7 @@ mkdir -p $TEMP_DIR
 chmod a+rwx $TEMP_DIR 
 
 # Source main utils script
-. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+. ${INSTALL_DIR}/bin/utils/utils.sh
 
 if [[ -z "$INSTALL_TARGET" ]]
 then
