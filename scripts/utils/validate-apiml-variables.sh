@@ -15,8 +15,6 @@
 # - KEY_ALIAS - The alias of the key within the keystore
 
 . ${ROOT_DIR}/bin/utils/utils.sh
-validate_variable_is_set "KEYSTORE"
-validate_variable_is_set "KEYSTORE_PASSWORD"
-validate_variable_is_set "KEY_ALIAS"
+validate_variables_are_set "KEYSTORE KEYSTORE_PASSWORD KEY_ALIAS"
 
 validate_directory_is_writable ${STATIC_DEF_CONFIG_DIR}
