@@ -46,6 +46,8 @@ ERRORS_FOUND=0
 for component_id in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
+  # backward compatible purpose, some may expect this variable to be component lifecycle directory
+  export LAUNCH_COMPONENT="${component_dir}/bin"
   # FIXME: change here to read manifest `commands.validate` entry
   VALIDATE_SCRIPT=${component_dir}/bin/validate.sh
   if [ ! -z "${component_dir}" -a -x "${VALIDATE_SCRIPT}" ]; then
@@ -89,7 +91,7 @@ fi
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
 ZOWE_VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 cp ${INSTANCE_DIR}/instance.env ${WORKSPACE_DIR}/active_configuration.cfg
-echo <<EOF >> ${WORKSPACE_DIR}/active_configuration.cfg
+cat <<EOF >> ${WORKSPACE_DIR}/active_configuration.cfg
 
 # === zowe-certificates.env
 EOF
@@ -109,6 +111,8 @@ EOF
 for component_id in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
+  # backward compatible purpose, some may expect this variable to be component lifecycle directory
+  export LAUNCH_COMPONENT="${component_dir}/bin"
   # FIXME: change here to read manifest `commands.configure` entry
   CONFIGURE_SCRIPT=${component_dir}/bin/configure.sh
   if [ ! -z "${component_dir}" -a -x "${CONFIGURE_SCRIPT}" ]; then

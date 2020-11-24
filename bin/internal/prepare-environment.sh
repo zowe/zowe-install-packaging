@@ -32,7 +32,7 @@ set -a
 
 if [ "${ZWE_ENVIRONMENT_PREPARED}" = "true" ]; then
   # environment variables are already prepared, skip running
-  exit 0
+  return 0
 fi
 
 # initialize flag variable to avoid re-run this script
@@ -165,13 +165,13 @@ find_component_directory() {
       fi
     fi
   else
-    if [ -d "${ROOT_DIR}/components/${component}" ]; then
+    if [ -d "${ROOT_DIR}/components/${component_id}" ]; then
       # this is a Zowe build-in component
-      component_dir="${ROOT_DIR}/components/${component}"
+      component_dir="${ROOT_DIR}/components/${component_id}"
     elif [ ! -z "${ZWE_EXTENSION_DIR}" ]; then
-      if [ -d "${ZWE_EXTENSION_DIR}/${component}" ]; then
+      if [ -d "${ZWE_EXTENSION_DIR}/${component_id}" ]; then
         # this is an extension installed/linked in ZWE_EXTENSION_DIR
-        component_dir="${ZWE_EXTENSION_DIR}/${component}"
+        component_dir="${ZWE_EXTENSION_DIR}/${component_id}"
       fi
     fi
   fi

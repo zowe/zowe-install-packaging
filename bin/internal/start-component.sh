@@ -47,6 +47,8 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 ########################################################
 # find component root directory and execute start script
 component_dir=$(find_component_directory "${LAUNCH_COMPONENT}")
+# backward compatible purpose, some may expect this variable to be component lifecycle directory
+export LAUNCH_COMPONENT="${component_dir}/bin"
 # FIXME: change here to read manifest `commands.start` entry
 START_SCRIPT=${component_dir}/bin/start.sh
 if [ ! -z "${component_dir}" -a -x "${START_SCRIPT}" ]; then
