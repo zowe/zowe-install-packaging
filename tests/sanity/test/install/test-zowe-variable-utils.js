@@ -66,7 +66,7 @@ describe('verify zowe-variable-utils', function() {
       const error_list = invalid_variables.map((variable, index) => {
         return `Error ${index}: ${variable} is empty`;
       });
-      expected_err = error_list.join('\n');
+      const expected_err = error_list.join('\n');
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
   });
