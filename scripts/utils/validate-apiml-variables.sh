@@ -14,10 +14,9 @@
 # - KEYSTORE_PASSWORD - The password to access the keystore supplied by KEYSTORE
 # - KEY_ALIAS - The alias of the key within the keystore
 
-. ${ROOT_DIR}/bin/utils/zowe-variable-utils.sh
+. ${ROOT_DIR}/bin/utils/utils.sh
 validate_variable_is_set "KEYSTORE"
 validate_variable_is_set "KEYSTORE_PASSWORD"
 validate_variable_is_set "KEY_ALIAS"
 
-. ${ROOT_DIR}/bin/utils/file-utils.sh
 validate_directory_is_writable ${STATIC_DEF_CONFIG_DIR}

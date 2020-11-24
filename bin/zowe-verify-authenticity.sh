@@ -126,10 +126,11 @@ then
     refPath=$(cd `dirname $0`;cd ../fingerprint || exit;pwd)
 fi
 
+# Source main utils script
+. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+
 # Create log
-. ${runtimePath}/bin/utils/setup-log-dir.sh
 ROOT_DIR=${runtimePath} # tell sourced script its location
-. ${runtimePath}/bin/utils/file-utils.sh
 set_install_log_directory "${outputPath}"
 outputPath=$LOG_DIRECTORY # set_install_log_directory sets its result in $LOG_DIRECTORY
 validate_log_file_not_in_root_dir "${outputPath}" "${runtimePath}"
@@ -212,7 +213,6 @@ then
 fi 
 
 # Checking java version
-. ${runtimePath}/bin/utils/java-utils.sh
 prompt_java_home_if_required
 
 echo Info: Calculating hashes ... | tee -a $LOG_FILE

@@ -10,7 +10,7 @@
 
 const sshHelper = require('./ssh-helper');
 
-describe('verify zowe-variable-utils', function() {
+describe('verify zowe-variable-utils', function() { //TODO NOW - remove only
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
