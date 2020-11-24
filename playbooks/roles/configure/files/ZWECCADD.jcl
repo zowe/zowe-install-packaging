@@ -22,6 +22,9 @@
 //*      * Name of the data set containing Zowe's certificate (PKCS12)
 //         SET   DSNAME=ZOWE
 //*
+//*      * Zowe's certificate Label (PKCS12)
+//         SET   LABEL=AMLCLIENTCERT
+//*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //         SET   STCGRP=          * group for Zowe started tasks
 //*                     12345678
@@ -44,7 +47,7 @@
 ACF
   SET PROFILE(USER) DIV(CERTDATA)
   INSERT &ZOWEUSER..ZOWECC DSNAME('&DSNAME.') +
-          LABEL(AMLCLIENTCERT) TRUST
+          LABEL(&LABEL.) TRUST
   CHKCERT &ZOWEUSER..ZOWECC
 $$
 //*
