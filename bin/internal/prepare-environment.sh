@@ -27,13 +27,13 @@
 # Note: this script could be called multiple times during start up.
 ################################################################################
 
-# export all variables defined in this script automatically
-set -a
-
 if [ "${ZWE_ENVIRONMENT_PREPARED}" = "true" ]; then
   # environment variables are already prepared, skip running
   return 0
 fi
+
+# export all variables defined in this script automatically
+set -a
 
 # initialize flag variable to avoid re-run this script
 ZWE_ENVIRONMENT_PREPARED=
@@ -192,3 +192,6 @@ checkForErrorsFound() {
 
 # set flag so we don't need to re-run this script
 ZWE_ENVIRONMENT_PREPARED=true
+
+# turn off automatic export
+set +a
