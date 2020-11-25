@@ -32,63 +32,53 @@ let assertStatusNoContent = (response) => {
 
 let getToken = async () => {
   const uuid = testUtils.uuid();
-  testUtils.log(uuid, 'ZOWE_CACHING_SERVICE_START value ' + process.env.ZOWE_CACHING_SERVICE_START);
+  testUtils.log(uuid, 'ZOWE_CACHING_SERVICE_START value: ' + process.env.ZOWE_CACHING_SERVICE_START);
   return await testUtils.login(uuid);
 };
 
 describe('test caching service via gateway', function() {
-  before('verify environment variables', function () {
-    if (process.env.ZOWE_CACHING_SERVICE_START !== undefined && process.env.ZOWE_CACHING_SERVICE_START == 'false') {
-      this.skip();
-    }
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    request = testUtils.verifyAndSetupEnvironment();
-  });
+  if (process.env.ZOWE_CACHING_SERVICE_START !== undefined && process.env.ZOWE_CACHING_SERVICE_START == 'true') {
+    before('verify environment variables', function () {
+      // allow self signed certs
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+      request = testUtils.verifyAndSetupEnvironment();
+    });
 
-  describe('should be able to use caching service ', () => {
-    it('to store a key', async () => {
-      authenticationCookie = await getToken();
-      const response = await request.post(CACHING_PATH, {
-        key, value
-      },
-      {
-        headers: {
-          'Cookie': authenticationCookie,
-          'X-CSRF-ZOSMF-HEADER': '*'
-        }
+    describe('should be able to use caching service ', () => {
+      it('to store a key', async () => {
+        authenticationCookie = await getToken();
+        const response = await request.post(CACHING_PATH, {
+          key, value
+        },
+        {
+          headers: {
+            'Cookie': authenticationCookie,
+            'X-CSRF-ZOSMF-HEADER': '*'
+          }
+        });
+
+        assertStatusCodeCreated(response);
       });
 
-      assertStatusCodeCreated(response);
-    });
+      it('to get a key', async () => {
+        authenticationCookie = await getToken();
+        const response = await request.get(CACHING_PATH + '/' + key,
+          {
+            headers: {
+              'Cookie': authenticationCookie,
+              'X-CSRF-ZOSMF-HEADER': '*'
+            }
+          });
 
-    it('to get a key', async () => {
-      authenticationCookie = await getToken();
-      const response = await request.get(CACHING_PATH + '/' + key,
-        {
-          headers: {
-            'Cookie': authenticationCookie,
-            'X-CSRF-ZOSMF-HEADER': '*'
-          }
-        });
-
-      assertStatusCodeOk(response);
-    });
-
-    it('to update the key value', async () => {
-      authenticationCookie = await getToken();
-      value = 'newKey';
-      await request.put(CACHING_PATH, {
-        key, value
-      },
-      {
-        headers: {
-          'Cookie': authenticationCookie,
-          'X-CSRF-ZOSMF-HEADER': '*'
-        }
+        assertStatusCodeOk(response);
       });
 
-      const response = await request.get(CACHING_PATH + '/' + key,
+      it('to update the key value', async () => {
+        authenticationCookie = await getToken();
+        value = 'newKey';
+        await request.put(CACHING_PATH, {
+          key, value
+        },
         {
           headers: {
             'Cookie': authenticationCookie,
@@ -96,20 +86,29 @@ describe('test caching service via gateway', function() {
           }
         });
 
-      assertStatusCodeOk(response);
-    });
+        const response = await request.get(CACHING_PATH + '/' + key,
+          {
+            headers: {
+              'Cookie': authenticationCookie,
+              'X-CSRF-ZOSMF-HEADER': '*'
+            }
+          });
 
-    it('to delete the key', async () => {
-      authenticationCookie = await getToken();
-      const response = await request.delete(CACHING_PATH + '/' + key,
-        {
-          headers: {
-            'Cookie': authenticationCookie,
-            'X-CSRF-ZOSMF-HEADER': '*'
-          }
-        });
+        assertStatusCodeOk(response);
+      });
 
-      assertStatusNoContent(response);
+      it('to delete the key', async () => {
+        authenticationCookie = await getToken();
+        const response = await request.delete(CACHING_PATH + '/' + key,
+          {
+            headers: {
+              'Cookie': authenticationCookie,
+              'X-CSRF-ZOSMF-HEADER': '*'
+            }
+          });
+
+        assertStatusNoContent(response);
+      });
     });
-  });
+  }
 });
