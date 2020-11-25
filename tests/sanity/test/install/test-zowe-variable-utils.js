@@ -61,7 +61,7 @@ describe('verify zowe-variable-utils', function() {
     });
 
     async function test_validate_variables_set(variables_list, invalid_variables) {
-      const command = `${validate_variables_are_set} "${variables_list.join(' ')}"`;
+      const command = `${validate_variables_are_set} "${variables_list.join()}"`;
       const expected_rc = invalid_variables.length;
       const error_list = invalid_variables.map((variable, index) => {
         return `Error ${index}: ${variable} is empty`;

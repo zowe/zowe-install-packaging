@@ -46,7 +46,7 @@ validate_variable_is_set() {
 # Takes in a list of space separated names of the variables
 validate_variables_are_set() {
   invalid=0
-  for var in $1
+  for var in $(echo $1 | sed "s/,/ /g")
   do
     validate_variable_is_set "${var}"
     valid_rc=$?
