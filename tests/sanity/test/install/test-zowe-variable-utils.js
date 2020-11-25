@@ -35,9 +35,38 @@ describe('verify zowe-variable-utils', function() {
     });
 
     async function test_validate_variable_set(variable_name, expected_valid) {
-      const command = `${validate_variable_is_set} "${variable_name}" "\${${variable_name}}"`;
+      const command = `${validate_variable_is_set} "${variable_name}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_err = expected_valid ? '' : `${variable_name} is empty`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+    }
+  });
+
+  const validate_variables_are_set = 'validate_variables_are_set';
+  describe(`verify ${validate_variables_are_set}`, function() {
+
+    it('test single set variable works', async function() {
+      const input = ['HOME'];
+      await test_validate_variables_set(input, []);
+    });
+
+    it('test one set and one unset variable gives a single error', async function() {
+      const variable_list = ['HOME', 'test_unset_variable'];
+      await test_validate_variables_set(variable_list, ['test_unset_variable']);
+    });
+
+    it('test two unset variable gives two errors', async function() {
+      const variable_list = ['test_unset_variable1', 'test_unset_variable2'];
+      await test_validate_variables_set(variable_list, variable_list);
+    });
+
+    async function test_validate_variables_set(variables_list, invalid_variables) {
+      const command = `${validate_variables_are_set} "${variables_list.join()}"`;
+      const expected_rc = invalid_variables.length;
+      const error_list = invalid_variables.map((variable, index) => {
+        return `Error ${index}: ${variable} is empty`;
+      });
+      const expected_err = error_list.join('\n');
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
   });

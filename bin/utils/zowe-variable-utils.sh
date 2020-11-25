@@ -43,6 +43,21 @@ validate_variable_is_set() {
   fi
 }
 
+# Takes in a list of space separated names of the variables
+validate_variables_are_set() {
+  invalid=0
+  for var in $(echo $1 | sed "s/,/ /g")
+  do
+    validate_variable_is_set "${var}"
+    valid_rc=$?
+    if [[ ${valid_rc} -ne 0 ]]
+    then	
+      let "invalid=${invalid}+1"
+    fi
+  done
+  return invalid
+}
+
 # ZOWE_PREFIX + instance - should be <=6 char long and exist.
 # TODO - any lower bound (other than 0)?
 # Requires ZOWE_PREFIX to be set as a shell variable

@@ -63,7 +63,9 @@ fi
 # identify this script
 SCRIPT="$(basename $0)"
 
-. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+# Source main utils script
+. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+
 if [[ -z "${LOG_FILE}" ]]
 then
   set_install_log_directory "${LOG_DIRECTORY}"
