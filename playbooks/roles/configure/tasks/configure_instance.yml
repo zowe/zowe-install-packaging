@@ -60,9 +60,8 @@
     echo "ZWED_agent_jwt_fallback=true" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_enabled=true" >> "{{ zowe_instance_dir }}/instance.env"
 
-# If zowe_apiml_caching_service_start true,
-# caching service is deployed on marist along with the rest of API ML and its sanity tests are run
 - name: Add Caching Service start parameter to instance.env
+  when: zowe_apiml_caching_service_start
   raw: |-
     echo "ZOWE_CACHING_SERVICE_START=true" >> "{{ zowe_instance_dir }}/instance.env"
 
