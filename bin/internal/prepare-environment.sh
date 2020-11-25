@@ -168,7 +168,9 @@ find_component_directory() {hese environment variables should have already been 
 check_for_errors_found() {
   if [[ ${ERRORS_FOUND} > 0 ]]; then
     echo "${ERRORS_FOUND} errors were found during validatation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
-    exit ${ERRORS_FOUND}
+    if [ ! "${ZWE_IGNORE_VALIDATION_ERRORS}" = "true" ]; then
+      exit ${ERRORS_FOUND}
+    fi
   fi
 }
 
