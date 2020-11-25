@@ -106,6 +106,10 @@ else
   if [[ $LAUNCH_COMPONENT_GROUPS == *"GATEWAY"* ]]
   then
     LAUNCH_COMPONENTS=discovery,gateway,api-catalog,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
+    if [[ ! -z ${ZOWE_CACHING_SERVICE_START} && ${ZOWE_CACHING_SERVICE_START} == true ]]
+    then
+      LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},caching-service
+    fi
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
