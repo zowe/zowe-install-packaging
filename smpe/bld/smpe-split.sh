@@ -104,7 +104,6 @@ list="$list components/api-mediation/api-catalog-services.jar"  # pax01
 list="$list components/api-mediation/discoverable-client.jar"   # pax02
 list="$list components/api-mediation/discovery-service.jar"     # pax03
 list="$list components/api-mediation/gateway-service.jar"       # pax04
-list="$list components/api-mediation/caching-service.jar"       # pax05
 list="$list components/app-server"                              # pax06
 list="$list components/files-api"                               # pax07
 list="$list components/jobs-api"                                # pax08
