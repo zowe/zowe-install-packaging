@@ -61,8 +61,8 @@ fi
 mkdir -p $TEMP_DIR
 chmod a+rwx $TEMP_DIR 
 
-. ${INSTALL_DIR}/bin/utils/setup-log-dir.sh
-. ${INSTALL_DIR}/bin/utils/file-utils.sh #source this here as setup-log-dir can't get it from root as it isn't install yet
+# Source main utils script
+. ${INSTALL_DIR}/bin/utils/utils.sh
 
 if [[ -z "$INSTALL_TARGET" ]]
 then

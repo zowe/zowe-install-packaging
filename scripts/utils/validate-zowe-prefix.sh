@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-# PLEASE NOTE - this is script is planned for removal - please use zowe-variable-utils.sh instead
+# PLEASE NOTE - this is script is planned for removal - please use bin/utils/utils.sh instead
 
-. ${ROOT_DIR}/bin/utils/zowe-variable-utils.sh
+. ${ROOT_DIR}/bin/utils/utils.sh
 validate_zowe_prefix
