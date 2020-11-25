@@ -15,7 +15,8 @@
 #
 # This script take these parameters
 # - c:    INSTANCE_DIR
-# - t:    a list of component IDs separated by comma
+# - t:    a list of component IDs or paths to component lifecycle script directory
+#         separated by comma
 #
 # For example:
 # $ bin/internal/prepare-workspace.sh \
@@ -25,11 +26,11 @@
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
 while getopts "c:t:" opt; do
-  case $opt in
-    c) INSTANCE_DIR=$OPTARG;;
-    t) LAUNCH_COMPONENTS=$OPTARG;;
+  case ${opt} in
+    c) INSTANCE_DIR=${OPTARG};;
+    t) LAUNCH_COMPONENTS=${OPTARG};;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -${OPTARG}" >&2
       exit 1
       ;;
   esac
@@ -43,21 +44,21 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 ########################################################
 # Validate component properties if script exists
 ERRORS_FOUND=0
-for component_id in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
   # FIXME: change here to read manifest `commands.validate` entry
-  VALIDATE_SCRIPT=${component_dir}/bin/validate.sh
-  if [ ! -z "${component_dir}" -a -x "${VALIDATE_SCRIPT}" ]; then
-    . ${VALIDATE_SCRIPT}
+  validate_script=${component_dir}/bin/validate.sh
+  if [ ! -z "${component_dir}" -a -x "${validate_script}" ]; then
+    . ${validate_script}
     retval=$?
-    let "ERRORS_FOUND=$ERRORS_FOUND+$retval"
+    let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
   fi
 done
 # exit if there are errors found
-checkForErrorsFound
+check_for_errors_found
 
 ########################################################
 # Prepare workspace directory
@@ -69,7 +70,9 @@ chmod -R 771 ${WORKSPACE_DIR}
 cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
 # Keep config dir for zss within permissions it accepts
-# FIXME: this should be moved to zlux/bin/configure.sh
+# FIXME: this should be moved to zlux/bin/configure.sh.
+#        Ideally we want this removed entirely as it stops uses from being able 
+#        to delete the instance directory and can cause errors on upgrade
 if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
 then
   chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
@@ -89,7 +92,7 @@ fi
 
 # Create a new active_configuration.cfg properties file with all the parsed parmlib properties stored in it,
 NOW=$(date +"%y.%m.%d.%H.%M.%S")
-ZOWE_VERSION=$(cat $ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+ZOWE_VERSION=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 cp ${INSTANCE_DIR}/instance.env ${WORKSPACE_DIR}/active_configuration.cfg
 cat <<EOF >> ${WORKSPACE_DIR}/active_configuration.cfg
 
@@ -108,14 +111,14 @@ EOF
 
 ########################################################
 # Run setup/configure on components if script exists
-for component_id in $(echo $LAUNCH_COMPONENTS | sed "s/,/ /g")
+for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
   # FIXME: change here to read manifest `commands.configure` entry
-  CONFIGURE_SCRIPT=${component_dir}/bin/configure.sh
-  if [ ! -z "${component_dir}" -a -x "${CONFIGURE_SCRIPT}" ]; then
-    . ${CONFIGURE_SCRIPT}
+  configure_script=${component_dir}/bin/configure.sh
+  if [ ! -z "${component_dir}" -a -x "${configure_script}" ]; then
+    . ${configure_script}
   fi
 done

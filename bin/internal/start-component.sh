@@ -24,16 +24,16 @@
 # For example:
 # $ bin/internal/start-component.sh \
 #        -c "/path/to/my/zowe/instance" \
-#        -t "discovery"
+#        -o "discovery"
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:t:" opt; do
-  case $opt in
-    c) INSTANCE_DIR=$OPTARG;;
-    t) component_id=$OPTARG;;
+while getopts "c:o:" opt; do
+  case ${opt} in
+    c) INSTANCE_DIR=${OPTARG};;
+    o) component_id=${OPTARG};;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -${OPTARG}" >&2
       exit 1
       ;;
   esac
@@ -50,7 +50,7 @@ component_dir=$(find_component_directory "${component_id}")
 # backward compatible purpose, some may expect this variable to be component lifecycle directory
 export LAUNCH_COMPONENT="${component_dir}/bin"
 # FIXME: change here to read manifest `commands.start` entry
-START_SCRIPT=${component_dir}/bin/start.sh
-if [ ! -z "${component_dir}" -a -x "${START_SCRIPT}" ]; then
-  . ${START_SCRIPT}
+start_script=${component_dir}/bin/start.sh
+if [ ! -z "${component_dir}" -a -x "${start_script}" ]; then
+  . ${start_script}
 fi

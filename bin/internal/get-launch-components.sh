@@ -22,10 +22,10 @@
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
 while getopts "c:" opt; do
-  case $opt in
-    c) INSTANCE_DIR=$OPTARG;;
+  case ${opt} in
+    c) INSTANCE_DIR=${OPTARG};;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -${OPTARG}" >&2
       exit 1
       ;;
   esac

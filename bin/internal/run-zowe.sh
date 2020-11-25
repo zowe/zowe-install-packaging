@@ -15,10 +15,10 @@
 ################################################################################
 
 while getopts "c:" opt; do
-  case $opt in
-    c) INSTANCE_DIR=$OPTARG;;
+  case ${opt} in
+    c) INSTANCE_DIR=${OPTARG};;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -${OPTARG}" >&2
       exit 1
       ;;
   esac
@@ -36,6 +36,6 @@ launch_components_list=$(${ROOT_DIR}/bin/internal/get-launch-components.sh -c "$
 . ${ROOT_DIR}/bin/internal/prepare-workspace.sh -c "${INSTANCE_DIR}" -t "${launch_components_list}"
 
 # FIXME: Zowe Launcher can take responsibility from here
-for component_id in $(echo $launch_components_list | sed "s/,/ /g"); do
-  . ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -t "${component_id}" &
+for component_id in $(echo "${launch_components_list}" | sed "s/,/ /g"); do
+  . ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -o "${component_id}" &
 done
