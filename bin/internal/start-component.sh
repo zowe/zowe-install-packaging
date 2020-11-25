@@ -31,7 +31,7 @@
 while getopts "c:t:" opt; do
   case $opt in
     c) INSTANCE_DIR=$OPTARG;;
-    t) LAUNCH_COMPONENT=$OPTARG;;
+    t) component_id=$OPTARG;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       exit 1
@@ -46,7 +46,7 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 
 ########################################################
 # find component root directory and execute start script
-component_dir=$(find_component_directory "${LAUNCH_COMPONENT}")
+component_dir=$(find_component_directory "${component_id}")
 # backward compatible purpose, some may expect this variable to be component lifecycle directory
 export LAUNCH_COMPONENT="${component_dir}/bin"
 # FIXME: change here to read manifest `commands.start` entry
