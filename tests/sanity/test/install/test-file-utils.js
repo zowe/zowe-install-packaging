@@ -182,7 +182,7 @@ describe('verify file-utils', function() {
       });
   
       async function test_validate_directories_are_accessible(directories_list, invalid_directories) {
-        const command = `${validate_directories_are_accessible} "${directories_list.join(' ')}"`;
+        const command = `${validate_directories_are_accessible} "${directories_list.join()}"`;
         const expected_rc = invalid_directories.length;
         const error_list = invalid_directories.map((directory, index) => {
           return `Error ${index}: ${get_inaccessible_message(directory)}`;
