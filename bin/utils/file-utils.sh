@@ -89,6 +89,20 @@ validate_directory_is_accessible() {
   return 0
 }
 
+validate_directories_are_accessible() {
+  invalid=0
+  for dir in $1
+  do
+    validate_directory_is_accessible "${dir}"
+    valid_rc=$?
+    if [[ ${valid_rc} -ne 0 ]]
+    then	
+      let "invalid=${invalid}+1"
+    fi
+  done
+  return invalid
+}
+
 validate_directory_is_writable() {
   directory=$1
   validate_directory_is_accessible $directory

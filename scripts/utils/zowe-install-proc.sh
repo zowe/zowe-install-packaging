@@ -39,7 +39,9 @@ fi
 # identify this script
 SCRIPT="$(basename $0)"
 
-. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
+# Source main utils script
+. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+
 set_install_log_directory ${LOG_DIRECTORY}
 validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
 set_install_log_file "zowe-install-proc"
