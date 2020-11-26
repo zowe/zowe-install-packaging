@@ -126,7 +126,7 @@ chmod a+rx $ZOWE_ROOT_DIR
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
 chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
 
-# Install the API Mediation Layer
+# Install the Java components
 . $INSTALL_DIR/scripts/zowe-install-components.sh
 
 # Install the zLUX server
