@@ -44,7 +44,7 @@ describe('verify node-utils', function () {
     async function test_node_added_to_path(node_home, expected_addition, path_pre_addition = '') {
       let command = path_pre_addition === '' ? '' : `export PATH=$PATH:${path_pre_addition} && `;
       command += `export NODE_HOME=${node_home} && ${ensure_node_is_on_path}`;
-      const expected_out = expected_addition ? 'Appending NODE_HOME/bin to the PATH...' : '';
+      const expected_out = expected_addition ? 'Prepending NODE_HOME/bin to the PATH...' : '';
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, 0, expected_out, '');
     }
   });
