@@ -75,12 +75,6 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 VERIFY_CERTIFICATES="${ZOWE_APIM_VERIFY_CERTIFICATES}"
 
-# zip #1226 - 1.10 -> 1.9 backward compatibility - default keystore type if not supplied
-if [[ -z ${KEYSTORE_TYPE} ]]
-then
-  KEYSTORE_TYPE="PKCS12"
-fi
-
 LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 
@@ -130,7 +124,7 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 #
 # @param string     component id, or path to component lifecycle scripts
 # Output            component directory will be written to stdout
-find_component_directory() {hese environment variables should have already been loaded
+find_component_directory() {
   component_id=$1
   # find component lifecycle scripts directory
   component_dir=
