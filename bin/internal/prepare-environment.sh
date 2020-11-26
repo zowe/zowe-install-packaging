@@ -114,6 +114,17 @@ fi
 #               root directory.
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
+# source all utility libraries
+. ${ROOT_DIR}/bin/utils/utils.sh
+# FIXME: ideally this should be handled by component configure.sh lifecycle script.
+#        We may require extensions to have these code in comformant program.
+if [ -n "${JAVA_HOME}" ]; then
+  ensure_java_is_on_path
+fi
+if [ -n "${NODE_HOME}" ]; then
+  ensure_node_is_on_path
+fi
+
 ###############################
 # Find component root directory
 #
