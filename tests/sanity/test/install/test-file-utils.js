@@ -165,6 +165,35 @@ describe('verify file-utils', function() {
       await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
 
+    const validate_directories_are_accessible = 'validate_directories_are_accessible';
+    describe(`verify ${validate_directories_are_accessible}`, function() {
+  
+      it('test single accessible directory works', async function() {
+        const input = [home_dir];
+        await test_validate_directories_are_accessible(input, []);
+      });
+  
+      it('test one accessible and one inaccessible directories gives a single error', async function() {
+        const directory_list = [home_dir, '/junk/rubbish/madeup'];
+        await test_validate_directories_are_accessible(directory_list, ['/junk/rubbish/madeup']);
+      });
+  
+      it('test two inaccessible directories gives two errors', async function() {
+        const directory_list = ['/junk/rubbish/madeup', '/junk/rubbish/madeup2'];
+        await test_validate_directories_are_accessible(directory_list, directory_list);
+      });
+  
+      async function test_validate_directories_are_accessible(directories_list, invalid_directories) {
+        const command = `${validate_directories_are_accessible} "${directories_list.join()}"`;
+        const expected_rc = invalid_directories.length;
+        const error_list = invalid_directories.map((directory, index) => {
+          return `Error ${index}: ${get_inaccessible_message(directory)}`;
+        });
+        const expected_err = error_list.join('\n');
+        await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+      }
+    });
+
     it('test home directory is writable', async function() {
       const directory = home_dir;
       await test_validate_directory_is_writable(directory, true);

@@ -10,6 +10,8 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+# This is a single library that sources the other utils to make them easier for extenders to call
+
 # TODO LATER - anyway to do this better?
 # Try and work out where we are even if sourced
 if [[ -n ${INSTALL_DIR} ]]
@@ -21,7 +23,7 @@ then
 elif [[ -n ${ROOT_DIR} ]]
 then
   export utils_dir="${ROOT_DIR}/bin/utils"
-elif [[ $0 == "network-utils.sh" ]] #Not called by source
+elif [[ $0 == "zosmf-utils.sh" ]] #Not called by source
 then
   export utils_dir=$(cd $(dirname $0);pwd)
 else
@@ -29,34 +31,12 @@ else
   return 1
 fi
 
-# Source common util functions
+# Source all util functions
 . ${utils_dir}/common.sh
-
-# $1 - should not be bound to a port currently
-validate_port_is_available() {
-  port=$1
-  netstat_report=$(onetstat -c SERVER -P ${port} | grep Listen)
-  if [[ -n ${netstat_report} ]]
-  then
-    print_error_message "Port ${port} is already in use by process ${netstat_report}"
-    return 1
-  fi
-}
-
-# Takes in a single parameter - the name of the variable
-validate_host_is_resolvable() {
-  variable_name=$1
-  eval "host=\"\$${variable_name}\""
-  if [[ -n "${host}" ]]
-  then 
-      oping ${host} > /dev/null    # check host
-      if [[ $? -ne 0 ]]
-      then    
-          print_error_message "${variable_name} '${host}' does not resolve"
-          return 1
-      fi
-  else 
-      print_error_message "${variable_name} is empty"
-      return 1
-  fi
-}
+. ${utils_dir}/file-utils.sh
+. ${utils_dir}/java-utils.sh
+. ${utils_dir}/network-utils.sh
+. ${utils_dir}/node-utils.sh
+. ${utils_dir}/setup-log-dir.sh
+. ${utils_dir}/zosmf-utils.sh
+. ${utils_dir}/zowe-variable-utils.sh

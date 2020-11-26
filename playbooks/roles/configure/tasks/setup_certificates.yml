@@ -45,3 +45,4 @@
 
 - name: List certificates directory
   raw: ls -l "{{ zowe_keystore_dir }}"
+

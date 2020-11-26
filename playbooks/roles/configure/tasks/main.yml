@@ -27,7 +27,6 @@
     - zowe_apiml_catalog_port
     - zowe_apiml_discovery_port
     - zowe_apiml_gateway_port
-    - zowe_apiml_enable_sso
     - zowe_apiml_allow_encoded_slashes
     - zowe_apiml_cors_enabled
     - zowe_apiml_prefer_ip_address
@@ -87,6 +86,7 @@
     tasks_from: setup_certificates
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
+
 # ============================================================================
 # Setup client certificates
 
@@ -97,8 +97,8 @@
   vars:
     filename: USER-cert.cer
     method: scp
-
 # Upload client CA certificate
+# This certificate will be configured in task Add the external CA to the truststore
 - import_role:
     name: configure
     tasks_from: upload_certificate
@@ -107,6 +107,7 @@
     method: scp
 
 # Upload client CA certificate in PKCS12
+# This certificate will be configured in task Add the external CA to the keyring
 - import_role:
     name: configure
     tasks_from: upload_certificate
@@ -117,14 +118,30 @@
 - import_role:
     name: configure
     tasks_from: configure_client_certificates
+  vars:
+    certificate: "{{ work_dir_remote }}/USER-cert.cer"
+    dataset: USER
+    label: API ML Client
 
-
+- import_role:
+    name: configure
+    tasks_from: configure_client_certificates
+  vars:
+    certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.pem"
+    dataset: JWTSCRT
+    label: "{{ zowe_token_label }}"
+  when:  zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 # ============================================================================
 # Setup certificates for keyring (self-signed)
 - import_role:
     name: configure
     tasks_from: setup_keyring_certificates
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
+
+- import_role:
+    name: configure
+    tasks_from: configure_sso_token
+  when: zowe_apiml_security_x509_enabled and zos_security_system == 'RACF'
 
 # ============================================================================
 # Add external API ML CA to the truststore
@@ -137,7 +154,6 @@
     script_filename: ./apiml_cm.sh
     script_parameters: "--action trust --service-password {{ zowe_keystore_password }} --service-truststore {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore --service-storetype PKCS12 --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
-
 
 - name: Add the external CA to the keyring
   raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca CERTAUTH {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password"

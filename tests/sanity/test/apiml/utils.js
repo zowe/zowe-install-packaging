@@ -12,9 +12,10 @@ const _ = require('lodash');
 const debug = require('debug')('zowe-sanity-test:apiml:gateway');
 const axios = require('axios');
 const expect = require('chai').expect;
-
+const fs = require('fs');
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
+let https = require('https');
 
 
 let login = async (uuid) => {
@@ -23,6 +24,7 @@ let login = async (uuid) => {
     username, password
   });
 
+function validateResponse(uuid, response) {
   logResponse(uuid, response);
 
   // Validate the response at least basically
@@ -30,6 +32,30 @@ let login = async (uuid) => {
   expect(response.headers).to.be.an('object');
   expect(response.headers).to.have.property('set-cookie');
   expect(response.data).to.be.empty;
+}
+
+let login = async (uuid) => {
+  log(uuid, 'URL: /api/v1/gateway/auth/login');
+  let response = await request.post('/api/v1/gateway/auth/login', {
+    username, password
+  });
+
+  validateResponse(uuid, response);
+
+  return findCookieInResponse(response, APIML_AUTH_COOKIE);
+};
+
+let loginWithCertificate = async (uuid) => {
+  log(uuid, 'login with certificate URL: /api/v1/gateway/auth/login');
+  const httpsAgent = new https.Agent({
+    rejectUnauthorized: false, // (NOTE: this will disable client verification)
+    cert: fs.readFileSync('../../playbooks/roles/configure/files/USER-cert.cer'),
+    key: fs.readFileSync('../../playbooks/roles/configure/files/USER-PRIVATEKEY.key'),
+  });
+  let response = await request.post('/api/v1/gateway/auth/login', {},
+    {httpsAgent}
+  );
+  validateResponse(uuid, response);
 
   return findCookieInResponse(response, APIML_AUTH_COOKIE);
 };
@@ -90,5 +116,6 @@ module.exports = {
   logResponse,
   findCookieInResponse,
   verifyAndSetupEnvironment,
-  uuid
+  uuid,
+  loginWithCertificate
 };

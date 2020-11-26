@@ -30,7 +30,6 @@
     sed -e "s+^CATALOG_PORT=.*\$+CATALOG_PORT={{ zowe_apiml_catalog_port }}+" | \
     sed -e "s+^DISCOVERY_PORT=.*\$+DISCOVERY_PORT={{ zowe_apiml_discovery_port }}+" | \
     sed -e "s+^GATEWAY_PORT=.*\$+GATEWAY_PORT={{ zowe_apiml_gateway_port }}+" | \
-    sed -e "s+^APIML_ENABLE_SSO=.*\$+APIML_ENABLE_SSO={{ zowe_apiml_enable_sso|string|lower }}+" | \
     sed -e "s+^JOBS_API_PORT=.*\$+JOBS_API_PORT={{ zowe_jobs_api_port }}+" | \
     sed -e "s+^FILES_API_PORT=.*\$+FILES_API_PORT={{ zowe_mvs_api_port }}+" | \
     sed -e "s+^JES_EXPLORER_UI_PORT=.*\$+JES_EXPLORER_UI_PORT={{ zowe_jobs_explorer_port }}+" | \
