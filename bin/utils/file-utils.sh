@@ -91,7 +91,7 @@ validate_directory_is_accessible() {
 
 validate_directories_are_accessible() {
   invalid=0
-  for dir in $1
+  for dir in $(echo $1 | sed "s/,/ /g")
   do
     validate_directory_is_accessible "${dir}"
     valid_rc=$?
