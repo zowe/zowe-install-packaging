@@ -74,20 +74,24 @@
       "version": "~0.2.0-STAGING"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-       "version": "~1.18.0-PR-939-SNAPSHOT",
-       "artifact": "api-catalog-*.zip"
+      "version": "~1.18.0-SNAPSHOT",
+      "artifact": "api-catalog-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.discovery-package": {
-       "version": "~1.18.0-PR-939-SNAPSHOT",
-       "artifact": "discovery-*.zip"
+      "version": "~1.18.0-SNAPSHOT",
+      "artifact": "discovery-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.gateway-package": {
-       "version": "~1.18.0-PR-939-SNAPSHOT",
-       "artifact": "gateway-*.zip"
+      "version": "~1.18.0-SNAPSHOT",
+      "artifact": "gateway-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-       "version": "~1.18.0-PR-939-SNAPSHOT",
-       "artifact": "caching-service-*.zip"
+      "version": "~1.18.0-SNAPSHOT",
+      "artifact": "caching-service-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
