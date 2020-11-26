@@ -17,13 +17,6 @@ const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 let https = require('https');
 
-
-let login = async (uuid) => {
-  log(uuid, 'URL: /api/v1/gateway/auth/login');
-  let response = await request.post('/api/v1/gateway/auth/login', {
-    username, password
-  });
-
 function validateResponse(uuid, response) {
   logResponse(uuid, response);
 
