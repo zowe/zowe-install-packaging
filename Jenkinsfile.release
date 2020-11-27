@@ -578,7 +578,7 @@ node('ibm-jenkins-slave-dind') {
         // load images
         if (releaseArtifacts['docker-amd64']) {
           sh "docker load --input .release/zowe-v1-lts.amd64-*.tar"
-          if ("${USERNAME}" != ompzowe) {
+          if ("${USERNAME}" != "ompzowe") {
             // the image in tar should always be ompzowe/zowe-v1-lts:amd64
             sh "docker tag ompzowe/zowe-v1-lts:amd64 ${USERNAME}/zowe-v1-lts:amd64"
           }
@@ -587,7 +587,7 @@ node('ibm-jenkins-slave-dind') {
         }
         if (releaseArtifacts['docker-s390x']) {
           sh "docker load --input .release/zowe-v1-lts.s390x-*.tar"
-          if ("${USERNAME}" != ompzowe) {
+          if ("${USERNAME}" != "ompzowe") {
             // the image in tar should always be ompzowe/zowe-v1-lts:s390x
             sh "docker tag ompzowe/zowe-v1-lts:s390x ${USERNAME}/zowe-v1-lts:s390x"
           }
