@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2018, 2019
+# Copyright IBM Corporation 2020
 ################################################################################
 
 #********************************************************************
@@ -16,21 +16,19 @@
 # $INSTALL_DIR
 # $LOG_FILE
 
-echo "<zowe-explorer-api-install.sh>" >> $LOG_FILE
+echo "<zowe-explorer-components.sh>" >> $LOG_FILE
 
-
-explorer_api_list="jobs files"
-for component_id in ${explorer_api_list}; do
+component_list="jobs-api files-api api-catalog discovery gateway caching-service"
+for component_id in ${component_list}; do
   cd ${INSTALL_DIR}
-  component_zip=$PWD/$(ls -t ./files/${component_id}-server-*.zip | head -1)
-  component_dir="${ZOWE_ROOT_DIR}/components/${component_id}-api"
+  component_zip=$PWD/$(ls -t ./files/${component_id}*.zip | head -1)
+  component_dir="${ZOWE_ROOT_DIR}/components/${component_id}"
   
   echo "  Installing ${component_zip} into ${component_zip}" >> $LOG_FILE
   mkdir -p "${component_dir}"
   cd "${component_dir}"
   jar -xf "${component_zip}"
   ${INSTALL_DIR}/scripts/tag-files.sh "${component_dir}" 1>/dev/null
-  chmod -R 755 "${component_dir}/bin"
 done
 
-echo "</zowe-explorer-api-install.sh>" >> $LOG_FILE
+echo "</zowe-explorer-components.sh>" >> $LOG_FILE

@@ -85,7 +85,11 @@ then
 else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
-    LAUNCH_COMPONENTS=api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
+    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
+    if [[ ! -z ${ZOWE_CACHING_SERVICE_START} && ${ZOWE_CACHING_SERVICE_START} == true ]]
+    then
+      LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},caching-service
+    fi
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
@@ -99,7 +103,7 @@ else
   fi
 fi
 
-if [[ ${LAUNCH_COMPONENTS} == *"api-mediation"* ]]
+if [[ ${LAUNCH_COMPONENTS} == *"discovery"* ]]
 then
   # Create the user configurable api-defs
   STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
