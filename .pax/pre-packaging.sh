@@ -25,7 +25,6 @@ set -x
 # ./content/smpe/
 # ./content/templates/
 # ./content/zowe-${ZOWE_VERSION}/
-# ./mediation/
 
 # ---------------------------------------------------------------------
 # --- create JCL files
@@ -157,15 +156,6 @@ fi
 # show what's already present
 echo "[$SCRIPT_NAME] content current directory: ls -A $(pwd)/"
 ls -A "$(pwd)/" || true
-
-# create mediation PAX
-echo "[$SCRIPT_NAME] create mediation pax"
-cd mediation
-MEDIATION_PATH="../content/zowe-$ZOWE_VERSION/files"
-pax -x os390 -w -f ${MEDIATION_PATH}/api-mediation-package.pax *
-cd ..
-# clean up working files
-rm -rf "./mediation"
 
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
 chmod +x content/zowe-$ZOWE_VERSION/bin/*.sh
