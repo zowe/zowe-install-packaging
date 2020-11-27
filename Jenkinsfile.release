@@ -463,10 +463,10 @@ node('ibm-jenkins-slave-dind') {
           "echo ===============================================\n" +
           "cat .tmp-upload-artifacts.json\n" +
           "echo\n" +
-          "echo ===============================================\n" +
+          "echo ===============================================\n"
 
-        echo ">>> Uploading signing results ..."
-        pipeline.artifactory.upload([spec: '.tmp-upload-artifacts.json'])
+      echo ">>> Uploading signing results ..."
+      pipeline.artifactory.upload([spec: '.tmp-upload-artifacts.json'])
     },
     timeout: [time: 20, unit: 'MINUTES']
   )
