@@ -589,7 +589,7 @@ node('ibm-jenkins-slave-dind') {
           "docker manifest push ${USERNAME}/zowe-v1-lts:latest"
       }
     },
-    timeout: [time: 60, unit: 'MINUTES']
+    timeout: [time: 120, unit: 'MINUTES']
   )
 
   pipeline.createStage(
