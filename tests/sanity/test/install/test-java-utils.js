@@ -44,7 +44,7 @@ describe('verify java-utils', function() {
     async function test_java_added_to_path(java_home, expected_addition, path_pre_addition = '') {
       let command = path_pre_addition === '' ? '' : `export PATH=$PATH:${path_pre_addition} && `;
       command += `export JAVA_HOME=${java_home} && ${ensure_java_is_on_path}`;
-      const expected_out = expected_addition ? 'Appending JAVA_HOME/bin to the PATH...' : '';
+      const expected_out = expected_addition ? 'Prepending JAVA_HOME/bin to the PATH...' : '';
       await test_java_utils_function_has_expected_rc_stdout_stderr(command, 0, expected_out, '');
     }
   });

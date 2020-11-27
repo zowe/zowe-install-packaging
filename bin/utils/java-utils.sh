@@ -35,8 +35,8 @@ fi
 ensure_java_is_on_path() {
   if [[ ":$PATH:" != *":$JAVA_HOME/bin:"* ]]
   then
-    print_message "Appending JAVA_HOME/bin to the PATH..."
-    export PATH=$PATH:$JAVA_HOME/bin
+    print_message "Prepending JAVA_HOME/bin to the PATH..."
+    export PATH=$JAVA_HOME/bin:$PATH
   fi
 }
 
