@@ -27,7 +27,8 @@ node('ibm-jenkins-slave-dind') {
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def github = lib.scm.GitHub.new(this)
 
-  def isFormalRelease = false
+  // def isFormalRelease = false
+  def isFormalRelease = true
   def releaseFilePath
   def releaseArtifacts = readJSON(text:'{}')
   def publishFilePath
