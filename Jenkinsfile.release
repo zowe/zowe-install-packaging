@@ -27,6 +27,7 @@ node('ibm-jenkins-slave-dind') {
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def github = lib.scm.GitHub.new(this)
 
+  // FIXME: test run purpose
   // def isFormalRelease = false
   def isFormalRelease = true
   def releaseFilePath
@@ -557,13 +558,16 @@ node('ibm-jenkins-slave-dind') {
   )
 
   pipeline.createStage(
-    name          : "Publish Docker Image",
-    isSkippable   : true,
-    shouldExecute : {
+    name             : "Publish Docker Image",
+    isSkippable      : true,
+    displayTimestamp : true,
+    timeout          : [time: 120, unit: 'MINUTES'],
+    shouldExecute    : {
       return isFormalRelease && (releaseArtifacts['docker-amd64'] || releaseArtifacts['docker-s390x'])
     },
-    stage         : {
+    stage            : {
       withCredentials([usernamePassword(
+        // FIXME: test run purpose
         // credentialsId: 'ZoweDockerhub',
         credentialsId: 'jackjia-docker-access-token',
         usernameVariable: 'USERNAME',
@@ -574,11 +578,19 @@ node('ibm-jenkins-slave-dind') {
         // load images
         if (releaseArtifacts['docker-amd64']) {
           sh "docker load --input .release/zowe-v1-lts.amd64-*.tar"
+          if ("${USERNAME}" != ompzowe) {
+            // the image in tar should always be ompzowe/zowe-v1-lts:amd64
+            sh "docker tag ompzowe/zowe-v1-lts:amd64 ${USERNAME}/zowe-v1-lts:amd64"
+          }
           publishCommands += "docker push ${USERNAME}/zowe-v1-lts:amd64\n"
           manifestAmends += " --amend ${USERNAME}/zowe-v1-lts:amd64"
         }
         if (releaseArtifacts['docker-s390x']) {
           sh "docker load --input .release/zowe-v1-lts.s390x-*.tar"
+          if ("${USERNAME}" != ompzowe) {
+            // the image in tar should always be ompzowe/zowe-v1-lts:s390x
+            sh "docker tag ompzowe/zowe-v1-lts:s390x ${USERNAME}/zowe-v1-lts:s390x"
+          }
           publishCommands += "docker push ${USERNAME}/zowe-v1-lts:s390x\n"
           manifestAmends += " --amend ${USERNAME}/zowe-v1-lts:s390x"
         }
@@ -588,8 +600,7 @@ node('ibm-jenkins-slave-dind') {
           "docker manifest create ${USERNAME}/zowe-v1-lts:latest ${manifestAmends}\n" +
           "docker manifest push ${USERNAME}/zowe-v1-lts:latest"
       }
-    },
-    timeout: [time: 120, unit: 'MINUTES']
+    }
   )
 
   pipeline.createStage(
