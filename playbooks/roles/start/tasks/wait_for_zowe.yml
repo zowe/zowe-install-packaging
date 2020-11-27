@@ -43,7 +43,7 @@
 
 # ============================================================================
 # Wait for Zowe services be started
-- name: Wait for Desktop port {{ zowe_zlux_port }} to be available
+- name: Wait for Desktop at {{zowe_zos_host}} port {{ zowe_zlux_port }} to be available
   uri:
     url: "https://{{ zowe_zos_host }}:{{ zowe_zlux_port }}"
     follow_redirects: all

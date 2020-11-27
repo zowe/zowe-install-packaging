@@ -66,6 +66,26 @@ ZOWE_ROOT_DIR=/path/to/zowe \
   npm test
 ```
 
+## Test your docker instance
+
+Docker instance can take advantage of npm script `test:docker`. It runs `mocha` tests based on config `.mocharc-docker.yml`
+
+```
+export ZOWE_ROOT_DIR="/root/zowe/runtime"
+export ZOWE_INSTANCE_DIR="/root/zowe/instance"
+export SSH_HOST=<zos-host>
+export SSH_PORT=22
+export SSH_USER=xxxxxx
+export SSH_PASSWD=xxxxx
+export ZOSMF_PORT=443
+export ZOWE_DS_MEMBER=ZWESVSTC
+export ZOWE_JOB_PREFIX=ZWE
+export ZOWE_ZLUX_HTTPS_PORT=8544
+export ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554
+export ZOWE_EXTERNAL_HOST=<docker-hostname>
+npm run test:docker
+```
+
 ## General Guideline For Adding Test Cases
 
 ### Test Cases Directory Structure
