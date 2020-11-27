@@ -11,9 +11,16 @@
 ################################################################################
 
 ################################################################################
-# This script will start Zowe.
+# This script will return the components defined to be started in this Zowe instance.
+#
+# These environment variables should have already been loaded:
+# - INSTANCE_DIR
+#
+# Note: the INSTANCE_DIR can be predefined as global variable, or can be passed
+#       from command line "-c" parameter.
 ################################################################################
 
+# if the user passes INSTANCE_DIR from command line parameter "-c"
 while getopts "c:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
@@ -24,18 +31,12 @@ while getopts "c:" opt; do
   esac
 done
 
-# export this to other scripts
-export INSTANCE_DIR
-# find runtime directory to locate the scripts
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+# validate INSTANCE_DIR which is required
+if [[ -z ${INSTANCE_DIR} ]]; then
+  echo "INSTANCE_DIR is not defined. You can either pass the value with -c parameter or define it as global environment variable." >&2
+  exit 1
+fi
 
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
-. ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}"
-
-launch_components_list=$(${ROOT_DIR}/bin/internal/get-launch-components.sh -c "${INSTANCE_DIR}")
-. ${ROOT_DIR}/bin/internal/prepare-workspace.sh -c "${INSTANCE_DIR}" -t "${launch_components_list}"
-
-# FIXME: Zowe Launcher can take responsibility from here
-for component_id in $(echo "${launch_components_list}" | sed "s/,/ /g"); do
-  . ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -o "${component_id}" &
-done
+# suppress any output to make sure this script only output LAUNCH_COMPONENTS
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" 1> /dev/null 2>&1
+echo "${LAUNCH_COMPONENTS}"
