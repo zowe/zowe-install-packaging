@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-node('ibm-jenkins-slave-nvm') {
+node('ibm-jenkins-slave-dind') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
@@ -18,6 +18,8 @@ node('ibm-jenkins-slave-nvm') {
   def ZOWE_RELEASE_FILEPATTERN = "zowe-*.pax"
   def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.zip"
   def ZOWE_RELEASE_SMPE_PTF_PROMOTE_FILEPATTERN = "smpe-promote-*.tar"
+  def ZOWE_RELEASE_DOCKER_AMD64_FILEPATTERN = "zowe-v1-lts.amd64-*.tar"
+  def ZOWE_RELEASE_DOCKER_S390X_FILEPATTERN = "zowe-v1-lts.s390x-*.tar"
   def ZOWE_RELEASE_CLI_CORE_FILEPATTERN = "zowe-cli-package-*.zip"
   def ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN = "zowe-cli-plugins-*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
@@ -236,6 +238,42 @@ node('ibm-jenkins-slave-nvm') {
         echo ">>> no SMP/e zip found in the build."
       }
 
+      // get Docker images - amd64
+      try {
+        def dockerImageAmd64 = pipeline.artifactory.getArtifact([
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/${params.ZOWE_BUILD_PATH}/${ZOWE_RELEASE_DOCKER_AMD64_FILEPATTERN}",
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (dockerImageAmd64['path']) {
+          echo ">>> Found Docker image amd64 version ${dockerImageAmd64['path']}."
+          def FMID = dockerImageAmd64['path'].split('/').last().split('-').first()
+          releaseArtifacts['docker-amd64'] = [:]
+          releaseArtifacts['docker-amd64']['source'] = dockerImageAmd64
+          releaseArtifacts['docker-amd64']['target'] = "zowe-v1-lts.amd64-${params.ZOWE_RELEASE_VERSION}.tar".toString()
+        }
+      } catch (e1) {
+        echo ">>> no Docker image amd64 version found in the build."
+      }
+
+      // get Docker images - s390x
+      try {
+        def dockerImageS390x = pipeline.artifactory.getArtifact([
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/${params.ZOWE_BUILD_PATH}/${ZOWE_RELEASE_DOCKER_S390X_FILEPATTERN}",
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (dockerImageS390x['path']) {
+          echo ">>> Found Docker image s390x version ${dockerImageS390x['path']}."
+          def FMID = dockerImageS390x['path'].split('/').last().split('-').first()
+          releaseArtifacts['docker-s390x'] = [:]
+          releaseArtifacts['docker-s390x']['source'] = dockerImageS390x
+          releaseArtifacts['docker-s390x']['target'] = "zowe-v1-lts.s390x-${params.ZOWE_RELEASE_VERSION}.tar".toString()
+        }
+      } catch (e1) {
+        echo ">>> no Docker image s390x version found in the build."
+      }
+
       // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
       releaseArtifacts['cli']['target'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
@@ -317,14 +355,12 @@ node('ibm-jenkins-slave-nvm') {
     stage         : {
       // debug show releaseArtifacts
       writeJSON file: '.tmp-release-artifacts.json', json: releaseArtifacts, pretty: 2
-      sh '''
-set +x
-echo All artifacts will be promoted:
-echo ===============================================
-cat .tmp-release-artifacts.json
-echo
-echo ===============================================
-'''
+      sh "set +x\n" +
+          "echo All artifacts will be promoted:\n" +
+          "echo ===============================================\n" +
+          "cat .tmp-release-artifacts.json\n" +
+          "echo\n" +
+          "echo ===============================================\n"
 
       releaseArtifacts.each { artifact, info ->
         echo ">>> Promoting ${artifact} ..."
@@ -357,14 +393,12 @@ echo ===============================================
 
       // debug show downloadArtifacts
       writeJSON file: '.tmp-download-artifacts.json', json: downloadArtifacts, pretty: 2
-      sh '''
-set +x
-echo All promoted artifacts:
-echo ===============================================
-cat .tmp-download-artifacts.json
-echo
-echo ===============================================
-'''
+      sh "set +x\n" +
+          "echo All promoted artifacts:\n" +
+          "echo ===============================================\n" +
+          "cat .tmp-download-artifacts.json\n" +
+          "echo\n" +
+          "echo ==============================================="
 
         echo ">>> Downloading all promoted artifacts ..."
         pipeline.artifactory.download([
@@ -423,14 +457,12 @@ echo ===============================================
 
       // debug show uploadArtifacts
       writeJSON file: '.tmp-upload-artifacts.json', json: uploadArtifacts, pretty: 2
-      sh '''
-set +x
-echo All signing results:
-echo ===============================================
-cat .tmp-upload-artifacts.json
-echo
-echo ===============================================
-'''
+      sh "set +x\n" +
+          "echo All signing results:\n" +
+          "echo ===============================================\n" +
+          "cat .tmp-upload-artifacts.json\n" +
+          "echo\n" +
+          "echo ===============================================\n" +
 
         echo ">>> Uploading signing results ..."
         pipeline.artifactory.upload([spec: '.tmp-upload-artifacts.json'])
@@ -521,6 +553,41 @@ echo ===============================================
       echo "Pull request #${pullRequestId} is created."
     },
     timeout: [time: 10, unit: 'MINUTES']
+  )
+
+  pipeline.createStage(
+    name          : "Publish Docker Image",
+    isSkippable   : true,
+    shouldExecute : {
+      return isFormalRelease && (releaseArtifacts['docker-amd64'] || releaseArtifacts['docker-s390x'])
+    },
+    stage         : {
+      withCredentials([usernamePassword(
+        credentialsId: 'ZoweDockerhub',
+        usernameVariable: 'USERNAME',
+        passwordVariable: 'PASSWORD'
+      )]) {
+        def publishCommands = "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\"\n"
+        def manifestAmends = ""
+        // load images
+        if (releaseArtifacts['docker-amd64']) {
+          sh "docker load --input .release/zowe-v1-lts.amd64-*.tar"
+          publishCommands += "docker push ${USERNAME}/zowe-v1-lts:amd64\n"
+          manifestAmends += " --amend ${USERNAME}/zowe-v1-lts:amd64"
+        }
+        if (releaseArtifacts['docker-s390x']) {
+          sh "docker load --input .release/zowe-v1-lts.s390x-*.tar"
+          publishCommands += "docker push ${USERNAME}/zowe-v1-lts:s390x\n"
+          manifestAmends += " --amend ${USERNAME}/zowe-v1-lts:s390x"
+        }
+
+        // publish images
+        sh publishCommands +
+          "docker manifest create ${USERNAME}/zowe-v1-lts:latest ${manifestAmends}\n" +
+          "docker manifest push ${USERNAME}/zowe-v1-lts:latest"
+      }
+    },
+    timeout: [time: 60, unit: 'MINUTES']
   )
 
   pipeline.createStage(
