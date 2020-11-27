@@ -23,7 +23,6 @@ set -x
 
 # expected input workspace layout ($ROOT_DIR):
 # ./.pax/keyring-util/
-# ./.pax/mediation/
 # ./bin/
 # ./files/
 # ./install/
@@ -202,5 +201,4 @@ echo "[$SCRIPT_NAME] done"
 # ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/
 # ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/
 # ${PAX_WORKSPACE_DIR}/keyring-util/  # already present
-# ${PAX_WORKSPACE_DIR}/mediation/  # already present
 # ascii/* will move into content/, translated to ebcdic
