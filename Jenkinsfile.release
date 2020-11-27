@@ -563,7 +563,8 @@ node('ibm-jenkins-slave-dind') {
     },
     stage         : {
       withCredentials([usernamePassword(
-        credentialsId: 'ZoweDockerhub',
+        // credentialsId: 'ZoweDockerhub',
+        credentialsId: 'jackjia-docker-access-token',
         usernameVariable: 'USERNAME',
         passwordVariable: 'PASSWORD'
       )]) {
