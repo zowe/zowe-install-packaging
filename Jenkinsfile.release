@@ -597,6 +597,7 @@ node('ibm-jenkins-slave-dind') {
 
         // publish images
         sh publishCommands +
+          "export DOCKER_CLI_EXPERIMENTAL=enabled\n" +
           "docker manifest create ${USERNAME}/zowe-v1-lts:latest ${manifestAmends}\n" +
           "docker manifest push ${USERNAME}/zowe-v1-lts:latest"
       }
