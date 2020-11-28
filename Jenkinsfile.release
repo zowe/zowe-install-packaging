@@ -27,9 +27,7 @@ node('ibm-jenkins-slave-dind') {
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def github = lib.scm.GitHub.new(this)
 
-  // FIXME: test run purpose
-  // def isFormalRelease = false
-  def isFormalRelease = true
+  def isFormalRelease = false
   def releaseFilePath
   def releaseArtifacts = readJSON(text:'{}')
   def publishFilePath
@@ -567,9 +565,7 @@ node('ibm-jenkins-slave-dind') {
     },
     stage            : {
       withCredentials([usernamePassword(
-        // FIXME: test run purpose
-        // credentialsId: 'ZoweDockerhub',
-        credentialsId: 'jackjia-docker-access-token',
+        credentialsId: 'ZoweDockerhub',
         usernameVariable: 'USERNAME',
         passwordVariable: 'PASSWORD'
       )]) {
