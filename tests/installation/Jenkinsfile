@@ -347,7 +347,7 @@ node('ibm-jenkins-slave-dind') {
       withCredentials(serverCredentials) {
       withEnv(testEnvVars) {
         try {
-          nvmShell params.CLIENT_NODE_VERSION, "npm test -- --testPathPattern \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
+          nvmShell params.CLIENT_NODE_VERSION, "npm test -- --testPathPattern --detectOpenHandles \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
         } finally {
           nvmShell params.CLIENT_NODE_VERSION, "npm run merge-reports"
         }
