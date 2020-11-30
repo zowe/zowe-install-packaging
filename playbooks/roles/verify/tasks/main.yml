@@ -17,8 +17,6 @@
     - zowe_zlux_port
     - zowe_apiml_gateway_port
     - zowe_instance_id
-    - zowe_jobs_api_port
-    - zowe_mvs_api_port
     - zowe_sanity_test_testcases
 
 # ============================================================================
