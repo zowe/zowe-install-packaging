@@ -8,6 +8,7 @@
       --env ZWED_agent_host={{zowe_zos_host}} \
       --env ZWED_agent_http_port={{zowe_zss_port}} \
       --env ZOWE_ZLUX_TELNET_PORT={{zowe_zlux_terminal_telnet_port}} \
+      --env ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }}
       --env GATEWAY_PORT={{zowe_apiml_gateway_port}} \
       --expose {{zowe_apiml_gateway_port}} \
       -p {{zowe_apiml_discovery_port}}:7553 \
