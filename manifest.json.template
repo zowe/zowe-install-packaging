@@ -107,14 +107,6 @@
   },
   "sourceDependencies": [
     {
-      "componentGroup": "Zowe Keyring Utilities",
-      "entries": [{
-        "repository": "keyring-utilities",
-        "tag": "master",
-        "destinations": ["Zowe PAX"]
-      }]
-    },
-    {
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
