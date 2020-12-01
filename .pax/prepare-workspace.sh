@@ -160,9 +160,9 @@ cd "${CONTENT_DIR}/files"
 mv zowe-utility-tools-*.zip zowe-utility-tools.zip
 cd "$ROOT_DIR"
 cd "${CONTENT_DIR}/bin/utils"
-jar -xf "${CONTENT_DIR}/files/zowe-utility-tools.zip"
-rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
+jar -xf "../../files/zowe-utility-tools.zip"
 cd "$ROOT_DIR"
+rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
