@@ -23,5 +23,5 @@
   # Show Zowe Docker Logs
   - import_role:
       name: docker
-      when: zowe_docker_image_url is defined and zowe_docker_image_url != ''
       tasks_from: docker-logs
+    when: zowe_docker_image_url is defined and zowe_docker_image_url != ''
