@@ -15,6 +15,14 @@ import {
 } from '../../utils';
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
 
+const extraVars = {
+  'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+  // we start docker container on localhost
+  'zowe_docker_image_url': process.env['ZOWE_DOCKER_URL'],
+  'zowe_external_domain_name': 'localhost',
+  'zowe_sanity_test_testcases': '-- --config .mocharc-docker.yml',
+}
+
 const testSuiteName = 'Test docker build installation';
 describe(testSuiteName, () => {
   beforeAll(() => {
@@ -29,17 +37,11 @@ describe(testSuiteName, () => {
     await installAndVerifyDockerBuild(
       testSuiteName,
       process.env.TEST_SERVER,
-      {
-        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        // we start docker container on localhost
-        'zowe_docker_image_url': process.env['ZOWE_DOCKER_URL'],
-        'zowe_external_domain_name': 'localhost',
-        'zowe_sanity_test_testcases': '-- --config .mocharc-docker.yml',
-      }
+      extraVars
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
 
   afterAll(async () => {
-    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+    await showZoweRuntimeLogs(process.env.TEST_SERVER, extraVars);
   })
 });

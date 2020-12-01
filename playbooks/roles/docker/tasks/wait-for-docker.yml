@@ -28,7 +28,7 @@
     - zowe_jobs_api_port
     - zowe_apiml_gateway_port
 
-- name: Wait for being able to login to ZSS
+- name: Wait for being able to login to ZSS at port {{zowe_zss_port}}
   uri:
     # ZSS is always running on z/OS side
     url: "{{ zowe_zss_https | ternary('https', 'http') }}://{{ zowe_zos_host }}:{{ zowe_zss_port }}/login"
@@ -62,7 +62,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   delegate_to: localhost
 
-- name: Wait for being able to login to App Server
+- name: Wait for being able to login to App Server at port {{zowe_zlux_port}}
   uri:
     url: "https://{{ zowe_external_domain_name }}:{{zowe_zlux_port}}/auth"
     follow_redirects: none
