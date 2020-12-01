@@ -155,8 +155,10 @@ cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
 rm -rf "$KEYRING_UTIL_SRC"
 
 # extract packaging utility tools to bin/utils
+cd "$ROOT_DIR"
 cd "${CONTENT_DIR}/files"
 mv zowe-utility-tools-*.zip zowe-utility-tools.zip
+cd "$ROOT_DIR"
 cd "${CONTENT_DIR}/bin/utils"
 jar -xf "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
