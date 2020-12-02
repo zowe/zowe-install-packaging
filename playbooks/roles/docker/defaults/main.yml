@@ -20,7 +20,6 @@ zos_zosmf_port: 10443
 zowe_zss_https: False
 zowe_zss_port: 8542
 zowe_launch_components: zss
-zowe_sanity_test_testcases:
 
 zowe_zlux_terminal_telnet_port: 23
 # The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'
