@@ -101,6 +101,9 @@
       "flat": "true",
       "excludePatterns": ["*PR*"]
    },
+    "org.zowe.utility_tools": {
+      "version": "~0.0.1-SNAPSHOT"
+    },
     "org.zowe.licenses": {
       "version": "1.10.0"
     }
@@ -358,9 +361,13 @@
       }]
     },
     {
-      "componentGroup": "Keyring Utilities",
+      "componentGroup": "Utilities",
       "entries": [{
         "repository": "keyring-utilities",
+        "tag": "master",
+        "destinations": ["Zowe PAX"]
+      }, {
+        "repository": "zowe-install-packaging-tools",
         "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
