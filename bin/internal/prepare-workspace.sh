@@ -96,9 +96,9 @@ get_log_filename() {
     COMPONENT_NAME=$component_id
   fi
 
-  if [ "${COMPONENT_NAME}" = "zss"]; then
+  if [ "${COMPONENT_NAME}" = "zss" ]; then
     COMPONENT_NAME="zssServer" #backwards compatibility
-  elif [ "${COMPONENT_NAME}" = "app-server"]; then
+  elif [ "${COMPONENT_NAME}" = "app-server" ]; then
     COMPONENT_NAME="appServer" #backwards compatibility
   fi
   
@@ -120,9 +120,9 @@ create_log_file() {
       COMPONENT_NAME=$component_id
     fi
   
-    if [ "${COMPONENT_NAME}" = "zss"]; then
+    if [ "${COMPONENT_NAME}" = "zss" ]; then
       COMPONENT_NAME="zssServer" #backwards compatibility
-    elif [ "${COMPONENT_NAME}" = "app-server"]; then
+    elif [ "${COMPONENT_NAME}" = "app-server" ]; then
       COMPONENT_NAME="appServer" #backwards compatibility
     fi
 
