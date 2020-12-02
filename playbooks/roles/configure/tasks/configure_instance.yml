@@ -63,5 +63,10 @@
     echo "ZWED_agent_jwt_fallback=true" >> "{{ zowe_instance_dir }}/instance.env"
     echo "ZWED_agent_jwt_enabled=true" >> "{{ zowe_instance_dir }}/instance.env"
 
+- name: Add Caching Service start parameter to instance.env
+  when: zowe_apiml_caching_service_start
+  raw: |-
+    echo "ZOWE_CACHING_SERVICE_START=true" >> "{{ zowe_instance_dir }}/instance.env"
+
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"

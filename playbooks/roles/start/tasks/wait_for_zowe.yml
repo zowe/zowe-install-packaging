@@ -139,3 +139,18 @@
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
+
+# This check will be added back later
+
+#- name: Wait for APIML Caching service to be available
+#  uri:
+#    url: "https://{{ zowe_external_domain_name }}:{{ zowe_caching_service_port }}/cachingservice/v2/api-docs"
+#    follow_redirects: none
+#    method: GET
+#    validate_certs: false
+#  register: _result
+#  until: _result.status == 200
+#  retries: "{{ wait_for_zowe_service_retries | int }}"
+#  delay: "{{ wait_for_zowe_service_delay | int }}"
+#  delegate_to: localhost
+#  when: zowe_apiml_caching_service_start
