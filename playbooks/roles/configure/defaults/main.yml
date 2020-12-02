@@ -109,7 +109,7 @@ zowe_external_ip_address:
 # Restrict permissions to keystore/truststore after the certificate setup script
 zowe_lock_keystore: true
 #
-zowe_launch_components: api-mediation,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss,zss,app-server
+zowe_launch_components:
 
 # PKCS#11 token name and label of jwt secret used by SSO
 zowe_token_name: ZWETOKEN

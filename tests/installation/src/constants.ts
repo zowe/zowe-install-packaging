@@ -31,9 +31,6 @@ export const SANITY_TEST_REPORTS_DIR: string = path.resolve(SANITY_TEST_ROOT_DIR
 // 45 minutes timeout for install conv. build
 export const TEST_TIMEOUT_CONVENIENCE_BUILD: number = 60 * 60 * 1000;
 
-// 30 minutes timeout for install docker build
-export const TEST_TIMEOUT_DOCKER_BUILD: number = 30 * 60 * 1000;
-
 // 90 minutes timeout for installation fmid
 export const TEST_TIMEOUT_SMPE_FMID: number = 90 * 60 * 1000;
 // 120 minutes timeout for installation ptf
