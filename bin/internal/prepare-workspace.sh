@@ -42,6 +42,124 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
 
 ########################################################
+# setup global logging properties
+# Handle log file syntax setup here so that the timestamps for all components match
+# Determine if components should log to a file, and where
+# FIXME: Zowe Launcher should probably do this file logging logic instead
+if [ -z "$ZWE_NO_LOGFILE" ]
+then
+  if [ -z "$ZWE_LOG_DIR" ]
+  then
+    export ZWE_LOG_DIR=${INSTANCE_DIR}/logs
+  fi
+  if [ -f "$ZWE_LOG_DIR" ]
+  then
+    export ZWE_NO_LOGFILE=1
+  elif [ ! -d "$ZWE_LOG_DIR" ]
+  then
+    echo "Will make log directory $ZWE_LOG_DIR"
+    mkdir -p $ZWE_LOG_DIR
+    if [ $? -ne 0 ]
+    then
+      echo "Cannot make log directory.  Logging disabled."
+      export ZWE_NO_LOGFILE=1
+    fi
+  fi
+  export ZWE_ROTATE_LOGS=0
+  if [ -d "$ZWE_LOG_DIR" ]
+  then
+    LOG_SUFFIX="-`date +%Y-%m-%d-%H-%M`"
+    if [ -z "$ZWE_LOGS_TO_KEEP" ]
+    then
+      export ZWE_LOGS_TO_KEEP=5
+    fi
+    echo $ZWE_LOGS_TO_KEEP|egrep '^\-?[0-9]+$' >/dev/null
+    if [ $? -ne 0 ]
+    then
+      echo "ZWE_LOGS_TO_KEEP not a number.  Defaulting to 5."
+      export ZWE_LOGS_TO_KEEP=5
+    fi
+    if [ $ZWE_LOGS_TO_KEEP -ge 0 ]
+    then
+      export ZWE_ROTATE_LOGS=1
+    fi
+  fi
+fi
+
+get_log_filename() {
+  component_id=$1
+  component_dir=$2
+  LOG_PREFIX=$3
+  if [ -d "${component_id}" ]; then
+    COMPONENT_NAME=$(cd ${component_dir}/ && echo "${PWD##*/}")
+  else
+    COMPONENT_NAME=$component_id
+  fi
+
+  if [ "${COMPONENT_NAME}" = "zss"]; then
+    COMPONENT_NAME="zssServer" #backwards compatibility
+  elif [ "${COMPONENT_NAME}" = "app-server"]; then
+    COMPONENT_NAME="appServer" #backwards compatibility
+  fi
+  
+  LOG_FILE="${ZWE_LOG_DIR}/${LOG_PREFIX}${COMPONENT_NAME}${LOG_SUFFIX}.log"
+  if [ -e "$LOG_FILE" ]; then
+     echo $LOG_FILE
+  fi
+}
+
+create_log_file() {
+  component_id=$1
+  component_dir=$2
+  LOG_PREFIX=$3
+  if [ -z "$ZWE_NO_LOGFILE" ]; then
+    #set up log file, if requested
+    if [ -d "${component_id}" ]; then
+      COMPONENT_NAME=$(cd ${component_dir}/ && echo "${PWD##*/}")
+    else
+      COMPONENT_NAME=$component_id
+    fi
+  
+    if [ "${COMPONENT_NAME}" = "zss"]; then
+      COMPONENT_NAME="zssServer" #backwards compatibility
+    elif [ "${COMPONENT_NAME}" = "app-server"]; then
+      COMPONENT_NAME="appServer" #backwards compatibility
+    fi
+
+    ZWE_LOG_FILE="${ZWE_LOG_DIR}/${LOG_PREFIX}${COMPONENT_NAME}${LOG_SUFFIX}.log"
+    
+    if [ ! -e "$ZWE_LOG_FILE" ]; then
+      touch "$ZWE_LOG_FILE"
+      if [ $? -ne 0 ]; then
+        echo "Cannot make log file '$ZWE_LOG_FILE'.  Logging disabled."
+        ZWE_LOG_FILE=
+      fi
+    else
+      if [ -d "$ZWE_LOG_FILE" ]; then
+        echo "ZWE_LOG_FILE '$ZWE_LOG_FILE' is a directory.  Must be a file.  Logging disabled."
+        ZWE_LOG_FILE=
+      fi
+    fi
+    if [ ! -w "$ZWE_LOG_FILE" ]; then
+      echo "file '$ZWE_LOG_FILE' is not writable. Logging disabled."
+      ZWE_LOG_FILE=
+    fi
+  fi
+  if [ -n "$ZWE_LOG_FILE" ]; then
+    #Clean up excess logs, if appropriate.
+    if [ $ZWE_ROTATE_LOGS -ne 0 ]; then
+      for f in `ls -r -1 $ZWE_LOG_DIR/${LOG_PREFIX}${COMPONENT_NAME}-*.log 2>/dev/null | tail +$ZWE_LOGS_TO_KEEP`
+      do
+        echo "${component_id} removing old log file '$f'"
+        rm -f $f
+      done
+    fi
+    echo "${component_id} log file=${ZWE_LOG_FILE}"
+  fi
+}
+
+
+########################################################
 # Validate component properties if script exists
 ERRORS_FOUND=0
 for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
@@ -49,11 +167,21 @@ do
   component_dir=$(find_component_directory "${component_id}")
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
+
   # FIXME: change here to read manifest `commands.validate` entry
   validate_script=${component_dir}/bin/validate.sh
   if [ ! -z "${component_dir}" -a -x "${validate_script}" ]; then
-    . ${validate_script}
-    retval=$?
+    # create log file if file logging enabled
+    create_log_file $component_id $component_dir "validate-"
+    LOG_FILE=$(get_log_filename $component_id $component_dir "validate-")
+
+    if [ -n "$LOG_FILE" ]; then
+      { . ${validate_script} 2>&1 ; let "ERRORS_FOUND=${ERRORS_FOUND}+$?" ; } | tee $LOG_FILE
+    else
+      . ${validate_script}
+      retval=$?
+    fi    
+    
     let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
   fi
 done
@@ -119,6 +247,14 @@ do
   # FIXME: change here to read manifest `commands.configure` entry
   configure_script=${component_dir}/bin/configure.sh
   if [ ! -z "${component_dir}" -a -x "${configure_script}" ]; then
-    . ${configure_script}
+    # create log file if file logging enabled
+    create_log_file $component_id $component_dir "configure-"
+    LOG_FILE=$(get_log_filename $component_id $component_dir "configure-")
+    
+    if [ -n "$LOG_FILE" ]; then
+      . ${configure_script} 2>&1 | tee $LOG_FILE
+    else
+      . ${configure_script}
+    fi
   fi
 done
