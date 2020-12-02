@@ -69,6 +69,9 @@ if [ ! -z "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates
   . ${INSTANCE_DIR}/bin/internal/read-keystore.sh
 fi
 
+# this variable is used by Gateway to fetch Zowe version and build information
+ZOWE_MANIFEST="${ROOT_DIR}/manifest.json"
+
 # workspace directory variable
 WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 
