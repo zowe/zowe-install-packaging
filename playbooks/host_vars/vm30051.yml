@@ -10,3 +10,6 @@ zowe_external_domain_name: vm30051.svl.ibm.com
 zowe_external_ip_address: 9.30.243.191
 zowe_zlux_terminal_telnet_port: 992
 zowe_zlux_terminal_telnet_security_type: tls
+zowe_token_name: ZWETOKEN
+zowe_token_label: jwtsecret
+zowe_apiml_security_x509_enabled: true
