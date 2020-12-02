@@ -49,9 +49,15 @@ do
   component_dir=$(find_component_directory "${component_id}")
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
-  # FIXME: change here to read manifest `commands.validate` entry
-  validate_script=${component_dir}/bin/validate.sh
+  validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
+  if [ -n "${validate_script}" ]; then
+    echo "Found commands.validate in component ${component_id} manifest: ${validate_script}"
+  else
+    echo "Unable to determine validate script for component ${component_id}, fall back to default bin/validate.sh"
+    validate_script=${component_dir}/bin/validate.sh
+  fi
   if [ ! -z "${component_dir}" -a -x "${validate_script}" ]; then
+    cd "${component_dir}"
     . ${validate_script}
     retval=$?
     let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
@@ -116,9 +122,15 @@ do
   component_dir=$(find_component_directory "${component_id}")
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
-  # FIXME: change here to read manifest `commands.configure` entry
-  configure_script=${component_dir}/bin/configure.sh
+  configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
+  if [ -n "${configure_script}" ]; then
+    echo "Found commands.configure in component ${component_id} manifest: ${configure_script}"
+  else
+    echo "Unable to determine configure script for component ${component_id}, fall back to default bin/configure.sh"
+    configure_script=${component_dir}/bin/configure.sh
+  fi
   if [ ! -z "${component_dir}" -a -x "${configure_script}" ]; then
+    cd "${component_dir}"
     . ${configure_script}
   fi
 done

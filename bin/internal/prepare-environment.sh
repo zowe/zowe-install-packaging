@@ -174,6 +174,45 @@ find_component_directory() {
 }
 
 ###############################
+# Read component manifest
+#
+# Note: this function requires Java.
+#
+# Example:
+# - read my-component commands.start value
+#   read_component_manifest "/path/to/zowe/components/my-component" ".commands.start"
+#
+# @param string   component directory
+# @param string   string of manifest key. For example: ".commands.configure"
+# Output          empty if component doesn't have manifest
+#                          , or manifest doesn't have the key
+#                          , or JAVA_HOME is not defined
+#                 the value defined in the manifest of the selected key
+read_component_manifest() {
+  component_dir=$1
+  manifest_key=$2
+
+  if [ -z "$JAVA_HOME" ]; then
+    return 0
+  fi
+  # java should have already been put into PATH
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  fconv="${utils_dir}/format-converter-cli.jar"
+  jq="${utils_dir}/jackson-jq-cli.jar"
+
+  if [ -f "${parent_dir}/manifest.yaml" ]; then
+    java -jar "${fconv}" "${parent_dir}/manifest.yaml" | java -jar "${jq}" -r "${manifest_key}"
+  elif [ -f "${parent_dir}/manifest.yml" ]; then
+    java -jar "${fconv}" "${parent_dir}/manifest.yml" | java -jar "${jq}" -r "${manifest_key}"
+  elif [ -f "${parent_dir}/manifest.json" ]; then
+    cat "${parent_dir}/manifest.json" | java -jar "${jq}" -r "${manifest_key}"
+  fi
+
+  return 0
+}
+
+###############################
 # Check if there are errors registered
 #
 # Notes: any error should increase global variable ERRORS_FOUND by 1.

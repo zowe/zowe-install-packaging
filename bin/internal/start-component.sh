@@ -49,8 +49,15 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 component_dir=$(find_component_directory "${component_id}")
 # backward compatible purpose, some may expect this variable to be component lifecycle directory
 export LAUNCH_COMPONENT="${component_dir}/bin"
-# FIXME: change here to read manifest `commands.start` entry
-start_script=${component_dir}/bin/start.sh
+start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
+if [ -n "${start_script}" ]; then
+  echo "Found commands.start in component ${component_id} manifest: ${start_script}"
+else
+  echo "Unable to determine start script for component ${component_id}, fall back to default bin/start.sh"
+  start_script=${component_dir}/bin/start.sh
+fi
 if [ ! -z "${component_dir}" -a -x "${start_script}" ]; then
+  cd "${component_dir}"
   . ${start_script}
 fi
+ 
