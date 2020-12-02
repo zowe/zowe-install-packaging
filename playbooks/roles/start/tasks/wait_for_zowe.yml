@@ -55,7 +55,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
   # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and ("app-server" in zowe_launch_components or zowe_launch_components == "")
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "app-server" in zowe_launch_components)
   delegate_to: localhost
 
 - name: Wait for Jobs API port {{ zowe_jobs_api_port }} to be available
@@ -72,7 +72,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
   # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and ("jobs-api" in zowe_launch_components or zowe_launch_components == "")
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "jobs-api" in zowe_launch_components)
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
@@ -89,7 +89,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
   # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and ("gateway" in zowe_launch_components or zowe_launch_components == "")
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "gateway" in zowe_launch_components)
   delegate_to: localhost
 
 - name: Wait for being able to login to API Catalog
@@ -111,7 +111,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
   # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and ("api-catalog" in zowe_launch_components or zowe_launch_components == "")
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "api-catalog" in zowe_launch_components)
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
@@ -135,7 +135,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
   # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and ("app-server" in zowe_launch_components or zowe_launch_components == "")
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "app-server" in zowe_launch_components)
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
