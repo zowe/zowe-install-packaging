@@ -1,0 +1,9 @@
+node('jenkins-nvm-keytar') {
+    // Initialize the pipeline
+    def pipeline = new NodeJSPipeline(this)
+    pipeline.isLernaMonorepo = true
+    'marist' : [
+        ssh_userpass    : 'CLI_DB2_PLUGIN'
+    ]
+    echo ${marist}
+}
