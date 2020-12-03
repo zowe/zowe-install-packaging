@@ -201,12 +201,12 @@ read_component_manifest() {
   fconv="${utils_dir}/format-converter-cli.jar"
   jq="${utils_dir}/jackson-jq-cli.jar"
 
-  if [ -f "${parent_dir}/manifest.yaml" ]; then
-    java -jar "${fconv}" "${parent_dir}/manifest.yaml" | java -jar "${jq}" -r "${manifest_key}"
-  elif [ -f "${parent_dir}/manifest.yml" ]; then
-    java -jar "${fconv}" "${parent_dir}/manifest.yml" | java -jar "${jq}" -r "${manifest_key}"
-  elif [ -f "${parent_dir}/manifest.json" ]; then
-    cat "${parent_dir}/manifest.json" | java -jar "${jq}" -r "${manifest_key}"
+  if [ -f "${component_dir}/manifest.yaml" ]; then
+    java -jar "${fconv}" "${component_dir}/manifest.yaml" | java -jar "${jq}" -r "${manifest_key}"
+  elif [ -f "${component_dir}/manifest.yml" ]; then
+    java -jar "${fconv}" "${component_dir}/manifest.yml" | java -jar "${jq}" -r "${manifest_key}"
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    cat "${component_dir}/manifest.json" | java -jar "${jq}" -r "${manifest_key}"
   fi
 
   return 0
