@@ -15,6 +15,7 @@ node('ibm-jenkins-slave-nvm') {
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
+  def zowePaxUploaded
 
   pipeline.admins.add("jackjia", "stevenh", "joewinchester", "markackert")
 
@@ -88,7 +89,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 20
+        expected    : 24
       )
 
       // we want build log pulled in for SMP/e build
@@ -155,10 +156,82 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/AZWE*'
     ]
   )
-
-  // 
+  
   pipeline.createStage(
-    name: "Build Docker",
+    name: "Build zLinux Docker",
+    timeout: [ time: 60, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_DOCKER
+    },
+    stage : {
+      if (params.BUILD_DOCKER) {
+        // this is a hack to find the zowe.pax upload
+        // FIXME: ideally this should be reachable from pipeline property
+        zowePaxUploaded = sh(
+          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
+          returnStdout: true
+        ).trim()
+        echo "zowePaxUploaded=${zowePaxUploaded}"
+        if (zowePaxUploaded == "") {
+          sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
+          error "Couldn't find zowe.pax uploaded."
+        }
+        
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'ZoweDockerhub',
+            usernameVariable: 'USERNAME',
+            passwordVariable: 'PASSWORD'
+          ),
+          sshUserPrivateKey(
+            credentialsId: 'zlinux-docker',
+            keyFileVariable: 'KEYFILE',
+            usernameVariable: 'ZUSER',
+            passphraseVariable: 'PASSPHRASE'
+          ),
+          string(
+            credentialsId: 'zlinux-host',
+            variable: 'ZHOST'
+          )
+        ]){
+          def Z_SERVER = [
+            name         : ZHOST,
+            host         : ZHOST,
+            port         : 22,
+            user         : ZUSER,
+            identityFile : KEYFILE,
+            passphrase   : PASSPHRASE,
+            allowAnyHosts: true
+          ]
+
+          sshCommand remote: Z_SERVER, command: \
+          """
+             mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
+             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
+             git clone --branch master https://github.com/zowe/zowe-dockerfiles.git
+             cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
+             wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
+             mkdir -p utils && cp -r ../../../../utils/* ./utils &&
+             sudo docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:s390x . &&
+             sudo docker save -o zowe-v1-lts.s390x.tar ${USERNAME}/zowe-v1-lts:s390x &&
+             sudo chmod 777 * &&
+             echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.s390x.tar
+          """
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts/zowe-v1-lts.s390x.tar", into: "zowe-v1-lts.s390x.tar"
+          pipeline.uploadArtifacts([ 'zowe-v1-lts.s390x.tar' ])
+          sshCommand remote: Z_SERVER, command: \
+          """
+             rm -rf zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
+             sudo docker system prune -f
+          """
+        }
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name: "Build Linux Docker",
     timeout: [ time: 120, unit: 'MINUTES' ],
     isSkippable: true,
     showExecute: {
@@ -168,15 +241,12 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (params.BUILD_DOCKER) {
         // this is a hack to find the zowe.pax upload
         // FIXME: ideally this should be reachable from pipeline property
-        def zowePaxUploaded = sh(
-          script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
-          returnStdout: true
-        ).trim()
         echo "zowePaxUploaded=${zowePaxUploaded}"
         if (zowePaxUploaded == "") {
           sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
           error "Couldn't find zowe.pax uploaded."
         }
+
         node('ibm-jenkins-slave-dind') {
           // checkout source code to docker build agent
           checkout scm
@@ -196,18 +266,17 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -ltr .'
 
             withCredentials([usernamePassword(
-              credentialsId: 'DockerGizaUser',
+              credentialsId: 'ZoweDockerhub',
               usernameVariable: 'USERNAME',
               passwordVariable: 'PASSWORD'
             )]){
               // build docker image
               sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
-              // publish
-              sh """
-                 docker login -u ${USERNAME} -p ${PASSWORD} \
-                 && docker push ${USERNAME}/zowe-v1-lts:amd64
-                 """
+              sh "docker save -o zowe-v1-lts.amd64.tar ${USERNAME}/zowe-v1-lts:amd64"
             }
+            // show files
+            sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
+            pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
           }
         }
       }

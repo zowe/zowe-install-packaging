@@ -28,6 +28,7 @@ function usage {
     echo "     - new-service - adds new service signed by local CA or external CA"
     echo "     - trust - adds a public certificate of a service to APIML truststore"
     echo "     - trust-zosmf - adds public certificates from z/OSMF to APIML truststore"
+    echo "     - trust-keyring - adds a public certificate of a service to APIML keyring"
     echo "     - clean - removes files created by setup"
     echo "     - jwt-keygen - generates and exports JWT key pair"
     echo ""
@@ -275,6 +276,15 @@ function export_service_certificate {
     fi
 }
 
+function import_external_certificate_to_truststore {
+    if [[ -n "${EXTERNAL_CERTIFICATE}" ]] && [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
+        echo "Import external certificate to the truststore"
+        CERTIFICATE=${SERVICE_KEYSTORE}.cer
+        ALIAS=extca0
+        trust
+    fi
+}
+
 # This check/code duplication is due to com.ibm.crypto.provider being need for z/os keyring support and
 # does not exist on other operating systems and will fail in docker or in development environments.
 # And Java does not support conditional import.
@@ -430,6 +440,7 @@ function new_service {
     import_external_ca_certificates
     export_service_certificate
     export_service_private_key
+    import_external_certificate_to_truststore
     echo "Listing generated files for service:"
     if [[ "${SERVICE_STORETYPE}" != "JCERACFKS" ]]; then
         ls -l ${SERVICE_KEYSTORE}* ${SERVICE_TRUSTSTORE}*
@@ -456,8 +467,15 @@ function trust {
     fi
 }
 
+function trust_keyring {
+    echo "Import a certificate to the keyring:"
+
+    keytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
+            -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+}
+
 function jwt_key_gen_and_export {
-    echo "Generates key pair for JWT token secret and exports the public key"
+    echo "Generates key pair for JWT secret and exports the public key"
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} \
           -dname "${SERVICE_DNAME}" -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
@@ -465,12 +483,18 @@ function jwt_key_gen_and_export {
     else
         pkeytool -genkeypair $V -alias ${JWT_ALIAS} -keyalg RSA -keysize 2048 -keystore ${SERVICE_KEYSTORE}.p12 \
         -dname "${SERVICE_DNAME}" -keypass ${SERVICE_PASSWORD} -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
-        pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore ${SERVICE_KEYSTORE}.p12 -storepass ${SERVICE_PASSWORD} -keypass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} \
-        -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+        pkeytool -exportcert -keystore ${SERVICE_KEYSTORE}.p12 -alias ${JWT_ALIAS} -rfc -storepass ${SERVICE_PASSWORD} -storetype ${SERVICE_STORETYPE} -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer
+
+        if [ `uname` = "OS/390" ]; then
+          iconv -f ISO8859-1 -t IBM-1047 ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer > ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+        else
+          mv ${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem
+        fi
     fi
 }
 
 function export_jwt_from_keyring {
+        echo "Export JWT secret from keyring"
         pkeytool -export -rfc -alias ${JWT_ALIAS} -keystore safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING} -storetype ${SERVICE_STORETYPE} \
           -file ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 }
@@ -694,6 +718,9 @@ case $ACTION in
         ;;
     trust)
         trust
+        ;;
+    trust-keyring)
+        trust_keyring
         ;;
     trust-zosmf)
         trust_zosmf

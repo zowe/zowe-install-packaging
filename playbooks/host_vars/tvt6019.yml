@@ -13,6 +13,8 @@ zowe_extra_environment_variables:
 
 # variables for zowe uninstallation and installation
 zowe_smpe_volser: T60192
+# caching service volume
+zowe_caching_vsam_volume: T60192
 
 zowe_external_domain_name: tvt6019.svl.ibm.com
 zowe_external_ip_address: 9.30.242.85
