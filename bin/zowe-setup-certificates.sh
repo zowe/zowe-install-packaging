@@ -180,9 +180,9 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
       "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-password "${KEYSTORE_PASSWORD}" \
         --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}"
       RC=$?
-      echo "apiml_cm.sh --action setup returned: ${RC}" >> ${LOG_FILE}
+      echo "apiml_cm.sh --action setup returned: ${RC}" >> "${LOG_FILE}"
     elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
-      "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh "--verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-keystore "${KEYSTORE_PREFIX}" \
+      "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-keystore "${KEYSTORE_PREFIX}" \
         --service-alias "${KEYSTORE_ALIAS}" --zowe-userid "${ZOWE_USER_ID}" --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --local-ca-filename "${LOCAL_CA_PREFIX}"
       RC=$?
       echo "apiml_cm.sh --action setup returned: ${RC}" >> "${LOG_FILE}"
@@ -193,7 +193,7 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
     (>&2 echo "Zowe Install setup configuration is invalid; check your zowe-setup-certificates.env file.")
     (>&2 echo "Some external apiml certificate fields are supplied...Fields must be filled out in full or left completely blank.")
     (>&2 echo "See ${LOG_FILE} for more details.")
-    echo "</zowe-setup-certificates.sh>" >> ${LOG_FILE}
+    echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
     rm "${KEYSTORE_PREFIX}"* "${TRUSTSTORE_PREFIX}"* "${EXTERNAL_CA_PREFIX}"* "${LOCAL_CA_PREFIX}"* 2> /dev/null
     exit 1
   fi

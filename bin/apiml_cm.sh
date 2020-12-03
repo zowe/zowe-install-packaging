@@ -125,18 +125,18 @@ function clean_service {
 function create_certificate_authority {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         echo "Generate keyring with the local CA private key and local CA public certificate:"
-        pkeytool -genkeypair ${V} -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
+        pkeytool -genkeypair $V -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
             -dname "${LOCAL_CA_DNAME}" -storetype "${SERVICE_STORETYPE}" -validity "${LOCAL_CA_VALIDITY}" \
             -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
         echo "Generate keystore with the local CA private key and local CA public certificate:"
-        pkeytool -genkeypair ${V} -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
+        pkeytool -genkeypair $V -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
             -dname "${LOCAL_CA_DNAME}" -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype ${SERVICE_STORETYPE} -validity ${LOCAL_CA_VALIDITY} \
             -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
         chmod 600 "${LOCAL_CA_FILENAME}.keystore.p12"
 
         echo "Export local CA public certificate:"
-        pkeytool -export ${V} -alias "${LOCAL_CA_ALIAS}" -file "${LOCAL_CA_FILENAME}.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" -rfc \
+        pkeytool -export $V -alias "${LOCAL_CA_ALIAS}" -file "${LOCAL_CA_FILENAME}.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" -rfc \
             -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype ${SERVICE_STORETYPE}
     fi
     if [ `uname` = "OS/390" ]; then
@@ -198,7 +198,7 @@ function sign_csr_using_local_ca {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         pkeytool -gencert $V -infile "${SERVICE_KEYSTORE}.csr" -outfile "${SERVICE_KEYSTORE}_signed.cer" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
             -alias "${LOCAL_CA_ALIAS}" -storetype ${SERVICE_STORETYPE} \
-            -ext "${SERVICE_EXT} "-ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
+            -ext "${SERVICE_EXT}" -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
             -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
         pkeytool -gencert $V -infile "${SERVICE_KEYSTORE}.csr" -outfile "${SERVICE_KEYSTORE}_signed.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
@@ -528,7 +528,7 @@ function zosmf_jwt_public_key {
         -cp "${BASE_DIR}/../components/api-mediation/gateway-service.jar" \
         -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
         org.springframework.boot.loader.PropertiesLauncher \
-        "https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT}" "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" "${LOCAL_CA_ALIAS}" \
+        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" "${LOCAL_CA_ALIAS}" \
         "${LOCAL_CA_FILENAME}.keystore.p12" PKCS12 "${LOCAL_CA_PASSWORD}" "${LOCAL_CA_PASSWORD}"
 }
 
@@ -542,7 +542,7 @@ function trust_zosmf {
     mkdir -p "${CER_DIR}"
     ALIAS="zosmf"
 
-    KEYTOOL_COMMAND="-printcert -sslserver "${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT}" -J-Dfile.encoding=UTF8"
+    KEYTOOL_COMMAND="-printcert -sslserver ${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} -J-Dfile.encoding=UTF8"
     # Check that the keytool command is okay and remote connection works. It prints out error messages
     # and ends the program if an error occurs.
     pkeytool ${KEYTOOL_COMMAND} -rfc
