@@ -100,7 +100,7 @@ validate_directories_are_accessible() {
       let "invalid=${invalid}+1"
     fi
   done
-  return invalid
+  return $invalid
 }
 
 validate_directory_is_writable() {
@@ -115,7 +115,7 @@ validate_directory_is_writable() {
       return 1
     fi
   else
-    return accessible_rc
+    return $accessible_rc
   fi
 }
 
