@@ -41,6 +41,7 @@ done
 
 ########################################################
 # prepare environment variables
+current_pwd=$(pwd)
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
 
@@ -56,8 +57,11 @@ else
   echo "Unable to determine start script for component ${component_id}, fall back to default bin/start.sh"
   start_script=${component_dir}/bin/start.sh
 fi
-if [ ! -z "${component_dir}" -a -x "${start_script}" ]; then
+if [ ! -z "${component_dir}" ]; then
   cd "${component_dir}"
-  . ${start_script}
+  if [ -x "${start_script}" ]; then
+    . ${start_script}
+  fi
+  cd "${current_pwd}"
 fi
  

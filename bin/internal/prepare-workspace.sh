@@ -38,6 +38,7 @@ done
 
 ########################################################
 # prepare environment variables
+current_pwd=$(pwd)
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
 
@@ -56,11 +57,14 @@ do
     echo "Unable to determine validate script for component ${component_id}, fall back to default bin/validate.sh"
     validate_script=${component_dir}/bin/validate.sh
   fi
-  if [ ! -z "${component_dir}" -a -x "${validate_script}" ]; then
+  if [ ! -z "${component_dir}" ]; then
     cd "${component_dir}"
-    . ${validate_script}
-    retval=$?
-    let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
+    if [ -x "${validate_script}" ]; then
+      . ${validate_script}
+      retval=$?
+      let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
+    fi
+    cd "${current_pwd}"
   fi
 done
 # exit if there are errors found
@@ -129,8 +133,11 @@ do
     echo "Unable to determine configure script for component ${component_id}, fall back to default bin/configure.sh"
     configure_script=${component_dir}/bin/configure.sh
   fi
-  if [ ! -z "${component_dir}" -a -x "${configure_script}" ]; then
+  if [ ! -z "${component_dir}" ]; then
     cd "${component_dir}"
-    . ${configure_script}
+    if [ -x "${configure_script}" ]; then
+      . ${configure_script}
+    fi
+    cd "${current_pwd}"
   fi
 done
