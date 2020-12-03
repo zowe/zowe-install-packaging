@@ -154,6 +154,16 @@ cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
 # cleanup working files
 rm -rf "$KEYRING_UTIL_SRC"
 
+# extract packaging utility tools to bin/utils
+cd "$ROOT_DIR"
+cd "${CONTENT_DIR}/files"
+mv zowe-utility-tools-*.zip zowe-utility-tools.zip
+cd "$ROOT_DIR"
+cd "${CONTENT_DIR}/bin/utils"
+jar -xf "../../files/zowe-utility-tools.zip"
+cd "$ROOT_DIR"
+rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
+
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
 mv "${CONTENT_DIR}/files/zowe_licenses_full.zip" \
