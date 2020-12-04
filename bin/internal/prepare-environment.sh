@@ -145,9 +145,6 @@ if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
 fi
 
-# source all utility libraries
-. ${ROOT_DIR}/bin/utils/utils.sh
-
 # set flag so we don't need to re-run this script
 ZWE_ENVIRONMENT_PREPARED=true
 
