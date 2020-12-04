@@ -42,8 +42,7 @@ then
   echo "WARNING: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
 fi
 
-# source all utility libraries
-. ${ROOT_DIR}/bin/utils/utils.sh
+# reset error counter
 ERRORS_FOUND=0
 
 # Fix node.js piles up in IPC message queue

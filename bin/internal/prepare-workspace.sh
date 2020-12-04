@@ -51,11 +51,10 @@ do
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
   validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
-  if [ -n "${validate_script}" ]; then
-    echo "Found commands.validate in component ${component_id} manifest: ${validate_script}"
-  else
-    echo "Unable to determine validate script for component ${component_id}, fall back to default bin/validate.sh"
-    validate_script=${component_dir}/bin/validate.sh
+  if [ -z "${validate_script}" ]; then
+    # backward compatible purpose
+    print_message "unable to determine validate script for component ${component_id}, fall back to default bin/validate.sh"
+    validate_script=bin/validate.sh
   fi
   if [ ! -z "${component_dir}" ]; then
     cd "${component_dir}"
@@ -127,11 +126,10 @@ do
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
   configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
-  if [ -n "${configure_script}" ]; then
-    echo "Found commands.configure in component ${component_id} manifest: ${configure_script}"
-  else
-    echo "Unable to determine configure script for component ${component_id}, fall back to default bin/configure.sh"
-    configure_script=${component_dir}/bin/configure.sh
+  if [ -z "${configure_script}" ]; then
+    # backward compatible purpose
+    print_message "unable to determine configure script for component ${component_id}, fall back to default bin/configure.sh"
+    configure_script=bin/configure.sh
   fi
   if [ ! -z "${component_dir}" ]; then
     cd "${component_dir}"
