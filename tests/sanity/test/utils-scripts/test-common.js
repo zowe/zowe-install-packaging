@@ -8,7 +8,7 @@
  * Copyright IBM Corporation 2020
  */
 
-const sshHelper = require('./ssh-helper');
+const sshHelper = require('../ssh-helper');
 
 describe('verify utils/common', function() {
   before('prepare SSH connection', async function() {
@@ -29,13 +29,13 @@ describe('verify utils/common', function() {
       const error_1 = 'It happened again!';
       const expected_err = `Error 0: ${error_0}\nError 1: ${error_1}`;
       const command = `${print_error_message} "${error_0}" && ${print_error_message} "${error_1}"`;
-      await test_common_function_has_expected_rc_stdout_stderr(command, 0, expected_err, expected_err);
+      await test_common_function_has_expected_rc_stdout_stderr(command, {}, { stdout: expected_err, stderr: expected_err });
     });
 
     async function test_print_error_message(message, expected_message) {
       const command = `${print_error_message} "${message}"`;
       // Currently we output errors to stdout and stderr
-      await test_common_function_has_expected_rc_stdout_stderr(command, 0, expected_message, expected_message);
+      await test_common_function_has_expected_rc_stdout_stderr(command, {}, { stdout: expected_message, stderr: expected_message });
     }
   });
 
@@ -45,7 +45,7 @@ describe('verify utils/common', function() {
     it('test single message', async function() {
       const message = 'this is a printed message';
       const command = `${print_message} "${message}"`;
-      await test_common_function_has_expected_rc_stdout_stderr(command, 0, message, '');
+      await test_common_function_has_expected_rc_stdout_stderr(command, {}, { stdout: message });
     });
   });
 
@@ -77,20 +77,21 @@ describe('verify utils/common', function() {
     async function test_log_message(message, expected_out, log_file = '') {
       const command = `${log_message} "${message}"`;
       if (log_file == '') {
-        await test_common_function_has_expected_rc_stdout_stderr(command, 0, expected_out, '');
+        await test_common_function_has_expected_rc_stdout_stderr(command, {}, { stdout: expected_out });
       } else {
         //Nothing stdout
-        await test_common_function_has_expected_rc_stdout_stderr(`export LOG_FILE=${log_file} && ${command}`, 0, '', '');
+        await test_common_function_has_expected_rc_stdout_stderr(command, { 'LOG_FILE': log_file });
         //Check log content
-        await test_common_function_has_expected_rc_stdout_stderr(`cat ${log_file}`, 0, expected_out, '');
+        await test_common_function_has_expected_rc_stdout_stderr(`cat ${log_file}`, {}, { stdout: expected_out });
       }
     }
   });
 
-  async function test_common_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
-    const common_utils_path = process.env.ZOWE_ROOT_DIR + '/bin/utils/common.sh';
-    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${common_utils_path} && ${command}`;
-    await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
+  async function test_common_function_has_expected_rc_stdout_stderr(command, envs = {}, expected = {}) {
+    await sshHelper.testCommand(command, {
+      envs: Object.assign({ 'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR }, envs),
+      sources: [ process.env.ZOWE_ROOT_DIR + '/bin/utils/common.sh' ]
+    }, expected);
   }
 
   after('dispose SSH connection', function() {

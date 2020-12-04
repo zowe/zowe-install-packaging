@@ -61,15 +61,30 @@ const executeCommand = async (command) => {
   return {rc, stdout, stderr};
 };
 
-const testCommand = async(command, expected_rc, expected_stdout, expected_stderr, exact_match = false) => {
-  const {rc, stdout, stderr} = await executeCommand(command);
-  expect(rc).to.equal(expected_rc);
+const testCommand = async(command, context = {}, expected = {}, exact_match = false) => {
+  const commands = [];
+  if (context && context.envs) {
+    for (const key in context.envs) {
+      commands.push(`export ${key}=${context.envs[key]}`);
+    }
+  }
+  if (context && context.sources) {
+    for (const src of context.sources) {
+      commands.push(`. ${src}`);
+    }
+  }
+  commands.push(command);
+  // apply default value
+  expected = Object.assign({rc: 0, stdout: '', stderr: ''}, expected);
+
+  const {rc, stdout, stderr} = await executeCommand(commands.join('\n'));
+  expect(rc).to.equal(expected.rc);
   if (exact_match) {
-    expect(stdout).to.equal(expected_stdout);
-    expect(stderr).to.equal(expected_stderr);
+    expect(stdout).to.equal(expected.stdout);
+    expect(stderr).to.equal(expected.stderr);
   } else {
-    await expectStringMatchExceptEmpty(stdout, expected_stdout);
-    await expectStringMatchExceptEmpty(stderr, expected_stderr);
+    await expectStringMatchExceptEmpty(stdout, expected.stdout);
+    await expectStringMatchExceptEmpty(stderr, expected.stderr);
   }
 };
 
