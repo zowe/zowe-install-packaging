@@ -59,7 +59,7 @@ fi
 if [ ! -z "${component_dir}" ]; then
   cd "${component_dir}"
   if [ -x "${start_script}" ]; then
-    . ${start_script}
+    ${start_script}
   fi
   cd "${current_pwd}"
 fi

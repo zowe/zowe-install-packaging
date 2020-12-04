@@ -39,9 +39,10 @@ set -a
 ZWE_ENVIRONMENT_PREPARED=
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:" opt; do
+while getopts "c:r:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -55,8 +56,16 @@ if [[ -z ${INSTANCE_DIR} ]]; then
   exit 1
 fi
 
-# find runtime directory
-ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+# find runtime directory if it's not defined
+if [ -z "${ROOT_DIR}" ]; then
+  # if prepare-environment.sh is sourced, this may not return correct path
+  ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+  # validate if this is zowe root path
+  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
+    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+    exit 1
+  fi
+fi
 
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
@@ -125,11 +134,15 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 . ${ROOT_DIR}/bin/utils/utils.sh
 # FIXME: ideally this should be handled by component configure.sh lifecycle script.
 #        We may require extensions to have these code in conformance program.
+# FIXME: prepare-environment.sh shouldn't have any output, but these 2 functions may output:
+#        Prepending JAVA_HOME/bin to the PATH...
+#        Prepending NODE_HOME/bin to the PATH...
+#        so we surpressed all output for those 2 functions
 if [ -n "${JAVA_HOME}" ]; then
-  ensure_java_is_on_path
+  ensure_java_is_on_path 1>/dev/null 2>&1
 fi
 if [ -n "${NODE_HOME}" ]; then
-  ensure_node_is_on_path
+  ensure_node_is_on_path 1>/dev/null 2>&1
 fi
 
 # source all utility libraries

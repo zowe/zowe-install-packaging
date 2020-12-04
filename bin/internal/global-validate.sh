@@ -47,7 +47,7 @@ ERRORS_FOUND=0
 
 # Fix node.js piles up in IPC message queue
 # FIXME: where is the best place for this fix? Currently it's here because global-validate.sh script is supposed to run only once.
-. ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
+${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
 
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 validate_directory_is_writable "${INSTANCE_DIR}"
@@ -57,4 +57,4 @@ validate_directory_is_accessible "${KEYSTORE_DIRECTORY}"
 
 ########################################################
 # Summary errors check, exit if errors found
-check_for_errors_found
+runtime_check_for_validation_errors_found

@@ -87,6 +87,43 @@ describe('verify utils/common', function() {
     }
   });
 
+  const runtime_check_for_validation_errors_found = 'runtime_check_for_validation_errors_found';
+  describe(`verify ${runtime_check_for_validation_errors_found}`, function() {
+
+    it('test log message with no error', async function() {
+      const errors_found = 0;
+      await test_common_function_has_expected_rc_stdout_stderr(runtime_check_for_validation_errors_found, {
+        'ERRORS_FOUND': errors_found,
+        'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,
+      });
+    });
+
+    it('test log message with specific errors', async function() {
+      const errors_found = 10;
+      const message = `${errors_found} errors were found during validatation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
+      await test_common_function_has_expected_rc_stdout_stderr(runtime_check_for_validation_errors_found, {
+        'ERRORS_FOUND': errors_found,
+        'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,
+      }, {
+        rc: errors_found,
+        stdout: message,
+      });
+    });
+
+    it('test log message with specific errors without exit', async function() {
+      const errors_found = 10;
+      const message = `${errors_found} errors were found during validatation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
+      await test_common_function_has_expected_rc_stdout_stderr(runtime_check_for_validation_errors_found, {
+        'ERRORS_FOUND': errors_found,
+        'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,
+        'ZWE_IGNORE_VALIDATION_ERRORS': 'true',
+      }, {
+        rc: 0,
+        stdout: message,
+      });
+    });
+  });
+
   async function test_common_function_has_expected_rc_stdout_stderr(command, envs = {}, expected = {}) {
     await sshHelper.testCommand(command, {
       envs: Object.assign({ 'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR }, envs),

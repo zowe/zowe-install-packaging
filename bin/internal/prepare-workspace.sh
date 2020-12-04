@@ -59,7 +59,7 @@ do
   if [ ! -z "${component_dir}" ]; then
     cd "${component_dir}"
     if [ -x "${validate_script}" ]; then
-      . ${validate_script}
+      ${validate_script}
       retval=$?
       let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
     fi
@@ -67,7 +67,7 @@ do
   fi
 done
 # exit if there are errors found
-check_for_errors_found
+runtime_check_for_validation_errors_found
 
 ########################################################
 # Prepare workspace directory
@@ -134,7 +134,7 @@ do
   if [ ! -z "${component_dir}" ]; then
     cd "${component_dir}"
     if [ -x "${configure_script}" ]; then
-      . ${configure_script}
+      ${configure_script}
     fi
     cd "${current_pwd}"
   fi
