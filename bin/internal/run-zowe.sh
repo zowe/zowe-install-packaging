@@ -30,13 +30,13 @@ export INSTANCE_DIR
 # this value should be trustworthy since this script is not supposed to be sourced
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}"
-. ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}"
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
+. ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 
-launch_components_list=$(${ROOT_DIR}/bin/internal/get-launch-components.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}")
-. ${ROOT_DIR}/bin/internal/prepare-workspace.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}" -t "${launch_components_list}"
+launch_components_list=$(${ROOT_DIR}/bin/internal/get-launch-components.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}")
+. ${ROOT_DIR}/bin/internal/prepare-workspace.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -t "${launch_components_list}"
 
 # FIXME: Zowe Launcher can take responsibility from here
 for component_id in $(echo "${launch_components_list}" | sed "s/,/ /g"); do
-  . ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}" -o "${component_id}" &
+  . ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -o "${component_id}" &
 done

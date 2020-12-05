@@ -43,7 +43,7 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}"
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 
 ########################################################
 if [[ "${USER}" == "IZUSVR" ]]

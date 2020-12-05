@@ -48,5 +48,5 @@ if [ -z "${ROOT_DIR}" ]; then
 fi
 
 # suppress any output to make sure this script only output LAUNCH_COMPONENTS
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}" 1> /dev/null 2>&1
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" 1> /dev/null 2>&1
 echo "${LAUNCH_COMPONENTS}"
