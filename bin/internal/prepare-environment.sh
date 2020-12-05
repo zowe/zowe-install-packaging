@@ -58,7 +58,7 @@ fi
 
 # find runtime directory if it's not defined
 if [ -z "${ROOT_DIR}" ]; then
-  # if prepare-environment.sh is sourced, this may not return correct path
+  # if this script is sourced, this may not return correct path
   ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
   # validate if this is zowe root path
   if [ ! -f "${ROOT_DIR}/manifest.json" ]; then

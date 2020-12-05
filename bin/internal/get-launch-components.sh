@@ -38,7 +38,7 @@ if [[ -z ${INSTANCE_DIR} ]]; then
   exit 1
 fi
 if [ -z "${ROOT_DIR}" ]; then
-  # if prepare-environment.sh is sourced, this may not return correct path
+  # if this script is sourced, this may not return correct path
   export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
   # validate if this is zowe root path
   if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
