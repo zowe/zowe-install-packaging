@@ -28,9 +28,10 @@
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:o:" opt; do
+while getopts "c:r:o:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     o) component_id=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
@@ -41,9 +42,16 @@ done
 
 ########################################################
 # prepare environment variables
-current_pwd=$(pwd)
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
+if [ -z "${ROOT_DIR}" ]; then
+  # if prepare-environment.sh is sourced, this may not return correct path
+  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+  # validate if this is zowe root path
+  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
+    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+    exit 1
+  fi
+fi
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}"
 
 ########################################################
 # find component root directory and execute start script
@@ -53,7 +61,7 @@ export LAUNCH_COMPONENT="${component_dir}/bin"
 start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
 if [ -z "${start_script}" ]; then
   # backward compatible purpose
-  print_message "unable to determine start script for component ${component_id}, fall back to default bin/start.sh"
+  print_message "unable to determine start script from component ${component_id} manifest, fall back to default bin/start.sh"
   start_script=${component_dir}/bin/start.sh
 fi
 if [ ! -z "${component_dir}" ]; then
@@ -61,6 +69,5 @@ if [ ! -z "${component_dir}" ]; then
   if [ -x "${start_script}" ]; then
     . ${start_script}
   fi
-  cd "${current_pwd}"
 fi
  

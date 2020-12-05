@@ -21,9 +21,10 @@
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:" opt; do
+while getopts "c:r:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -33,8 +34,16 @@ done
 
 ########################################################
 # prepare environment variables
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
+if [ -z "${ROOT_DIR}" ]; then
+  # if prepare-environment.sh is sourced, this may not return correct path
+  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+  # validate if this is zowe root path
+  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
+    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+    exit 1
+  fi
+fi
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}"
 
 ########################################################
 if [[ "${USER}" == "IZUSVR" ]]

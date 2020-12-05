@@ -25,9 +25,10 @@
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:t:" opt; do
+while getopts "c:r:t:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     t) LAUNCH_COMPONENTS=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
@@ -38,9 +39,16 @@ done
 
 ########################################################
 # prepare environment variables
-current_pwd=$(pwd)
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
+if [ -z "${ROOT_DIR}" ]; then
+  # if prepare-environment.sh is sourced, this may not return correct path
+  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+  # validate if this is zowe root path
+  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
+    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+    exit 1
+  fi
+fi
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "{$ROOT_DIR}"
 
 ########################################################
 # Validate component properties if script exists
@@ -53,7 +61,7 @@ do
   validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
   if [ -z "${validate_script}" ]; then
     # backward compatible purpose
-    print_message "unable to determine validate script for component ${component_id}, fall back to default bin/validate.sh"
+    print_message "unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
     validate_script=bin/validate.sh
   fi
   if [ ! -z "${component_dir}" ]; then
@@ -63,7 +71,6 @@ do
       retval=$?
       let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
     fi
-    cd "${current_pwd}"
   fi
 done
 # exit if there are errors found
@@ -128,7 +135,7 @@ do
   configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
   if [ -z "${configure_script}" ]; then
     # backward compatible purpose
-    print_message "unable to determine configure script for component ${component_id}, fall back to default bin/configure.sh"
+    print_message "unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
     configure_script=bin/configure.sh
   fi
   if [ ! -z "${component_dir}" ]; then
@@ -136,6 +143,5 @@ do
     if [ -x "${configure_script}" ]; then
       . ${configure_script}
     fi
-    cd "${current_pwd}"
   fi
 done
