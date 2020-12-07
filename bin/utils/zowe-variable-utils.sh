@@ -55,7 +55,7 @@ validate_variables_are_set() {
       let "invalid=${invalid}+1"
     fi
   done
-  return invalid
+  return $invalid
 }
 
 # ZOWE_PREFIX + instance - should be <=6 char long and exist.
@@ -73,6 +73,6 @@ validate_zowe_prefix() {
       return 1
     fi
   else
-    return prefix_set_rc
+    return $prefix_set_rc
   fi
 }

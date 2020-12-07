@@ -14,6 +14,10 @@ cleanup_zowe_job_history: True
 # ==============================================================================
 # optional, default to ansible_ssh_host
 # required for zD&T (external IP is different from internal IP)
+zowe_zos_host:
+# optional, default to zowe_zos_host
+# for z/OS deployment, this can be left empty and be same as zowe_zos_host
+# for all-in-one docker deployment, this can be set to domain where you start docker container
 zowe_external_domain_name:
 # optional, default to ansible_user
 zowe_test_user:

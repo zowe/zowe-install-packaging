@@ -40,3 +40,4 @@ fi
 . ${utils_dir}/setup-log-dir.sh
 . ${utils_dir}/zosmf-utils.sh
 . ${utils_dir}/zowe-variable-utils.sh
+. ${utils_dir}/component-utils.sh

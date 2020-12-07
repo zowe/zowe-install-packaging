@@ -222,6 +222,54 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
 };
 
 /**
+ * Install and verify a Zowe build
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    installPlaybook
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+async function installAndVerifyDockerZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndVerifyDockerZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  debug(`run ${installPlaybook} on ${serverId}`);
+  const resultInstall = await runAnsiblePlaybook(
+    testcase,
+    installPlaybook,
+    serverId,
+    extraVars
+  );
+
+  expect(resultInstall.code).toBe(0);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  debug(`run verify.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify.yml',
+      serverId,
+      extraVars
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
+}
+
+/**
  * Install and verify convenience build
  *
  * @param  {String}    testcase 
@@ -230,6 +278,17 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
  */
 export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
+};
+
+/**
+ * Install and verify docker build
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+export async function installAndVerifyDockerBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  await installAndVerifyDockerZowe(testcase, 'install-docker.yml', serverId, extraVars);
 };
 
 /**
