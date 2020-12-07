@@ -42,7 +42,7 @@ find_component_directory() {
     if [ -d "${ROOT_DIR}/components/${component_id}" ]; then
       # this is a Zowe build-in component
       component_dir="${ROOT_DIR}/components/${component_id}"
-    elif [ ! -z "${ZWE_EXTENSION_DIR}" ]; then
+    elif [ -n "${ZWE_EXTENSION_DIR}" ]; then
       if [ -d "${ZWE_EXTENSION_DIR}/${component_id}" ]; then
         # this is an extension installed/linked in ZWE_EXTENSION_DIR
         component_dir="${ZWE_EXTENSION_DIR}/${component_id}"

@@ -64,7 +64,7 @@ if [ -z "${start_script}" ]; then
   print_message "unable to determine start script from component ${component_id} manifest, fall back to default bin/start.sh"
   start_script=${component_dir}/bin/start.sh
 fi
-if [ ! -z "${component_dir}" ]; then
+if [ -n "${component_dir}" ]; then
   cd "${component_dir}"
   if [ -x "${start_script}" ]; then
     . ${start_script}

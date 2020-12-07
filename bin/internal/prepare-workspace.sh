@@ -64,7 +64,7 @@ do
     print_message "unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
     validate_script=bin/validate.sh
   fi
-  if [ ! -z "${component_dir}" ]; then
+  if [ -n "${component_dir}" ]; then
     cd "${component_dir}"
     if [ -x "${validate_script}" ]; then
       . ${validate_script}
@@ -138,7 +138,7 @@ do
     print_message "unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
     configure_script=bin/configure.sh
   fi
-  if [ ! -z "${component_dir}" ]; then
+  if [ -n "${component_dir}" ]; then
     cd "${component_dir}"
     if [ -x "${configure_script}" ]; then
       . ${configure_script}
