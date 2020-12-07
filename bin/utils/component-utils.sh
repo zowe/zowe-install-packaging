@@ -13,7 +13,11 @@
 ###############################
 # Find component root directory
 #
-# Note: this function is for Zowe runtime, it depends on bin/internal/prepare-environment.sh.
+# Required environment variables:
+# - ROOT_DIR
+#
+# Optional environment variables:
+# - ZWE_EXTENSION_DIR
 #
 # This function will find the component in this sequence:
 #   - check if component id paramter is a path to lifecycle scripts directory
@@ -56,9 +60,12 @@ find_component_directory() {
 ###############################
 # Read component manifest
 #
-# Note: this function requires Java.
+# Note: this function requires Java, which means JAVA_HOME should have been defined,
+#       and ensure_java_is_on_path should have been executed.
 #
-# Note: this function is for Zowe runtime, it depends on bin/internal/prepare-environment.sh.
+# Required environment variables:
+# - ROOT_DIR
+# - JAVA_HOME
 #
 # Example:
 # - read my-component commands.start value
