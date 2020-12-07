@@ -12,7 +12,10 @@ const sshHelper = require('../ssh-helper');
 
 const install_iframe_script='zowe-install-iframe-plugin.sh';
 const install_iframe_path = `${process.env.ZOWE_ROOT_DIR}/bin/utils/${install_iframe_script}`;
+
+
 describe(`verify ${install_iframe_script}`, function() {
+
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });

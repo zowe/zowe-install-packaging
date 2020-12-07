@@ -1,0 +1,7 @@
+recursive: true
+timeout: 360000
+reporter: mocha-multi-reporters
+reporter-option:
+- configFile=test/multi-reporters.json
+require: test/mocha-helper.js
+exclude: [ "test/cli/**", "test/install/**", "test/e2e/test-05-tn3270.js", "test/api-doc-gen.js" ]
