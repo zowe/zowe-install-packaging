@@ -21,9 +21,10 @@
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:" opt; do
+while getopts "c:r:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -33,8 +34,16 @@ done
 
 ########################################################
 # prepare environment variables
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
+if [ -z "${ROOT_DIR}" ]; then
+  # if this script is sourced, this may not return correct path
+  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+  # validate if this is zowe root path
+  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
+    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+    exit 1
+  fi
+fi
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 
 ########################################################
 if [[ "${USER}" == "IZUSVR" ]]
@@ -42,13 +51,12 @@ then
   echo "WARNING: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
 fi
 
-# source all utility libraries
-. ${ROOT_DIR}/bin/utils/utils.sh
+# reset error counter
 ERRORS_FOUND=0
 
 # Fix node.js piles up in IPC message queue
 # FIXME: where is the best place for this fix? Currently it's here because global-validate.sh script is supposed to run only once.
-. ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
+${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
 
 # Make sure INSTANCE_DIR is accessible and writable to the user id running this
 validate_directory_is_writable "${INSTANCE_DIR}"
@@ -58,4 +66,4 @@ validate_directory_is_accessible "${KEYSTORE_DIRECTORY}"
 
 ########################################################
 # Summary errors check, exit if errors found
-check_for_errors_found
+runtime_check_for_validation_errors_found
