@@ -8,7 +8,7 @@
  * Copyright IBM Corporation 2020
  */
 
-const sshHelper = require('./ssh-helper');
+const sshHelper = require('../ssh-helper');
 
 const install_iframe_script='zowe-install-iframe-plugin.sh';
 const install_iframe_path = `${process.env.ZOWE_ROOT_DIR}/bin/utils/${install_iframe_script}`;
@@ -75,7 +75,11 @@ Usage: ${install_iframe_path} -i <plugin_id> -s <plugin_short_name> -u <url> -d 
   });
   
   async function test_install_iframe_has_expected_rc_stdout_stderr(parameters, expected_rc, expected_stdout) {
-    await sshHelper.testCommand(`${install_iframe_path} -z ${parameters}`, expected_rc, expected_stdout, '',  true);
+    await sshHelper.testCommand(`${install_iframe_path} -z ${parameters}`, {}, {
+      rc: expected_rc,
+      stdout: expected_stdout,
+      stderr: '',
+    },  true);
   }
 
   after('dispose SSH connection', function() {
