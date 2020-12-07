@@ -25,7 +25,6 @@ set -x
 # ./content/smpe/
 # ./content/templates/
 # ./content/zowe-${ZOWE_VERSION}/
-# ./mediation/
 
 # ---------------------------------------------------------------------
 # --- create JCL files
@@ -37,6 +36,7 @@ set -x
 function _createJCL
 {
 VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
+# vtl-cli source: https://github.com/plavjanik/vtl-cli
 
 if [ -f "$1/$2.vtl" ]; then
   vtlList="$2.vtl"                             # process just this file
@@ -156,15 +156,6 @@ fi
 # show what's already present
 echo "[$SCRIPT_NAME] content current directory: ls -A $(pwd)/"
 ls -A "$(pwd)/" || true
-
-# create mediation PAX
-echo "[$SCRIPT_NAME] create mediation pax"
-cd mediation
-MEDIATION_PATH="../content/zowe-$ZOWE_VERSION/files"
-pax -x os390 -w -f ${MEDIATION_PATH}/api-mediation-package-0.8.4.pax *
-cd ..
-# clean up working files
-rm -rf "./mediation"
 
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
 chmod +x content/zowe-$ZOWE_VERSION/bin/*.sh

@@ -37,6 +37,10 @@ zowe_extra_environment_variables:
 
 # variables for zowe uninstallation and installation
 zowe_smpe_volser: WLAG1
+# caching service volume
+zowe_caching_vsam_volume: WLAG1
 
 zowe_external_domain_name: wlag.svl.ibm.com
 zowe_external_ip_address: 9.30.238.55
+zowe_zlux_terminal_telnet_port: 992
+zowe_zlux_terminal_telnet_security_type: tls

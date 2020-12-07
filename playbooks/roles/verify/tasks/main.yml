@@ -18,6 +18,7 @@
     - zowe_apiml_gateway_port
     - zowe_jobs_api_port
     - zowe_mvs_api_port
+    - zowe_sanity_test_testcases
 
 # ============================================================================
 - name: Delete old reports
@@ -35,7 +36,7 @@
 
 # ============================================================================
 - name: test Zowe instance
-  command: npm test {{ zowe_sanity_test_testcases | default('') }}
+  command: npm test -- {{ zowe_sanity_test_testcases | default('') }}
   args:
     chdir: "{{ zowe_sanity_test_root_dir }}"
   environment:
@@ -53,4 +54,5 @@
     ZOWE_EXPLORER_JOBS_PORT: "{{ zowe_jobs_api_port }}"
     ZOWE_EXPLORER_DATASETS_PORT: "{{ zowe_mvs_api_port }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
+    ZOWE_CACHING_SERVICE_START: "{{ zowe_apiml_caching_service_start|string|lower }}"
   delegate_to: localhost

@@ -22,6 +22,10 @@ zowe_extra_environment_variables:
 
 # variables for zowe uninstallation and installation
 zowe_smpe_volser: TIVLP1
+# caching service volume
+zowe_caching_vsam_volume: TIVLP1
 
 zowe_external_domain_name: tivlp46.svl.ibm.com
 zowe_external_ip_address: 9.30.237.20
+zowe_zlux_terminal_telnet_port: 992
+zowe_zlux_terminal_telnet_security_type: tls

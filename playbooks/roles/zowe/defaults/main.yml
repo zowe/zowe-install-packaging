@@ -31,12 +31,12 @@ zowe_known_xmem_jobnames:
 
 # this should list all known started tasks we ever setup during install
 zowe_known_started_tasks:
-- ZWESIS*.*
-- ZOWESVR.*
-- ZWESVSTC.*
-- ZWESISTC.*
-- ZWESASTC.*
-- ZWES*.*
+- ZWESIS*
+- ZOWESVR
+- ZWESVSTC
+- ZWESISTC
+- ZWESASTC
+- ZWES*
 
 # this should list all known facility profiles we ever setup during install
 zowe_known_facility_profiles:
@@ -73,6 +73,14 @@ zowe_known_loadlib_members:
 # this should list all parmlib members we ever setup during install
 zowe_known_parmlib_members:
 - ZWESIP00
+
+# this should list all known zowe runtime server user ids we ever setup during install
+zowe_known_runtime_users:
+- ZWESVUSR
+    
+# this should list all known cross memory server user ids we ever setup during install
+zowe_known_xmem_stc_users:
+- ZWESIUSR
 
 # default zowe profile
 # this profile is abandoned after v1.7.0
@@ -119,5 +127,6 @@ zowe_known_tss_keyring_names:
 zowe_known_keyring_personal_digicerts:
 - ZOWECERT
 - ZOWEJWT
+- JWTSECRET
 zowe_known_keyring_certauth_digicerts:
 - ZOWECA

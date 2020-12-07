@@ -65,8 +65,8 @@ prompt_for_node_home_if_required() {
 ensure_node_is_on_path() {
   if [[ ":$PATH:" != *":$NODE_HOME/bin:"* ]]
   then
-    print_message "Appending NODE_HOME/bin to the PATH..."
-    export PATH=$PATH:$NODE_HOME/bin
+    print_message "Prepending NODE_HOME/bin to the PATH..."
+    export PATH=$NODE_HOME/bin:$PATH
   fi
 }
 
