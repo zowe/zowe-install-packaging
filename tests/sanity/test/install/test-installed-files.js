@@ -13,7 +13,9 @@ const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:install:installed-files');
 const addContext = require('mochawesome/addContext'); 
 
+
 describe('verify installed files', function() {
+
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
