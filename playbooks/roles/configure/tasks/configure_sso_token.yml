@@ -1,6 +1,11 @@
 ---
 # Setup profile and token necessary to enable SSO with JWT
 
+- name: Enable CRYPTOZ profile
+  raw: |-
+    tsocmd "SETROPTS RACLIST(CRYPTOZ)"
+  ignore_errors: True
+
 - name: Define a CRYPTOZ SO profile
   raw: |-
     tsocmd "RDEFINE CRYPTOZ SO.{{ zowe_token_name }}"
