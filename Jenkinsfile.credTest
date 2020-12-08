@@ -161,7 +161,6 @@ node('ibm-jenkins-slave-nvm') {
         echo "***Credential*** = ${DB2USER}"
         echo "***Credential*** = ${DB2PASS}"
         }
-    }
 
 
 
