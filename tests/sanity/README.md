@@ -92,6 +92,7 @@ npm run test:docker
 
 - All test cases are located in `test` directory.
 - Test cases are grouped as sub-directories:
+  * `test/apiml`: includes all API Mediation Layer test cases,
   * `test/cli`: includes all CLI test cases,
   * `test/e2e`: includes all E2E UI test cases,
   * `test/explorer`: includes all Zowe Explorer API test cases,
