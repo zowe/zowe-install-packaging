@@ -147,27 +147,6 @@ node('ibm-jenkins-slave-nvm') {
         }
 
 
-        echo "Looking up credentials"
-        def CLI_CRED
-        def CLI_DB2_PLUGIN
-        def CLI_CRED_PSW
-        def CLI_CRED_USR
-        def CLI_DB2_PLUGIN_PSW
-        def CLI_DB2_PLUGIN_USR
-        sh "sed -e 's#{CLI_DB2_PLUGIN}#${env.CLI_CRED}#g'"
-        echo "***Credential*** =  ${CLI_DB2_PLUGIN}"
-        echo "***Credential*** =  ${CLI_DB2_PLUGIN_USR}"
-        echo "***Credential*** =  ${CLI_DB2_PLUGIN_PSW}"
-        echo "***Credential*** =  ${CLI_CRED}"
-        echo "***Credential*** =  ${CLI_CRED_USR}"
-        echo "***Credential*** =  ${CLI_CRED_PSW}"
-        withCredentials([string(credentialsId: 'CLI_DB2_PLUGIN_USR', variable: 'DB2USER'),string(credentialsId: 'CLI_DB2_PLUGIN_PSW', variable: 'DB2PASS')]) {
-        echo "***Credential*** = ${DB2USER}"
-        echo "***Credential*** = ${DB2PASS}"
-        }
-
-
-
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
