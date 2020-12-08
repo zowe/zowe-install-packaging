@@ -14,9 +14,11 @@ const debug = require('debug')('zowe-sanity-test:install:explore-server');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 
+
 let REQ;
 
 describe(`test zLux server https://${process.env.SSH_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
+
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';

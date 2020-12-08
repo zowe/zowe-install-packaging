@@ -587,7 +587,7 @@ const locateApp = async(driver, appName) => {
     const caption = await win.findElements(By.css('.border-box-sizing .heading .caption'));
     if (caption[0]) {
       const text = await caption[0].getText();
-      if (text === appName) {
+      if (text.startsWith(appName)) {
         // app window launched
         appWin = win;
         break;
