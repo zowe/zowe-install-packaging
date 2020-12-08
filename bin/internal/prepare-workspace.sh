@@ -59,7 +59,7 @@ do
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
   validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
-  if [ -z "${validate_script}" ]; then
+  if [ -z "${validate_script}" -o "${validate_script}" = "null" ]; then
     # backward compatible purpose
     print_message "unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
     validate_script=bin/validate.sh
@@ -133,7 +133,7 @@ do
   # backward compatible purpose, some may expect this variable to be component lifecycle directory
   export LAUNCH_COMPONENT="${component_dir}/bin"
   configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
-  if [ -z "${configure_script}" ]; then
+  if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then
     # backward compatible purpose
     print_message "unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
     configure_script=bin/configure.sh
