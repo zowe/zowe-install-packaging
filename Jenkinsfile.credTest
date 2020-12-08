@@ -179,10 +179,12 @@ node('ibm-jenkins-slave-nvm') {
         def USERPASS_PSW
         def USERPASS_USR
         withCredentials([usernameColonPassword(credentialsId: 'CLI_DB2_PLUGIN', variable: 'USERPASS')]) {
-        echo "***Credential*** = ${USERPASS}"
-        echo "***Credential*** = ${USERPASS}"
-        echo "Username = ${USERPASS_USR}"
-        echo "Password = ${USERPASS_PSW}"
+            echo "***Credential*** = ${USERPASS}"
+            echo "***Credential*** = ${USERPASS}"
+        withCredentials([usernamePassword(credentialsId: 'mycreds', usernameVariable: 'DB2_USERNAME', passwordVariable: 'DB2_PASSWORD')]) {
+            echo "***Credential*** = ${DB2_USERNAME}"
+            echo "***Credential*** = ${DB2_PASSWORD}"
+        }
         echo "**END OF TESTS**"
         }
       }
