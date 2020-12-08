@@ -160,8 +160,7 @@ node('ibm-jenkins-slave-nvm') {
         withCredentials([usernamePassword(credentialsId: 'CLI_DB2_PLUGIN', usernameVariable: 'DB2_USERNAME', passwordVariable: 'DB2_PASSWORD')]) {
             echo "***Credential*** = ${DB2_USERNAME}"
             echo "***Credential*** = ${DB2_PASSWORD}"
-            echo "${DB2_USERNAME}" >> test.properties
-            echo "${DB2_PASSWORD}" >> test.properties
+            echo "***Credential*** = ${DB2_USERNAME}" >> test.properties
         echo "**END OF TESTS**"
         }
       }
