@@ -95,7 +95,9 @@ npm run test:docker
   * `test/cli`: includes all CLI test cases,
   * `test/e2e`: includes all E2E UI test cases,
   * `test/explorer`: includes all Zowe Explorer API test cases,
-  * `test/install`: includes all test cases validating Zowe installation.
+  * `test/install`: includes all test cases validating Zowe installation,
+  * `test/utils-scripts`: includes all test cases validating Zowe utility scripts,
+  * `test/zlux`: includes all test cases validating Zowe zlux server.
 
 ### Output Debugging Information
 
