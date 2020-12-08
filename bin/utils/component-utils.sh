@@ -82,7 +82,7 @@ read_component_manifest() {
   manifest_key=$2
 
   if [ -z "$JAVA_HOME" ]; then
-    return 0
+    return 1
   fi
   # java should have already been put into PATH
 
@@ -92,11 +92,14 @@ read_component_manifest() {
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
     java -jar "${fconv}" "${component_dir}/manifest.yaml" | java -jar "${jq}" -r "${manifest_key}"
+    return $?
   elif [ -f "${component_dir}/manifest.yml" ]; then
     java -jar "${fconv}" "${component_dir}/manifest.yml" | java -jar "${jq}" -r "${manifest_key}"
+    return $?
   elif [ -f "${component_dir}/manifest.json" ]; then
     cat "${component_dir}/manifest.json" | java -jar "${jq}" -r "${manifest_key}"
+    return $?
+  else
+    return 1
   fi
-
-  return 0
 }

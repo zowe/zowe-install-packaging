@@ -95,6 +95,29 @@ describe('verify utils/component-utils', function() {
       );
     });
 
+    it('test reading non-existing component manifest entry', async function() {
+      const component = 'jobs-api';
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands.somethingDoesNotExist"`,
+        {},
+        {
+          stdout: 'null',
+        }
+      );
+    });
+
+    it('test reading component manifest entry with wrong definition', async function() {
+      const component = 'jobs-api';
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands[].start"`,
+        {},
+        {
+          rc: 1,
+          stderr: 'jq: error: Cannot index string with string "start"',
+        }
+      );
+    });
+
   });
 
   async function test_component_function_has_expected_rc_stdout_stderr(command, envs = {}, expected = {}, exact_match = true) {
