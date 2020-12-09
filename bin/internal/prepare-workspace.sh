@@ -51,21 +51,43 @@ fi
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 
 ########################################################
+# Prepare workspace directory
+mkdir -p ${WORKSPACE_DIR}
+# Make accessible to group so owning user can edit?
+chmod -R 771 ${WORKSPACE_DIR}
+
+# Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
+cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
+
+########################################################
+# convert components YAML manifest to JSAON format
+for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
+do
+  component_dir=$(find_component_directory "${component_id}")
+  if [ -n "${component_dir}" ]; then
+    convert_component_manifest "${component_dir}"
+  fi
+done
+
+########################################################
 # Validate component properties if script exists
 ERRORS_FOUND=0
 for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
-  # backward compatible purpose, some may expect this variable to be component lifecycle directory
-  export LAUNCH_COMPONENT="${component_dir}/bin"
-  validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
-  if [ -z "${validate_script}" -o "${validate_script}" = "null" ]; then
-    # backward compatible purpose
-    print_message "unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
-    validate_script=bin/validate.sh
-  fi
   if [ -n "${component_dir}" ]; then
     cd "${component_dir}"
+
+    # backward compatible purpose, some may expect this variable to be component lifecycle directory
+    export LAUNCH_COMPONENT="${component_dir}/bin"
+
+    # check validate script
+    validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
+    if [ -z "${validate_script}" -o "${validate_script}" = "null" ]; then
+      # backward compatible purpose
+      print_message "unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
+      validate_script=bin/validate.sh
+    fi
     if [ -x "${validate_script}" ]; then
       . ${validate_script}
       retval=$?
@@ -77,14 +99,6 @@ done
 runtime_check_for_validation_errors_found
 
 ########################################################
-# Prepare workspace directory
-mkdir -p ${WORKSPACE_DIR}
-# Make accessible to group so owning user can edit?
-chmod -R 771 ${WORKSPACE_DIR}
-
-# Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
-cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
-
 # Keep config dir for zss within permissions it accepts
 # FIXME: this should be moved to zlux/bin/configure.sh.
 #        Ideally we want this removed entirely as it stops uses from being able 
@@ -130,16 +144,23 @@ EOF
 for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
-  # backward compatible purpose, some may expect this variable to be component lifecycle directory
-  export LAUNCH_COMPONENT="${component_dir}/bin"
-  configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
-  if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then
-    # backward compatible purpose
-    print_message "unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
-    configure_script=bin/configure.sh
-  fi
   if [ -n "${component_dir}" ]; then
     cd "${component_dir}"
+
+    # backward compatible purpose, some may expect this variable to be component lifecycle directory
+    export LAUNCH_COMPONENT="${component_dir}/bin"
+
+    # default behavior
+    process_component_apiml_static_definitions "${component_dir}"
+    process_component_desktop_iframe_plugin "${component_dir}"
+
+    # check configure script
+    configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
+    if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then
+      # backward compatible purpose
+      print_message "unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
+      configure_script=bin/configure.sh
+    fi
     if [ -x "${configure_script}" ]; then
       . ${configure_script}
     fi

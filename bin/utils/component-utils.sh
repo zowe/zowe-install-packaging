@@ -58,6 +58,56 @@ find_component_directory() {
 }
 
 ###############################
+# Convert component YAML format manifest to JSON and place into workspace foler
+#
+# Note: this function requires Java, which means JAVA_HOME should have been defined,
+#       and ensure_java_is_on_path should have been executed.
+#
+# Note: this function is for runtime only to prepare workspace
+#
+# Required environment variables:
+# - ROOT_DIR
+# - JAVA_HOME
+# - WORKSPACE_DIR
+#
+# Example:
+# - convert my-component manifest, a .manifest.json will be created in <WORKSPACE_DIR>/my-component folder
+#   convert_component_manifest "/path/to/zowe/components/my-component"
+#
+# @param string   component directory
+convert_component_manifest() {
+  component_dir=$1
+
+  if [ -z "$JAVA_HOME" ]; then
+    return 1
+  fi
+  # java should have already been put into PATH
+
+  if [ -z "${WORKSPACE_DIR}" ]; then
+    return 1
+  fi
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  fconv="${utils_dir}/format-converter-cli.jar"
+  component_name=$(basename "${component_dir}")
+  component_manifest=
+
+  if [ -f "${component_dir}/manifest.yaml" ]; then
+    component_manifest="${component_dir}/manifest.yaml"
+  elif [ -f "${component_dir}/manifest.yml" ]; then
+    component_manifest="${component_dir}/manifest.yml"
+  fi
+
+  if [ -n "${component_manifest}" ]; then
+    mkdir -p "${WORKSPACE_DIR}/${component_name}"
+    java -jar "${fconv}" -o "${WORKSPACE_DIR}/${component_name}/.manifest.json" "${component_manifest}"
+    return $?
+  else
+    return 1
+  fi
+}
+
+###############################
 # Read component manifest
 #
 # Note: this function requires Java, which means JAVA_HOME should have been defined,
@@ -66,6 +116,9 @@ find_component_directory() {
 # Required environment variables:
 # - ROOT_DIR
 # - JAVA_HOME
+#
+# Optional environment variables:
+# - WORKSPACE_DIR
 #
 # Example:
 # - read my-component commands.start value
@@ -87,10 +140,18 @@ read_component_manifest() {
   # java should have already been put into PATH
 
   utils_dir="${ROOT_DIR}/bin/utils"
+  component_name=$(basename "${component_dir}")
   fconv="${utils_dir}/format-converter-cli.jar"
   jq="${utils_dir}/jackson-jq-cli.jar"
+  manifest_in_workspace=
+  if [ -n "${WORKSPACE_DIR}" ]; then
+    manifest_in_workspace="${WORKSPACE_DIR}/${component_name}/.manifest.json"
+  fi
 
-  if [ -f "${component_dir}/manifest.yaml" ]; then
+  if [ -n "${manifest_in_workspace}" -a -f "${manifest_in_workspace}" ]; then
+    cat "${manifest_in_workspace}" | java -jar "${jq}" -r "${manifest_key}"
+    return $?
+  elif [ -f "${component_dir}/manifest.yaml" ]; then
     java -jar "${fconv}" "${component_dir}/manifest.yaml" | java -jar "${jq}" -r "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yml" ]; then
@@ -103,3 +164,81 @@ read_component_manifest() {
     return 1
   fi
 }
+
+###############################
+# Parse and process manifest service APIML static definition
+#
+# The supported manifest entry is ".apimlServices.static[].file". All files defined
+# here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
+#
+# Note: this function requires Java, which means JAVA_HOME should have been defined,
+#       and ensure_java_is_on_path should have been executed.
+#
+# Required environment variables:
+# - ROOT_DIR
+# - JAVA_HOME
+# - STATIC_DEF_CONFIG_DIR
+#
+# @param string   component directory
+process_component_apiml_static_definitions() {
+  component_dir=$1
+
+  if [ -z "${STATIC_DEF_CONFIG_DIR}" ]; then
+    print_error_message "Error: STATIC_DEF_CONFIG_DIR is required to process component definitions for API Mediation Layer."
+    return 1
+  fi
+
+  component_name=$(basename "${component_dir}")
+
+  static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static[].file" 2>/dev/null)
+  if [ -z "${static_defs}" -o "${static_defs}" = "null" ]; then
+    # does the component define it as object instead of array
+    static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static.file" 2>/dev/null)
+  fi
+
+  cd "${component_dir}"
+  echo "${static_defs}" | while read one_def; do
+    one_def_trimmed=$(echo "${one_def}" | xargs)
+    if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
+      print_message "Process component ${component_name} API Mediation Layer static definition ${one_def_trimmed} ..."
+      sanitized_def_name=$(echo "${one_def_trimmed}" | sed 's/[^a-zA-Z0-9]/_/g')
+      # FIXME: we may change the static definitions files to real template in the future.
+      #        currently we support to use environment variables in the static definition template
+      cat "${one_def_trimmed}" | envsubst | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
+      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml || true
+    fi
+  done
+}
+
+
+###############################
+# Parse and process manifest desktop iframe plugin definition
+#
+# The supported manifest entry is ".apimlServices.static[].file". All files defined
+# here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
+#
+# Note: this function requires Java, which means JAVA_HOME should have been defined,
+#       and ensure_java_is_on_path should have been executed.
+#
+# Required environment variables:
+# - ROOT_DIR
+# - JAVA_HOME
+#
+# @param string   component directory
+process_component_desktop_iframe_plugin() {
+  component_dir=$1
+
+  component_name=$(basename "${component_dir}")
+
+  iframe_plugin_defs=$(read_component_manifest "${component_dir}" ".desktopIframePlugins" 2>/dev/null)
+  if [ -z "${iframe_plugin_defs}" -o "${iframe_plugin_defs}" = "null" ]; then
+    # not defined, exit with 0
+    return 0
+  fi
+
+  cd "${component_dir}"
+  echo "${iframe_plugin_defs}" | while read one_def || [[ -n $one_def ]]; do
+    print_message "Process component ${component_name} desktop iframe plugin definition ... [[${one_def}]]"
+  done
+}
+

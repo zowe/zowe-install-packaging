@@ -65,6 +65,8 @@ find . \( \
 -name ".jshintrc" -o \
 -name ".JSHINTRC" -o \
 -name "*.json" -o \
+-name "*.json.tpl" -o \
+-name "*.json.template" -o \
 -name "*.JSON" -o \
 -name "*.jst" -o \
 -name "*.JST" -o \
@@ -112,8 +114,12 @@ find . \( \
 -name "*.xml" -o \
 -name "*.XML" -o \
 -name "*.yaml" -o \
+-name "*.yaml.tpl" -o \
+-name "*.yaml.template" -o \
 -name "*.YAML" -o \
 -name "*.yml" -o \
+-name "*.yml.tpl" -o \
+-name "*.yml.template" -o \
 -name "*.YML" \
 \) -exec chtag -tc ISO8859-1 {} \;
 
