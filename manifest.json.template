@@ -24,7 +24,7 @@
     "org.zowe.zlux.sample-angular-app": {
       "version": "1.18.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "sample-react-app-1.18.0-20201208.205124.pax"
+      "artifact": "sample-angular-app-1.18.0-20201208.205224.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
       "version": "1.18.0-RC",
