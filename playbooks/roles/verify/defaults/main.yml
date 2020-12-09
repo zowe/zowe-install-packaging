@@ -11,7 +11,7 @@ work_dir_local: .tmp
 # if run test in debug mode. for example, set to "test:*"
 zowe_sanity_test_debug_mode: ""
 # only run subset of test cases
-zowe_sanity_test_testcases: "./test/**/!(api-doc-gen.js)"
+zowe_sanity_test_testcases: "\"./test/**/!(api-doc-gen.js)\" --exclude ./**/test-zss-via-gateway.js"
 # default folder of sanity test
 zowe_sanity_test_root_dir: ../tests/sanity
 
@@ -25,8 +25,8 @@ zowe_instance_dir: ~/.zowe/instance
 # zowe job prefix.
 zowe_job_prefix: ZWE
 zowe_proclib_membername: ZWESVSTC
+zowe_instance_id: 1
 # ports will be tested
 zowe_apiml_gateway_port: 7554
-zowe_jobs_api_port: 8545
-zowe_mvs_api_port: 8547
 zowe_zlux_port: 8544
+zowe_apiml_caching_service_start: true

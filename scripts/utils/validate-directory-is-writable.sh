@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2019, 2020
 ################################################################################
 
-# PLEASE NOTE - this is script is planned for removal - please use file-utils.sh instead
+# PLEASE NOTE - this is script is planned for removal - please use bin/utils/utils.sh instead
 
-. ${ROOT_DIR}/bin/utils/file-utils.sh
+. ${ROOT_DIR}/bin/utils/utils.sh
 validate_directory_is_writable $1

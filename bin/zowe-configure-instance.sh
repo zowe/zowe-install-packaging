@@ -38,7 +38,8 @@ fi
 
 . ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
 
-. ${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh
+# Source main utils script
+. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
 if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
