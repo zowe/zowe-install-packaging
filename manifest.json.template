@@ -75,32 +75,32 @@
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.7"
-    },
-    "org.zowe.explorer-mvs": {
       "version": "1.0.8"
     },
+    "org.zowe.explorer-mvs": {
+      "version": "1.0.9"
+    },
     "org.zowe.explorer-uss": {
-      "version": "1.0.7"
+      "version": "1.0.8"
     },
     "org.zowe.explorer-ui-server": {
       "version": "0.2.15"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
       "version": "1.18.1",
-      "artifact": "api-catalog-1.18.1.zip"
+      "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
       "version": "1.18.1",
-      "artifact": "discovery-1.18.1.zip"
+      "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
       "version": "1.18.1",
-      "artifact": "gateway-1.18.1.zip"
+      "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
       "version": "1.18.1",
-      "artifact": "caching-service-1.18.1.zip"
+      "artifact": "caching-service*.zip"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -110,7 +110,8 @@
       "flat": "true"
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.1-SNAPSHOT"
+      "version": "~0.0.1-SNAPSHOT",
+      "repository": "libs-snapshot-local"
     },
     "org.zowe.licenses": {
       "version": "1.17.0"
@@ -121,14 +122,14 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.8.1",
+        "tag": "v4.9.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.17.1",
+        "tag": "v1.18.1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -193,7 +194,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.24.4",
+        "tag": "v6.24.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -207,7 +208,7 @@
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v4.0.6",
+        "tag": "v4.0.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -249,7 +250,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.8",
+        "tag": "v1.0.9",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -263,7 +264,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.7",
+        "tag": "v1.0.8",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -277,7 +278,7 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.7",
+        "tag": "v1.0.8",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -291,14 +292,14 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v1.0.3",
+        "tag": "v1.0.4",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v1.0.3",
+        "tag": "v1.0.4",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -384,7 +385,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "1.10.1",
+        "tag": "v1.10.1",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     }
