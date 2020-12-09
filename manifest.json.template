@@ -67,12 +67,10 @@
       "artifact": "zss-1.18.0-rc-62-20201208204614.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "1.0.4",
-      "explode": "true"
+      "version": "1.0.4"
     },
     "org.zowe.explorer.files": {
-      "version": "1.0.4",
-      "explode": "true"
+      "version": "1.0.4"
     },
     "org.zowe.explorer-jes": {
       "version": "1.0.8"
