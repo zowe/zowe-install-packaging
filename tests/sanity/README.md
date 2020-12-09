@@ -43,7 +43,7 @@ With correct npm registry, you can run `npm install` to install all dependencies
 
 By default, E2E UI test cases are launched by Selenium with Firefox driver. If you run test cases on your local, you need Firefox installed.
 
-The existing test cases are tested on Firefox v61.0.2 which is pre-installed in Jenkins Docker Slaves. In theory, the e2e test cases should be able to run on Firefox v53 and above.
+The existing test cases are tested on Firefox v61.0.2 which is pre-installed in Jenkins build agent. In theory, the e2e test cases should be able to run on Firefox v53 and above.
 
 ### Start Test
 
