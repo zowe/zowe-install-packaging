@@ -108,8 +108,7 @@
       "flat": "true"
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.1-SNAPSHOT",
-      "repository": "libs-snapshot-local"
+      "version": "0.0.1"
     },
     "org.zowe.licenses": {
       "version": "1.17.0"
