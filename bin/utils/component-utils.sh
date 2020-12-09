@@ -184,11 +184,12 @@ process_component_apiml_static_definitions() {
   component_dir=$1
 
   if [ -z "${STATIC_DEF_CONFIG_DIR}" ]; then
-    print_error_message "Error: STATIC_DEF_CONFIG_DIR is required to process component definitions for API Mediation Layer."
+    >&2 echo "Error: STATIC_DEF_CONFIG_DIR is required to process component definitions for API Mediation Layer."
     return 1
   fi
 
   component_name=$(basename "${component_dir}")
+  all_succeed=true
 
   static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static[].file" 2>/dev/null)
   if [ -z "${static_defs}" -o "${static_defs}" = "null" ]; then
@@ -197,19 +198,36 @@ process_component_apiml_static_definitions() {
   fi
 
   cd "${component_dir}"
-  echo "${static_defs}" | while read one_def; do
+  while read -r one_def; do
     one_def_trimmed=$(echo "${one_def}" | xargs)
     if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
-      print_message "Process component ${component_name} API Mediation Layer static definition ${one_def_trimmed} ..."
+      echo "process ${component_name} service static definition file ${one_def_trimmed} ..."
       sanitized_def_name=$(echo "${one_def_trimmed}" | sed 's/[^a-zA-Z0-9]/_/g')
       # FIXME: we may change the static definitions files to real template in the future.
       #        currently we support to use environment variables in the static definition template
-      cat "${one_def_trimmed}" | envsubst | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
-      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml || true
+      parsed_def=$( ( echo "cat <<EOF" ; cat "${one_def}" ; echo EOF ) | sh 2>&1)
+      retval=$?
+      if [ "${retval}" != "0" ]; then
+        >&2 echo "failed to parse ${component_name} API Mdeialtion Layer static definition file ${one_def}: ${parsed_def}"
+        if [[ "${parsed_def}" == *unclosed* ]]; then
+          >&2 echo "this is very likely an encoding issue that file is not tagged properly"
+        fi
+        all_succeed=false
+        break
+      fi
+      echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
+      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
     fi
-  done
-}
+  done <<EOF
+$(echo "${static_defs}")
+EOF
 
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
 
 ###############################
 # Parse and process manifest desktop iframe plugin definition
@@ -224,21 +242,90 @@ process_component_apiml_static_definitions() {
 # - ROOT_DIR
 # - JAVA_HOME
 #
+# Optional environment variables (but very likely are required):
+# - ZOWE_EXPLORER_HOST
+# - GATEWAY_PORT
+#
 # @param string   component directory
 process_component_desktop_iframe_plugin() {
   component_dir=$1
 
   component_name=$(basename "${component_dir}")
-
-  iframe_plugin_defs=$(read_component_manifest "${component_dir}" ".desktopIframePlugins" 2>/dev/null)
-  if [ -z "${iframe_plugin_defs}" -o "${iframe_plugin_defs}" = "null" ]; then
-    # not defined, exit with 0
-    return 0
-  fi
+  all_succeed=true
 
   cd "${component_dir}"
-  echo "${iframe_plugin_defs}" | while read one_def || [[ -n $one_def ]]; do
-    print_message "Process component ${component_name} desktop iframe plugin definition ... [[${one_def}]]"
-  done
-}
 
+  # we maximum support 20 desktop iframe plugins in one package
+  iterator_index=0
+  while [ $iterator_index -lt 20 ]; do
+    iframe_plugin_def=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}]" 2>/dev/null)
+    if [ -z "${iframe_plugin_def}" -o "${iframe_plugin_def}" = "null" ]; then
+      # not defined, which means no more definitions
+      break
+    fi
+
+    plugin_id=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].id" 2>/dev/null)
+    if [ -z "${plugin_id}" -o "${plugin_id}" = "null" ]; then
+      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
+    fi
+    plugin_name=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].name" 2>/dev/null)
+    if [ -z "${plugin_name}" -o "${plugin_name}" = "null" ]; then
+      plugin_name=$(read_component_manifest "${component_dir}" ".name" 2>/dev/null)
+    fi
+    plugin_url=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].url" 2>/dev/null)
+    if [ -z "${plugin_url}" -o "${plugin_url}" = "null" ]; then
+      plugin_url=
+      # this is a big guess to check configs, should we do this?
+      # or should we check APIML static defs?
+      base_uri=$(read_component_manifest "${component_dir}" ".configs.baseUri" 2>/dev/null)
+      if [ -n "${base_uri}" -a "${base_uri}" != "null" ]; then
+        plugin_url="https://${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}${base_uri}"
+      fi
+    fi
+    plugin_icon=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].icon" 2>/dev/null)
+
+    echo "process desktop plugin #${iterator_index}"
+
+    if [ -z "${plugin_id}" -o "${plugin_id}" = "null" ]; then
+      all_succeed=false
+      >&2 echo "plugin id is not defined"
+    fi
+    if [ -z "${plugin_name}" -o "${plugin_name}" = "null" ]; then
+      all_succeed=false
+      >&2 echo "plugin name is not defined"
+    fi
+    if [ -z "${plugin_url}" -o "${plugin_url}" = "null" ]; then
+      all_succeed=false
+      >&2 echo "plugin url is not defined"
+    fi
+    if [ -z "${plugin_icon}" -o "${plugin_icon}" = "null" ]; then
+      all_succeed=false
+      >&2 echo "plugin icon is not defined"
+    elif [ ! -f "${component_dir}/${plugin_icon}" ]; then
+      all_succeed=false
+      >&2 echo "plugin icon ${component_dir}/${plugin_icon} does not exist"
+    fi
+
+    if [ "${all_succeed}" = "true" ]; then
+      echo "* id   : ${plugin_id}"
+      echo "* name : ${plugin_name}"
+      echo "* url  : ${plugin_url}"
+      echo "* icon : ${plugin_icon}"
+
+      ${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \
+        "${plugin_id}" \
+        "${plugin_name}" \
+        "${plugin_url}" \
+        "${WORKSPACE_DIR}/${component_name}" \
+        "${component_dir}/${plugin_icon}"
+    fi
+
+    iterator_index=`expr $iterator_index + 1`
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    return 1
+  fi
+}

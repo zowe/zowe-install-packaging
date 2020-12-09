@@ -44,6 +44,49 @@ log_message() {
   fi
 }
 
+# return currrent user id
+get_user_id() {
+  echo ${USER:-${USERNAME:-${LOGNAME}}}
+}
+
+# runtime logging functions, follow zowe service logging standard
+print_formatted_message() {
+  service=$1
+  logger=$2
+  level=$3
+  message=$4
+
+  # always use upper case
+  level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
+
+  log_line_prefix="$(date -u '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
+  while read -r line; do
+    has_prefix=$(echo "$line" | awk '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/')
+    if [ -z "${has_prefix}" ]; then
+      line="${log_line_prefix} ${line}"
+    fi
+    if [ "${level}" = "ERROR" ]; then
+      >&2 echo "${line}"
+    else
+      echo "${line}"
+    fi
+  done <<EOF
+$(echo "${message}")
+EOF
+}
+
+print_formatted_info() {
+  print_formatted_message "${1}" "${2}" "INFO" "${3}"
+}
+
+print_formatted_warn() {
+  print_formatted_message "${1}" "${2}" "WARN" "${3}"
+}
+
+print_formatted_error() {
+  print_formatted_message "${1}" "${2}" "ERROR" "${3}"
+}
+
 ###############################
 # Check if there are errors registered
 #

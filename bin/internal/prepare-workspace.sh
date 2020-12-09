@@ -50,8 +50,13 @@ if [ -z "${ROOT_DIR}" ]; then
 fi
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 
+# zowe launch script logging identifier
+LOGGING_SERVICE_ID=ZWELS
+LOGGING_SCRIPT_NAME=prepare-workspace.sh
+
 ########################################################
 # Prepare workspace directory
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "prepare workspace directory ..."
 mkdir -p ${WORKSPACE_DIR}
 # Make accessible to group so owning user can edit?
 chmod -R 771 ${WORKSPACE_DIR}
@@ -61,16 +66,20 @@ cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
 ########################################################
 # convert components YAML manifest to JSAON format
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "prepare component manifest in workspace ..."
 for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
   if [ -n "${component_dir}" ]; then
+    print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- ${component_id}"
     convert_component_manifest "${component_dir}"
   fi
 done
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component manifests prepared"
 
 ########################################################
 # Validate component properties if script exists
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "process component validations ..."
 ERRORS_FOUND=0
 for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
@@ -85,18 +94,27 @@ do
     validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
     if [ -z "${validate_script}" -o "${validate_script}" = "null" ]; then
       # backward compatible purpose
-      print_message "unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
+      print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
       validate_script=bin/validate.sh
     fi
     if [ -x "${validate_script}" ]; then
-      . ${validate_script}
+      print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- process ${component_id} validate command ..."
+      result=$(. ${validate_script})
       retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        else
+          print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        fi
+      fi
       let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
     fi
   fi
 done
 # exit if there are errors found
 runtime_check_for_validation_errors_found
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component validations are successful"
 
 ########################################################
 # Keep config dir for zss within permissions it accepts
@@ -141,6 +159,7 @@ EOF
 
 ########################################################
 # Run setup/configure on components if script exists
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "process component configurations ..."
 for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
   component_dir=$(find_component_directory "${component_id}")
@@ -150,19 +169,49 @@ do
     # backward compatible purpose, some may expect this variable to be component lifecycle directory
     export LAUNCH_COMPONENT="${component_dir}/bin"
 
-    # default behavior
-    process_component_apiml_static_definitions "${component_dir}"
-    process_component_desktop_iframe_plugin "${component_dir}"
+    print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- configure ${component_id}"
+
+    # default build-in behaviors
+    # - apiml static definitions
+    result=$(process_component_apiml_static_definitions "${component_dir}" 2>&1)
+    retval=$?
+    if [ -n "${result}" ]; then
+      if [ "${retval}" = "0" ]; then
+        print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+      else
+        print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+      fi
+    fi
+    # - desktop iframe plugin
+    result=$(process_component_desktop_iframe_plugin "${component_dir}" 2>&1)
+    retval=$?
+    if [ -n "${result}" ]; then
+      if [ "${retval}" = "0" ]; then
+        print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+      else
+        print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+      fi
+    fi
 
     # check configure script
     configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
     if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then
       # backward compatible purpose
-      print_message "unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
+      print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
       configure_script=bin/configure.sh
     fi
     if [ -x "${configure_script}" ]; then
-      . ${configure_script}
+      print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* process ${component_id} configure command ..."
+      result=$(. ${configure_script})
+      retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        else
+          print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        fi
+      fi
     fi
   fi
 done
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component configurations are successful"
