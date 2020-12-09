@@ -1,9 +1,13 @@
 ---
 # this playbook runs bin/zowe-setup-certificates.sh to setup certificates for Zowe
+# FIXME: HOSTNAME should be combination of zowe_zos_host and zowe_external_domain_name.
+#        The reason we use zowe_zos_host here is the certificates created here will only
+#        be used by z/OS side. Docker image may use different certificate with it's
+#        own zowe-setup-certificates.sh
 - name: Prepare zowe-setup-certificates.env
   raw: >-
     cat "{{ zowe_root_dir }}/bin/zowe-setup-certificates.env" | \
-    sed -e "s+^HOSTNAME=.*\$+HOSTNAME={{ zowe_external_domain_name }}+" | \
+    sed -e "s+^HOSTNAME=.*\$+HOSTNAME={{ zowe_zos_host }}+" | \
     sed -e "s+^IPADDRESS=.*\$+IPADDRESS={{ zowe_external_ip_address }}+" | \
     sed -e "s+^ZOSMF_CERTIFICATE=.*\$+ZOSMF_CERTIFICATE={{ zowe_zosmf_certificate }}+" | \
     sed -e "s+^EXTERNAL_CERTIFICATE=.*\$+EXTERNAL_CERTIFICATE={{ zowe_external_certficate }}+" | \

@@ -67,11 +67,11 @@
       "artifact": "zss-1.18.0-rc-62-20201208204614.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "1.0.3",
+      "version": "1.0.4",
       "explode": "true"
     },
-    "org.zowe.explorer.data.sets": {
-      "version": "1.0.3",
+    "org.zowe.explorer.files": {
+      "version": "1.0.4",
       "explode": "true"
     },
     "org.zowe.explorer-jes": {
@@ -86,11 +86,21 @@
     "org.zowe.explorer-ui-server": {
       "version": "0.2.15"
     },
-    "org.zowe.apiml.sdk.zowe-install": {
-       "version": "1.17.1",
-       "artifact": "zowe-install-1.17.1.zip",
-       "target": ".pax/mediation/",
-       "explode": "true"
+    "org.zowe.apiml.sdk.api-catalog-package": {
+      "version": "1.18.1",
+      "artifact": "api-catalog-1.18.1.zip"
+    },
+    "org.zowe.apiml.sdk.discovery-package": {
+      "version": "1.18.1",
+      "artifact": "discovery-1.18.1.zip"
+    },
+    "org.zowe.apiml.sdk.gateway-package": {
+      "version": "1.18.1",
+      "artifact": "gateway-1.18.1.zip"
+    },
+    "org.zowe.apiml.sdk.caching-service-package": {
+      "version": "1.18.1",
+      "artifact": "caching-service-1.18.1.zip"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -99,6 +109,9 @@
       "explode": "false",
       "flat": "true"
    },
+    "org.zowe.utility_tools": {
+      "version": "~0.0.1-SNAPSHOT"
+    },
     "org.zowe.licenses": {
       "version": "1.17.0"
     }
@@ -356,10 +369,14 @@
       }]
     },
     {
-      "componentGroup": "Keyring Utilities",
+      "componentGroup": "Utilities",
       "entries": [{
         "repository": "keyring-utilities",
         "tag": "v1.0.4",
+        "destinations": ["Zowe PAX"]
+      }, {
+        "repository": "zowe-install-packaging-tools",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     },

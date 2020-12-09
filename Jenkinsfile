@@ -32,11 +32,6 @@ node('ibm-jenkins-slave-nvm') {
       defaultValue: false
     ),
     booleanParam(
-      name: 'PUBLISH_DOCKER',
-      description: 'If we want to publish docker image to dockerhub.',
-      defaultValue: false
-    ),
-    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -94,7 +89,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 20
+        expected    : 24
       )
 
       // we want build log pulled in for SMP/e build
@@ -218,20 +213,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../../../../utils/* ./utils &&
-             sudo docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:s390x . &&
+             sudo docker build -t ${USERNAME}/zowe-v1-lts:s390x . &&
              sudo docker save -o zowe-v1-lts.s390x.tar ${USERNAME}/zowe-v1-lts:s390x &&
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.s390x.tar
           """
           sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts/zowe-v1-lts.s390x.tar", into: "zowe-v1-lts.s390x.tar"
           pipeline.uploadArtifacts([ 'zowe-v1-lts.s390x.tar' ])
-          if (params.PUBLISH_DOCKER) {
-            sshCommand remote: Z_SERVER, command: \
-            """
-               sudo docker login -u ${USERNAME} -p ${PASSWORD} &&
-               sudo docker push ${USERNAME}/zowe-v1-lts:s390x
-            """
-          }
           sshCommand remote: Z_SERVER, command: \
           """
              rm -rf zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
@@ -283,26 +271,12 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
               passwordVariable: 'PASSWORD'
             )]){
               // build docker image
-              sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
+              sh "docker build -t ${USERNAME}/zowe-v1-lts:amd64 ."
               sh "docker save -o zowe-v1-lts.amd64.tar ${USERNAME}/zowe-v1-lts:amd64"
             }
             // show files
             sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
             pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
-
-            if (params.PUBLISH_DOCKER) {
-              withCredentials([usernamePassword(
-                credentialsId: 'ZoweDockerhub',
-                usernameVariable: 'USERNAME',
-                passwordVariable: 'PASSWORD'
-              )]){
-                // publish
-                sh """
-                 docker login -u ${USERNAME} -p ${PASSWORD} \
-                 && docker push ${USERNAME}/zowe-v1-lts:amd64
-                 """
-              }
-            }
           }
         }
       }

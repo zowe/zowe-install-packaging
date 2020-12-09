@@ -1,0 +1,14 @@
+---
+# Docker Pull & Run
+- import_role:
+    name: docker
+    tasks_from: uninstall
+
+- import_role:
+    name: docker
+    tasks_from: docker-pull
+
+# Docker Start
+- import_role:
+    name: docker
+    tasks_from: docker-start

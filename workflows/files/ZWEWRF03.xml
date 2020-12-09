@@ -185,15 +185,6 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>7554</default>
         </integer>
     </variable>
-    <variable name="APIML_ENABLE_SSO" scope="instance" visibility="public">
-        <label>API Mediation Layer Single Sign-On</label>
-        <abstract>Do you want to enable Single Sign-On?</abstract>
-        <description>Check this option to enable the Single Sign-On.</description>
-        <category>API Mediation Layer</category>
-        <boolean>
-            <default>false</default>
-        </boolean>
-    </variable>
     <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX Server HTTPS Port</label>
         <abstract>Zowe ZLUX Server HTTPS Port</abstract>
@@ -297,7 +288,6 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="CATALOG_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="DISCOVERY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="GATEWAY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="APIML_ENABLE_SSO" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_ZSS_SERVER_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" noPromptIfSet="false" required="true"/>
@@ -350,7 +340,6 @@ export KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
 export CATALOG_PORT=${instance-CATALOG_PORT}
 export DISCOVERY_PORT=${instance-DISCOVERY_PORT}
 export GATEWAY_PORT=${instance-GATEWAY_PORT}
-export APIML_ENABLE_SSO=${instance-APIML_ENABLE_SSO}
 
 # explorer variables
 export JOBS_API_PORT=${instance-JOBS_API_PORT}
@@ -429,7 +418,6 @@ KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
 CATALOG_PORT=${instance-CATALOG_PORT}
 DISCOVERY_PORT=${instance-DISCOVERY_PORT}
 GATEWAY_PORT=${instance-GATEWAY_PORT}
-APIML_ENABLE_SSO=${instance-APIML_ENABLE_SSO}
 
 # explorer variables
 JOBS_API_PORT=${instance-JOBS_API_PORT}
@@ -506,7 +494,6 @@ export KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
 export CATALOG_PORT=${instance-CATALOG_PORT}
 export DISCOVERY_PORT=${instance-DISCOVERY_PORT}
 export GATEWAY_PORT=${instance-GATEWAY_PORT}
-export APIML_ENABLE_SSO=${instance-APIML_ENABLE_SSO}
 
 # explorer variables
 export JOBS_API_PORT=${instance-JOBS_API_PORT}

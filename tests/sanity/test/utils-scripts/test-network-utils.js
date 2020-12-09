@@ -9,9 +9,11 @@
  */
 
 const expect = require('chai').expect;
-const sshHelper = require('./ssh-helper');
+const sshHelper = require('../ssh-helper');
+
 
 describe('verify network-utils', function() {
+
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
@@ -56,14 +58,46 @@ describe('verify network-utils', function() {
     }
   });
 
+  const validate_host_is_resolvable = 'validate_host_is_resolvable';
+  describe(`verify ${validate_host_is_resolvable}`, function() {
+
+    it('test ssh host is resolvable', async function() {
+      const variable_name = 'ssh_host';
+      const command = `export ${variable_name}="${process.env.SSH_HOST}" && ${validate_host_is_resolvable} "${variable_name}"`;
+      await test_network_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+    });
+
+    it('test unset host port is not resolvable', async function() {
+      const variable_name = 'test_unset_variable';
+      const command = `${validate_host_is_resolvable} "${variable_name}"`;
+      const expected_err = `${variable_name} is empty`;
+      await test_network_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
+    });
+
+    it('test junk host port is not resolvable', async function() {
+      const variable_name = 'a_host';
+      const variable_value = 'http://www.rubbish.junk';
+      const command = `export ${variable_name}="${variable_value}" && ${validate_host_is_resolvable} "${variable_name}"`;
+      const expected_err = `${variable_name} '${variable_value}' does not resolve`;
+      await test_network_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
+    });
+
+  });
+
   async function test_network_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
-    const network_utils_path = process.env.ZOWE_ROOT_DIR + '/bin/utils/network-utils.sh';
-    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${network_utils_path} && ${command}`;
-    // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
-    if (expected_stderr != '') {
-      expected_stdout = expected_stderr;
-    }
-    await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
+    await sshHelper.testCommand(command, {
+      envs: {
+        'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR,
+      },
+      sources: [
+        process.env.ZOWE_ROOT_DIR + '/bin/utils/network-utils.sh',
+      ]
+    }, {
+      rc: expected_rc,
+      // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+      stdout: expected_stderr || expected_stdout,
+      stderr: expected_stderr,
+    });
   }
 
   after('dispose SSH connection', function() {

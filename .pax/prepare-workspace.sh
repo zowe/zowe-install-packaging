@@ -23,7 +23,6 @@ set -x
 
 # expected input workspace layout ($ROOT_DIR):
 # ./.pax/keyring-util/
-# ./.pax/mediation/
 # ./bin/
 # ./files/
 # ./install/
@@ -146,13 +145,6 @@ cp -R install/*        "${ASCII_DIR}/install"
 cp -R scripts/*        "${ASCII_DIR}/scripts"
 cp -R shared/scripts/* "${ASCII_DIR}/scripts"
 
-# jobs-api-server-start.sh is already in IBM-1047 encoding, no need to put in ascii folder
-mkdir -p "${CONTENT_DIR}/files/scripts"
-mv ${ASCII_DIR}/files/scripts/jobs-api*.sh \
-   ${CONTENT_DIR}/files/scripts/
-mv ${ASCII_DIR}/files/scripts/files-api*.sh \
-   ${CONTENT_DIR}/files/scripts/
-
 # move keyring-util to bin/utils/keyring-util
 KEYRING_UTIL_SRC="${PAX_WORKSPACE_DIR}/keyring-util"
 KEYRING_UTIL_DEST="${CONTENT_DIR}/bin/utils/keyring-util"
@@ -161,6 +153,16 @@ cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
 
 # cleanup working files
 rm -rf "$KEYRING_UTIL_SRC"
+
+# extract packaging utility tools to bin/utils
+cd "$ROOT_DIR"
+cd "${CONTENT_DIR}/files"
+mv zowe-utility-tools-*.zip zowe-utility-tools.zip
+cd "$ROOT_DIR"
+cd "${CONTENT_DIR}/bin/utils"
+jar -xf "../../files/zowe-utility-tools.zip"
+cd "$ROOT_DIR"
+rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
@@ -209,5 +211,4 @@ echo "[$SCRIPT_NAME] done"
 # ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/
 # ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/
 # ${PAX_WORKSPACE_DIR}/keyring-util/  # already present
-# ${PAX_WORKSPACE_DIR}/mediation/  # already present
 # ascii/* will move into content/, translated to ebcdic
