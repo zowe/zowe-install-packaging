@@ -268,9 +268,9 @@ process_component_desktop_iframe_plugin() {
     if [ -z "${plugin_id}" -o "${plugin_id}" = "null" ]; then
       plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
     fi
-    plugin_name=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].name" 2>/dev/null)
-    if [ -z "${plugin_name}" -o "${plugin_name}" = "null" ]; then
-      plugin_name=$(read_component_manifest "${component_dir}" ".name" 2>/dev/null)
+    plugin_title=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].title" 2>/dev/null)
+    if [ -z "${plugin_title}" -o "${plugin_title}" = "null" ]; then
+      plugin_title=$(read_component_manifest "${component_dir}" ".title" 2>/dev/null)
     fi
     plugin_url=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].url" 2>/dev/null)
     if [ -z "${plugin_url}" -o "${plugin_url}" = "null" ]; then
@@ -283,6 +283,11 @@ process_component_desktop_iframe_plugin() {
       fi
     fi
     plugin_icon=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].icon" 2>/dev/null)
+    plugin_version=$(read_component_manifest "${component_dir}" ".version" 2>/dev/null)
+    if [ -z "${plugin_version}" -o "${plugin_version}" = "null" ]; then
+      # this is the same default version in bin/utils/zowe-install-iframe-plugin.sh
+      plugin_version=1.0.0
+    fi
 
     echo "process desktop plugin #${iterator_index}"
 
@@ -290,9 +295,9 @@ process_component_desktop_iframe_plugin() {
       all_succeed=false
       >&2 echo "plugin id is not defined"
     fi
-    if [ -z "${plugin_name}" -o "${plugin_name}" = "null" ]; then
+    if [ -z "${plugin_title}" -o "${plugin_title}" = "null" ]; then
       all_succeed=false
-      >&2 echo "plugin name is not defined"
+      >&2 echo "plugin title is not defined"
     fi
     if [ -z "${plugin_url}" -o "${plugin_url}" = "null" ]; then
       all_succeed=false
@@ -307,17 +312,20 @@ process_component_desktop_iframe_plugin() {
     fi
 
     if [ "${all_succeed}" = "true" ]; then
-      echo "* id   : ${plugin_id}"
-      echo "* name : ${plugin_name}"
-      echo "* url  : ${plugin_url}"
-      echo "* icon : ${plugin_icon}"
+      echo "* id      : ${plugin_id}"
+      echo "* title   : ${plugin_title}"
+      echo "* version : ${plugin_version}"
+      echo "* url     : ${plugin_url}"
+      echo "* icon    : ${component_dir}/${plugin_icon}"
+      echo "* folder  : ${WORKSPACE_DIR}/${component_name}"
 
       ${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh \
-        "${plugin_id}" \
-        "${plugin_name}" \
-        "${plugin_url}" \
-        "${WORKSPACE_DIR}/${component_name}" \
-        "${component_dir}/${plugin_icon}"
+        -d "${WORKSPACE_DIR}/${component_name}" \
+        -i "${plugin_id}" \
+        -s "${plugin_title}" \
+        -t "${component_dir}/${plugin_icon}" \
+        -u "${plugin_url}" \
+        -v "${plugin_version}"
     fi
 
     iterator_index=`expr $iterator_index + 1`
