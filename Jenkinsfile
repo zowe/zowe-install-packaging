@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-node('ibm-jenkins-slave-nvm') {
+node('zowe-jenkins-agent') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
@@ -213,7 +213,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../../../../utils/* ./utils &&
-             sudo docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:s390x . &&
+             sudo docker build -t ${USERNAME}/zowe-v1-lts:s390x . &&
              sudo docker save -o zowe-v1-lts.s390x.tar ${USERNAME}/zowe-v1-lts:s390x &&
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.s390x.tar
@@ -247,7 +247,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           error "Couldn't find zowe.pax uploaded."
         }
 
-        node('ibm-jenkins-slave-dind') {
+        node('zowe-jenkins-agent-dind') {
           // checkout source code to docker build agent
           checkout scm
           // checkout repository with dockerfile
@@ -271,7 +271,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
               passwordVariable: 'PASSWORD'
             )]){
               // build docker image
-              sh "docker build -f Dockerfile.jenkins -t ${USERNAME}/zowe-v1-lts:amd64 ."
+              sh "docker build -t ${USERNAME}/zowe-v1-lts:amd64 ."
               sh "docker save -o zowe-v1-lts.amd64.tar ${USERNAME}/zowe-v1-lts:amd64"
             }
             // show files

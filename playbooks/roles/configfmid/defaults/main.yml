@@ -18,6 +18,8 @@ zowe_instance_dir: ~/.zowe/instance
 zowe_job_prefix: ZWE
 # instance id. This will be put into zowe job name after {{ zowe_job_prefix }}
 zowe_instance_id: 1
+# default z/OSMF port. Optional, default value is ansible_ssh_host
+zos_zosmf_host:
 # default z/OSMF port
 zos_zosmf_port: 10443
 # APIML ports
@@ -33,6 +35,7 @@ zowe_mvs_explorer_port: 8548
 zowe_uss_explorer_port: 8550
 # zlux ports
 zowe_zlux_port: 8544
+zowe_zss_https: False
 zowe_zss_port: 8542
 # make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
 zowe_zss_xmem_name: ZWESIS_STD
@@ -69,6 +72,10 @@ zowe_xmem_stc_group: ZWEADMIN
 
 # optional, default to ansible_ssh_host
 # required for zD&T (external IP is different from internal IP)
+zowe_zos_host:
+# optional, default to zowe_zos_host
+# for z/OS deployment, this can be left empty and be same as zowe_zos_host
+# for all-in-one docker deployment, this can be set to domain where you start docker container
 zowe_external_domain_name:
 # optional, no default value
 # required for zD&T (external IP is different from internal IP)

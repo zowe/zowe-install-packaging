@@ -22,7 +22,7 @@ def nvmShell(nodeVersion, script) {
   }
 }
 
-node('ibm-jenkins-slave-nvm') {
+node('zowe-jenkins-agent-dind') {
   String INSTALL_TEST_PATH = 'tests/installation'
   String SANITY_TEST_PATH = 'tests/sanity'
 
@@ -71,6 +71,9 @@ node('ibm-jenkins-slave-nvm') {
     ],
     'smpe ptf': [
       test_files: 'dist/__tests__/basic/install-ptf.js',
+    ],
+    'test docker': [
+      test_files: 'dist/__tests__/basic/install-docker.js',
     ],
     'bundle: multiple node versions': [
       test_files: 'dist/__tests__/extended/node-versions/',
@@ -157,6 +160,12 @@ node('ibm-jenkins-slave-nvm') {
       name: 'ZOWE_CLI_ARTIFACTORY_BUILD',
       description: 'Zowe artifactory download build',
       defaultValue: 'Zowe CLI Bundle :: master',
+      trim: true
+    ),
+    string(
+      name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD',
+      description: 'Zowe docker artifactory url',
+      defaultValue: '',
       trim: true
     ),
     // >>>>>>>> parametters for test cases
@@ -308,6 +317,7 @@ node('ibm-jenkins-slave-nvm') {
         'ANSIBLE_FORCE_COLOR=true',
         "TEST_SERVER=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']}".toString(),
         "ZOWE_BUILD_LOCAL=${zoweBuild}".toString(),
+        "ZOWE_DOCKER_URL=${params.ZOWE_DOCKER_ARTIFACTORY_BUILD}".toString(),
         "SANITY_TEST_DEBUG=${params.SANITY_TEST_DEBUG_INFORMATION}".toString(),
         "DEBUG=${params.INSTALL_TEST_DEBUG_INFORMATION}".toString(),
       ]
