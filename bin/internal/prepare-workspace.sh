@@ -65,7 +65,7 @@ chmod -R 771 ${WORKSPACE_DIR}
 cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
 ########################################################
-# convert components YAML manifest to JSAON format
+# convert components YAML manifest to JSON format
 print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "prepare component manifest in workspace ..."
 for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
 do
