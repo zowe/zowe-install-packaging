@@ -82,7 +82,7 @@
       "version": "1.0.8"
     },
     "org.zowe.explorer-ui-server": {
-      "version": "0.2.15"
+      "version": "0.2.16"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
       "version": "1.18.1",
@@ -268,7 +268,7 @@
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-        "tag": "v0.2.15",
+        "tag": "v0.2.16",
         "destinations": ["Zowe PAX"]
       }]
     }, {
