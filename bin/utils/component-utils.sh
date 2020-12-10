@@ -79,11 +79,13 @@ convert_component_manifest() {
   component_dir=$1
 
   if [ -z "$JAVA_HOME" ]; then
+    >&2 echo "JAVA_HOME is required by this function"
     return 1
   fi
   # java should have already been put into PATH
 
   if [ -z "${WORKSPACE_DIR}" ]; then
+    >&2 echo "WORKSPACE_DIR is required by this function"
     return 1
   fi
 
@@ -103,7 +105,8 @@ convert_component_manifest() {
     java -jar "${fconv}" -o "${WORKSPACE_DIR}/${component_name}/.manifest.json" "${component_manifest}"
     return $?
   else
-    return 1
+    # this could be the package doesn't have manifest, or has it in JSON format
+    return 0
   fi
 }
 
@@ -135,6 +138,7 @@ read_component_manifest() {
   manifest_key=$2
 
   if [ -z "$JAVA_HOME" ]; then
+    >&2 echo "JAVA_HOME is required by this function"
     return 1
   fi
   # java should have already been put into PATH
@@ -161,6 +165,7 @@ read_component_manifest() {
     cat "${component_dir}/manifest.json" | java -jar "${jq}" -r "${manifest_key}"
     return $?
   else
+    >&2 echo "no manifest found in ${component_dir}"
     return 1
   fi
 }
@@ -225,6 +230,7 @@ EOF
   if [ "${all_succeed}" = "true" ]; then
     return 0
   else
+    # error message should have be echoed before this
     return 1
   fi
 }
@@ -334,6 +340,7 @@ process_component_desktop_iframe_plugin() {
   if [ "${all_succeed}" = "true" ]; then
     return 0
   else
+    # error message should have be echoed before this
     return 1
   fi
 }

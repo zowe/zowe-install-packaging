@@ -75,7 +75,7 @@ convert_component_yaml_to_json() {
     component_dir=$(find_component_directory "${component_id}")
     if [ -n "${component_dir}" ]; then
       print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- ${component_id}"
-      convert_component_manifest "${component_dir}"
+      convert_component_manifest "${component_dir}" 1>/dev/null 2>&1
     fi
   done
   print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component manifests prepared"
