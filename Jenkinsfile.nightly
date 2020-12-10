@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-node('ibm-jenkins-slave-nvm') {
+node('zowe-jenkins-agent') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def SLACK_CHANNEL = '#zowe-build'
