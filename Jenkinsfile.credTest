@@ -155,12 +155,14 @@ node('ibm-jenkins-slave-nvm') {
       } else {
         echo "No need to build new driver."
         echo "Looking up credentials"
-        def USERPASS_PSW
-        def USERPASS_USR
-        withCredentials([usernamePassword(credentialsId: 'CLI_DB2_PLUGIN', usernameVariable: 'DB2_USERNAME', passwordVariable: 'DB2_PASSWORD')]) {
+        withCredentials([
+          usernamePassword(credentialsId: 'CLI_DB2_PLUGIN', usernameVariable: 'DB2_USERNAME', passwordVariable: 'DB2_PASSWORD'),
+          usernamePassword(credentialsId: 'CLI_DB2_HOST_PORT', usernameVariable: 'DB2_HOST', passwordVariable: 'DB2_PORT')
+        ]) {
             echo "***Credential*** = ${DB2_USERNAME}"
             echo "***Credential*** = ${DB2_PASSWORD}"
-            echo "***Credential*** = ${DB2_USERNAME}" >> test.properties
+            echo "***Credential*** = ${DB2_HOST}"
+            echo "***Credential*** = ${DB2_PORT}"
         echo "**END OF TESTS**"
         }
       }
