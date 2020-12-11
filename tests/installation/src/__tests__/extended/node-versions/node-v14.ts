@@ -32,7 +32,7 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zos_node_home': '/ZOWE/node/node-v6.17.0-os390-s390x',
+        'zos_node_home': '/ZOWE/node/node-v14.15.1-os390-s390x',
         'zowe_lock_keystore': 'false',
       }
     );
