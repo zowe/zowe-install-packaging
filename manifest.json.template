@@ -102,7 +102,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.1-SNAPSHOT"
+      "version": "~0.0.2-USERS-JACK-NODE-VERSION"
     },
     "org.zowe.licenses": {
       "version": "1.10.0"

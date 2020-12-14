@@ -156,6 +156,8 @@ find . \( \
 -name "*.GIF" -o \
 -name "*.gz" -o \
 -name "*.GZ" -o \
+-name "*.tgz" -o \
+-name "*.TGZ" -o \
 -name "*.jar" -o \
 -name "*.JAR" -o \
 -name "*.jpg" -o \

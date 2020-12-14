@@ -90,7 +90,7 @@ convert_component_manifest() {
   fi
 
   utils_dir="${ROOT_DIR}/bin/utils"
-  fconv="${utils_dir}/format-converter-cli.jar"
+  fconv="${utils_dir}/fconv/src/index.js"
   component_name=$(basename "${component_dir}")
   component_manifest=
 
@@ -102,7 +102,7 @@ convert_component_manifest() {
 
   if [ -n "${component_manifest}" ]; then
     mkdir -p "${WORKSPACE_DIR}/${component_name}"
-    java -jar "${fconv}" -o "${WORKSPACE_DIR}/${component_name}/.manifest.json" "${component_manifest}"
+    node "${fconv}" -o "${WORKSPACE_DIR}/${component_name}/.manifest.json" "${component_manifest}"
     return $?
   else
     # this could be the package doesn't have manifest, or has it in JSON format
@@ -145,24 +145,24 @@ read_component_manifest() {
 
   utils_dir="${ROOT_DIR}/bin/utils"
   component_name=$(basename "${component_dir}")
-  fconv="${utils_dir}/format-converter-cli.jar"
-  jq="${utils_dir}/jackson-jq-cli.jar"
+  fconv="${utils_dir}/fconv/src/index.js"
+  jq="${utils_dir}/njq/src/index.js"
   manifest_in_workspace=
   if [ -n "${WORKSPACE_DIR}" ]; then
     manifest_in_workspace="${WORKSPACE_DIR}/${component_name}/.manifest.json"
   fi
 
   if [ -n "${manifest_in_workspace}" -a -f "${manifest_in_workspace}" ]; then
-    cat "${manifest_in_workspace}" | java -jar "${jq}" -r "${manifest_key}"
+    cat "${manifest_in_workspace}" | node "${jq}" -r "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yaml" ]; then
-    java -jar "${fconv}" "${component_dir}/manifest.yaml" | java -jar "${jq}" -r "${manifest_key}"
+    node "${fconv}" "${component_dir}/manifest.yaml" | node "${jq}" -r "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yml" ]; then
-    java -jar "${fconv}" "${component_dir}/manifest.yml" | java -jar "${jq}" -r "${manifest_key}"
+    node "${fconv}" "${component_dir}/manifest.yml" | node "${jq}" -r "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.json" ]; then
-    cat "${component_dir}/manifest.json" | java -jar "${jq}" -r "${manifest_key}"
+    cat "${component_dir}/manifest.json" | node "${jq}" -r "${manifest_key}"
     return $?
   else
     >&2 echo "no manifest found in ${component_dir}"
