@@ -43,7 +43,7 @@ With correct npm registry, you can run `npm install` to install all dependencies
 
 By default, E2E UI test cases are launched by Selenium with Firefox driver. If you run test cases on your local, you need Firefox installed.
 
-The existing test cases are tested on Firefox v61.0.2 which is pre-installed in Jenkins Docker Slaves. In theory, the e2e test cases should be able to run on Firefox v53 and above.
+The existing test cases are tested on Firefox v61.0.2 which is pre-installed in Jenkins build agent. In theory, the e2e test cases should be able to run on Firefox v53 and above.
 
 ### Start Test
 
@@ -92,10 +92,13 @@ npm run test:docker
 
 - All test cases are located in `test` directory.
 - Test cases are grouped as sub-directories:
+  * `test/apiml`: includes all API Mediation Layer test cases,
   * `test/cli`: includes all CLI test cases,
   * `test/e2e`: includes all E2E UI test cases,
   * `test/explorer`: includes all Zowe Explorer API test cases,
-  * `test/install`: includes all test cases validating Zowe installation.
+  * `test/install`: includes all test cases validating Zowe installation,
+  * `test/utils-scripts`: includes all test cases validating Zowe utility scripts,
+  * `test/zlux`: includes all test cases validating Zowe zlux server.
 
 ### Output Debugging Information
 
