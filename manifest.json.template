@@ -98,7 +98,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.2-USERS-JACK-NODE-VERSION"
+      "version": "~0.0.2-PR-4"
     },
     "org.zowe.licenses": {
       "version": "1.10.0"
