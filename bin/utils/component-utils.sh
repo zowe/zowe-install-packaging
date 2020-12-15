@@ -210,7 +210,7 @@ process_component_apiml_static_definitions() {
       sanitized_def_name=$(echo "${one_def_trimmed}" | sed 's/[^a-zA-Z0-9]/_/g')
       # FIXME: we may change the static definitions files to real template in the future.
       #        currently we support to use environment variables in the static definition template
-      parsed_def=$( ( echo "cat <<EOF" ; cat "${one_def}" ; echo EOF ) | sh 2>&1)
+      parsed_def=$( ( echo "cat <<EOF" ; cat "${one_def}" ; echo ; echo EOF ) | sh 2>&1)
       retval=$?
       if [ "${retval}" != "0" ]; then
         >&2 echo "failed to parse ${component_name} API Mdeialtion Layer static definition file ${one_def}: ${parsed_def}"
