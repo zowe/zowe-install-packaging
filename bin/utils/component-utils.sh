@@ -60,14 +60,14 @@ find_component_directory() {
 ###############################
 # Convert component YAML format manifest to JSON and place into workspace foler
 #
-# Note: this function requires Java, which means JAVA_HOME should have been defined,
-#       and ensure_java_is_on_path should have been executed.
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
 #
 # Note: this function is for runtime only to prepare workspace
 #
 # Required environment variables:
 # - ROOT_DIR
-# - JAVA_HOME
+# - NODE_HOME
 # - WORKSPACE_DIR
 #
 # Example:
@@ -78,11 +78,11 @@ find_component_directory() {
 convert_component_manifest() {
   component_dir=$1
 
-  if [ -z "$JAVA_HOME" ]; then
-    >&2 echo "JAVA_HOME is required by this function"
+  if [ -z "$NODE_HOME" ]; then
+    >&2 echo "NODE_HOME is required by this function"
     return 1
   fi
-  # java should have already been put into PATH
+  # node should have already been put into PATH
 
   if [ -z "${WORKSPACE_DIR}" ]; then
     >&2 echo "WORKSPACE_DIR is required by this function"
@@ -113,12 +113,12 @@ convert_component_manifest() {
 ###############################
 # Read component manifest
 #
-# Note: this function requires Java, which means JAVA_HOME should have been defined,
-#       and ensure_java_is_on_path should have been executed.
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
 #
 # Required environment variables:
 # - ROOT_DIR
-# - JAVA_HOME
+# - NODE_HOME
 #
 # Optional environment variables:
 # - WORKSPACE_DIR
@@ -131,17 +131,17 @@ convert_component_manifest() {
 # @param string   string of manifest key. For example: ".commands.configure"
 # Output          empty if component doesn't have manifest
 #                          , or manifest doesn't have the key
-#                          , or JAVA_HOME is not defined
+#                          , or NODE_HOME is not defined
 #                 the value defined in the manifest of the selected key
 read_component_manifest() {
   component_dir=$1
   manifest_key=$2
 
-  if [ -z "$JAVA_HOME" ]; then
-    >&2 echo "JAVA_HOME is required by this function"
+  if [ -z "$NODE_HOME" ]; then
+    >&2 echo "NODE_HOME is required by this function"
     return 1
   fi
-  # java should have already been put into PATH
+  # node should have already been put into PATH
 
   utils_dir="${ROOT_DIR}/bin/utils"
   component_name=$(basename "${component_dir}")
@@ -176,12 +176,12 @@ read_component_manifest() {
 # The supported manifest entry is ".apimlServices.static[].file". All files defined
 # here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
 #
-# Note: this function requires Java, which means JAVA_HOME should have been defined,
-#       and ensure_java_is_on_path should have been executed.
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
 #
 # Required environment variables:
 # - ROOT_DIR
-# - JAVA_HOME
+# - NODE_HOME
 # - STATIC_DEF_CONFIG_DIR
 #
 # @param string   component directory
@@ -241,12 +241,12 @@ EOF
 # The supported manifest entry is ".apimlServices.static[].file". All files defined
 # here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
 #
-# Note: this function requires Java, which means JAVA_HOME should have been defined,
-#       and ensure_java_is_on_path should have been executed.
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
 #
 # Required environment variables:
 # - ROOT_DIR
-# - JAVA_HOME
+# - NODE_HOME
 #
 # Optional environment variables (but very likely are required):
 # - ZOWE_EXPLORER_HOST
