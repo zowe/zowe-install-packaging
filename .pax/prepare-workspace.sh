@@ -123,6 +123,26 @@ mkdir -p "${CONTENT_DIR}/files"
 echo "[${SCRIPT_NAME}] copying files ..."
 cp -R files/* "${CONTENT_DIR}/files"
 
+# extract packaging utility tools to bin/utils
+echo "[${SCRIPT_NAME}] prepare utility tools ..."
+cd "$ROOT_DIR"
+cd "${CONTENT_DIR}/files"
+mv zowe-utility-tools-*.zip zowe-utility-tools.zip
+cd "$ROOT_DIR"
+cd "${CONTENT_DIR}/bin/utils"
+jar -xf "../../files/zowe-utility-tools.zip"
+# we should get 2 tgz files as npm packages
+echo "[${SCRIPT_NAME}] extract zowe-fconv ..."
+tar zxvf zowe-fconv-*.tgz
+mv package fconv
+rm zowe-fconv-*.tgz
+echo "[${SCRIPT_NAME}] extract zowe-njq ..."
+tar zxvf zowe-njq-*.tgz
+mv package njq
+rm zowe-njq-*.tgz
+cd "$ROOT_DIR"
+rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
+
 # put text files into ascii folder (recursive & verbose)
 # TODO why include? everything except exclude is copied
 rsync -rv \
@@ -153,26 +173,6 @@ cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
 
 # cleanup working files
 rm -rf "$KEYRING_UTIL_SRC"
-
-# extract packaging utility tools to bin/utils
-echo "[${SCRIPT_NAME}] prepare utility tools ..."
-cd "$ROOT_DIR"
-cd "${CONTENT_DIR}/files"
-mv zowe-utility-tools-*.zip zowe-utility-tools.zip
-cd "$ROOT_DIR"
-cd "${CONTENT_DIR}/bin/utils"
-jar -xf "../../files/zowe-utility-tools.zip"
-# we should get 2 tgz files as npm packages
-echo "[${SCRIPT_NAME}] extract zowe-fconv ..."
-tar zxvf zowe-fconv-*.tgz
-mv package fconv
-rm zowe-fconv-*.tgz
-echo "[${SCRIPT_NAME}] extract zowe-njq ..."
-tar zxvf zowe-njq-*.tgz
-mv package njq
-rm zowe-njq-*.tgz
-cd "$ROOT_DIR"
-rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
