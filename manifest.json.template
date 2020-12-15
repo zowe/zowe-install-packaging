@@ -56,42 +56,38 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.5-PR-119"
     },
     "org.zowe.explorer.files": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.5-PR-185"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.9-PR-242"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.10-PR-161"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.9-PR-110"
     },
     "org.zowe.explorer-ui-server": {
       "version": "~0.2.0-STAGING"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "~1.18.0-SNAPSHOT",
-      "artifact": "api-catalog-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "version": "~1.19.0-PR-1002",
+      "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "~1.18.0-SNAPSHOT",
-      "artifact": "discovery-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "version": "~1.19.0-PR-1002",
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "~1.18.0-SNAPSHOT",
-      "artifact": "gateway-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "version": "~1.19.0-PR-1002",
+      "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "~1.18.0-SNAPSHOT",
-      "artifact": "caching-service-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "version": "~1.19.0-PR-1002",
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
