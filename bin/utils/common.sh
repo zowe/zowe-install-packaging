@@ -59,6 +59,44 @@ print_formatted_message() {
   # always use upper case
   level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
 
+  # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
+  expected_log_level_var=ZWE_LOG_LEVEL_${service}
+  expected_log_level_val=$(eval "echo \${$expected_log_level_var}")
+  if [ -z "${expected_log_level_val}" ]; then
+    expected_log_level_val=INFO
+  fi
+  display_log=false
+  case expected_log_level_val in
+    ERROR)
+      if [ "${level}" = "ERROR" ]; then
+        display_log=true
+      fi
+      ;;
+    WARN)
+      if [ "${level}" = "ERROR" -o "${level}" = "WARN" ]; then
+        display_log=true
+      fi
+      ;;
+    DEBUG)
+      if [ "${level}" = "ERROR" -o "${level}" = "WARN" -o "${level}" = "INFO" -o "${level}" = "DEBUG" ]; then
+        display_log=true
+      fi
+      ;;
+    TRACE)
+      display_log=true
+      ;;
+    *)
+      # INFO
+      if [ "${level}" = "ERROR" -o "${level}" = "WARN" -o "${level}" = "INFO" ]; then
+        display_log=true
+      fi
+      ;;
+  esac
+  if [ "${display_log}" = "false" ]; then
+    # no need to display this log based on LOG_LEVEL settings
+    return 0
+  fi
+
   log_line_prefix="$(date -u '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
   while read -r line; do
     has_prefix=$(echo "$line" | awk '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/')
@@ -66,6 +104,7 @@ print_formatted_message() {
       line="${log_line_prefix} ${line}"
     fi
     if [ "${level}" = "ERROR" ]; then
+      # only errors are written to stderr
       >&2 echo "${line}"
     else
       echo "${line}"
@@ -73,6 +112,14 @@ print_formatted_message() {
   done <<EOF
 $(echo "${message}")
 EOF
+}
+
+print_formatted_trace() {
+  print_formatted_message "${1}" "${2}" "TRACE" "${3}"
+}
+
+print_formatted_debug() {
+  print_formatted_message "${1}" "${2}" "DEBUG" "${3}"
 }
 
 print_formatted_info() {

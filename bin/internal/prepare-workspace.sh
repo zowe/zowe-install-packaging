@@ -74,11 +74,11 @@ convert_component_yaml_to_json() {
   do
     component_dir=$(find_component_directory "${component_id}")
     if [ -n "${component_dir}" ]; then
-      print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- ${component_id}"
+      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- ${component_id}"
       convert_component_manifest "${component_dir}" 1>/dev/null 2>&1
     fi
   done
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component manifests prepared"
+  print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component manifests prepared"
 }
 
 ########################################################
@@ -103,12 +103,12 @@ validate_components() {
         validate_script=bin/validate.sh
       fi
       if [ -x "${validate_script}" ]; then
-        print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- process ${component_id} validate command ..."
+        print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- process ${component_id} validate command ..."
         result=$(. ${validate_script})
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
-            print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+            print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
           else
             print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
           fi
@@ -119,7 +119,7 @@ validate_components() {
   done
   # exit if there are errors found
   runtime_check_for_validation_errors_found
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component validations are successful"
+  print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component validations are successful"
 }
 
 ########################################################
@@ -167,7 +167,7 @@ configure_components() {
       # backward compatible purpose, some may expect this variable to be component lifecycle directory
       export LAUNCH_COMPONENT="${component_dir}/bin"
 
-      print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- configure ${component_id}"
+      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- configure ${component_id}"
 
       # default build-in behaviors
       # - apiml static definitions
@@ -175,7 +175,7 @@ configure_components() {
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
-          print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
         else
           print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
         fi
@@ -185,7 +185,7 @@ configure_components() {
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
-          print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
         else
           print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
         fi
@@ -199,12 +199,12 @@ configure_components() {
         configure_script=bin/configure.sh
       fi
       if [ -x "${configure_script}" ]; then
-        print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* process ${component_id} configure command ..."
+        print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* process ${component_id} configure command ..."
         result=$(. ${configure_script})
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
-            print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+            print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
           else
             print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
           fi
@@ -212,7 +212,7 @@ configure_components() {
       fi
     fi
   done
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component configurations are successful"
+  print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component configurations are successful"
 }
 
 ########################################################
