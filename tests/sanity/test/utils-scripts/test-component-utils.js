@@ -113,7 +113,7 @@ describe('verify utils/component-utils', function() {
         {},
         {
           rc: 1,
-          stderr: 'jq: error: Cannot index string with string "start"',
+          stderr: 'Error: Cannot iterate over object',
         }
       );
     });

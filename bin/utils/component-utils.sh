@@ -287,6 +287,12 @@ process_component_desktop_iframe_plugin() {
       if [ -n "${base_uri}" -a "${base_uri}" != "null" ]; then
         plugin_url="https://${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}${base_uri}"
       fi
+    elif [[ ${plugin_url} == http://* || ${plugin_url} == https://* ]]; then
+      # already a full url, do nothing
+      # FIXME: we may need to parse the url as template
+    elif [[ ${plugin_url} == /* ]]; then
+      # a url path, prefix with gateway access
+      plugin_url="https://${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}${plugin_url}"
     fi
     plugin_icon=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${iterator_index}].icon" 2>/dev/null)
     plugin_version=$(read_component_manifest "${component_dir}" ".version" 2>/dev/null)
