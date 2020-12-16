@@ -210,7 +210,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              git clone --branch master https://github.com/zowe/zowe-dockerfiles.git
-             cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/server-bundle &&
+             cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../../../../utils/* ./utils &&
              sudo docker build -t ompzowe/server-bundle:s390x . &&
@@ -254,7 +254,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           // FIXME: this dockerfile should be merged into current repo to avoid
           //        version synchronizing issues
           sh 'git clone --branch master https://github.com/zowe/zowe-dockerfiles.git'
-          dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/server-bundle') {
+          dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts') {
             // copy utils to docker build folder
             sh 'mkdir -p utils && cp -r ../../../../utils/* ./utils'
             // download zowe pax to docker build agent
