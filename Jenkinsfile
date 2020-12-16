@@ -218,7 +218,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.s390x.tar
           """
-          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/server-bundle/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
           pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
           sshCommand remote: Z_SERVER, command: \
           """
