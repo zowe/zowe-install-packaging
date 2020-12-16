@@ -213,8 +213,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/server-bundle &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../../../../utils/* ./utils &&
-             sudo docker build -t ${USERNAME}/server-bundle:s390x . &&
-             sudo docker save -o server-bundle.s390x.tar ${USERNAME}/server-bundle:s390x &&
+             sudo docker build -t ompzowe/server-bundle:s390x . &&
+             sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x &&
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.s390x.tar
           """
@@ -271,8 +271,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
               passwordVariable: 'PASSWORD'
             )]){
               // build docker image
-              sh "docker build -t ${USERNAME}/server-bundle:amd64 ."
-              sh "docker save -o server-bundle.amd64.tar ${USERNAME}/server-bundle:amd64"
+              sh "docker build -t ompzowe/server-bundle:amd64 ."
+              sh "docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64"
             }
             // show files
             sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.amd64.tar'

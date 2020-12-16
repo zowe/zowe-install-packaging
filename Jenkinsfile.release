@@ -573,31 +573,25 @@ node('zowe-jenkins-agent-dind') {
         def manifestAmends = ""
         // load images
         if (releaseArtifacts['docker-amd64']) {
+          // the image in tar should always be ompzowe/server-bundle:s390x
           sh "docker load --input .release/server-bundle.amd64-*.tar"
-          if ("${USERNAME}" != "ompzowe") {
-            // the image in tar should always be ompzowe/server-bundle:amd64
-            sh "docker tag ompzowe/server-bundle:amd64 ${USERNAME}/server-bundle:amd64"
-          }
-          publishCommands += "docker push ${USERNAME}/server-bundle:amd64\n"
-          manifestAmends += " --amend ${USERNAME}/server-bundle:amd64"
+          publishCommands += "docker push ompzowe/server-bundle:amd64\n"
+          manifestAmends += " --amend ompzowe/server-bundle:amd64"
         }
         if (releaseArtifacts['docker-s390x']) {
+          // the image in tar should always be ompzowe/server-bundle:s390x
           sh "docker load --input .release/server-bundle.s390x-*.tar"
-          if ("${USERNAME}" != "ompzowe") {
-            // the image in tar should always be ompzowe/server-bundle:s390x
-            sh "docker tag ompzowe/server-bundle:s390x ${USERNAME}/server-bundle:s390x"
-          }
-          publishCommands += "docker push ${USERNAME}/server-bundle:s390x\n"
-          manifestAmends += " --amend ${USERNAME}/server-bundle:s390x"
+          publishCommands += "docker push ompzowe/server-bundle:s390x\n"
+          manifestAmends += " --amend ompzowe/server-bundle:s390x"
         }
 
         // publish images
         sh publishCommands +
           "export DOCKER_CLI_EXPERIMENTAL=enabled\n" +
-          "docker manifest create ${USERNAME}/server-bundle:latest ${manifestAmends}\n" +
-          "docker manifest push ${USERNAME}/server-bundle:latest" +
-          "docker manifest create ${USERNAME}/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
-          "docker manifest push ${USERNAME}/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
+          "docker manifest create ompzowe/server-bundle:latest ${manifestAmends}\n" +
+          "docker manifest push ompzowe/server-bundle:latest" +
+          "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
+          "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
       }
     }
   )
