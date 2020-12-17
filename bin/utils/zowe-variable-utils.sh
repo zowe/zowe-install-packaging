@@ -76,3 +76,36 @@ validate_zowe_prefix() {
     return $prefix_set_rc
   fi
 }
+
+update_zowe_instance_variable(){                                                                            
+  variable_name=$1
+  variable_value=$2
+  is_append=$3 # if false then the value of the given veriable_name will be replaced, append the value if true
+
+  if [ -z ${is_append} ]; then
+    is_append=true # default value is true
+  fi
+
+  variable_name_exists=$(grep "^ *${variable_name}=" ${INSTANCE_DIR}/instance.env)
+
+  if [ -z ${variable_name_exists} ]; then
+    echo "${variable_name}=${variable_value}" >> ${INSTANCE_DIR}/instance.env
+  else
+    curr_variable_value=$(echo ". ${INSTANCE_DIR}/instance.env && echo \$${variable_name}" | sh)
+    if [ ! -z ${curr_variable_value} ]; then
+      if [ ${is_append} = false ]; then
+        sed -e "s/^ *${variable_name}=${curr_variable_value}/${variable_name}=${variable_value}/" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+        mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
+      else
+        # Ensures that the bin directory of the component is included into the instance.env once (Avoids duplication if same component is installed twice)
+        if [[ $(echo ${curr_variable_value} | grep ${variable_value}) = "" ]]; then
+          sed -e "s/^ *${variable_name}=${curr_variable_value}/${variable_name}=${curr_variable_value},${variable_value}/" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+          mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
+        fi
+      fi
+    else
+        sed -e "s/^ *${variable_name}=/${variable_name}=${variable_value}/" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+        mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
+    fi
+  fi
+}

@@ -1,4 +1,15 @@
 #!/bin/sh
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project. 2020
+#######################################################################
+
 DEFAULT_TARGET_DIR=/opt/zowe/extensions
 
 if [[ -z ${ZOWE_ROOT_DIR} ]]
@@ -6,78 +17,48 @@ then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
-# Try and source the file utils if it exists
-if [[ -f "${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh" ]]
-then
-    . ${ZOWE_ROOT_DIR}/bin/utils/file-utils.sh
-fi
+. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
 
 error_handler(){
     print_error_message "$1"
     exit 1
 }
 
-install_component(){
-
-    # Represents the current value of EXTERNAL_COMPONENT variable in instance.env
-    EXT_COMP_VAL=$(eval "grep '^EXTERNAL_COMPONENTS=' $INSTANCE_DIR/instance.env | cut -f2 -d= | cut -f1 -d#")
-
-    if [ "$EXT_COMP_VAL" = " " ]; then
-        sed -e "s/EXTERNAL_COMPONENTS=/EXTERNAL_COMPONENTS=$COMPONENT_NAME/" $INSTANCE_DIR/instance.env > $INSTANCE_DIR/instance.env.tmp
-        mv $INSTANCE_DIR/instance.env.tmp $INSTANCE_DIR/instance.env
-        log_message "Appending directory path containing component's life cycle scripts into the EXTERNAL_COMPONENTS variable in instance.env"
-    else
-        # Ensures that the bin directory of the component is included into the instance.env once (Avoids duplication if same component is installed twice)
-        if [[ $(grep 'EXTERNAL_COMPONENT' $INSTANCE_DIR/instance.env | grep $COMPONENT_NAME) = "" ]]; then
-            sed -e "s/EXTERNAL_COMPONENTS=/EXTERNAL_COMPONENTS=$COMPONENT_NAME,/" $INSTANCE_DIR/instance.env > $INSTANCE_DIR/instance.env.tmp
-            mv $INSTANCE_DIR/instance.env.tmp $INSTANCE_DIR/instance.env
-            log_message "Appending directory path containing component's life cycle scripts into the EXTERNAL_COMPONENTS variable in instance.env"
-        fi
-    fi
+enable_component(){
+    update_zowe_instance_variable "EXTERNAL_COMPONENTS" "${COMPONENT_NAME}"
 
     log_message "Zowe component has been installed."
 }
 
 install_desktop_plugin(){
 
-    log_message "Running $INSTANCE_DIR/bin/install-app.sh $COMPONENT_PATH"
+    log_message "Running ${INSTANCE_DIR}/bin/install-app.sh ${component_path}"
     # Uses install-app.sh in zowe-instance-dir to automatically set up the component onto zowe
-    $INSTANCE_DIR/bin/install-app.sh $COMPONENT_PATH
+    ${INSTANCE_DIR}/bin/install-app.sh ${component_path}
 
     log_message "Zowe component has been installed."
 }
 
 configure_component(){
+    
+    cd ${component_path}
 
-    cd $COMPONENT_PATH
+    commands_cfg_instance=$(read_component_manifest ${component_path} ".commands.configureInstance") 2>/dev/null
 
-    if [[ -f "$COMPONENT_PATH/manifest.yaml" ]]; then
-        MANIFEST_PATH="$COMPONENT_PATH/manifest.yaml"
-    elif [[ -f "$COMPONENT_PATH/manifest.yml" ]]; then
-        MANIFEST_PATH="$COMPONENT_PATH/manifest.yml"
-    elif [[ -f "$COMPONENT_PATH/manifest.json" ]]; then
-        MANIFEST_PATH="$COMPONENT_PATH/manifest.json"
+    if [ ! "${commands_cfg_instance}" = "null" ] && [ -n ${commands_cfg_instance}]; then
+        ./${commands_cfg_instance}
     fi
 
-    COMMANDS_CFG_INSTANCE=$(eval "java -jar ${ZOWE_ROOT_DIR}/bin/utils/format-converter-cli.jar $MANIFEST_PATH | java -jar ${ZOWE_ROOT_DIR}/bin/utils/jackson-jq-cli.jar -r '.commands.configureInstance'")
+    desktop_plugin_path=$(read_component_manifest "${component_path}" ".desktopPlugin[].path") 2>/dev/null
 
-    if [ ! "$COMMANDS_CFG_INSTANCE" = "null" ]; then
-        ./$COMMANDS_CFG_INSTANCE
+    if [ ! "${desktop_plugin_path}" = "null" ] && [ -n ${desktop_plugin_path} ]; then
+        install_desktop_plugin
     fi
 
-    DESKTOP_PLUGIN=$(eval "java -jar ${ZOWE_ROOT_DIR}/bin/utils/format-converter-cli.jar $MANIFEST_PATH | java -jar ${ZOWE_ROOT_DIR}/bin/utils/jackson-jq-cli.jar -r '.desktopPlugin'")
+    commands_start=$(read_component_manifest "${component_path}" ".commands.start") 2>/dev/null
 
-    if [ ! "$DESKTOP_PLUGIN" = "null" ]; then
-            DESKTOP_PLUGIN_PATH=$(eval "java -jar ${ZOWE_ROOT_DIR}/bin/utils/format-converter-cli.jar $MANIFEST_PATH | java -jar ${ZOWE_ROOT_DIR}/bin/utils/jackson-jq-cli.jar -r '.desktopPlugin[].path'")
-            if [ ! "$DESKTOP_PLUGIN_PATH" = "null" ]; then
-                install_desktop_plugin
-            fi
-    fi
-
-    COMMANDS_START=$(eval "java -jar ${ZOWE_ROOT_DIR}/bin/utils/format-converter-cli.jar $MANIFEST_PATH | java -jar ${ZOWE_ROOT_DIR}/bin/utils/jackson-jq-cli.jar -r '.commands.start'")
-
-    if [ ! "$COMMANDS_START" = "null" ] && [ $IS_NATIVE = false ]; then
-        install_component
+    if [ ! "${commands_start}" = "null" ] && [ -n "${commands_start}" ] && [ ${IS_NATIVE} = false ]; then
+        enable_component
     fi
 
 }
@@ -93,11 +74,11 @@ while [ $# -gt 0 ]; do #Checks for parameters
         -i|--instance_dir) #Represents the path to zowe's instance directory (optional)
             shift
             path=$(get_full_path "$1")
-            validate_directory_is_accessible "$path"
+            validate_directory_is_accessible "${path}"
             if [[ $? -eq 0 ]]; then
-                validate_file_not_in_directory "$path/instance.env" "$path"
+                validate_file_not_in_directory "${path}/instance.env" "${path}"
                 if [[ $? -ne 0 ]]; then
-                    INSTANCE_DIR=$path
+                    INSTANCE_DIR=${path}
                 else
                     error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
                 fi
@@ -107,8 +88,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             shift
         ;;
         -n|--native)
-            shift
-            IS_NATIVE=$1
+            IS_NATIVE=true
             shift
         ;;
         -d|--target_dir) # Represents the path to the desired target directory to place the extensions (optional)
@@ -127,33 +107,36 @@ while [ $# -gt 0 ]; do #Checks for parameters
     esac
 done
 
-if [ -z $TARGET_DIR ]; then
-    TARGET_DIR=$DEFAULT_TARGET_DIR
+# This is to prepare JAVA_HOME environment
+. ${ZOWE_ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ZOWE_ROOT_DIR}"
+
+if [ -z ${TARGET_DIR} ]; then
+    TARGET_DIR=${DEFAULT_TARGET_DIR}
 fi
 
-if [ -z $IS_NATIVE ]; then
+if [ -z ${IS_NATIVE} ]; then
     IS_NATIVE=false
 fi
 
-if [ -z $LOG_DIRECTORY ]; then
-    LOG_DIRECTORY="$INSTANCE_DIR/logs"
+if [ -z ${LOG_DIRECTORY} ]; then
+    LOG_DIRECTORY="${INSTANCE_DIR}/logs"
 fi
 
-if [ -d "$TARGET_DIR/$COMPONENT_NAME" ]; then
-    COMPONENT_PATH=$TARGET_DIR/$COMPONENT_NAME
+if [ -d "${TARGET_DIR}/${COMPONENT_NAME}" ]; then
+    component_path=${TARGET_DIR}/${COMPONENT_NAME}
 else
-    error_handler "$TARGET_DIR/$COMPONENT_NAME is not an existing extension."
+    error_handler "${TARGET_DIR}/${COMPONENT_NAME} is not an existing extension."
 fi
 
-. ${ZOWE_ROOT_DIR}/bin/utils/setup-log-dir.sh
 set_install_log_directory "${LOG_DIRECTORY}"
 validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
 set_install_log_file "install-component"
 
-log_message "Zowe Root Directory: $ZOWE_ROOT_DIR"
-log_message "Component Name: $COMPONENT_NAME"
-log_message "Zowe Instance Directory: $INSTANCE_DIR"
-log_message "Target Directory: $TARGET_DIR"
-log_message "Log Directory: $LOG_DIRECTORY"
+log_message "Zowe Root Directory: ${ZOWE_ROOT_DIR}"
+log_message "Component Name: ${COMPONENT_NAME}"
+log_message "Zowe Instance Directory: ${INSTANCE_DIR}"
+log_message "Target Directory: ${TARGET_DIR}"
+log_message "Native Extension: ${IS_NATIVE}"
+log_message "Log Directory: ${LOG_DIRECTORY}"
 
 configure_component

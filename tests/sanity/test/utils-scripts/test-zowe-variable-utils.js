@@ -105,10 +105,61 @@ describe('verify zowe-variable-utils', function() {
     }
   });
   
+  const update_zowe_instance_variable = 'update_zowe_instance_variable';
+  describe(`verify ${update_zowe_instance_variable}`, function() {
+
+    it('test append new zowe instance environment variable', async function() {
+      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR test_value`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+    });
+
+    it('test validate new zowe instance environment variable appended', async function() {
+      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^ *TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value', '');
+    });
+
+    it('test append value into existing zowe instance environment variable', async function() {
+      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR secondtest123`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+    });
+
+    it('test value appended into existing zowe instance environment variable', async function() {
+      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^ *TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'secondtest123', '');
+    });
+
+    it('test append existing value', async function() {
+      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR test_value`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+    });
+
+    it('test validate no change in zowe instance environment variable', async function() {
+      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^ *TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value,secondtest123', '');
+    });
+
+    it('test replace value of a instance environment variable', async function() {
+      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR replaced_value false`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+    });
+
+    it('test validate value of environment variable has been replaced', async function() {
+      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'replaced_value', '');
+    });
+    
+    after('Clean up temporary instance variable', async function() {
+      await sshHelper.executeCommandWithNoError(`sed '$d' ${process.env.ZOWE_INSTANCE_DIR}/instance.env > ${process.env.ZOWE_INSTANCE_DIR}/instance.env.tmp`);
+      await sshHelper.executeCommandWithNoError(`mv ${process.env.ZOWE_INSTANCE_DIR}/instance.env.tmp ${process.env.ZOWE_INSTANCE_DIR}/instance.env`);
+    });
+  });
+
+
   async function test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
     await sshHelper.testCommand(command, {
       envs: {
         'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR,
+        'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,
       },
       sources: [
         process.env.ZOWE_ROOT_DIR + '/bin/utils/zowe-variable-utils.sh',
