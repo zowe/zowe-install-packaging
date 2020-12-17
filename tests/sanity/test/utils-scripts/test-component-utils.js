@@ -8,6 +8,7 @@
  * Copyright IBM Corporation 2020
  */
 
+const { expect } = require('chai');
 const sshHelper = require('../ssh-helper');
 
 describe('verify utils/component-utils', function() {
@@ -116,6 +117,103 @@ describe('verify utils/component-utils', function() {
           stderr: 'Error: Cannot iterate over object',
         }
       );
+    });
+
+  });
+
+  const convert_component_manifest = 'convert_component_manifest';
+  describe(`verify ${convert_component_manifest}`, function() {
+    const dummy_component_name = 'sanity_test_dummy';
+    const component_runtime_dir = `${process.env.ZOWE_ROOT_DIR}/components/${dummy_component_name}`;
+    const component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
+
+    before('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
+    });
+
+    after('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir}`);
+    });
+
+    it('test creating component manifest.json', async function() {
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${convert_component_manifest} "${component_runtime_dir}"`
+      );
+
+      const jsonContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_instance_dir}/.manifest.json`);
+      expect(jsonContent).to.be.equal(`{\n  "name": "${dummy_component_name}"\n}`);
+    });
+
+  });
+
+  const process_component_apiml_static_definitions = 'process_component_apiml_static_definitions';
+  describe(`verify ${process_component_apiml_static_definitions}`, function() {
+    const dummy_component_name = 'sanity_test_dummy';
+    const component_runtime_dir = `${process.env.ZOWE_ROOT_DIR}/components/${dummy_component_name}`;
+    const static_def_file = 'static-def.yaml';
+    // this may change in the future
+    const static_def_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/api-mediation/api-defs`;
+    const target_static_def_file = `${dummy_component_name}_static_def_yaml.yml`;
+
+    before('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`mkdir -p ${component_runtime_dir} && echo 'name: ${dummy_component_name}\napimlServices:\n  static:\n  - file: ${static_def_file}' > ${component_runtime_dir}/manifest.yaml && echo 'services: does not matter' > ${component_runtime_dir}/${static_def_file}`);
+    });
+
+    after('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${static_def_dir}/${target_static_def_file}`);
+    });
+
+    it('test creating component manifest.json', async function() {
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${process_component_apiml_static_definitions} "${component_runtime_dir}"`,
+        {},
+        {
+          stdout: `process ${dummy_component_name} service static definition file ${static_def_file} ...`
+        }
+      );
+
+      const jsonContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON iconv -f IBM-850 -t IBM-1047 ${static_def_dir}/${target_static_def_file}`);
+      expect(jsonContent).to.be.equal('services: does not matter');
+    });
+
+  });
+
+  const process_component_desktop_iframe_plugin = 'process_component_desktop_iframe_plugin';
+  describe.only(`verify ${process_component_desktop_iframe_plugin}`, function() {
+    const dummy_component_name = 'sanity_test_dummy';
+    const dummy_component_title = 'Sanity Test Dummy';
+    const dummy_component_id = 'org.zowe.plugins.sanity_test_dummy';
+    const dummy_component_url = '/ui/v1/dummy';
+    const component_runtime_dir = `${process.env.ZOWE_ROOT_DIR}/components/${dummy_component_name}`;
+    const component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
+    const app_server_plugins_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/app-server/plugins`;
+
+    before('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}\nid: ${dummy_component_id}\ntitle: ${dummy_component_title}\ndesktopIframePlugins:\n- url: ${dummy_component_url}\n  icon: image.png' > ${component_runtime_dir}/manifest.yaml && echo 'dummy' > ${component_runtime_dir}/image.png`);
+    });
+
+    after('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir} && rm -fr ${app_server_plugins_dir}/${dummy_component_id}.json`);
+    });
+
+    it('test creating component manifest.json', async function() {
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${process_component_desktop_iframe_plugin} "${component_runtime_dir}"`,
+        {},
+        {
+          stdout: 'process desktop plugin #0'
+        },
+        false
+      );
+
+      const pluginDefinitionContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_instance_dir}/pluginDefinition.json`);
+      expect(pluginDefinitionContent).to.have.string(`"identifier": "${dummy_component_id}",`);
+
+      const pluginIndexHtml = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_instance_dir}/web/index.html`);
+      expect(pluginIndexHtml).to.have.string(dummy_component_url);
+
+      const pluginRegistryContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${app_server_plugins_dir}/${dummy_component_id}.json`);
+      expect(pluginRegistryContent).to.have.string(`"identifier": "${dummy_component_id}",`);
     });
 
   });
