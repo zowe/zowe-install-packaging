@@ -1,2 +1,7 @@
 ---
 zos_security_system: TSS
+
+# smpe deployment volume
+zowe_smpe_volser: ZOWE02
+# caching service volume
+zowe_caching_vsam_volume: ZOWE02

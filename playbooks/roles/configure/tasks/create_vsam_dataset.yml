@@ -28,11 +28,6 @@
     msg: zowe_caching_vsam_storage_class is required
   when: zos_vsam_rls and (zowe_caching_vsam_storage_class is not defined or zowe_caching_vsam_storage_class is none or zowe_caching_vsam_storage_class == '')
 
-- name: Check if zowe_caching_vsam_volume has a value
-  fail:
-    msg: zowe_caching_vsam_volume is required
-  when: not zos_vsam_rls and (zowe_caching_vsam_volume is not defined or zowe_caching_vsam_volume is none or zowe_caching_vsam_volume == '')
-
 - name: Set caching service vsam data set name
   set_fact:
     zowe_caching_service_vsam_dsname: "{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}"
@@ -50,7 +45,8 @@
     cat "{{ work_dir_remote }}/ZWECSVSM.raw.jcl" | \
     sed -e "48,999s/#dsname/{{ zowe_caching_service_vsam_dsname }}/g" | \
     sed -e "48,999s/#storclas/{{ zowe_caching_vsam_storage_class }}/g" | \
-    sed -e "48,999s/#volume/{{ zowe_caching_vsam_volume }}/" \
+    sed -e "48,999s/#volume/{{ zowe_caching_vsam_volume }}/" | \
+    sed -e '/VOLUME()/d' \
     > "{{ work_dir_remote }}/ZWECSVSM.jcl"
 
 - name: Set ZWEVSVSM job MODE configuration

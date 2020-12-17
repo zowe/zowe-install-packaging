@@ -3,3 +3,8 @@ zowe_sanity_test_testcases: "./test/**/!(api-doc-gen).js"
 zowe_token_name: ZWETOKEN
 zowe_token_label: jwtsecret
 zowe_apiml_security_x509_enabled: true
+
+# smpe deployment volume, default will use storage class defined
+zowe_smpe_volser:
+# caching service volume, default will use storage class defined
+zowe_caching_vsam_volume:
