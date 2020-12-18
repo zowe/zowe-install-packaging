@@ -117,7 +117,7 @@ echo "   SMPCPATH='$SMP_HOME/classes'"
 SED="s:#job1:$gimzipJob1:"
 SED="$SED;s:#parm:$gimzipParm:"
 SED="$SED;s:#hlq:$gimzipHlq:"
-SED="$SED;s:#volser:$volser:"
+SED="$SED;s:#volser:$volser:g"
 SED="$SED;s:#dir:$gimzip:"
 _sed $here/$jcl $log/$jcl
 test "$debug" && cat $log/$jcl
