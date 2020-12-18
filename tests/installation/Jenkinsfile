@@ -22,7 +22,7 @@ def nvmShell(nodeVersion, script) {
   }
 }
 
-node('zowe-jenkins-agent-dind') {
+node('zowe-jenkins-agent-dind-wdc') {
   String INSTALL_TEST_PATH = 'tests/installation'
   String SANITY_TEST_PATH = 'tests/sanity'
 
