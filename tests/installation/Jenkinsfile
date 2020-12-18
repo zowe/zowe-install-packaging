@@ -46,16 +46,6 @@ node('zowe-jenkins-agent-dind-wdc') {
       ansible_host     : 'marist-3',
       ssh_hostport     : 'ssh-marist-server-zzow03-hostport',
       ssh_userpass     : 'ssh-marist-server-zzow03'
-    ],
-    // 'river': [
-    //   ansible_host     : 'river-0',
-    //   ssh_hostport     : 'ssh-river-original-hostport',
-    //   ssh_userpass     : 'ssh-zdt-test-image-guest'
-    // ],
-    'river-3': [
-      ansible_host     : 'river-3',
-      ssh_hostport     : 'ssh-river-c3-hostport',
-      ssh_userpass     : 'ssh-zdt-test-image-guest'
     ]
   ];
   // Test scopes, what test should we run
