@@ -88,7 +88,6 @@ return 0
 # ---------------------------------------------------------------------
 SCRIPT_NAME=$(basename "$0")  # $0=./.pax/prepare-workspace.sh
 BASE_DIR=$(dirname "$0")      # <something>/.pax
-PAX_WORKSPACE_DIR=.pax
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
@@ -100,10 +99,11 @@ fi
 cd $BASE_DIR
 cd ..
 ROOT_DIR=$(pwd)
+PAX_WORKSPACE_DIR=${ROOT_DIR}/.pax
 
 # show what's already present
-echo "[${SCRIPT_NAME}] content \$PAX_WORKSPACE_DIR: ls -A ${PAX_WORKSPACE_DIR}/"
-ls -A "${PAX_WORKSPACE_DIR}/" || true
+echo "[${SCRIPT_NAME}] content \$PAX_WORKSPACE_DIR: ls -l ${PAX_WORKSPACE_DIR}/"
+ls -l "${PAX_WORKSPACE_DIR}/" || true
 
 # workspace path abbreviations, relative to $ROOT_DIR
 ASCII_DIR="${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
@@ -111,39 +111,51 @@ CONTENT_DIR="${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}"
 
 # prepare pax workspace
 echo "[${SCRIPT_NAME}] preparing folders ..."
-#-- ascii
-mkdir -p "${ASCII_DIR}/bin"
-mkdir -p "${ASCII_DIR}/files"
-mkdir -p "${ASCII_DIR}/install"
-mkdir -p "${ASCII_DIR}/scripts"
-#-- content
+mkdir -p "${ASCII_DIR}"
+mkdir -p "${CONTENT_DIR}/bin"
+mkdir -p "${CONTENT_DIR}/install"
+mkdir -p "${CONTENT_DIR}/scripts"
 mkdir -p "${CONTENT_DIR}/files"
 
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
-cp -R files/* "${CONTENT_DIR}/files"
+cp manifest.json       "${CONTENT_DIR}"
+cp -R bin/*            "${CONTENT_DIR}/bin"
+cp -R install/*        "${CONTENT_DIR}/install"
+cp -R scripts/*        "${CONTENT_DIR}/scripts"
+cp -R shared/scripts/* "${CONTENT_DIR}/scripts"
+cp -R files/*          "${CONTENT_DIR}/files"
+
+# extract packaging utility tools to bin/utils
+echo "[${SCRIPT_NAME}] prepare utility tools ..."
+cd "$ROOT_DIR" && cd "${CONTENT_DIR}/files"
+mv zowe-utility-tools-*.zip zowe-utility-tools.zip
+cd "$ROOT_DIR" && cd "${CONTENT_DIR}/bin/utils"
+jar -xf "../../files/zowe-utility-tools.zip"
+# we should get 2 tgz files as npm packages
+echo "[${SCRIPT_NAME}] extract zowe-fconv ..."
+tar zxvf zowe-fconv-*.tgz
+mv package fconv
+rm zowe-fconv-*.tgz
+echo "[${SCRIPT_NAME}] extract zowe-njq ..."
+tar zxvf zowe-njq-*.tgz
+mv package njq
+rm zowe-njq-*.tgz
+cd "$ROOT_DIR"
+rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 
 # put text files into ascii folder (recursive & verbose)
-# TODO why include? everything except exclude is copied
 rsync -rv \
-  --include '*.json' \
-  --include '*.html' \
-  --include '*.jcl' \
-  --include '*.template' \
   --exclude '*.zip' \
   --exclude '*.png' \
   --exclude '*.tgz' \
   --exclude '*.tar.gz' \
   --exclude '*.pax' \
   --exclude '*.jar' \
+  --exclude '*.class' \
   --prune-empty-dirs --remove-source-files \
-  "${CONTENT_DIR}/files" \
+  "${CONTENT_DIR}/" \
   "${ASCII_DIR}"
-cp manifest.json       "${ASCII_DIR}"
-cp -R bin/*            "${ASCII_DIR}/bin"
-cp -R install/*        "${ASCII_DIR}/install"
-cp -R scripts/*        "${ASCII_DIR}/scripts"
-cp -R shared/scripts/* "${ASCII_DIR}/scripts"
 
 # move keyring-util to bin/utils/keyring-util
 KEYRING_UTIL_SRC="${PAX_WORKSPACE_DIR}/keyring-util"
@@ -153,16 +165,6 @@ cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
 
 # cleanup working files
 rm -rf "$KEYRING_UTIL_SRC"
-
-# extract packaging utility tools to bin/utils
-cd "$ROOT_DIR"
-cd "${CONTENT_DIR}/files"
-mv zowe-utility-tools-*.zip zowe-utility-tools.zip
-cd "$ROOT_DIR"
-cd "${CONTENT_DIR}/bin/utils"
-jar -xf "../../files/zowe-utility-tools.zip"
-cd "$ROOT_DIR"
-rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
