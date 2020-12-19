@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-node('zowe-jenkins-agent') {
+node('zowe-jenkins-agent-dind-wdc') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
@@ -136,7 +136,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
           extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
-          keepTempFolder      : params.KEEP_TEMP_FOLDER
+          keepTempFolder      : params.KEEP_TEMP_FOLDER,
+          paxOptions          : '-o saveext'
       )
       if (params.BUILD_SMPE) {
         // rename SMP/e build with correct FMID name
@@ -210,16 +211,16 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              git clone --branch master https://github.com/zowe/zowe-dockerfiles.git
-             cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
+             cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/server-bundle &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../../../../utils/* ./utils &&
-             sudo docker build -t ${USERNAME}/zowe-v1-lts:s390x . &&
-             sudo docker save -o zowe-v1-lts.s390x.tar ${USERNAME}/zowe-v1-lts:s390x &&
+             sudo docker build -t ${USERNAME}/server-bundle:s390x . &&
+             sudo docker save -o server-bundle.s390x.tar ${USERNAME}/server-bundle:s390x &&
              sudo chmod 777 * &&
-             echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.s390x.tar
+             echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.s390x.tar
           """
-          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts/zowe-v1-lts.s390x.tar", into: "zowe-v1-lts.s390x.tar"
-          pipeline.uploadArtifacts([ 'zowe-v1-lts.s390x.tar' ])
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/server-bundle/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
+          pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
           sshCommand remote: Z_SERVER, command: \
           """
              rm -rf zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
@@ -247,14 +248,14 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           error "Couldn't find zowe.pax uploaded."
         }
 
-        node('zowe-jenkins-agent-dind') {
+        node('zowe-jenkins-agent-dind-wdc') {
           // checkout source code to docker build agent
           checkout scm
           // checkout repository with dockerfile
           // FIXME: this dockerfile should be merged into current repo to avoid
           //        version synchronizing issues
           sh 'git clone --branch master https://github.com/zowe/zowe-dockerfiles.git'
-          dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts') {
+          dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/server-bundle') {
             // copy utils to docker build folder
             sh 'mkdir -p utils && cp -r ../../../../utils/* ./utils'
             // download zowe pax to docker build agent
@@ -271,12 +272,12 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
               passwordVariable: 'PASSWORD'
             )]){
               // build docker image
-              sh "docker build -t ${USERNAME}/zowe-v1-lts:amd64 ."
-              sh "docker save -o zowe-v1-lts.amd64.tar ${USERNAME}/zowe-v1-lts:amd64"
+              sh "docker build -t ${USERNAME}/server-bundle:amd64 ."
+              sh "docker save -o server-bundle.amd64.tar ${USERNAME}/server-bundle:amd64"
             }
             // show files
-            sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr zowe-v1-lts.amd64.tar'
-            pipeline.uploadArtifacts([ 'zowe-v1-lts.amd64.tar' ])
+            sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.amd64.tar'
+            pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
           }
         }
       }
