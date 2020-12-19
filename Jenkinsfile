@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-node('ibm-jenkins-slave-nvm') {
+node('zowe-jenkins-agent-dind-wdc') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
@@ -247,7 +247,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           error "Couldn't find zowe.pax uploaded."
         }
 
-        node('ibm-jenkins-slave-dind') {
+        node('zowe-jenkins-agent-dind-wdc') {
           // checkout source code to docker build agent
           checkout scm
           // checkout repository with dockerfile
