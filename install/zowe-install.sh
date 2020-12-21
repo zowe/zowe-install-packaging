@@ -126,14 +126,26 @@ chmod a+rx $ZOWE_ROOT_DIR
 cp "$INSTALL_DIR/manifest.json" "$ZOWE_ROOT_DIR"
 chmod 750 "${ZOWE_ROOT_DIR}/manifest.json"
 
-# Install the Java components
-. $INSTALL_DIR/scripts/zowe-install-components.sh
+# Install manifest-compatible components
+component_list="jobs-api files-api api-catalog discovery gateway caching-service explorer-ui-server explorer-jes explorer-mvs explorer-uss"
+for component_id in ${component_list}; do
+  cd ${INSTALL_DIR}
+  component_package=$PWD/$(ls -t ./files/${component_id}-* | head -1)
+  if [ ! -f ${component_package} ]; then
+    echo "  Component ${component_id} package (${component_id}-*) is missing"
+    echo "  Installation terminated"
+    exit 0
+  fi
+
+  echo "  Installing component ${component_id} into ${ZOWE_ROOT_DIR}/components ..."  >> $LOG_FILE
+  . $INSTALL_DIR/bin/zowe-install-component.sh \
+    --component "${component_package}" \
+    --target_dir "${ZOWE_ROOT_DIR}/components" \
+    --native --logs-dir "${LOG_DIRECTORY}"
+done
 
 # Install the zLUX server
 . $INSTALL_DIR/scripts/zowe-install-zlux.sh
-
-# Install Explorer UI plugins
-. $INSTALL_DIR/scripts/zowe-install-explorer-ui.sh
 
 echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
 ls $ZOWE_ROOT_DIR >> $LOG_FILE

@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019
+# Copyright IBM Corporation 2019, 2020
 ################################################################################
 
 if [ $# -lt 2 ]; then
@@ -255,6 +255,18 @@ if [[ $RETURN_CODE != "0" ]]; then
 fi
 chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
+
+# Go through Zowe build-in components and see they need to be configured for current instance
+component_list="jobs-api files-api api-catalog discovery gateway caching-service explorer-ui-server explorer-jes explorer-mvs explorer-uss"
+for component_id in ${component_list}; do
+  cd ${INSTALL_DIR}
+  echo "  Installing component ${component_id} into ${ZOWE_ROOT_DIR}/components ..."  >> $LOG_FILE
+  . $INSTALL_DIR/bin/zowe-configure-component.sh \
+    --component "${component_id}" \
+    --instance_dir "${INSTANCE_DIR}" \
+    --target_dir "${ZOWE_ROOT_DIR}/components" \
+    --native --logs-dir "${LOG_DIRECTORY}"
+done
 
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
