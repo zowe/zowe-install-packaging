@@ -74,7 +74,7 @@ fi
 # Question: is there a better way to load these variables since this is already handled by
 #           <instance-dir>/bin/internal/run-zowe.sh
 . ${INSTANCE_DIR}/bin/internal/read-instance.sh
-if [ ! -z "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
+if [ -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
   . ${INSTANCE_DIR}/bin/internal/read-keystore.sh
 fi
 
@@ -98,7 +98,7 @@ else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
     LAUNCH_COMPONENTS=discovery,gateway,api-catalog,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
-    if [[ ! -z ${ZOWE_CACHING_SERVICE_START} && ${ZOWE_CACHING_SERVICE_START} == true ]]
+    if [[ -n ${ZOWE_CACHING_SERVICE_START} && ${ZOWE_CACHING_SERVICE_START} == true ]]
     then
       LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},caching-service
     fi

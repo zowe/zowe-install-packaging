@@ -45,10 +45,16 @@ if [ -z "${ROOT_DIR}" ]; then
 fi
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 
+# zowe launch script logging identifier
+LOGGING_SERVICE_ID=ZWELS
+LOGGING_SCRIPT_NAME=global-validate.sh
+
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "process global validations ..."
+
 ########################################################
 if [[ "${USER}" == "IZUSVR" ]]
 then
-  echo "WARNING: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
+  print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
 fi
 
 # reset error counter
@@ -67,3 +73,5 @@ validate_directory_is_accessible "${KEYSTORE_DIRECTORY}"
 ########################################################
 # Summary errors check, exit if errors found
 runtime_check_for_validation_errors_found
+
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "global validations are successful"

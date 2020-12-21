@@ -192,6 +192,7 @@ separator
 mkdir -p ${ZOWE_ROOT_DIR}/scripts/utils
 cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
 cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
+cp $INSTALL_DIR/scripts/tag-files.sh $ZOWE_ROOT_DIR/scripts/utils/tag-files.sh
 
 # Based on zowe-install-packaging/issues/1014 we should set everything to 755
 chmod -R 755 ${ZOWE_ROOT_DIR}
