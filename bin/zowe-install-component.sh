@@ -12,14 +12,10 @@
 
 DEFAULT_TARGET_DIR=/opt/zowe/extensions
 
-echo "ZOWE_ROOT_DIR before=${ZOWE_ROOT_DIR}"
-
 if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
-
-echo "ZOWE_ROOT_DIR after=${ZOWE_ROOT_DIR}"
 
 . ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
 
