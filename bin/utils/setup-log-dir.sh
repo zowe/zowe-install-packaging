@@ -19,7 +19,7 @@ fi
 set_install_log_file_from_full_path() {
   export LOG_FILE=$1
 
-  if [ -f "${LOG_FILE}" ]; then
+  if [ ! -f "${LOG_FILE}" ]; then
     # create and echo message if log file doesn't exist
     touch ${LOG_FILE}
     echo "Log file created: ${LOG_FILE}"
