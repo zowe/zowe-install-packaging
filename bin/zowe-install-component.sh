@@ -255,11 +255,11 @@ print_and_log_message "Install Zowe component ${COMPONENT_FILE} to ${TARGET_DIR}
 separator
 
 # prepare target directory
+mkdir -p "${TARGET_DIR}"
 validate_directory_is_writable "${TARGET_DIR}"
 if [[ $? -ne 0 ]]; then
     error_handler "Target directory ${TARGET_DIR} is not writable."
 fi
-mkdir -p "${TARGET_DIR}"
 
 # Extract the files of the extension into target directory
 extract_to_target_dir
