@@ -44,6 +44,15 @@ log_message() {
   fi
 }
 
+# print message to stdout and also write message to log
+print_and_log_message() {
+  message=$1
+  echo "${message}"
+  if [[ -n "${LOG_FILE}" ]] && [[ -w "${LOG_FILE}" ]]; then
+    echo "${message}" >> $LOG_FILE
+  fi
+}
+
 # return currrent user id
 get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME}}}

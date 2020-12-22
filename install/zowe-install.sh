@@ -257,13 +257,13 @@ fi
 ################################################################################
 # Install Zowe
 
-echo "Install started at: "`date` >> $LOG_FILE
-
 ZOWE_ROOT_DIR=$(get_full_path ${INSTALL_TARGET})
 ZOWE_DSN_PREFIX=$DSN_PREFIX
 
-prepare_temp_dir
 prepare_log_file
+
+echo "Install started at: "`date` >> $LOG_FILE
+prepare_temp_dir
 get_and_validate_zowe_version
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
@@ -279,7 +279,7 @@ install_zlux
 finish_and_cleanup
 
 ################################################################################
-# Conclusion
+# Conclude
 echo "zowe-install.sh completed. In order to use Zowe:"
 if [[ ${NEW_INSTALL} == "true" ]]
 then
