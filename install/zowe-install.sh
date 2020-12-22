@@ -180,7 +180,7 @@ install_buildin_components() {
       --component-name "${component_name}" \
       --component-file "${component_package}" \
       --target_dir "${ZOWE_ROOT_DIR}/components" \
-      --native --logs-file "${LOG_FILE}"
+      --native --log-file "${LOG_FILE}"
   done
 }
 

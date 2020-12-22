@@ -29,8 +29,8 @@
 #                     Otherwise will fall back to ${DEFAULT_TARGET_DIR}.
 # -n|--native         optional boolean. Whether this component is bundled
 #                     into Zowe package.
-# -l|--log-dir        optional. path to log directory.
-# -f|--log-file       optional. write logs to the file specified.
+# -l|--logs-dir        optional. path to logs directory.
+# -f|--log-file       optional. write log to the file specified.
 #######################################################################
 
 #######################################################################

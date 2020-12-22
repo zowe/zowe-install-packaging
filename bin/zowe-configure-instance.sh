@@ -265,7 +265,7 @@ for component_name in ${component_list}; do
     --component-name "${component_name}" \
     --instance_dir "${INSTANCE_DIR}" \
     --target_dir "${ZOWE_ROOT_DIR}/components" \
-    --native --logs-file "${LOG_FILE}"
+    --native --log-file "${LOG_FILE}"
 done
 
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
