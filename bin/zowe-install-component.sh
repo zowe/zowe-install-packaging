@@ -83,13 +83,13 @@ extract_to_target_dir(){
     cd "${TARGET_DIR}" && rm -fr temp-ext-dir
 
     if [ -d "${COMPONENT_FILE}" ]; then
-        print_and_log_message "Component is a directory, create symbolic link to target directory."
+        print_and_log_message "- component is a directory, create symbolic link to target directory."
         ln -s "${COMPONENT_FILE}" temp-ext-dir
     else
         # create temporary directory to lay down extension files in
         mkdir -p temp-ext-dir && cd temp-ext-dir
 
-        print_and_log_message "Extract file $(basename ${COMPONENT_FILE}) to temporary directory."
+        print_and_log_message "- extract file $(basename ${COMPONENT_FILE}) to temporary directory."
 
         if [[ "$COMPONENT_FILE" = *.pax ]]; then
             pax -ppx -rf "$COMPONENT_FILE"
@@ -117,9 +117,45 @@ extract_to_target_dir(){
         error_handler "Component ${component_name} already exists in ${TARGET_DIR}."
     fi
 
-    print_and_log_message "Rename temporary directory to ${component_name}."
+    print_and_log_message "- rename temporary directory to ${component_name}."
     mv temp-ext-dir "${component_name}"
 
+}
+
+process_command_install() {
+    if [ -z "${NODE_HOME}" ]; then
+        print_and_log_message "WARNING: NODE_HOME is not defined. The component commands.install defined in manifest will not be processed."
+        print_and_log_message "         You can either re-run the zowe-install-component.sh script with NODE_HOME defined, or run commands.install defined in manifest manually."
+    else
+        commands_installL=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".commands.install" 2>/dev/null)
+        if [[ ! "${commands_install}" = "null" ]] && [[ ! -z ${commands_install} ]]; then
+            print_and_log_message "- process ${commands_install} defined in manifest commands.install"
+            cd "${TARGET_DIR}/${component_name}"
+            # run commands
+            . $commands_install
+        fi
+    fi
+}
+
+configure_component() {
+    if [ ! -z ${INSTANCE_DIR} ]; then
+        # write ZWE_EXTENSION_DIR to instance.env
+        if [ "${IS_NATIVE}" = "false" ]; then
+            update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
+        fi
+
+        # CALL CONFIGURE COMPONENT SCRIPT
+        cmd="${ZOWE_ROOT_DIR}/bin/zowe-configure-component.sh"
+        cmd="${cmd} -c \"${component_name}\""
+        cmd="${cmd} -d \"${TARGET_DIR}\""
+        cmd="${cmd} -i \"${INSTANCE_DIR}\""
+        # we should always have LOG_FILE at this time
+        cmd="${cmd} -f \"${LOG_FILE}\""
+        if [ "${IS_NATIVE}" = false ]; then
+          cmd="${cmd} -n"
+        fi
+        eval "${cmd}"
+    fi
 }
 
 #######################################################################
@@ -252,7 +288,6 @@ prepare_log_file
 
 separator
 print_and_log_message "Install Zowe component ${COMPONENT_FILE} to ${TARGET_DIR}"
-separator
 
 # prepare target directory
 mkdir -p "${TARGET_DIR}"
@@ -266,39 +301,11 @@ extract_to_target_dir
 # component_name should have been assigned value in extract_to_target_dir
 
 # Call commands.install if exists
-if [ -z "${NODE_HOME}" ]; then
-    print_and_log_message "WARNING: NODE_HOME is not defined. The component commands.install defined in manifest will not be processed."
-else
-    commands_installL=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".commands.install" 2>/dev/null)
-    if [[ ! "${commands_install}" = "null" ]] && [[ ! -z ${commands_install} ]]; then
-        print_and_log_message "Process ${commands_install} ..."
-        cd "${TARGET_DIR}/${component_name}"
-        # run commands
-        . $commands_install
-    fi
-fi
+process_command_install
 
-# Check for automated configuration
-if [ ! -z ${INSTANCE_DIR} ]; then
-    # write ZWE_EXTENSION_DIR to instance.env
-    if [ "${IS_NATIVE}" = "false" ]; then
-        update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
-    fi
-
-    # CALL CONFIGURE COMPONENT SCRIPT
-    cmd="${ZOWE_ROOT_DIR}/bin/zowe-configure-component.sh"
-    cmd="${cmd} -c \"${component_name}\""
-    cmd="${cmd} -d \"${TARGET_DIR}\""
-    cmd="${cmd} -i \"${INSTANCE_DIR}\""
-    # we should always have LOG_FILE at this time
-    cmd="${cmd} -f \"${LOG_FILE}\""
-    if [ "${IS_NATIVE}" = false ]; then
-      cmd="${cmd} -n"
-    fi
-    eval "${cmd}"
-fi
+# Check for automated configuration if INSTANCE_DIR is defined
+configure_component
 
 #######################################################################
 # Conclude
-separator
-print_and_log_message "Zowe component ${component_name} is installed successfully."
+print_and_log_message "Zowe component ${component_name} is installed successfully.\n"
