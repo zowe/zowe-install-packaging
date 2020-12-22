@@ -58,6 +58,94 @@ find_component_directory() {
 }
 
 ###############################
+# Detect and verify file encoding
+#
+# This function will try to verify file encoding by reading sample string.
+#
+# Note: this function always returns 0 and if succeeds, it will output encoding
+#       to stdout.
+#
+# Example:
+# - detect manifest encoding by checking result "name"
+#   detect_file_encoding "/path/to/zowe/components/my-component/manifest.yaml" "name"
+#
+# @param string   path to file to verify
+# @param string   expected sample string to verify result
+# @param string   expected encoding. This is optional, and default value is "auto".
+#                 When this value is auto, the function will try to guess common
+#                 encodings (IBM-1047, ISO8859-1, IBM-850) and 
+detect_file_encoding() {
+  file_name=$1
+  expected_sample=$2
+  expected_encoding=$3
+
+  expected_encoding_uc=$(echo "${expected_encoding}" | tr '[:lower:]' '[:upper:]')
+
+  confirmed_encoding=
+  if [ "${expected_encoding_uc}" = "IBM-1047" ]; then
+    result=$(cat "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+    if [ -n "${result}" ]; then
+      confirmed_encoding=IBM-1047
+    fi
+  elif [ "${expected_encoding_uc}" = "AUTO" -o -z "${expected_encoding_uc}" ]; then
+    # check IBM-1047
+    result=$(cat "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+    if [ -n "${result}" ]; then
+      confirmed_encoding=IBM-1047
+    fi
+    # check common encodings
+    for enc in "ISO8859-01 IBM-850"; do
+      if [ -z "${confirmed_encoding}" ]; then
+        result=$(iconv -f "${enc}" -t IBM-1047 "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+        if [ -n "${result}" ]; then
+          confirmed_encoding=${enc}
+        fi
+      fi
+    done
+  else
+    result=$(iconv -f "${expected_encoding_uc}" -t IBM-1047 "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+    if [ -n "${result}" ]; then
+      confirmed_encoding=${expected_encoding_uc}
+    fi
+  fi
+
+  if [ -n "${confirmed_encoding}" ]; then
+    echo "${confirmed_encoding}"
+  fi
+}
+
+###############################
+# Detect and verify component manifest encoding
+#
+# Note: this function always returns 0 and if succeeds, it will output encoding
+#       to stdout.
+#
+# Example:
+# - detect manifest encoding of my-component
+#   detect_component_manifest_encoding "/path/to/zowe/components/my-component"
+#
+# @param string   component directory
+detect_component_manifest_encoding() {
+  component_dir=$1
+
+  component_manifest=
+  if [ -f "${component_dir}/manifest.yaml" ]; then
+    component_manifest="${component_dir}/manifest.yaml"
+  elif [ -f "${component_dir}/manifest.yml" ]; then
+    component_manifest="${component_dir}/manifest.yml"
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    component_manifest="${component_dir}/manifest.json"
+  fi
+  if [ -n "${component_manifest}" ]; then
+    # manifest at least should have name defined
+    confirmed_encoding=$(detect_file_encoding "${component_manifest}" "name")
+    if [ -n "${confirmed_encoding}" ]; then
+      echo "${confirmed_encoding}"
+    fi
+  fi
+}
+
+###############################
 # Convert component YAML format manifest to JSON and place into workspace foler
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,

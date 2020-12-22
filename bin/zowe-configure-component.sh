@@ -78,7 +78,7 @@ enable_component(){
     commands_start=$(read_component_manifest "${component_path}" ".commands.start" 2>/dev/null)
     if [ ! "${commands_start}" = "null" ] && [ -n "${commands_start}" ] && [ ${IS_NATIVE} = false ]; then
         # we only enable if extension has commands.start defined in manifest
-        print_and_log_message "- enable ${COMPONENT_NAME} for instance ${INSTANCE_DIR}"
+        log_message "- enable ${COMPONENT_NAME} for instance ${INSTANCE_DIR}"
         # append to EXTERNAL_COMPONENTS
         update_zowe_instance_variable "EXTERNAL_COMPONENTS" "${COMPONENT_NAME}" "true"
     fi
@@ -87,7 +87,7 @@ enable_component(){
 install_desktop_plugin(){
     desktop_plugin_path=$(read_component_manifest "${component_path}" ".desktopPlugin[].path" 2>/dev/null)
     if [ ! "${desktop_plugin_path}" = "null" ] && [ -n ${desktop_plugin_path} ]; then
-        print_and_log_message "- install Zowe desktop plugin"
+        log_message "- install Zowe desktop plugin"
         # Uses install-app.sh in zowe-instance-dir to automatically set up the component onto zowe
         ${INSTANCE_DIR}/bin/install-app.sh "${component_path}"
     fi
@@ -96,7 +96,7 @@ install_desktop_plugin(){
 configure_component(){
     commands_cfg_instance=$(read_component_manifest "${component_path}" ".commands.configureInstance" 2>/dev/null)
     if [ ! "${commands_cfg_instance}" = "null" ] && [ -n ${commands_cfg_instance}]; then
-        print_and_log_message "- process commands.configureInstance defined in manifest"
+        log_message "- process commands.configureInstance defined in manifest"
         cd ${component_path}
         ./${commands_cfg_instance}
     fi
@@ -214,4 +214,4 @@ enable_component
 
 #######################################################################
 # Conclude
-print_and_log_message "Zowe component ${COMPONENT_FILE} is configured successfully.\n"
+log_message "Zowe component ${COMPONENT_FILE} is configured successfully.\n"

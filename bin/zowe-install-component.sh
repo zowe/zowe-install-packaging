@@ -32,6 +32,11 @@
 #                     native component, the script will check ZWE_EXTENSION_DIR
 #                     if possible. Otherwise will fall back to
 #                     ${DEFAULT_TARGET_DIR}.
+# -e|--auto-encoding  optional. If we want to automatically tagging the
+#                     directory. Default value is "auto". Allowed values are:
+#                     - yes: automatically tag the files encoding
+#                     - no: do not automatically tag encoding
+#                     - auto: only tag when manifest is in ISO8859-01 encoding.
 # -n|--native         optional boolean. Whether this component is bundled
 #                     into Zowe package.
 # -l|--logs-dir       optional. path to logs directory.
@@ -83,13 +88,13 @@ extract_to_target_dir(){
     cd "${TARGET_DIR}" && rm -fr temp-ext-dir
 
     if [ -d "${COMPONENT_FILE}" ]; then
-        print_and_log_message "- component is a directory, create symbolic link to target directory."
+        log_message "- component is a directory, create symbolic link to target directory."
         ln -s "${COMPONENT_FILE}" temp-ext-dir
     else
         # create temporary directory to lay down extension files in
         mkdir -p temp-ext-dir && cd temp-ext-dir
 
-        print_and_log_message "- extract file $(basename ${COMPONENT_FILE}) to temporary directory."
+        log_message "- extract file $(basename ${COMPONENT_FILE}) to temporary directory."
 
         if [[ "$COMPONENT_FILE" = *.pax ]]; then
             pax -ppx -rf "$COMPONENT_FILE"
@@ -98,6 +103,16 @@ extract_to_target_dir(){
         elif [[ "$COMPONENT_FILE" = *.tar ]]; then
             pax -z tar -xf "$COMPONENT_FILE"
         fi
+    fi
+
+    # automatically tag files
+    manifest_encoding=
+    if [ "${AUTO_ENCODING}" = "auto" ]; then
+      manifest_encoding=$(detect_component_manifest_encoding "${TARGET_DIR}/temp-ext-dir")
+    fi
+    if [ "${AUTO_ENCODING}" = "yes" -o "${manifest_encoding}" = "ISO8859-01" ]; then
+        # automatically tag files
+        $ZOWE_ROOT_DIR/scripts/utils/tag-files.sh "${TARGET_DIR}"
     fi
 
     if [ -n "${COMPONENT_NAME}" ]; then
@@ -117,7 +132,7 @@ extract_to_target_dir(){
         error_handler "Component ${component_name} already exists in ${TARGET_DIR}."
     fi
 
-    print_and_log_message "- rename temporary directory to ${component_name}."
+    log_message "- rename temporary directory to ${component_name}."
     mv temp-ext-dir "${component_name}"
 
 }
@@ -129,7 +144,7 @@ process_command_install() {
     else
         commands_installL=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".commands.install" 2>/dev/null)
         if [[ ! "${commands_install}" = "null" ]] && [[ ! -z ${commands_install} ]]; then
-            print_and_log_message "- process ${commands_install} defined in manifest commands.install"
+            log_message "- process ${commands_install} defined in manifest commands.install"
             cd "${TARGET_DIR}/${component_name}"
             # run commands
             . $commands_install
@@ -203,6 +218,10 @@ while [ $# -gt 0 ]; do #Checks for parameters
             IS_NATIVE=true
             shift
         ;;
+        -e|--auto-encoding)
+            shift
+            AUTO_ENCODING=$1
+            shift
         -l|--logs-dir) # Represents the path to the installation logs
             shift
             LOG_DIRECTORY=$1
@@ -277,6 +296,10 @@ if [ -n "${COMPONENT_NAME}" ]; then
     fi
 fi
 
+if [ "${AUTO_ENCODING}" != "no" -a "${AUTO_ENCODING}" != "yes" ]; then
+  AUTO_ENCODING=auto
+fi
+
 if [ -z "${LOG_FILE}" -a -z "${LOG_DIRECTORY}" -a -n "${INSTANCE_DIR}" ]; then
     LOG_DIRECTORY="${INSTANCE_DIR}/logs"
 fi
@@ -308,4 +331,4 @@ configure_component
 
 #######################################################################
 # Conclude
-print_and_log_message "Zowe component ${component_name} is installed successfully.\n"
+log_message "Zowe component ${component_name} is installed successfully.\n"
