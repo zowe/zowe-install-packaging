@@ -167,20 +167,20 @@ install_mvs() {
 
 install_buildin_components() {
   component_list="jobs-api files-api api-catalog discovery gateway caching-service explorer-ui-server explorer-jes explorer-mvs explorer-uss"
-  for component_id in ${component_list}; do
+  for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
-    component_package=$PWD/$(ls -t ./files/${component_id}-* | head -1)
+    component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
     if [ ! -f ${component_package} ]; then
-      echo "  Component ${component_id} package (${component_id}-*) is missing"
+      echo "  Component ${component_name} package (${component_name}-*) is missing"
       echo "  Installation terminated"
       exit 0
     fi
 
-    echo "  Installing component ${component_id} into ${ZOWE_ROOT_DIR}/components ..."  >> $LOG_FILE
     . $INSTALL_DIR/bin/zowe-install-component.sh \
-      --component "${component_package}" \
+      --component-name "${component_name}" \
+      --component-file "${component_package}" \
       --target_dir "${ZOWE_ROOT_DIR}/components" \
-      --native --logs-dir "${LOG_DIRECTORY}"
+      --native --logs-file "${LOG_FILE}"
   done
 }
 

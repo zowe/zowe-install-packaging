@@ -295,6 +295,7 @@ if [ ! -z ${INSTANCE_DIR} ]; then
     if [ "${IS_NATIVE}" = false ]; then
       cmd="${cmd} -n"
     fi
+    eval "${cmd}"
 fi
 
 #######################################################################
