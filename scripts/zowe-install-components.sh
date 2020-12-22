@@ -18,7 +18,7 @@
 
 echo "<zowe-install-components.sh>" >> $LOG_FILE
 
-component_list="jobs-api files-api api-catalog discovery gateway caching-service common-lib"
+component_list="jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib"
 for component_id in ${component_list}; do
   cd ${INSTALL_DIR}
   component_zip=$PWD/$(ls -t ./files/${component_id}*.zip | head -1)

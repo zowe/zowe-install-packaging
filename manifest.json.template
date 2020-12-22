@@ -93,9 +93,9 @@
       "artifact": "caching-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.common-lib-package": {
+    "org.zowe.apiml.sdk.apiml-common-lib-package": {
       "version": "~1.19.0-SNAPSHOT",
-      "artifact": "common-lib-*.zip",
+      "artifact": "apiml-common-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.keyring-utilities": {
