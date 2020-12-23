@@ -257,10 +257,9 @@ chmod -R 755 ${INSTANCE}
 chmod -R 755 ${INSTANCE_DIR}/bin
 
 # Go through Zowe build-in components and see they need to be configured for current instance
-component_list="jobs-api files-api api-catalog discovery gateway caching-service explorer-ui-server explorer-jes explorer-mvs explorer-uss"
+component_list="jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss"
 for component_name in ${component_list}; do
   cd ${ZOWE_ROOT_DIR}
-  echo "  Installing component ${component_name} into ${ZOWE_ROOT_DIR}/components ..."  >> $LOG_FILE
   . $ZOWE_ROOT_DIR/bin/zowe-configure-component.sh \
     --component-name "${component_name}" \
     --instance_dir "${INSTANCE_DIR}" \
