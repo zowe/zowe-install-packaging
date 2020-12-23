@@ -122,7 +122,7 @@ describe('verify utils/component-utils', function() {
   });
 
   const convert_component_manifest = 'convert_component_manifest';
-  describe(`verify ${convert_component_manifest}`, function() {
+  describe.skip(`verify ${convert_component_manifest}`, function() {
     const dummy_component_name = 'sanity_test_dummy';
     const component_runtime_dir = `${process.env.ZOWE_ROOT_DIR}/components/${dummy_component_name}`;
     const component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
@@ -147,7 +147,7 @@ describe('verify utils/component-utils', function() {
   });
 
   const process_component_apiml_static_definitions = 'process_component_apiml_static_definitions';
-  describe(`verify ${process_component_apiml_static_definitions}`, function() {
+  describe.skip(`verify ${process_component_apiml_static_definitions}`, function() {
     const dummy_component_name = 'sanity_test_dummy';
     const component_runtime_dir = `${process.env.ZOWE_ROOT_DIR}/components/${dummy_component_name}`;
     const static_def_file = 'static-def.yaml';
@@ -179,7 +179,7 @@ describe('verify utils/component-utils', function() {
   });
 
   const process_component_desktop_iframe_plugin = 'process_component_desktop_iframe_plugin';
-  describe(`verify ${process_component_desktop_iframe_plugin}`, function() {
+  describe.skip(`verify ${process_component_desktop_iframe_plugin}`, function() {
     const dummy_component_name = 'sanity_test_dummy';
     const dummy_component_title = 'Sanity Test Dummy';
     const dummy_component_id = 'org.zowe.plugins.sanity_test_dummy';
