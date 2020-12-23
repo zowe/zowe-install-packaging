@@ -66,10 +66,6 @@ RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
 
 #######################################################################
 # Functions
-separator() {
-    echo "---------------------------------------------------------------------"
-}
-
 error_handler(){
     print_error_message "$1"
     exit 1
@@ -318,7 +314,6 @@ fi
 
 prepare_log_file
 
-separator
 print_and_log_message "Install Zowe component ${COMPONENT_FILE} to ${TARGET_DIR}"
 
 # prepare target directory

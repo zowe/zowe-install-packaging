@@ -198,6 +198,7 @@ finish_and_cleanup() {
   # remove the working directory
   rm -rf $TEMP_DIR
 
+  echo
   echo "Zowe ${ZOWE_VERSION} runtime install completed into"
   echo "  directory " $ZOWE_ROOT_DIR
   echo "  datasets  " ${ZOWE_DSN_PREFIX}.SZWESAMP " and " ${ZOWE_DSN_PREFIX}.SZWEAUTH

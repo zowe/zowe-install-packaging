@@ -52,10 +52,6 @@ fi
 
 #######################################################################
 # Functions
-separator() {
-    echo "---------------------------------------------------------------------"
-}
-
 error_handler(){
     print_error_message "$1"
     exit 1
@@ -203,7 +199,6 @@ fi
 
 prepare_log_file
 
-separator
 print_and_log_message "Configure Zowe component ${component_path} for instance ${INSTANCE_DIR}"
 
 configure_component
