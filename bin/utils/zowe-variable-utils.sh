@@ -100,7 +100,7 @@ update_zowe_instance_variable(){
     echo "${variable_name}=${variable_value}" >> ${INSTANCE_DIR}/instance.env
   else
     curr_variable_value=$(read_zowe_instance_variable "${variable_name}")
-    if [ ! -z "${curr_variable_value}" ]; then
+    if [ -n "${curr_variable_value}" ]; then
       if [ "${is_append}" = "false" ]; then
         sed -e "s/^ *${variable_name}=${curr_variable_value}/${variable_name}=${variable_value}/" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
         mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env

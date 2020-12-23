@@ -50,8 +50,7 @@ DEFAULT_TARGET_DIR=/global/zowe/extensions
 
 #######################################################################
 # Prepare shell environment
-if [[ -z ${ZOWE_ROOT_DIR} ]]
-then
+if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
@@ -77,8 +76,7 @@ error_handler(){
 }
 
 prepare_log_file() {
-    if [[ -z "${LOG_FILE}" ]]
-    then
+    if [ -z "${LOG_FILE}" ]; then
         set_install_log_directory "${LOG_DIRECTORY}"
         validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
         set_install_log_file "zowe-install-component"
@@ -150,7 +148,7 @@ process_command_install() {
         print_and_log_message "         You can either re-run the zowe-install-component.sh script with NODE_HOME defined, or run commands.install defined in manifest manually."
     else
         commands_installL=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".commands.install" 2>/dev/null)
-        if [[ ! "${commands_install}" = "null" ]] && [[ ! -z ${commands_install} ]]; then
+        if [[ "${commands_install}" != "null" ]] && [[ -n "${commands_install}" ]]; then
             log_message "- process ${commands_install} defined in manifest commands.install"
             cd "${TARGET_DIR}/${component_name}"
             # run commands
@@ -160,7 +158,7 @@ process_command_install() {
 }
 
 configure_component() {
-    if [ ! -z ${INSTANCE_DIR} ]; then
+    if [ -n "${INSTANCE_DIR}" ]; then
         # write ZWE_EXTENSION_DIR to instance.env
         if [ "${IS_NATIVE}" = "false" ]; then
             update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
@@ -248,12 +246,12 @@ done
 
 #######################################################################
 # Check and sanitize valiables
-if [ -z ${COMPONENT_FILE} ]; then
+if [ -z "${COMPONENT_FILE}" ]; then
     #Ensures that the required parameters are entered, otherwise exit the program
     error_handler "Missing parameters, try: zowe-install-component.sh -o <PATH_TO_COMPONENT>"
 fi
 
-if [ -z ${IS_NATIVE} ]; then
+if [ -z "${IS_NATIVE}" ]; then
     IS_NATIVE=false
 fi
 
@@ -262,10 +260,10 @@ if [ -z "${TARGET_DIR}" ]; then
     if [ "${IS_NATIVE}" = "false" ]; then
         if [ -n "${ZWE_EXTENSION_DIR}" ]; then
             zwe_extension_dir="${ZWE_EXTENSION_DIR}"
-        elif [ ! -z "${INSTANCE_DIR}" ]; then #instance_dir exists
+        elif [ -n "${INSTANCE_DIR}" ]; then #instance_dir exists
             zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
         fi
-        if [ -z ${zwe_extension_dir} ]; then
+        if [ -z "${zwe_extension_dir}" ]; then
             #Assigns TARGET_DIR to the default directory since it was not set to a specific directory
             TARGET_DIR=${DEFAULT_TARGET_DIR}
         else
@@ -282,7 +280,7 @@ if [ "${IS_NATIVE}" = "false" ]; then
     if [[ $? -ne 0 ]]; then
         error_handler "The specified target directory is located within zowe's runtime folder. Select another location for the target directory."
     fi
-    if [ ! -z "${INSTANCE_DIR}" ]; then #instance_dir exists
+    if [ -n "${INSTANCE_DIR}" ]; then #instance_dir exists
         # install non-native component into instance workspace directory is not suggested.
         validate_file_not_in_directory "${TARGET_DIR}" "${INSTANCE_DIR}/workspace"
         if [[ $? -ne 0 ]]; then

@@ -39,8 +39,7 @@ DEFAULT_TARGET_DIR=/global/zowe/extensions
 
 #######################################################################
 # Prepare shell environment
-if [[ -z ${ZOWE_ROOT_DIR} ]]
-then
+if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
@@ -63,8 +62,7 @@ error_handler(){
 }
 
 prepare_log_file() {
-    if [[ -z "${LOG_FILE}" ]]
-    then
+    if [ -z "${LOG_FILE}" ]; then
         set_install_log_directory "${LOG_DIRECTORY}"
         validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
         set_install_log_file "zowe-configure-component"
@@ -76,7 +74,7 @@ prepare_log_file() {
 
 enable_component(){
     commands_start=$(read_component_manifest "${component_path}" ".commands.start" 2>/dev/null)
-    if [ ! "${commands_start}" = "null" ] && [ -n "${commands_start}" ] && [ ${IS_NATIVE} = false ]; then
+    if [ "${commands_start}" != "null" ] && [ -n "${commands_start}" ] && [ "${IS_NATIVE}" = "false" ]; then
         # we only enable if extension has commands.start defined in manifest
         log_message "- enable ${COMPONENT_NAME} for instance ${INSTANCE_DIR}"
         # append to EXTERNAL_COMPONENTS
@@ -86,7 +84,7 @@ enable_component(){
 
 install_desktop_plugin(){
     desktop_plugin_path=$(read_component_manifest "${component_path}" ".desktopPlugin[].path" 2>/dev/null)
-    if [ ! "${desktop_plugin_path}" = "null" ] && [ -n ${desktop_plugin_path} ]; then
+    if [ "${desktop_plugin_path}" != "null" ] && [ -n "${desktop_plugin_path}" ]; then
         log_message "- install Zowe desktop plugin"
         # Uses install-app.sh in zowe-instance-dir to automatically set up the component onto zowe
         ${INSTANCE_DIR}/bin/install-app.sh "${component_path}"
@@ -95,7 +93,7 @@ install_desktop_plugin(){
 
 configure_component(){
     commands_cfg_instance=$(read_component_manifest "${component_path}" ".commands.configureInstance" 2>/dev/null)
-    if [ ! "${commands_cfg_instance}" = "null" ] && [ -n ${commands_cfg_instance}]; then
+    if [ "${commands_cfg_instance}" != "null" ] && [ -n "${commands_cfg_instance}" ]; then
         log_message "- process commands.configureInstance defined in manifest"
         cd ${component_path}
         ./${commands_cfg_instance}
@@ -160,7 +158,7 @@ if [ -z "${COMPONENT_NAME}" -o -z "${INSTANCE_DIR}" ]; then
     error_handler "Missing parameters, try: zowe-configure-component.sh -c <COMPONENT_NAME> -i <ZOWE_INSTANCE_DIR>"
 fi
 
-if [ -z ${IS_NATIVE} ]; then
+if [ -z "${IS_NATIVE}" ]; then
     IS_NATIVE=false
 fi
 
@@ -169,10 +167,10 @@ if [ -z "${TARGET_DIR}" ]; then
     if [ "${IS_NATIVE}" = "false" ]; then
         if [ -n "${ZWE_EXTENSION_DIR}" ]; then
             zwe_extension_dir="${ZWE_EXTENSION_DIR}"
-        elif [ ! -z "${INSTANCE_DIR}" ]; then #instance_dir exists
+        elif [ -n "${INSTANCE_DIR}" ]; then #instance_dir exists
             zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
         fi
-        if [ -z ${zwe_extension_dir} ]; then
+        if [ -z "${zwe_extension_dir}" ]; then
             #Assigns TARGET_DIR to the default directory since it was not set to a specific directory
             TARGET_DIR=${DEFAULT_TARGET_DIR}
         else
