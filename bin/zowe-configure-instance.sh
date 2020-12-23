@@ -268,6 +268,7 @@ for component_name in ${component_list}; do
     --native --log-file "${LOG_FILE}"
 done
 
+echo
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
 echo "   (or in SDSF directly issue the command /S ZWESVSTC,INSTANCE='${INSTANCE_DIR}')"

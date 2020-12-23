@@ -116,7 +116,10 @@ extract_to_target_dir(){
         if [ "${AUTO_ENCODING}" = "yes" -o "${manifest_encoding}" = "ISO8859-1" ]; then
             # automatically tag files
             log_message "- automatically tag files"
-            $ZOWE_ROOT_DIR/scripts/utils/tag-files.sh "${TARGET_DIR}" 1>&2 >> $LOG_FILE
+            $ZOWE_ROOT_DIR/scripts/utils/tag-files.sh "${TARGET_DIR}/temp-ext-dir" 1>&2 >> $LOG_FILE
+            cd "${TARGET_DIR}/temp-ext-dir"
+            log_message "- files in $(pwd) after tagged"
+            ls -TREal >> $LOG_FILE
         fi
     fi
 
