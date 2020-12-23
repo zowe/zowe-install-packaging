@@ -36,7 +36,7 @@
 #                     directory. Default value is "auto". Allowed values are:
 #                     - yes: automatically tag the files encoding
 #                     - no: do not automatically tag encoding
-#                     - auto: only tag when manifest is in ISO8859-01 encoding.
+#                     - auto: only tag when manifest is in ISO8859-1 encoding.
 # -n|--native         optional boolean. Whether this component is bundled
 #                     into Zowe package.
 # -l|--logs-dir       optional. path to logs directory.
@@ -110,7 +110,7 @@ extract_to_target_dir(){
     if [ "${AUTO_ENCODING}" = "auto" ]; then
       manifest_encoding=$(detect_component_manifest_encoding "${TARGET_DIR}/temp-ext-dir")
     fi
-    if [ "${AUTO_ENCODING}" = "yes" -o "${manifest_encoding}" = "ISO8859-01" ]; then
+    if [ "${AUTO_ENCODING}" = "yes" -o "${manifest_encoding}" = "ISO8859-1" ]; then
         # automatically tag files
         $ZOWE_ROOT_DIR/scripts/utils/tag-files.sh "${TARGET_DIR}"
     fi
