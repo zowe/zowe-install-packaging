@@ -96,6 +96,13 @@ configure_component(){
     fi
 }
 
+ensure_zwe_extension_dir() {
+    # write ZWE_EXTENSION_DIR to instance.env
+    if [ "${IS_NATIVE}" = "false" ]; then
+        update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
+    fi
+}
+
 #######################################################################
 # Parse command line options
 while [ $# -gt 0 ]; do #Checks for parameters
@@ -201,6 +208,7 @@ prepare_log_file
 
 print_and_log_message "Configure Zowe component ${component_path} for instance ${INSTANCE_DIR}"
 
+ensure_zwe_extension_dir
 configure_component
 install_desktop_plugin
 enable_component

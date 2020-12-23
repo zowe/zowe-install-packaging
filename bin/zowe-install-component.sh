@@ -158,11 +158,6 @@ process_command_install() {
 
 configure_component() {
     if [ -n "${INSTANCE_DIR}" ]; then
-        # write ZWE_EXTENSION_DIR to instance.env
-        if [ "${IS_NATIVE}" = "false" ]; then
-            update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
-        fi
-
         # CALL CONFIGURE COMPONENT SCRIPT
         cmd="${ZOWE_ROOT_DIR}/bin/zowe-configure-component.sh"
         cmd="${cmd} -c \"${component_name}\""
