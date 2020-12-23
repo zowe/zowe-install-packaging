@@ -62,8 +62,15 @@ find_component_directory() {
 #
 # This function will try to verify file encoding by reading sample string.
 #
-# Note: this function always returns 0 and if succeeds, it will output encoding
-#       to stdout.
+# Note: this function always exits with 0. Depends on the cases, the output is
+#       confirmed encoding to stdout.
+#       - file is already tagged: the output will be the encoding tag,
+#       - file is not tagged:
+#         - expected encoding is auto: the output will be one of IBM-1047, 
+#                 ISO8859-1, IBM-850 based on the guess. Output is empty if none
+#                 of those encodings are correct.
+#         - expected encoding is not auto: the output will be same as expected
+#                 encoding if it's correct. otherwise output will be empty.
 #
 # Example:
 # - detect manifest encoding by checking result "name"
@@ -73,7 +80,7 @@ find_component_directory() {
 # @param string   expected sample string to verify result
 # @param string   expected encoding. This is optional, and default value is "auto".
 #                 When this value is auto, the function will try to guess common
-#                 encodings (IBM-1047, ISO8859-1, IBM-850) and 
+#                 encodings (IBM-1047, ISO8859-1, IBM-850). 
 detect_file_encoding() {
   file_name=$1
   expected_sample=$2
@@ -82,31 +89,39 @@ detect_file_encoding() {
   expected_encoding_uc=$(echo "${expected_encoding}" | tr '[:lower:]' '[:upper:]')
 
   confirmed_encoding=
-  if [ "${expected_encoding_uc}" = "IBM-1047" ]; then
-    result=$(cat "${file_name}" | grep "${expected_sample}" 2>/dev/null)
-    if [ -n "${result}" ]; then
-      confirmed_encoding=IBM-1047
-    fi
-  elif [ "${expected_encoding_uc}" = "AUTO" -o -z "${expected_encoding_uc}" ]; then
-    # check IBM-1047
-    result=$(cat "${file_name}" | grep "${expected_sample}" 2>/dev/null)
-    if [ -n "${result}" ]; then
-      confirmed_encoding=IBM-1047
-    fi
-    # check common encodings
-    common_encodings="ISO8859-1 IBM-850"
-    for enc in ${common_encodings}; do
-      if [ -z "${confirmed_encoding}" ]; then
-        result=$(iconv -f "${enc}" -t IBM-1047 "${file_name}" | grep "${expected_sample}" 2>/dev/null)
-        if [ -n "${result}" ]; then
-          confirmed_encoding=${enc}
-        fi
+
+  current_tag=$(ls -T "${file_name}" | awk '{print $2}')
+  if [ "${current_tag}" != "untagged" ]; then
+    confirmed_encoding="${current_tag}"
+  fi
+
+  if [ -z "${confirmed_encoding}" ]; then
+    if [ "${expected_encoding_uc}" = "IBM-1047" ]; then
+      result=$(cat "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+      if [ -n "${result}" ]; then
+        confirmed_encoding=IBM-1047
       fi
-    done
-  else
-    result=$(iconv -f "${expected_encoding_uc}" -t IBM-1047 "${file_name}" | grep "${expected_sample}" 2>/dev/null)
-    if [ -n "${result}" ]; then
-      confirmed_encoding=${expected_encoding_uc}
+    elif [ "${expected_encoding_uc}" = "AUTO" -o -z "${expected_encoding_uc}" ]; then
+      # check IBM-1047
+      result=$(cat "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+      if [ -n "${result}" ]; then
+        confirmed_encoding=IBM-1047
+      fi
+      # check common encodings
+      common_encodings="ISO8859-1 IBM-850"
+      for enc in ${common_encodings}; do
+        if [ -z "${confirmed_encoding}" ]; then
+          result=$(iconv -f "${enc}" -t IBM-1047 "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+          if [ -n "${result}" ]; then
+            confirmed_encoding=${enc}
+          fi
+        fi
+      done
+    else
+      result=$(iconv -f "${expected_encoding_uc}" -t IBM-1047 "${file_name}" | grep "${expected_sample}" 2>/dev/null)
+      if [ -n "${result}" ]; then
+        confirmed_encoding=${expected_encoding_uc}
+      fi
     fi
   fi
 
