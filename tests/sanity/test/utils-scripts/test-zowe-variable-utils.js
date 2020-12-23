@@ -115,7 +115,7 @@ describe('verify zowe-variable-utils', function() {
     });
 
     it('test validate new zowe instance environment variable appended', async function() {
-      const command = 'read_zowe_instance_variable TEST_INSTANCE_VAR';
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value', '', true);
     });
 
@@ -125,7 +125,7 @@ describe('verify zowe-variable-utils', function() {
     });
 
     it('test value appended into existing zowe instance environment variable', async function() {
-      const command = 'read_zowe_instance_variable TEST_INSTANCE_VAR';
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value,secondtest123', '', true);
     });
 
@@ -135,7 +135,7 @@ describe('verify zowe-variable-utils', function() {
     });
 
     it('test validate no change in zowe instance environment variable', async function() {
-      const command = 'read_zowe_instance_variable TEST_INSTANCE_VAR';
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value,secondtest123', '', true);
     });
 
@@ -145,7 +145,7 @@ describe('verify zowe-variable-utils', function() {
     });
 
     it('test validate value of environment variable has been replaced', async function() {
-      const command = 'read_zowe_instance_variable TEST_INSTANCE_VAR';
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'replaced_value', '', true);
     });
     
