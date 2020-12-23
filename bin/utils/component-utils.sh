@@ -94,7 +94,8 @@ detect_file_encoding() {
       confirmed_encoding=IBM-1047
     fi
     # check common encodings
-    for enc in "ISO8859-01 IBM-850"; do
+    common_encodings="ISO8859-01 IBM-850"
+    for enc in ${common_encodings}; do
       if [ -z "${confirmed_encoding}" ]; then
         result=$(iconv -f "${enc}" -t IBM-1047 "${file_name}" | grep "${expected_sample}" 2>/dev/null)
         if [ -n "${result}" ]; then
