@@ -222,6 +222,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             shift
             AUTO_ENCODING=$1
             shift
+        ;;
         -l|--logs-dir) # Represents the path to the installation logs
             shift
             LOG_DIRECTORY=$1
