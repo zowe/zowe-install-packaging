@@ -179,7 +179,7 @@ describe('verify utils/component-utils', function() {
   });
 
   const process_component_desktop_iframe_plugin = 'process_component_desktop_iframe_plugin';
-  describe.only(`verify ${process_component_desktop_iframe_plugin}`, function() {
+  describe(`verify ${process_component_desktop_iframe_plugin}`, function() {
     const dummy_component_name = 'sanity_test_dummy';
     const dummy_component_title = 'Sanity Test Dummy';
     const dummy_component_id = 'org.zowe.plugins.sanity_test_dummy';
