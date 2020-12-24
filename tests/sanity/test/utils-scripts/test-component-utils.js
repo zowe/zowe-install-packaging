@@ -136,6 +136,69 @@ describe('verify utils/component-utils', function() {
 
   });
 
+  const detect_component_manifest_encoding = 'detect_component_manifest_encoding';
+  describe(`verify ${detect_component_manifest_encoding}`, function() {
+    beforeEach('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir}`);
+    });
+
+    afterEach('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir}`);
+    });
+
+    it('test detecting component manifest.yaml encoding with default setup', async function() {
+      // prepare manifest.yaml in default (IBM-1047) encoding
+      await sshHelper.executeCommandWithNoError(`echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
+
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${detect_component_manifest_encoding} "${component_runtime_dir}"`,
+        {
+          'ZWE_EXTENSION_DIR': `${TMP_DIR}/${TMP_EXT_DIR}`,
+        },
+        {
+          stdout: 'IBM-1047',
+        }
+      );
+    });
+    it('test detecting component manifest.yaml encoding with customized encoding setup', async function() {
+      // prepare manifest.yaml in default (IBM-1047) encoding
+      await sshHelper.executeCommandWithNoError(`cd ${component_runtime_dir} && echo 'name: ${dummy_component_name}' > manifest.yaml.1047 && iconv -f IBM-1047 -t ISO8859-1 manifest.yaml.1047 > manifest.yaml && rm manifest.yaml.1047`);
+
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${detect_component_manifest_encoding} "${component_runtime_dir}"`,
+        {
+          'ZWE_EXTENSION_DIR': `${TMP_DIR}/${TMP_EXT_DIR}`,
+        },
+        {
+          stdout: 'ISO8859-1',
+        }
+      );
+    });
+
+    it('test detecting files-api manifest.yaml encoding', async function() {
+      // files-api is shipped as ZIP and it should be automatically tagged as ISO8859-1 encoding during installation
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${detect_component_manifest_encoding} "${process.env.ZOWE_ROOT_DIR}/components/files-api"`,
+        {},
+        {
+          stdout: 'ISO8859-1',
+        }
+      );
+    });
+
+    it('test detecting explorer-jes manifest.yaml encoding', async function() {
+      // explorer-jes is shipped as PAX and it's already in IBM-1047 encoding
+      await test_component_function_has_expected_rc_stdout_stderr(
+        `${detect_component_manifest_encoding} "${process.env.ZOWE_ROOT_DIR}/components/explorer-jes"`,
+        {},
+        {
+          stdout: 'IBM-1047',
+        }
+      );
+    });
+
+  });
+
   const convert_component_manifest = 'convert_component_manifest';
   describe(`verify ${convert_component_manifest}`, function() {
     const component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
@@ -148,7 +211,7 @@ describe('verify utils/component-utils', function() {
       await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir}`);
     });
 
-    it('test creating component manifest.json', async function() {
+    it('test creating component .manifest.json in workspace', async function() {
       await test_component_function_has_expected_rc_stdout_stderr(
         `${convert_component_manifest} "${component_runtime_dir}"`,
         {
@@ -177,7 +240,7 @@ describe('verify utils/component-utils', function() {
       await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${static_def_dir}/${target_static_def_file}`);
     });
 
-    it('test creating component manifest.json', async function() {
+    it('test processing APIML static definitions', async function() {
       await test_component_function_has_expected_rc_stdout_stderr(
         `${process_component_apiml_static_definitions} "${component_runtime_dir}"`,
         {
@@ -210,7 +273,7 @@ describe('verify utils/component-utils', function() {
       await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir} && rm -fr ${app_server_plugins_dir}/${dummy_component_id}.json`);
     });
 
-    it('test creating component manifest.json', async function() {
+    it('test processing Desktop iFrame plugins', async function() {
       await test_component_function_has_expected_rc_stdout_stderr(
         `${process_component_desktop_iframe_plugin} "${component_runtime_dir}"`,
         {

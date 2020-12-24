@@ -33,7 +33,7 @@ describe('verify zowe-variable-utils', function() {
     it('test set variable is set', async function() {
       const variable_name = 'test_set_variable';
       const command = `export ${variable_name}="true" && ${validate_variable_is_set} "${variable_name}"`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '', true);
     });
 
     async function test_validate_variable_set(variable_name, expected_valid) {
@@ -69,7 +69,7 @@ describe('verify zowe-variable-utils', function() {
         return `Error ${index}: ${variable} is empty`;
       });
       const expected_err = error_list.join('\n');
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err, true);
     }
   });
 
@@ -105,47 +105,48 @@ describe('verify zowe-variable-utils', function() {
     }
   });
   
+  const read_zowe_instance_variable = 'read_zowe_instance_variable';
   const update_zowe_instance_variable = 'update_zowe_instance_variable';
   describe(`verify ${update_zowe_instance_variable}`, function() {
-
+ 
     it('test append new zowe instance environment variable', async function() {
       const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR test_value`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '', true);
     });
 
     it('test validate new zowe instance environment variable appended', async function() {
-      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^ *TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value', '');
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value', '', true);
     });
 
     it('test append value into existing zowe instance environment variable', async function() {
-      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR secondtest123`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR secondtest123 true`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '', true);
     });
 
     it('test value appended into existing zowe instance environment variable', async function() {
-      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^ *TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'secondtest123', '');
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value,secondtest123', '', true);
     });
 
     it('test append existing value', async function() {
-      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR test_value`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR test_value true`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '', true);
     });
 
     it('test validate no change in zowe instance environment variable', async function() {
-      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^ *TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value,secondtest123', '');
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'test_value,secondtest123', '', true);
     });
 
     it('test replace value of a instance environment variable', async function() {
-      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR replaced_value false`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '');
+      const command = `${update_zowe_instance_variable} TEST_INSTANCE_VAR replaced_value`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '', true);
     });
 
     it('test validate value of environment variable has been replaced', async function() {
-      const command = `cat ${process.env.ZOWE_INSTANCE_DIR}/instance.env | grep '^TEST_INSTANCE_VAR=' | cut -f2 -d= | cut -f1 -d# | xargs`;
-      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'replaced_value', '');
+      const command = `${read_zowe_instance_variable} TEST_INSTANCE_VAR`;
+      await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, 'replaced_value', '', true);
     });
     
     after('Clean up temporary instance variable', async function() {
@@ -155,7 +156,7 @@ describe('verify zowe-variable-utils', function() {
   });
 
 
-  async function test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
+  async function test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr, exact_match = false) {
     await sshHelper.testCommand(command, {
       envs: {
         'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR,
@@ -169,7 +170,8 @@ describe('verify zowe-variable-utils', function() {
       // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
       stdout: expected_stderr || expected_stdout,
       stderr: expected_stderr,
-    });
+    },
+    exact_match);
   }
 
   after('dispose SSH connection', function() {
