@@ -19,7 +19,21 @@
 //* - output, job log
 //*   #sysprint
 //*********************************************************************
-/*JOBPARM LINES=999999 
+//* Depends on JES initialization parameters and JCL error message,
+//* these values may need to be adjusted for a successful build:
+//* - LINES EXCEEDED by checking $D ESTLNCT
+//*   RESPONSE=S0W1      $HASP845 ESTLNCT  NUM=5,INT=5000,OPT=1 
+/*JOBPARM LINES=50000
+//* - BYTES EXCEEDED by checking $D ESTBYTE
+//*   RESPONSE=S0W1      $HASP845 ESTBYTE  NUM=99999,INT=99999,OPT=0 
+/*JOBPARM BYTES=9999999
+//* - PAGES EXCEEDED by checking $D ESTPAGE
+//*   RESPONSE=S0W1      $HASP845 ESTPAGE  NUM=40,INT=10,OPT=0 
+//*JOBPARM PAGES=100
+//* - CARDS EXCEEDED by checking $D ESTPUN
+//*   RESPONSE=S0W1      $HASP845 ESTPUN  NUM=1,INT=1000,OPT=0 
+//*JOBPARM CARDS=5000
+//*********************************************************************
 //*
 //*        ----+----1----+----2----+----3--
 // SET HLQ=#hlq
