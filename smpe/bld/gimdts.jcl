@@ -1,5 +1,4 @@
 //GIMDTS   JOB #job1
-/*JOBPARM LINES=999999 
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
 //* accompanies this distribution, and is available at
@@ -20,6 +19,7 @@
 //* - output, job log
 //*   #sysprint
 //*********************************************************************
+/*JOBPARM LINES=999999 
 //*
 //*        ----+----1----+----2----+----3--
 // SET HLQ=#hlq
