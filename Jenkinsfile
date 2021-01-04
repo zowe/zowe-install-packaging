@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-node('zowe-jenkins-agent') {
+node('zowe-jenkins-agent-dind-wdc') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
@@ -89,7 +89,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 24
+        expected    : 25
       )
 
       // we want build log pulled in for SMP/e build
@@ -136,7 +136,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
           extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
-          keepTempFolder      : params.KEEP_TEMP_FOLDER
+          keepTempFolder      : params.KEEP_TEMP_FOLDER,
+          paxOptions          : '-o saveext'
       )
       if (params.BUILD_SMPE) {
         // rename SMP/e build with correct FMID name
@@ -247,7 +248,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           error "Couldn't find zowe.pax uploaded."
         }
 
-        node('zowe-jenkins-agent-dind') {
+        node('zowe-jenkins-agent-dind-wdc') {
           // checkout source code to docker build agent
           checkout scm
           // checkout repository with dockerfile
