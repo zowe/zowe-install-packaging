@@ -39,7 +39,7 @@ function detectExternalRootCA {
     var_CA_chain_length=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
       -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v | grep -c -e Owner:`
     if [[ $var_CA_chain_length -lt 2 ]]; then
-      echo "The ${KEYSTORE_ALIAS} certificate is self-signed or does not contain its CA chain. If the certificate is externally signed \
+      echo "The ${KEYSTORE_ALIAS} certificate is self-signed or does not contain its CA chain or the detection algorithm failed for other reason. If the certificate is externally signed \
 and its root CA is connected to the same keyring then you can manually set the EXTERNAL_ROOT_CA env variable with the \
 root CA label in the ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} file."
     else
