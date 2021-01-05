@@ -27,7 +27,7 @@
 #                     ${ZOWE_ROOT_DIR}/components. For non-native component,
 #                     the script will check ZWE_EXTENSION_DIR if possible.
 #                     Otherwise will fall back to ${DEFAULT_TARGET_DIR}.
-# -n|--native         optional boolean. Whether this component is bundled
+# -k|--core           optional boolean. Whether this component is bundled
 #                     into Zowe package.
 # -l|--logs-dir        optional. path to logs directory.
 # -f|--log-file       optional. write log to the file specified.
@@ -70,7 +70,7 @@ prepare_log_file() {
 
 enable_component(){
     commands_start=$(read_component_manifest "${component_path}" ".commands.start" 2>/dev/null)
-    if [ "${commands_start}" != "null" ] && [ -n "${commands_start}" ] && [ "${IS_NATIVE}" = "false" ]; then
+    if [ "${commands_start}" != "null" ] && [ -n "${commands_start}" ] && [ "${IS_ZOWE_CORE}" = "false" ]; then
         # we only enable if extension has commands.start defined in manifest
         log_message "- enable ${COMPONENT_NAME} for instance ${INSTANCE_DIR}"
         # append to EXTERNAL_COMPONENTS
@@ -101,7 +101,7 @@ configure_component(){
 
 ensure_zwe_extension_dir() {
     # write ZWE_EXTENSION_DIR to instance.env
-    if [ "${IS_NATIVE}" = "false" ]; then
+    if [ "${IS_ZOWE_CORE}" = "false" ]; then
         update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
     fi
 }
@@ -132,8 +132,8 @@ while [ $# -gt 0 ]; do #Checks for parameters
             fi
             shift
         ;;
-        -n|--native)
-            IS_NATIVE=true
+        -k|--core)
+            IS_ZOWE_CORE=true
             shift
         ;;
         -d|--target_dir) # Represents the path to the desired target directory to place the extensions (optional)
@@ -164,13 +164,13 @@ if [ -z "${COMPONENT_NAME}" -o -z "${INSTANCE_DIR}" ]; then
     error_handler "Missing parameters, try: zowe-configure-component.sh -c <COMPONENT_NAME> -i <ZOWE_INSTANCE_DIR>"
 fi
 
-if [ -z "${IS_NATIVE}" ]; then
-    IS_NATIVE=false
+if [ -z "${IS_ZOWE_CORE}" ]; then
+    IS_ZOWE_CORE=false
 fi
 
 # assign default value for TARGET_DIR
 if [ -z "${TARGET_DIR}" ]; then
-    if [ "${IS_NATIVE}" = "false" ]; then
+    if [ "${IS_ZOWE_CORE}" = "false" ]; then
         if [ -n "${ZWE_EXTENSION_DIR}" ]; then
             zwe_extension_dir="${ZWE_EXTENSION_DIR}"
         elif [ -n "${INSTANCE_DIR}" ]; then #instance_dir exists
@@ -192,7 +192,7 @@ if [ -e "${component_path}" ]; then
 else
     error_handler "${component_path} does not exist."
 fi
-if [ "${IS_NATIVE}" = "false" ]; then
+if [ "${IS_ZOWE_CORE}" = "false" ]; then
     # TARGET_DIR should be same as ZWE_EXTENSION_DIR defined in instance.env
     zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
     if [ -n "${zwe_extension_dir}" -a "${TARGET_DIR}" != "${zwe_extension_dir}" ]; then

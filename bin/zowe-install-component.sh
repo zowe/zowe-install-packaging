@@ -38,7 +38,7 @@
 #                     - no: do not automatically tag encoding
 #                     - auto: only tag when manifest is in ISO8859-1 encoding.
 #                     This option is only applicable for z/OS.
-# -n|--native         optional boolean. Whether this component is bundled
+# -k|--core           optional boolean. Whether this component is bundled
 #                     into Zowe package.
 # -l|--logs-dir       optional. path to logs directory.
 # -f|--log-file       optional. write log to the file specified.
@@ -165,7 +165,7 @@ configure_component() {
         cmd="${cmd} -i \"${INSTANCE_DIR}\""
         # we should always have LOG_FILE at this time
         cmd="${cmd} -f \"${LOG_FILE}\""
-        if [ "${IS_NATIVE}" = false ]; then
+        if [ "${IS_ZOWE_CORE}" = false ]; then
           cmd="${cmd} -n"
         fi
         eval "${cmd}"
@@ -213,8 +213,8 @@ while [ $# -gt 0 ]; do #Checks for parameters
             TARGET_DIR=$(get_full_path "$1")
             shift
         ;;
-        -n|--native)
-            IS_NATIVE=true
+        -k|--core)
+            IS_ZOWE_CORE=true
             shift
         ;;
         -e|--auto-encoding)
@@ -245,13 +245,13 @@ if [ -z "${COMPONENT_FILE}" ]; then
     error_handler "Missing parameters, try: zowe-install-component.sh -o <PATH_TO_COMPONENT>"
 fi
 
-if [ -z "${IS_NATIVE}" ]; then
-    IS_NATIVE=false
+if [ -z "${IS_ZOWE_CORE}" ]; then
+    IS_ZOWE_CORE=false
 fi
 
 # assign default value for TARGET_DIR
 if [ -z "${TARGET_DIR}" ]; then
-    if [ "${IS_NATIVE}" = "false" ]; then
+    if [ "${IS_ZOWE_CORE}" = "false" ]; then
         if [ -n "${ZWE_EXTENSION_DIR}" ]; then
             zwe_extension_dir="${ZWE_EXTENSION_DIR}"
         elif [ -n "${INSTANCE_DIR}" ]; then #instance_dir exists
@@ -268,7 +268,7 @@ if [ -z "${TARGET_DIR}" ]; then
     fi
 fi
 # validate TARGET_DIR
-if [ "${IS_NATIVE}" = "false" ]; then
+if [ "${IS_ZOWE_CORE}" = "false" ]; then
     # install non-native component into Zowe runtime directory is not allowed.
     validate_file_not_in_directory "${TARGET_DIR}" "${ZOWE_ROOT_DIR}"
     if [[ $? -ne 0 ]]; then
