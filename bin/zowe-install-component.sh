@@ -166,7 +166,7 @@ configure_component() {
         # we should always have LOG_FILE at this time
         cmd="${cmd} -f \"${LOG_FILE}\""
         if [ "${IS_ZOWE_CORE}" = false ]; then
-          cmd="${cmd} -n"
+          cmd="${cmd} -k"
         fi
         eval "${cmd}"
     fi
