@@ -23,8 +23,8 @@
 # -c|--component-name required. component name.
 # -i|--instance-dir   required. path to Zowe instance directory.
 # -d|--target-dir     optional. directory where the component is installed.
-#                     For native component, default value is
-#                     ${ZOWE_ROOT_DIR}/components. For non-native component,
+#                     For Zowe core component, default value is
+#                     ${ZOWE_ROOT_DIR}/components. For Zowe extensions,
 #                     the script will check ZWE_EXTENSION_DIR if possible.
 #                     Otherwise will fall back to ${DEFAULT_TARGET_DIR}.
 # -k|--core           optional boolean. Whether this component is bundled

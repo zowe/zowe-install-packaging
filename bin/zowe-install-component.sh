@@ -27,9 +27,9 @@
 # -i|--instance-dir   optional. path to Zowe instance directory. If this
 #                     has a value, the script will also execute
 #                     zowe-configure-component.sh.
-# -d|--target-dir     optional. path to target directory. For native component,
-#                     default value is ${ZOWE_ROOT_DIR}/components. For non-
-#                     native component, the script will check ZWE_EXTENSION_DIR
+# -d|--target-dir     optional. path to target directory. For core component,
+#                     default value is ${ZOWE_ROOT_DIR}/components. For Zowe
+#                     extensions, the script will check ZWE_EXTENSION_DIR
 #                     if possible. Otherwise will fall back to
 #                     ${DEFAULT_TARGET_DIR}.
 # -e|--auto-encoding  optional. If we want to automatically tagging the
@@ -269,13 +269,13 @@ if [ -z "${TARGET_DIR}" ]; then
 fi
 # validate TARGET_DIR
 if [ "${IS_ZOWE_CORE}" = "false" ]; then
-    # install non-native component into Zowe runtime directory is not allowed.
+    # install extensions into Zowe runtime directory is not allowed.
     validate_file_not_in_directory "${TARGET_DIR}" "${ZOWE_ROOT_DIR}"
     if [[ $? -ne 0 ]]; then
         error_handler "The specified target directory is located within zowe's runtime folder. Select another location for the target directory."
     fi
     if [ -n "${INSTANCE_DIR}" ]; then #instance_dir exists
-        # install non-native component into instance workspace directory is not suggested.
+        # install extensions into instance workspace directory is not suggested.
         validate_file_not_in_directory "${TARGET_DIR}" "${INSTANCE_DIR}/workspace"
         if [[ $? -ne 0 ]]; then
             print_error_message "WARNING: the specified target directory is located within zowe's instance workspace folder, this is not recommended."
