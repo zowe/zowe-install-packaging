@@ -54,6 +54,8 @@ if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
+. ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
+
 . ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
 
 # node is required for read_component_manifest
