@@ -53,29 +53,32 @@
 //* 7) Update the SET AUXUSER= statement to match the desired
 //*    user ID for the XMEM Auxilary started task.
 //*
-//* 8) Update the SET ZOWESTC= statement to match the desired
+//* 8) Update the SET ZOWECLS= statement to match the desired
+//*    Zowe resource class name.
+//*
+//* 9) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
 //*
-//* 9) Update the SET XMEMSTC= statement to match the desired
+//* 10) Update the SET XMEMSTC= statement to match the desired
 //*    XMEM started task name.
 //*
-//* 10) Update the SET AUXSTC= statement to match the desired
+//* 11) Update the SET AUXSTC= statement to match the desired
 //*    XMEM Auxilary started task name.
 //*
-//* 11) Update the SET HLQ= statement to match the desired
+//* 12) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
 //*
-//* 12) Update the SET SYSPROG= statement to match the existing
+//* 13) Update the SET SYSPROG= statement to match the existing
 //*     user ID or group used by z/OS system programmers.
 //*
-//* 13) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//* 14) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
 //*     and GID values, update the SET *ID= statements to match the
 //*     desired UID and GID values.
 //*
-//* 14) When using Top Secret, update the Top Secret specific SET
+//* 15) When using Top Secret, update the Top Secret specific SET
 //*     statements.
 //*
-//* 15) Customize the commands in the DD statement that matches your
+//* 16) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -109,6 +112,7 @@
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
+//         SET  ZOWECLS=ZOWE         * Zowe resource class name
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
 //         SET  XMEMSTC=ZWESISTC     * xmem started task name
 //         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
@@ -138,6 +142,7 @@
 //         SET ADMINDEP=             * department owning admin group
 //         SET  STCGDEP=             * department owning STC group
 //         SET  STCUDEP=             * department owning STC user IDs
+//         SET  ZOWEDEP=             * department owning Zowe resources
 //         SET  FACACID=             * ACID owning IBMFAC
 //*                     12345678
 #end
@@ -151,6 +156,7 @@
 //         SET ZOWEUSER=${ZOWEUSER}  * userid for Zowe started task
 //         SET XMEMUSER=${XMEMUSER}  * userid for xmem started task
 //         SET  AUXUSER=${AUXUSER}   * userid for xmem AUX started task
+//         SET  ZOWECLS=${ZOWECLS}   * Zowe resource class name
 //         SET  ZOWESTC=${ZOWESTC}  * Zowe started task name
 //         SET  XMEMSTC=${XMEMSTC}  * xmem started task name
 //         SET   AUXSTC=${AUXSTC}  * xmem AUX started task name
@@ -378,7 +384,7 @@
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
-/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly     */
 /*   advised to protect it against updates.                          */
 /* - The sample commands assume that EGN (Enhanced Generic Naming)   */
 /*   is active, which allows the usage of ** to represent any number */
@@ -399,6 +405,30 @@
 /* show results .................................................... */
   LISTGRP &HLQ.
   LISTDSD PREFIX(&HLQ.) ALL
+
+/* DEFINE ZOWE RESOURCE PROTECTION ................................. */
+
+/* - Defines new resource class for Zowe that protects access to     */
+/*   sensitive Zowe resources.                                       */
+/* - Defines resource APIML.SERVICES that controls access to         */
+/*   detailed information about API services to Zowe users.          */
+
+/* define Zowe resource class                                        */
+/* use a unique value in POSIT                                       */
+  RDEFINE CDT &ZOWECLS. -
+    UACC(NONE) -
+    CDTINFO(DEFAULTUACC(NONE) -
+      FIRST(ALPHA) -
+      OTHER(ALPHA,NATIONAL,NUMERIC,SPECIAL) -
+      MAXLENGTH(246) -
+      POSIT(607) -
+      RACLIST(DISALLOWED))
+
+  SETROPTS RACLIST(CDT) REFRESH
+  SETROPTS CLASSACT(&ZOWECLS.)
+
+/* define resource class about information about API services        */
+  RDEFINE &ZOWECLS. APIML.SERVICES UACC(NONE)
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */

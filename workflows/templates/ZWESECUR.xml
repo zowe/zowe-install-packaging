@@ -126,6 +126,15 @@
 			<default>#AUXUSER</default>
 		</string>
 	</variable>
+    <variable name="ZOWECLS" scope="instance" visibility="public">
+		<label>ZOWECLS</label>
+		<abstract>Zowe resource class name</abstract>
+		<description>Zowe resource class name that is used by resources that control access to Zowe resources</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>ZOWE</default>
+		</string>
+	</variable>
     <variable name="ZOWESTC" scope="instance" visibility="public">
 		<label>ZOWESTC</label>
 		<abstract>Zowe started task name</abstract>
