@@ -186,6 +186,7 @@
 //         SET ADMINDEP=${ADMINDEP}  * department owning admin group
 //         SET  STCGDEP=${STCGDEP}   * department owning STC group
 //         SET  STCUDEP=${STCUDEP}   * department owning STC user IDs
+//         SET  ZOWEDEP=             * department owning Zowe resources
 //         SET  FACACID=${FACACID}   * ACID owning IBMFAC
 //*                     12345678
 #end
@@ -429,6 +430,13 @@
 
 /* define resource class about information about API services        */
   RDEFINE &ZOWECLS. APIML.SERVICES UACC(NONE)
+
+/* uncomment and replace "user" to permit Zowe users to access       */
+/* this resource(s):                                                 */
+/* PERMIT APIML.SERVICES CLASS(&ZOWECLS.) ID(user) ACCESS(READ)"     */
+
+/* show results                                                      */
+  RLIST &ZOWECLS. *
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
@@ -764,6 +772,27 @@ $$
 
 /* show results                                                      */
   TSS WHOHAS DATASET(&HLQ.)
+
+/* DEFINE ZOWE RESOURCE PROTECTION ................................. */
+
+/* - Defines new resource class for Zowe that protects access to     */
+/*   sensitive Zowe resources.                                       */
+/* - Defines resource APIML.SERVICES that controls access to         */
+/*   detailed information about API services to Zowe users.          */
+
+/* define Zowe resource class                                        */
+  TSS ADDTO(RDT) RESCLASS(&ZOWECLS.) +
+    ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)
+
+/* define resource class about information about API services        */
+  TSS ADDTO(&ZOWEDEP.) &ZOWECLS.(APIML.SERVICES)
+
+/* uncomment and replace "user" to permit Zowe users to access       */
+/* this resource(s):                                                 */
+/* TSS PERMIT(user) &ZOWECLS.(APIML.SERVICES) ACCESS(READ)           */
+
+/* show results                                                      */
+   TSS LIST(RDT) RESCLASS(&ZOWECLS.)
 
 /* If any of these started tasks are multiusers address spaces       */
 /* a TSS FACILITY needs to be defined and assigned to the started    */
