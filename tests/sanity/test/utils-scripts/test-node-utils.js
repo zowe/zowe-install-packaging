@@ -8,9 +8,11 @@
  * Copyright IBM Corporation 2020
  */
 
-const sshHelper = require('./ssh-helper');
+const sshHelper = require('../ssh-helper');
+
 
 describe('verify node-utils', function () {
+
   before('prepare SSH connection', async function () {
     await sshHelper.prepareConnection();
   });
@@ -44,7 +46,7 @@ describe('verify node-utils', function () {
     async function test_node_added_to_path(node_home, expected_addition, path_pre_addition = '') {
       let command = path_pre_addition === '' ? '' : `export PATH=$PATH:${path_pre_addition} && `;
       command += `export NODE_HOME=${node_home} && ${ensure_node_is_on_path}`;
-      const expected_out = expected_addition ? 'Appending NODE_HOME/bin to the PATH...' : '';
+      const expected_out = expected_addition ? 'Prepending NODE_HOME/bin to the PATH...' : '';
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, 0, expected_out, '');
     }
   });
@@ -183,13 +185,19 @@ describe('verify node-utils', function () {
   });
 
   async function test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
-    const node_utils_path = process.env.ZOWE_ROOT_DIR + '/bin/utils/node-utils.sh';
-    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${node_utils_path} && ${command}`;
-    // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
-    if (expected_stderr != '') {
-      expected_stdout = expected_stderr;
-    }
-    await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr);
+    await sshHelper.testCommand(command, {
+      envs: {
+        'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR,
+      },
+      sources: [
+        process.env.ZOWE_ROOT_DIR + '/bin/utils/node-utils.sh',
+      ]
+    }, {
+      rc: expected_rc,
+      // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+      stdout: expected_stderr || expected_stdout,
+      stderr: expected_stderr,
+    });
   }
 
   after('restore env', async function () {

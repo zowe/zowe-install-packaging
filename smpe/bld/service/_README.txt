@@ -91,8 +91,10 @@ This file will be erased & merged into promoted-hold.txt during promote.
 Syntax rules:
 - Max 64 col
 - Round brackets, ( and ), must be present in pairs
-- Comment markers, /* and */, may NOT be present (this includes
+- Comment markers, /* and */, must NOT be present (this includes
   //* for comment lines in sample JCL)
+- The tilde, ~, must NOT be present as it used by the sed command to 
+  parse the file. Adjust smpe/bld/smpe-service.sh if usage is required.
 - Hold text must start with a flower box
 ****************************************************************
 * Affected function: {area that is impacted by this hold text} *
