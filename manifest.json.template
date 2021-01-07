@@ -374,7 +374,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "master",
+        "tag": "v0.0.1",
         "destinations": ["Zowe PAX"]
       }]
     },
