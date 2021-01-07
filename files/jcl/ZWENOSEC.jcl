@@ -203,6 +203,15 @@
   LISTGRP  &ADMINGRP. OMVS
   DELGROUP &ADMINGRP.
 
+/* REMOVE ZOWE RESOURCE CLASS ...................................... */
+
+/* remove profile in ZOWE class                                      */
+  RDELETE ZOWE APIML.SERVICES
+/* remove ZOWE class                                                 */
+  RDELETE CDT ZOWE
+
+  SETROPTS RACLIST(CDT) REFRESH
+
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
 PROFILE
