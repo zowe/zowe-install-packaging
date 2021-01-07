@@ -85,6 +85,7 @@ install_desktop_plugin(){
     desktop_plugin_path=$(read_component_manifest "${component_path}" ".desktopPlugins[${iterator_index}].path" 2>/dev/null)
     while [ "${desktop_plugin_path}" != "null" ] && [ -n "${desktop_plugin_path}" ]; do
         log_message "- install Zowe desktop plugin"
+        cd "${component_path}"
         # Uses install-app.sh in zowe-instance-dir to automatically set up the component onto zowe
         ${INSTANCE_DIR}/bin/install-app.sh "${desktop_plugin_path}"
         iterator_index=`expr $iterator_index + 1`
