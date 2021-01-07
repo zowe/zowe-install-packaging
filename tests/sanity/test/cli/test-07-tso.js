@@ -20,7 +20,7 @@ let acctNum;
 
 describe.skip('cli runs tso commands', function() {
   before('verify environment variables', async function() {
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;

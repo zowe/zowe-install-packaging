@@ -42,3 +42,21 @@ validate_port_is_available() {
     return 1
   fi
 }
+
+# Takes in a single parameter - the name of the variable
+validate_host_is_resolvable() {
+  variable_name=$1
+  eval "host=\"\$${variable_name}\""
+  if [[ -n "${host}" ]]
+  then 
+      oping ${host} > /dev/null    # check host
+      if [[ $? -ne 0 ]]
+      then    
+          print_error_message "${variable_name} '${host}' does not resolve"
+          return 1
+      fi
+  else 
+      print_error_message "${variable_name} is empty"
+      return 1
+  fi
+}

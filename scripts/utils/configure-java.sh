@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-# PLEASE NOTE - this is script is planned for removal - please use node-utils.sh instead
+# PLEASE NOTE - this is script is planned for removal - please use bin/utils/utils.sh instead
 
-. ${ROOT_DIR}/bin/utils/java-utils.sh
+. ${ROOT_DIR}/bin/utils/utils.sh
 ensure_java_is_on_path

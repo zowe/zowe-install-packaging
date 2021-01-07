@@ -18,18 +18,19 @@
     msg: "After configuring instance, {{ zowe_instance_dir }}/bin/zowe-start.sh doesn't exist."
   when: zowe_configure_instance_result.rc != 0
 
+# add ZWE_LAUNCH_COMPONENTS if not exist, instead of just replace 
 - name: Update instance.env
   raw: >-
     cat "{{ zowe_instance_dir }}/instance.env" | \
-    sed -e "s+^ZOWE_EXPLORER_HOST=.*\$+ZOWE_EXPLORER_HOST={{ zowe_external_domain_name }}+" | \
+    sed -e "s+^ZOWE_EXPLORER_HOST=.*\$+ZOWE_EXPLORER_HOST={{ zowe_zos_host }}+" | \
     sed -e "s+^ZOWE_PREFIX=.*\$+ZOWE_PREFIX={{ zowe_job_prefix }}+" | \
     sed -e "s+^ZOWE_INSTANCE=.*\$+ZOWE_INSTANCE={{ zowe_instance_id }}+" | \
+    sed -e "s+^ZOSMF_HOST=.*\$+ZOSMF_HOST={{ zos_zosmf_host }}+" | \
     sed -e "s+^ZOSMF_PORT=.*\$+ZOSMF_PORT={{ zos_zosmf_port }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^CATALOG_PORT=.*\$+CATALOG_PORT={{ zowe_apiml_catalog_port }}+" | \
     sed -e "s+^DISCOVERY_PORT=.*\$+DISCOVERY_PORT={{ zowe_apiml_discovery_port }}+" | \
     sed -e "s+^GATEWAY_PORT=.*\$+GATEWAY_PORT={{ zowe_apiml_gateway_port }}+" | \
-    sed -e "s+^APIML_ENABLE_SSO=.*\$+APIML_ENABLE_SSO={{ zowe_apiml_enable_sso|string|lower }}+" | \
     sed -e "s+^APIML_ALLOW_ENCODED_SLASHES=.*\$+APIML_ALLOW_ENCODED_SLASHES={{ zowe_apiml_allow_encoded_slashes|string|lower }}+" | \
     sed -e "s+^APIML_CORS_ENABLED=.*\$+APIML_CORS_ENABLED={{ zowe_apiml_cors_enabled|string|lower }}+" | \
     sed -e "s+^APIML_PREFER_IP_ADDRESS=.*\$+APIML_PREFER_IP_ADDRESS={{ zowe_apiml_prefer_ip_address|string|lower }}+" | \
@@ -47,9 +48,25 @@
     sed -e "s+^ZOWE_ZSS_XMEM_SERVER_NAME=.*\$+ZOWE_ZSS_XMEM_SERVER_NAME={{ zowe_zss_xmem_name }}+" | \
     sed -e "s+^ZOWE_ZLUX_SSH_PORT=.*\$+ZOWE_ZLUX_SSH_PORT={{ zowe_zlux_terminal_ssh_port }}+" | \
     sed -e "s+^ZOWE_ZLUX_TELNET_PORT=.*\$+ZOWE_ZLUX_TELNET_PORT={{ zowe_zlux_terminal_telnet_port }}+" | \
-    sed -e "s+^ZOWE_ZLUX_SECURITY_TYPE=.*\$+ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }}+" \
+    sed -e "s+^ZOWE_ZLUX_SECURITY_TYPE=.*\$+ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }}+" | \
+    sed -e "s+^ZWE_LAUNCH_COMPONENTS=.*\$+ZWE_LAUNCH_COMPONENTS={{ zowe_launch_components }}+" \
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
+
+# This is TEMPORARY workaround because of missing security setup on some servers and problem with ZSS configuration,
+# remove once this is fixed
+- name: Add ZSS configuration to instance.env
+  when: zowe_apiml_security_x509_enabled
+  raw: |-
+    echo "ZWED_agent_jwt_token_name=ZWETOKEN" >> "{{ zowe_instance_dir }}/instance.env"
+    echo "ZWED_agent_jwt_token_label=jwtsecret" >> "{{ zowe_instance_dir }}/instance.env"
+    echo "ZWED_agent_jwt_fallback=true" >> "{{ zowe_instance_dir }}/instance.env"
+    echo "ZWED_agent_jwt_enabled=true" >> "{{ zowe_instance_dir }}/instance.env"
+
+- name: Add Caching Service start parameter to instance.env
+  when: zowe_apiml_caching_service_start
+  raw: |-
+    echo "ZOWE_CACHING_SERVICE_START=true" >> "{{ zowe_instance_dir }}/instance.env"
 
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"

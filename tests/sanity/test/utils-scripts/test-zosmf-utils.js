@@ -9,9 +9,11 @@
  */
 
 const expect = require('chai').expect;
-const sshHelper = require('./ssh-helper');
+const sshHelper = require('../ssh-helper');
+
 
 describe('verify zosmf-utils', function() {
+  
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
   });
@@ -120,13 +122,19 @@ ${process.env.ZOSMF_PORT}`;
   });
 
   async function test_zosmf_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr, exact_match = false) {
-    const zosmf_utils_path = process.env.ZOWE_ROOT_DIR + '/bin/utils/zosmf-utils.sh';
-    command = `export ZOWE_ROOT_DIR=${process.env.ZOWE_ROOT_DIR} && . ${zosmf_utils_path} && ${command}`;
-    // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
-    if (expected_stderr != '') {
-      expected_stdout = expected_stderr;
-    }
-    await sshHelper.testCommand(command, expected_rc, expected_stdout, expected_stderr, exact_match);
+    await sshHelper.testCommand(command, {
+      envs: {
+        'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR,
+      },
+      sources: [
+        process.env.ZOWE_ROOT_DIR + '/bin/utils/zosmf-utils.sh',
+      ]
+    }, {
+      rc: expected_rc,
+      // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
+      stdout: expected_stderr || expected_stdout,
+      stderr: expected_stderr,
+    }, exact_match);
   }
 
   after('dispose SSH connection', function() {
