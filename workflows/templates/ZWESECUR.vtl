@@ -53,32 +53,29 @@
 //* 7) Update the SET AUXUSER= statement to match the desired
 //*    user ID for the XMEM Auxilary started task.
 //*
-//* 8) Update the SET ZOWECLS= statement to match the desired
-//*    Zowe resource class name.
-//*
-//* 9) Update the SET ZOWESTC= statement to match the desired
+//* 8) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
 //*
-//* 10) Update the SET XMEMSTC= statement to match the desired
+//* 9) Update the SET XMEMSTC= statement to match the desired
 //*    XMEM started task name.
 //*
-//* 11) Update the SET AUXSTC= statement to match the desired
+//* 10) Update the SET AUXSTC= statement to match the desired
 //*    XMEM Auxilary started task name.
 //*
-//* 12) Update the SET HLQ= statement to match the desired
+//* 11) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
 //*
-//* 13) Update the SET SYSPROG= statement to match the existing
+//* 12) Update the SET SYSPROG= statement to match the existing
 //*     user ID or group used by z/OS system programmers.
 //*
-//* 14) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//* 13) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
 //*     and GID values, update the SET *ID= statements to match the
 //*     desired UID and GID values.
 //*
-//* 15) When using Top Secret, update the Top Secret specific SET
+//* 14) When using Top Secret, update the Top Secret specific SET
 //*     statements.
 //*
-//* 16) Customize the commands in the DD statement that matches your
+//* 15) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -112,7 +109,6 @@
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
-//         SET  ZOWECLS=ZOWE         * Zowe resource class name
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
 //         SET  XMEMSTC=ZWESISTC     * xmem started task name
 //         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
@@ -156,7 +152,6 @@
 //         SET ZOWEUSER=${ZOWEUSER}  * userid for Zowe started task
 //         SET XMEMUSER=${XMEMUSER}  * userid for xmem started task
 //         SET  AUXUSER=${AUXUSER}   * userid for xmem AUX started task
-//         SET  ZOWECLS=${ZOWECLS}   * Zowe resource class name
 //         SET  ZOWESTC=${ZOWESTC}  * Zowe started task name
 //         SET  XMEMSTC=${XMEMSTC}  * xmem started task name
 //         SET   AUXSTC=${AUXSTC}  * xmem AUX started task name
@@ -416,7 +411,7 @@
 
 /* define Zowe resource class                                        */
 /* use a unique value in POSIT                                       */
-  RDEFINE CDT &ZOWECLS. -
+  RDEFINE CDT ZOWE -
     UACC(NONE) -
     CDTINFO(DEFAULTUACC(NONE) -
       FIRST(ALPHA) -
@@ -426,17 +421,17 @@
       RACLIST(DISALLOWED))
 
   SETROPTS RACLIST(CDT) REFRESH
-  SETROPTS CLASSACT(&ZOWECLS.)
+  SETROPTS CLASSACT(ZOWE)
 
 /* define resource class about information about API services        */
-  RDEFINE &ZOWECLS. APIML.SERVICES UACC(NONE)
+  RDEFINE ZOWE APIML.SERVICES UACC(NONE)
 
 /* uncomment and replace "user" to permit Zowe users to access       */
 /* this resource(s):                                                 */
-/* PERMIT APIML.SERVICES CLASS(&ZOWECLS.) ID(user) ACCESS(READ)"     */
+/* PERMIT APIML.SERVICES CLASS(ZOWE) ID(user) ACCESS(READ)"     */
 
 /* show results                                                      */
-  RLIST &ZOWECLS. *
+  RLIST ZOWE *
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
@@ -781,18 +776,18 @@ $$
 /*   detailed information about API services to Zowe users.          */
 
 /* define Zowe resource class                                        */
-  TSS ADDTO(RDT) RESCLASS(&ZOWECLS.) +
+  TSS ADDTO(RDT) RESCLASS(ZOWE) +
     ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)
 
 /* define resource class about information about API services        */
-  TSS ADDTO(&ZOWEDEP.) &ZOWECLS.(APIML.SERVICES)
+  TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.SERVICES)
 
 /* uncomment and replace "user" to permit Zowe users to access       */
 /* this resource(s):                                                 */
-/* TSS PERMIT(user) &ZOWECLS.(APIML.SERVICES) ACCESS(READ)           */
+/* TSS PERMIT(user) ZOWE(APIML.SERVICES) ACCESS(READ)           */
 
 /* show results                                                      */
-   TSS LIST(RDT) RESCLASS(&ZOWECLS.)
+   TSS LIST(RDT) RESCLASS(ZOWE)
 
 /* If any of these started tasks are multiusers address spaces       */
 /* a TSS FACILITY needs to be defined and assigned to the started    */
