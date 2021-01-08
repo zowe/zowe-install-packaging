@@ -13,25 +13,30 @@ const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:install:explore-server');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
+const {zluxAuth} = require('./utils');
 
+let REQ, zluxBaseUrl, apimlBaseUrl, apimlAuthCookie;
 
-let REQ;
+describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
 
-describe(`test zLux server https://${process.env.SSH_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
-
-  before('verify environment variables', function() {
+  before('verify environment variables', async function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ZLUX_HTTPS_PORT, 'ZOWE_ZLUX_HTTPS_PORT is not defined').to.not.be.empty;
 
+    zluxBaseUrl = `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`;
+    apimlBaseUrl = `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
     REQ = axios.create({
-      baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`,
+      baseURL: zluxBaseUrl,
       timeout: 20000,
+      headers: { 'Content-Type': 'application/json' },
     });
+
+    apimlAuthCookie = await zluxAuth(REQ, process.env.SSH_USER, process.env.SSH_PASSWD);
   });
 
   describe('GET /', function() {
@@ -83,12 +88,15 @@ describe(`test zLux server https://${process.env.SSH_HOST}:${process.env.ZOWE_ZL
   });
 
   describe('GET /ZLUX/plugins', function() {
-    it('/org.zowe.explorer-jes/web/index.html should return ok', function() {
+    it('/org.zowe.explorer-jes/iframe should return ok', function() {
       const _this = this;
 
       const req = {
         method: 'get',
-        url: '/ZLUX/plugins/org.zowe.explorer-jes/web/index.html'
+        url: '/ZLUX/plugins/org.zowe.explorer-jes/iframe',
+        headers: {
+          cookie: apimlAuthCookie
+        }
       };
       debug('request', req);
 
@@ -102,8 +110,10 @@ describe(`test zLux server https://${process.env.SSH_HOST}:${process.env.ZOWE_ZL
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          expect(res.data).to.include('<html>');
-          expect(res.data).to.include('<body>');
+          expect(JSON.stringify(res.data)).to.contain('zluxIframe');
+          expect(JSON.stringify(res.data)).to.contain(`${apimlBaseUrl}/ui/v1/explorer-jes`);
+        }).catch(function(err) {
+          throw err;
         });
     });
 
