@@ -188,7 +188,11 @@ while [ $# -gt 0 ]; do #Checks for parameters
             shift
             path=$(get_full_path "$1")
             if [[ "$path" = *.pax ]] || [[ "$path" = *.zip ]] || [[ "$path" = *.tar ]] || [[ -d "$path" ]]; then
-                COMPONENT_FILE="${path}"
+                if [ -a "$path" ]; then
+                    COMPONENT_FILE="${path}"
+                else
+                    error_handler "-o|--component-file: Given path is not in a correct file format or does not exist"
+                fi
             else
                 error_handler "-o|--component-file: Given path is not in a correct file format or does not exist"
             fi
