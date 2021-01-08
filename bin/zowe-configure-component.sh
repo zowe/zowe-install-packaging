@@ -167,7 +167,7 @@ if [ -z "${COMPONENT_NAME}" -o -z "${INSTANCE_DIR}" ]; then
     error_handler "Missing parameters, try: zowe-configure-component.sh -c <COMPONENT_NAME> -i <ZOWE_INSTANCE_DIR>"
 fi
 
-if [ -z "${IS_ZOWE_CORE}" ]; then
+if [ "${IS_ZOWE_CORE}" != "true" ]; then
     IS_ZOWE_CORE=false
 fi
 

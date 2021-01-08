@@ -167,7 +167,7 @@ configure_component() {
         cmd="${cmd} -i \"${INSTANCE_DIR}\""
         # we should always have LOG_FILE at this time
         cmd="${cmd} -f \"${LOG_FILE}\""
-        if [ "${IS_ZOWE_CORE}" = false ]; then
+        if [ "${IS_ZOWE_CORE}" = "true" ]; then
           cmd="${cmd} -k"
         fi
         eval "${cmd}"
@@ -251,7 +251,7 @@ if [ -z "${COMPONENT_FILE}" ]; then
     error_handler "Missing parameters, try: zowe-install-component.sh -o <PATH_TO_COMPONENT>"
 fi
 
-if [ -z "${IS_ZOWE_CORE}" ]; then
+if [ "${IS_ZOWE_CORE}" != "true" ]; then
     IS_ZOWE_CORE=false
 fi
 

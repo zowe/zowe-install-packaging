@@ -100,19 +100,20 @@ update_zowe_instance_variable(){
     echo "${variable_name}=${variable_value}" >> ${INSTANCE_DIR}/instance.env
   else
     curr_variable_value=$(read_zowe_instance_variable "${variable_name}")
+    # FIXME: we have risks if value has "#" character
     if [ -n "${curr_variable_value}" ]; then
       if [ "${is_append}" = "false" ]; then
-        sed -e "s/^ *${variable_name}=${curr_variable_value}/${variable_name}=${variable_value}/" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+        sed -e "s#^ *${variable_name}=${curr_variable_value}#${variable_name}=${variable_value}#" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
         mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
       else
         # Ensures that the bin directory of the component is included into the instance.env once (Avoids duplication if same component is installed twice)
         if [[ $(echo ${curr_variable_value} | grep ${variable_value}) = "" ]]; then
-          sed -e "s/^ *${variable_name}=${curr_variable_value}/${variable_name}=${curr_variable_value},${variable_value}/" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+          sed -e "s#^ *${variable_name}=${curr_variable_value}#${variable_name}=${curr_variable_value},${variable_value}#" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
           mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
         fi
       fi
     else
-        sed -e "s/^ *${variable_name}=/${variable_name}=${variable_value}/" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+        sed -e "s#^ *${variable_name}=#${variable_name}=${variable_value}#" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
         mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
     fi
   fi
