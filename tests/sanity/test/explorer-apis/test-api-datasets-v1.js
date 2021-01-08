@@ -13,6 +13,7 @@ const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:explorer:api-datasets');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
+const {deflate} = require('./zlib-helper');
 
 let REQ, username, password;
 const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
@@ -32,6 +33,9 @@ describe('test explorer server datasets api', function() {
     REQ = axios.create({
       baseURL: `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
       timeout: 30000,
+      headers: {
+        'Accept-Encoding': 'gzip',
+      },
     });
     username = process.env.SSH_USER;
     password = process.env.SSH_PASSWD;
@@ -47,22 +51,32 @@ describe('test explorer server datasets api', function() {
       auth: {
         username,
         password,
-      }
+      },
+      decompress: false,
+      responseType: 'stream'
     };
     debug('request', req);
 
     return REQ.request(req)
       .then(function(res) {
-        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
-        addContext(_this, {
-          title: 'http response',
-          value: res && res.data
-        });
+        expect(res).to.have.property('data');
+        deflate(res).then((data) => {
+          debug('response', _.pick(res, ['status', 'statusText', 'headers']));
+          addContext(_this, {
+            title: 'http response',
+            value: res && data
+          });
 
-        expect(res).to.have.property('status');
-        expect(res.status).to.equal(200);
-        expect(res.data.items).to.be.an('array');
-        expect(res.data.items.map(one => one.name)).to.include(TEST_DATASET_NAME);
+          expect(res).to.have.property('status');
+          expect(res).to.have.property('headers');
+          expect(res.headers).to.have.property('content-encoding');
+          expect(res.headers['content-encoding']).to.equal('gzip');
+          expect(res.status).to.equal(200);
+          expect(data.items).to.be.an('array');
+          expect(data.items.map(one => one.name)).to.include(TEST_DATASET_NAME);
+        }).catch(err => {
+          throw err;
+        });
       });
   });
 
@@ -75,24 +89,31 @@ describe('test explorer server datasets api', function() {
       auth: {
         username,
         password,
-      }
+      },
+      decompress: false,
+      responseType: 'stream'
     };
     debug('request', req);
 
     return REQ.request(req)
-      .then(function(res) {
-        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+    .then(function(res) {
+      expect(res).to.have.property('data');
+      deflate(res.data).then((data) => {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers']));
         addContext(_this, {
           title: 'http response',
-          value: res && res.data
+          value: res && data
         });
 
         expect(res).to.have.property('status');
         expect(res.status).to.equal(200);
-        expect(res.data).to.be.an('object');
-        expect(res.data).to.have.property('items');
-        expect(res.data.items).to.be.an('array');
-        expect(res.data.items).to.include(TEST_DATASET_MEMBER_NAME);
+        expect(res).to.have.property('headers');
+        expect(res.headers).to.have.property('content-encoding');
+        expect(res.headers['content-encoding']).to.equal('gzip');        
+        expect(data).to.be.an('object');
+        expect(data).to.have.property('items');
+        expect(data.items).to.be.an('array');
+        expect(data.items).to.include(TEST_DATASET_MEMBER_NAME);
       });
   });
 
