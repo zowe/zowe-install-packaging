@@ -187,14 +187,14 @@ while [ $# -gt 0 ]; do #Checks for parameters
         -o|--component-file) #Represents the path pointed to the component's compressed file
             shift
             path=$(get_full_path "$1")
-            if [[ "$path" = *.pax ]] || [[ "$path" = *.zip ]] || [[ "$path" = *.tar ]] || [[ -d "$path" ]]; then
-                if [ -a "$path" ]; then
+            if [ -a "$path" ]; then
+                if [[ "$path" = *.pax ]] || [[ "$path" = *.zip ]] || [[ "$path" = *.tar ]] || [[ -d "$path" ]]; then
                     COMPONENT_FILE="${path}"
                 else
-                    error_handler "-o|--component-file: Given path is not in a correct file format or does not exist"
+                    error_handler "-o|--component-file: Given path is not in a correct file format"
                 fi
             else
-                error_handler "-o|--component-file: Given path is not in a correct file format or does not exist"
+                error_handler "-o|--component-file: Given path does not exist"
             fi
             shift
         ;;
