@@ -36,12 +36,23 @@ print_message() {
 # If LOG_FILE is an writable file then output to it, otherwise echo instead
 log_message() {
   message=$1
+  # by default it may also print to stdout, set to false to disable it 
+  may_print_to_stdout=$2
+
   if [[ -n "${LOG_FILE}" ]] && [[ -w "${LOG_FILE}" ]];
   then
     echo ${message} >> $LOG_FILE 
-  else
+  elif [ "${may_print_to_stdout}" != "false" ]; then
     echo ${message}
   fi
+}
+
+# print message to stdout and also write message to log
+print_and_log_message() {
+  message=$1
+
+  print_message "${message}"
+  log_message "${message}" "false"
 }
 
 # return currrent user id
