@@ -288,7 +288,7 @@ process_component_desktop_iframe_plugin() {
         plugin_url="https://${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}${base_uri}"
       fi
     elif [[ ${plugin_url} == http://* || ${plugin_url} == https://* ]]; then
-      # already a full url, do nothing
+      : # already a full url, do nothing
       # FIXME: we may need to parse the url as template
     elif [[ ${plugin_url} == /* ]]; then
       # a url path, prefix with gateway access
