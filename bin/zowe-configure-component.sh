@@ -80,16 +80,16 @@ enable_component(){
     fi
 }
 
-install_desktop_plugin(){
+install_app_framework_plugin(){
     iterator_index=0
-    desktop_plugin_path=$(read_component_manifest "${component_path}" ".desktopPlugins[${iterator_index}].path" 2>/dev/null)
-    while [ "${desktop_plugin_path}" != "null" ] && [ -n "${desktop_plugin_path}" ]; do
-        log_message "- install Zowe desktop plugin"
+    appfw_plugin_path=$(read_component_manifest "${component_path}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+    while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
+        log_message "- install Zowe App Framework plugin"
         cd "${component_path}"
         # Uses install-app.sh in zowe-instance-dir to automatically set up the component onto zowe
-        ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${desktop_plugin_path})"
+        ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
         iterator_index=`expr $iterator_index + 1`
-        desktop_plugin_path=$(read_component_manifest "${component_path}" ".desktopPlugins[${iterator_index}].path" 2>/dev/null)
+        appfw_plugin_path=$(read_component_manifest "${component_path}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
     done
 }
 
@@ -216,7 +216,7 @@ print_and_log_message "Configure Zowe component ${component_path} for instance $
 
 ensure_zwe_extension_dir
 configure_component
-install_desktop_plugin
+install_app_framework_plugin
 enable_component
 
 #######################################################################
