@@ -36,16 +36,17 @@ function detectExternalRootCA {
   else
     # Assumption: External certificate contains its chain of trust. The root certificate is the last one in the list
     #             that we get using the commands just below:
-    var_keytool_cmd="keytool -list -storetype JCERACFKS -keystore \"safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}\" \
-      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider"
-    var_CA_chain_length=`${var_keytool_cmd} -alias "${KEYSTORE_ALIAS}" -v | grep -c -e Owner:`
+    var_CA_chain_length=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
+      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v | grep -c -e Owner:`
     if [[ $var_CA_chain_length -lt 2 ]]; then
-      echo "The ${KEYSTORE_ALIAS} certificate is self-signed or does not contain its CA chain. If the certificate is externally signed \
+      echo "The ${KEYSTORE_ALIAS} certificate is self-signed or does not contain its CA chain or the detection algorithm failed for other reason. If the certificate is externally signed \
 and its root CA is connected to the same keyring then you can manually set the EXTERNAL_ROOT_CA env variable with the \
 root CA label in the ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} file."
     else
-      var_root_CA_DN=`${var_keytool_cmd} -alias "${KEYSTORE_ALIAS}" -v | grep -e Issuer: | tail -n 1 | cut -d ":" -f 2-`
-      var_root_CA_alias=`${var_keytool_cmd} -v | grep -e "Owner:${var_root_CA_DN}" -P 5 | grep -e "Alias name:" | cut -d ":" -f 2-`
+      var_root_CA_DN=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
+      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v | grep -e Issuer: | tail -n 1 | cut -d ":" -f 2-`
+      var_root_CA_alias=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
+      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -v | grep -e "Owner:${var_root_CA_DN}" -P 5 | grep -e "Alias name:" | cut -d ":" -f 2-`
       EXTERNAL_ROOT_CA=`echo ${var_root_CA_alias} | tr -d '[:space:]'`
       echo "A label of the external root CA in the keyring: ${EXTERNAL_ROOT_CA}"
     fi

@@ -589,7 +589,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         sh publishCommands +
           "export DOCKER_CLI_EXPERIMENTAL=enabled\n" +
           "docker manifest create ompzowe/server-bundle:latest ${manifestAmends}\n" +
-          "docker manifest push ompzowe/server-bundle:latest" +
+          "docker manifest push ompzowe/server-bundle:latest\n" +
           "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
           "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
       }
