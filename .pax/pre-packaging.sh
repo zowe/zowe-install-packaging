@@ -214,7 +214,7 @@ echo Installing Zowe in temporary runtime directory
 mkdir zowe-runtime-dir 
 userid=${USER:-${USERNAME:-${LOGNAME}}}
 tempDSNlevel=T$(($$ % 10000000)) # the lower 7 digits of the PID
-./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -h $userid.$tempDSNlevel # temp DSN based on PID
+./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -l logs -h $userid.$tempDSNlevel # temp DSN based on PID
 for szweDSN in SZWESAMP SZWEAUTH # delete temp DSNs 
 do
   tsocmd delete $tempDSNlevel.$szweDSN # 1> /dev/null 2> /dev/null

@@ -76,3 +76,45 @@ validate_zowe_prefix() {
     return $prefix_set_rc
   fi
 }
+
+# return value of a variable defined in zowe instance env
+read_zowe_instance_variable() {
+  variable_name=$1
+
+  # source in a new shell so it shouldn't mess the current shell
+  echo $(echo ". ${INSTANCE_DIR}/instance.env && echo \$${variable_name}" | sh)
+}
+
+update_zowe_instance_variable(){                                                                            
+  variable_name=$1
+  variable_value=$2
+  is_append=$3 # if false then the value of the given veriable_name will be replaced, append the value if true
+
+  if [ "${is_append}" != "true" ]; then
+    is_append=false # default value is false
+  fi
+
+  variable_name_exists=$(grep "^ *${variable_name}=" ${INSTANCE_DIR}/instance.env)
+
+  if [ -z "${variable_name_exists}" ]; then
+    echo "${variable_name}=${variable_value}" >> ${INSTANCE_DIR}/instance.env
+  else
+    curr_variable_value=$(read_zowe_instance_variable "${variable_name}")
+    # FIXME: we have risks if value has "#" character
+    if [ -n "${curr_variable_value}" ]; then
+      if [ "${is_append}" = "false" ]; then
+        sed -e "s#^ *${variable_name}=${curr_variable_value}#${variable_name}=${variable_value}#" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+        mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
+      else
+        # Ensures that the bin directory of the component is included into the instance.env once (Avoids duplication if same component is installed twice)
+        if [[ $(echo ${curr_variable_value} | grep ${variable_value}) = "" ]]; then
+          sed -e "s#^ *${variable_name}=${curr_variable_value}#${variable_name}=${curr_variable_value},${variable_value}#" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+          mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
+        fi
+      fi
+    else
+        sed -e "s#^ *${variable_name}=#${variable_name}=${variable_value}#" ${INSTANCE_DIR}/instance.env > ${INSTANCE_DIR}/instance.env.tmp
+        mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
+    fi
+  fi
+}
