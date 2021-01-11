@@ -18,7 +18,7 @@ const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
 const TEST_DATASET_NAME = 'SYS1.LINKLIB';
 const TEST_DATASET_MEMBER_NAME = 'ACCOUNT';
 
-describe('test explorer server datasets api',async function() {
+describe('test explorer server datasets api v2',async function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -55,7 +55,7 @@ describe('test explorer server datasets api',async function() {
     utils.logResponse(uuid, res);
     verifyResponse(res);
 
-    debug('list dataset manual decompress with zlib');
+    debug('list dataset decompress with zlib');
     res = await handleCompressionRequest(REQ,req);
     utils.logResponse(uuid, res);
     verifyResponse(res);
@@ -91,7 +91,7 @@ describe('test explorer server datasets api',async function() {
     utils.logResponse(uuid, res);
     verifyResponse(res);
 
-    debug('list dataset manual decompress with zlib');
+    debug('list dataset decompress with zlib');
     res = await handleCompressionRequest(REQ,req);
     utils.logResponse(uuid, res);
     verifyResponse(res);
@@ -130,7 +130,7 @@ describe('test explorer server datasets api',async function() {
     verifyResponseStatus(res);
     verifyResponseData(res);
 
-    debug('list dataset manual decompress with zlib');
+    debug('list dataset decompress with zlib');
     res = await handleCompressionRequest(REQ,req,{ungzip: false});
     utils.logResponse(uuid, res);
     verifyResponseStatus(res);
