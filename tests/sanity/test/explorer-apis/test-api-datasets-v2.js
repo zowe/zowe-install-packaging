@@ -86,12 +86,12 @@ describe('test explorer server datasets api v2',async function() {
       expect(res.data.items).to.include(TEST_DATASET_MEMBER_NAME);
     }
 
-    debug('list dataset default');
+    debug('list dataset member default');
     let res = await REQ.request(req);
     utils.logResponse(uuid, res);
     verifyResponse(res);
 
-    debug('list dataset decompress with zlib');
+    debug('list dataset member decompress with zlib');
     res = await handleCompressionRequest(REQ,req);
     utils.logResponse(uuid, res);
     verifyResponse(res);

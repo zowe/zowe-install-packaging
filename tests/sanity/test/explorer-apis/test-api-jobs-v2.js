@@ -52,12 +52,12 @@ describe('test explorer server jobs api v2', function() {
       expect(res.data.items[0].jobName).to.equal(ZOWE_JOB_NAME);
     }
 
-    debug('list dataset default');
+    debug('list jobs default');
     let res = await REQ.request(req);
     utils.logResponse(uuid, res);
     verifyResponse(res);
 
-    debug('list dataset decompress with zlib');
+    debug('list jobs decompress with zlib');
     res = await handleCompressionRequest(REQ,req);
     utils.logResponse(uuid, res);
     verifyResponse(res);
