@@ -12,16 +12,12 @@ const _ = require('lodash');
 const debug = require('debug')('zowe-sanity-test:apiml:gateway');
 const axios = require('axios');
 const expect = require('chai').expect;
-
+const fs = require('fs');
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
+let https = require('https');
 
-let login = async (uuid) => {
-  log(uuid, 'URL: /api/v1/gateway/auth/login');
-  let response = await request.post('/api/v1/gateway/auth/login', {
-    username, password
-  });
-
+function validateResponse(uuid, response) {
   logResponse(uuid, response);
 
   // Validate the response at least basically
@@ -29,6 +25,30 @@ let login = async (uuid) => {
   expect(response.headers).to.be.an('object');
   expect(response.headers).to.have.property('set-cookie');
   expect(response.data).to.be.empty;
+}
+
+let login = async (uuid) => {
+  log(uuid, 'URL: /api/v1/gateway/auth/login');
+  let response = await request.post('/api/v1/gateway/auth/login', {
+    username, password
+  });
+
+  validateResponse(uuid, response);
+
+  return findCookieInResponse(response, APIML_AUTH_COOKIE);
+};
+
+let loginWithCertificate = async (uuid) => {
+  log(uuid, 'login with certificate URL: /api/v1/gateway/auth/login');
+  const httpsAgent = new https.Agent({
+    rejectUnauthorized: false, // (NOTE: this will disable client verification)
+    cert: fs.readFileSync('../../playbooks/roles/configure/files/USER-cert.cer'),
+    key: fs.readFileSync('../../playbooks/roles/configure/files/USER-PRIVATEKEY.key'),
+  });
+  let response = await request.post('/api/v1/gateway/auth/login', {},
+    {httpsAgent}
+  );
+  validateResponse(uuid, response);
 
   return findCookieInResponse(response, APIML_AUTH_COOKIE);
 };
@@ -45,12 +65,12 @@ let findCookieInResponse = (response, cookieName) => {
 
 let verifyAndSetupEnvironment = () => {
   const environment = process.env;
-  expect(environment.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
+  expect(environment.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
   expect(environment.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
   expect(environment.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
   expect(environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
-  const baseUrl = `https://${environment.SSH_HOST}:${environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
+  const baseUrl = `https://${process.env.ZOWE_EXTERNAL_HOST}:${environment.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
   const SECOND = 1000;
   request = axios.create({
     baseURL: baseUrl,
@@ -89,5 +109,6 @@ module.exports = {
   logResponse,
   findCookieInResponse,
   verifyAndSetupEnvironment,
-  uuid
+  uuid,
+  loginWithCertificate
 };

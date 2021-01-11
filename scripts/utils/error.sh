@@ -12,12 +12,12 @@
 
 #output an error and add to the count
 
-if [ -z "$ERRORS_FOUND" ];
+if [ -z "${ERRORS_FOUND}" ];
 then
   ERRORS_FOUND=0
 fi
 
 # echo error to standard out and err
-echo "Error $ERRORS_FOUND: $1"
-echo "Error $ERRORS_FOUND: $1" 1>&2
-let "ERRORS_FOUND=$ERRORS_FOUND+1"
+echo "Error ${ERRORS_FOUND}: $1"
+echo "Error ${ERRORS_FOUND}: $1" 1>&2
+let "ERRORS_FOUND=${ERRORS_FOUND}+1"

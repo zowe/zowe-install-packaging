@@ -56,21 +56,21 @@ getPing_bin() {
     fi
 }
 
+# Source main utils script
+. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+
 # Run the main shell script logic
 if [[ $ZOWE_ZOSMF_PORT == "" ]]
 then
-  . ${ZOWE_ROOT_DIR}/bin/utils/zosmf-utils.sh
   prompt_zosmf_port_if_required
 else 
-    echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
+  echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
-. ${ZOWE_ROOT_DIR}/bin/utils/java-utils.sh
 prompt_java_home_if_required
 
 if [[ ${SKIP_NODE} != 1 ]]
 then
-  . ${ZOWE_ROOT_DIR}/bin/utils/node-utils.sh
   prompt_for_node_home_if_required
 fi
 
