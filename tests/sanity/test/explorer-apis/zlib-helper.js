@@ -52,7 +52,7 @@ function manualDecompressionRequest(REQ, req, ungzip) {
 }
 
 function handleCompressionRequest(REQ, req, handleOptions) {
-  let options =  Object.assign({},{manualDecompress: false, ungzip: true}, handleOptions);
+  let options =  Object.assign({},{manualDecompress: true, ungzip: true}, handleOptions);
   if(options.manualDecompress) {
     return manualDecompressionRequest(REQ,req, options.ungzip);
   }

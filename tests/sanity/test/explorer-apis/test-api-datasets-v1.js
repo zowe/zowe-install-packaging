@@ -117,7 +117,7 @@ async function getDatasetContentHelper(manualDecompress=false) {
     });
 }
 
-describe.only('test explorer server datasets api', function() {
+describe('test explorer server datasets api', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
