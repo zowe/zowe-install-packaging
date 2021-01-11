@@ -28,7 +28,7 @@ describe.only('test explorer server uss files api v2', function() {
     const authenticationCookie = await utils.login(uuid);
 
     utils.log(uuid, ' URL: /api/v2/unixfiles?path=' + process.env.ZOWE_INSTANCE_DIR);
-    const req ={url:`/api/v2/unixfiles?path=/u/nakul/zowe/instance`, 
+    const req ={url: `/api/v2/unixfiles?path=${process.env.ZOWE_INSTANCE_DIR}`,
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
