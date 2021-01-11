@@ -15,7 +15,7 @@ const { handleCompressionRequest } = require('./zlib-helper');
 
 let REQ;
 
-describe.only('test explorer server uss files api v2', function() {
+describe('test explorer server uss files api v2', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
