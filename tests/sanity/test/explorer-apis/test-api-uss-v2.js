@@ -10,10 +10,12 @@
 
 const expect = require('chai').expect;
 const utils = require('../apiml/utils');
+const debug = require('debug')('zowe-sanity-test:explorer:api-uss-v2');
+const { handleCompressionRequest } = require('./zlib-helper');
 
 let REQ;
 
-describe('test explorer server uss files api', function() {
+describe('test explorer server uss files api v2', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -26,24 +28,35 @@ describe('test explorer server uss files api', function() {
     const authenticationCookie = await utils.login(uuid);
 
     utils.log(uuid, ' URL: /api/v2/unixfiles?path=' + process.env.ZOWE_INSTANCE_DIR);
-    const res = await REQ.get(`/api/v2/unixfiles?path=${process.env.ZOWE_INSTANCE_DIR}`, {
+    const req ={url: `/api/v2/unixfiles?path=${process.env.ZOWE_INSTANCE_DIR}`,
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
       }
-    });
-    utils.logResponse(uuid, res);
+    };
 
-    expect(res).to.have.property('status');
-    expect(res.status).to.equal(200);
-    expect(res.data).to.be.an('object');
-    expect(res.data).to.have.property('type');
-    expect(res.data.type).to.be.a('string');
-    expect(res.data).to.have.property('owner');
-    expect(res.data.owner).to.be.a('string');
-    expect(res.data).to.have.property('group');
-    expect(res.data.group).to.be.a('string');
-    expect(res.data).to.have.property('permissionsSymbolic');
-    expect(res.data.permissionsSymbolic).to.be.a('string');
+    function verifyResponse(res) {
+      expect(res).to.have.property('status');
+      expect(res.status).to.equal(200);
+      expect(res.data).to.be.an('object');
+      expect(res.data).to.have.property('type');
+      expect(res.data.type).to.be.a('string');
+      expect(res.data).to.have.property('owner');
+      expect(res.data.owner).to.be.a('string');
+      expect(res.data).to.have.property('group');
+      expect(res.data.group).to.be.a('string');
+      expect(res.data).to.have.property('permissionsSymbolic');
+      expect(res.data.permissionsSymbolic).to.be.a('string');
+    }
+
+    debug('list unix directory default');
+    let res = await REQ.request(req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
+
+    debug('list unix directory decompress with zlib');
+    res = await handleCompressionRequest(REQ,req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
   });
 });
