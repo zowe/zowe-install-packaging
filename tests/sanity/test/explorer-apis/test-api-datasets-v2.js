@@ -10,13 +10,15 @@
 
 const expect = require('chai').expect;
 const utils = require('../apiml/utils');
+const debug = require('debug')('zowe-sanity-test:explorer:api-datasets-v2');
+const { handleCompressionRequest } = require('./zlib-helper');
 
 let REQ;
 const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
 const TEST_DATASET_NAME = 'SYS1.LINKLIB';
 const TEST_DATASET_MEMBER_NAME = 'ACCOUNT';
 
-describe('test explorer server datasets api', function() {
+describe('test explorer server datasets api v2',async function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -30,18 +32,34 @@ describe('test explorer server datasets api', function() {
     const authenticationCookie = await utils.login(uuid);
 
     utils.log(uuid, ' URL: /api/v2/datasets/' + encodeURIComponent(TEST_DATASET_PATTERN));
-    const res = await REQ.get('/api/v2/datasets/' + encodeURIComponent(TEST_DATASET_PATTERN), {
+
+    const req = {
+      method: 'get',
+      url: '/api/v2/datasets/' + encodeURIComponent(TEST_DATASET_PATTERN),
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
       }
-    });
-    utils.logResponse(uuid, res);
+    };
+    debug('request', req);
 
-    expect(res).to.have.property('status');
-    expect(res.status).to.equal(200);
-    expect(res.data.items).to.be.a('array');
-    expect(res.data.items.map(one => one.name)).to.include(TEST_DATASET_NAME);
+    function verifyResponse(res) {
+      expect(res).to.have.property('status');
+      expect(res.status).to.equal(200);
+      expect(res.data.items).to.be.a('array');
+      expect(res.data.items.map(one => one.name)).to.include(TEST_DATASET_NAME);
+    }
+
+    debug('list dataset default');
+    let res = await REQ.request(req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
+
+    debug('list dataset decompress with zlib');
+    res = await handleCompressionRequest(REQ,req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
+    
   });
 
   it(`should be able to get members of data set ${TEST_DATASET_NAME} (v2 API)`, async() => {
@@ -49,20 +67,35 @@ describe('test explorer server datasets api', function() {
     const authenticationCookie = await utils.login(uuid);
 
     utils.log(uuid, ' URL: /api/v2/datasets/' + encodeURIComponent(TEST_DATASET_NAME) + '/members');
-    const res = await REQ.get('/api/v2/datasets/' + encodeURIComponent(TEST_DATASET_NAME) + '/members', {
+
+    const req = {
+      method: 'get',
+      url: '/api/v2/datasets/' + encodeURIComponent(TEST_DATASET_NAME) + '/members',
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
       }
-    });
-    utils.logResponse(uuid, res);
+    };
 
-    expect(res).to.have.property('status');
-    expect(res.status).to.equal(200);
-    expect(res.data).to.be.an('object');
-    expect(res.data).to.have.property('items');
-    expect(res.data.items).to.be.an('array');
-    expect(res.data.items).to.include(TEST_DATASET_MEMBER_NAME);
+    function verifyResponse(res) {
+      expect(res).to.have.property('status');
+      expect(res.status).to.equal(200);
+      expect(res.data).to.be.an('object');
+      expect(res.data).to.have.property('items');
+      expect(res.data.items).to.be.an('array');
+      expect(res.data.items).to.include(TEST_DATASET_MEMBER_NAME);
+    }
+
+    debug('list dataset member default');
+    let res = await REQ.request(req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
+
+    debug('list dataset member decompress with zlib');
+    res = await handleCompressionRequest(REQ,req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
+
   });
 
   it(`should be able to get content of data set ${TEST_DATASET_NAME} (v2 API)`, async() => {
@@ -70,18 +103,37 @@ describe('test explorer server datasets api', function() {
     const authenticationCookie = await utils.login(uuid);
 
     utils.log(uuid, ' URL: /api/v2/datasets/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content');
-    const res = await REQ.get('/api/v2/datasets/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content', {
+    const req = {
+      method: 'get',
+      url:'/api/v2/datasets/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content', 
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
       }
-    });
-    utils.logResponse(uuid, res);
+    };
+    
+    function verifyResponseStatus(res) {
+      expect(res).to.have.property('status');
+      expect(res.status).to.equal(200);
+      
+    }
 
-    expect(res).to.have.property('status');
-    expect(res.status).to.equal(200);
-    expect(res.data).to.be.an('object');
-    expect(res.data).to.have.property('records');
-    expect(res.data.records).to.be.a('string');
+    function verifyResponseData(res) {
+      expect(res.data).to.be.an('object');
+      expect(res.data).to.have.property('records');
+      expect(res.data.records).to.be.a('string');
+    }
+
+    debug('list dataset default');
+    let res = await REQ.request(req);
+    utils.logResponse(uuid, res);
+    verifyResponseStatus(res);
+    verifyResponseData(res);
+
+    debug('list dataset decompress with zlib');
+    res = await handleCompressionRequest(REQ,req,{ungzip: false});
+    utils.logResponse(uuid, res);
+    verifyResponseStatus(res);
+
   });
 });

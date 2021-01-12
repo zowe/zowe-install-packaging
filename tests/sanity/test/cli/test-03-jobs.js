@@ -25,7 +25,7 @@ describe('cli list jobs of ZWE*', function() {
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
 
     const result = await createDefaultZOSMFProfile(
-      process.env.SSH_HOST,
+      process.env.ZOWE_EXTERNAL_HOST,
       process.env.ZOSMF_PORT,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
