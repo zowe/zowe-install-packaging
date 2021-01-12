@@ -117,12 +117,15 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
         });
     });
 
-    it('/org.zowe.explorer-mvs/web/index.html should return ok', function() {
+    it('/org.zowe.explorer-mvs/iframe should return ok', function() {
       const _this = this;
 
       const req = {
         method: 'get',
-        url: '/ZLUX/plugins/org.zowe.explorer-mvs/web/index.html'
+        url: '/ZLUX/plugins/org.zowe.explorer-mvs/iframe',
+        headers: {
+          cookie: apimlAuthCookie
+        }
       };
       debug('request', req);
 
@@ -136,17 +139,22 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          expect(res.data).to.include('<html>');
-          expect(res.data).to.include('<body>');
+          expect(JSON.stringify(res.data)).to.contain('zluxIframe');
+          expect(JSON.stringify(res.data)).to.contain(`${apimlBaseUrl}/ui/v1/explorer-mvs`);
+        }).catch(function(err) {
+          throw err;
         });
     });
 
-    it('/org.zowe.explorer-uss/web/index.html should return ok', function() {
+    it('/org.zowe.explorer-uss/iframe should return ok', function() {
       const _this = this;
 
       const req = {
         method: 'get',
-        url: '/ZLUX/plugins/org.zowe.explorer-uss/web/index.html'
+        url: '/ZLUX/plugins/org.zowe.explorer-uss/iframe',
+        headers: {
+          cookie: apimlAuthCookie
+        }
       };
       debug('request', req);
 
@@ -160,8 +168,10 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          expect(res.data).to.include('<html>');
-          expect(res.data).to.include('<body>');
+          expect(JSON.stringify(res.data)).to.contain('zluxIframe');
+          expect(JSON.stringify(res.data)).to.contain(`${apimlBaseUrl}/ui/v1/explorer-uss`);
+        }).catch(function(err) {
+          throw err;
         });
     });
   });
