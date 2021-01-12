@@ -15,7 +15,7 @@ const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 const {zluxAuth} = require('./utils');
 
-let REQ, zluxBaseUrl, apimlBaseUrl, apimlAuthCookie;
+let REQ, REQ_APIML, zluxBaseUrl, apimlBaseUrl, apimlAuthCookie;
 
 describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
 
@@ -32,6 +32,12 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     apimlBaseUrl = `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
     REQ = axios.create({
       baseURL: zluxBaseUrl,
+      timeout: 20000,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    REQ_APIML = axios.create({
+      baseURL: apimlBaseUrl,
       timeout: 20000,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -88,6 +94,36 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
   });
 
   describe('GET /ZLUX/plugins', function() {
+    
+    it('/org.zowe.explorer-jes/iframe is a protected path needs authentication', function() {
+      const _this = this;
+
+      const req = {
+        method: 'get',
+        url: '/ZLUX/plugins/org.zowe.explorer-jes/iframe',
+      };
+      debug('request', req);
+
+      return REQ.request(req).catch(function(err) {
+        expect(err).to.have.property('response');
+        let res = err.response;
+        debug('response', _.pick(err.response, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(401);
+        expect(res).to.have.property('data');
+        expect(res.data).to.have.property('result');
+        expect(res.data.result).to.have.property('authenticated');
+        expect(res.data.result.authenticated).to.be.false;
+        expect(res.data.result).to.have.property('authorized');
+        expect(res.data.result.authenticated).to.be.false;
+      });
+    });
+
     it('/org.zowe.explorer-jes/iframe should return ok', function() {
       const _this = this;
 
@@ -174,5 +210,54 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
           throw err;
         });
     });
+  });
+
+  describe('GET ZLUX Logger and Iframe Adapter', function() {
+    it('GET /ui/v1/zlux/ZLUX/plugins/org.zowe.zlux.bootstrap/web/iframe-adapter.js', function() {
+      const _this = this;
+
+      const req = {
+        method: 'get',
+        url: '/ui/v1/zlux/ZLUX/plugins/org.zowe.zlux.bootstrap/web/iframe-adapter.js',
+      };
+      debug('request', req);
+
+      return REQ_APIML.request(req).then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res).to.have.property('data');
+        expect(JSON.stringify(res.data)).contains('ZoweZLUX.iframe');
+      });
+    });
+
+    it('GET /ui/v1/zlux/lib/org.zowe.zlux.logger/0.9.0/logger.js', function() {
+      const _this = this;
+
+      const req = {
+        method: 'get',
+        url: '/ui/v1/zlux/lib/org.zowe.zlux.logger/0.9.0/logger.js',
+      };
+      debug('request', req);
+
+      return REQ_APIML.request(req).then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res).to.have.property('data');
+        expect(JSON.stringify(res.data)).contains('exports.Logger');
+      });
+    });
+    
   });
 });
