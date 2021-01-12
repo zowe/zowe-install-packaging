@@ -62,9 +62,7 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.9-PR-236",
-      "repository": "libs-snapshot-local",
-      "artifact": "explorer-jes-1.0.9-pr-236-12-20210112163954.pax"
+      "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-mvs": {
       "version": "~1.0.0-STAGING"
