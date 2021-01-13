@@ -302,9 +302,6 @@ node('zowe-jenkins-agent-dind-wdc') {
     timeout: [time: 4, unit: 'HOURS']
   )
 
-  libs-snapshot-local/org/zowe/1.19.0-STAGING/server-bundle.amd64-1.19.0-staging-1234-20210112103139.tar
-  https://zowe.jfrog.io/artifactory/libs-snapshot-local/org/zowe/1.19.0-STAGING/server-bundle.amd64-1.19.0-staging-1234-20210112103139.tar
-
   pipeline.test(
     name              : "Zowe docker image",
     shouldExecute : {
