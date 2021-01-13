@@ -51,6 +51,7 @@
     sed -e "s+^ZOWE_ZLUX_SECURITY_TYPE=.*\$+ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }}+" | \
     sed -e "s+^ZWE_LAUNCH_COMPONENTS=.*\$+ZWE_LAUNCH_COMPONENTS={{ zowe_launch_components }}+" \
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
+    echo "APIML_SECURITY_AUTHORIZATION_PROVIDER=endpoint" >> "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
 
 # This is TEMPORARY workaround because of missing security setup on some servers and problem with ZSS configuration,
