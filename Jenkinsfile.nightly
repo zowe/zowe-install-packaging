@@ -310,7 +310,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     operation         : {
       echo "Docker artifact info: '${sourceDockerBuildInfo}'\n"
       echo "pipeline.artifactory: '${pipeline.artifactory}'\n"
-      def docker_url = pipeline.artifactory.url + '/' sourceDockerBuildInfo.path
+      def docker_url = pipeline.artifactory.url + '/' + sourceDockerBuildInfo.path
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
