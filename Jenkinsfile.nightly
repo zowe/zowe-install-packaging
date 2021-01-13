@@ -167,8 +167,6 @@ node('zowe-jenkins-agent-dind-wdc') {
       } else {
         echo "No need to build new driver."
       }
-
-      echo "Docker artifact info: '${sourceDockerBuildInfo}'\n"
     }
   )
 
@@ -304,22 +302,28 @@ node('zowe-jenkins-agent-dind-wdc') {
     timeout: [time: 4, unit: 'HOURS']
   )
 
+  libs-snapshot-local/org/zowe/1.19.0-STAGING/server-bundle.amd64-1.19.0-staging-1234-20210112103139.tar
+  https://zowe.jfrog.io/artifactory/libs-snapshot-local/org/zowe/1.19.0-STAGING/server-bundle.amd64-1.19.0-staging-1234-20210112103139.tar
+
   pipeline.test(
     name              : "Zowe docker image",
     shouldExecute : {
-      return sourceDockerBuildInfo && sourceDockerBuildInfo['url']
+      return sourceDockerBuildInfo && sourceDockerBuildInfo['path'] sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     operation         : {
+      echo "Docker artifact info: '${sourceDockerBuildInfo}'\n"
+      echo "pipeline.artifactory: '${pipeline.artifactory}'\n"
+      def docker_url = pipeline.artifactory.url + '/' sourceDockerBuildInfo.path
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
              "TEST_SCOPE: test docker\n" +
-             "ZOWE_ARTIFACTORY_PATTERN: '${sourceDockerBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
-             "ZOWE_DOCKER_ARTIFACTORY_BUILD: '${sourceDockerBuildInfo.url}'\n" +
+             "ZOWE_DOCKER_ARTIFACTORY_BUILD: '${docker_url}'\n" +
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
              "Skip Stage: Lint: true\n" +
@@ -329,9 +333,9 @@ node('zowe-jenkins-agent-dind-wdc') {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
           string(name: 'TEST_SCOPE', value: 'test docker'),
-          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceDockerBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
-          string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: sourceDockerBuildInfo.url),
+          string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: docker_url),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
