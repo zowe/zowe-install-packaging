@@ -27,7 +27,7 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
-  def sourceDockerBuildInfo
+  def sourceDockerAmd64BuildInfo
   def cliSourceBuildInfo
   def cliPluginsSourceBuildInfo
 
@@ -75,14 +75,14 @@ node('zowe-jenkins-agent-dind-wdc') {
     stage         : {
       echo "Checking last build of \"${ZOWE_BUILD_NAME}\" ..."
 
-      // check artifactory for latest build with SMP/E and docker image
+      // check artifactory for latest build with SMP/E and docker amd64 image
       try {
         def smpeBuild = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME
         ])
 
-        def dockerBuild = pipeline.artifactory.getArtifact([
+        def dockerAmd64Build = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
           'build-name'   : ZOWE_BUILD_NAME
         ])
@@ -98,7 +98,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         if (timeElapse < 12) { // how many hours we consider it's too old?
           echo "Will skip re-build."
           sourceSmpeBuildInfo = smpeBuild
-          sourceDockerBuildInfo = dockerBuild
+          sourceDockerAmd64BuildInfo = dockerAmd64Build
         } else {
           echo "Will need to re-build."
         }
@@ -159,7 +159,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME
         ])
-        sourceDockerBuildInfo = pipeline.artifactory.getArtifact([
+        sourceDockerAmd64BuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
           'build-name'   : ZOWE_BUILD_NAME
         ])
@@ -303,12 +303,12 @@ node('zowe-jenkins-agent-dind-wdc') {
   )
 
   pipeline.test(
-    name              : "Zowe docker image",
+    name              : "Zowe docker Amd-64 image",
     shouldExecute : {
-      return sourceDockerBuildInfo && sourceDockerBuildInfo['path'] && sourceRegBuildInfo && sourceRegBuildInfo['path']
+      return sourceDockerAmd64BuildInfo && sourceDockerAmd64BuildInfo['path'] && sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     operation         : {
-      def docker_url = pipeline.artifactory.url + '/' + sourceDockerBuildInfo.path
+      def docker_amd64_url = pipeline.artifactory.url + '/' + sourceDockerAmd64BuildInfo.path
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
@@ -318,7 +318,7 @@ node('zowe-jenkins-agent-dind-wdc') {
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
-             "ZOWE_DOCKER_ARTIFACTORY_BUILD: '${docker_url}'\n" +
+             "ZOWE_DOCKER_ARTIFACTORY_BUILD: '${docker_amd64_url}'\n" +
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
              "Skip Stage: Lint: true\n" +
@@ -330,7 +330,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'test docker'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
-          string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: docker_url),
+          string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: docker_amd64_url),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -354,7 +354,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
           testDockerBuildErrorUrl = test_result.absoluteUrl
-          echo "Test failed on Docker Image ${sourceDockerBuildInfo.url}, check failure details at ${test_result.absoluteUrl}"
+          echo "Test failed on Docker Image ${sourceDockerAmd64BuildInfo.url}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
         }
       }
@@ -378,6 +378,10 @@ node('zowe-jenkins-agent-dind-wdc') {
       ])
       targetRegFullPath = pipeline.artifactory.promote([
         'source'     : sourceRegBuildInfo,
+        'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
+      ])
+      targetDockeramd64FullPath = pipeline.artifactory.promote([
+        'source'     : sourceDockerAmd64BuildInfo,
         'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
       ])
 
@@ -408,7 +412,8 @@ node('zowe-jenkins-agent-dind-wdc') {
       def slackColor = 'good'
       def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n"
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetDockeramd64FullPath}\n\n"
       if (cliSourceBuildInfo && cliTargetFullPath) {
         message += "\n\n" +
                     "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
@@ -436,7 +441,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (testDockerBuildErrorUrl) {
         slackColor = 'warning'
         message = message + "\n\n" +
-                  "!!WARNING!! Smoke test FAILED on the docker image! Check test result here: " +
+                  "!!WARNING!! Smoke test FAILED on the docker amd-64 image! Check test result here: " +
                   testDockerBuildErrorUrl + "\n"
       }
 
