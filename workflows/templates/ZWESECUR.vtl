@@ -776,11 +776,11 @@ $$
 /*   detailed information about API services to Zowe users.          */
 
 /* define Zowe resource class                                        */
-  TSS ADDTO(RDT) RESCLASS(ZOWE) +
+  TSS ADDTO(RDT) RESCLASS(ZOWE) MAXLEN(246) +
     ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)
 
 /* define resource class about information about API services        */
-  TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.SERVICES)
+  TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.)
 
 /* uncomment and replace "user" to permit Zowe users to access       */
 /* this resource(s):                                                 */

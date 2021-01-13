@@ -89,6 +89,7 @@
 //* Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*                     12345678
 //         SET ADMINDEP=SYSPDEPT     * department owning admin group
+//         SET  ZOWEDEP=             * department owning Zowe resources
 //*                     12345678
 //*
 //* end Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
@@ -393,6 +394,16 @@ TSS REMOVE(STC) PROCNAME(&AUXSTC)
 /* remove group for administrators                                   */
 TSS LIST(&ADMINGRP)
 TSS DELETE(&ADMINGRP)
+
+/* REMOVE ZOWE RESOURCE CLASS ...................................... */
+/* uncomment commands to below if the ZOWE class has been created    */
+/* by the ZWESECUR job                                               */
+
+/* remove resource name in ZOWE class                                */
+/* TSS REMOVE(&ZOWEDEP.) ZOWE(APIML.SERVICES)                        */
+/* remove ZOWE class                                                 */
+/* TSS REMOVE(RDT) RESCLASS(ZOWE)                                    */
+
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
 PROFILE
