@@ -305,7 +305,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   pipeline.test(
     name              : "Zowe docker image",
     shouldExecute : {
-      return sourceDockerBuildInfo && sourceDockerBuildInfo['path'] sourceRegBuildInfo && sourceRegBuildInfo['path']
+      return sourceDockerBuildInfo && sourceDockerBuildInfo['path'] && sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     operation         : {
       echo "Docker artifact info: '${sourceDockerBuildInfo}'\n"
