@@ -27,6 +27,7 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
+  def sourceDockerBuildInfo
   def cliSourceBuildInfo
   def cliPluginsSourceBuildInfo
 
@@ -74,29 +75,35 @@ node('zowe-jenkins-agent-dind-wdc') {
     stage         : {
       echo "Checking last build of \"${ZOWE_BUILD_NAME}\" ..."
 
-      // check artifactory for latest build with SMP/e
+      // check artifactory for latest build with SMP/E and docker image
       try {
-        def latestBuild = pipeline.artifactory.getArtifact([
+        def smpeBuild = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME
         ])
 
+        def dockerBuild = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
+          'build-name'   : ZOWE_BUILD_NAME
+        ])
+
         // extract build information
-        def buildNumber = latestBuild['build.number']
-        def buildTimestamp = latestBuild['build.timestamp']
+        def buildNumber = smpeBuild['build.number']
+        def buildTimestamp = smpeBuild['build.timestamp']
         long buildTimestampInt = buildTimestamp as Long
         def currentTimestamp = sh(script: 'date +"%s"', returnStdout: true).trim()
         long currentTimestampInt = currentTimestamp as Long
         def timeElapse = (currentTimestampInt * 1000 - buildTimestampInt) / (3600 * 1000)
         echo "Build #${buildNumber} is ${timeElapse} hours ago"
-        if (timeElapse < 22) { // how many hours we consider it's too old?
+        if (timeElapse < 12) { // how many hours we consider it's too old?
           echo "Will skip re-build."
-          sourceSmpeBuildInfo = latestBuild
+          sourceSmpeBuildInfo = smpeBuild
+          sourceDockerBuildInfo = dockerBuild
         } else {
           echo "Will need to re-build."
         }
       } catch (es) {
-        echo "getArtifact zowe-smpe-*.zip failed: ${es}"
+        echo "getArtifact zowe-smpe-*.zip, or server-bundle.amd64-*.tar failed: ${es}"
         echo "Will need to re-build."
       }
 
@@ -138,6 +145,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           job: '/zowe-install-packaging/staging',
           parameters: [
             booleanParam(name: 'BUILD_SMPE', value: true),
+            booleanParam(name: 'BUILD_DOCKER', value: true),
           ],
           propagate: false
         )
@@ -151,9 +159,16 @@ node('zowe-jenkins-agent-dind-wdc') {
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME
         ])
+        sourceDockerBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
+          'build-name'   : ZOWE_BUILD_NAME
+        ])
+        
       } else {
         echo "No need to build new driver."
       }
+
+      echo "Docker artifact info: '${sourceDockerBuildInfo}'\n"
     }
   )
 
@@ -281,6 +296,66 @@ node('zowe-jenkins-agent-dind-wdc') {
         if (test_result.result != 'SUCCESS') {
           testSmpeBuildErrorUrl = test_result.absoluteUrl
           echo "Test failed on SMP/e build ${sourceSmpeBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          IS_BUILD_UNSTABLE = true
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 4, unit: 'HOURS']
+  )
+
+  pipeline.test(
+    name              : "Zowe docker image",
+    shouldExecute : {
+      return sourceDockerBuildInfo && sourceDockerBuildInfo['url']
+    },
+    operation         : {
+      if (params.TEST_RUN) {
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SCOPE: test docker\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceDockerBuildInfo.path}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "ZOWE_DOCKER_ARTIFACTORY_BUILD: '${sourceDockerBuildInfo.url}'\n" +
+             "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
+             "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
+      } else {
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SCOPE', value: 'test docker'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceDockerBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: sourceDockerBuildInfo.url),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+          booleanParam(name: 'Skip Stage: Lint', value: true),
+          booleanParam(name: 'Skip Stage: Audit', value: true),
+          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        }
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
+        //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
+        //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        // }
+        def test_result = build(
+            job: '/zowe-install-test/staging',
+            parameters: testParameters,
+            propagate: false
+          )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          testDockerBuildErrorUrl = test_result.absoluteUrl
+          echo "Test failed on Docker Image ${sourceDockerBuildInfo.url}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
         }
       }
