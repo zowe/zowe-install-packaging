@@ -433,6 +433,13 @@ node('zowe-jenkins-agent-dind-wdc') {
                   testSmpeBuildErrorUrl + "\n"
       }
 
+      if (testDockerBuildErrorUrl) {
+        slackColor = 'warning'
+        message = message + "\n\n" +
+                  "!!WARNING!! Smoke test FAILED on the docker image! Check test result here: " +
+                  testDockerBuildErrorUrl + "\n"
+      }
+
       echo "*************************************************************************************************\n" +
            message + "\n" +
            "*************************************************************************************************"
