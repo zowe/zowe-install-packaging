@@ -10,12 +10,14 @@
 
 const expect = require('chai').expect;
 const utils = require('../apiml/utils');
+const debug = require('debug')('zowe-sanity-test:explorer:api-jobs-v2');
+const { handleCompressionRequest } = require('./zlib-helper');
 
 const { ZOWE_JOB_NAME } = require('../constants');
 
 let REQ;
 
-describe('test explorer server jobs api', function() {
+describe('test explorer server jobs api v2', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -29,7 +31,7 @@ describe('test explorer server jobs api', function() {
     const authenticationCookie = await utils.login(uuid);
 
     utils.log(uuid, ' URL: /api/v2/jobs');
-    const res = await REQ.get('/api/v2/jobs', {
+    const req = {url:'/api/v2/jobs', 
       params: {
         prefix: `${ZOWE_JOB_NAME}*`,
         owner: 'ZWE*',
@@ -39,14 +41,26 @@ describe('test explorer server jobs api', function() {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
       }
-    });
-    utils.logResponse(uuid, res);
+    };
 
-    expect(res).to.have.property('status');
-    expect(res.status).to.equal(200);
-    expect(res.data.items).to.be.an('array');
-    expect(res.data.items).to.have.lengthOf(1);
-    expect(res.data.items[0]).to.have.any.keys('jobName', 'jobId', 'owner', 'status', 'type', 'subsystem');
-    expect(res.data.items[0].jobName).to.equal(ZOWE_JOB_NAME);
+    function verifyResponse(res) {
+      expect(res).to.have.property('status');
+      expect(res.status).to.equal(200);
+      expect(res.data.items).to.be.an('array');
+      expect(res.data.items).to.have.lengthOf(1);
+      expect(res.data.items[0]).to.have.any.keys('jobName', 'jobId', 'owner', 'status', 'type', 'subsystem');
+      expect(res.data.items[0].jobName).to.equal(ZOWE_JOB_NAME);
+    }
+
+    debug('list jobs default');
+    let res = await REQ.request(req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
+
+    debug('list jobs decompress with zlib');
+    res = await handleCompressionRequest(REQ,req);
+    utils.logResponse(uuid, res);
+    verifyResponse(res);
+
   });
 });

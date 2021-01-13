@@ -22,7 +22,7 @@ describe('cli perform ssh commands with zos-uss', function() {
     expect(process.env.ZOWE_INSTANCE_DIR, 'ZOWE_INSTANCE_DIR is not defined').to.not.be.empty;
 
     const result = await createDefaultUSSProfile(
-      process.env.SSH_HOST,
+      process.env.ZOWE_EXTERNAL_HOST,
       process.env.SSH_USER,
       process.env.SSH_PASSWD,
       process.env.SSH_PORT,
