@@ -36,10 +36,126 @@ print_message() {
 # If LOG_FILE is an writable file then output to it, otherwise echo instead
 log_message() {
   message=$1
+  # by default it may also print to stdout, set to false to disable it 
+  may_print_to_stdout=$2
+
   if [[ -n "${LOG_FILE}" ]] && [[ -w "${LOG_FILE}" ]];
   then
     echo ${message} >> $LOG_FILE 
-  else
+  elif [ "${may_print_to_stdout}" != "false" ]; then
     echo ${message}
+  fi
+}
+
+# print message to stdout and also write message to log
+print_and_log_message() {
+  message=$1
+
+  print_message "${message}"
+  log_message "${message}" "false"
+}
+
+# return currrent user id
+get_user_id() {
+  echo ${USER:-${USERNAME:-${LOGNAME}}}
+}
+
+# runtime logging functions, follow zowe service logging standard
+print_formatted_message() {
+  service=$1
+  logger=$2
+  level=$3
+  message=$4
+
+  # always use upper case
+  level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
+
+  # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
+  expected_log_level_var=ZWE_LOG_LEVEL_${service}
+  expected_log_level_val=$(eval "echo \${$expected_log_level_var}")
+  if [ -z "${expected_log_level_val}" ]; then
+    expected_log_level_val=INFO
+  fi
+  display_log=false
+  case expected_log_level_val in
+    ERROR)
+      if [ "${level}" = "ERROR" ]; then
+        display_log=true
+      fi
+      ;;
+    WARN)
+      if [ "${level}" = "ERROR" -o "${level}" = "WARN" ]; then
+        display_log=true
+      fi
+      ;;
+    DEBUG)
+      if [ "${level}" = "ERROR" -o "${level}" = "WARN" -o "${level}" = "INFO" -o "${level}" = "DEBUG" ]; then
+        display_log=true
+      fi
+      ;;
+    TRACE)
+      display_log=true
+      ;;
+    *)
+      # INFO
+      if [ "${level}" = "ERROR" -o "${level}" = "WARN" -o "${level}" = "INFO" ]; then
+        display_log=true
+      fi
+      ;;
+  esac
+  if [ "${display_log}" = "false" ]; then
+    # no need to display this log based on LOG_LEVEL settings
+    return 0
+  fi
+
+  log_line_prefix="$(date -u '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
+  while read -r line; do
+    has_prefix=$(echo "$line" | awk '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/')
+    if [ -z "${has_prefix}" ]; then
+      line="${log_line_prefix} ${line}"
+    fi
+    if [ "${level}" = "ERROR" ]; then
+      # only errors are written to stderr
+      >&2 echo "${line}"
+    else
+      echo "${line}"
+    fi
+  done <<EOF
+$(echo "${message}")
+EOF
+}
+
+print_formatted_trace() {
+  print_formatted_message "${1}" "${2}" "TRACE" "${3}"
+}
+
+print_formatted_debug() {
+  print_formatted_message "${1}" "${2}" "DEBUG" "${3}"
+}
+
+print_formatted_info() {
+  print_formatted_message "${1}" "${2}" "INFO" "${3}"
+}
+
+print_formatted_warn() {
+  print_formatted_message "${1}" "${2}" "WARN" "${3}"
+}
+
+print_formatted_error() {
+  print_formatted_message "${1}" "${2}" "ERROR" "${3}"
+}
+
+###############################
+# Check if there are errors registered
+#
+# Notes: this function is for Zowe runtime, it requires INSTANCE_DIR variable.
+#
+# Notes: any error should increase global variable ERRORS_FOUND by 1.
+runtime_check_for_validation_errors_found() {
+  if [[ ${ERRORS_FOUND} > 0 ]]; then
+    print_message "${ERRORS_FOUND} errors were found during validatation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
+    if [ ! "${ZWE_IGNORE_VALIDATION_ERRORS}" = "true" ]; then
+      exit ${ERRORS_FOUND}
+    fi
   fi
 }

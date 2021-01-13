@@ -13,28 +13,30 @@ const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:apiml:gateway');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
+const { parseCookies, getCookieByKey } = require('../cookie-helper');
 
 let REQ, username, password;
 let cookies = {};
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
+
 
 describe('test api mediation layer zosmf api', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
     REQ = axios.create({
-      baseURL: `https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
+      baseURL: `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
       timeout: 30000,
     });
     username = process.env.SSH_USER;
     password = process.env.SSH_PASSWD;
-    debug(`Explorer server URL: https://${process.env.SSH_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
+    debug(`Explorer server URL: https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
   });
 
   it('should be able to login to z/OS', function() {
@@ -67,31 +69,7 @@ describe('test api mediation layer zosmf api', function() {
         expect(res.headers).to.have.property('set-cookie');
         expect(res.data).to.be.empty;
 
-        for (let one of res.headers['set-cookie']) {
-          const trunks = one.split(/;/).map(trunk => trunk.trim());
-          let cookie = null;
-          for (let i in trunks) {
-            const kv = trunks[i].split(/=/);
-            if (`${i}` === '0') {
-              if (kv.length === 2) {
-                cookie = kv[0];
-                cookies[cookie] = {
-                  value: kv[1],
-                };
-              } else {
-                debug(`unknown cookie: ${trunks[i]}`);
-              }
-            } else if (cookie) {
-              if (kv.length === 2) {
-                cookies[cookie][kv[0]] = kv[1];
-              } else if (kv.length === 1) {
-                cookies[cookie][kv[0]] = true;
-              } else {
-                debug(`unknown cookie: ${trunks[i]}`);
-              }
-            }
-          }
-        }
+        cookies = parseCookies(res.headers['set-cookie']);
         debug(`cookies: ${JSON.stringify(cookies)}`);
 
         expect(cookies).to.include.any.keys(APIML_AUTH_COOKIE);
@@ -108,7 +86,7 @@ describe('test api mediation layer zosmf api', function() {
       method: 'get',
       url: '/api/v1/zosmf/info',
       headers: {
-        Cookie: `${APIML_AUTH_COOKIE}=${cookies[APIML_AUTH_COOKIE].value}`,
+        Cookie: `${getCookieByKey(cookies,APIML_AUTH_COOKIE)}`,
         'X-CSRF-ZOSMF-HEADER': '*'
       },
     };

@@ -22,7 +22,7 @@ def nvmShell(nodeVersion, script) {
   }
 }
 
-node('ibm-jenkins-slave-nvm') {
+node('zowe-jenkins-agent-dind-wdc') {
   String INSTALL_TEST_PATH = 'tests/installation'
   String SANITY_TEST_PATH = 'tests/sanity'
 
@@ -46,16 +46,6 @@ node('ibm-jenkins-slave-nvm') {
       ansible_host     : 'marist-3',
       ssh_hostport     : 'ssh-marist-server-zzow03-hostport',
       ssh_userpass     : 'ssh-marist-server-zzow03'
-    ],
-    // 'river': [
-    //   ansible_host     : 'river-0',
-    //   ssh_hostport     : 'ssh-river-original-hostport',
-    //   ssh_userpass     : 'ssh-zdt-test-image-guest'
-    // ],
-    'river-3': [
-      ansible_host     : 'river-3',
-      ssh_hostport     : 'ssh-river-c3-hostport',
-      ssh_userpass     : 'ssh-zdt-test-image-guest'
     ]
   ];
   // Test scopes, what test should we run
@@ -71,6 +61,9 @@ node('ibm-jenkins-slave-nvm') {
     ],
     'smpe ptf': [
       test_files: 'dist/__tests__/basic/install-ptf.js',
+    ],
+    'test docker': [
+      test_files: 'dist/__tests__/basic/install-docker.js',
     ],
     'bundle: multiple node versions': [
       test_files: 'dist/__tests__/extended/node-versions/',
@@ -159,10 +152,16 @@ node('ibm-jenkins-slave-nvm') {
       defaultValue: 'Zowe CLI Bundle :: master',
       trim: true
     ),
+    string(
+      name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD',
+      description: 'Zowe docker artifactory url',
+      defaultValue: '',
+      trim: true
+    ),
     // >>>>>>>> parametters for test cases
     choice(
       name: 'NODE_VERSION',
-      choices: ['v8.16.0', 'v6.17.0', 'v8.16.2', 'v8.17.0', 'v12.13.0', 'v12.14.1', 'v12.16.1'],
+      choices: ['v8.16.0', 'v8.17.0', 'v12.13.0', 'v12.16.1', 'v14.15.1'],
       description: 'This option is only valid for Marist server and specify node.js version on z/OS side. The installation will set NODE_HOME to /ZOWE/node/node-{{version}}-os390-s390x.',
       trim: true
     ),
@@ -308,8 +307,10 @@ node('ibm-jenkins-slave-nvm') {
         'ANSIBLE_FORCE_COLOR=true',
         "TEST_SERVER=${TEST_SERVERS[params.TEST_SERVER]['ansible_host']}".toString(),
         "ZOWE_BUILD_LOCAL=${zoweBuild}".toString(),
+        "ZOWE_DOCKER_URL=${params.ZOWE_DOCKER_ARTIFACTORY_BUILD}".toString(),
         "SANITY_TEST_DEBUG=${params.SANITY_TEST_DEBUG_INFORMATION}".toString(),
         "DEBUG=${params.INSTALL_TEST_DEBUG_INFORMATION}".toString(),
+        // "ANSIBLE_VERBOSE=-vvv",
       ]
 
       if (TEST_SERVERS[params.TEST_SERVER].containsKey('node_home_pattern')) {

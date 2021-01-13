@@ -10,7 +10,7 @@
  * Copyright IBM Corporation 2018, 2019
  */
 
-node('ibm-jenkins-slave-dind') {
+node('zowe-jenkins-agent-dind-wdc') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def ZOWE_RELEASE_REPOSITORY = 'libs-release-local'
@@ -18,8 +18,8 @@ node('ibm-jenkins-slave-dind') {
   def ZOWE_RELEASE_FILEPATTERN = "zowe-*.pax"
   def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.zip"
   def ZOWE_RELEASE_SMPE_PTF_PROMOTE_FILEPATTERN = "smpe-promote-*.tar"
-  def ZOWE_RELEASE_DOCKER_AMD64_FILEPATTERN = "zowe-v1-lts.amd64-*.tar"
-  def ZOWE_RELEASE_DOCKER_S390X_FILEPATTERN = "zowe-v1-lts.s390x-*.tar"
+  def ZOWE_RELEASE_DOCKER_AMD64_FILEPATTERN = "server-bundle.amd64-*.tar"
+  def ZOWE_RELEASE_DOCKER_S390X_FILEPATTERN = "server-bundle.s390x-*.tar"
   def ZOWE_RELEASE_CLI_CORE_FILEPATTERN = "zowe-cli-package-*.zip"
   def ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN = "zowe-cli-plugins-*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
@@ -250,7 +250,7 @@ node('ibm-jenkins-slave-dind') {
           def FMID = dockerImageAmd64['path'].split('/').last().split('-').first()
           releaseArtifacts['docker-amd64'] = [:]
           releaseArtifacts['docker-amd64']['source'] = dockerImageAmd64
-          releaseArtifacts['docker-amd64']['target'] = "zowe-v1-lts.amd64-${params.ZOWE_RELEASE_VERSION}.tar".toString()
+          releaseArtifacts['docker-amd64']['target'] = "server-bundle.amd64-${params.ZOWE_RELEASE_VERSION}.tar".toString()
         }
       } catch (e1) {
         echo ">>> no Docker image amd64 version found in the build."
@@ -268,7 +268,7 @@ node('ibm-jenkins-slave-dind') {
           def FMID = dockerImageS390x['path'].split('/').last().split('-').first()
           releaseArtifacts['docker-s390x'] = [:]
           releaseArtifacts['docker-s390x']['source'] = dockerImageS390x
-          releaseArtifacts['docker-s390x']['target'] = "zowe-v1-lts.s390x-${params.ZOWE_RELEASE_VERSION}.tar".toString()
+          releaseArtifacts['docker-s390x']['target'] = "server-bundle.s390x-${params.ZOWE_RELEASE_VERSION}.tar".toString()
         }
       } catch (e1) {
         echo ">>> no Docker image s390x version found in the build."
@@ -573,31 +573,25 @@ node('ibm-jenkins-slave-dind') {
         def manifestAmends = ""
         // load images
         if (releaseArtifacts['docker-amd64']) {
-          sh "docker load --input .release/zowe-v1-lts.amd64-*.tar"
-          if ("${USERNAME}" != "ompzowe") {
-            // the image in tar should always be ompzowe/zowe-v1-lts:amd64
-            sh "docker tag ompzowe/zowe-v1-lts:amd64 ${USERNAME}/zowe-v1-lts:amd64"
-          }
-          publishCommands += "docker push ${USERNAME}/zowe-v1-lts:amd64\n"
-          manifestAmends += " --amend ${USERNAME}/zowe-v1-lts:amd64"
+          // the image in tar should always be ompzowe/server-bundle:s390x
+          sh "docker load --input .release/server-bundle.amd64-*.tar"
+          publishCommands += "docker push ompzowe/server-bundle:amd64\n"
+          manifestAmends += " --amend ompzowe/server-bundle:amd64"
         }
         if (releaseArtifacts['docker-s390x']) {
-          sh "docker load --input .release/zowe-v1-lts.s390x-*.tar"
-          if ("${USERNAME}" != "ompzowe") {
-            // the image in tar should always be ompzowe/zowe-v1-lts:s390x
-            sh "docker tag ompzowe/zowe-v1-lts:s390x ${USERNAME}/zowe-v1-lts:s390x"
-          }
-          publishCommands += "docker push ${USERNAME}/zowe-v1-lts:s390x\n"
-          manifestAmends += " --amend ${USERNAME}/zowe-v1-lts:s390x"
+          // the image in tar should always be ompzowe/server-bundle:s390x
+          sh "docker load --input .release/server-bundle.s390x-*.tar"
+          publishCommands += "docker push ompzowe/server-bundle:s390x\n"
+          manifestAmends += " --amend ompzowe/server-bundle:s390x"
         }
 
         // publish images
         sh publishCommands +
           "export DOCKER_CLI_EXPERIMENTAL=enabled\n" +
-          "docker manifest create ${USERNAME}/zowe-v1-lts:latest ${manifestAmends}\n" +
-          "docker manifest push ${USERNAME}/zowe-v1-lts:latest" +
-          "docker manifest create ${USERNAME}/zowe-v1-lts:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
-          "docker manifest push ${USERNAME}/zowe-v1-lts:v${params.ZOWE_RELEASE_VERSION}"
+          "docker manifest create ompzowe/server-bundle:latest ${manifestAmends}\n" +
+          "docker manifest push ompzowe/server-bundle:latest\n" +
+          "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
+          "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
       }
     }
   )

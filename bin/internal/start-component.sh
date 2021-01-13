@@ -28,9 +28,10 @@
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:o:" opt; do
+while getopts "c:r:o:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     o) component_id=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
@@ -41,16 +42,37 @@ done
 
 ########################################################
 # prepare environment variables
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}"
+if [ -z "${ROOT_DIR}" ]; then
+  # if this script is sourced, this may not return correct path
+  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+  # validate if this is zowe root path
+  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
+    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+    exit 1
+  fi
+fi
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
+
+# zowe launch script logging identifier
+LOGGING_SERVICE_ID=ZWELS
+LOGGING_SCRIPT_NAME=start-component.sh
 
 ########################################################
 # find component root directory and execute start script
 component_dir=$(find_component_directory "${component_id}")
 # backward compatible purpose, some may expect this variable to be component lifecycle directory
 export LAUNCH_COMPONENT="${component_dir}/bin"
-# FIXME: change here to read manifest `commands.start` entry
-start_script=${component_dir}/bin/start.sh
-if [ ! -z "${component_dir}" -a -x "${start_script}" ]; then
-  . ${start_script}
+start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
+if [ -z "${start_script}" -o "${start_script}" = "null" ]; then
+  # backward compatible purpose
+  print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "unable to determine start script from component ${component_id} manifest, fall back to default bin/start.sh"
+  start_script=${component_dir}/bin/start.sh
 fi
+if [ -n "${component_dir}" ]; then
+  cd "${component_dir}"
+  if [ -x "${start_script}" ]; then
+    print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "starting component ${component_id} ..."
+    . ${start_script}
+  fi
+fi
+ 

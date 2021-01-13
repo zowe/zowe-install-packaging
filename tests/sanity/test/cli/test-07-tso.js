@@ -20,14 +20,14 @@ let acctNum;
 
 describe.skip('cli runs tso commands', function() {
   before('verify environment variables', async function() {
-    expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.SSH_PORT, 'SSH_PORT is not defined').to.not.be.empty;
     expect(process.env.ZOSMF_PORT, 'SSH_PORT is not defined').to.not.be.empty;
 
     const zosmfprofile = await createDefaultZOSMFProfile(
-      process.env.SSH_HOST,
+      process.env.ZOWE_EXTERNAL_HOST,
       process.env.ZOSMF_PORT,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
@@ -42,7 +42,7 @@ describe.skip('cli runs tso commands', function() {
     expect(zosmfprofile.stdout).to.have.string('Profile created successfully');
     
     const ussprofile = await createDefaultUSSProfile(
-      process.env.SSH_HOST,
+      process.env.ZOWE_EXTERNAL_HOST,
       process.env.SSH_USER,
       process.env.SSH_PASSWD,
       process.env.SSH_PORT,

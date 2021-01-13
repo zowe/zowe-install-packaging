@@ -43,7 +43,7 @@ With correct npm registry, you can run `npm install` to install all dependencies
 
 By default, E2E UI test cases are launched by Selenium with Firefox driver. If you run test cases on your local, you need Firefox installed.
 
-The existing test cases are tested on Firefox v61.0.2 which is pre-installed in Jenkins Docker Slaves. In theory, the e2e test cases should be able to run on Firefox v53 and above.
+The existing test cases are tested on Firefox v61.0.2 which is pre-installed in Jenkins build agent. In theory, the e2e test cases should be able to run on Firefox v53 and above.
 
 ### Start Test
 
@@ -52,6 +52,7 @@ Example command:
 ```
 ZOWE_ROOT_DIR=/path/to/zowe \
   ZOWE_INSTANCE_DIR=/path/to/zowe/instanceDir \
+  ZOWE_EXTERNAL_HOST=test-server \
   SSH_HOST=test-server \
   SSH_PORT=12022 \
   SSH_USER=********* \
@@ -59,11 +60,30 @@ ZOWE_ROOT_DIR=/path/to/zowe \
   ZOSMF_PORT=10443 \
   ZOWE_DS_MEMBER=ZWESVSTC \
   ZOWE_JOB_PREFIX=ZWE \
+  ZOWE_INSTANCE_ID=1 \
   ZOWE_ZLUX_HTTPS_PORT=8544 \
   ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554 \
-  ZOWE_EXPLORER_JOBS_PORT=8545 \
-  ZOWE_EXPLORER_DATASETS_PORT=8547 \
   npm test
+```
+
+## Test your docker instance
+
+Docker instance can take advantage of npm script `test:docker`. It runs `mocha` tests based on config `.mocharc-docker.yml`
+
+```
+export ZOWE_ROOT_DIR="/root/zowe/runtime"
+export ZOWE_INSTANCE_DIR="/root/zowe/instance"
+export SSH_HOST=<zos-host>
+export SSH_PORT=22
+export SSH_USER=xxxxxx
+export SSH_PASSWD=xxxxx
+export ZOSMF_PORT=443
+export ZOWE_DS_MEMBER=ZWESVSTC
+export ZOWE_JOB_PREFIX=ZWE
+export ZOWE_ZLUX_HTTPS_PORT=8544
+export ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554
+export ZOWE_EXTERNAL_HOST=<docker-hostname>
+npm run test:docker
 ```
 
 ## General Guideline For Adding Test Cases
@@ -72,10 +92,13 @@ ZOWE_ROOT_DIR=/path/to/zowe \
 
 - All test cases are located in `test` directory.
 - Test cases are grouped as sub-directories:
+  * `test/apiml`: includes all API Mediation Layer test cases,
   * `test/cli`: includes all CLI test cases,
   * `test/e2e`: includes all E2E UI test cases,
   * `test/explorer`: includes all Zowe Explorer API test cases,
-  * `test/install`: includes all test cases validating Zowe installation.
+  * `test/install`: includes all test cases validating Zowe installation,
+  * `test/utils-scripts`: includes all test cases validating Zowe utility scripts,
+  * `test/zlux`: includes all test cases validating Zowe zlux server.
 
 ### Output Debugging Information
 
@@ -89,25 +112,7 @@ const debug = require('debug')('zowe-sanity-test:my-testsuite:my-testcase');
 debug('result:', result);
 ```
 
-To show debugging information on your local, you can add `DEBUG=zowe-sanity-test:*` to the test command:
-
-```
-ZOWE_ROOT_DIR=/path/to/zowe \
-  ZOWE_INSTANCE_DIR=/path/to/zowe/instanceDir \
-  SSH_HOST=test-server \
-  SSH_PORT=12022 \
-  SSH_USER=********* \
-  SSH_PASSWD=********* \
-  ZOSMF_PORT=10443 \
-  ZOWE_DS_MEMBER=ZWESVSTC \
-  ZOWE_JOB_PREFIX=ZWE \
-  ZOWE_ZLUX_HTTPS_PORT=8544 \
-  ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554 \
-  ZOWE_EXPLORER_JOBS_PORT=8545 \
-  ZOWE_EXPLORER_DATASETS_PORT=8547 \
-  DEBUG=zowe-sanity-test:* \
-  npm test
-```
+To show debugging information on your local, you can add `DEBUG=zowe-sanity-test:*` to the test command.
 
 In Jenkins Pipeline, we have pre-defined build parameter `TEST_CASE_DEBUG_INFORMATION`, which can enable to show debugging information. For example, give `TEST_CASE_DEBUG_INFORMATION` value `zowe-sanity-test:*` will show all test debugging information.
 
@@ -397,8 +402,10 @@ When you start test on Windows, you may see this error: `'ZOWE_ROOT_DIR' is not 
 Run `npm install -g cross-env` and then run command
 
 ```
-cross-env ZOWE_ROOT_DIR=/path/to/zowe ZOWE_INSTANCE_DIR=/path/to/zowe/instanceDir SSH_HOST=test-server SSH_PORT=12022 SSH_USER=********* SSH_PASSWD=********* ZOSMF_PORT=10443 ZOWE_DS_MEMBER=ZWESVSTC ZOWE_JOB_PREFIX=ZWE ZOWE_ZLUX_HTTPS_PORT=8544 ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554 ZOWE_EXPLORER_JOBS_PORT=8545 ZOWE_EXPLORER_DATASETS_PORT=8547 npm test
+cross-env ZOWE_ROOT_DIR=/path/to/zowe <...> npm test
 ```
+
+You can add any environment variables defined in [Start Test](#start-test) section.
 
 to start test.
 
