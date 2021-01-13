@@ -204,11 +204,13 @@
   DELGROUP &ADMINGRP.
 
 /* REMOVE ZOWE RESOURCE CLASS ...................................... */
+/* uncomment commands to below if the ZOWE class has been created    */
+/* by the ZWESECUR job                                               */
 
 /* remove profile in ZOWE class                                      */
-  RDELETE ZOWE APIML.SERVICES
+/* RDELETE ZOWE APIML.SERVICES                                       */
 /* remove ZOWE class                                                 */
-  RDELETE CDT ZOWE
+/* RDELETE CDT ZOWE                                                  */
 
   SETROPTS RACLIST(CDT) REFRESH
 
