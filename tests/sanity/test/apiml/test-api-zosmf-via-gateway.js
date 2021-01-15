@@ -13,6 +13,7 @@ const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:apiml:gateway');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
+const { parseCookies, getCookieByKey } = require('../cookie-helper');
 
 let REQ, username, password;
 let cookies = {};
@@ -68,31 +69,7 @@ describe('test api mediation layer zosmf api', function() {
         expect(res.headers).to.have.property('set-cookie');
         expect(res.data).to.be.empty;
 
-        for (let one of res.headers['set-cookie']) {
-          const trunks = one.split(/;/).map(trunk => trunk.trim());
-          let cookie = null;
-          for (let i in trunks) {
-            const kv = trunks[i].split(/=/);
-            if (`${i}` === '0') {
-              if (kv.length === 2) {
-                cookie = kv[0];
-                cookies[cookie] = {
-                  value: kv[1],
-                };
-              } else {
-                debug(`unknown cookie: ${trunks[i]}`);
-              }
-            } else if (cookie) {
-              if (kv.length === 2) {
-                cookies[cookie][kv[0]] = kv[1];
-              } else if (kv.length === 1) {
-                cookies[cookie][kv[0]] = true;
-              } else {
-                debug(`unknown cookie: ${trunks[i]}`);
-              }
-            }
-          }
-        }
+        cookies = parseCookies(res.headers['set-cookie']);
         debug(`cookies: ${JSON.stringify(cookies)}`);
 
         expect(cookies).to.include.any.keys(APIML_AUTH_COOKIE);
@@ -109,7 +86,7 @@ describe('test api mediation layer zosmf api', function() {
       method: 'get',
       url: '/api/v1/zosmf/info',
       headers: {
-        Cookie: `${APIML_AUTH_COOKIE}=${cookies[APIML_AUTH_COOKIE].value}`,
+        Cookie: `${getCookieByKey(cookies,APIML_AUTH_COOKIE)}`,
         'X-CSRF-ZOSMF-HEADER': '*'
       },
     };

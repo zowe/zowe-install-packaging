@@ -26,6 +26,7 @@ const {
 let driver;
 
 const APP_TO_TEST = 'VT Terminal';
+const APP_CAPTION = 'VT';
 
 describe(`test ${APP_TO_TEST}`, function() {
   before('verify environment variable and load login page', async function() {
@@ -51,7 +52,7 @@ describe(`test ${APP_TO_TEST}`, function() {
   it('should launch app correctly', async function() {
     // load app
     await launchApp(driver, APP_TO_TEST);
-    const app = await locateApp(driver, APP_TO_TEST);
+    const app = await locateApp(driver, APP_CAPTION);
     expect(app).to.be.an('object');
     debug('app launched');
 
