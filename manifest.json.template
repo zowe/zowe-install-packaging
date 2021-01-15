@@ -64,7 +64,7 @@
     "org.zowe.explorer-jes": {
       "version": "1.0.9-EXCLUDE-PNG-ASCII",
       "repository": "libs-snapshot-local",
-      "artifact": "explorer-jes-1.0.9-exclude-png-ascii-1-20210115175153.pax"
+      "artifact": "explorer-jes-1.0.9-pr-245-3-20210115204110.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "~1.0.0-STAGING"
