@@ -100,6 +100,10 @@
       "version": "1.19.0",
       "artifact": "caching-service*.zip"
     },
+    "org.zowe.apiml.sdk.apiml-common-lib-package": {
+      "version": "1.19.0",
+      "artifact": "apiml-common-lib-*.zip"
+    },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
       "artifact": "keyring-util-1.0.4",
