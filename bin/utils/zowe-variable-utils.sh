@@ -97,6 +97,12 @@ update_zowe_instance_variable(){
   variable_name_exists=$(grep "^ *${variable_name}=" ${INSTANCE_DIR}/instance.env)
 
   if [ -z "${variable_name_exists}" ]; then
+    # check if we have line feed at the end of instance.env and add if missing
+    # otherwise we may append to another variable at the end of the file
+    have_line_feed=$(tail -c 1 ${INSTANCE_DIR}/instance.env | wc -l)
+    if [ ${have_line_feed} -eq 0 ]; then
+      echo "" >> ${INSTANCE_DIR}/instance.env
+    fi
     echo "${variable_name}=${variable_value}" >> ${INSTANCE_DIR}/instance.env
   else
     curr_variable_value=$(read_zowe_instance_variable "${variable_name}")
