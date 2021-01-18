@@ -309,6 +309,18 @@ SET RULE
 LIST &HLQ.
 DELETE &HLQ.
 *
+
+* Remove ZOWE resource class
+
+* uncomment commands to below if the ZOWE class has been created
+* by the ZWESECUR job
+
+* remove key in ZWE resource type
+* SET RESOURCE(ZWE)
+* DELETE APIML
+* remove ZOWE class mapping
+* SET CONTROL(GSO)
+* DELETE CLASMAP.ZOWE
 $$
 //*
 //*********************************************************************
