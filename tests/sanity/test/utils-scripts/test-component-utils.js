@@ -125,11 +125,11 @@ describe('verify utils/component-utils', function() {
     it('test reading component manifest entry with wrong definition', async function() {
       const component = 'jobs-api';
       await test_component_function_has_expected_rc_stdout_stderr(
-        'echo $' + `(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands[].start")`,
+        'echo $' + `(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands[].start" 2>&1)`,
         {},
         {
           rc: 0,
-          stderr: 'Error: Cannot iterate over object',
+          stdout: 'Error: Cannot iterate over object',
         }
       );
     });
