@@ -92,7 +92,7 @@ describe('verify utils/component-utils', function() {
     it('test reading component name', async function() {
       const component = 'jobs-api';
       await test_component_function_has_expected_rc_stdout_stderr(
-        `echo \$(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".name")`,
+        'echo $' + `(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".name")`,
         {},
         {
           stdout: component,
@@ -103,7 +103,7 @@ describe('verify utils/component-utils', function() {
     it('test reading component commands.start', async function() {
       const component = 'jobs-api';
       await test_component_function_has_expected_rc_stdout_stderr(
-        `echo \$(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands.start")`,
+        'echo $' + `(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands.start")`,
         {},
         {
           stdout: 'bin/start.sh',
@@ -114,7 +114,7 @@ describe('verify utils/component-utils', function() {
     it('test reading non-existing component manifest entry', async function() {
       const component = 'jobs-api';
       await test_component_function_has_expected_rc_stdout_stderr(
-        `echo \$(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands.somethingDoesNotExist")`,
+        'echo $' + `(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands.somethingDoesNotExist")`,
         {},
         {
           stdout: 'null',
@@ -125,7 +125,7 @@ describe('verify utils/component-utils', function() {
     it('test reading component manifest entry with wrong definition', async function() {
       const component = 'jobs-api';
       await test_component_function_has_expected_rc_stdout_stderr(
-        `echo \$(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands[].start")`,
+        'echo $' + `(${read_component_manifest} "${process.env.ZOWE_ROOT_DIR}/components/${component}" ".commands[].start")`,
         {},
         {
           rc: 0,
