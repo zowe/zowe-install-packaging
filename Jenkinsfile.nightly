@@ -33,9 +33,11 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   def testRegBuildErrorUrl
   def testSmpeBuildErrorUrl
+  def testDockerBuildErrorUrl
 
   def targetSmpeFullPath
   def targetRegFullPath
+  def targetDockeramd64FullPath
   def cliTargetFullPath
   def cliPluginsTargetFullPath
 
