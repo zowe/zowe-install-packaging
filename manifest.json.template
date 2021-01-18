@@ -64,7 +64,7 @@
     "org.zowe.explorer-jes": {
       "version": "1.0.9-PR-245",
       "repository": "libs-snapshot-local",
-      "artifact": "explorer-jes-1.0.9-pr-245-3-20210115204110.pax"
+      "artifact": "explorer-jes-1.0.9-pr-245-5-20210118162558.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "~1.0.0-STAGING"
