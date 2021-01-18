@@ -16,26 +16,26 @@ let authenticationCookie;
 
 describe('test endpoint /services and its authentication', function() {
 
-    before('obtain JWT token', async () => {
-        const uuid = testUtils.uuid();
-        authenticationCookie = await testUtils.login(uuid);
-    });
+  before('obtain JWT token', async () => {
+    const uuid = testUtils.uuid();
+    authenticationCookie = await testUtils.login(uuid);
+  });
 
-    describe('should be able get list of services', () => {
-        it('with authenticated user', async () => {
-            const uuid = testUtils.uuid();
-            const response = await request.get('/gateway/api/v1/services', {
-                headers: {
-                    'Cookie': authenticationCookie
-                }
-            });
-            testUtils.logResponse(uuid, response);
+  describe('should be able get list of services', () => {
+    it('with authenticated user', async () => {
+      const uuid = testUtils.uuid();
+      const response = await request.get('/gateway/api/v1/services', {
+        headers: {
+          'Cookie': authenticationCookie
+        }
+      });
+      testUtils.logResponse(uuid, response);
 
-            expect(response).to.have.property('status');
-            expect(response.status).to.equal(200);
-            expect(response.data).to.be.an('array').that.is.not.empty;
-            expect(response.data.map(x => x.serviceId)).to.include.members(["gateway", "discovery"]);
-        })
+      expect(response).to.have.property('status');
+      expect(response.status).to.equal(200);
+      expect(response.data).to.be.an('array').that.is.not.empty;
+      expect(response.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
     });
+  });
 
 });
