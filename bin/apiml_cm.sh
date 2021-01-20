@@ -148,12 +148,12 @@ function add_external_ca {
     echo "Adding external Certificate Authorities:"
     if [ -n "${EXTERNAL_CA}" ]; then
         I=1
-        for FILE in "${EXTERNAL_CA}"; do
+        for FILE in ${EXTERNAL_CA}; do
             cp -v "${FILE}" "${EXTERNAL_CA_FILENAME}.${I}.cer"
             I=$((I+1))
         done
         if [ `uname` = "OS/390" ]; then
-            for FILENAME in "${EXTERNAL_CA_FILENAME}.*.cer"; do
+            for FILENAME in "${EXTERNAL_CA_FILENAME}".*.cer; do
                 iconv -f ISO8859-1 -t IBM-1047 "${FILENAME}" > "${FILENAME}-ebcdic"
             done
         fi
