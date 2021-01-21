@@ -210,16 +210,16 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           """
              mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
              cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
-             git clone --branch master https://github.com/zowe/zowe-dockerfiles.git
-             cd zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts &&
+             git clone --branch ${env.BRANCH_NAME} https://github.com/zowe/zowe-install-packaging.git
+             cd zowe-install-packaging/containers/server-bundle &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
-             mkdir -p utils && cp -r ../../../../utils/* ./utils &&
-             sudo docker build -t ompzowe/server-bundle:s390x . &&
+             mkdir -p utils && cp -r ../utils/* ./utils &&
+             sudo docker build --build-arg BUILD_PLATFORM=s390x -t ompzowe/server-bundle:s390x . &&
              sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x &&
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.s390x.tar
           """
-          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-dockerfiles/dockerfiles/zowe-release/s390x/zowe-v1-lts/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-install-packaging/containers/server-bundle/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
           pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
           sshCommand remote: Z_SERVER, command: \
           """
@@ -248,38 +248,29 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           error "Couldn't find zowe.pax uploaded."
         }
 
-        node('zowe-jenkins-agent-dind-wdc') {
-          // checkout source code to docker build agent
-          checkout scm
-          // checkout repository with dockerfile
-          // FIXME: this dockerfile should be merged into current repo to avoid
-          //        version synchronizing issues
-          sh 'git clone --branch master https://github.com/zowe/zowe-dockerfiles.git'
-          dir ('zowe-dockerfiles/dockerfiles/zowe-release/amd64/zowe-v1-lts') {
-            // copy utils to docker build folder
-            sh 'mkdir -p utils && cp -r ../../../../utils/* ./utils'
-            // download zowe pax to docker build agent
-            pipeline.artifactory.download(
-              specContent: "{\"files\":[{\"pattern\": \"${zowePaxUploaded}\",\"target\":\"zowe.pax\",\"flat\":\"true\"}]}",
-              expected: 1
-            )
-            // show files
-            sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -ltr .'
-
-            withCredentials([usernamePassword(
-              credentialsId: 'ZoweDockerhub',
-              usernameVariable: 'USERNAME',
-              passwordVariable: 'PASSWORD'
-            )]){
-              // build docker image
-              sh "docker build -t ompzowe/server-bundle:amd64 ."
-              sh "docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64"
-            }
-            // show files
-            sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.amd64.tar'
-            pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
+        dir ('containers/server-bundle') {
+          // copy utils to docker build folder
+          sh 'mkdir -p utils && cp -r ../utils/* ./utils'
+          // download zowe pax to docker build agent
+          pipeline.artifactory.download(
+            specContent: "{\"files\":[{\"pattern\": \"${zowePaxUploaded}\",\"target\":\"zowe.pax\",\"flat\":\"true\"}]}",
+            expected: 1
+          )
+          // show files
+          sh 'echo ">>>>>>>>>>>>>>>>>> sub-node: " && pwd && ls -ltr .'
+           withCredentials([usernamePassword(
+            credentialsId: 'ZoweDockerhub',
+            usernameVariable: 'USERNAME',
+            passwordVariable: 'PASSWORD'
+          )]){
+            // build docker image
+            sh "docker build  --build-arg BUILD_PLATFORM=amd64 -t ompzowe/server-bundle:amd64 ."
+            sh "docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64"
           }
-        }
+          // show files
+          sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.amd64.tar'
+          pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
+        }      
       }
     }
   )
