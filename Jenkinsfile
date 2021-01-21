@@ -248,6 +248,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           error "Couldn't find zowe.pax uploaded."
         }
 
+        checkout scm
         dir ('containers/server-bundle') {
           // copy utils to docker build folder
           sh 'mkdir -p utils && cp -r ../utils/* ./utils'
