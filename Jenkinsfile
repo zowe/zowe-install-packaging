@@ -242,13 +242,18 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (params.BUILD_DOCKER) {
         // this is a hack to find the zowe.pax upload
         // FIXME: ideally this should be reachable from pipeline property
+        if (!zowePaxUploaded) {
+          zowePaxUploaded = sh(
+            script: "cat .tmp-pipeline-publish-spec.json | jq -r '.files[] | select(.pattern == \".pax/zowe.pax\") | .target'",
+            returnStdout: true
+          ).trim()
+        }
         echo "zowePaxUploaded=${zowePaxUploaded}"
         if (zowePaxUploaded == "") {
           sh "echo 'content of .tmp-pipeline-publish-spec.json' && cat .tmp-pipeline-publish-spec.json"
           error "Couldn't find zowe.pax uploaded."
         }
 
-        checkout scm
         dir ('containers/server-bundle') {
           // copy utils to docker build folder
           sh 'mkdir -p utils && cp -r ../utils/* ./utils'
