@@ -608,25 +608,22 @@ node('zowe-jenkins-agent-dind-wdc') {
       def smpeMessage = ''
       if (releaseArtifacts['smpe-zip'] && releaseArtifacts['smpe-zip']['target']) {
 smpeMessage = """
-
 SMP/e build:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-zip']['target']}
 
 """
-
+      }
 def dockeramd64Message = ''
       if (releaseArtifacts['docker-amd64'] && releaseArtifacts['docker-amd64']['target']) {
 dockeramd64Message = """
-
 docker amd64 image:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['docker-amd64']['target']}
 
 """
-
+      }
 def dockers390xMessage = ''
       if (releaseArtifacts['docker-s390x'] && releaseArtifacts['docker-s390x']['target']) {
 dockers390xMessage = """
-
 docker s390x image:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['docker-s390x']['target']}
 
