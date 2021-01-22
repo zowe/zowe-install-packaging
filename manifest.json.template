@@ -73,35 +73,35 @@
       "version": "1.0.6"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.10"
-    },
-    "org.zowe.explorer-mvs": {
       "version": "1.0.11"
     },
+    "org.zowe.explorer-mvs": {
+      "version": "1.0.12"
+    },
     "org.zowe.explorer-uss": {
-      "version": "1.0.10"
+      "version": "1.0.11"
     },
     "org.zowe.explorer-ui-server": {
       "version": "0.2.16"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "1.19.1",
+      "version": "1.19.2",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "1.19.1",
+      "version": "1.19.2",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.19.1",
+      "version": "1.19.2",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "1.19.1",
+      "version": "1.19.2",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.19.1",
+      "version": "1.19.2",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.keyring-utilities": {
@@ -130,7 +130,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.19.1",
+        "tag": "v1.19.2",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -251,21 +251,21 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.11",
+        "tag": "v1.0.12",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "v0.0.12",
+        "tag": "v0.0.13",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.10",
+        "tag": "v1.0.11",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -279,7 +279,7 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.10",
+        "tag": "v1.0.11",
         "destinations": ["Zowe PAX"]
       }]
     }, {
