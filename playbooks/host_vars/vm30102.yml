@@ -1,7 +1,8 @@
 ---
-ansible_ssh_host: tivlp46.svl.ibm.com
-ansible_user:
-ansible_password:
+ansible_ssh_host: vm30102.svl.ibm.com
+ansible_user: 
+ansible_password: 
+
 
 ################################################################################
 zowe_fmids_dir_remote: /var/zowe/zowe-fmids
@@ -11,7 +12,16 @@ zowe_instance_dir: /var/zowe/zowe-instance-dir
 zowe_keystore_dir: /var/zowe/keystore
 zowe_logs_dir: /var/zowe/logs
 zowe_install_logs_dir: /var/zowe/logs
-zos_zosmf_port: 443
+
+zowe_apiml_verify_certficates_of_services: false
+# variables for zowe smpe uninstallation and installation
+# during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed
+zowe_smpe_hlq_dsn: ZOE
+# during uninstallation, any data-sets start with this will be removed
+zowe_smpe_hlq_csi: ZOE.SMPE
+zowe_smpe_hlq_tzone: ZOE.SMPE
+zowe_smpe_hlq_dzone: ZOE.SMPE
+zowe_smpe_dir_prefix: /var/zowe/runtime
 
 zowe_extra_environment_variables:
   # SVL image has an error when executing netstat
@@ -21,11 +31,15 @@ zowe_extra_environment_variables:
   RESOLVER_CONFIG: "\"//'USER.PARMLIB(TCPDATA)'\""
 
 # variables for zowe uninstallation and installation
-zowe_smpe_volser: LP4605
+zowe_smpe_volser: V31023
 # caching service volume
-zowe_caching_vsam_volume: LP4605
+zowe_caching_vsam_volume: V31023
+
+zowe_external_domain_name: vm30102.svl.ibm.com
+zowe_external_ip_address: 9.30.243.197
 
 
-zowe_external_ip_address: 9.30.237.20
-zowe_zlux_terminal_telnet_port: 992
-zowe_zlux_terminal_telnet_security_type: tls
+#zowe_zlux_terminal_telnet_port: 992
+#zowe_zlux_terminal_telnet_security_type: tls
+
+
