@@ -191,8 +191,7 @@ if [ -z "${TARGET_DIR}" ]; then
 fi
 # validate TARGET_DIR
 component_path=${TARGET_DIR}/${COMPONENT_NAME}
-if [ -e "${component_path}" ]; then
-else
+if [ ! -e "${component_path}" ]; then
     error_handler "${component_path} does not exist."
 fi
 if [ "${IS_ZOWE_CORE}" = "false" ]; then
