@@ -863,8 +863,14 @@ fi    #
 # append next csplit block (xx09 holds HOLD placeholder)
 _cmd --save $log/$html cat $ptf/xx10
 
-# add list of PRE sysmods (replace , with blank so broswer can reformat)
-_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.PRE
+# add list of previous PTFs or #pre placeholder to sample ACCEPT job
+if test -f $service/$prevPtf
+then
+  _cmd --save $log/$html cat $service/$prevPtf
+else  # no previous PTFs, put the original placeholder back
+  _cmd --save $log/$html cat $ptf/xx11
+fi    # 
+#_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.PRE
 
 # append next csplit block (xx11 holds PRE placeholder)
 _cmd --save $log/$html cat $ptf/xx12
