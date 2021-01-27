@@ -24,7 +24,7 @@ shift $(($OPTIND-1))
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 
 # Get the log directory either from -l, or from default locations setting INSTALL_LOG_DIR
-. ${ROOT_DIR}/bin/utils/setup-log-dir.sh
+. ${ROOT_DIR}/bin/utils/utils.sh
 get_install_log_directory "${INSTALL_LOG_DIR}"
 
 RUNTIME_LOG_DIR=${INSTANCE_DIR}/logs
