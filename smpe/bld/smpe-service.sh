@@ -870,7 +870,6 @@ then
 else  # no previous PTFs, put the original placeholder back
   _cmd --save $log/$html cat $ptf/xx11
 fi    # 
-#_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.PRE
 
 # append next csplit block (xx11 holds PRE placeholder)
 _cmd --save $log/$html cat $ptf/xx12
