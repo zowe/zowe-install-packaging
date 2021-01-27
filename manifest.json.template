@@ -76,7 +76,6 @@
     "org.zowe.apiml.sdk.api-catalog-package": {
       "version": "1.20.0-PR-1104-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
-      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.discovery-package": {
       "version": "~1.20.0-SNAPSHOT",
