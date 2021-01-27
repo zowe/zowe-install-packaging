@@ -166,7 +166,9 @@ Password:</I> <STRONG>tsopw</STRONG>
 //SMPCNTL  DD *
    SET BOUNDARY(<STRONG>#dzone</STRONG>) .
    ACCEPT SELECT(
+<!--cut11-->
 #pre
+<!--cut12-->
    ) REDO COMPRESS(ALL) BYPASS(HOLDSYS,HOLDERROR).
 //*
   </PRE>
@@ -191,9 +193,9 @@ Password:</I> <STRONG>tsopw</STRONG>
 //RECEIVE  EXEC PGM=GIMSMP,REGION=0M
 //SMPCSI   DD DISP=OLD,DSN=&CSI
 //SMPPTFIN DD DISP=SHR,DSN=&HLQ..#name1
-<!--cut11-->
+<!--cut13-->
 #dsnreq
-<!--cut12-->
+<!--cut14-->
 //SMPCNTL  DD *
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT(

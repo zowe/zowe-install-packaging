@@ -863,6 +863,12 @@ fi    #
 # append next csplit block (xx09 holds HOLD placeholder)
 _cmd --save $log/$html cat $ptf/xx10
 
+# add list of PRE sysmods (replace , with blank so broswer can reformat)
+_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.PRE
+
+# append next csplit block (xx11 holds PRE placeholder)
+_cmd --save $log/$html cat $ptf/xx12
+
 # add a requisite data set names to RECEIVE SMPPTFIN (sysmod 2 and up)
 test "$debug" && echo "while read -r trk name"
 while read -r trk name
@@ -873,8 +879,8 @@ do
   _cmd --save $log/$html echo "//         DD DISP=SHR,DSN=&HLQ..$name"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 
-# append next csplit block (xx11 holds DSN placeholder)
-_cmd --save $log/$html cat $ptf/xx12
+# append next csplit block (xx13 holds DSN placeholder)
+_cmd --save $log/$html cat $ptf/xx14
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
