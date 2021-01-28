@@ -775,13 +775,13 @@ done    # for f
 test -f $ptf/$readme.PRE || _cmd --save $ptf/$readme.PRE echo none
 test -f $ptf/$readme.SUP || _cmd --save $ptf/$readme.SUP echo none
 
-# add list of PRE sysmods (replace , with blank so broswer can reformat)
+# add list of PRE sysmods (replace , with blank so browser can reformat)
 _cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.PRE
 
 # append next csplit block (xx01 holds PRE placeholder)
 _cmd --save $log/$html cat $ptf/xx02
 
-# add list of SUP sysmods (replace , with blank so broswer can reformat)
+# add list of SUP sysmods (replace , with blank so browser can reformat)
 _cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.SUP
 
 # append next csplit block (xx03 holds SUP placeholder)
@@ -855,6 +855,7 @@ then
   SED=""           # substitute characters with special meaning in HTML
   SED="$SED;s~<~\&lt;~g"   # we assume there is no "~" in the hold data
   SED="$SED;s~>~\&gt;~g"
+  SED="$SED;s~&~\&amp;~g"
   _cmd --save $log/$html sed "$SED" $ptf/tmp
 else
   _cmd --save $log/$html echo none
@@ -862,6 +863,22 @@ fi    #
 
 # append next csplit block (xx09 holds HOLD placeholder)
 _cmd --save $log/$html cat $ptf/xx10
+
+# add list of previous PTFs or #pre placeholder to sample ACCEPT job
+if test -f $service/$prevPtf
+then
+  # replace placeholder with list of previous PTFs
+  _cmd cp $service/$prevPtf $ptf/xx11
+  # create formatted $ptf/$readme.ACPT (ignore updates to $ptf/xx11)
+  _formatPreSupReq ACPT $ptf/xx11
+else  # no previous PTFs, stage the original placeholder
+  _cmd cp $ptf/xx11 $ptf/$readme.ACPT
+fi    # 
+# add list or placeholder (replace , with blank so browser can reformat)
+_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.ACPT
+
+# append next csplit block (xx11 holds PRE placeholder)
+_cmd --save $log/$html cat $ptf/xx12
 
 # add a requisite data set names to RECEIVE SMPPTFIN (sysmod 2 and up)
 test "$debug" && echo "while read -r trk name"
@@ -873,8 +890,8 @@ do
   _cmd --save $log/$html echo "//         DD DISP=SHR,DSN=&HLQ..$name"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 
-# append next csplit block (xx11 holds DSN placeholder)
-_cmd --save $log/$html cat $ptf/xx12
+# append next csplit block (xx13 holds DSN placeholder)
+_cmd --save $log/$html cat $ptf/xx14
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
@@ -903,7 +920,7 @@ _sed $log/$html
 
 # no longer needed
 _cmd rm -f $ptf/$tracksCoreq  $ptf/$readme $ptf/xx*  $ptf/tmp
-_cmd rm -f $ptf/$readme.PRE   $ptf/$readme.SUP
+_cmd rm -f $ptf/$readme.PRE   $ptf/$readme.SUP       $ptf/$readme.ACPT
 
 test "$debug" && echo "< _readme"
 }    # _readme
