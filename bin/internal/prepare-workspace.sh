@@ -99,7 +99,9 @@ validate_components() {
       validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
       if [ -z "${validate_script}" -o "${validate_script}" = "null" ]; then
         # backward compatible purpose
-        print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
+        if [ $(is_core_component "${component_dir}") != "true" ]; then
+          print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
+        fi
         validate_script=bin/validate.sh
       fi
       if [ -x "${validate_script}" ]; then
@@ -195,7 +197,9 @@ configure_components() {
       configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
       if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then
         # backward compatible purpose
-        print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
+        if [ $(is_core_component "${component_dir}") != "true" ]; then
+          print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
+        fi
         configure_script=bin/configure.sh
       fi
       if [ -x "${configure_script}" ]; then
