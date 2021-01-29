@@ -58,6 +58,21 @@ find_component_directory() {
 }
 
 ###############################
+# Check if component is core component
+#
+# Required environment variables:
+# - ROOT_DIR
+#
+# @param string     component directory
+# Output            true|false
+is_core_component() {
+  component_dir=$1
+
+  core_component_dir=${ROOT_DIR}/components
+  [[ $component_dir == "${core_component_dir}"* ]] && echo true || echo false
+}
+
+###############################
 # Detect and verify file encoding
 #
 # This function will try to verify file encoding by reading sample string.
