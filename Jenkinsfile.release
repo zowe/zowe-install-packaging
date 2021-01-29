@@ -589,7 +589,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         sh publishCommands +
           "export DOCKER_CLI_EXPERIMENTAL=enabled\n" +
           "docker manifest create ompzowe/server-bundle:latest ${manifestAmends}\n" +
-          "docker manifest push ompzowe/server-bundle:latest" +
+          "docker manifest push ompzowe/server-bundle:latest\n" +
           "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
           "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
       }
@@ -613,6 +613,24 @@ SMP/e build:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['smpe-zip']['target']}
 
 """
+
+def dockeramd64Message = ''
+      if (releaseArtifacts['docker-amd64'] && releaseArtifacts['docker-amd64']['target']) {
+dockeramd64Message = """
+
+docker amd64 image:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['docker-amd64']['target']}
+
+"""
+
+def dockers390xMessage = ''
+      if (releaseArtifacts['docker-s390x'] && releaseArtifacts['docker-s390x']['target']) {
+dockers390xMessage = """
+
+docker s390x image:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['docker-s390x']['target']}
+
+"""
       }
 
       def successMsg = """
@@ -622,6 +640,8 @@ ${source} is promoted as Zowe v${params.ZOWE_RELEASE_VERSION}, you can download 
 
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['zowe']['target']}
 ${smpeMessage}
+${dockeramd64Message}
+${dockers390xMessage}
 The CLI Core Package is published here:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
 

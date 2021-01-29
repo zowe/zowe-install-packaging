@@ -9,3 +9,13 @@
   - opercmd.rexx
   - show_job_log.rexx
   - list_jobs.rexx
+
+# OPT={0|1|2} Specifies the action JES2 takes when a job exceeds the estimated number of output lines as specified by the NUM= parameter.
+# 0 Job is allowed to continue execution. 1 Job is cancelled without a dump. 2 Job is cancelled with a dump (if a dump was coded for this job step)
+- name: Set default JES2PARM ESTLNCT OPT to 0
+  import_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: "$T ESTLNCT,OPT=0"
+  ignore_errors: yes

@@ -89,6 +89,44 @@ describe('verify utils/common', function() {
     }
   });
 
+  const print_and_log_message = 'print_and_log_message';
+  describe(`verify ${print_and_log_message}`, function() {
+
+    it('test log message with no log_file', async function() {
+      const message = 'Log this';
+      await test_print_and_log_message(message, message);
+    });
+
+    describe('with a log file created', async function() {
+      const temp_dir = '~/delete_1234';
+      const log_file = `${temp_dir}/log.txt`;
+      before('create log file', async function() {
+        await sshHelper.executeCommandWithNoError(`mkdir -p ${temp_dir} && touch ${log_file} && chmod u+w ${log_file}`);
+      });
+
+      after('dispose dummy node', async function() {
+        await sshHelper.executeCommandWithNoError(`rm -rf ${temp_dir}`);
+      });
+
+      it('test log message with log_file', async function() {
+        const message = 'Log this';
+        await test_print_and_log_message(message, message, log_file);
+      });
+    });
+
+    async function test_print_and_log_message(message, expected_out, log_file = '') {
+      const command = `${print_and_log_message} "${message}"`;
+      if (log_file == '') {
+        await test_common_function_has_expected_rc_stdout_stderr(command, {}, { stdout: expected_out });
+      } else {
+        //Check stdout
+        await test_common_function_has_expected_rc_stdout_stderr(command, { 'LOG_FILE': log_file }, { stdout: expected_out });
+        //Check log content
+        await test_common_function_has_expected_rc_stdout_stderr(`cat ${log_file}`, {}, { stdout: expected_out });
+      }
+    }
+  });
+
   const runtime_check_for_validation_errors_found = 'runtime_check_for_validation_errors_found';
   describe(`verify ${runtime_check_for_validation_errors_found}`, function() {
 
