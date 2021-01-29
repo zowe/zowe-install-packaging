@@ -38,7 +38,7 @@
   block:
   - name: Update zowe_extension_filename from zowe_ext_local
     set_fact:
-      zowe_extension_filname: "zowe-ext-{{ zowe_ext_url.split('/')[-1] }}"
+      zowe_extension_filename: "zowe-ext-{{ zowe_ext_local.split('/')[-1] }}"
       
   - name: Download zowe extension from local if zowe_ext_local exists
     copy:

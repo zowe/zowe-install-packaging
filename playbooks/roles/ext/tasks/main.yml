@@ -28,7 +28,7 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./zowe-install-component.sh
-    script_parameters: "-d \"{{ zowe_extension_dir }}\" -i \"{{ zowe_instance_dir }}\" -o \"{{ work_dir_remote }}/{{ filename_to_upload }}\" -l \"{{ zowe_logs_dir }}\""
+    script_parameters: "-d \"{{ zowe_extension_dir }}\" -i \"{{ zowe_instance_dir }}\" -o \"{{ work_dir_remote }}/{{ zowe_extension_filename }}\" -l \"{{ zowe_logs_dir }}\""
 
 # ============================================================================
 # Display logs
