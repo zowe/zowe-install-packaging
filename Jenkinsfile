@@ -208,18 +208,21 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
           sshCommand remote: Z_SERVER, command: \
           """
-             mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
-             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER} &&
-             git clone --branch ${env.BRANCH_NAME} https://github.com/zowe/zowe-install-packaging.git
-             cd zowe-install-packaging/containers/server-bundle &&
+             mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
+          """
+          sshPut remote: Z_SERVER, from: "containers", into: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}"
+          sshCommand remote: Z_SERVER, command: \
+          """
+             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../utils/* ./utils &&
+             chmod +x ./utils/*.sh ./utils/*/bin/* &&
              sudo docker build --build-arg BUILD_PLATFORM=s390x -t ompzowe/server-bundle:s390x . &&
              sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x &&
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.s390x.tar
           """
-          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/zowe-install-packaging/containers/server-bundle/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
           pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
           sshCommand remote: Z_SERVER, command: \
           """
