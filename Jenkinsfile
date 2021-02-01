@@ -17,7 +17,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def manifest
   def zowePaxUploaded
 
-  pipeline.admins.add("jackjia", "stevenh", "joewinchester", "markackert")
+  pipeline.admins.add("jackjia", "tomzhang", "joewinchester", "markackert")
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
