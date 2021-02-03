@@ -204,7 +204,10 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
 
       // upgrade npm
-      nvmShell params.CLIENT_NODE_VERSION, "npm install -g npm"
+      // removed due to incompatible issue, npm@7.5.2 requires node v10
+      // npm WARN notsup Unsupported engine for npm@7.5.2: wanted: {"node":">=10"} (current: {"node":"8.17.0","npm":"6.14.11"})
+      // npm WARN notsup Not compatible with your version of node/npm: npm@7.5.2
+      // nvmShell params.CLIENT_NODE_VERSION, "npm install -g npm"
     }
   )
 
