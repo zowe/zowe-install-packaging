@@ -48,6 +48,24 @@
   loop: "{{ zowe_ptf_install_jcls }}"
 
 # ============================================================================
+# is the PTF already installed?
+- import_role:
+    name: ptf
+    tasks_from: is_ptf_installed
+  vars:
+    smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
+    # we hardcoded TZONE name
+    smpe_tzone: TZONE
+    smpe_fmid: "{{ zowe_smpe_fmid }}"
+    ptfs:
+    - "{{ zowe_smpe_ptf }}"
+
+- name: Overwrite PTF install steps if PTF is already installed
+  set_fact:
+    zowe_smpe_ptf_install_steps: "{{ zowe_smpe_ptf_overwrite_steps }}"
+  when: ptfs_existence[zowe_smpe_ptf]
+
+# ============================================================================
 # Run install-SMPE-SYSMOD.sh to install Zowe SMPE FMID
 - name: Prepare install-SMPE-SYSMOD.sh
   template:
