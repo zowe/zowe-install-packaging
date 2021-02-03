@@ -66,7 +66,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       test_files: 'dist/__tests__/basic/install-docker.js',
     ],
     'install smpe ptf 2 times': [
-      test_files: 'dist/__tests__/extended/ptf/install-ptf-two-times.ts',
+      test_files: 'dist/__tests__/extended/ptf/install-ptf-two-times.js',
     ],
     'bundle: multiple node versions': [
       test_files: 'dist/__tests__/extended/node-versions/',
