@@ -232,10 +232,12 @@ node('zowe-jenkins-agent-dind-wdc') {
           echo ">>> Found SMP/e promote tar ${smpePtfPromote['path']}."
           smpePtfPromoteTarPath = smpePtfPromote['path']
         } catch (e2) {
-          echo ">>> no SMP/e promote tar found in the build."
+          echo ">>> no SMP/e promote tar found in the build, throwing error and exit"
+          error "no SMP/e promote tar found in the build"
         }
       } catch (e1) {
-        echo ">>> no SMP/e zip found in the build."
+        echo ">>> no SMP/e zip found in the build, throwing error and exit"
+        error "no SMP/e zip found in the build"
       }
 
       // get Docker images - amd64
