@@ -35,7 +35,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def testSmpeBuildErrorUrl
   def testDockerBuildErrorUrl
   def testMultipleNodeErrorUrl
-  def testMultipleKeystoreErrorUrl
+  def testMultipleKeyringErrorUrl
 
   def targetSmpeFullPath
   def targetRegFullPath
@@ -430,7 +430,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   )
 
   pipeline.test(
-    name              : "Zowe Multiple Keystore Modes Build",
+    name              : "Zowe Multiple Keyring Modes Build",
     shouldExecute : {
       return fullTestRun && sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
@@ -438,7 +438,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
-             "TEST_SCOPE: bundle: multiple keystore modes\n" +
+             "TEST_SCOPE: bundle: multiple keyring modes\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
@@ -452,7 +452,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: multiple keystore modes'),
+          string(name: 'TEST_SCOPE', value: 'bundle: multiple keyring modes'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
@@ -473,8 +473,8 @@ node('zowe-jenkins-agent-dind-wdc') {
           )
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
-          testMultipleKeystoreErrorUrl = test_result.absoluteUrl
-          echo "Test failed on multiple keystore modes build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          testMultipleKeyringErrorUrl = test_result.absoluteUrl
+          echo "Test failed on multiple keyring modes build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
         }
       }
@@ -572,11 +572,11 @@ node('zowe-jenkins-agent-dind-wdc') {
                   testMultipleNodeErrorUrl + "\n"
       }
 
-      if (testMultipleKeystoreErrorUrl) {
+      if (testMultipleKeyringErrorUrl) {
         slackColor = 'warning'
         message = message + "\n\n" +
-                  "!!WARNING!! Smoke test FAILED on the multiple keystore modes build! Check test result here: " +
-                  testMultipleKeystoreErrorUrl + "\n"
+                  "!!WARNING!! Smoke test FAILED on the multiple keyring modes build! Check test result here: " +
+                  testMultipleKeyringErrorUrl + "\n"
       }
 
       echo "*************************************************************************************************\n" +
