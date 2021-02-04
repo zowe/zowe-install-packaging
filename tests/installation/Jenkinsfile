@@ -89,7 +89,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       jenkins_primary_lock: 'marist',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
-    'bundle: multiple keyring modes': [
+    'bundle: keyring on multiple security systems': [
       test_files: 'dist/__tests__/extended/keyring-modes/',
       jenkins_primary_lock: 'marist',
     ],

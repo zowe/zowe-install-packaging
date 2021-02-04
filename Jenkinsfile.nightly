@@ -63,10 +63,10 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   // get the day of the week
   def currentDayofWeek = sh(script: 'date +"%a"', returnStdout: true).trim()
-  def fullTestRun
+  boolean fullTestRun = false
   // only run full test suite on Saturdays
   if (currentDayofWeek.equals('Sat')) {
-    fullTestRun = 'true'
+    fullTestRun = true
   }
 
   pipeline.setup(
@@ -438,7 +438,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
-             "TEST_SCOPE: bundle: multiple keyring modes\n" +
+             "TEST_SCOPE: bundle: keyring on multiple security systems\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
@@ -452,7 +452,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: multiple keyring modes'),
+          string(name: 'TEST_SCOPE', value: 'bundle: keyring on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
