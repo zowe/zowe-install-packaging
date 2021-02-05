@@ -7,7 +7,7 @@
 
 **TL;DR**:
 ```sh
-docker pull ompzowe/server-bundle:amd64
+docker pull ompzowe/server-bundle:latest
 export DISCOVERY_PORT=7553
 export GATEWAY_PORT=7554
 export APP_SERVER_PORT=8544
@@ -32,28 +32,31 @@ docker run -it \
     --env DISCOVERY_PORT=${DISCOVERY_PORT} \
     --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
     --mount type=bind,source=c:\temp\certs,target=/home/zowe/certs \
-    ompzowe/server-bundle:amd64
+    ompzowe/server-bundle:latest
 ```
 Open browser and test it
  - API Mediation Layer: https://myhost.acme.net:7554
  - App Framework: https://myhost.acme.net:8544
 
 ## Building docker image
+Within this directory are several dockerfiles that have different purposes
+* Dockerfile.nodejava: This is used to build an image with prereqs to cut down on build time of the main image. Build this whenever you want to update or change the prereqs
+* Dockerfile: This is used to build the server-bundle image
+* Dockerfile.sources: This is used if you want the server-bundle image with source code of dependencies included
+
 ### Building docker image on Linux
-Navigate to any subfolder of zowe-release for your computer architecture, such as s390x for zlinux or amd64 for intel linux.
-For example, with an intel linux machine, to build v1 LTS you can execute:
+This folder and associated utils folder contains the scripts needed to build. Simply execute:
 ```sh
-cd dockerfiles/zowe-release/amd64/server-bundle
+cd zowe-install-packaging/containers/server-bundle
 mkdir utils
 cp -r ../utils/* ./utils
 docker build -t zowe/docker:latest .
 ```
 
 ### Building docker image on Windows
-Navigate to any subfolder of zowe-release/amd64.
-For example, to build v1 LTS you can execute:
+This folder and associated utils folder contains the scripts needed to build. Simply execute:
 ```powershell
-cd dockerfiles/zowe-release/amd64/server-bundle
+cd zowe-install-packaging/containers/server-bundle
 mkdir utils
 copy ..\utils\* utils
 docker build -t zowe/docker:latest .
@@ -80,7 +83,7 @@ docker build -t zowe/docker:latest .
 For example:
 
 ```cmd
-DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=8544 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_https_port=8542 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/home/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/home/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:amd64
+DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=8544 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_http_port=8542 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/root/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/root/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:latest
 ```
 Note: External certificates are optional and should not be included in the start command if undesired.
 
@@ -136,7 +139,7 @@ docker run -it ^
     --env DISCOVERY_PORT=%DISCOVERY_PORT% ^
     --env ZOWE_ZLUX_SERVER_HTTPS_PORT=%APP_SERVER_PORT% ^
     --mount type=bind,c:\workspaces\ZooTainers-Hackathon2019\certs,target=/home/zowe/certs ^
-    ompzowe/server-bundle:amd64
+    ompzowe/server-bundle:latest
 ```
 
 ### Linux
@@ -163,7 +166,7 @@ docker run -it \
     --env DISCOVERY_PORT=${DISCOVERY_PORT} \
     --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
     --mount type=bind,source=c:\temp\certs,target=/home/zowe/certs \
-    ompzowe/server-bundle:amd64
+    ompzowe/server-bundle:latest
 ```
 
 #### Expected output
@@ -211,7 +214,7 @@ docker run -it \
     --env DISCOVERY_PORT=${DISCOVERY_PORT} \
     --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
 	-v ~/apps:/home/zowe/apps:rw \
-    ompzowe/server-bundle:amd64 $@
+    ompzowe/server-bundle:latest $@
 ```
 
 By default, external plugins in the ```/home/zowe/apps``` folder will be installed at start up.
