@@ -65,7 +65,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def currentDayofWeek = sh(script: 'date +"%a"', returnStdout: true).trim()
   boolean fullTestRun = false
   // only run full test suite on Saturdays
-  if (currentDayofWeek.equals('Fri')) {
+  if (currentDayofWeek.equals('Sat')) {
     fullTestRun = true
   }
 
