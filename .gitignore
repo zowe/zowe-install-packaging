@@ -22,6 +22,11 @@ tmp/
 !.pax/pre-packaging.sh
 !.pax/post-packaging.sh
 !.pax/prepare-workspace.sh
+!.pax/catchall-packaging.sh
+
+# build temporary files
+manifest.json
+artifactory-download-spec.json
 
 # zowe jobs output
 output/
