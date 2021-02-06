@@ -152,10 +152,14 @@ ZWEXMP00=ZWESIP00  # for ZWESIS01
     echo "Using SAMPLIB member ${samplib}(${ZWEXMP00})" | tee -a ${LOG_FILE}
   else
     echo "Copying SAMPLIB member ${ZWEXMP00}" | tee -a ${LOG_FILE}
-    if cp "//'${samplib}(${ZWEXMP00})'"  "//'${parmlib}(${ZWEXMP00})'"
-    then
+    cp_stdout=$(cp "//'${samplib}(${ZWEXMP00})'"  "//'${parmlib}(${ZWEXMP00})'" 2>&1)
+    cp_rc=$?
+    if [ "${cp_rc}" = "0" ]; then
       echo "Info:  member ${ZWEXMP00} has been successfully copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
       # rc=0
+    elif [[ $cp_stdout = FSUM8977* ]]; then
+      # FSUM8977 cp: source "//'.SZWESAMP(ZWESIP00)'" and target "//'.PARMLIB(ZWESIP00)'" are identical
+      echo "Info:  same member ${ZWEXMP00} already exists in dataset ${parmlib}" | tee -a ${LOG_FILE}
     else
       echo "Error:  member ${ZWEXMP00} has not been copied to dataset ${parmlib}" | tee -a ${LOG_FILE}
       echo "Check if PARMLIB dataset ${parmlib} is in use by xmem server or another job or user" | tee -a ${LOG_FILE}
