@@ -116,25 +116,28 @@ function wrap_call {
 
 # Clean up sysmod data sets
 wrap_call tsocmd delete "'${hlq}.ZOWE.${FMID}.$SYSMOD1'"
-wrap_call tsocmd delete "'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
+if [ -n "${SYSMOD2}" ]; then
+    wrap_call tsocmd delete "'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
+fi
 
 echo "Before sysmod1 allocate:"
 wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD1'" history status members
-wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+if [ -n "${SYSMOD2}" ]; then
+    wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+fi
 
 csidsn=$csihlq.CSI
 
-for FMIDpath in \
-    $download_path/ZOWE.$FMID.$SYSMOD1            \
-    $download_path/ZOWE.$FMID.$SYSMOD2  
-#  ignore   $download_path/ZOWE.$FMID.$SYSMOD1.readme.htm  for now
-do
-    if [[ ! -r $FMIDpath ]]
-    then
-        echo $SCRIPT ERROR: file $FMIDpath is missing or not readable
-        exit 1
-    fi
-done
+if [[ ! -r "$download_path/ZOWE.$FMID.$SYSMOD1" ]]
+then
+    echo $SCRIPT ERROR: file $SYSMOD1 is missing or not readable
+    exit 1
+fi
+if [[ ( "$SYSMOD2" != "" ) && ( ! -r "$download_path/ZOWE.$FMID.$SYSMOD2" ) ]]
+then
+    echo $SCRIPT ERROR: file $SYSMOD2 is missing or not readable
+    exit 1
+fi
 
 operdir=$SCRIPT_DIR         # this is where opercmd.rexx should be available
 
@@ -359,22 +362,30 @@ do
         echo script $SCRIPT copying USS sysmod files to datasets
         echo "Before sysmod1 copies:"
         wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD1'" history status members
-        wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+        if [ -n "${SYSMOD2}" ]; then
+            wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+        fi
         echo "uss sysmod 1: $(ls -al $download_path/ZOWE.$FMID.$SYSMOD1)"
-        echo "uss sysmod 2: $(ls -al $download_path/ZOWE.$FMID.$SYSMOD2)"
+        if [ -n "${SYSMOD2}" ]; then
+            echo "uss sysmod 2: $(ls -al $download_path/ZOWE.$FMID.$SYSMOD2)"
+        fi
         cp -B $download_path/ZOWE.$FMID.$SYSMOD1 "//'${hlq}.ZOWE.${FMID}.$SYSMOD1'"
         if [[ $? -ne 0 ]]; then
-          echo $SCRIPT ERROR: copy $SYSMOD1 failed
-          exit 3
+            echo $SCRIPT ERROR: copy $SYSMOD1 failed
+            exit 3
         fi
-        cp -B $download_path/ZOWE.$FMID.$SYSMOD2 "//'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
-        if [[ $? -ne 0 ]]; then
-          echo $SCRIPT ERROR: copy $SYSMOD2 failed
-          exit 3
+        if [ -n "${SYSMOD2}" ]; then
+            cp -B $download_path/ZOWE.$FMID.$SYSMOD2 "//'${hlq}.ZOWE.${FMID}.$SYSMOD2'"
+            if [[ $? -ne 0 ]]; then
+                echo $SCRIPT ERROR: copy $SYSMOD2 failed
+                exit 3
+            fi
         fi
         echo "After sysmod copy:"
         wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD1'" history status members
-        wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+        if [ -n "${SYSMOD2}" ]; then
+            wrap_call tsocmd listds "'${hlq}.ZOWE.${FMID}.$SYSMOD2'" history status members
+        fi
         echo script $SCRIPT copy complete
     fi
 

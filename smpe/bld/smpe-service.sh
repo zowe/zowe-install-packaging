@@ -617,7 +617,7 @@ do
   # TODO rework when +8 REQ sysmods
   SED=""
   SED="$SED;s/#SySmOdNaMe/$sysmodName/"
-  SED="$SED;s/^#req$/$req/"
+  SED="$SED;s~^#req$~$req~"                 # $req can be "/* REQ() */"
   _sedMVS -s $header "$SYSMOD"
 
   # prime merge JCL

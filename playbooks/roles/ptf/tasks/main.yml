@@ -18,7 +18,8 @@
     - zowe_smpe_hlq_csi
     - zowe_smpe_fmid
     - zowe_smpe_ptf
-    - zowe_smpe_ptf_2
+    # it's possible we only have 1 PTF
+    # - zowe_smpe_ptf_2
 
 - name: Prepare extracted and tmp folders
   raw: >-
@@ -47,6 +48,43 @@
     file_upload_hashcheck: false
   loop: "{{ zowe_ptf_install_jcls }}"
 
+- name: Fix JCLs is we only have 1 PTF
+  when: zowe_smpe_ptf_2 == ""
+  block:
+  - name: Fix Z1ALLOC
+    raw: >-
+      cat "{{ work_dir_remote }}/Z1ALLOC.jcl" | \
+      sed -e '/TMP0002/{N;N;N;N;N;N;N;N;d;}' | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z1ALLOC.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z1ALLOC.jcl.tmp" "{{ work_dir_remote }}/Z1ALLOC.jcl"
+  - name: Fix Z3RECEIV
+    raw: >-
+      cat "{{ work_dir_remote }}/Z3RECEIV.jcl" | \
+      sed -e '/sysmod2/d' | \
+      sed -e '/SYSMOD2/d' \
+      > "{{ work_dir_remote }}/Z3RECEIV.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z3RECEIV.jcl.tmp" "{{ work_dir_remote }}/Z3RECEIV.jcl"
+  - name: Fix Z4APPLY
+    raw: >-
+      cat "{{ work_dir_remote }}/Z4APPLY.jcl" | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z4APPLY.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z4APPLY.jcl.tmp" "{{ work_dir_remote }}/Z4APPLY.jcl"
+  - name: Fix Z6REST
+    raw: >-
+      cat "{{ work_dir_remote }}/Z6REST.jcl" | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z6REST.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z6REST.jcl.tmp" "{{ work_dir_remote }}/Z6REST.jcl"
+  - name: Fix Z8DEALOC
+    raw: >-
+      cat "{{ work_dir_remote }}/Z8DEALOC.jcl" | \
+      sed -e '/TMP0002/{N;N;d;}' | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z8DEALOC.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z8DEALOC.jcl.tmp" "{{ work_dir_remote }}/Z8DEALOC.jcl"
+
 # ============================================================================
 # Run install-SMPE-SYSMOD.sh to install Zowe SMPE FMID
 - name: Prepare install-SMPE-SYSMOD.sh
@@ -74,12 +112,29 @@
     smpe_fmid: "{{ zowe_smpe_fmid }}"
     ptfs:
     - "{{ zowe_smpe_ptf }}"
+
+- import_role:
+    name: ptf
+    tasks_from: is_ptf_installed
+  when: zowe_smpe_ptf_2 != ""
+  vars:
+    smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
+    # we hardcoded TZONE name
+    smpe_tzone: TZONE
+    smpe_fmid: "{{ zowe_smpe_fmid }}"
+    ptfs:
     - "{{ zowe_smpe_ptf_2 }}"
 
-- name: Validate if PTFs are installed properly
+- name: Validate if the first PTF are installed properly
   fail:
     msg: "PTF {{ item }} is not installed"
   when: not ptfs_existence[item]
   loop: 
   - "{{ zowe_smpe_ptf }}"
+
+- name: Validate if the second PTF is installed properly
+  fail:
+    msg: "PTF {{ item }} is not installed"
+  when: zowe_smpe_ptf_2 != "" and not ptfs_existence[item]
+  loop: 
   - "{{ zowe_smpe_ptf_2 }}"
