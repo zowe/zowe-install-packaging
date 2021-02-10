@@ -279,7 +279,6 @@ ZWEXMP00=ZWESIP00  # for ZWESIS01
       fi
     else
       echo "PARMLIB ${parmlib} member ${ZWEXMP00} doesn't exist" | tee -a ${LOG_FILE}
-      echo "TSO listds command output (rc=${cmd_rc}):\n${cmd_output}" | tee -a ${LOG_FILE}
     fi
 
     echo "Copying SAMPLIB member ${ZWEXMP00}" | tee -a ${LOG_FILE}
