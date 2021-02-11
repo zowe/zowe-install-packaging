@@ -10,7 +10,7 @@
 
 const { expect } = require('chai');
 const sshHelper = require('../ssh-helper');
-const debug = require('debug')('zowe-sanity-test:utils-scripts:component-utils');
+// const debug = require('debug')('zowe-sanity-test:utils-scripts:component-utils');
 
 describe('verify utils/component-utils', function() {
   let TMP_DIR;
