@@ -91,7 +91,7 @@ prepare_workspace_dir() {
   # Make accessible to group so owning user can edit?
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
   if [ "$?" != "0" ]; then
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "instance workspace directory permission is not setup correctly"
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
     print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
   fi
 
@@ -202,6 +202,10 @@ configure_components() {
     if [ -n "${component_dir}" ]; then
       cd "${component_dir}"
 
+      # prepare component workspace
+      component_name=$(basename "${component_dir}")
+      mkdir -p "${WORKSPACE_DIR}/${component_name}"
+
       # backward compatible purpose, some may expect this variable to be component lifecycle directory
       export LAUNCH_COMPONENT="${component_dir}/bin"
 
@@ -240,7 +244,9 @@ configure_components() {
       fi
       if [ -x "${configure_script}" ]; then
         print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* process ${component_id} configure command ..."
-        result=$(. ${configure_script})
+        # execute configure step and snapshot environment
+        # FIXME: .env should be attached with HA instance id
+        result=$(. ${configure_script} ; rc=$? ; env > "${WORKSPACE_DIR}/${component_name}/.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -270,7 +276,12 @@ configure_components
 #        to delete the instance directory and can cause errors on upgrade
 if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
 then
-  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
-  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/*
+  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig 1> /dev/null 2> /dev/null
+  chmod_rc1=$?
+  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/* 1> /dev/null 2> /dev/null
+  chmod_rc2=$?
+  if [ "${chmod_rc1}" != "0" -o "${chmod_rc2}" != "0" ]; then
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "permission of app-server workspace directory (${WORKSPACE_DIR}/app-server/serverConfig) is not setup correctly"
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+  fi
 fi
-

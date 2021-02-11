@@ -77,6 +77,23 @@ validate_zowe_prefix() {
   fi
 }
 
+# source .env file
+source_env() {
+  env_file=$1
+
+  while read -r line; do
+    # skip comments
+    test -z "${line%%#*}" && continue
+    key=${line%%=*}
+    val=${line#*=}
+    if [[ "$val" == \'* || "$val" == \"* ]]; then
+      eval "export ${key}=${val}"
+    else
+      eval "export ${key}='${val}'"
+    fi
+  done < $env_file
+}
+
 # return value of a variable defined in zowe instance env
 read_zowe_instance_variable() {
   variable_name=$1
