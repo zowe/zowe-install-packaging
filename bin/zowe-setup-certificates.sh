@@ -22,7 +22,7 @@
 function detectExternalRootCA {
   echo "Detecting external root CA... STARTED"
   if [[ -z "${ZOWE_KEYRING}" ]]; then
-    for file in "${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/extca.*.cer-ebcdic"; do
+    for file in "${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}"/extca.*.cer-ebcdic; do
       if [[ ! -f ${file} ]]; then
         break;
       fi
@@ -200,13 +200,13 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
   fi
 else
   EXT_CA_PARM=""
-  for CA in "${EXTERNAL_CERTIFICATE_AUTHORITIES}"; do
+  for CA in ${EXTERNAL_CERTIFICATE_AUTHORITIES}; do
       EXT_CA_PARM="${EXT_CA_PARM} --external-ca ${CA} "
   done
 
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-password "${KEYSTORE_PASSWORD}" \
-      --external-certificate "${EXTERNAL_CERTIFICATE}" --external-certificate-alias "${EXTERNAL_CERTIFICATE_ALIAS}" "${EXT_CA_PARM}" \
+      --external-certificate "${EXTERNAL_CERTIFICATE}" --external-certificate-alias "${EXTERNAL_CERTIFICATE_ALIAS}" ${EXT_CA_PARM} \
       --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
       --external-ca-filename ${EXTERNAL_CA_PREFIX}
     RC=$?
