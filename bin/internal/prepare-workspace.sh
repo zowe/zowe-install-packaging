@@ -89,7 +89,11 @@ prepare_workspace_dir() {
 
   mkdir -p ${WORKSPACE_DIR}
   # Make accessible to group so owning user can edit?
-  chmod -R 771 ${WORKSPACE_DIR}
+  chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
+  if [ "$?" != "0" ]; then
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "instance workspace directory permission is not setup correctly"
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+  fi
 
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
   cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
