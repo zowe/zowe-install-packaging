@@ -23,14 +23,7 @@ describe('verify utils/component-utils', function() {
     await sshHelper.prepareConnection();
 
     // retrieve tmp dir on server side
-    let tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMPDIR}"');
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    if (!tmpOnServer) {
-      tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMP}"');
-    }
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    TMP_DIR = tmpOnServer || '/tmp';
-    debug(`TMP_DIR=${TMP_DIR}`);
+    TMP_DIR = await sshHelper.getTmpDir();
     component_runtime_dir = `${TMP_DIR}/${TMP_EXT_DIR}/${dummy_component_name}`;
     component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
   });

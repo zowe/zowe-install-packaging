@@ -125,14 +125,7 @@ describe('verify zowe-variable-utils', function() {
     ].join('\\n').replace(/\n/g, '\\\\\\n').replace(/\r/g, '\\\\r').replace(/\t/g, '\\\\t').replace(/"/g, '\\"');
     before('create test env file', async function() {
       // retrieve tmp dir on server side
-      let tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMPDIR}"');
-      tmpOnServer = tmpOnServer && tmpOnServer.trim();
-      if (!tmpOnServer) {
-        tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMP}"');
-      }
-      tmpOnServer = tmpOnServer && tmpOnServer.trim();
-      TMP_DIR = tmpOnServer || '/tmp';
-      debug(`TMP_DIR=${TMP_DIR}`);
+      TMP_DIR = await sshHelper.getTmpDir();
       debug(`${test_env_file}=${test_env_content}`);
 
       await sshHelper.executeCommandWithNoError(`rm -f ${TMP_DIR}/${test_env_file} && echo "${test_env_content}" > ${TMP_DIR}/${test_env_file}`);
