@@ -148,12 +148,12 @@ function add_external_ca {
     echo "Adding external Certificate Authorities:"
     if [ -n "${EXTERNAL_CA}" ]; then
         I=1
-        for FILE in "${EXTERNAL_CA}"; do
+        for FILE in ${EXTERNAL_CA}; do
             cp -v "${FILE}" "${EXTERNAL_CA_FILENAME}.${I}.cer"
             I=$((I+1))
         done
         if [ `uname` = "OS/390" ]; then
-            for FILENAME in "${EXTERNAL_CA_FILENAME}.*.cer"; do
+            for FILENAME in "${EXTERNAL_CA_FILENAME}".*.cer; do
                 iconv -f ISO8859-1 -t IBM-1047 "${FILENAME}" > "${FILENAME}-ebcdic"
             done
         fi
@@ -525,7 +525,8 @@ function zosmf_jwt_public_key {
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
         -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
-        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service.jar" \
+        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service-lite.jar" \
+        -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
         -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
         org.springframework.boot.loader.PropertiesLauncher \
         https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" "${LOCAL_CA_ALIAS}" \
