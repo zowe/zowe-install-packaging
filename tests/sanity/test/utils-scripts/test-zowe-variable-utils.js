@@ -9,7 +9,7 @@
  */
 
 const sshHelper = require('../ssh-helper');
-const debug = require('debug')('zowe-sanity-test:utils-scripts:zowe-variable-utils');
+
 
 describe('verify zowe-variable-utils', function() {
 
@@ -104,7 +104,7 @@ describe('verify zowe-variable-utils', function() {
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
   });
-
+  
   const read_zowe_instance_variable = 'read_zowe_instance_variable';
   const update_zowe_instance_variable = 'update_zowe_instance_variable';
   describe(`verify ${update_zowe_instance_variable}`, function() {
