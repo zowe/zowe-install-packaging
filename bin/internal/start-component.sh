@@ -76,7 +76,7 @@ if [ -n "${component_dir}" ]; then
   # source environment snapshot created by configure step
   component_name=$(basename "${component_dir}")
   if [ -f "${WORKSPACE_DIR}/${component_name}/.env" ]; then
-    source_env "${WORKSPACE_DIR}/${component_name}/.env"
+    . "${WORKSPACE_DIR}/${component_name}/.env"
   fi
 
   if [ -x "${start_script}" ]; then

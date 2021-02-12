@@ -246,7 +246,7 @@ configure_components() {
         print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
         # FIXME: .env should be attached with HA instance id
-        result=$(. ${configure_script} ; rc=$? ; env > "${WORKSPACE_DIR}/${component_name}/.env" ; return $rc)
+        result=$(. ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${WORKSPACE_DIR}/${component_name}/.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
