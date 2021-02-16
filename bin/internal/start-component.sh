@@ -72,6 +72,13 @@ if [ -z "${start_script}" -o "${start_script}" = "null" ]; then
 fi
 if [ -n "${component_dir}" ]; then
   cd "${component_dir}"
+
+  # source environment snapshot created by configure step
+  component_name=$(basename "${component_dir}")
+  if [ -f "${WORKSPACE_DIR}/${component_name}/.env" ]; then
+    . "${WORKSPACE_DIR}/${component_name}/.env"
+  fi
+
   if [ -x "${start_script}" ]; then
     print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "starting component ${component_id} ..."
     . ${start_script}
