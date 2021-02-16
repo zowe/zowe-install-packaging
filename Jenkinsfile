@@ -287,12 +287,19 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
   def ALL_CAUSES = currentBuild.getBuildCauses()
   def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause')
+  def BRANCHEVENT_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchEventCause')
   def REMOTE_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$RemoteCause')
   def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
   def USERID_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
 
   def autotesting_enable
-  echo "Current build is caused by $ALL_CAUSES"
+  echo "DEBUG: Current build is caused by $ALL_CAUSES"
+  echo "DEBUG: BIC is $BRANCHINDEXING_CAUSE"
+  echo "DEBUG: BEC is $BRANCHEVENT_CAUSE"
+  echo "DEBUG: RC is $REMOTE_CAUSE"
+  echo "DEBUG: USC is $UPSTREAM_CAUSE"
+  echo "DEBUG: UC is $USERID_CAUSE"
+
   // could be from one of
   // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
   // $REMOTE_CAUSE"          triggered by a remote request
@@ -302,7 +309,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // enable automatic testing when a specific jenkins user starts the job
       autotesting_enable = true
   }
-  else if (BRANCHINDEXING_CAUSE) {
+  else if (BRANCHEVENT_CAUSE) {
       // PR opened triggered this build, need to determine if the PR opener has been authroized write and above access
       String prNumberFullString = ${env.BRANCH_NAME}   // this will be PR-<number>
       int prNumber = prNumberFullString.split("-")[1] as Integer   // only extract the PR number as integer
@@ -313,7 +320,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       }
   }
 
-  echo "autotesting_enable is "+ $autotesting_enable
+  echo "autotesting_enable is $autotesting_enable"
 
   // pipeline.test(
   //   name              : "Zowe Regular Build",
