@@ -292,15 +292,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   // def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
   // def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause')
  
-
   def autotesting_enable = false
   
   echo "DEBUG: Current build is caused by $ALL_CAUSES"
-  echo "DEBUG: BEC is $BRANCHEVENT_CAUSE"
-  echo "DEBUG: UC is $USERID_CAUSE"
 
   String shortDesciption = BRANCHEVENT_CAUSE[0].shortDescription
   echo "DEBUG: short description is: $shortDesciption"
+
   // could be from one of
   // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
   // $REMOTE_CAUSE"          triggered by a remote request
@@ -312,10 +310,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   }
   else if (BRANCHEVENT_CAUSE) {
       // PR opened triggered this build, need to determine if the PR opener has been authroized write and above access
+      echo "DEBUG1"
       String prNumberFullString = ${env.BRANCH_NAME}   // this will be PR-<number>
+      echo "DEBUG2"
       int prNumber = prNumberFullString.split("-")[1] as Integer   // only extract the PR number as integer
+      echo "DEBUG3"
       def user = pipeline.github.getPullRequestUser(prNumber)
+      echo "DEBUG4"
       def allowed = pipeline.github.isUserWriteCollaborator(user)
+      echo "DEBUG5"
       if (allowed) {
           autotesting_enable = true
       }
