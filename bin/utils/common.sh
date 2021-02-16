@@ -60,6 +60,10 @@ get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME}}}
 }
 
+get_tmp_dir() {
+  echo ${TMPDIR:-${TMP:-/tmp}}
+}
+
 # runtime logging functions, follow zowe service logging standard
 print_formatted_message() {
   service=$1
