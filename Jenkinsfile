@@ -303,8 +303,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   }
   
   echo "DEBUG: short description is: $causeShortDescription"
-
-  echo "DEBUG: GETTING ALL ENVS: $env"
+  //print all envs
+  echo sh(script: 'env', returnStdout: true)
+  
   pipeline.github.initFromFolder()
   println "repo is " + pipeline.github.repository
   println "branch is " + pipeline.github.branch
