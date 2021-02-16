@@ -302,13 +302,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     causeShortDescription = USERID_CAUSE[0].shortDescription
   }
   
-  echo "DEBUG: short description is: $shortDesciption"
+  echo "DEBUG: short description is: $causeShortDescription"
 
   pipeline.github.initFromFolder()
   println "repo is " + pipeline.github.repository
   println "branch is " + pipeline.github.branch
 
-  
+
   // could be from one of
   // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
   // $REMOTE_CAUSE"          triggered by a remote request
