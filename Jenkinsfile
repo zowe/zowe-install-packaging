@@ -300,7 +300,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   echo "DEBUG: short description is: $shortDesciption"
 
   pipeline.github.initFromFolder()
-
+  println "repo is " + pipeline.github.repository
+  println "branch is " + pipeline.github.branch
   // could be from one of
   // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
   // $REMOTE_CAUSE"          triggered by a remote request
