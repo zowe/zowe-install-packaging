@@ -296,10 +296,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   def autotesting_enable = false
   
   echo "DEBUG: Current build is caused by $ALL_CAUSES"
-  echo "DEBUG: BIC is $BRANCHINDEXING_CAUSE"
   echo "DEBUG: BEC is $BRANCHEVENT_CAUSE"
-  echo "DEBUG: RC is $REMOTE_CAUSE"
-  echo "DEBUG: USC is $UPSTREAM_CAUSE"
   echo "DEBUG: UC is $USERID_CAUSE"
 
   echo "DEBUG: BUILD_CAUSE is $BUILD_CAUSE"
