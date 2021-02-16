@@ -286,13 +286,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   def ALL_CAUSES = currentBuild.getBuildCauses()
-  def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause')
-  def BRANCHEVENT_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchEventCause')
-  def REMOTE_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$RemoteCause')
-  def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
+  def BRANCHEVENT_CAUSE = currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
   def USERID_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+  // def REMOTE_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$RemoteCause')
+  // def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
+  // def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause')
+ 
 
-  def autotesting_enable
+  def autotesting_enable = false
+  
   echo "DEBUG: Current build is caused by $ALL_CAUSES"
   echo "DEBUG: BIC is $BRANCHINDEXING_CAUSE"
   echo "DEBUG: BEC is $BRANCHEVENT_CAUSE"
@@ -300,6 +302,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   echo "DEBUG: USC is $UPSTREAM_CAUSE"
   echo "DEBUG: UC is $USERID_CAUSE"
 
+  echo "DEBUG: BUILD_CAUSE is $BUILD_CAUSE"
+
+  String shortDesciption = BRANCHEVENT_CAUSE.getShortDescription()
+  echo "DEBUG: short description is: $shortDesciption"
   // could be from one of
   // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
   // $REMOTE_CAUSE"          triggered by a remote request
