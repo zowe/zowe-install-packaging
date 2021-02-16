@@ -311,7 +311,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   else if (BRANCHEVENT_CAUSE) {
       // PR opened triggered this build, need to determine if the PR opener has been authroized write and above access
       echo "DEBUG1"
-      String prNumberFullString = ${env.BRANCH_NAME}   // this will be PR-<number>
+      String prNumberFullString = "${env.BRANCH_NAME}"   // this will be PR-<number>
       echo "DEBUG2"
       int prNumber = prNumberFullString.split("-")[1] as Integer   // only extract the PR number as integer
       echo "DEBUG3"
