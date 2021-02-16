@@ -299,6 +299,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   String shortDesciption = BRANCHEVENT_CAUSE[0].shortDescription
   echo "DEBUG: short description is: $shortDesciption"
 
+  pipeline.github.initFromFolder()
+
   // could be from one of
   // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
   // $REMOTE_CAUSE"          triggered by a remote request
