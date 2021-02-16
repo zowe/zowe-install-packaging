@@ -293,15 +293,22 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   // def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause')
  
   def autotesting_enable = false
-  
+  String causeShortDescription
   echo "DEBUG: Current build is caused by $ALL_CAUSES"
-
-  String shortDesciption = BRANCHEVENT_CAUSE[0].shortDescription
+  if (BRANCHEVENT_CAUSE) {
+    causeShortDescription = BRANCHEVENT_CAUSE[0].shortDescription
+  }
+  else if (USERID_CAUSE) {
+    causeShortDescription = USERID_CAUSE[0].shortDescription
+  }
+  
   echo "DEBUG: short description is: $shortDesciption"
 
   pipeline.github.initFromFolder()
   println "repo is " + pipeline.github.repository
   println "branch is " + pipeline.github.branch
+
+  
   // could be from one of
   // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
   // $REMOTE_CAUSE"          triggered by a remote request
