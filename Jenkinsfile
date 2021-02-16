@@ -12,7 +12,7 @@
 import hudson.model.Cause
 
 node('zowe-jenkins-agent-dind-wdc') {
-  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library@users/tom/initFromFolder").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
@@ -73,6 +73,58 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       }
 
       pipeline.setVersion(manifest['version'])
+
+
+      // Determining build cause then decide if to run convenience build testing after build
+      def ALL_CAUSES = currentBuild.getBuildCauses()
+      def BRANCHEVENT_CAUSE = currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
+      def USERID_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+      // def REMOTE_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$RemoteCause')
+      // def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
+      // def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause')
+    
+      def autotesting_enable = false
+      String causeShortDescription
+      echo "DEBUG: Current build is caused by $ALL_CAUSES"
+      if (BRANCHEVENT_CAUSE) {
+        causeShortDescription = BRANCHEVENT_CAUSE[0].shortDescription
+      }
+      else if (USERID_CAUSE) {
+        causeShortDescription = USERID_CAUSE[0].shortDescription
+      }
+      
+      echo "DEBUG: short description is: $causeShortDescription"
+    
+      println "repo is " + pipeline.github.repository
+      println "branch is " + pipeline.github.branch
+
+
+      // could be from one of
+      // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
+      // $REMOTE_CAUSE"          triggered by a remote request
+      // $UPSTREAM_CAUSE"        triggered by an upstream project
+      // $USERID_CAUSE"          triggered by Jenkins user
+      if (USERID_CAUSE) {
+        // enable automatic testing when a specific jenkins user starts the job
+        autotesting_enable = true
+      }
+      else if (BRANCHEVENT_CAUSE) {
+        // PR opened triggered this build, need to determine if the PR opener has been authroized write and above access
+        echo "DEBUG1"
+        String prNumberFullString = "${env.BRANCH_NAME}"   // this will be PR-<number>
+        echo "DEBUG2"
+        int prNumber = prNumberFullString.split("-")[1] as Integer   // only extract the PR number as integer
+        echo "DEBUG3"
+        def user = pipeline.github.getPullRequestUser(prNumber)
+        echo "DEBUG4"
+        def allowed = pipeline.github.isUserWriteCollaborator(user)
+        echo "DEBUG5"
+        if (allowed) {
+            autotesting_enable = true
+        }
+      }
+
+      echo "autotesting_enable is $autotesting_enable"
     }
   )
 
@@ -285,100 +337,49 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     }
   )
 
-  def ALL_CAUSES = currentBuild.getBuildCauses()
-  def BRANCHEVENT_CAUSE = currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')
-  def USERID_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
-  // def REMOTE_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$RemoteCause')
-  // def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
-  // def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause')
- 
-  def autotesting_enable = false
-  String causeShortDescription
-  echo "DEBUG: Current build is caused by $ALL_CAUSES"
-  if (BRANCHEVENT_CAUSE) {
-    causeShortDescription = BRANCHEVENT_CAUSE[0].shortDescription
-  }
-  else if (USERID_CAUSE) {
-    causeShortDescription = USERID_CAUSE[0].shortDescription
-  }
-  
-  echo "DEBUG: short description is: $causeShortDescription"
-  //print all envs
-  echo sh(script: 'env', returnStdout: true)
-  
-  pipeline.github.initFromFolder()
-  println "repo is " + pipeline.github.repository
-  println "branch is " + pipeline.github.branch
 
 
-  // could be from one of
-  // $BRANCHINDEXING_CAUSE"  triggered by Pull Request open event
-  // $REMOTE_CAUSE"          triggered by a remote request
-  // $UPSTREAM_CAUSE"        triggered by an upstream project
-  // $USERID_CAUSE"          triggered by Jenkins user
-  if (USERID_CAUSE) {
-      // enable automatic testing when a specific jenkins user starts the job
-      autotesting_enable = true
-  }
-  else if (BRANCHEVENT_CAUSE) {
-      // PR opened triggered this build, need to determine if the PR opener has been authroized write and above access
-      echo "DEBUG1"
-      String prNumberFullString = "${env.BRANCH_NAME}"   // this will be PR-<number>
-      echo "DEBUG2"
-      int prNumber = prNumberFullString.split("-")[1] as Integer   // only extract the PR number as integer
-      echo "DEBUG3"
-      def user = pipeline.github.getPullRequestUser(prNumber)
-      echo "DEBUG4"
-      def allowed = pipeline.github.isUserWriteCollaborator(user)
-      echo "DEBUG5"
-      if (allowed) {
-          autotesting_enable = true
+  pipeline.test(
+    name              : "Zowe Regular Build",
+    shouldExecute : {
+      return autotesting_enable && sourceRegBuildInfo && sourceRegBuildInfo['path']
+    },
+    operation         : {
+      def testParameters = [
+        booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+        string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+        string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+        string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+        string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+        string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+        booleanParam(name: 'Skip Stage: Lint', value: true),
+        booleanParam(name: 'Skip Stage: Audit', value: true),
+        booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+      ]
+      if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+        testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+        testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
       }
-  }
-
-  echo "autotesting_enable is $autotesting_enable"
-
-  // pipeline.test(
-  //   name              : "Zowe Regular Build",
-  //   shouldExecute : {
-  //     return autotesting_enable && sourceRegBuildInfo && sourceRegBuildInfo['path']
-  //   },
-  //   operation         : {
-  //     def testParameters = [
-  //       booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-  //       string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
-  //       string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
-  //       string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
-  //       string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
-  //       string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
-  //       booleanParam(name: 'Skip Stage: Lint', value: true),
-  //       booleanParam(name: 'Skip Stage: Audit', value: true),
-  //       booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
-  //     ]
-  //     if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
-  //       testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
-  //       testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
-  //     }
-  //     // FIXME: add back after those 2 parameters are added to zowe-install-test
-  //     // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
-  //     //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
-  //     //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
-  //     // }
-  //     def test_result = build(
-  //         job: '/zowe-install-test/staging',
-  //         parameters: testParameters,
-  //         propagate: false
-  //       )
-  //     echo "Test result: ${test_result.result}"
-  //     if (test_result.result != 'SUCCESS') {
-  //       testRegBuildErrorUrl = test_result.absoluteUrl
-  //       echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-  //       IS_BUILD_UNSTABLE = true
-  //     }
-  //   },
-  //   allowMissingJunit : true,
-  //   timeout: [time: 2, unit: 'HOURS']
-  // )
+      // FIXME: add back after those 2 parameters are added to zowe-install-test
+      // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
+      //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
+      //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+      // }
+      def test_result = build(
+          job: '/zowe-install-test/staging',
+          parameters: testParameters,
+          propagate: false
+        )
+      echo "Test result: ${test_result.result}"
+      if (test_result.result != 'SUCCESS') {
+        testRegBuildErrorUrl = test_result.absoluteUrl
+        echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+        IS_BUILD_UNSTABLE = true
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 2, unit: 'HOURS']
+  )
 
   pipeline.end()
 }
