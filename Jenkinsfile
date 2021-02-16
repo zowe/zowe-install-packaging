@@ -299,8 +299,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   echo "DEBUG: BEC is $BRANCHEVENT_CAUSE"
   echo "DEBUG: UC is $USERID_CAUSE"
 
-  echo "DEBUG: BUILD_CAUSE is $BUILD_CAUSE"
-
   String shortDesciption = BRANCHEVENT_CAUSE.getShortDescription()
   echo "DEBUG: short description is: $shortDesciption"
   // could be from one of
