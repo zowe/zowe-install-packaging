@@ -318,12 +318,14 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     }
   )
 
-  pipeline.test(
+  pipeline.createStage(
     name              : "Zowe Regular Build",
+    timeout: [time: 2, unit: 'HOURS'],
+    isSkippable: true,
     shouldExecute : {
       return autotesting_enable
     },
-    operation         : {
+    stage : {
       def buildName = env.JOB_NAME.replace('/', ' :: ')
       def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
       def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
@@ -361,13 +363,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         )
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
-          echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
           currentBuild.result='UNSTABLE'
+          if (test_result.result == 'ABORTED') {
+            echo "Test aborted"
+          } else {
+            echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          }
         }
       }
-    },
-    allowMissingJunit : true,
-    timeout: [time: 2, unit: 'HOURS']
+    }
   )
 
   pipeline.end()
