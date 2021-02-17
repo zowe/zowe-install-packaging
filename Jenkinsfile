@@ -9,6 +9,9 @@
  *
  * Copyright IBM Corporation 2018, 2019
  */
+import hudson.model.Cause
+
+def isAuthorizedUser = false
 
 node('zowe-jenkins-agent-dind-wdc') {
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
@@ -72,6 +75,39 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       }
 
       pipeline.setVersion(manifest['version'])
+
+      // Determining the build cause then decide if to run build and convenience build testing
+      def ALL_CAUSES = currentBuild.getBuildCauses()
+      def BRANCHEVENT_CAUSE = currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')           // PR is opened or updated
+      def USERID_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')                 // A Jenkins user starts a manual build
+      def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause') // By clicking 'Scan Repository Now'
+      // def REMOTE_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$RemoteCause')
+      // def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
+    
+      String causeShortDescription
+      if (BRANCHEVENT_CAUSE) {
+        causeShortDescription = BRANCHEVENT_CAUSE[0].shortDescription
+      }
+  
+      if (USERID_CAUSE) {
+        // enable automatic build and testing when a specific jenkins user starts the job
+        isAuthorizedUser = true
+      }
+      else if ((BRANCHEVENT_CAUSE && causeShortDescription.contains("Pull request")) || BRANCHINDEXING_CAUSE) {
+        // PR opened or branch updated, or 'Scan Repository Now' triggered this build
+        // need to determine if the PR opener has been authroized write+ access
+        String prNumberFullString = "${env.BRANCH_NAME}"   // this will be PR-<number>
+        int prNumber = prNumberFullString.split("-")[1] as Integer   // only extract the PR number as integer
+        def user = pipeline.github.getPullRequestUser(prNumber)
+        def allowed = pipeline.github.isUserWriteCollaborator(user)
+        if (allowed) {
+            isAuthorizedUser = true
+        }
+      }
+      echo "isAuthorizedUser is $isAuthorizedUser"
+      if (!isAuthorizedUser) {
+        currentBuild.result = 'ABORTED'
+      }
     }
   )
 
@@ -280,6 +316,62 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.amd64.tar'
           pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
         }      
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name              : "Zowe Regular Build",
+    timeout: [time: 2, unit: 'HOURS'],
+    isSkippable: true,
+    shouldExecute : {
+      return isAuthorizedUser
+    },
+    stage : {
+      def buildName = env.JOB_NAME.replace('/', ' :: ')
+      def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
+      def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
+      def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
+      
+      sourceRegBuildInfo = pipeline.artifactory.getArtifact([
+        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
+        'build-name'   : buildName,
+        'build-number' : env.BUILD_NUMBER
+      ])
+      cliSourceBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+          'build-name'   : ZOWE_CLI_BUILD_NAME
+      ])
+      if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: buildName),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+          booleanParam(name: 'Skip Stage: Lint', value: true),
+          booleanParam(name: 'Skip Stage: Audit', value: true),
+          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        }
+
+        def test_result = build(
+          job: '/zowe-install-test/staging',
+          parameters: testParameters
+        )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          currentBuild.result='UNSTABLE'
+          if (test_result.result == 'ABORTED') {
+            echo "Test aborted"
+          } else {
+            echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          }
+        }
       }
     }
   )
