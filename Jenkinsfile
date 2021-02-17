@@ -357,13 +357,12 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
         def test_result = build(
           job: '/zowe-install-test/staging',
-          parameters: testParameters,
-          propagate: true
+          parameters: testParameters
         )
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
           echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-          IS_BUILD_UNSTABLE = true
+          currentBuild.result='UNSTABLE'
         }
       }
     },
