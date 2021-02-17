@@ -358,7 +358,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         def test_result = build(
           job: '/zowe-install-test/staging',
           parameters: testParameters,
-          propagate: false
+          propagate: true
         )
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
