@@ -89,9 +89,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (BRANCHEVENT_CAUSE) {
         causeShortDescription = BRANCHEVENT_CAUSE[0].shortDescription
       }
-      else if (USERID_CAUSE) {
-        causeShortDescription = USERID_CAUSE[0].shortDescription
-      }
+  
       if (USERID_CAUSE) {
         // enable automatic testing when a specific jenkins user starts the job
         autotesting_enable = true
@@ -320,52 +318,58 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     }
   )
 
+  pipeline.test(
+    name              : "Zowe Regular Build",
+    shouldExecute : {
+      return autotesting_enable
+    },
+    operation         : {
+      def buildName = env.JOB_NAME.replace('/', ' :: ')
+      def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
+      def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
+      def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
+      
+      sourceRegBuildInfo = pipeline.artifactory.getArtifact([
+        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
+        'build-name'   : buildName,
+        'build-number' : env.BUILD_NUMBER
+      ])
+      cliSourceBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+          'build-name'   : ZOWE_CLI_BUILD_NAME
+      ])
+      if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: buildName),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+          booleanParam(name: 'Skip Stage: Lint', value: true),
+          booleanParam(name: 'Skip Stage: Audit', value: true),
+          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        }
 
-  //TODO
-  // pipeline.test(
-  //   name              : "Zowe Regular Build",
-  //   shouldExecute : {
-  //     return autotesting_enable
-  //   },
-  //   operation         : {
-
-  //     def buildName = env.JOB_NAME.replace('/', ' :: ')
-  //     def buildNumber = env.BUILD_NUMBER
-  //     def testParameters = [
-  //       booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-  //       string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
-  //       string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
-  //       string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
-  //       string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
-  //       string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
-  //       booleanParam(name: 'Skip Stage: Lint', value: true),
-  //       booleanParam(name: 'Skip Stage: Audit', value: true),
-  //       booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
-  //     ]
-  //     if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
-  //       testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
-  //       testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
-  //     }
-  //     // FIXME: add back after those 2 parameters are added to zowe-install-test
-  //     // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
-  //     //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
-  //     //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
-  //     // }
-  //     def test_result = build(
-  //         job: '/zowe-install-test/staging',
-  //         parameters: testParameters,
-  //         propagate: false
-  //       )
-  //     echo "Test result: ${test_result.result}"
-  //     if (test_result.result != 'SUCCESS') {
-  //       testRegBuildErrorUrl = test_result.absoluteUrl
-  //       echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
-  //       IS_BUILD_UNSTABLE = true
-  //     }
-  //   },
-  //   allowMissingJunit : true,
-  //   timeout: [time: 2, unit: 'HOURS']
-  // )
+        def test_result = build(
+          job: '/zowe-install-test/staging',
+          parameters: testParameters,
+          propagate: false
+        )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          IS_BUILD_UNSTABLE = true
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 2, unit: 'HOURS']
+  )
 
   pipeline.end()
 }
