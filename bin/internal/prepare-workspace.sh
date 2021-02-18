@@ -58,12 +58,48 @@ LOGGING_SCRIPT_NAME=prepare-workspace.sh
 # Prepare workspace directory
 prepare_workspace_dir() {
   print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "prepare workspace directory ..."
+
+  # before we create workspace, let's do some checks to decide if we need to run
+  # zowe-configure-instance.sh again. The new explorer UI apps require re-configure
+  # to put the plugin definition back into workspace/app-server/plugins folder
+  # if workspace is deleted.
+  require_re_configure=false
+  if [ ! -d "${WORKSPACE_DIR}" ]; then
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "workspace doesn't exist ..."
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure on the instance is required"
+    # not exist -  we need to run zowe-configure-instance.sh
+    require_re_configure=true
+  elif [ -f "${WORKSPACE_DIR}/manifest.json" ]; then
+    # exist and manifest.json is still there
+    # check if workspace is created with old version of zowe
+    runtime_version=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+    workspace_version=$(cat ${WORKSPACE_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+    if [ "${runtime_version}" != "${workspace_version}" ]; then
+      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "workspace is on version ${workspace_version} which is not same as zowe version ${runtime_version}"
+      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure on the instance is required"
+      require_re_configure=true
+    fi
+  fi
+  # QUESTION: can we re-configure the instance here? we may see many perission failures because the old workspace
+  #           is very likely created under install user, not zowe runtime user.
+  # if [ "${require_re_configure}" = "true" ]; then
+  #   print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure zowe ..."
+  #   $(${ROOT_DIR}/bin/zowe-configure-instance.sh -c "${INSTANCE_DIR}")
+  # fi
+
   mkdir -p ${WORKSPACE_DIR}
   # Make accessible to group so owning user can edit?
-  chmod -R 771 ${WORKSPACE_DIR}
+  chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
+  if [ "$?" != "0" ]; then
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+  fi
 
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
   cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
+
+  # create static definition directory
+  mkdir -p ${STATIC_DEF_CONFIG_DIR}
 }
 
 ########################################################
@@ -166,6 +202,10 @@ configure_components() {
     if [ -n "${component_dir}" ]; then
       cd "${component_dir}"
 
+      # prepare component workspace
+      component_name=$(basename "${component_dir}")
+      mkdir -p "${WORKSPACE_DIR}/${component_name}"
+
       # backward compatible purpose, some may expect this variable to be component lifecycle directory
       export LAUNCH_COMPONENT="${component_dir}/bin"
 
@@ -204,7 +244,9 @@ configure_components() {
       fi
       if [ -x "${configure_script}" ]; then
         print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* process ${component_id} configure command ..."
-        result=$(. ${configure_script})
+        # execute configure step and snapshot environment
+        # FIXME: .env should be attached with HA instance id
+        result=$(. ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${WORKSPACE_DIR}/${component_name}/.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -234,7 +276,12 @@ configure_components
 #        to delete the instance directory and can cause errors on upgrade
 if [ -d ${WORKSPACE_DIR}/app-server/serverConfig ]
 then
-  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig
-  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/*
+  chmod 750 ${WORKSPACE_DIR}/app-server/serverConfig 1> /dev/null 2> /dev/null
+  chmod_rc1=$?
+  chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/* 1> /dev/null 2> /dev/null
+  chmod_rc2=$?
+  if [ "${chmod_rc1}" != "0" -o "${chmod_rc2}" != "0" ]; then
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "permission of app-server workspace directory (${WORKSPACE_DIR}/app-server/serverConfig) is not setup correctly"
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+  fi
 fi
-
