@@ -1,4 +1,8 @@
 ---
+- name: debug docker info 
+  debug:
+    msg: "debug...{{ zowe_external_domain_name }} - {{zos_zosmf_host}} - {{zos_zosmf_port}} - {{zowe_zos_host}} -{{zowe_zss_port}}-{{zowe_zlux_terminal_telnet_port}}-{{ zowe_zlux_terminal_telnet_security_type }}-{{zowe_apiml_gateway_port}} -{{zowe_apiml_gateway_port}}-{{zowe_apiml_discovery_port}}-{{zowe_apiml_gateway_port}}:{{zowe_apiml_gateway_port}}-{{zowe_zlux_port}}-{{zowe_docker_image}}:{{zowe_docker_tag}} "
+
 - name: start docker in detached mode
   raw: >- 
     docker run -d --rm --env ZOWE_EXPLORER_HOST={{ zowe_external_domain_name }} \
