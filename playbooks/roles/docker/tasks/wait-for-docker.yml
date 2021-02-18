@@ -2,14 +2,14 @@
 # ============================================================================
 - name: Update zowe_test_user from ansible_user if it's not defined
   # hide log to avoid exposing zowe_test_user
-  no_log: True
+  no_log: False
   set_fact:
     zowe_test_user: "{{ hostvars[inventory_hostname].ansible_user }}"
   when: zowe_test_user == '' or zowe_test_user is none
 
 - name: Update zowe_test_password from ansible_password if it's not defined
   # hide log to avoid exposing zowe_test_password
-  no_log: True
+  no_log: False
   set_fact:
     zowe_test_password: "{{ hostvars[inventory_hostname].ansible_password }}"
   when: zowe_test_password == '' or zowe_test_password is none
@@ -48,7 +48,7 @@
   when: '"zss" in zowe_launch_components'
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
-  no_log: True
+  no_log: False
 
 - name: Wait for APIML port {{zowe_apiml_gateway_port}} to be available
   uri:
@@ -81,7 +81,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
-  no_log: True
+  no_log: False
 
 - name: Wait for being able to login to API Catalog
   uri:
@@ -102,4 +102,4 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
-  no_log: True
+  no_log: False
