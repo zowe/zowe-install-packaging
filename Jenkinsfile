@@ -9,12 +9,9 @@
  *
  * Copyright IBM Corporation 2018, 2019
  */
-import hudson.model.Cause
-
-def isAuthorizedUser = false
 
 node('zowe-jenkins-agent-dind-wdc') {
-  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library@users/tom/getCauseAuthorized").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
@@ -75,39 +72,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       }
 
       pipeline.setVersion(manifest['version'])
-
-      // Determining the build cause then decide if to run build and convenience build testing
-      def ALL_CAUSES = currentBuild.getBuildCauses()
-      def BRANCHEVENT_CAUSE = currentBuild.getBuildCauses('jenkins.branch.BranchEventCause')           // PR is opened or updated
-      def USERID_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')                 // A Jenkins user starts a manual build
-      def BRANCHINDEXING_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$BranchIndexingCause') // By clicking 'Scan Repository Now'
-      // def REMOTE_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$RemoteCause')
-      // def UPSTREAM_CAUSE = currentBuild.getBuildCauses('hudson.model.Cause$UpstreamCause')
-    
-      String causeShortDescription
-      if (BRANCHEVENT_CAUSE) {
-        causeShortDescription = BRANCHEVENT_CAUSE[0].shortDescription
-      }
-  
-      if (USERID_CAUSE) {
-        // enable automatic build and testing when a specific jenkins user starts the job
-        isAuthorizedUser = true
-      }
-      else if ((BRANCHEVENT_CAUSE && causeShortDescription.contains("Pull request")) || BRANCHINDEXING_CAUSE) {
-        // PR opened or branch updated, or 'Scan Repository Now' triggered this build
-        // need to determine if the PR opener has been authroized write+ access
-        String prNumberFullString = "${env.BRANCH_NAME}"   // this will be PR-<number>
-        int prNumber = prNumberFullString.split("-")[1] as Integer   // only extract the PR number as integer
-        def user = pipeline.github.getPullRequestUser(prNumber)
-        def allowed = pipeline.github.isUserWriteCollaborator(user)
-        if (allowed) {
-            isAuthorizedUser = true
-        }
-      }
-      echo "isAuthorizedUser is $isAuthorizedUser"
-      if (!isAuthorizedUser) {
-        currentBuild.result = 'ABORTED'
-      }
     }
   )
 
@@ -325,7 +289,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout: [time: 2, unit: 'HOURS'],
     isSkippable: true,
     shouldExecute : {
-      return isAuthorizedUser
+      return pipeline.isAuthorizedUser
     },
     stage : {
       def buildName = env.JOB_NAME.replace('/', ' :: ')
