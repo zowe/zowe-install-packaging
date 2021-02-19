@@ -74,6 +74,14 @@
   when: not zowe_configure_skip_zwesecur
 
 # ============================================================================
+# Make sure we uninstall keyring setup before we do it again to avoid failures like
+#   RACDCERT ADD('ZOWEAD3.SMPE.CERT.JWTSCRT') ID(ZWESVUSR) WITHLABEL('JWTSECRET') TRUST
+#   IRRD111I The certificate cannot be added.  The label jwtsecret is already in use.
+- import_role:
+    name: zowe
+    tasks_from: uninstall_keyring
+
+# ============================================================================
 # Run ZWEKRING
 - import_role:
     name: configure
