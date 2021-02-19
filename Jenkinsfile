@@ -11,7 +11,7 @@
  */
 
 node('zowe-jenkins-agent-dind-wdc') {
-  def lib = library("jenkins-library@users/tom/getCauseAuthorized").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
