@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2021
 #######################################################################
 
 #% package prepared product as service (++USERMOD, ++APAR, ++PTF)
@@ -904,6 +904,7 @@ do
   coreq="$coreq $sysmod"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 coreq=$(echo $coreq)                              # strip leading blank
+test -z "$coreq" && coreq="none"   # dummy value if there are no coreqs
 test $debug && echo "coreq=$coreq"
 
 # customize common variables
