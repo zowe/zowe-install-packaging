@@ -275,7 +275,7 @@ return PTFs    /* _minCount */
 
 /*---------------------------------------------------------------------
  * --- determine how to distribute parts among PTFs
- * Returns nothing
+ * Returns return code
  * Args: /
  */
 _distribute: PROCEDURE EXPOSE ExecName Debug !Vars.
