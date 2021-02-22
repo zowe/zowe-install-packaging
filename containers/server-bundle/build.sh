@@ -20,8 +20,9 @@
 # ./build.sh amd64 1 https://zowe.jfrog.io/zowe/libs-snapshot-local/org/zowe/1.17.0-STAGING/zowe-1.17.0-staging-1052-20201017043641.pax
 
 mkdir -p utils
-cp -r ../../../../utils/* ./utils
+cp -r ../utils/* ./utils
 if [ "$#" -lt 2 ]
+then
   echo "Usage: $0 <amd64|s390x> <build name> [pax location]"
   exit 1
 fi
