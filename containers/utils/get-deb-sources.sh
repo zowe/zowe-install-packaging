@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: EPL-2.0 OR MIT
 
 ### This will be copied into and run from within the working container.
 ### Do not run it on your local system!
