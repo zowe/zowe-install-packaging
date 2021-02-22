@@ -178,7 +178,7 @@ mv "${CONTENT_DIR}/files/zowe_licenses_full.zip" \
 # move zlux files to zlux folder & give fixed name
 mkdir -p "${CONTENT_DIR}/files/zlux"
 cd "${CONTENT_DIR}/files"
-mv zlux-core-*.pax          zlux/zlux-core.pax
+mv zlux-core-*.pax          app-server-${ZOWE_VERSION}.pax
 mv zss-auth-*.pax           zlux/zss-auth.pax
 mv zosmf-auth-*.pax         zlux/zosmf-auth.pax
 mv zlux-editor-*.pax        zlux/zlux-editor.pax
@@ -188,7 +188,6 @@ mv vt-ng2-*.pax             zlux/vt-ng2.pax
 mv sample-react-app-*.pax   zlux/sample-react-app.pax
 mv sample-iframe-app-*.pax  zlux/sample-iframe-app.pax
 mv sample-angular-app-*.pax zlux/sample-angular-app.pax
-mv zss-*.pax                zss.pax
 cd "$ROOT_DIR"
 
 # create customized workflows
