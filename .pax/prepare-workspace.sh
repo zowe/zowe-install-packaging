@@ -178,6 +178,7 @@ mv "${CONTENT_DIR}/files/zowe_licenses_full.zip" \
 # move zlux files to zlux folder & give fixed name
 mkdir -p "${CONTENT_DIR}/files/zlux"
 cd "${CONTENT_DIR}/files"
+mv zss-*.pax                zss-${ZOWE_VERSION}.pax
 mv zlux-core-*.pax          app-server-${ZOWE_VERSION}.pax
 mv zss-auth-*.pax           zlux/zss-auth.pax
 mv zosmf-auth-*.pax         zlux/zosmf-auth.pax
