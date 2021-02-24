@@ -893,10 +893,33 @@ done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 # append next csplit block (xx13 holds DSN placeholder)
 _cmd --save $log/$html cat $ptf/xx14
 
+# add an allocation statement for each sysmod
+test "$debug" && echo "while read -r trk name"
+while read -r trk name
+do
+  sysmod=${name##*.}                # keep from last period (exclusive)
+  test $debug && echo "(delete) name=$name, sysmod=$sysmod"
+
+  # pad sysmod name with blanks to 8 characters
+  sysmod8=$(echo "$sysmod      " | sed 's/^\(........\).*/\1/')
+
+  # append customized data
+  # expected xx15 content:
+  # //##ptf8 DD DSN=&HLQ..##name,
+  # //            DISP=(OLD,DELETE,DELETE)
+  SED=""
+  SED="$SED;s/##ptf8/$sysmod8/"
+  SED="$SED;s/##name/$name/"
+  _cmd --save $log/$html sed "$SED" $ptf/xx15
+done < $ptf/$tracks    # while read
+
+# append next csplit block
+_cmd --save $log/$html cat $ptf/xx16
+
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # get requisite sysmod names (sysmod 2 and up)
-unset coreq
+unset coreq colst
 test "$debug" && echo "while read -r trk name"
 while read -r trk name
 do
@@ -904,7 +927,9 @@ do
   coreq="$coreq $sysmod"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 coreq=$(echo $coreq)                              # strip leading blank
-test -z "$coreq" && coreq="none"   # dummy value if there are no coreqs
+colst="$coreq"
+test -z "$colst" && colst="none"   # dummy value if there are no coreqs
+test $debug && echo "colst=$colst"
 test $debug && echo "coreq=$coreq"
 
 # customize common variables
@@ -914,8 +939,9 @@ SED="$SED;s/##name1/$name1/"
 SED="$SED;s/##ptf1/$sysmod1/"
 SED="$SED;s/##fmid/$FMID/"
 SED="$SED;s/##rework/$julian7 ($yyyymmdd)/"
-SED="$SED;s/#vrm/$VERSION/"
+SED="$SED;s/##vrm/$VERSION/"
 SED="$SED;s^##branch^$BRANCH (build $BUILD)^" # ^ not allowed in branch name
+SED="$SED;s/##reqlist/$colst/"
 SED="$SED;s/##req/$coreq/"
 _sed $log/$html
 
