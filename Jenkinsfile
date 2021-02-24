@@ -217,6 +217,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../utils/* ./utils &&
              chmod +x ./utils/*.sh ./utils/*/bin/* &&
+             sudo docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" &&
              sudo docker build -t ompzowe/server-bundle:s390x . &&
              sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x &&
              sudo chmod 777 * &&
@@ -273,7 +274,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             passwordVariable: 'PASSWORD'
           )]){
             // build docker image
-            sh "docker build  -t ompzowe/server-bundle:amd64 ."
+            sh "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" && docker build  -t ompzowe/server-bundle:amd64 ."
             sh "docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64"
           }
           // show files
