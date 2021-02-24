@@ -21,14 +21,14 @@
 
 mkdir -p utils
 cp -r ../utils/* ./utils
-if [ "$#" -lt 2 ]
+if [ "$#" -lt 1 ]
 then
-  echo "Usage: $0 <amd64|s390x> <build name> [pax location]"
+  echo "Usage: $0 <build name> [pax location]"
   exit 1
 fi
    
-if [ "$2" = "" ]; then
-  docker build -f Dockerfile --no-cache --build-arg BUILD_PLATFORM=$1 -t ompzowe/server-bundle:testing$2 .
+if [ "$1" = "" ]; then
+  docker build -f Dockerfile --no-cache -t ompzowe/server-bundle:testing$1 .
 else
-  docker build -f Dockerfile --no-cache --build-arg BUILD_PLATFORM=$1 --build-arg ZOWE_BUILD=$3 -t ompzowe/server-bundle:testing$2 .
+  docker build -f Dockerfile --no-cache --build-arg ZOWE_BUILD=$2 -t ompzowe/server-bundle:testing$1 .
 fi

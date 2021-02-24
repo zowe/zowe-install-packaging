@@ -1,5 +1,4 @@
-ARG BUILD_PLATFORM
-FROM ompzowe/zowecicd-node12-java8:$BUILD_PLATFORM as builder
+FROM ompzowe/zowecicd-node12-java8:v2.0 as builder
 
 # allow to customize which Zowe build to build from
 # There are 3 possible values:
@@ -106,7 +105,7 @@ RUN cp /home/zowe/instance/instance.env /home/zowe/instance/instance.env.bkp \
 
 RUN chown -R zowe:zowe /home/zowe
 
-FROM ompzowe/zowecicd-node12-java8:$BUILD_PLATFORM
+FROM ompzowe/zowecicd-node12-java8:v2.0
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
