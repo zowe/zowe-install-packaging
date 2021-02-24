@@ -1,5 +1,6 @@
 <HTML>
 <!--
+  All ##... stubs will be replaced by build automation.
   The following stubs are used as part of the install instructions:
   - #hlq
   - #volser
@@ -13,60 +14,65 @@
   - #acpt
   - #smpe
   - #boot
+  
+  Build customization will split the install instructions at all 
+   "cut.." markers, and replace all unenven numbered blocks with custom
+   data. Once the instructions are reassembled, remaining placeholders
+   for build customization are replaced with data.
   -->
 <HEAD>
-  <TITLE>Installation instructions for #type #ptf1 for FMID #fmid</TITLE>
+  <TITLE>Installation instructions for ##type ##ptf1 for FMID ##fmid</TITLE>
   <META http-equiv=Content-Type content="text/html; charset=windows-1252">
 </HEAD>
 <BODY>
-  <H2>Installation instructions for #type #ptf1 for FMID #fmid</H2>
-  <P>The #type is shipped as file #name1</P>
-  <P>The #type has rework (build) date #rework,<br>
-    and is version #vrm, from branch #branch</P>
+  <H2>Installation instructions for ##type ##ptf1 for FMID ##fmid</H2>
+  <P>The ##type is shipped as file ##name1</P>
+  <P>The ##type has rework (build) date ##rework,<br>
+    and is version ##vrm, from branch ##branch</P>
 
-  <P>The following fixes are prerequisites for this #type:<br>
+  <P>The following fixes are prerequisites for this ##type:<br>
 <!--cut01-->
-  #pre
+  ##pre
 <!--cut02-->
   </P>
 
-  <P>The following fixes are corequisites for this #type:<br>
-  #req
+  <P>The following fixes are corequisites for this ##type:<br>
+  ##reqlist
   </P>
 
-  <P>The following fixes are superseded by this #type:<br>
+  <P>The following fixes are superseded by this ##type:<br>
 <!--cut03-->
-  #sup
+  ##sup
 <!--cut04-->
   </P>
 
   <H3><A name="Overview of the installation steps">Overview of the installation
     steps</A></H3>
-  <P>Steps required to install the #type:
+  <P>Steps required to install the ##type:
   <OL type=1>
-    <LI><A href="#alloc">Allocate host data sets for the #type</A>.</LI>
-    <LI><A href="#upload">Upload the #type from your workstation to z/OS</A>.</LI>
-    <LI><A href="#hold">SMP/E hold information for the #type</A>.</LI>
+    <LI><A href="#alloc">Allocate host data sets for the ##type</A>.</LI>
+    <LI><A href="#upload">Upload the ##type from your workstation to z/OS</A>.</LI>
+    <LI><A href="#hold">SMP/E hold information for the ##type</A>.</LI>
     <LI><A href="#acpt">Perform SMP/E ACCEPT for the prerequisites</A>.</LI>
-    <LI><A href="#smpe">Perform SMP/E RECEIVE and APPLY for the #type</A>.</LI>
+    <LI><A href="#smpe">Perform SMP/E RECEIVE and APPLY for the ##type</A>.</LI>
     <LI><A href="#boot">Restart started tasks to activate changes</A>.</LI>
    </OL></P>
 
-  <H3><A name=alloc>Allocate host data sets for the #type</A></H3>
+  <H3><A name=alloc>Allocate host data sets for the ##type</A></H3>
   <P>A sequential data set must be allocated on the z/OS system to receive the
-    #type that you will upload from your workstation. You can do this by
+    ##type that you will upload from your workstation. You can do this by
     submitting the job below. Add a job card and modify the parameters to meet
     your site's requirements before submitting.</P>
   <PRE>
 //*
-//* Change #hlq to the high level qualifier used to upload the #type.
+//* Change #hlq to the high level qualifier used to upload the ##type.
 //* (optional) Uncomment and change #volser to specify a volume.
 //*
 //         SET HLQ=<STRONG>#hlq</STRONG>
 //*
 //ALLOC    EXEC PGM=IEFBR14
 <!--cut05-->
-//#ptf8 DD DSN=&HLQ..#name,
+//##ptf8 DD DSN=&HLQ..##name,
 //            DISP=(NEW,CATLG,DELETE),
 //            DSORG=PS,
 //            RECFM=FB,
@@ -74,12 +80,12 @@
 //            UNIT=SYSALLDA,
 //*            VOL=SER=<STRONG>#volser</STRONG>,
 //*            BLKSIZE=6160,
-//            SPACE=(TRK,(#pri,15))
+//            SPACE=(TRK,(##pri,15))
 <!--cut06-->
 //*
   </PRE>
 
-  <H3><A name=upload>Upload the #type from your workstation to z/OS</A></H3>
+  <H3><A name=upload>Upload the ##type from your workstation to z/OS</A></H3>
   <P>Upload the file in binary format from your workstation to the z/OS data
 set. On a Windows system, you can use FTP from a command prompt to upload the
 file. In the sample dialog shown below, commands or other information entered
@@ -94,7 +100,7 @@ by the user are in bold, and the following values are assumed:</P>
     <TR><TD vAlign=top width="25%"><TT>tsopw</TT></TD>
         <TD vAlign=top width="75%">Your TSO password</TD></TR>
     <TR><TD vAlign=top width="25%"><TT>d:</TT></TD>
-        <TD vAlign=top width="75%">Your drive containing the #type files</TD></TR>
+        <TD vAlign=top width="75%">Your drive containing the ##type files</TD></TR>
     <TR><TD vAlign=top width="25%"><TT>hlq</TT></TD>
         <TD vAlign=top width="75%">High-level qualifier that you used for the
           data set that you allocated in the job above</TD></TR>
@@ -127,27 +133,27 @@ Password:</I> <STRONG>tsopw</STRONG>
 <I>200 Representation type is Image
 
 <!--cut07-->
-</I>ftp&gt; <STRONG>put d:\#name</STRONG>
+</I>ftp&gt; <STRONG>put d:\##name</STRONG>
 <I>200 Port request OK.
-125 Storing data set #hlq.#name
+125 Storing data set #hlq.##name
 250 Transfer completed successfully
-#bytes bytes sent in 0.28 seconds
+##bytes bytes sent in 0.28 seconds
 
 <!--cut08-->
 </I>ftp&gt; <STRONG>quit</STRONG>
 <I>221 Quit command received. Goodbye.</I>
   </PRE>
 
-  <H3><A name="hold">SMP/E hold information for the #type</A></H3>
+  <H3><A name="hold">SMP/E hold information for the ##type</A></H3>
   <PRE>
 <!--cut09-->
-  #holddata
+  ##holddata
 <!--cut10-->
   </PRE>
 
   <H3><A name="acpt">Perform SMP/E ACCEPT for the prerequisites</A></H3>
   <P>SMP/E ACCEPT the prerequisites to facilitate an easy backout of the
-    #type, if required. Note that once accepted, you cannot backout the
+    ##type, if required. Note that once accepted, you cannot backout the
     accepted prerequisites.</P>
 
   <P>This step can be skipped if there are no prerequisites, or if
@@ -166,22 +172,23 @@ Password:</I> <STRONG>tsopw</STRONG>
 //SMPCNTL  DD *
    SET BOUNDARY(<STRONG>#dzone</STRONG>) .
    ACCEPT SELECT(
+      ##fmid
 <!--cut11-->
-#pre
+##pre
 <!--cut12-->
    ) REDO COMPRESS(ALL) BYPASS(HOLDSYS,HOLDERROR).
 //*
   </PRE>
 
-  <H3><A name="smpe">Perform SMP/E RECEIVE and APPLY for the #type</A></H3>
-  <P>SMP/E RECEIVE and APPLY the #type.</P>
+  <H3><A name="smpe">Perform SMP/E RECEIVE and APPLY for the ##type</A></H3>
+  <P>SMP/E RECEIVE and APPLY the ##type.</P>
 
   <P>You can do this by submitting the job below. Add a job card and
      modify the parameters to meet your site's requirements before
      submitting.</P>
   <PRE>
 //*
-//* Change #hlq to the high level qualifier used to upload the #type.
+//* Change #hlq to the high level qualifier used to upload the ##type.
 //* Change #globalcsi to the data set name of your global CSI.
 //* Change #tzone to your CSI target zone name.
 //* Once the APPLY CHECK is successful, remove the CHECK operand
@@ -192,15 +199,15 @@ Password:</I> <STRONG>tsopw</STRONG>
 //*
 //RECEIVE  EXEC PGM=GIMSMP,REGION=0M
 //SMPCSI   DD DISP=OLD,DSN=&CSI
-//SMPPTFIN DD DISP=SHR,DSN=&HLQ..#name1
+//SMPPTFIN DD DISP=SHR,DSN=&HLQ..##name1
 <!--cut13-->
-#dsnreq
+##dsnreq
 <!--cut14-->
 //SMPCNTL  DD *
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT(
-     #ptf1
-     #req
+     ##ptf1
+     ##req
    ) SYSMODS LIST .
 //*
 //APPLY    EXEC PGM=GIMSMP,REGION=0M
@@ -208,8 +215,8 @@ Password:</I> <STRONG>tsopw</STRONG>
 //SMPCNTL  DD *
    SET BOUNDARY(<STRONG>#tzone</STRONG>) .
    APPLY SELECT(
-     #ptf1
-     #req
+     ##ptf1
+     ##req
    )
    CHECK
    BYPASS(HOLDSYS,HOLDERROR)
