@@ -149,7 +149,7 @@ read_yaml() {
   fconv="${utils_dir}/fconv/src/index.js"
   jq="${utils_dir}/njq/src/index.js"
 
-  node "${fconv}" "${file}" | node "${jq}" -r "${key}"
+  node "${fconv}" --input-format=yaml "${file}" | node "${jq}" -r "${key}"
   return $?
 }
 
