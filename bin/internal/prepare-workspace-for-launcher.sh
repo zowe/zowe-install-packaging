@@ -14,9 +14,10 @@
 # This script will prepare Zowe workspace for Zowe Launcher.
 ################################################################################
 
-while getopts "c:" opt; do
+while getopts "c:r:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -26,9 +27,7 @@ done
 
 # export this to other scripts
 export INSTANCE_DIR
-# find runtime directory to locate the scripts
-# this value should be trustworthy since this script is not supposed to be sourced
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+export ROOT_DIR
 
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 . ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
