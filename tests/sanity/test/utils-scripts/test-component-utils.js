@@ -137,13 +137,13 @@ describe('verify utils/component-utils', function() {
     it('test reading component manifest with an invalid manifest.yaml file', async function() {
       const manifest_file = 'manifest.yaml';
       await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && cd ${component_runtime_dir} && touch ${manifest_file} && chmod u+w ${manifest_file}`);
-      await sshHelper.executeCommandWithNoError(`echo -test: test-value >> ${component_runtime_dir}/${manifest_file}`);
+      await sshHelper.executeCommandWithNoError(`echo 'invalid: "invalid-value' >> ${component_runtime_dir}/${manifest_file}`);
       await test_component_function_has_expected_rc_stdout_stderr(
-        'echo $' + `(${read_component_manifest} "${component_runtime_dir}" ".test" 2>&1)`,
+        'echo $' + `(${read_component_manifest} "${component_runtime_dir}" ".invalid" 2>&1)`,
         {},
         {
           rc: 0,
-          stdout:'null',
+          stdout:'Error: error reading input file: Missing closing "quote Error: Unexpected end of JSON input',
         }
       );
     });
