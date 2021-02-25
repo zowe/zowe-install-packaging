@@ -142,7 +142,10 @@ echo " "
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 #function main { }     # dummy function to simplify program flow parsing
-main() { echo }       # dummy function to simplify program flow parsing
+main()
+{
+  echo
+}       # dummy function to simplify program flow parsing
 
 # misc setup
 TMPDIR=${TMPDIR:-/tmp}
@@ -202,6 +205,7 @@ fi    #
 jclDir="$(cd $jclDir 2>&1;pwd)"            # make this an absolute path
 jobCard=$jclDir/$jobCard
 work=$jclDir/$work
+input=$(cd "$(dirname "${input}")"; pwd)/$(basename "${input}")
 
 # show input/output details
 echo "-- input:  $input"

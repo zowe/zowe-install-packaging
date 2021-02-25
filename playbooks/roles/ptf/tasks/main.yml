@@ -30,14 +30,30 @@
     mkdir -p "{{ work_dir_remote }}/extracted"
 
 # ============================================================================
-# Upload JCLs to remote work space
-- name: Copy PTF installation JCLs to local tmp folder
+# Generate JCLs used to install PTF
+- name: Copy job card to local tmp folder
   copy:
-    src: "jcl/{{ item }}.jcl"
+    src: "{{ item }}"
     dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
   delegate_to: localhost
-  loop: "{{ zowe_ptf_install_jcls }}"
+  loop:
+  - "jcl/jobcard.jcl"
+  - "scripts/smpe-prepare-jcls.sh"
 
+- name: Generate PTF install JCLs
+  delegate_to: localhost
+  shell:
+    cmd: chmod +x smpe-prepare-jcls.sh && ./smpe-prepare-jcls.sh -i "{{ zowe_smpe_ptf_readme }}" -j ./
+    chdir: "{{ work_dir_local }}/{{ inventory_hostname }}"
+
+- name: List JCLs created
+  delegate_to: localhost
+  shell:
+    cmd: ls -l *.jcl
+    chdir: "{{ work_dir_local }}/{{ inventory_hostname }}"
+
+# ============================================================================
+# Upload JCLs to remote work space
 - name: Upload PTF installation JCLs
   include_role:
     name: common
