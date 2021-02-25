@@ -97,11 +97,19 @@ const expectStringMatchExceptEmpty = async (actual, expected) => {
   }
 };
 
+const getTmpDir = async () => {
+  const tmpDir = await executeCommandWithNoError('echo ${TMPDIR:-${TMP:-/tmp}}');
+  debug(`TMP=${tmpDir}`);
+
+  return tmpDir;
+};
+
 // export constants and methods
 module.exports = {
   prepareConnection,
   cleanUpConnection,
   executeCommand,
   executeCommandWithNoError,
-  testCommand
+  testCommand,
+  getTmpDir,
 };
