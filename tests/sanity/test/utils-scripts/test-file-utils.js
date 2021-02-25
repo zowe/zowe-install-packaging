@@ -22,13 +22,11 @@ describe('verify file-utils', function() {
   });
 
   before('set up temporary directory', async function() {
-    let tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMPDIR}"');
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    if (!tmpOnServer) {
-      tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMP}"');
-    }
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    TMP_DIR = tmpOnServer || '/tmp';
+    TMP_DIR = await sshHelper.executeCommandWithNoError('get_tmp_dir', {
+      sources: [
+        `${process.env.ZOWE_ROOT_DIR}/bin/utils/common.sh`,
+      ]
+    });
     component_runtime_dir = `${TMP_DIR}/${TMP_EXT_DIR}/${dummy_component_name}`;
   });
 
