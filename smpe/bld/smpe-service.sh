@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2021
 #######################################################################
 
 #% package prepared product as service (++USERMOD, ++APAR, ++PTF)
@@ -617,7 +617,7 @@ do
   # TODO rework when +8 REQ sysmods
   SED=""
   SED="$SED;s/#SySmOdNaMe/$sysmodName/"
-  SED="$SED;s/^#req$/$req/"
+  SED="$SED;s~^#req$~$req~"                 # $req can be "/* REQ() */"
   _sedMVS -s $header "$SYSMOD"
 
   # prime merge JCL
@@ -799,7 +799,7 @@ do
 
   # append customized data
   # expected xx05 content:
-  # //#ptf8 DD DSN=&HLQ..#name,
+  # //##ptf8 DD DSN=&HLQ..##name,
   # //            DISP=(NEW,CATLG,DELETE),
   # //            DSORG=PS,
   # //            RECFM=FB,
@@ -807,11 +807,11 @@ do
   # //            UNIT=SYSALLDA,
   # //*            VOL=SER=<STRONG>#volser</STRONG>,
   # //*            BLKSIZE=6160,
-  # //            SPACE=(TRK,(#pri,15))
+  # //            SPACE=(TRK,(##pri,15))
   SED=""
-  SED="$SED;s/#ptf8/$sysmod8/"
-  SED="$SED;s/#name/$name/"
-  SED="$SED;s/#pri/$trk/"
+  SED="$SED;s/##ptf8/$sysmod8/"
+  SED="$SED;s/##name/$name/"
+  SED="$SED;s/##pri/$trk/"
   _cmd --save $log/$html sed "$SED" $ptf/xx05
 done < $ptf/$tracks    # while read
 
@@ -827,14 +827,14 @@ do
 
   # append customized data
   # expected xx07 content:
-  # </I>ftp&gt; <STRONG>put d:\#name</STRONG>
+  # </I>ftp&gt; <STRONG>put d:\##name</STRONG>
   # <I>200 Port request OK.
-  # 125 Storing data set #hlq.#name
+  # 125 Storing data set #hlq.##name
   # 250 Transfer completed successfully
-  # #bytes bytes sent in 0.28 seconds
+  # ##bytes bytes sent in 0.28 seconds
   SED=""
-  SED="$SED;s/#name/$name/"
-  SED="$SED;s/#bytes/$bytes/"
+  SED="$SED;s/##name/$name/"
+  SED="$SED;s/##bytes/$bytes/"
   _cmd --save $log/$html sed "$SED" $ptf/xx07
 done < $ptf/$tracks    # while read
 
@@ -904,18 +904,19 @@ do
   coreq="$coreq $sysmod"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 coreq=$(echo $coreq)                              # strip leading blank
+test -z "$coreq" && coreq="none"   # dummy value if there are no coreqs
 test $debug && echo "coreq=$coreq"
 
 # customize common variables
 SED=""
-SED="$SED;s/#type/$sysmodType/"
-SED="$SED;s/#name1/$name1/"
-SED="$SED;s/#ptf1/$sysmod1/"
-SED="$SED;s/#fmid/$FMID/"
-SED="$SED;s/#rework/$julian7 ($yyyymmdd)/"
+SED="$SED;s/##type/$sysmodType/"
+SED="$SED;s/##name1/$name1/"
+SED="$SED;s/##ptf1/$sysmod1/"
+SED="$SED;s/##fmid/$FMID/"
+SED="$SED;s/##rework/$julian7 ($yyyymmdd)/"
 SED="$SED;s/#vrm/$VERSION/"
-SED="$SED;s^#branch^$BRANCH (build $BUILD)^" # ^ not allowed in branch name
-SED="$SED;s/#req/$coreq/"
+SED="$SED;s^##branch^$BRANCH (build $BUILD)^" # ^ not allowed in branch name
+SED="$SED;s/##req/$coreq/"
 _sed $log/$html
 
 # no longer needed
