@@ -12,9 +12,24 @@ const sshHelper = require('../ssh-helper');
 
 
 describe('verify file-utils', function() {
+  let TMP_DIR;
+  const TMP_EXT_DIR = 'sanity_test_files_utils';
+  const dummy_component_name = 'sanity_test_dummy';
+  let component_runtime_dir;
 
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
+  });
+
+  before('set up temporary directory', async function() {
+    let tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMPDIR}"');
+    tmpOnServer = tmpOnServer && tmpOnServer.trim();
+    if (!tmpOnServer) {
+      tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMP}"');
+    }
+    tmpOnServer = tmpOnServer && tmpOnServer.trim();
+    TMP_DIR = tmpOnServer || '/tmp';
+    component_runtime_dir = `${TMP_DIR}/${TMP_EXT_DIR}/${dummy_component_name}`;
   });
 
   let home_dir;
@@ -123,7 +138,7 @@ describe('verify file-utils', function() {
       const command = `${validate_file_is_accessible} "${file}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_err = expected_valid ? '' : get_inaccessible_message(file);
-      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_err, expected_err);
     }
   });
 
@@ -162,7 +177,7 @@ describe('verify file-utils', function() {
       const command = `validate_directory_is_accessible "${directory}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_err = expected_valid ? '' : get_inaccessible_message(directory);
-      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_err, expected_err);
     }
 
     const validate_directories_are_accessible = 'validate_directories_are_accessible';
@@ -190,7 +205,7 @@ describe('verify file-utils', function() {
           return `Error ${index}: ${get_inaccessible_message(directory)}`;
         });
         const expected_err = error_list.join('\n');
-        await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+        await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_err, expected_err);
       }
     });
 
@@ -204,7 +219,7 @@ describe('verify file-utils', function() {
       const command = `validate_directory_is_writable "${directory}"`;
       const expected_rc = 1;
       const expected_err = get_inaccessible_message(directory);
-      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_err, expected_err);
     });
 
     // zip-1377 Marist's ACF2 and TS id seems to have elevated privileges be able to write non-writable directories, so this fails
@@ -216,7 +231,7 @@ describe('verify file-utils', function() {
       const command = `validate_directory_is_writable "${directory}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_err = expected_valid ? '' : `Directory '${directory}' does not have write access`;
-      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_err, expected_err);
     }
   });
 
@@ -260,6 +275,121 @@ describe('verify file-utils', function() {
       await sshHelper.executeCommandWithNoError(`rm -rf ${temp_dir}`);
     });
   });
+
+  const read_yaml = 'read_yaml';
+  describe(`verify ${read_yaml}`, function() {
+
+    before('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir}`);
+    });
+
+    after('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir}`);
+    });
+
+    it('test read component name', async function() {
+      const component = 'api-catalog';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/manifest.yaml`;
+      const key = '.name';
+      await test_read_yaml(file, key, component);
+    });
+
+    it('test read non-existing entry in component manifest', async function() {
+      const component = 'api-catalog';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/manifest.yaml`;
+      const key = '.unexistingProperty';
+      await test_read_yaml(file, key, null);
+    });
+
+    it('test read component manifest with incorrect key', async function() {
+      const component = 'api-catalog';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/manifest.yaml`;
+      const key = '.apimlServices.dynamic.serviceId';
+      await test_read_yaml(file, key, null);
+    });
+
+    it('test read component manifest with correct key', async function() {
+      const component = 'api-catalog';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/manifest.yaml`;
+      const key = '.apimlServices.dynamic[].serviceId';
+      await test_read_yaml(file, key, 'apicatalog');
+    });
+
+    it('test read component yaml template', async function() {
+      const component = 'jobs-api';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/apiml-static-registration.yaml.template`;
+      const key = '.services[].serviceId';
+      await test_read_yaml(file, key, 'jobs');
+    });
+
+    it('test invalid yaml file', async function() {
+      const invalid_yaml = 'invalid.yaml';
+      await sshHelper.executeCommandWithNoError(`cd ${component_runtime_dir} && touch ${invalid_yaml} && chmod u+w ${invalid_yaml}`);
+      await sshHelper.executeCommandWithNoError(`echo 'invalid: "invalid_value' >> ${component_runtime_dir}/${invalid_yaml}`);
+      const file = `${component_runtime_dir}/${invalid_yaml}`;
+      const key = '.invalid';
+      const err_msg = 'Error: error reading input file: Missing closing "quote';
+      await test_read_yaml(file, key, '', false, err_msg);
+    });
+
+    async function test_read_yaml(file, key, expected_output, expected_valid=true, expected_err='') {
+      const command = `${read_yaml} "${file}" "${key}"`;
+      const expected_rc = expected_valid ? 0 : 1;
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_output, expected_err);
+    }
+  });
+
+  //add invalid files (invalid yaml and json)
+  const read_json = 'read_json';
+  describe(`verify ${read_json}`, function() {
+    
+    before('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir}`);
+    });
+
+    after('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir}`);
+    });
+
+    const file_name = 'pluginDefinition.json';
+
+    it('test read component\'s pluginDefinition identifier', async function() {
+      const component = 'explorer-jes';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/${file_name}`;
+      const key = '.identifier';
+      await test_read_json(file, key, 'org.zowe.explorer-jes');
+    });
+
+    it('test read non-existing entry in pluginDefinition', async function() {
+      const component = 'explorer-jes';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/${file_name}`;
+      const key = '.unexistingProperty';
+      await test_read_json(file, key, null);
+    });
+
+    it('test read pluginDefinition with correct key', async function() {
+      const component = 'explorer-jes';
+      const file = `${process.env.ZOWE_ROOT_DIR}/components/${component}/${file_name}`;
+      const key = '.webContent.framework';
+      await test_read_json(file, key, 'iframe');
+    });
+
+    it('test invalid json file', async function() {
+      const invalid_json = 'invalid.json';
+      await sshHelper.executeCommandWithNoError(`cd ${component_runtime_dir} && touch ${invalid_json} && chmod u+w ${invalid_json}`);
+      await sshHelper.executeCommandWithNoError(`echo '{invalid: "invalid"}' >> ${component_runtime_dir}/${invalid_json}`);
+      const file = `${component_runtime_dir}/${invalid_json}`;
+      const key = '.invalid';
+      const err_msg = 'Error: Unexpected token';
+      await test_read_json(file, key, '', false, err_msg);
+    });
+
+    async function test_read_json(file, key, expected_output, expected_valid=true, expected_err='') {
+      const command = `${read_json} "${file}" "${key}"`;
+      const expected_rc = expected_valid ? 0 : 1;
+      await test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_output, expected_err);
+    }
+  });
   
   async function test_file_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr) {
     await sshHelper.testCommand(command, {
@@ -267,12 +397,13 @@ describe('verify file-utils', function() {
         'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR,
       },
       sources: [
-        process.env.ZOWE_ROOT_DIR + '/bin/utils/file-utils.sh',
+        //process.env.ZOWE_ROOT_DIR + '/bin/utils/file-utils.sh',
+        process.env.ZOWE_ROOT_DIR + '/bin/internal/prepare-environment.sh -c ' + process.env.ZOWE_INSTANCE_DIR + ' -r ' + process.env.ZOWE_ROOT_DIR,
       ]
     }, {
       rc: expected_rc,
       // Whilst printErrorMessage outputs to STDERR and STDOUT we need to expect the err in both
-      stdout: expected_stderr || expected_stdout,
+      stdout: expected_stdout,
       stderr: expected_stderr,
     });
   }
