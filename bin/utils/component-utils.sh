@@ -262,26 +262,23 @@ read_component_manifest() {
   fi
   # node should have already been put into PATH
 
-  utils_dir="${ROOT_DIR}/bin/utils"
   component_name=$(basename "${component_dir}")
-  fconv="${utils_dir}/fconv/src/index.js"
-  jq="${utils_dir}/njq/src/index.js"
   manifest_in_workspace=
   if [ -n "${WORKSPACE_DIR}" ]; then
     manifest_in_workspace="${WORKSPACE_DIR}/${component_name}/.manifest.json"
   fi
 
   if [ -n "${manifest_in_workspace}" -a -f "${manifest_in_workspace}" ]; then
-    cat "${manifest_in_workspace}" | node "${jq}" -r "${manifest_key}"
+    read_json "${manifest_in_workspace}" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yaml" ]; then
-    node "${fconv}" "${component_dir}/manifest.yaml" | node "${jq}" -r "${manifest_key}"
+    read_yaml "${component_dir}/manifest.yaml" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yml" ]; then
-    node "${fconv}" "${component_dir}/manifest.yml" | node "${jq}" -r "${manifest_key}"
+    read_yaml "${component_dir}/manifest.yml" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.json" ]; then
-    cat "${component_dir}/manifest.json" | node "${jq}" -r "${manifest_key}"
+    read_json "${component_dir}/manifest.json" "${manifest_key}"
     return $?
   else
     >&2 echo "no manifest found in ${component_dir}"

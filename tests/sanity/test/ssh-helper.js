@@ -44,16 +44,30 @@ const cleanUpConnection = () => {
   ssh.dispose();
 };
 
+const prepareCommands = (command, context = {})  =>{
+  const commands = [];
+  if (context && context.envs) {
+    for (const key in context.envs) {
+      commands.push(`export ${key}=${context.envs[key]}`);
+    }
+  }
+  if (context && context.sources) {
+    for (const src of context.sources) {
+      commands.push(`. ${src}`);
+    }
+  }
+  commands.push(command);
+  return commands.join('\n');
+};
 // Runs the command, ensures rc = 0 and there is no stderr and returns stdout value
-const executeCommandWithNoError = async(command) => {
-  const {rc, stdout, stderr} = await executeCommand(command);
+const executeCommandWithNoError = async(command, context = {}) => {
+  const {rc, stdout, stderr} = await executeCommand(prepareCommands(command, context));
   expect(rc).to.equal(0);
   expect(stderr).to.be.empty;
   return stdout;
 };
-
-const executeCommand = async (command) => {
-  const result = await ssh.execCommand(command);
+const executeCommand = async (command, context = {}) => {
+  const result = await ssh.execCommand(prepareCommands(command, context));
   const rc = result.code;
   const stdout = result.stdout;
   const stderr = result.stderr;
