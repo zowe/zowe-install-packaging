@@ -12,7 +12,7 @@ ZOWE_BUILD=$1
 ZOWE_TARGET_NAME=zowe.pax
 
 # this is workdir expected
-cd /home/zowe
+cd /tmp
 
 if [ "$ZOWE_BUILD" = "latest" ]; then
   echo "Downloading most recent release ..."

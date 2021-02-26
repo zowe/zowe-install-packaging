@@ -40,14 +40,16 @@ RUN cd /home/zowe/utils/autoconv && \
     ln -s ./autoconv/bin/autoconv ../autoconv.sh
 
 # copy run.sh and optional zowe.pax
-COPY run.sh zowe.pax* /home/zowe/
+COPY run.sh /home/zowe
+COPY zowe.pax* /tmp
+
 # download zowe build if specified
 RUN /home/zowe/utils/download-zowe-build.sh "${ZOWE_BUILD}"
 
 # 1. Convert content of pax files from ebcdic to ASCII
 # 2. replace or remove some zos specific parameters
 # 3. Install zowe, then remove installer files
-RUN cd /home/zowe/zowe-install && \
+RUN mkdir -p /tmp/zowe-install && cd /tmp/zowe-install && \
     tar -xvf ../zowe.pax --strip 1 && \
     find . -type f -iregex '.*\.\(rexx\|js\|sh\|json\|jcl\|yaml\|clist\|env\)$' -exec sh -c "conv '{}' | sponge '{}'" \; && \
     find . -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \; && \
@@ -59,7 +61,7 @@ RUN cd /home/zowe/zowe-install && \
     sed -i 's/java version/openjdk version/' scripts/utils/validate-java.sh && \
     \
     \
-    cd /home/zowe/zowe-install/files && \
+    cd /tmp/zowe-install/files && \
     for f in *.pax; do \
         echo "Processing $f file." && \
         rm -rf tmp && \
@@ -87,23 +89,19 @@ RUN cd /home/zowe/zowe-install && \
     done && \
     \
     \
-    /home/zowe/zowe-install/install/zowe-install.sh -i /home/zowe/install -l /home/zowe/logs && \
+    /tmp/zowe-install/install/zowe-install.sh -i /home/zowe/install -l /home/zowe/logs && \
   	bash -c "/home/zowe/install/bin/zowe-configure-instance.sh -c /home/zowe/instance" && \
     \
     \
     cd /home/zowe/install/components/explorer-ui-server && \
     rm -rf node_modules && \
     npm install --only=prod --ignore-scripts && \
-    rm -f /home/zowe/*.pax && \
-    rm -rf /home/zowe/zowe-install && \
     cd /home/zowe/install/components && \
     find */bin -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \;
 
 # Could be modified during runtime, back it up.
 RUN cp /home/zowe/instance/instance.env /home/zowe/instance/instance.env.bkp \
     && cp /home/zowe/install/bin/zowe-setup-certificates.env /home/zowe/install/bin/zowe-setup-certificates.env.bkp
-
-RUN chown -R zowe:zowe /home/zowe
 
 FROM ompzowe/zowecicd-node12-java8:v2.0
 
@@ -123,7 +121,7 @@ ENV ZWED_agent_http_port='8542'
 
 ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
 
-COPY --from=builder /home/zowe /home/zowe
+COPY --chown=zowe:zowe --from=builder /home/zowe /home/zowe
 
 USER zowe
 

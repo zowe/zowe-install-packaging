@@ -5,6 +5,19 @@ then
     sleep infinity
 else
 
+ROOT_DIR="/home/zowe/install"
+
+if [ -d "/root/zowe/apps" ]; then
+    apps_dir="/root/zowe/apps"
+else
+    apps_dir="/home/zowe/apps"
+fi
+if [ -d "/root/zowe/certs" ]; then
+    certs_dir="/root/zowe/certs"
+else
+    certs_dir="/home/zowe/certs"
+fi
+
 
 if [ -n "$HOSTNAME" ]; then
   if [ -z "$ZOWE_EXPLORER_HOST" ]; then
@@ -13,28 +26,40 @@ if [ -n "$HOSTNAME" ]; then
 fi
 
 if [ -z "${EXTERNAL_INSTANCE}" ]; then
-	if [ -z "${INSTANCE_DIR}" ]; then
+  if [ -d "/home/zowe/external_instance" ]; then
+    export EXTERNAL_INSTANCE="/home/zowe/external_instance"
+    export INSTANCE_DIR="/home/zowe/external_instance"
+  elif [ -d "/root/zowe/external_instance" ]; then
+    export EXTERNAL_INSTANCE="/root/zowe/external_instance"
+    export INSTANCE_DIR="/root/zowe/external_instance"
+  elif [ -z "${INSTANCE_DIR}" ]; then
 		export INSTANCE_DIR=/home/zowe/instance
 	fi
 else
 	export INSTANCE_DIR=$EXTERNAL_INSTANCE
 fi
 
-if [ -d "/home/zowe/apps" ]; then
+if [ -d "${apps_dir}" ]; then
   export ZLUX_ROOT=/home/zowe/install/components/app-server/share
-  cd /home/zowe/apps
+  cd ${apps_dir}
   for D in */;
    do
     if test -f "$D/autoinstall.sh"; then
       app=$(cd $D && pwd)
       ZLUX_ROOT=$ZLUX_ROOT APP_PLUGIN_DIR=app ./$D/autoinstall.sh
     elif test -f "$D/pluginDefinition.json"; then
-      $INSTANCE_DIR/bin/install-app.sh /home/zowe/apps/$D
+        $INSTANCE_DIR/bin/install-app.sh ${apps_dir}/$D
+    elif test -f "$D/manifest.yaml"; then
+        $ROOT_DIR/bin/zowe-install-component.sh -o ${apps_dir}/$D -i $INSTANCE_DIR
+    elif test -f "D/manifest.yml"; then
+        $ROOT_DIR/bin/zowe-install-component.sh -o ${apps_dir}/$D -i $INSTANCE_DIR
+    elif test -f "D/manifest.json"; then
+        $ROOT_DIR/bin/zowe-install-component.sh -o ${apps_dir}/$D -i $INSTANCE_DIR
     fi
   done
 fi
 
-if [ ! -d "/home/zowe/certs" ]; then
+if [ ! -d "${certs_dir}" ]; then
     input1="/home/zowe/install/bin/zowe-setup-certificates.env.bkp"
     while read -r line
     do
