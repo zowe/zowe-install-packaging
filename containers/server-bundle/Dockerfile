@@ -32,6 +32,7 @@ RUN mkdir /home/zowe/utils && \
     mkdir /home/zowe/samples
 COPY utils/ /home/zowe/utils/
 COPY start.sh /home/zowe/samples/
+COPY NOTICE.txt LICENSE.txt /home/zowe/
 
 RUN cd /home/zowe/utils/autoconv && \
     npm install && \
