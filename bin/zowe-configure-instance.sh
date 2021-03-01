@@ -258,6 +258,9 @@ if [[ $RETURN_CODE != "0" ]]; then
   print_and_log_message "         everyone. To properly setup instance directory permission, please add both"
   print_and_log_message "         install user ${current_user} and Zowe runtime user to ${ZOWE_GROUP} group."
   print_and_log_message ""
+  print_and_log_message "         If you don't have ${ZOWE_GROUP} group or want to set a specific Zowe administrator"
+  print_and_log_message "         group, please run this command again with the -g flag."
+  print_and_log_message ""
   chmod 777 ${INSTANCE_DIR}
 fi
 chmod -R 755 ${INSTANCE}
