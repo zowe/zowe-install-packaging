@@ -70,7 +70,7 @@ prepare_workspace_dir() {
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
   cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
-  # STATIC_DEF_CONFIG_DIR maybe exist if discovery is not started in this instance
+  # STATIC_DEF_CONFIG_DIR maybe not have a value if discovery is not started in this instance
   if [ -n "${STATIC_DEF_CONFIG_DIR}" ]; then
     # create static definition directory
     mkdir -p ${STATIC_DEF_CONFIG_DIR}
