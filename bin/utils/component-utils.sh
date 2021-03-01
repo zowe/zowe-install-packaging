@@ -470,8 +470,8 @@ process_component_desktop_iframe_plugin() {
 ###############################
 # Parse and process manifest App Framework Plugin (appfwPlugins) definitions
 #
-# The supported manifest entry is ".appfwPlugins". All files defined
-# here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
+# The supported manifest entry is ".appfwPlugins". All plugins
+# defined will be passed to install-app.sh for proper installation.
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
