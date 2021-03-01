@@ -277,13 +277,6 @@ for component_name in ${component_list}; do
     --core --log-file "${LOG_FILE}"
 done
 
-# after (re-)configure, copy manifest to <instance-dir> so we know a re-configure has been done
-cp "${ZOWE_ROOT_DIR}/manifest.json" "${INSTANCE_DIR}/manifest.json" 1> /dev/null 2> /dev/null
-chmod 770 "${INSTANCE_DIR}/manifest.json" 1> /dev/null 2> /dev/null
-if [[ $RETURN_CODE != "0" ]]; then
-  chmod 777 "${INSTANCE_DIR}/manifest.json" 1> /dev/null 2> /dev/null
-fi
-
 echo
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
