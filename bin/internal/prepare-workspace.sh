@@ -64,28 +64,30 @@ prepare_workspace_dir() {
   # to put the plugin definition back into workspace/app-server/plugins folder
   # if workspace is deleted.
   require_re_configure=false
-  if [ ! -d "${WORKSPACE_DIR}" ]; then
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "workspace doesn't exist ..."
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure on the instance is required"
-    # not exist -  we need to run zowe-configure-instance.sh
-    require_re_configure=true
+
+  # check if instance is created with old version of zowe
+  runtime_version=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+  if [ -f "${INSTANCE_DIR}/manifest.json" ]; then
+    # from v1.20.0, manifest.json will be copied to instance-dir by zowe-configure-instance.sh
+    instance_version=$(cat ${INSTANCE_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
   elif [ -f "${WORKSPACE_DIR}/manifest.json" ]; then
-    # exist and manifest.json is still there
-    # check if workspace is created with old version of zowe
-    runtime_version=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-    workspace_version=$(cat ${WORKSPACE_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-    if [ "${runtime_version}" != "${workspace_version}" ]; then
-      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "workspace is on version ${workspace_version} which is not same as zowe version ${runtime_version}"
-      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure on the instance is required"
-      require_re_configure=true
-    fi
+    # we may have manifest in workspace folder
+    instance_version=$(cat ${WORKSPACE_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+  else
+    instance_version=unknown
   fi
-  # QUESTION: can we re-configure the instance here? we may see many perission failures because the old workspace
-  #           is very likely created under install user, not zowe runtime user.
-  # if [ "${require_re_configure}" = "true" ]; then
-  #   print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure zowe ..."
-  #   $(${ROOT_DIR}/bin/zowe-configure-instance.sh -c "${INSTANCE_DIR}")
-  # fi
+  if [ "${runtime_version}" != "${instance_version}" ]; then
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "instance is generated from an older version (${instance_version}) which is not same as currrent running Zowe version (${runtime_version})"
+    require_re_configure=true
+  fi
+
+  if [ "${require_re_configure}" = "true" ]; then
+    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure on the instance is required"
+    # QUESTION: can we re-configure the instance here? we may see many perission failures because the old workspace
+    #           is very likely created under install user, not zowe runtime user.
+    #   print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure zowe ..."
+    #   $(${ROOT_DIR}/bin/zowe-configure-instance.sh -c "${INSTANCE_DIR}")
+  fi
 
   mkdir -p ${WORKSPACE_DIR}
   # Make accessible to group so owning user can edit?
@@ -96,6 +98,9 @@ prepare_workspace_dir() {
   fi
 
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
+  # we copied manifest both to INSTANCE_DIR and WORKSPACE_DIR
+  # the version in WORKSPACE_DIR is kept for back compatibile purpose
+  # zowe start script will check the one in INSTANCE_DIR to determine if a re-configure has been done or not
   cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
   # create static definition directory

@@ -274,13 +274,11 @@ for component_name in ${component_list}; do
     --core --log-file "${LOG_FILE}"
 done
 
-# after (re-)configure, if we have workspace/manifest.json, we can update to latest version
-if [ -f "${INSTANCE_DIR}/workspace/manifest.json" ]; then
-  cp "${ZOWE_ROOT_DIR}/manifest.json" "${INSTANCE_DIR}/workspace/manifest.json" 1> /dev/null 2> /dev/null
-  chmod 770 "${INSTANCE_DIR}/workspace/manifest.json" 1> /dev/null 2> /dev/null
-  if [[ $RETURN_CODE != "0" ]]; then
-    chmod 777 "${INSTANCE_DIR}/workspace/manifest.json" 1> /dev/null 2> /dev/null
-  fi
+# after (re-)configure, copy manifest to <instance-dir> so we know a re-configure has been done
+cp "${ZOWE_ROOT_DIR}/manifest.json" "${INSTANCE_DIR}/manifest.json" 1> /dev/null 2> /dev/null
+chmod 770 "${INSTANCE_DIR}/manifest.json" 1> /dev/null 2> /dev/null
+if [[ $RETURN_CODE != "0" ]]; then
+  chmod 777 "${INSTANCE_DIR}/manifest.json" 1> /dev/null 2> /dev/null
 fi
 
 echo
