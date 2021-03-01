@@ -77,11 +77,12 @@ print_formatted_message() {
   # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
   expected_log_level_var=ZWE_LOG_LEVEL_${service}
   expected_log_level_val=$(eval "echo \${$expected_log_level_var}")
+  expected_log_level_val=$(echo "${expected_log_level_val}" | tr '[:lower:]' '[:upper:]')
   if [ -z "${expected_log_level_val}" ]; then
     expected_log_level_val=INFO
   fi
   display_log=false
-  case expected_log_level_val in
+  case ${expected_log_level_val} in
     ERROR)
       if [ "${level}" = "ERROR" ]; then
         display_log=true

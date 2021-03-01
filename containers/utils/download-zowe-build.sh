@@ -12,14 +12,18 @@ ZOWE_BUILD=$1
 ZOWE_TARGET_NAME=zowe.pax
 
 # this is workdir expected
-cd /root/zowe
+cd /tmp
 
 if [ "$ZOWE_BUILD" = "latest" ]; then
   echo "Downloading most recent release ..."
+  apt-get update && apt-get install -y wget --no-install-recommends
   wget -q "https://zowe.jfrog.io/zowe/libs-release-local/org/zowe/[RELEASE]/zowe-[RELEASE].pax" -O "$ZOWE_TARGET_NAME"
+  apt-get purge -y wget
 elif [[ $ZOWE_BUILD = https://* ]]; then
   echo "Downloading $ZOWE_BUILD ..."
+  apt-get update && apt-get install -y wget --no-install-recommends
   wget -q "$ZOWE_BUILD" -O "$ZOWE_TARGET_NAME"
+  apt-get purge -y wget
 else
   echo "Try to use local Zowe build (zowe.pax)"
 fi

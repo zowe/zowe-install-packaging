@@ -12,13 +12,21 @@
   - #upload
   - #hold
   - #acpt
-  - #smpe
+  - #receive
+  - #apply
+  - #delete
   - #boot
-  
-  Build customization will split the install instructions at all 
+  - #other
+
+  Build customization will split the install instructions at all
    "cut.." markers, and replace all unenven numbered blocks with custom
    data. Once the instructions are reassembled, remaining placeholders
    for build customization are replaced with data.
+
+  "jcl.." Markers must surround the sample JCL. Automated test will
+   extract the customized JCL for testing purposes.
+
+   DO_NOT_CHANGE_used_by_automation_FMID=##fmid
   -->
 <HEAD>
   <TITLE>Installation instructions for ##type ##ptf1 for FMID ##fmid</TITLE>
@@ -54,23 +62,31 @@
     <LI><A href="#upload">Upload the ##type from your workstation to z/OS</A>.</LI>
     <LI><A href="#hold">SMP/E hold information for the ##type</A>.</LI>
     <LI><A href="#acpt">Perform SMP/E ACCEPT for the prerequisites</A>.</LI>
-    <LI><A href="#smpe">Perform SMP/E RECEIVE and APPLY for the ##type</A>.</LI>
+    <LI><A href="#receive">Perform SMP/E RECEIVE for the ##type</A>.</LI>
+    <LI><A href="#apply">Perform SMP/E APPLY for the ##type</A>.</LI>
+    <LI><A href="#delete">Delete host data sets allocated for the ##type</A>.</LI>
     <LI><A href="#boot">Restart started tasks to activate changes</A>.</LI>
+    <LI><A href="#other">Sample SMP/E UCLIN, REJECT, and RESTORE JCL for the ##type</A>.</LI>
    </OL></P>
 
   <H3><A name=alloc>Allocate host data sets for the ##type</A></H3>
   <P>A sequential data set must be allocated on the z/OS system to receive the
-    ##type that you will upload from your workstation. You can do this by
-    submitting the job below. Add a job card and modify the parameters to meet
-    your site's requirements before submitting.</P>
+    ##type that you will upload from your workstation. </P>
+
+  <P>You can do this by submitting the JCL below. Add a job card and
+     modify the parameters to meet your site's requirements before
+     submitting.</P>
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl01-->
   <PRE>
 //*
-//* Change #hlq to the high level qualifier used to upload the ##type.
+//* Change #hlq to the high level qualifier used to upload the dataset.
 //* (optional) Uncomment and change #volser to specify a volume.
 //*
 //         SET HLQ=<STRONG>#hlq</STRONG>
 //*
-//ALLOC    EXEC PGM=IEFBR14
+//ALLOC    EXEC PGM=IEFBR14,COND=(4,LT)
 <!--cut05-->
 //##ptf8 DD DSN=&HLQ..##name,
 //            DISP=(NEW,CATLG,DELETE),
@@ -84,6 +100,7 @@
 <!--cut06-->
 //*
   </PRE>
+<!--jcl02-->
 
   <H3><A name=upload>Upload the ##type from your workstation to z/OS</A></H3>
   <P>Upload the file in binary format from your workstation to the z/OS data
@@ -105,10 +122,10 @@ by the user are in bold, and the following values are assumed:</P>
         <TD vAlign=top width="75%">High-level qualifier that you used for the
           data set that you allocated in the job above</TD></TR>
   </TBODY></TABLE>
-  <B>Note:</B> In this example, the FTP server is configured to start 
-  in MVS with your user ID as current high level qualifier. Adjust the 
-  <TT>cd ..</TT> command to match your system setup. 
-  <BR>If you start in a z/OS UNIX path, for example 
+  <B>Note:</B> In this example, the FTP server is configured to start
+  in MVS with your user ID as current high level qualifier. Adjust the
+  <TT>cd ..</TT> command to match your system setup.
+  <BR>If you start in a z/OS UNIX path, for example
   <TT>Working directory is "/u/tsouid".</TT>,
   then you can switch to the MVS side using <TT>cd //</TT>.
   <PRE>
@@ -159,15 +176,18 @@ Password:</I> <STRONG>tsopw</STRONG>
   <P>This step can be skipped if there are no prerequisites, or if
      there is a reason to not make a prerequisite permanent.</P>
 
-  <P>You can accept the prerequisites by submitting the job below.
+  <P>You can accept the prerequisites by submitting the JCL below.
      Add a job card and modify the parameters to meet your site's
      requirements before submitting.</P>
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl03-->
   <PRE>
 //*
 //* Change #globalcsi to the data set name of your global CSI.
 //* Change #dzone to your CSI distribution zone name.
 //*
-//ACCEPT   EXEC PGM=GIMSMP,REGION=0M
+//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=<STRONG>#globalcsi</STRONG>
 //SMPCNTL  DD *
    SET BOUNDARY(<STRONG>#dzone</STRONG>) .
@@ -179,25 +199,26 @@ Password:</I> <STRONG>tsopw</STRONG>
    ) REDO COMPRESS(ALL) BYPASS(HOLDSYS,HOLDERROR).
 //*
   </PRE>
+<!--jcl04-->
 
-  <H3><A name="smpe">Perform SMP/E RECEIVE and APPLY for the ##type</A></H3>
-  <P>SMP/E RECEIVE and APPLY the ##type.</P>
+  <H3><A name="receive">Perform SMP/E RECEIVE for the ##type</A></H3>
+  <P>SMP/E RECEIVE the ##type.</P>
 
-  <P>You can do this by submitting the job below. Add a job card and
+  <P>You can do this by submitting the JCL below. Add a job card and
      modify the parameters to meet your site's requirements before
      submitting.</P>
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl05-->
   <PRE>
 //*
-//* Change #hlq to the high level qualifier used to upload the ##type.
+//* Change #hlq to the high level qualifier used to upload the dataset.
 //* Change #globalcsi to the data set name of your global CSI.
-//* Change #tzone to your CSI target zone name.
-//* Once the APPLY CHECK is successful, remove the CHECK operand
-//* and run the APPLY step again to do the actual APPLY.
 //*
 //         SET HLQ=<STRONG>#hlq</STRONG>
 //         SET CSI=<STRONG>#globalcsi</STRONG>
 //*
-//RECEIVE  EXEC PGM=GIMSMP,REGION=0M
+//RECEIVE  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=&CSI
 //SMPPTFIN DD DISP=SHR,DSN=&HLQ..##name1
 <!--cut13-->
@@ -210,7 +231,28 @@ Password:</I> <STRONG>tsopw</STRONG>
      ##req
    ) SYSMODS LIST .
 //*
-//APPLY    EXEC PGM=GIMSMP,REGION=0M
+  </PRE>
+<!--jcl06-->
+
+  <H3><A name="apply">Perform SMP/E APPLY for the ##type</A></H3>
+  <P>SMP/E APPLY the ##type.</P>
+
+  <P>You can do this by submitting the JCL below. Add a job card and
+     modify the parameters to meet your site's requirements before
+     submitting.</P>
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl07-->
+  <PRE>
+//*
+//* Change #globalcsi to the data set name of your global CSI.
+//* Change #tzone to your CSI target zone name.
+//* Once the APPLY CHECK is successful, remove the CHECK operand
+//*  and run the APPLY step again to do the actual APPLY.
+//*
+//         SET CSI=<STRONG>#globalcsi</STRONG>
+//*
+//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=&CSI
 //SMPCNTL  DD *
    SET BOUNDARY(<STRONG>#tzone</STRONG>) .
@@ -223,8 +265,159 @@ Password:</I> <STRONG>tsopw</STRONG>
    REDO COMPRESS(ALL) .
 //*
   </PRE>
+<!--jcl08-->
+
+  <H3><A name="delete">Delete host data sets allocated for the ##type</A></H3>
+  <P>After a successful SMP/E RECEIVE, the data sets allocated to upload
+    the ##type can be removed.</P>
+
+  <P>You can do this by submitting the JCL below. Add a job card and
+     modify the parameters to meet your site's requirements before
+     submitting.</P>
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl09-->
+  <PRE>
+//*
+//* Change #hlq to the high level qualifier used to upload the dataset.
+//*
+//         SET HLQ=<STRONG>#hlq</STRONG>
+//*
+//DEALLOC  EXEC PGM=IEFBR14,COND=(4,LT)
+<!--cut15-->
+//##ptf8 DD DSN=&HLQ..##name,
+//            DISP=(OLD,DELETE,DELETE)
+<!--cut16-->
+//*
+  </PRE>
+<!--jcl10-->
 
   <H3><A name="boot">Restart started tasks to activate changes</A></H3>
   <P>Restart started tasks to activate changes.</P>
+
+  <H3><A name="other">Sample SMP/E UCLIN, REJECT, and RESTORE JCL for the ##type</A></H3>
+  <P>While normally not needed, there might be times you want to alter
+    your SMP/E environment, or undo the work you've done for this ##type.
+    To assist with this, sample JCL is provided as comments in the source
+    of this file.</P>
+  <UL>
+    <LI>SMP/E UCLIN updates the SMP/E envrionment. This can be used to,
+      for example, increase allocation sizes of SMP/E work data sets.</LI>
+    <LI>SMP/E REJECT removes the ##type from the GLOBAL zone. This can
+      be used to remove the ##type before SMP/E APPLY has been done.</LI>
+    <LI>SMP/E RESTORE restores your SMP/E target libries to the level
+      stored in the distribution libries (which are populated during
+      SMP/E ACCEPT). This can be used to remove the ##type after SMP/E
+      APPLY has been done.</LI>
+  </UL>
+
+  <P>To access the sample JCL, open this file in a text editor instead
+    of a browser and scroll to the bottom of the file.</P>
+
+<!--
+   ****************************
+   * sample SMP/E RESTORE JCL *
+   ****************************
+-->
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl11-->
+<!--
+//*
+//* The RESTORE process will replace the affected elements in the
+//* target libraries with the version from the distribution
+//* libraries. This implies that you cannot RESTORE a SYSMOD once it
+//* has been accepted. This also implies that you must RESTORE all
+//* SYSMODS that have been applied since the last accepted SYSMOD.
+//*
+//* Change #globalcsi to the data set name of your global CSI.
+//* Change #tzone to your CSI target zone name.
+//*
+//         SET CSI=<STRONG>#globalcsi</STRONG>
+//*
+//RESTORE  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=&CSI
+//SMPCNTL  DD *
+   SET BOUNDARY(<STRONG>#tzone</STRONG>) .
+   LIST SYSMODS .
+   RESTORE SELECT(
+     ##ptf1
+     ##req
+   ) .
+//*
+-->
+<!--jcl12-->
+<!--
+   ***************************
+   * sample SMP/E REJECT JCL *
+   ***************************
+-->
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl13-->
+<!--
+//*
+//* REJECT automatically acts on co-requisite SYSMODs as well,
+//* so only one SYSMOD is specified.
+//*
+//* Change #globalcsi to the data set name of your global CSI.
+//*
+//         SET CSI=<STRONG>#globalcsi</STRONG>
+//*
+//REJECT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=&CSI
+//SMPCNTL  DD *
+   SET BOUNDARY(GLOBAL) .
+   LIST SYSMODS .
+   REJECT SELECT(
+     ##ptf1
+   ) BYPASS(APPLYCHECK) .
+//*
+-->
+<!--jcl14-->
+<!--
+   **************************
+   * sample SMP/E UCLIN JCL *
+   **************************
+-->
+<!-- note: adjust playbooks/roles/ptf/files/scripts/smpe-prepare-jcls.sh
+  when changing the JCL -->
+<!--jcl15-->
+<!--
+//*
+//* Change #globalcsi to the data set name of your global CSI.
+//* Change #tzone to your CSI target zone name.
+//* Change #dzone to your CSI distribution zone name.
+//*
+//UCLIN    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPLOG   DD SYSOUT=*
+//SMPCSI   DD DISP=OLD,DSN=#globalcsi
+//SMPCNTL  DD *
+   SET BOUNDARY(GLOBAL) .
+   UCLIN .
+   REP DDDEF(SYSUT1)  CYL SPACE(450,100)
+       UNIT(SYSALLDA) VOLUME(#volser)
+       .
+   ENDUCL .
+   
+   SET BOUNDARY(#tzone) .
+   UCLIN .
+   REP DDDEF(SYSUT1)  CYL SPACE(450,100)
+       UNIT(SYSALLDA) VOLUME(#volser)
+       .
+   REP DDDEF(SMPWRK6) CYL SPACE(450,100) DIR(50)
+       UNIT(SYSALLDA) VOLUME(#volser)
+       .
+   ENDUCL .
+   
+   SET BOUNDARY(#dzone) .
+   UCLIN .
+   REP DDDEF(SMPWRK6) CYL SPACE(450,100) DIR(50)
+       UNIT(SYSALLDA) VOLUME(#volser)
+       .
+   ENDUCL .
+//*
+-->
+<!--jcl16-->
 
 </BODY></HTML>
