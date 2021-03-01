@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright Contributors to the Zowe Project. 2019, 2019
+ * Copyright Contributors to the Zowe Project. 2019, 2021
  */
 /*
  *% Determine how to distribute parts among PTFs (sent to stdout).
@@ -47,7 +47,7 @@ if Debug then do; say ''; say '>' ExecName Args; end
 
 /* split startup arguments in multiple vars */
 parse var Args File !Vars.!Hdr1 !Vars.!Hdr2 !Vars.!Reserved Trash
-parse value !Vars.!Reserved 1 with !Vars.!Reserved .   /* default: 1 */
+parse value !Vars.!Reserved 0 with !Vars.!Reserved .   /* default: 0 */
 
 /* validate startup arguments */
 if File == ''
@@ -100,7 +100,7 @@ then do               /* unable to establish the SYSCALL environment */
 end    /* */
 
 if _readFile(File)                          /* get size of each part */
-  then call _distribute               /* determine part distribution */
+  then cRC=_distribute()              /* determine part distribution */
   else cRC=8
 
 if ExecEnv <> 'OMVS' then call syscalls 'OFF'           /* ignore RC */
@@ -205,6 +205,7 @@ return @Success    /* _syscall */
  * Updates:
  *  !Vars.!Lines.*: list of line counts
  *  !Vars.!Parts.*: list of part names
+ *  !Vars.!Total: total line count
  * Args:
  *  File: path of file to interpret
  */
@@ -269,20 +270,18 @@ do while !Vars.!Parts.0 > (PTFs * 900)      /* max 900 parts per PTF */
   PTFs=PTFs+1
 end    /* while parts */
 
-/* caller expects to use !Vars.!Reserved PTFs, so do as expected */
-if PTFs < !Vars.!Reserved then PTFs=!Vars.!Reserved
-
 if Debug then say '< _minCount' PTFs
 return PTFs    /* _minCount */
 
 /*---------------------------------------------------------------------
  * --- determine how to distribute parts among PTFs
- * Returns nothing
+ * Returns return code
  * Args: /
  */
 _distribute: PROCEDURE EXPOSE ExecName Debug !Vars.
 if Debug then say '> _distribute'
 OK=0  /* FALSE */          /* assume we need more than minCount PTFs */
+cRC=0                                   /* assume everything is good */
 
 PTFs=_minCount()                 /* determine minimum number of PTFs */
 
@@ -323,6 +322,15 @@ do until OK                   /* repeat until we can place all parts */
   end    /* */
 end    /* until OK */
 
+/* does caller expect to use !Vars.!Reserved PTFs ? */
+if !Vars.!Reserved <> 0
+then if PTFs <> !Vars.!Reserved 
+  then do
+  say '** ERROR' ExecName 'actual PTF count ('PTFs') does not match' ,
+    'reserved PTF count ('!Vars.!Reserved')'
+  cRC=8  
+  end    /* */
+
 /* write result to stdout, line 1 has parts for PTF 1, line 2 ... */
 do T=1 to PTFs
   if Debug then
@@ -331,5 +339,5 @@ do T=1 to PTFs
 end    /* loop T */
 
 if Debug then say '< _distribute'
-return    /* _distribute */
+return cRC    /* _distribute */
 

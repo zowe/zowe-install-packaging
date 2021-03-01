@@ -10,27 +10,22 @@
 
 const { expect } = require('chai');
 const sshHelper = require('../ssh-helper');
-const debug = require('debug')('zowe-sanity-test:utils-scripts:component-utils');
+// const debug = require('debug')('zowe-sanity-test:utils-scripts:component-utils');
 
 describe('verify utils/component-utils', function() {
   let TMP_DIR;
   const TMP_EXT_DIR = 'sanity_test_extensions';
   const dummy_component_name = 'sanity_test_dummy';
   let component_runtime_dir;
+  let component_instance_dir;
 
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
 
     // retrieve tmp dir on server side
-    let tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMPDIR}"');
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    if (!tmpOnServer) {
-      tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMP}"');
-    }
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    TMP_DIR = tmpOnServer || '/tmp';
-    debug(`TMP_DIR=${TMP_DIR}`);
+    TMP_DIR = await sshHelper.getTmpDir();
     component_runtime_dir = `${TMP_DIR}/${TMP_EXT_DIR}/${dummy_component_name}`;
+    component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
   });
 
   const find_component_directory = 'find_component_directory';
@@ -82,6 +77,39 @@ describe('verify utils/component-utils', function() {
           false
         );
       });
+    });
+
+  });
+
+  const is_core_component = 'is_core_component';
+  describe(`verify ${is_core_component}`, function() {
+    before('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
+    });
+
+    after('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir}`);
+    });
+
+    it('test with core component', async function() {
+      const component = 'jobs-api';
+      await test_component_function_has_expected_rc_stdout_stderr(
+        'echo $' + `(${is_core_component} "` + '$' + `(find_component_directory ${component})")`,
+        {},
+        {
+          stdout: 'true',
+        }
+      );
+    });
+
+    it('test with non-core component', async function() {
+      await test_component_function_has_expected_rc_stdout_stderr(
+        'echo $' + `(${is_core_component} "` + '$' + `(find_component_directory ${dummy_component_name})")`,
+        {},
+        {
+          stdout: 'false',
+        }
+      );
     });
 
   });
@@ -215,8 +243,6 @@ describe('verify utils/component-utils', function() {
 
   const convert_component_manifest = 'convert_component_manifest';
   describe(`verify ${convert_component_manifest}`, function() {
-    const component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
-
     before('create test component', async function() {
       await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
     });

@@ -34,6 +34,8 @@ node('zowe-jenkins-agent-dind-wdc') {
   def testRegBuildErrorUrl
   def testSmpeBuildErrorUrl
   def testDockerBuildErrorUrl
+  def testMultipleNodeErrorUrl
+  def testMultipleKeyringErrorUrl
 
   def targetSmpeFullPath
   def targetRegFullPath
@@ -57,6 +59,14 @@ node('zowe-jenkins-agent-dind-wdc') {
   // we want to run daily on master branch
   if (isStagingBranch) {
     pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 23 * * *")]))
+  }
+
+  // get the day of the week
+  def currentDayofWeek = sh(script: 'date +"%a"', returnStdout: true).trim()
+  boolean fullTestRun = false
+  // only run full test suite on Saturdays
+  if (currentDayofWeek.equals('Sat')) {
+    fullTestRun = true
   }
 
   pipeline.setup(
@@ -189,6 +199,67 @@ node('zowe-jenkins-agent-dind-wdc') {
   )
 
   pipeline.test(
+    name              : "Zowe docker Amd-64 image",
+    shouldExecute : {
+      return sourceDockerAmd64BuildInfo && sourceDockerAmd64BuildInfo['path'] && sourceRegBuildInfo && sourceRegBuildInfo['path']
+    },
+    operation         : {
+      def docker_amd64_url = pipeline.artifactory.url + '/' + sourceDockerAmd64BuildInfo.path
+      if (params.TEST_RUN) {
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SCOPE: test docker\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "ZOWE_DOCKER_ARTIFACTORY_BUILD: '${docker_amd64_url}'\n" +
+             "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
+             "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
+      } else {
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SCOPE', value: 'test docker'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: docker_amd64_url),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+          booleanParam(name: 'Skip Stage: Lint', value: true),
+          booleanParam(name: 'Skip Stage: Audit', value: true),
+          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        }
+        // FIXME: add back after those 2 parameters are added to zowe-install-test
+        // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
+        //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
+        //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        // }
+        def test_result = build(
+            job: '/zowe-install-test/staging',
+            parameters: testParameters,
+            propagate: false
+          )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          testDockerBuildErrorUrl = test_result.absoluteUrl
+          echo "Test failed on Docker Image ${sourceDockerAmd64BuildInfo.url}, check failure details at ${test_result.absoluteUrl}"
+          IS_BUILD_UNSTABLE = true
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 4, unit: 'HOURS']
+  )
+
+  pipeline.test(
     name              : "Zowe Regular Build",
     shouldExecute : {
       return sourceRegBuildInfo && sourceRegBuildInfo['path']
@@ -305,22 +376,20 @@ node('zowe-jenkins-agent-dind-wdc') {
   )
 
   pipeline.test(
-    name              : "Zowe docker Amd-64 image",
+    name              : "Zowe Multiple Node Versions Build",
     shouldExecute : {
-      return sourceDockerAmd64BuildInfo && sourceDockerAmd64BuildInfo['path'] && sourceRegBuildInfo && sourceRegBuildInfo['path']
+      return fullTestRun && sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     operation         : {
-      def docker_amd64_url = pipeline.artifactory.url + '/' + sourceDockerAmd64BuildInfo.path
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
-             "TEST_SCOPE: test docker\n" +
+             "TEST_SCOPE: bundle: multiple node versions\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
-             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
              "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
              "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
-             "ZOWE_DOCKER_ARTIFACTORY_BUILD: '${docker_amd64_url}'\n" +
              "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
              "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
              "Skip Stage: Lint: true\n" +
@@ -329,10 +398,9 @@ node('zowe-jenkins-agent-dind-wdc') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'test docker'),
+          string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
-          string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: docker_amd64_url),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -343,11 +411,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
-        // FIXME: add back after those 2 parameters are added to zowe-install-test
-        // if (cliPluginsSourceBuildInfo && cliPluginsSourceBuildInfo.path) {
-        //   testParameters.add(string(name: 'ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN', value: cliPluginsSourceBuildInfo.path))
-        //   testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
-        // }
+
         def test_result = build(
             job: '/zowe-install-test/staging',
             parameters: testParameters,
@@ -355,14 +419,68 @@ node('zowe-jenkins-agent-dind-wdc') {
           )
         echo "Test result: ${test_result.result}"
         if (test_result.result != 'SUCCESS') {
-          testDockerBuildErrorUrl = test_result.absoluteUrl
-          echo "Test failed on Docker Image ${sourceDockerAmd64BuildInfo.url}, check failure details at ${test_result.absoluteUrl}"
+          testMultipleNodeErrorUrl = test_result.absoluteUrl
+          echo "Test failed on multiple node versions build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
           IS_BUILD_UNSTABLE = true
         }
       }
     },
     allowMissingJunit : true,
-    timeout: [time: 4, unit: 'HOURS']
+    timeout: [time: 2, unit: 'HOURS']
+  )
+
+  pipeline.test(
+    name              : "Zowe Multiple Keyring Modes Build",
+    shouldExecute : {
+      return fullTestRun && sourceRegBuildInfo && sourceRegBuildInfo['path']
+    },
+    operation         : {
+      if (params.TEST_RUN) {
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SCOPE: bundle: keyring on multiple security systems\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
+             "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
+      } else {
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SCOPE', value: 'bundle: keyring on multiple security systems'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+          booleanParam(name: 'Skip Stage: Lint', value: true),
+          booleanParam(name: 'Skip Stage: Audit', value: true),
+          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        }
+
+        def test_result = build(
+            job: '/zowe-install-test/staging',
+            parameters: testParameters,
+            propagate: false
+          )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          testMultipleKeyringErrorUrl = test_result.absoluteUrl
+          echo "Test failed on multiple keyring modes build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          IS_BUILD_UNSTABLE = true
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 2, unit: 'HOURS']
   )
 
   pipeline.createStage(
@@ -389,16 +507,24 @@ node('zowe-jenkins-agent-dind-wdc') {
 
       // promote Zowe CLI nightly build
       if (cliSourceBuildInfo) {
-        cliTargetFullPath = pipeline.artifactory.promote([
-          'source'     : cliSourceBuildInfo,
-          'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
-        ])
+        try {
+          cliTargetFullPath = pipeline.artifactory.promote([
+            'source'     : cliSourceBuildInfo,
+            'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
+          ])
+        } catch (errCli) {
+          echo "promote CLI core package failed: ${errCli}"
+        }
       }
       if (cliPluginsSourceBuildInfo) {
-        cliPluginsTargetFullPath = pipeline.artifactory.promote([
-          'source'     : cliPluginsSourceBuildInfo,
-          'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
-        ])
+        try {
+          cliPluginsTargetFullPath = pipeline.artifactory.promote([
+            'source'     : cliPluginsSourceBuildInfo,
+            'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
+          ])
+        } catch (errCliPlugin) {
+          echo "promote CLI plugins package failed: ${errCliPlugin}"
+        }
       }
     },
     timeout: [time: 10, unit: 'MINUTES']
@@ -416,15 +542,27 @@ node('zowe-jenkins-agent-dind-wdc') {
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetDockeramd64FullPath}\n\n"
-      if (cliSourceBuildInfo && cliTargetFullPath) {
-        message += "\n\n" +
-                    "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
+      if (cliSourceBuildInfo) {
+        if (cliTargetFullPath) {
+          message += "\n\n" +
+                      "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                      "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
+        } else {
+          slackColor = 'warning'
+          message += "\n\n" +
+                      "!!WARNING!! Failed to promote CLI Core Package"
+        }
       }
-      if (cliPluginsSourceBuildInfo && cliPluginsTargetFullPath) {
-        message += "\n\n" +
-                    "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliPluginsTargetFullPath}"
+      if (cliPluginsSourceBuildInfo) {
+        if (cliPluginsTargetFullPath) {
+          message += "\n\n" +
+                      "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                      "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliPluginsTargetFullPath}"
+        } else {
+          slackColor = 'warning'
+          message += "\n\n" +
+                      "!!WARNING!! Failed to promote CLI Plguins Package"
+        }
       }
       if (testRegBuildErrorUrl) {
         slackColor = 'warning'
@@ -445,6 +583,20 @@ node('zowe-jenkins-agent-dind-wdc') {
         message = message + "\n\n" +
                   "!!WARNING!! Smoke test FAILED on the docker amd-64 image! Check test result here: " +
                   testDockerBuildErrorUrl + "\n"
+      }
+ 
+      if (testMultipleNodeErrorUrl) {
+        slackColor = 'warning'
+        message = message + "\n\n" +
+                  "!!WARNING!! Smoke test FAILED on the multiple node versions build! Check test result here: " +
+                  testMultipleNodeErrorUrl + "\n"
+      }
+
+      if (testMultipleKeyringErrorUrl) {
+        slackColor = 'warning'
+        message = message + "\n\n" +
+                  "!!WARNING!! Smoke test FAILED on the multiple keyring modes build! Check test result here: " +
+                  testMultipleKeyringErrorUrl + "\n"
       }
 
       echo "*************************************************************************************************\n" +
