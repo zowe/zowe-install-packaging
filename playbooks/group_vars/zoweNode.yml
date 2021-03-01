@@ -12,6 +12,7 @@ ansible_port: 22
 zowe_fmids_dir_remote: /opt/zowe/zowe-fmids
 work_dir_remote: /opt/zowe/ansible
 zowe_root_dir: /opt/zowe/runtime
+zowe_extension_dir: /opt/zowe/extensions
 zowe_instance_dir: /opt/zowe/zowe-instance-dir
 zowe_keystore_dir: /opt/zowe/keystore
 zowe_logs_dir: /opt/zowe/logs
