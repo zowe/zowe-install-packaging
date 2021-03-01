@@ -548,8 +548,9 @@ node('zowe-jenkins-agent-dind-wdc') {
                       "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
                       "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
         } else {
+          slackColor = 'warning'
           message += "\n\n" +
-                      "Failed to promote CLI Core Package"
+                      "!!WARNING!! Failed to promote CLI Core Package"
         }
       }
       if (cliPluginsSourceBuildInfo) {
@@ -558,8 +559,9 @@ node('zowe-jenkins-agent-dind-wdc') {
                       "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
                       "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliPluginsTargetFullPath}"
         } else {
+          slackColor = 'warning'
           message += "\n\n" +
-                      "Failed to promote CLI Plguins Package"
+                      "!!WARNING!! Failed to promote CLI Plguins Package"
         }
       }
       if (testRegBuildErrorUrl) {
