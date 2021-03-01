@@ -232,6 +232,16 @@ configure_components() {
           print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
         fi
       fi
+      # - generic app framework plugin
+      result=$(process_component_appfw_plugin "${component_dir}" 2>&1)
+      retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        else
+          print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        fi
+      fi
 
       # check configure script
       configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)

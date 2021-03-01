@@ -354,8 +354,8 @@ EOF
 ###############################
 # Parse and process manifest desktop iframe plugin definition
 #
-# The supported manifest entry is ".apimlServices.static[].file". All files defined
-# here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
+# The supported manifest entry is ".desktopIframePlugins". All plugins
+# defined will be passed to zowe-install-iframe-plugin.sh for proper installation.
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
@@ -457,6 +457,43 @@ process_component_desktop_iframe_plugin() {
     fi
 
     iterator_index=`expr $iterator_index + 1`
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+###############################
+# Parse and process manifest App Framework Plugin (appfwPlugins) definitions
+#
+# The supported manifest entry is ".appfwPlugins". All files defined
+# here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# Required environment variables:
+# - INSTANCE_DIR
+# - NODE_HOME
+#
+# @param string   component directory
+process_component_appfw_plugin() {
+  component_dir=$1
+
+  all_succeed=true
+  iterator_index=0
+  appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+  while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
+      cd "${component_dir}"
+      ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+      # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
+
+      iterator_index=`expr $iterator_index + 1`
+      appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   done
 
   if [ "${all_succeed}" = "true" ]; then
