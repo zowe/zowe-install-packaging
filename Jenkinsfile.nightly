@@ -507,16 +507,24 @@ node('zowe-jenkins-agent-dind-wdc') {
 
       // promote Zowe CLI nightly build
       if (cliSourceBuildInfo) {
-        cliTargetFullPath = pipeline.artifactory.promote([
-          'source'     : cliSourceBuildInfo,
-          'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
-        ])
+        try {
+          cliTargetFullPath = pipeline.artifactory.promote([
+            'source'     : cliSourceBuildInfo,
+            'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
+          ])
+        } catch (errCli) {
+          echo "promote CLI core package failed: ${errCli}"
+        }
       }
       if (cliPluginsSourceBuildInfo) {
-        cliPluginsTargetFullPath = pipeline.artifactory.promote([
-          'source'     : cliPluginsSourceBuildInfo,
-          'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
-        ])
+        try {
+          cliPluginsTargetFullPath = pipeline.artifactory.promote([
+            'source'     : cliPluginsSourceBuildInfo,
+            'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_CLI_RELEASE_PATH}/"
+          ])
+        } catch (errCliPlugin) {
+          echo "promote CLI plugins package failed: ${errCliPlugin}"
+        }
       }
     },
     timeout: [time: 10, unit: 'MINUTES']
@@ -534,15 +542,27 @@ node('zowe-jenkins-agent-dind-wdc') {
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetDockeramd64FullPath}\n\n"
-      if (cliSourceBuildInfo && cliTargetFullPath) {
-        message += "\n\n" +
-                    "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
+      if (cliSourceBuildInfo) {
+        if (cliTargetFullPath) {
+          message += "\n\n" +
+                      "The CLI Core Package ${ZOWE_CLI_BUILD_NAME}#${cliSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                      "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliTargetFullPath}"
+        } else {
+          slackColor = 'warning'
+          message += "\n\n" +
+                      "!!WARNING!! Failed to promote CLI Core Package"
+        }
       }
-      if (cliPluginsSourceBuildInfo && cliPluginsTargetFullPath) {
-        message += "\n\n" +
-                    "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliPluginsTargetFullPath}"
+      if (cliPluginsSourceBuildInfo) {
+        if (cliPluginsTargetFullPath) {
+          message += "\n\n" +
+                      "The CLI Plugins Package ${ZOWE_CLI_BUILD_NAME}#${cliPluginsSourceBuildInfo['build.number']} is promoted as nightly CLI build. You can download from:\n\n" +
+                      "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${cliPluginsTargetFullPath}"
+        } else {
+          slackColor = 'warning'
+          message += "\n\n" +
+                      "!!WARNING!! Failed to promote CLI Plguins Package"
+        }
       }
       if (testRegBuildErrorUrl) {
         slackColor = 'warning'
