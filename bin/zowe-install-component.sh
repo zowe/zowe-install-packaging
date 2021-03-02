@@ -112,15 +112,18 @@ extract_to_target_dir(){
     if [ "${RUN_ON_ZOS}" = "true" ]; then
         manifest_encoding=$(detect_component_manifest_encoding "${TARGET_DIR}/temp-ext-dir")
         log_message "Component manifest encoding=${manifest_encoding}, requested auto_encoding=${AUTO_ENCODING}"
-        autotag="yes"
-        # unless explicitly asked to tag, if component is already tagged, retag could produce errors
+        #the autotag script we have is for tagging when files are ascii, so we assume tagging cant be done unless ascii
+        autotag="no"
+
         if [ "${manifest_encoding}" = "ISO8859-1" ]; then
             is_tagged=$(detect_if_component_tagged "${TARGET_DIR}/temp-ext-dir")
+            # unless explicitly asked to tag, if component is already tagged, retag could produce errors
             if [ "${is_tagged}" = "true" ]; then
                 log_message "Component tagged, so turning auto-encoding off"
                 autotag="no"
             else
                 log_message "ASCII Component not tagged, so turning auto-encoding ON"
+                autotag="yes"
             fi
         fi
         if [ "${AUTO_ENCODING}" != "no" -a "${autotag}" = "yes" ]; then
