@@ -285,5 +285,58 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     }
   )
 
+  pipeline.createStage(
+    name              : "Test Convenience Build",
+    timeout: [time: 2, unit: 'HOURS'],
+    isSkippable: true,
+    stage : {
+      def buildName = env.JOB_NAME.replace('/', ' :: ')
+      def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
+      def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
+      def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
+      
+      sourceRegBuildInfo = pipeline.artifactory.getArtifact([
+        'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
+        'build-name'   : buildName,
+        'build-number' : env.BUILD_NUMBER
+      ])
+      cliSourceBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+          'build-name'   : ZOWE_CLI_BUILD_NAME
+      ])
+      if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: buildName),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+          booleanParam(name: 'Skip Stage: Lint', value: true),
+          booleanParam(name: 'Skip Stage: Audit', value: true),
+          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        }
+
+        def test_result = build(
+          job: '/zowe-install-test/staging',
+          parameters: testParameters
+        )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          currentBuild.result='UNSTABLE'
+          if (test_result.result == 'ABORTED') {
+            echo "Test aborted"
+          } else {
+            echo "Test failed on regular build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          }
+        }
+      }
+    }
+  )
+
   pipeline.end()
 }
