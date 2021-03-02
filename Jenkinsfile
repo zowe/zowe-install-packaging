@@ -286,12 +286,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   pipeline.createStage(
-    name              : "Zowe Regular Build",
+    name              : "Test Convenience Build",
     timeout: [time: 2, unit: 'HOURS'],
     isSkippable: true,
-    shouldExecute : {
-      return pipeline.isAuthorizedUser
-    },
     stage : {
       def buildName = env.JOB_NAME.replace('/', ' :: ')
       def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
