@@ -258,6 +258,9 @@ if [[ $RETURN_CODE != "0" ]]; then
   print_and_log_message "         everyone. To properly setup instance directory permission, please add both"
   print_and_log_message "         install user ${current_user} and Zowe runtime user to ${ZOWE_GROUP} group."
   print_and_log_message ""
+  print_and_log_message "         If you don't have ${ZOWE_GROUP} group or want to set a specific Zowe administrator"
+  print_and_log_message "         group, please run this command again with the -g flag."
+  print_and_log_message ""
   chmod 777 ${INSTANCE_DIR}
 fi
 chmod -R 755 ${INSTANCE}
@@ -273,15 +276,6 @@ for component_name in ${component_list}; do
     --target_dir "${ZOWE_ROOT_DIR}/components" \
     --core --log-file "${LOG_FILE}"
 done
-
-# after (re-)configure, if we have workspace/manifest.json, we can update to latest version
-if [ -f "${INSTANCE_DIR}/workspace/manifest.json" ]; then
-  cp "${ZOWE_ROOT_DIR}/manifest.json" "${INSTANCE_DIR}/workspace/manifest.json" 1> /dev/null 2> /dev/null
-  chmod 770 "${INSTANCE_DIR}/workspace/manifest.json" 1> /dev/null 2> /dev/null
-  if [[ $RETURN_CODE != "0" ]]; then
-    chmod 777 "${INSTANCE_DIR}/workspace/manifest.json" 1> /dev/null 2> /dev/null
-  fi
-fi
 
 echo
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."

@@ -24,3 +24,5 @@ zowe_launch_components: zss
 zowe_zlux_terminal_telnet_port: 23
 # The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'
 zowe_zlux_terminal_telnet_security_type:
+
+zowe_root_dir: ~/
