@@ -41,7 +41,7 @@ RUN cd /home/zowe/utils/autoconv && \
     ln -s ./autoconv/bin/autoconv ../autoconv.sh
 
 # copy run.sh and optional zowe.pax
-COPY run.sh /home/zowe
+COPY run.sh run_inner.sh /home/zowe/
 COPY zowe.pax* /tmp
 
 # download zowe build if specified
@@ -50,7 +50,8 @@ RUN /home/zowe/utils/download-zowe-build.sh "${ZOWE_BUILD}"
 # 1. Convert content of pax files from ebcdic to ASCII
 # 2. replace or remove some zos specific parameters
 # 3. Install zowe, then remove installer files
-RUN mkdir -p /tmp/zowe-install && cd /tmp/zowe-install && \
+RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
+    mkdir -p /tmp/zowe-install && cd /tmp/zowe-install && \
     tar -xvf ../zowe.pax --strip 1 && \
     find . -type f -iregex '.*\.\(rexx\|js\|sh\|json\|jcl\|yaml\|clist\|env\)$' -exec sh -c "conv '{}' | sponge '{}'" \; && \
     find . -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \; && \
@@ -123,7 +124,5 @@ ENV ZWED_agent_http_port='8542'
 ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
 
 COPY --chown=zowe:zowe --from=builder /home/zowe /home/zowe
-
-USER zowe
 
 ENTRYPOINT ["/home/zowe/run.sh"]
