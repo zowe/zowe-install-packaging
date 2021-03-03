@@ -280,6 +280,20 @@ if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
   fi
 fi
 
+echo "Creating GSKit keystore... STARTED"
+GSKIT_KEYSTORE="${KEYSTORE_PREFIX}.kdb"
+GSKKYMAN=gskkyman
+rm -f "${GSKIT_KEYSTORE}" "${KEYSTORE_PREFIX}.rdb" 2>/dev/null
+printf "1\n${GSKIT_KEYSTORE}\n${KEYSTORE_PASSWORD}\n${KEYSTORE_PASSWORD}\n\n\n0\n\n0\n0" | "${GSKKYMAN}" > /dev/null 2>&1
+printf "${KEYSTORE_PASSWORD}\n${KEYSTORE_PASSWORD}\n" | "${GSKKYMAN}" -i -k "${GSKIT_KEYSTORE}" -l "${KEYSTORE_ALIAS}" -p "${KEYSTORE_PREFIX}.p12" >> "${LOG_FILE}" 2>/dev/null
+RC=$?
+if [ "$RC" -ne "0" ]; then
+  echo "${GSKKYMAN} returned: ${RC}" >> "${LOG_FILE}"
+  (>&2 echo "Creating GSKit keystore has failed. See ${LOG_FILE} for more details.")
+  exit 1
+fi
+echo "Creating GSKit keystore... DONE"
+
 # If a keyring is used to hold certificates then make sure the local_ca directory doesn't contain
 # any "localca" certificates. A certificate may have been created in the directory to help forging a certificate
 # that encapsulates JWT token from z/OSMF. The certificate is not needed anymore at this stage and can be deleted.
@@ -311,6 +325,7 @@ if [[ -z "${ZOWE_KEYRING}" ]]; then
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
     PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
     PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
+    GSKIT_KEYSTORE="${KEYSTORE_PREFIX}.kdb"
 EOF
 else
   cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
