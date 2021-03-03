@@ -2,6 +2,12 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `1.20.0`
+
+### New features and enhancements
+- server-bundle docker image has been optimized to greatly reduce the size without impacting the content and usability
+- server-bundle docker image now runs zowe under the user "zowe", and the default mount locations of instance, keystore, and plugins directories is now within /home/zowe as a result
+
 ## `1.17.0`
 
 ### New features and enhancements
