@@ -284,7 +284,16 @@ echo "Creating GSKit keystore... STARTED"
 GSKIT_KEYSTORE="${KEYSTORE_PREFIX}.kdb"
 GSKKYMAN=gskkyman
 rm -f "${GSKIT_KEYSTORE}" "${KEYSTORE_PREFIX}.rdb" 2>/dev/null
-printf "1\n${GSKIT_KEYSTORE}\n${KEYSTORE_PASSWORD}\n${KEYSTORE_PASSWORD}\n\n\n0\n\n0\n0" | "${GSKKYMAN}" > /dev/null 2>&1
+# Create GSKit database. Parameters are provided in stdin:
+# - Enter option number: 1 <enter>  (Create new database)
+# - Enter key database name (press ENTER to return to menu): ${GSKIT_KEYSTORE} <enter>
+# - Enter database password (press ENTER to return to menu): ${KEYSTORE_PASSWORD} <enter>
+# - Re-enter database password: ${KEYSTORE_PASSWORD} <enter>
+# - Enter password expiration in days (press ENTER for no expiration): <enter>
+# - Enter database record length (press ENTER to use 5000): <enter>
+# - Enter 1 for FIPS mode database or 0 to continue: 0 <enter>
+# - Press ENTER to continue. <enter>
+printf "1\n${GSKIT_KEYSTORE}\n${KEYSTORE_PASSWORD}\n${KEYSTORE_PASSWORD}\n\n\n0\n\n0\n" | "${GSKKYMAN}" > /dev/null 2>&1
 printf "${KEYSTORE_PASSWORD}\n${KEYSTORE_PASSWORD}\n" | "${GSKKYMAN}" -i -k "${GSKIT_KEYSTORE}" -l "${KEYSTORE_ALIAS}" -p "${KEYSTORE_PREFIX}.p12" >> "${LOG_FILE}" 2>/dev/null
 RC=$?
 if [ "$RC" -ne "0" ]; then
