@@ -320,9 +320,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
           testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
         }
-
+        
+        //env.BRANCH_NAME will be "PR-1937" or branch name "users/xxx/xxxx"
         def test_result = build(
-          job: '/zowe-install-test/staging',
+          job: '/zowe-install-test/${env.BRANCH_NAME}',
           parameters: testParameters
         )
         echo "Test result: ${test_result.result}"
