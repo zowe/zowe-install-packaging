@@ -291,6 +291,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     isSkippable: true,
     stage : {
       def buildName = env.JOB_NAME.replace('/', ' :: ')
+      def branchName = env.BRANCH_NAME   //this field will be "PR-1937" or branch name "users/xxx/xxxx"
       def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
       def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
       def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
@@ -322,7 +323,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         }
 
         def test_result = build(
-          job: '/zowe-install-test/staging',
+          job: '/zowe-install-test/'+branchName,
           parameters: testParameters
         )
         echo "Test result: ${test_result.result}"
