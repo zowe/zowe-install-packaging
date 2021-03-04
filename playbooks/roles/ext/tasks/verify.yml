@@ -1,0 +1,52 @@
+---
+# Verify extensions are installed and running
+# Input: component_name - required
+
+# ============================================================================
+- name: Initialize script name to source
+  set_fact:
+    prepare_environment: ""
+# ============================================================================
+# validate variables
+- import_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - zowe_root_dir
+    - zowe_extension_dir
+    - zowe_instance_dir
+    - work_dir_remote
+
+# ============================================================================
+# Prepare file to source
+- name: Prepare variable to help source prepare-environment.sh
+  set_fact:
+    prepare_environment: ". {{ zowe_root_dir }}/bin/internal/prepare-environment.sh -c {{ zowe_instance_dir }} -r {{ zowe_root_dir }}"
+
+- name: Verify {{ component_name }} is running
+  when: component_name is defined
+  block:
+    # Validate component's services
+    - name: Get Component's Service ID
+      raw: "{{ prepare_environment }} && list_component_service_id {{ component_name }}"
+      register: component_id_list
+
+    - name: Validate Services are running
+      include_tasks: verify-ext-status.yml
+      vars:
+        component_id: "{{ item }}"
+        is_service: true
+      with_items: "{{ component_id_list.stdout_lines }}"
+
+    # Validate component's desktop plugins
+    - name: Get Component's Desktop Plugin Identifiers
+      raw: "{{ prepare_environment }} && list_component_plugin_id {{ component_name }}"
+      register: plugin_id_list
+
+    - name: Validate Component's plugins are installed
+      include_tasks: verify-ext-status.yml
+      vars:
+        component_id: "{{ item }}"
+        is_service: false
+      with_items: "{{ plugin_id_list.stdout_lines }}"

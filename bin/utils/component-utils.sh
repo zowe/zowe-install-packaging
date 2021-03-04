@@ -354,8 +354,8 @@ EOF
 ###############################
 # Parse and process manifest desktop iframe plugin definition
 #
-# The supported manifest entry is ".apimlServices.static[].file". All files defined
-# here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
+# The supported manifest entry is ".desktopIframePlugins". All plugins
+# defined will be passed to zowe-install-iframe-plugin.sh for proper installation.
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
@@ -465,4 +465,110 @@ process_component_desktop_iframe_plugin() {
     # error message should have be echoed before this
     return 1
   fi
+}
+
+###############################
+# Parse and process manifest App Framework Plugin (appfwPlugins) definitions
+#
+# The supported manifest entry is ".appfwPlugins". All plugins
+# defined will be passed to install-app.sh for proper installation.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# Required environment variables:
+# - INSTANCE_DIR
+# - NODE_HOME
+#
+# @param string   component directory
+process_component_appfw_plugin() {
+  component_dir=$1
+
+  all_succeed=true
+  iterator_index=0
+  appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+  while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
+      cd "${component_dir}"
+      ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+      # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
+
+      iterator_index=`expr $iterator_index + 1`
+      appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+list_component_service_id() {
+  component_name=$1
+
+  if [ -d "${ROOT_DIR}/components/${component_name}" ]; then
+    component_dir="${ROOT_DIR}/components/${component_name}"
+  elif [ -d "${ROOT_DIR}/../extensions/${component_name}" ]; then
+    component_dir="${ROOT_DIR}/../extensions/${component_name}"
+  else
+    # error
+    echo "error"
+    return 1
+  fi
+
+  service_index=0
+  dynamic_service_id=$(read_component_manifest "${component_dir}" ".apimlServices.dynamic[${service_index}].serviceId" 2>/dev/null)
+  while [ "${dynamic_service_id}" != "null" ] && [ -n "${dynamic_service_id}" ]; do
+    echo ${dynamic_service_id}
+    service_index=`expr $service_index + 1`
+    dynamic_service_id=$(read_component_manifest "${component_dir}" ".apimlServices.dynamic[${service_index}].serviceId" 2>/dev/null)
+  done
+  static_file_index=0
+  static_file=$(read_component_manifest "${component_dir}" ".apimlServices.static[${static_file_index}].file" 2>/dev/null)
+  while [ "${static_file}" != "null" ] && [ -n "${static_file}" ]; do
+    service_id_index=0
+    static_service_id=$(read_yaml "${component_dir}/${static_file}" ".services[${service_id_index}].serviceId" 2>/dev/null)
+      while [ "${static_service_id}" != "null" ] && [ -n "${static_service_id}" ]; do
+        echo ${static_service_id}
+        service_id_index=`expr $service_id_index + 1`
+        static_service_id=$(read_yaml "${component_dir}/${static_file}" ".services[${service_id_index}].serviceId" 2>/dev/null)
+      done
+    static_file_index=`expr $static_file_index + 1`
+    static_file=$(read_component_manifest "${component_dir}" ".apimlServices.static[${static_file_index}].file" 2>/dev/null)
+  done
+  return 0
+}
+
+list_component_plugin_id() {
+  component_name=$1
+  definition_file="pluginDefinition.json"
+
+  if [ -d "${ROOT_DIR}/components/${component_name}" ]; then
+    component_dir="${ROOT_DIR}/components/${component_name}"
+  elif [ -d "${ROOT_DIR}/../extensions/${component_name}" ]; then
+    component_dir="${ROOT_DIR}/../extensions/${component_name}"
+  else
+    # error
+    echo "error"
+    return 1
+  fi
+
+  cd ${component_dir}
+
+  appfwplugin_index=0
+  appfwplugin_definition_file=$(read_component_manifest "${component_dir}" ".appfwPlugins[${appfwplugin_index}].path" 2>/dev/null)
+  while [ "${appfwplugin_definition_file}" != "null" ] && [ -n "${appfwplugin_definition_file}" ]; do
+    echo $(read_json "${appfwplugin_definition_file}/${definition_file}" ".identifier" 2>/dev/null)
+    appfwplugin_index=`expr $appfwplugin_index + 1`
+    appfwplugin_definition_file=$(read_component_manifest "${component_dir}" ".appfwPlugins[${appfwplugin_index}].path" 2>/dev/null)
+  done
+  desktopIframe_index=0
+  desktopIframe_id=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${desktopIframe_index}].id" 2>/dev/null)
+  while [ "${desktopIframe_id}" != "null" ] && [ -n "${desktopIframe_id}" ]; do
+    echo ${desktopIframe_id}
+    desktopIframe_index=`expr $desktopIframe_index + 1`
+    desktopIframe_id=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${desktopIframe_index}].id" 2>/dev/null)
+  done
+  return 0
 }

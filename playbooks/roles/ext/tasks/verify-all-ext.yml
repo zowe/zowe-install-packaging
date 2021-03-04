@@ -1,0 +1,20 @@
+---
+# Verifies all extensions and components are installed and running
+
+# IDEA: Maybe perform this task through a shell script function
+
+# - name: Initialize list of directories containing components
+#   set_fact:
+#     component_directories: "{{ zowe_root_dir }}/components {{ zowe_extension_dir }}"
+
+- name: List components
+  raw: cd {{ zowe_root_dir }}/components && ls -1 && cd {{ zowe_extension_dir }} && ls -1
+  register: all_components
+
+- name: Verify Components
+  include_tasks: verify.yml
+  vars:
+    component_name: "{{ curr_component }}"
+  with_items: "{{ all_components.stdout_lines }}"
+  loop_control:
+    loop_var: curr_component
