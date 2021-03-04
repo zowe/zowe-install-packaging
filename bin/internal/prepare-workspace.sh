@@ -59,34 +59,6 @@ LOGGING_SCRIPT_NAME=prepare-workspace.sh
 prepare_workspace_dir() {
   print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "prepare workspace directory ..."
 
-  # before we create workspace, let's do some checks to decide if we need to run
-  # zowe-configure-instance.sh again. The new explorer UI apps require re-configure
-  # to put the plugin definition back into workspace/app-server/plugins folder
-  # if workspace is deleted.
-  require_re_configure=false
-  if [ ! -d "${WORKSPACE_DIR}" ]; then
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "workspace doesn't exist ..."
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure on the instance is required"
-    # not exist -  we need to run zowe-configure-instance.sh
-    require_re_configure=true
-  elif [ -f "${WORKSPACE_DIR}/manifest.json" ]; then
-    # exist and manifest.json is still there
-    # check if workspace is created with old version of zowe
-    runtime_version=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-    workspace_version=$(cat ${WORKSPACE_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
-    if [ "${runtime_version}" != "${workspace_version}" ]; then
-      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "workspace is on version ${workspace_version} which is not same as zowe version ${runtime_version}"
-      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure on the instance is required"
-      require_re_configure=true
-    fi
-  fi
-  # QUESTION: can we re-configure the instance here? we may see many perission failures because the old workspace
-  #           is very likely created under install user, not zowe runtime user.
-  # if [ "${require_re_configure}" = "true" ]; then
-  #   print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "re-configure zowe ..."
-  #   $(${ROOT_DIR}/bin/zowe-configure-instance.sh -c "${INSTANCE_DIR}")
-  # fi
-
   mkdir -p ${WORKSPACE_DIR}
   # Make accessible to group so owning user can edit?
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
@@ -98,8 +70,11 @@ prepare_workspace_dir() {
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
   cp ${ROOT_DIR}/manifest.json ${WORKSPACE_DIR}
 
-  # create static definition directory
-  mkdir -p ${STATIC_DEF_CONFIG_DIR}
+  # STATIC_DEF_CONFIG_DIR maybe not have a value if discovery is not started in this instance
+  if [ -n "${STATIC_DEF_CONFIG_DIR}" ]; then
+    # create static definition directory
+    mkdir -p ${STATIC_DEF_CONFIG_DIR}
+  fi
 }
 
 ########################################################
@@ -224,6 +199,16 @@ configure_components() {
       fi
       # - desktop iframe plugin
       result=$(process_component_desktop_iframe_plugin "${component_dir}" 2>&1)
+      retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        else
+          print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+        fi
+      fi
+      # - generic app framework plugin
+      result=$(process_component_appfw_plugin "${component_dir}" 2>&1)
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
