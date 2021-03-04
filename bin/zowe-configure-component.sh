@@ -87,7 +87,11 @@ install_app_framework_plugin(){
         log_message "- install Zowe App Framework plugin"
         cd "${component_path}"
         # Uses install-app.sh in zowe-instance-dir to automatically set up the component onto zowe
-        ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+        if [[ -n "${LOG_FILE}" ]] && [[ -w "${LOG_FILE}" ]]; then
+            ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})" >> $LOG_FILE
+        else
+            ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+        fi
         iterator_index=`expr $iterator_index + 1`
         appfw_plugin_path=$(read_component_manifest "${component_path}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
     done
@@ -105,6 +109,7 @@ configure_component(){
 ensure_zwe_extension_dir() {
     # write ZWE_EXTENSION_DIR to instance.env
     if [ "${IS_ZOWE_CORE}" = "false" ]; then
+        log_message "- ensure ZWE_EXTENSION_DIR is defined in instance.env"
         update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
     fi
 }
@@ -215,7 +220,8 @@ print_and_log_message "Configure Zowe component ${component_path} for instance $
 
 ensure_zwe_extension_dir
 configure_component
-install_app_framework_plugin
+# FIXME: this should be handled during zowe-configure-instance.sh, but temporarily moved to runtime configure-component step
+# install_app_framework_plugin
 enable_component
 
 #######################################################################

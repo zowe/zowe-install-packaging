@@ -65,11 +65,20 @@ export LAUNCH_COMPONENT="${component_dir}/bin"
 start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
 if [ -z "${start_script}" -o "${start_script}" = "null" ]; then
   # backward compatible purpose
-  print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "unable to determine start script from component ${component_id} manifest, fall back to default bin/start.sh"
+  if [ $(is_core_component "${component_dir}") != "true" ]; then
+    print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "unable to determine start script from component ${component_id} manifest, fall back to default bin/start.sh"
+  fi
   start_script=${component_dir}/bin/start.sh
 fi
 if [ -n "${component_dir}" ]; then
   cd "${component_dir}"
+
+  # source environment snapshot created by configure step
+  component_name=$(basename "${component_dir}")
+  if [ -f "${WORKSPACE_DIR}/${component_name}/.env" ]; then
+    . "${WORKSPACE_DIR}/${component_name}/.env"
+  fi
+
   if [ -x "${start_script}" ]; then
     print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "starting component ${component_id} ..."
     . ${start_script}

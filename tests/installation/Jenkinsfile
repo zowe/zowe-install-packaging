@@ -65,6 +65,9 @@ node('zowe-jenkins-agent-dind-wdc') {
     'test docker': [
       test_files: 'dist/__tests__/basic/install-docker.js',
     ],
+    'install smpe ptf 2 times': [
+      test_files: 'dist/__tests__/extended/ptf/install-ptf-two-times.js',
+    ],
     'bundle: multiple node versions': [
       test_files: 'dist/__tests__/extended/node-versions/',
       jenkins_primary_lock: 'marist',
@@ -89,8 +92,8 @@ node('zowe-jenkins-agent-dind-wdc') {
       jenkins_primary_lock: 'marist',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
-    'bundle: multiple keystore modes': [
-      test_files: 'dist/__tests__/extended/keystore-modes/',
+    'bundle: keyring on multiple security systems': [
+      test_files: 'dist/__tests__/extended/keyring-modes/',
       jenkins_primary_lock: 'marist',
     ],
     'generate api documentation': [
@@ -204,7 +207,10 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
 
       // upgrade npm
-      nvmShell params.CLIENT_NODE_VERSION, "npm install -g npm"
+      // removed due to incompatible issue, npm@7.5.2 requires node v10
+      // npm WARN notsup Unsupported engine for npm@7.5.2: wanted: {"node":">=10"} (current: {"node":"8.17.0","npm":"6.14.11"})
+      // npm WARN notsup Not compatible with your version of node/npm: npm@7.5.2
+      // nvmShell params.CLIENT_NODE_VERSION, "npm install -g npm"
     }
   )
 

@@ -119,7 +119,7 @@ if [[ ${LAUNCH_COMPONENTS} == *"discovery"* ]]
 then
   # Create the user configurable api-defs
   STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
-  mkdir -p ${STATIC_DEF_CONFIG_DIR}
+  # action to create the directory will be in prepare-workspace.sh
 fi
 
 # Notes: changed old behavior

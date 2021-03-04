@@ -251,6 +251,16 @@ chmod 775 ${INSTANCE_DIR}
 chgrp -R ${ZOWE_GROUP} ${INSTANCE_DIR} 1> /dev/null 2> /dev/null
 RETURN_CODE=$?
 if [[ $RETURN_CODE != "0" ]]; then
+  current_user=$(get_user_id)
+  print_and_log_message ""
+  print_and_log_message "WARNING: some files or directories in the instance directory ${INSTANCE_DIR} cannot be"
+  print_and_log_message "         changed to group ${ZOWE_GROUP}. Will set instance directory to be writable to"
+  print_and_log_message "         everyone. To properly setup instance directory permission, please add both"
+  print_and_log_message "         install user ${current_user} and Zowe runtime user to ${ZOWE_GROUP} group."
+  print_and_log_message ""
+  print_and_log_message "         If you don't have ${ZOWE_GROUP} group or want to set a specific Zowe administrator"
+  print_and_log_message "         group, please run this command again with the -g flag."
+  print_and_log_message ""
   chmod 777 ${INSTANCE_DIR}
 fi
 chmod -R 755 ${INSTANCE}

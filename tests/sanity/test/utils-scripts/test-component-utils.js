@@ -10,27 +10,22 @@
 
 const { expect } = require('chai');
 const sshHelper = require('../ssh-helper');
-const debug = require('debug')('zowe-sanity-test:utils-scripts:component-utils');
+// const debug = require('debug')('zowe-sanity-test:utils-scripts:component-utils');
 
 describe('verify utils/component-utils', function() {
   let TMP_DIR;
   const TMP_EXT_DIR = 'sanity_test_extensions';
   const dummy_component_name = 'sanity_test_dummy';
   let component_runtime_dir;
+  let component_instance_dir;
 
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
 
     // retrieve tmp dir on server side
-    let tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMPDIR}"');
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    if (!tmpOnServer) {
-      tmpOnServer = await sshHelper.executeCommandWithNoError('echo "${TMP}"');
-    }
-    tmpOnServer = tmpOnServer && tmpOnServer.trim();
-    TMP_DIR = tmpOnServer || '/tmp';
-    debug(`TMP_DIR=${TMP_DIR}`);
+    TMP_DIR = await sshHelper.getTmpDir();
     component_runtime_dir = `${TMP_DIR}/${TMP_EXT_DIR}/${dummy_component_name}`;
+    component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
   });
 
   const find_component_directory = 'find_component_directory';
@@ -86,6 +81,39 @@ describe('verify utils/component-utils', function() {
 
   });
 
+  const is_core_component = 'is_core_component';
+  describe(`verify ${is_core_component}`, function() {
+    before('create test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
+    });
+
+    after('dispose test component', async function() {
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir}`);
+    });
+
+    it('test with core component', async function() {
+      const component = 'jobs-api';
+      await test_component_function_has_expected_rc_stdout_stderr(
+        'echo $' + `(${is_core_component} "` + '$' + `(find_component_directory ${component})")`,
+        {},
+        {
+          stdout: 'true',
+        }
+      );
+    });
+
+    it('test with non-core component', async function() {
+      await test_component_function_has_expected_rc_stdout_stderr(
+        'echo $' + `(${is_core_component} "` + '$' + `(find_component_directory ${dummy_component_name})")`,
+        {},
+        {
+          stdout: 'false',
+        }
+      );
+    });
+
+  });
+
   const read_component_manifest = 'read_component_manifest';
   describe(`verify ${read_component_manifest}`, function() {
 
@@ -130,6 +158,20 @@ describe('verify utils/component-utils', function() {
         {
           rc: 0,
           stdout: 'Error: Cannot iterate over object',
+        }
+      );
+    });
+
+    it('test reading component manifest with an invalid manifest.yaml file', async function() {
+      const manifest_file = 'manifest.yaml';
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && cd ${component_runtime_dir} && touch ${manifest_file} && chmod u+w ${manifest_file}`);
+      await sshHelper.executeCommandWithNoError(`echo 'invalid: "invalid-value' >> ${component_runtime_dir}/${manifest_file}`);
+      await test_component_function_has_expected_rc_stdout_stderr(
+        'echo $' + `(${read_component_manifest} "${component_runtime_dir}" ".invalid" 2>&1)`,
+        {},
+        {
+          rc: 0,
+          stdout:'Error: error reading input file: Missing closing "quote Error: Unexpected end of JSON input',
         }
       );
     });
@@ -201,8 +243,6 @@ describe('verify utils/component-utils', function() {
 
   const convert_component_manifest = 'convert_component_manifest';
   describe(`verify ${convert_component_manifest}`, function() {
-    const component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
-
     before('create test component', async function() {
       await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
     });
