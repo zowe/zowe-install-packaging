@@ -338,5 +338,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       }
     }
   )
+  
   pipeline.end()
 }
