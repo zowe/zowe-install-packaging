@@ -148,7 +148,7 @@ process_command_install() {
         print_and_log_message "WARNING: NODE_HOME is not defined. The component commands.install defined in manifest will not be processed."
         print_and_log_message "         You can either re-run the zowe-install-component.sh script with NODE_HOME defined, or run commands.install defined in manifest manually."
     else
-        commands_install =$(read_component_manifest "${TARGET_DIR}/${component_name}" ".commands.install" 2>/dev/null)
+        commands_install=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".commands.install" 2>/dev/null)
         if [[ "${commands_install}" != "null" ]] && [[ -n "${commands_install}" ]]; then
             log_message "- process ${commands_install} defined in manifest commands.install"
             cd "${TARGET_DIR}/${component_name}"
