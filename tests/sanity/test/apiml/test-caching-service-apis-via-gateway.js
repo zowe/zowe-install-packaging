@@ -9,10 +9,17 @@
  */
 
 const expect = require('chai').expect;
+const https = require('https');
+const fs = require('fs');
 let request;
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+  cert: fs.readFileSync('../../playbooks/roles/configure/files/USER-cert.cer'),
+  key: fs.readFileSync('../../playbooks/roles/configure/files/USER-PRIVATEKEY.key'),
+});
+
 let key = 'testKey';
 let value = 'testValue';
-let authenticationCookie;
 
 const testUtils = require('./utils');
 const CACHING_PATH = '/cachingservice/api/v1/cache';
@@ -31,12 +38,6 @@ let assertStatusNoContent = (response) => {
   expect(response.status).to.equal(204);
 };
 
-let getToken = async () => {
-  const uuid = testUtils.uuid();
-  testUtils.log(uuid, 'ZOWE_CACHING_SERVICE_START value: ' + process.env.ZOWE_CACHING_SERVICE_START);
-  return await testUtils.login(uuid);
-};
-
 (cachingServiceEnabled ? describe : describe.skip)('test caching service via gateway', function() {
   before('verify environment variables', function () {
     // allow self signed certs
@@ -46,66 +47,32 @@ let getToken = async () => {
 
   describe('should be able to use caching service ', () => {
     it('to store a key', async () => {
-      authenticationCookie = await getToken();
       const response = await request.post(CACHING_PATH, {
         key, value
-      },
-      {
-        headers: {
-          'Cookie': authenticationCookie,
-          'X-CSRF-ZOSMF-HEADER': '*'
-        }
-      });
+      },{ httpsAgent });
 
       assertStatusCodeCreated(response);
     });
 
     it('to get a key', async () => {
-      authenticationCookie = await getToken();
-      const response = await request.get(CACHING_PATH + '/' + key,
-        {
-          headers: {
-            'Cookie': authenticationCookie,
-            'X-CSRF-ZOSMF-HEADER': '*'
-          }
-        });
+      const response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
 
       assertStatusCodeOk(response);
     });
 
     it('to update the key value', async () => {
-      authenticationCookie = await getToken();
       value = 'newKey';
       await request.put(CACHING_PATH, {
         key, value
-      },
-      {
-        headers: {
-          'Cookie': authenticationCookie,
-          'X-CSRF-ZOSMF-HEADER': '*'
-        }
-      });
+      }, { httpsAgent });
 
-      const response = await request.get(CACHING_PATH + '/' + key,
-        {
-          headers: {
-            'Cookie': authenticationCookie,
-            'X-CSRF-ZOSMF-HEADER': '*'
-          }
-        });
+      const response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
 
       assertStatusCodeOk(response);
     });
 
     it('to delete the key', async () => {
-      authenticationCookie = await getToken();
-      const response = await request.delete(CACHING_PATH + '/' + key,
-        {
-          headers: {
-            'Cookie': authenticationCookie,
-            'X-CSRF-ZOSMF-HEADER': '*'
-          }
-        });
+      const response = await request.delete(CACHING_PATH + '/' + key, { httpsAgent });
 
       assertStatusNoContent(response);
     });
