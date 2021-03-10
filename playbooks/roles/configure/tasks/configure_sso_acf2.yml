@@ -1,0 +1,38 @@
+---
+# Transfer and submit ZWEPKADD JCL to add and bind SSO token in ACF2
+
+- name: Remove ZWEPKADD.jcl if exists
+  raw: rm -f "{{ work_dir_remote }}/ZWEPKADD.jcl"
+
+- name: Transfer ZWEPKADD.jcl to zOS
+  block:
+
+    - name: Copy ZWEPKADD.jcl to local tmp folder
+      copy:
+        src: ZWEPKADD.jcl
+        dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
+      delegate_to: localhost
+
+    - import_role:
+        name: common
+        tasks_from: upload_file
+      vars:
+        filename_to_upload: ZWEPKADD.jcl
+        file_upload_method: scp
+        file_upload_hashcheck: false
+
+    - name: Check if ZWEPKADD.jcl exists on zOS
+      raw: test -f "{{ work_dir_remote }}/ZWEPKADD.jcl"
+      ignore_errors: True
+      register: file_exist
+      failed_when: file_exist.rc != 0
+
+- name: Check ZWEPKADD.jcl changes
+  raw: cat "{{ work_dir_remote }}/ZWEPKADD.jcl"
+
+- name: Run ZWEPKADD.jcl
+  import_role:
+    name: zos
+    tasks_from: run_jcl
+  vars:
+    jcl_filename: "{{ work_dir_remote }}/ZWEPKADD.jcl"
