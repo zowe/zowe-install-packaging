@@ -127,6 +127,8 @@ zowe_known_tss_keyring_names:
 zowe_known_keyring_personal_digicerts:
 - ZOWECERT
 - ZOWEJWT
-- JWTSECRET
+- USER
+- ZWECC
+- JWTSCRT
 zowe_known_keyring_certauth_digicerts:
 - ZOWECA
