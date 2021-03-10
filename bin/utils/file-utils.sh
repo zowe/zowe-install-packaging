@@ -135,24 +135,6 @@ count_children_in_directory() {
   return 0
 }
 
-read_xml() {
-  file=$1
-  key=$2
-
-  if [ -z "$NODE_HOME" ]; then
-    >&2 echo "NODE_HOME is required by this function"
-    return 1
-  fi
-  # node should have already been put into PATH
-
-  utils_dir="${ROOT_DIR}/bin/utils"
-  fconv="${utils_dir}/fconv/src/index.js"
-  jq="${utils_dir}/njq/src/index.js"
-
-  node "${fconv}" "${file}" | node "${jq}" -r "${key}"
-  return $?
-}
-
 read_yaml() {
   file=$1
   key=$2

@@ -505,17 +505,7 @@ process_component_appfw_plugin() {
 }
 
 list_component_service_id() {
-  component_name=$1
-
-  if [ -d "${ROOT_DIR}/components/${component_name}" ]; then
-    component_dir="${ROOT_DIR}/components/${component_name}"
-  elif [ -d "${ROOT_DIR}/../extensions/${component_name}" ]; then
-    component_dir="${ROOT_DIR}/../extensions/${component_name}"
-  else
-    # error
-    echo "error"
-    return 1
-  fi
+  component_dir=$1
 
   service_index=0
   dynamic_service_id=$(read_component_manifest "${component_dir}" ".apimlServices.dynamic[${service_index}].serviceId" 2>/dev/null)
@@ -541,18 +531,9 @@ list_component_service_id() {
 }
 
 list_component_plugin_id() {
-  component_name=$1
-  definition_file="pluginDefinition.json"
+  component_dir=$1
 
-  if [ -d "${ROOT_DIR}/components/${component_name}" ]; then
-    component_dir="${ROOT_DIR}/components/${component_name}"
-  elif [ -d "${ROOT_DIR}/../extensions/${component_name}" ]; then
-    component_dir="${ROOT_DIR}/../extensions/${component_name}"
-  else
-    # error
-    echo "error"
-    return 1
-  fi
+  definition_file="pluginDefinition.json"
 
   cd ${component_dir}
 
@@ -571,4 +552,64 @@ list_component_plugin_id() {
     desktopIframe_id=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${desktopIframe_index}].id" 2>/dev/null)
   done
   return 0
+}
+
+# requires NODE_HOME to be defined
+# MUST source prepare-environment
+verify_component_instance() {
+  component_id=$1
+
+  component_dir=$(find_component_directory "${component_id}")
+  echo ${component_dir}
+
+  service_ids=$(list_component_service_id "${component_dir}")
+
+  if [ ! -d ~/temp-verify ]; then
+    mkdir ~/temp-verify
+  fi
+
+  echo ${component_id} | tr '[:lower:]' '[:upper:]'
+  echo "==========================================\n"
+
+  echo "SERVICE COMPONENT STATUS"
+
+  for service_id in $service_ids; do
+    rm -rf ~/temp-verify/verify-ext-serviceid.json
+    node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J >> ~/temp-verify/verify-ext-serviceid.json
+    service_status=$(read_json ~/temp-verify/verify-ext-serviceid.json .application.instance[0].status)
+    echo "${service_id}" - "${service_status}"
+  done
+
+  if [ -z "${service_ids}" ]; then
+     echo "No services exist for this component"
+  fi
+  
+  desktop_ids=$(list_component_plugin_id "${component_dir}")
+  
+  echo "\nDESKTOP COMPONENT STATUS"
+
+  for desktop_id in $desktop_ids; do
+    rm -rf ~/temp-verify/verify-ext-desktop.json
+    node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k >> ~/temp-verify/verify-ext-desktop.json
+    desktop_identifier_list=$(read_json ~/temp-verify/verify-ext-desktop.json .pluginDefinitions[].identifier)
+
+    if [[ "$desktop_identifier_list" == *"$desktop_id"* ]]; then
+      echo "OK! - ${desktop_id} exists"
+    else
+      echo "FAIL! - ${desktop_id} does not exist"
+    fi
+  done
+
+  if [ -z "${desktop_ids}" ]; then
+    echo "No desktop plugins exist for this component"
+  fi
+}
+
+list_all_components() {
+  # Take note: find_component_directory doesn't locate {{ zwe_extensions_dir }}
+  # temporary, need to change variable
+  component_dir_list="${ROOT_DIR}/components ${ROOT_DIR}/../extensions"
+  for component_dirs in ${component_dir_list}; do
+    ls -1 ${component_dirs}
+  done
 }

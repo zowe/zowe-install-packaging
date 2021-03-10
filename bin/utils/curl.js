@@ -20,7 +20,7 @@
  * -u: username:password
  * -v: verbose mode
  * -J: prettify JSON response to make it more readable
- * --output 'status'/'body'/'header': outputs one of three following information
+ * --response-type 'status'/'body'/'header': outputs one of three following information (body is default value)
  *
  * Usage Examples:
  *
@@ -60,7 +60,7 @@ const params = {
   data: null,
 };
 let prettifyJson = false;
-let output = '';
+let responseType = '';
 
 // parse arguments
 const args = process.argv.slice(2);
@@ -93,11 +93,11 @@ for (let i = 0; i < args.length; i++) {
     verbose = true;
   } else if (args[i] === '-J') {
     prettifyJson = true;
-  } else if (args[i] == '--output'){
+  } else if (args[i] == '--response-type'){
     i++;
-    output = args[i];
-    if (output != 'body' && output != 'header' && output != 'status') {
-      exitWithError(1, `Error: --output| can only take one of the three following values: header, body, status\n`);
+    responseType = args[i];
+    if (responseType != 'body' && responseType != 'header' && responseType != 'status') {
+      exitWithError(1, `Error: --response-type| can only take one of the three following values: header, body, status\n`);
     }
   } else {
     exitWithError(1, `Error: unknown parameter ${args[i]}\n`);
@@ -119,7 +119,7 @@ if (params.auth) {
   options.auth = params.auth;
 }
 
-if (verbose && output == '') {
+if (verbose) {
   process.stdout.write(`> ${params.method} ${params.url}\n`);
   process.stdout.write(`> Headers:\n`);
   for (const k in params.headers) {
@@ -135,23 +135,22 @@ if (verbose && output == '') {
 const HTTP = params.url.protocol === 'https:' ? require('https') : require('http');
 let resBody = '';
 const req = HTTP.request(options, (res) => {
-  if (verbose && output == '') {
-    // console.log(res);
-    process.stdout.write(`< Status: ${res.statusCode}\n`);
-    process.stdout.write(`< Headers:\n`);
+  if (responseType == 'header') {
     for (const k in res.headers) {
-      process.stdout.write(`< - ${k}: ${res.headers[k]}\n`);
+      process.stdout.write(`${k}: ${res.headers[k]}\n`);
     }
-    process.stdout.write(`< Body:\n`);
-  }
-
-  if (output == 'header') {
-    for (const k in res.headers) {
-      process.stdout.write(`- ${k}: ${res.headers[k]}\n`);
-    }
-  } else if (output == 'status') {
+  } else if (responseType == 'status') {
     process.stdout.write(`${res.statusCode}\n`)
   } else {
+    if (verbose) {
+      // console.log(res);
+      process.stdout.write(`< Status: ${res.statusCode}\n`);
+      process.stdout.write(`< Headers:\n`);
+      for (const k in res.headers) {
+        process.stdout.write(`< - ${k}: ${res.headers[k]}\n`);
+      }
+      process.stdout.write(`< Body:\n`);
+    }
     // res.setEncoding('utf8');
     res.on('data', (chunk) => {
       resBody += chunk;
