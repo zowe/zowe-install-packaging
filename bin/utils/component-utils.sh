@@ -560,7 +560,6 @@ verify_component_instance() {
   component_id=$1
 
   component_dir=$(find_component_directory "${component_id}")
-  echo ${component_dir}
 
   service_ids=$(list_component_service_id "${component_dir}")
 
