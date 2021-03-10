@@ -11,9 +11,6 @@
  */
 
 node('zowe-jenkins-agent-dind-wdc') {
-  echo "env.JOB_NAME=${env.JOB_NAME}"
-  error "exit"
-
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
@@ -293,7 +290,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout: [time: 2, unit: 'HOURS'],
     isSkippable: true,
     stage : {
-      def buildName = env.JOB_NAME.replace('/', ' :: ')
+      def buildName = env.JOB_NAME.replace('/', ' :: ').replace('%2F', ' :: ')
       def branchName = env.BRANCH_NAME   //this field will be "PR-1937" or branch name "users/xxx/xxxx"
       def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
       def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
