@@ -11,6 +11,9 @@
  */
 
 node('zowe-jenkins-agent-dind-wdc') {
+  echo "env.JOB_NAME=${env.JOB_NAME}"
+  error "exit"
+
   def lib = library("jenkins-library").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
