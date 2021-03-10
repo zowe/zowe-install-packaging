@@ -18,16 +18,16 @@
   raw: echo "  DELETE CERTAUTH.{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
   loop: "{{ zowe_known_keyring_certauth_digicerts }}"
 
-- name: Add set keying division ACF2 statement to JCL
+- name: Delete zowe token
+  raw: echo "  P11TOKEN DEL TOKEN({{ zowe_token_name }}) FORCE" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+
+- name: Add set keyring division ACF2 statement to JCL
   raw: echo "  SET PROFILE(USER) DIVISION(KEYRING)" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
 - name: Add delete Zowe ACF2 keyrings statement(s) to JCL
   raw: echo "  DELETE {{ zowe_runtime_user }}.{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
   loop: "{{ zowe_known_tss_keyring_names }}"
   ignore_errors: True
-
-- name: Delete zowe token
-  raw: echo "  P11TOKEN DEL TOKEN({{ zowe_token_name }}) FORCE" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
 - name: finalise ACFNOKYR.jcl
   raw: echo "\n  F ACF2,REBUILD(FAC)\n\n* List the keyring ................................................\n  SET PROFILE(USER) DIVISION(KEYRING)\n  LIST {{ zowe_runtime_user }}.ZOWERING\n\nEND\n\$\$" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
