@@ -15,6 +15,9 @@
     - name: Copy certificate to dataset
       raw: cp "{{ certificate }}" "//'{{ zowe_dataset_prefix }}.CERT.{{ dataset }}'"
 
+    - name: Print jwtcert
+      raw: cat {{ certificate }}
+
     - name: Import certificate to RACF
       when: zos_security_system == 'RACF'
       raw: |-
