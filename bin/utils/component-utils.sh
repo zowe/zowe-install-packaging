@@ -504,6 +504,22 @@ process_component_appfw_plugin() {
   fi
 }
 
+###############################
+# Lists the service IDs of a specified component
+#
+# Note: this function calls is dependent on various utility functions and
+#       environment variables. Simply source bin/internal/prepare-environment.sh
+#       to import the required dependencies.
+#
+# Required environment variables:
+# - NODE_HOME
+# - ROOT_DIR
+#
+# Example:
+# - List the service IDs for the api-catalog component
+#   i.e: list_component_service_id "${ROOT_DIR}/components/api-catalog"
+#
+# @param string   component directory
 list_component_service_id() {
   component_dir=$1
 
@@ -529,6 +545,22 @@ list_component_service_id() {
   done
   return 0
 }
+###############################
+# Lists the desktop plugin IDs of a specified component
+#
+# Note: this function calls is dependent on various utility functions and
+#       environment variables. Simply source bin/internal/prepare-environment.sh
+#       to import the required dependencies.
+#
+# Required environment variables:
+# - NODE_HOME
+# - ROOT_DIR
+#
+# Example:
+# - List the desktop plugin IDs for the explorer-mvs component
+#   i.e: list_component_plugin_id "${ROOT_DIR}/components/explorer-mvs"
+#
+# @param string   component directory
 
 list_component_plugin_id() {
   component_dir=$1
@@ -554,8 +586,27 @@ list_component_plugin_id() {
   return 0
 }
 
-# requires NODE_HOME to be defined
-# MUST source prepare-environment
+###############################
+# Verifies a specific component by performing a fast check. If the component
+# has any services, it will check if the status of those services are "UP". If
+# it has any desktop plugins it will check if it exists on the zowe instance.
+#
+# Note: this function calls is dependent on various utility functions and
+#       environment variables. Simply source bin/internal/prepare-environment.sh
+#       to import the required dependencies.
+#
+# Required environment variables:
+# - NODE_HOME
+# - ROOT_DIR
+# - ZOWE_EXPLORER_HOST
+# - DISCOVERY_PORT
+# - ZOWE_ZLUX_SERVER_HTTPS_PORT
+#
+# Example:
+# - Verify service and desktop plugin of explorer-jes component
+#   i.e: verify_component_instance "${ROOT_DIR}/components/explorer-jes"
+#
+# @param string   component directory
 verify_component_instance() {
   component_id=$1
 
@@ -604,6 +655,18 @@ verify_component_instance() {
   fi
 }
 
+###############################
+# Lists all the components that exists in a zowe instance
+#
+# Required environment variables:
+# - ROOT_DIR
+# - ZWE_EXTENSION_DIR
+#
+# Example:
+# - This will display all components that is currentally installled on a zowe instance
+#   i.e: list_all_components
+#
+# @param string   component directory
 list_all_components() {
   # Take note: find_component_directory doesn't locate {{ zwe_extensions_dir }}
   # temporary, need to change variable
