@@ -134,7 +134,7 @@
 
 - import_role:
     name: configure
-    tasks_from: configure_client_certificates
+    tasks_from: configure_jwt_secret_certificate
   vars:
     certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.pem"
     dataset: JWTSCRT
