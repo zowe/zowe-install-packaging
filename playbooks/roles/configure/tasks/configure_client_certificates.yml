@@ -29,6 +29,7 @@
     - name: Import certificate to TSS
       when: zos_security_system == 'TSS'
       raw: |-
+        tsocmd "TSS CHKCERT DCDSN('{{ zowe_dataset_prefix }}.CERT.{{ dataset }}')"
         tsocmd "TSS ADDTO({{ zowe_runtime_user }}) DIGICERT({{ dataset }}) LABLCERT('{{ label }}') DCDSN('{{ zowe_dataset_prefix }}.CERT.{{ dataset }}') TRUST"
         tsocmd "TSS LIST({{ zowe_runtime_user }}) DIGICERT(ALL)"
       ignore_errors: True
