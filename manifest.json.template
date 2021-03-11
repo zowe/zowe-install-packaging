@@ -97,7 +97,7 @@
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "1.20.16",
+      "version": "1.20.10",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
