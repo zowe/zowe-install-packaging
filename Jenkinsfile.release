@@ -603,11 +603,12 @@ node('zowe-jenkins-agent-dind-wdc') {
           "docker manifest push ompzowe/server-bundle:latest\n" +
           "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
           "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
+        
+        // signing: enables end users to download only images that pass signature verification
+        // sadly, docker does not yet support signing manifests, and also cannot sign multiple images with a single command
         sh "export DOCKER_CONTENT_TRUST=1\n" +
           "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:amd64\n" +
-          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:s390x\n" +
-          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:latest\n" +
-          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
+          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:s390x"
       }
     }
   )
