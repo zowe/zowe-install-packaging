@@ -614,19 +614,13 @@ verify_component_instance() {
 
   service_ids=$(list_component_service_id "${component_dir}")
 
-  if [ ! -d ~/temp-verify ]; then
-    mkdir ~/temp-verify
-  fi
-
   echo ${component_id} | tr '[:lower:]' '[:upper:]'
   echo "==========================================\n"
 
   echo "SERVICE COMPONENT STATUS"
 
   for service_id in $service_ids; do
-    rm -rf ~/temp-verify/verify-ext-serviceid.json
-    node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J >> ~/temp-verify/verify-ext-serviceid.json
-    service_status=$(read_json ~/temp-verify/verify-ext-serviceid.json .application.instance[0].status)
+    service_status=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J | read_json - .application.instance[0].status)
     echo "${service_id}" - "${service_status}"
   done
 
@@ -639,11 +633,9 @@ verify_component_instance() {
   echo "\nDESKTOP COMPONENT STATUS"
 
   for desktop_id in $desktop_ids; do
-    rm -rf ~/temp-verify/verify-ext-desktop.json
-    node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k >> ~/temp-verify/verify-ext-desktop.json
-    desktop_identifier_list=$(read_json ~/temp-verify/verify-ext-desktop.json .pluginDefinitions[].identifier)
+    desktop_identifier=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k | read_json - .pluginDefinitions[].identifier)
 
-    if [[ "$desktop_identifier_list" == *"$desktop_id"* ]]; then
+    if [[ "$desktop_identifier" == *"$desktop_id"* ]]; then
       echo "OK! - ${desktop_id} exists"
     else
       echo "FAIL! - ${desktop_id} does not exist"
@@ -661,6 +653,7 @@ verify_component_instance() {
 # Required environment variables:
 # - ROOT_DIR
 # - ZWE_EXTENSION_DIR
+# - EXTERNAL_COMPONENTS
 #
 # Example:
 # - This will display all components that is currentally installled on a zowe instance
@@ -670,8 +663,15 @@ verify_component_instance() {
 list_all_components() {
   # Take note: find_component_directory doesn't locate {{ zwe_extensions_dir }}
   # temporary, need to change variable
-  component_dir_list="${ROOT_DIR}/components ${ROOT_DIR}/../extensions"
+  component_dir_list="${ROOT_DIR}/components ${ZWE_EXTENSION_DIR}"
+
   for component_dirs in ${component_dir_list}; do
     ls -1 ${component_dirs}
   done
+
+  # May need to loop through EXTERNAL_COMPONENTS env variable (contains third part components)
+  # for directories in $(echo ${EXTERNAL_COMPONENTS} | sed "s/,/ /g"); do
+  #   echo ${directories}
+  # done
+  
 }
