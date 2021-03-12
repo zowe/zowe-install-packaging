@@ -566,11 +566,20 @@ node('zowe-jenkins-agent-dind-wdc') {
       return isFormalRelease && (releaseArtifacts['docker-amd64'] || releaseArtifacts['docker-s390x'])
     },
     stage            : {
-      withCredentials([usernamePassword(
-        credentialsId: 'ZoweDockerhub',
-        usernameVariable: 'USERNAME',
-        passwordVariable: 'PASSWORD'
-      )]) {
+      withCredentials([
+        usernamePassword(
+          credentialsId: 'ZoweDockerhub',
+          usernameVariable: 'USERNAME',
+          passwordVariable: 'PASSWORD'
+        ),
+        sshUserPrivateKey(
+          credentialsId: 'DockerUserSigningKey',
+          keyFileVariable: 'USERSIGNKEY',
+          passphraseVariable: 'SIGNPASSPHRASE',
+          usernameVariable: 'SIGNKEYNAME'
+        )
+      ]) {
+        sh "echo \"${USERSIGNKEY}\" > ~/.docker/trust/private/${SIGNKEYNAME}.key"
         def publishCommands = "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\"\n"
         def manifestAmends = ""
         // load images
@@ -594,6 +603,11 @@ node('zowe-jenkins-agent-dind-wdc') {
           "docker manifest push ompzowe/server-bundle:latest\n" +
           "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
           "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
+        sh "export DOCKER_CONTENT_TRUST=1\n" +
+          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:amd64\n" +
+          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:s390x\n" +
+          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:latest\n" +
+          "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
       }
     }
   )
