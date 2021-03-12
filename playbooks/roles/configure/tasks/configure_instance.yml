@@ -60,10 +60,10 @@
   raw: |-
     export INSTANCE_DIR={{ zowe_instance_dir }}
     . {{ zowe_root_dir }}/bin/utils/utils.sh
-    update_zowe_instance_variable ZWED_agent_jwt_token_name=ZWETOKEN
-    update_zowe_instance_variable ZWED_agent_jwt_token_label=jwtsecret
-    update_zowe_instance_variable ZWED_agent_jwt_fallback=true
-    update_zowe_instance_variable ZWED_agent_jwt_enabled=true
+    update_zowe_instance_variable ZWED_agent_jwt_token_name ZWETOKEN
+    update_zowe_instance_variable ZWED_agent_jwt_token_label jwtsecret
+    update_zowe_instance_variable ZWED_agent_jwt_fallback true
+    update_zowe_instance_variable ZWED_agent_jwt_enabled true
 
 # This is a temporary solution, eventually caching service will be handled by ZWE_LAUNCH_COMPONENTS like others
 - name: Add Caching Service start parameter to instance.env
