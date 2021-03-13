@@ -187,10 +187,10 @@ detect_component_manifest_encoding() {
 # Required environment variables:
 # - ROOT_DIR
 # - NODE_HOME
-# - WORKSPACE_DIR
+# - INSTANCE_ENV_DIR
 #
 # Example:
-# - convert my-component manifest, a .manifest.json will be created in <WORKSPACE_DIR>/my-component folder
+# - convert my-component manifest, a .manifest.json will be created in <INSTANCE_ENV_DIR>/my-component folder
 #   convert_component_manifest "/path/to/zowe/components/my-component"
 #
 # @param string   component directory
@@ -203,8 +203,8 @@ convert_component_manifest() {
   fi
   # node should have already been put into PATH
 
-  if [ -z "${WORKSPACE_DIR}" ]; then
-    >&2 echo "WORKSPACE_DIR is required by this function"
+  if [ -z "${INSTANCE_ENV_DIR}" ]; then
+    >&2 echo "INSTANCE_ENV_DIR is required by this function"
     return 1
   fi
 
@@ -220,11 +220,20 @@ convert_component_manifest() {
   fi
 
   if [ -n "${component_manifest}" ]; then
-    mkdir -p "${WORKSPACE_DIR}/${component_name}"
-    node "${fconv}" -o "${WORKSPACE_DIR}/${component_name}/.manifest.json" "${component_manifest}"
-    return $?
+    mkdir -p "${INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${INSTANCE_ENV_DIR}/${component_name}"
+    node "${fconv}" -o "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json" "${component_manifest}"
+    rc=$?
+    chmod 640 "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    return $rc
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    mkdir -p "${INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${INSTANCE_ENV_DIR}/${component_name}"
+    cp "${component_dir}/manifest.json" "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    chmod 640 "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    return 0
   else
-    # this could be the package doesn't have manifest, or has it in JSON format
+    # this could be the package doesn't have manifest
     return 0
   fi
 }
@@ -240,7 +249,7 @@ convert_component_manifest() {
 # - NODE_HOME
 #
 # Optional environment variables:
-# - WORKSPACE_DIR
+# - INSTANCE_ENV_DIR
 #
 # Example:
 # - read my-component commands.start value
@@ -263,13 +272,14 @@ read_component_manifest() {
   # node should have already been put into PATH
 
   component_name=$(basename "${component_dir}")
-  manifest_in_workspace=
-  if [ -n "${WORKSPACE_DIR}" ]; then
-    manifest_in_workspace="${WORKSPACE_DIR}/${component_name}/.manifest.json"
+  manifest_in_env_dir=
+  if [ -n "${INSTANCE_ENV_DIR}" ]; then
+    manifest_in_env_dir="${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
   fi
 
-  if [ -n "${manifest_in_workspace}" -a -f "${manifest_in_workspace}" ]; then
-    read_json "${manifest_in_workspace}" "${manifest_key}"
+  if [ -n "${manifest_in_env_dir}" -a -f "${manifest_in_env_dir}" ]; then
+    # this should cover most of the cases
+    read_json "${manifest_in_env_dir}" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yaml" ]; then
     read_yaml "${component_dir}/manifest.yaml" "${manifest_key}"

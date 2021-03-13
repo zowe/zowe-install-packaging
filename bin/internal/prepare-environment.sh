@@ -39,6 +39,7 @@ set -a
 ZWE_ENVIRONMENT_PREPARED=
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
+OPTIND=1
 while getopts "c:r:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
@@ -69,6 +70,8 @@ fi
 
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
+# source all utility libraries
+. ${ROOT_DIR}/bin/utils/utils.sh
 
 # read the instance environment variables to make sure they exists
 # Question: is there a better way to load these variables since this is already handled by
@@ -130,8 +133,6 @@ fi
 #               root directory.
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
-# source all utility libraries
-. ${ROOT_DIR}/bin/utils/utils.sh
 # FIXME: ideally this should be handled by component configure.sh lifecycle script.
 #        We may require extensions to have these code in conformance program.
 # FIXME: prepare-environment.sh shouldn't have any output, but these 2 functions may output:

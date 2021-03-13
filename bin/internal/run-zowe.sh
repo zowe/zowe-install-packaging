@@ -14,6 +14,7 @@
 # This script will start Zowe.
 ################################################################################
 
+OPTIND=1
 while getopts "c:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
@@ -29,6 +30,9 @@ export INSTANCE_DIR
 # find runtime directory to locate the scripts
 # this value should be trustworthy since this script is not supposed to be sourced
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+
+. ${INSTANCE_DIR}/bin/internal/utils.sh
+reset_env_dir
 
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
 . ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"

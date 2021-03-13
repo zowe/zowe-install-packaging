@@ -25,6 +25,7 @@
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
+OPTIND=1
 while getopts "c:r:t:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
@@ -251,8 +252,12 @@ configure_components() {
 prepare_workspace_dir
 convert_component_yaml_to_json
 validate_components
-store_config_archive
+# FIXME: which instance.env to copy?
+# store_config_archive
 configure_components
+# at this point, <instance>/.env/<component>/.manifest.json should be in place
+# re-generate components instance.env
+prepare_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
 
 ########################################################
 # Keep config dir for zss within permissions it accepts

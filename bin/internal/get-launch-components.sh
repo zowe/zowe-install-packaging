@@ -21,6 +21,7 @@
 ################################################################################
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
+OPTIND=1
 while getopts "c:r:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
