@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.20.0-STAGING",
+      "version": "~1.20.0-271-S-151-S-S-S",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zss-auth": {
@@ -52,7 +52,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~1.20.0-STAGING",
+      "version": "~1.20.0-PR-226",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
