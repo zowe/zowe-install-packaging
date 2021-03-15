@@ -169,6 +169,11 @@ fix_env_dir_files_encoding() {
 prepare_instance_env_from_yaml_config() {
   ha_instance=$1
 
+  if [ -f "${INSTANCE_DIR}/instance.env" -o ! -f "${INSTANCE_DIR}/zowe.yaml" ]; then
+    # still using instance.env, nothing to do
+    return 0
+  fi
+
   prepare_node_js
   prepare_yaml_for_ha_instance "${INSTANCE_DIR}/zowe.yaml" "${ha_instance}"
   if [ ! -f "${INSTANCE_ENV_DIR}/.zowe.yaml" ]; then

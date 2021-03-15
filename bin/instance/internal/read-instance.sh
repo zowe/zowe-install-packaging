@@ -18,6 +18,6 @@ if [ -z "${ROOT_DIR}" ]; then
   read_essential_vars
 fi
 
-if [ -f "${INSTANCE_DIR}/zowe.yaml" ]; then
+if [ ! -f "${INSTANCE_DIR}/instance.env" -a -f "${INSTANCE_DIR}/zowe.yaml" ]; then
   prepare_and_read_instance_env "${HA_INSTANCE_ID}" "${START_COMPONENT_ID}"
 fi
