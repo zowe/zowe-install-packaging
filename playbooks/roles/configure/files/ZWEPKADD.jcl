@@ -21,7 +21,7 @@
 //*                     12345678
 //*
 //*      * Zowe's certificate Label (PKCS12)
-//         SET   LABEL=jwtsecret
+//         SET   LABEL=JWTCERT
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //         SET   STCGRP=          * group for Zowe started tasks

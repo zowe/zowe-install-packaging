@@ -27,6 +27,13 @@
       register: file_exist
       failed_when: file_exist.rc != 0
 
+- name: Update ZWEPKADD.jcl with configurations
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWEPKADD.jcl" | \
+    sed -e "s+ZOWEUSER=ZWESVUSR+ZOWEUSER={{ zowe_runtime_user }}+" | \
+    sed -e "s+LABEL=JWTCERT+LABEL={{ zowe_token_label }}+" | \
+    > "{{ work_dir_remote }}/ZWEPKADD.jcl"
+
 - name: Check ZWEPKADD.jcl changes
   raw: cat "{{ work_dir_remote }}/ZWEPKADD.jcl"
 
