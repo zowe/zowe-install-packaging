@@ -430,7 +430,7 @@ ACF
 
 * Create jwtsecret
    SET PROFILE(USER) DIVISION(CERTDATA)
-   GENCERT &ZOWEUSER..ZOWEJWT -
+   GENCERT &ZOWEUSER -
            SUBJSDN(CN='&CN. JWT' -
                    OU='&OU.' -
                     O='&O.' -
@@ -443,9 +443,9 @@ ACF
 
 * Connect jwtsecret to the keyring ................................
   SET PROFILE(USER) DIVISION(CERTDATA)
-  CONNECT CERTDATA(&ZOWEUSER..ZOWEJWT) RINGNAME(&ZOWERING.) -
+  CONNECT CERTDATA(&ZOWEUSER) RINGNAME(&ZOWERING.) -
   KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL)
-  CHKCERT &ZOWEUSER..ZOWEJWT
+  CHKCERT &ZOWEUSER
 
 * Allow ZOWEUSER to access keyring ................................
   SET RESOURCE(FAC)
