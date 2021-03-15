@@ -31,7 +31,7 @@
   raw: >-
     cat "{{ work_dir_remote }}/ZWEPKADD.jcl" | \
     sed -e "s+ZOWEUSER=ZWESVUSR+ZOWEUSER={{ zowe_runtime_user }}+" | \
-    sed -e "s+LABEL=JWTCERT+LABEL={{ zowe_token_label }}+" | \
+    sed -e "s+LABEL=JWTCERT+LABEL={{ zowe_token_label }}+" \
     > "{{ work_dir_remote }}/ZWEPKADD.jcl"
 
 - name: Check ZWEPKADD.jcl changes
