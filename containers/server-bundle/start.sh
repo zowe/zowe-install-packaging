@@ -30,7 +30,7 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_http_port=8542 \
+    --env ZWED_agent_https_port=8542 \
     -p ${DISCOVERY_PORT}:7553 \
     -p ${GATEWAY_PORT}:7554 \
     -p ${APP_SERVER_PORT}:8544 \
