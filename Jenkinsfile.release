@@ -575,11 +575,11 @@ node('zowe-jenkins-agent-dind-wdc') {
         sshUserPrivateKey(
           credentialsId: 'DockerUserSigningKey',
           keyFileVariable: 'USERSIGNKEY',
-          passphraseVariable: 'SIGNPASSPHRASE',
+          passphraseVariable: 'DECRYPTCODE',
           usernameVariable: 'SIGNKEYNAME'
         )
       ]) {
-        sh "echo \"${USERSIGNKEY}\" > ~/.docker/trust/private/${SIGNKEYNAME}.key"
+        sh "cp \"${USERSIGNKEY}\" ~/.docker/trust/private/${SIGNKEYNAME}.key"
         def publishCommands = "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\"\n"
         def manifestAmends = ""
         // load images
@@ -606,6 +606,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         
         // signing: enables end users to download only images that pass signature verification
         // sadly, docker does not yet support signing manifests, and also cannot sign multiple images with a single command
+        // it may be the case that pulling from a manifest picks an image within that has the signing, therefore supporting signing
         sh "export DOCKER_CONTENT_TRUST=1\n" +
           "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:amd64\n" +
           "printf \"${DECRYPTCODE}\n\" | docker trust sign ompzowe/server-bundle:s390x"
