@@ -72,7 +72,7 @@ fi
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 # source all utility libraries
-. ${ROOT_DIR}/bin/utils/utils.sh
+[ -z "${ZWELS_SOURCED_RUNTIME_UTILS}" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 
 # read the instance environment variables to make sure they exists
 # Question: is there a better way to load these variables since this is already handled by

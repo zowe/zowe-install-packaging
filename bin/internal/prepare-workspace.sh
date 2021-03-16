@@ -259,7 +259,7 @@ configure_components
 # at this point, <instance>/.env/<component>/.manifest.json should be in place
 # re-generate components instance.env
 print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
-prepare_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
+generate_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
 
 ########################################################
 # Keep config dir for zss within permissions it accepts

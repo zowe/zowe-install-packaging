@@ -11,9 +11,7 @@
 ################################################################################
 
 # Requires INSTANCE_DIR, KEYSTORE_DIRECTORY to be set
-if [ -z "$(LC_ALL=C type read_essential_vars | grep 'function')" ]; then
-  . ${INSTANCE_DIR}/bin/internal/utils.sh
-fi
+[ -z "${ZWELS_SOURCED_INSTANCE_UTILS}" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
 if [ -z "${ROOT_DIR}" ]; then
   read_essential_vars
 fi

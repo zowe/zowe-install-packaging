@@ -11,13 +11,11 @@
 ################################################################################
 
 # Requires INSTANCE_DIR to be set
-if [ -z "$(LC_ALL=C type read_essential_vars | grep 'function')" ]; then
-  . ${INSTANCE_DIR}/bin/internal/utils.sh
-fi
+[ -z "${ZWELS_SOURCED_INSTANCE_UTILS}" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
 if [ -z "${ROOT_DIR}" ]; then
   read_essential_vars
 fi
 
 if [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
-  prepare_and_read_instance_env "${HA_INSTANCE_ID}" "${START_COMPONENT_ID}"
+  generate_and_read_instance_env_from_yaml_config "${HA_INSTANCE_ID}" "${START_COMPONENT_ID}"
 fi

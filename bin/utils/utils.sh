@@ -41,3 +41,6 @@ fi
 . ${utils_dir}/zosmf-utils.sh
 . ${utils_dir}/zowe-variable-utils.sh
 . ${utils_dir}/component-utils.sh
+
+# status if this file has been sourced already
+export ZWELS_SOURCED_RUNTIME_UTILS=true

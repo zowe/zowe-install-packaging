@@ -10,7 +10,9 @@
 # Copyright IBM Corporation 2021
 ################################################################################
 
+# where we store temporary environment files
 export INSTANCE_ENV_DIR=${INSTANCE_DIR}/.env
+# how we read configurations
 ZWE_CONFIG_LOAD_METHOD=
 if [ -f "${INSTANCE_DIR}/instance.env" ]; then
   ZWE_CONFIG_LOAD_METHOD=instance.env
@@ -20,7 +22,14 @@ else
   ZWE_CONFIG_LOAD_METHOD=
 fi
 export ZWE_CONFIG_LOAD_METHOD
+# status if this file has been sourced already
+export ZWELS_SOURCED_INSTANCE_UTILS=true
 
+###############################
+# Check if a shell function is defined
+#
+# @param string   function name
+# Output          true if the function is defined
 function_exists() {
   fn=$1
   status=$(LC_ALL=C type $fn | grep 'function')
@@ -29,6 +38,10 @@ function_exists() {
   fi
 }
 
+###############################
+# Exit script with error message
+#
+# @param string   error message
 exit_with_error() {
   message=$1
 
@@ -42,7 +55,11 @@ exit_with_error() {
   exit 1
 }
 
-# get system name
+###############################
+# Return system name in lower case
+#
+# - value SYSNAME variable
+# - short hostname
 get_sysname() {
   sysname=$(sysvar SYSNAME 2>/dev/null)
   if [ -z "${sysname}" ]; then
@@ -51,6 +68,10 @@ get_sysname() {
   echo "${sysname}" | tr '[:upper:]' '[:lower:]'
 }
 
+###############################
+# Check if script is running on z/OS
+#
+# Output          true if it's z/OS
 is_on_zos() {
   if [ `uname` = "OS/390" ]; then
     echo "true"
@@ -59,6 +80,11 @@ is_on_zos() {
   fi
 }
 
+###############################
+# Get file encoding from z/OS USS tagging
+#
+# @param string   file name
+# output          USS encoding if exists in upper case
 zos_get_file_tag_encoding() {
   file=$1
   # m ISO8859-1   T=off <file>
@@ -66,6 +92,12 @@ zos_get_file_tag_encoding() {
   ls -T "$file" | awk '{print $2;}' | tr '[:lower:]' '[:upper:]'
 }
 
+###############################
+# Shell sourcing an environment env file
+#
+# All variables defined in env file will be exported.
+#
+# @param string   env file name
 source_env() {
   env_file=$1
 
@@ -79,6 +111,17 @@ source_env() {
   done < "${env_file}"
 }
 
+###############################
+# Read YAML configuration from shell script
+#
+# Note: this is not a reliable way to read YAML file, but we need this to find
+#       out ROOT_DIR to execute further functions.
+#
+# @param string   YAML file name
+# @param string   parent key to read after
+# @param string   which key to read
+# @param string   if this variable is required. If this is true and we cannot
+#                 find the value of the key, an error will be displayed.
 shell_read_yaml_config() {
   yaml_file=$1
   parent_key=$2
@@ -95,6 +138,7 @@ shell_read_yaml_config() {
   fi
 }
 
+###############################
 # Read the most basic variables we need to start Zowe
 # - ROOT_DIR
 # - ZOWE_PREFIX
@@ -123,36 +167,44 @@ read_essential_vars() {
   fi
 }
 
-# prepare env directory, which should be owned by runtime user
+###############################
+# Empty and prepare env directory, which should be owned by runtime user
 reset_env_dir() {
   rm -fr "${INSTANCE_ENV_DIR}" 2>/dev/null
   mkdir -p "${INSTANCE_ENV_DIR}"
   chmod 750 "${INSTANCE_ENV_DIR}"
 }
 
-# this is here because config-converter requires node.js
+###############################
+# Prepare NODE_HOME and PATH to execute node.js scripts
+#
+# Note: this is here because config-converter requires node.js.
 prepare_node_js() {
   . "${ROOT_DIR}/bin/utils/node-utils.sh"
   ensure_node_is_on_path 1>/dev/null 2>&1
 }
 
+###############################
+# Convert instance.env to zowe.yaml file
+#
+# FIXME: this is used for now.
 convert_instance_env_to_yaml() {
+  if [ "${ZWE_CONFIG_LOAD_METHOD}" != "instance.env" ]; then
+    return 0
+  fi
+
   node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${INSTANCE_DIR}/instance.env" > "${INSTANCE_ENV_DIR}/zowe.yaml"
   chmod 640 "${INSTANCE_ENV_DIR}/zowe.yaml"
 }
 
-prepare_yaml_for_ha_instance() {
-  yaml_file=$1
-  ha_instance=$2
-  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${INSTANCE_ENV_DIR}" --ha "${ha_instance}" "${yaml_file}"
-}
-
-convert_yaml_to_instance_env() {
-  ha_instance=$1
-  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml env --wd "${INSTANCE_ENV_DIR}" --ha "${ha_instance}"
-}
-
-convert_env_dir_file_encoding() {
+###############################
+# Check encoding of a file and convert to IBM-1047 if needed.
+#
+# Note: usually this is required if the file is supposed to be shell script,
+#       which requires to be IBM-1047 encoding.
+#
+# @param string    file to check and convert
+zos_convert_env_dir_file_encoding() {
   file=$1
 
   encoding=$(zos_get_file_tag_encoding "$one")
@@ -165,17 +217,12 @@ convert_env_dir_file_encoding() {
   fi
 }
 
-# node.js may create instance.env with ISO8859-1, need to convert to IBM-1047 to allow shell to read
-fix_env_dir_files_encoding() {
-  if [ "$(is_on_zos)" != "true" ]; then
-    return 0
-  fi
-  for one in $(find "${INSTANCE_ENV_DIR}" -type f -name '.instance-*.env') ; do
-    convert_env_dir_file_encoding "${one}"
-  done
-}
-
-prepare_instance_env_from_yaml_config() {
+###############################
+# Prepare configuration for current HA instance, and generate backward
+# compatible instance.env files from zowe.yaml.
+#
+# @param string   HA instance ID
+generate_instance_env_from_yaml_config() {
   ha_instance=$1
 
   if [ "${ZWE_CONFIG_LOAD_METHOD}" != "zowe.yaml" ]; then
@@ -184,19 +231,36 @@ prepare_instance_env_from_yaml_config() {
   fi
 
   prepare_node_js
-  prepare_yaml_for_ha_instance "${INSTANCE_DIR}/zowe.yaml" "${ha_instance}"
+
+  # prepare .zowe.yaml and .zowe-<ha-id>.json
+  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${INSTANCE_ENV_DIR}" --ha "${ha_instance}" "${INSTANCE_DIR}/zowe.yaml"
   if [ ! -f "${INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
     exit_with_error "failed to translate <instance-dir>/zowe.yaml"
   fi
-  convert_yaml_to_instance_env "${ha_instance}"
-  fix_env_dir_files_encoding
+
+  # convert YAML configurations to backward compatible .instance-<ha-id>.env files
+  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml env --wd "${INSTANCE_ENV_DIR}" --ha "${ha_instance}"
+
+  # fix files encoding
+  # node.js may create instance.env with ISO8859-1, need to convert to IBM-1047 to allow shell to read
+  if [ "$(is_on_zos)" = "true" ]; then
+    for one in $(find "${INSTANCE_ENV_DIR}" -type f -name '.instance-*.env') ; do
+      zos_convert_env_dir_file_encoding "${one}"
+    done
+  fi
+
+  # we are all set
   if [ -f "${INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
     # component manifest already in place, we don't need to run this again
     touch "${INSTANCE_ENV_DIR}/.ready"
   fi
 }
 
-prepare_and_read_instance_env() {
+###############################
+# This script will source appropriate instance.env variables based on
+# HA instance ID and component. If the instance.env doesn't exist, it
+# will try to generate it.
+generate_and_read_instance_env_from_yaml_config() {
   ha_instance=$1
   component_id=$2
 
@@ -207,11 +271,17 @@ prepare_and_read_instance_env() {
 
   print_formatted=$(function_exists print_formatted_info)
   LOGGING_SERVICE_ID=ZWELS
-  LOGGING_SCRIPT_NAME=prepare_and_read_instance_env
+  LOGGING_SCRIPT_NAME=generate_and_read_instance_env_from_yaml_config
 
   if [ -z "${ha_instance}" ]; then
     exit_with_error "HA_INSTANCE_ID is empty"
   fi
+
+  # usually creating instance.env has 2 steps:
+  # 1. components .manifest.json are not ready yet, we can only generate <.env>/.instance-<ha-id>.env
+  # 2. components .manifest.json are ready, we should also generate <.env>/<component>/.instance-<ha-id>.env
+  # <.env>/.ready is indication where all conversions are completed, no need to re-run.
+
   if [ ! -f "${INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
     # never initialized, do minimal
     message="initialize .instance-${ha_instance}.env"
@@ -220,7 +290,7 @@ prepare_and_read_instance_env() {
     else
       echo "${message}"
     fi
-    prepare_instance_env_from_yaml_config "${ha_instance}"
+    generate_instance_env_from_yaml_config "${ha_instance}"
   elif [ ! -f "${INSTANCE_ENV_DIR}/.ready" ]; then
     if [ -f "${INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
       message="refresh component copy of .instance-${ha_instance}.env(s)"
@@ -229,9 +299,11 @@ prepare_and_read_instance_env() {
       else
         echo "${message}"
       fi
-      prepare_instance_env_from_yaml_config "${ha_instance}"
+      generate_instance_env_from_yaml_config "${ha_instance}"
     fi
   fi
+
+  # try to source correct instance.env file
   if [ "${component_id}" != "" -a -f "${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env" ]; then
     message="loading ${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
@@ -249,6 +321,7 @@ prepare_and_read_instance_env() {
     fi
     source_env "${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
   else
+    # something wrong, conversion wasn't successful
     if [ "${component_id}" != "" ]; then
       message="compatible version of <instance>/.env/${component_id}/.instance-${ha_instance}.env doesnot exist"
     else
