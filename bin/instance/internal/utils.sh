@@ -26,7 +26,7 @@ export ZWE_CONFIG_LOAD_METHOD
 ###############################
 # Dummy function to check if this utils script has been sourced
 #
-# example: [ -n "$(is_instance_utils_sourced 2>/dev/null || true)" ] && echo "sourced"
+# example: [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && echo "sourced"
 is_instance_utils_sourced() {
   echo 'true'
 }

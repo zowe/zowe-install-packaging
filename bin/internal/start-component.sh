@@ -54,7 +54,7 @@ if [ -z "${ROOT_DIR}" ]; then
   fi
 fi
 export START_COMPONENT_ID
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
 
 # zowe launch script logging identifier
 LOGGING_SERVICE_ID=ZWELS

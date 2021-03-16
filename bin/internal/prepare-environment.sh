@@ -27,16 +27,8 @@
 # Note: this script could be called multiple times during start up.
 ################################################################################
 
-if [ "${ZWE_ENVIRONMENT_PREPARED}" = "true" ]; then
-  # environment variables are already prepared, skip running
-  return 0
-fi
-
 # export all variables defined in this script automatically
 set -a
-
-# initialize flag variable to avoid re-run this script
-ZWE_ENVIRONMENT_PREPARED=
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
 OPTIND=1
@@ -72,7 +64,8 @@ fi
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 # source all utility libraries
-[ -n "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
+[ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
+[ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 
 # read the instance environment variables to make sure they exists
 # Question: is there a better way to load these variables since this is already handled by
@@ -146,9 +139,6 @@ fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
 fi
-
-# set flag so we don't need to re-run this script
-ZWE_ENVIRONMENT_PREPARED=true
 
 # turn off automatic export
 set +a

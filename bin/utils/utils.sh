@@ -45,7 +45,7 @@ fi
 ###############################
 # Dummy function to check if this utils script has been sourced
 #
-# example: [ -n "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && echo "sourced"
+# example: [ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && echo "sourced"
 is_runtime_utils_sourced() {
   echo 'true'
 }

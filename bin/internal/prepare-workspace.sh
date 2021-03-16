@@ -50,7 +50,7 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
 
 # zowe launch script logging identifier
 LOGGING_SERVICE_ID=ZWELS
@@ -256,10 +256,12 @@ validate_components
 # FIXME: which instance.env to copy?
 # store_config_archive
 configure_components
-# at this point, <instance>/.env/<component>/.manifest.json should be in place
-# re-generate components instance.env
-print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
-generate_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
+if [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
+  # at this point, <instance>/.env/<component>/.manifest.json should be in place
+  # re-generate components instance.env
+  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
+  generate_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
+fi
 
 ########################################################
 # Keep config dir for zss within permissions it accepts

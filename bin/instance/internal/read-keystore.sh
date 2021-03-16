@@ -11,7 +11,7 @@
 ################################################################################
 
 # Requires INSTANCE_DIR, KEYSTORE_DIRECTORY to be set
-[ -n "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
+[ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
 if [ -z "${ROOT_DIR}" ]; then
   read_essential_vars
 fi
