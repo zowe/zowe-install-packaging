@@ -248,16 +248,16 @@ configure_components() {
 # prepare workspace
 prepare_workspace_dir
 convert_component_yaml_to_json
-validate_components
-# FIXME: which instance.env to copy?
-# store_config_archive
-configure_components
 if [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   # at this point, <instance>/.env/<component>/.manifest.json should be in place
   # re-generate components instance.env
   print_formatted_info "ZWELS" "prepare-workspace.sh:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
   generate_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
 fi
+validate_components
+# FIXME: which instance.env to copy?
+# store_config_archive
+configure_components
 
 ########################################################
 # Keep config dir for zss within permissions it accepts

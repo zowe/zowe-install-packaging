@@ -211,7 +211,7 @@ convert_instance_env_to_yaml() {
 zos_convert_env_dir_file_encoding() {
   file=$1
 
-  encoding=$(zos_get_file_tag_encoding "$one")
+  encoding=$(zos_get_file_tag_encoding "$file")
   if [ "${encoding}" != "UNTAGGED" -a "${encoding}" != "IBM-1047" ]; then
     tmpfile="${INSTANCE_ENV_DIR}/t"
     rm -f "${tmpfile}"

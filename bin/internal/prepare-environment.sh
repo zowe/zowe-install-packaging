@@ -72,7 +72,7 @@ fi
 # Question: is there a better way to load these variables since this is already handled by
 #           <instance-dir>/bin/internal/run-zowe.sh
 . ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${HA_INSTANCE_ID}" -o "${START_COMPONENT_ID}"
-if [ -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
+if [ "${ZWE_CONFIG_LOAD_METHOD}" = "instance.env" -a -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
   . ${INSTANCE_DIR}/bin/internal/read-keystore.sh -i "${HA_INSTANCE_ID}" -o "${START_COMPONENT_ID}"
 fi
 
