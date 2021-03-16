@@ -22,8 +22,14 @@ else
   ZWE_CONFIG_LOAD_METHOD=
 fi
 export ZWE_CONFIG_LOAD_METHOD
-# status if this file has been sourced already
-export ZWELS_SOURCED_INSTANCE_UTILS=true
+
+###############################
+# Dummy function to check if this utils script has been sourced
+#
+# example: [ -n "$(is_instance_utils_sourced 2>/dev/null || true)" ] && echo "sourced"
+is_instance_utils_sourced() {
+  echo 'true'
+}
 
 ###############################
 # Check if a shell function is defined

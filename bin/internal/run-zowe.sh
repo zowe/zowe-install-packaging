@@ -33,8 +33,8 @@ export INSTANCE_DIR
 export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 
 # source utility scripts
-[ -z "${ZWELS_SOURCED_INSTANCE_UTILS}" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
-[ -z "${ZWELS_SOURCED_RUNTIME_UTILS}" ] && . ${ROOT_DIR}/bin/utils/utils.sh
+[ -n "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
+[ -n "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 reset_env_dir
 
 # assign default value
