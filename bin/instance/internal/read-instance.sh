@@ -17,5 +17,17 @@ if [ -z "${ROOT_DIR}" ]; then
 fi
 
 if [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
+  OPTIND=1
+  while getopts "i:o:" opt; do
+    case ${opt} in
+      i) HA_INSTANCE_ID=${OPTARG};;
+      o) START_COMPONENT_ID=${OPTARG};;
+      \?)
+        echo "Invalid option: -${OPTARG}" >&2
+        exit 1
+        ;;
+    esac
+  done
+
   generate_and_read_instance_env_from_yaml_config "${HA_INSTANCE_ID}" "${START_COMPONENT_ID}"
 fi

@@ -52,21 +52,17 @@ if [ -z "${ROOT_DIR}" ]; then
 fi
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
 
-# zowe launch script logging identifier
-LOGGING_SERVICE_ID=ZWELS
-LOGGING_SCRIPT_NAME=prepare-workspace.sh
-
 ########################################################
 # Prepare workspace directory
 prepare_workspace_dir() {
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "prepare workspace directory ..."
+  print_formatted_info "ZWELS" "prepare-workspace.sh,prepare_workspace_dir:${LINENO}" "prepare workspace directory ..."
 
   mkdir -p ${WORKSPACE_DIR}
   # Make accessible to group so owning user can edit?
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
   if [ "$?" != "0" ]; then
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+    print_formatted_error "ZWELS" "prepare-workspace.sh,prepare_workspace_dir:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
+    print_formatted_error "ZWELS" "prepare-workspace.sh,prepare_workspace_dir:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
   fi
 
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
@@ -82,22 +78,22 @@ prepare_workspace_dir() {
 ########################################################
 # convert components YAML manifest to JSON format
 convert_component_yaml_to_json() {
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "prepare component manifest in workspace ..."
+  print_formatted_info "ZWELS" "prepare-workspace.sh,convert_component_yaml_to_json:${LINENO}" "prepare component manifest in workspace ..."
   for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
   do
     component_dir=$(find_component_directory "${component_id}")
     if [ -n "${component_dir}" ]; then
-      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- ${component_id}"
+      print_formatted_debug "ZWELS" "prepare-workspace.sh,convert_component_yaml_to_json:${LINENO}" "- ${component_id}"
       convert_component_manifest "${component_dir}" 1>/dev/null 2>&1
     fi
   done
-  print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component manifests prepared"
+  print_formatted_debug "ZWELS" "prepare-workspace.sh,convert_component_yaml_to_json:${LINENO}" "component manifests prepared"
 }
 
 ########################################################
 # Validate component properties if script exists
 validate_components() {
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "process component validations ..."
+  print_formatted_info "ZWELS" "prepare-workspace.sh,validate_components:${LINENO}" "process component validations ..."
   ERRORS_FOUND=0
   for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
   do
@@ -113,19 +109,19 @@ validate_components() {
       if [ -z "${validate_script}" -o "${validate_script}" = "null" ]; then
         # backward compatible purpose
         if [ $(is_core_component "${component_dir}") != "true" ]; then
-          print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
+          print_formatted_warn "ZWELS" "prepare-workspace.sh,validate_components:${LINENO}" "- unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
         fi
         validate_script=bin/validate.sh
       fi
       if [ -x "${validate_script}" ]; then
-        print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- process ${component_id} validate command ..."
+        print_formatted_debug "ZWELS" "prepare-workspace.sh,validate_components:${LINENO}" "- process ${component_id} validate command ..."
         result=$(. ${validate_script})
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
-            print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+            print_formatted_debug "ZWELS" "prepare-workspace.sh,validate_components:${LINENO}" "${result}"
           else
-            print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+            print_formatted_error "ZWELS" "prepare-workspace.sh,validate_components:${LINENO}" "${result}"
           fi
         fi
         let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
@@ -134,7 +130,7 @@ validate_components() {
   done
   # exit if there are errors found
   runtime_check_for_validation_errors_found
-  print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component validations are successful"
+  print_formatted_debug "ZWELS" "prepare-workspace.sh,validate_components:${LINENO}" "component validations are successful"
 }
 
 ########################################################
@@ -172,7 +168,7 @@ EOF
 ########################################################
 # Run setup/configure on components if script exists
 configure_components() {
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "process component configurations ..."
+  print_formatted_info "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "process component configurations ..."
   for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
   do
     component_dir=$(find_component_directory "${component_id}")
@@ -186,7 +182,7 @@ configure_components() {
       # backward compatible purpose, some may expect this variable to be component lifecycle directory
       export LAUNCH_COMPONENT="${component_dir}/bin"
 
-      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "- configure ${component_id}"
+      print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "- configure ${component_id}"
 
       # default build-in behaviors
       # - apiml static definitions
@@ -194,9 +190,9 @@ configure_components() {
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
-          print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
         else
-          print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_error "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
         fi
       fi
       # - desktop iframe plugin
@@ -204,9 +200,9 @@ configure_components() {
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
-          print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
         else
-          print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_error "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
         fi
       fi
       # - generic app framework plugin
@@ -214,9 +210,9 @@ configure_components() {
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
-          print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
         else
-          print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+          print_formatted_error "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
         fi
       fi
 
@@ -225,27 +221,27 @@ configure_components() {
       if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then
         # backward compatible purpose
         if [ $(is_core_component "${component_dir}") != "true" ]; then
-          print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
+          print_formatted_warn "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "* unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
         fi
         configure_script=bin/configure.sh
       fi
       if [ -x "${configure_script}" ]; then
-        print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "* process ${component_id} configure command ..."
+        print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
         # FIXME: .env should be attached with HA instance id
         result=$(. ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${WORKSPACE_DIR}/${component_name}/.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
-            print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+            print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
           else
-            print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${result}"
+            print_formatted_error "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "${result}"
           fi
         fi
       fi
     fi
   done
-  print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "component configurations are successful"
+  print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "component configurations are successful"
 }
 
 ########################################################
@@ -259,7 +255,7 @@ configure_components
 if [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   # at this point, <instance>/.env/<component>/.manifest.json should be in place
   # re-generate components instance.env
-  print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
+  print_formatted_info "ZWELS" "prepare-workspace.sh:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
   generate_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
 fi
 
@@ -275,7 +271,7 @@ then
   chmod -R 740 ${WORKSPACE_DIR}/app-server/serverConfig/* 1> /dev/null 2> /dev/null
   chmod_rc2=$?
   if [ "${chmod_rc1}" != "0" -o "${chmod_rc2}" != "0" ]; then
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "permission of app-server workspace directory (${WORKSPACE_DIR}/app-server/serverConfig) is not setup correctly"
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+    print_formatted_error "ZWELS" "prepare-workspace.sh:${LINENO}" "permission of app-server workspace directory (${WORKSPACE_DIR}/app-server/serverConfig) is not setup correctly"
+    print_formatted_error "ZWELS" "prepare-workspace.sh:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
   fi
 fi

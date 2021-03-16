@@ -52,9 +52,7 @@ exit_with_error() {
   message=$1
 
   if [ "$(function_exists print_formatted_error)" = "true" ]; then
-    LOGGING_SERVICE_ID=ZWELS
-    LOGGING_SCRIPT_NAME=exit_with_error
-    print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+    print_formatted_error "ZWELS" "utils.sh,exit_with_error:${LINENO}" "${message}"
   else
     >&2 echo "Error: ${message}"
   fi
@@ -276,8 +274,6 @@ generate_and_read_instance_env_from_yaml_config() {
   fi
 
   print_formatted=$(function_exists print_formatted_info)
-  LOGGING_SERVICE_ID=ZWELS
-  LOGGING_SCRIPT_NAME=generate_and_read_instance_env_from_yaml_config
 
   if [ -z "${ha_instance}" ]; then
     exit_with_error "HA_INSTANCE_ID is empty"
@@ -292,7 +288,7 @@ generate_and_read_instance_env_from_yaml_config() {
     # never initialized, do minimal
     message="initialize .instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
-      print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+      print_formatted_debug "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
     else
       echo "${message}"
     fi
@@ -301,7 +297,7 @@ generate_and_read_instance_env_from_yaml_config() {
     if [ -f "${INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
       message="refresh component copy of .instance-${ha_instance}.env(s)"
       if [ "${print_formatted}" = "true" ]; then
-        print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+        print_formatted_debug "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
       else
         echo "${message}"
       fi
@@ -313,7 +309,7 @@ generate_and_read_instance_env_from_yaml_config() {
   if [ "${component_id}" != "" -a -f "${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env" ]; then
     message="loading ${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
-      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+      print_formatted_debug "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
     else
       echo "${message}"
     fi
@@ -321,7 +317,7 @@ generate_and_read_instance_env_from_yaml_config() {
   elif [ -f "${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env" ]; then
     message="loading ${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
-      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+      print_formatted_debug "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
     else
       echo "${message}"
     fi
@@ -334,7 +330,7 @@ generate_and_read_instance_env_from_yaml_config() {
       message="compatible version of <instance>/.env/.instance-${ha_instance}.env doesnot exist"
     fi
     if [ "${print_formatted}" = "true" ]; then
-      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+      print_formatted_error "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
     else
       >&2 echo "Error: ${message}"
     fi

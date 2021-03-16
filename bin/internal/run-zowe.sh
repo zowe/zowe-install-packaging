@@ -64,5 +64,5 @@ print_formatted_info "ZWELS" "run-zowe.sh:${LINENO}" "Zowe runtime environment p
 print_formatted_debug "ZWELS" "run-zowe.sh:${LINENO}" "starting component(s) ${launch_components_list} ..."
 # FIXME: Zowe Launcher can take responsibility from here
 for component_id in $(echo "${launch_components_list}" | sed "s/,/ /g"); do
-  ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}" -o "${component_id}" &
+  /bin/sh -c "${ROOT_DIR}/bin/internal/start-component.sh -c \"${INSTANCE_DIR}\" -r \"${ROOT_DIR}\" -i \"${HA_INSTANCE_ID}\" -o \"${component_id}\"" &
 done

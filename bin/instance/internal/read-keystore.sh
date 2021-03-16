@@ -10,6 +10,11 @@
 # Copyright IBM Corporation 2021
 ################################################################################
 
+# Note: this file is kept for backward compatible purpose.
+#       If the instance is using zowe.yaml config, the keystore environments are
+#       already loaded with read-instance.sh. This is only useful if the instance
+#       is using instance.env.
+
 # Requires INSTANCE_DIR, KEYSTORE_DIRECTORY to be set
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
 if [ -z "${ROOT_DIR}" ]; then

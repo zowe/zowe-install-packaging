@@ -53,12 +53,7 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
-export START_COMPONENT_ID
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
-
-# zowe launch script logging identifier
-LOGGING_SERVICE_ID=ZWELS
-LOGGING_SCRIPT_NAME=start-component.sh
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}" -o "${START_COMPONENT_ID}"
 
 ########################################################
 # find component root directory and execute start script
@@ -69,7 +64,7 @@ start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/d
 if [ -z "${start_script}" -o "${start_script}" = "null" ]; then
   # backward compatible purpose
   if [ $(is_core_component "${component_dir}") != "true" ]; then
-    print_formatted_warn "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "unable to determine start script from component ${START_COMPONENT_ID} manifest, fall back to default bin/start.sh"
+    print_formatted_warn "ZWELS" "start-component.sh:${LINENO}" "unable to determine start script from component ${START_COMPONENT_ID} manifest, fall back to default bin/start.sh"
   fi
   start_script=${component_dir}/bin/start.sh
 fi
@@ -83,7 +78,7 @@ if [ -n "${component_dir}" ]; then
   fi
 
   if [ -x "${start_script}" ]; then
-    print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "starting component ${START_COMPONENT_ID} ..."
+    print_formatted_info "ZWELS" "start-component.sh:${LINENO}" "starting component ${START_COMPONENT_ID} ..."
     . ${start_script}
   fi
 fi

@@ -32,11 +32,12 @@ set -a
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
 OPTIND=1
-while getopts "c:r:i:" opt; do
+while getopts "c:r:i:o:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     r) ROOT_DIR=${OPTARG};;
     i) HA_INSTANCE_ID=${OPTARG};;
+    o) START_COMPONENT_ID=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -70,9 +71,9 @@ fi
 # read the instance environment variables to make sure they exists
 # Question: is there a better way to load these variables since this is already handled by
 #           <instance-dir>/bin/internal/run-zowe.sh
-. ${INSTANCE_DIR}/bin/internal/read-instance.sh
+. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${HA_INSTANCE_ID}" -o "${START_COMPONENT_ID}"
 if [ -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
-  . ${INSTANCE_DIR}/bin/internal/read-keystore.sh
+  . ${INSTANCE_DIR}/bin/internal/read-keystore.sh -i "${HA_INSTANCE_ID}" -o "${START_COMPONENT_ID}"
 fi
 
 # this variable is used by Gateway to fetch Zowe version and build information
