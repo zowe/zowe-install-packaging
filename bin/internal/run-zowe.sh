@@ -44,7 +44,7 @@ fi
 
 # display starting information
 print_formatted_info "ZWELS" "run-zowe.sh:${LINENO}" "starting Zowe instance ${HA_INSTANCE_ID} from ${INSTANCE_DIR} ..."
-print_formatted_info "ZWELS" "run-zowe.sh:${LINENO}" "use configuration defined in ${ZWE_CONFIG_LOAD_METHOD}"
+print_formatted_debug "ZWELS" "run-zowe.sh:${LINENO}" "use configuration defined in ${ZWE_CONFIG_LOAD_METHOD}"
 # generic prepare environment
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
 # global validations
@@ -61,7 +61,7 @@ fi
 print_formatted_info "ZWELS" "run-zowe.sh:${LINENO}" "Zowe runtime environment prepared"
 
 # display starting information
-print_formatted_info "ZWELS" "run-zowe.sh:${LINENO}" "starting component(s) ${launch_components_list} ..."
+print_formatted_debug "ZWELS" "run-zowe.sh:${LINENO}" "starting component(s) ${launch_components_list} ..."
 # FIXME: Zowe Launcher can take responsibility from here
 for component_id in $(echo "${launch_components_list}" | sed "s/,/ /g"); do
   ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}" -o "${component_id}" &

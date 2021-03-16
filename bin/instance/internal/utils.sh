@@ -313,7 +313,7 @@ generate_and_read_instance_env_from_yaml_config() {
   if [ "${component_id}" != "" -a -f "${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env" ]; then
     message="loading ${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
-      print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
     else
       echo "${message}"
     fi
@@ -321,7 +321,7 @@ generate_and_read_instance_env_from_yaml_config() {
   elif [ -f "${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env" ]; then
     message="loading ${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
-      print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+      print_formatted_debug "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
     else
       echo "${message}"
     fi
