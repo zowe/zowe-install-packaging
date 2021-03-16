@@ -250,7 +250,7 @@ convert_component_yaml_to_json
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   # at this point, <instance>/.env/<component>/.manifest.json should be in place
   # re-generate components instance.env
-  print_formatted_info "ZWELS" "prepare-workspace.sh:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
+  print_formatted_debug "ZWELS" "prepare-workspace.sh:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
   generate_instance_env_from_yaml_config "${ZWELS_HA_INSTANCE_ID}"
 fi
 validate_components
