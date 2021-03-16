@@ -85,15 +85,15 @@
       "version": "0.2.16"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "1.20.16",
+      "version": "1.20.18",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "1.20.16",
+      "version": "1.20.18",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.20.16",
+      "version": "1.20.18",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
@@ -101,7 +101,7 @@
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.20.16",
+      "version": "1.20.18",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.keyring-utilities": {
@@ -130,7 +130,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.20.16",
+        "tag": "v1.20.18",
         "destinations": ["Zowe PAX"]
       }]
     }, {
