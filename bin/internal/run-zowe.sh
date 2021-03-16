@@ -15,9 +15,10 @@
 ################################################################################
 
 OPTIND=1
-while getopts "c:" opt; do
+while getopts "c:i:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    i) HA_INSTANCE_ID=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -34,13 +35,18 @@ export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 . ${INSTANCE_DIR}/bin/internal/utils.sh
 reset_env_dir
 
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
-. ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}"
+# assign default value
+if [ -z "${HA_INSTANCE_ID}" ]; then
+  HA_INSTANCE_ID=$(get_sysname)
+fi
 
-launch_components_list=$(${ROOT_DIR}/bin/internal/get-launch-components.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}")
-. ${ROOT_DIR}/bin/internal/prepare-workspace.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -t "${launch_components_list}"
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
+. ${ROOT_DIR}/bin/internal/global-validate.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
+
+launch_components_list=$(${ROOT_DIR}/bin/internal/get-launch-components.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}")
+. ${ROOT_DIR}/bin/internal/prepare-workspace.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}" -t "${launch_components_list}"
 
 # FIXME: Zowe Launcher can take responsibility from here
 for component_id in $(echo "${launch_components_list}" | sed "s/,/ /g"); do
-  . ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -o "${component_id}" &
+  ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}" -o "${component_id}" &
 done

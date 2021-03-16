@@ -22,10 +22,11 @@
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
 OPTIND=1
-while getopts "c:r:" opt; do
+while getopts "c:r:i:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     r) ROOT_DIR=${OPTARG};;
+    i) HA_INSTANCE_ID=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1

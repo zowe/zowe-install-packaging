@@ -20,4 +20,4 @@ fi
 
 . ${INSTANCE_DIR}/bin/internal/utils.sh
 read_essential_vars
-${ROOT_DIR}/bin/internal/run-zowe.sh -c ${INSTANCE_DIR}
+${ROOT_DIR}/bin/internal/run-zowe.sh -c "${INSTANCE_DIR}" -i "${HA_INSTANCE_ID}"

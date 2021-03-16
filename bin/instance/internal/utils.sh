@@ -11,10 +11,19 @@
 ################################################################################
 
 export INSTANCE_ENV_DIR=${INSTANCE_DIR}/.env
+ZWE_CONFIG_LOAD_METHOD=
+if [ -f "${INSTANCE_DIR}/instance.env" ]; then
+  ZWE_CONFIG_LOAD_METHOD=instance.env
+elif [ -f "${INSTANCE_DIR}/zowe.yaml" ]; then
+  ZWE_CONFIG_LOAD_METHOD=zowe.yaml
+else
+  ZWE_CONFIG_LOAD_METHOD=
+fi
+export ZWE_CONFIG_LOAD_METHOD
 
 function_exists() {
   fn=$1
-  status=$(LC_ALL=C type $n | grep -q 'shell function')
+  status=$(LC_ALL=C type $fn | grep 'function')
   if [ -n "${status}" ]; then
     echo "true"
   fi
@@ -36,7 +45,7 @@ exit_with_error() {
 # get system name
 get_sysname() {
   sysname=$(sysvar SYSNAME 2>/dev/null)
-  if [ -z ${sysname} ]; then
+  if [ -z "${sysname}" ]; then
     sysname=$(hostname -s 2>/dev/null)
   fi
   echo "${sysname}" | tr '[:upper:]' '[:lower:]'
@@ -97,9 +106,9 @@ read_essential_vars() {
     exit_with_error "INSTANCE_DIR does not have a value."
   fi
 
-  if [ -f "${INSTANCE_DIR}/instance.env" ]; then
+  if [ "${ZWE_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
     source_env "${INSTANCE_DIR}/instance.env"
-  elif [ -f "${INSTANCE_DIR}/zowe.yaml" ]; then
+  elif [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
     export ROOT_DIR=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "runtimeDirectory" "true")
     export ZOWE_PREFIX=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "jobPrefix" "true")
     export ZOWE_INSTANCE=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "identifier" "true")
@@ -169,7 +178,7 @@ fix_env_dir_files_encoding() {
 prepare_instance_env_from_yaml_config() {
   ha_instance=$1
 
-  if [ -f "${INSTANCE_DIR}/instance.env" -o ! -f "${INSTANCE_DIR}/zowe.yaml" ]; then
+  if [ "${ZWE_CONFIG_LOAD_METHOD}" != "zowe.yaml" ]; then
     # still using instance.env, nothing to do
     return 0
   fi
@@ -191,16 +200,21 @@ prepare_and_read_instance_env() {
   ha_instance=$1
   component_id=$2
 
+  if [ "${ZWE_CONFIG_LOAD_METHOD}" != "zowe.yaml" ]; then
+    # still using instance.env, nothing to do
+    return 0
+  fi
+
   print_formatted=$(function_exists print_formatted_info)
   LOGGING_SERVICE_ID=ZWELS
   LOGGING_SCRIPT_NAME=prepare_and_read_instance_env
 
   if [ -z "${ha_instance}" ]; then
-    ha_instance=$(get_sysname)
+    exit_with_error "HA_INSTANCE_ID is empty"
   fi
   if [ ! -f "${INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
     # never initialized, do minimal
-    message="initialize instance-<ha-id>.env"
+    message="initialize .instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
       print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
     else
@@ -209,7 +223,7 @@ prepare_and_read_instance_env() {
     prepare_instance_env_from_yaml_config "${ha_instance}"
   elif [ ! -f "${INSTANCE_ENV_DIR}/.ready" ]; then
     if [ -f "${INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
-      message="refresh component copy of instance.env(s)"
+      message="refresh component copy of .instance-${ha_instance}.env(s)"
       if [ "${print_formatted}" = "true" ]; then
         print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
       else
@@ -235,6 +249,16 @@ prepare_and_read_instance_env() {
     fi
     source_env "${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
   else
-    exit_with_error "failed to translate zowe.yaml"
+    if [ "${component_id}" != "" ]; then
+      message="compatible version of <instance>/.env/${component_id}/.instance-${ha_instance}.env doesnot exist"
+    else
+      message="compatible version of <instance>/.env/.instance-${ha_instance}.env doesnot exist"
+    fi
+    if [ "${print_formatted}" = "true" ]; then
+      print_formatted_error "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "${message}"
+    else
+      >&2 echo "Error: ${message}"
+    fi
+    exit 1
   fi
 }

@@ -11,9 +11,10 @@
 ################################################################################
 
 set -e
+export HA_INSTANCE_ID=$1
 export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
 . ${INSTANCE_DIR}/bin/internal/utils.sh
 read_essential_vars
 
-${ROOT_DIR}/scripts/internal/opercmd "S ZWESVSTC,INSTANCE='"${INSTANCE_DIR}"',JOBNAME=${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
+${ROOT_DIR}/scripts/internal/opercmd "S ZWESVSTC,INSTANCE='"${INSTANCE_DIR}"',HA='"${HA_INSTANCE_ID}"',JOBNAME=${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
 echo Start command issued, check SDSF job log ...

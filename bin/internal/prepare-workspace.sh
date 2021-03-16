@@ -26,10 +26,11 @@
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
 OPTIND=1
-while getopts "c:r:t:" opt; do
+while getopts "c:r:i:t:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     r) ROOT_DIR=${OPTARG};;
+    i) HA_INSTANCE_ID=${OPTARG};;
     t) LAUNCH_COMPONENTS=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
@@ -257,6 +258,7 @@ validate_components
 configure_components
 # at this point, <instance>/.env/<component>/.manifest.json should be in place
 # re-generate components instance.env
+print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
 prepare_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
 
 ########################################################

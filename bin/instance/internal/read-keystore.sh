@@ -11,7 +11,7 @@
 ################################################################################
 
 # Requires INSTANCE_DIR, KEYSTORE_DIRECTORY to be set
-if [ -z "$(LC_ALL=C type read_essential_vars | grep -q 'shell function')" ]; then
+if [ -z "$(LC_ALL=C type read_essential_vars | grep 'function')" ]; then
   . ${INSTANCE_DIR}/bin/internal/utils.sh
 fi
 if [ -z "${ROOT_DIR}" ]; then
