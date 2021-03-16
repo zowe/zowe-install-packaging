@@ -30,7 +30,7 @@ while getopts "c:r:i:t:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     r) ROOT_DIR=${OPTARG};;
-    i) HA_INSTANCE_ID=${OPTARG};;
+    i) ZWELS_HA_INSTANCE_ID=${OPTARG};;
     t) LAUNCH_COMPONENTS=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
@@ -50,7 +50,7 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}"
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${ZWELS_HA_INSTANCE_ID}"
 
 ########################################################
 # Prepare workspace directory
@@ -115,7 +115,7 @@ validate_components() {
       fi
       if [ -x "${validate_script}" ]; then
         print_formatted_debug "ZWELS" "prepare-workspace.sh,validate_components:${LINENO}" "- process ${component_id} validate command ..."
-        result=$(. ${validate_script})
+        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${validate_script})
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -228,8 +228,7 @@ configure_components() {
       if [ -x "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "prepare-workspace.sh,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
-        # FIXME: .env should be attached with HA instance id
-        result=$(. ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${WORKSPACE_DIR}/${component_name}/.env" ; return $rc)
+        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -248,11 +247,11 @@ configure_components() {
 # prepare workspace
 prepare_workspace_dir
 convert_component_yaml_to_json
-if [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
+if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   # at this point, <instance>/.env/<component>/.manifest.json should be in place
   # re-generate components instance.env
   print_formatted_info "ZWELS" "prepare-workspace.sh:${LINENO}" "refresh component copy of .instance-${ha_instance}.env(s)"
-  generate_instance_env_from_yaml_config "${HA_INSTANCE_ID}"
+  generate_instance_env_from_yaml_config "${ZWELS_HA_INSTANCE_ID}"
 fi
 validate_components
 # FIXME: which instance.env to copy?

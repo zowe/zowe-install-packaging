@@ -26,7 +26,7 @@ while getopts "c:r:i:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     r) ROOT_DIR=${OPTARG};;
-    i) HA_INSTANCE_ID=${OPTARG};;
+    i) ZWELS_HA_INSTANCE_ID=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -50,5 +50,5 @@ if [ -z "${ROOT_DIR}" ]; then
 fi
 
 # suppress any output to make sure this script only output LAUNCH_COMPONENTS
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${HA_INSTANCE_ID}" 1> /dev/null 2>&1
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${ZWELS_HA_INSTANCE_ID}" 1> /dev/null 2>&1
 echo "${LAUNCH_COMPONENTS}"

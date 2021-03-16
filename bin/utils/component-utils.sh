@@ -187,10 +187,10 @@ detect_component_manifest_encoding() {
 # Required environment variables:
 # - ROOT_DIR
 # - NODE_HOME
-# - INSTANCE_ENV_DIR
+# - ZWELS_INSTANCE_ENV_DIR
 #
 # Example:
-# - convert my-component manifest, a .manifest.json will be created in <INSTANCE_ENV_DIR>/my-component folder
+# - convert my-component manifest, a .manifest.json will be created in <ZWELS_INSTANCE_ENV_DIR>/my-component folder
 #   convert_component_manifest "/path/to/zowe/components/my-component"
 #
 # @param string   component directory
@@ -203,8 +203,8 @@ convert_component_manifest() {
   fi
   # node should have already been put into PATH
 
-  if [ -z "${INSTANCE_ENV_DIR}" ]; then
-    >&2 echo "INSTANCE_ENV_DIR is required by this function"
+  if [ -z "${ZWELS_INSTANCE_ENV_DIR}" ]; then
+    >&2 echo "ZWELS_INSTANCE_ENV_DIR is required by this function"
     return 1
   fi
 
@@ -220,17 +220,17 @@ convert_component_manifest() {
   fi
 
   if [ -n "${component_manifest}" ]; then
-    mkdir -p "${INSTANCE_ENV_DIR}/${component_name}"
-    chmod 750 "${INSTANCE_ENV_DIR}/${component_name}"
-    node "${fconv}" -o "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json" "${component_manifest}"
+    mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    node "${fconv}" -o "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json" "${component_manifest}"
     rc=$?
-    chmod 640 "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
     return $rc
   elif [ -f "${component_dir}/manifest.json" ]; then
-    mkdir -p "${INSTANCE_ENV_DIR}/${component_name}"
-    chmod 750 "${INSTANCE_ENV_DIR}/${component_name}"
-    cp "${component_dir}/manifest.json" "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
-    chmod 640 "${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    cp "${component_dir}/manifest.json" "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
     return 0
   else
     # this could be the package doesn't have manifest
@@ -249,7 +249,7 @@ convert_component_manifest() {
 # - NODE_HOME
 #
 # Optional environment variables:
-# - INSTANCE_ENV_DIR
+# - ZWELS_INSTANCE_ENV_DIR
 #
 # Example:
 # - read my-component commands.start value
@@ -273,8 +273,8 @@ read_component_manifest() {
 
   component_name=$(basename "${component_dir}")
   manifest_in_env_dir=
-  if [ -n "${INSTANCE_ENV_DIR}" ]; then
-    manifest_in_env_dir="${INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+  if [ -n "${ZWELS_INSTANCE_ENV_DIR}" ]; then
+    manifest_in_env_dir="${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
   fi
 
   if [ -n "${manifest_in_env_dir}" -a -f "${manifest_in_env_dir}" ]; then

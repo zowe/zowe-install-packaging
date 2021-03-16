@@ -10,7 +10,7 @@
 # Copyright IBM Corporation 2021
 ################################################################################
 
-export HA_INSTANCE_ID=$1
+export ZWELS_HA_INSTANCE_ID=$1
 export INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
 if [[ ! -z "${EXTERNAL_INSTANCE}" ]]
 then
@@ -20,4 +20,4 @@ fi
 
 . ${INSTANCE_DIR}/bin/internal/utils.sh
 read_essential_vars
-${ROOT_DIR}/bin/internal/run-zowe.sh -c "${INSTANCE_DIR}" -i "${HA_INSTANCE_ID}"
+${ROOT_DIR}/bin/internal/run-zowe.sh -c "${INSTANCE_DIR}" -i "${ZWELS_HA_INSTANCE_ID}"

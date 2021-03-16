@@ -11,17 +11,17 @@
 ################################################################################
 
 # where we store temporary environment files
-export INSTANCE_ENV_DIR=${INSTANCE_DIR}/.env
+export ZWELS_INSTANCE_ENV_DIR=${INSTANCE_DIR}/.env
 # how we read configurations
-ZWE_CONFIG_LOAD_METHOD=
+ZWELS_CONFIG_LOAD_METHOD=
 if [ -f "${INSTANCE_DIR}/instance.env" ]; then
-  ZWE_CONFIG_LOAD_METHOD=instance.env
+  ZWELS_CONFIG_LOAD_METHOD=instance.env
 elif [ -f "${INSTANCE_DIR}/zowe.yaml" ]; then
-  ZWE_CONFIG_LOAD_METHOD=zowe.yaml
+  ZWELS_CONFIG_LOAD_METHOD=zowe.yaml
 else
-  ZWE_CONFIG_LOAD_METHOD=
+  ZWELS_CONFIG_LOAD_METHOD=
 fi
-export ZWE_CONFIG_LOAD_METHOD
+export ZWELS_CONFIG_LOAD_METHOD
 
 ###############################
 # Dummy function to check if this utils script has been sourced
@@ -154,9 +154,9 @@ read_essential_vars() {
     exit_with_error "INSTANCE_DIR does not have a value."
   fi
 
-  if [ "${ZWE_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
+  if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
     source_env "${INSTANCE_DIR}/instance.env"
-  elif [ "${ZWE_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
+  elif [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
     export ROOT_DIR=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "runtimeDirectory" "true")
     export ZOWE_PREFIX=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "jobPrefix" "true")
     export ZOWE_INSTANCE=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "identifier" "true")
@@ -174,9 +174,9 @@ read_essential_vars() {
 ###############################
 # Empty and prepare env directory, which should be owned by runtime user
 reset_env_dir() {
-  rm -fr "${INSTANCE_ENV_DIR}" 2>/dev/null
-  mkdir -p "${INSTANCE_ENV_DIR}"
-  chmod 750 "${INSTANCE_ENV_DIR}"
+  rm -fr "${ZWELS_INSTANCE_ENV_DIR}" 2>/dev/null
+  mkdir -p "${ZWELS_INSTANCE_ENV_DIR}"
+  chmod 750 "${ZWELS_INSTANCE_ENV_DIR}"
 }
 
 ###############################
@@ -193,12 +193,12 @@ prepare_node_js() {
 #
 # FIXME: this is used for now.
 convert_instance_env_to_yaml() {
-  if [ "${ZWE_CONFIG_LOAD_METHOD}" != "instance.env" ]; then
+  if [ "${ZWELS_CONFIG_LOAD_METHOD}" != "instance.env" ]; then
     return 0
   fi
 
-  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${INSTANCE_DIR}/instance.env" > "${INSTANCE_ENV_DIR}/zowe.yaml"
-  chmod 640 "${INSTANCE_ENV_DIR}/zowe.yaml"
+  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${INSTANCE_DIR}/instance.env" > "${ZWELS_INSTANCE_ENV_DIR}/zowe.yaml"
+  chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/zowe.yaml"
 }
 
 ###############################
@@ -213,7 +213,7 @@ zos_convert_env_dir_file_encoding() {
 
   encoding=$(zos_get_file_tag_encoding "$file")
   if [ "${encoding}" != "UNTAGGED" -a "${encoding}" != "IBM-1047" ]; then
-    tmpfile="${INSTANCE_ENV_DIR}/t"
+    tmpfile="${ZWELS_INSTANCE_ENV_DIR}/t"
     rm -f "${tmpfile}"
     iconv -f "${encoding}" -t "IBM-1047" "${file}" > "${tmpfile}"
     mv "${tmpfile}" "${file}"
@@ -229,7 +229,7 @@ zos_convert_env_dir_file_encoding() {
 generate_instance_env_from_yaml_config() {
   ha_instance=$1
 
-  if [ "${ZWE_CONFIG_LOAD_METHOD}" != "zowe.yaml" ]; then
+  if [ "${ZWELS_CONFIG_LOAD_METHOD}" != "zowe.yaml" ]; then
     # still using instance.env, nothing to do
     return 0
   fi
@@ -237,26 +237,26 @@ generate_instance_env_from_yaml_config() {
   prepare_node_js
 
   # prepare .zowe.yaml and .zowe-<ha-id>.json
-  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${INSTANCE_ENV_DIR}" --ha "${ha_instance}" "${INSTANCE_DIR}/zowe.yaml"
-  if [ ! -f "${INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
+  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${ZWELS_INSTANCE_ENV_DIR}" --ha "${ha_instance}" "${INSTANCE_DIR}/zowe.yaml"
+  if [ ! -f "${ZWELS_INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
     exit_with_error "failed to translate <instance-dir>/zowe.yaml"
   fi
 
   # convert YAML configurations to backward compatible .instance-<ha-id>.env files
-  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml env --wd "${INSTANCE_ENV_DIR}" --ha "${ha_instance}"
+  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml env --wd "${ZWELS_INSTANCE_ENV_DIR}" --ha "${ha_instance}"
 
   # fix files encoding
   # node.js may create instance.env with ISO8859-1, need to convert to IBM-1047 to allow shell to read
   if [ "$(is_on_zos)" = "true" ]; then
-    for one in $(find "${INSTANCE_ENV_DIR}" -type f -name '.instance-*.env') ; do
+    for one in $(find "${ZWELS_INSTANCE_ENV_DIR}" -type f -name '.instance-*.env') ; do
       zos_convert_env_dir_file_encoding "${one}"
     done
   fi
 
   # we are all set
-  if [ -f "${INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
+  if [ -f "${ZWELS_INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
     # component manifest already in place, we don't need to run this again
-    touch "${INSTANCE_ENV_DIR}/.ready"
+    touch "${ZWELS_INSTANCE_ENV_DIR}/.ready"
   fi
 }
 
@@ -268,7 +268,7 @@ generate_and_read_instance_env_from_yaml_config() {
   ha_instance=$1
   component_id=$2
 
-  if [ "${ZWE_CONFIG_LOAD_METHOD}" != "zowe.yaml" ]; then
+  if [ "${ZWELS_CONFIG_LOAD_METHOD}" != "zowe.yaml" ]; then
     # still using instance.env, nothing to do
     return 0
   fi
@@ -276,7 +276,7 @@ generate_and_read_instance_env_from_yaml_config() {
   print_formatted=$(function_exists print_formatted_info)
 
   if [ -z "${ha_instance}" ]; then
-    exit_with_error "HA_INSTANCE_ID is empty"
+    exit_with_error "ZWELS_HA_INSTANCE_ID is empty"
   fi
 
   # usually creating instance.env has 2 steps:
@@ -284,7 +284,7 @@ generate_and_read_instance_env_from_yaml_config() {
   # 2. components .manifest.json are ready, we should also generate <.env>/<component>/.instance-<ha-id>.env
   # <.env>/.ready is indication where all conversions are completed, no need to re-run.
 
-  if [ ! -f "${INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
+  if [ ! -f "${ZWELS_INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
     # never initialized, do minimal
     message="initialize .instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
@@ -293,8 +293,8 @@ generate_and_read_instance_env_from_yaml_config() {
       echo "${message}"
     fi
     generate_instance_env_from_yaml_config "${ha_instance}"
-  elif [ ! -f "${INSTANCE_ENV_DIR}/.ready" ]; then
-    if [ -f "${INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
+  elif [ ! -f "${ZWELS_INSTANCE_ENV_DIR}/.ready" ]; then
+    if [ -f "${ZWELS_INSTANCE_ENV_DIR}/gateway/.manifest.json" ]; then
       message="refresh component copy of .instance-${ha_instance}.env(s)"
       if [ "${print_formatted}" = "true" ]; then
         print_formatted_debug "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
@@ -306,22 +306,22 @@ generate_and_read_instance_env_from_yaml_config() {
   fi
 
   # try to source correct instance.env file
-  if [ "${component_id}" != "" -a -f "${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env" ]; then
-    message="loading ${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env"
+  if [ "${component_id}" != "" -a -f "${ZWELS_INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env" ]; then
+    message="loading ${ZWELS_INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
       print_formatted_debug "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
     else
       echo "${message}"
     fi
-    source_env "${INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env"
-  elif [ -f "${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env" ]; then
-    message="loading ${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
+    source_env "${ZWELS_INSTANCE_ENV_DIR}/${component_id}/.instance-${ha_instance}.env"
+  elif [ -f "${ZWELS_INSTANCE_ENV_DIR}/.instance-${ha_instance}.env" ]; then
+    message="loading ${ZWELS_INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
     if [ "${print_formatted}" = "true" ]; then
       print_formatted_debug "ZWELS" "utils.sh,generate_and_read_instance_env_from_yaml_config:${LINENO}" "${message}"
     else
       echo "${message}"
     fi
-    source_env "${INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
+    source_env "${ZWELS_INSTANCE_ENV_DIR}/.instance-${ha_instance}.env"
   else
     # something wrong, conversion wasn't successful
     if [ "${component_id}" != "" ]; then
