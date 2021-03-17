@@ -28,6 +28,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
         ;;
     esac
   done
+  shift $(($OPTIND-1))
 
   generate_and_read_instance_env_from_yaml_config "${ZWELS_HA_INSTANCE_ID}" "${ZWELS_START_COMPONENT_ID}"
 fi

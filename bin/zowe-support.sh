@@ -10,6 +10,7 @@
 # Copyright IBM Corporation 2019, 2021
 ################################################################################
 
+OPTIND=1
 while getopts "l:" opt; do
   case $opt in
     l) INSTALL_LOG_DIR=$OPTARG;;

@@ -41,6 +41,7 @@ while getopts "c:r:i:o:" opt; do
       ;;
   esac
 done
+shift $(($OPTIND-1))
 
 ########################################################
 # prepare environment variables

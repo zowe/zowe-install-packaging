@@ -25,6 +25,7 @@ while getopts "c:i:" opt; do
       ;;
   esac
 done
+shift $(($OPTIND-1))
 
 # export this to other scripts
 export INSTANCE_DIR

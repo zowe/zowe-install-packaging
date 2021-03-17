@@ -33,6 +33,7 @@ while getopts "c:r:i:" opt; do
       ;;
   esac
 done
+shift $(($OPTIND-1))
 
 # validate INSTANCE_DIR which is required
 if [[ -z ${INSTANCE_DIR} ]]; then
