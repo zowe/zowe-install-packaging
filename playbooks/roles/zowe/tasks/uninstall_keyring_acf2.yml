@@ -14,6 +14,9 @@
   raw: echo "  DELETE {{ zowe_runtime_user }}.{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
   loop: "{{ zowe_known_keyring_personal_digicerts }}"
 
+- name: Add remove Zowe ACF2 personal certficates statement(s) to JCL
+  raw: echo "  DELETE {{ zowe_runtime_user }}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+
 - name: Add remove Zowe ACF2 certauth certficates statement(s) to JCL
   raw: echo "  DELETE CERTAUTH.{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
   loop: "{{ zowe_known_keyring_certauth_digicerts }}"
