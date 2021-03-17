@@ -203,6 +203,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             path=$(get_full_path "$1")
             validate_directory_is_accessible "$path"
             if [[ $? -eq 0 ]]; then
+                # FIXME: make it compatible with zowe.yaml
                 validate_file_not_in_directory "$path/instance.env" "$path"
                 if [[ $? -ne 0 ]]; then
                     INSTANCE_DIR="${path}"

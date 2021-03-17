@@ -136,6 +136,7 @@ validate_components() {
 
 ########################################################
 # Prepare workspace directory - manage active_configuration.cfg
+# FIXME: make it compatible with zowe.yaml
 store_config_archive() {
   mkdir -p ${WORKSPACE_DIR}/backups
 
@@ -255,6 +256,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   generate_instance_env_from_yaml_config "${ZWELS_HA_INSTANCE_ID}"
 fi
 validate_components
+# FIXME: make it compatible with zowe.yaml
 # FIXME: which instance.env to copy?
 # store_config_archive
 configure_components

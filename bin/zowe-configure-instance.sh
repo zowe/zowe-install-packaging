@@ -77,6 +77,7 @@ create_new_instance() {
   echo "Created ${INSTANCE} with injected content">> $LOG_FILE
 }
 
+# FIXME: make it compatible with zowe.yaml
 check_existing_instance_for_updates() {
   echo_and_log "Checking existing ${INSTANCE} for updated properties"
 
@@ -154,6 +155,7 @@ then
 else
   create_new_instance
 fi
+# FIXME: generate zowe.yaml template
 
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh

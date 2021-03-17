@@ -110,6 +110,7 @@ ensure_zwe_extension_dir() {
     # write ZWE_EXTENSION_DIR to instance.env
     if [ "${IS_ZOWE_CORE}" = "false" ]; then
         log_message "- ensure ZWE_EXTENSION_DIR is defined in instance.env"
+        # FIXME: make it compatible with zowe.yaml
         update_zowe_instance_variable "ZWE_EXTENSION_DIR" "${TARGET_DIR}" "false"
     fi
 }
@@ -201,6 +202,7 @@ if [ ! -e "${component_path}" ]; then
 fi
 if [ "${IS_ZOWE_CORE}" = "false" ]; then
     # TARGET_DIR should be same as ZWE_EXTENSION_DIR defined in instance.env
+    # FIXME: make it compatible with zowe.yaml
     zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
     if [ -n "${zwe_extension_dir}" -a "${TARGET_DIR}" != "${zwe_extension_dir}" ]; then
         error_handler "It's recommended to install all Zowe extensions into same directory. The recommended target directory is ZWE_EXTENSION_DIR (${ZWE_EXTENSION_DIR}) defined in Zowe instance.env."
