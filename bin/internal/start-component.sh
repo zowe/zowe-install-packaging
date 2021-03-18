@@ -7,19 +7,24 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2020
+# Copyright IBM Corporation 2020, 2021
 ################################################################################
 
 ################################################################################
-# This script will start a Zowe component.
+# This script will start one Zowe component.
 #
 # This script take these parameters
-# - c:    INSTANCE_DIR
-# - t:    one component ID. For backward compatible purpose, the parameter can
+# - c:    instance directory
+# - o:    one component ID. For backward compatible purpose, the parameter can
 #         also be a directory to the component lifecycle script folder.
+# - r:    optional, root directory
+# - i:    optional, HA instance ID. Default value is &SYSNAME.
 #
-# Zowe Launcher may use this script to start a component, so there may no any
-# environment variables prepared.
+# Note:
+# 1. This script requires instance directory prepared for runtime. So
+#    bin/internal/prepare-instance.sh should have been executed.
+# 2. This script doesn't rely on any environment variables, it will load
+#    everything needed.
 #
 # For example:
 # $ bin/internal/start-component.sh \
@@ -86,6 +91,6 @@ if [ -n "${component_dir}" ]; then
 
   if [ -x "${start_script}" ]; then
     print_formatted_info "ZWELS" "start-component.sh:${LINENO}" "starting component ${ZWELS_START_COMPONENT_ID} ..."
-    . ${start_script}
+    /bin/sh -c "${start_script}" &
   fi
 fi

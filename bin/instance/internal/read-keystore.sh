@@ -15,20 +15,15 @@
 #       already loaded with read-instance.sh. This is only useful if the instance
 #       is using instance.env.
 
-# Requires INSTANCE_DIR, KEYSTORE_DIRECTORY to be set
-[ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
-if [ -z "${ROOT_DIR}" ]; then
-  read_essential_vars
-fi
+# Requires INSTANCE_DIR to be set
+. ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
 
-if [ -z "${KEYSTORE_DIRECTORY}" ]; then
-  # we don't have this var, this may happen with zowe.yaml
-  # which will source the certificate variables from instance-<ha-id>.env
-  exit 0
+# this is only valid if we use instance.env
+if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
+  if [ -z "${KEYSTORE_DIRECTORY}" -o ! -r "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
+    # exit immediately if file cannot be accessed
+    exit_with_error "${KEYSTORE_DIRECTORY}/zowe-certificates.env does not exist"
+  fi
+  # Read in properties by executing, then export all the keys so we don't need to shell share
+  source_env "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
 fi
-if [ ! -r "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
-  # exit immediately if file cannot be accessed
-  exit 1
-fi
-# Read in properties by executing, then export all the keys so we don't need to shell share
-source_env "${KEYSTORE_DIRECTORY}/zowe-certificates.env"

@@ -20,7 +20,7 @@
 # - ZWE_EXTENSION_DIR
 #
 # This function will find the component in this sequence:
-#   - check if component id paramter is a path to lifecycle scripts directory
+#   - check if component id parameter is a path to lifecycle scripts directory
 #   - ${ROOT_DIR}/components/<component-id>
 #   - ${ZWE_EXTENSION_DIR}/<component-id>
 #
@@ -177,7 +177,7 @@ detect_component_manifest_encoding() {
 }
 
 ###############################
-# Convert component YAML format manifest to JSON and place into workspace foler
+# Convert component YAML format manifest to JSON and place into workspace folder
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
@@ -211,18 +211,18 @@ convert_component_manifest() {
   utils_dir="${ROOT_DIR}/bin/utils"
   fconv="${utils_dir}/fconv/src/index.js"
   component_name=$(basename "${component_dir}")
-  component_manifest=
+  component_manifest_yaml=
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
-    component_manifest="${component_dir}/manifest.yaml"
+    component_manifest_yaml="${component_dir}/manifest.yaml"
   elif [ -f "${component_dir}/manifest.yml" ]; then
-    component_manifest="${component_dir}/manifest.yml"
+    component_manifest_yaml="${component_dir}/manifest.yml"
   fi
 
-  if [ -n "${component_manifest}" ]; then
+  if [ -n "${component_manifest_yaml}" ]; then
     mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
     chmod 750 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
-    node "${fconv}" -o "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json" "${component_manifest}"
+    node "${fconv}" -o "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json" "${component_manifest_yaml}"
     rc=$?
     chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
     return $rc
@@ -308,6 +308,7 @@ read_component_manifest() {
 # Required environment variables:
 # - ROOT_DIR
 # - NODE_HOME
+# - ZWELS_HA_INSTANCE_ID
 # - STATIC_DEF_CONFIG_DIR
 #
 # @param string   component directory
@@ -346,8 +347,8 @@ process_component_apiml_static_definitions() {
         all_succeed=false
         break
       fi
-      echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
-      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
+      echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
+      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
     fi
   done <<EOF
 $(echo "${static_defs}")

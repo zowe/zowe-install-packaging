@@ -58,6 +58,19 @@ validate_variables_are_set() {
   return $invalid
 }
 
+###############################
+# Check if a shell function is defined
+#
+# @param string   function name
+# Output          true if the function is defined
+function_exists() {
+  fn=$1
+  status=$(LC_ALL=C type $fn | grep 'function')
+  if [ -n "${status}" ]; then
+    echo "true"
+  fi
+}
+
 # ZOWE_PREFIX + instance - should be <=6 char long and exist.
 # TODO - any lower bound (other than 0)?
 # Requires ZOWE_PREFIX to be set as a shell variable
@@ -88,7 +101,7 @@ read_zowe_instance_variable() {
 update_zowe_instance_variable(){                                                                            
   variable_name=$1
   variable_value=$2
-  is_append=$3 # if false then the value of the given veriable_name will be replaced, append the value if true
+  is_append=$3 # if false then the value of the given variable_name will be replaced, append the value if true
 
   if [ "${is_append}" != "true" ]; then
     is_append=false # default value is false

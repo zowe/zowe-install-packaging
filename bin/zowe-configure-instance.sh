@@ -40,6 +40,8 @@ fi
 
 # Source main utils script
 . ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+# this utils usually be sourced from instance dir, but here we are too early
+. ${ZOWE_ROOT_DIR}/bin/instance/internal/utils.sh
 if [[ -z ${INSTANCE_DIR} ]]
 then
   echo "-c parameter not set. Please re-run 'zowe-configure-instance.sh -c <Instance directory>' specifying the location of the new zowe instance directory you want to create"
@@ -156,6 +158,8 @@ else
   create_new_instance
 fi
 # FIXME: generate zowe.yaml template
+# generate zowe.yaml.sample
+convert_instance_env_to_yaml "${INSTANCE}" "${INSTANCE_DIR}/zowe.yaml.sample"
 
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
@@ -193,6 +197,22 @@ for component_name in ${component_list}; do
     --target_dir "${ZOWE_ROOT_DIR}/components" \
     --core --log-file "${LOG_FILE}"
 done
+
+# try to clean up previous static api registrations
+# this variable should be same as what defined in prepare-environment.sh
+STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
+if [ -d "${STATIC_DEF_CONFIG_DIR}" ]; then
+  rm -fr "${STATIC_DEF_CONFIG_DIR}"/* 1> /dev/null 2> /dev/null
+  RETURN_CODE=$?
+  if [[ $RETURN_CODE != "0" ]]; then
+    print_and_log_message ""
+    print_and_log_message "WARNING: failed to delete component API static registration files in directory"
+    print_and_log_message "         ${STATIC_DEF_CONFIG_DIR}."
+    print_and_log_message "         It's recommended to cleanup this folder before you starting Zowe."
+    print_and_log_message ""
+    chmod 777 ${INSTANCE_DIR}
+  fi
+fi
 
 echo
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."

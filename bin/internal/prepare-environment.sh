@@ -7,24 +7,25 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2020
+# Copyright IBM Corporation 2020, 2021
 ################################################################################
 
 ################################################################################
-# This script will prepare all the environment required to start a component.
+# This script will prepare all the environment variables required to start
+# a Zowe component.
 #
-# These environment variables should have already been loaded:
+# This script take these parameters
+# - c:    instance directory
+# - o:    optional, one component ID. If this is specified, the component version
+#         instance.env will be loaded. For backward compatible purpose, the
+#         parameter can also be a directory to the component lifecycle script folder.
+# - r:    optional, root directory
+# - i:    optional, HA instance ID. Default value is &SYSNAME.
+#
+# These environment variables can also be passed from environment.
 # - INSTANCE_DIR
-#
-# Note: the INSTANCE_DIR can be predefined as global variable, or can be passed
-#       from command line "-c" parameter.
-#
-# Note: this script doesn't rely on <instance-dir>/bin/internal/run-zowe.sh, so
-#       it assumes all environment variables in `instance.env` are not loaded.
-#       With this assumption, we can safely call this script in Zowe Launcher
-#       which doesn't have the environment prepared by run-zowe.sh.
-#
-# Note: this script could be called multiple times during start up.
+# - ROOT_DIR
+# - ZWELS_HA_INSTANCE_ID
 ################################################################################
 
 # export all variables defined in this script automatically
@@ -69,9 +70,12 @@ fi
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
 [ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 
+# assign default value
+if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
+  ZWELS_HA_INSTANCE_ID=$(get_sysname)
+fi
+
 # read the instance environment variables to make sure they exists
-# Question: is there a better way to load these variables since this is already handled by
-#           <instance-dir>/bin/internal/run-zowe.sh
 . ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" -a -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
   . ${INSTANCE_DIR}/bin/internal/read-keystore.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
@@ -114,12 +118,8 @@ else
   fi
 fi
 
-if [[ ${LAUNCH_COMPONENTS} == *"discovery"* ]]
-then
-  # Create the user configurable api-defs
-  STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
-  # action to create the directory will be in prepare-workspace.sh
-fi
+# directory for user configurable api-defs
+STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 
 # Notes: changed old behavior
 # Old behavior: LAUNCH_COMPONENTS is a list of full path to component lifecycle scripts folder
@@ -131,10 +131,10 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
 # FIXME: ideally this should be handled by component configure.sh lifecycle script.
 #        We may require extensions to have these code in conformance program.
-# FIXME: prepare-environment.sh shouldn't have any output, but these 2 functions may output:
-#        Prepending JAVA_HOME/bin to the PATH...
-#        Prepending NODE_HOME/bin to the PATH...
-#        so we surpressed all output for those 2 functions
+# prepare-environment.sh shouldn't have any output, but these 2 functions may output:
+#   Prepending JAVA_HOME/bin to the PATH...
+#   Prepending NODE_HOME/bin to the PATH...
+# so we surpressed all output for those 2 functions
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi

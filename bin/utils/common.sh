@@ -55,7 +55,7 @@ print_and_log_message() {
   log_message "${message}" "false"
 }
 
-# return currrent user id
+# return current user id
 get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME}}}
 }
@@ -158,7 +158,7 @@ print_formatted_error() {
 # Notes: any error should increase global variable ERRORS_FOUND by 1.
 runtime_check_for_validation_errors_found() {
   if [[ ${ERRORS_FOUND} > 0 ]]; then
-    print_message "${ERRORS_FOUND} errors were found during validatation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
+    print_message "${ERRORS_FOUND} errors were found during validation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
     if [ ! "${ZWE_IGNORE_VALIDATION_ERRORS}" = "true" ]; then
       exit ${ERRORS_FOUND}
     fi

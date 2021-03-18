@@ -18,6 +18,5 @@ then
   INSTANCE_DIR=$EXTERNAL_INSTANCE
 fi
 
-. ${INSTANCE_DIR}/bin/internal/utils.sh
-read_essential_vars
+. ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
 ${ROOT_DIR}/bin/internal/run-zowe.sh -c "${INSTANCE_DIR}" -i "${ZWELS_HA_INSTANCE_ID}"

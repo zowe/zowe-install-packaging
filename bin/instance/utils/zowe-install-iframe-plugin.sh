@@ -11,6 +11,5 @@
 ################################################################################
 
 export INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
-. ${INSTANCE_DIR}/bin/internal/utils.sh
-read_essential_vars
+. ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
 . ${ROOT_DIR}/bin/utils/zowe-install-iframe-plugin.sh "$@"
