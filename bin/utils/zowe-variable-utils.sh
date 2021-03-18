@@ -98,6 +98,17 @@ read_zowe_instance_variable() {
   echo $(echo ". ${INSTANCE_DIR}/instance.env && echo \$${variable_name}" | sh)
 }
 
+# read yaml key value
+read_zowe_yaml_variable() {
+  key=$1
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  jq="${utils_dir}/njq/src/index.js"
+
+  node "${config_converter}" yaml read "${INSTANCE_DIR}/zowe.yaml" | node "${jq}" -r "${key}"
+}
+
 update_zowe_instance_variable(){                                                                            
   variable_name=$1
   variable_value=$2
@@ -136,4 +147,14 @@ update_zowe_instance_variable(){
         mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
     fi
   fi
+}
+
+update_zowe_yaml_variable(){                                                                            
+  variable_name=$1
+  variable_value=$2
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  
+  node "${config_converter}" yaml update "${INSTANCE_DIR}/zowe.yaml" "${variable_name}" "${variable_value}"
 }

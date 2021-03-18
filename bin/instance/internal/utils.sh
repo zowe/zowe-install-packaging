@@ -14,9 +14,9 @@
 export ZWELS_INSTANCE_ENV_DIR=${INSTANCE_DIR}/.env
 # how we read configurations
 ZWELS_CONFIG_LOAD_METHOD=
-if [ -f "${INSTANCE_DIR}/instance.env" ]; then
+if [ -n "${INSTANCE_DIR}" -a -f "${INSTANCE_DIR}/instance.env" ]; then
   ZWELS_CONFIG_LOAD_METHOD=instance.env
-elif [ -f "${INSTANCE_DIR}/zowe.yaml" ]; then
+elif [ -n "${INSTANCE_DIR}" -a -f "${INSTANCE_DIR}/zowe.yaml" ]; then
   ZWELS_CONFIG_LOAD_METHOD=zowe.yaml
 else
   ZWELS_CONFIG_LOAD_METHOD=
