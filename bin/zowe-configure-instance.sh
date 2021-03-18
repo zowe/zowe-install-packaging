@@ -35,6 +35,7 @@ if [[ -z ${ZOWE_ROOT_DIR} ]]
 then
 	export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
+export ROOT_DIR="${ZOWE_ROOT_DIR}"
 
 . ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
 
@@ -157,8 +158,10 @@ then
 else
   create_new_instance
 fi
-# FIXME: generate zowe.yaml template
+
 # generate zowe.yaml.sample
+# we need node for following commands
+ensure_node_is_on_path 1>/dev/null 2>&1
 convert_instance_env_to_yaml "${INSTANCE}" "${INSTANCE_DIR}/zowe.yaml.sample"
 
 #Make install-app.sh present per-instance for convenience
