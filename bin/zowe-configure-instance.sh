@@ -159,11 +159,6 @@ else
   create_new_instance
 fi
 
-# generate zowe.yaml.sample
-# we need node for following commands
-ensure_node_is_on_path 1>/dev/null 2>&1
-convert_instance_env_to_yaml "${INSTANCE}" "${INSTANCE_DIR}/zowe.yaml.sample"
-
 #Make install-app.sh present per-instance for convenience
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 # copy other files we needed for <instance>/bin
@@ -201,21 +196,22 @@ for component_name in ${component_list}; do
     --core --log-file "${LOG_FILE}"
 done
 
-# try to clean up previous static api registrations
+# FIXME: try to clean up previous static api registrations
+#        what happens if user has custom static definitions?
 # this variable should be same as what defined in prepare-environment.sh
-STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
-if [ -d "${STATIC_DEF_CONFIG_DIR}" ]; then
-  rm -fr "${STATIC_DEF_CONFIG_DIR}"/* 1> /dev/null 2> /dev/null
-  RETURN_CODE=$?
-  if [[ $RETURN_CODE != "0" ]]; then
-    print_and_log_message ""
-    print_and_log_message "WARNING: failed to delete component API static registration files in directory"
-    print_and_log_message "         ${STATIC_DEF_CONFIG_DIR}."
-    print_and_log_message "         It's recommended to cleanup this folder before you starting Zowe."
-    print_and_log_message ""
-    chmod 777 ${INSTANCE_DIR}
-  fi
-fi
+# STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
+# if [ -d "${STATIC_DEF_CONFIG_DIR}" ]; then
+#   rm -fr "${STATIC_DEF_CONFIG_DIR}"/* 1> /dev/null 2> /dev/null
+#   RETURN_CODE=$?
+#   if [[ $RETURN_CODE != "0" ]]; then
+#     print_and_log_message ""
+#     print_and_log_message "WARNING: failed to delete component API static registration files in directory"
+#     print_and_log_message "         ${STATIC_DEF_CONFIG_DIR}."
+#     print_and_log_message "         It's recommended to cleanup this folder before you starting Zowe."
+#     print_and_log_message ""
+#     chmod 777 ${INSTANCE_DIR}
+#   fi
+# fi
 
 echo
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."

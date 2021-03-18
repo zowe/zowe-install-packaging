@@ -34,8 +34,12 @@ convert_instance_env_to_yaml() {
   # we need node for following commands
   ensure_node_is_on_path 1>/dev/null 2>&1
 
-  node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}" > "${zowe_yaml}"
-  chmod 640 "${zowe_yaml}"
+  if [ -z "${zowe_yaml}" ]; then
+    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}"
+  else
+    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}" > "${zowe_yaml}"
+    chmod 640 "${zowe_yaml}"
+  fi
 }
 
 ###############################
