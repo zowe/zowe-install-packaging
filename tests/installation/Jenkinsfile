@@ -108,6 +108,9 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   pipeline.admins.add("jackjia")
 
+  int prPostCommentID
+  String commentText
+
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
     booleanParam(
@@ -338,20 +341,16 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
 
       //post a comment on PR to signify that a test is about to run
-      //currentBuild
-
-      echo "1: ${params.TEST_SCOPE}" //good
-      echo "2: ${env.BUILD_URL}" //good
-      echo "3: ${pipeline.changeInfo.pullRequestId}" //bad
-
+      int prNumber
       if (pipeline.changeInfo.isPullRequest) {
         String prNumberString = "${pipeline.changeInfo.pullRequestId}"
-        int prNumber = prNumberString as Integer   // convert to int
-        pipeline.github.postComment(prNumber,"Test is about to run.\nTest scope: ${params.TEST_SCOPE}\nLink: ${env.BUILD_URL}\nCheck back here for final status once the test finishes.")
+        prNumber = prNumberString as Integer   // convert to int
+        commentText += "Test scope: ${params.TEST_SCOPE}\n"
+        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
+        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a> <i>Click the icon to see details</i>\n"
+        prPostCommentID = pipeline.github.postComment(prNumber, commentText)
       }
-      //pipeline.checkAuthorizedUser()
       
-/*  temporarily block tests to test out comment feature
       lock(resource: lockResources, extra: lockExtraResources) {
         // timestamps {
         dir(INSTALL_TEST_PATH) {
@@ -369,13 +368,33 @@ node('zowe-jenkins-agent-dind-wdc') {
         } // end of dir
         // end of timestamps
       } // end of lock
-*/
     }, //operation
     junit         : "${INSTALL_TEST_PATH}/reports/junit.xml",
     htmlReports   : [
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 360, unit: 'MINUTES'],
+  )
+
+  pipeline.createStage(
+    name              : "Update Comment to signify build failure details",
+    timeout: [time: 2, unit: 'MINUTES'],
+    isSkippable: false,
+    showExecute: {
+      return prPostCommentID
+    },
+    stage : {
+      //update comment originally posted on PR, to reflect build status
+      String buildStatus = "${currentBuild.currentResult}"
+      def allTestFailures = currentBuild.getAction(hudson.tasks.junit.TestResultAction.class).getFailedTests()
+      if (allTestFailures) {
+        commentText += "Failed tests:\n"
+        allTestFailures.each{ eachFailTest -> 
+          commentText += "${eachFailTest.name}"
+        }
+        pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
+      }
+    }
   )
 
   pipeline.createStage(

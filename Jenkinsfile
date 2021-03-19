@@ -11,11 +11,12 @@
  */
 
 node('zowe-jenkins-agent-dind-wdc') {
-  def lib = library("jenkins-library").org.zowe.jenkins_shared_library
+  def lib = library("jenkins-library@users/tom/githubcomment").org.zowe.jenkins_shared_library
 
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
   def zowePaxUploaded
+  int prPostCommentID
 
   pipeline.admins.add("jackjia", "tomzhang", "joewinchester", "markackert")
 
@@ -79,6 +80,17 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 5, unit: 'MINUTES'],
     isSkippable   : false,
     operation     : {
+      //post a comment on PR to signify that a build is about to start
+      int prNumber
+      String commentText
+      if (pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+        prNumber = prNumberString as Integer   // convert to int
+        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
+        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a> <i>Click the icon to see details</i>\n"
+        prPostCommentID = pipeline.github.postComment(prNumber, commentText)
+      }
+
       // prepareing download spec
       echo 'prepareing download spec ...'
       def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
