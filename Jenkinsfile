@@ -310,9 +310,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       String prNumberString = "${pipeline.changeInfo.pullRequestId}"
       int prNumber = prNumberString as Integer   // convert to int
       String commentText = "Building Zowe sources...\n"
-      commentText += "Link: ${env.BUILD_URL}"
+      commentText += "Link: ${env.BUILD_URL}\n"
       commentText += "Status: Passed"
-      pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
+      pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
     }
   )
 
