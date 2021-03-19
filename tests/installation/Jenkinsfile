@@ -340,12 +340,12 @@ node('zowe-jenkins-agent-dind-wdc') {
       //post a comment on PR to signify that a test is about to run
       //currentBuild
 
-      echo "1: ${params.TEST_SCOPE}"
-      echo "2: ${env.BUILD_URL}"
-      echo "3: ${pipeline.getChangeInfo().pullRequestId}"
+      echo "1: ${params.TEST_SCOPE}" //good
+      echo "2: ${env.BUILD_URL}" //good
+      echo "3: ${pipeline.changeInfo.pullRequestId}" //bad
 
-      if (pipeline.getChangeInfo().isPullRequest) {
-        String prNumberString = "${pipeline.getChangeInfo().pullRequestId}"
+      if (pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
         int prNumber = prNumberString as Integer   // convert to int
         pipeline.github.postComment(prNumber,"Test is about to run.\nTest scope: ${params.TEST_SCOPE}\nLink: ${env.BUILD_URL}\nCheck back here for final status once the test finishes.")
       }
