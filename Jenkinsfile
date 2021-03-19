@@ -82,12 +82,11 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     operation     : {
       //post a comment on PR to signify that a build is about to start
       int prNumber
-      String commentText
       if (pipeline.changeInfo.isPullRequest) {
         String prNumberString = "${pipeline.changeInfo.pullRequestId}"
         prNumber = prNumberString as Integer   // convert to int
         //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
-        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a> <i>Click the icon to see details</i>\n"
+        String commentText += "Building sources\nStatus: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a> <i>Click the icon to see details</i>\n"
         prPostCommentID = pipeline.github.postComment(prNumber, commentText)
       }
 
