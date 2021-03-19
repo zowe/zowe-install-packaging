@@ -109,7 +109,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   pipeline.admins.add("jackjia")
 
   int prPostCommentID
-  String commentText
+  String commentText = ""
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
