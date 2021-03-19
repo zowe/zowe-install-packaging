@@ -81,10 +81,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     isSkippable   : false,
     operation     : {
       //post a comment on PR to signify that a build is about to start
-      int prNumber
       if (pipeline.changeInfo.isPullRequest) {
         String prNumberString = "${pipeline.changeInfo.pullRequestId}"
-        prNumber = prNumberString as Integer   // convert to int
+        int prNumber = prNumberString as Integer   // convert to int
         String commentText = "Building Zowe sources...\n"
         //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
         commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
@@ -295,6 +294,25 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
         }      
       }
+    }
+  )
+
+  pipeline.createStage(
+    name              : "Update Comment to signify build pass status",
+    timeout: [time: 2, unit: 'MINUTES'],
+    isSkippable: false,
+    showExecute: {
+      return prPostCommentID
+    },
+    stage : {
+      //update comment originally posted on PR, to reflect build status
+      // At this point, the build and packaging stages must have passed
+      String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+      int prNumber = prNumberString as Integer   // convert to int
+      String commentText = "Building Zowe sources...\n"
+      commentText += "Link: ${env.BUILD_URL}"
+      commentText += "Status: Passed"
+      pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
     }
   )
 
