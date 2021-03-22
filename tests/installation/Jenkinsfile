@@ -382,7 +382,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     name              : "Update Comment to signify build failure details",
     timeout: [time: 2, unit: 'MINUTES'],
     isSkippable: false,
-    resultThreshold: UNSTABLE,
+    resultThreshold: "FAILURE",
     showExecute: {
       return prPostCommentID
     },
