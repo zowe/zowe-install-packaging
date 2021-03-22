@@ -140,7 +140,7 @@ describe('verify utils/common', function() {
 
     it('test log message with specific errors', async function() {
       const errors_found = 10;
-      const message = `${errors_found} errors were found during validatation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
+      const message = `${errors_found} errors were found during validation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
       await test_common_function_has_expected_rc_stdout_stderr(runtime_check_for_validation_errors_found, {
         'ERRORS_FOUND': errors_found,
         'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,
@@ -152,7 +152,7 @@ describe('verify utils/common', function() {
 
     it('test log message with specific errors without exit', async function() {
       const errors_found = 10;
-      const message = `${errors_found} errors were found during validatation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
+      const message = `${errors_found} errors were found during validation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
       await test_common_function_has_expected_rc_stdout_stderr(runtime_check_for_validation_errors_found, {
         'ERRORS_FOUND': errors_found,
         'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,

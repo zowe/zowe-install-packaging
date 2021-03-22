@@ -75,6 +75,8 @@ source_env() {
 # Note: this is not a reliable way to read YAML file, but we need this to find
 #       out ROOT_DIR to execute further functions.
 #
+# FIXME: we should have a language neutral YAML reading tool, not using shell script.
+#
 # @param string   YAML file name
 # @param string   parent key to read after
 # @param string   which key to read
@@ -116,7 +118,12 @@ read_essential_vars() {
     export ZOWE_PREFIX=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "jobPrefix" "true")
     export ZOWE_INSTANCE=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "identifier" "true")
     export KEYSTORE_DIRECTORY=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "environments" "KEYSTORE_DIRECTORY" "false")
-    export ZWE_LOG_LEVEL_ZWELS=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "environments" "ZWE_LOG_LEVEL_ZWELS" "false")
+    # this could get wrong value if launchScript doesn't have logLevel defined, but something else has
+    ZWE_LOG_LEVEL_ZWELS=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "launchScript" "logLevel" "false")
+    if [ -z "${ZWE_LOG_LEVEL_ZWELS}" ]; then
+      ZWE_LOG_LEVEL_ZWELS=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "environments" "ZWE_LOG_LEVEL_ZWELS" "false")
+    fi
+    export ZWE_LOG_LEVEL_ZWELS
     # find node_home, this is needed for config converter tools
     zowe_node_home=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "node" "home" "false")
     if [ ! -z "${zowe_node_home}" ]; then
