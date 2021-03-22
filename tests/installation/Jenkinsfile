@@ -10,6 +10,10 @@
  * Copyright IBM Corporation 2020
  */
 
+import hudson.tasks.junit.TestResultAction
+import hudson.model.Action
+import hudson.model.Run
+
 // Provide possibility to specify node.js version in Jenkins agent
 // this value should match the Jenkins node we are using
 String NVM_INIT_SCRIPT = '/home/jenkins/.nvm/nvm.sh'
@@ -389,11 +393,13 @@ node('zowe-jenkins-agent-dind-wdc') {
     stage : {
       //update comment originally posted on PR, to reflect build status
       String buildStatus = "${currentBuild.currentResult}"
-      def allTestFailures = currentBuild.getAction(hudson.tasks.junit.TestResultAction.class).getFailedTests()
+      def allTestFailures = currentBuild.rawBuild.getAction(TestResultAction).getFailedTests()
       if (allTestFailures) {
         commentText += "Failed tests:\n"
         allTestFailures.each{ eachFailTest -> 
-          commentText += "${eachFailTest.name}\n"
+          commentText += "name is ${eachFailTest.name}\n"
+          commentText += "\t\tdetail is " + eachFailTest.getErrorDetails() + "\n"
+          
         }
         pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
       }
