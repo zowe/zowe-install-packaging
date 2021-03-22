@@ -128,7 +128,7 @@ zowe_known_keyring_personal_digicerts:
 - ZOWECERT
 - ZOWEJWT
 - USER
-- ZWECC
 - JWTSCRT
+- ZOWECC
 zowe_known_keyring_certauth_digicerts:
 - ZOWECA
