@@ -659,10 +659,7 @@ verify_component_instance() {
 # - This will display all components that is currentally installled on a zowe instance
 #   i.e: list_all_components
 #
-# @param string   component directory
 list_all_components() {
-  # Take note: find_component_directory doesn't locate {{ zwe_extensions_dir }}
-  # temporary, need to change variable
   component_dir_list="${ROOT_DIR}/components ${ZWE_EXTENSION_DIR}"
 
   for component_dirs in ${component_dir_list}; do
