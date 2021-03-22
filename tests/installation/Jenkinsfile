@@ -346,6 +346,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         String prNumberString = "${pipeline.changeInfo.pullRequestId}"
         prNumber = prNumberString as Integer   // convert to int
         commentText = "Test scope: ${params.TEST_SCOPE}\n"
+        commentText += "Test job number: ${env.BUILD_NUMBER}\n"
         //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
         commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
         commentText += "<i>Click the icon to see details</i>\n"
@@ -381,6 +382,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     name              : "Update Comment to signify build failure details",
     timeout: [time: 2, unit: 'MINUTES'],
     isSkippable: false,
+    resultThreshold: UNSTABLE,
     showExecute: {
       return prPostCommentID
     },
