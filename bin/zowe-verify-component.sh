@@ -1,6 +1,46 @@
 #!/bin/sh
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project. 2020
+#######################################################################
 
-# Temporary, this script needs to be fixed up 
+#######################################################################
+# Verify Zowe Component
+#
+# This script will verify a component of a Zowe instance.
+#
+#
+# Command line options:
+# -c|--component-id required. Identification of a component.
+# -i|--instance-dir   required. path to Zowe instance directory.
+#######################################################################
+
+#######################################################################
+# Prepare shell environment
+if [ -z "${ZOWE_ROOT_DIR}" ]; then
+  export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
+fi
+
+if [ ! -f "${ZOWE_ROOT_DIR}/manifest.json" ]; then
+    error_handler "ZOWE_ROOT_DIR path is not a zowe root directory."
+fi
+
+. ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
+
+. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+
+#######################################################################
+# Functions
+error_handler(){
+    print_error_message "$1"
+    exit 1
+}
 
 while [ $# -gt 0 ]; do #Checks for parameters
     arg="$1"
@@ -12,35 +52,34 @@ while [ $# -gt 0 ]; do #Checks for parameters
         ;;
         -i|--instance_dir)
             shift
-            INSTANCE_DIR=$1
-            shift
-        ;;
-        -r|--root_dir)
-            shift
-            ROOT_DIR=$1
+            path=$(get_full_path "$1")
+            validate_directory_is_accessible "$path"
+            if [[ $? -eq 0 ]]; then
+                validate_file_not_in_directory "$path/instance.env" "$path"
+                if [[ $? -ne 0 ]]; then
+                    INSTANCE_DIR="${path}"
+                else
+                    error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
+                fi
+            else
+                error_handler "-i|--instance_dir: Given path is not a zowe instance directory or does not exist"
+            fi
             shift
         ;;
         *)
-            echo "usage: zowe-verify-component.sh -c <component-id> -i <zowe-instance-dir> -r <zowe-root-dir>"
+            error_handler "usage: zowe-verify-component.sh -c <component-id> -i <zowe-instance-dir> -r <zowe-root-dir>"
             shift
     esac
 done
 
 if [ -z "${INSTANCE_DIR}" ]; then
-    echo "-i|--instance_dir - Instance directory must be assigned."
-    exit 1
-fi
-
-if [ -z "${ROOT_DIR}" ]; then
-    echo "-r|--root_dir - Root directory must be assigned."
-    exit 1
+    error_handler "-i|--instance_dir - Instance directory must be assigned."
 fi
 
 if [ -z "${component_id}" ]; then
-    echo "-c|--component-id - Component id must be assigned."
-    exit 1
+    error_handler "-c|--component-id - Component id must be assigned."
 fi
 
-. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c ${INSTANCE_DIR} -r ${ROOT_DIR}
+. ${ZOWE_ROOT_DIR}/bin/internal/prepare-environment.sh -c ${INSTANCE_DIR} -r ${ZOWE_ROOT_DIR}
 
 verify_component_instance ${component_id}
