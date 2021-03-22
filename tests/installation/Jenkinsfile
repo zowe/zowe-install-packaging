@@ -391,7 +391,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (allTestFailures) {
         commentText += "Failed tests:\n"
         allTestFailures.each{ eachFailTest -> 
-          commentText += "${eachFailTest.name}"
+          commentText += "${eachFailTest.name}\n"
         }
         pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
       }
