@@ -115,7 +115,7 @@
       "version": "0.0.2"
     },
     "org.zowe.licenses": {
-      "version": "1.18.0"
+      "version": "1.20.0"
     }
   },
   "sourceDependencies": [
@@ -386,7 +386,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.12.1",
+        "tag": "v1.13.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     }
