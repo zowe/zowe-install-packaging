@@ -208,8 +208,8 @@ node('zowe-jenkins-agent-dind-wdc') {
         error "Cannot extract git revision from build \"${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']}\""
       }
       echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
-      echo ">>>> BuildInfo vcsUrl is ${zoweBuildInfo.['vcsUrl']}, vcs revision is ${zoweBuildInfo.['vcsRevision']}"
-      
+      echo ">>>> BuildInfo vcsUrl is ${zoweBuildInfo['vcsUrl']}, vcs revision is ${zoweBuildInfo['vcsRevision']}"
+
       // get SMP/e build
       try {
         def smpeTarSource = pipeline.artifactory.getArtifact([
