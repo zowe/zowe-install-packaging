@@ -24,6 +24,7 @@
 //*
 //*      * Zowe's certificate Label (PKCS12)
 //         SET   LABEL=AMLCLIENTCERT
+//         SET   SUFIX=
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //         SET   STCGRP=          * group for Zowe started tasks
@@ -46,9 +47,9 @@
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 ACF
   SET PROFILE(USER) DIV(CERTDATA)
-  INSERT &ZOWEUSER..ZOWECC DSNAME('&DSNAME.') +
+  INSERT &ZOWEUSER..&SUFIX DSNAME('&DSNAME.') +
           LABEL(&LABEL.) TRUST
-  CHKCERT &ZOWEUSER..ZOWECC
+  CHKCERT &ZOWEUSER..&SUFIX
 $$
 //*
 
