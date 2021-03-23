@@ -205,10 +205,11 @@ node('zowe-jenkins-agent-dind-wdc') {
       )
       releaseArtifacts['zowe']['revision'] = zoweBuildInfo && zoweBuildInfo['vcsRevision']
       if (!("${releaseArtifacts['zowe']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-        //error "Cannot extract git revision from build \"${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']}\""
+        error "Cannot extract git revision from build \"${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']}\""
       }
       echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
-
+      echo ">>>> BuildInfo vcsUrl is ${zoweBuildInfo.['vcsUrl']}, vcs revision is ${zoweBuildInfo.['vcsRevision']}"
+      
       // get SMP/e build
       try {
         def smpeTarSource = pipeline.artifactory.getArtifact([
