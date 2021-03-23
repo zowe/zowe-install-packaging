@@ -89,7 +89,7 @@
   raw: >-
     cat "{{ zowe_instance_dir }}/instance.env" | \
     sed -e "s+^ZWE_CACHING_SERVICE_PORT=.*\$+ZWE_CACHING_SERVICE_PORT={{ zowe_caching_service_port }}+" | \
-    sed -e "s+^ZWE_CACHING_SERVICE_PERSISTENT=.*\$+ZWE_CACHING_SERVICE_PERSISTENT={{ zowe_caching_service_persistent }}+" | \
+    sed -e "s+^CACHING_STORAGE_MODE=.*\$+CACHING_STORAGE_MODE={{ zowe_caching_service_persistent }}+" | \
     sed -e "s+^ZWE_CACHING_SERVICE_VSAM_DATASET=.*\$+ZWE_CACHING_SERVICE_VSAM_DATASET={{ zowe_caching_service_vsam_dsname }}+" \
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"

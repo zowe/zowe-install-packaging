@@ -53,7 +53,7 @@ zowe_mvs_explorer_port: 8548
 zowe_uss_explorer_port: 8550
 # caching service
 zowe_caching_service_port: 7555
-zowe_caching_service_persistent: VSAM
+zowe_caching_service_persistent: vsam
 zowe_apiml_caching_service_start: true
 # the final data set name will be: {zowe_job_prefix}.{zowe_caching_service_vsam_dsprefix}{zowe_instance_id}
 # for example: IBMUSER.ZWE.CACHE1
