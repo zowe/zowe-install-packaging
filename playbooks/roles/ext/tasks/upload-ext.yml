@@ -1,0 +1,55 @@
+---
+# ============================================================================
+- name: Initialize zowe extension filename
+  set_fact:
+    zowe_extension_filename: ""
+
+# ============================================================================
+# Cleans up extensions currently uploaded in the system
+- name: Clean up old extensions
+  raw: "rm -rf {{ work_dir_remote }}/zowe-ext-*"
+
+# ============================================================================
+- name: Download Zowe Extension from zowe_ext_url if it has value
+  when: zowe_ext_url is defined
+  block:
+  - name: Update zowe_extension_filename from zowe_ext_url
+    set_fact:
+      zowe_extension_filename: "zowe-ext-{{ zowe_ext_url.split('/')[-1] }}"
+
+  - name: Download zowe extension if zowe_ext_url exists
+    get_url:
+      url: "{{ zowe_ext_url }}"
+      dest: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zowe_extension_filename }}"
+    delegate_to: localhost
+
+  - import_role:
+      name: common
+      tasks_from: upload_file
+    vars:
+      filename_to_upload: "{{ zowe_extension_filename }}"
+      file_upload_method: sftp
+      file_upload_hashcheck: true
+
+# ============================================================================
+# if zowe_build_local is set, upload to z/OS
+- name: Download Zowe Extension from zowe_ext_local if it has value
+  when: zowe_ext_local is defined
+  block:
+  - name: Update zowe_extension_filename from zowe_ext_local
+    set_fact:
+      zowe_extension_filename: "zowe-ext-{{ zowe_ext_local.split('/')[-1] }}"
+      
+  - name: Download zowe extension from local if zowe_ext_local exists
+    copy:
+      src: "{{ zowe_ext_local }}"
+      dest: "{{ work_dir_local }}/{{ inventory_hostname }}/{{ zowe_extension_filename }}"
+    delegate_to: localhost
+
+  - import_role:
+      name: common
+      tasks_from: upload_file
+    vars:
+      filename_to_upload: "{{ zowe_extension_filename }}"
+      file_upload_method: sftp
+      file_upload_hashcheck: true

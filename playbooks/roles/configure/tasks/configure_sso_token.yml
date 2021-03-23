@@ -26,7 +26,9 @@
   block:
     - name: Create zowe token
       raw: tsocmd "RACDCERT ADDTOKEN({{ zowe_token_name }})"
+      ignore_errors: True
     - name: Bind jwtsecret to profile
       raw: tsocmd "RACDCERT BIND(TOKEN({{ zowe_token_name }}) ID({{ zowe_runtime_user }}) LABEL('{{ zowe_token_label }}'))"
+      ignore_errors: True
     - name: List zowe token certificates
       raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"

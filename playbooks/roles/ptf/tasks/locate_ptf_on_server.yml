@@ -58,7 +58,7 @@
       - zowe_smpe_ptf != ''
       # it's possible we only have 1 PTF
       # - zowe_smpe_ptf_2 != ''
-      # it's ok we don't have readme
-      # - zowe_smpe_ptf_readme != ''
+      # we need readme to generate JCLs
+      - zowe_smpe_ptf_readme != ''
     success_msg: "All required Zowe SMPE PTF files are uploaded."
     fail_msg: "Couldn't find all Zowe SMPE PTF files (SYSMOD and readme.htm)"
