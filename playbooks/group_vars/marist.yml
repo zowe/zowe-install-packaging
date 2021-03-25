@@ -8,7 +8,6 @@ zowe_extension_dir: /ZOWE/extensions
 zowe_keystore_dir: /ZOWE/tmp/keystore
 zowe_install_logs_dir: /ZOWE/tmp/logs
 zowe_dataset_prefix: ZOWEAD3.ZWE
-cahing_vsam_dataset_prefix: ZWESVUSR.ZWE
 zowe_apiml_verify_certficates_of_services: false
 zowe_xmem_proclib: VENDOR.PROCLIB
 # this variable is deprecated in favor of zowe_dataset_prefix

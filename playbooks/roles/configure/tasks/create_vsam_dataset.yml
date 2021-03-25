@@ -22,7 +22,6 @@
     - zowe_caching_service_port
     - zowe_caching_service_persistent
     - zowe_caching_service_vsam_dsprefix
-    - cahing_vsam_dataset_prefix
 
 - name: Check if zowe_caching_vsam_storage_class has a value
   fail:
@@ -36,7 +35,7 @@
 
 - name: Set caching service vsam data set name
   set_fact:
-    zowe_caching_service_vsam_dsname: "{{ cahing_vsam_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}"
+    zowe_caching_service_vsam_dsname: "{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}"
 
 - import_role:
     name: zos
