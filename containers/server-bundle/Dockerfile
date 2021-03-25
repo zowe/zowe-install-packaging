@@ -124,5 +124,6 @@ ENV ZWED_agent_https_port='8542'
 ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
 
 COPY --chown=zowe:zowe --from=builder /home/zowe /home/zowe
+RUN chmod a+x /home/zowe/*.sh /home/zowe/.run_inner.sh
 
 ENTRYPOINT ["/home/zowe/run.sh"]
