@@ -393,7 +393,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     stage : {
       //update comment originally posted on PR, to reflect build status
       String buildStatus = "${currentBuild.currentResult}"
-      def allTestFailures = currentBuild.rawBuild.getAction(TestResultAction).getFailedTests()
+      def allTestFailures = currentBuild.getAction(TestResultAction).getFailedTests()
       if (allTestFailures) {
         commentText += "Failed tests:\n"
         allTestFailures.each{ eachFailTest -> 
