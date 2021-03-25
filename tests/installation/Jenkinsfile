@@ -393,13 +393,14 @@ node('zowe-jenkins-agent-dind-wdc') {
     stage : {
       //update comment originally posted on PR, to reflect build status
       String buildStatus = "${currentBuild.currentResult}"
-      def allTestFailures = currentBuild.getAction(TestResultAction).getFailedTests()
-      if (allTestFailures) {
-        commentText += "Failed tests:\n"
-        allTestFailures.each{ eachFailTest -> 
-          commentText += "name is ${eachFailTest.name}\n"
-          commentText += "\t\tdetail is " + eachFailTest.getErrorDetails() + "\n"
-          
+      // def allTestFailures = currentBuild.getAction(TestResultAction).getFailedTests()
+      def testSummary = junit(testResults: '${INSTALL_TEST_PATH}/reports/junit.xml') 
+      if (testSummary) {
+        echo "AAAAAAAAAAAA: ${testSummary.properties}"
+        // commentText += "Failed tests:\n"
+        // allTestFailures.each{ eachFailTest -> 
+        //   commentText += "name is ${eachFailTest.name}\n"
+        //   commentText += "\t\tdetail is " + eachFailTest.getErrorDetails() + "\n"
         }
         pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
       }
