@@ -53,7 +53,7 @@
       rm -f "{{ work_dir_remote }}/ZWECSVSM.jcl"
 
   - name: Copy SZWESAMP(ZWECSVSM) to USS
-    raw: cp "//'{{ cahing_vsam_dataset_prefix }}.SZWESAMP(ZWECSVSM)'" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl"
+    raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWECSVSM)'" "{{ work_dir_remote }}/ZWECSVSM.raw.jcl"
 
   - name: Update dsname in ZWECSVSM.jcl
     raw: >-
