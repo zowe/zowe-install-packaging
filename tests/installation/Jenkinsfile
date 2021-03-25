@@ -401,9 +401,8 @@ node('zowe-jenkins-agent-dind-wdc') {
         // allTestFailures.each{ eachFailTest -> 
         //   commentText += "name is ${eachFailTest.name}\n"
         //   commentText += "\t\tdetail is " + eachFailTest.getErrorDetails() + "\n"
-        }
-        pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
       }
+        pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
     }
   )
 
