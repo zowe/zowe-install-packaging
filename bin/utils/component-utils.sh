@@ -609,6 +609,7 @@ list_component_plugin_id() {
 # @param string   component directory
 verify_component_instance() {
   component_id=$1
+  rc_failures=0
 
   component_dir=$(find_component_directory "${component_id}")
 
@@ -621,7 +622,12 @@ verify_component_instance() {
 
   for service_id in $service_ids; do
     service_status=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J | read_json - .application.instance[0].status)
-    echo "${service_id}" - "${service_status}"
+    if [[ "${service_status}" == "UP" ]]; then
+      echo "${service_id}" - "${service_status}"
+    else
+      echo "${service_id}" - "${service_status}" 2>/dev/null
+      rc_failures=`expr $rc_failures + 1`
+    fi
   done
 
   if [ -z "${service_ids}" ]; then
@@ -636,15 +642,18 @@ verify_component_instance() {
     desktop_identifier=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k | read_json - .pluginDefinitions[].identifier)
 
     if [[ "$desktop_identifier" == *"$desktop_id"* ]]; then
-      echo "OK! - ${desktop_id} exists"
+      echo "OK! - ${desktop_id} exist"
     else
-      echo "FAIL! - ${desktop_id} does not exist"
+      echo "FAIL! - ${desktop_id} does not exist" 2>/dev/null
+      rc_failures=`expr $rc_failures + 1`
     fi
   done
 
   if [ -z "${desktop_ids}" ]; then
     echo "No desktop plugins exist for this component"
   fi
+
+  return $rc_failures
 }
 
 ###############################

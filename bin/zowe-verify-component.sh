@@ -42,6 +42,17 @@ error_handler(){
     exit 1
 }
 
+prepare_log_file() {
+    if [ -z "${LOG_FILE}" ]; then
+        set_install_log_directory "${LOG_DIRECTORY}"
+        validate_log_file_not_in_root_dir "${LOG_DIRECTORY}" "${ZOWE_ROOT_DIR}"
+        set_install_log_file "zowe-verify-component"
+    else
+        set_install_log_file_from_full_path "${LOG_FILE}"
+        validate_log_file_not_in_root_dir "${LOG_FILE}" "${ZOWE_ROOT_DIR}"
+    fi
+}
+
 while [ $# -gt 0 ]; do #Checks for parameters
     arg="$1"
     case $arg in
@@ -66,6 +77,16 @@ while [ $# -gt 0 ]; do #Checks for parameters
             fi
             shift
         ;;
+        -l|--logs-dir) # Represents the path to the installation logs
+            shift
+            LOG_DIRECTORY=$1
+            shift
+        ;;
+        -f|--log-file) # write logs to target file if specified
+            shift
+            LOG_FILE=$1
+            shift
+        ;;
         *)
             error_handler "usage: zowe-verify-component.sh -c <component-id> -i <zowe-instance-dir> -r <zowe-root-dir>"
             shift
@@ -80,6 +101,19 @@ if [ -z "${component_id}" ]; then
     error_handler "-c|--component-id - Component id must be assigned."
 fi
 
+if [ -z "${LOG_FILE}" -a -z "${LOG_DIRECTORY}" -a -n "${INSTANCE_DIR}" ]; then
+    LOG_DIRECTORY="${INSTANCE_DIR}/logs"
+fi
+
+prepare_log_file
+
 . ${ZOWE_ROOT_DIR}/bin/internal/prepare-environment.sh -c ${INSTANCE_DIR} -r ${ZOWE_ROOT_DIR}
 
+log_message "Verify ${component_id} is installed on the Zowe instance."
+
 verify_component_instance ${component_id}
+
+log_message "Verification for ${component_id} complete."
+log_message "rc=$?"
+
+exit $?
