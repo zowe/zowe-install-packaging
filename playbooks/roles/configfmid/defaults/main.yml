@@ -35,7 +35,7 @@ zowe_mvs_explorer_port: 8548
 zowe_uss_explorer_port: 8550
 # zlux ports
 zowe_zlux_port: 8544
-zowe_zss_https: False
+zowe_zss_https: True
 zowe_zss_port: 8542
 # make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
 zowe_zss_xmem_name: ZWESIS_STD
