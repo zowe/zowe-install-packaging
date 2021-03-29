@@ -112,8 +112,12 @@ prepare_log_file
 log_message "Verify ${component_id} is installed on the Zowe instance."
 
 verify_component_instance ${component_id}
+rc=$?
 
-log_message "Verification for ${component_id} complete."
-log_message "rc=$?"
+if [[ $rc -eq 0 ]]; then
+    log_message "Verification for ${component_id} was successful."
+else
+    log_message "Verification for ${component_id} was unsuccessful, there were ${rc} failure(s)."
+fi
 
-exit $?
+exit $rc
