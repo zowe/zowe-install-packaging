@@ -123,7 +123,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def jsonOutput = readJSON text: output
   def testName
   def failedTestList = []
-  jsonOutput.suites.each { k,v ->
+  jsonOutput.suites.cases.each { k,v ->
     println "KKKKKKKK is ${k}\n"
     println "VVVVVVVV is ${v}"
     // k is "cases"    v is array of properties {age,className,name,status}
