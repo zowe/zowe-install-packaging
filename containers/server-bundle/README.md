@@ -21,7 +21,7 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_http_port=8542 \
+    --env ZWED_agent_https_port=8542 \
     --expose ${DISCOVERY_PORT} \
     --expose ${GATEWAY_PORT} \
     --expose ${APP_SERVER_PORT} \
@@ -67,7 +67,7 @@ docker build -t zowe/docker:latest .
    - `ZOSMF_HOST=<zosmf_hostname>` - z/OSMF hostname (eg mf.acme.net)
    - `ZOSMF_PORT=<zosmf_port>` - z/OSMF port eg (1443)
    - `ZWED_agent_host=<zss_hostname>` - ZSS host (eg mf.acme.net)
-   - `ZWED_agent_http_port=<zss_port>` - ZSS port z/OSMF port eg (60012)
+   - `ZWED_agent_https_port=<zss_port>` - ZSS port z/OSMF port eg (60012)
    - `source=<folder with certs>,target=<target dir within image>` - local folder containing external certs, and their target dir in the image (optional)
    - `EXTERNAL_CERTIFICATE=<keystore.p12>` - location of p12 keystore. (optional)
    - `EXTERNAL_CERTIFICATE_ALIAS=<alias>` - valid alias within keystore. (optional)
@@ -80,7 +80,7 @@ docker build -t zowe/docker:latest .
 For example:
 
 ```cmd
-DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=8544 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_http_port=8542 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/home/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/home/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:amd64
+DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=8544 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_https_port=8542 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/home/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/home/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:amd64
 ```
 Note: External certificates are optional and should not be included in the start command if undesired.
 
@@ -125,7 +125,7 @@ docker run -it ^
     --env ZOSMF_HOST=your.zosmainframe.com ^
     --env ZWED_agent_host=your.zosmainframe.com ^
     --env ZOSMF_PORT=11443 ^
-    --env ZWED_agent_http_port=8542 ^
+    --env ZWED_agent_https_port=8542 ^
     --expose %DISCOVERY_PORT% ^
     --expose %GATEWAY_PORT% ^
     --expose %APP_SERVER_PORT% ^
@@ -152,7 +152,7 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_http_port=8542 \
+    --env ZWED_agent_https_port=8542 \
     --expose ${DISCOVERY_PORT} \
     --expose ${GATEWAY_PORT} \
     --expose ${APP_SERVER_PORT} \
@@ -200,7 +200,7 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_http_port=8542 \
+    --env ZWED_agent_https_port=8542 \
     --expose ${DISCOVERY_PORT} \
     --expose ${GATEWAY_PORT} \
     --expose ${APP_SERVER_PORT} \
