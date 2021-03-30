@@ -128,7 +128,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     println "VVVVVVVV is ${v}"
     // k is "cases"    v is array of properties {age,className,name,status}
     testName = ""  //overwrite
-    v.each { propName, propValue ->
+    k.each { propName, propValue ->
       println "PPPPPNNNNN is ${propName}\n"
       println "PPPPPVVVVV is ${propValue}"
       if (propName == "name") {
