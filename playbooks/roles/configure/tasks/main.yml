@@ -156,6 +156,11 @@
     name: configure
     tasks_from: configure_sso_token_tss
   when: zowe_apiml_security_x509_enabled and zos_security_system == 'TSS'
+
+- import_role:
+    name: configure
+    tasks_from: configure_sso_token_acf2
+  when: zowe_apiml_security_x509_enabled and zos_security_system == 'ACF2'
 # ============================================================================
 # Add external API ML CA to the truststore
 - name: Add the external CA to the truststore

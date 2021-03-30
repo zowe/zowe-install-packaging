@@ -21,6 +21,9 @@
   raw: echo "  DELETE CERTAUTH.{{ item}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
   loop: "{{ zowe_known_keyring_certauth_digicerts }}"
 
+- name: Add delete zowe token
+  raw: echo "  P11TOKEN DEL TOKEN({{ zowe_token_name }}) FORCE" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
+
 - name: Add set keyring division ACF2 statement to JCL
   raw: echo "  SET PROFILE(USER) DIVISION(KEYRING)" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
 
