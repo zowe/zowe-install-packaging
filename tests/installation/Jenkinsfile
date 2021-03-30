@@ -424,7 +424,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           }
         }
       }
-      def commentText = "Number of failing tests: " + failedTestList.size() + "\n"
+      commentText += "\nNumber of failing tests: " + failedTestList.size() + "\n"
       commentText += "Tests are:\n"
       
       failedTestList.each { String line ->
