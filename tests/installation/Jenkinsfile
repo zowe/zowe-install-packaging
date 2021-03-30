@@ -121,18 +121,35 @@ node('zowe-jenkins-agent-dind-wdc') {
   def command = "curl --globoff -H \"Accept: application/json\" \"https://wash.zowe.org:8443/job/zowe-install-test/job/staging/1297/testReport/api/json?tree=suites[cases[className,name,age,status]]\""
   def output = sh(script : command, returnStdout: true).trim()
   def jsonOutput = readJSON text: output
-  def testName
+  def name
+  def className
+  def status
+  def age
+
   def failedTestList = []
   jsonOutput.suites.cases.each { cases ->
     cases.each { eachTest ->
-      testName = ""  //overwrite
+      //overwrite
+      name = ""
+      className = ""
+      status = ""
+      age = ""
       eachTest.each { propName, propValue ->
         if (propName == "name") {
-          testName = propValue //pre-save the test name if needed later
+          name = propValue
         }
-        if (propName == "status" && propValue == "FAILED") {
-          failedTestList.add(testName)
+        if (propName == "status") {
+          status = propValue
         }
+        if (propName == "className") {
+          className = propValue
+        }
+        if (propName == "age") {
+          age = propValue
+        }
+      }
+      if (!className.contains("dist/__tests__") && status == "FAILED") {
+        failedTestList.add(name)
       }
     }
   }
