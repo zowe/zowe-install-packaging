@@ -136,7 +136,10 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
     }
   }
-  println "FINAL: ${failedTestList}"
+  println "FINALSIZE: " + failedTestList.size()
+  failedTestList.each { String line ->
+    println line
+  }
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
