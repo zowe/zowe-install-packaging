@@ -123,24 +123,22 @@ node('zowe-jenkins-agent-dind-wdc') {
   def jsonOutput = readJSON text: output
   def testName
   def failedTestList = []
-  jsonOutput.suites.cases.each { k,v ->
-    println "KKKKKKKK is ${k}\n"
-    println "VVVVVVVV is ${v}"
-    // k is "cases"    v is array of properties {age,className,name,status}
+  jsonOutput.suites.cases.each { cases ->
     testName = ""  //overwrite
-    k.each { propName, propValue ->
-      println "PPPPPNNNNN is ${propName}\n"
-      println "PPPPPVVVVV is ${propValue}"
-      if (propName == "name") {
-        testName = propValue //pre-save the test name if needed later
+    cases.each { eachTest ->
+      eachTest.each -> { propName,propValue ->
+        println "PPPPPNNNNN is ${propName}\n"
+        println "PPPPPVVVVV is ${propValue}"
+        if (propName == "name") {
+          testName = propValue //pre-save the test name if needed later
+        }
+        if (propName == "status" && propValue == "FAILED") {
+          failedTestList.add(testName)
+        }
       }
-      if (propName == "status" && propValue == "FAILED") {
-        failedTestList.add(testName)
-      }
-      println ""
     }
   }
-  println "${failedTestList}"
+  println "FINAL: ${failedTestList}"
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
