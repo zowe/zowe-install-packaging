@@ -117,47 +117,6 @@ node('zowe-jenkins-agent-dind-wdc') {
   int prPostCommentID
   String commentText
 
-  //DEBUG
-  def command = "curl --globoff -H \"Accept: application/json\" \"https://wash.zowe.org:8443/job/zowe-install-test/job/staging/1297/testReport/api/json?tree=suites[cases[className,name,age,status]]\""
-  def output = sh(script : command, returnStdout: true).trim()
-  def jsonOutput = readJSON text: output
-  def name
-  def className
-  def status
-  def age
-
-  def failedTestList = []
-  jsonOutput.suites.cases.each { cases ->
-    cases.each { eachTest ->
-      //overwrite
-      name = ""
-      className = ""
-      status = ""
-      age = ""
-      eachTest.each { propName, propValue ->
-        if (propName == "name") {
-          name = propValue
-        }
-        if (propName == "status") {
-          status = propValue
-        }
-        if (propName == "className") {
-          className = propValue
-        }
-        if (propName == "age") {
-          age = propValue
-        }
-      }
-      if (!className.contains("dist/__tests__") && status == "FAILED") {
-        failedTestList.add(name)
-      }
-    }
-  }
-  println "FINALSIZE: " + failedTestList.size()
-  failedTestList.each { String line ->
-    println line
-  }
-
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
     booleanParam(
@@ -435,7 +394,43 @@ node('zowe-jenkins-agent-dind-wdc') {
     },
     stage : {
       //update comment originally posted on PR, to reflect build status
-      // pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
+      def command = "curl --globoff -H \"Accept: application/json\" \"${env.BUILD_URL}/testReport/api/json?tree=suites[cases[className,name,age,status]]\""
+      def output = sh(script : command, returnStdout: true).trim()
+      def jsonOutput = readJSON text: output
+      def name
+      def className
+      def status
+
+      def failedTestList = []
+      jsonOutput.suites.cases.each { cases ->
+        cases.each { eachTest ->
+          //overwrite
+          name = ""
+          className = ""
+          status = ""
+          eachTest.each { propName, propValue ->
+            if (propName == "name") {
+              name = propValue
+            }
+            if (propName == "status") {
+              status = propValue
+            }
+            if (propName == "className") {
+              className = propValue
+            }
+          }
+          if (!className.contains("dist/__tests__") && status == "FAILED") {
+            failedTestList.add(name)
+          }
+        }
+      }
+      def commentText = "Number of failing tests: " + failedTestList.size() + "\n"
+      commentText += "Tests are:\n"
+      
+      failedTestList.each { String line ->
+        commentText += line + "\n"
+      }
+      pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
     }
   )
 
