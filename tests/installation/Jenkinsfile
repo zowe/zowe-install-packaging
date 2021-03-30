@@ -120,7 +120,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   //DEBUG
   String contentString = "https://wash.zowe.org:8443/job/zowe-install-test/job/PR-2023/14/testReport/api/json?tree=suites[cases[className,name,age,status]]"
 	//contentString = StringEscapeUtils.escapeJava(contentString)
-	def output = sh(script : "curl -X GET -H \"Accept: application.json\" $contentString", returnStdout: true).trim()
+	def output = sh(script : "curl -X GET -H \"Accept: application.json\" \"$contentString\"", returnStdout: true).trim()
   def jsonout = new JsonSlurper().parseText(output)
   echo "${jsonout.properties}"
 
