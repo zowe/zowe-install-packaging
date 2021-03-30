@@ -12,6 +12,7 @@ const expect = require('chai').expect;
 const https = require('https');
 const fs = require('fs');
 const utils = require('./utils.js');
+const debug = require('debug')('zowe-sanity-test:apiml:caching');
 let request;
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
@@ -53,34 +54,83 @@ let assertStatusNoContent = (response) => {
 
   describe('should be able to use caching service ', () => {
     it('to store a key', async () => {
-
-      const response = await request.post(CACHING_PATH, {
-        key, value
-      },{ httpsAgent });
+      let response;
+      try {
+        response = await request.post(CACHING_PATH, {
+          key, value
+        },{ httpsAgent });
+      } catch (err) {
+        if (err.response) {
+          response = err.response;
+        } else {
+          debug(err && err.stack);
+          expect(err).to.be.null;
+        }
+      }
 
       assertStatusCodeCreated(response);
     });
 
     it('to get a key', async () => {
-      const response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
+      let response;
+      try {
+        response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
+      } catch (err) {
+        if (err.response) {
+          response = err.response;
+        } else {
+          debug(err && err.stack);
+          expect(err).to.be.null;
+        }
+      }
 
       assertStatusCodeOk(response);
     });
 
     it('to update the key value', async () => {
       value = 'newKey';
-      const putResponse = await request.put(CACHING_PATH, {
-        key, value
-      }, { httpsAgent });
+      let putResponse;
+      try {
+        putResponse = await request.put(CACHING_PATH, {
+          key, value
+        }, { httpsAgent });
+      } catch (err) {
+        if (err.response) {
+          putResponse = err.response;
+        } else {
+          debug(err && err.stack);
+          expect(err).to.be.null;
+        }
+      }
       utils.log('Put response', putResponse);
 
-      const response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
+      let response;
+      try {
+        response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
+      } catch (err) {
+        if (err.response) {
+          response = err.response;
+        } else {
+          debug(err && err.stack);
+          expect(err).to.be.null;
+        }
+      }
 
       assertStatusCodeOk(response);
     });
 
     it('to delete the key', async () => {
-      const response = await request.delete(CACHING_PATH + '/' + key, { httpsAgent });
+      let response;
+      try {
+        response = await request.delete(CACHING_PATH + '/' + key, { httpsAgent });
+      } catch (err) {
+        if (err.response) {
+          response = err.response;
+        } else {
+          debug(err && err.stack);
+          expect(err).to.be.null;
+        }
+      }
 
       assertStatusNoContent(response);
     });
