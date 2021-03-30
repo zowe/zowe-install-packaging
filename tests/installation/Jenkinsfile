@@ -126,7 +126,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   jsonOutput.suites.cases.each { cases ->
     testName = ""  //overwrite
     cases.each { eachTest ->
-      eachTest.each -> { propName,propValue ->
+      eachTest.each { propName, propValue ->
         println "PPPPPNNNNN is ${propName}\n"
         println "PPPPPVVVVV is ${propValue}"
         if (propName == "name") {
