@@ -120,9 +120,8 @@ node('zowe-jenkins-agent-dind-wdc') {
   //DEBUG
   def command = "curl --globoff -H \"Accept: application/json\" \"https://wash.zowe.org:8443/job/zowe-install-test/job/staging/1297/testReport/api/json?tree=suites[cases[className,name,age,status]]\""
   def output = sh(script : command, returnStdout: true).trim()
-  echo "$output"
-  def jsonout = new JsonSlurper().parseText(output)
-  echo "${jsonout.properties}"
+  def json = readJSON text: output
+  echo "${json.suites.cases}"
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
