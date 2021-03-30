@@ -17,7 +17,11 @@
   loop: "{{ zowe_known_tss_keyring_names }}"
   ignore_errors: True
 
+- name: Deleting Zowe TSS token
+  raw: tsocmd "TSS P11TOKEN TOKENDEL LABLCTKN({{ zowe_token_name }}) FORCE"
+  ignore_errors: True
+
 - name: List keyrings's TSS certificates
   raw: tsocmd "TSS LIST({{ zowe_runtime_user }}) KEYRING({{ item }})"
   loop: "{{ zowe_known_tss_keyring_names }}"
-  ignore_errors: True 
+  ignore_errors: True
