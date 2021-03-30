@@ -323,7 +323,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout: [time: 2, unit: 'HOURS'],
     isSkippable: true,
     stage : {
-      def buildName = env.JOB_NAME.replace('/', ' :: ')
+      def buildName = env.JOB_NAME.replace('/', ' :: ').replace('%2F', ' :: ')
       def branchName = env.BRANCH_NAME   //this field will be "PR-1937" or branch name "users/xxx/xxxx"
       def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
       def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
@@ -358,7 +358,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         }
 
         def test_result = build(
-          job: '/zowe-install-test/'+branchName,
+          job: '/zowe-install-test/' + branchName.replace('/', '%2F'),
           parameters: testParameters
         )
         echo "Test result: ${test_result.result}"
