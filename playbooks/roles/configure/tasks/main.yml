@@ -134,7 +134,7 @@
 
 - import_role:
     name: configure
-    tasks_from: configure_client_certificates
+    tasks_from: configure_jwt_secret_certificate
   vars:
     certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.pem"
     dataset: JWTSCRT
@@ -152,6 +152,10 @@
     tasks_from: configure_sso_token
   when: zowe_apiml_security_x509_enabled and zos_security_system == 'RACF'
 
+- import_role:
+    name: configure
+    tasks_from: configure_sso_token_tss
+  when: zowe_apiml_security_x509_enabled and zos_security_system == 'TSS'
 # ============================================================================
 # Add external API ML CA to the truststore
 - name: Add the external CA to the truststore

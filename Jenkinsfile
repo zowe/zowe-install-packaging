@@ -323,7 +323,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         }
 
         def test_result = build(
-          job: '/zowe-install-test/'+branchName,
+          job: '/zowe-install-test/' + branchName.replace('/', '%2F'),
           parameters: testParameters
         )
         echo "Test result: ${test_result.result}"

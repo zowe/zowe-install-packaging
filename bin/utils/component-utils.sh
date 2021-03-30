@@ -333,6 +333,12 @@ process_component_apiml_static_definitions() {
   while read -r one_def; do
     one_def_trimmed=$(echo "${one_def}" | xargs)
     if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
+      if [ ! -r "${one_def}" ]; then
+        >&2 echo "static definition file ${one_def} of component ${component_name} is not accessible"
+        all_succeed=false
+        break
+      fi
+
       echo "process ${component_name} service static definition file ${one_def_trimmed} ..."
       sanitized_def_name=$(echo "${one_def_trimmed}" | sed 's/[^a-zA-Z0-9]/_/g')
       # FIXME: we may change the static definitions files to real template in the future.
@@ -500,6 +506,12 @@ process_component_appfw_plugin() {
   appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
       cd "${component_dir}"
+      if [ ! -r "${appfw_plugin_path}" ]; then
+        >&2 echo "App Framework plugin directory ${appfw_plugin_path} is not accessible"
+        all_succeed=false
+        break
+      fi
+
       ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
       # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
