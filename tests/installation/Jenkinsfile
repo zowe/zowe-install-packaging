@@ -124,8 +124,8 @@ node('zowe-jenkins-agent-dind-wdc') {
   def testName
   def failedTestList = []
   jsonOutput.suites.cases.each { cases ->
-    testName = ""  //overwrite
     cases.each { eachTest ->
+      testName = ""  //overwrite
       eachTest.each { propName, propValue ->
         println "PPPPPNNNNN is ${propName}\n"
         println "PPPPPVVVVV is ${propValue}"
