@@ -424,11 +424,15 @@ node('zowe-jenkins-agent-dind-wdc') {
           }
         }
       }
-      commentText += "\nNumber of failing tests: " + failedTestList.size() + "\n"
-      commentText += "Tests are:\n"
-      
-      failedTestList.each { String line ->
-        commentText += line + "\n"
+      if (failedTestList) {
+        commentText += "\nNumber of failing tests: " + failedTestList.size() + "\n"
+        commentText += "Tests are:\n"
+  
+        failedTestList.each { String line ->
+          commentText += line + "\n"
+        }
+      } else {
+        commentText += "All tests passed!"
       }
       pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
     }
