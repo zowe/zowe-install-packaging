@@ -124,13 +124,13 @@ node('zowe-jenkins-agent-dind-wdc') {
   def testName
   def failedTestList = []
   jsonOutput.suites.each { k,v ->
-    echo "${k}"
-    echo "${v}"
+    println "${k}\n"
+    println "${v}"
     // k is "cases"    v is array of properties {age,className,name,status}
     testName = ""  //overwrite
     v.each { propName, propValue ->
-      echo "${propName}"
-      echo "${propValue}"
+      println "${propName}\n"
+      println "${propValue}"
       if (propName == "name") {
         testName = propValue //pre-save the test name if needed later
       }
@@ -139,7 +139,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
     }
   }
-  echo "${failedTestList}"
+  println "${failedTestList}"
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
