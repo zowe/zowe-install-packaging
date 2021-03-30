@@ -118,7 +118,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   String commentText
 
   //DEBUG
-	def output = sh(script : "curl -X GET -H \"Accept: application.json\" \"https://wash.zowe.org:8443/job/zowe-install-test/job/PR-2023/14/testReport/api/json?tree=suites[cases[className,name,age,status]]\"", returnStdout: true).trim()
+	def output = sh(script : "curl -X GET -H \"Accept: application.json\" \"https://wash.zowe.org:8443/job/zowe-install-test/job/PR-2023/14/testReport/api/json?tree=suites\[cases\[className,name,age,status\]\]\"", returnStdout: true).trim()
   def jsonout = new JsonSlurper().parseText(output)
   echo "${jsonout.properties}"
 
