@@ -151,10 +151,7 @@
     name: configure
     tasks_from: configure_sso_token
   when: zowe_apiml_security_x509_enabled and zos_security_system == 'RACF'
-- import_role:
-    name: configure
-    tasks_from: configure_sso_token_acf2
-  when: zowe_apiml_security_x509_enabled and zos_security_system == 'ACF2'
+
 - import_role:
     name: configure
     tasks_from: configure_sso_token_tss
