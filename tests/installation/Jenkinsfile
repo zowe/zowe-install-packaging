@@ -13,6 +13,8 @@
 import hudson.tasks.junit.TestResultAction
 import hudson.model.Action
 import hudson.model.Run
+import groovy.json.JsonSlurper
+import groovy.json.StringEscapeUtils
 
 // Provide possibility to specify node.js version in Jenkins agent
 // this value should match the Jenkins node we are using
@@ -114,6 +116,13 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   int prPostCommentID
   String commentText
+
+  //DEBUG
+  String contentString = "https://wash.zowe.org:8443/job/zowe-install-test/job/PR-2023/14/testReport/api/json?tree=suites[cases[className,name,age,status]]"
+	contentString = StringEscapeUtils.escapeJava(contentString)
+	def output = sh (script : "curl -X GET -H \"Accept: application.json\" $contentString", returnStdout: true).trim()
+  def jsonout = new JsonSlurper().parseText(output)
+  echo "${jsonout.properties}"
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
@@ -392,19 +401,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     },
     stage : {
       //update comment originally posted on PR, to reflect build status
-      // String buildStatus = "${currentBuild.currentResult}"
-      // // def allTestFailures = currentBuild.getAction(TestResultAction).getFailedTests()
-      // def testSummary = junit(testResults: '${INSTALL_TEST_PATH}/reports/junit.xml') 
-      // if (testSummary) {
-      //   echo "AAAAAAAAAAAA: ${testSummary.properties}"
-      //   // commentText += "Failed tests:\n"
-      //   // allTestFailures.each{ eachFailTest -> 
-      //   //   commentText += "name is ${eachFailTest.name}\n"
-      //   //   commentText += "\t\tdetail is " + eachFailTest.getErrorDetails() + "\n"
-      // }
       // pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
-
-      pipeline.jenkins.getFailedTestReport()
     }
   )
 
