@@ -61,8 +61,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
           expect(err).to.have.property('response');
           const res = err.response;
           expect(res).to.have.property('status');
-          //expect(res.status).to.equal(302);
-          expect(res.status).to.equal(999);
+          expect(res.status).to.equal(302);
           expect(res).to.have.property('headers');
           expect(res.headers).to.have.property('location');
           expect(res.headers.location).to.equal('./ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
