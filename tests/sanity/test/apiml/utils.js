@@ -9,13 +9,30 @@
  */
 
 const _ = require('lodash');
-const debug = require('debug')('zowe-sanity-test:apiml:gateway');
+const debug = require('debug')('zowe-sanity-test:apiml:utils');
 const axios = require('axios');
 const expect = require('chai').expect;
 const fs = require('fs');
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 let https = require('https');
+
+const httpRequest = async (request, config) => {
+  let response;
+  try {
+    debug('Http Request', config);
+    response = await request.request(config);
+  } catch (err) {
+    if (err.response) {
+      response = err.response;
+    } else {
+      debug('Http Request Error', err && err.stack);
+      expect(err).to.be.null;
+    }
+  }
+
+  return response;
+};
 
 function validateResponse(uuid, response) {
   logResponse(uuid, response);
@@ -29,8 +46,12 @@ function validateResponse(uuid, response) {
 
 let login = async (uuid) => {
   log(uuid, 'URL: /api/v1/gateway/auth/login');
-  let response = await request.post('/api/v1/gateway/auth/login', {
-    username, password
+  const response = await httpRequest(request, {
+    url: '/api/v1/gateway/auth/login',
+    method: 'post',
+    data: {
+      username, password
+    },
   });
 
   validateResponse(uuid, response);
@@ -45,9 +66,11 @@ let loginWithCertificate = async (uuid) => {
     cert: fs.readFileSync('../../playbooks/roles/configure/files/USER-cert.cer'),
     key: fs.readFileSync('../../playbooks/roles/configure/files/USER-PRIVATEKEY.key'),
   });
-  let response = await request.post('/api/v1/gateway/auth/login', {},
-    {httpsAgent}
-  );
+  let response = await httpRequest(request, {
+    url: '/api/v1/gateway/auth/login',
+    method: 'post',
+    httpsAgent
+  });
   validateResponse(uuid, response);
 
   return findCookieInResponse(response, APIML_AUTH_COOKIE);
@@ -106,6 +129,7 @@ function uuid() {
 module.exports = {
   log,
   login,
+  httpRequest,
   logResponse,
   findCookieInResponse,
   verifyAndSetupEnvironment,

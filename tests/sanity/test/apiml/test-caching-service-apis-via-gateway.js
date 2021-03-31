@@ -54,83 +54,51 @@ let assertStatusNoContent = (response) => {
 
   describe('should be able to use caching service ', () => {
     it('to store a key', async () => {
-      let response;
-      try {
-        response = await request.post(CACHING_PATH, {
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH,
+        method: 'post',
+        data: {
           key, value
-        },{ httpsAgent });
-      } catch (err) {
-        if (err.response) {
-          response = err.response;
-        } else {
-          debug(err && err.stack);
-          expect(err).to.be.null;
-        }
-      }
+        },
+        httpsAgent
+      });
 
       assertStatusCodeCreated(response);
     });
 
     it('to get a key', async () => {
-      let response;
-      try {
-        response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
-      } catch (err) {
-        if (err.response) {
-          response = err.response;
-        } else {
-          debug(err && err.stack);
-          expect(err).to.be.null;
-        }
-      }
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH + '/' + key,
+        httpsAgent
+      });
 
       assertStatusCodeOk(response);
     });
 
     it('to update the key value', async () => {
       value = 'newKey';
-      let putResponse;
-      try {
-        putResponse = await request.put(CACHING_PATH, {
-          key, value
-        }, { httpsAgent });
-      } catch (err) {
-        if (err.response) {
-          putResponse = err.response;
-        } else {
-          debug(err && err.stack);
-          expect(err).to.be.null;
-        }
-      }
+      const putResponse = await utils.httpRequest(request, {
+        url: CACHING_PATH,
+        method: 'put',
+        data: { key, value },
+        httpsAgent
+      });
       utils.log('Put response', putResponse);
 
-      let response;
-      try {
-        response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
-      } catch (err) {
-        if (err.response) {
-          response = err.response;
-        } else {
-          debug(err && err.stack);
-          expect(err).to.be.null;
-        }
-      }
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH + '/' + key,
+        httpsAgent
+      });
 
       assertStatusCodeOk(response);
     });
 
     it('to delete the key', async () => {
-      let response;
-      try {
-        response = await request.delete(CACHING_PATH + '/' + key, { httpsAgent });
-      } catch (err) {
-        if (err.response) {
-          response = err.response;
-        } else {
-          debug(err && err.stack);
-          expect(err).to.be.null;
-        }
-      }
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH + '/' + key,
+        method: 'delete',
+        httpsAgent
+      });
 
       assertStatusNoContent(response);
     });
