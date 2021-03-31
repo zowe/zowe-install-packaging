@@ -399,7 +399,6 @@ node('zowe-jenkins-agent-dind-wdc') {
       def output = sh(script : command, returnStdout: true).trim()
       def jsonOutput = readJSON text: output
       def name
-      def className
       def status
 
       def failedTestList = []
@@ -407,7 +406,6 @@ node('zowe-jenkins-agent-dind-wdc') {
         cases.each { eachTest ->
           //overwrite
           name = ""
-          className = ""
           status = ""
           eachTest.each { propName, propValue ->
             if (propName == "name") {
@@ -416,26 +414,21 @@ node('zowe-jenkins-agent-dind-wdc') {
             if (propName == "status") {
               status = propValue
             }
-            if (propName == "className") {
-              className = propValue
-            }
           }
-          if (!className.contains("dist/__tests__") && status == "FAILED") {
+          if (status == "FAILED") {
             failedTestList.add(name)
           }
         }
       }
       if (failedTestList) {
-        commentText += "\nNumber of failing tests: " + failedTestList.size() + "\n"
-        commentText += "Tests are:\n"
-  
+        commentText += "Failed tests are:\n"
         failedTestList.each { String line ->
           commentText += line + "\n"
         }
       } else {
         commentText += "All tests passed!"
       }
-      pipeline.github.UpdateComment(prNumber, prPostCommentID, commentText)
+      pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
     }
   )
 
