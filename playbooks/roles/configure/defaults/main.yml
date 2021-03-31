@@ -62,7 +62,7 @@ zowe_caching_vsam_storage_class:
 zowe_caching_vsam_volume:
 # zlux ports
 zowe_zlux_port: 8544
-zowe_zss_https: False
+zowe_zss_https: True
 zowe_zss_port: 8542
 # make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
 zowe_zss_xmem_name: ZWESIS_STD
