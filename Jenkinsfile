@@ -310,10 +310,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // At this point, the build and packaging stages must have passed
       String prNumberString = "${pipeline.changeInfo.pullRequestId}"
       int prNumber = prNumberString as Integer   // convert to int
-      String commentText = "Building Zowe sources...\n"
+      String commentText = "Building and Packaging Zowe sources...\n"
       commentText += "Build number: ${env.BUILD_NUMBER}\n"
       commentText += "Link: ${env.BUILD_URL}\n"
-      commentText += "Status: Passed"
+      commentText += "Build status: <p style=\"color:green;\">Passed</p>"
       pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
     }
   )

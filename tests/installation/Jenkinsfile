@@ -10,12 +10,6 @@
  * Copyright IBM Corporation 2020
  */
 
-import hudson.tasks.junit.TestResultAction
-import hudson.model.Action
-import hudson.model.Run
-import groovy.json.JsonSlurper
-import groovy.json.StringEscapeUtils
-
 // Provide possibility to specify node.js version in Jenkins agent
 // this value should match the Jenkins node we are using
 String NVM_INIT_SCRIPT = '/home/jenkins/.nvm/nvm.sh'
@@ -421,12 +415,14 @@ node('zowe-jenkins-agent-dind-wdc') {
         }
       }
       if (failedTestList) {
-        commentText += "Failed tests are:\n"
+        commentText += "<hr>Failed tests are:\n"
+        commentText += "<ul>"
         failedTestList.each { String line ->
-          commentText += line + "\n"
+          commentText += "<li>" + line + "</li>"
         }
+        commentText += "</ul>"
       } else {
-        commentText += "All tests passed!"
+        commentText += "<hr>All tests <p style=\"color:green;\">passed!</p>"
       }
       pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
     }
