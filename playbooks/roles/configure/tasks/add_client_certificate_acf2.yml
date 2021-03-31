@@ -38,8 +38,8 @@
   raw: >-
     cat "{{ work_dir_remote }}/ZWECCADD.jcl" | \
     sed -e "s+ZOWEUSER=ZWESVUSR+ZOWEUSER={{ zowe_runtime_user }}+" | \
-    sed -e "s+LABEL=AMLCLIENTCERT+LABEL={{ label }}+" | \
     sed -e "s+SUFIX=+SUFIX={{ dataset }}+" | \
+    sed -e "s+LABEL(&LABEL.)+LABEL({{ label }})+" | \
     sed -e "s+DSNAME=ZOWE+DSNAME={{ zowe_dataset_prefix }}.CERT.{{ dataset }}+" \
     > "{{ work_dir_remote }}/ZWECCADD.jcl"
 
