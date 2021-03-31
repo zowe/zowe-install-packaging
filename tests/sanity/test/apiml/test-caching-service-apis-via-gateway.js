@@ -12,6 +12,7 @@ const expect = require('chai').expect;
 const https = require('https');
 const fs = require('fs');
 const utils = require('./utils.js');
+// const debug = require('debug')('zowe-sanity-test:apiml:caching');
 let request;
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
@@ -53,34 +54,51 @@ let assertStatusNoContent = (response) => {
 
   describe('should be able to use caching service ', () => {
     it('to store a key', async () => {
-
-      const response = await request.post(CACHING_PATH, {
-        key, value
-      },{ httpsAgent });
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH,
+        method: 'post',
+        data: {
+          key, value
+        },
+        httpsAgent
+      });
 
       assertStatusCodeCreated(response);
     });
 
     it('to get a key', async () => {
-      const response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH + '/' + key,
+        httpsAgent
+      });
 
       assertStatusCodeOk(response);
     });
 
     it('to update the key value', async () => {
       value = 'newKey';
-      const putResponse = await request.put(CACHING_PATH, {
-        key, value
-      }, { httpsAgent });
+      const putResponse = await utils.httpRequest(request, {
+        url: CACHING_PATH,
+        method: 'put',
+        data: { key, value },
+        httpsAgent
+      });
       utils.log('Put response', putResponse);
 
-      const response = await request.get(CACHING_PATH + '/' + key, { httpsAgent });
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH + '/' + key,
+        httpsAgent
+      });
 
       assertStatusCodeOk(response);
     });
 
     it('to delete the key', async () => {
-      const response = await request.delete(CACHING_PATH + '/' + key, { httpsAgent });
+      const response = await utils.httpRequest(request, {
+        url: CACHING_PATH + '/' + key,
+        method: 'delete',
+        httpsAgent
+      });
 
       assertStatusNoContent(response);
     });

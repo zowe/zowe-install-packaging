@@ -36,7 +36,8 @@ describe('test zss x509 certificate mapping via gateway', function() {
     const authenticationCookie = await testUtils.loginWithCertificate(uuid);
     const username = process.env.SSH_USER;
     testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
-    const response = await request.get(`/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`, {
+    const response = await testUtils.httpRequest(request, {
+      url: `/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`,
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
