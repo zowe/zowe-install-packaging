@@ -313,7 +313,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       String commentText = "Building and Packaging Zowe sources...\n"
       commentText += "Build number: ${env.BUILD_NUMBER}\n"
       commentText += "Link: ${env.BUILD_URL}\n"
-      commentText += "Build status: <p style=\"color:green;\">Passed</p>"
+      commentText += "Build status: `Passed`"
       pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
     }
   )

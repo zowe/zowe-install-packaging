@@ -347,7 +347,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         commentText = "Test scope: ${params.TEST_SCOPE}\n"
         commentText += "Test job number: ${env.BUILD_NUMBER}\n"
         //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
-        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
+        commentText += "Test status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
         commentText += "<i>Click the icon to see details</i>\n"
         prPostCommentID = pipeline.github.postComment(prNumber, commentText)
       }
@@ -420,9 +420,9 @@ node('zowe-jenkins-agent-dind-wdc') {
         failedTestList.each { String line ->
           commentText += "<li>" + line + "</li>"
         }
-        commentText += "</ul>"
+        commentText += "</ul>\n"
       } else {
-        commentText += "<hr>All tests <p style=\"color:green;\">passed!</p>"
+        commentText += "<hr>All tests passed!"
       }
       pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
     }
