@@ -12,7 +12,7 @@ const expect = require('chai').expect;
 const https = require('https');
 const fs = require('fs');
 const utils = require('./utils.js');
-const debug = require('debug')('zowe-sanity-test:apiml:caching');
+// const debug = require('debug')('zowe-sanity-test:apiml:caching');
 let request;
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
