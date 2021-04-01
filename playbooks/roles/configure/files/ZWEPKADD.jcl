@@ -17,7 +17,7 @@
 //*********************************************************************
 //         EXPORT SYMLIST=*
 //*
-//         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
+//         SET ZOWEUSER=ZWESVUSR.JWTSCRT  * userid for Zowe started task
 //*                     12345678
 //*
 //*      * Zowe's certificate Label (PKCS12)
