@@ -69,7 +69,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       test_files: 'dist/__tests__/extended/ptf/install-ptf-two-times.js',
     ],
     'enable VERIFY_CERTIFICATES': [
-      test_files: 'dist/__tests__/extended/certificates/verify-certificates.ts',
+      test_files: 'dist/__tests__/extended/certificates/verify-certificates.js',
     ],
     'bundle: multiple node versions': [
       test_files: 'dist/__tests__/extended/node-versions/',
