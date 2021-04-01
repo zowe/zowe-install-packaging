@@ -302,19 +302,18 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     name              : "Update comment to signify build pass status",
     timeout: [time: 2, unit: 'MINUTES'],
     isSkippable: false,
-    showExecute: {
-      return prPostCommentID
-    },
     stage : {
       //update comment originally posted on PR, to reflect build status
       // At this point, the build and packaging stages must have passed
-      String prNumberString = "${pipeline.changeInfo.pullRequestId}"
-      int prNumber = prNumberString as Integer   // convert to int
-      String commentText = "Building and Packaging Zowe sources...\n"
-      commentText += "Build number: ${env.BUILD_NUMBER}\n"
-      commentText += "Link: ${env.BUILD_URL}\n"
-      commentText += "Build status: `Passed`"
-      pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
+      if (prPostCommentID && pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+        int prNumber = prNumberString as Integer   // convert to int
+        String commentText = "Building and Packaging Zowe sources...\n"
+        commentText += "Build number: ${env.BUILD_NUMBER}\n"
+        commentText += "Link: ${env.BUILD_URL}\n"
+        commentText += "Build status: `Passed`"
+        pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
+      }
     }
   )
 
