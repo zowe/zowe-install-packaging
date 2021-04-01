@@ -430,7 +430,7 @@ ACF
 
 * Create jwtsecret
    SET PROFILE(USER) DIVISION(CERTDATA)
-   GENCERT &ZOWEUSER..ZOWEJWT -
+   GENCERT &ZOWEUSER..JWTSCRT -
            SUBJSDN(CN='&CN. JWT' -
                    OU='&OU.' -
                     O='&O.' -
