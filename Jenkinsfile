@@ -16,6 +16,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
   def zowePaxUploaded
+  int prPostCommentID
 
   pipeline.admins.add("jackjia", "tomzhang", "joewinchester", "markackert")
 
@@ -79,6 +80,18 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 5, unit: 'MINUTES'],
     isSkippable   : false,
     operation     : {
+      //post a comment on PR to signify that a build is about to start
+      if (pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+        int prNumber = prNumberString as Integer   // convert to int
+        String commentText = "Building Zowe sources...\n"
+        commentText += "Build number: ${env.BUILD_NUMBER}\n"
+        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
+        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
+        commentText += "<i>Click the icon above to see details</i>\n"
+        prPostCommentID = pipeline.github.postComment(prNumber, commentText)
+      }
+
       // prepareing download spec
       echo 'prepareing download spec ...'
       def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
@@ -286,6 +299,26 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   pipeline.createStage(
+    name              : "Update comment to signify build pass status",
+    timeout: [time: 2, unit: 'MINUTES'],
+    isSkippable: false,
+    showExecute: {
+      return prPostCommentID
+    },
+    stage : {
+      //update comment originally posted on PR, to reflect build status
+      // At this point, the build and packaging stages must have passed
+      String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+      int prNumber = prNumberString as Integer   // convert to int
+      String commentText = "Building and Packaging Zowe sources...\n"
+      commentText += "Build number: ${env.BUILD_NUMBER}\n"
+      commentText += "Link: ${env.BUILD_URL}\n"
+      commentText += "Build status: `Passed`"
+      pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
+    }
+  )
+
+  pipeline.createStage(
     name              : "Test Convenience Build",
     timeout: [time: 2, unit: 'HOURS'],
     isSkippable: true,
@@ -308,7 +341,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'TEST_SERVER', value: 'marist'),
+          //string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'TEST_SCOPE', value: 'convenience build'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: buildName),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
