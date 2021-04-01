@@ -251,7 +251,9 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
       echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
       rm "${KEYSTORE_PREFIX}"* "${TRUSTSTORE_PREFIX}"* "${EXTERNAL_CA_PREFIX}"* "${LOCAL_CA_PREFIX}"* 2> /dev/null
-      exit 1
+      # FIXME: ignore this error for now and move on. We should display better message to distinguish what kind of failure it is.
+      # if it's only failing on importing jwt secret, we can move forward and display error message
+      # exit 1
   fi
 fi
 echo "Creating certificates and keystores... DONE"
