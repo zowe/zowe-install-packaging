@@ -238,7 +238,7 @@ configure_components() {
       if [ -x "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
-        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env" ; return $rc)
+        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|message=|utils_dir=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -256,9 +256,10 @@ configure_components() {
 ########################################################
 # Parse command line parameters
 OPTIND=1
-while getopts "c:i:" opt; do
+while getopts "c:r:i:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
+    r) ROOT_DIR=${OPTARG};;
     i) ZWELS_HA_INSTANCE_ID=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
@@ -271,8 +272,16 @@ shift $(($OPTIND-1))
 # export this to other scripts
 export INSTANCE_DIR
 # find runtime directory to locate the scripts
-# this value should be trustworthy since this script is not supposed to be sourced
-export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+if [ -z "${ROOT_DIR}" ]; then
+  # if this script is sourced, this may not return correct path
+  # this value should be trustworthy since this script is not supposed to be sourced
+  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+  # validate if this is zowe root path
+  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
+    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+    exit 1
+  fi
+fi
 
 # source utility scripts
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
@@ -332,6 +341,3 @@ fi
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "Zowe runtime environment prepared"
 # display starting components information
 print_formatted_debug "ZWELS" "prepare-instance:${LINENO}" "starting component(s) ${LAUNCH_COMPONENTS} ..."
-
-# FIXME: zowe-launcher requires this exit 0?
-#exit 0

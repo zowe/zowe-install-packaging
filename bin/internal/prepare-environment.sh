@@ -91,7 +91,11 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 VERIFY_CERTIFICATES="${ZOWE_APIM_VERIFY_CERTIFICATES}"
 
 LAUNCH_COMPONENTS=""
-export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
+# FIXME: if ZOWE_INSTANCE is same as last character of ZOWE_PREFIX, it will never be appended
+if [[ "${ZOWE_PREFIX}" != *"${ZOWE_INSTANCE}" ]]; then
+  # FIXME: append ZOWE_INSTANCE and overwrite ZOWE_PREFIX is too confusing, it causes problem when we source this file multiple times
+  export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
+fi
 
 # If ZWE_LAUNCH_COMPONENTS set it takes precedence over LAUNCH_COMPONENT_GROUPS
 if [[ -n "${ZWE_LAUNCH_COMPONENTS}" ]]

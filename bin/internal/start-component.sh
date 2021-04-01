@@ -19,6 +19,7 @@
 #         also be a directory to the component lifecycle script folder.
 # - r:    optional, root directory
 # - i:    optional, HA instance ID. Default value is &SYSNAME.
+# - b:    optional boolean, run component start script in background
 #
 # Note:
 # 1. This script requires instance directory prepared for runtime. So
@@ -34,12 +35,13 @@
 
 # if the user passes INSTANCE_DIR from command line parameter "-c"
 OPTIND=1
-while getopts "c:r:i:o:" opt; do
+while getopts "c:r:i:o:b" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     r) ROOT_DIR=${OPTARG};;
     i) ZWELS_HA_INSTANCE_ID=${OPTARG};;
     o) ZWELS_START_COMPONENT_ID=${OPTARG};;
+    b) RUN_IN_BACKGROUND=true;;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -91,6 +93,13 @@ if [ -n "${component_dir}" ]; then
 
   if [ -x "${start_script}" ]; then
     print_formatted_info "ZWELS" "start-component.sh:${LINENO}" "starting component ${ZWELS_START_COMPONENT_ID} ..."
-    /bin/sh -c "${start_script}" &
+    # FIXME: we have assumption here start_script is pointing to a shell script
+    # if [[ "${start_script}" == *.sh ]]; then
+    if [ "${RUN_IN_BACKGROUND}" = "true" ]; then
+      . "${start_script}" &
+    else
+      # wait for all background subprocesses created by bin/start.sh exit
+      cat "${start_script}" | { cat ; echo; echo wait; } | /bin/sh
+    fi
   fi
 fi
