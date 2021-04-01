@@ -24,6 +24,10 @@
     show_job_log_name: "{{ zowe_xmem_stc_name }}"
 
 # ============================================================================
-- name: Show Zowe runtime logs
+- name: Show Zowe installation logs
+  raw: find "{{ zowe_install_logs_dir }}" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  ignore_errors: True
+
+  - name: Show Zowe runtime logs
   raw: find "{{ zowe_instance_dir }}/logs" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
