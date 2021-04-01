@@ -98,7 +98,7 @@ describe('test explorer server datasets api v2',async function() {
 
   });
 
-  it(`should be able to get content of a data set member ${TEST_DATASET_NAME} (v2 API)`, async() => {
+  it(`should be able to get content of a data set member ${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME}) (v2 API)`, async() => {
     const uuid = utils.uuid();
     const authenticationCookie = await utils.login(uuid);
 
