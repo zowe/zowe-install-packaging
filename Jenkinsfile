@@ -232,7 +232,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              chmod +x ./utils/*.sh ./utils/*/bin/* &&
              sudo docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" &&
              sudo docker build -t ompzowe/server-bundle:s390x . &&
-             sudo docker build -f Dockerfile.sources -t ompzowe/server-bundle:s390x-sources . &&
+             sudo docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=s390x -t ompzowe/server-bundle:s390x-sources . &&
              sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x &&
              sudo docker save -o server-bundle.s390x-sources.tar ompzowe/server-bundle:s390x-sources &&
              sudo chmod 777 * &&
@@ -290,7 +290,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             passwordVariable: 'PASSWORD'
           )]){
             // build docker image
-            sh "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" && docker build  -t ompzowe/server-bundle:amd64 . && sudo docker build -f Dockerfile.sources -t ompzowe/server-bundle:amd64-sources ."
+            sh "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" && docker build  -t ompzowe/server-bundle:amd64 . && sudo docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=amd64 -t ompzowe/server-bundle:amd64-sources ."
             sh "docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64"
             sh "docker save -o server-bundle.sources.amd64.tar ompzowe/server-bundle:amd64-sources"
           }
