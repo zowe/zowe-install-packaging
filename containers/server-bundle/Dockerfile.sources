@@ -1,6 +1,8 @@
 ARG BUILD_PLATFORM
 FROM ompzowe/server-bundle:${BUILD_PLATFORM}
 
+ENV NODE_VERSION 12.22.0
+
 RUN mkdir -p /root/sources/utils && \
     cd /root/sources && \
     apt-get update && apt-get install -y wget --no-install-recommends && \
