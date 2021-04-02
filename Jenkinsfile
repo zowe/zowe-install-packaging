@@ -232,12 +232,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              chmod +x ./utils/*.sh ./utils/*/bin/* &&
              sudo docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" &&
              sudo docker build -t ompzowe/server-bundle:s390x . &&
+             sudo docker build -f Dockerfile.sources -t ompzowe/server-bundle:s390x-sources . &&
              sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x &&
+             sudo docker save -o server-bundle.s390x-sources.tar ompzowe/server-bundle:s390x-sources &&
              sudo chmod 777 * &&
              echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.s390x.tar
           """
           sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
-          pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
+          sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle/server-bundle.s390x-sources.tar", into: "server-bundle.s390x-sources.tar"
+          pipeline.uploadArtifacts([ 'server-bundle.s390x.tar', 'server-bundle.s390x-sources.tar' ])
           sshCommand remote: Z_SERVER, command: \
           """
              rm -rf zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
@@ -287,12 +290,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             passwordVariable: 'PASSWORD'
           )]){
             // build docker image
-            sh "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" && docker build  -t ompzowe/server-bundle:amd64 ."
+            sh "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" && docker build  -t ompzowe/server-bundle:amd64 . && sudo docker build -f Dockerfile.sources -t ompzowe/server-bundle:amd64-sources ."
             sh "docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64"
+            sh "docker save -o server-bundle.amd64-sources.tar ompzowe/server-bundle:amd64-sources"
           }
           // show files
           sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.amd64.tar'
-          pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
+          pipeline.uploadArtifacts([ 'server-bundle.amd64.tar', 'server-bundle.amd64-sources.tar' ])
         }      
       }
     }
