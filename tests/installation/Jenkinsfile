@@ -108,6 +108,9 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   pipeline.admins.add("jackjia")
 
+  int prPostCommentID
+  String commentText
+
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
     booleanParam(
@@ -337,29 +340,91 @@ node('zowe-jenkins-agent-dind-wdc') {
         }
       }
 
+      //post a comment on PR to signify that a test is about to run
+      if (pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+        int prNumber = prNumberString as Integer   // convert to int
+        commentText = "Test scope: ${params.TEST_SCOPE}\n"
+        commentText += "Test job number: ${env.BUILD_NUMBER}\n"
+        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
+        commentText += "Test status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
+        commentText += "<i>Click the icon to see details</i>\n"
+        prPostCommentID = pipeline.github.postComment(prNumber, commentText)
+      }
+      
       lock(resource: lockResources, extra: lockExtraResources) {
-      // timestamps {
-      dir(INSTALL_TEST_PATH) {
-      ansiColor('xterm') {
-      withCredentials(serverCredentials) {
-      withEnv(testEnvVars) {
-        try {
-          nvmShell params.CLIENT_NODE_VERSION, "npm test -- --testPathPattern --detectOpenHandles \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
-        } finally {
-          nvmShell params.CLIENT_NODE_VERSION, "npm run merge-reports"
-        }
-      } // end of withEnv
-      } // end of withCredentials
-      } // end of ansiColor
-      } // end of dir
-      // end of timestamps
+        // timestamps {
+        dir(INSTALL_TEST_PATH) {
+          ansiColor('xterm') {
+            withCredentials(serverCredentials) {
+              withEnv(testEnvVars) {
+                try {
+                  nvmShell params.CLIENT_NODE_VERSION, "npm test -- --testPathPattern --detectOpenHandles \"${TEST_SCOPES[params.TEST_SCOPE]['test_files']}\""
+                } finally {
+                  nvmShell params.CLIENT_NODE_VERSION, "npm run merge-reports"
+                }
+              } // end of withEnv
+            } // end of withCredentials
+          } // end of ansiColor
+        } // end of dir
+        // end of timestamps
       } // end of lock
-    },
+    }, //operation
     junit         : "${INSTALL_TEST_PATH}/reports/junit.xml",
     htmlReports   : [
       [dir: "${INSTALL_TEST_PATH}/reports", files: "index.html", name: "Report: Test Result"],
     ],
     timeout: [time: 360, unit: 'MINUTES'],
+  )
+
+  pipeline.createStage(
+    name              : "Update Comment to signify build failure details",
+    timeout: [time: 2, unit: 'MINUTES'],
+    isSkippable: false,
+    resultThreshold: "FAILURE",
+    stage : {
+      if (prPostCommentID && pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+        int prNumber = prNumberString as Integer   // convert to int
+        //update comment originally posted on PR, to reflect build status
+        def command = "curl --globoff -H \"Accept: application/json\" \"${env.BUILD_URL}/testReport/api/json?tree=suites[cases[className,name,age,status]]\""
+        def output = sh(script : command, returnStdout: true).trim()
+        def jsonOutput = readJSON text: output
+        def name
+        def status
+
+        def failedTestList = []
+        jsonOutput.suites.cases.each { cases ->
+          cases.each { eachTest ->
+            //overwrite
+            name = ""
+            status = ""
+            eachTest.each { propName, propValue ->
+              if (propName == "name") {
+                name = propValue
+              }
+              if (propName == "status") {
+                status = propValue
+              }
+            }
+            if (status == "FAILED") {
+              failedTestList.add(name)
+            }
+          }
+        }
+        if (failedTestList) {
+          commentText += "<hr>Failed tests are:\n"
+          commentText += "<ul>"
+          failedTestList.each { String line ->
+            commentText += "<li>" + line + "</li>"
+          }
+          commentText += "</ul>\n"
+        } else {
+          commentText += "<hr>All tests passed!"
+        }
+        pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
+      }
+    }
   )
 
   pipeline.createStage(

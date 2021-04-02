@@ -33,7 +33,8 @@ describe('test api mediation layer zosmf authentication', function() {
   describe('should be able to get data from z/OSMF ', () => {
     it('with valid basic header', async () => {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-      const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
+      const response = await testUtils.httpRequest(request, {
+        url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
         headers: {
           'Authorization': `Basic ${token}`,
           'X-CSRF-ZOSMF-HEADER': '*'
@@ -48,7 +49,8 @@ describe('test api mediation layer zosmf authentication', function() {
       const authenticationCookie = await testUtils.login(uuid);
 
       testUtils.log(uuid, '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
-      const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
+      const response = await testUtils.httpRequest(request, {
+        url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
         headers: {
           'Cookie': authenticationCookie,
           'X-CSRF-ZOSMF-HEADER': '*'
@@ -61,7 +63,8 @@ describe('test api mediation layer zosmf authentication', function() {
 
     it('with valid LTPA cookie', async () => {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-      const loginResponse = await request.get('/api/v1/zosmf/info', {
+      const loginResponse = await testUtils.httpRequest(request, {
+        url: '/api/v1/zosmf/info',
         headers: {
           'Authorization': `Basic ${token}`,
           'X-CSRF-ZOSMF-HEADER': '*'
@@ -69,7 +72,8 @@ describe('test api mediation layer zosmf authentication', function() {
       });
 
       const ltpaCookie = testUtils.findCookieInResponse(loginResponse, ZOSMF_TOKEN);
-      const response = await request.get('/api/v1/zosmf/info', {
+      const response = await testUtils.httpRequest(request, {
+        url: '/api/v1/zosmf/info',
         headers: {
           'Cookie': ltpaCookie,
           'X-CSRF-ZOSMF-HEADER': '*'
@@ -86,7 +90,8 @@ describe('test api mediation layer zosmf authentication', function() {
       const tokenValue = justCookie.split('=')[1];
 
       testUtils.log(uuid, '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
-      const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
+      const response = await testUtils.httpRequest(request, {
+        url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
         headers: {
           'Authorization': `Bearer ${tokenValue}`,
           'X-CSRF-ZOSMF-HEADER': '*'
