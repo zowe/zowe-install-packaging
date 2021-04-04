@@ -245,15 +245,23 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> "${LOG_FILE}"
   if [ "$RC" -ne "0" ]; then
+    if [ "$RC" = "99" ]; then
+      # import z/OSMF JWT secret failed
+      (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
+      (>&2 echo "WARNING: z/OSMF JWT public key is not retrieved successfully. This may affect sharing SSO token between z/OSMF and Zowe.")
+      echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
+      # FIXME: ignore this error for now and move on. We should display better message to distinguish what kind of failure it is.
+      # if it's only failing on importing jwt secret, we can move forward and display error message
+    else
+      # import z/OSMF public key failed
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
       (>&2 echo "ERROR: z/OSMF is not trusted by the API Mediation Layer. Make sure ZOWE_ZOSMF_HOST and ZOWE_ZOSMF_PORT variables define the desired z/OSMF instance.")
       (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
       (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
       echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
       rm "${KEYSTORE_PREFIX}"* "${TRUSTSTORE_PREFIX}"* "${EXTERNAL_CA_PREFIX}"* "${LOCAL_CA_PREFIX}"* 2> /dev/null
-      # FIXME: ignore this error for now and move on. We should display better message to distinguish what kind of failure it is.
-      # if it's only failing on importing jwt secret, we can move forward and display error message
-      # exit 1
+      exit 1
+    fi
   fi
 fi
 echo "Creating certificates and keystores... DONE"
