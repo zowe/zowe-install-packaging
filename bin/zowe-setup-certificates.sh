@@ -248,10 +248,8 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
     if [ "$RC" = "99" ]; then
       # import z/OSMF JWT secret failed
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
-      (>&2 echo "WARNING: z/OSMF JWT public key is not retrieved successfully. This may affect sharing SSO token between z/OSMF and Zowe.")
-      echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
-      # FIXME: ignore this error for now and move on. We should display better message to distinguish what kind of failure it is.
-      # if it's only failing on importing jwt secret, we can move forward and display error message
+      (>&2 echo "WARNING: z/OSMF JWT public key is not retrieved successfully.")
+      # FIXME: is it ok to move on and ignore this issue?
     else
       # import z/OSMF public key failed
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
