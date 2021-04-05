@@ -17,3 +17,10 @@ New variables are added to configuration file instance.env.
   ${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth
   # allow user to customize external client certificate
     authorization url
+
+These variable(s) are deprecated from configuration file
+instance.env.
+
+- APIML_PREFER_IP_ADDRESS=false
+  # This value will be always set to false and Zowe start
+    script will ignore this configuration entry.
