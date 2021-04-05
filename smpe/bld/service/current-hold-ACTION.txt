@@ -1,0 +1,19 @@
+****************************************************************
+* Affected function: Zowe configuration                        *
+****************************************************************
+* Description: redo configuration                              *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: instance.env                                           *
+****************************************************************
+New variables are added to configuration file instance.env.     
+
+- APIML_GATEWAY_EXTERNAL_MAPPER=https://${ZOWE_EXPLORER_HOST}
+  :${GATEWAY_PORT}/zss/api/v1/certificate/x509/map
+  # allow user to customize external client certificate
+    authentication mapper
+- APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://
+  ${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth
+  # allow user to customize external client certificate
+    authorization url
