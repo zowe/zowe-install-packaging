@@ -73,6 +73,10 @@ print_formatted_message() {
 
   if [ "${message}" = "-" ]; then
     read message
+    if [ -z "${message}" ]; then
+      # empty input
+      return 0
+    fi
   fi
 
   # always use upper case
