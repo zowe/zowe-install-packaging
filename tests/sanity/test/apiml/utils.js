@@ -16,7 +16,6 @@ const fs = require('fs');
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 let username, password, request;
 let https = require('https');
-const { IncomingMessage } = require('http');
 
 const httpRequest = async (request, config) => {
   let response;
