@@ -1,0 +1,16 @@
+****************************************************************
+* Affected function: Zowe configuration                        *
+****************************************************************
+* Description: redo configuration                              *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: instance.env                                           *
+****************************************************************
+
+These variable(s) are deprecated from configuration file
+instance.env.
+
+- APIML_PREFER_IP_ADDRESS=false
+  # This value will be always set to false and Zowe start
+    script will ignore this configuration entry.

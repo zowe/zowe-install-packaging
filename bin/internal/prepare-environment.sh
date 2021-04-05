@@ -87,6 +87,10 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 VERIFY_CERTIFICATES="${ZOWE_APIM_VERIFY_CERTIFICATES}"
 
+# ignore user settings and set this value to be false
+# this configuration is deprecated and settings in instance.env will not affect how Zowe is starting
+APIML_PREFER_IP_ADDRESS=false
+
 LAUNCH_COMPONENTS=""
 export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
 

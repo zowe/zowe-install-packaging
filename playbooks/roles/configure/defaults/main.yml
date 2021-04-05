@@ -39,7 +39,7 @@ zowe_apiml_verify_certficates_of_services: true
 # APIML configuration properties
 zowe_apiml_allow_encoded_slashes: true
 zowe_apiml_cors_enabled: false
-zowe_apiml_prefer_ip_address: true
+zowe_apiml_prefer_ip_address: false
 zowe_apiml_gateway_timeout_millis: 600000
 zowe_apiml_security_x509_enabled: false
 zowe_apiml_security_zosmf_applid: IZUDFLT
