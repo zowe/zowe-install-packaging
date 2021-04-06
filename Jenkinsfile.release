@@ -200,13 +200,15 @@ node('zowe-jenkins-agent-dind-wdc') {
       // try to get Zowe build commit hash
       def zoweBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['zowe']['buildName'],
-        releaseArtifacts['zowe']['buildNumber']
+        releaseArtifacts['zowe']['buildNumber'],
+        "zowe-install-packaging"
       )
       releaseArtifacts['zowe']['revision'] = zoweBuildInfo && zoweBuildInfo['vcsRevision']
       if (!("${releaseArtifacts['zowe']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
         error "Cannot extract git revision from build \"${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']}\""
       }
       echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
+      echo ">>>> BuildInfo vcsUrl is ${zoweBuildInfo['vcsUrl']}, vcs revision is ${zoweBuildInfo['vcsRevision']}"
 
       // get SMP/e build
       try {
@@ -232,10 +234,12 @@ node('zowe-jenkins-agent-dind-wdc') {
           echo ">>> Found SMP/e promote tar ${smpePtfPromote['path']}."
           smpePtfPromoteTarPath = smpePtfPromote['path']
         } catch (e2) {
-          echo ">>> no SMP/e promote tar found in the build."
+          echo ">>> no SMP/e promote tar found in the build, throwing error and exit"
+          error "no SMP/e promote tar found in the build"
         }
       } catch (e1) {
-        echo ">>> no SMP/e zip found in the build."
+        echo ">>> no SMP/e zip found in the build, throwing error and exit"
+        error "no SMP/e zip found in the build"
       }
 
       // get Docker images - amd64
@@ -307,25 +311,26 @@ node('zowe-jenkins-agent-dind-wdc') {
       // try to get Zowe CLI CORE build commit hash
       def cliBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['cli']['buildName'],
-        releaseArtifacts['cli']['buildNumber']
+        releaseArtifacts['cli']['buildNumber'],
+        'zowe-cli'
       )
-      releaseArtifacts['cli']['revision'] = cliBuildInfo && cliBuildInfo['vcsRevision']
-      if (!("${releaseArtifacts['cli']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-        error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
-      }
-      echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
+      // releaseArtifacts['cli']['revision'] = cliBuildInfo && cliBuildInfo['vcsRevision']
+      // if (!("${releaseArtifacts['cli']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+      //   error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
+      // }
+      // echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
 
       // try to get Zowe CLI Plugins build commit hash
       def cliPluginsBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['cli-plugins']['buildName'],
-        releaseArtifacts['cli-plugins']['buildNumber']
+        releaseArtifacts['cli-plugins']['buildNumber'],
+        'zowe-cli'
       )
-      releaseArtifacts['cli-plugins']['revision'] = cliPluginsBuildInfo && cliPluginsBuildInfo['vcsRevision']
-      if (!("${releaseArtifacts['cli-plugins']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-        error "Cannot extract git revision from build \"${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']}\""
-      }
-      echo ">>>> Build ${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']} commit hash is ${releaseArtifacts['cli-plugins']['revision']}, may proceed."
-    
+      // releaseArtifacts['cli-plugins']['revision'] = cliPluginsBuildInfo && cliPluginsBuildInfo['vcsRevision']
+      // if (!("${releaseArtifacts['cli-plugins']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+      //   error "Cannot extract git revision from build \"${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']}\""
+      // }
+      // echo ">>>> Build ${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']} commit hash is ${releaseArtifacts['cli-plugins']['revision']}, may proceed."
     }
   )
 

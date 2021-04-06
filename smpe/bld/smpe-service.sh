@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2019
+# Copyright Contributors to the Zowe Project. 2019, 2021
 #######################################################################
 
 #% package prepared product as service (++USERMOD, ++APAR, ++PTF)
@@ -617,7 +617,7 @@ do
   # TODO rework when +8 REQ sysmods
   SED=""
   SED="$SED;s/#SySmOdNaMe/$sysmodName/"
-  SED="$SED;s/^#req$/$req/"
+  SED="$SED;s~^#req$~$req~"                 # $req can be "/* REQ() */"
   _sedMVS -s $header "$SYSMOD"
 
   # prime merge JCL
@@ -775,13 +775,13 @@ done    # for f
 test -f $ptf/$readme.PRE || _cmd --save $ptf/$readme.PRE echo none
 test -f $ptf/$readme.SUP || _cmd --save $ptf/$readme.SUP echo none
 
-# add list of PRE sysmods (replace , with blank so broswer can reformat)
+# add list of PRE sysmods (replace , with blank so browser can reformat)
 _cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.PRE
 
 # append next csplit block (xx01 holds PRE placeholder)
 _cmd --save $log/$html cat $ptf/xx02
 
-# add list of SUP sysmods (replace , with blank so broswer can reformat)
+# add list of SUP sysmods (replace , with blank so browser can reformat)
 _cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.SUP
 
 # append next csplit block (xx03 holds SUP placeholder)
@@ -799,7 +799,7 @@ do
 
   # append customized data
   # expected xx05 content:
-  # //#ptf8 DD DSN=&HLQ..#name,
+  # //##ptf8 DD DSN=&HLQ..##name,
   # //            DISP=(NEW,CATLG,DELETE),
   # //            DSORG=PS,
   # //            RECFM=FB,
@@ -807,11 +807,11 @@ do
   # //            UNIT=SYSALLDA,
   # //*            VOL=SER=<STRONG>#volser</STRONG>,
   # //*            BLKSIZE=6160,
-  # //            SPACE=(TRK,(#pri,15))
+  # //            SPACE=(TRK,(##pri,15))
   SED=""
-  SED="$SED;s/#ptf8/$sysmod8/"
-  SED="$SED;s/#name/$name/"
-  SED="$SED;s/#pri/$trk/"
+  SED="$SED;s/##ptf8/$sysmod8/"
+  SED="$SED;s/##name/$name/"
+  SED="$SED;s/##pri/$trk/"
   _cmd --save $log/$html sed "$SED" $ptf/xx05
 done < $ptf/$tracks    # while read
 
@@ -827,14 +827,14 @@ do
 
   # append customized data
   # expected xx07 content:
-  # </I>ftp&gt; <STRONG>put d:\#name</STRONG>
+  # </I>ftp&gt; <STRONG>put d:\##name</STRONG>
   # <I>200 Port request OK.
-  # 125 Storing data set #hlq.#name
+  # 125 Storing data set #hlq.##name
   # 250 Transfer completed successfully
-  # #bytes bytes sent in 0.28 seconds
+  # ##bytes bytes sent in 0.28 seconds
   SED=""
-  SED="$SED;s/#name/$name/"
-  SED="$SED;s/#bytes/$bytes/"
+  SED="$SED;s/##name/$name/"
+  SED="$SED;s/##bytes/$bytes/"
   _cmd --save $log/$html sed "$SED" $ptf/xx07
 done < $ptf/$tracks    # while read
 
@@ -855,6 +855,7 @@ then
   SED=""           # substitute characters with special meaning in HTML
   SED="$SED;s~<~\&lt;~g"   # we assume there is no "~" in the hold data
   SED="$SED;s~>~\&gt;~g"
+  SED="$SED;s~&~\&amp;~g"
   _cmd --save $log/$html sed "$SED" $ptf/tmp
 else
   _cmd --save $log/$html echo none
@@ -862,6 +863,22 @@ fi    #
 
 # append next csplit block (xx09 holds HOLD placeholder)
 _cmd --save $log/$html cat $ptf/xx10
+
+# add list of previous PTFs or #pre placeholder to sample ACCEPT job
+if test -f $service/$prevPtf
+then
+  # replace placeholder with list of previous PTFs
+  _cmd cp $service/$prevPtf $ptf/xx11
+  # create formatted $ptf/$readme.ACPT (ignore updates to $ptf/xx11)
+  _formatPreSupReq ACPT $ptf/xx11
+else  # no previous PTFs, stage the original placeholder
+  _cmd cp $ptf/xx11 $ptf/$readme.ACPT
+fi    # 
+# add list or placeholder (replace , with blank so browser can reformat)
+_cmd --save $log/$html sed "s/,/ /g" $ptf/$readme.ACPT
+
+# append next csplit block (xx11 holds PRE placeholder)
+_cmd --save $log/$html cat $ptf/xx12
 
 # add a requisite data set names to RECEIVE SMPPTFIN (sysmod 2 and up)
 test "$debug" && echo "while read -r trk name"
@@ -873,13 +890,36 @@ do
   _cmd --save $log/$html echo "//         DD DISP=SHR,DSN=&HLQ..$name"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 
-# append next csplit block (xx11 holds DSN placeholder)
-_cmd --save $log/$html cat $ptf/xx12
+# append next csplit block (xx13 holds DSN placeholder)
+_cmd --save $log/$html cat $ptf/xx14
+
+# add an allocation statement for each sysmod
+test "$debug" && echo "while read -r trk name"
+while read -r trk name
+do
+  sysmod=${name##*.}                # keep from last period (exclusive)
+  test $debug && echo "(delete) name=$name, sysmod=$sysmod"
+
+  # pad sysmod name with blanks to 8 characters
+  sysmod8=$(echo "$sysmod      " | sed 's/^\(........\).*/\1/')
+
+  # append customized data
+  # expected xx15 content:
+  # //##ptf8 DD DSN=&HLQ..##name,
+  # //            DISP=(OLD,DELETE,DELETE)
+  SED=""
+  SED="$SED;s/##ptf8/$sysmod8/"
+  SED="$SED;s/##name/$name/"
+  _cmd --save $log/$html sed "$SED" $ptf/xx15
+done < $ptf/$tracks    # while read
+
+# append next csplit block
+_cmd --save $log/$html cat $ptf/xx16
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 # get requisite sysmod names (sysmod 2 and up)
-unset coreq
+unset coreq colst
 test "$debug" && echo "while read -r trk name"
 while read -r trk name
 do
@@ -887,23 +927,27 @@ do
   coreq="$coreq $sysmod"
 done < $ptf/$tracksCoreq    # while read         # all but first sysmod
 coreq=$(echo $coreq)                              # strip leading blank
+colst="$coreq"
+test -z "$colst" && colst="none"   # dummy value if there are no coreqs
+test $debug && echo "colst=$colst"
 test $debug && echo "coreq=$coreq"
 
 # customize common variables
 SED=""
-SED="$SED;s/#type/$sysmodType/"
-SED="$SED;s/#name1/$name1/"
-SED="$SED;s/#ptf1/$sysmod1/"
-SED="$SED;s/#fmid/$FMID/"
-SED="$SED;s/#rework/$julian7 ($yyyymmdd)/"
-SED="$SED;s/#vrm/$VERSION/"
-SED="$SED;s^#branch^$BRANCH (build $BUILD)^" # ^ not allowed in branch name
-SED="$SED;s/#req/$coreq/"
+SED="$SED;s/##type/$sysmodType/"
+SED="$SED;s/##name1/$name1/"
+SED="$SED;s/##ptf1/$sysmod1/"
+SED="$SED;s/##fmid/$FMID/"
+SED="$SED;s/##rework/$julian7 ($yyyymmdd)/"
+SED="$SED;s/##vrm/$VERSION/"
+SED="$SED;s^##branch^$BRANCH (build $BUILD)^" # ^ not allowed in branch name
+SED="$SED;s/##reqlist/$colst/"
+SED="$SED;s/##req/$coreq/"
 _sed $log/$html
 
 # no longer needed
 _cmd rm -f $ptf/$tracksCoreq  $ptf/$readme $ptf/xx*  $ptf/tmp
-_cmd rm -f $ptf/$readme.PRE   $ptf/$readme.SUP
+_cmd rm -f $ptf/$readme.PRE   $ptf/$readme.SUP       $ptf/$readme.ACPT
 
 test "$debug" && echo "< _readme"
 }    # _readme

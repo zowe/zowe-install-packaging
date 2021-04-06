@@ -40,6 +40,10 @@ zowe_smpe_ptf_install_steps:
 - Z2ACCEPT
 - Z3RECEIV
 - Z4APPLY
+zowe_smpe_ptf_overwrite_steps:
+- Z0PTFUCL
+- Z1ALLOC
+- Z4APPLY
 zowe_smpe_ptf_uninstall_steps:
 - Z6REST
 - Z7REJECT

@@ -138,6 +138,7 @@
 //         SET ADMINDEP=             * department owning admin group
 //         SET  STCGDEP=             * department owning STC group
 //         SET  STCUDEP=             * department owning STC user IDs
+//         SET  ZOWEDEP=             * department owning Zowe resources
 //         SET  FACACID=             * ACID owning IBMFAC
 //*                     12345678
 #end
@@ -180,6 +181,7 @@
 //         SET ADMINDEP=${ADMINDEP}  * department owning admin group
 //         SET  STCGDEP=${STCGDEP}   * department owning STC group
 //         SET  STCUDEP=${STCUDEP}   * department owning STC user IDs
+//         SET  ZOWEDEP=             * department owning Zowe resources
 //         SET  FACACID=${FACACID}   * ACID owning IBMFAC
 //*                     12345678
 #end
@@ -366,6 +368,8 @@
    SETROPTS RACLIST(UNIXPRIV) REFRESH
 
 /** permit Zowe main server to use identity mapping service          */
+  RLIST   FACILITY IRR.RUSERMAP ALL
+  RDEFINE FACILITY IRR.RUSERMAP UACC(NONE)
   PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
@@ -375,10 +379,11 @@
   RLIST   FACILITY BPX.SERVER        ALL
   RLIST   FACILITY BPX.JOBNAME       ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
+  RLIST   FACILITY IRR.RUSERMAP      ALL
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
-/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly     */
 /*   advised to protect it against updates.                          */
 /* - The sample commands assume that EGN (Enhanced Generic Naming)   */
 /*   is active, which allows the usage of ** to represent any number */
@@ -399,6 +404,38 @@
 /* show results .................................................... */
   LISTGRP &HLQ.
   LISTDSD PREFIX(&HLQ.) ALL
+
+/* DEFINE ZOWE RESOURCE PROTECTION ................................. */
+
+/* - Defines new resource class for Zowe that protects access to     */
+/*   sensitive Zowe resources.                                       */
+/* - Defines resource APIML.SERVICES that controls access to         */
+/*   detailed information about API services to Zowe users.          */
+
+/* define ZOWE resource class                                        */
+/* skip this command if the ZOWE resource class already exists       */
+/* use a unique value in POSIT                                       */
+  RDEFINE CDT ZOWE -
+    UACC(NONE) -
+    CDTINFO(DEFAULTUACC(NONE) -
+      FIRST(ALPHA) -
+      OTHER(ALPHA,NATIONAL,NUMERIC,SPECIAL) -
+      MAXLENGTH(246) -
+      POSIT(607) -
+      RACLIST(DISALLOWED))
+
+  SETROPTS RACLIST(CDT) REFRESH
+  SETROPTS CLASSACT(ZOWE)
+
+/* define resource for information about API services                */
+  RDEFINE ZOWE APIML.SERVICES UACC(NONE)
+
+/* uncomment and replace "user" to permit Zowe users to access       */
+/* the resource:                                                     */
+/* PERMIT APIML.SERVICES CLASS(ZOWE) ID(user) ACCESS(READ)"          */
+
+/* show results                                                      */
+  RLIST ZOWE *
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
@@ -569,6 +606,34 @@ ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *  show results
 LIST &HLQ.
 *
+
+*
+* DEFINE ZOWE RESOURCE PROTECTION .................................
+*
+* - Defines new resource class for Zowe that protects access to
+*   sensitive Zowe resources.
+* - Defines resource APIML.SERVICES that controls access to
+*   detailed information about API services to Zowe users.
+
+* define ZOWE resource type and class mapping
+* skip this section if the ZOWE resource class already exists
+SET CONTROL(GSO)
+INSERT CLASMAP.ZOWE RESOURCE(ZOWE) RSRCTYPE(ZWE)
+F ACF2,REFRESH(CLASMAP),TYPE(GSO)
+CHANGE INFODIR TYPES(R-RZWE)
+F ACF2,REFRESH(INFODIR)
+SET CONTROL(GSO)
+
+* uncomment and replace "user" to permit Zowe users to access
+* the resource:
+* SET RESOURCE(ZWE)
+* RECKEY APIML ADD(SERVICES -
+* UID(user) SERVICE(READ) ALLOW)
+* F ACF2,REBUILD(ZWE)
+
+* show results
+SET RESOURCE(ZWE)
+LIST LIKE(-)
 $$
 //*
 //*********************************************************************
@@ -734,6 +799,28 @@ $$
 
 /* show results                                                      */
   TSS WHOHAS DATASET(&HLQ.)
+
+/* DEFINE ZOWE RESOURCE PROTECTION ................................. */
+
+/* - Defines new resource class for Zowe that protects access to     */
+/*   sensitive Zowe resources.                                       */
+/* - Defines resource APIML.SERVICES that controls access to         */
+/*   detailed information about API services to Zowe users.          */
+
+/* define ZOWE resource class                                        */
+/* skip this command if the ZOWE resource class already exists       */
+  TSS ADDTO(RDT) RESCLASS(ZOWE) MAXLEN(246) +
+    ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)
+
+/* define resource for information about API services                */
+  TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.)
+
+/* uncomment and replace "user" to permit Zowe users to access       */
+/* the resource:                                                     */
+/* TSS PERMIT(user) ZOWE(APIML.SERVICES) ACCESS(READ)                */
+
+/* show results                                                      */
+   TSS LIST(RDT) RESCLASS(ZOWE)
 
 /* If any of these started tasks are multiusers address spaces       */
 /* a TSS FACILITY needs to be defined and assigned to the started    */

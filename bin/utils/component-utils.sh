@@ -58,6 +58,21 @@ find_component_directory() {
 }
 
 ###############################
+# Check if component is core component
+#
+# Required environment variables:
+# - ROOT_DIR
+#
+# @param string     component directory
+# Output            true|false
+is_core_component() {
+  component_dir=$1
+
+  core_component_dir=${ROOT_DIR}/components
+  [[ $component_dir == "${core_component_dir}"* ]] && echo true || echo false
+}
+
+###############################
 # Detect and verify file encoding
 #
 # This function will try to verify file encoding by reading sample string.
@@ -247,26 +262,23 @@ read_component_manifest() {
   fi
   # node should have already been put into PATH
 
-  utils_dir="${ROOT_DIR}/bin/utils"
   component_name=$(basename "${component_dir}")
-  fconv="${utils_dir}/fconv/src/index.js"
-  jq="${utils_dir}/njq/src/index.js"
   manifest_in_workspace=
   if [ -n "${WORKSPACE_DIR}" ]; then
     manifest_in_workspace="${WORKSPACE_DIR}/${component_name}/.manifest.json"
   fi
 
   if [ -n "${manifest_in_workspace}" -a -f "${manifest_in_workspace}" ]; then
-    cat "${manifest_in_workspace}" | node "${jq}" -r "${manifest_key}"
+    read_json "${manifest_in_workspace}" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yaml" ]; then
-    node "${fconv}" "${component_dir}/manifest.yaml" | node "${jq}" -r "${manifest_key}"
+    read_yaml "${component_dir}/manifest.yaml" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yml" ]; then
-    node "${fconv}" "${component_dir}/manifest.yml" | node "${jq}" -r "${manifest_key}"
+    read_yaml "${component_dir}/manifest.yml" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.json" ]; then
-    cat "${component_dir}/manifest.json" | node "${jq}" -r "${manifest_key}"
+    read_json "${component_dir}/manifest.json" "${manifest_key}"
     return $?
   else
     >&2 echo "no manifest found in ${component_dir}"
@@ -310,6 +322,12 @@ process_component_apiml_static_definitions() {
   while read -r one_def; do
     one_def_trimmed=$(echo "${one_def}" | xargs)
     if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
+      if [ ! -r "${one_def}" ]; then
+        >&2 echo "static definition file ${one_def} of component ${component_name} is not accessible"
+        all_succeed=false
+        break
+      fi
+
       echo "process ${component_name} service static definition file ${one_def_trimmed} ..."
       sanitized_def_name=$(echo "${one_def_trimmed}" | sed 's/[^a-zA-Z0-9]/_/g')
       # FIXME: we may change the static definitions files to real template in the future.
@@ -342,8 +360,8 @@ EOF
 ###############################
 # Parse and process manifest desktop iframe plugin definition
 #
-# The supported manifest entry is ".apimlServices.static[].file". All files defined
-# here will be parsed and put into Zowe static definition directory in IBM-850 encoding.
+# The supported manifest entry is ".desktopIframePlugins". All plugins
+# defined will be passed to zowe-install-iframe-plugin.sh for proper installation.
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
@@ -445,6 +463,49 @@ process_component_desktop_iframe_plugin() {
     fi
 
     iterator_index=`expr $iterator_index + 1`
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+###############################
+# Parse and process manifest App Framework Plugin (appfwPlugins) definitions
+#
+# The supported manifest entry is ".appfwPlugins". All plugins
+# defined will be passed to install-app.sh for proper installation.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# Required environment variables:
+# - INSTANCE_DIR
+# - NODE_HOME
+#
+# @param string   component directory
+process_component_appfw_plugin() {
+  component_dir=$1
+
+  all_succeed=true
+  iterator_index=0
+  appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+  while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
+      cd "${component_dir}"
+      if [ ! -r "${appfw_plugin_path}" ]; then
+        >&2 echo "App Framework plugin directory ${appfw_plugin_path} is not accessible"
+        all_succeed=false
+        break
+      fi
+
+      ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+      # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
+
+      iterator_index=`expr $iterator_index + 1`
+      appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   done
 
   if [ "${all_succeed}" = "true" ]; then

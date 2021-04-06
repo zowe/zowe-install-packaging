@@ -60,6 +60,10 @@ get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME}}}
 }
 
+get_tmp_dir() {
+  echo ${TMPDIR:-${TMP:-/tmp}}
+}
+
 # runtime logging functions, follow zowe service logging standard
 print_formatted_message() {
   service=$1
@@ -67,17 +71,26 @@ print_formatted_message() {
   level=$3
   message=$4
 
+  if [ "${message}" = "-" ]; then
+    read message
+    if [ -z "${message}" ]; then
+      # empty input
+      return 0
+    fi
+  fi
+
   # always use upper case
   level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
 
   # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
   expected_log_level_var=ZWE_LOG_LEVEL_${service}
   expected_log_level_val=$(eval "echo \${$expected_log_level_var}")
+  expected_log_level_val=$(echo "${expected_log_level_val}" | tr '[:lower:]' '[:upper:]')
   if [ -z "${expected_log_level_val}" ]; then
     expected_log_level_val=INFO
   fi
   display_log=false
-  case expected_log_level_val in
+  case ${expected_log_level_val} in
     ERROR)
       if [ "${level}" = "ERROR" ]; then
         display_log=true

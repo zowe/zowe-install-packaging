@@ -18,7 +18,8 @@
     - zowe_smpe_hlq_csi
     - zowe_smpe_fmid
     - zowe_smpe_ptf
-    - zowe_smpe_ptf_2
+    # it's possible we only have 1 PTF
+    # - zowe_smpe_ptf_2
 
 - name: Prepare extracted and tmp folders
   raw: >-
@@ -29,14 +30,30 @@
     mkdir -p "{{ work_dir_remote }}/extracted"
 
 # ============================================================================
-# Upload JCLs to remote work space
-- name: Copy PTF installation JCLs to local tmp folder
+# Generate JCLs used to install PTF
+- name: Copy job card to local tmp folder
   copy:
-    src: "jcl/{{ item }}.jcl"
+    src: "{{ item }}"
     dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
   delegate_to: localhost
-  loop: "{{ zowe_ptf_install_jcls }}"
+  loop:
+  - "jcl/jobcard.jcl"
+  - "scripts/smpe-prepare-jcls.sh"
 
+- name: Generate PTF install JCLs
+  delegate_to: localhost
+  shell:
+    cmd: chmod +x smpe-prepare-jcls.sh && ./smpe-prepare-jcls.sh -i "{{ zowe_smpe_ptf_readme }}" -j ./
+    chdir: "{{ work_dir_local }}/{{ inventory_hostname }}"
+
+- name: List JCLs created
+  delegate_to: localhost
+  shell:
+    cmd: ls -l *.jcl
+    chdir: "{{ work_dir_local }}/{{ inventory_hostname }}"
+
+# ============================================================================
+# Upload JCLs to remote work space
 - name: Upload PTF installation JCLs
   include_role:
     name: common
@@ -46,6 +63,61 @@
     file_upload_method: scp
     file_upload_hashcheck: false
   loop: "{{ zowe_ptf_install_jcls }}"
+
+- name: Fix JCLs is we only have 1 PTF
+  when: zowe_smpe_ptf_2 == ""
+  block:
+  - name: Fix Z1ALLOC
+    raw: >-
+      cat "{{ work_dir_remote }}/Z1ALLOC.jcl" | \
+      sed -e '/TMP0002/{N;N;N;N;N;N;N;N;d;}' | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z1ALLOC.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z1ALLOC.jcl.tmp" "{{ work_dir_remote }}/Z1ALLOC.jcl"
+  - name: Fix Z3RECEIV
+    raw: >-
+      cat "{{ work_dir_remote }}/Z3RECEIV.jcl" | \
+      sed -e '/sysmod2/d' | \
+      sed -e '/SYSMOD2/d' \
+      > "{{ work_dir_remote }}/Z3RECEIV.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z3RECEIV.jcl.tmp" "{{ work_dir_remote }}/Z3RECEIV.jcl"
+  - name: Fix Z4APPLY
+    raw: >-
+      cat "{{ work_dir_remote }}/Z4APPLY.jcl" | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z4APPLY.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z4APPLY.jcl.tmp" "{{ work_dir_remote }}/Z4APPLY.jcl"
+  - name: Fix Z6REST
+    raw: >-
+      cat "{{ work_dir_remote }}/Z6REST.jcl" | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z6REST.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z6REST.jcl.tmp" "{{ work_dir_remote }}/Z6REST.jcl"
+  - name: Fix Z8DEALOC
+    raw: >-
+      cat "{{ work_dir_remote }}/Z8DEALOC.jcl" | \
+      sed -e '/TMP0002/{N;N;d;}' | \
+      sed -e '/sysmod2/d' \
+      > "{{ work_dir_remote }}/Z8DEALOC.jcl.tmp" && \
+      mv "{{ work_dir_remote }}/Z8DEALOC.jcl.tmp" "{{ work_dir_remote }}/Z8DEALOC.jcl"
+
+# ============================================================================
+# is the PTF already installed?
+- import_role:
+    name: ptf
+    tasks_from: is_ptf_installed
+  vars:
+    smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
+    # we hardcoded TZONE name
+    smpe_tzone: TZONE
+    smpe_fmid: "{{ zowe_smpe_fmid }}"
+    ptfs:
+    - "{{ zowe_smpe_ptf }}"
+
+- name: Overwrite PTF install steps if PTF is already installed
+  set_fact:
+    zowe_smpe_ptf_install_steps: "{{ zowe_smpe_ptf_overwrite_steps }}"
+  when: ptfs_existence[zowe_smpe_ptf]
 
 # ============================================================================
 # Run install-SMPE-SYSMOD.sh to install Zowe SMPE FMID
@@ -64,22 +136,41 @@
     upload_and_run_script_filename: install-SMPE-SYSMOD.sh
     upload_and_run_script_parameters: "\"{{ zowe_smpe_hlq_dsn }}\" \"{{ zowe_smpe_hlq_csi }}\" \"{{ (zowe_smpe_dir_prefix is regex(\"/$\")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + \"/\") }}\" \"{{ work_dir_remote }}\" \"{{ zowe_smpe_fmid }}\" \"{{ zowe_smpe_ptf }}\" \"{{ zowe_smpe_ptf_2 }}\" \"{{ zowe_smpe_volser }}\" install"
 
-- import_role:
-    name: ptf
-    tasks_from: is_ptf_installed
-  vars:
-    smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
-    # we hardcoded TZONE name
-    smpe_tzone: TZONE
-    smpe_fmid: "{{ zowe_smpe_fmid }}"
-    ptfs:
+- name: Check if the first PTF is installed properly
+  block:
+  - import_role:
+      name: ptf
+      tasks_from: is_ptf_installed
+    vars:
+      smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
+      # we hardcoded TZONE name
+      smpe_tzone: TZONE
+      smpe_fmid: "{{ zowe_smpe_fmid }}"
+      ptfs:
+      - "{{ zowe_smpe_ptf }}"
+  - name: Validate if the first PTF are installed properly
+    fail:
+      msg: "PTF {{ item }} is not installed"
+    when: not ptfs_existence[item]
+    loop: 
     - "{{ zowe_smpe_ptf }}"
-    - "{{ zowe_smpe_ptf_2 }}"
 
-- name: Validate if PTFs are installed properly
-  fail:
-    msg: "PTF {{ item }} is not installed"
-  when: not ptfs_existence[item]
-  loop: 
-  - "{{ zowe_smpe_ptf }}"
-  - "{{ zowe_smpe_ptf_2 }}"
+- name: Check if the second PTF is installed properly
+  when: zowe_smpe_ptf_2 != ""
+  block:
+  - import_role:
+      name: ptf
+      tasks_from: is_ptf_installed
+    vars:
+      smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
+      # we hardcoded TZONE name
+      smpe_tzone: TZONE
+      smpe_fmid: "{{ zowe_smpe_fmid }}"
+      ptfs:
+      - "{{ zowe_smpe_ptf_2 }}"
+  - name: Validate if the second PTF is installed properly
+    fail:
+      msg: "PTF {{ item }} is not installed"
+    when: not ptfs_existence[item]
+    loop: 
+    - "{{ zowe_smpe_ptf_2 }}"

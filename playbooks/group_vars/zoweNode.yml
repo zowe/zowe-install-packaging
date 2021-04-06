@@ -12,6 +12,7 @@ ansible_port: 22
 zowe_fmids_dir_remote: /opt/zowe/zowe-fmids
 work_dir_remote: /opt/zowe/ansible
 zowe_root_dir: /opt/zowe/runtime
+zowe_extension_dir: /opt/zowe/extensions
 zowe_instance_dir: /opt/zowe/zowe-instance-dir
 zowe_keystore_dir: /opt/zowe/keystore
 zowe_logs_dir: /opt/zowe/logs
@@ -20,6 +21,8 @@ zos_zosmf_port: 443
 
 zowe_dataset_prefix: IBMUSER.ZWE
 zowe_apiml_verify_certficates_of_services: false
+# the current z/OSMF level doesn't support some jwt features, fall back to use LTPA mode
+zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: LTPA
 zowe_proclib_dsname: USER.PROCLIB
 zowe_xmem_proclib: USER.PROCLIB
 # this variable is deprecated in favor of zowe_dataset_prefix

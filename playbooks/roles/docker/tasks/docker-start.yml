@@ -6,7 +6,7 @@
       --env ZOSMF_HOST={{zos_zosmf_host}} \
       --env ZOSMF_PORT={{zos_zosmf_port}} \
       --env ZWED_agent_host={{zowe_zos_host}} \
-      --env ZWED_agent_http_port={{zowe_zss_port}} \
+      --env ZWED_agent_https_port={{zowe_zss_port}} \
       --env ZOWE_ZLUX_TELNET_PORT={{zowe_zlux_terminal_telnet_port}} \
       --env ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }} \
       --env GATEWAY_PORT={{zowe_apiml_gateway_port}} \

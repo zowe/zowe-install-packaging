@@ -148,12 +148,12 @@ function add_external_ca {
     echo "Adding external Certificate Authorities:"
     if [ -n "${EXTERNAL_CA}" ]; then
         I=1
-        for FILE in "${EXTERNAL_CA}"; do
+        for FILE in ${EXTERNAL_CA}; do
             cp -v "${FILE}" "${EXTERNAL_CA_FILENAME}.${I}.cer"
             I=$((I+1))
         done
         if [ `uname` = "OS/390" ]; then
-            for FILENAME in "${EXTERNAL_CA_FILENAME}.*.cer"; do
+            for FILENAME in "${EXTERNAL_CA_FILENAME}".*.cer; do
                 iconv -f ISO8859-1 -t IBM-1047 "${FILENAME}" > "${FILENAME}-ebcdic"
             done
         fi
@@ -216,10 +216,10 @@ function import_local_ca_certificate {
 }
 
 function import_external_ca_certificates {
-    if ls "${EXTERNAL_CA_FILENAME}.*.cer" 1> /dev/null 2>&1; then
+    if ls "${EXTERNAL_CA_FILENAME}".*.cer 1> /dev/null 2>&1; then
         echo "Import the external Certificate Authorities to the truststore:"
         I=1
-        for FILENAME in "${EXTERNAL_CA_FILENAME}.*.cer"; do
+        for FILENAME in "${EXTERNAL_CA_FILENAME}".*.cer; do
             [ -e "$FILENAME" ] || continue
             pkeytool -importcert $V -trustcacerts -noprompt -file "${FILENAME}" -alias "extca${I}" -keystore "${SERVICE_TRUSTSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype PKCS12
             I=$((I+1))
@@ -243,9 +243,9 @@ function import_signed_certificate {
 
 function import_external_certificate {
     echo "Import the external Certificate Authorities to the keystore:"
-    if ls "${EXTERNAL_CA_FILENAME}.*.cer" 1> /dev/null 2>&1; then
+    if ls "${EXTERNAL_CA_FILENAME}".*.cer 1> /dev/null 2>&1; then
         I=1
-        for FILENAME in "${EXTERNAL_CA_FILENAME}.*.cer"; do
+        for FILENAME in "${EXTERNAL_CA_FILENAME}".*.cer; do
             [ -e "$FILENAME" ] || continue
             pkeytool -importcert $V -trustcacerts -noprompt -file "${FILENAME}" -alias "extca${I}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype PKCS12
             I=$((I+1))
@@ -525,7 +525,8 @@ function zosmf_jwt_public_key {
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
         -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
-        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service.jar" \
+        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service-lite.jar" \
+        -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
         -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
         org.springframework.boot.loader.PropertiesLauncher \
         https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" "${LOCAL_CA_ALIAS}" \
