@@ -109,15 +109,15 @@ prepare_log_file
 
 . ${ZOWE_ROOT_DIR}/bin/internal/prepare-environment.sh -c ${INSTANCE_DIR} -r ${ZOWE_ROOT_DIR}
 
-log_message "Verify ${component_id} is installed on the Zowe instance."
+print_and_log_message "Verify ${component_id} is started and registered on the Zowe instance."
 
 verify_component_instance ${component_id}
 rc=$?
 
 if [[ $rc -eq 0 ]]; then
-    log_message "Verification for ${component_id} was successful."
+    print_and_log_message "Verification for ${component_id} was successful."
 else
-    log_message "Verification for ${component_id} was unsuccessful, there were ${rc} failure(s)."
+    print_and_log_message "Verification for ${component_id} was unsuccessful, there were ${rc} failure(s)."
 fi
 
 exit $rc
