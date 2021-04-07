@@ -244,7 +244,7 @@ describe('verify utils/component-utils', function() {
   const convert_component_manifest = 'convert_component_manifest';
   describe(`verify ${convert_component_manifest}`, function() {
     before('create test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_env_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_env_dir} && mkdir -p ${component_env_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
     });
 
     after('dispose test component', async function() {
