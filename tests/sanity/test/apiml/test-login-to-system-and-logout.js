@@ -18,26 +18,21 @@ const HttpStatus = {
 };
 
 let logged = async (uuid, headers, expectedStatus) => {
-  let status;
-  try {
-    testUtils.log(uuid, 'URL: ' + '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
-    const response = await request.get('/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*', {
-      headers: headers
-    });
-    testUtils.logResponse(uuid, response);
-    status = response.status;
-  } catch(err) {
-    testUtils.logResponse(uuid, err.response);
-    status = err.response.status;
-  }
+  const response = await testUtils.httpRequest(request, {
+    url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
+    headers,
+  });
+  const status = response.status;
 
   expect(status).to.equal(expectedStatus);
 };
 
 let logout = async (uuid, headers) => {
   testUtils.log(uuid, 'URL: ' + '/api/v1/gateway/auth/logout');
-  const response = await request.post('/api/v1/gateway/auth/logout', {},{
-    headers: headers
+  const response = await testUtils.httpRequest(request, {
+    url: '/api/v1/gateway/auth/logout',
+    method: 'post',
+    headers,
   });
   testUtils.logResponse(uuid, response);
   expect(response.status).to.equal(204);

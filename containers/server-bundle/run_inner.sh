@@ -12,9 +12,9 @@ if [ -d "${apps_dir}" ]; then
         $INSTANCE_DIR/bin/install-app.sh ${apps_dir}/$D
     elif test -f "$D/manifest.yaml"; then
         $ROOT_DIR/bin/zowe-install-component.sh -o ${apps_dir}/$D -i $INSTANCE_DIR
-    elif test -f "D/manifest.yml"; then
+    elif test -f "$D/manifest.yml"; then
         $ROOT_DIR/bin/zowe-install-component.sh -o ${apps_dir}/$D -i $INSTANCE_DIR
-    elif test -f "D/manifest.json"; then
+    elif test -f "$D/manifest.json"; then
         $ROOT_DIR/bin/zowe-install-component.sh -o ${apps_dir}/$D -i $INSTANCE_DIR
     fi
   done

@@ -17,7 +17,7 @@ zowe_docker_tag: amd64
 zos_zosmf_host:
 # default z/OSMF port
 zos_zosmf_port: 10443
-zowe_zss_https: False
+zowe_zss_https: True
 zowe_zss_port: 8542
 zowe_launch_components: zss
 

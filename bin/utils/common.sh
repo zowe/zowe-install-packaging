@@ -78,6 +78,14 @@ print_formatted_message() {
   level=$3
   message=$4
 
+  if [ "${message}" = "-" ]; then
+    read message
+    if [ -z "${message}" ]; then
+      # empty input
+      return 0
+    fi
+  fi
+
   # always use upper case
   level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
 

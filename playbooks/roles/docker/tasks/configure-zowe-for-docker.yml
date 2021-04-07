@@ -23,7 +23,7 @@
   raw: echo "ZWE_LAUNCH_COMPONENTS={{ zowe_launch_components }}" >> '{{ zowe_instance_dir }}/instance.env'
 
 - name: Make zss available externally
-  raw: echo "ZWED_agent_http_ipAddresses=0.0.0.0"  >> "{{ zowe_instance_dir }}/instance.env"
+  raw: echo "ZWED_agent_https_ipAddresses=0.0.0.0"  >> "{{ zowe_instance_dir }}/instance.env"
 
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"
