@@ -81,7 +81,7 @@ if [ -n "${component_dir}" ]; then
 
   if [ -x "${start_script}" ]; then
     print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" "starting component ${component_id} ..."
-    . ${start_script}
+    . ${start_script} &
   fi
 fi
  

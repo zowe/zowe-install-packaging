@@ -53,5 +53,4 @@
     ZOWE_ZLUX_HTTPS_PORT: "{{ zowe_zlux_port }}"
     ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT: "{{ zowe_apiml_gateway_port }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
-    ZOWE_CACHING_SERVICE_START: "{{ zowe_apiml_caching_service_start|string|lower }}"
   delegate_to: localhost

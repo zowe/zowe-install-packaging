@@ -70,6 +70,25 @@ validate_directory_is_writable "${INSTANCE_DIR}"
 # Validate keystore directory accessible
 validate_directory_is_accessible "${KEYSTORE_DIRECTORY}"
 
+# ZOWE_PREFIX shouldn't be too long
+validate_zowe_prefix 2>&1 | print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" -
+
+# currently node is always required
+# otherwise we should check if these services are starting:
+# - explorer-mvs, explorer-jes, explorer-uss
+# - app-server, zss
+validate_node_home 2>&1 | print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" -
+
+# validate java for some core components
+if [[ ${LAUNCH_COMPONENTS} == *"gateway"* || ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"api-catalog"* || ${LAUNCH_COMPONENTS} == *"caching-service"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
+  validate_java_home 2>&1 | print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" -
+fi
+
+# validate z/OSMF for some core components
+if [[ ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
+  validate_zosmf_host_and_port "${ZOSMF_HOST}" "${ZOSMF_PORT}" 2>&1 | print_formatted_info "${LOGGING_SERVICE_ID}" "${LOGGING_SCRIPT_NAME}:${LINENO}" -
+fi
+
 ########################################################
 # Summary errors check, exit if errors found
 runtime_check_for_validation_errors_found

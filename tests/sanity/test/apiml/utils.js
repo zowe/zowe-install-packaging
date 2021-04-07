@@ -112,7 +112,10 @@ let verifyAndSetupEnvironment = () => {
 
 let logResponse = (uuid, res) => {
   const conciseRes = _.pick(res, ['status', 'statusText', 'headers', 'data']);
-  debug(uuid + ' response', JSON.stringify(conciseRes));
+  debug(uuid + ' response status:', conciseRes && conciseRes.status);
+  debug(uuid + ' response statusText:', conciseRes && conciseRes.statusText);
+  debug(uuid + ' response headers:', conciseRes && conciseRes.headers);
+  debug(uuid + ' response data:', conciseRes && conciseRes.data);
 };
 
 let log = (uuid, message) => {
