@@ -10,6 +10,8 @@ This project targets to use Ansible to uninstall / install Zowe.
   - [SMPE FMID](#smpe-fmid)
   - [SMPE PTF](#smpe-ptf)
   - [Uninstall Zowe](#uninstall-zowe)
+  - [Docker](#docker)
+  - [Install Zowe Extensions](#install-zowe-extensions)
 - [Other Predefined Playbooks](#other-predefined-playbooks)
   - [Sanity Test a Zowe Instance](#sanity-test-a-zowe-instance)
   - [Start and Stop a Zowe Instance](#start-and-stop-a-zowe-instance)

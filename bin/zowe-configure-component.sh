@@ -240,7 +240,9 @@ print_and_log_message "Configure Zowe component ${component_path} for instance $
 ensure_zwe_extension_dir
 configure_component
 # FIXME: this should be handled during zowe-configure-instance.sh, but temporarily moved to runtime configure-component step
-# install_app_framework_plugin
+if [ "${IS_ZOWE_CORE}" = "false" ]; then
+    install_app_framework_plugin
+fi
 enable_component
 
 #######################################################################
