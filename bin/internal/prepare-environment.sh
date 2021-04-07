@@ -101,11 +101,7 @@ then
 else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
-    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
-    if [[ -n ${ZOWE_CACHING_SERVICE_START} && ${ZOWE_CACHING_SERVICE_START} == true ]]
-    then
-      LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},caching-service
-    fi
+    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
@@ -117,6 +113,13 @@ else
   then
     LAUNCH_COMPONENTS=zss,${LAUNCH_COMPONENTS}
   fi
+fi
+
+# caching-service with VSAM persistent can only run on z/OS
+# FIXME: should we let sysadmin to decide this?
+if [ `uname` != "OS/390" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
+  # to avoid potential retries on starting caching-service, do not start caching-service
+  LAUNCH_COMPONENTS=$(echo "${LAUNCH_COMPONENTS}" | sed -e 's#caching-service##' | sed -e 's#,,#,#')
 fi
 
 if [[ ${LAUNCH_COMPONENTS} == *"discovery"* ]]
