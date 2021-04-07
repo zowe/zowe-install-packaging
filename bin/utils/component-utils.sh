@@ -622,7 +622,7 @@ verify_component_instance() {
     log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
     status_index=0
     service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
-    log_message "${component_id} service ${service_id} status: ${service_status}"
+    log_message "${component_id} service ${service_id} status: ${service_status:-"<empty-and-exit-loop>"}"
     while [[ -n ${service_status} ]]; do
       if [[ "${service_status}" == "UP" ]]; then
         print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
@@ -633,7 +633,7 @@ verify_component_instance() {
       fi
       status_index=`expr $status_index + 1`
       service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
-      log_message "${component_id} service ${service_id} status: ${service_status}"
+      log_message "${component_id} service ${service_id} status: ${service_status:-"<empty-and-exit-loop>"}"
     done
     if [[ ${status_index} -eq 0 ]]; then
         print_and_log_error_message "- service ${service_id} is not registered properly!"
