@@ -619,8 +619,10 @@ verify_component_instance() {
 
   for service_id in $service_ids; do
     json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J 2>/dev/null)
+    log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
     status_index=0
     service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
+    log_message "${component_id} service ${service_id} status: ${service_status}"
     while [[ -n ${service_status} ]]; do
       if [[ "${service_status}" == "UP" ]]; then
         print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
@@ -631,6 +633,7 @@ verify_component_instance() {
       fi
       status_index=`expr $status_index + 1`
       service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
+      log_message "${component_id} service ${service_id} status: ${service_status}"
     done
     if [[ ${status_index} -eq 0 ]]; then
         print_and_log_error_message "- service ${service_id} is not registered properly!"
@@ -643,11 +646,13 @@ verify_component_instance() {
   fi
   
   desktop_ids=$(list_component_plugin_id "${component_dir}")
+  desktop_identifiers=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k | read_json - .pluginDefinitions[].identifier)
+  log_message "Identifiers for desktop plugins currently registered: ${desktop_identifiers}"
 
   for desktop_id in $desktop_ids; do
-    desktop_identifier=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k | read_json - .pluginDefinitions[].identifier)
+    log_message "${component_id} desktop plugin identifier: ${desktop_id}"
 
-    if [[ "$desktop_identifier" == *"$desktop_id"* ]]; then
+    if [[ "$desktop_identifiers" == *"$desktop_id"* ]]; then
       print_and_log_message "- desktop plugin ${desktop_id} is registered successfully"
     else
       print_and_log_error_message "- desktop plugin ${desktop_id} is not registered successfully"
