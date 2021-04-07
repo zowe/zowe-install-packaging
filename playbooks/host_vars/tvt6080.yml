@@ -12,9 +12,9 @@ zowe_extra_environment_variables:
   RESOLVER_CONFIG: "\"//'USER.PARMLIB(TCPDATA)'\""
 
 # variables for zowe uninstallation and installation
-zowe_smpe_volser: T60802
+zowe_smpe_volser: T60804
 # caching service volume
-zowe_caching_vsam_volume: T60802
+zowe_caching_vsam_volume: T60804
 
 
 zowe_external_ip_address: 9.30.242.131

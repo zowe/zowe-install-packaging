@@ -90,6 +90,10 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 VERIFY_CERTIFICATES="${ZOWE_APIM_VERIFY_CERTIFICATES}"
 
+# ignore user settings and set this value to be false
+# this configuration is deprecated and settings in instance.env will not affect how Zowe is starting
+APIML_PREFER_IP_ADDRESS=false
+
 LAUNCH_COMPONENTS=""
 # FIXME: if ZOWE_INSTANCE is same as last character of ZOWE_PREFIX, it will never be appended
 if [[ "${ZOWE_PREFIX}" != *"${ZOWE_INSTANCE}" ]]; then
@@ -104,11 +108,7 @@ then
 else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
-    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
-    if [[ -n ${ZOWE_CACHING_SERVICE_START} && ${ZOWE_CACHING_SERVICE_START} == true ]]
-    then
-      LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},caching-service
-    fi
+    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
@@ -120,6 +120,13 @@ else
   then
     LAUNCH_COMPONENTS=zss,${LAUNCH_COMPONENTS}
   fi
+fi
+
+# caching-service with VSAM persistent can only run on z/OS
+# FIXME: should we let sysadmin to decide this?
+if [ `uname` != "OS/390" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
+  # to avoid potential retries on starting caching-service, do not start caching-service
+  LAUNCH_COMPONENTS=$(echo "${LAUNCH_COMPONENTS}" | sed -e 's#caching-service##' | sed -e 's#,,#,#')
 fi
 
 # directory for user configurable api-defs

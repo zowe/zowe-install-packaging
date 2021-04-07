@@ -29,4 +29,3 @@ zowe_instance_id: 1
 # ports will be tested
 zowe_apiml_gateway_port: 7554
 zowe_zlux_port: 8544
-zowe_apiml_caching_service_start: true
