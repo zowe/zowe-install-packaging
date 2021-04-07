@@ -6,7 +6,7 @@
 //*                                                                  *
 //* SPDX-License-Identifier: EPL-2.0                                 *
 //*                                                                  *
-//* Copyright IBM Corporation 2018, 2019                             *
+//* Copyright IBM Corporation 2018, 2021                             *
 //********************************************************************
 //*                                                                  *
 //* ZOWE SERVER PROCEDURE                                            *

@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2020
+ * Copyright IBM Corporation 2020, 2021
  */
 
 const { expect } = require('chai');

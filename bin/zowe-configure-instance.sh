@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019, 2020
+# Copyright IBM Corporation 2019, 2021
 ################################################################################
 
 if [ $# -lt 2 ]; then
