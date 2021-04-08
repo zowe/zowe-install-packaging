@@ -27,6 +27,13 @@ print_error_message() {
   let "ERRORS_FOUND=${ERRORS_FOUND}+1"
 }
 
+print_and_log_error_message() {
+  message=$1
+
+  print_error_message "${message}"
+  log_message "${message}" "false"
+}
+
 # In future we can add timestamps/message ids here
 print_message() {
   message=$1
@@ -70,6 +77,14 @@ print_formatted_message() {
   logger=$2
   level=$3
   message=$4
+
+  if [ "${message}" = "-" ]; then
+    read message
+    if [ -z "${message}" ]; then
+      # empty input
+      return 0
+    fi
+  fi
 
   # always use upper case
   level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')

@@ -1,5 +1,8 @@
 ---
-- name: Sanity test on Zowe instance
+# input:
+# - component_name: name of component to be verified
+
+- name: Verify Zowe Extension
   hosts: all
   gather_facts: false
   become: false
@@ -20,10 +23,7 @@
       tasks_from: detect_zowe_instance
 
   # ============================================================================
-  # Run sanity test
-  - import_role:
-      name: verify
-
+  # Run Verify Zowe Extensions
   - import_role:
       name: ext
-      tasks_from: verify-all-ext
+      tasks_from: verify
