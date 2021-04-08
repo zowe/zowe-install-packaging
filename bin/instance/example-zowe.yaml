@@ -62,9 +62,6 @@ zowe:
     token:
       name: ""
       label: ""
-  # optional to enable debug mode for Zowe launch script
-  # launchScript:
-  #   logLevel: debug
 
 # customize java
 java:
