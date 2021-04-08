@@ -32,7 +32,7 @@ zowe:
   # this is required.
   externalCertificate:
     keystore:
-      keyAlias: localhost
+      alias: localhost
       password: password
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
       type: PKCS12
@@ -47,7 +47,7 @@ zowe:
   # this is optional. If this section is missing, all components will fall back to "zowe.externalCertificate".
   internalCertificate:
     keystore:
-      keyAlias: localhost
+      alias: localhost
       password: password
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
       type: PKCS12
