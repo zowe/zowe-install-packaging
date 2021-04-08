@@ -10,6 +10,8 @@
 
 zowe:
   runtimeDirectory: /global/zowe/runtime
+  # where extensions are installed
+  # extensionDirectory: /global/zowe/extensions
   jobPrefix: ZWE
   identifier: "1"
   externalDomains:
@@ -191,6 +193,9 @@ components:
     enabled: true
     port: "8550"
     frameAncestors: dvipa.my-company.com:*
+  # for extensions, you can add your definition like this
+  # my-extension:
+  #   enabled: true
 
 # we can customize configurations for each HA instance
 haInstances:
