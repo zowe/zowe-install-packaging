@@ -33,6 +33,8 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
     exit_with_error "-i <ZWELS_HA_INSTANCE_ID> is required" "read-instance.sh:${LINENO}"
   fi
+  # sanitize instance id
+  ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
   # Source appropriate instance.env variables based on HA instance ID and component.
   if [ "${ZWELS_START_COMPONENT_ID}" != "" -a -f "${ZWELS_INSTANCE_ENV_DIR}/${ZWELS_START_COMPONENT_ID}/.instance-${ZWELS_HA_INSTANCE_ID}.env" ]; then

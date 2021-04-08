@@ -74,6 +74,8 @@ fi
 if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
   ZWELS_HA_INSTANCE_ID=$(get_sysname)
 fi
+# sanitize instance id
+ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
 # read the instance environment variables to make sure they exists
 . ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
