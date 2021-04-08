@@ -215,6 +215,16 @@ done
 
 echo
 echo "Configure instance completed. Please now review the properties in ${INSTANCE} to check they are correct."
+
+echo
+echo "As technical preview, Zowe now provides a new way to customize your instance with a YAML file."
+echo "You can convert your instance.env file by running this script:"
+echo "  ${INSTANCE_DIR}/bin/utils/convert-to-zowe-yaml.sh > ${INSTANCE_DIR}/zowe.yaml"
+echo "The zowe.yaml will take effect once you delete or rename your ${INSTANCE_DIR}/instance.env file."
+echo "Please check ${INSTANCE_DIR}/bin/example-zowe.yaml and see how you can customize Zowe instance."
+echo "This YAML configuration format is mandatory to deploy Zowe in a Parallel Sysplex environment."
+
+echo
 echo "To start Zowe run the script "${INSTANCE_DIR}/bin/zowe-start.sh
 echo "   (or in SDSF directly issue the command /S ZWESVSTC,INSTANCE='${INSTANCE_DIR}')"
 echo "To stop Zowe run the script "${INSTANCE_DIR}/bin/zowe-stop.sh

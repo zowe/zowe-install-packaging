@@ -339,8 +339,8 @@ EOF
       echo "#   keystore:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
       echo "#     alias: ${service_id}" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
       echo "#   pem:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
-      echo "#     key: ${KEYSTORE_PREFIX}-${service_id}.key" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
-      echo "#     certificate: ${KEYSTORE_PREFIX}-${service_id}.cer-ebcdic" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#     key: ${KEYSTORE_PREFIX}.${service_id}.key" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#     certificate: ${KEYSTORE_PREFIX}.${service_id}.cer-ebcdic" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
     done
   fi
 else

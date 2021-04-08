@@ -178,7 +178,7 @@ function create_service_certificate_and_csr {
     if [ -z "${export_file_id}" ]; then
       target_file="${SERVICE_KEYSTORE}"
     else
-      target_file="${SERVICE_KEYSTORE}-${export_file_id}"
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
     fi
 
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
@@ -218,7 +218,7 @@ function sign_csr_using_local_ca {
     if [ -z "${export_file_id}" ]; then
       target_file="${SERVICE_KEYSTORE}"
     else
-      target_file="${SERVICE_KEYSTORE}-${export_file_id}"
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
     fi
 
      echo ">>>> Sign the CSR using the Certificate Authority:"
@@ -259,7 +259,7 @@ function import_signed_certificate {
     if [ -z "${export_file_id}" ]; then
       target_file="${SERVICE_KEYSTORE}"
     else
-      target_file="${SERVICE_KEYSTORE}-${export_file_id}"
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
     fi
 
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
@@ -309,7 +309,7 @@ function export_service_certificate {
     if [ -z "${export_file_id}" ]; then
       target_file="${SERVICE_KEYSTORE}"
     else
-      target_file="${SERVICE_KEYSTORE}-${export_file_id}"
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
     fi
 
     echo ">>>> Export service certificate to the PEM format"
@@ -338,7 +338,7 @@ function export_service_private_key {
     if [ -z "${export_file_id}" ]; then
       target_file="${SERVICE_KEYSTORE}"
     else
-      target_file="${SERVICE_KEYSTORE}-${export_file_id}"
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
     fi
 
     echo ">>>> Exporting service private key"
