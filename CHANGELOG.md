@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `1.21.0`
+
+- server-bundle docker image is now signed so that users can verify authenticity of a release using docker technology
+
 ## `1.20.0`
 
 ### New features and enhancements
