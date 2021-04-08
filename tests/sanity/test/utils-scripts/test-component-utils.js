@@ -25,7 +25,7 @@ describe('verify utils/component-utils', function() {
     // retrieve tmp dir on server side
     TMP_DIR = await sshHelper.getTmpDir();
     component_runtime_dir = `${TMP_DIR}/${TMP_EXT_DIR}/${dummy_component_name}`;
-    component_env_dir = `${process.env.ZOWE_INSTANCE_DIR}/.env/${dummy_component_name}`;
+    component_env_dir = `${TMP_DIR}/.env/${dummy_component_name}`;
   });
 
   const find_component_directory = 'find_component_directory';
@@ -256,6 +256,7 @@ describe('verify utils/component-utils', function() {
         `${convert_component_manifest} "${component_runtime_dir}"`,
         {
           'ZWE_EXTENSION_DIR': `${TMP_DIR}/${TMP_EXT_DIR}`,
+          'ZWELS_INSTANCE_ENV_DIR': `${TMP_DIR}/.env`,
         }
       );
 

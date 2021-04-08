@@ -11,7 +11,10 @@
 ################################################################################
 
 # where we store temporary environment files
-export ZWELS_INSTANCE_ENV_DIR=${INSTANCE_DIR}/.env
+if [ -z "${ZWELS_INSTANCE_ENV_DIR}" ]; then
+  ZWELS_INSTANCE_ENV_DIR=${INSTANCE_DIR}/.env
+fi
+export ZWELS_INSTANCE_ENV_DIR
 # how we read configurations
 ZWELS_CONFIG_LOAD_METHOD=
 if [ -n "${INSTANCE_DIR}" -a -f "${INSTANCE_DIR}/instance.env" ]; then
