@@ -28,6 +28,11 @@ zowe:
     SSO_FALLBACK_TO_NATIVE_AUTH: "true"
   # this should be the port you defined on DVIPA for gateway external port
   externalPort: "7554"
+
+  # gateway internal connector DVIPA address
+  gatewayInternalHost: "dvipa.my-company.com"
+  gatewayInternalPort: "7564"
+
   # default certificate for gateway external connector
   # this is required.
   externalCertificate:
