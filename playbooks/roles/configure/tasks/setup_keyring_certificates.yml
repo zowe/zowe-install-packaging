@@ -16,6 +16,7 @@
     sed -e "s+^HOSTNAME=.*\$+HOSTNAME={{ zowe_zos_host }}+" | \
     sed -e "s+^IPADDRESS=.*\$+IPADDRESS={{ zowe_external_ip_address }}+" | \
     sed -e "s+^VERIFY_CERTIFICATES=.*\$+VERIFY_CERTIFICATES={{ zowe_apiml_verify_certficates_of_services|string|lower }}+" | \
+    sed -e "s+^NONSTRICT_VERIFY_CERTIFICATES=.*\$+NONSTRICT_VERIFY_CERTIFICATES={{ zowe_apiml_nonstrict_verify_certficates_of_services|string|lower }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^ZOWE_CERTIFICATE_LABEL=.*\$+ZOWE_CERTIFICATE_LABEL={{ zowe_keyring_certname }}+" | \
     sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \

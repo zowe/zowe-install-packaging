@@ -3,7 +3,8 @@
 # Variables to be supplied:
 # - HOSTNAME - The hostname of the system running API Mediation
 # - IPADDRESS - The IP Address of the system running API Mediation
-# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services (defaults to true)
+# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services in strict mode (defaults to true)
+# - NONSTRICT_VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services in non-strict mode (defaults to true)
 # - EXTERNAL_CERTIFICATE - optional - Path to a PKCS12 keystore with a server certificate for APIML
 # - EXTERNAL_CERTIFICATE_ALIAS - optional - Alias of the certificate in the keystore
 # - EXTERNAL_CERTIFICATE_AUTHORITIES - optional - Public certificates of trusted CAs
@@ -229,7 +230,7 @@ if [ "$RC" -ne "0" ]; then
     exit 1
 fi
 
-if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
+if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "true" ]; then
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf \
       --service-password "${KEYSTORE_PASSWORD}" --service-truststore "${TRUSTSTORE_PREFIX}" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
@@ -316,6 +317,7 @@ if [[ -z "${ZOWE_KEYRING}" ]]; then
     EXTERNAL_ROOT_CA="${EXTERNAL_ROOT_CA}"
     EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
     ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+    ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
     PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
     PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
@@ -333,6 +335,7 @@ else
     EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
     LOCAL_CA="${ZOWE_LOCALCA_LABEL}"
     ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+    ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
     PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
     PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"

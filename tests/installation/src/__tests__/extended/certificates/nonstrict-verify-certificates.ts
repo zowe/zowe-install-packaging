@@ -18,7 +18,7 @@ import {
 } from '../../../constants';
 
 const testServer = 'marist-1';
-const testSuiteName = 'Test convenience build installation by enabling VERIFY_CERTIFICATES';
+const testSuiteName = 'Test convenience build installation by enabling NONSTRICT_VERIFY_CERTIFICATES';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -33,7 +33,7 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_apiml_verify_certficates_of_services': 'true',
+        'zowe_apiml_verify_certficates_of_services': 'false',
         'zowe_apiml_nonstrict_verify_certficates_of_services': 'true',
       }
     );
