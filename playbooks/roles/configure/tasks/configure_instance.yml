@@ -92,6 +92,7 @@
     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eutils "5"
     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2enetwork "5"
     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eauth "5"
+    update_zowe_instance_variable ZWED_agent_https_ipAddresses "0.0.0.0"
 
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"
