@@ -50,9 +50,6 @@
   # Stop Zowe
   - import_role:
       name: stop
-  - name: Wait for Zowe stopping
-    pause:
-      seconds: 30
 
   # ============================================================================
   - name: Install Zowe SMPE PTF

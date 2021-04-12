@@ -55,7 +55,7 @@ cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugin
 
 echo "Unpax zssServer " >> $LOG_FILE
 cd ${ZSS_COMPONENT_DIR}
-pax -r -px -f $INSTALL_DIR/files/zss.pax bin manifest.yaml
+pax -r -px -f $INSTALL_DIR/files/zss.pax bin manifest.yaml apiml-static-reg.yaml.template
 extattr +p bin/zssServer
 cp -r ${ZSS_COMPONENT_DIR}/bin/z*.sh ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/bin
 chmod -R a-w ${APP_SERVER_COMPONENT_DIR} 2>/dev/null
