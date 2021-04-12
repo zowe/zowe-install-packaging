@@ -73,18 +73,16 @@
     . {{ zowe_root_dir }}/bin/utils/utils.sh
     update_zowe_instance_variable APIML_SECURITY_ZOSMF_JWT_AUTOCONFIGURATION_MODE "{{ zowe_apiml_security_zosmf_jwt_autoconfiguration_mode }}"
 
-- name: Disable ZSS HTTPS mode
-  # update_zowe_instance_variable ZOWE_ZSS_SERVER_TLS "false"
-  raw: |-
-    export INSTANCE_DIR={{ zowe_instance_dir }}
-    export ZOWE_ROOT_DIR={{ zowe_root_dir }}
-    . {{ zowe_root_dir }}/bin/utils/utils.sh
-    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eproxy "5"
-    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eutils "5"
-    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2enetwork "5"
-    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eauth "5"
-    update_zowe_instance_variable ZWED_agent_https_ipAddresses "$ZOWE_IP_ADDRESS"
-    update_zowe_instance_variable ZWED_agent_host "$ZOWE_IP_ADDRESS"
+# - name: Disable ZSS HTTPS mode
+#   # update_zowe_instance_variable ZOWE_ZSS_SERVER_TLS "false"
+#   raw: |-
+#     export INSTANCE_DIR={{ zowe_instance_dir }}
+#     export ZOWE_ROOT_DIR={{ zowe_root_dir }}
+#     . {{ zowe_root_dir }}/bin/utils/utils.sh
+#     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eproxy "5"
+#     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eutils "5"
+#     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2enetwork "5"
+#     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eauth "5"
 
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"
