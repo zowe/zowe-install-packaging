@@ -24,22 +24,3 @@ instance.env.
 - APIML_PREFER_IP_ADDRESS=false
   # This value will be always set to false and Zowe start
     script will ignore this configuration entry.
-
-New variables are added to configuration file
-zowe-setup-certificates.env.
-
-- COMPONENT_LEVEL_CERTIFICATES
-  # allow user to generate dedicated certificates for
-    components.
-- EXTERNAL_COMPONENT_CERTIFICATES
-  # allow user to import external certificates which are
-    dedicated for components.
-- EXTERNAL_COMPONENT_CERTIFICATE_ALIASES
-  # when using external certificates for components, this
-    configuration allows user to define which alias can
-    be used by which component.
-
-As technical preview, Zowe now provides a new way to customize
-your instance with a YAML file. You can convert your
-instance.env file by running the script
-${INSTANCE_DIR}/bin/utils/convert-to-zowe-yaml.sh
