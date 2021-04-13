@@ -15,5 +15,7 @@ export ZWELS_HA_INSTANCE_ID=$1
 export INSTANCE_DIR=$(cd $(dirname $0)/../;pwd)
 . ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
 
-${ROOT_DIR}/scripts/internal/opercmd "S ZWESVSTC,INSTANCE='"${INSTANCE_DIR}"',HA='"${ZWELS_HA_INSTANCE_ID}"',JOBNAME=${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
+# FIXME: prepare for HA deployment
+# ${ROOT_DIR}/scripts/internal/opercmd "S ZWESVSTC,INSTANCE='"${INSTANCE_DIR}"',HA='"${ZWELS_HA_INSTANCE_ID}"',JOBNAME=${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
+${ROOT_DIR}/scripts/internal/opercmd "S ZWESVSTC,INSTANCE='"${INSTANCE_DIR}"',JOBNAME=${ZOWE_PREFIX}${ZOWE_INSTANCE}SV"
 echo Start command issued, check SDSF job log ...
