@@ -93,7 +93,7 @@ if [ -n "${component_dir}" ]; then
 
   if [ -x "${start_script}" ]; then
     print_formatted_info "ZWELS" "start-component.sh:${LINENO}" "starting component ${ZWELS_START_COMPONENT_ID} ..."
-    print_formatted_debug "ZWELS" "start-component.sh:${LINENO}" "environment for ${ZWELS_START_COMPONENT_ID}: $(env | sort | tr '\n' ',')"
+    print_formatted_debug "ZWELS" "start-component.sh:${LINENO}" "environment for ${ZWELS_START_COMPONENT_ID}: $(env | sort | tr '\n' '~')"
     # FIXME: we have assumption here start_script is pointing to a shell script
     # if [[ "${start_script}" == *.sh ]]; then
     if [ "${RUN_IN_BACKGROUND}" = "true" ]; then
