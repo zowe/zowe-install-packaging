@@ -6,7 +6,7 @@
 //*                                                                  *
 //* SPDX-License-Identifier: EPL-2.0                                 *
 //*                                                                  *
-//* Copyright IBM Corporation 2018, 2021                             *
+//* Copyright IBM Corporation 2018, 2019                             *
 //********************************************************************
 //*                                                                  *
 //* ZOWE SERVER PROCEDURE                                            *
@@ -17,22 +17,18 @@
 //* Invoke this procedure, specifying the root path where the        *
 //* ZOWE server is installed on your system.                         *
 //*                                                                  *
-//*   S ZWESVSTC,INSTANCE='{{instance_directory}}',                  *
-//*              HA='{{ha_instance}}'                                *
+//*   S ZWESVSTC,INSTANCE='{{instance_directory}}'                   *
 //*                                                                  *
 //*                                                                  *
 //********************************************************************
-//ZWESVSTC   PROC INSTANCE='{{instance_directory}}',
-//  HA='{{ha_instance}}'
+//ZWESVSTC   PROC INSTANCE='{{instance_directory}}'
 //*-------------------------------------------------------------------
 //* INSTANCE - The path to the HFS directory where the 
 //*            zowe instance was created
-//* HA       - The HA instance ID to start. By default,
-//*            this value will be your SYSNAME
 //*-------------------------------------------------------------------
 //EXPORT EXPORT SYMLIST=*
 //ZOWESTEP EXEC PGM=BPXBATSL,REGION=0M,TIME=NOLIMIT,
-//  PARM='PGM /bin/sh &INSTANCE/bin/internal/run-zowe.sh &HA'
+//  PARM='PGM /bin/sh &INSTANCE/bin/internal/run-zowe.sh'
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //*             PATHOPTS=ORDONLY
