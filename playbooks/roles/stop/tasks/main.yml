@@ -18,3 +18,10 @@
 
 - name: Stop Zowe
   raw: "{{ zowe_stop_path }}"
+
+- name: Wait for Zowe stopping
+  pause:
+    seconds: 10
+
+- name: Cancelling all address spaces left behind if there 
+  raw: cd "{{ work_dir_remote }}" && ./kill-zombies.sh {{ zowe_runtime_user }}

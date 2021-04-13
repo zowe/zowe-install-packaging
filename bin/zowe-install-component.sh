@@ -104,7 +104,7 @@ extract_to_target_dir(){
         elif [[ "$COMPONENT_FILE" = *.zip ]]; then
             jar xf "$COMPONENT_FILE"
         elif [[ "$COMPONENT_FILE" = *.tar ]]; then
-            pax -z tar -xf "$COMPONENT_FILE"
+            _CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "$COMPONENT_FILE"
         fi
     fi
 
