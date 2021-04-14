@@ -517,10 +517,13 @@ function zosmf_jwt_public_key {
             -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype PKCS12
     fi
 
-    java -Xms16m -Xmx32m -Xquickstart \
+    current_pwd=$(pwd)
+    cd "${BASE_DIR}"
+    if [[ "$LOG" != "" ]]; then
+      java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.verifySslCertificatesOfServices=${VERIFY_CERTIFICATES} \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
         -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
@@ -529,8 +532,111 @@ function zosmf_jwt_public_key {
         -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
         -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
         org.springframework.boot.loader.PropertiesLauncher \
-        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" "${LOCAL_CA_ALIAS}" \
+        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${LOCAL_CA_ALIAS}" \
+        "${LOCAL_CA_FILENAME}.keystore.p12" PKCS12 "${LOCAL_CA_PASSWORD}" "${LOCAL_CA_PASSWORD}" >> $LOG 2>&1
+      RC=$?
+    else
+      java -Xms16m -Xmx32m -Xquickstart \
+        -Dfile.encoding=UTF-8 \
+        -Djava.io.tmpdir=${TEMP_DIR} \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
+        -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
+        -Dserver.ssl.trustStoreType=PKCS12 \
+        -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
+        -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
+        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service-lite.jar" \
+        -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
+        -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
+        org.springframework.boot.loader.PropertiesLauncher \
+        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${LOCAL_CA_ALIAS}" \
         "${LOCAL_CA_FILENAME}.keystore.p12" PKCS12 "${LOCAL_CA_PASSWORD}" "${LOCAL_CA_PASSWORD}"
+      RC=$?
+    fi
+    cd "${current_pwd}"
+
+    if [ "$RC" != "0" ]; then
+      echo "Failed to retrieve z/OSMF JWT public key, exit with code ${RC}"
+    fi
+
+    if [ -f "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" ]; then
+      if [ `uname` = "OS/390" ]; then
+        echo "Convert encoding of ${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer and save to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+        # java write the pem file in ISO8859-1 encoding, convert to IBM-1047
+        iconv -f ISO8859-1 -t IBM-1047 "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" > "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+        rm -f "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer"
+      else
+        echo "Rename ${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+        mv "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+      fi
+    fi
+
+    if [ "$RC" != "0" ]; then
+      echo "Failed to retrieve z/OSMF JWT public key, exit with code ${RC}"
+      # return rc of java command?
+      # return $RC
+      return 99
+    else
+      return 0
+    fi
+}
+
+function validate_certificate_domain {
+  host=$1
+  port=$2
+  host=$(echo "${host}" | tr '[:upper:]' '[:lower:]')
+
+  echo ">>>> validate certificate of ${host}:${port}"
+
+  # get first certificate, ignore CAs
+  cert=$(keytool -printcert -sslserver "${host}:${port}" | sed '/Certificate #1/,+99999 d')
+  if [ -z "${cert}" ]; then
+    >&2 echo "Error: failed to load certificate of ${host}:${port} to validate"
+    return 1
+  fi
+
+  owner=$(echo "${cert}" | grep -i "Owner:" | awk -F":" '{print $2;}')
+  common_name=
+  old_IFS="${IFS}"
+  IFS=,
+  for prop in $owner; do
+    key=$(echo "${prop}" | sed 's/^ *//g' | awk -F"=" '{print $1;}')
+    val=$(echo "${prop}" | sed 's/^ *//g' | awk -F"=" '{print $2;}')
+    if [ "${key}" = "CN" ]; then
+      common_name="${val}"
+    fi
+  done
+  IFS="${old_IFS}"
+
+  if [ -z "${common_name}" ]; then
+    >&2 echo "Error: failed to find common name of the certificate"
+    return 2
+  fi
+  echo "${host} certificate has common name ${common_name}"
+
+  if [ "$(echo "${common_name}" | tr '[:upper:]' '[:lower:]'})" != "${host}" ]; then
+    echo "${host} doesn't match certificate common name, check subject alternate name(s)"
+    san=$(echo "${cert}" | sed -e '1,/2.5.29.17/d' | sed '/ObjectId/,+99999 d')
+    dnsnames=$(echo "${san}" | grep -i DNSName | awk -F":" '{print $2;}' | sed 's/^ *//g' | sed 's/ *$//g')
+    if [ -n "${dnsnames}" ]; then
+      echo "certificate has these subject alternate name(s):"
+      echo "${dnsnames}"
+      match=
+      for dnsname in "${dnsnames}" ; do
+        if [ "${dnsname}" = "${host}" ]; then
+          match=true
+        fi
+      done
+      if [ "${match}" != "true" ]; then
+        >&2 echo "Error: ${host} doesn't match any of the certificate common name and subject alternate name(s)"
+        return 4
+      fi
+    else
+      >&2 echo "Error: ${host} certificate doesn't have subject alternate name(s)"
+      return 3
+    fi
+  fi
+  echo "certificate of ${host}:${port} has valid common name and/or subject alternate name(s)"
+  return 0
 }
 
 function trust_zosmf {
@@ -585,6 +691,16 @@ function trust_zosmf {
 
     # clean up temporary files
     rm -rf "${CER_DIR}"
+
+    if [ "${VERIFY_CERTIFICATES}" = "true" ]; then
+      # validate if ZOWE_ZOSMF_HOST matches certificate common name or SAN
+      validate_certificate_domain "${ZOWE_ZOSMF_HOST}" "${ZOWE_ZOSMF_PORT}"
+      if [ "$?" != "0" ]; then
+        >&2 echo "Error: z/OSMF certficate has invalid common name or subject alternate name(s), please update the certificate so Zowe Gateway can communicate with z/OSMF properly."
+        >&2 echo "If you cannot modify z/OSMF certificate, you will need to disable strict certificate verification by setting VERIFY_CERTIFICATES to false but keeping NONSTRICT_VERIFY_CERTIFICATES as true."
+        exit 98
+      fi
+    fi
   else
     echo "Getting zosmf certificates from file"
     for entry in "${ZOSMF_CERTIFICATE}"; do
@@ -593,6 +709,8 @@ function trust_zosmf {
       ALIAS=${entry%.*}
       trust
     done
+
+    # FIXME: should we also validate ZOSMF_CERTIFICATE domain?
   fi
 }
 

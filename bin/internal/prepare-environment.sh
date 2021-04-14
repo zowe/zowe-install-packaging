@@ -86,6 +86,7 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 VERIFY_CERTIFICATES="${ZOWE_APIM_VERIFY_CERTIFICATES}"
+NONSTRICT_VERIFY_CERTIFICATES="${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
 
 # ignore user settings and set this value to be false
 # this configuration is deprecated and settings in instance.env will not affect how Zowe is starting

@@ -68,6 +68,21 @@ node('zowe-jenkins-agent-dind-wdc') {
     'install smpe ptf 2 times': [
       test_files: 'dist/__tests__/extended/ptf/install-ptf-two-times.js',
     ],
+    'enable VERIFY_CERTIFICATES': [
+      test_files: 'dist/__tests__/extended/certificates/verify-certificates.js',
+    ],
+    'enable NONSTRICT_VERIFY_CERTIFICATES': [
+      test_files: 'dist/__tests__/extended/certificates/nonstrict-verify-certificates.js',
+    ],
+    'external certificate': [
+      test_files: 'dist/__tests__/extended/certificates/external-certificate.js',
+    ],
+    'enabled VERIFY_CERTIFICATES with external certificate': [
+      test_files: 'dist/__tests__/extended/certificates/verify-external-certificate.js',
+    ],
+    'enabled NONSTRICT_VERIFY_CERTIFICATES with external certificate': [
+      test_files: 'dist/__tests__/extended/certificates/nonstrict-verify-external-certificate.js',
+    ],
     'bundle: multiple node versions': [
       test_files: 'dist/__tests__/extended/node-versions/',
       jenkins_primary_lock: 'marist',

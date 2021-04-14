@@ -14,6 +14,7 @@
     sed -e "s+^EXTERNAL_CERTIFICATE_ALIAS=.*\$+EXTERNAL_CERTIFICATE_ALIAS={{ zowe_external_certficate_alias }}+" | \
     sed -e "s+^EXTERNAL_CERTIFICATE_AUTHORITIES=.*\$+EXTERNAL_CERTIFICATE_AUTHORITIES={{ zowe_external_certficate_authorities }}+" | \
     sed -e "s+^VERIFY_CERTIFICATES=.*\$+VERIFY_CERTIFICATES={{ zowe_apiml_verify_certficates_of_services|string|lower }}+" | \
+    sed -e "s+^NONSTRICT_VERIFY_CERTIFICATES=.*\$+NONSTRICT_VERIFY_CERTIFICATES={{ zowe_apiml_nonstrict_verify_certficates_of_services|string|lower }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^KEYSTORE_PASSWORD=.*\$+KEYSTORE_PASSWORD={{ zowe_keystore_password }}+" | \
     sed -e "s+^KEYSTORE_ALIAS=.*\$+KEYSTORE_ALIAS={{ zowe_keystore_alias }}+" | \
