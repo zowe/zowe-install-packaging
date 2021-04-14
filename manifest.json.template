@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "1.21.0-S-S-159-S-S-S",
+      "version": "~1.21.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zss-auth": {
@@ -110,7 +110,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.3-PR-5"
+      "version": "~0.0.3"
     },
     "org.zowe.licenses": {
       "version": "1.10.0"
