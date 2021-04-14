@@ -70,7 +70,7 @@
     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2enetwork "5"
     update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eauth "5"
     update_zowe_instance_variable GSK_TRACE_FILE "{{ zowe_instance_dir }}/gsk_trace.trc"
-    update zowe_instance_variable GSK_TRACE=0xFF
+    update zowe_instance_variable GSK_TRACE "0xFF"
 
     
 - name: Add/update APIML_SECURITY_ZOSMF_JWT_AUTOCONFIGURATION_MODE
