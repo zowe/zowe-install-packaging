@@ -523,7 +523,7 @@ function zosmf_jwt_public_key {
       java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.verifySslCertificatesOfServices=${VERIFY_CERTIFICATES} \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
         -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
@@ -539,7 +539,7 @@ function zosmf_jwt_public_key {
       java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.verifySslCertificatesOfServices=${VERIFY_CERTIFICATES} \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
         -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
