@@ -27,6 +27,13 @@ print_error_message() {
   let "ERRORS_FOUND=${ERRORS_FOUND}+1"
 }
 
+print_and_log_error_message() {
+  message=$1
+
+  print_error_message "${message}"
+  log_message "${message}" "false"
+}
+
 # In future we can add timestamps/message ids here
 print_message() {
   message=$1
