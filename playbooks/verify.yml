@@ -23,7 +23,3 @@
   # Run sanity test
   - import_role:
       name: verify
-
-  - import_role:
-      name: ext
-      tasks_from: verify-all-ext
