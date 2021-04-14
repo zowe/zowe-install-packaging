@@ -65,7 +65,14 @@
     update_zowe_instance_variable ZWED_agent_jwt_token_label jwtsecret
     update_zowe_instance_variable ZWED_agent_jwt_fallback true
     update_zowe_instance_variable ZWED_agent_jwt_enabled true
+    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eproxy "5"
+    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eutils "5"
+    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2enetwork "5"
+    update_zowe_instance_variable ZWED_logLevels__x5fzsf_x2eauth "5"
+    update_zowe_instance_variable GSK_TRACE_FILE "{{ zowe_instance_dir }}/gsk_trace.trc"
+    update zowe_instance_variable GSK_TRACE=0xFF
 
+    
 - name: Add/update APIML_SECURITY_ZOSMF_JWT_AUTOCONFIGURATION_MODE
   raw: |-
     export INSTANCE_DIR={{ zowe_instance_dir }}
