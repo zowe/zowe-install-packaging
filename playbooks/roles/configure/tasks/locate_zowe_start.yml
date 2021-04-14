@@ -42,7 +42,3 @@
   - name: Show zowe_start_path value
     debug:
       var: zowe_start_path
-  - name: Check if zowe_start_path has a value
-    fail:
-      msg: Cannot find zowe-start.sh
-    when: zowe_start_path == ""
