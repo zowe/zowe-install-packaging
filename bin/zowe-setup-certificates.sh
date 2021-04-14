@@ -14,7 +14,8 @@
 # Variables to be supplied:
 # - HOSTNAME - The hostname of the system running API Mediation
 # - IPADDRESS - The IP Address of the system running API Mediation
-# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services (defaults to true)
+# - VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services in strict mode (defaults to true)
+# - NONSTRICT_VERIFY_CERTIFICATES - true/false - Should APIML verify certificates of services in non-strict mode (defaults to true)
 # - EXTERNAL_CERTIFICATE - optional - Path to a PKCS12 keystore with a server certificate for APIML
 # - EXTERNAL_CERTIFICATE_ALIAS - optional - Alias of the certificate in the keystore
 # - EXTERNAL_CERTIFICATE_AUTHORITIES - optional - Public certificates of trusted CAs
@@ -247,7 +248,7 @@ if [ "$RC" -ne "0" ]; then
     exit 1
 fi
 
-if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
+if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "true" ]; then
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf \
       --service-password "${KEYSTORE_PASSWORD}" --service-truststore "${TRUSTSTORE_PREFIX}" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
@@ -263,6 +264,13 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
 
   echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> "${LOG_FILE}"
   if [ "$RC" -ne "0" ]; then
+    if [ "$RC" = "99" ]; then
+      # import z/OSMF JWT secret failed
+      (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
+      (>&2 echo "WARNING: z/OSMF JWT public key is not retrieved successfully.")
+      # FIXME: is it ok to move on and ignore this issue?
+    else
+      # import z/OSMF public key failed
       (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
       (>&2 echo "ERROR: z/OSMF is not trusted by the API Mediation Layer. Make sure ZOWE_ZOSMF_HOST and ZOWE_ZOSMF_PORT variables define the desired z/OSMF instance.")
       (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
@@ -270,6 +278,7 @@ if [[ "${VERIFY_CERTIFICATES}" == "true" ]]; then
       echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
       rm "${KEYSTORE_PREFIX}"* "${TRUSTSTORE_PREFIX}"* "${EXTERNAL_CA_PREFIX}"* "${LOCAL_CA_PREFIX}"* 2> /dev/null
       exit 1
+    fi
   fi
 fi
 echo "Creating certificates and keystores... DONE"
@@ -326,6 +335,7 @@ KEYSTORE_CERTIFICATE_AUTHORITY="${LOCAL_CA_PREFIX}.cer-ebcdic"
 EXTERNAL_ROOT_CA="${EXTERNAL_ROOT_CA}"
 EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
 ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
 SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
 PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
 PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
@@ -356,6 +366,7 @@ EXTERNAL_ROOT_CA="${EXTERNAL_ROOT_CA}"
 EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
 LOCAL_CA="${ZOWE_LOCALCA_LABEL}"
 ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
 SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
 PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
 PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
