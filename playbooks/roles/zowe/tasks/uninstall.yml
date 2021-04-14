@@ -28,28 +28,10 @@
   set_fact:
     zowe_known_xmem_jobnames: "{{ zowe_known_xmem_jobnames }} + [ '{{ zowe_xmem_proclib_member_aux }}' ]"
   when: not zowe_xmem_proclib_member_aux in zowe_known_xmem_jobnames
-
-- name: Stop Zowe Cross Memory Server
-  include_role:
-    name: zos
-    tasks_from: opercmd
-  vars:
-    opercmd: P {{ item }}
-  loop: "{{ zowe_known_xmem_jobnames }}"
-  ignore_errors: True
-
-- name: Stop Zowe if zowe-stop.sh exists
-  raw: test -f "{{ zowe_instance_dir }}/bin/zowe-stop.sh" && {{ zowe_instance_dir }}/bin/zowe-stop.sh
-  ignore_errors: True
-
+ 
 - name: Stopping Zowe
   include_role:
-    name: zos
-    tasks_from: opercmd
-  vars:
-    opercmd: C {{ item }}
-  loop: "{{ zowe_known_jobnames }}"
-  ignore_errors: True
+    name: stop
 
 # ============================================================================
 - import_role:

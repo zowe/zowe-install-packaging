@@ -19,9 +19,27 @@
 - name: Stop Zowe
   raw: "{{ zowe_stop_path }}"
 
+- name: Stop other known Zowe Cross Memory Server
+  include_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: P {{ item }}
+  loop: "{{ zowe_known_xmem_jobnames }}"
+  ignore_errors: True
+
+- name: Stopping other known Zowe jobs
+  include_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: C {{ item }}
+  loop: "{{ zowe_known_jobnames }}"
+  ignore_errors: True
+
 - name: Wait for Zowe stopping
   pause:
     seconds: 10
 
-- name: Cancelling all address spaces left behind if there 
+- name: Cancelling all address spaces left behind if there are
   raw: cd "{{ work_dir_remote }}" && ./kill-zombies.sh {{ zowe_runtime_user }}
