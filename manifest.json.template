@@ -126,7 +126,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.11.2",
+        "tag": "v4.13.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -198,7 +198,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.27.0",
+        "tag": "v6.31.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -240,7 +240,7 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v1.4.0",
+        "tag": "v1.4.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -393,7 +393,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.13.0",
+        "tag": "v1.13.1",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     }
