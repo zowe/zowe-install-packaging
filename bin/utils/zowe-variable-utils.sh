@@ -58,6 +58,19 @@ validate_variables_are_set() {
   return $invalid
 }
 
+###############################
+# Check if a shell function is defined
+#
+# @param string   function name
+# Output          true if the function is defined
+function_exists() {
+  fn=$1
+  status=$(LC_ALL=C type $fn | grep 'function')
+  if [ -n "${status}" ]; then
+    echo "true"
+  fi
+}
+
 # ZOWE_PREFIX + instance - should be <=6 char long and exist.
 # TODO - any lower bound (other than 0)?
 # Requires ZOWE_PREFIX to be set as a shell variable
@@ -85,10 +98,21 @@ read_zowe_instance_variable() {
   echo $(echo ". ${INSTANCE_DIR}/instance.env && echo \$${variable_name}" | sh)
 }
 
+# read yaml key value
+read_zowe_yaml_variable() {
+  key=$1
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  jq="${utils_dir}/njq/src/index.js"
+
+  node "${config_converter}" yaml read "${INSTANCE_DIR}/zowe.yaml" | node "${jq}" -r "${key}"
+}
+
 update_zowe_instance_variable(){                                                                            
   variable_name=$1
   variable_value=$2
-  is_append=$3 # if false then the value of the given veriable_name will be replaced, append the value if true
+  is_append=$3 # if false then the value of the given variable_name will be replaced, append the value if true
 
   if [ "${is_append}" != "true" ]; then
     is_append=false # default value is false
@@ -123,4 +147,14 @@ update_zowe_instance_variable(){
         mv ${INSTANCE_DIR}/instance.env.tmp ${INSTANCE_DIR}/instance.env
     fi
   fi
+}
+
+update_zowe_yaml_variable(){                                                                            
+  variable_name=$1
+  variable_value=$2
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  
+  node "${config_converter}" yaml update "${INSTANCE_DIR}/zowe.yaml" "${variable_name}" "${variable_value}"
 }

@@ -1,5 +1,16 @@
 #!/bin/sh
 
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+#######################################################################
+
 # Variables to be supplied:
 # - HOSTNAME - The hostname of the system running API Mediation
 # - IPADDRESS - The IP Address of the system running API Mediation
@@ -19,6 +30,9 @@
 #                  files will be created.
 # - GENERATE_CERTS_FOR_KEYRING - If you used ZWEKRING jcl to configure certificates and the keyring
 #                                then set this variable to false (defaults to false)
+# - COMPONENT_LEVEL_CERTIFICATES - optional - if you want to generate dedicated certificates for certain components.
+# - EXTERNAL_COMPONENT_CERTIFICATES - optional - external certificates for each of components listed in COMPONENT_LEVEL_CERTIFICATES
+# - EXTERNAL_COMPONENT_CERTIFICATE_ALIASES - optional - external certificate aliases for each of components listed in COMPONENT_LEVEL_CERTIFICATES
 
 function detectExternalRootCA {
   echo "Detecting external root CA... STARTED"
@@ -180,12 +194,14 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
   if [[ -z "${EXTERNAL_CERTIFICATE}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]] && [[ -z "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]]; then
     if [[ -z "${ZOWE_KEYRING}" ]]; then
       "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-password "${KEYSTORE_PASSWORD}" \
-        --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}"
+        --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+        --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}"
       RC=$?
       echo "apiml_cm.sh --action setup returned: ${RC}" >> "${LOG_FILE}"
     elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
       "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-keystore "${KEYSTORE_PREFIX}" \
-        --service-alias "${KEYSTORE_ALIAS}" --zowe-userid "${ZOWE_USER_ID}" --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --local-ca-filename "${LOCAL_CA_PREFIX}"
+        --service-alias "${KEYSTORE_ALIAS}" --zowe-userid "${ZOWE_USER_ID}" --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+        --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}"
       RC=$?
       echo "apiml_cm.sh --action setup returned: ${RC}" >> "${LOG_FILE}"
     else
@@ -209,13 +225,15 @@ else
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-password "${KEYSTORE_PASSWORD}" \
       --external-certificate "${EXTERNAL_CERTIFICATE}" --external-certificate-alias "${EXTERNAL_CERTIFICATE_ALIAS}" ${EXT_CA_PARM} \
       --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
-      --external-ca-filename ${EXTERNAL_CA_PREFIX}
+      --external-ca-filename ${EXTERNAL_CA_PREFIX} --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}" \
+      --external-component-certificates "${EXTERNAL_COMPONENT_CERTIFICATES}" --external-component-certificate-aliases "${EXTERNAL_COMPONENT_CERTIFICATE_ALIASES}"
     RC=$?
     echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
   elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --zowe-userid "${ZOWE_USER_ID}" --zowe-keyring ${ZOWE_KEYRING} \
       --service-storetype "JCERACFKS" --external-certificate "${EXTERNAL_CERTIFICATE}" --external-certificate-alias "${EXTERNAL_CERTIFICATE_ALIAS}" \
-      --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}"
+      --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}" \
+      --external-component-certificates "${EXTERNAL_COMPONENT_CERTIFICATES}" --external-component-certificate-aliases "${EXTERNAL_COMPONENT_CERTIFICATE_ALIASES}"
     RC=$?
     echo "apiml_cm.sh --action setup returned: $RC" >> "${LOG_FILE}"
   else
@@ -306,40 +324,63 @@ rm ${ZOWE_CERTIFICATES_ENV} 2> /dev/null
 
 if [[ -z "${ZOWE_KEYRING}" ]]; then
   cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
-    KEY_ALIAS="${KEYSTORE_ALIAS}"
-    KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
-    KEYSTORE="${KEYSTORE_PREFIX}.p12"
-    KEYSTORE_TYPE="PKCS12"
-    TRUSTSTORE="${TRUSTSTORE_PREFIX}.p12"
-    KEYSTORE_KEY="${KEYSTORE_PREFIX}.key"
-    KEYSTORE_CERTIFICATE="${KEYSTORE_PREFIX}.cer-ebcdic"
-    KEYSTORE_CERTIFICATE_AUTHORITY="${LOCAL_CA_PREFIX}.cer-ebcdic"
-    EXTERNAL_ROOT_CA="${EXTERNAL_ROOT_CA}"
-    EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
-    ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
-    ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
-    SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
-    PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
-    PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
+KEY_ALIAS="${KEYSTORE_ALIAS}"
+KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+KEYSTORE="${KEYSTORE_PREFIX}.p12"
+KEYSTORE_TYPE="PKCS12"
+TRUSTSTORE="${TRUSTSTORE_PREFIX}.p12"
+KEYSTORE_KEY="${KEYSTORE_PREFIX}.key"
+KEYSTORE_CERTIFICATE="${KEYSTORE_PREFIX}.cer-ebcdic"
+KEYSTORE_CERTIFICATE_AUTHORITY="${LOCAL_CA_PREFIX}.cer-ebcdic"
+EXTERNAL_ROOT_CA="${EXTERNAL_ROOT_CA}"
+EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
+ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
+SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
+PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
+PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
 EOF
+
+  if [ -n "${COMPONENT_LEVEL_CERTIFICATES}" ]; then
+    echo "" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+    for service_id in $(echo "${COMPONENT_LEVEL_CERTIFICATES}" | sed -e 's#,# #g'); do
+      echo "# To configure certificate for ${service_id}, you can add these entries to \"components.${service_id}\" of your YAML configuration:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "# certificate:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#   keystore:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#     alias: ${service_id}" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#   pem:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#     key: ${KEYSTORE_PREFIX}.${service_id}.key" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#     certificate: ${KEYSTORE_PREFIX}.${service_id}.cer-ebcdic" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+    done
+  fi
 else
   cat >${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} <<EOF
-    KEY_ALIAS="${KEYSTORE_ALIAS}"
-    KEYSTORE_PASSWORD="password"
-    KEYRING_OWNER="${ZOWE_USER_ID}"
-    KEYRING_NAME="${ZOWE_KEYRING}"
-    KEYSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
-    KEYSTORE_TYPE="JCERACFKS"
-    TRUSTSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
-    EXTERNAL_ROOT_CA="${EXTERNAL_ROOT_CA}"
-    EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
-    LOCAL_CA="${ZOWE_LOCALCA_LABEL}"
-    ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
-    ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
-    SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
-    PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
-    PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
+KEY_ALIAS="${KEYSTORE_ALIAS}"
+KEYSTORE_PASSWORD="password"
+KEYRING_OWNER="${ZOWE_USER_ID}"
+KEYRING_NAME="${ZOWE_KEYRING}"
+KEYSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
+KEYSTORE_TYPE="JCERACFKS"
+TRUSTSTORE="safkeyring:////\${KEYRING_OWNER}/\${KEYRING_NAME}"
+EXTERNAL_ROOT_CA="${EXTERNAL_ROOT_CA}"
+EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}"
+LOCAL_CA="${ZOWE_LOCALCA_LABEL}"
+ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
+ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
+SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
+PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
+PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
 EOF
+
+  if [ -n "${COMPONENT_LEVEL_CERTIFICATES}" ]; then
+    echo "" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+    for service_id in $(echo "${COMPONENT_LEVEL_CERTIFICATES}" | sed -e 's#,# #g'); do
+      echo "# To configure certificate for ${service_id}, you can add these entries to \"components.${service_id}\" of your YAML configuration:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "# certificate:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#   keystore:" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+      echo "#     alias: ${service_id}" >> ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
+    done
+  fi
 fi
 
 if [[ "${ZOWE_LOCK_KEYSTORE}" == "true" ]]; then

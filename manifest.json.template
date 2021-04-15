@@ -98,6 +98,9 @@
       "artifact": "apiml-common-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
+    "org.zowe.launcher": {
+      "version": "~0.0.3-SNAPSHOT"
+    },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
       "artifact": "keyring-util-*",
@@ -107,7 +110,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.1-SNAPSHOT"
+      "version": "~0.0.4-SNAPSHOT"
     },
     "org.zowe.licenses": {
       "version": "1.10.0"
@@ -373,6 +376,10 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
+        "tag": "master",
+        "destinations": ["Zowe PAX"]
+      }, {
+        "repository": "launcher",
         "tag": "master",
         "destinations": ["Zowe PAX"]
       }]

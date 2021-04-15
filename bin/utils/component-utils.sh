@@ -20,7 +20,7 @@
 # - ZWE_EXTENSION_DIR
 #
 # This function will find the component in this sequence:
-#   - check if component id paramter is a path to lifecycle scripts directory
+#   - check if component id parameter is a path to lifecycle scripts directory
 #   - ${ROOT_DIR}/components/<component-id>
 #   - ${ZWE_EXTENSION_DIR}/<component-id>
 #
@@ -177,7 +177,7 @@ detect_component_manifest_encoding() {
 }
 
 ###############################
-# Convert component YAML format manifest to JSON and place into workspace foler
+# Convert component YAML format manifest to JSON and place into workspace folder
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
@@ -187,10 +187,10 @@ detect_component_manifest_encoding() {
 # Required environment variables:
 # - ROOT_DIR
 # - NODE_HOME
-# - WORKSPACE_DIR
+# - ZWELS_INSTANCE_ENV_DIR
 #
 # Example:
-# - convert my-component manifest, a .manifest.json will be created in <WORKSPACE_DIR>/my-component folder
+# - convert my-component manifest, a .manifest.json will be created in <ZWELS_INSTANCE_ENV_DIR>/my-component folder
 #   convert_component_manifest "/path/to/zowe/components/my-component"
 #
 # @param string   component directory
@@ -203,28 +203,37 @@ convert_component_manifest() {
   fi
   # node should have already been put into PATH
 
-  if [ -z "${WORKSPACE_DIR}" ]; then
-    >&2 echo "WORKSPACE_DIR is required by this function"
+  if [ -z "${ZWELS_INSTANCE_ENV_DIR}" ]; then
+    >&2 echo "ZWELS_INSTANCE_ENV_DIR is required by this function"
     return 1
   fi
 
   utils_dir="${ROOT_DIR}/bin/utils"
   fconv="${utils_dir}/fconv/src/index.js"
   component_name=$(basename "${component_dir}")
-  component_manifest=
+  component_manifest_yaml=
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
-    component_manifest="${component_dir}/manifest.yaml"
+    component_manifest_yaml="${component_dir}/manifest.yaml"
   elif [ -f "${component_dir}/manifest.yml" ]; then
-    component_manifest="${component_dir}/manifest.yml"
+    component_manifest_yaml="${component_dir}/manifest.yml"
   fi
 
-  if [ -n "${component_manifest}" ]; then
-    mkdir -p "${WORKSPACE_DIR}/${component_name}"
-    node "${fconv}" -o "${WORKSPACE_DIR}/${component_name}/.manifest.json" "${component_manifest}"
-    return $?
+  if [ -n "${component_manifest_yaml}" ]; then
+    mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    node "${fconv}" -o "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json" "${component_manifest_yaml}"
+    rc=$?
+    chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    return $rc
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    cp "${component_dir}/manifest.json" "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    return 0
   else
-    # this could be the package doesn't have manifest, or has it in JSON format
+    # this could be the package doesn't have manifest
     return 0
   fi
 }
@@ -240,7 +249,7 @@ convert_component_manifest() {
 # - NODE_HOME
 #
 # Optional environment variables:
-# - WORKSPACE_DIR
+# - ZWELS_INSTANCE_ENV_DIR
 #
 # Example:
 # - read my-component commands.start value
@@ -263,13 +272,14 @@ read_component_manifest() {
   # node should have already been put into PATH
 
   component_name=$(basename "${component_dir}")
-  manifest_in_workspace=
-  if [ -n "${WORKSPACE_DIR}" ]; then
-    manifest_in_workspace="${WORKSPACE_DIR}/${component_name}/.manifest.json"
+  manifest_in_env_dir=
+  if [ -n "${ZWELS_INSTANCE_ENV_DIR}" ]; then
+    manifest_in_env_dir="${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
   fi
 
-  if [ -n "${manifest_in_workspace}" -a -f "${manifest_in_workspace}" ]; then
-    read_json "${manifest_in_workspace}" "${manifest_key}"
+  if [ -n "${manifest_in_env_dir}" -a -f "${manifest_in_env_dir}" ]; then
+    # this should cover most of the cases
+    read_json "${manifest_in_env_dir}" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yaml" ]; then
     read_yaml "${component_dir}/manifest.yaml" "${manifest_key}"
@@ -298,6 +308,7 @@ read_component_manifest() {
 # Required environment variables:
 # - ROOT_DIR
 # - NODE_HOME
+# - ZWELS_HA_INSTANCE_ID
 # - STATIC_DEF_CONFIG_DIR
 #
 # @param string   component directory
@@ -342,8 +353,8 @@ process_component_apiml_static_definitions() {
         all_succeed=false
         break
       fi
-      echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
-      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
+      echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
+      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
     fi
   done <<EOF
 $(echo "${static_defs}")
