@@ -104,6 +104,10 @@
       "version": "1.21.8",
       "artifact": "apiml-common-lib-*.zip"
     },
+    "org.zowe.launcher": {
+      "version": "0.0.2",
+      "artifact": "apiml-common-lib-*.zip"
+    },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
       "artifact": "keyring-util-1.0.4",
@@ -378,6 +382,10 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
+        "tag": "v0.0.2",
+        "destinations": ["Zowe PAX"]
+      }, {
+        "repository": "launcher",
         "tag": "v0.0.2",
         "destinations": ["Zowe PAX"]
       }]
