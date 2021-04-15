@@ -99,7 +99,7 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.launcher": {
-      "version": "~0.0.2"
+      "version": "~0.0.3-SNAPSHOT"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -110,7 +110,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.3"
+      "version": "~0.0.4-SNAPSHOT"
     },
     "org.zowe.licenses": {
       "version": "1.10.0"
