@@ -17,6 +17,11 @@ New variables are added to configuration file instance.env.
   ${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth
   # allow user to customize external client certificate
     authorization url
+- ZOWE_ZSS_SERVER_TLS=false
+  # Set this to false if you need to use ZSS without TLS
+    (Backward-compat). May be needed if encountering desktop
+    login failure due to app-server to ZSS communication
+    failure
 
 These variable(s) are deprecated from configuration file
 instance.env.
@@ -24,3 +29,24 @@ instance.env.
 - APIML_PREFER_IP_ADDRESS=false
   # This value will be always set to false and Zowe start
     script will ignore this configuration entry.
+
+****************************************************************
+* Affected function: Zowe setup certificates configuration     *
+****************************************************************
+* Description: rerun setup if want to enable component         *
+*              certificates verification                       *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: zowe-setup-certificates.env                            *
+*       zowe-setup-keyring-certificates.env                    *
+****************************************************************
+New variable is added to configuration file
+zowe-setup-certificates.env and
+zowe-setup-keyring-certificates.env.
+
+- NONSTRICT_VERIFY_CERTIFICATES=true
+  # allow user to enable component certificates verification
+    in non-strict mode. Non-strict mode will validate if
+    the component certificate authorities are in truststore,
+    but will ignore certificate common name / SAN check.
