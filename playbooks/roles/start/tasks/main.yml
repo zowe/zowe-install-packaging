@@ -11,10 +11,18 @@
 - import_role:
     name: configure
     tasks_from: locate_xmem
+- name: Check if zowe_xmem_stc_name has a value
+  fail:
+    msg: Cannot find cross memory server
+  when: zowe_xmem_stc_name == ""
 
 - import_role:
     name: configure
     tasks_from: locate_zowe_start
+- name: Check if zowe_start_path has a value
+  fail:
+    msg: Cannot find zowe-start.sh
+  when: zowe_start_path == ""
 
 # ============================================================================
 - name: Start Cross Memory Server

@@ -9,6 +9,8 @@ zowe_keystore_dir: /ZOWE/tmp/keystore
 zowe_install_logs_dir: /ZOWE/tmp/logs
 zowe_dataset_prefix: ZOWEAD3.ZWE
 zowe_apiml_verify_certficates_of_services: false
+# enable Non-Strict verify certificates by default
+zowe_apiml_nonstrict_verify_certficates_of_services: true
 zowe_xmem_proclib: VENDOR.PROCLIB
 # this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib: ZOWEAD3.LOADLIB

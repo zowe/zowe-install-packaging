@@ -19,7 +19,9 @@ node('zowe-jenkins-agent-dind-wdc') {
   def ZOWE_RELEASE_SMPE_PAX_FILEPATTERN = "zowe-smpe-*.zip"
   def ZOWE_RELEASE_SMPE_PTF_PROMOTE_FILEPATTERN = "smpe-promote-*.tar"
   def ZOWE_RELEASE_DOCKER_AMD64_FILEPATTERN = "server-bundle.amd64-*.tar"
+  def ZOWE_RELEASE_DOCKER_AMD64_SOURCE_FILEPATTERN = "server-bundle.source.amd64-*.tar"
   def ZOWE_RELEASE_DOCKER_S390X_FILEPATTERN = "server-bundle.s390x-*.tar"
+  def ZOWE_RELEASE_DOCKER_S390X_SOURCE_FILEPATTERN = "server-bundle.source.s390x-*.tar"
   def ZOWE_RELEASE_CLI_CORE_FILEPATTERN = "zowe-cli-package-*.zip"
   def ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN = "zowe-cli-plugins-*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
@@ -200,13 +202,15 @@ node('zowe-jenkins-agent-dind-wdc') {
       // try to get Zowe build commit hash
       def zoweBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['zowe']['buildName'],
-        releaseArtifacts['zowe']['buildNumber']
+        releaseArtifacts['zowe']['buildNumber'],
+        "zowe-install-packaging"
       )
       releaseArtifacts['zowe']['revision'] = zoweBuildInfo && zoweBuildInfo['vcsRevision']
       if (!("${releaseArtifacts['zowe']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
         error "Cannot extract git revision from build \"${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']}\""
       }
       echo ">>>> Build ${releaseArtifacts['zowe']['buildName']}/${releaseArtifacts['zowe']['buildNumber']} commit hash is ${releaseArtifacts['zowe']['revision']}, may proceed."
+      echo ">>>> BuildInfo vcsUrl is ${zoweBuildInfo['vcsUrl']}, vcs revision is ${zoweBuildInfo['vcsRevision']}"
 
       // get SMP/e build
       try {
@@ -257,7 +261,24 @@ node('zowe-jenkins-agent-dind-wdc') {
       } catch (e1) {
         echo ">>> no Docker image amd64 version found in the build."
       }
-
+      // get Docker images with sources - amd64
+      try {
+        def dockerImageSourcesAmd64 = pipeline.artifactory.getArtifact([
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/${params.ZOWE_BUILD_PATH}/${ZOWE_RELEASE_DOCKER_AMD64_SOURCE_FILEPATTERN}",
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (dockerImageSourcesAmd64['path']) {
+          echo ">>> Found Docker image amd64 sources version ${dockerImageSourcesAmd64['path']}."
+          def FMID = dockerImageSourcesAmd64['path'].split('/').last().split('-').first()
+          releaseArtifacts['docker-amd64-sources'] = [:]
+          releaseArtifacts['docker-amd64-sources']['source'] = dockerImageSourcesAmd64
+          releaseArtifacts['docker-amd64-sources']['target'] = "server-bundle.sources.amd64-${params.ZOWE_RELEASE_VERSION}.tar".toString()
+        }
+      } catch (e1) {
+        echo ">>> no Docker image amd64 sources version found in the build."
+      }
+      
       // get Docker images - s390x
       try {
         def dockerImageS390x = pipeline.artifactory.getArtifact([
@@ -275,7 +296,25 @@ node('zowe-jenkins-agent-dind-wdc') {
       } catch (e1) {
         echo ">>> no Docker image s390x version found in the build."
       }
+      // get Docker images with sources - s390x
+      try {
+        def dockerImageSourcesS390x = pipeline.artifactory.getArtifact([
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/${params.ZOWE_BUILD_PATH}/${ZOWE_RELEASE_DOCKER_S390X_SOURCE_FILEPATTERN}",
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (dockerImageSourcesS390x['path']) {
+          echo ">>> Found Docker image s390x sources version ${dockerImageSourcesS390x['path']}."
+          def FMID = dockerImageSourcesS390x['path'].split('/').last().split('-').first()
+          releaseArtifacts['docker-s390x-sources'] = [:]
+          releaseArtifacts['docker-s390x-sources']['source'] = dockerImageSourcesS390x
+          releaseArtifacts['docker-s390x-sources']['target'] = "server-bundle.sources.s390x-${params.ZOWE_RELEASE_VERSION}.tar".toString()
+        }
+      } catch (e1) {
+        echo ">>> no Docker image s390x sources version found in the build."
+      }
 
+      
       // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
       releaseArtifacts['cli']['target'] = "zowe-cli-package-${params.ZOWE_RELEASE_VERSION}.zip".toString()
@@ -309,25 +348,26 @@ node('zowe-jenkins-agent-dind-wdc') {
       // try to get Zowe CLI CORE build commit hash
       def cliBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['cli']['buildName'],
-        releaseArtifacts['cli']['buildNumber']
+        releaseArtifacts['cli']['buildNumber'],
+        'zowe-cli'
       )
-      releaseArtifacts['cli']['revision'] = cliBuildInfo && cliBuildInfo['vcsRevision']
-      if (!("${releaseArtifacts['cli']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-        error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
-      }
-      echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
+      // releaseArtifacts['cli']['revision'] = cliBuildInfo && cliBuildInfo['vcsRevision']
+      // if (!("${releaseArtifacts['cli']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+      //   error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
+      // }
+      // echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
 
       // try to get Zowe CLI Plugins build commit hash
       def cliPluginsBuildInfo = pipeline.artifactory.getBuildInfo(
         releaseArtifacts['cli-plugins']['buildName'],
-        releaseArtifacts['cli-plugins']['buildNumber']
+        releaseArtifacts['cli-plugins']['buildNumber'],
+        'zowe-cli'
       )
-      releaseArtifacts['cli-plugins']['revision'] = cliPluginsBuildInfo && cliPluginsBuildInfo['vcsRevision']
-      if (!("${releaseArtifacts['cli-plugins']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
-        error "Cannot extract git revision from build \"${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']}\""
-      }
-      echo ">>>> Build ${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']} commit hash is ${releaseArtifacts['cli-plugins']['revision']}, may proceed."
-    
+      // releaseArtifacts['cli-plugins']['revision'] = cliPluginsBuildInfo && cliPluginsBuildInfo['vcsRevision']
+      // if (!("${releaseArtifacts['cli-plugins']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
+      //   error "Cannot extract git revision from build \"${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']}\""
+      // }
+      // echo ">>>> Build ${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']} commit hash is ${releaseArtifacts['cli-plugins']['revision']}, may proceed."
     }
   )
 
@@ -573,12 +613,19 @@ node('zowe-jenkins-agent-dind-wdc') {
       )]) {
         def publishCommands = "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\"\n"
         def manifestAmends = ""
+        def manifestSourceAmends = ""
         // load images
         if (releaseArtifacts['docker-amd64']) {
-          // the image in tar should always be ompzowe/server-bundle:s390x
+          // the image in tar should always be ompzowe/server-bundle:amd64
           sh "docker load --input .release/server-bundle.amd64-*.tar"
           publishCommands += "docker push ompzowe/server-bundle:amd64\n"
           manifestAmends += " --amend ompzowe/server-bundle:amd64"
+        }
+        if (releaseArtifacts['docker-amd64-sources']) {
+          // the image in tar should always be ompzowe/server-bundle:amd64-sources
+          sh "docker load --input .release/server-bundle.sources.amd64-*.tar"
+          publishCommands += "docker push ompzowe/server-bundle:amd64-sources\n"
+          manifestSourceAmends += " --amend ompzowe/server-bundle:amd64-sources"
         }
         if (releaseArtifacts['docker-s390x']) {
           // the image in tar should always be ompzowe/server-bundle:s390x
@@ -586,14 +633,25 @@ node('zowe-jenkins-agent-dind-wdc') {
           publishCommands += "docker push ompzowe/server-bundle:s390x\n"
           manifestAmends += " --amend ompzowe/server-bundle:s390x"
         }
-
+        if (releaseArtifacts['docker-s390x-sources']) {
+          // the image in tar should always be ompzowe/server-bundle:amd64-sources
+          sh "docker load --input .release/server-bundle.sources.s390x-*.tar"
+          publishCommands += "docker push ompzowe/server-bundle:s390x-sources\n"
+          manifestSourceAmends += " --amend ompzowe/server-bundle:s390x-sources"
+        }
+        
         // publish images
         sh publishCommands +
           "export DOCKER_CLI_EXPERIMENTAL=enabled\n" +
           "docker manifest create ompzowe/server-bundle:latest ${manifestAmends}\n" +
           "docker manifest push ompzowe/server-bundle:latest\n" +
+          "docker manifest create ompzowe/server-bundle:latest-sources ${manifestSourceAmends}\n" +
+          "docker manifest push ompzowe/server-bundle:latest-sources\n" +
           "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION} ${manifestAmends}\n" +
-          "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}"
+          "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}" +
+          "docker manifest create ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}-sources ${manifestSourceAmends}\n" +
+          "docker manifest push ompzowe/server-bundle:v${params.ZOWE_RELEASE_VERSION}-sources"
+
       }
     }
   )

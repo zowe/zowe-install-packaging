@@ -1,5 +1,16 @@
 #!/bin/sh
 
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+#######################################################################
+
 #
 # APIML Certificate Management
 # ============================
@@ -53,11 +64,13 @@ SERVICE_PASSWORD="password"
 SERVICE_KEYSTORE="keystore/localhost/localhost.keystore"
 SERVICE_TRUSTSTORE="keystore/localhost/localhost.truststore"
 SERVICE_DNAME="CN=Zowe Service, OU=API Mediation Layer, O=Zowe Sample, L=Prague, S=Prague, C=CZ"
+COMPONENT_DNAME="CN=Zowe Service - {component}, OU=API Mediation Layer, O=Zowe Sample, L=Prague, S=Prague, C=CZ"
 SERVICE_EXT="SAN=dns:localhost.localdomain,dns:localhost"
 SERVICE_VALIDITY=3650
 SERVICE_STORETYPE="PKCS12"
 EXTERNAL_CERTIFICATE=
 EXTERNAL_CERTIFICATE_ALIAS=
+COMPONENT_LEVEL_CERTIFICATES=
 ZOSMF_CERTIFICATE=
 
 ZOWE_USERID=ZWESVUSR
@@ -72,14 +85,14 @@ fi
 
 function pkeytool {
     ARGS=$@
-    echo "Calling keytool $ARGS"
+    echo "> Calling keytool $ARGS"
     if [ "$LOG" != "" ]; then
         keytool "$@" >> $LOG 2>&1
     else
         keytool "$@"
     fi
     RC=$?
-    echo "keytool returned: $RC"
+    echo "< keytool returned: $RC"
     if [ "$RC" -ne "0" ]; then
         exit 1
     fi
@@ -89,7 +102,7 @@ function clean_keyring {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         KEYRING_UTIL="${BASE_DIR}/utils/keyring-util/keyring-util"
         chmod +x $KEYRING_UTIL
-        echo "Removing ${ZOWE_USERID}/${ZOWE_KEYRING} keyring"
+        echo ">>>> Removing ${ZOWE_USERID}/${ZOWE_KEYRING} keyring"
         "${KEYRING_UTIL}" delring "${ZOWE_USERID}" "${ZOWE_KEYRING}"
     fi
 }
@@ -99,9 +112,9 @@ function clean_local_ca {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         KEYRING_UTIL="${BASE_DIR}/utils/keyring-util/keyring-util"
         chmod +x "${KEYRING_UTIL}"
-        echo "Disconnecting ${LOCAL_CA_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
+        echo ">>>> Disconnecting ${LOCAL_CA_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "${ZOWE_KEYRING}" "${LOCAL_CA_ALIAS}"
-        echo "Removing ${LOCAL_CA_ALIAS} certificate from RACF database"
+        echo ">>>> Removing ${LOCAL_CA_ALIAS} certificate from RACF database"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "*" "${LOCAL_CA_ALIAS}"
     fi
 }
@@ -111,31 +124,31 @@ function clean_service {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         KEYRING_UTIL="${BASE_DIR}/utils/keyring-util/keyring-util"
         chmod +x "${KEYRING_UTIL}"
-        echo "Disconnecting ${SERVICE_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
+        echo ">>>> Disconnecting ${SERVICE_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "${ZOWE_KEYRING}" "${SERVICE_ALIAS}"
-        echo "Disconnecting ${JWT_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
+        echo ">>>> Disconnecting ${JWT_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "${ZOWE_KEYRING}" "${JWT_ALIAS}"
-        echo "Removing ${SERVICE_ALIAS} certificate from RACF database"
+        echo ">>>> Removing ${SERVICE_ALIAS} certificate from RACF database"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "*" "${SERVICE_ALIAS}"
-        echo "Removing ${JWT_ALIAS} certificate from RACF database"
+        echo ">>>> Removing ${JWT_ALIAS} certificate from RACF database"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "*" "${JWT_ALIAS}"
     fi
 }
 
 function create_certificate_authority {
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        echo "Generate keyring with the local CA private key and local CA public certificate:"
+        echo ">>>> Generate keyring with the local CA private key and local CA public certificate:"
         pkeytool -genkeypair $V -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
             -dname "${LOCAL_CA_DNAME}" -storetype "${SERVICE_STORETYPE}" -validity "${LOCAL_CA_VALIDITY}" \
             -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
-        echo "Generate keystore with the local CA private key and local CA public certificate:"
+        echo ">>>> Generate keystore with the local CA private key and local CA public certificate:"
         pkeytool -genkeypair $V -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
             -dname "${LOCAL_CA_DNAME}" -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype ${SERVICE_STORETYPE} -validity ${LOCAL_CA_VALIDITY} \
             -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
         chmod 600 "${LOCAL_CA_FILENAME}.keystore.p12"
 
-        echo "Export local CA public certificate:"
+        echo ">>>> Export local CA public certificate:"
         pkeytool -export $V -alias "${LOCAL_CA_ALIAS}" -file "${LOCAL_CA_FILENAME}.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" -rfc \
             -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype ${SERVICE_STORETYPE}
     fi
@@ -145,7 +158,7 @@ function create_certificate_authority {
 }
 
 function add_external_ca {
-    echo "Adding external Certificate Authorities:"
+    echo ">>>> Adding external Certificate Authorities:"
     if [ -n "${EXTERNAL_CA}" ]; then
         I=1
         for FILE in ${EXTERNAL_CA}; do
@@ -161,23 +174,30 @@ function add_external_ca {
 }
 
 function create_service_certificate_and_csr {
+    export_file_id=$1
+    if [ -z "${export_file_id}" ]; then
+      target_file="${SERVICE_KEYSTORE}"
+    else
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
+    fi
+
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        echo "Generate service private key and service into the keyring:"
+        echo ">>>> Generate service private key and service into the keyring:"
         pkeytool -genkeypair $V -alias "${SERVICE_ALIAS}" -keyalg RSA -keysize 2048 -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
             -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 
-        echo "Generate CSR for the service certificate in the keyring:"
+        echo ">>>> Generate CSR for the service certificate in the keyring:"
         pkeytool -certreq $V -alias "${SERVICE_ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -file "${SERVICE_KEYSTORE}.csr" \
             -keyalg RSA -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
-        if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
+        if [ -n "${export_file_id}" -o ! -e "${SERVICE_KEYSTORE}.p12" ];
         then
-            echo "Generate service private key and service:"
+            echo ">>>> Generate service private key and service:"
             pkeytool -genkeypair $V -alias "${SERVICE_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${SERVICE_KEYSTORE}.p12" -keypass "${SERVICE_PASSWORD}" -storepass "${SERVICE_PASSWORD}" \
                 -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY}
 
-            echo "Generate CSR for the the service certificate:"
-            pkeytool -certreq $V -alias "${SERVICE_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -file "${SERVICE_KEYSTORE}.csr" \
+            echo ">>>> Generate CSR for the the service certificate:"
+            pkeytool -certreq $V -alias "${SERVICE_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -file "${target_file}.csr" \
                 -keyalg RSA -storetype ${SERVICE_STORETYPE} -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY}
         fi
     fi
@@ -186,7 +206,7 @@ function create_service_certificate_and_csr {
 function create_self_signed_service {
     if [ ! -e "${SERVICE_KEYSTORE}.p12" ];
     then
-        echo "Generate service private key and service:"
+        echo ">>>> Generate service private key and service:"
         pkeytool -genkeypair $V -alias "${SERVICE_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${SERVICE_KEYSTORE}.p12" -keypass "${SERVICE_PASSWORD}" -storepass "${SERVICE_PASSWORD}" \
             -storetype PKCS12 -dname "${SERVICE_DNAME}" -validity ${SERVICE_VALIDITY} \
             -ext "${SERVICE_EXT}" -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth
@@ -194,14 +214,21 @@ function create_self_signed_service {
 }
 
 function sign_csr_using_local_ca {
-     echo "Sign the CSR using the Certificate Authority:"
+    export_file_id=$1
+    if [ -z "${export_file_id}" ]; then
+      target_file="${SERVICE_KEYSTORE}"
+    else
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
+    fi
+
+     echo ">>>> Sign the CSR using the Certificate Authority:"
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        pkeytool -gencert $V -infile "${SERVICE_KEYSTORE}.csr" -outfile "${SERVICE_KEYSTORE}_signed.cer" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
+        pkeytool -gencert $V -infile "${target_file}.csr" -outfile "${target_file}_signed.cer" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
             -alias "${LOCAL_CA_ALIAS}" -storetype ${SERVICE_STORETYPE} \
             -ext "${SERVICE_EXT}" -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
             -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
-        pkeytool -gencert $V -infile "${SERVICE_KEYSTORE}.csr" -outfile "${SERVICE_KEYSTORE}_signed.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
+        pkeytool -gencert $V -infile "${target_file}.csr" -outfile "${target_file}_signed.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
             -alias "${LOCAL_CA_ALIAS}" -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype ${SERVICE_STORETYPE} \
             -ext "${SERVICE_EXT}" -ext KeyUsage:critical=keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment -ext ExtendedKeyUsage=clientAuth,serverAuth -rfc \
             -validity ${SERVICE_VALIDITY}
@@ -210,16 +237,16 @@ function sign_csr_using_local_ca {
 
 function import_local_ca_certificate {
     if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
-        echo "Import the local Certificate Authority to the truststore:"
+        echo ">>>> Import the local Certificate Authority to the truststore:"
         pkeytool -importcert $V -trustcacerts -noprompt -file "${LOCAL_CA_FILENAME}.cer" -alias "${LOCAL_CA_ALIAS}" -keystore "${SERVICE_TRUSTSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE}
     fi
 }
 
 function import_external_ca_certificates {
-    if ls "${EXTERNAL_CA_FILENAME}.*.cer" 1> /dev/null 2>&1; then
-        echo "Import the external Certificate Authorities to the truststore:"
+    if ls "${EXTERNAL_CA_FILENAME}".*.cer 1> /dev/null 2>&1; then
+        echo ">>>> Import the external Certificate Authorities to the truststore:"
         I=1
-        for FILENAME in "${EXTERNAL_CA_FILENAME}.*.cer"; do
+        for FILENAME in "${EXTERNAL_CA_FILENAME}".*.cer; do
             [ -e "$FILENAME" ] || continue
             pkeytool -importcert $V -trustcacerts -noprompt -file "${FILENAME}" -alias "extca${I}" -keystore "${SERVICE_TRUSTSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype PKCS12
             I=$((I+1))
@@ -228,24 +255,35 @@ function import_external_ca_certificates {
 }
 
 function import_signed_certificate {
+    export_file_id=$1
+    if [ -z "${export_file_id}" ]; then
+      target_file="${SERVICE_KEYSTORE}"
+    else
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
+    fi
+
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        echo "Import the signed CSR to the keystore:"
-        pkeytool -importcert $V -trustcacerts -noprompt -file "${SERVICE_KEYSTORE}_signed.cer" -alias "${SERVICE_ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
+        echo ">>>> Import the signed CSR to the keystore:"
+        pkeytool -importcert $V -trustcacerts -noprompt -file "${target_file}_signed.cer" -alias "${SERVICE_ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
         -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
     else
-        echo "Import the Certificate Authority to the keystore:"
-        pkeytool -importcert $V -trustcacerts -noprompt -file "${LOCAL_CA_FILENAME}.cer" -alias "${LOCAL_CA_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE}
 
-        echo "Import the signed CSR to the keystore:"
-        pkeytool -importcert $V -trustcacerts -noprompt -file "${SERVICE_KEYSTORE}_signed.cer" -alias "${SERVICE_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE}
+        keytool -v -list -noprompt -alias "${LOCAL_CA_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE} >/dev/null 2>/dev/null
+        if [ "$?" != "0" ]; then
+            echo ">>>> Import the Certificate Authority to the keystore:"
+            pkeytool -importcert $V -trustcacerts -noprompt -file "${LOCAL_CA_FILENAME}.cer" -alias "${LOCAL_CA_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE}
+        fi
+
+        echo ">>>> Import the signed CSR to the keystore:"
+        pkeytool -importcert $V -trustcacerts -noprompt -file "${target_file}_signed.cer" -alias "${SERVICE_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE}
     fi
 }
 
 function import_external_certificate {
-    echo "Import the external Certificate Authorities to the keystore:"
-    if ls "${EXTERNAL_CA_FILENAME}.*.cer" 1> /dev/null 2>&1; then
+    echo ">>>> Import the external Certificate Authorities to the keystore:"
+    if ls "${EXTERNAL_CA_FILENAME}".*.cer 1> /dev/null 2>&1; then
         I=1
-        for FILENAME in "${EXTERNAL_CA_FILENAME}.*.cer"; do
+        for FILENAME in "${EXTERNAL_CA_FILENAME}".*.cer; do
             [ -e "$FILENAME" ] || continue
             pkeytool -importcert $V -trustcacerts -noprompt -file "${FILENAME}" -alias "extca${I}" -keystore "${SERVICE_KEYSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype PKCS12
             I=$((I+1))
@@ -254,12 +292,12 @@ function import_external_certificate {
 
     if [ -n "${EXTERNAL_CERTIFICATE}" ]; then
         if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-            echo "Import the signed certificate and its private key to the keyring:"
+            echo ">>>> Import the signed certificate and its private key to the keyring:"
             pkeytool -importkeystore $V -destkeystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -deststoretype ${SERVICE_STORETYPE} -destalias "${SERVICE_ALIAS}" \
               -srckeystore "${EXTERNAL_CERTIFICATE}" -srcstoretype PKCS12 -srcstorepass "${SERVICE_PASSWORD}" -srcalias "${EXTERNAL_CERTIFICATE_ALIAS}" \
               -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
         else
-            echo "Import the signed certificate and its private key to the keystore:"
+            echo ">>>> Import the signed certificate and its private key to the keystore:"
             pkeytool -importkeystore $V -deststorepass "${SERVICE_PASSWORD}" -destkeypass "${SERVICE_PASSWORD}" -destkeystore "${SERVICE_KEYSTORE}.p12" -deststoretype ${SERVICE_STORETYPE} -destalias "${SERVICE_ALIAS}" \
               -srckeystore "${EXTERNAL_CERTIFICATE}" -srcstoretype PKCS12 -srcstorepass "${SERVICE_PASSWORD}" -keypass "${SERVICE_PASSWORD}" -srcalias "${EXTERNAL_CERTIFICATE_ALIAS}"
         fi
@@ -267,18 +305,25 @@ function import_external_certificate {
 }
 
 function export_service_certificate {
-    echo "Export service certificate to the PEM format"
+    export_file_id=$1
+    if [ -z "${export_file_id}" ]; then
+      target_file="${SERVICE_KEYSTORE}"
+    else
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
+    fi
+
+    echo ">>>> Export service certificate to the PEM format"
     if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
-        pkeytool -exportcert -alias "${SERVICE_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storetype ${SERVICE_STORETYPE} -storepass "${SERVICE_PASSWORD}" -rfc -file "${SERVICE_KEYSTORE}.cer"
+        pkeytool -exportcert -alias "${SERVICE_ALIAS}" -keystore "${SERVICE_KEYSTORE}.p12" -storetype ${SERVICE_STORETYPE} -storepass "${SERVICE_PASSWORD}" -rfc -file "${target_file}.cer"
         if [ `uname` = "OS/390" ]; then
-          iconv -f ISO8859-1 -t IBM-1047 "${SERVICE_KEYSTORE}.cer" > "${SERVICE_KEYSTORE}.cer-ebcdic"
+          iconv -f ISO8859-1 -t IBM-1047 "${target_file}.cer" > "${target_file}.cer-ebcdic"
         fi
     fi
 }
 
 function import_external_certificate_to_truststore {
     if [[ -n "${EXTERNAL_CERTIFICATE}" ]] && [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
-        echo "Import external certificate to the truststore"
+        echo ">>>> Import external certificate to the truststore"
         CERTIFICATE="${SERVICE_KEYSTORE}.cer"
         ALIAS=extca0
         trust
@@ -289,7 +334,14 @@ function import_external_certificate_to_truststore {
 # does not exist on other operating systems and will fail in docker or in development environments.
 # And Java does not support conditional import.
 function export_service_private_key {
-    echo "Exporting service private key"
+    export_file_id=$1
+    if [ -z "${export_file_id}" ]; then
+      target_file="${SERVICE_KEYSTORE}"
+    else
+      target_file="${SERVICE_KEYSTORE}.${export_file_id}"
+    fi
+
+    echo ">>>> Exporting service private key"
     echo "TEMP_DIR=$TEMP_DIR"
 
     if [ `uname` = "OS/390" ]; then
@@ -396,17 +448,17 @@ public class ExportPrivateKey {
 }
 EOF
     fi
-    echo "cat returned $?"
+    echo "< cat returned $?"
     javac "${TEMP_DIR}/ExportPrivateKey.java"
-    echo "javac returned $?"
+    echo "< javac returned $?"
     if [ `uname` = "OS/390" ]; then
         if [[ "${SERVICE_STORETYPE}" == "PKCS12" ]]; then
-            java -cp "${TEMP_DIR}" ExportPrivateKey "${SERVICE_KEYSTORE}.p12" ${SERVICE_STORETYPE} "${SERVICE_PASSWORD}" "${SERVICE_ALIAS}" "${SERVICE_PASSWORD}" "${SERVICE_KEYSTORE}.key"
+            java -cp "${TEMP_DIR}" ExportPrivateKey "${SERVICE_KEYSTORE}.p12" ${SERVICE_STORETYPE} "${SERVICE_PASSWORD}" "${SERVICE_ALIAS}" "${SERVICE_PASSWORD}" "${target_file}.key"
         fi
     else
-        java -cp "${TEMP_DIR}" ExportPrivateKey "${SERVICE_KEYSTORE}.p12" PKCS12 "${SERVICE_PASSWORD}" "${SERVICE_ALIAS}" "${SERVICE_PASSWORD}" "${SERVICE_KEYSTORE}.key"
+        java -cp "${TEMP_DIR}" ExportPrivateKey "${SERVICE_KEYSTORE}.p12" PKCS12 "${SERVICE_PASSWORD}" "${SERVICE_ALIAS}" "${SERVICE_PASSWORD}" "${target_file}.key"
     fi
-    echo "java returned $?"
+    echo "< java returned $?"
     rm "${TEMP_DIR}/ExportPrivateKey.java" "${TEMP_DIR}/ExportPrivateKey.class"
 }
 
@@ -414,14 +466,14 @@ function setup_local_ca {
     clean_local_ca
     create_certificate_authority
     add_external_ca
-    echo "Listing generated files for local CA:"
+    echo ">>>> Listing generated files for local CA:"
     ls -l "${LOCAL_CA_FILENAME}"*
 }
 
 function new_service_csr {
     clean_service
     create_service_certificate_and_csr
-    echo "Listing generated files for service:"
+    echo ">>>> Listing generated files for service:"
     if [[ "${SERVICE_STORETYPE}" != "JCERACFKS" ]]; then
         ls -l "${SERVICE_KEYSTORE}"* "${SERVICE_TRUSTSTORE}"*
     fi
@@ -441,7 +493,7 @@ function new_service {
     export_service_certificate
     export_service_private_key
     import_external_certificate_to_truststore
-    echo "Listing generated files for service:"
+    echo ">>>> Listing generated files for service:"
     if [[ "${SERVICE_STORETYPE}" != "JCERACFKS" ]]; then
         ls -l "${SERVICE_KEYSTORE}"* "${SERVICE_TRUSTSTORE}"*
     fi
@@ -453,12 +505,30 @@ function new_self_signed_service {
     import_local_ca_certificate
     export_service_certificate
     export_service_private_key
-    echo "Listing generated files for self-signed service:"
+    echo ">>>> Listing generated files for self-signed service:"
     ls -l "${SERVICE_KEYSTORE}"*
 }
 
+function append_service {
+    service_id=$1
+
+    if [ -n "${EXTERNAL_CERTIFICATE}" ]; then
+        import_external_certificate
+    else
+        create_service_certificate_and_csr "${service_id}"
+        sign_csr_using_local_ca "${service_id}"
+        import_signed_certificate "${service_id}"
+    fi
+    export_service_certificate "${service_id}"
+    export_service_private_key "${service_id}"
+    echo ">>>> Listing generated files for service ${service_id}:"
+    if [[ "${SERVICE_STORETYPE}" != "JCERACFKS" ]]; then
+        ls -l "${SERVICE_KEYSTORE}"* "${SERVICE_TRUSTSTORE}"*
+    fi
+}
+
 function trust {
-    echo "Import a certificate to the truststore:"
+    echo ">>>> Import a certificate to the truststore:"
     pkeytool -importcert $V -trustcacerts -noprompt -file "${CERTIFICATE}" -alias "${ALIAS}" -keystore "${SERVICE_TRUSTSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype PKCS12
 
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
@@ -468,13 +538,16 @@ function trust {
 }
 
 function trust_keyring {
-    echo "Import a certificate to the keyring:"
+    echo ">>>> Import a certificate to the keyring:"
 
     keytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
             -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 }
 
 function jwt_key_gen_and_export {
+    OLD_SERVICE_DNAME=${SERVICE_DNAME}
+    SERVICE_DNAME=$(echo "${COMPONENT_DNAME}" | sed -e "s#{component}#JWT#")
+
     echo "Generates key pair for JWT secret and exports the public key"
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
         pkeytool -genkeypair $V -alias "${JWT_ALIAS}" -keyalg RSA -keysize 2048 -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
@@ -491,36 +564,41 @@ function jwt_key_gen_and_export {
           mv "${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer" "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
         fi
     fi
+
+    SERVICE_DNAME=${OLD_SERVICE_DNAME}
 }
 
 function export_jwt_from_keyring {
-        echo "Export JWT secret from keyring"
+        echo ">>>> Export JWT secret from keyring"
         pkeytool -export -rfc -alias "${JWT_ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
           -file "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 }
 
 function zosmf_jwt_public_key {
-    echo "Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+    echo ">>>> Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
 
     # If Zowe local CA keystore file does not exist (e.g. is defined in a keyring) then we have to create another CA
     # whose sole purpose is to help forging a fake certificate that encapsulates JWT token from z/OSMF so that it can be
     # connected with PKCS11 token.
     if [[ ! -f "${LOCAL_CA_FILENAME}.keystore.p12" ]]; then
-        echo "Generate keystore with the CA private key and CA public certificate:"
+        echo ">>>> Generate keystore with the CA private key and CA public certificate:"
         pkeytool -genkeypair $V -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
             -dname "${LOCAL_CA_DNAME}" -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype PKCS12 -validity ${LOCAL_CA_VALIDITY} \
             -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
         chmod 600 "${LOCAL_CA_FILENAME}.keystore.p12"
 
-        echo "Export the CA public certificate:"
+        echo ">>>> Export the CA public certificate:"
         pkeytool -export $V -alias "${LOCAL_CA_ALIAS}" -file "${LOCAL_CA_FILENAME}.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" -rfc \
             -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype PKCS12
     fi
 
-    java -Xms16m -Xmx32m -Xquickstart \
+    current_pwd=$(pwd)
+    cd "${BASE_DIR}"
+    if [[ "$LOG" != "" ]]; then
+      java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.verifySslCertificatesOfServices=${VERIFY_CERTIFICATES} \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
         -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
@@ -529,14 +607,117 @@ function zosmf_jwt_public_key {
         -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
         -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
         org.springframework.boot.loader.PropertiesLauncher \
-        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" "${LOCAL_CA_ALIAS}" \
+        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${LOCAL_CA_ALIAS}" \
+        "${LOCAL_CA_FILENAME}.keystore.p12" PKCS12 "${LOCAL_CA_PASSWORD}" "${LOCAL_CA_PASSWORD}" >> $LOG 2>&1
+      RC=$?
+    else
+      java -Xms16m -Xmx32m -Xquickstart \
+        -Dfile.encoding=UTF-8 \
+        -Djava.io.tmpdir=${TEMP_DIR} \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
+        -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
+        -Dserver.ssl.trustStoreType=PKCS12 \
+        -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
+        -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
+        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service-lite.jar" \
+        -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
+        -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
+        org.springframework.boot.loader.PropertiesLauncher \
+        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${LOCAL_CA_ALIAS}" \
         "${LOCAL_CA_FILENAME}.keystore.p12" PKCS12 "${LOCAL_CA_PASSWORD}" "${LOCAL_CA_PASSWORD}"
+      RC=$?
+    fi
+    cd "${current_pwd}"
+
+    if [ "$RC" != "0" ]; then
+      echo "Failed to retrieve z/OSMF JWT public key, exit with code ${RC}"
+    fi
+
+    if [ -f "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" ]; then
+      if [ `uname` = "OS/390" ]; then
+        echo "Convert encoding of ${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer and save to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+        # java write the pem file in ISO8859-1 encoding, convert to IBM-1047
+        iconv -f ISO8859-1 -t IBM-1047 "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" > "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+        rm -f "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer"
+      else
+        echo "Rename ${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+        mv "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
+      fi
+    fi
+
+    if [ "$RC" != "0" ]; then
+      echo "Failed to retrieve z/OSMF JWT public key, exit with code ${RC}"
+      # return rc of java command?
+      # return $RC
+      return 99
+    else
+      return 0
+    fi
+}
+
+function validate_certificate_domain {
+  host=$1
+  port=$2
+  host=$(echo "${host}" | tr '[:upper:]' '[:lower:]')
+
+  echo ">>>> validate certificate of ${host}:${port}"
+
+  # get first certificate, ignore CAs
+  cert=$(keytool -printcert -sslserver "${host}:${port}" | sed '/Certificate #1/,+99999 d')
+  if [ -z "${cert}" ]; then
+    >&2 echo "Error: failed to load certificate of ${host}:${port} to validate"
+    return 1
+  fi
+
+  owner=$(echo "${cert}" | grep -i "Owner:" | awk -F":" '{print $2;}')
+  common_name=
+  old_IFS="${IFS}"
+  IFS=,
+  for prop in $owner; do
+    key=$(echo "${prop}" | sed 's/^ *//g' | awk -F"=" '{print $1;}')
+    val=$(echo "${prop}" | sed 's/^ *//g' | awk -F"=" '{print $2;}')
+    if [ "${key}" = "CN" ]; then
+      common_name="${val}"
+    fi
+  done
+  IFS="${old_IFS}"
+
+  if [ -z "${common_name}" ]; then
+    >&2 echo "Error: failed to find common name of the certificate"
+    return 2
+  fi
+  echo "${host} certificate has common name ${common_name}"
+
+  if [ "$(echo "${common_name}" | tr '[:upper:]' '[:lower:]'})" != "${host}" ]; then
+    echo "${host} doesn't match certificate common name, check subject alternate name(s)"
+    san=$(echo "${cert}" | sed -e '1,/2.5.29.17/d' | sed '/ObjectId/,+99999 d')
+    dnsnames=$(echo "${san}" | grep -i DNSName | awk -F":" '{print $2;}' | sed 's/^ *//g' | sed 's/ *$//g')
+    if [ -n "${dnsnames}" ]; then
+      echo "certificate has these subject alternate name(s):"
+      echo "${dnsnames}"
+      match=
+      for dnsname in "${dnsnames}" ; do
+        if [ "${dnsname}" = "${host}" ]; then
+          match=true
+        fi
+      done
+      if [ "${match}" != "true" ]; then
+        >&2 echo "Error: ${host} doesn't match any of the certificate common name and subject alternate name(s)"
+        return 4
+      fi
+    else
+      >&2 echo "Error: ${host} certificate doesn't have subject alternate name(s)"
+      return 3
+    fi
+  fi
+  echo "certificate of ${host}:${port} has valid common name and/or subject alternate name(s)"
+  return 0
 }
 
 function trust_zosmf {
   echo "${ZOSMF_CERTIFICATE}"
   if [[ -z "${ZOSMF_CERTIFICATE}" ]]; then
-    echo "Getting certificates from z/OSMF host"
+    echo ">>>> Getting certificates from z/OSMF host"
     CER_DIR=`dirname "${SERVICE_TRUSTSTORE}"`/temp
     TEMP_CERT_FILE=temp-zosmf-cert
     rm -rf CER_DIR=`dirname "${SERVICE_TRUSTSTORE}"`/temp &> /dev/null
@@ -551,14 +732,14 @@ function trust_zosmf {
     # First, print out ZOSMF certificates fingerprints for a user to check
     # We call keytool directly because the pkeytool messes the output that we want to display
     if [[ "$LOG" != "" ]]; then
-      echo "z/OSMF certificate fingerprint:" >&5
+      echo "> z/OSMF certificate fingerprint:" >&5
       keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5' >&5
     else
-      echo "z/OSMF certificate fingerprint:"
+      echo "> z/OSMF certificate fingerprint:"
       keytool ${KEYTOOL_COMMAND} | grep -e 'Owner:' -e 'SHA1:' -e 'SHA256:' -e 'MD5'
     fi
     # keytool should work here but we check RC just in case
-    echo "z/OSMF certificate fingerprint: keytool returned: $RC"
+    echo "< z/OSMF certificate fingerprint: keytool returned: $RC"
     RC=$?
     if [ "$RC" -ne "0" ]; then
         exit 1
@@ -568,7 +749,7 @@ function trust_zosmf {
     keytool ${KEYTOOL_COMMAND} -rfc > "${CER_DIR}/${TEMP_CERT_FILE}"
     # keytool should work now but we check RC just in case
     RC=$?
-    echo "z/OSMF certificate to temp file: keytool returned: $RC"
+    echo "< z/OSMF certificate to temp file: keytool returned: $RC"
     if [ "$RC" -ne "0" ]; then
         exit 1
     fi
@@ -585,15 +766,79 @@ function trust_zosmf {
 
     # clean up temporary files
     rm -rf "${CER_DIR}"
+
+    if [ "${VERIFY_CERTIFICATES}" = "true" ]; then
+      # validate if ZOWE_ZOSMF_HOST matches certificate common name or SAN
+      validate_certificate_domain "${ZOWE_ZOSMF_HOST}" "${ZOWE_ZOSMF_PORT}"
+      if [ "$?" != "0" ]; then
+        >&2 echo "Error: z/OSMF certficate has invalid common name or subject alternate name(s), please update the certificate so Zowe Gateway can communicate with z/OSMF properly."
+        >&2 echo "If you cannot modify z/OSMF certificate, you will need to disable strict certificate verification by setting VERIFY_CERTIFICATES to false but keeping NONSTRICT_VERIFY_CERTIFICATES as true."
+        exit 98
+      fi
+    fi
   else
-    echo "Getting zosmf certificates from file"
+    echo ">>>> Getting zosmf certificates from file"
     for entry in "${ZOSMF_CERTIFICATE}"; do
       CERTIFICATE=${entry}
       entry=${entry##*/}
       ALIAS=${entry%.*}
       trust
     done
+
+    # FIXME: should we also validate ZOSMF_CERTIFICATE domain?
   fi
+}
+
+function generate_component_level_certificates {
+  if [ -z "${COMPONENT_LEVEL_CERTIFICATES}" ]; then
+    # no action needed
+    return 0
+  fi
+  if [ -n "${EXTERNAL_CERTIFICATE}" ]; then
+    # user is using external certificates
+    return 0
+  fi
+  echo ">>>> Generate component-level certificates for: ${COMPONENT_LEVEL_CERTIFICATES}"
+  OLD_SERVICE_ALIAS=${SERVICE_ALIAS}
+  OLD_SERVICE_DNAME=${SERVICE_DNAME}
+  OLD_EXTERNAL_CERTIFICATE=${EXTERNAL_CERTIFICATE}
+  OLD_EXTERNAL_CERTIFICATE_ALIAS=${EXTERNAL_CERTIFICATE_ALIAS}
+  for SERVICE_ALIAS in $(echo "${COMPONENT_LEVEL_CERTIFICATES}" | sed -e 's#,# #g'); do
+    # check if component is using external certificate
+    EXTERNAL_CERTIFICATE=
+    for one_component_def in $(echo "${EXTERNAL_COMPONENT_CERTIFICATES}" | sed -e 's#:# #g'); do
+      component=$(echo "${one_component_def}" | awk -F":" '{print $1;}')
+      component_cert=$(echo "${one_component_def}" | awk -F":" '{print $2;}')
+      if [ "${component}" = "${SERVICE_ALIAS}" ]; then
+        EXTERNAL_CERTIFICATE="${component_cert}"
+        break
+      fi
+    done
+    EXTERNAL_CERTIFICATE_ALIAS=
+    for one_component_def in $(echo "${EXTERNAL_COMPONENT_CERTIFICATES}" | sed -e 's#:# #g'); do
+      component=$(echo "${one_component_def}" | awk -F":" '{print $1;}')
+      component_alias=$(echo "${one_component_def}" | awk -F":" '{print $2;}')
+      if [ "${component}" = "${SERVICE_ALIAS}" ]; then
+        EXTERNAL_CERTIFICATE_ALIAS="${component_alias}"
+        break
+      fi
+    done
+    if [ -n "${EXTERNAL_CERTIFICATE}" -a -z "${EXTERNAL_CERTIFICATE_ALIAS}" ] || [ -n "${EXTERNAL_CERTIFICATE}" -a -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]; then
+      >&2 echo "Error: external certificate definition of component ${SERVICE_ALIAS} is not complete. You may miss either certificate or alias."
+      exit 1
+    fi
+    echo "- component ${SERVICE_ALIAS}"
+    if [ -n "${EXTERNAL_CERTIFICATE}" -a -n "${EXTERNAL_CERTIFICATE_ALIAS}" ]; then
+      echo "  using external certificate ${EXTERNAL_CERTIFICATE} with alias ${EXTERNAL_CERTIFICATE_ALIAS}"
+    fi
+    SERVICE_DNAME=$(echo "${COMPONENT_DNAME}" | sed -e "s#{component}#${SERVICE_ALIAS}#")
+    # generate, sign and trust certificate
+    append_service "${SERVICE_ALIAS}"
+  done
+  SERVICE_ALIAS=${OLD_SERVICE_ALIAS}
+  SERVICE_DNAME=${OLD_SERVICE_DNAME}
+  EXTERNAL_CERTIFICATE=${OLD_EXTERNAL_CERTIFICATE}
+  EXTERNAL_CERTIFICATE_ALIAS=${OLD_EXTERNAL_CERTIFICATE_ALIAS}
 }
 
 function toUpperCase {
@@ -668,6 +913,15 @@ while [ "$1" != "" ]; do
         --external-ca-filename ) shift
                                 EXTERNAL_CA_FILENAME=$1
                                 ;;
+        --component-level-certs ) shift
+                                COMPONENT_LEVEL_CERTIFICATES=$1
+                                ;;
+        --external-component-certificates ) shift
+                                EXTERNAL_COMPONENT_CERTIFICATES=$1
+                                ;;
+        --external-component-certificate-aliases ) shift
+                                EXTERNAL_COMPONENT_CERTIFICATE_ALIASES=$1
+                                ;;
         --zosmf-certificate )   shift
                                 ZOSMF_CERTIFICATE=$1
                                 ;;
@@ -700,6 +954,7 @@ case $ACTION in
         clean_keyring
         setup_local_ca
         new_service
+        generate_component_level_certificates
         jwt_key_gen_and_export
         ;;
     add-external-ca)

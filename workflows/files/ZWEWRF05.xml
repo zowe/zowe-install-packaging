@@ -52,8 +52,21 @@ script attempts to calculate the value on its own.</description>
     </variable>
     <variable name="VERIFY_CERTIFICATES" scope="instance" visibility="public">
         <label>VERIFY_CERTIFICATES</label>
-        <abstract>Should APIML verify certificates of services - true/false</abstract>
-        <description>Should APIML verify certificates of services - true/false</description>
+        <abstract>Should APIML verify certificates of services in strict mode - true/false</abstract>
+        <description>Should APIML verify certificates of services in strict mode - true/false. "strict mode" will verify
+if the certificates is trusted in truststore, also verify if the certificate Common Name or Subject Alternate Name (SAN)
+match the service hostname. If this value is true, NONSTRICT_VERIFY_CERTIFICATES will be ignored.</description>
+        <category>General Security</category>
+        <boolean>
+            <default>true</default>
+        </boolean>
+    </variable>
+    <variable name="NONSTRICT_VERIFY_CERTIFICATES" scope="instance" visibility="public">
+        <label>NONSTRICT_VERIFY_CERTIFICATES</label>
+        <abstract>Should APIML verify certificates of services in non-strict mode - true/false</abstract>
+        <description>Should APIML verify certificates of services in non-strict mode - true/false. "non-strict mode" will
+verify if the certificates is trusted in truststore, but certificate Common Name or Subject Alternate Name (SAN) will NOT
+be checked.</description>
         <category>General Security</category>
         <boolean>
             <default>true</default>
@@ -149,6 +162,7 @@ and that will be also used to secure newly generated keystores for API Mediation
         <variableValue name="HOSTNAME" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="IPADDRESS" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="VERIFY_CERTIFICATES" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="NONSTRICT_VERIFY_CERTIFICATES" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="EXTERNAL_CERTIFICATE" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="EXTERNAL_CERTIFICATE_ALIAS" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="EXTERNAL_CERTIFICATE_AUTHORITIES" scope="instance" noPromptIfSet="false" required="false"/>
@@ -181,6 +195,7 @@ chmod 755 ${USSDIR}/zowe-setup-certificates.env
 HOSTNAME='${HOSTNAME}'
 IPADDRESS='${IPADDRESS}'
 VERIFY_CERTIFICATES='${VERIFY_CERTIFICATES}'
+NONSTRICT_VERIFY_CERTIFICATES='${NONSTRICT_VERIFY_CERTIFICATES}'
 EXTERNAL_CERTIFICATE='${EXTERNAL_CERTIFICATE}'
 EXTERNAL_CERTIFICATE_ALIAS='${EXTERNAL_CERTIFICATE_ALIAS}'
 EXTERNAL_CERTIFICATE_AUTHORITIES='${EXTERNAL_CERTIFICATE_AUTHORITIES}'
@@ -191,7 +206,7 @@ KEYSTORE_ALIAS='${KEYSTORE_ALIAS}'
 ZOWE_USER_ID='${ZOWE_USER_ID}'
 ZOWE_GROUP_ID='${ZOWE_GROUP_ID}'
 
-sed -e "s#HOSTNAME=#HOSTNAME=$HOSTNAME#g" -e "s#IPADDRESS=#IPADDRESS=$IPADDRESS#g" -e "s#VERIFY_CERTIFICATES=true#VERIFY_CERTIFICATES=$VERIFY_CERTIFICATES#g" -e "s#EXTERNAL_CERTIFICATE=#EXTERNAL_CERTIFICATE=$EXTERNAL_CERTIFICATE#g" -e "s#EXTERNAL_CERTIFICATE_ALIAS=#EXTERNAL_CERTIFICATE_ALIAS=$EXTERNAL_CERTIFICATE_ALIAS#g" -e "s#EXTERNAL_CERTIFICATE_AUTHORITIES=#EXTERNAL_CERTIFICATE_AUTHORITIES=$EXTERNAL_CERTIFICATE_AUTHORITIES#g" -e "s#ZOSMF_CERTIFICATE=#ZOSMF_CERTIFICATE=$ZOSMF_CERTIFICATE#g" -e "s#KEYSTORE_PASSWORD=password#KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD#g" -e "s#KEYSTORE_DIRECTORY=/global/zowe/keystore#KEYSTORE_DIRECTORY=$KEYSTORE_DIRECTORY#g" -e "s#KEYSTORE_ALIAS=localhost#KEYSTORE_ALIAS=$KEYSTORE_ALIAS#g" -e "s#ZOWE_USER_ID=ZWESVUSR#ZOWE_USER_ID=$ZOWE_USER_ID#g" -e "s#ZOWE_GROUP_ID=ZWEADMIN#ZOWE_GROUP_ID=$ZOWE_GROUP_ID#g" ${zowe_install_path}/bin/zowe-setup-certificates.env > ${USSDIR}/zowe-setup-certificates.env
+sed -e "s#HOSTNAME=#HOSTNAME=$HOSTNAME#g" -e "s#IPADDRESS=#IPADDRESS=$IPADDRESS#g" -e "s#VERIFY_CERTIFICATES=true#VERIFY_CERTIFICATES=$VERIFY_CERTIFICATES#g" -e "s#NONSTRICT_VERIFY_CERTIFICATES=true#NONSTRICT_VERIFY_CERTIFICATES=$NONSTRICT_VERIFY_CERTIFICATES#g" -e "s#EXTERNAL_CERTIFICATE=#EXTERNAL_CERTIFICATE=$EXTERNAL_CERTIFICATE#g" -e "s#EXTERNAL_CERTIFICATE_ALIAS=#EXTERNAL_CERTIFICATE_ALIAS=$EXTERNAL_CERTIFICATE_ALIAS#g" -e "s#EXTERNAL_CERTIFICATE_AUTHORITIES=#EXTERNAL_CERTIFICATE_AUTHORITIES=$EXTERNAL_CERTIFICATE_AUTHORITIES#g" -e "s#ZOSMF_CERTIFICATE=#ZOSMF_CERTIFICATE=$ZOSMF_CERTIFICATE#g" -e "s#KEYSTORE_PASSWORD=password#KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD#g" -e "s#KEYSTORE_DIRECTORY=/global/zowe/keystore#KEYSTORE_DIRECTORY=$KEYSTORE_DIRECTORY#g" -e "s#KEYSTORE_ALIAS=localhost#KEYSTORE_ALIAS=$KEYSTORE_ALIAS#g" -e "s#ZOWE_USER_ID=ZWESVUSR#ZOWE_USER_ID=$ZOWE_USER_ID#g" -e "s#ZOWE_GROUP_ID=ZWEADMIN#ZOWE_GROUP_ID=$ZOWE_GROUP_ID#g" ${zowe_install_path}/bin/zowe-setup-certificates.env > ${USSDIR}/zowe-setup-certificates.env
             </inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
         </template>

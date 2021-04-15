@@ -76,22 +76,10 @@ const executeCommand = async (command, context = {}) => {
 };
 
 const testCommand = async(command, context = {}, expected = {}, exact_match = false) => {
-  const commands = [];
-  if (context && context.envs) {
-    for (const key in context.envs) {
-      commands.push(`export ${key}=${context.envs[key]}`);
-    }
-  }
-  if (context && context.sources) {
-    for (const src of context.sources) {
-      commands.push(`. ${src}`);
-    }
-  }
-  commands.push(command);
   // apply default value
   expected = Object.assign({rc: 0, stdout: '', stderr: ''}, expected);
 
-  const {rc, stdout, stderr} = await executeCommand(commands.join('\n'));
+  const {rc, stdout, stderr} = await executeCommand(prepareCommands(command, context));
   expect(rc).to.equal(expected.rc);
   if (exact_match) {
     expect(stdout).to.equal(expected.stdout);

@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright IBM Corporation 2018, 2021
  */
 
 node('zowe-jenkins-agent-dind-wdc') {
@@ -16,6 +16,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def pipeline = lib.pipelines.generic.GenericPipeline.new(this)
   def manifest
   def zowePaxUploaded
+  int prPostCommentID
 
   pipeline.admins.add("jackjia", "tomzhang", "joewinchester", "markackert")
 
@@ -29,6 +30,11 @@ node('zowe-jenkins-agent-dind-wdc') {
     booleanParam(
       name: 'BUILD_DOCKER',
       description: 'If we want to build docker image.',
+      defaultValue: false
+    ),
+    booleanParam(
+      name: 'BUILD_DOCKER_SOURCES',
+      description: 'If we want to build docker image with included source files.',
       defaultValue: false
     ),
     booleanParam(
@@ -79,6 +85,18 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     timeout       : [time: 5, unit: 'MINUTES'],
     isSkippable   : false,
     operation     : {
+      //post a comment on PR to signify that a build is about to start
+      if (pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+        int prNumber = prNumberString as Integer   // convert to int
+        String commentText = "Building Zowe sources...\n"
+        commentText += "Build number: ${env.BUILD_NUMBER}\n"
+        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
+        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
+        commentText += "<i>Click the icon above to see details</i>\n"
+        prPostCommentID = pipeline.github.postComment(prNumber, commentText)
+      }
+
       // prepareing download spec
       echo 'prepareing download spec ...'
       def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
@@ -89,7 +107,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 25
+        expected    : 26
       )
 
       // we want build log pulled in for SMP/e build
@@ -211,20 +229,37 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              mkdir -p zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
           """
           sshPut remote: Z_SERVER, from: "containers", into: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}"
-          sshCommand remote: Z_SERVER, command: \
-          """
+
+          sshString = """
              cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle &&
              wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
              mkdir -p utils && cp -r ../utils/* ./utils &&
              chmod +x ./utils/*.sh ./utils/*/bin/* &&
              sudo docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" &&
              sudo docker build -t ompzowe/server-bundle:s390x . &&
-             sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x &&
+             sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x
+             """
+          if (params.BUILD_DOCKER_SOURCES) {
+            sshString += """
+              sudo docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=s390x -t ompzowe/server-bundle:s390x-sources . &&
+              sudo docker save -o server-bundle.s390x-sources.tar ompzowe/server-bundle:s390x-sources &&
+              """
+          }
+          sshString += """
              sudo chmod 777 * &&
-             echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.s390x.tar
-          """
+             echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.*
+             """
+          sshCommand remote: Z_SERVER, command: sshString
+
           sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle/server-bundle.s390x.tar", into: "server-bundle.s390x.tar"
-          pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
+
+          if (params.BUILD_DOCKER_SOURCES) {
+            sshGet remote: Z_SERVER, from: "zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle/server-bundle.s390x-sources.tar", into: "server-bundle.sources.s390x.tar"
+            pipeline.uploadArtifacts([ 'server-bundle.sources.s390x.tar', 'server-bundle.s390x.tar' ])
+          } else {
+            pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
+          }
+
           sshCommand remote: Z_SERVER, command: \
           """
              rm -rf zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}
@@ -276,11 +311,38 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             // build docker image
             sh "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" && docker build  -t ompzowe/server-bundle:amd64 ."
             sh "docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64"
+            if (params.BUILD_DOCKER_SOURCES) {
+              sh "docker login -u \"${USERNAME}\" -p \"${PASSWORD}\" && docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=amd64 -t ompzowe/server-bundle:amd64-sources ."
+              sh "docker save -o server-bundle.sources.amd64.tar ompzowe/server-bundle:amd64-sources"
+            }
           }
           // show files
-          sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.amd64.tar'
-          pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
+          sh 'echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.*'
+          if (params.BUILD_DOCKER_SOURCES) {
+            pipeline.uploadArtifacts([ 'server-bundle.amd64.tar', 'server-bundle.sources.amd64.tar' ])
+          } else {
+            pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
+          }
         }      
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name              : "Update comment to signify build pass status",
+    timeout: [time: 2, unit: 'MINUTES'],
+    isSkippable: false,
+    stage : {
+      //update comment originally posted on PR, to reflect build status
+      // At this point, the build and packaging stages must have passed
+      if (prPostCommentID && pipeline.changeInfo.isPullRequest) {
+        String prNumberString = "${pipeline.changeInfo.pullRequestId}"
+        int prNumber = prNumberString as Integer   // convert to int
+        String commentText = "Building and Packaging Zowe sources...\n"
+        commentText += "Build number: ${env.BUILD_NUMBER}\n"
+        commentText += "Link: ${env.BUILD_URL}\n"
+        commentText += "Build status: `Passed`"
+        pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
       }
     }
   )
@@ -308,7 +370,9 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'TEST_SERVER', value: 'marist'),
+          //string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
+          string(name: 'TEST_SCOPE', value: 'convenience build'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: buildName),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),

@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2020
+# Copyright Contributors to the Zowe Project.
 #######################################################################
 
 #######################################################################
@@ -53,10 +53,13 @@ DEFAULT_TARGET_DIR=/global/zowe/extensions
 if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
+export ROOT_DIR="${ZOWE_ROOT_DIR}"
 
 . ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
 
-. ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+[ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
+# this utils usually be sourced from instance dir, but here we are too early
+[ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${ZOWE_ROOT_DIR}/bin/instance/internal/utils.sh
 
 # node is required for read_component_manifest
 if [ -n "${NODE_HOME}" ]; then
@@ -101,7 +104,7 @@ extract_to_target_dir(){
         elif [[ "$COMPONENT_FILE" = *.zip ]]; then
             jar xf "$COMPONENT_FILE"
         elif [[ "$COMPONENT_FILE" = *.tar ]]; then
-            pax -z tar -xf "$COMPONENT_FILE"
+            _CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "$COMPONENT_FILE"
         fi
     fi
 
@@ -203,8 +206,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             path=$(get_full_path "$1")
             validate_directory_is_accessible "$path"
             if [[ $? -eq 0 ]]; then
-                validate_file_not_in_directory "$path/instance.env" "$path"
-                if [[ $? -ne 0 ]]; then
+                if [ -e "$path/instance.env" -o -e "$path/zowe.yaml" ]; then
                     INSTANCE_DIR="${path}"
                 else
                     error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
@@ -261,7 +263,11 @@ if [ -z "${TARGET_DIR}" ]; then
         if [ -n "${ZWE_EXTENSION_DIR}" ]; then
             zwe_extension_dir="${ZWE_EXTENSION_DIR}"
         elif [ -n "${INSTANCE_DIR}" ]; then #instance_dir exists
-            zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
+            if [ -e "${INSTANCE_DIR}/instance.env" ]; then
+                zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
+            elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
+                zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
+            fi
         fi
         if [ -z "${zwe_extension_dir}" ]; then
             #Assigns TARGET_DIR to the default directory since it was not set to a specific directory
@@ -288,7 +294,12 @@ if [ "${IS_ZOWE_CORE}" = "false" ]; then
         fi
 
         # TARGET_DIR should be same as ZWE_EXTENSION_DIR defined in instance.env
-        zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
+        zwe_extension_dir=
+        if [ -e "${INSTANCE_DIR}/instance.env" ]; then
+            zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
+        elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
+            zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
+        fi
         if [ -n "${zwe_extension_dir}" -a "${TARGET_DIR}" != "${zwe_extension_dir}" ]; then
             error_handler "It's recommended to install all Zowe extensions into same directory. The recommended target directory is ZWE_EXTENSION_DIR (${ZWE_EXTENSION_DIR}) defined in Zowe instance.env."
         fi

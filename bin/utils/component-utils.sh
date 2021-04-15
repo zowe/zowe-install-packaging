@@ -20,7 +20,7 @@
 # - ZWE_EXTENSION_DIR
 #
 # This function will find the component in this sequence:
-#   - check if component id paramter is a path to lifecycle scripts directory
+#   - check if component id parameter is a path to lifecycle scripts directory
 #   - ${ROOT_DIR}/components/<component-id>
 #   - ${ZWE_EXTENSION_DIR}/<component-id>
 #
@@ -177,7 +177,7 @@ detect_component_manifest_encoding() {
 }
 
 ###############################
-# Convert component YAML format manifest to JSON and place into workspace foler
+# Convert component YAML format manifest to JSON and place into workspace folder
 #
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
@@ -187,10 +187,10 @@ detect_component_manifest_encoding() {
 # Required environment variables:
 # - ROOT_DIR
 # - NODE_HOME
-# - WORKSPACE_DIR
+# - ZWELS_INSTANCE_ENV_DIR
 #
 # Example:
-# - convert my-component manifest, a .manifest.json will be created in <WORKSPACE_DIR>/my-component folder
+# - convert my-component manifest, a .manifest.json will be created in <ZWELS_INSTANCE_ENV_DIR>/my-component folder
 #   convert_component_manifest "/path/to/zowe/components/my-component"
 #
 # @param string   component directory
@@ -203,28 +203,37 @@ convert_component_manifest() {
   fi
   # node should have already been put into PATH
 
-  if [ -z "${WORKSPACE_DIR}" ]; then
-    >&2 echo "WORKSPACE_DIR is required by this function"
+  if [ -z "${ZWELS_INSTANCE_ENV_DIR}" ]; then
+    >&2 echo "ZWELS_INSTANCE_ENV_DIR is required by this function"
     return 1
   fi
 
   utils_dir="${ROOT_DIR}/bin/utils"
   fconv="${utils_dir}/fconv/src/index.js"
   component_name=$(basename "${component_dir}")
-  component_manifest=
+  component_manifest_yaml=
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
-    component_manifest="${component_dir}/manifest.yaml"
+    component_manifest_yaml="${component_dir}/manifest.yaml"
   elif [ -f "${component_dir}/manifest.yml" ]; then
-    component_manifest="${component_dir}/manifest.yml"
+    component_manifest_yaml="${component_dir}/manifest.yml"
   fi
 
-  if [ -n "${component_manifest}" ]; then
-    mkdir -p "${WORKSPACE_DIR}/${component_name}"
-    node "${fconv}" -o "${WORKSPACE_DIR}/${component_name}/.manifest.json" "${component_manifest}"
-    return $?
+  if [ -n "${component_manifest_yaml}" ]; then
+    mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    node "${fconv}" -o "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json" "${component_manifest_yaml}"
+    rc=$?
+    chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    return $rc
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    chmod 750 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+    cp "${component_dir}/manifest.json" "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    chmod 640 "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
+    return 0
   else
-    # this could be the package doesn't have manifest, or has it in JSON format
+    # this could be the package doesn't have manifest
     return 0
   fi
 }
@@ -240,7 +249,7 @@ convert_component_manifest() {
 # - NODE_HOME
 #
 # Optional environment variables:
-# - WORKSPACE_DIR
+# - ZWELS_INSTANCE_ENV_DIR
 #
 # Example:
 # - read my-component commands.start value
@@ -263,13 +272,14 @@ read_component_manifest() {
   # node should have already been put into PATH
 
   component_name=$(basename "${component_dir}")
-  manifest_in_workspace=
-  if [ -n "${WORKSPACE_DIR}" ]; then
-    manifest_in_workspace="${WORKSPACE_DIR}/${component_name}/.manifest.json"
+  manifest_in_env_dir=
+  if [ -n "${ZWELS_INSTANCE_ENV_DIR}" ]; then
+    manifest_in_env_dir="${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.manifest.json"
   fi
 
-  if [ -n "${manifest_in_workspace}" -a -f "${manifest_in_workspace}" ]; then
-    read_json "${manifest_in_workspace}" "${manifest_key}"
+  if [ -n "${manifest_in_env_dir}" -a -f "${manifest_in_env_dir}" ]; then
+    # this should cover most of the cases
+    read_json "${manifest_in_env_dir}" "${manifest_key}"
     return $?
   elif [ -f "${component_dir}/manifest.yaml" ]; then
     read_yaml "${component_dir}/manifest.yaml" "${manifest_key}"
@@ -298,6 +308,7 @@ read_component_manifest() {
 # Required environment variables:
 # - ROOT_DIR
 # - NODE_HOME
+# - ZWELS_HA_INSTANCE_ID
 # - STATIC_DEF_CONFIG_DIR
 #
 # @param string   component directory
@@ -322,6 +333,12 @@ process_component_apiml_static_definitions() {
   while read -r one_def; do
     one_def_trimmed=$(echo "${one_def}" | xargs)
     if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
+      if [ ! -r "${one_def}" ]; then
+        >&2 echo "static definition file ${one_def} of component ${component_name} is not accessible"
+        all_succeed=false
+        break
+      fi
+
       echo "process ${component_name} service static definition file ${one_def_trimmed} ..."
       sanitized_def_name=$(echo "${one_def_trimmed}" | sed 's/[^a-zA-Z0-9]/_/g')
       # FIXME: we may change the static definitions files to real template in the future.
@@ -336,8 +353,8 @@ process_component_apiml_static_definitions() {
         all_succeed=false
         break
       fi
-      echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
-      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}_${sanitized_def_name}.yml
+      echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
+      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
     fi
   done <<EOF
 $(echo "${static_defs}")
@@ -489,6 +506,12 @@ process_component_appfw_plugin() {
   appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
       cd "${component_dir}"
+      if [ ! -r "${appfw_plugin_path}" ]; then
+        >&2 echo "App Framework plugin directory ${appfw_plugin_path} is not accessible"
+        all_succeed=false
+        break
+      fi
+
       ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
       # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
@@ -502,4 +525,193 @@ process_component_appfw_plugin() {
     # error message should have be echoed before this
     return 1
   fi
+}
+
+###############################
+# Lists the service IDs of a specified component
+#
+# Note: this function calls is dependent on various utility functions and
+#       environment variables. Simply source bin/internal/prepare-environment.sh
+#       to import the required dependencies.
+#
+# Required environment variables:
+# - NODE_HOME
+# - ROOT_DIR
+#
+# Example:
+# - List the service IDs for the api-catalog component
+#   i.e: list_component_service_id "${ROOT_DIR}/components/api-catalog"
+#
+# @param string   component directory
+list_component_service_id() {
+  component_dir=$1
+
+  service_index=0
+  dynamic_service_id=$(read_component_manifest "${component_dir}" ".apimlServices.dynamic[${service_index}].serviceId" 2>/dev/null)
+  while [ "${dynamic_service_id}" != "null" ] && [ -n "${dynamic_service_id}" ]; do
+    echo ${dynamic_service_id}
+    service_index=`expr $service_index + 1`
+    dynamic_service_id=$(read_component_manifest "${component_dir}" ".apimlServices.dynamic[${service_index}].serviceId" 2>/dev/null)
+  done
+  static_file_index=0
+  static_file=$(read_component_manifest "${component_dir}" ".apimlServices.static[${static_file_index}].file" 2>/dev/null)
+  while [ "${static_file}" != "null" ] && [ -n "${static_file}" ]; do
+    service_id_index=0
+    static_service_id=$(read_yaml "${component_dir}/${static_file}" ".services[${service_id_index}].serviceId" 2>/dev/null)
+      while [ "${static_service_id}" != "null" ] && [ -n "${static_service_id}" ]; do
+        echo ${static_service_id}
+        service_id_index=`expr $service_id_index + 1`
+        static_service_id=$(read_yaml "${component_dir}/${static_file}" ".services[${service_id_index}].serviceId" 2>/dev/null)
+      done
+    static_file_index=`expr $static_file_index + 1`
+    static_file=$(read_component_manifest "${component_dir}" ".apimlServices.static[${static_file_index}].file" 2>/dev/null)
+  done
+  return 0
+}
+###############################
+# Lists the desktop plugin IDs of a specified component
+#
+# Note: this function calls is dependent on various utility functions and
+#       environment variables. Simply source bin/internal/prepare-environment.sh
+#       to import the required dependencies.
+#
+# Required environment variables:
+# - NODE_HOME
+# - ROOT_DIR
+#
+# Example:
+# - List the desktop plugin IDs for the explorer-mvs component
+#   i.e: list_component_plugin_id "${ROOT_DIR}/components/explorer-mvs"
+#
+# @param string   component directory
+
+list_component_plugin_id() {
+  component_dir=$1
+
+  definition_file="pluginDefinition.json"
+
+  cd ${component_dir}
+
+  appfwplugin_index=0
+  appfwplugin_definition_file=$(read_component_manifest "${component_dir}" ".appfwPlugins[${appfwplugin_index}].path" 2>/dev/null)
+  while [ "${appfwplugin_definition_file}" != "null" ] && [ -n "${appfwplugin_definition_file}" ]; do
+    echo $(read_json "${appfwplugin_definition_file}/${definition_file}" ".identifier" 2>/dev/null)
+    appfwplugin_index=`expr $appfwplugin_index + 1`
+    appfwplugin_definition_file=$(read_component_manifest "${component_dir}" ".appfwPlugins[${appfwplugin_index}].path" 2>/dev/null)
+  done
+  desktopIframe_index=0
+  desktopIframe_id=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${desktopIframe_index}].id" 2>/dev/null)
+  while [ "${desktopIframe_id}" != "null" ] && [ -n "${desktopIframe_id}" ]; do
+    echo ${desktopIframe_id}
+    desktopIframe_index=`expr $desktopIframe_index + 1`
+    desktopIframe_id=$(read_component_manifest "${component_dir}" ".desktopIframePlugins[${desktopIframe_index}].id" 2>/dev/null)
+  done
+  return 0
+}
+
+###############################
+# Verifies a specific component by performing a fast check. If the component
+# has any services, it will check if the status of those services are "UP". If
+# it has any desktop plugins it will check if it exists on the zowe instance.
+#
+# Note: this function calls is dependent on various utility functions and
+#       environment variables. Simply source bin/internal/prepare-environment.sh
+#       to import the required dependencies.
+#
+# Required environment variables:
+# - NODE_HOME
+# - ROOT_DIR
+# - ZOWE_EXPLORER_HOST
+# - DISCOVERY_PORT
+# - ZOWE_ZLUX_SERVER_HTTPS_PORT
+#
+# Example:
+# - Verify service and desktop plugin of explorer-jes component
+#   i.e: verify_component_instance "${ROOT_DIR}/components/explorer-jes"
+#
+# @param string   component directory
+verify_component_instance() {
+  component_id=$1
+  rc_failures=0
+
+  component_dir=$(find_component_directory "${component_id}")
+
+  service_ids=$(list_component_service_id "${component_dir}")
+
+  print_and_log_message "=========================================="
+
+  for service_id in $service_ids; do
+    json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J 2>/dev/null)
+    log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
+    status_index=0
+    service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
+    log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
+    while [[ -n ${service_status} ]]; do
+      if [[ "${service_status}" == "UP" ]]; then
+        print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
+      else
+      # This case is currently used but will be implmented for future purposes
+        print_and_log_error_message "- service ${service_id} is registered but is currently ${service_status}"
+        rc_failures=`expr $rc_failures + 1`
+      fi
+      status_index=`expr $status_index + 1`
+      service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
+      log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
+    done
+    if [[ ${status_index} -eq 0 ]]; then
+        print_and_log_error_message "- service ${service_id} is not registered properly!"
+        rc_failures=`expr $rc_failures + 1`
+    fi
+  done
+
+  if [ -z "${service_ids}" ]; then
+     print_and_log_message "- No services exist for this component"
+  fi
+  
+  desktop_ids=$(list_component_plugin_id "${component_dir}")
+  desktop_identifiers=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k | read_json - .pluginDefinitions[].identifier)
+  log_message "Identifiers for desktop plugins currently registered: ${desktop_identifiers}"
+
+  for desktop_id in $desktop_ids; do
+    log_message "${component_id} desktop plugin identifier: ${desktop_id}"
+
+    if [[ "$desktop_identifiers" == *"$desktop_id"* ]]; then
+      print_and_log_message "- desktop plugin ${desktop_id} is registered successfully"
+    else
+      print_and_log_error_message "- desktop plugin ${desktop_id} is not registered successfully"
+      rc_failures=`expr $rc_failures + 1`
+    fi
+  done
+
+  if [ -z "${desktop_ids}" ]; then
+    print_and_log_message "- No desktop plugins exist for this component"
+  fi
+
+  return $rc_failures
+}
+
+###############################
+# Lists all the components that exists in a zowe instance
+#
+# Required environment variables:
+# - ROOT_DIR
+# - ZWE_EXTENSION_DIR
+# - EXTERNAL_COMPONENTS
+#
+# Example:
+# - This will display all components that is currentally installled on a zowe instance
+#   i.e: list_all_components
+#
+list_all_components() {
+  component_dir_list="${ROOT_DIR}/components ${ZWE_EXTENSION_DIR}"
+
+  for component_dirs in ${component_dir_list}; do
+    ls -1 ${component_dirs}
+  done
+
+  # May need to loop through EXTERNAL_COMPONENTS env variable (contains third part components)
+  # for directories in $(echo ${EXTERNAL_COMPONENTS} | sed "s/,/ /g"); do
+  #   echo ${directories}
+  # done
+  
 }

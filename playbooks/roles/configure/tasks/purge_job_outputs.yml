@@ -26,6 +26,7 @@
 - include_role:
     name: zos
     tasks_from: list_jobs
+  when: zowe_xmem_stc_name != ""
   vars:
     list_jobs_name: "{{ zowe_xmem_stc_name }}"
 
