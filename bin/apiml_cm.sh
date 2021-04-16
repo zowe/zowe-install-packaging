@@ -577,6 +577,9 @@ function export_jwt_from_keyring {
 function zosmf_jwt_public_key {
     echo ">>>> Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
 
+    echo ">> current environment variables"
+    env | sort
+
     # If Zowe local CA keystore file does not exist (e.g. is defined in a keyring) then we have to create another CA
     # whose sole purpose is to help forging a fake certificate that encapsulates JWT token from z/OSMF so that it can be
     # connected with PKCS11 token.
