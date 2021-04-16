@@ -252,13 +252,15 @@ if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf \
       --service-password "${KEYSTORE_PASSWORD}" --service-truststore "${TRUSTSTORE_PREFIX}" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-      --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}"
+      --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}"
   else
     export GENERATE_CERTS_FOR_KEYRING;
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf --zowe-userid "${ZOWE_USER_ID}" \
       --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
       --service-keystore "${KEYSTORE_PREFIX}" --service-password "${KEYSTORE_PASSWORD}" \
-      --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}"
+      --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}"
   fi
   RC=$?
 
