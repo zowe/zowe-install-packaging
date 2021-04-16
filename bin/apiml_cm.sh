@@ -862,6 +862,12 @@ while [ "$1" != "" ]; do
                                 export LOG=$1
                                 exec 5>&1 >>$LOG
                                 ;;
+        --verify-certificates )   shift
+                                VERIFY_CERTIFICATES=$1
+                                ;;
+        --nonstrict-verify-certificates )   shift
+                                NONSTRICT_VERIFY_CERTIFICATES=$1
+                                ;;
         --local-ca-filename )   shift
                                 LOCAL_CA_FILENAME=$1
                                 ;;
