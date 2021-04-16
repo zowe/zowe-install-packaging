@@ -601,7 +601,7 @@ function zosmf_jwt_public_key {
       java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=true \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
         -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
@@ -617,7 +617,7 @@ function zosmf_jwt_public_key {
       java -Xms16m -Xmx32m -Xquickstart \
         -Dfile.encoding=UTF-8 \
         -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=true \
+        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
         -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
         -Dserver.ssl.trustStoreType=PKCS12 \
         -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
@@ -864,6 +864,12 @@ while [ "$1" != "" ]; do
         --log )                 shift
                                 export LOG=$1
                                 exec 5>&1 >>$LOG
+                                ;;
+        --verify-certificates )   shift
+                                VERIFY_CERTIFICATES=$1
+                                ;;
+        --nonstrict-verify-certificates )   shift
+                                NONSTRICT_VERIFY_CERTIFICATES=$1
                                 ;;
         --local-ca-filename )   shift
                                 LOCAL_CA_FILENAME=$1
