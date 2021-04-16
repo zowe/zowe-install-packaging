@@ -980,9 +980,6 @@ case $ACTION in
         ;;
     trust-zosmf)
         trust_zosmf
-        if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" == "false" ]]; then
-          export_jwt_from_keyring
-        fi
         zosmf_jwt_public_key
         ;;
     cert-key-export)
