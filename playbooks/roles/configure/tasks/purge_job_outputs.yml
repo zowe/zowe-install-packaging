@@ -83,6 +83,21 @@
   loop: "{{ list_jobs_result.stdout_lines }}"
 
 # ============================================================================
+# Purge ZWEKRING
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWEKRING"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
 # Purge ZWESSOTK
 - include_role:
     name: zos
