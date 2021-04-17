@@ -14,14 +14,14 @@
     cat "{{ work_dir_remote }}/ZWESSOTK.raw.jcl" | \
     sed -e "s%SET  PRODUCT=RACF%SET PRODUCT={{ zos_security_system }}%" | \
     sed -e "s%SET JWTLABEL='jwtsecret'%SET JWTLABEL='{{ zowe_token_label }}'%" | \
-    sed -e "s%SET  SSOTOKEN=%SET  SSOTOKEN='{{ zowe_token_name }}'%" \
+    sed -e "s%SET SSOTOKEN=%SET SSOTOKEN='{{ zowe_token_name }}'%" \
     > "{{ work_dir_remote }}/ZWESSOTK.jcl"
 
 - name: Check ZWESSOTK.jcl changes
   raw: >-
     grep -e "^// *SET " \
         -e PRODUCT \
-        -e JWTDSNAME \
+        -e JWTDSNAM \
         -e JWTLABEL \
         -e SSOTOKEN \
         "{{ work_dir_remote }}/ZWESSOTK.jcl"

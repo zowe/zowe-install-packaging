@@ -28,7 +28,7 @@
 //* 3) Update the SET ZOWEUSER= statement to match the existing
 //*    user ID for the Zowe started task.
 //*
-//* 4) Update the SET JWTDSNAME= statement if you plan to import the
+//* 4) Update the SET JWTDSNAM= statement if you plan to import the
 //*    JWT secret certificate from a data set in PKCS12 format.
 //*
 //* 5) Update the SET JWTLABEL= statement if you are not using the
@@ -65,11 +65,11 @@
 //*                     12345678
 //*
 //*      * Name of the data set containing SSO JWT secret
-//         SET JWTDSNAME=
+//         SET JWTDSNAM=
 //*      * Certificate label of Zowe's JWT secret to enable SSO
-//         SET  JWTLABEL='jwtsecret'
+//         SET JWTLABEL='jwtsecret'
 //*      * SSO token name
-//         SET  SSOTOKEN=
+//         SET SSOTOKEN=
 //*
 //*********************************************************************
 //*
@@ -118,7 +118,7 @@
 /* Import JWT secret - BEGINNING ................................... */
 
 /* Import certificate                                                */
-/*  RACDCERT ADD('&JWTDSNAME.') +
+/*  RACDCERT ADD('&JWTDSNAM.') +
 /*           ID(&ZOWEUSER.) +
 /*           WITHLABEL('&JWTLABEL.') +
 /*           TRUST
@@ -176,11 +176,11 @@ $$
 /* Import JWT secret - BEGINNING ................................... */
 
 /* Import certificate                                                */
-/*  TSS CHKCERT DCDSN('&JWTDSNAME.')
+/*  TSS CHKCERT DCDSN('&JWTDSNAM.')
 /*  TSS ADD(&ZOWEUSER.) +
 /*      DIGICERT(&JWTLABEL.) +
 /*      LABLCERT('&JWTLABEL.') +
-/*      DCDSN('&JWTDSNAME.') TRUST
+/*      DCDSN('&JWTDSNAM.') TRUST
 
 /* List imported certificate                                         */
 /*  TSS LIST(&ZOWEUSER.) DIGICERT(ALL)

@@ -7,7 +7,7 @@
     rm -f "{{ work_dir_remote }}/ZWENOSSO.raw.jcl"
 
 - name: Find if ZWENOSSO exists
-  raw: tsocmd listds "'{{ zowe_dataset_prefix }}.SZWESAMP'" members | grep ZWENOSEC
+  raw: tsocmd listds "'{{ zowe_dataset_prefix }}.SZWESAMP'" members | grep ZWENOSSO
   register: samplib_jcl_exists
   ignore_errors: True
 
