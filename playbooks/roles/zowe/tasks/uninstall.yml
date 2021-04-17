@@ -130,6 +130,11 @@
     tasks_from: uninstall_keyring  
 
 # ============================================================================
+- import_role:
+    name: zowe
+    tasks_from: delete_sso_token  
+
+# ============================================================================
 - name: Remove installation folders
   raw: echo rm -fr {{ item }} | su
   loop:
