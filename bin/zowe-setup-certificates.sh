@@ -257,6 +257,7 @@ if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf \
       --service-password "${KEYSTORE_PASSWORD}" --service-truststore "${TRUSTSTORE_PREFIX}" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
       --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
       --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
   else
     export GENERATE_CERTS_FOR_KEYRING;
@@ -264,6 +265,7 @@ if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "
       --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
       --service-keystore "${KEYSTORE_PREFIX}" --service-password "${KEYSTORE_PASSWORD}" \
       --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
       --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
   fi
   RC=$?
