@@ -31,6 +31,8 @@ zowe_instance_id: 1
 zos_zosmf_host:
 # default z/OSMF port
 zos_zosmf_port: 10443
+# default z/OSMF user
+zos_zosmf_user: IZUSVR
 # APIML ports
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
