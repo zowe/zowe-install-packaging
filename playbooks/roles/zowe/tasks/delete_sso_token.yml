@@ -12,7 +12,7 @@
   ignore_errors: True
 
 - name: Execute ZWENOSSO jcl
-  when: samplib_jcl_exists.stdout != ''
+  when: samplib_jcl_exists.rc == 0
   block:
   - name: Copy SZWESAMP(ZWENOSSO) to USS
     raw: cp "//'{{ zowe_dataset_prefix }}.SZWESAMP(ZWENOSSO)'" "{{ work_dir_remote }}/ZWENOSSO.raw.jcl"
