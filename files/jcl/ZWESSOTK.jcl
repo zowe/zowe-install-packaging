@@ -93,7 +93,7 @@
 
 /* Define a CRYPTOZ SO.<token> profile                               */
     RDEFINE CRYPTOZ SO.&SSOTOKEN.
-    PERMIT SO.&SSOTOKEN. ACCESS(UPDATE) CLASS(CRYPTOZ) +
+    PERMIT SO.&SSOTOKEN. ACCESS(CONTROL) CLASS(CRYPTOZ) +
         ID(&ZOWEUSER.)
 
 /* Define a CRYPTOZ USER.<token> profile                             */
