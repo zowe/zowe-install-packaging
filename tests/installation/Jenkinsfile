@@ -334,7 +334,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         "ZOWE_DOCKER_URL=${params.ZOWE_DOCKER_ARTIFACTORY_BUILD}".toString(),
         "SANITY_TEST_DEBUG=${params.SANITY_TEST_DEBUG_INFORMATION}".toString(),
         "DEBUG=${params.INSTALL_TEST_DEBUG_INFORMATION}".toString(),
-        // "ANSIBLE_VERBOSE=-vvv",
+        "ANSIBLE_VERBOSE=-vvv",
       ]
 
       if (TEST_SERVERS[params.TEST_SERVER].containsKey('node_home_pattern')) {

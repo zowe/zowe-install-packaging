@@ -48,7 +48,7 @@
   when: '"zss" in zowe_launch_components'
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
-  no_log: True
+  # no_log: True
 
 - name: Wait for APIML port {{zowe_apiml_gateway_port}} to be available
   uri:
