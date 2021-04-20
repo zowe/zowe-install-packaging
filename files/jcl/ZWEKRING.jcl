@@ -14,6 +14,27 @@
 //* Zowe Open Source Project
 //* This JCL can be used to define key ring and certificates for Zowe
 //*
+//*********************************************************************
+//* ATTENTION!
+//* Configure certificate for Zowe
+//* Select one of three options which is the most suitable for your
+//* environment and follow the appropriate action
+//*
+//* Options:
+//*  1. (default option) Generate Zowe's certificate that will be
+//*     signed by the Zowe's local CA
+//*
+//*  2. Zowe's certificate is already loaded in RACF database
+//*     ACTION:
+//*     a. modify the following snippet
+//*        CONNECT(SITE | ID(userid) +
+//*        LABEL('certlabel') +
+//*        to match the owner of the desired certificate
+//*
+//*  3. Import external Zowe's certificate from a data set in PKCS12
+//*     format
+//*
+//*********************************************************************
 //*
 //* CAUTION: This is neither a JCL procedure nor a complete job.
 //* Before using this JCL, you will have to make the following
@@ -31,33 +52,57 @@
 //* 4) Update the SET ZOWERING= statement to match the desired
 //*    name of the keyring owned by the &ZOWEUSER user ID.
 //*
-//* 5) Update the SET LABEL= statement with the name of the Zowe
-//*    certificate that will be added to the security database or
-//*    that is already stored in the security database.
+//* 5) Specify the option number which is suitable for your
+//*    environment by the SET OPTION statement.
 //*
-//* 6) Update the SET DSNAME= statement if you plan to import the Zowe
-//*    certificate from a data set in PKCS12 format.
+//* 6) Update the SET LABEL= statement with the name of the Zowe
+//*    certificate that will be defined, or added to the security
+//*    database or if that is already stored in the security database.
 //*
-//* 7) Update the SET PKCSPASS= statement to match the password for
-//*    the PKCS12 data set.
-//*
-//* 8) Specify the distinguished name of the Zowe's local CA by
+//* 7) Specify the distinguished name of the Zowe's local CA by
 //*    updating the SET statements CN=, OU=, O=, L=, SP=, C=, and
 //*    LOCALCA=.
 //*
-//* 9) Update the SET HOSTNAME= variable to match the hostname where
+//* 8) Update the SET HOSTNAME= variable to match the hostname where
 //*    Zowe is to run.
 //*
-//* 10) Update the SET IPADDRES= variable to match the IP address
-//*     where Zowe is to run.
+//* 9) Update the SET IPADDRES= variable to match the IP address
+//*    where Zowe is to run.
 //*
-//* 11) Customize the commands in the DD statement that matches your
+//* 10) Update the SET DSNAME= statement if you plan to add the Zowe
+//*     certificate from a data set in PKCS12 format.
+//*
+//* 11) Update the SET PKCSPASS= statement to match the password for
+//*     the PKCS12 data set.
+//*
+//* 12) Set IFZOWECA to 1 if the Zowe certificate signed by a
+//*     recognized certificate authority (CA).
+//*
+//* 13) Update the SET ITRMZWCA= variable to match the intermediate
+//*     CA of the Zowe certificate. It is only applicable if Zowe
+//*     certificate signed by a recognized certificate authority (CA).
+//*
+//* 14) Update the SET ROOTZWCA= variable to match the root CA of the
+//*     Zowe certificate. It is only applicable if Zowe certificate
+//*     signed by a recognized certificate authority (CA).
+//*
+//* 15) Set IFROZFCA to 1 if the z/OSMF crtificate signed by a
+//*     recognized certificate authority (CA).
+//*
+//* 16) Update the SET ROOTZFCA= variable to match the root CA of the
+//*     z/OSMF certificate. It is only applicable if z/OSMF
+//*     certificate signed by a recognized certificate authority (CA).
+//*
+//* 17) Update the SET JWTLABEL= statement if you are not using the
+//*     default JWT secret label.
+//*
+//* 18) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
 //*
-//* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
-//*    TO ALTER SECURITY DEFINITIONS
+//* 1. The userid that runs this job must have sufficient authority
+//*    to alter security definitions
 //*
 //* 2. Assumption: signing CA chain of the Zowe external certificate is
 //*    added to the security database under the CERTAUTH userid.
@@ -77,44 +122,54 @@
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
 //*                     12345678
 //*
+//*      * Keyring for the Zowe userid
+//         SET ZOWERING='ZoweKeyring'
+//*      * Option number to configure Zowe certificate
+//         SET OPTION=
+//*      * Zowe's certificate label
+//         SET LABEL='localhost'
+//*      * Zowe's local CA name
+//         SET LOCALCA='localca'
+//*      * Zowe's local CA common name
+//         SET CN='Zowe Development Instances'
+//*      * Zowe's local CA organizational unit
+//         SET OU='API Mediation Layer'
+//*      * Zowe's local CA organization
+//         SET O='Zowe Sample'
+//*      * Zowe's local CA city/locality
+//         SET L='Prague'
+//*      * Zowe's local CA state/province
+//         SET SP='Prague'
+//*      * Zowe's local CA country
+//         SET C='CZ'
 //*      * Hostname of the system where Zowe is to run
 //         SET HOSTNAME=''
 //*      * IP address of the system where Zowe is to run
 //         SET IPADDRES=''
-//*      * Keyring for the Zowe userid
-//         SET ZOWERING='ZoweKeyring'
-//*      * Zowe's certificate label
-//         SET    LABEL='localhost'
 //*      * Name of the data set containing Zowe's certificate (PKCS12)
-//         SET   DSNAME=
+//         SET DSNAME=
 //*      * Password for the PKCS12 data set
 //         SET PKCSPASS=''
-//*      * Name/Label of the intermediate CA of the Zowe certificate
-//*      * Ignore if not applicable
-//         SET ITRMZWCA=
-//*      * Name/Label of the root CA of the Zowe certificate
-//*      * Ignore if not applicable
-//         SET ROOTZWCA=
-//*      * Name/Label of the root CA of the z/OSMF certificate
-//         SET ROOTZFCA=
-//*      * Zowe's local CA common name
-//         SET       CN='Zowe Development Instances'
-//*      * Zowe's local CA organizational unit
-//         SET       OU='API Mediation Layer'
-//*      * Zowe's local CA organization
-//         SET        O='Zowe Sample'
-//*      * Zowe's local CA city/locality
-//         SET        L='Prague'
-//*      * Zowe's local CA state/province
-//         SET       SP='Prague'
-//*      * Zowe's local CA country
-//         SET        C='CZ'
-//*      * Zowe's local CA name
-//         SET        LOCALCA='localca'
+//*      * IF the Zowe certificate signed by a recognized certificate
+//*      * authority (CA),set IFZOWECA to 1
+//         SET IFZOWECA=0
+//*      * Label of the intermediate CA of the Zowe certificate
+//*        if applicable
+//         SET ITRMZWCA=''
+//*      * Label of the root CA of the Zowe certificate if applicable
+//         SET ROOTZWCA=''
+//*      * IF the z/OSMF certificate signed by a recognized
+//*      * certificate authority (CA),set IFROZFCA to 1
+//         SET IFROZFCA=0
+//*      * Label of the root CA of the z/OSMF certificate if
+//*        applicable
+//         SET ROOTZFCA=''
+//*      * Certificate label of Zowe's JWT secret
+//         SET JWTLABEL='jwtsecret'
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*                     12345678
-//         SET   STCGRP=          * group for Zowe started tasks
+//         SET STCGRP=          * group for Zowe started tasks
 //*                     12345678
 //*
 //* end ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
@@ -136,7 +191,14 @@
 /* Create the keyring .............................................. */
   RACDCERT ADDRING(&ZOWERING.) ID(&ZOWEUSER.)
   SETROPTS RACLIST(DIGTRING) REFRESH
+$$
+//IFOPT1   IF (&OPTION EQ 1) THEN
+//RUNOPT1  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
+/* Option 1 - Default Option - BEGINNING ........................... */
 /* Create Zowe's local CA authority .................................*/
   RACDCERT GENCERT CERTAUTH +
            SUBJECTSDN( +
@@ -150,135 +212,149 @@
            NOTAFTER(DATE(2030-05-01)) +
            WITHLABEL('&LOCALCA') +
            KEYUSAGE(CERTSIGN)
-  SETROPTS RACLIST(DIGTCERT) REFRESH
 
 /* Connect Zowe's local CA authority to the keyring ................ */
   RACDCERT CONNECT(CERTAUTH LABEL('&LOCALCA') +
            RING(&ZOWERING.)) +
            ID(&ZOWEUSER.)
 
-/* ***************************************************************** */
-/* ATTENTION!                                                        */
-/* Configure certificate for Zowe .................................. */
-/* Select one of three options which is the most suitable for your   */
-/* environment and follow the appropriate action                     */
-/*                                                                   */
-/* Options:                                                          */
-/*  1. Zowe's certificate is already loaded in RACF database         */
-/*     ACTION: a. Uncomment the "Option 1" block below and modify the*/
-/*             following snippet below                               */
-/*                CONNECT(SITE | ID(userid) +                        */
-/*                LABEL('certlabel') +                               */
-/*             to match the owner of the desired certificate.        */
-/*             b. Comment out the "Option 3" block below             */
-/*                                                                   */
-/*  2. Import external Zowe's certificate from a data set in PKCS12  */
-/*     format                                                        */
-/*     ACTION: a. Uncomment the "Option 2" block below               */
-/*             b. Comment out the "Option 3" block below             */
-/*                                                                   */
-/*  3. Generate Zowe's certificate that will be signed by the        */
-/*     Zowe's local CA                                               */
-/*     ACTION: This is the default behavior if you submit            */
-/*             this file unmodified                                  */
-/*                                                                   */
-/* ***************************************************************** */
-/*                                                                   */
-/* Option 1 - BEGINNING ............................................ */
-/* Connect a Zowe's certificate with the keyring                     */
-/*  RACDCERT CONNECT(SITE | ID(userid) +
-/*           LABEL('certlabel') +
-/*           RING(&ZOWERING.) +
-/*           USAGE(PERSONAL) DEFAULT) +
-/*           ID(&ZOWEUSER.)
-
-/* Option 1 - END .................................................. */
-/* ................................................................. */
-/* Option 2 - BEGINNING ............................................ */
-/* Import external certificate from data set ....................... */
-/* RACDCERT ADD('&DSNAME.') +
-/*          ID(&ZOWEUSER.) +
-/*          WITHLABEL('&LABEL.') +
-/*          PASSWORD('&PKCSPASS.') +
-/*          TRUST
-/* SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH
-
-/* Connect a Zowe's certificate with the keyring                     */
-/*  RACDCERT CONNECT(ID(&ZOWEUSER.) +
-/*           LABEL('&LABEL.') +
-/*           RING(&ZOWERING.) +
-/*           USAGE(PERSONAL) DEFAULT) +
-/*           ID(&ZOWEUSER.)
-
-/* Option 2 - END .................................................. */
-/* ................................................................. */
-/* Option 3 - BEGINNING ............................................ */
 /* Create a certificate signed by local zowe's CA .................. */
-    RACDCERT GENCERT ID(&ZOWEUSER.) +
-            SUBJECTSDN( +
-                CN('&CN. certificate') +
-                OU('&OU.') +
-                O('&O.') +
-                L('&L.') +
-                SP('&SP.') +
-                C('&C.')) +
-            SIZE(2048) +
-            NOTAFTER(DATE(2030-05-01)) +
-            WITHLABEL('&LABEL.') +
-            KEYUSAGE(HANDSHAKE) +
-            ALTNAME(IP(&IPADDRES) +
-                DOMAIN('&HOSTNAME')) +
-            SIGNWITH(CERTAUTH LABEL('&LOCALCA'))
-    SETROPTS RACLIST(DIGTCERT) REFRESH
+  RACDCERT GENCERT ID(&ZOWEUSER.) +
+           SUBJECTSDN( +
+             CN('&CN. certificate') +
+             OU('&OU.') +
+             O('&O.') +
+             L('&L.') +
+             SP('&SP.') +
+             C('&C.')) +
+           SIZE(2048) +
+           NOTAFTER(DATE(2030-05-01)) +
+           WITHLABEL('&LABEL.') +
+           KEYUSAGE(HANDSHAKE) +
+           ALTNAME(IP(&IPADDRES) +
+               DOMAIN('&HOSTNAME')) +
+           SIGNWITH(CERTAUTH LABEL('&LOCALCA'))
 
-/* Connect a Zowe's certificate with the keyring                     */
+/* Connect a Zowe's certificate with the keyring ................... */
     RACDCERT CONNECT(ID(&ZOWEUSER.) +
              LABEL('&LABEL.') +
              RING(&ZOWERING.) +
              USAGE(PERSONAL) DEFAULT) +
              ID(&ZOWEUSER.)
 
-/* Option 3 - END .................................................. */
+  SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
 
-/* A common part for all options starts here ....................... */
+/* Option 1 - Default Option - END ................................. */
+$$
+//IFOPT1ED ENDIF
+//*
+//IFOPT2   IF (&OPTION EQ 2) THEN
+//RUNOPT2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 2 - BEGINNING ............................................ */
+/* Connect a Zowe's certificate with the keyring ................... */
+  RACDCERT CONNECT(SITE | ID(userid) +
+           LABEL('certlabel') +
+           RING(&ZOWERING.) +
+           USAGE(PERSONAL) DEFAULT) +
+           ID(&ZOWEUSER.)
+
+  SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+
+/* Option 2 - END .................................................. */
+$$
+//IFOPT2ED ENDIF
+//*
+//IFOPT3   IF (&OPTION EQ 3) THEN
+//RUNOPT3  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 3 - BEGINNING ............................................ */
+/* Import external certificate from data set ....................... */
+  RACDCERT ADD('&DSNAME.') +
+           ID(&ZOWEUSER.) +
+           WITHLABEL('&LABEL.') +
+           PASSWORD('&PKCSPASS.') +
+           TRUST
+
+/* Connect a Zowe's certificate with the keyring ................... */
+  RACDCERT CONNECT(ID(&ZOWEUSER.) +
+           LABEL('&LABEL.') +
+           RING(&ZOWERING.) +
+           USAGE(PERSONAL) DEFAULT) +
+           ID(&ZOWEUSER.)
+
+  SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+
+/* Option 3 - END .................................................. */
+$$
+//IFOPT3ED ENDIF
+//*
+//IFZWCA   IF (&IFZOWECA EQ 1) THEN
+//RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* Connect all CAs of the Zowe certificate's signing chain with the  */
 /* keyring ......................................................... */
-/* Add or remove commands according to the Zowe certificate's        */
-/* signing CA chain ................................................ */
-   RACDCERT CONNECT(CERTAUTH +
-            LABEL('&ITRMZWCA.') +
-            RING(&ZOWERING.) USAGE(CERTAUTH)) +
-            ID(&ZOWEUSER.)
-   RACDCERT CONNECT(CERTAUTH +
-            LABEL('&ROOTZWCA.') +
-            RING(&ZOWERING.) USAGE(CERTAUTH)) +
-            ID(&ZOWEUSER.)
+  RACDCERT CONNECT(CERTAUTH +
+           LABEL('&ITRMZWCA.') +
+           RING(&ZOWERING.) USAGE(CERTAUTH)) +
+           ID(&ZOWEUSER.)
 
-/* Connect root CA that signed z/OSMF certificate with the keyring.  */
-/* If z/OSMF is using self-signed certificate then specify directly  */
-/* the z/OSMF certificate to be connected with the keyring.          */
-   RACDCERT CONNECT(CERTAUTH +
-            LABEL('&ROOTZFCA.') +
-            RING(&ZOWERING.) USAGE(CERTAUTH)) +
-            ID(&ZOWEUSER.)
+  RACDCERT CONNECT(CERTAUTH +
+           LABEL('&ROOTZWCA.') +
+           RING(&ZOWERING.) USAGE(CERTAUTH)) +
+           ID(&ZOWEUSER.)
 
-/* Create jwtsecret .................................................*/
+  SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+$$
+//IFZWCAED ENDIF
+//*
+//IFZFCA   IF (&IFROZFCA EQ 1) THEN
+//RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Connect the z/OSMF root CA signed by a recognized certificate ... */
+/* authority (CA) .................................................. */
+  RACDCERT CONNECT(CERTAUTH +
+           LABEL('&ROOTZFCA.') +
+           RING(&ZOWERING.) USAGE(CERTAUTH)) +
+           ID(&ZOWEUSER.)
+
+  SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+$$
+//IFZFCAED ENDIF
+//*
+//RUNCOMM  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* A common part for all options - BEGINNING ....................... */
+/* Create jwt secret ............................................... */
   RACDCERT GENCERT ID(&ZOWEUSER.) +
-             SUBJECTSDN( +
-               CN('&CN. JWT') +
-               OU('&OU.') +
-               O('&O.') +
-               L('&L.') +
-               SP('&SP.') +
-               C('&C.')) +
-             SIZE(2048) +
-             NOTAFTER(DATE(2030-05-01)) +
-             WITHLABEL('jwtsecret')
-  SETROPTS RACLIST(DIGTCERT) REFRESH
+           SUBJECTSDN( +
+             CN('&CN. JWT') +
+             OU('&OU.') +
+             O('&O.') +
+             L('&L.') +
+             SP('&SP.') +
+             C('&C.')) +
+           SIZE(2048) +
+           NOTAFTER(DATE(2030-05-01)) +
+           WITHLABEL('&JWTLABEL.')
 
-/* Connect jwtsecret to the keyring ................................ */
-  RACDCERT CONNECT(ID(&ZOWEUSER.) LABEL('jwtsecret') +
+/* Connect jwt secret to the keyring ............................... */
+  RACDCERT CONNECT(ID(&ZOWEUSER.) LABEL('&JWTLABEL.') +
            RING(&ZOWERING.) USAGE(PERSONAL)) +
            ID(&ZOWEUSER.)
 
@@ -286,17 +362,13 @@
   PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) ID(&ZOWEUSER.) +
          ACCESS(READ)
 
-/* Uncomment this command if SITE acid owns the Zowe certificate     */
-/*  PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY) ID(&ZOWEUSER.) +
-/*         ACCESS(CONTROL)
-
-  SETROPTS RACLIST(FACILITY) REFRESH
+  SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
 
 /* List the keyring ................................................ */
-   RACDCERT LISTRING(&ZOWERING.) ID(&ZOWEUSER.)
+  RACDCERT LISTRING(&ZOWERING.) ID(&ZOWEUSER.)
 
-/* ................................................................. */
-/* only the last RC is returned, this command ensures it is a 0      */
+/* Common part - END ................................................ */
+/* only the last RC is returned, this command ensures it is a 0 .... */
 PROFILE
 $$
 //*
@@ -428,7 +500,7 @@ ACF
    CONNECT CERTDATA(CERTAUTH.&ROOTZFCA.) RINGNAME(&ZOWERING.) -
    KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
 
-* Create jwtsecret
+* Create jwt secret
    SET PROFILE(USER) DIVISION(CERTDATA)
    GENCERT &ZOWEUSER..ZOWEJWT -
            SUBJSDN(CN='&CN. JWT' -
@@ -438,10 +510,10 @@ ACF
                    SP='&SP.' -
                    C='&C.') -
            SIZE(2048) -
-           LABEL(jwtsecret) -
+           LABEL(&JWTLABEL.) -
            EXPIRE(05/01/30)
 
-* Connect jwtsecret to the keyring ................................
+* Connect jwt secret to the keyring ...............................
   SET PROFILE(USER) DIVISION(CERTDATA)
   CONNECT CERTDATA(&ZOWEUSER..ZOWEJWT) RINGNAME(&ZOWERING.) -
   KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL)
@@ -584,7 +656,7 @@ $$
    TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
        RINGDATA(CERTAUTH,&ROOTZFCA.) USAGE(CERTAUTH)
 
-/* Create jwtsecret .................................................*/
+/* Create jwt secret ................................................*/
    TSS GENCERT(&ZOWEUSER.) +
       DIGICERT(ZOWEJWT) +
       SUBJECTN( +
@@ -596,9 +668,9 @@ $$
         C="&C." ') +
       KEYSIZE(2048) +
       NADATE(05/01/30) +
-      LABLCERT(jwtsecret)
+      LABLCERT(&JWTLABEL.)
 
-/* Connect jwtsecret to the keyring ................................ */
+/* Connect jwt secret to the keyring ............................... */
   TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
       RINGDATA(&ZOWEUSER.,ZOWEJWT) USAGE(PERSONAL)
 
