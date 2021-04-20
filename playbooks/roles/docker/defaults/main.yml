@@ -13,6 +13,13 @@ zowe_docker_tag: amd64
 # ==============================================================================
 # Variables should be verified and overwrittern.
 # ==============================================================================
+# optional, default to ansible_ssh_host
+# required for zD&T (external IP is different from internal IP)
+zowe_zos_host:
+# optional, default to ansible_user
+zowe_test_user:
+# optional, default to ansible_password
+zowe_test_password:
 # default z/OSMF port. Optional, default value is ansible_ssh_host
 zos_zosmf_host:
 # default z/OSMF port
