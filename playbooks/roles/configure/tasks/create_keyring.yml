@@ -27,12 +27,32 @@
   debug:
     var: zowe_external_ip_address
 
+- name: Get z/OSMF keyring
+  raw: tsocmd 'RACDCERT LIST ID({{ zos_zosmf_user }})' 2>&1 | grep -v RACDCERT | awk "/Ring:/{x=NR+10;next}(NR<=x){print}" | awk '{print $1}' | sed -e 's/^>//' -e 's/<$//' | tr -d '\n'
+  ignore_errors: True
+  register: zosmf_keyring_output
+
+- name: Show ip zowe_external_ip_address
+  debug:
+    var: zosmf_keyring_output.stdout
+
+- name: Get z/OSMF CA
+  raw: tsocmd 'RACDCERT LISTRING({{ zosmf_keyring_output.stdout }}) ID({{ zos_zosmf_user }})' 2>&1 | grep -v RACDCERT | grep 'CERTAUTH' | head -n 1 | awk '{print $1}' | tr -d '\n'
+  ignore_errors: True
+  register: zosmf_ca_output
+
+- name: Show z/OSMF CA
+  debug:
+    var: zosmf_ca_output.stdout
+
 - name: Update ZWEKRING.jcl with configurations
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.raw.jcl" | \
     sed -e "s%SET  PRODUCT=RACF%SET PRODUCT={{ zos_security_system }}%" | \
     sed -e "s%SET HOSTNAME=''%SET HOSTNAME='{{ zowe_zos_host }}'%" | \
     sed -e "s%SET IPADDRES=''%SET IPADDRES='{{ zowe_external_ip_address }}'%" | \
+    sed -e "s%SET JWTLABEL='jwtsecret'%SET JWTLABEL='{{ zowe_token_label }}'%" | \
+    sed -e "s%SET ROOTZFCA=%SET ROOTZFCA='{{ zosmf_ca_output.stdout }}'%" | \
     sed -e "s%SET    LABEL='localhost'%SET    LABEL='{{ zowe_keyring_certname }}'%" \
     > "{{ work_dir_remote }}/ZWEKRING.jcl"
 
