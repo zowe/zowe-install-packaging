@@ -532,13 +532,28 @@ function trust {
     pkeytool -importcert $V -trustcacerts -noprompt -file "${CERTIFICATE}" -alias "${ALIAS}" -keystore "${SERVICE_TRUSTSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype PKCS12
 
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
-        keytool -importcert $V -trustcacerts -noprompt -file "${CERTIFICATE}" -alias "${ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
-            -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+        # this may fail if the user has imported CAs to keyring. but we don't know how user configured ZWEKRING, so just retry
+        trust_keyring
     fi
 }
 
 function trust_keyring {
     echo ">>>> Import a certificate to the keyring:"
+
+    # FIXME: this function may fail in several ways
+    # - missing permission on class RDATALIB, possible happens when importing external CAs into keyring
+    #   check https://www.ibm.com/docs/en/zos/2.3.0?topic=library-racf-authorization for details.
+    #   possible error message:
+    #     keytool error (likely untranslated): java.io.IOException: R_datalib (IRRSDL00) error: not RACF authorized to use the requested service (8, 8, 8)
+    # - importing z/OSMF certificate back to keyring may see RACF reason code "The certificate exists under a different user.", which is under IZUSVR
+    # Proper way to trust for keyring should use ZWEKRING jcl and set these parameters:
+    # - ITRMZWCA
+    # - ROOTZWCA
+    # - ROOTZFCA
+    #
+    # Alternative way to use keyring-util, but error should be same
+    # KEYRING_UTIL="${BASE_DIR}/utils/keyring-util/keyring-util"
+    # "${KEYRING_UTIL}" IMPORT "${ZOWE_USERID}" "${ZOWE_KEYRING}" "${ALIAS}" CERTAUTH "${SERVICE_TRUSTSTORE}.p12" "${SERVICE_PASSWORD}"
 
     keytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
             -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
