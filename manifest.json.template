@@ -62,9 +62,8 @@
       "artifact": "zosmf-auth-1.21.0-20210414.230525.pax"
     },
     "org.zowe.zss": {
-      "version": "1.21.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zss-1.21.0-rc-74-20210414224904.pax"
+      "version": "~1.21.0-PR-289",
+      "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
       "version": "1.0.6"
