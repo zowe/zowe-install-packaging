@@ -27,23 +27,34 @@
   debug:
     var: zowe_external_ip_address
 
-- name: Get z/OSMF keyring
-  raw: tsocmd 'RACDCERT LIST ID({{ zos_zosmf_user }})' 2>&1 | grep -v RACDCERT | awk "/Ring:/{x=NR+10;next}(NR<=x){print}" | awk '{print $1}' | sed -e 's/^>//' -e 's/<$//' | tr -d '\n'
-  ignore_errors: True
-  register: zosmf_keyring_output
+- name: Automatically detect zos_zosmf_ca
+  when: zos_zosmf_ca is undefined or zos_zosmf_ca is none or zos_zosmf_ca|length == 0
+  block:
+  - name: Get z/OSMF keyring for RACF
+    # this only works for RACF
+    raw: tsocmd 'RACDCERT LIST ID({{ zos_zosmf_user }})' 2>&1 | grep -v RACDCERT | awk "/Ring:/{x=NR+10;next}(NR<=x){print}" | awk '{print $1}' | sed -e 's/^>//' -e 's/<$//' | tr -d '\n'
+    ignore_errors: True
+    register: zosmf_keyring_output
+  - name: Show zosmf_keyring_output
+    debug:
+      var: zosmf_keyring_output.stdout
 
-- name: Show ip zowe_external_ip_address
-  debug:
-    var: zosmf_keyring_output.stdout
-
-- name: Get z/OSMF CA
-  raw: tsocmd 'RACDCERT LISTRING({{ zosmf_keyring_output.stdout }}) ID({{ zos_zosmf_user }})' 2>&1 | grep -v RACDCERT | grep 'CERTAUTH' | head -n 1 | awk '{print $1}' | tr -d '\n'
-  ignore_errors: True
-  register: zosmf_ca_output
+  - name: Get z/OSMF CA
+    # this only works for RACF
+    raw: tsocmd 'RACDCERT LISTRING({{ zosmf_keyring_output.stdout }}) ID({{ zos_zosmf_user }})' 2>&1 | grep -v RACDCERT | grep 'CERTAUTH' | head -n 1 | awk '{print $1}' | tr -d '\n'
+    ignore_errors: True
+    register: zosmf_ca_output
+  - name: Update zos_zosmf_ca
+    set_fact:
+      zos_zosmf_ca: zosmf_ca_output.stdout
 
 - name: Show z/OSMF CA
   debug:
-    var: zosmf_ca_output.stdout
+    var: zos_zosmf_ca
+- name: Check value of zos_zosmf_ca
+  fail:
+    msg: "To successfully verify certificates, zos_zosmf_ca is required"
+  when: (zowe_apiml_verify_certficates_of_services or zowe_apiml_nonstrict_verify_certficates_of_services) and (zos_zosmf_ca is undefined or zos_zosmf_ca is none or zos_zosmf_ca|length == 0)
 
 - name: Update ZWEKRING.jcl with configurations
   raw: >-
@@ -52,7 +63,7 @@
     sed -e "s%SET HOSTNAME=''%SET HOSTNAME='{{ zowe_zos_host }}'%" | \
     sed -e "s%SET IPADDRES=''%SET IPADDRES='{{ zowe_external_ip_address }}'%" | \
     sed -e "s%SET JWTLABEL='jwtsecret'%SET JWTLABEL='{{ zowe_token_label }}'%" | \
-    sed -e "s%SET ROOTZFCA=%SET ROOTZFCA='{{ zosmf_ca_output.stdout }}'%" | \
+    sed -e "s%SET ROOTZFCA=%SET ROOTZFCA='{{ zos_zosmf_ca }}'%" | \
     sed -e "s%SET    LABEL='localhost'%SET    LABEL='{{ zowe_keyring_certname }}'%" \
     > "{{ work_dir_remote }}/ZWEKRING.jcl"
 
