@@ -143,6 +143,12 @@ print_formatted_message() {
   done <<EOF
 $(echo "${message}")
 EOF
+
+  # reset values
+  service=
+  logger=
+  level=
+  message=
 }
 
 print_formatted_trace() {

@@ -22,6 +22,9 @@ New variables are added to configuration file instance.env.
     (Backward-compat). May be needed if encountering desktop
     login failure due to app-server to ZSS communication
     failure
+- ZWE_LOG_LEVEL_ZWELS=
+  # Log level for launch scripts. Set this to "debug" to
+    see detail of validate and configure steps.
 
 These variable(s) are deprecated from configuration file
 instance.env.

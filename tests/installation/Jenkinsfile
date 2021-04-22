@@ -65,6 +65,9 @@ node('zowe-jenkins-agent-dind-wdc') {
     'test docker': [
       test_files: 'dist/__tests__/basic/install-docker.js',
     ],
+    'test keyring': [
+      test_files: 'dist/__tests__/extended/keyring.js',
+    ],
     'install smpe ptf 2 times': [
       test_files: 'dist/__tests__/extended/ptf/install-ptf-two-times.js',
     ],
