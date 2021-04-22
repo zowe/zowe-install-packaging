@@ -17,12 +17,13 @@ import {
   TEST_TIMEOUT_CONVENIENCE_BUILD,
 } from '../../../constants';
 
-const testServer = 'marist-1';
+const testServer = process.env.TEST_SERVER;
 const testSuiteName = 'Test convenience build installation by enabling NONSTRICT_VERIFY_CERTIFICATES';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
+      'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
     ]);
   });

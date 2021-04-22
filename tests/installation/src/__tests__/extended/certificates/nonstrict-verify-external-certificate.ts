@@ -8,7 +8,7 @@
  * Copyright IBM Corporation 2020
  */
 
- import {
+import {
   checkMandatoryEnvironmentVariables,
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
@@ -17,12 +17,13 @@ import {
   TEST_TIMEOUT_CONVENIENCE_BUILD,
 } from '../../../constants';
 
-const testServer = 'marist-1';
+const testServer = process.env.TEST_SERVER;
 const testSuiteName = 'Test convenience build installation by using external certificate';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
+      'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
     ]);
   });
