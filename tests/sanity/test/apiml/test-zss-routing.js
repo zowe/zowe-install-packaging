@@ -18,7 +18,12 @@ let assertNotEmptyValidResponse = (response) => {
   expect(response.data).to.not.be.empty;
 };
 
-describe('test zss can be routed via gateway', function() {
+const zosHost = process.env.ZOWE_ZOS_HOST || process.env.ZOWE_EXTERNAL_HOST;
+// FIXME: zss is static registered and registration information are not shared to Discovery running off Z.
+//        so disable this test if Gateway/Discovery host and z/OS host are not same.
+const skipTest = process.env.ZOWE_EXTERNAL_HOST !== zosHost;
+
+(skipTest ? describe.skip : describe)('test zss can be routed via gateway', function() {
   before('verify environment variables', function() {
     // allow self signed certs
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';

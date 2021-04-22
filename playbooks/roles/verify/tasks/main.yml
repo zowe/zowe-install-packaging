@@ -42,6 +42,7 @@
     ZOWE_ROOT_DIR: "{{ zowe_root_dir }}"
     ZOWE_INSTANCE_DIR: "{{ zowe_instance_dir }}"
     ZOWE_EXTERNAL_HOST: "{{ zowe_external_domain_name }}"
+    ZOWE_ZOS_HOST: "{{ zowe_zos_host }}"
     SSH_HOST: "{{ ansible_ssh_host }}"
     SSH_PORT: "{{ ansible_port }}"
     SSH_USER: "{{ ansible_user }}"
