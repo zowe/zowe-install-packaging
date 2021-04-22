@@ -1,0 +1,62 @@
+/**
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright IBM Corporation 2020
+ */
+
+import {
+  checkMandatoryEnvironmentVariables,
+  showZoweRuntimeLogs,
+  installAndVerifyExtension,
+  installAndVerifyConvenienceBuild,
+} from '../../utils';
+import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
+
+const testSuiteName = 'Test sample extensions installation and verify';
+describe(testSuiteName, () => {
+  beforeAll(async () => {
+    // validate variables
+    checkMandatoryEnvironmentVariables([
+      'TEST_SERVER',
+      'ZOWE_BUILD_LOCAL',
+      'EXTENSIONS_LIST',
+    ]);
+    await installAndVerifyConvenienceBuild(
+      testSuiteName,
+      process.env.TEST_SERVER,
+      {
+        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zowe_lock_keystore': 'false',
+      }
+    );
+  });
+
+  process.env.EXTENSIONS_LIST.split(',').forEach((extension) => {
+    if (!extension){
+        return
+    }
+    const extensionArray = extension.split(':');
+    if (extensionArray.length !== 2){
+        return
+    }
+
+    test(`install and verify ${extensionArray[0]}`, async () => {
+        await installAndVerifyExtension(
+          testSuiteName,
+          process.env.TEST_SERVER,
+          {
+            'zowe_ext_url': `https://zowe.jfrog.io/artifactory/${extensionArray[1]}`,
+            'component_name': extensionArray[0],
+          }
+        );
+      }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+  });
+
+  afterAll(async () => {
+    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+  })
+});

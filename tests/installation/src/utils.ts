@@ -269,6 +269,87 @@ async function installAndVerifyDockerZowe(testcase: string, installPlaybook: str
   expect(resultVerify.code).toBe(0);
 }
 
+async function installExtension(testcase: string, installPlaybook: string, verifyPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`run ${installPlaybook} on ${serverId}`);
+  const resultInstall = await runAnsiblePlaybook(
+    testcase,
+    installPlaybook,
+    serverId,
+    {
+      'zowe_ext_url': extraVars['zowe_ext_url']
+    }
+  );
+  
+  expect(resultInstall.stderr).toBe('');
+}
+
+async function restartZowe(testcase: string, serverId: string): Promise<void> {
+
+  debug(`stop zowe on ${serverId}`);
+  const resultStop = await runAnsiblePlaybook(
+    testcase,
+    'stop.yml',
+    serverId,
+    {}
+  );
+
+  expect(resultStop.code).toBe(0);
+
+  debug(`start zowe on ${serverId}`);
+  const resultStart = await runAnsiblePlaybook(
+    testcase,
+    'start.yml',
+    serverId,
+    {}
+  );
+
+  expect(resultStart.code).toBe(0);
+
+}
+
+async function verifyExtension(testcase: string, verifyPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
+  debug(`run verify-ext.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      verifyPlaybook,
+      serverId,
+      {
+        'component_name': extraVars['component_name']
+      }
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify.code).toBe(0);
+  return resultVerify;
+}
+
+async function installAndVerifyZoweExtension(testcase: string, installPlaybook: string, verifyPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndVerifyZoweExtension(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  await installExtension(testcase, 'install-ext.yml', 'verify-ext.yml', serverId, extraVars);
+
+  // await sleep(120000);
+
+  await restartZowe(testcase, serverId);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  // await sleep(120000);
+
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  const resultVerify = await verifyExtension(testcase, verifyPlaybook, serverId, extraVars);
+
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+};
+
 /**
  * Install and verify convenience build
  *
@@ -300,6 +381,10 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
  */
 export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install-fmid.yml', serverId, extraVars);
+}
+
+export async function installAndVerifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  await installAndVerifyZoweExtension(testcase, 'install-ext.yml', 'verify-ext.yml', serverId, extraVars);
 }
 
 /**
