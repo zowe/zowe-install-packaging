@@ -673,6 +673,15 @@ function zosmf_jwt_public_key {
     fi
 }
 
+function compare_domain_with_wildcards {
+  pattern=$(echo "$1" | tr '[:upper:]' '[:lower:]'})
+  domain=$(echo "$2" | tr '[:upper:]' '[:lower:]'})
+  
+  if [ "${pattern}" = "${domain}" ] || [[ ${domain} == ${pattern} ]]; then
+    echo "true"
+  fi
+}
+
 function validate_certificate_domain {
   host=$1
   port=$2
@@ -706,7 +715,7 @@ function validate_certificate_domain {
   fi
   echo "${host} certificate has common name ${common_name}"
 
-  if [ "$(echo "${common_name}" | tr '[:upper:]' '[:lower:]'})" != "${host}" ]; then
+  if [ "$(compare_domain_with_wildcards "${common_name}" "${host}")" != "true" ]; then
     echo "${host} doesn't match certificate common name, check subject alternate name(s)"
     san=$(echo "${cert}" | sed -e '1,/2.5.29.17/d' | sed '/ObjectId/,+99999 d')
     dnsnames=$(echo "${san}" | grep -i DNSName | awk -F":" '{print $2;}' | sed 's/^ *//g' | sed 's/ *$//g')
@@ -715,7 +724,7 @@ function validate_certificate_domain {
       echo "${dnsnames}"
       match=
       for dnsname in "${dnsnames}" ; do
-        if [ "${dnsname}" = "${host}" ]; then
+        if [ "$(compare_domain_with_wildcards "${dnsname}" "${host}")" = "true" ]; then
           match=true
         fi
       done
