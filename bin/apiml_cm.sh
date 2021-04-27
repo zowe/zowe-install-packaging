@@ -690,7 +690,7 @@ function validate_certificate_domain {
   echo ">>>> validate certificate of ${host}:${port}"
 
   # get first certificate, ignore CAs
-  cert=$(keytool -printcert -sslserver "${host}:${port}" | sed '/Certificate #1/,+99999 d')
+  cert=$(keytool -printcert -sslserver "${host}:${port}" | sed '/Certificate #1/q')
   if [ -z "${cert}" ]; then
     >&2 echo "Error: failed to load certificate of ${host}:${port} to validate"
     return 1
@@ -717,13 +717,13 @@ function validate_certificate_domain {
 
   if [ "$(compare_domain_with_wildcards "${common_name}" "${host}")" != "true" ]; then
     echo "${host} doesn't match certificate common name, check subject alternate name(s)"
-    san=$(echo "${cert}" | sed -e '1,/2.5.29.17/d' | sed '/ObjectId/,+99999 d')
-    dnsnames=$(echo "${san}" | grep -i DNSName | awk -F":" '{print $2;}' | sed 's/^ *//g' | sed 's/ *$//g')
+    san=$(echo "${cert}" | sed -e '1,/2.5.29.17/d' | sed '/ObjectId/q')
+    dnsnames=$(echo "${san}" | grep -i DNSName | tr , '\n' | tr -d '[]' | awk -F":" '{print $2;}' | sed 's/^ *//g' | sed 's/ *$//g')
     if [ -n "${dnsnames}" ]; then
       echo "certificate has these subject alternate name(s):"
       echo "${dnsnames}"
       match=
-      for dnsname in "${dnsnames}" ; do
+      for dnsname in ${dnsnames} ; do
         if [ "$(compare_domain_with_wildcards "${dnsname}" "${host}")" = "true" ]; then
           match=true
         fi
