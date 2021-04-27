@@ -195,13 +195,15 @@ if [[ -z "${EXTERNAL_CERTIFICATE}" ]] || [[ -z "${EXTERNAL_CERTIFICATE_ALIAS}" ]
     if [[ -z "${ZOWE_KEYRING}" ]]; then
       "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-password "${KEYSTORE_PASSWORD}" \
         --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
-        --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}"
+        --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}" \
+        --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
       RC=$?
       echo "apiml_cm.sh --action setup returned: ${RC}" >> "${LOG_FILE}"
     elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
       "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --service-keystore "${KEYSTORE_PREFIX}" \
         --service-alias "${KEYSTORE_ALIAS}" --zowe-userid "${ZOWE_USER_ID}" --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --local-ca-filename "${LOCAL_CA_PREFIX}" \
-        --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}"
+        --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}" \
+        --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
       RC=$?
       echo "apiml_cm.sh --action setup returned: ${RC}" >> "${LOG_FILE}"
     else
@@ -226,14 +228,16 @@ else
       --external-certificate "${EXTERNAL_CERTIFICATE}" --external-certificate-alias "${EXTERNAL_CERTIFICATE_ALIAS}" ${EXT_CA_PARM} \
       --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
       --external-ca-filename ${EXTERNAL_CA_PREFIX} --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}" \
-      --external-component-certificates "${EXTERNAL_COMPONENT_CERTIFICATES}" --external-component-certificate-aliases "${EXTERNAL_COMPONENT_CERTIFICATE_ALIASES}"
+      --external-component-certificates "${EXTERNAL_COMPONENT_CERTIFICATES}" --external-component-certificate-aliases "${EXTERNAL_COMPONENT_CERTIFICATE_ALIASES}" \
+      --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
     RC=$?
     echo "apiml_cm.sh --action setup returned: $RC" >> $LOG_FILE
   elif [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action setup --service-ext "${SAN}" --zowe-userid "${ZOWE_USER_ID}" --zowe-keyring ${ZOWE_KEYRING} \
       --service-storetype "JCERACFKS" --external-certificate "${EXTERNAL_CERTIFICATE}" --external-certificate-alias "${EXTERNAL_CERTIFICATE_ALIAS}" \
       --service-alias "${KEYSTORE_ALIAS}" --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" --component-level-certs "${COMPONENT_LEVEL_CERTIFICATES}" \
-      --external-component-certificates "${EXTERNAL_COMPONENT_CERTIFICATES}" --external-component-certificate-aliases "${EXTERNAL_COMPONENT_CERTIFICATE_ALIASES}"
+      --external-component-certificates "${EXTERNAL_COMPONENT_CERTIFICATES}" --external-component-certificate-aliases "${EXTERNAL_COMPONENT_CERTIFICATE_ALIASES}" \
+      --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
     RC=$?
     echo "apiml_cm.sh --action setup returned: $RC" >> "${LOG_FILE}"
   else
@@ -252,13 +256,17 @@ if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf \
       --service-password "${KEYSTORE_PASSWORD}" --service-truststore "${TRUSTSTORE_PREFIX}" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-      --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}"
+      --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
+      --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
   else
     export GENERATE_CERTS_FOR_KEYRING;
     "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf --zowe-userid "${ZOWE_USER_ID}" \
       --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
       --service-keystore "${KEYSTORE_PREFIX}" --service-password "${KEYSTORE_PASSWORD}" \
-      --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}"
+      --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
+      --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
   fi
   RC=$?
 
@@ -282,30 +290,6 @@ if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "
   fi
 fi
 echo "Creating certificates and keystores... DONE"
-
-JWT_ALIAS="jwtsecret"
-APIML_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.pem"
-P12_PUBLIC_KEY="${KEYSTORE_PREFIX}.${JWT_ALIAS}.p12"
-if ! [[ -z "${PKCS11_TOKEN_NAME}" ]] && ! [[ -z "${PKCS11_TOKEN_LABEL}" ]]; then
-  if [[ -f "${APIML_PUBLIC_KEY}" ]]
-  then
-    chtag -tc ISO8859-1 "${APIML_PUBLIC_KEY}"
-    if ! keytool -importcert -file "${APIML_PUBLIC_KEY}" -keystore "${P12_PUBLIC_KEY}" -storetype pkcs12 -storepass "${KEYSTORE_PASSWORD}" -trustcacerts -noprompt >> "${LOG_FILE}" 2>&1 ; then
-      echo "Unable to convert ${APIML_PUBLIC_KEY} to PKCS#12. See $LOG_FILE for more details."
-    else
-      keytool -importcert -file "${LOCAL_CA_PREFIX}.cer" -alias localca -keystore "${P12_PUBLIC_KEY}" -storetype pkcs12 -storepass "${KEYSTORE_PASSWORD}" -trustcacerts -noprompt >> "${LOG_FILE}" 2>&1
-      UPPER_KEY_LABEL=$(echo "${PKCS11_TOKEN_LABEL}" | tr '[:lower:]' '[:upper:]')
-      if ! echo "${KEYSTORE_PASSWORD}" | gskkyman -i -t "${PKCS11_TOKEN_NAME}" -l "${UPPER_KEY_LABEL}" -p "${P12_PUBLIC_KEY}" >> "${LOG_FILE}" 2>&1 ; then
-        echo "Unable to store ${P12_PUBLIC_KEY} in token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}. See ${LOG_FILE} for more details. If you are not attempting to install Zowe from Docker, you may delete ${P12_PUBLIC_KEY}."
-      else
-        echo "Successfully loaded ${APIML_PUBLIC_KEY} into token ${PKCS11_TOKEN_NAME} with label ${UPPER_KEY_LABEL}."
-        rm "${P12_PUBLIC_KEY}" 2> /dev/null
-      fi
-    fi
-  else
-    echo "No such file ${APIML_PUBLIC_KEY}, unable to complete SSO setup."
-  fi
-fi
 
 # If a keyring is used to hold certificates then make sure the local_ca directory doesn't contain
 # any "localca" certificates. A certificate may have been created in the directory to help forging a certificate
@@ -338,7 +322,7 @@ ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
 ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
 SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
 PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
-PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
+PKCS11_TOKEN_LABEL="${PKCS11_TOKEN_LABEL}"
 EOF
 
   if [ -n "${COMPONENT_LEVEL_CERTIFICATES}" ]; then
@@ -369,7 +353,7 @@ ZOWE_APIM_VERIFY_CERTIFICATES=${VERIFY_CERTIFICATES}
 ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${NONSTRICT_VERIFY_CERTIFICATES}
 SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
 PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
-PKCS11_TOKEN_LABEL="${UPPER_KEY_LABEL}"
+PKCS11_TOKEN_LABEL="${PKCS11_TOKEN_LABEL}"
 EOF
 
   if [ -n "${COMPONENT_LEVEL_CERTIFICATES}" ]; then

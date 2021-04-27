@@ -74,6 +74,16 @@
   ignore_errors: True
 
 # ============================================================================
+- import_role:
+    name: zowe
+    tasks_from: uninstall_keyring  
+
+# ============================================================================
+- import_role:
+    name: zowe
+    tasks_from: delete_sso_token  
+
+# ============================================================================
 - name: Check APF settings of {{ zowe_xmem_loadlib }}
   raw: >-
     '{{ work_dir_remote }}/opercmd.rexx' 'D PROG,APF,DSNAME={{ zowe_xmem_loadlib }}' | grep '[0-9]\{1,\} \{1,\}[0-9a-zA-Z*]\{1,\} \{1,\}{{ zowe_xmem_loadlib }}' | awk '{print $2}' | tr -d '\n'
@@ -123,11 +133,6 @@
 - name: Remove everything prefix with {{ zowe_dataset_prefix }}
   raw: tsocmd listds "'{{ zowe_dataset_prefix }}'" level | grep '{{ zowe_dataset_prefix }}' | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
   ignore_errors: True
-
-# ============================================================================
-- import_role:
-    name: zowe
-    tasks_from: uninstall_keyring  
 
 # ============================================================================
 - name: Remove installation folders

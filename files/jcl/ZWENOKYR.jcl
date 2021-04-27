@@ -62,6 +62,8 @@
 //         SET    LABEL='localhost'
 //*      * Zowe's local CA name
 //         SET  LOCALCA='localca'
+//*      * Certificate label of Zowe's JWT secret
+//         SET JWTLABEL='jwtsecret'
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*                     12345678
@@ -93,7 +95,7 @@
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* Delete jwtsecret certificate .....................................*/
-  RACDCERT DELETE(LABEL('jwtsecret')) ID(&ZOWEUSER.)
+  RACDCERT DELETE(LABEL('&JWTLABEL.')) ID(&ZOWEUSER.)
 
 /* Delete LABEL certificate ........................................*/
   RACDCERT DELETE(LABEL('&LABEL.')) ID(&ZOWEUSER.)
