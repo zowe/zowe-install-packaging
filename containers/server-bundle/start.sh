@@ -8,6 +8,15 @@
 DISCOVERY_PORT=7553
 GATEWAY_PORT=7554
 APP_SERVER_PORT=8544
+# If using external instance (recommended), put the path to it on the host computer here
+# EXT_INSTANCE_PATH=
+
+
+
+if [ -d "${EXT_INSTANCE_PATH}" ]; then
+  full_instance_path=$(cd ${EXT_INSTANCE_PATH} && pwd)
+  instance_mount="-v ${full_instance_path}:/home/zowe/external_instance:rw"
+fi
 
 # You may wish to set --env ZOWE_EXPLOERER_HOST to the value of hostname if iframe apps do not load
 
@@ -21,14 +30,9 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_http_port=8542 \
-    --expose ${DISCOVERY_PORT} \
-    --expose ${GATEWAY_PORT} \
-    --expose ${APP_SERVER_PORT} \
-    -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} \
-    -p ${GATEWAY_PORT}:${GATEWAY_PORT} \
-    -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} \
-    --env GATEWAY_PORT=${GATEWAY_PORT} \
-    --env DISCOVERY_PORT=${DISCOVERY_PORT} \
-    --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
-    ompzowe/server-bundle:amd64 $@
+    --env ZWED_agent_https_port=8542 \
+    -p ${DISCOVERY_PORT}:7553 \
+    -p ${GATEWAY_PORT}:7554 \
+    -p ${APP_SERVER_PORT}:8544 \
+    ${instance_mount} \
+    ompzowe/server-bundle:latest $@

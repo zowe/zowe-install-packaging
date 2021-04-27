@@ -26,12 +26,10 @@ ZSS_COMPONENT_DIR=${ZOWE_ROOT_DIR}/components/zss
 mkdir -p ${APP_SERVER_COMPONENT_DIR}
 mkdir -p ${ZSS_COMPONENT_DIR}
 cd ${APP_SERVER_COMPONENT_DIR}
-mkdir -p bin
-mkdir -p share
-cd share
 echo "Unpax $INSTALL_DIR/files/zlux/zlux-core.pax " >> $LOG_FILE
 pax -r -px -f $INSTALL_DIR/files/zlux/zlux-core.pax
 
+cd share
 for paxfile in ${INSTALL_DIR}/files/zlux/*.pax
 do
   if [[ $paxfile != "${INSTALL_DIR}/files/zlux/zlux-core.pax" ]]
@@ -57,14 +55,9 @@ cp -f ${INSTALL_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugin
 
 echo "Unpax zssServer " >> $LOG_FILE
 cd ${ZSS_COMPONENT_DIR}
-pax -r -px -f $INSTALL_DIR/files/zss.pax bin
+pax -r -px -f $INSTALL_DIR/files/zss.pax bin manifest.yaml apiml-static-reg.yaml.template
 extattr +p bin/zssServer
-cp -r ${ZSS_COMPONENT_DIR}/bin/z* ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/bin
-extattr +p ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/bin/zssServer
-cd ${APP_SERVER_COMPONENT_DIR}/share
-
-chmod -R a-w tn3270-ng2/ vt-ng2/ zlux-app-manager/ zlux-app-server/ zlux-ng2/ zlux-server-framework/ zlux-shared/ 2>/dev/null
-cp zlux-app-server/bin/start.sh zlux-app-server/bin/configure.sh ${APP_SERVER_COMPONENT_DIR}/bin
-chmod -R a-w zlux-app-server/ 2>/dev/null
+cp -r ${ZSS_COMPONENT_DIR}/bin/z*.sh ${APP_SERVER_COMPONENT_DIR}/share/zlux-app-server/bin
+chmod -R a-w ${APP_SERVER_COMPONENT_DIR} 2>/dev/null
 cd $INSTALL_DIR
 echo "</zowe-install-zlux.sh>" >> $LOG_FILE

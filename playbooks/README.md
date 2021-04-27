@@ -10,6 +10,8 @@ This project targets to use Ansible to uninstall / install Zowe.
   - [SMPE FMID](#smpe-fmid)
   - [SMPE PTF](#smpe-ptf)
   - [Uninstall Zowe](#uninstall-zowe)
+  - [Docker](#docker)
+  - [Install Zowe Extensions](#install-zowe-extensions)
 - [Other Predefined Playbooks](#other-predefined-playbooks)
   - [Sanity Test a Zowe Instance](#sanity-test-a-zowe-instance)
   - [Start and Stop a Zowe Instance](#start-and-stop-a-zowe-instance)
@@ -177,6 +179,23 @@ $ ansible-playbook -l <server> install-docker.yml -v --extra-vars "zowe_docker_i
 
 For example, you can pick a downloadable Zowe build from https://zowe.jfrog.io/zowe/webapp/#/artifacts/browse/tree/General/libs-snapshot-local/org/zowe.
 
+### Install Zowe Extensions
+
+You can install an extension by providing it's full url to the extension using the `zowe_ext_url` variable. This will download and install the extension onto the specified running Zowe instance:
+```
+$ ansible-playbook -l <server> install-ext.yml -v --extra-vars "zowe_ext_url=https://zowe.jfrog.io/artifactory/libs-snapshot-local/org/zowe/sample-node-api/1.0.0-SNAPSHOT/sample-node-api-1.0.0-snapshot-6-20210126212259.pax"
+```
+
+You can also install an extension that exists in your local directory by using the `zowe_ext_local` variable. This will transfer the file from your local to the remote server and install the extension:
+```
+$ ansible-playbook -l <server> install-ext.yml -v --extra-vars "zowe_ext_local=/path/to/local/directory/zowe-extension.pax"
+```
+
+Please Note:
+
+- This playbook is compatible with `.pax, .zip and .tar` files
+- The `-v` option allows you to see stdout from server side, which includes installation log, etc.
+
 ## Other Predefined Playbooks
 
 ### Sanity Test a Zowe Instance
@@ -212,6 +231,8 @@ $ ansible-playbook -l <server> show-logs.yml -v
 - **zowe_build_remote**: An optional string to define the FMID you want to install and the FMID has been pre-uploaded to your target server `zowe_fmids_dir_remote` folder.
 - **zowe_docker_image_local**: An optional string to define where is the Zowe Docker image on your local computer.
 - **zowe_docker_image_url**: An optional URL string to define where to download Zowe Docker image.
+- **zowe_ext_local**: A string to define where the Zowe Extension is on your local computer. (one of zowe_ext_local or zowe_ext_url MUST be defined)
+- **zowe_ext_url**: A string to define where to download the Zowe Extension. (one of zowe_ext_local or zowe_ext_url MUST be defined)
 - **zos_java_home**: An optional string to customize your Java version by specifying the full path to your Java folder.
 - **zos_node_home**: An optional string to customize your node.js version by specifying the full path to your node.js folder.
 - **zowe_auto_create_user_group**: A boolean value to enable or disable creating Zowe user and group. Default value is `false`.

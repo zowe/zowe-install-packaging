@@ -1,3 +1,209 @@
+++HOLD(UO01980) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(21088)
+  COMMENT(
+  ****************************************************************
+  * Affected function: Zowe configuration                        *
+  ****************************************************************
+  * Description: redo configuration                              *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: instance.env                                           *
+  ****************************************************************
+  New variables are added to configuration file instance.env.     
+  Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c                
+  <PATH_TO_INSTANCE_DIR> again with an updated instance.env       
+  to pick up the new definitions.                                 
+   
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: stop servers                                    *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Stop the Zowe servers before installing this update.
+   
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: start servers                                   *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Start the Zowe servers after installing this update.
+  ).
+++HOLD(UO01970) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(21082)
+  COMMENT(
+  ****************************************************************
+  * Affected function: Zowe configuration                        *
+  ****************************************************************
+  * Description: redo configuration                              *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: instance.env                                           *
+  ****************************************************************
+  New variables are added to configuration file instance.env.     
+  
+  - APIML_ALLOW_ENCODED_SLASHES=true
+    # when true, the Gateway allows encoded characters to be part
+      of URL requests redirected through the Gateway
+  - APIML_CORS_ENABLED=false
+    # when true, CORS are enabled in the API Gateway for Gateway
+      routes api/v1/gateway/**
+  - APIML_PREFER_IP_ADDRESS=true
+    # when true, advertise the IP address of a service instead of
+      its hostname
+  - APIML_GATEWAY_TIMEOUT_MILLIS=600000
+    # connection timeout to the services in milliseconds
+  - APIML_SECURITY_ZOSMF_APPLID=IZUDFLT
+    # z/OSMF APPLID used for PassTickets
+  - APIML_SECURITY_AUTH_PROVIDER=zosmf
+    # authentication provider used by the API Gateway, valid
+      values are zosmf and SAF
+  - APIML_DEBUG_MODE_ENABLED=false
+    # when true, enable debug logging for API Mediation Layer
+      services
+  - APIML_SECURITY_X509_ENABLED=false
+    # when true, clients can authenticate using X.509 certificates
+  - APIML_MAX_CONNECTIONS_PER_ROUTE=100
+    # tuning of API Mediation Layer
+  - APIML_MAX_TOTAL_CONNECTIONS=1000
+    # tuning of API Mediation Layer
+  
+  - ZWE_DISCOVERY_SERVICES_LIST=https://${ZOWE_EXPLORER_HOST}:${DI
+    SCOVERY_PORT}/eureka/
+    # list of discovery service URLs separated by comma
+  
+  Existing variables are removed from configuration file 
+  instance.env.
+  
+  - APIML_ENABLE_SSO=false
+  
+  ****************************************************************
+  * Affected function: Zowe configuration                        *
+  ****************************************************************
+  * Description: redo configuration                              *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: instance.env                                           *
+  ****************************************************************
+  New variables are added to configuration file instance.env.     
+  Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c                
+  <PATH_TO_INSTANCE_DIR> again with an updated instance.env       
+  to pick up the new definitions.                                 
+   
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: stop servers                                    *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Stop the Zowe servers before installing this update.
+   
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: start servers                                   *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Start the Zowe servers after installing this update.
+  ).
+++HOLD(UO01969) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(21040)
+  COMMENT(
+  ****************************************************************
+  * Affected function: Zowe configuration                        *
+  ****************************************************************
+  * Description: redo configuration                              *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: instance.env                                           *
+  ****************************************************************
+  New variables are added to configuration file instance.env.     
+  
+  - APIML_ALLOW_ENCODED_SLASHES=true
+    # when true, the Gateway allows encoded characters to be part
+      of URL requests redirected through the Gateway
+  - APIML_CORS_ENABLED=false
+    # when true, CORS are enabled in the API Gateway for Gateway
+      routes api/v1/gateway/**
+  - APIML_PREFER_IP_ADDRESS=true
+    # when true, advertise the IP address of a service instead of
+      its hostname
+  - APIML_GATEWAY_TIMEOUT_MILLIS=600000
+    # connection timeout to the services in milliseconds
+  - APIML_SECURITY_ZOSMF_APPLID=IZUDFLT
+    # z/OSMF APPLID used for PassTickets
+  - APIML_SECURITY_AUTH_PROVIDER=zosmf
+    # authentication provider used by the API Gateway, valid
+      values are zosmf and SAF
+  - APIML_DEBUG_MODE_ENABLED=false
+    # when true, enable debug logging for API Mediation Layer
+      services
+  - APIML_SECURITY_X509_ENABLED=false
+    # when true, clients can authenticate using X.509 certificates
+  - APIML_MAX_CONNECTIONS_PER_ROUTE=100
+    # tuning of API Mediation Layer
+  - APIML_MAX_TOTAL_CONNECTIONS=1000
+    # tuning of API Mediation Layer
+  
+  - ZWE_DISCOVERY_SERVICES_LIST=https://${ZOWE_EXPLORER_HOST}:${DI
+    SCOVERY_PORT}/eureka/
+    # list of discovery service URLs separated by comma
+  
+  Existing variables are removed from configuration file 
+  instance.env.
+  
+  - APIML_ENABLE_SSO=false
+  
+  ****************************************************************
+  * Affected function: Zowe configuration                        *
+  ****************************************************************
+  * Description: redo configuration                              *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: instance.env                                           *
+  ****************************************************************
+  New variables are added to configuration file instance.env.     
+  Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c                
+  <PATH_TO_INSTANCE_DIR> again with an updated instance.env       
+  to pick up the new definitions.                                 
+   
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: stop servers                                    *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Stop the Zowe servers before installing this update.
+   
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: start servers                                   *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Start the Zowe servers after installing this update.
+  ).
 ++HOLD(UO01967) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(21030)
   COMMENT(
   ****************************************************************

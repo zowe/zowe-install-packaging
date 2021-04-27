@@ -44,24 +44,7 @@ const cleanUpConnection = () => {
   ssh.dispose();
 };
 
-// Runs the command, ensures rc = 0 and there is no stderr and returns stdout value
-const executeCommandWithNoError = async(command) => {
-  const {rc, stdout, stderr} = await executeCommand(command);
-  expect(rc).to.equal(0);
-  expect(stderr).to.be.empty;
-  return stdout;
-};
-
-const executeCommand = async (command) => {
-  const result = await ssh.execCommand(command);
-  const rc = result.code;
-  const stdout = result.stdout;
-  const stderr = result.stderr;
-  debug(`Executed '${command}'\nrc:${rc}\nstdout:'${stdout}'\nstderr:'${stderr}'`);
-  return {rc, stdout, stderr};
-};
-
-const testCommand = async(command, context = {}, expected = {}, exact_match = false) => {
+const prepareCommands = (command, context = {})  =>{
   const commands = [];
   if (context && context.envs) {
     for (const key in context.envs) {
@@ -74,10 +57,29 @@ const testCommand = async(command, context = {}, expected = {}, exact_match = fa
     }
   }
   commands.push(command);
+  return commands.join('\n');
+};
+// Runs the command, ensures rc = 0 and there is no stderr and returns stdout value
+const executeCommandWithNoError = async(command, context = {}) => {
+  const {rc, stdout, stderr} = await executeCommand(prepareCommands(command, context));
+  expect(rc).to.equal(0);
+  expect(stderr).to.be.empty;
+  return stdout;
+};
+const executeCommand = async (command, context = {}) => {
+  const result = await ssh.execCommand(prepareCommands(command, context));
+  const rc = result.code;
+  const stdout = result.stdout;
+  const stderr = result.stderr;
+  debug(`Executed '${command}'\nrc:${rc}\nstdout:'${stdout}'\nstderr:'${stderr}'`);
+  return {rc, stdout, stderr};
+};
+
+const testCommand = async(command, context = {}, expected = {}, exact_match = false) => {
   // apply default value
   expected = Object.assign({rc: 0, stdout: '', stderr: ''}, expected);
 
-  const {rc, stdout, stderr} = await executeCommand(commands.join('\n'));
+  const {rc, stdout, stderr} = await executeCommand(prepareCommands(command, context));
   expect(rc).to.equal(expected.rc);
   if (exact_match) {
     expect(stdout).to.equal(expected.stdout);
@@ -97,11 +99,19 @@ const expectStringMatchExceptEmpty = async (actual, expected) => {
   }
 };
 
+const getTmpDir = async () => {
+  const tmpDir = await executeCommandWithNoError('echo ${TMPDIR:-${TMP:-/tmp}}');
+  debug(`TMP=${tmpDir}`);
+
+  return tmpDir;
+};
+
 // export constants and methods
 module.exports = {
   prepareConnection,
   cleanUpConnection,
   executeCommand,
   executeCommandWithNoError,
-  testCommand
+  testCommand,
+  getTmpDir,
 };

@@ -1,5 +1,4 @@
-ARG BUILD_PLATFORM
-FROM ompzowe/zowecicd-node12-java8:$BUILD_PLATFORM
+FROM ompzowe/zowecicd-node12-java8:v2.1 as builder
 
 # allow to customize which Zowe build to build from
 # There are 3 possible values:
@@ -7,6 +6,11 @@ FROM ompzowe/zowecicd-node12-java8:$BUILD_PLATFORM
 # 2. ZOWE_BUILD=latest: will download the most recent official release and use it as base build
 # 3. ZOWE_BUILD=<url>: will download Zowe build from this url and use it as base build
 ARG ZOWE_BUILD=
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl wget \
+    groff iproute2 moreutils pax && \
+    rm -rf /var/lib/apt/lists/*
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
@@ -20,30 +24,34 @@ ENV ZOWE_IP_ADDRESS=0.0.0.0
 
 ENV ZOWE_ZOSMF_PORT='443'
 #ENV ZOWE_ZSS_SERVER_PORT='00000'
-ENV ZWED_agent_http_port='8542'
+ENV ZWED_agent_https_port='8542'
 
 ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
 
-RUN mkdir /root/zowe/utils && \
-    mkdir /root/zowe/samples
-COPY utils/ /root/zowe/utils/
-COPY start.sh /root/zowe/samples/
+RUN mkdir /home/zowe/utils && \
+    mkdir /home/zowe/samples
+COPY utils/ /home/zowe/utils/
+COPY start.sh /home/zowe/samples/
+COPY NOTICE.txt LICENSE.txt /home/zowe/
 
-RUN cd /root/zowe/utils/autoconv && \
+RUN cd /home/zowe/utils/autoconv && \
     npm install && \
     npm run build && \
     rm -rf node_modules src samples *.js *.json .editorconfig *ignore *.md && \
     ln -s ./autoconv/bin/autoconv ../autoconv.sh
 
 # copy run.sh and optional zowe.pax
-COPY run.sh zowe.pax* /root/zowe/
+COPY run.sh run_inner.sh /home/zowe/
+COPY zowe.pax* /tmp
+
 # download zowe build if specified
-RUN /root/zowe/utils/download-zowe-build.sh "${ZOWE_BUILD}"
+RUN /home/zowe/utils/download-zowe-build.sh "${ZOWE_BUILD}"
 
 # 1. Convert content of pax files from ebcdic to ASCII
 # 2. replace or remove some zos specific parameters
 # 3. Install zowe, then remove installer files
-RUN cd /root/zowe/zowe-install && \
+RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
+    mkdir -p /tmp/zowe-install && cd /tmp/zowe-install && \
     tar -xvf ../zowe.pax --strip 1 && \
     find . -type f -iregex '.*\.\(rexx\|js\|sh\|json\|jcl\|yaml\|clist\|env\)$' -exec sh -c "conv '{}' | sponge '{}'" \; && \
     find . -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \; && \
@@ -55,7 +63,7 @@ RUN cd /root/zowe/zowe-install && \
     sed -i 's/java version/openjdk version/' scripts/utils/validate-java.sh && \
     \
     \
-    cd /root/zowe/zowe-install/files && \
+    cd /tmp/zowe-install/files && \
     for f in *.pax; do \
         echo "Processing $f file." && \
         rm -rf tmp && \
@@ -83,20 +91,39 @@ RUN cd /root/zowe/zowe-install && \
     done && \
     \
     \
-    /root/zowe/zowe-install/install/zowe-install.sh -i /root/zowe/install -l /root/zowe/logs && \
-  	bash -c "/root/zowe/install/bin/zowe-configure-instance.sh -c /root/zowe/instance" && \
+    /tmp/zowe-install/install/zowe-install.sh -i /home/zowe/install -l /home/zowe/logs && \
+  	bash -c "/home/zowe/install/bin/zowe-configure-instance.sh -c /home/zowe/instance" && \
     \
     \
-    cd /root/zowe/install/components/explorer-ui-server && \
+    cd /home/zowe/install/components/explorer-ui-server && \
     rm -rf node_modules && \
     npm install --only=prod --ignore-scripts && \
-    rm -f /root/zowe/*.pax && \
-    rm -rf /root/zowe/zowe-install && \
-    cd /root/zowe/install/components && \
+    cd /home/zowe/install/components && \
     find */bin -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \;
 
 # Could be modified during runtime, back it up.
-RUN cp /root/zowe/instance/instance.env /root/zowe/instance/instance.env.bkp
-RUN cp /root/zowe/install/bin/zowe-setup-certificates.env /root/zowe/install/bin/zowe-setup-certificates.env.bkp
+RUN cp /home/zowe/instance/instance.env /home/zowe/instance/instance.env.bkp \
+    && cp /home/zowe/install/bin/zowe-setup-certificates.env /home/zowe/install/bin/zowe-setup-certificates.env.bkp
 
-ENTRYPOINT ["/root/zowe/run.sh"]
+FROM ompzowe/zowecicd-node12-java8:v2.1
+
+EXPOSE 7553/tcp
+EXPOSE 7554/tcp
+EXPOSE 8544/tcp
+
+#ENV ZOWE_ZOSMF_HOST='zosmf.host.com'
+#ENV ZOWE_ZSS_HOST='zss.host.com'
+#ENV ZWED_agent_host='zwed.host.com'
+ENV ZOWE_EXPLORER_HOST='localhost'
+ENV ZOWE_IP_ADDRESS=0.0.0.0
+
+ENV ZOWE_ZOSMF_PORT='443'
+#ENV ZOWE_ZSS_SERVER_PORT='00000'
+ENV ZWED_agent_https_port='8542'
+
+ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
+
+COPY --chown=zowe:zowe --from=builder /home/zowe /home/zowe
+RUN chmod a+x /home/zowe/*.sh /home/zowe/.run_inner.sh
+
+ENTRYPOINT ["/home/zowe/run.sh"]

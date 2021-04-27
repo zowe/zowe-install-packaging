@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2020
+ * Copyright IBM Corporation 2020, 2021
  */
 
 const sshHelper = require('../ssh-helper');
@@ -140,7 +140,7 @@ describe('verify utils/common', function() {
 
     it('test log message with specific errors', async function() {
       const errors_found = 10;
-      const message = `${errors_found} errors were found during validatation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
+      const message = `${errors_found} errors were found during validation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
       await test_common_function_has_expected_rc_stdout_stderr(runtime_check_for_validation_errors_found, {
         'ERRORS_FOUND': errors_found,
         'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,
@@ -152,7 +152,7 @@ describe('verify utils/common', function() {
 
     it('test log message with specific errors without exit', async function() {
       const errors_found = 10;
-      const message = `${errors_found} errors were found during validatation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
+      const message = `${errors_found} errors were found during validation, please check the message, correct any properties required in ${process.env.ZOWE_INSTANCE_DIR}/instance.env and re-launch Zowe`;
       await test_common_function_has_expected_rc_stdout_stderr(runtime_check_for_validation_errors_found, {
         'ERRORS_FOUND': errors_found,
         'INSTANCE_DIR': process.env.ZOWE_INSTANCE_DIR,
@@ -164,11 +164,57 @@ describe('verify utils/common', function() {
     });
   });
 
-  async function test_common_function_has_expected_rc_stdout_stderr(command, envs = {}, expected = {}) {
+  const print_formatted_message = 'print_formatted_message';
+  describe(`verify ${print_formatted_message}`, function() {
+    const log_service = 'SANITYTEST';
+    const log_stack = 'stack1,stack2';
+    const log_message = 'test message';
+    const set_log_level = (lvl) => {
+      const envs = {};
+      envs[`ZWE_LOG_LEVEL_${log_service}`] = lvl;
+      return envs;
+    };
+
+    it('should display INFO formatted log without log level config', async function() {
+      await test_common_function_has_expected_rc_stdout_stderr(`print_formatted_message "${log_service}" "${log_stack}" INFO "${log_message}"`,
+        {},
+        {
+          stdout: `INFO (${log_stack}) ${log_message}`,
+        },
+        false);
+    });
+
+    it('should display ERROR formatted log without log level config', async function() {
+      await test_common_function_has_expected_rc_stdout_stderr(`print_formatted_message "${log_service}" "${log_stack}" ERROR "${log_message}"`,
+        {},
+        {
+          stderr: `ERROR (${log_stack}) ${log_message}`,
+        },
+        false);
+    });
+
+    it('should not display DEBUG formatted log without log level config', async function() {
+      await test_common_function_has_expected_rc_stdout_stderr(`print_formatted_message "${log_service}" "${log_stack}" DEBUG "${log_message}"`,
+        {},
+        {},
+        false);
+    });
+
+    it('should display DEBUG formatted log if log level is DEBUG', async function() {
+      await test_common_function_has_expected_rc_stdout_stderr(`print_formatted_message "${log_service}" "${log_stack}" DEBUG "${log_message}"`,
+        set_log_level('debug'),
+        {
+          stdout: `DEBUG (${log_stack}) ${log_message}`,
+        },
+        false);
+    });
+  });
+
+  async function test_common_function_has_expected_rc_stdout_stderr(command, envs = {}, expected = {}, exact_match = true) {
     await sshHelper.testCommand(command, {
       envs: Object.assign({ 'ZOWE_ROOT_DIR': process.env.ZOWE_ROOT_DIR }, envs),
       sources: [ process.env.ZOWE_ROOT_DIR + '/bin/utils/common.sh' ]
-    }, expected);
+    }, expected, exact_match);
   }
 
   after('dispose SSH connection', function() {

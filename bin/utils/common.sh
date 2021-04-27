@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2020
+# Copyright IBM Corporation 2020, 2021
 ################################################################################
 
 print_error_message() {
@@ -25,6 +25,13 @@ print_error_message() {
   print_message "Error ${ERRORS_FOUND}: ${message}"
 
   let "ERRORS_FOUND=${ERRORS_FOUND}+1"
+}
+
+print_and_log_error_message() {
+  message=$1
+
+  print_error_message "${message}"
+  log_message "${message}" "false"
 }
 
 # In future we can add timestamps/message ids here
@@ -55,9 +62,13 @@ print_and_log_message() {
   log_message "${message}" "false"
 }
 
-# return currrent user id
+# return current user id
 get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME}}}
+}
+
+get_tmp_dir() {
+  echo ${TMPDIR:-${TMP:-/tmp}}
 }
 
 # runtime logging functions, follow zowe service logging standard
@@ -67,17 +78,26 @@ print_formatted_message() {
   level=$3
   message=$4
 
+  if [ "${message}" = "-" ]; then
+    read message
+    if [ -z "${message}" ]; then
+      # empty input
+      return 0
+    fi
+  fi
+
   # always use upper case
   level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
 
   # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
   expected_log_level_var=ZWE_LOG_LEVEL_${service}
   expected_log_level_val=$(eval "echo \${$expected_log_level_var}")
+  expected_log_level_val=$(echo "${expected_log_level_val}" | tr '[:lower:]' '[:upper:]')
   if [ -z "${expected_log_level_val}" ]; then
     expected_log_level_val=INFO
   fi
   display_log=false
-  case expected_log_level_val in
+  case ${expected_log_level_val} in
     ERROR)
       if [ "${level}" = "ERROR" ]; then
         display_log=true
@@ -123,6 +143,12 @@ print_formatted_message() {
   done <<EOF
 $(echo "${message}")
 EOF
+
+  # reset values
+  service=
+  logger=
+  level=
+  message=
 }
 
 print_formatted_trace() {
@@ -153,7 +179,7 @@ print_formatted_error() {
 # Notes: any error should increase global variable ERRORS_FOUND by 1.
 runtime_check_for_validation_errors_found() {
   if [[ ${ERRORS_FOUND} > 0 ]]; then
-    print_message "${ERRORS_FOUND} errors were found during validatation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
+    print_message "${ERRORS_FOUND} errors were found during validation, please check the message, correct any properties required in ${INSTANCE_DIR}/instance.env and re-launch Zowe"
     if [ ! "${ZWE_IGNORE_VALIDATION_ERRORS}" = "true" ]; then
       exit ${ERRORS_FOUND}
     fi

@@ -1,4 +1,18 @@
 ****************************************************************
+* Affected function: Zowe configuration                        *
+****************************************************************
+* Description: redo configuration                              *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: instance.env                                           *
+****************************************************************
+New variables are added to configuration file instance.env.     
+Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c                
+<PATH_TO_INSTANCE_DIR> again with an updated instance.env       
+to pick up the new definitions.                                 
+ 
+****************************************************************
 * Affected function: Zowe servers                              *
 ****************************************************************
 * Description: stop servers                                    *

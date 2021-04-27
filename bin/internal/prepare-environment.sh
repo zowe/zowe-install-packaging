@@ -7,48 +7,45 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2020
+# Copyright IBM Corporation 2020, 2021
 ################################################################################
 
 ################################################################################
-# This script will prepare all the environment required to start a component.
+# This script will prepare all the environment variables required to start
+# a Zowe component.
 #
-# These environment variables should have already been loaded:
+# This script take these parameters
+# - c:    instance directory
+# - o:    optional, one component ID. If this is specified, the component version
+#         instance.env will be loaded. For backward compatible purpose, the
+#         parameter can also be a directory to the component lifecycle script folder.
+# - r:    optional, root directory
+# - i:    optional, HA instance ID. Default value is &SYSNAME.
+#
+# These environment variables can also be passed from environment.
 # - INSTANCE_DIR
-#
-# Note: the INSTANCE_DIR can be predefined as global variable, or can be passed
-#       from command line "-c" parameter.
-#
-# Note: this script doesn't rely on <instance-dir>/bin/internal/run-zowe.sh, so
-#       it assumes all environment variables in `instance.env` are not loaded.
-#       With this assumption, we can safely call this script in Zowe Launcher
-#       which doesn't have the environment prepared by run-zowe.sh.
-#
-# Note: this script could be called multiple times during start up.
+# - ROOT_DIR
+# - ZWELS_HA_INSTANCE_ID
 ################################################################################
-
-if [ "${ZWE_ENVIRONMENT_PREPARED}" = "true" ]; then
-  # environment variables are already prepared, skip running
-  return 0
-fi
 
 # export all variables defined in this script automatically
 set -a
 
-# initialize flag variable to avoid re-run this script
-ZWE_ENVIRONMENT_PREPARED=
-
 # if the user passes INSTANCE_DIR from command line parameter "-c"
-while getopts "c:r:" opt; do
+OPTIND=1
+while getopts "c:r:i:o:" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     r) ROOT_DIR=${OPTARG};;
+    i) ZWELS_HA_INSTANCE_ID=${OPTARG};;
+    o) ZWELS_START_COMPONENT_ID=${OPTARG};;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
       ;;
   esac
 done
+shift $(($OPTIND-1))
 
 # validate INSTANCE_DIR which is required
 if [[ -z ${INSTANCE_DIR} ]]; then
@@ -69,13 +66,21 @@ fi
 
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
+# source all utility libraries
+[ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
+[ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
+
+# assign default value
+if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
+  ZWELS_HA_INSTANCE_ID=$(get_sysname)
+fi
+# sanitize instance id
+ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
 # read the instance environment variables to make sure they exists
-# Question: is there a better way to load these variables since this is already handled by
-#           <instance-dir>/bin/internal/run-zowe.sh
-. ${INSTANCE_DIR}/bin/internal/read-instance.sh
-if [ -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
-  . ${INSTANCE_DIR}/bin/internal/read-keystore.sh
+. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
+if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" -a -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
+  . ${INSTANCE_DIR}/bin/internal/read-keystore.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 fi
 
 # this variable is used by Gateway to fetch Zowe version and build information
@@ -86,9 +91,18 @@ WORKSPACE_DIR=${INSTANCE_DIR}/workspace
 
 # TODO - in for backwards compatibility, remove once naming conventions finalised and sorted #870
 VERIFY_CERTIFICATES="${ZOWE_APIM_VERIFY_CERTIFICATES}"
+NONSTRICT_VERIFY_CERTIFICATES="${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
+
+# ignore user settings and set this value to be false
+# this configuration is deprecated and settings in instance.env will not affect how Zowe is starting
+APIML_PREFER_IP_ADDRESS=false
 
 LAUNCH_COMPONENTS=""
-export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
+# FIXME: if ZOWE_INSTANCE is same as last character of ZOWE_PREFIX, it will never be appended
+if [[ "${ZOWE_PREFIX}" != *"${ZOWE_INSTANCE}" ]]; then
+  # FIXME: append ZOWE_INSTANCE and overwrite ZOWE_PREFIX is too confusing, it causes problem when we source this file multiple times
+  export ZOWE_PREFIX=${ZOWE_PREFIX}${ZOWE_INSTANCE}
+fi
 
 # If ZWE_LAUNCH_COMPONENTS set it takes precedence over LAUNCH_COMPONENT_GROUPS
 if [[ -n "${ZWE_LAUNCH_COMPONENTS}" ]]
@@ -97,11 +111,7 @@ then
 else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
-    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
-    if [[ -n ${ZOWE_CACHING_SERVICE_START} && ${ZOWE_CACHING_SERVICE_START} == true ]]
-    then
-      LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS},caching-service
-    fi
+    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
@@ -115,12 +125,15 @@ else
   fi
 fi
 
-if [[ ${LAUNCH_COMPONENTS} == *"discovery"* ]]
-then
-  # Create the user configurable api-defs
-  STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
-  mkdir -p ${STATIC_DEF_CONFIG_DIR}
+# caching-service with VSAM persistent can only run on z/OS
+# FIXME: should we let sysadmin to decide this?
+if [ `uname` != "OS/390" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
+  # to avoid potential retries on starting caching-service, do not start caching-service
+  LAUNCH_COMPONENTS=$(echo "${LAUNCH_COMPONENTS}" | sed -e 's#caching-service##' | sed -e 's#,,#,#')
 fi
+
+# directory for user configurable api-defs
+STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 
 # Notes: changed old behavior
 # Old behavior: LAUNCH_COMPONENTS is a list of full path to component lifecycle scripts folder
@@ -130,23 +143,18 @@ fi
 #               root directory.
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
-# source all utility libraries
-. ${ROOT_DIR}/bin/utils/utils.sh
 # FIXME: ideally this should be handled by component configure.sh lifecycle script.
 #        We may require extensions to have these code in conformance program.
-# FIXME: prepare-environment.sh shouldn't have any output, but these 2 functions may output:
-#        Prepending JAVA_HOME/bin to the PATH...
-#        Prepending NODE_HOME/bin to the PATH...
-#        so we surpressed all output for those 2 functions
+# prepare-environment.sh shouldn't have any output, but these 2 functions may output:
+#   Prepending JAVA_HOME/bin to the PATH...
+#   Prepending NODE_HOME/bin to the PATH...
+# so we surpressed all output for those 2 functions
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
 fi
-
-# set flag so we don't need to re-run this script
-ZWE_ENVIRONMENT_PREPARED=true
 
 # turn off automatic export
 set +a

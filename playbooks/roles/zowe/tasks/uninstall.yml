@@ -28,28 +28,10 @@
   set_fact:
     zowe_known_xmem_jobnames: "{{ zowe_known_xmem_jobnames }} + [ '{{ zowe_xmem_proclib_member_aux }}' ]"
   when: not zowe_xmem_proclib_member_aux in zowe_known_xmem_jobnames
-
-- name: Stop Zowe Cross Memory Server
-  include_role:
-    name: zos
-    tasks_from: opercmd
-  vars:
-    opercmd: P {{ item }}
-  loop: "{{ zowe_known_xmem_jobnames }}"
-  ignore_errors: True
-
-- name: Stop Zowe if zowe-stop.sh exists
-  raw: test -f "{{ zowe_instance_dir }}/bin/zowe-stop.sh" && {{ zowe_instance_dir }}/bin/zowe-stop.sh
-  ignore_errors: True
-
+ 
 - name: Stopping Zowe
   include_role:
-    name: zos
-    tasks_from: opercmd
-  vars:
-    opercmd: C {{ item }}
-  loop: "{{ zowe_known_jobnames }}"
-  ignore_errors: True
+    name: stop
 
 # ============================================================================
 - import_role:
@@ -90,6 +72,16 @@
   raw: (tsocmd listds "'{{ item[0] }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1' | grep '^{{ item[1] }}$') && echo "Deleting {{ item[0] }}({{ item[1] }}) ..." && tsocmd DELETE "'{{ item[0] }}({{ item[1] }})'"
   loop: "{{ server_proclibs.stdout_lines|product(zowe_known_proc_stcs)|list }}"
   ignore_errors: True
+
+# ============================================================================
+- import_role:
+    name: zowe
+    tasks_from: uninstall_keyring  
+
+# ============================================================================
+- import_role:
+    name: zowe
+    tasks_from: delete_sso_token  
 
 # ============================================================================
 - name: Check APF settings of {{ zowe_xmem_loadlib }}
@@ -141,11 +133,6 @@
 - name: Remove everything prefix with {{ zowe_dataset_prefix }}
   raw: tsocmd listds "'{{ zowe_dataset_prefix }}'" level | grep '{{ zowe_dataset_prefix }}' | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
   ignore_errors: True
-
-# ============================================================================
-- import_role:
-    name: zowe
-    tasks_from: uninstall_keyring  
 
 # ============================================================================
 - name: Remove installation folders

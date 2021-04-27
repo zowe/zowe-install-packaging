@@ -32,7 +32,3 @@
   - name: Show zowe_xmem_stc_name value
     debug:
       var: zowe_xmem_stc_name
-  - name: Check if zowe_xmem_stc_name has a value
-    fail:
-      msg: Cannot find cross memory server
-    when: zowe_xmem_stc_name == ""
