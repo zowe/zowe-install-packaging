@@ -16,11 +16,29 @@
     sed -e "s+^HOSTNAME=.*\$+HOSTNAME={{ zowe_zos_host }}+" | \
     sed -e "s+^IPADDRESS=.*\$+IPADDRESS={{ zowe_external_ip_address }}+" | \
     sed -e "s+^VERIFY_CERTIFICATES=.*\$+VERIFY_CERTIFICATES={{ zowe_apiml_verify_certficates_of_services|string|lower }}+" | \
+    sed -e "s+^NONSTRICT_VERIFY_CERTIFICATES=.*\$+NONSTRICT_VERIFY_CERTIFICATES={{ zowe_apiml_nonstrict_verify_certficates_of_services|string|lower }}+" | \
     sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
     sed -e "s+^ZOWE_CERTIFICATE_LABEL=.*\$+ZOWE_CERTIFICATE_LABEL={{ zowe_keyring_certname }}+" | \
     sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
     sed -e "s+^ZOWE_KEYRING=.*\$+ZOWE_KEYRING={{ zowe_keyring_alias }}+" \
     > "{{ work_dir_remote }}/zowe-setup-keyring-certificates.env"
+  when: not zowe_apiml_security_x509_enabled
+
+- name: Prepare zowe-setup-keyring-certificates.env
+  raw: >-
+    cat "{{ zowe_root_dir }}/bin/zowe-setup-keyring-certificates.env" | \
+    sed -e "s+^HOSTNAME=.*\$+HOSTNAME={{ zowe_zos_host }}+" | \
+    sed -e "s+^IPADDRESS=.*\$+IPADDRESS={{ zowe_external_ip_address }}+" | \
+    sed -e "s+^VERIFY_CERTIFICATES=.*\$+VERIFY_CERTIFICATES={{ zowe_apiml_verify_certficates_of_services|string|lower }}+" | \
+    sed -e "s+^NONSTRICT_VERIFY_CERTIFICATES=.*\$+NONSTRICT_VERIFY_CERTIFICATES={{ zowe_apiml_nonstrict_verify_certficates_of_services|string|lower }}+" | \
+    sed -e "s+^KEYSTORE_DIRECTORY=.*\$+KEYSTORE_DIRECTORY={{ zowe_keystore_dir }}+" | \
+    sed -e "s+^ZOWE_CERTIFICATE_LABEL=.*\$+ZOWE_CERTIFICATE_LABEL={{ zowe_keyring_certname }}+" | \
+    sed -e "s+^PKCS11_TOKEN_NAME=.*\$+PKCS11_TOKEN_NAME={{ zowe_token_name }}+" | \
+    sed -e "s+^PKCS11_TOKEN_LABEL=.*\$+PKCS11_TOKEN_LABEL={{ zowe_token_label }}+" | \
+    sed -e "s+^ZOWE_USER_ID=.*\$+ZOWE_USER_ID={{ zowe_runtime_user }}+" | \
+    sed -e "s+^ZOWE_KEYRING=.*\$+ZOWE_KEYRING={{ zowe_keyring_alias }}+" \
+    > "{{ work_dir_remote }}/zowe-setup-keyring-certificates.env"
+  when: zowe_apiml_security_x509_enabled
 
 - name: Show zowe-setup-keyring-certificates.env
   raw: cat "{{ work_dir_remote }}/zowe-setup-keyring-certificates.env"

@@ -42,7 +42,3 @@
   - name: Show zowe_stop_path value
     debug:
       var: zowe_stop_path
-  - name: Check if zowe_stop_path has a value
-    fail:
-      msg: Cannot find zowe-stop.sh
-    when: zowe_stop_path == ""

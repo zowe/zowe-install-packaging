@@ -40,6 +40,9 @@ if [ ! -d "${certs_dir}" ]; then
     if [ -z "$VERIFY_CERTIFICATES" ]; then
         sed -i 's/VERIFY_CERTIFICATES=true/VERIFY_CERTIFICATES=false/g' /home/zowe/install/bin/zowe-setup-certificates.env
     fi
+    if [ -z "$NONSTRICT_VERIFY_CERTIFICATES" ]; then
+        sed -i 's/NONSTRICT_VERIFY_CERTIFICATES=true/NONSTRICT_VERIFY_CERTIFICATES=false/g' /home/zowe/install/bin/zowe-setup-certificates.env
+    fi
     sed -i 's/HOSTNAME=.*/HOSTNAME='"${ZOWE_EXPLORER_HOST}"'/g' /home/zowe/install/bin/zowe-setup-certificates.env
     sed -i 's/IPADDRESS=.*/IPADDRESS='"${ZOWE_IP_ADDRESS}"'/g' /home/zowe/install/bin/zowe-setup-certificates.env
 

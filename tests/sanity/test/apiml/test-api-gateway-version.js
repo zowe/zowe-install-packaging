@@ -41,7 +41,7 @@ describe('test api gateway version', function() {
 
     const req = {
       method: 'get',
-      url: '/api/v1/gateway/version',
+      url: '/application/version',
       auth: {
         username,
         password,

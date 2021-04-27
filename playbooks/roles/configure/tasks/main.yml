@@ -34,7 +34,6 @@
     - zowe_apiml_security_x509_enabled
     - zowe_apiml_security_zosmf_applid
     - zowe_apiml_security_auth_provider
-    - zowe_apiml_caching_service_start
     - zowe_jobs_api_port
     - zowe_mvs_api_port
     - zowe_jobs_explorer_port
@@ -95,7 +94,6 @@
     tasks_from: setup_certificates
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
-
 # ============================================================================
 # Setup client certificates
 
@@ -134,12 +132,13 @@
 
 - import_role:
     name: configure
-    tasks_from: configure_client_certificates
+    tasks_from: configure_jwt_secret_certificate
   vars:
     certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.jwtsecret.pem"
     dataset: JWTSCRT
     label: "{{ zowe_token_label }}"
   when:  zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+
 # ============================================================================
 # Setup certificates for keyring (self-signed)
 - import_role:
@@ -147,10 +146,12 @@
     tasks_from: setup_keyring_certificates
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
 
+# ============================================================================
+# Create SSO token and bind to JWT secret certificate
 - import_role:
     name: configure
-    tasks_from: configure_sso_token
-  when: zowe_apiml_security_x509_enabled and zos_security_system == 'RACF'
+    tasks_from: create_sso_token
+  when: zowe_apiml_security_x509_enabled
 
 # ============================================================================
 # Add external API ML CA to the truststore

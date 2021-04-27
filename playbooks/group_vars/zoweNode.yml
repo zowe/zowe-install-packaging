@@ -21,6 +21,7 @@ zos_zosmf_port: 443
 
 zowe_dataset_prefix: IBMUSER.ZWE
 zowe_apiml_verify_certficates_of_services: false
+zowe_apiml_nonstrict_verify_certficates_of_services: false
 # the current z/OSMF level doesn't support some jwt features, fall back to use LTPA mode
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: LTPA
 zowe_proclib_dsname: USER.PROCLIB

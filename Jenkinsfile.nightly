@@ -36,6 +36,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def testDockerBuildErrorUrl
   def testMultipleNodeErrorUrl
   def testMultipleKeyringErrorUrl
+  def testExternalCertificates
 
   def targetSmpeFullPath
   def targetRegFullPath
@@ -484,6 +485,62 @@ node('zowe-jenkins-agent-dind-wdc') {
     timeout: [time: 2, unit: 'HOURS']
   )
 
+  pipeline.test(
+    name              : "Zowe Using External Certificates",
+    shouldExecute : {
+      return fullTestRun && sourceRegBuildInfo && sourceRegBuildInfo['path']
+    },
+    operation         : {
+      if (params.TEST_RUN) {
+        echo "Skip testing with parameters:\n\n" +
+             "STARTED_BY_AUTOMATION: true\n" +
+             "TEST_SERVER: marist\n" +
+             "TEST_SCOPE: external certificate\n" +
+             "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
+             "ZOWE_ARTIFACTORY_BUILD: ''\n" +
+             "ZOWE_CLI_ARTIFACTORY_PATTERN: '${cliSourceBuildInfo ? cliSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_PLUGINS_ARTIFACTORY_PATTERN: '${cliPluginsSourceBuildInfo ? cliPluginsSourceBuildInfo.path : ''}'\n" +
+             "ZOWE_CLI_ARTIFACTORY_BUILD: ''\n" +
+             "INSTALL_TEST_DEBUG_INFORMATION: 'zowe-install-test:*'\n" +
+             "SANITY_TEST_DEBUG_INFORMATION: 'zowe-sanity-test:*'\n" +
+             "Skip Stage: Lint: true\n" +
+             "Skip Stage: Audit: true\n" +
+             "Skip Stage: SonarQube Scan: true"
+      } else {
+        def testParameters = [
+          booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SERVER', value: 'marist'),
+          string(name: 'TEST_SCOPE', value: 'external certificate'),
+          string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
+          string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
+          string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
+          booleanParam(name: 'Skip Stage: Lint', value: true),
+          booleanParam(name: 'Skip Stage: Audit', value: true),
+          booleanParam(name: 'Skip Stage: SonarQube Scan', value: true)
+        ]
+        if (cliSourceBuildInfo && cliSourceBuildInfo.path) {
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_PATTERN', value: cliSourceBuildInfo.path))
+          testParameters.add(string(name: 'ZOWE_CLI_ARTIFACTORY_BUILD', value: ''))
+        }
+
+        def test_result = build(
+            job: '/zowe-install-test/staging',
+            parameters: testParameters,
+            propagate: false
+          )
+        echo "Test result: ${test_result.result}"
+        if (test_result.result != 'SUCCESS') {
+          testExternalCertificates = test_result.absoluteUrl
+          echo "Test failed on using external certificate on build ${sourceRegBuildInfo.path}, check failure details at ${test_result.absoluteUrl}"
+          IS_BUILD_UNSTABLE = true
+        }
+      }
+    },
+    allowMissingJunit : true,
+    timeout: [time: 1, unit: 'HOURS']
+  )
+
   pipeline.createStage(
     name          : "Promote",
     isSkippable   : true,
@@ -598,6 +655,13 @@ node('zowe-jenkins-agent-dind-wdc') {
         message = message + "\n\n" +
                   "!!WARNING!! Smoke test FAILED on the multiple keyring modes build! Check test result here: " +
                   testMultipleKeyringErrorUrl + "\n"
+      }
+
+      if (testExternalCertificates) {
+        slackColor = 'warning'
+        message = message + "\n\n" +
+                  "!!WARNING!! Smoke test FAILED on using external certificate! Check test result here: " +
+                  testExternalCertificates + "\n"
       }
 
       echo "*************************************************************************************************\n" +

@@ -11,9 +11,10 @@
     "mediationLayer": {
       "server": {
         "hostname": "localhost",
-        "port": 10011,
+        "port": 7554,
         "isHttps": true
       },
+      //environmentally set to true when apiml available
       "enabled": false
     },
     "headers": {
@@ -33,10 +34,15 @@
       },
       "fallback": true
     },
-    "http": {
+    "https": {
       "ipAddresses": ["127.0.0.1"],
       //to be a replacement for zssPort
       "port": 8542
+    },
+    "mediationLayer": {
+      "serviceName": "zss",
+      //environmentally set to true when apiml available
+      "enabled": false
     }
   },
   //Zowe cross memory server name

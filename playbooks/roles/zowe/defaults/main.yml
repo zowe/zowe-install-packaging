@@ -36,6 +36,7 @@ zowe_known_started_tasks:
 - ZWESVSTC
 - ZWESISTC
 - ZWESASTC
+- ZWESLSTC
 - ZWES*
 
 # this should list all known facility profiles we ever setup during install
@@ -118,8 +119,12 @@ zowe_known_keyring_names:
 zowe_known_keyring_personal_certificates:
 - ZoweCert
 - jwtsecret
+- "API ML Client"
+- ZOWE
+- amlexca
 zowe_known_keyring_certauth_certificates:
 - localca
+- amlexca
 
 # TSS keyring has extra certificate properties
 zowe_known_tss_keyring_names:
@@ -127,6 +132,8 @@ zowe_known_tss_keyring_names:
 zowe_known_keyring_personal_digicerts:
 - ZOWECERT
 - ZOWEJWT
-- JWTSECRET
+- USER
+- JWTSCRT
+- ZOWECC
 zowe_known_keyring_certauth_digicerts:
 - ZOWECA
