@@ -17,6 +17,7 @@ let authenticationCookie;
 describe('test endpoint /services and its authentication', function() {
 
   before('obtain JWT token', async () => {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const uuid = testUtils.uuid();
     authenticationCookie = await testUtils.login(uuid);
   });
