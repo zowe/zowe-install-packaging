@@ -23,20 +23,26 @@ describe('test endpoint /services and its authentication', function() {
   });
 
   describe('should be able get list of services', () => {
-    it('with authenticated user', async () => {
-      const uuid = testUtils.uuid();
-      const response = await request.get('/gateway/api/v1/services', {
+  });
+  it('with authenticated user', async () => {
+    const uuid = testUtils.uuid();
+    let response;
+    try {
+      response = await request.get('/gateway/api/v1/services', {
         headers: {
           'Cookie': authenticationCookie
         }
       });
       testUtils.logResponse(uuid, response);
+    } catch (error) {
+      testUtils.logResponse(uuid, error.response);
+      response = error.response;
+    }
 
-      expect(response).to.have.property('status');
-      expect(response.status).to.equal(200);
-      expect(response.data).to.be.an('array').that.is.not.empty;
-      expect(response.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
-    });
+    expect(response).to.have.property('status');
+    expect(response.status).to.equal(200);
+    expect(response.data).to.be.an('array').that.is.not.empty;
+    expect(response.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
   });
 
 });
