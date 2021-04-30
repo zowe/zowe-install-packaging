@@ -287,7 +287,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   }]
 }
 """,
-        expected    : 2
+        expected    : 1
       )
     },
     timeout: [time: 20, unit: 'MINUTES']
