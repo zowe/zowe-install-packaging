@@ -28,7 +28,7 @@ describe('test endpoint /services and its authentication', function() {
     const uuid = testUtils.uuid();
     let response;
     try {
-      response = await request.get('/gateway/api/v1/services', {
+      response = await request.get('/gateway/services', {
         headers: {
           'Cookie': authenticationCookie
         }
