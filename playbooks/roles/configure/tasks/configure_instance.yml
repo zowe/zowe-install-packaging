@@ -51,7 +51,6 @@
     sed -e "s+^ZOWE_ZLUX_SECURITY_TYPE=.*\$+ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }}+" | \
     sed -e "s+^ZWE_LAUNCH_COMPONENTS=.*\$+ZWE_LAUNCH_COMPONENTS={{ zowe_launch_components }}+" \
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
-    echo "APIML_SECURITY_AUTHORIZATION_PROVIDER=native" >> "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
 
 - name: Add/update APIML_SECURITY_ZOSMF_JWT_AUTOCONFIGURATION_MODE
