@@ -185,6 +185,14 @@ install_buildin_components() {
       --component-file "${component_package}" \
       --target_dir "${ZOWE_ROOT_DIR}/components" \
       --core --log-file "${LOG_FILE}"
+
+    # Call the updater script to update the API ML to the latest version
+    if [ "${component_name}" = "apiml-common-lib" ]; then
+      echo "Updating the API Mediation Layer"
+      cd $ZOWE_ROOT_DIR/components/apiml-common-lib/bin
+      . update_apiml.sh
+      cd ${INSTALL_DIR}
+    fi
   done
 }
 
