@@ -367,6 +367,10 @@ $$
    PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) ID(&ZOWEUSER.) +
           ACCESS(READ)
 
+/* Uncomment this command if SITE user owns the Zowe certificate ... */
+/*  PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY) ID(&ZOWEUSER.) +
+/*         ACCESS(CONTROL)
+
    SETROPTS RACLIST(FACILITY) REFRESH
 
 /* List the keyring ................................................ */
@@ -553,6 +557,10 @@ ACF
   RECKEY IRR ADD(DIGTCERT.LISTRING ROLE(&STCGRP) -
   SERVICE(READ) ALLOW)
 *
+* Uncomment this command if SITE acid owns the Zowe certificate ... */
+*  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&STCGRP) -
+*  SERVICE(CONTROL) ALLOW)
+*
   F ACF2,REBUILD(FAC)
 *
 * List the keyring ................................................ */
@@ -720,6 +728,9 @@ $$
 
 /* Allow ZOWEUSER to access keyring ................................ */
   TSS PERMIT(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
+
+/* Uncomment this command if SITE acid owns the Zowe certificate ... */
+/* TSS PERMIT(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
 
 /* List the keyring ................................................ */
   TSS LIST(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.)
