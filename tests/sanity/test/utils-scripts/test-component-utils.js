@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2020
+ * Copyright IBM Corporation 2020, 2021
  */
 
 const { expect } = require('chai');
@@ -17,7 +17,7 @@ describe('verify utils/component-utils', function() {
   const TMP_EXT_DIR = 'sanity_test_extensions';
   const dummy_component_name = 'sanity_test_dummy';
   let component_runtime_dir;
-  let component_instance_dir;
+  let component_env_dir;
 
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
@@ -25,7 +25,7 @@ describe('verify utils/component-utils', function() {
     // retrieve tmp dir on server side
     TMP_DIR = await sshHelper.getTmpDir();
     component_runtime_dir = `${TMP_DIR}/${TMP_EXT_DIR}/${dummy_component_name}`;
-    component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
+    component_env_dir = `${TMP_DIR}/.env/${dummy_component_name}`;
   });
 
   const find_component_directory = 'find_component_directory';
@@ -84,11 +84,11 @@ describe('verify utils/component-utils', function() {
   const is_core_component = 'is_core_component';
   describe(`verify ${is_core_component}`, function() {
     before('create test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
     });
 
     after('dispose test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir}`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir}`);
     });
 
     it('test with core component', async function() {
@@ -244,11 +244,11 @@ describe('verify utils/component-utils', function() {
   const convert_component_manifest = 'convert_component_manifest';
   describe(`verify ${convert_component_manifest}`, function() {
     before('create test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_env_dir} && mkdir -p ${component_env_dir} && echo 'name: ${dummy_component_name}' > ${component_runtime_dir}/manifest.yaml`);
     });
 
     after('dispose test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir}`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_env_dir}`);
     });
 
     it('test creating component .manifest.json in workspace', async function() {
@@ -256,10 +256,11 @@ describe('verify utils/component-utils', function() {
         `${convert_component_manifest} "${component_runtime_dir}"`,
         {
           'ZWE_EXTENSION_DIR': `${TMP_DIR}/${TMP_EXT_DIR}`,
+          'ZWELS_INSTANCE_ENV_DIR': `${TMP_DIR}/.env`,
         }
       );
 
-      const jsonContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_instance_dir}/.manifest.json`);
+      const jsonContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_env_dir}/.manifest.json`);
       expect(jsonContent).to.be.equal(`{\n  "name": "${dummy_component_name}"\n}`);
     });
 
@@ -270,14 +271,14 @@ describe('verify utils/component-utils', function() {
     const static_def_file = 'static-def.yaml';
     // this may change in the future
     const static_def_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/api-mediation/api-defs`;
-    const target_static_def_file = `${dummy_component_name}_static_def_yaml.yml`;
+    const target_static_def_file_pattern = `${dummy_component_name}.static_def_yaml.*.yml`;
 
     before('create test component', async function() {
       await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && echo 'name: ${dummy_component_name}\napimlServices:\n  static:\n  - file: ${static_def_file}' > ${component_runtime_dir}/manifest.yaml && echo 'services: does not matter' > ${component_runtime_dir}/${static_def_file}`);
     });
 
     after('dispose test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${static_def_dir}/${target_static_def_file}`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${static_def_dir}/${target_static_def_file_pattern}`);
     });
 
     it('test processing APIML static definitions', async function() {
@@ -291,7 +292,11 @@ describe('verify utils/component-utils', function() {
         }
       );
 
-      const jsonContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON iconv -f IBM-850 -t IBM-1047 ${static_def_dir}/${target_static_def_file}`);
+      const res = await sshHelper.executeCommand(`ls -1 ${static_def_dir}/${target_static_def_file_pattern}`);
+      expect(res.rc).to.equal(0);
+      const target_static_def_file = res.stdout;
+
+      const jsonContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON iconv -f IBM-850 -t IBM-1047 ${target_static_def_file}`);
       expect(jsonContent).to.be.equal('services: does not matter');
     });
 
@@ -302,15 +307,15 @@ describe('verify utils/component-utils', function() {
     const dummy_component_title = 'Sanity Test Dummy';
     const dummy_component_id = 'org.zowe.plugins.sanity_test_dummy';
     const dummy_component_url = '/ui/v1/dummy';
-    const component_instance_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
+    const component_workspace_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/${dummy_component_name}`;
     const app_server_plugins_dir = `${process.env.ZOWE_INSTANCE_DIR}/workspace/app-server/plugins`;
 
     before('create test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_instance_dir} && echo 'name: ${dummy_component_name}\nid: ${dummy_component_id}\ntitle: ${dummy_component_title}\ndesktopIframePlugins:\n- url: ${dummy_component_url}\n  icon: image.png' > ${component_runtime_dir}/manifest.yaml && echo 'dummy' > ${component_runtime_dir}/image.png`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && mkdir -p ${component_runtime_dir} && rm -fr ${component_workspace_dir} && echo 'name: ${dummy_component_name}\nid: ${dummy_component_id}\ntitle: ${dummy_component_title}\ndesktopIframePlugins:\n- url: ${dummy_component_url}\n  icon: image.png' > ${component_runtime_dir}/manifest.yaml && echo 'dummy' > ${component_runtime_dir}/image.png`);
     });
 
     after('dispose test component', async function() {
-      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_instance_dir} && rm -fr ${app_server_plugins_dir}/${dummy_component_id}.json`);
+      await sshHelper.executeCommandWithNoError(`rm -rf ${component_runtime_dir} && rm -fr ${component_workspace_dir} && rm -fr ${app_server_plugins_dir}/${dummy_component_id}.json`);
     });
 
     it('test processing Desktop iFrame plugins', async function() {
@@ -325,10 +330,10 @@ describe('verify utils/component-utils', function() {
         false
       );
 
-      const pluginDefinitionContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_instance_dir}/pluginDefinition.json`);
+      const pluginDefinitionContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_workspace_dir}/pluginDefinition.json`);
       expect(pluginDefinitionContent).to.have.string(`"identifier": "${dummy_component_id}",`);
 
-      const pluginIndexHtml = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_instance_dir}/web/index.html`);
+      const pluginIndexHtml = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${component_workspace_dir}/web/index.html`);
       expect(pluginIndexHtml).to.have.string(dummy_component_url);
 
       const pluginRegistryContent = await sshHelper.executeCommandWithNoError(`_BPXK_AUTOCVT=ON cat ${app_server_plugins_dir}/${dummy_component_id}.json`);

@@ -25,6 +25,7 @@ zowe_test_user:
 zowe_test_password:
 
 # ports will be tested
+#zowe_zss_port: 8542
 zowe_zlux_port: 8544
 zowe_jobs_api_port: 8545
 zowe_apiml_gateway_port: 7554

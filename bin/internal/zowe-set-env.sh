@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2020
+# Copyright IBM Corporation 2020, 2021
 ################################################################################
 
 export _CEE_RUNOPTS="FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
@@ -20,5 +20,5 @@ export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 umask 0002                                       # similar to chmod 755
 
-# Workaround Fix for node 8.16.1 that requires compatability mode for untagged files
+# Workaround Fix for node 8.16.1 that requires compatibility mode for untagged files
 export __UNTAGGED_READ_MODE=V6

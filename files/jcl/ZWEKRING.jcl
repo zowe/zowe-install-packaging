@@ -51,7 +51,10 @@
 //* 10) Update the SET IPADDRES= variable to match the IP address
 //*     where Zowe is to run.
 //*
-//* 11) Customize the commands in the DD statement that matches your
+//* 11) Update the SET JWTLABEL= statement if you are not using the
+//*     default JWT secret label.
+//*
+//* 12) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -111,6 +114,8 @@
 //         SET        C='CZ'
 //*      * Zowe's local CA name
 //         SET        LOCALCA='localca'
+//*      * Certificate label of Zowe's JWT secret
+//         SET JWTLABEL='jwtsecret'
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*                     12345678
@@ -263,7 +268,7 @@
             RING(&ZOWERING.) USAGE(CERTAUTH)) +
             ID(&ZOWEUSER.)
 
-/* Create jwtsecret .................................................*/
+/* Create jwt secret ................................................*/
   RACDCERT GENCERT ID(&ZOWEUSER.) +
              SUBJECTSDN( +
                CN('&CN. JWT') +
@@ -274,11 +279,11 @@
                C('&C.')) +
              SIZE(2048) +
              NOTAFTER(DATE(2030-05-01)) +
-             WITHLABEL('jwtsecret')
+             WITHLABEL('&JWTLABEL.')
   SETROPTS RACLIST(DIGTCERT) REFRESH
 
-/* Connect jwtsecret to the keyring ................................ */
-  RACDCERT CONNECT(ID(&ZOWEUSER.) LABEL('jwtsecret') +
+/* Connect jwt secret to the keyring ............................... */
+  RACDCERT CONNECT(ID(&ZOWEUSER.) LABEL('&JWTLABEL.') +
            RING(&ZOWERING.) USAGE(PERSONAL)) +
            ID(&ZOWEUSER.)
 
@@ -428,7 +433,7 @@ ACF
    CONNECT CERTDATA(CERTAUTH.&ROOTZFCA.) RINGNAME(&ZOWERING.) -
    KEYRING(&ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
 
-* Create jwtsecret
+* Create jwt secret
    SET PROFILE(USER) DIVISION(CERTDATA)
    GENCERT &ZOWEUSER..JWTSCRT -
            SUBJSDN(CN='&CN. JWT' -
@@ -438,10 +443,10 @@ ACF
                    SP='&SP.' -
                    C='&C.') -
            SIZE(2048) -
-           LABEL(jwtsecret) -
+           LABEL(&JWTLABEL.) -
            EXPIRE(05/01/30)
 
-* Connect jwtsecret to the keyring ................................
+* Connect jwt secret to the keyring ...............................
   SET PROFILE(USER) DIVISION(CERTDATA)
   CONNECT CERTDATA(&ZOWEUSER..ZOWEJWT) RINGNAME(&ZOWERING.) -
   KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL)
@@ -584,7 +589,7 @@ $$
    TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
        RINGDATA(CERTAUTH,&ROOTZFCA.) USAGE(CERTAUTH)
 
-/* Create jwtsecret .................................................*/
+/* Create jwt secret ................................................*/
    TSS GENCERT(&ZOWEUSER.) +
       DIGICERT(ZOWEJWT) +
       SUBJECTN( +
@@ -596,9 +601,9 @@ $$
         C="&C." ') +
       KEYSIZE(2048) +
       NADATE(05/01/30) +
-      LABLCERT(jwtsecret)
+      LABLCERT(&JWTLABEL.)
 
-/* Connect jwtsecret to the keyring ................................ */
+/* Connect jwt secret to the keyring ............................... */
   TSS ADD(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.) +
       RINGDATA(&ZOWEUSER.,ZOWEJWT) USAGE(PERSONAL)
 

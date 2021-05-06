@@ -7,7 +7,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2020
+# Copyright IBM Corporation 2020, 2021
 ################################################################################
 
 # This is a single library that sources the other utils to make them easier for extenders to call
@@ -33,6 +33,8 @@ fi
 
 # Source all util functions
 . ${utils_dir}/common.sh
+. ${utils_dir}/sys-utils.sh
+. ${utils_dir}/zos-utils.sh
 . ${utils_dir}/file-utils.sh
 . ${utils_dir}/java-utils.sh
 . ${utils_dir}/network-utils.sh
@@ -40,4 +42,13 @@ fi
 . ${utils_dir}/setup-log-dir.sh
 . ${utils_dir}/zosmf-utils.sh
 . ${utils_dir}/zowe-variable-utils.sh
+. ${utils_dir}/config-utils.sh
 . ${utils_dir}/component-utils.sh
+
+###############################
+# Dummy function to check if this utils script has been sourced
+#
+# example: [ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && echo "sourced"
+is_runtime_utils_sourced() {
+  echo 'true'
+}
