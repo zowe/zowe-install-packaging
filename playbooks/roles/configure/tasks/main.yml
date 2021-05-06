@@ -151,12 +151,7 @@
 - import_role:
     name: configure
     tasks_from: create_sso_token
-  when: zowe_apiml_security_x509_enabled
-
-- import_role:
-    name: configure
-    tasks_from: configure_sso_token_tss
-  when: zowe_apiml_security_x509_enabled and zos_security_system == 'TSS'
+  when: zowe_apiml_security_x509_enabled and zos_security_system != 'ACF2'
 
 - import_role:
     name: configure
