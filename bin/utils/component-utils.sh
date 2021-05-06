@@ -176,6 +176,28 @@ detect_component_manifest_encoding() {
   fi
 }
 
+detect_if_component_tagged() {
+  component_dir=$1
+
+  component_manifest=
+  if [ -f "${component_dir}/manifest.yaml" ]; then
+    component_manifest="${component_dir}/manifest.yaml"
+  elif [ -f "${component_dir}/manifest.yml" ]; then
+    component_manifest="${component_dir}/manifest.yml"
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    component_manifest="${component_dir}/manifest.json"
+  fi
+  if [ -n "${component_manifest}" ]; then
+      # manifest at least should have name defined
+    tag=$(chtag -p ${component_manifest} | cut -f 2 -d\ )
+    if [ ! "${tag}" = "untagged" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+  fi
+}
+
 ###############################
 # Convert component YAML format manifest to JSON and place into workspace folder
 #
