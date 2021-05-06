@@ -316,7 +316,7 @@ async function verifyExtension(testcase: string, verifyPlaybook: string, serverI
       verifyPlaybook,
       serverId,
       {
-        'component_name': extraVars['component_name']
+        'component_id': extraVars['component_id']
       }
     );
   } catch (e) {

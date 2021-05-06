@@ -16,6 +16,7 @@ import {
 } from '../../utils';
 import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
 
+let beforeAllResult = false;
 const testSuiteName = 'Test sample extensions installation and verify';
 describe(testSuiteName, () => {
   beforeAll(async () => {
@@ -33,7 +34,8 @@ describe(testSuiteName, () => {
         'zowe_lock_keystore': 'false',
       }
     );
-  });
+    beforeAllResult = true;
+  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
 
   process.env.EXTENSIONS_LIST.split(',').forEach((extension) => {
     if (!extension){
@@ -45,12 +47,13 @@ describe(testSuiteName, () => {
     }
 
     test(`install and verify ${extensionArray[0]}`, async () => {
+        expect(beforeAllResult).toBe(true);
         await installAndVerifyExtension(
           testSuiteName,
           process.env.TEST_SERVER,
           {
             'zowe_ext_url': `https://zowe.jfrog.io/artifactory/${extensionArray[1]}`,
-            'component_name': extensionArray[0],
+            'component_id': extensionArray[0],
           }
         );
       }, TEST_TIMEOUT_CONVENIENCE_BUILD);
