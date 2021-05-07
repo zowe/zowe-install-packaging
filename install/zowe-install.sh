@@ -165,11 +165,36 @@ install_mvs() {
   fi
 }
 
+extract_apiml_common_lib_component() {
+  cd ${INSTALL_DIR}
+  apiml_common_lib_component_package=$PWD/$(ls -t ./files/apiml-common-lib-* | head -1)
+  . $INSTALL_DIR/bin/zowe-install-component.sh \
+    --component-name "apiml-common-lib" \
+    --component-file "${apiml_common_lib_component_package}" \
+    --target_dir "${ZOWE_ROOT_DIR}/components" \
+    --core --log-file "${LOG_FILE}"
+}
+
+upgrade_components() {
+  extract_apiml_common_lib_component
+  component_list=$1
+  echo "Updating the Zowe components to the latest version"
+  for component_name in ${component_list}; do
+    cd ${INSTALL_DIR}
+    component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
+    . $ZOWE_ROOT_DIR/components/apiml-common-lib/bin/zowe-upgrade-component.sh --component-package "${component_package}"
+  done
+}
+
 install_buildin_components() {
   if [ "${RUN_ON_ZOS}" = "true" ]; then
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
   else
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
+  fi
+   # Upgrade the Zowe components by downloading the latest artifacts
+  if [ -n "${ZWE_COMPONENTS_UPGRADE}" ] && [ "${ZWE_COMPONENTS_UPGRADE}" = "true" ]; then
+    upgrade_components "${component_list}"
   fi
   for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
@@ -185,14 +210,6 @@ install_buildin_components() {
       --component-file "${component_package}" \
       --target_dir "${ZOWE_ROOT_DIR}/components" \
       --core --log-file "${LOG_FILE}"
-
-    # Call the updater script to update the API ML to the latest version
-    if [ "${component_name}" = "apiml-common-lib" ]; then
-      echo "Updating the API Mediation Layer"
-      cd $ZOWE_ROOT_DIR/components/apiml-common-lib/bin
-      . update_apiml.sh
-      cd ${INSTALL_DIR}
-    fi
   done
 }
 
