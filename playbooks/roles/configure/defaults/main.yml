@@ -120,3 +120,6 @@ zowe_launch_components:
 # PKCS#11 token name and label of jwt secret used by SSO
 zowe_token_name: ZWETOKEN
 zowe_token_label: jwtsecret
+
+# Property to enable the automatic Zowe components upgrade during the installation
+zowe_components_upgrade: false
