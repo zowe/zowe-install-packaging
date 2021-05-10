@@ -34,7 +34,6 @@
     - zowe_apiml_security_x509_enabled
     - zowe_apiml_security_zosmf_applid
     - zowe_apiml_security_auth_provider
-    - zowe_components_upgrade
     - zowe_jobs_api_port
     - zowe_mvs_api_port
     - zowe_jobs_explorer_port

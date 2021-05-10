@@ -80,7 +80,6 @@ zowe_token_label: jwtsecret
 zowe_token_name: ZWETOKEN
 zowe_user_profile: ~/.zowe_profile
 zowe_uss_explorer_port: 8550
-zowe_components_upgrade: false
 # this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib:
 zowe_xmem_parmlib:
