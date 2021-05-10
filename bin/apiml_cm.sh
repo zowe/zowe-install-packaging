@@ -532,13 +532,28 @@ function trust {
     pkeytool -importcert $V -trustcacerts -noprompt -file "${CERTIFICATE}" -alias "${ALIAS}" -keystore "${SERVICE_TRUSTSTORE}.p12" -storepass "${SERVICE_PASSWORD}" -storetype PKCS12
 
     if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]] && [[ "${GENERATE_CERTS_FOR_KEYRING}" != "false" ]]; then
-        keytool -importcert $V -trustcacerts -noprompt -file "${CERTIFICATE}" -alias "${ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
-            -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+        # this may fail if the user has imported CAs to keyring. but we don't know how user configured ZWEKRING, so just retry
+        trust_keyring
     fi
 }
 
 function trust_keyring {
     echo ">>>> Import a certificate to the keyring:"
+
+    # FIXME: this function may fail in several ways
+    # - missing permission on class RDATALIB, possible happens when importing external CAs into keyring
+    #   check https://www.ibm.com/docs/en/zos/2.3.0?topic=library-racf-authorization for details.
+    #   possible error message:
+    #     keytool error (likely untranslated): java.io.IOException: R_datalib (IRRSDL00) error: not RACF authorized to use the requested service (8, 8, 8)
+    # - importing z/OSMF certificate back to keyring may see RACF reason code "The certificate exists under a different user.", which is under IZUSVR
+    # Proper way to trust for keyring should use ZWEKRING jcl and set these parameters:
+    # - ITRMZWCA
+    # - ROOTZWCA
+    # - ROOTZFCA
+    #
+    # Alternative way to use keyring-util, but error should be same
+    # KEYRING_UTIL="${BASE_DIR}/utils/keyring-util/keyring-util"
+    # "${KEYRING_UTIL}" IMPORT "${ZOWE_USERID}" "${ZOWE_KEYRING}" "${ALIAS}" CERTAUTH "${SERVICE_TRUSTSTORE}.p12" "${SERVICE_PASSWORD}"
 
     keytool -importcert $V -trustcacerts -noprompt -file ${CERTIFICATE} -alias "${ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
             -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
@@ -658,6 +673,15 @@ function zosmf_jwt_public_key {
     fi
 }
 
+function compare_domain_with_wildcards {
+  pattern=$(echo "$1" | tr '[:upper:]' '[:lower:]'})
+  domain=$(echo "$2" | tr '[:upper:]' '[:lower:]'})
+  
+  if [ "${pattern}" = "${domain}" ] || [[ ${domain} == ${pattern} ]]; then
+    echo "true"
+  fi
+}
+
 function validate_certificate_domain {
   host=$1
   port=$2
@@ -666,7 +690,7 @@ function validate_certificate_domain {
   echo ">>>> validate certificate of ${host}:${port}"
 
   # get first certificate, ignore CAs
-  cert=$(keytool -printcert -sslserver "${host}:${port}" | sed '/Certificate #1/,+99999 d')
+  cert=$(keytool -printcert -sslserver "${host}:${port}" | sed '/Certificate #1/q')
   if [ -z "${cert}" ]; then
     >&2 echo "Error: failed to load certificate of ${host}:${port} to validate"
     return 1
@@ -691,16 +715,16 @@ function validate_certificate_domain {
   fi
   echo "${host} certificate has common name ${common_name}"
 
-  if [ "$(echo "${common_name}" | tr '[:upper:]' '[:lower:]'})" != "${host}" ]; then
+  if [ "$(compare_domain_with_wildcards "${common_name}" "${host}")" != "true" ]; then
     echo "${host} doesn't match certificate common name, check subject alternate name(s)"
-    san=$(echo "${cert}" | sed -e '1,/2.5.29.17/d' | sed '/ObjectId/,+99999 d')
-    dnsnames=$(echo "${san}" | grep -i DNSName | awk -F":" '{print $2;}' | sed 's/^ *//g' | sed 's/ *$//g')
+    san=$(echo "${cert}" | sed -e '1,/2.5.29.17/d' | sed '/ObjectId/q')
+    dnsnames=$(echo "${san}" | grep -i DNSName | tr , '\n' | tr -d '[]' | awk -F":" '{print $2;}' | sed 's/^ *//g' | sed 's/ *$//g')
     if [ -n "${dnsnames}" ]; then
       echo "certificate has these subject alternate name(s):"
       echo "${dnsnames}"
       match=
-      for dnsname in "${dnsnames}" ; do
-        if [ "${dnsname}" = "${host}" ]; then
+      for dnsname in ${dnsnames} ; do
+        if [ "$(compare_domain_with_wildcards "${dnsname}" "${host}")" = "true" ]; then
           match=true
         fi
       done

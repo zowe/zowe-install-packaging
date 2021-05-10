@@ -35,6 +35,15 @@
     sed -e "s+ADDUSER+NOADDUSER+" > "{{ work_dir_remote }}/ZWESECUR.jcl"
   when: not zowe_auto_create_user_group
 
+- name: Create APIML.SERVICES class in ZOWE class
+  raw: >-
+    cat "{{ work_dir_remote }}/ZWESECUR.raw.jcl" | \
+    sed -e 's+/.*PERMIT APIML.SERVICES CLASS(ZOWE) ID(user) ACCESS(READ).*$+PERMIT APIML.SERVICES CLASS(ZOWE) ID({{ zowe_runtime_user }}) ACCESS(READ)+' | \
+    sed -e 's+.*RECKEY APIML ADD(SERVICES -.*$+RECKEY APIML ADD(SERVICES -+' | \
+    sed -e 's+.*UID(user) SERVICE(READ) ALLOW).*$+UID({{ zowe_runtime_user }}) SERVICE(READ) ALLOW)\nF ACF2,REBUILD(ZWE)+' | \
+    sed -e 's+.*TSS PERMIT(user) ZOWE(APIML.SERVICES) ACCESS(READ).*$+TSS PERMIT({{ zowe_runtime_user }}) ZOWE(APIML.SERVICES) ACCESS(READ)+' \
+    > "{{ work_dir_remote }}/ZWESECUR.jcl"
+
 - name: Check ZWESECUR.jcl changes
   raw: >-
     grep -e "^// *SET " \

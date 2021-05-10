@@ -166,7 +166,7 @@ install_mvs() {
 }
 
 install_buildin_components() {
-  component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss"
+  component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
   for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
     component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
@@ -182,14 +182,6 @@ install_buildin_components() {
       --target_dir "${ZOWE_ROOT_DIR}/components" \
       --core --log-file "${LOG_FILE}"
   done
-}
-
-install_zlux() {
-  # Install the zLUX server
-  . $INSTALL_DIR/scripts/zowe-install-zlux.sh
-
-  echo "---- After expanding zLUX artifacts this is a directory listing of "$ZOWE_ROOT_DIR >> $LOG_FILE
-  ls $ZOWE_ROOT_DIR >> $LOG_FILE
 }
 
 finish_and_cleanup() {
@@ -276,7 +268,6 @@ copy_fingerprint
 copy_workflow
 install_mvs
 install_buildin_components
-install_zlux
 finish_and_cleanup
 
 ################################################################################

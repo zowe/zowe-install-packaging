@@ -36,3 +36,93 @@
   vars:
     purge_job_output_id: "{{ item }}"
   loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge ZWESECUR
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWESECUR"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge ZWESECUR
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWESECUR"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge ZWECSVSM
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWECSVSM"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge ZWEKRING
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWEKRING"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge ZWESSOTK
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWESSOTK"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge ZWENOSSO
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWENOSSO"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"

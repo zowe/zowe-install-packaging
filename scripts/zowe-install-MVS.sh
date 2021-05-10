@@ -12,7 +12,7 @@
 
 sizeAUTH='space(30,15) tracks'
 sizeSAMP='space(15,15) tracks'
-members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl ZWEKRING.jcl ZWENOKYR.jcl ZWECSVSM.jcl'
+members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl ZWEKRING.jcl ZWENOKYR.jcl ZWECSVSM.jcl ZWESSOTK.jcl ZWENOSSO.jcl'
 
 # info: construct ${variable%%.*} keeps up to first . (exclusive)
 
@@ -27,8 +27,8 @@ mkdir -p ${TEMP_DIR}/${script%%.*}/LOADLIB >> ${LOG_FILE} 2>&1
 mkdir -p ${TEMP_DIR}/${script%%.*}/SAMPLIB >> ${LOG_FILE} 2>&1
 dir=`pwd`
 cd ${TEMP_DIR}/${script%%.*}
-pax -rvf ${INSTALL_DIR}/files/zss.pax -ppx LOADLIB >> ${LOG_FILE} 2>&1
-pax -rvf ${INSTALL_DIR}/files/zss.pax -ppx SAMPLIB >> ${LOG_FILE} 2>&1
+pax -rvf ${INSTALL_DIR}/files/zss-${ZOWE_VERISON}.pax -ppx LOADLIB >> ${LOG_FILE} 2>&1
+pax -rvf ${INSTALL_DIR}/files/zss-${ZOWE_VERSION}.pax -ppx SAMPLIB >> ${LOG_FILE} 2>&1
 cd $dir
 
 # add non-ZSS members to staging area

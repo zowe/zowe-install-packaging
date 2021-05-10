@@ -31,6 +31,10 @@ zowe_instance_id: 1
 zos_zosmf_host:
 # default z/OSMF port
 zos_zosmf_port: 10443
+# default z/OSMF user
+zos_zosmf_user: IZUSVR
+# default z/OSMF Certificate Authority
+zos_zosmf_ca:
 # APIML ports
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
@@ -75,7 +79,7 @@ zowe_external_certficate:
 zowe_external_certficate_alias:
 zowe_external_certficate_authorities:
 zowe_keystore_dir: ~/.zowe/keystore
-zowe_log_dir: ~/.zowe/logs
+zowe_logs_dir: ~/.zowe/logs
 zowe_keystore_password: password
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert

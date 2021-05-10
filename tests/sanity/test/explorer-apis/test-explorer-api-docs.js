@@ -60,7 +60,7 @@ describe('test explorer(s) api docs', function() {
         expect(res).to.have.property('status');
         expect(res.status).to.equal(200);
         expect(res.headers).to.have.property('content-type');
-        expect(res.headers['content-type']).to.equal('application/json;charset=UTF-8');
+        expect(res.headers['content-type']).to.equal('application/json');
         expect(res.data).to.have.property('swagger');
       });
   });
@@ -89,7 +89,7 @@ describe('test explorer(s) api docs', function() {
         expect(res).to.have.property('status');
         expect(res.status).to.equal(200);
         expect(res.headers).to.have.property('content-type');
-        expect(res.headers['content-type']).to.equal('application/json;charset=UTF-8');
+        expect(res.headers['content-type']).to.equal('application/json');
         expect(res.data).to.have.property('swagger');
       });
   });
@@ -118,7 +118,7 @@ describe('test explorer(s) api docs', function() {
         expect(res).to.have.property('status');
         expect(res.status).to.equal(200);
         expect(res.headers).to.have.property('content-type');
-        expect(res.headers['content-type']).to.equal('application/json;charset=UTF-8');
+        expect(res.headers['content-type']).to.equal('application/json');
         expect(res.data).to.have.property('swagger');
       });
   });
