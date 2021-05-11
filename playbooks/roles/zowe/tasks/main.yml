@@ -35,6 +35,8 @@
     script_chdir: "{{ work_dir_remote }}/extracted/{{ zowe_build_extracted_subfolder.stdout }}/install"
     script_filename: ./zowe-install.sh
     script_parameters: "-i \"{{ zowe_root_dir }}\" -h \"{{ zowe_dataset_prefix }}\" -l \"{{ zowe_install_logs_dir }}\""
+  environments:
+    ZOWE_COMPONENTS_UPGRADE: true
 
 - name: List log dir
   raw: ls -l "{{ zowe_install_logs_dir }}"
@@ -43,4 +45,3 @@
 - name: Show installation log
   raw: find {{ zowe_install_logs_dir }} -name "zowe-install-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
-  

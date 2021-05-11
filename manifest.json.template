@@ -94,7 +94,7 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.22.0-PR1446-2",
+      "version": "1.22.0-PR1446-3",
       "artifact": "apiml-common-lib-package-*.zip",
       "repository": "libs-release-local"
     },
