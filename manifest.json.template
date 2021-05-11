@@ -95,7 +95,7 @@
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
       "version": "1.22.0-PR1446-2",
-      "artifact": "apiml-common-lib-*.zip",
+      "artifact": "apiml-common-lib-package-1.22.0-PR1446-2.zip",
     },
     "org.zowe.launcher": {
       "version": "~0.0.3-SNAPSHOT"
