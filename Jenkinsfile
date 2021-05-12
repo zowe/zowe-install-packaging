@@ -233,9 +233,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           sshCommand remote: Z_SERVER, command: \
              """
              cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle &&
-             wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax &&
+             wget "https://zowe.jfrog.io/zowe/${zowePaxUploaded}" -O zowe.pax
+             """
+          sshCommand remote: Z_SERVER, command: \
+             """
+             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle &&
              mkdir -p utils && cp -r ../utils/* ./utils &&
-             chmod +x ./utils/*.sh ./utils/*/bin/* &&
+             chmod +x ./utils/*.sh ./utils/*/bin/*
              """
           sshCommand remote: Z_SERVER, command: \
              """
@@ -243,18 +247,21 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
              """
           sshCommand remote: Z_SERVER, command: \
              """
+             cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle &&
              sudo docker build -t ompzowe/server-bundle:s390x . &&
              sudo docker save -o server-bundle.s390x.tar ompzowe/server-bundle:s390x
              """
           if (params.BUILD_DOCKER_SOURCES) {
             sshCommand remote: Z_SERVER, command: \
               """
+              cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle &&
               sudo docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=s390x -t ompzowe/server-bundle:s390x-sources . &&
-              sudo docker save -o server-bundle.s390x-sources.tar ompzowe/server-bundle:s390x-sources &&
+              sudo docker save -o server-bundle.s390x-sources.tar ompzowe/server-bundle:s390x-sources
               """
           }
           sshCommand remote: Z_SERVER, command: \
             """
+            cd zowe-build/${env.BRANCH_NAME}_${env.BUILD_NUMBER}/containers/server-bundle &&
             sudo chmod 777 * &&
             echo ">>>>>>>>>>>>>>>>>> docker tar: " && pwd && ls -ltr server-bundle.*
             """
