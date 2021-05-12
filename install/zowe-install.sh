@@ -166,7 +166,11 @@ install_mvs() {
 }
 
 install_buildin_components() {
-  component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
+  if [ "${RUN_ON_ZOS}" = "true" ]; then
+      component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
+  else
+      component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
+  fi
   for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
     component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
