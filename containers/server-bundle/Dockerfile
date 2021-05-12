@@ -75,6 +75,7 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
         pax -wf ../$f . && \
         cd .. ;  \
     done && \
+    rm zss-*.pax && \
     cd zlux && \
     for f in *.pax; do \
         echo "Processing $f file." &&\
