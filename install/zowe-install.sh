@@ -182,7 +182,14 @@ upgrade_components() {
   for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
     component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
-    . $ZOWE_ROOT_DIR/components/apiml-common-lib/bin/zowe-upgrade-component.sh --component-package "${component_package}"
+    if [ ! -f ${component_package} ]; then
+      echo "  Component ${component_name} package (${component_name}-*) is missing"
+      echo "  Installation terminated"
+      exit 0
+    fi
+    . $ZOWE_ROOT_DIR/components/apiml-common-lib/bin/zowe-upgrade-component.sh \
+      --component-package "${component_package}"\
+      --log-file "${LOG_FILE}"
   done
 }
 
