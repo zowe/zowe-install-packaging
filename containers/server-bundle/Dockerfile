@@ -59,7 +59,6 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
     find . -type f -name '*.sh' -exec sh -c "sed -i 's/iconv -f IBM-1047 -t IBM-850/cat/' {}" \; && \
     find . -type f -name '*.sh' -exec sh -c "chmod +x {}" \; && \
     echo "exit 0" > scripts/opercmd && \
-    sed -i 's/-px //' scripts/zowe-install-zlux.sh && \
     sed -i 's/java version/openjdk version/' scripts/utils/validate-java.sh && \
     \
     \
