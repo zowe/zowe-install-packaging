@@ -50,12 +50,12 @@ error_handler() {
 download_apiml_artifacts() {
   artifact_group="apiml/sdk"
   path=https://zowe.jfrog.io/artifactory/$repository_path/org/zowe/$artifact_group/$artifact_name
-  version=$(curl -s $path/maven-metadata.xml | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
-  build=$(curl -s $path/"$version"/maven-metadata.xml | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
+  version=$(/bin/sh curl -s $path/maven-metadata.xml | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
+  build=$(/bin/sh curl -s $path/"$version"/maven-metadata.xml | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
   full_name=$artifact_name-$build.zip
   print_and_log_message $full_name
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  curl -s --output "${temporary_components_directory}" \
+  /bin/sh curl -s --output "${temporary_components_directory}" \
   $path/"$version"/"$full_name"
   rc=$?;
 
@@ -72,10 +72,10 @@ download_other_artifacts() {
   repository_path=$2
   path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
   print_and_log_message $path
-  url=$(curl -s "$path" | jq -r '.uri')
-  url=$(curl -s "$url" | jq -r '.downloadUri')
+  url=$(/bin/sh curl -s "$path" | jq -r '.uri')
+  url=$(/bin/sh curl -s "$url" | jq -r '.downloadUri')
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  curl -s --output "${temporary_components_directory}" \
+  /bin/sh curl -s --output "${temporary_components_directory}" \
   "$url"
   rc=$?;
 
