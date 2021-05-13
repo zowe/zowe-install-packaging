@@ -71,9 +71,11 @@ download_apiml_artifacts() {
 }
 
 download_other_artifacts() {
+  print_and_log_message "I am in download_other_artifacts"
   artifact_group=$1
   repository_path=$2
   path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
+  print_and_log_message $path
   url=$(curl -s "$path" | jq -r '.uri')
   url=$(curl -s "$url" | jq -r '.downloadUri')
   print_and_log_message "Downloading the ${artifact_name} artifact..."
