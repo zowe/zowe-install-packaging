@@ -63,8 +63,9 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
     \
     \
     cd /tmp/zowe-install/files && \
+    mv app-server-*.pax zlux && \
     for f in *.pax; do \
-        echo "Processing $f file." && \
+        echo "Processing ebcdic pax $f" && \
         rm -rf tmp && \
         mkdir tmp && \
         cd tmp && \
@@ -75,10 +76,10 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
         pax -wf ../$f . && \
         cd .. ;  \
     done && \
-    rm zss-*.pax && \
+    rm -f zss*.pax && \
     cd zlux && \
     for f in *.pax; do \
-        echo "Processing $f file." &&\
+        echo "Processing tagged pax $f" &&\
         rm -rf tmp &&\
         mkdir tmp &&\
         cd tmp &&\
@@ -86,9 +87,11 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
         rm ../$f &&\
         find . -type f -iregex '.*\.\(sh\)$' -exec sh -c "conv '{}' | sponge '{}'" \; && \
         find . -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \; &&\
+        find . -type f -name '*.sh' -exec sh -c "sed -i 's/-px //' {}" \; && \
         pax -wf ../$f . &&\
         cd .. ; \
     done && \
+    mv app-server-*.pax .. && \
     \
     \
     /tmp/zowe-install/install/zowe-install.sh -i /home/zowe/install -l /home/zowe/logs && \
