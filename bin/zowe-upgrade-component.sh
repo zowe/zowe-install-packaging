@@ -47,17 +47,13 @@ error_handler() {
     exit 1
 }
 
-construct_full_name() {
-  artifact_name=$(echo "$artifact_name" | grep -o '^[^[:digit:]]*')
-}
-
 download_apiml_artifacts() {
-  artifact_name=$(echo "${artifact_name}" | sed 's/.$//')
   artifact_group="apiml/sdk"
   path=https://zowe.jfrog.io/artifactory/$repository_path/org/zowe/$artifact_group/$artifact_name
   version=$(curl -s $path/maven-metadata.xml | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
   build=$(curl -s $path/"$version"/maven-metadata.xml | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
   full_name=$artifact_name-$build.zip
+  print_and_log_message $full_name
   print_and_log_message "Downloading the ${artifact_name} artifact..."
   curl -s --output "${temporary_components_directory}" \
   $path/"$version"/"$full_name"
@@ -121,34 +117,56 @@ while [ $# -gt 0 ]; do #Checks for parameters
 done
 
 case $artifact_name in
-  launcher-*)
+  launcher*)
+    artifact_name=launcher
     full_name=launcher-[RELEASE].pax
     download_other_artifacts "launcher" "libs-release-local"
     ;;
-  jobs-api-package-*)
+  jobs-api-package*)
     full_name=jobs-api-package-[RELEASE].zip
     download_other_artifacts "explorer/jobs" "libs-release-local"
     ;;
-  files-api-package-*)
+  files-api-package*)
     full_name=files-api-package-[RELEASE].zip
     download_other_artifacts "explorer/files" "libs-release-local"
     ;;
-  api-catalog-package-* | discovery-package-* | gateway-package-* | caching-service-package-* | apiml-common-lib-package-*)
+  api-catalog-package*)
+    artifact_name=api-catalog-package
     download_apiml_artifacts
     ;;
-  explorer-ui-server-*)
+  discovery-package*)
+    artifact_name=discovery-package
+    download_apiml_artifacts
+    ;;
+  gateway-package*)
+    artifact_name=gateway-package
+    download_apiml_artifacts
+    ;;
+  caching-service-package*)
+    artifact_name=caching-service-package
+    download_apiml_artifacts
+    ;;
+  apiml-common-lib-package*)
+    artifact_name=apiml-common-lib-package
+    download_apiml_artifacts
+    ;;
+  explorer-ui-server*)
+    artifact_name=explorer-ui-server
     full_name=$artifact_name-[RELEASE].pax
     download_other_artifacts "explorer-ui-server" "libs-snapshot-local"
     ;;
-  explorer-jes-*)
+  explorer-jes*)
+    artifact_name=explorer-jes
     full_name=$artifact_name-[RELEASE].pax
     download_other_artifacts "explorer-jes" "libs-release-local"
     ;;
-  explorer-mvs-*)
+  explorer-mvs*)
+    artifact_name=explorer-mvs
     full_name=$artifact_name-[RELEASE].pax
     download_other_artifacts "explorer-mvs" "libs-release-local"
     ;;
-  explorer-uss-*)
+  explorer-uss*)
+    artifact_name=explorer-uss
     full_name=$artifact_name-[RELEASE].pax
     download_other_artifacts "explorer-uss" "libs-release-local"
     ;;
