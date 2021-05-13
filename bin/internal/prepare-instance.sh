@@ -206,7 +206,7 @@ configure_components() {
 
       # prepare component workspace
       component_name=$(basename "${component_dir}")
-      mkdir -p "${WORKSPACE_DIR}/${component_name}"
+      mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
 
       # backward compatible purpose, some may expect this variable to be component lifecycle directory
       export LAUNCH_COMPONENT="${component_dir}/bin"
