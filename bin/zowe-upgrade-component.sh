@@ -52,13 +52,13 @@ error_handler() {
 download_apiml_artifacts() {
   artifact_group="apiml/sdk"
   path=https://zowe.jfrog.io/artifactory/$repository_path/org/zowe/$artifact_group/$artifact_name
-  version=$(curl -s $path/maven-metadata.xml | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
-  build=$(curl -s $path/"$version"/maven-metadata.xml | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
+  version=$(node "${SCRIPT_DIR}"/utils/curl.js $path/maven-metadata.xml -k | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
+  build=$(node "${SCRIPT_DIR}"/utils/curl.js -s $path/"$version"/maven-metadata.xml -k | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
   full_name=$artifact_name-$build.zip
   print_and_log_message $full_name
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  curl -s --output "${temporary_components_directory}" \
-  $path/"$version"/"$full_name"
+  cd ${temporary_components_directory}
+  node .${SCRIPT_DIR}/utils/curl.js $path/"$version"/"$full_name"
   rc=$?;
 
   if [ $rc != 0 ]; then
@@ -201,4 +201,4 @@ esac
 
 prepare_log_file
 
-exit 0
+#exit 0
