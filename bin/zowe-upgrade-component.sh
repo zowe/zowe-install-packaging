@@ -22,8 +22,6 @@
 # -f|--log-file          optional. write log to the file specified.
 ################################################################################
 
-#Downloading the Zowe component artifact from Zowe artifactory and saving it into the temporary components directory.
-
 # Prepare shell environment
 if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
@@ -31,6 +29,8 @@ fi
 
 repository_path="libs-snapshot-local"
 
+#######################################################################
+# Functions
 prepare_log_file() {
     if [ -z "${LOG_FILE}" ]; then
         set_install_log_directory "${LOG_DIRECTORY}"
@@ -47,6 +47,7 @@ error_handler() {
     exit 1
 }
 
+# Downloading the Zowe component artifact from Zowe artifactory and saving it into the temporary components directory.
 download_apiml_artifacts() {
   artifact_group="apiml/sdk"
   path=https://zowe.jfrog.io/artifactory/$repository_path/org/zowe/$artifact_group/$artifact_name
@@ -117,6 +118,8 @@ while [ $# -gt 0 ]; do #Checks for parameters
       esac
 done
 
+#######################################################################
+# Parse component package
 case $artifact_name in
   launcher*)
     artifact_name=launcher
