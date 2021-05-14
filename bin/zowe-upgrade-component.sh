@@ -101,7 +101,7 @@ download_other_artifacts() {
   print_and_log_message "url value: $url"
   print_and_log_message "Downloading the ${artifact_name} artifact..."
   cd ${temporary_components_directory}
-  node .{SCRIPT_DIR}/utils/curl.js "$url"
+  node .${SCRIPT_DIR}/utils/curl.js "$url"
   rc=$?;
 
   if [ $rc != 0 ]; then
