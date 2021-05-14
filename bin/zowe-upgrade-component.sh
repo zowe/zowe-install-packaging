@@ -73,11 +73,11 @@ download_other_artifacts() {
   repository_path=$2
   path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
   print_and_log_message $path
-  url=$(curl  "$path" | jq -r '.uri')
-  url=$(curl  "$url" | jq -r '.downloadUri')
+  url=$(curl --verbose "$path" | jq -r '.uri')
+  url=$(curl --verbose "$url" | jq -r '.downloadUri')
   print_and_log_message "url value: $url"
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  curl --output "${temporary_components_directory}" \
+  curl --verbose --output "${temporary_components_directory}" \
   "$url"
   rc=$?;
 
