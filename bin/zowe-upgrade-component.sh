@@ -95,9 +95,9 @@ download_other_artifacts() {
   repository_path=$2
   path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
   print_and_log_message $path
-  jq=./utils/njq/src/index.js
-  url=$(node ./utils/curl.js "$path" -k | node "${jq}" -r '.uri')
-  url=$(node ./utils/curl.js "$url" -k | node "${jq}" -r '.downloadUri')
+  jq="${SCRIPT_DIR}"/utils/njq/src/index.js
+  url=$(node "${SCRIPT_DIR}"/utils/curl.js "$path" -k | node "${jq}" -r '.uri')
+  url=$(node "${SCRIPT_DIR}"/utils/curl.js "$url" -k | node "${jq}" -r '.downloadUri')
   print_and_log_message "url value: $url"
   print_and_log_message "Downloading the ${artifact_name} artifact..."
   cd {temporary_components_directory}
