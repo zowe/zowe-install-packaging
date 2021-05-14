@@ -27,6 +27,7 @@ if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
 
+SCRIPT_DIR=$(dirname $0)
 repository_path="libs-snapshot-local"
 
 #######################################################################
@@ -67,18 +68,39 @@ download_apiml_artifacts() {
   fi
 }
 
+#download_other_artifacts() {
+#  print_and_log_message "I am in download_other_artifacts"
+#  artifact_group=$1
+#  repository_path=$2
+#  path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
+#  print_and_log_message $path
+#  url=$(curl --verbose "$path" | jq -r '.uri')
+#  url=$(curl --verbose "$url" | jq -r '.downloadUri')
+#  print_and_log_message "url value: $url"
+#  print_and_log_message "Downloading the ${artifact_name} artifact..."
+#  curl --verbose --output "${temporary_components_directory}" \
+#  "$url"
+#  rc=$?;
+#
+#  if [ $rc != 0 ]; then
+#    error_handler "The ${artifact_name} artifact download failed."
+#  else
+#    print_and_log_message "The ${artifact_name} artifact has been downloaded into the directory ${temporary_components_directory}"
+#  fi
+#}
+
 download_other_artifacts() {
   print_and_log_message "I am in download_other_artifacts"
   artifact_group=$1
   repository_path=$2
   path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
   print_and_log_message $path
-  url=$(curl --verbose "$path" | jq -r '.uri')
-  url=$(curl --verbose "$url" | jq -r '.downloadUri')
+  url=$(node ./utils/curl.js "$path" -k | jq -r '.uri')
+  url=$(node ./utils/curl.js "$url" -k | jq -r '.downloadUri')
   print_and_log_message "url value: $url"
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  curl --verbose --output "${temporary_components_directory}" \
-  "$url"
+  cd {temporary_components_directory}
+  node .{SCRIPT_DIR}/utils/curl.js "$url"
   rc=$?;
 
   if [ $rc != 0 ]; then
