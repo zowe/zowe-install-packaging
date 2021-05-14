@@ -55,7 +55,6 @@ download_apiml_artifacts() {
   version=$(node "${SCRIPT_DIR}"/utils/curl.js $path/maven-metadata.xml -k | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
   build=$(node "${SCRIPT_DIR}"/utils/curl.js -s $path/"$version"/maven-metadata.xml -k | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
   full_name=$artifact_name-$build.zip
-  print_and_log_message $full_name
   print_and_log_message "Downloading the ${artifact_name} artifact..."
   cd ${temporary_components_directory}
   node .${SCRIPT_DIR}/utils/curl.js $path/"$version"/"$full_name"
@@ -68,37 +67,13 @@ download_apiml_artifacts() {
   fi
 }
 
-#download_other_artifacts() {
-#  print_and_log_message "I am in download_other_artifacts"
-#  artifact_group=$1
-#  repository_path=$2
-#  path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
-#  print_and_log_message $path
-#  url=$(curl --verbose "$path" | jq -r '.uri')
-#  url=$(curl --verbose "$url" | jq -r '.downloadUri')
-#  print_and_log_message "url value: $url"
-#  print_and_log_message "Downloading the ${artifact_name} artifact..."
-#  curl --verbose --output "${temporary_components_directory}" \
-#  "$url"
-#  rc=$?;
-#
-#  if [ $rc != 0 ]; then
-#    error_handler "The ${artifact_name} artifact download failed."
-#  else
-#    print_and_log_message "The ${artifact_name} artifact has been downloaded into the directory ${temporary_components_directory}"
-#  fi
-#}
-
 download_other_artifacts() {
-  print_and_log_message "I am in download_other_artifacts"
   artifact_group=$1
   repository_path=$2
   path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
-  print_and_log_message $path
   jq="${SCRIPT_DIR}"/utils/njq/src/index.js
   url=$(node "${SCRIPT_DIR}"/utils/curl.js "$path" -k | node "${jq}" -r '.uri')
   url=$(node "${SCRIPT_DIR}"/utils/curl.js "$url" -k | node "${jq}" -r '.downloadUri')
-  print_and_log_message "url value: $url"
   print_and_log_message "Downloading the ${artifact_name} artifact..."
   cd ${temporary_components_directory}
   node .${SCRIPT_DIR}/utils/curl.js "$url"
@@ -119,10 +94,8 @@ while [ $# -gt 0 ]; do #Checks for parameters
           -o|--component-package)
               shift
               artifact_name=$(basename $1)
-              construct_full_name
               temporary_components_directory=$(get_full_path "$1")
               temporary_components_directory=$(cd $(dirname "$temporary_components_directory") && pwd)
-              print_and_log_message "temporary_components_directory value ${temporary_components_directory}"
               shift
           ;;
           -l|--logs-dir) # Represents the path to the installation logs
@@ -196,6 +169,11 @@ case $artifact_name in
     artifact_name=explorer-uss
     full_name=$artifact_name-[RELEASE].pax
     download_other_artifacts "explorer-uss" "libs-release-local"
+    ;;
+   zss*)
+    artifact_name=zss
+    full_name=$artifact_name-[RELEASE].pax
+    download_other_artifacts "zss" "libs-snapshot-local"
     ;;
 esac
 
