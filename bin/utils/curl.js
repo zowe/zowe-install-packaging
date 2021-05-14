@@ -18,6 +18,7 @@
  * -H: http header
  * -d: post/put method body
  * -u: username:password
+ * -o, --output <file> Write to file instead of stdout
  * -v: verbose mode
  * -J: prettify JSON response to make it more readable
  * --response-type 'status'/'body'/'header': outputs one of three following information (body is default value)
@@ -31,6 +32,7 @@
  */
 
 const { URL } = require('url');
+const fs = require('fs');
 
 const exitWithError = (code, message) => {
   process.stderr.write(message);
@@ -58,6 +60,7 @@ const params = {
   url: null,
   auth: null,
   data: null,
+  output: null,
 };
 let prettifyJson = false;
 let responseType = '';
@@ -93,6 +96,9 @@ for (let i = 0; i < args.length; i++) {
     verbose = true;
   } else if (args[i] === '-J') {
     prettifyJson = true;
+  } else if (args[i] === '-o' || args[i] === '--output') {
+    i++;
+    params.output = args[i];
   } else if (args[i] == '--response-type'){
     i++;
     responseType = args[i];
@@ -133,7 +139,7 @@ if (verbose) {
 
 // make request
 const HTTP = params.url.protocol === 'https:' ? require('https') : require('http');
-let resBody = '';
+let resBody = [];
 const req = HTTP.request(options, (res) => {
   if (responseType == 'header') {
     for (const k in res.headers) {
@@ -153,17 +159,21 @@ const req = HTTP.request(options, (res) => {
     }
     // res.setEncoding('utf8');
     res.on('data', (chunk) => {
-      resBody += chunk;
+      resBody.push(chunk);
     });
     res.on('end', () => {
-      if (prettifyJson) {
-        // sometimes response doesn't have this header
-        // && res.headers['content-type'] === 'application/json'
-        process.stdout.write(JSON.stringify(JSON.parse(resBody), null, 2));
+      if (params.output) {
+        fs.writeFileSync(params.output, Buffer.concat(resBody));
       } else {
-        process.stdout.write(resBody);
+        if (prettifyJson) {
+          // sometimes response doesn't have this header
+          // && res.headers['content-type'] === 'application/json'
+          process.stdout.write(JSON.stringify(JSON.parse(resBody.join('')), null, 2));
+        } else {
+          process.stdout.write(resBody.join(''));
+        }
+        process.stdout.write('\n');
       }
-      process.stdout.write('\n');
     });
   }
 });
@@ -171,7 +181,7 @@ const req = HTTP.request(options, (res) => {
 // handling errors
 req.on('error', (e) => {
   const msg = `Request failed (${e.code}): ${e.message}\n` +
-            (verbose ? e.stack + '\n' : '');
+    (verbose ? e.stack + '\n' : '');
   exitWithError(2, msg);
 });
 
