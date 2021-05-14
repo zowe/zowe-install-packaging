@@ -100,7 +100,7 @@ download_other_artifacts() {
   url=$(node "${SCRIPT_DIR}"/utils/curl.js "$url" -k | node "${jq}" -r '.downloadUri')
   print_and_log_message "url value: $url"
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  cd {temporary_components_directory}
+  cd ${temporary_components_directory}
   node .{SCRIPT_DIR}/utils/curl.js "$url"
   rc=$?;
 
