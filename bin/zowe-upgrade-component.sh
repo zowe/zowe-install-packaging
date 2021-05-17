@@ -53,7 +53,7 @@ download_apiml_artifacts() {
   artifact_group="apiml/sdk"
   path=https://zowe.jfrog.io/artifactory/$repository_path/org/zowe/$artifact_group/$artifact_name
   version=$(node "${SCRIPT_DIR}"/utils/curl.js $path/maven-metadata.xml -k | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
-  build=$(node "${SCRIPT_DIR}"/utils/curl.js -s $path/"$version"/maven-metadata.xml -k | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
+  build=$(node "${SCRIPT_DIR}"/utils/curl.js $path/"$version"/maven-metadata.xml -k | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
   full_name=$artifact_name-$build.zip
   print_and_log_message "Downloading the ${artifact_name} artifact..."
   node ${SCRIPT_DIR}/utils/curl.js $path/"$version"/"$full_name" -o ${temporary_components_directory}/$(basename "$url")
