@@ -173,6 +173,11 @@ case $artifact_name in
     full_name=$artifact_name-[RELEASE].pax
     download_other_artifacts "zss" "libs-snapshot-local"
     ;;
+   app-server*)
+    artifact_name=zlux-core
+    full_name=$artifact_name-[RELEASE].pax
+    download_other_artifacts "zlux/zlux-core" "libs-snapshot-local"
+    ;;
 esac
 
 prepare_log_file
