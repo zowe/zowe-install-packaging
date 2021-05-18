@@ -190,10 +190,12 @@ install_buildin_components() {
   fi
   echo "ZOWE_COMPONENTS_UPGRADE value: ${ZOWE_COMPONENTS_UPGRADE}"
    # Upgrade the Zowe components by downloading the latest artifacts
+  ls -l
   if [ -n "${ZOWE_COMPONENTS_UPGRADE}" ] && [ "${ZOWE_COMPONENTS_UPGRADE}" = "true" ]; then
     upgrade_components "${component_list}"
     echo "Zowe components upgrade completed"
   fi
+  ls -l
   for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
     component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
