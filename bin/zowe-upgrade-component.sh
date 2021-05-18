@@ -56,7 +56,7 @@ download_apiml_artifacts() {
   build=$(node "${SCRIPT_DIR}"/utils/curl.js $path/"$version"/maven-metadata.xml -k | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
   full_name=$artifact_name-$build.zip
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  node .${SCRIPT_DIR}/utils/curl.js $path/"$version"/"$full_name" -o ${temporary_components_directory}/$(basename "$url")
+  node ${SCRIPT_DIR}/utils/curl.js $path/"$version"/"$full_name" -o ${temporary_components_directory}/$(basename "$url")
   rc=$?;
 
   if [ $rc != 0 ]; then
@@ -74,7 +74,7 @@ download_other_artifacts() {
   url=$(node "${SCRIPT_DIR}"/utils/curl.js "$path" -k | node "${jq}" -r '.uri')
   url=$(node "${SCRIPT_DIR}"/utils/curl.js "$url" -k | node "${jq}" -r '.downloadUri')
   print_and_log_message "Downloading the ${artifact_name} artifact..."
-  node .${SCRIPT_DIR}/utils/curl.js "$url" -o ${temporary_components_directory}/$(basename "$url")
+  node ${SCRIPT_DIR}/utils/curl.js "$url" -o ${temporary_components_directory}/$(basename "$url")
   rc=$?;
 
   if [ $rc != 0 ]; then
