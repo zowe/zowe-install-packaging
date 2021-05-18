@@ -62,7 +62,7 @@ download_apiml_artifacts() {
   if [ $rc != 0 ]; then
     error_handler "The ${artifact_name} artifact download failed."
   else
-    print_and_log_message "The ${artifact_name} artifact has been downloaded."
+    print_and_log_message "The ${artifact_name} artifact has been downloaded into the directory ${temporary_components_directory}"
   fi
 }
 
