@@ -39,24 +39,24 @@ describe(testSuiteName, () => {
 
   process.env.EXTENSIONS_LIST.split(',').forEach((extension) => {
     if (!extension){
-        return
+      return;
     }
     const extensionArray = extension.split(':');
     if (extensionArray.length !== 2){
-        return
+      return;
     }
 
     test(`install and verify ${extensionArray[0]}`, async () => {
-        expect(beforeAllResult).toBe(true);
-        await installAndVerifyExtension(
-          testSuiteName,
-          process.env.TEST_SERVER,
-          {
-            'zowe_ext_url': `https://zowe.jfrog.io/artifactory/${extensionArray[1]}`,
-            'component_id': extensionArray[0],
-          }
-        );
-      }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+      expect(beforeAllResult).toBe(true);
+      await installAndVerifyExtension(
+        testSuiteName,
+        process.env.TEST_SERVER,
+        {
+          'zowe_ext_url': ((extensionArray[1].startsWith('https://') || extensionArray[1].startsWith('http://')) ? extensionArray[1] : `https://zowe.jfrog.io/artifactory/${extensionArray[1]}`),
+          'component_id': extensionArray[0],
+        }
+      );
+    }, TEST_TIMEOUT_CONVENIENCE_BUILD);
   });
 
   afterAll(async () => {
