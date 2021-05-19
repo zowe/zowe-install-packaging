@@ -33,7 +33,7 @@
     tasks_from: run_script
   vars:
     script_chdir: "{{ work_dir_remote }}/extracted/{{ zowe_build_extracted_subfolder.stdout }}/install"
-    script_filename: ZOWE_COMPONENTS_UPGRADE=true ./zowe-install.sh
+    script_filename: ./zowe-install.sh
     script_parameters: "-i \"{{ zowe_root_dir }}\" -h \"{{ zowe_dataset_prefix }}\" -l \"{{ zowe_install_logs_dir }}\""
 
 - name: List log dir

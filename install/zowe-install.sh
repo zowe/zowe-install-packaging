@@ -188,14 +188,11 @@ install_buildin_components() {
   else
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
   fi
-  echo "ZOWE_COMPONENTS_UPGRADE value: ${ZOWE_COMPONENTS_UPGRADE}"
    # Upgrade the Zowe components by downloading the latest artifacts
-  ls -l "${INSTALL_DIR}/files"
   if [ -n "${ZOWE_COMPONENTS_UPGRADE}" ] && [ "${ZOWE_COMPONENTS_UPGRADE}" = "true" ]; then
     upgrade_components "${component_list}"
     echo "Zowe components upgrade completed"
   fi
-  ls -l "${INSTALL_DIR}/files"
   for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
     component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
