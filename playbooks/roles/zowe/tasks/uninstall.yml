@@ -142,6 +142,7 @@
   - "{{ zowe_instance_dir }}"
   - "{{ zowe_keystore_dir }}"
   - "{{ zowe_install_logs_dir }}"
+  - "{{ zowe_extension_dir }}"
   # configure certificate log, added after v1.7.1
   # these files should be organized into install_log
   - "~/zowe_certificate_setup_log"
