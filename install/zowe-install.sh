@@ -165,11 +165,33 @@ install_mvs() {
   fi
 }
 
+upgrade_components() {
+  component_list=$1
+  echo "Updating the Zowe components to the latest version"
+  for component_name in ${component_list}; do
+    cd ${INSTALL_DIR}
+    component_package=$PWD/$(ls -t ./files/${component_name}-* | head -1)
+    if [ ! -f ${component_package} ]; then
+      echo "  Component ${component_name} package (${component_name}-*) is missing"
+      echo "  Installation terminated"
+      exit 0
+    fi
+    . $INSTALL_DIR/bin/zowe-upgrade-component.sh \
+      --component-package "${component_package}"\
+      --log-file "${LOG_FILE}"
+  done
+}
+
 install_buildin_components() {
   if [ "${RUN_ON_ZOS}" = "true" ]; then
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
   else
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
+  fi
+   # Upgrade the Zowe components by downloading the latest artifacts
+  if [ -n "${ZOWE_COMPONENTS_UPGRADE}" ] && [ "${ZOWE_COMPONENTS_UPGRADE}" = "true" ]; then
+    upgrade_components "${component_list}"
+    echo "Zowe components upgrade completed"
   fi
   for component_name in ${component_list}; do
     cd ${INSTALL_DIR}
