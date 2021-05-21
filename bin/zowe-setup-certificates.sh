@@ -34,8 +34,9 @@
 # - EXTERNAL_COMPONENT_CERTIFICATES - optional - external certificates for each of components listed in COMPONENT_LEVEL_CERTIFICATES
 # - EXTERNAL_COMPONENT_CERTIFICATE_ALIASES - optional - external certificate aliases for each of components listed in COMPONENT_LEVEL_CERTIFICATES
 
-function detectExternalRootCA {
-  echo "Detecting external root CA... STARTED"
+function detectExternalCAs {
+  echo "Detecting external CAs ... STARTED"
+  EXTERNAL_ROOT_CA=
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     for file in "${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}"/extca.*.cer-ebcdic; do
       if [[ ! -f ${file} ]]; then
@@ -51,22 +52,33 @@ function detectExternalRootCA {
   else
     # Assumption: External certificate contains its chain of trust. The root certificate is the last one in the list
     #             that we get using the commands just below:
-    var_CA_chain_length=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
-      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v | grep -c -e Owner:`
+    var_key_chain=$(keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v)
+    var_CA_chain_length=$(echo "${var_key_chain}" | grep -c -e Owner:)
     if [[ $var_CA_chain_length -lt 2 ]]; then
       echo "The ${KEYSTORE_ALIAS} certificate is self-signed or does not contain its CA chain or the detection algorithm failed for other reason. If the certificate is externally signed \
 and its root CA is connected to the same keyring then you can manually set the EXTERNAL_ROOT_CA env variable with the \
 root CA label in the ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} file."
     else
-      var_root_CA_DN=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
-      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v | grep -e Issuer: | tail -n 1 | cut -d ":" -f 2-`
-      var_root_CA_alias=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
-      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -v | grep -e "Owner:${var_root_CA_DN}" -P 5 | grep -e "Alias name:" | cut -d ":" -f 2-`
-      EXTERNAL_ROOT_CA=`echo ${var_root_CA_alias} | tr -d '[:space:]'`
-      echo "A label of the external root CA in the keyring: ${EXTERNAL_ROOT_CA}"
+      EXTERNAL_CERTIFICATE_AUTHORITIES=
+      var_all_cas=$(echo "${var_key_chain}" | grep -e Issuer: | uniq | cut -d ":" -f 2- | sed 's/^[ \t]*//')
+      var_full_key_list=$(keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -v)
+      while read -r one_ca; do
+        var_ca_alias=$(echo "${var_full_key_list}" | grep -e "Owner: ${one_ca}" -P 5 | grep -e "Alias name:" | cut -d ":" -f 2- | sed 's/^[ \t]*//')
+        if [ -n "${var_ca_alias}" ]; then
+          EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}${var_ca_alias},"
+          EXTERNAL_ROOT_CA="${var_ca_alias}"
+        fi
+      done <<EOF
+$(echo "${var_all_cas}")
+EOF
+      if [ "${EXTERNAL_CERTIFICATE_AUTHORITIES}" = "," ]; then
+        EXTERNAL_CERTIFICATE_AUTHORITIES=
+      fi
+      echo "Label of the external root CA in the keyring: ${EXTERNAL_ROOT_CA}"
+      echo "Label(s) of all external CA(s) in the keyring: ${EXTERNAL_CERTIFICATE_AUTHORITIES}"
     fi
   fi
-  echo "Detecting external root CA... DONE"
+  echo "Detecting external CAs... DONE"
 }
 
 # process input parameters.
@@ -298,9 +310,8 @@ if [ -n "${ZOWE_KEYRING}" ]; then
   rm -f "${LOCAL_CA_PREFIX}"*
 fi
 
-# detect external root CA
-EXTERNAL_ROOT_CA=
-detectExternalRootCA;
+# detect external CAs
+detectExternalCAs
 
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}
