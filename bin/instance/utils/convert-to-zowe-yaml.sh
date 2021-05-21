@@ -15,10 +15,20 @@
 #
 # parameter(s):
 # - optional, path to instance.env
+# - optional, path to zowe.yaml to generate
+#
+# If there is only one parameter, it will be treated as path to zowe.yaml.
 ################################################################################
 
 INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
-INSTANCE_ENV=$1
+INSTANCE_ENV=
+TARGET_YAML=
+if [ "$#" -eq 2 ]; then
+  INSTANCE_ENV=$1
+  TARGET_YAML=$2
+elif [ "$#" -eq 1 ]; then
+  TARGET_YAML=$1
+fi
 if [ -z "${INSTANCE_ENV}" ]; then
   INSTANCE_ENV="${INSTANCE_DIR}/instance.env"
 fi
@@ -37,4 +47,4 @@ read_essential_vars
 # generate zowe.yaml.sample
 # we need node for following commands
 ensure_node_is_on_path 1>/dev/null 2>&1
-convert_instance_env_to_yaml "${INSTANCE_ENV}"
+convert_instance_env_to_yaml "${INSTANCE_ENV}" "${TARGET_YAML}"

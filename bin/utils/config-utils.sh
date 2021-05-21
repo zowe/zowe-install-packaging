@@ -37,7 +37,22 @@ convert_instance_env_to_yaml() {
   if [ -z "${zowe_yaml}" ]; then
     node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}"
   else
-    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}" > "${zowe_yaml}"
+    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}" -o "${zowe_yaml}"
+
+    # convert encoding to IBM-1047
+    if [ "$(is_on_zos)" = "true" ]; then
+      # most likely it's tagged
+      config_encoding=$(detect_file_encoding "${zowe_yaml}" "zowe:")
+      if [ -n "${config_encoding}" ]; then
+        # any cases we cannot find encoding?
+        if [ "${config_encoding}" != "IBM-1047" ]; then
+          iconv -f "${config_encoding}" -t "IBM-1047" "${zowe_yaml}" > "${zowe_yaml}.tmp"
+          mv "${zowe_yaml}.tmp" "${zowe_yaml}"
+        fi
+        chtag -r "${zowe_yaml}" 2>/dev/null
+      fi
+    fi
+
     chmod 640 "${zowe_yaml}"
   fi
 }
