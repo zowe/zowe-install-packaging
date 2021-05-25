@@ -62,7 +62,7 @@ global_validate() {
   fi
 
   # reset error counter
-  ERRORS_FOUND=0
+  export ERRORS_FOUND=0
 
   # Make sure INSTANCE_DIR is accessible and writable to the user id running this
   validate_directory_is_writable "${INSTANCE_DIR}"
@@ -85,8 +85,13 @@ global_validate() {
   fi
 
   # validate z/OSMF for some core components
-  if [[ ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
-    validate_zosmf_host_and_port "${ZOSMF_HOST}" "${ZOSMF_PORT}" 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+  if [ -n "${ZOSMF_HOST}" -a -n "${ZOSMF_PORT}" ]; then
+    if [[ ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
+      validate_zosmf_host_and_port "${ZOSMF_HOST}" "${ZOSMF_PORT}" 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+    fi
+  elif [ "${APIML_SECURITY_AUTH_PROVIDER}" = "zosmf" ]; then
+    print_formatted_error "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" "z/OSMF is not configured, APIML_SECURITY_AUTH_PROVIDER with value of zosmf is not supported."
+    let "ERRORS_FOUND=${ERRORS_FOUND}+1"
   fi
 
   # Summary errors check, exit if errors found
