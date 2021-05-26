@@ -105,9 +105,9 @@ generate_instance_env_from_yaml_config() {
   find "${ZWELS_INSTANCE_ENV_DIR}" -type f -name ".*-${ha_instance}.json" | xargs rm -f
   find "${ZWELS_INSTANCE_ENV_DIR}" -type f -name ".zowe.yaml" | xargs rm -f
 
-  # prepare .zowe.yaml and .zowe-<ha-id>.json
+  # prepare .zowe.json and .zowe-<ha-id>.json
   node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${ZWELS_INSTANCE_ENV_DIR}" --ha "${ha_instance}" "${INSTANCE_DIR}/zowe.yaml"
-  if [ ! -f "${ZWELS_INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
+  if [ ! -f "${ZWELS_INSTANCE_ENV_DIR}/.zowe.json" ]; then
     exit_with_error "failed to translate <instance-dir>/zowe.yaml" "config-utils.sh,generate_instance_env_from_yaml_config:${LINENO}"
   fi
 
