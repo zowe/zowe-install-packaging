@@ -65,9 +65,13 @@ node('zowe-jenkins-agent-dind-wdc') {
   // get the day of the week
   def currentDayofWeek = sh(script: 'date +"%a"', returnStdout: true).trim()
   boolean fullTestRun = false
+  boolean keyringRun = false
   // only run full test suite on Saturdays
   if (currentDayofWeek.equals('Sat')) {
     fullTestRun = true
+  }
+  if (currentDayofWeek.equals('Wed')) {
+    keyringRun = true
   }
 
   pipeline.setup(
@@ -434,7 +438,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   pipeline.test(
     name              : "Zowe Multiple Keyring Modes Build",
     shouldExecute : {
-      return fullTestRun && sourceRegBuildInfo && sourceRegBuildInfo['path']
+      return (keyringRun || fullTestRun) && sourceRegBuildInfo && sourceRegBuildInfo['path']
     },
     operation         : {
       if (params.TEST_RUN) {
