@@ -662,29 +662,34 @@ verify_component_instance() {
 
   print_and_log_message "=========================================="
 
-  for service_id in $service_ids; do
-    json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J 2>/dev/null)
-    log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
-    status_index=0
-    service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
-    log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
-    while [[ -n ${service_status} ]]; do
-      if [[ "${service_status}" == "UP" ]]; then
-        print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
-      else
-      # This case is currently used but will be implmented for future purposes
-        print_and_log_error_message "- service ${service_id} is registered but is currently ${service_status}"
-        rc_failures=`expr $rc_failures + 1`
-      fi
-      status_index=`expr $status_index + 1`
+  if [[ -z "${VERIFY_USER_NAME}"]] || [[ -z "${VERIFY_PASSWORD}" ]]; then
+    print_and_log_error_message "- VERIFY_USER_NAME and VERIFY_PASSWORD must be defined!"
+    rc_failures=`expr $rc_failures + 1`
+  else
+    for service_id in $service_ids; do
+      json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${GATEWAY_PORT}"/gateway/services/"${service_id}" -u "${VERIFY_USER_NAME}":"${VERIFY_PASSWORD})" 2>/dev/null)
+      log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
+      status_index=0
       service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
       log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
+      while [[ -n ${service_status} ]]; do
+        if [[ "${service_status}" == "UP" ]]; then
+          print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
+        else
+        # This case is currently used but will be implmented for future purposes
+          print_and_log_error_message "- service ${service_id} is registered but is currently ${service_status}"
+          rc_failures=`expr $rc_failures + 1`
+        fi
+        status_index=`expr $status_index + 1`
+        service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
+        log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
+      done
+      if [[ ${status_index} -eq 0 ]]; then
+          print_and_log_error_message "- service ${service_id} is not registered properly!"
+          rc_failures=`expr $rc_failures + 1`
+      fi
     done
-    if [[ ${status_index} -eq 0 ]]; then
-        print_and_log_error_message "- service ${service_id} is not registered properly!"
-        rc_failures=`expr $rc_failures + 1`
-    fi
-  done
+  fi
 
   if [ -z "${service_ids}" ]; then
      print_and_log_message "- No services exist for this component"
