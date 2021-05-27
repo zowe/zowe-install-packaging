@@ -15,7 +15,7 @@ const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 const {zluxAuth} = require('./utils');
 
-let REQ, REQ_APIML, zluxBaseUrl, apimlBaseUrl, apimlAuthCookie;
+let REQ, REQ_APIML, zluxBaseUrl, apimlBaseUrl, apimlAuthCookie, zluxHost, apimlHost;
 
 describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
 
@@ -28,8 +28,10 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ZLUX_HTTPS_PORT, 'ZOWE_ZLUX_HTTPS_PORT is not defined').to.not.be.empty;
 
-    zluxBaseUrl = `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`;
-    apimlBaseUrl = `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
+    zluxHost = `${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`;
+    apimlHost = `${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
+    zluxBaseUrl = `https://${zluxHost}`;
+    apimlBaseUrl = `https://${apimlHost}`;
     REQ = axios.create({
       baseURL: zluxBaseUrl,
       timeout: 20000,
@@ -260,4 +262,65 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     });
     
   });
+
+  describe('GET ZLUX & ZSS swagger docs', function() {
+    it('GET ZLUX Swagger', function() {
+      const _this = this;
+  
+      const req = {
+        method: 'get',
+        url: '/ui/v1/zlux/ZLUX/plugins/org.zowe.zlux/catalogs/swagger',
+      };
+      debug('request', req);
+  
+      return REQ_APIML.request(req).then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+  
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res).to.have.property('data');
+
+        expect(res.data).to.have.keys('info', 'paths','host', 'basePath', 'schemes', 'swagger');
+        expect(res.data.host.toUpperCase()).equal(zluxHost.toUpperCase());
+        expect(res.data.info.title).equal('org.zowe.zlux');
+        expect(res.data.paths).to.have.property('/server/environment');
+      });
+    });
+  
+    it('GET ZSS Swagger', function() {
+      const _this = this;
+  
+      const req = {
+        method: 'get',
+        url: '/ui/v1/zlux/ZLUX/plugins/org.zowe.zlux.agent/catalogs/swagger',
+      };
+      debug('request', req);
+  
+      return REQ_APIML.request(req).then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
+        addContext(_this, {
+          title: 'http response',
+          value: res && res.data
+        });
+  
+        expect(res).to.have.property('status');
+        expect(res.status).to.equal(200);
+        expect(res).to.have.property('data');
+        expect(res.data).to.have.keys('info', 'paths','host', 'basePath', 'schemes', 'swagger');
+        expect(res.data.host.toUpperCase()).equal(apimlHost.toUpperCase());
+        expect(res.data.info.title).equal('org.zowe.zlux.agent');
+        expect(res.data.paths).to.have.property('/server/agent/environment');
+      });
+    });
+    
+  });
 });
+
+
+
+
+
