@@ -67,10 +67,12 @@ while [ $# -gt 0 ]; do #Checks for parameters
             shift
             export VERIFY_USER_NAME=$1
             shift
+        ;;
         -p|--password)
             shift
             export VERIFY_PASSWORD=$1
             shift
+        ;;
         -i|--instance_dir)
             shift
             path=$(get_full_path "$1")

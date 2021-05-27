@@ -662,7 +662,7 @@ verify_component_instance() {
 
   print_and_log_message "=========================================="
 
-  if [[ -z "${VERIFY_USER_NAME}"]] || [[ -z "${VERIFY_PASSWORD}" ]]; then
+  if [[ -z "${VERIFY_USER_NAME}" || -z "${VERIFY_PASSWORD}" ]]; then
     print_and_log_error_message "- VERIFY_USER_NAME and VERIFY_PASSWORD must be defined!"
     rc_failures=`expr $rc_failures + 1`
   else
