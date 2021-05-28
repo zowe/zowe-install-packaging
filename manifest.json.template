@@ -74,7 +74,7 @@
       "version": "~0.2.0-STAGING"
     },
     "org.zowe.explorer-ip": {
-      "version": "~1.0.0-SNAPSHOT",
+      "version": "~1.0.0-PR-11",
       "artifact": "*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
