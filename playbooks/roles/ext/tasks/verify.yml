@@ -26,4 +26,4 @@
       vars:
         script_chdir: "{{ zowe_root_dir }}/bin"
         script_filename: ./zowe-verify-component.sh
-        script_parameters: "-i \"{{ zowe_instance_dir }}\" -c \"{{ component_id }}\""
+        script_parameters: "-i \"{{ zowe_instance_dir }}\" -c \"{{ component_id }}\" -u \"{{ ansible_user }}\" -p \"{{ ansible_pass }}\""
