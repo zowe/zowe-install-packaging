@@ -10,7 +10,7 @@
 
 const sshHelper = require('../ssh-helper');
 
-describe.only('verify installed files', function() {
+describe('verify installed files', function() {
 
   before('prepare SSH connection', async function() {
     await sshHelper.prepareConnection();
