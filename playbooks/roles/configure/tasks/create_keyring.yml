@@ -67,7 +67,7 @@
     > "{{ work_dir_remote }}/ZWEKRING.jcl"
 
 - name: Update ZWEKRING.jcl IFZOWECA with configurations
-  when: zowe_keyring_external_intermediate_ca|length > 0 or zowe_keyring_external_root_ca|length > 0
+  when: zowe_keyring_external_intermediate_ca is not none or zowe_keyring_external_root_ca is not none
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.jcl" | \
     sed -e "s%SET IFZOWECA=0%SET IFZOWECA=1%" | \
@@ -76,7 +76,7 @@
     > "{{ work_dir_remote }}/ZWEKRING.jcl"
 
 - name: Update ZWEKRING.jcl IFROZFCA with configurations
-  when: zos_zosmf_ca|length > 0
+  when: zos_zosmf_ca is not none
   raw: >-
     cat "{{ work_dir_remote }}/ZWEKRING.jcl" | \
     sed -e "s%SET IFROZFCA=0%SET IFROZFCA=1%" | \
