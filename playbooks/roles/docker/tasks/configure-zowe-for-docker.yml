@@ -25,8 +25,5 @@
 - name: Make zss available externally
   raw: echo "ZWED_agent_https_ipAddresses=0.0.0.0"  >> "{{ zowe_instance_dir }}/instance.env"
 
-- name: Set APIML_SECURITY_AUTHORIZATION_PROVIDER to ZSS
-  raw: echo "APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://{{ zowe_zos_host }}:{{ zowe_apiml_gateway_port }}/zss/api/v1/saf-auth"  >> "{{ zowe_instance_dir }}/instance.env"
-
 - name: Show instance.env
   raw: cat "{{ zowe_instance_dir }}/instance.env"
