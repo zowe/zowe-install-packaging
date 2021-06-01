@@ -59,19 +59,19 @@ getPing_bin() {
 # Source main utils script
 . ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
 
-# Run the main shell script logic
-if [[ $ZOWE_ZOSMF_PORT == "" ]]
-then
-  prompt_zosmf_port_if_required
-else 
-  echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
-fi
-
 prompt_java_home_if_required
 
 if [[ ${SKIP_NODE} != 1 ]]
 then
   prompt_for_node_home_if_required
+fi
+
+# Run the main shell script logic
+if [[ $ZOWE_ZOSMF_PORT == "" ]]
+then
+  get_zosmf_port
+else 
+  echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 fi
 
 ###identify ping
@@ -230,14 +230,14 @@ fi
 echo "  ZOWE_IP_ADDRESS    variable value="$ZOWE_IP_ADDRESS
 echo "  ZOWE_EXPLORER_HOST variable value="$ZOWE_EXPLORER_HOST
 
-if [[ $ZOWE_ZOSMF_HOST == "" ]]
-then
+if [ -z "${ZOWE_ZOSMF_PORT}" ]; then
+    ZOWE_ZOSMF_HOST=
+elif [ -z "${ZOWE_ZOSMF_HOST}" ]; then
     ZOWE_ZOSMF_HOST=$ZOWE_EXPLORER_HOST
     echo "  ZOWE_ZOSMF_HOST variable not specified, value defaults to "$ZOWE_ZOSMF_HOST >> $LOG_FILE
-    export ZOWE_ZOSMF_HOST
-else
-    echo "  ZOWE_ZOSMF_HOST variable value="$ZOWE_ZOSMF_HOST >> $LOG_FILE
 fi
-    
+export ZOWE_ZOSMF_HOST
+echo "  ZOWE_ZOSMF_HOST variable value="$ZOWE_ZOSMF_HOST >> $LOG_FILE
+echo "  ZOWE_ZOSMF_PORT variable value="$ZOWE_ZOSMF_PORT >> $LOG_FILE
 
 echo "</zowe-init.sh>" >> $LOG_FILE
