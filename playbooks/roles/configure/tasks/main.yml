@@ -137,7 +137,7 @@
     certificate: "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.keystore.{{ zowe_token_label }}.pem"
     dataset: JWTSCRT
     label: "{{ zowe_token_label }}"
-  when:  zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+  when: zowe_apiml_security_x509_enabled and ( zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING' )
 
 # ============================================================================
 # Setup certificates for keyring (self-signed)
