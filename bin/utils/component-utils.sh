@@ -667,26 +667,22 @@ verify_component_instance() {
     rc_failures=`expr $rc_failures + 1`
   else
     for service_id in $service_ids; do
-      json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${GATEWAY_PORT}"/gateway/services/"${service_id}" -u "${VERIFY_USER_NAME}":"${VERIFY_PASSWORD})" 2>/dev/null)
+      json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${GATEWAY_PORT}"/gateway/services/"${service_id}" -k -u "${VERIFY_USER_NAME}:${VERIFY_PASSWORD}" 2>/dev/null)
       log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
-      status_index=0
-      service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
+      service_status=$(echo "${json_response}" | read_json - .status 2>/dev/null)
       log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
-      while [[ -n ${service_status} ]]; do
-        if [[ "${service_status}" == "UP" ]]; then
-          print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
-        else
-        # This case is currently used but will be implmented for future purposes
-          print_and_log_error_message "- service ${service_id} is registered but is currently ${service_status}"
-          rc_failures=`expr $rc_failures + 1`
-        fi
-        status_index=`expr $status_index + 1`
-        service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
-        log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
-      done
-      if [[ ${status_index} -eq 0 ]]; then
-          print_and_log_error_message "- service ${service_id} is not registered properly!"
-          rc_failures=`expr $rc_failures + 1`
+      if [[ "${service_status}" == "UP" ]]; then
+        print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
+      elif [[ "${service_status}" == "UNKNOWN" ]]; then
+        print_and_log_error_message "- service ${service_id} is not registered properly!"
+        rc_failures=`expr $rc_failures + 1`
+      elif [ -n "${service_status}" ]; then
+        print_and_log_error_message "- service ${service_id} is registered but is currently ${service_status}"
+        rc_failures=`expr $rc_failures + 1`
+      else
+        # why it's empty?
+        print_and_log_error_message "- service ${service_id} status cannot be determined"
+        rc_failures=`expr $rc_failures + 1`
       fi
     done
   fi
