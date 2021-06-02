@@ -34,8 +34,9 @@
 # - EXTERNAL_COMPONENT_CERTIFICATES - optional - external certificates for each of components listed in COMPONENT_LEVEL_CERTIFICATES
 # - EXTERNAL_COMPONENT_CERTIFICATE_ALIASES - optional - external certificate aliases for each of components listed in COMPONENT_LEVEL_CERTIFICATES
 
-function detectExternalRootCA {
-  echo "Detecting external root CA... STARTED"
+function detectExternalCAs {
+  echo "Detecting external CAs ... STARTED"
+  EXTERNAL_ROOT_CA=
   if [[ -z "${ZOWE_KEYRING}" ]]; then
     for file in "${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}"/extca.*.cer-ebcdic; do
       if [[ ! -f ${file} ]]; then
@@ -51,22 +52,33 @@ function detectExternalRootCA {
   else
     # Assumption: External certificate contains its chain of trust. The root certificate is the last one in the list
     #             that we get using the commands just below:
-    var_CA_chain_length=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
-      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v | grep -c -e Owner:`
+    var_key_chain=$(keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v)
+    var_CA_chain_length=$(echo "${var_key_chain}" | grep -c -e Owner:)
     if [[ $var_CA_chain_length -lt 2 ]]; then
       echo "The ${KEYSTORE_ALIAS} certificate is self-signed or does not contain its CA chain or the detection algorithm failed for other reason. If the certificate is externally signed \
 and its root CA is connected to the same keyring then you can manually set the EXTERNAL_ROOT_CA env variable with the \
 root CA label in the ${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME} file."
     else
-      var_root_CA_DN=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
-      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -alias "${KEYSTORE_ALIAS}" -v | grep -e Issuer: | tail -n 1 | cut -d ":" -f 2-`
-      var_root_CA_alias=`keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" \
-      -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -v | grep -e "Owner:${var_root_CA_DN}" -P 5 | grep -e "Alias name:" | cut -d ":" -f 2-`
-      EXTERNAL_ROOT_CA=`echo ${var_root_CA_alias} | tr -d '[:space:]'`
-      echo "A label of the external root CA in the keyring: ${EXTERNAL_ROOT_CA}"
+      EXTERNAL_CERTIFICATE_AUTHORITIES=
+      var_all_cas=$(echo "${var_key_chain}" | grep -e Issuer: | uniq | cut -d ":" -f 2- | sed 's/^[ \t]*//')
+      var_full_key_list=$(keytool -list -storetype JCERACFKS -keystore "safkeyring://${ZOWE_USER_ID}/${ZOWE_KEYRING}" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -v)
+      while read -r one_ca; do
+        var_ca_alias=$(echo "${var_full_key_list}" | grep -e "Owner: ${one_ca}" -P 5 | grep -e "Alias name:" | cut -d ":" -f 2- | sed 's/^[ \t]*//')
+        if [ -n "${var_ca_alias}" ]; then
+          EXTERNAL_CERTIFICATE_AUTHORITIES="${EXTERNAL_CERTIFICATE_AUTHORITIES}${var_ca_alias},"
+          EXTERNAL_ROOT_CA="${var_ca_alias}"
+        fi
+      done <<EOF
+$(echo "${var_all_cas}")
+EOF
+      if [ "${EXTERNAL_CERTIFICATE_AUTHORITIES}" = "," ]; then
+        EXTERNAL_CERTIFICATE_AUTHORITIES=
+      fi
+      echo "Label of the external root CA in the keyring: ${EXTERNAL_ROOT_CA}"
+      echo "Label(s) of all external CA(s) in the keyring: ${EXTERNAL_CERTIFICATE_AUTHORITIES}"
     fi
   fi
-  echo "Detecting external root CA... DONE"
+  echo "Detecting external CAs... DONE"
 }
 
 # process input parameters.
@@ -252,43 +264,46 @@ if [ "$RC" -ne "0" ]; then
     exit 1
 fi
 
-if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "true" ]; then
-  if [[ -z "${ZOWE_KEYRING}" ]]; then
-    "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf \
-      --service-password "${KEYSTORE_PASSWORD}" --service-truststore "${TRUSTSTORE_PREFIX}" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-      --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
-      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
-      --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
-  else
-    export GENERATE_CERTS_FOR_KEYRING;
-    "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf --zowe-userid "${ZOWE_USER_ID}" \
-      --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
-      --service-keystore "${KEYSTORE_PREFIX}" --service-password "${KEYSTORE_PASSWORD}" \
-      --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
-      --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
-      --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
-  fi
-  RC=$?
-
-  echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> "${LOG_FILE}"
-  if [ "$RC" -ne "0" ]; then
-    if [ "$RC" = "99" ]; then
-      # import z/OSMF JWT secret failed
-      (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
-      (>&2 echo "WARNING: z/OSMF JWT public key is not retrieved successfully.")
-      # FIXME: is it ok to move on and ignore this issue?
+if [ -n "${ZOWE_ZOSMF_HOST}" -a -n "${ZOWE_ZOSMF_PORT}" ]; then
+  if [ "${VERIFY_CERTIFICATES}" = "true" -o "${NONSTRICT_VERIFY_CERTIFICATES}" = "true" ]; then
+    if [[ -z "${ZOWE_KEYRING}" ]]; then
+      "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf \
+        --service-password "${KEYSTORE_PASSWORD}" --service-truststore "${TRUSTSTORE_PREFIX}" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+        --service-keystore "${KEYSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+        --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
+        --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
     else
-      # import z/OSMF public key failed
-      (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
-      (>&2 echo "ERROR: z/OSMF is not trusted by the API Mediation Layer. Make sure ZOWE_ZOSMF_HOST and ZOWE_ZOSMF_PORT variables define the desired z/OSMF instance.")
-      (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
-      (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
-      echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
-      rm "${KEYSTORE_PREFIX}"* "${TRUSTSTORE_PREFIX}"* "${EXTERNAL_CA_PREFIX}"* "${LOCAL_CA_PREFIX}"* 2> /dev/null
-      exit 1
+      export GENERATE_CERTS_FOR_KEYRING;
+      "${ZOWE_ROOT_DIR}/bin/apiml_cm.sh" --verbose --log "${LOG_FILE}" --action trust-zosmf --zowe-userid "${ZOWE_USER_ID}" \
+        --zowe-keyring "${ZOWE_KEYRING}" --service-storetype "JCERACFKS" --zosmf-certificate "${ZOSMF_CERTIFICATE}" \
+        --service-keystore "${KEYSTORE_PREFIX}" --service-password "${KEYSTORE_PASSWORD}" \
+        --service-truststore "${TRUSTSTORE_PREFIX}" --local-ca-filename "${LOCAL_CA_PREFIX}" \
+        --verify-certificates "${VERIFY_CERTIFICATES}" --nonstrict-verify-certificates "${NONSTRICT_VERIFY_CERTIFICATES}" \
+        --jwt-alias "${PKCS11_TOKEN_LABEL:-jwtsecret}"
+    fi
+    RC=$?
+
+    echo "apiml_cm.sh --action trust-zosmf returned: $RC" >> "${LOG_FILE}"
+    if [ "$RC" -ne "0" ]; then
+      if [ "$RC" = "99" ]; then
+        # import z/OSMF JWT secret failed
+        (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
+        (>&2 echo "WARNING: z/OSMF JWT public key is not retrieved successfully.")
+        # FIXME: is it ok to move on and ignore this issue?
+      else
+        # import z/OSMF public key failed
+        (>&2 echo "apiml_cm.sh --action trust-zosmf has failed. See ${LOG_FILE} for more details")
+        (>&2 echo "ERROR: z/OSMF is not trusted by the API Mediation Layer. Make sure ZOWE_ZOSMF_HOST and ZOWE_ZOSMF_PORT variables define the desired z/OSMF instance.")
+        (>&2 echo "ZOWE_ZOSMF_HOST=${ZOWE_ZOSMF_HOST}   ZOWE_ZOSMF_PORT=${ZOWE_ZOSMF_PORT}")
+        (>&2 echo "You can also specify z/OSMF certificate explicitly in the ZOSMF_CERTIFICATE environmental variable in the zowe-setup-certificates.env file.")
+        echo "</zowe-setup-certificates.sh>" >> "${LOG_FILE}"
+        rm "${KEYSTORE_PREFIX}"* "${TRUSTSTORE_PREFIX}"* "${EXTERNAL_CA_PREFIX}"* "${LOCAL_CA_PREFIX}"* 2> /dev/null
+        exit 1
+      fi
     fi
   fi
 fi
+
 echo "Creating certificates and keystores... DONE"
 
 # If a keyring is used to hold certificates then make sure the local_ca directory doesn't contain
@@ -298,9 +313,8 @@ if [ -n "${ZOWE_KEYRING}" ]; then
   rm -f "${LOCAL_CA_PREFIX}"*
 fi
 
-# detect external root CA
-EXTERNAL_ROOT_CA=
-detectExternalRootCA;
+# detect external CAs
+detectExternalCAs
 
 # re-create and populate the zowe-certificates.env file.
 ZOWE_CERTIFICATES_ENV=${KEYSTORE_DIRECTORY}/${ZOWE_CERT_ENV_NAME}

@@ -5,13 +5,12 @@
 ****************************************************************
 * Timing: post-APPLY                                           *
 ****************************************************************
-* Part: instance.env                                           *
+* Part: instance directory                                     *
 ****************************************************************
-New variables are added to configuration file instance.env.     
-Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c                
-<PATH_TO_INSTANCE_DIR> again with an updated instance.env       
-to pick up the new definitions.                                 
- 
+New changes are made to instance directory bin folder.
+Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c
+<PATH_TO_INSTANCE_DIR> again.
+
 ****************************************************************
 * Affected function: Zowe servers                              *
 ****************************************************************
@@ -22,7 +21,7 @@ to pick up the new definitions.
 * Part: ZWESVSTC & ZWESISTC                                    *
 ****************************************************************
 Stop the Zowe servers before installing this update.
- 
+
 ****************************************************************
 * Affected function: Zowe servers                              *
 ****************************************************************
@@ -30,6 +29,6 @@ Stop the Zowe servers before installing this update.
 ****************************************************************
 * Timing: post-APPLY                                           *
 ****************************************************************
-* Part: ZWESVSTC & ZWESISTC                                    *
+* Part: ZWESVSTC or ZWESLSTC, and ZWESISTC                     *
 ****************************************************************
 Start the Zowe servers after installing this update.
