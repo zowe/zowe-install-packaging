@@ -148,8 +148,9 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          expect(JSON.stringify(res.data)).to.contain('zluxIframe');
-          expect(JSON.stringify(res.data)).to.contain(`${apimlBaseUrl}/ui/v1/explorer-jes`);
+          let respStr = JSON.stringify(res.data).toLowerCase();
+          expect(respStr).to.contain('zluxiframe');
+          expect(respStr).to.contain(`${apimlBaseUrl.toLowerCase()}/ui/v1/explorer-jes`);
         }).catch(function(err) {
           throw err;
         });
@@ -177,8 +178,9 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          expect(JSON.stringify(res.data)).to.contain('zluxIframe');
-          expect(JSON.stringify(res.data)).to.contain(`${apimlBaseUrl}/ui/v1/explorer-mvs`);
+          let respStr = JSON.stringify(res.data).toLowerCase();
+          expect(respStr).to.contain('zluxiframe');
+          expect(respStr).to.contain(`${apimlBaseUrl.toLowerCase()}/ui/v1/explorer-mvs`);
         }).catch(function(err) {
           throw err;
         });
@@ -206,8 +208,9 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          expect(JSON.stringify(res.data)).to.contain('zluxIframe');
-          expect(JSON.stringify(res.data)).to.contain(`${apimlBaseUrl}/ui/v1/explorer-uss`);
+          let respStr = JSON.stringify(res.data).toLowerCase();
+          expect(respStr).to.contain('zluxiframe');
+          expect(respStr).to.contain(`${apimlBaseUrl.toLowerCase()}/ui/v1/explorer-uss`);
         }).catch(function(err) {
           throw err;
         });
