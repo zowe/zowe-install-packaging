@@ -124,6 +124,10 @@ ENV ZOWE_ZOSMF_PORT='443'
 #ENV ZOWE_ZSS_SERVER_PORT='00000'
 ENV ZWED_agent_https_port='8542'
 
+# authorization needs to point to zss endpoint
+ENV APIML_SECURITY_AUTHORIZATION_PROVIDER=endpoint
+ENV APIML_SECURITY_AUTHORIZATION_ENDPOINT_ENABLED=true
+
 ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
 
 COPY --chown=zowe:zowe --from=builder /home/zowe /home/zowe

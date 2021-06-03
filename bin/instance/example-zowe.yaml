@@ -31,10 +31,6 @@ zowe:
   # this should be the port you defined on DVIPA for gateway external port
   externalPort: "7554"
 
-  # gateway internal connector DVIPA address
-  gatewayInternalHost: "dvipa.my-company.com"
-  gatewayInternalPort: "7564"
-
   # default certificate for gateway external connector
   # this is required.
   externalCertificate:
@@ -108,6 +104,7 @@ components:
             url: https://dvipa.my-company.com:7554/zss/api/v1/saf-auth
         ssl:
           verifySslCertificatesOfServices: false
+          nonStrictVerifySslCertificatesOfServices: true
     debug: false
     server:
       maxConnectionsPerRoute: "100"
@@ -129,6 +126,7 @@ components:
       security:
         ssl:
           verifySslCertificatesOfServices: false
+          nonStrictVerifySslCertificatesOfServices: true
     debug: false
     alternativeStaticApiDefinitionsDirectories: ""
   api-catalog:
@@ -147,11 +145,13 @@ components:
       evictionStrategy: reject
       mode: VSAM
       vsam:
+        # your VSAM data set created by ZWECSVSM job
         name: ""
     apiml:
       security:
         ssl:
           verifySslCertificatesOfServices: false
+          nonStrictVerifySslCertificatesOfServices: true
   app-server:
     enabled: true
     port: "8544"
@@ -167,6 +167,7 @@ components:
     enabled: true
     port: "8542"
     crossMemoryServerName: ZWESIS_STD
+    tls: true
     # we can customize zss certificate
     # the missing definitions will be picked from "zowe.internalCertificate"
     certificate:
