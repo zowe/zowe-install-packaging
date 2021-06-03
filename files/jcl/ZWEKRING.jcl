@@ -76,8 +76,8 @@
 //* 11) Update the SET PKCSPASS= statement to match the password for
 //*     the PKCS12 data set.
 //*
-//* 12) Set IFZOWECA to 1 if the Zowe certificate signed by a
-//*     recognized certificate authority (CA).
+//* 12) If you have external certificate authorities for ITRMZWCA
+//*     and/or ROOTZWCA, set IFZOWECA to 1 to connect to Zowe keyring.
 //*
 //* 13) Update the SET ITRMZWCA= variable to match the intermediate
 //*     CA of the Zowe certificate. It is only applicable if Zowe
@@ -87,8 +87,10 @@
 //*     Zowe certificate. It is only applicable if Zowe certificate
 //*     signed by a recognized certificate authority (CA).
 //*
-//* 15) Set IFROZFCA to 1 if the z/OSMF crtificate signed by a
-//*     recognized certificate authority (CA).
+//* 15) If you enable VERIFY_CERTIFICATES or
+//*     NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
+//*     IFROZFCA to 1 to connect z/OSMF certificate authority to
+//*     Zowe keyring. Otherwise set to 0.
 //*
 //* 16) Update the SET ROOTZFCA= variable to match the root CA of the
 //*     z/OSMF certificate. It is only applicable if z/OSMF
@@ -153,16 +155,18 @@
 //         SET DSNAME=
 //*      * Password for the PKCS12 data set
 //         SET PKCSPASS=''
-//*      * IF the Zowe certificate signed by a recognized certificate
-//*      * authority (CA),set IFZOWECA to 1
+//*      * If you have external certificate authorities for ITRMZWCA
+//*      * and/or ROOTZWCA, set IFZOWECA to 1 to connect to Zowe keyring.
 //         SET IFZOWECA=0
 //*      * Label of the intermediate CA of the Zowe certificate
 //*        if applicable
 //         SET ITRMZWCA=''
 //*      * Label of the root CA of the Zowe certificate if applicable
 //         SET ROOTZWCA=''
-//*      * IF the z/OSMF certificate signed by a recognized
-//*      * certificate authority (CA),set IFROZFCA to 1
+//*      * If you enable VERIFY_CERTIFICATES or
+//*      * NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
+//*      * IFROZFCA to 1 to connect z/OSMF certificate authority to
+//*      * Zowe keyring. Otherwise set to 0.
 //         SET IFROZFCA=0
 //*      * Label of the root CA of the z/OSMF certificate if
 //*        applicable
