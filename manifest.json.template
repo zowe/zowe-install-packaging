@@ -65,10 +65,12 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.13-PR-177",
+      "repository": "libs-snapshot-local"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.12-PR-125",
+      "repository": "libs-snapshot-local"
     },
     "org.zowe.explorer-ui-server": {
       "version": "~0.2.0-STAGING"
