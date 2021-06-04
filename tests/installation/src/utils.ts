@@ -221,21 +221,88 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   expect(resultVerify.code).toBe(0);
 };
 
+async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`run install-ext.yml on ${serverId}`);
+  const resultInstall = await runAnsiblePlaybook(
+    testcase,
+    'install-ext.yml',
+    serverId,
+    {
+      'zowe_ext_url': extraVars['zowe_ext_url']
+    }
+  );
+  
+  expect(resultInstall.stderr).toBe('');
+}
+
+async function restartZowe(testcase: string, serverId: string): Promise<void> {
+
+  debug(`stop zowe on ${serverId}`);
+  const resultStop = await runAnsiblePlaybook(
+    testcase,
+    'stop.yml',
+    serverId,
+    {}
+  );
+
+  expect(resultStop.code).toBe(0);
+
+  debug(`start zowe on ${serverId}`);
+  const resultStart = await runAnsiblePlaybook(
+    testcase,
+    'start.yml',
+    serverId,
+    {}
+  );
+
+  expect(resultStart.code).toBe(0);
+
+}
+
+async function verifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
+  debug(`run verify-ext.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify-ext.yml',
+      serverId,
+      {
+        'component_id': extraVars['component_id']
+      }
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify.code).toBe(0);
+  return resultVerify;
+}
+
 /**
- * Install and verify a Zowe build
+ * Install and verify convenience build
  *
  * @param  {String}    testcase 
- * @param  {String}    installPlaybook
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-async function installAndVerifyDockerZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
-  debug(`installAndVerifyDockerZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
+export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
+};
 
-  debug(`run ${installPlaybook} on ${serverId}`);
+/**
+ * Install and verify docker build
+ *
+ * @param  {String}    testcase 
+ * @param  {String}    serverId
+ * @param  {Object}    extraVars
+ */
+export async function installAndVerifyDockerBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndVerifyDockerBuild(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  debug(`run install-docker.yml on ${serverId}`);
   const resultInstall = await runAnsiblePlaybook(
     testcase,
-    installPlaybook,
+    'install-docker.yml',
     serverId,
     extraVars
   );
@@ -267,28 +334,6 @@ async function installAndVerifyDockerZowe(testcase: string, installPlaybook: str
   copySanityTestReport(resultVerify.reportHash);
 
   expect(resultVerify.code).toBe(0);
-}
-
-/**
- * Install and verify convenience build
- *
- * @param  {String}    testcase 
- * @param  {String}    serverId
- * @param  {Object}    extraVars
- */
-export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
-  await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
-};
-
-/**
- * Install and verify docker build
- *
- * @param  {String}    testcase 
- * @param  {String}    serverId
- * @param  {Object}    extraVars
- */
-export async function installAndVerifyDockerBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
-  await installAndVerifyDockerZowe(testcase, 'install-docker.yml', serverId, extraVars);
 };
 
 /**
@@ -301,6 +346,24 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
 export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install-fmid.yml', serverId, extraVars);
 }
+
+export async function installAndVerifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`installAndVerifyExtension(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
+
+  await installExtension(testcase, serverId, extraVars);
+
+  await restartZowe(testcase, serverId);
+
+  // clean up sanity test folder
+  cleanupSanityTestReportDir();
+
+  const resultVerify = await verifyExtension(testcase, serverId, extraVars);
+
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  // copy sanity test result to install test report folder
+  copySanityTestReport(resultVerify.reportHash);
+};
 
 /**
  * Install and verify SMPE PTF

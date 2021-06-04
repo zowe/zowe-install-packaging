@@ -18,7 +18,9 @@
 #
 # Command line options:
 # -c|--component-id required. Identification of a component.
-# -i|--instance-dir   required. path to Zowe instance directory.
+# -i|--instance-dir required. path to Zowe instance directory.
+# -u|--username     required. Username of a specified user for the current system.
+# -p|--password     required. Password of the specified user.
 #######################################################################
 
 #######################################################################
@@ -59,6 +61,16 @@ while [ $# -gt 0 ]; do #Checks for parameters
         -c|--component-id) # component name
             shift
             component_id=$1
+            shift
+        ;;
+        -u|--username)
+            shift
+            export VERIFY_USER_NAME=$1
+            shift
+        ;;
+        -p|--password)
+            shift
+            export VERIFY_PASSWORD=$1
             shift
         ;;
         -i|--instance_dir)

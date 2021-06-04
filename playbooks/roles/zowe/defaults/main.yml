@@ -122,6 +122,7 @@ zowe_known_keyring_personal_certificates:
 - "API ML Client"
 - ZOWE
 - amlexca
+- localhost
 zowe_known_keyring_certauth_certificates:
 - localca
 - amlexca
