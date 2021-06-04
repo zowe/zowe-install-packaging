@@ -160,7 +160,7 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v1.21.0-RC1",
+          "tag": "v1.22.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
