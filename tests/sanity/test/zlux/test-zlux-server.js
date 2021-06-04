@@ -15,7 +15,7 @@ const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 const {zluxAuth} = require('./utils');
 
-let REQ, REQ_APIML, zluxBaseUrl, apimlBaseUrl, apimlAuthCookie, zluxHost, apimlHost, zssHost;
+let REQ, REQ_APIML, zluxBaseUrl, apimlBaseUrl, apimlAuthCookie, zluxHost, apimlHost;
 
 describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
 
@@ -28,11 +28,9 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
     expect(process.env.ZOWE_ZLUX_HTTPS_PORT, 'ZOWE_ZLUX_HTTPS_PORT is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_ZSS_PORT, 'ZOWE_ZSS_PORT is not defined').to.not.be.empty;
 
     zluxHost = `${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`;
     apimlHost = `${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`;
-    zssHost = `${process.env.SSH_HOST}:${process.env.ZOWE_ZSS_PORT}`;
     zluxBaseUrl = `https://${zluxHost}`;
     apimlBaseUrl = `https://${apimlHost}`;
     REQ = axios.create({
@@ -317,7 +315,6 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
         expect(res.status).to.equal(200);
         expect(res).to.have.property('data');
         expect(res.data).to.have.keys('info', 'paths','host', 'basePath', 'schemes', 'swagger');
-        expect(res.data.host.toUpperCase()).equal(zssHost.toUpperCase());
         expect(res.data.info.title).equal('org.zowe.zlux.agent');
         expect(res.data.paths).to.have.property('/server/agent/environment');
       });
