@@ -68,7 +68,8 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.13-PR-127",
+      "repository": "libs-snapshot-local"
     },
     "org.zowe.explorer-ui-server": {
       "version": "~0.2.0-STAGING"
