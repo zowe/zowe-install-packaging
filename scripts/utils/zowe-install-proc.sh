@@ -91,7 +91,7 @@ for member in $members_to_copy
 do 
   ./zowe-copy-to-JES.sh -s ${samplib} -i ${member} -r ${proclib} -o ${member} -f ${LOG_FILE}
   rc=$?
-  if [[ $rc -ne 0 ]]
+  if [[ ${rc} -ne 0 ]]
   then
     echo "rc from zowe-copy-to-JES.sh is ${rc}" >> ${LOG_FILE}
     script_exit ${rc}
