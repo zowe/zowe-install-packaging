@@ -92,7 +92,7 @@ do
   if [[ $rc -ne 0 ]]
   then
     echo "rc from zowe-copy-to-JES.sh is ${rc}" >> ${LOG_FILE}
-	script_exit $rc
+	  script_exit $rc
   fi
 done
 echo "rc from zowe-copy-to-JES.sh is ${rc}" >> ${LOG_FILE}
