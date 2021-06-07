@@ -252,11 +252,12 @@ haInstances:
       api-catalog:
         enabled: false
       app-server:
+        enabled: false
         port: "28544"
       zss:
         port: "28542"
       jobs-api:
-        enabled: false
+        enabled: true
       files-api:
         enabled: false
       explorer-jes:
