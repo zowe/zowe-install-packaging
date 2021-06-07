@@ -37,7 +37,22 @@ convert_instance_env_to_yaml() {
   if [ -z "${zowe_yaml}" ]; then
     node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}"
   else
-    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}" > "${zowe_yaml}"
+    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}" -o "${zowe_yaml}"
+
+    # convert encoding to IBM-1047
+    if [ "$(is_on_zos)" = "true" ]; then
+      # most likely it's tagged
+      config_encoding=$(detect_file_encoding "${zowe_yaml}" "zowe:")
+      if [ -n "${config_encoding}" ]; then
+        # any cases we cannot find encoding?
+        if [ "${config_encoding}" != "IBM-1047" ]; then
+          iconv -f "${config_encoding}" -t "IBM-1047" "${zowe_yaml}" > "${zowe_yaml}.tmp"
+          mv "${zowe_yaml}.tmp" "${zowe_yaml}"
+        fi
+        chtag -r "${zowe_yaml}" 2>/dev/null
+      fi
+    fi
+
     chmod 640 "${zowe_yaml}"
   fi
 }
@@ -90,9 +105,9 @@ generate_instance_env_from_yaml_config() {
   find "${ZWELS_INSTANCE_ENV_DIR}" -type f -name ".*-${ha_instance}.json" | xargs rm -f
   find "${ZWELS_INSTANCE_ENV_DIR}" -type f -name ".zowe.yaml" | xargs rm -f
 
-  # prepare .zowe.yaml and .zowe-<ha-id>.json
+  # prepare .zowe.json and .zowe-<ha-id>.json
   node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${ZWELS_INSTANCE_ENV_DIR}" --ha "${ha_instance}" "${INSTANCE_DIR}/zowe.yaml"
-  if [ ! -f "${ZWELS_INSTANCE_ENV_DIR}/.zowe.yaml" ]; then
+  if [ ! -f "${ZWELS_INSTANCE_ENV_DIR}/.zowe.json" ]; then
     exit_with_error "failed to translate <instance-dir>/zowe.yaml" "config-utils.sh,generate_instance_env_from_yaml_config:${LINENO}"
   fi
 

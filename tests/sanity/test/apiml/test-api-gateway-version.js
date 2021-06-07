@@ -37,6 +37,15 @@ describe('test api gateway version', function() {
   });
 
   it('should return the version information of the API Mediation Layer and Zowe', function() {
+    debug("Verify access to version via /application/version");
+    getAndVerifyVersion('/application/version');
+    debug("Verify access to version via /gateway/api/v1/version");
+    getAndVerifyVersion('/gateway/api/v1/version');
+    debug("Verify access to version via /api/v1/gateway/version");
+    getAndVerifyVersion('/api/v1/gateway/version');
+  });
+
+  function getAndVerifyVersion(url) {
     const _this = this;
 
     const req = {
@@ -56,7 +65,7 @@ describe('test api gateway version', function() {
           title: 'http response',
           value: res && res.data
         });
-        
+
         expect(res).to.have.property('status');
         expect(res.status).to.equal(200);
         expect(res.data).to.have.property('apiml');
@@ -64,5 +73,5 @@ describe('test api gateway version', function() {
         expect(res.data.apiml).to.have.property('buildNumber');
         expect(res.data.apiml).to.have.property('commitHash');
       });
-  });
+  }
 });

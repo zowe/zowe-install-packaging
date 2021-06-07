@@ -176,6 +176,28 @@ detect_component_manifest_encoding() {
   fi
 }
 
+detect_if_component_tagged() {
+  component_dir=$1
+
+  component_manifest=
+  if [ -f "${component_dir}/manifest.yaml" ]; then
+    component_manifest="${component_dir}/manifest.yaml"
+  elif [ -f "${component_dir}/manifest.yml" ]; then
+    component_manifest="${component_dir}/manifest.yml"
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    component_manifest="${component_dir}/manifest.json"
+  fi
+  if [ -n "${component_manifest}" ]; then
+      # manifest at least should have name defined
+    tag=$(chtag -p ${component_manifest} | cut -f 2 -d\ )
+    if [ ! "${tag}" = "untagged" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+  fi
+}
+
 ###############################
 # Convert component YAML format manifest to JSON and place into workspace folder
 #
@@ -640,29 +662,30 @@ verify_component_instance() {
 
   print_and_log_message "=========================================="
 
-  for service_id in $service_ids; do
-    json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${DISCOVERY_PORT}"/eureka/apps/"${service_id}" -k -H 'Accept: application/json' -J 2>/dev/null)
-    log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
-    status_index=0
-    service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
-    log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
-    while [[ -n ${service_status} ]]; do
+  if [[ -z "${VERIFY_USER_NAME}" || -z "${VERIFY_PASSWORD}" ]]; then
+    print_and_log_error_message "- VERIFY_USER_NAME and VERIFY_PASSWORD must be defined!"
+    rc_failures=`expr $rc_failures + 1`
+  else
+    for service_id in $service_ids; do
+      json_response=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${GATEWAY_PORT}"/gateway/services/"${service_id}" -k -u "${VERIFY_USER_NAME}:${VERIFY_PASSWORD}" 2>/dev/null)
+      log_message "${component_id} service ${service_id} Eureka response: ${json_response}"
+      service_status=$(echo "${json_response}" | read_json - .status 2>/dev/null)
+      log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
       if [[ "${service_status}" == "UP" ]]; then
         print_and_log_message "- service ${service_id} is registered successfully and status is: ${service_status}"
-      else
-      # This case is currently used but will be implmented for future purposes
-        print_and_log_error_message "- service ${service_id} is registered but is currently ${service_status}"
-        rc_failures=`expr $rc_failures + 1`
-      fi
-      status_index=`expr $status_index + 1`
-      service_status=$(echo "${json_response}" | read_json - .application.instance[${status_index}].status 2>/dev/null)
-      log_message "${component_id} service ${service_id}[${status_index}] status: ${service_status:-<empty-and-exit-loop>}"
-    done
-    if [[ ${status_index} -eq 0 ]]; then
+      elif [[ "${service_status}" == "UNKNOWN" ]]; then
         print_and_log_error_message "- service ${service_id} is not registered properly!"
         rc_failures=`expr $rc_failures + 1`
-    fi
-  done
+      elif [ -n "${service_status}" ]; then
+        print_and_log_error_message "- service ${service_id} is registered but is currently ${service_status}"
+        rc_failures=`expr $rc_failures + 1`
+      else
+        # why it's empty?
+        print_and_log_error_message "- service ${service_id} status cannot be determined"
+        rc_failures=`expr $rc_failures + 1`
+      fi
+    done
+  fi
 
   if [ -z "${service_ids}" ]; then
      print_and_log_message "- No services exist for this component"

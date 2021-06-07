@@ -15,6 +15,10 @@ _Please note, currently package.json doesn't include *Babel JS*, which means all
 
 Run `npm install` to install dependencies.
 
+### Build the test cases
+
+Run `npm run-script build` to build the test cases.
+
 ### Start Test
 
 Example command:
@@ -24,7 +28,7 @@ TEST_SERVER=my-server \
   SSH_HOST=test-server-host-name \
   SSH_PORT=22 \
   SSH_USER=********* \
-  SSH_PASSWD=********* \
+  SSH_PASSWORD=********* \
   DEBUG=zowe-install-test:* \
   npm test
 ```

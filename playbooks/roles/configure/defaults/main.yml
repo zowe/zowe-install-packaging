@@ -83,6 +83,8 @@ zowe_logs_dir: ~/.zowe/logs
 zowe_keystore_password: password
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
+zowe_keyring_external_intermediate_ca:
+zowe_keyring_external_root_ca:
 zowe_keystore_alias: localhost
 zowe_proclib_dsname: auto
 zowe_proclib_membername: ZWESVSTC
