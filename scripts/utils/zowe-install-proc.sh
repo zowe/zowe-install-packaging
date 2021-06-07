@@ -71,7 +71,7 @@ proclib=auto
 fi
 
 samplib=${data_set_prefix}.SZWESAMP
-members_to_copy=(ZWESVSTC ZWESLSTC)
+members_to_copy="ZWESVSTC ZWESLSTC"
 
 echo    "samplib =" ${samplib} >> $LOG_FILE
 echo    "proclib =" ${proclib} >> $LOG_FILE
@@ -85,7 +85,7 @@ do
   fi
 done
 
-for member in $(members_to_copy)
+for member in $members_to_copy
 do 
   ./zowe-copy-to-JES.sh -s ${samplib} -i ${member} -r ${proclib} -o ${member} -f ${LOG_FILE}
   rc=$?
