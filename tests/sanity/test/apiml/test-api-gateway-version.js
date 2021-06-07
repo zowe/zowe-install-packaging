@@ -37,7 +37,7 @@ describe('test api gateway version', function() {
   });
 
   it('should return the version information of the API Mediation Layer and Zowe', function() {
-    debug("Verify access to version via /application/version");
+    debug('Verify access to version via /application/version');
     getAndVerifyVersion('/application/version');
   });
 
