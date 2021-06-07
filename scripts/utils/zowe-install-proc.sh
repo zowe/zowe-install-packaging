@@ -6,7 +6,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright IBM Corporation 2019, 2020
+# Copyright IBM Corporation 2019, 2021
 ################################################################################
 
 # Function: Copy Zowe server PROC from datasetPrefx.SZWESAMP(ZWESVSTC) to JES concatenation
@@ -71,8 +71,7 @@ proclib=auto
 fi
 
 samplib=${data_set_prefix}.SZWESAMP
-input_member=ZWESVSTC
-output_member=ZWESVSTC
+members_to_copy=(ZWESVSTC ZWESLSTC)
 
 echo    "samplib =" ${samplib} >> $LOG_FILE
 echo    "proclib =" ${proclib} >> $LOG_FILE
@@ -86,8 +85,15 @@ do
   fi
 done
 
-./zowe-copy-to-JES.sh -s ${samplib} -i ${input_member} -r ${proclib} -o ${output_member} -f ${LOG_FILE}
-rc=$?
+for member in $(members_to_copy)
+do 
+  ./zowe-copy-to-JES.sh -s ${samplib} -i ${member} -r ${proclib} -o ${member} -f ${LOG_FILE}
+  rc=$?
+  if [[ $rc -ne 0 ]]
+  then
+    echo "rc from zowe-copy-to-JES.sh is ${rc}" >> ${LOG_FILE}
+	script_exit $rc
+  fi
+done
 echo "rc from zowe-copy-to-JES.sh is ${rc}" >> ${LOG_FILE}
-
-script_exit ${rc}
+script_exit $?
