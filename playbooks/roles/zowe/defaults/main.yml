@@ -126,6 +126,7 @@ zowe_known_keyring_personal_certificates:
 zowe_known_keyring_certauth_certificates:
 - localca
 - amlexca
+- localhost
 
 # TSS keyring has extra certificate properties
 zowe_known_tss_keyring_names:
