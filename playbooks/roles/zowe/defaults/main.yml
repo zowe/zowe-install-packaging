@@ -34,6 +34,7 @@ zowe_known_started_tasks:
 - ZWESIS*
 - ZOWESVR
 - ZWESVSTC
+- ZWESLSTC
 - ZWESISTC
 - ZWESASTC
 - ZWESLSTC
@@ -51,6 +52,7 @@ zowe_known_proc_stcs:
 - ZOWESVR
 - ZOWESTC
 - ZWESVSTC
+- ZWESLSTC
 # known cross memory server stc
 - ZWESIS01
 - ZWEXMSTC
