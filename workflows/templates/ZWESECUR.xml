@@ -135,6 +135,15 @@
 			<default>#ZWESVSTC</default>
 		</string>
 	</variable>
+    <variable name="ZLNCHSTC" scope="instance" visibility="public">
+		<label>ZLNCHSTC</label>
+		<abstract>Zowe started task name for HA</abstract>
+		<description>Zowe started task name for HA</description>
+		<category>General Security</category>
+		<string multiLine="false" valueMustBeChoice="false">
+			<default>#ZWESLSTC</default>
+		</string>
+	</variable>
     <variable name="XMEMSTC" scope="instance" visibility="public">
 		<label>XMEMSTC</label>
 		<abstract>Xmem started task name</abstract>
