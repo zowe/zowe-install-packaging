@@ -22,7 +22,7 @@ describe('verify zosmf-utils', function() {
     expect(process.env.ZOSMF_PORT, 'ZOSMF_PORT is not defined').to.not.be.empty;
   });
 
-  const get_zosmf_port = 'prompt_zosmf_port_if_required';
+  const get_zosmf_port = 'get_zosmf_port';
   describe(`verify ${get_zosmf_port}`, function() {
 
     it('test that we get the correct port', async function() {
@@ -116,7 +116,7 @@ ${process.env.ZOSMF_PORT}`;
     });
 
     async function test_validate_zosmf_host_and_port(http_response_code, expected_rc, expected_stdout, expected_stderr) {
-      const command = `export ZOSMF_HOST=${process.env.SSH_HOST} && export ZOSMF_PORT=${process.env.ZOSMF_PORT} && ${check_zosmf_info_response_code} ${http_response_code}`;
+      const command = `${check_zosmf_info_response_code} ${process.env.SSH_HOST} ${process.env.ZOSMF_PORT} ${http_response_code}`;
       await test_zosmf_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_stdout, expected_stderr);
     }
   });

@@ -59,13 +59,13 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
     find . -type f -name '*.sh' -exec sh -c "sed -i 's/iconv -f IBM-1047 -t IBM-850/cat/' {}" \; && \
     find . -type f -name '*.sh' -exec sh -c "chmod +x {}" \; && \
     echo "exit 0" > scripts/opercmd && \
-    sed -i 's/-px //' scripts/zowe-install-zlux.sh && \
     sed -i 's/java version/openjdk version/' scripts/utils/validate-java.sh && \
     \
     \
     cd /tmp/zowe-install/files && \
+    mv app-server-*.pax zlux && \
     for f in *.pax; do \
-        echo "Processing $f file." && \
+        echo "Processing ebcdic pax $f" && \
         rm -rf tmp && \
         mkdir tmp && \
         cd tmp && \
@@ -76,9 +76,10 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
         pax -wf ../$f . && \
         cd .. ;  \
     done && \
+    rm -f zss*.pax && \
     cd zlux && \
     for f in *.pax; do \
-        echo "Processing $f file." &&\
+        echo "Processing tagged pax $f" &&\
         rm -rf tmp &&\
         mkdir tmp &&\
         cd tmp &&\
@@ -86,9 +87,11 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
         rm ../$f &&\
         find . -type f -iregex '.*\.\(sh\)$' -exec sh -c "conv '{}' | sponge '{}'" \; && \
         find . -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \; &&\
+        find . -type f -name '*.sh' -exec sh -c "sed -i 's/-px //' {}" \; && \
         pax -wf ../$f . &&\
         cd .. ; \
     done && \
+    mv app-server-*.pax .. && \
     \
     \
     /tmp/zowe-install/install/zowe-install.sh -i /home/zowe/install -l /home/zowe/logs && \
@@ -120,6 +123,10 @@ ENV ZOWE_IP_ADDRESS=0.0.0.0
 ENV ZOWE_ZOSMF_PORT='443'
 #ENV ZOWE_ZSS_SERVER_PORT='00000'
 ENV ZWED_agent_https_port='8542'
+
+# authorization needs to point to zss endpoint
+ENV APIML_SECURITY_AUTHORIZATION_PROVIDER=endpoint
+ENV APIML_SECURITY_AUTHORIZATION_ENDPOINT_ENABLED=true
 
 ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
 
