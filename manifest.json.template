@@ -118,7 +118,7 @@
       "version": "0.0.5"
     },
     "org.zowe.licenses": {
-      "version": "1.21.0"
+      "version": "1.22.0"
     }
   },
   "sourceDependencies": [
