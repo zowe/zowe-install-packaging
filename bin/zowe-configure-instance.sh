@@ -103,35 +103,39 @@ get_zowe_version() {
 # Since this is used to gather ZIS parms currently, it can be skipped if they are provided in args instead.
 
 get_zis_params() {
-  if [ -n $DSN_PREFIX ]; then
+  if [ ! -z "${DSN_PREFIX}" ]; then
     ZIS_PARMLIB=${DSN_PREFIX}.SAMPLIB
     ZIS_LOADLIB=${DSN_PREFIX}.SZWEAUTH
   else
-    if [ -z $ZIS_LOADLIB -o -z $ZIS_PARMLIB ]; then
-      if [ -z $NO_TEMP ]; then
-        echo "ZIS parameters wont be recorded due to missing arguments. Rerun this script with -d or -l and -p parameters to fix."
+    if [ -z "${ZIS_LOADLIB}" -o -z "${ZIS_PARMLIB}" ]; then
+      if [ -n "${NO_TEMP}" ]; then
+        echo_and_log "ZIS parameters wont be recorded due to missing arguments. You may record them in the instance configuration later."
       elif [ -d "/tmp/zowe/${ZOWE_VERSION}" ]; then
         get_zowe_version
         for file in /tmp/zowe/$ZOWE_VERSION/install-*.env; do
-          if [[ -f $file ]]; then
-            ROOT_DIR_VAL=$(cat $file | grep "^ROOT_DIR=" | cut -d'=' -f2)
-            if [[ ROOT_DIR_VAL == ZOWE_ROOT_DIR ]]; then
+          if [[ -f "${file}" ]]; then
+            ROOT_DIR_VAL=$(cat "${file}" | grep "^ZOWE_ROOT_DIR=" | cut -d'=' -f2)
+            if [ "${ROOT_DIR_VAL}" = "${ZOWE_ROOT_DIR}" ]; then
+              echo "Sourcing '${file}' for ZIS parameters" >> ${LOG_FILE}
               . $file
               break;
             fi
           fi
         done
-        if [ -z $ZOWE_DSN_PREFIX ]; then
-          echo "ZIS parameters wont be recorded due to temporary file parse error. Rerun this script with -d or -l and -p parameters to fix."
+        if [ -z "${ZOWE_DSN_PREFIX}" ]; then
+          echo_and_log "ZIS parameters wont be recorded due to temporary file parse error. You may record them in the instance configuration later."
         else
           ZIS_PARMLIB=${ZOWE_DSN_PREFIX}.SAMPLIB
           ZIS_LOADLIB=${ZOWE_DSN_PREFIX}.SZWEAUTH
         fi
       else
-        echo "ZIS parameters wont be recorded because temporary file not found. Rerun this script with -d or -l and -p parameters to fix."
+        echo_and_log "ZIS parameters wont be recorded because temporary file not found. You may record them in the instance configuration later."
       fi
     fi
   fi
+  echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX" >> ${LOG_FILE}
+  echo "ZIS_PARMLIB=$ZIS_PARMLIB" >> ${LOG_FILE}
+  echo "ZIS_LOADLIB=$ZIS_LOADLIB" >> ${LOG_FILE}
 }
 
 create_new_instance() {
