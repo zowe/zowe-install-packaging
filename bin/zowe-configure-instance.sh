@@ -135,7 +135,10 @@ get_zis_params() {
 }
 
 create_new_instance() {
-  get_zis_params #may find nothing, thats ok
+  RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
+  if [ "${RUN_ON_ZOS}" = "true" ]; then
+    get_zis_params #may find nothing, thats ok
+  fi
 
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
