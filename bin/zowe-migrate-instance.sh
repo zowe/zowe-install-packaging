@@ -114,8 +114,8 @@ if [ -e "$INSTANCE_DIR/instance.env" ]; then
   fi
   readKeystore
 
-  cd utils
-  node migrate-tools.js "$INSTANCE_DIR" "$OUTPUT_DIR" "$TO_TYPE" "$FROM_TYPE"
+  cd utils/migrate-tool
+  node migrate-tool.js "$INSTANCE_DIR" "$OUTPUT_DIR" "$TO_TYPE" "$FROM_TYPE"
 else
   echo "Error: cannot read instance.env"
   exit 1
