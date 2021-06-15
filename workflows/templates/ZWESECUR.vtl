@@ -56,26 +56,30 @@
 //* 8) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
 //*
-//* 9) Update the SET XMEMSTC= statement to match the desired
+//* 9) Update the SET ZLNCHSTC= statement to match the desired
+//*    Zowe launcher started task name. It is applicable if you
+//*    run Zowe for high availability.
+//*
+//* 10) Update the SET XMEMSTC= statement to match the desired
 //*    XMEM started task name.
 //*
-//* 10) Update the SET AUXSTC= statement to match the desired
+//* 11) Update the SET AUXSTC= statement to match the desired
 //*    XMEM Auxilary started task name.
 //*
-//* 11) Update the SET HLQ= statement to match the desired
+//* 12) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
 //*
-//* 12) Update the SET SYSPROG= statement to match the existing
+//* 13) Update the SET SYSPROG= statement to match the existing
 //*     user ID or group used by z/OS system programmers.
 //*
-//* 13) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//* 14) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
 //*     and GID values, update the SET *ID= statements to match the
 //*     desired UID and GID values.
 //*
-//* 14) When using Top Secret, update the Top Secret specific SET
+//* 15) When using Top Secret, update the Top Secret specific SET
 //*     statements.
 //*
-//* 15) Customize the commands in the DD statement that matches your
+//* 16) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -110,6 +114,7 @@
 //         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
 //         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
+//         SET ZLNCHSTC=ZWESLSTC     * Zowe started task name for HA
 //         SET  XMEMSTC=ZWESISTC     * xmem started task name
 //         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
 //         SET      HLQ=ZWE          * data set high level qualifier
@@ -153,6 +158,7 @@
 //         SET XMEMUSER=${XMEMUSER}  * userid for xmem started task
 //         SET  AUXUSER=${AUXUSER}   * userid for xmem AUX started task
 //         SET  ZOWESTC=${ZOWESTC}  * Zowe started task name
+//         SET ZLNCHSTC=${ZLNCHSTC}  * Zowe started task name for HA
 //         SET  XMEMSTC=${XMEMSTC}  * xmem started task name
 //         SET   AUXSTC=${AUXSTC}  * xmem AUX started task name
 //         SET      HLQ=${HLQ}    * data set high level qualifier
@@ -296,6 +302,12 @@
    STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE MAIN SERVER')
 
+/* started task for ZOWE Launcher in high availability               */
+  RLIST   STARTED &ZLNCHSTC..* ALL STDATA
+  RDEFINE STARTED &ZLNCHSTC..* -
+   STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
+   DATA('ZOWE LAUNCHER SERVER')
+
 /* started task for XMEM cross memory server                         */
   RLIST   STARTED &XMEMSTC..* ALL STDATA
   RDEFINE STARTED &XMEMSTC..* -
@@ -316,6 +328,7 @@
   LISTUSER &XMEMUSER. OMVS
   LISTUSER &AUXUSER.  OMVS
   RLIST STARTED &ZOWESTC..* ALL STDATA
+  RLIST STARTED &ZLNCHSTC..* ALL STDATA
   RLIST STARTED &XMEMSTC..* ALL STDATA
   RLIST STARTED &AUXSTC..*  ALL STDATA
 
@@ -432,7 +445,7 @@
 
 /* uncomment and replace "user" to permit Zowe users to access       */
 /* the resource:                                                     */
-/* PERMIT APIML.SERVICES CLASS(ZOWE) ID(user) ACCESS(READ)"          */
+/* PERMIT APIML.SERVICES CLASS(ZOWE) ID(user) ACCESS(READ)           */
 
 /* show results                                                      */
   RLIST ZOWE *
@@ -514,6 +527,14 @@ SET CONTROL(GSO)
 INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) +
 GROUP(&STCGRP.) +
 STCID(&ZOWESTC.)
+F ACF2,REFRESH(STC)
+*
+* started task for ZOWE Launcher in high availability
+*
+SET CONTROL(GSO)
+INSERT STC.&ZLNCHSTC. LOGONID(&ZOWEUSER.) +
+GROUP(&STCGRP.) +
+STCID(&ZLNCHSTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for XMEM cross memory server
@@ -701,6 +722,11 @@ $$
 /* started task for ZOWE main server                                 */
   TSS LIST(STC) PROCNAME(&ZOWESTC.) PREFIX
   TSS ADD(STC) PROCNAME(&ZOWESTC.) ACID(&ZOWEUSER.)
+  TSS ADD(&ZOWEUSER.) FAC(STC)
+
+/* started task for ZOWE Launcher in high availability               */
+  TSS LIST(STC) PROCNAME(&ZLNCHSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&ZLNCHSTC.) ACID(&ZOWEUSER.)
   TSS ADD(&ZOWEUSER.) FAC(STC)
 
 /* started task for XMEM cross memory server                         */
