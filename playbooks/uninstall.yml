@@ -24,6 +24,3 @@
     - import_role:
         name: fmid
         tasks_from: uninstall
-    - import_role:
-        name: ext
-        tasks_from: uninstall
