@@ -15,7 +15,7 @@ const path = require('path');
 const os = require('os');
 const isZos = os.platform() == 'os390';
 
-const TAG_FILES_LOCATION = '../../../scripts';
+const TAG_FILES_LOCATION = '../../../scripts/utils';
 
 const types = {
   "zos": 1,
@@ -29,6 +29,25 @@ const types = {
 const TYPE_ZOS=1;
 const TYPE_CONTAINER=2;
 const TYPE_CONTAINER_BUNDLE=3;
+
+const ebcdic1047Toiso819 = [
+  0x00, 0x01, 0x02, 0x03, 0x00, 0x09, 0x00, 0x7f, 0x00, 0x00, 0x00, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+  0x10, 0x11, 0x12, 0x13, 0x00, 0x85, 0x08, 0x00, 0x18, 0x19, 0x00, 0x00, 0x1c, 0x1d, 0x1e, 0x1f,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0x17, 0x1b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x06, 0x07,
+  0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x00, 0x1a,
+  0x20, 0xa0, 0xe2, 0xe4, 0xe0, 0xe1, 0xe3, 0xe5, 0xe7, 0xf1, 0xa2, 0x2e, 0x3c, 0x28, 0x2b, 0x7c,
+  0x26, 0xe9, 0xea, 0xeb, 0xe8, 0xed, 0xee, 0xef, 0xec, 0xdf, 0x21, 0x24, 0x2a, 0x29, 0x3b, 0x5e,
+  0x2d, 0x2f, 0xc2, 0xc4, 0xc0, 0xc1, 0xc3, 0xc5, 0xc7, 0xd1, 0xa6, 0x2c, 0x25, 0x5f, 0x3e, 0x3f,
+  0xf8, 0xc9, 0xca, 0xcb, 0xc8, 0xcd, 0xce, 0xcf, 0xcc, 0x60, 0x3a, 0x23, 0x40, 0x27, 0x3d, 0x22,
+  0xd8, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0xab, 0xbb, 0xf0, 0xfd, 0xfe, 0xb1,
+  0xb0, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0xaa, 0xba, 0xe6, 0xb8, 0xc6, 0xa4,
+  0xb5, 0x7e, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0xa1, 0xbf, 0xd0, 0x5b, 0xde, 0xae,
+  0xac, 0xa3, 0xa5, 0xb7, 0xa9, 0xa7, 0xb6, 0xbc, 0xbd, 0xbe, 0xdd, 0xa8, 0xaf, 0x5d, 0xb4, 0xd7,
+  0x7b, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0xad, 0xf4, 0xf6, 0xf2, 0xf3, 0xf5,
+  0x7d, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0xb9, 0xfb, 0xfc, 0xf9, 0xfa, 0xff,
+  0x5c, 0xf7, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0xb2, 0xd4, 0xd6, 0xd2, 0xd3, 0xd5,
+  0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0xb3, 0xdb, 0xdc, 0xd9, 0xda, 0x00
+];
 
 const commandArgs = process.argv.slice(2);
 if (commandArgs.length != 4) {
@@ -49,7 +68,10 @@ if (!process.env['KEYSTORE_TYPE']) {
 
 const WORKSPACE_DIR = path.join(instanceDir, 'workspace');
 console.log(`instance=${instanceDir}`);
-console.log(`output=${outputDir}`);
+let outputKeystoreDir = process.env['MIGRATE_KEYSTORE_DIRECTORY'] ? process.env['MIGRATE_KEYSTORE_DIRECTORY'] : path.join(outputDir, 'keystore');
+let outputInstanceDir = process.env['MIGRATE_KEYSTORE_DIRECTORY'] ? outputDir : path.join(outputDir, 'instance');
+console.log(`output instance=${outputInstanceDir}`);
+console.log(`output keystore=${outputKeystoreDir}`);
 
 const KEYSTORE_ENV_FILE = path.join(process.env['KEYSTORE_DIRECTORY'], 'zowe-certificates.env');
 const INSTANCE_PATHS = {
@@ -110,7 +132,7 @@ function migrateZosBundle() {
   if (isZos) {
     migrateConfigZosBundle();
     //simple conversion: reading files and writing them will do ebcdic-ascii conversion automatically!
-    convertRecursively(path.join(instanceDir, 'workspace'), path.join(outputDir, 'instance', 'workspace'), undefined, WORKSPACE_DIR, simpleConvert);
+    convertRecursively(path.join(instanceDir, 'workspace'), path.join(outputInstanceDir, 'workspace'), undefined, WORKSPACE_DIR, simpleConvert);
   } else {
     //no tagging info, this is going to be guesswork.
     console.error(`Error: Cannot migrate instance while not on z/OS. Rerun this script on z/OS.`);
@@ -123,14 +145,17 @@ function migrateZosBundle() {
 function migrateBundleZos() {
   if (isZos) {
     //instance
-    fs.copySync(instanceDir, path.join(outputDir, 'instance'));
-    tagRecursively(instanceDir, path.join(outputDir, 'instance'), exceptions);
+    let instWithSlash = instanceDir.endsWith('/') ? instanceDir : instanceDir+'/';
+    execAndLogErrors(`cp -r ${instWithSlash} ${outputInstanceDir}`);
+    tagRecursively(outputInstanceDir, CONVERT_DIR_EXCEPTIONS);
     //updatepaths
-    console.log('Run zowe-configure-instance.sh on this to finalize');
+    console.log(`Run 'zowe-configure-instance.sh -c "${outputInstanceDir}"' to finalize the migrated instance.`);
 
     //keystore
-    fs.copySync(process.env['KEYSTORE_DIRECTORY'], path.join(outputDir, 'keystore'));
-    tagRecursively(process.env['KEYSTORE_DIRECTORY'], path.join(outputDir, 'keystore'), []);
+    let keystoreWithSlash = process.env['KEYSTORE_DIRECTORY'].endsWith('/') ? process.env['KEYSTORE_DIRECTORY'] : process.env['KEYSTORE_DIRECTORY']+'/';
+    execAndLogErrors(`cp -r ${keystoreWithSlash} ${outputKeystoreDir}`);
+//  fs.copySync(process.env['KEYSTORE_DIRECTORY'], outputKeystoreDir);
+    tagRecursively(outputKeystoreDir, []);
     //updatepaths
   } else {
     //chtag doesnt exist, needs iconv
@@ -152,22 +177,22 @@ function migrateKeystoreZosBundle() {
     console.error(`Keystore type ${process.env['KEYSTORE_TYPE']} is not supported for migration`);
     process.exit(1);
   }
-  fs.writeFileSync(path.join(outputDir, 'keystore', 'zowe-certificates.env'), fs.readFileSync(KEYSTORE_ENV_FILE,'utf8'));
-  convertRecursively(process.env['KEYSTORE_DIRECTORY'], path.join(outputDir, 'keystore'), undefined, WORKSPACE_DIR, certConvert);
+  fs.writeFileSync(path.join(outputKeystoreDir, 'zowe-certificates.env'), fs.readFileSync(KEYSTORE_ENV_FILE,'utf8'));
+  convertRecursively(process.env['KEYSTORE_DIRECTORY'], outputKeystoreDir, undefined, WORKSPACE_DIR, certConvert);
   setDockerKeystorePaths();
 }
 
 function migrateConfigZosBundle() {
   //migrate instance minus workspace
-  convertRecursively(instanceDir, path.join(outputDir, 'instance'), undefined, WORKSPACE_DIR, simpleConvert);
+  convertRecursively(instanceDir, outputInstanceDir, undefined, WORKSPACE_DIR, simpleConvert);
   setDockerInstancePaths();
 }
 
 function setDockerKeystorePaths() {
-  let keystore = fs.readFileSync(path.join(outputDir, 'keystore', 'zowe-certificates.env'), 'utf8');
+  let keystore = fs.readFileSync(path.join(outputKeystoreDir, 'zowe-certificates.env'), 'utf8');
   let lines = keystore.split('\n');
   let keystoreDir = process.env['KEYSTORE_DIRECTORY'];
-  const migrateDir = path.join(outputDir, 'keystore', 'migrated');
+  const migrateDir = path.join(outputKeystoreDir, 'migrated');
 
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
@@ -202,7 +227,7 @@ function setDockerKeystorePaths() {
     };
   }
   keystore = lines.join('\n');
-  fs.writeFileSync(path.join(outputDir, 'keystore', 'zowe-certificates.env'), keystore);
+  fs.writeFileSync(path.join(outputKeystoreDir, 'zowe-certificates.env'), keystore);
 }
 
 
@@ -218,7 +243,7 @@ function setZosInstancePaths(keystoreDir) {
 }
 
 function setDockerInstancePaths() {
-  let instance = fs.readFileSync(path.join(outputDir, 'instance', 'instance.env'), 'utf8');
+  let instance = fs.readFileSync(path.join(outputInstanceDir, 'instance.env'), 'utf8');
   let lines = instance.split('\n');
   const keys = Object.keys(INSTANCE_PATHS);
   for (let i = 0; i < lines.length; i++) {
@@ -231,7 +256,7 @@ function setDockerInstancePaths() {
     };
   }
   instance = lines.join('\n');
-  fs.writeFileSync(path.join(outputDir, 'instance', 'instance.env'), instance);
+  fs.writeFileSync(path.join(outputInstanceDir, 'instance.env'), instance);
 }
 
 function isTextCert(buff) {
@@ -283,6 +308,7 @@ function simpleConvert(fullPath, destinationPath, convertMap) {
 
 function execAndLogErrors(command) {
   try {
+    console.log('exec: ',command);
     execSync(command);
   } catch (e) {
     //stderr seen here but could be warnings instead of errors
@@ -291,26 +317,21 @@ function execAndLogErrors(command) {
 }
 
 function untagInternal(inputPath, exceptions) {
-  const names = fs.readdirSync(inputPath);
+  console.log('checking exceptions=',exceptions);
 
-  names.forEach(function(name) {
-    const fullPath = path.join(inputPath, name);
-    let isException = false;
-    for (let i = 0; i < exceptions.length; i++) {
-      if (fullPath.endsWith(exceptions[i])) {
-        isException = true;
-        break;
-      }
-    }
-    const stat = fs.statSync(fullPath);
-    if (!isException) {
+  exceptions.forEach(function(exception) {
+    const fullPath = path.join(inputPath, exception);
+    console.log('Checking path=',fullPath);
+    try {
+      const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
-        tagRecursively(fullPath);
+        execAndLogErrors(`chtag -r -R ${fullPath}`);
+      } else {
+        execAndLogErrors(`chtag -r ${fullPath}`);
       }
-    } else if (stat.isDirectory()) {
-      execAndLogErrors(`chtag -r -R ${fullPath}`);
-    } else {
-      execAndLogErrors(`chtag -r ${fullPath}`);
+    } catch (e) {
+      console.error('Path lookup error=',e);
+      //doesnt exist? permissions?
     }
   });
 }
@@ -323,7 +344,7 @@ function tagRecursively(inputPath, exceptions) {
   execAndLogErrors(`${tagScriptDir}/tag-files.sh ${inputPath}`);
 
   //now, untag exceptions
-  untagInternal(inputPath);
+  untagInternal(inputPath, exceptions);
 }
 
 //if convertMap is null, we use nodejs string conversion trick of zos to input ??? and output ascii

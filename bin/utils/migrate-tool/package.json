@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/zowe/zowe-install-packaging-tools#readme",
   "dependencies": {
-    "fs-extra": "^10.0.0",
+    "fs-extra": "^8.0.0",
     "yaml": "^1.10.2"
   }
 }

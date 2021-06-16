@@ -109,8 +109,8 @@ if [ -e "$INSTANCE_DIR/instance.env" ]; then
 
   readInstance
   echo "keystore dir=$KEYSTORE_DIRECTORY"
-  if [ -z "$KEYSTORE_DIR" ]; then
-    KEYSTORE_DIR="$KEYSTORE_DIRECTORY"
+  if [ ! -z "$KEYSTORE_DIR" ]; then
+    export KEYSTORE_DIRECTORY="$KEYSTORE_DIR"
   fi
   readKeystore
 
