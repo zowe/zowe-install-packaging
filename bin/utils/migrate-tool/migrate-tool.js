@@ -7,7 +7,6 @@
 
   Copyright Contributors to the Zowe Project.
 */
-console.log('js type='+process.env['KEYSTORE_TYPE']);
 const { execSync } = require('child_process');
 const fs = require('fs-extra');
 const yaml = require('yaml');
@@ -30,7 +29,7 @@ const TYPE_ZOS=1;
 const TYPE_CONTAINER=2;
 const TYPE_CONTAINER_BUNDLE=3;
 
-const ebcdic1047Toiso819 = [
+const e1047to819 = [
   0x00, 0x01, 0x02, 0x03, 0x00, 0x09, 0x00, 0x7f, 0x00, 0x00, 0x00, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
   0x10, 0x11, 0x12, 0x13, 0x00, 0x85, 0x08, 0x00, 0x18, 0x19, 0x00, 0x00, 0x1c, 0x1d, 0x1e, 0x1f,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0x17, 0x1b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x06, 0x07,
@@ -59,7 +58,6 @@ const instanceDir = commandArgs[0];
 const outputDir = commandArgs[1];
 const toType = types[commandArgs[2]];
 const fromType = types[commandArgs[3]];
-console.log('keystore='+process.env['KEYSTORE_DIRECTORY']);
 
 if (!process.env['KEYSTORE_TYPE']) {
   console.error(`Could not read KEYSTORE_TYPE env var. Env vars not set correctly for migration tool.`);
@@ -67,21 +65,73 @@ if (!process.env['KEYSTORE_TYPE']) {
 }
 
 const WORKSPACE_DIR = path.join(instanceDir, 'workspace');
-console.log(`instance=${instanceDir}`);
 let outputKeystoreDir = process.env['MIGRATE_KEYSTORE_DIRECTORY'] ? process.env['MIGRATE_KEYSTORE_DIRECTORY'] : path.join(outputDir, 'keystore');
 let outputInstanceDir = process.env['MIGRATE_KEYSTORE_DIRECTORY'] ? outputDir : path.join(outputDir, 'instance');
-console.log(`output instance=${outputInstanceDir}`);
-console.log(`output keystore=${outputKeystoreDir}`);
+console.log(`Generating output instance=${outputInstanceDir}`);
+console.log(`Generating output keystore=${outputKeystoreDir}`);
 
 const KEYSTORE_ENV_FILE = path.join(process.env['KEYSTORE_DIRECTORY'], 'zowe-certificates.env');
-const INSTANCE_PATHS = {
+
+
+function getZosJavaHome() {
+  if (process.env['ENV_JAVA_HOME']) {
+    return process.env['ENV_JAVA_HOME'];
+  } else {
+    try {
+      let buf = execSync('type java');
+      let path = buf.toString('utf8').substring(8); //omit "java is"
+      return path.substring(0,path.lastIndexOf('/bin/'));
+    } catch (e) {
+      console.log(e);
+      console.error("Java could not be located, migration cannot continue");
+      return process.exit(5);
+    }
+  }
+}
+function getZosNodeHome() {
+  return process.env['ENV_NODE_HOME'] ? process.env['ENV_NODE_HOME'] :
+    process.env['_'].substring(0,process.env['_'].lastIndexOf('/bin/'));
+}
+const ZOS_INSTANCE_VALUES = {
+//'ROOT_DIR': will be updated when running configure script
+  'JAVA_HOME': getZosJavaHome(),
+  'NODE_HOME': getZosNodeHome(),
+  'KEYSTORE_DIRECTORY': outputKeystoreDir,
+  'ZWED_siteDir': "$INSTANCE_DIR/workspace/app-server/site",
+  'ZWED_instanceDir': "$INSTANCE_DIR/workspace/app-server",
+  'ZWED_groupsDir': "$INSTANCE_DIR/workspace/app-server/groups",
+  'ZWED_usersDir': "$INSTANCE_DIR/workspace/app-server/users",
+  'ZWED_pluginsDir': "$INSTANCE_DIR/workspace/app-server/plugins",
+}
+
+const DOCKER_INSTANCE_VALUES = {
   'ROOT_DIR': "/home/zowe/install",
   'JAVA_HOME': "/usr/local/openjdk-8",
   'NODE_HOME':'/usr/local/node',
-  'KEYSTORE_DIRECTORY': "/home/zowe/certs"
+  'KEYSTORE_DIRECTORY': "/home/zowe/certs",
+  'ZWED_siteDir': "$INSTANCE_DIR/workspace/app-server/site",
+  'ZWED_instanceDir': "$INSTANCE_DIR/workspace/app-server",
+  'ZWED_groupsDir': "$INSTANCE_DIR/workspace/app-server/groups",
+  'ZWED_usersDir': "$INSTANCE_DIR/workspace/app-server/users",
+  'ZWED_pluginsDir': "$INSTANCE_DIR/workspace/app-server/plugins",
+  'CATALOG_PORT':7552,
+  'DISCOVERY_PORT':7553,
+  'GATEWAY_PORT':7554,
+  'ZWE_CACHING_SERVICE_PORT':7555,
+  'JOBS_API_PORT':8545,
+  'FILES_API_PORT':8547,
+  'JES_EXPLORER_UI_PORT':8546,
+  'MVS_EXPLORER_UI_PORT':8548,
+  'USS_EXPLORER_UI_PORT':8550, 
+  'ZOWE_ZLUX_SERVER_HTTPS_PORT':8544,
+  'ZOWE_ZSS_SERVER_PORT':8542
 }
 
+const REMOVE_VALUES = ['ZOWE_EXPLORER_HOST', 'ZOWE_IP_ADDRESS'];
+
 const KEYSTORE_KEYS = ['KEYSTORE', 'TRUSTSTORE', 'KEYSTORE_KEY', 'KEYSTORE_CERTIFICATE', 'KEYSTORE_CERTIFICATE_AUTHORITY'];
+
+const DOCKER_KEYSTORE_DIRECTORIES = ['/global/zowe/keystore', '/home/zowe/certs'];
 
 const CONVERT_DIR_EXCEPTIONS = [ 'workspace/api-mediation/api-defs' ];
 
@@ -130,9 +180,14 @@ function migrateZosBundle() {
   migrateKeystoreZosBundle();
 
   if (isZos) {
-    migrateConfigZosBundle();
+    //migrate instance minus workspace
+    console.log('Copying instance');
+    convertRecursively(instanceDir, outputInstanceDir, undefined, WORKSPACE_DIR, simpleConvert);
+    console.log('Updating instance configuration');
+    setInstanceValues(DOCKER_INSTANCE_VALUES);
     //simple conversion: reading files and writing them will do ebcdic-ascii conversion automatically!
     convertRecursively(path.join(instanceDir, 'workspace'), path.join(outputInstanceDir, 'workspace'), undefined, WORKSPACE_DIR, simpleConvert);
+    console.log(`The migration script does not regenerate self-signed certificates. If signed certificates are not being used, do not import the keystore to docker, and it will generate new self-signed certificates at runtime.`);
   } else {
     //no tagging info, this is going to be guesswork.
     console.error(`Error: Cannot migrate instance while not on z/OS. Rerun this script on z/OS.`);
@@ -146,17 +201,24 @@ function migrateBundleZos() {
   if (isZos) {
     //instance
     let instWithSlash = instanceDir.endsWith('/') ? instanceDir : instanceDir+'/';
+    console.log('Copying instance');
     execAndLogErrors(`cp -r ${instWithSlash} ${outputInstanceDir}`);
+    console.log('Tagging instance files');
     tagRecursively(outputInstanceDir, CONVERT_DIR_EXCEPTIONS);
-    //updatepaths
-    console.log(`Run 'zowe-configure-instance.sh -c "${outputInstanceDir}"' to finalize the migrated instance.`);
+    console.log('Updating instance configuration');
+    setInstanceValues(ZOS_INSTANCE_VALUES);
 
     //keystore
     let keystoreWithSlash = process.env['KEYSTORE_DIRECTORY'].endsWith('/') ? process.env['KEYSTORE_DIRECTORY'] : process.env['KEYSTORE_DIRECTORY']+'/';
+    console.log('Copying keystore');
     execAndLogErrors(`cp -r ${keystoreWithSlash} ${outputKeystoreDir}`);
-//  fs.copySync(process.env['KEYSTORE_DIRECTORY'], outputKeystoreDir);
+    //  fs.copySync(process.env['KEYSTORE_DIRECTORY'], outputKeystoreDir);
+    console.log('Tagging keystore files');
     tagRecursively(outputKeystoreDir, []);
-    //updatepaths
+    console.log('Correcting keystore paths');
+    setKeystorePaths(false, DOCKER_KEYSTORE_DIRECTORIES, outputKeystoreDir);
+    console.log(`The migration script does not regenerate self-signed certificates. If signed certificates are not being used, run keystore generation to get a new keystore.`);
+    console.log(`Run './zowe-configure-instance.sh -c "${outputInstanceDir}"' to finalize the migrated instance.`);
   } else {
     //chtag doesnt exist, needs iconv
     console.error(`Error: Cannot migrate instance while not on z/OS. Rerun this script on z/OS.`);
@@ -177,21 +239,16 @@ function migrateKeystoreZosBundle() {
     console.error(`Keystore type ${process.env['KEYSTORE_TYPE']} is not supported for migration`);
     process.exit(1);
   }
+  console.log('Copying keystore');
   fs.writeFileSync(path.join(outputKeystoreDir, 'zowe-certificates.env'), fs.readFileSync(KEYSTORE_ENV_FILE,'utf8'));
   convertRecursively(process.env['KEYSTORE_DIRECTORY'], outputKeystoreDir, undefined, WORKSPACE_DIR, certConvert);
-  setDockerKeystorePaths();
+  console.log('Correcting keystore paths');
+  setKeystorePaths(true, [process.env['KEYSTORE_DIRECTORY']], DOCKER_INSTANCE_VALUES.KEYSTORE_DIRECTORY);
 }
 
-function migrateConfigZosBundle() {
-  //migrate instance minus workspace
-  convertRecursively(instanceDir, outputInstanceDir, undefined, WORKSPACE_DIR, simpleConvert);
-  setDockerInstancePaths();
-}
-
-function setDockerKeystorePaths() {
+function setKeystorePaths(migrateExternalCerts, oldKeystoreRoots, newKeystoreRoot) {
   let keystore = fs.readFileSync(path.join(outputKeystoreDir, 'zowe-certificates.env'), 'utf8');
   let lines = keystore.split('\n');
-  let keystoreDir = process.env['KEYSTORE_DIRECTORY'];
   const migrateDir = path.join(outputKeystoreDir, 'migrated');
 
   for (let i = 0; i < lines.length; i++) {
@@ -200,10 +257,19 @@ function setDockerKeystorePaths() {
       let key = KEYSTORE_KEYS[j];
       if (line.startsWith(key+'=')) {
         let value=line.substring(key.length+1);
-        if (value.startsWith(keystoreDir)) {
-          lines[i] = key + '=' + value.replace(keystoreDir, INSTANCE_PATHS.KEYSTORE_DIRECTORY);
-        } else {
-          //object does not originate in keystore. copy it out
+        let keystoreStringToSwap;
+        for (let k = 0; k < oldKeystoreRoots.length; k++) {
+          if (value.startsWith(oldKeystoreRoots[k])
+             ||value.startsWith('"'+oldKeystoreRoots[k])) {
+            keystoreStringToSwap = oldKeystoreRoots[k];
+            break;
+          }
+        }
+        
+        if (keystoreStringToSwap) {
+          lines[i] = key + '=' + value.replace(keystoreStringToSwap, newKeystoreRoot);
+        } else if (migrateExternalCerts) {
+          //object does not originate in keystore. copy it out if possible to
           let filename = path.basename(value);
           let buf = fs.readFileSync(value);
           try {
@@ -220,7 +286,7 @@ function setDockerKeystorePaths() {
           } else {
             fs.writeFileSync(destinationPath, buf);
           }
-          lines[i] = key + '=' + path.join(INSTANCE_PATHS.KEYSTORE_DIRECTORY, 'migrated', filename);
+          lines[i] = `${key}="${path.join(newKeystoreRoot, 'migrated', filename)}"`;
         }
         break;
       }
@@ -230,31 +296,35 @@ function setDockerKeystorePaths() {
   fs.writeFileSync(path.join(outputKeystoreDir, 'zowe-certificates.env'), keystore);
 }
 
-
-function setZosInstancePaths(keystoreDir) {
-  const nodePath = process.env['_'];
-  try { 
-    const javaPath = execSync('type java').substring(8); //omit "java is"
-  } catch (e) {
-    console.error("Java could not be located, migration cannot continue");
-    process.exit(5);
-  }
-
-}
-
-function setDockerInstancePaths() {
+function setInstanceValues(valueMap) {
   let instance = fs.readFileSync(path.join(outputInstanceDir, 'instance.env'), 'utf8');
   let lines = instance.split('\n');
-  const keys = Object.keys(INSTANCE_PATHS);
+  const keys = Object.keys(valueMap);
+  const usedKeys = [];
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
     for (let j = 0; j < keys.length; j++) {
       let key = keys[j];
       if (line.startsWith(key+'=')) {
-        lines[i] = key+'='+INSTANCE_PATHS[key];
+        lines[i] = key+'='+valueMap[key];
+        usedKeys.push(key);
       }
     };
+    //remove values we dont want, or perhaps are going to be regenerated soon
+    for (let j = 0; j < REMOVE_VALUES.length; j++) {
+      if (line.startsWith(REMOVE_VALUES[j]+'=')) {
+        lines[i] = '';
+      }
+    }
   }
+  //add values not found in instance
+  for (let i = 0; i < keys.length; i++) {
+    if (usedKeys.indexOf(keys[i]) == -1) {
+      lines.push(`${keys[i]}=${valueMap[keys[i]]}`);
+    }
+  }
+
+
   instance = lines.join('\n');
   fs.writeFileSync(path.join(outputInstanceDir, 'instance.env'), instance);
 }
@@ -317,11 +387,10 @@ function execAndLogErrors(command) {
 }
 
 function untagInternal(inputPath, exceptions) {
-  console.log('checking exceptions=',exceptions);
+  console.log('Checking for exceptions to untag');
 
   exceptions.forEach(function(exception) {
     const fullPath = path.join(inputPath, exception);
-    console.log('Checking path=',fullPath);
     try {
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {

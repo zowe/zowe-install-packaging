@@ -67,26 +67,26 @@ fi
 readInstance() {
   mkdir -p $OUTPUT_DIR/instance
 
-  . "$INSTANCE_DIR/instance.env"
-  if [ $? -ne 0 ]; then
-    echo "cant read instance"
+  
+  if [ $(. "$INSTANCE_DIR/instance.env" 2> /dev/null) ]; then
+    source_env "$INSTANCE_DIR/instance.env"
+  else
+    echo "Can't read instance file, attempting to read as EBCDIC."
     iconv -f 819 -t 1047 "$INSTANCE_DIR/instance.env" > "$OUTPUT_DIR/instance/instance.env.iconv1047"
     source_env "$OUTPUT_DIR/instance/instance.env.iconv1047"
-  else
-    source_env "$INSTANCE_DIR/instance.env"
   fi
 }
 
 readKeystore() {
   mkdir -p $OUTPUT_DIR/keystore
 
-  . "$KEYSTORE_DIR/zowe-certificates.env"
-  if [ $? -ne 0 ]; then
-    echo "cant read keystore"
+  
+  if [ $(. "$KEYSTORE_DIR/zowe-certificates.env" 2> /dev/null) ]; then
+    source_env "$KEYSTORE_DIR/zowe-certificates.env"
+  else
+    echo "Can't read keystore file, attempting to read as EBCDIC."
     iconv -f 819 -t 1047 "$KEYSTORE_DIR/zowe-certificates.env" > "$OUTPUT_DIR/keystore/zowe-certificates.env.iconv1047"
     source_env "$OUTPUT_DIR/keystore/zowe-certificates.env.iconv1047"
-  else
-    source_env "$KEYSTORE_DIR/zowe-certificates.env"
   fi
 }
 
@@ -104,11 +104,11 @@ source_env() {
 }
 
 if [ -e "$INSTANCE_DIR/instance.env" ]; then
-  echo "mkdir -p $OUTPUT_DIR"
   mkdir -p $OUTPUT_DIR
+  export ENV_NODE_HOME="$NODE_HOME"
+  export ENV_JAVA_HOME="$JAVA_HOME"
 
   readInstance
-  echo "keystore dir=$KEYSTORE_DIRECTORY"
   if [ ! -z "$KEYSTORE_DIR" ]; then
     export KEYSTORE_DIRECTORY="$KEYSTORE_DIR"
   fi
