@@ -159,9 +159,9 @@ validate_components() {
         fi
         let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
       fi
-      zos_deps=$(read_component_manifest "${component_dir}" "zDependencies" 2>/dev/null)
+      zos_deps=$(read_component_manifest "${component_dir}" ".zDependencies" 2>/dev/null)
       if [ -n "${zos_deps}" ]; then
-        print_formatted_warn "ZWELS" "prepare-instance.sh,validate_components:${LINENO}" "- ${component_id} depends on a z/OS service. This dependency may require additional setup, please refer to the component documentation"
+        print_formatted_warn "ZWELS" "prepare-instance.sh,validate_components:${LINENO}" "- ${component_id} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation"
       fi
     fi
   done
