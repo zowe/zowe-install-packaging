@@ -32,16 +32,18 @@ fi
 # Source common util functions
 . ${utils_dir}/common.sh
 
-prompt_zosmf_port_if_required() {
+# Note: this function has removed prompt ability to avoid blocking automation
+get_zosmf_port() {
   zosmf_port_list=$(onetstat -b -E IZUSVR1 2>/dev/null | grep .*Listen | awk '{ print $4 }')
   extract_zosmf_port "${zosmf_port_list}"
   extract_rc=$?
   if [[ ${extract_rc} -ne 0 ]]
   then
-    echo "Unable to detect z/OS MF HTTPS port"
-    echo "Please enter the HTTPS port of z/OS MF server on this system"
-    read zosmf_port_list
-    export ZOWE_ZOSMF_PORT=${zosmf_port_list}
+    echo "Unable to detect z/OS MF HTTPS port. Following z/OS MF configuration will be skipped."
+    echo "If you have z/OS MF available, please setup ZOWE_ZOSMF_PORT environment variable and rerun the utility script."
+    # echo "Please enter the HTTPS port of z/OS MF server on this system"
+    # read zosmf_port_list
+    export ZOWE_ZOSMF_PORT=
   fi
 }
 
@@ -64,7 +66,7 @@ extract_zosmf_port() {
   if [[ ${number_of_matches} -gt 1 ]] && [[ -n "${ZOSMF_HOST}" ]] && [[ -n "${NODE_HOME}" ]];
   then
     for port in ${zosmf_port_list}; do
-      http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/zosmfHttpRequest.js ${ZOSMF_HOST} ${port})
+      http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/curl.js https://${ZOSMF_HOST}:${port}/zosmf/info -k --response-type status)
       if [[ ${http_response_code} == 200 ]]
       then
         zosmf_port_list=${port}
@@ -103,23 +105,25 @@ validate_zosmf_host_and_port() {
     log_message "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
   else
     http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/curl.js https://${zosmf_host}:${zosmf_port}/zosmf/info -k --response-type status)
-    check_zosmf_info_response_code "${http_response_code}"
+    check_zosmf_info_response_code "${zosmf_host}" "${zosmf_port}" "${http_response_code}"
     return $?
   fi
 }
 
 check_zosmf_info_response_code() {
-  http_response_code=$1
+  zosmf_host=$1
+  zosmf_port=$2
+  http_response_code=$3
   if [[ -z "${http_response_code}" ]]
   then
-    log_message "Warning: Could not validate if z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
+    log_message "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
   else
     if [[ ${http_response_code} != 200 ]]
     then
-      print_error_message "Could not contact z/OS MF on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info' - ${http_response_code}"
+      print_error_message "Could not contact z/OS MF on 'https://${zosmf_host}:${zosmf_port}/zosmf/info' - ${http_response_code}"
       return 1
     else
-      log_message "Successfully checked z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
+      log_message "Successfully checked z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
     fi
   fi
 }

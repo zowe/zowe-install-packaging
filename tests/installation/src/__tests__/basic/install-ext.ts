@@ -26,12 +26,15 @@ describe(testSuiteName, () => {
       'ZOWE_BUILD_LOCAL',
       'EXTENSIONS_LIST',
     ]);
+    //await installConvBuild
+    //remove verification of conv build - for optimal runtime purposes
     await installAndVerifyConvenienceBuild(
       testSuiteName,
       process.env.TEST_SERVER,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_lock_keystore': 'false',
+        //skip_start - for optimal runtime purposes
       }
     );
     beforeAllResult = true;
