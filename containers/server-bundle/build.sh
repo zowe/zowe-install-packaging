@@ -15,9 +15,9 @@
 # 2. zowe build url
 #
 # Examples:
-# ./build.sh amd64 1
-# ./build.sh amd64 1 latest
-# ./build.sh amd64 1 https://zowe.jfrog.io/zowe/libs-snapshot-local/org/zowe/1.17.0-STAGING/zowe-1.17.0-staging-1052-20201017043641.pax
+# ./build.sh amd64
+# ./build.sh amd64 latest
+# ./build.sh amd64 https://zowe.jfrog.io/zowe/libs-snapshot-local/org/zowe/1.17.0-STAGING/zowe-1.17.0-staging-1052-20201017043641.pax
 
 mkdir -p utils
 cp -r ../utils/* ./utils
