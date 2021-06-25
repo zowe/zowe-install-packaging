@@ -34,10 +34,15 @@
       },
       "fallback": true
     },
-    "https": {
-      "ipAddresses": ["127.0.0.1"],
+    "http": {
+      //"ipAddresses": ["127.0.0.1"],
       //to be a replacement for zssPort
-      "port": 8542
+      //"port": 8542
+    },
+    "https": {
+      //"ipAddresses": ["0.0.0.0"],
+      //to be a replacement for zssPort
+      //"port": 8542
     },
     "mediationLayer": {
       "serviceName": "zss",
