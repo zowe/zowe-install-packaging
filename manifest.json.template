@@ -12,7 +12,8 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.23.0-STAGING",
+      "version": "~1.23.0-175-zlux-app-server",
+      "repository": "libs-snapshot-local",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zss-auth": {
