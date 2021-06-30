@@ -72,17 +72,22 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug('app viewport is ready');
 
     // wait for page is loaded
+    await driver.sleep(3000);
     const canvas = await waitUntilElement(driver, 'ng-component > .react-plugin-container > div#ipexplorer-root', viewport);
     expect(canvas).to.be.an('object');
     const tabPanel =  await waitUntilElement(driver, '#tabpanel-0', canvas);
     expect(tabPanel).to.be.an('object');
-    const dataRow = await waitUntilElement(driver, '.MuiTableBody-root>tr', canvas);
-    expect(dataRow).to.be.an('object');
-    debug('app is fully loaded');
- 
-    // save screenshot
-    const file2 = await saveScreenshot(driver, testName, 'app-loaded');
+    // const dataRow = await waitUntilElement(driver, '.MuiTableBody-root>tr', canvas);
+    // expect(dataRow).to.be.an('object');
+    const file1 = await saveScreenshot(driver, testName, 'app-loaded');
+    addContext(this, file1);
+    // try to switch tabs
+    const reservedPortsTab = await waitUntilElement(driver, '#reserved-ports-tab', canvas);
+    expect(reservedPortsTab).to.be.an('object');
+    await reservedPortsTab.click();
+    const file2 = await saveScreenshot(driver, testName, 'tab-switch');
     addContext(this, file2);
+    debug('app is fully loaded');
   });
  
  
