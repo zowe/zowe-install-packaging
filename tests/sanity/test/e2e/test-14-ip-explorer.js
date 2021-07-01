@@ -77,10 +77,9 @@ describe(`test ${APP_TO_TEST}`, function() {
     expect(canvas).to.be.an('object');
     const tabPanel =  await waitUntilElement(driver, '#tabpanel-0', canvas);
     expect(tabPanel).to.be.an('object');
-    // const dataRow = await waitUntilElement(driver, '.MuiTableBody-root>tr', canvas);
-    // expect(dataRow).to.be.an('object');
     const file1 = await saveScreenshot(driver, testName, 'app-loaded');
     addContext(this, file1);
+
     // try to switch tabs
     const reservedPortsTab = await waitUntilElement(driver, '#reserved-ports-tab', canvas);
     expect(reservedPortsTab).to.be.an('object');
