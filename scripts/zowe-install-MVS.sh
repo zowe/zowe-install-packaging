@@ -135,8 +135,6 @@ fi
 
 # 3. {datasetprefix}.SZWEPLUG
 
-tsocmd "delete '${ZOWE_DSN_PREFIX}.SZWESAMP' " >> ${LOG_FILE} 2>&1
-
 # TODO replace by allocate-dataset.sh call to resuse VOLSER support
 tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEPLUG') " \
     "dsntype(library) dsorg(po) recfm(u) lrecl(0) bLKSIZE(32760)" \
