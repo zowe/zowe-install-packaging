@@ -415,43 +415,46 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (prPostCommentID && pipeline.changeInfo.isPullRequest) {
         String prNumberString = "${pipeline.changeInfo.pullRequestId}"
         int prNumber = prNumberString as Integer   // convert to int
-        //update comment originally posted on PR, to reflect build status
-        def command = "curl --globoff -H \"Accept: application/json\" \"${env.BUILD_URL}/testReport/api/json?tree=suites[cases[className,name,age,status]]\""
-        def output = sh(script : command, returnStdout: true).trim()
-        def jsonOutput = readJSON text: output
-        def name
-        def status
 
-        def failedTestList = []
-        jsonOutput.suites.cases.each { cases ->
-          cases.each { eachTest ->
-            //overwrite
-            name = ""
-            status = ""
-            eachTest.each { propName, propValue ->
-              if (propName == "name") {
-                name = propValue
-              }
-              if (propName == "status") {
-                status = propValue
-              }
+        //update comment originally posted on PR, to reflect build status
+        withCredentials([usernamePassword(credentialsId: 'jenkins-credential', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+            def command = "curl --globoff -u \"\${USERNAME}:\${PASSWORD}\" -sS -H \"Accept: application/json\" \"${env.BUILD_URL}/testReport/api/json?tree=suites[cases[className,name,age,status]]\""
+            def output = sh(script : command, returnStdout: true).trim()
+            def jsonOutput = readJSON text: output
+            def name
+            def status
+
+            def failedTestList = []
+            jsonOutput.suites.cases.each { cases ->
+            cases.each { eachTest ->
+                //overwrite
+                name = ""
+                status = ""
+                eachTest.each { propName, propValue ->
+                if (propName == "name") {
+                    name = propValue
+                }
+                if (propName == "status") {
+                    status = propValue
+                }
+                }
+                if (status == "FAILED") {
+                failedTestList.add(name)
+                }
             }
-            if (status == "FAILED") {
-              failedTestList.add(name)
             }
-          }
+            if (failedTestList) {
+            commentText += "<hr>Failed tests are:\n"
+            commentText += "<ul>"
+            failedTestList.each { String line ->
+                commentText += "<li>" + line + "</li>"
+            }
+            commentText += "</ul>\n"
+            } else {
+            commentText += "<hr>All tests passed!"
+            }
+            pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
         }
-        if (failedTestList) {
-          commentText += "<hr>Failed tests are:\n"
-          commentText += "<ul>"
-          failedTestList.each { String line ->
-            commentText += "<li>" + line + "</li>"
-          }
-          commentText += "</ul>\n"
-        } else {
-          commentText += "<hr>All tests passed!"
-        }
-        pipeline.github.updateComment(prNumber, prPostCommentID, commentText)
       }
     }
   )
