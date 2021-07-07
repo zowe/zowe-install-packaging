@@ -19,7 +19,11 @@ convert_all_component_manifests_to_json() {
     component_dir=$(find_component_directory "${component_id}")
     if [ -n "${component_dir}" ]; then
       print_formatted_debug "ZWELS" "config-utils.sh,convert_all_component_manifests_to_json:${LINENO}" "- ${component_id}"
-      convert_component_manifest "${component_dir}" 1>/dev/null 2>&1
+      component_manifest_conversion_output=$(convert_component_manifest "${component_dir}" 2>&1)
+      if [ "$?" != "0" ]; then
+        print_formatted_warn "ZWELS" "config-utils.sh,convert_all_component_manifests_to_json:${LINENO}" "manifest file of ${component_id} is invalid"
+        print_formatted_error "ZWELS" "config-utils.sh,convert_all_component_manifests_to_json:${LINENO}" "Prepare ${component_id} manifest failed: ${component_manifest_conversion_output}"
+      fi
     fi
   done
   print_formatted_debug "ZWELS" "config-utils.sh,convert_all_component_manifests_to_json:${LINENO}" "component manifests prepared"
