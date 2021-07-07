@@ -1,0 +1,23 @@
+{
+  "name": "migrate-tool",
+  "version": "1.0.0",
+  "description": "A tool to migrate zowe instances and keystores between formats",
+  "main": "migrate-tool.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zowe/zowe-install-packaging-tools.git"
+  },
+  "author": "1000turquoisepogs",
+  "license": "EPL-2.0",
+  "bugs": {
+    "url": "https://github.com/zowe/zowe-install-packaging-tools/issues"
+  },
+  "homepage": "https://github.com/zowe/zowe-install-packaging-tools#readme",
+  "dependencies": {
+    "fs-extra": "^8.0.0",
+    "yaml": "^1.10.2"
+  }
+}

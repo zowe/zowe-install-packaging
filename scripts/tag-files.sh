@@ -202,6 +202,8 @@ find . \( \
 -name ".gitmodules" -o \
 -name "*.jcl" -o \
 -name "*.JCL" -o \
+-name "*.env" -o \
+-name "*.ENV" -o \
 -name "*.sh" -o \
 -name "*.SH" \
 \) -exec sh -c 'iconv -f iso8859-1 -t 1047 "$0" > "$0".1047' {} \; -exec sh -c 'mv "$0".1047 "$0"' {} \;
