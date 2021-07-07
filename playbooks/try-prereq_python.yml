@@ -1,0 +1,17 @@
+---
+- name: Test prereq_python role
+  hosts: all
+  gather_facts: false
+  become: false
+  
+  # ibm.ibm_zos_core.zos_ssh connection is required here or on the host_vars.
+  # keeping it here for now to avoid this new requirement for all host connections.
+  vars:
+      ansible_connection: ibm.ibm_zos_core.zos_ssh
+
+  tasks:
+  # ============================================================================
+  # Check if Python is available on the z/OS host
+  - import_role:
+      name: zos
+      tasks_from: prereq_python

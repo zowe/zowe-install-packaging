@@ -1,0 +1,22 @@
+---
+# this role checks if Python is available on z/OS by using the zos_ping module
+# from the ibm.ibm_zos_core collection
+
+# input:
+# - z/OS host: obtained from the playbook that imports the role
+# requirements:
+# - ibm.ibm_zos_core collection installed on the control node
+# - ansible_connection: ibm.ibm_zos_core.zos_ssh on the playbook or host_vars
+# output:
+# - zos_ping verifies the presence of z/OS Web Client Enablement Toolkit, iconv, and Python.
+# - zos_ping returns pong when the target host is not missing any of the dependencies.
+
+# TODO add ibm.ibm_zos_core collection to ../meta/main.yaml so we can use only the module name
+- name: Ping the z/OS host and perform resource checks
+  ibm.ibm_zos_core.zos_ping:
+  register: prereq_python_result
+
+- name: Print result
+  debug:
+    msg: "A valid release of Python is available on the host."
+  when: prereq_python_result.ping == "pong"
