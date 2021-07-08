@@ -11,7 +11,7 @@
 ################################################################################
 
 if [ $# -lt 2 ]; then
-  echo "Usage: $0 -c zowe_install_directory [-g zowe_group] [--skip_temp | -d dsn_prefix | (-l loadlib -p parmlib)]"
+  echo "Usage: $0 -c zowe_install_directory [-g zowe_group] [--skip_temp | -d dsn_prefix | (-l loadlib -p parmlib -z zis_pluginlib)]"
   exit 1
 fi
 
@@ -49,6 +49,11 @@ while [ $# -gt 0 ]; do
     -p|--parmlib)
       shift
       ZIS_PARMLIB=$1
+      shift
+      ;;
+    -z|--zis_pluginlib)
+      shift
+      ZIS_PLUGINLIB=$1
       shift
       ;;
     -d|--dsn_prefix)
@@ -104,8 +109,9 @@ get_zowe_version() {
 
 get_zis_params() {
   if [ ! -z "${DSN_PREFIX}" ]; then
-    ZIS_PARMLIB=${DSN_PREFIX}.SAMPLIB
+    ZIS_PARMLIB=${DSN_PREFIX}.SZWESAMP
     ZIS_LOADLIB=${DSN_PREFIX}.SZWEAUTH
+    ZIS_PLUGINLIB=${DSN_PREFIX}.SZWEPLUG
   else
     if [ -z "${ZIS_LOADLIB}" -o -z "${ZIS_PARMLIB}" ]; then
       if [ -n "${NO_TEMP}" ]; then
@@ -125,8 +131,9 @@ get_zis_params() {
         if [ -z "${ZOWE_DSN_PREFIX}" ]; then
           echo_and_log "ZIS parameters wont be recorded due to temporary file parse error. You may record them in the instance configuration later."
         else
-          ZIS_PARMLIB=${ZOWE_DSN_PREFIX}.SAMPLIB
+          ZIS_PARMLIB=${ZOWE_DSN_PREFIX}.SZWESAMP
           ZIS_LOADLIB=${ZOWE_DSN_PREFIX}.SZWEAUTH
+          ZIS_PLUGINLIB=${ZOWE_DSN_PREFIX}.SZWEPLUG
         fi
       else
         echo_and_log "ZIS parameters wont be recorded because temporary file not found. You may record them in the instance configuration later."
@@ -136,6 +143,7 @@ get_zis_params() {
   echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX" >> ${LOG_FILE}
   echo "ZIS_PARMLIB=$ZIS_PARMLIB" >> ${LOG_FILE}
   echo "ZIS_LOADLIB=$ZIS_LOADLIB" >> ${LOG_FILE}
+  echo "ZIS_PLUGINLIB=$ZIS_PLUGINLIB" >> ${LOG_FILE}
 }
 
 create_new_instance() {
@@ -154,6 +162,7 @@ create_new_instance() {
     -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
     -e "s#{{zwes_zis_loadlib}}#${ZIS_LOADLIB}#" \
     -e "s#{{zwes_zis_parmlib}}#${ZIS_PARMLIB}#" \
+    -e "s#{{zwes_zis_pluginlib}}#${ZIS_PLUGINLIB}#" \
     "${TEMPLATE}" \
     > "${INSTANCE}"
 
