@@ -188,6 +188,7 @@ mv vt-ng2-*.pax             zlux/vt-ng2.pax
 mv sample-react-app-*.pax   zlux/sample-react-app.pax
 mv sample-iframe-app-*.pax  zlux/sample-iframe-app.pax
 mv sample-angular-app-*.pax zlux/sample-angular-app.pax
+mv explorer-ip-*.pax        zlux/explorer-ip.pax
 mv zss-*.pax                zss-${ZOWE_VERSION}.pax
 cd "$ROOT_DIR"
 

@@ -73,6 +73,10 @@
     "org.zowe.explorer-ui-server": {
       "version": "~0.2.0-STAGING"
     },
+    "org.zowe.explorer-ip": {
+      "version": "~1.0.0-SNAPSHOT",
+      "artifact": "*.pax"
+    },
     "org.zowe.apiml.sdk.api-catalog-package": {
       "version": "~1.23.0-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
@@ -390,6 +394,14 @@
         "repository": "vscode-extension-for-zowe",
         "tag": "master",
         "destinations": ["Visual Studio Code Marketplace"]
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop IP Explorer Plug-in",
+      "entries": [{
+        "repository": "explorer-ip",
+        "tag": "master",
+        "destinations": ["Zowe PAX"]
       }]
     }
   ],
