@@ -91,6 +91,10 @@
     {
       "identifier": "org.zowe.explorer-mvs",
       "versions": ["*"]
+    },
+    {
+      "identifier": "org.zowe.explorer-ip",
+      "versions": ["*"]
     }
   ]
 }

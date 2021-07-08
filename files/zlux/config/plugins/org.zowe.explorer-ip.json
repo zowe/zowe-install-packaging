@@ -1,0 +1,5 @@
+{
+  "identifier": "org.zowe.explorer-ip",
+  "pluginLocation": "components/app-server/share/explorer-ip",
+  "relativeTo": "$ROOT_DIR"
+}
