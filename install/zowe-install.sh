@@ -210,6 +210,18 @@ install_buildin_components() {
   done
 }
 
+record_zis_info() {
+  # Record useful user input specified at install time that would otherwise be lost at configure & runtime
+  # Later retrieve this info by looking in a known folder location with info that helps to disambiguate which install it originated from
+  # This is not foolproof, but will use the info from the latest install of a given ROOT_DIR
+  if [ "${RUN_ON_ZOS}" = "true" ]; then
+    mkdir -p /tmp/zowe/$ZOWE_VERSION
+    CURRENT_TIME=`date +%Y%j%H%M%S`
+    INSTALL_VAR_FILE=/tmp/zowe/${ZOWE_VERSION}/install-${CURRENT_TIME}.env
+    echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX\nZOWE_ROOT_DIR=$ZOWE_ROOT_DIR\nZOWE_VERSION=$ZOWE_VERSION" >> $INSTALL_VAR_FILE
+  fi
+}
+
 finish_and_cleanup() {
   # Based on zowe-install-packaging/issues/1014 we should set everything to 755
   chmod -R 755 ${ZOWE_ROOT_DIR}
@@ -294,6 +306,7 @@ copy_fingerprint
 copy_workflow
 install_mvs
 install_buildin_components
+record_zis_info
 finish_and_cleanup
 
 ################################################################################

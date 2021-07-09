@@ -11,24 +11,11 @@
 ################################################################################
 
 if [ $# -lt 2 ]; then
-  echo "Usage: $0 -c zowe_install_directory [-g zowe_group]"
+  echo "Usage: $0 -c zowe_install_directory [-g zowe_group] [--skip_temp | -d dsn_prefix | (-l loadlib -p parmlib -z zis_pluginlib)]"
   exit 1
 fi
 
 ZOWE_GROUP=ZWEADMIN
-
-while getopts "c:g:s" opt; do
-  case $opt in
-    c) INSTANCE_DIR=$OPTARG;;
-    g) ZOWE_GROUP=$OPTARG;;
-    s) SKIP_NODE=1;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-  esac
-done
-shift $(($OPTIND-1))
 
 # TODO LATER - once not called from zowe-configure.sh remove if and keep the export
 if [[ -z ${ZOWE_ROOT_DIR} ]]
@@ -37,7 +24,56 @@ then
 fi
 export ROOT_DIR="${ZOWE_ROOT_DIR}"
 
+while [ $# -gt 0 ]; do
+  arg="$1"
+  case $arg in
+    -c|--instance_dir)
+      shift
+      INSTANCE_DIR=$1
+      shift
+      ;;
+    -g|--group)
+      shift
+      ZOWE_GROUP=$1
+      shift
+      ;;
+    -s)
+      SKIP_NODE=1
+      shift
+      ;;
+    -l|--loadlib)
+      shift
+      ZIS_LOADLIB=$1
+      shift
+      ;;
+    -p|--parmlib)
+      shift
+      ZIS_PARMLIB=$1
+      shift
+      ;;
+    -z|--zis_pluginlib)
+      shift
+      ZIS_PLUGINLIB=$1
+      shift
+      ;;
+    -d|--dsn_prefix)
+      shift
+      DSN_PREFIX=$1
+      shift
+      ;;
+    -n|--skip_temp)
+      NO_TEMP=1
+      shift
+      ;;
+    *)
+      echo "Invalid option: -$arg" >&2
+      exit 1
+  esac
+done
+
+
 . ${ZOWE_ROOT_DIR}/bin/internal/zowe-set-env.sh
+
 
 # Source main utils script
 . ${ZOWE_ROOT_DIR}/bin/utils/utils.sh
@@ -64,7 +100,58 @@ echo_and_log() {
   echo "$1" >> ${LOG_FILE}
 }
 
+get_zowe_version() {
+  export ZOWE_VERSION=$(cat $ZOWE_ROOT_DIR/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+}
+
+# Install-time user input like DSN, if can be determined at this point, should be put into instance for later use
+# Since this is used to gather ZIS parms currently, it can be skipped if they are provided in args instead.
+
+get_zis_params() {
+  if [ ! -z "${DSN_PREFIX}" ]; then
+    ZIS_PARMLIB=${DSN_PREFIX}.SZWESAMP
+    ZIS_LOADLIB=${DSN_PREFIX}.SZWEAUTH
+    ZIS_PLUGINLIB=${DSN_PREFIX}.SZWEPLUG
+  else
+    if [ -z "${ZIS_LOADLIB}" -o -z "${ZIS_PARMLIB}" ]; then
+      if [ -n "${NO_TEMP}" ]; then
+        echo_and_log "ZIS parameters wont be recorded due to missing arguments. You may record them in the instance configuration later."
+      elif [ -d "/tmp/zowe/${ZOWE_VERSION}" ]; then
+        get_zowe_version
+        for file in /tmp/zowe/$ZOWE_VERSION/install-*.env; do
+          if [[ -f "${file}" ]]; then
+            ROOT_DIR_VAL=$(cat "${file}" | grep "^ZOWE_ROOT_DIR=" | cut -d'=' -f2)
+            if [ "${ROOT_DIR_VAL}" = "${ZOWE_ROOT_DIR}" ]; then
+              echo "Sourcing '${file}' for ZIS parameters" >> ${LOG_FILE}
+              . $file
+              break;
+            fi
+          fi
+        done
+        if [ -z "${ZOWE_DSN_PREFIX}" ]; then
+          echo_and_log "ZIS parameters wont be recorded due to temporary file parse error. You may record them in the instance configuration later."
+        else
+          ZIS_PARMLIB=${ZOWE_DSN_PREFIX}.SZWESAMP
+          ZIS_LOADLIB=${ZOWE_DSN_PREFIX}.SZWEAUTH
+          ZIS_PLUGINLIB=${ZOWE_DSN_PREFIX}.SZWEPLUG
+        fi
+      else
+        echo_and_log "ZIS parameters wont be recorded because temporary file not found. You may record them in the instance configuration later."
+      fi
+    fi
+  fi
+  echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX" >> ${LOG_FILE}
+  echo "ZIS_PARMLIB=$ZIS_PARMLIB" >> ${LOG_FILE}
+  echo "ZIS_LOADLIB=$ZIS_LOADLIB" >> ${LOG_FILE}
+  echo "ZIS_PLUGINLIB=$ZIS_PLUGINLIB" >> ${LOG_FILE}
+}
+
 create_new_instance() {
+  RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
+  if [ "${RUN_ON_ZOS}" = "true" ]; then
+    get_zis_params #may find nothing, thats ok
+  fi
+
   sed \
     -e "s#{{root_dir}}#${ZOWE_ROOT_DIR}#" \
     -e "s#{{java_home}}#${JAVA_HOME}#" \
@@ -73,6 +160,9 @@ create_new_instance() {
     -e "s#{{zosmf_host}}#${ZOWE_ZOSMF_HOST}#" \
     -e "s#{{zowe_explorer_host}}#${ZOWE_EXPLORER_HOST}#" \
     -e "s#{{zowe_ip_address}}#${ZOWE_IP_ADDRESS}#" \
+    -e "s#{{zwes_zis_loadlib}}#${ZIS_LOADLIB}#" \
+    -e "s#{{zwes_zis_parmlib}}#${ZIS_PARMLIB}#" \
+    -e "s#{{zwes_zis_pluginlib}}#${ZIS_PLUGINLIB}#" \
     "${TEMPLATE}" \
     > "${INSTANCE}"
 
