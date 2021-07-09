@@ -73,7 +73,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             export VERIFY_PASSWORD=$1
             shift
         ;;
-        -i|--instance_dir)
+        -i|--instance-dir)
             shift
             path=$(get_full_path "$1")
             validate_directory_is_accessible "$path"
@@ -82,10 +82,10 @@ while [ $# -gt 0 ]; do #Checks for parameters
                 if [[ $? -ne 0 ]]; then
                     INSTANCE_DIR="${path}"
                 else
-                    error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
+                    error_handler "-i|--instance-dir: Given path is not a zowe instance directory"
                 fi
             else
-                error_handler "-i|--instance_dir: Given path is not a zowe instance directory or does not exist"
+                error_handler "-i|--instance-dir: Given path is not a zowe instance directory or does not exist"
             fi
             shift
         ;;
@@ -106,7 +106,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
 done
 
 if [ -z "${INSTANCE_DIR}" ]; then
-    error_handler "-i|--instance_dir - Instance directory must be assigned."
+    error_handler "-i|--instance-dir - Instance directory must be assigned."
 fi
 
 if [ -z "${component_id}" ]; then

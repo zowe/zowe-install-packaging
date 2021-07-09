@@ -205,7 +205,7 @@ install_buildin_components() {
     . $INSTALL_DIR/bin/zowe-install-component.sh \
       --component-name "${component_name}" \
       --component-file "${component_package}" \
-      --target_dir "${ZOWE_ROOT_DIR}/components" \
+      --target-dir "${ZOWE_ROOT_DIR}/components" \
       --core --log-file "${LOG_FILE}"
   done
 }

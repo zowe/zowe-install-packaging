@@ -35,6 +35,19 @@ is_instance_utils_sourced() {
 }
 
 ###############################
+# Check if a shell function is defined
+#
+# @param string   function name
+# Output          true if the function is defined
+function_exists() {
+  fn=$1
+  status=$(LC_ALL=C type $fn 2>&1 | grep 'function')
+  if [ -n "${status}" ]; then
+    echo "true"
+  fi
+}
+
+###############################
 # Exit script with error message
 #
 # @param string   error message
@@ -118,6 +131,7 @@ read_essential_vars() {
     source_env "${INSTANCE_DIR}/instance.env"
   elif [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
     export ROOT_DIR=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "runtimeDirectory" "true")
+    export ZOWE_ROOT_DIR="${ROOT_DIR}"
     export ZOWE_PREFIX=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "jobPrefix" "true")
     export ZOWE_INSTANCE=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "identifier" "true")
     export KEYSTORE_DIRECTORY=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "environments" "KEYSTORE_DIRECTORY" "false")

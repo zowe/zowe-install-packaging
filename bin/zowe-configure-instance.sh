@@ -281,8 +281,8 @@ for component_name in ${component_list}; do
   cd ${ZOWE_ROOT_DIR}
   . $ZOWE_ROOT_DIR/bin/zowe-configure-component.sh \
     --component-name "${component_name}" \
-    --instance_dir "${INSTANCE_DIR}" \
-    --target_dir "${ZOWE_ROOT_DIR}/components" \
+    --instance-dir "${INSTANCE_DIR}" \
+    --target-dir "${ZOWE_ROOT_DIR}/components" \
     --core --log-file "${LOG_FILE}"
 done
 

@@ -318,6 +318,10 @@ fi
 . ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
 [ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 
+# ignore default value passed from ZWESLSTC
+if [ "${ZWELS_HA_INSTANCE_ID}" = "{{ha_instance_id}}" -o "${ZWELS_HA_INSTANCE_ID}" = "__ha_instance_id__" ]; then
+  ZWELS_HA_INSTANCE_ID=
+fi
 # assign default value
 if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
   ZWELS_HA_INSTANCE_ID=$(get_sysname)
