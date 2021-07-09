@@ -40,6 +40,7 @@ const PRE_INSTALLED_APPS = [
   'Sample React App',
   'IFrame Sample',
   // 'Hello World',
+  'IP Explorer',
 ];
 const PRE_PINNED_APPS = [
   'TN3270',
