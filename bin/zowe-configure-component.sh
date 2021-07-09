@@ -135,7 +135,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             COMPONENT_NAME=$1
             shift
         ;;
-        -i|--instance_dir) #Represents the path to zowe's instance directory (optional)
+        -i|--instance-dir) #Represents the path to zowe's instance directory (optional)
             shift
             path=$(get_full_path "$1")
             validate_directory_is_accessible "${path}"
@@ -143,10 +143,10 @@ while [ $# -gt 0 ]; do #Checks for parameters
                 if [ -e "$path/instance.env" -o -e "$path/zowe.yaml" ]; then
                     INSTANCE_DIR=${path}
                 else
-                    error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
+                    error_handler "-i|--instance-dir: Given path is not a zowe instance directory"
                 fi
             else
-                error_handler "-i|--instance_dir: Given path is not a zowe instance directory or does not exist"
+                error_handler "-i|--instance-dir: Given path is not a zowe instance directory or does not exist"
             fi
             shift
         ;;
@@ -154,7 +154,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             IS_ZOWE_CORE=true
             shift
         ;;
-        -d|--target_dir) # Represents the path to the desired target directory to place the extensions (optional)
+        -d|--target-dir) # Represents the path to the desired target directory to place the extensions (optional)
             shift
             TARGET_DIR=$(get_full_path "$1")
             shift
