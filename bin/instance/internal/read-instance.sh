@@ -29,6 +29,10 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
 
   print_formatted_function_available=$(function_exists print_formatted_info)
 
+  # ignore default value passed from ZWESLSTC
+  if [ "${ZWELS_HA_INSTANCE_ID}" = "{{ha_instance_id}}" -o "${ZWELS_HA_INSTANCE_ID}" = "__ha_instance_id__" ]; then
+    ZWELS_HA_INSTANCE_ID=
+  fi
   # If HA instance ID doesn't exist, it will raise an error.
   if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
     exit_with_error "-i <ZWELS_HA_INSTANCE_ID> is required" "read-instance.sh:${LINENO}"
