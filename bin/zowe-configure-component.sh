@@ -93,8 +93,6 @@ install_zis_plugin() {
     ZIS_PATH_DIR=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
     ZIS_INSTALL_DIR="${TARGET_DIR}/zss/bin"
     ZIS_INSTALL_FILE="${ZIS_INSTALL_DIR}/zis-plugin-install.sh"
-    
-    INSTANCE_DIR="/u/ts6321/release3/zowe-instance"
 
     while [ "${ZIS_PATH_DIR}" != "null" ] && [ -n "${ZIS_PATH_DIR}" ]; do
 
