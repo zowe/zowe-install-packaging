@@ -99,11 +99,9 @@ install_zis_plugin() {
       if [ -e "${INSTANCE_DIR}/instance.env" ]; then
           if [ -n "$(read_zowe_instance_variable "ZWES_ZIS_PARMLIB")" ]; then
               export ZIS_PARMLIB=$(read_zowe_instance_variable "ZWES_ZIS_PARMLIB")
-              log_message "ZIS PARM ${ZIS_PARMLIB}"
           fi
           if [ -n "$(read_zowe_instance_variable "ZWES_ZIS_PLUGINLIB")" ]; then
               export ZIS_PLUGINLIB=$(read_zowe_instance_variable "ZWES_ZIS_PLUGINLIB")
-              log_message "ZIS PLUGIN ${ZIS_PARMLIB}"
           fi
       fi
 
@@ -121,6 +119,8 @@ install_zis_plugin() {
           if [[ -z "${ZIS_PLUGINLIB}" ]]; then
               log_message "ZIS_PLUGINLIB N/A from env or instance. Skipping ZIS plugin check."
           else
+              log_message "Received ZIS_PARMLIB: ${ZIS_PARMLIB}"
+              log_message "Received ZIS_PLUGINLIB: ${ZIS_PLUGINLIB}"
               if test -f "$ZIS_INSTALL_FILE"; then
                   if [ -n "${ZIS_PATH_DIR}" ]; then 
                       LOADLIB=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].loadlib" 2>/dev/null)
