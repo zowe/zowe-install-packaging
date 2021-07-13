@@ -196,7 +196,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             COMPONENT_NAME=$1
             shift
         ;;
-        -i|--instance_dir) #Represents the path to zowe's instance directory (optional)
+        -i|--instance-dir) #Represents the path to zowe's instance directory (optional)
             shift
             path=$(get_full_path "$1")
             validate_directory_is_accessible "${path}"
@@ -204,10 +204,10 @@ while [ $# -gt 0 ]; do #Checks for parameters
                 if [ -e "$path/instance.env" -o -e "$path/zowe.yaml" ]; then
                     INSTANCE_DIR=${path}
                 else
-                    error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
+                    error_handler "-i|--instance-dir: Given path is not a zowe instance directory"
                 fi
             else
-                error_handler "-i|--instance_dir: Given path is not a zowe instance directory or does not exist"
+                error_handler "-i|--instance-dir: Given path is not a zowe instance directory or does not exist"
             fi
             shift
         ;;
@@ -215,7 +215,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             IS_ZOWE_CORE=true
             shift
         ;;
-        -d|--target_dir) # Represents the path to the desired target directory to place the extensions (optional)
+        -d|--target-dir) # Represents the path to the desired target directory to place the extensions (optional)
             shift
             TARGET_DIR=$(get_full_path "$1")
             shift
@@ -257,6 +257,9 @@ if [ -z "${TARGET_DIR}" ]; then
                 zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
             elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
                 zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
+                if [ "${zwe_extension_dir}" = "null" ]; then
+                    zwe_extension_dir=
+                fi
             fi
         fi
         if [ -z "${zwe_extension_dir}" ]; then
@@ -281,6 +284,9 @@ if [ "${IS_ZOWE_CORE}" = "false" ]; then
         zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
     elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
         zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
+        if [ "${zwe_extension_dir}" = "null" ]; then
+            zwe_extension_dir=
+        fi
     fi
     if [ -n "${zwe_extension_dir}" -a "${TARGET_DIR}" != "${zwe_extension_dir}" ]; then
         error_handler "It's recommended to install all Zowe extensions into same directory. The recommended target directory is ZWE_EXTENSION_DIR (${ZWE_EXTENSION_DIR}) defined in Zowe instance.env."
