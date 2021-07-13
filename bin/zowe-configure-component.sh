@@ -39,6 +39,7 @@ DEFAULT_TARGET_DIR=/global/zowe/extensions
 
 #######################################################################
 # Prepare shell environment
+
 if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
@@ -85,6 +86,66 @@ enable_component(){
             update_zowe_yaml_variable "components.${COMPONENT_NAME}.enabled" "true"
         fi
     fi
+}
+
+install_zis_plugin() {
+    iterator_index=0
+    ZIS_PATH_DIR=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
+    ZIS_INSTALL_DIR="${TARGET_DIR}/zss/bin"
+    ZIS_INSTALL_FILE="${ZIS_INSTALL_DIR}/zis-plugin-install.sh"
+    
+    INSTANCE_DIR="/u/ts6321/release3/zowe-instance"
+
+    while [ "${ZIS_PATH_DIR}" != "null" ] && [ -n "${ZIS_PATH_DIR}" ]; do
+
+      if [ -e "${INSTANCE_DIR}/instance.env" ]; then
+          if [ -n "$(read_zowe_instance_variable "ZWES_ZIS_PARMLIB")" ]; then
+              export ZIS_PARMLIB=$(read_zowe_instance_variable "ZWES_ZIS_PARMLIB")
+              log_message "ZIS PARM ${ZIS_PARMLIB}"
+          fi
+          if [ -n "$(read_zowe_instance_variable "ZWES_ZIS_PLUGINLIB")" ]; then
+              export ZIS_PLUGINLIB=$(read_zowe_instance_variable "ZWES_ZIS_PLUGINLIB")
+              log_message "ZIS PLUGIN ${ZIS_PARMLIB}"
+          fi
+      fi
+
+      if [ -n "${ZWES_ZIS_PARMLIB}" ]; then #Checks existing env variables
+          export ZIS_PARMLIB="${ZWES_ZIS_PARMLIB}"
+      fi
+          
+      if [ -n "${ZWES_ZIS_PLUGINLIB}" ]; then
+          export ZIS_PLUGINLIB="${ZWES_ZIS_PLUGINLIB}"
+      fi
+
+      if [[ -z "${ZIS_PARMLIB}" ]]; then
+          log_message "ZIS_PARMLIB N/A from env or instance. Skipping ZIS plugin check."
+      else
+          if [[ -z "${ZIS_PLUGINLIB}" ]]; then
+              log_message "ZIS_PLUGINLIB N/A from env or instance. Skipping ZIS plugin check."
+          else
+              if test -f "$ZIS_INSTALL_FILE"; then
+                  if [ -n "${ZIS_PATH_DIR}" ]; then 
+                      LOADLIB=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].loadlib" 2>/dev/null)
+                      if [ "${LOADLIB}" = "null" ] || [ -z "${LOADLIB}" ]; then # Check custom defined lib directories in manifest.yaml
+                          LOADLIB="loadlib" # default
+                      fi
+                      SAMPLIB=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].samplib" 2>/dev/null)
+                      if [ "${SAMPLIB}" = "null" ] || [ -z "${SAMPLIB}" ]; then
+                          SAMPLIB="samplib" #default
+                      fi
+                      # Need to cd because zis-plugin-install script relies on other relative scripts
+                      cd "${ZIS_INSTALL_DIR}" && ./zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}/${LOADLIB}" "${ZIS_PATH_DIR}/${SAMPLIB}"
+                      # ZIS Plugin install script has its own logging, no need to send success message
+                  else 
+                      log_message "No ZIS plugins detected in manifest."
+                  fi
+              fi
+          fi
+      fi
+      iterator_index=`expr $iterator_index + 1`
+      ZIS_PATH_DIR=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
+      
+    done
 }
 
 install_app_framework_plugin(){
@@ -135,7 +196,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             COMPONENT_NAME=$1
             shift
         ;;
-        -i|--instance-dir) #Represents the path to zowe's instance directory (optional)
+        -i|--instance_dir) #Represents the path to zowe's instance directory (optional)
             shift
             path=$(get_full_path "$1")
             validate_directory_is_accessible "${path}"
@@ -143,10 +204,10 @@ while [ $# -gt 0 ]; do #Checks for parameters
                 if [ -e "$path/instance.env" -o -e "$path/zowe.yaml" ]; then
                     INSTANCE_DIR=${path}
                 else
-                    error_handler "-i|--instance-dir: Given path is not a zowe instance directory"
+                    error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
                 fi
             else
-                error_handler "-i|--instance-dir: Given path is not a zowe instance directory or does not exist"
+                error_handler "-i|--instance_dir: Given path is not a zowe instance directory or does not exist"
             fi
             shift
         ;;
@@ -154,7 +215,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             IS_ZOWE_CORE=true
             shift
         ;;
-        -d|--target-dir) # Represents the path to the desired target directory to place the extensions (optional)
+        -d|--target_dir) # Represents the path to the desired target directory to place the extensions (optional)
             shift
             TARGET_DIR=$(get_full_path "$1")
             shift
@@ -196,9 +257,6 @@ if [ -z "${TARGET_DIR}" ]; then
                 zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
             elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
                 zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
-                if [ "${zwe_extension_dir}" = "null" ]; then
-                    zwe_extension_dir=
-                fi
             fi
         fi
         if [ -z "${zwe_extension_dir}" ]; then
@@ -223,9 +281,6 @@ if [ "${IS_ZOWE_CORE}" = "false" ]; then
         zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
     elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
         zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
-        if [ "${zwe_extension_dir}" = "null" ]; then
-            zwe_extension_dir=
-        fi
     fi
     if [ -n "${zwe_extension_dir}" -a "${TARGET_DIR}" != "${zwe_extension_dir}" ]; then
         error_handler "It's recommended to install all Zowe extensions into same directory. The recommended target directory is ZWE_EXTENSION_DIR (${ZWE_EXTENSION_DIR}) defined in Zowe instance.env."
@@ -250,6 +305,7 @@ if [ "${IS_ZOWE_CORE}" = "false" ]; then
     install_app_framework_plugin
 fi
 enable_component
+install_zis_plugin
 
 #######################################################################
 # Conclude
