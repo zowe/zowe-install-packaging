@@ -13,6 +13,7 @@ import {
   showZoweRuntimeLogs,
   installAndVerifyExtension,
   installAndVerifyConvenienceBuild,
+  installAndVerifySmpePtf,
 } from '../../utils';
 import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
 
@@ -28,15 +29,26 @@ describe(testSuiteName, () => {
     ]);
     //await installConvBuild
     //remove verification of conv build - for optimal runtime purposes
-    await installAndVerifyConvenienceBuild(
-      testSuiteName,
-      process.env.TEST_SERVER,
-      {
-        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_lock_keystore': 'false',
-        //skip_start - for optimal runtime purposes
-      }
-    );
+    if(process.env['ZOWE_BUILD_LOCAL'].includes(".pax")){
+      await installAndVerifyConvenienceBuild(
+        testSuiteName,
+        process.env.TEST_SERVER,
+        {
+          'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+          'zowe_lock_keystore': 'false',
+          //skip_start - for optimal runtime purposes
+        }
+      );
+    } else if(process.env['ZOWE_BUILD_LOCAL'].includes(".zip")){
+      await installAndVerifySmpePtf(
+        testSuiteName,
+        process.env.TEST_SERVER,
+        {
+          'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+          'zowe_lock_keystore': 'false',
+        }
+      );
+    }
     beforeAllResult = true;
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
 
