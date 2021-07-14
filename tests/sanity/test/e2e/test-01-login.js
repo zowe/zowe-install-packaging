@@ -16,6 +16,7 @@ const testName = path.basename(__filename, path.extname(__filename));
 
 const {
   PRE_INSTALLED_APPS,
+  PRE_INSTALLED_APPS_DISABLED_FOR_DOCKER,
   PRE_PINNED_APPS,
   DEFAULT_PAGE_LOADING_TIMEOUT,
   DEFAULT_ELEMENT_CHECK_INTERVAL,
