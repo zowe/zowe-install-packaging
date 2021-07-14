@@ -263,6 +263,7 @@ describe('test MVD login page', function() {
     loginSuccessfully = true;
   });
 
+  const dockerTest = process.env.ZOWE_EXTERNAL_HOST !== zosHost;
 
   it('should be able to popup apps menu', async function() {
     if (!loginSuccessfully) {
@@ -290,7 +291,14 @@ describe('test MVD login page', function() {
 
     // check popup menu items
     const menuItems = await getElements(popup, '.launch-widget-row > .app-label');
-    expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length);
+
+    if (dockerTest) {
+        // Docker scenario will not have IP Explorer, thus installed apps should be one less the total count
+        expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length-1);
+    }
+    else { 
+        expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length);
+    }
     for (let item of menuItems) {
       const text = await item.getText();
       expect(text).to.be.oneOf(PRE_INSTALLED_APPS);
