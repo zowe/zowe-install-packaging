@@ -205,9 +205,21 @@ install_buildin_components() {
     . $INSTALL_DIR/bin/zowe-install-component.sh \
       --component-name "${component_name}" \
       --component-file "${component_package}" \
-      --target_dir "${ZOWE_ROOT_DIR}/components" \
+      --target-dir "${ZOWE_ROOT_DIR}/components" \
       --core --log-file "${LOG_FILE}"
   done
+}
+
+record_zis_info() {
+  # Record useful user input specified at install time that would otherwise be lost at configure & runtime
+  # Later retrieve this info by looking in a known folder location with info that helps to disambiguate which install it originated from
+  # This is not foolproof, but will use the info from the latest install of a given ROOT_DIR
+  if [ "${RUN_ON_ZOS}" = "true" ]; then
+    mkdir -p /tmp/zowe-${ZOWE_VERSION}
+    CURRENT_TIME=`date +%Y%j%H%M%S`
+    INSTALL_VAR_FILE=/tmp/zowe-${ZOWE_VERSION}/install-${CURRENT_TIME}.env
+    echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX\nZOWE_ROOT_DIR=$ZOWE_ROOT_DIR\nZOWE_VERSION=$ZOWE_VERSION" >> $INSTALL_VAR_FILE
+  fi
 }
 
 finish_and_cleanup() {
@@ -294,6 +306,7 @@ copy_fingerprint
 copy_workflow
 install_mvs
 install_buildin_components
+record_zis_info
 finish_and_cleanup
 
 ################################################################################
