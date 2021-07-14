@@ -295,7 +295,7 @@ describe('test MVD login page', function() {
 
     if (dockerTest) {
       // Docker scenario will not have IP Explorer, thus installed apps should be one less the total count
-      expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length-1);
+      expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length-PRE_INSTALLED_APPS_DISABLED_FOR_DOCKER.length);
     }
     else { 
       expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length);
