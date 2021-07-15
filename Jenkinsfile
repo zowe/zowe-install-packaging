@@ -91,9 +91,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         int prNumber = prNumberString as Integer   // convert to int
         String commentText = "Building Zowe sources...\n"
         commentText += "Build number: ${env.BUILD_NUMBER}\n"
-        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
-        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
-        commentText += "<i>Click the icon above to see details</i>\n"
+        commentText += "Status: <a href=\"${env.BUILD_URL}\">Click me!</a>\n"
         prPostCommentID = pipeline.github.postComment(prNumber, commentText)
       }
 
