@@ -17,7 +17,7 @@ For Zowe core components, here are our recommendations:
 - [Red Hat Universal Base Image 8 Minimal](https://developers.redhat.com/articles/ubi-faq?redirect_fragment=resources#ubi_details)
 - [Ubuntu](https://hub.docker.com/_/ubuntu)
 
-The image should be as small as possible.
+The image should contain as few software packages as possible for security, and be as small as possible such as by reducing package count and layers.
 
 ### Multi-CPU Architecture
 
@@ -85,24 +85,24 @@ This is required folder structure for all Zowe components:
 
 ```
 /licenses
-/app
+/component
   +- README.md
 ```
 
 - `/licenses` folder holds all license related files. It should include at least the license information for current application. It's recommended to include license notice file of all pedigree dependencies. All licenses files must be in UTF-8 encoding.
-- `/app/README.md` provides information about the application for end-user.
+- `/component/README.md` provides information about the application for end-user.
 
 These file(s) and folder(s) are recommended:
 
 ```
-/app
+/component
   +- manifest.json or manifest.yaml
   +- /bin/<lifecycle-scripts>
   +- <other-application-files>
 ```
 
-- `/app/manifest.(json|yaml)` is recommended for Zowe component. The format of the file is defined at [Zowe component manifest](https://docs.zowe.org/stable/extend/packaging-zos-extensions/#zowe-component-manifest). Component must use same manifest file when it's running on z/OS.
-- `/app/bin/<lifecycle-scripts>` should remain same as what it is running on z/OS. Component must use same lifecycle scripts when it's running on z/OS.
+- `/component/manifest.(json|yaml)` is recommended for Zowe component. The format of the file is defined at [Zowe component manifest](https://docs.zowe.org/stable/extend/packaging-zos-extensions/#zowe-component-manifest). Component must use same manifest file when it's running on z/OS.
+- `/component/bin/<lifecycle-scripts>` should remain same as what it is running on z/OS. Component must use same lifecycle scripts when it's running on z/OS.
 
 ### Environment Variable(s)
 
@@ -112,7 +112,13 @@ These environment variable(s) must be set as a fixed value in the image:
 
 ### User `zowe`
 
-In the Dockerfile, a `zowe` user and group must be created. Example command `RUN groupadd -r zowe && useradd --no-log-init -r -g zowe zowe`.
+In the Dockerfile, a `zowe` user and group must be created. The `zowe` user `UID` and group `GID` should be defined as `ARG` and with default value `UID=20000` and `GID=20000`. Example commands:
+
+```
+ARG UID=20000
+ARG GID=20000
+RUN groupadd -g $GID -r zowe && useradd --no-log-init -u $UID -d /home/zowe -r -g zowe zowe
+```
 
 `USER zowe` must be specified before the first `CMD` or `ENTRYPOINT`.
 
@@ -132,7 +138,6 @@ Below sections are mainly targeting Kubernetes or OpenShift environment. Startin
 
 - NOT be started as root user in the container.
 - listen on ONLY one port in the container.
-- NOT rely on hardcoded directory names like `/app`.
 - be cloud vendor neutral and must NOT rely on features provided by specific cloud vendor.
 - NOT rely on host information such as `hostIP`, `hostPort`, `hostPath`, `hostNetwork`, `hostPID` and `hostIPC`.
 - MUST accept either `instance.env` or `zowe.yaml` as configuration file, same as running on z/OS.
@@ -142,39 +147,40 @@ Below sections are mainly targeting Kubernetes or OpenShift environment. Startin
 In runtime, the Zowe content are organized in this structure:
 
 ```
-/zowe
-  +- /runtime
-  +- /extension
-    +- /<component-id>
-  +- /instance
-    +- instance.env or zowe.yaml
-    +- /workspace
-  +- /keystore
-    +- zowe-certificates.env
+/home
+  +- /zowe
+    +- /runtime
+    +- /extension
+      +- /<component-id>
+    +- /instance
+      +- instance.env or zowe.yaml
+      +- /workspace
+    +- /keystore
+      +- zowe-certificates.env
 ```
 
-- `/zowe/runtime` is a shared volume initialized by `zowe-launch-scripts` container.
-- `/zowe/extension/<component-id>` is a symbolic link to `/app` directory. `<component-id>` is `ZOWE_COMPONENT_ID` defined in `ENV`.
-- `/zowe/instance/(instance.env|zowe.yaml)` is Zowe configuration file and MUST be mounted from ConfigMap.
-- `/zowe/keystore/zowe-certificates.env` is optional if the user is using `instance.env`. If this configuration exists, it MUST be mounted from ConfigMap.
+- `/home/zowe/runtime` is a shared volume initialized by `zowe-launch-scripts` container.
+- `/home/zowe/extension/<component-id>` is a symbolic link to `/component` directory. `<component-id>` is `ZOWE_COMPONENT_ID` defined in `ENV`.
+- `/home/zowe/instance/(instance.env|zowe.yaml)` is Zowe configuration file and MUST be mounted from ConfigMap.
+- `/home/zowe/keystore/zowe-certificates.env` is optional if the user is using `instance.env`. If this configuration exists, it MUST be mounted from ConfigMap.
 - Any confidential environment variables, for example, redis password, in `instance.env` or `zowe.yaml` should be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
 ### ConfigMap and Secrets
 
-- `instance.env` or `zowe.yaml` must be stored in ConfigMap and be mounted under `/zowe/instance` directory.
-- If the user is using `instance.env`, content of `<keystore>/zowe-certificates.env` must also be stored in ConfigMap and be mounted to `/zowe/keystore`.
-- All certificates must be stored in Secrets. Those files will be mounted under `/zowe/keystore` directory.
+- `instance.env` or `zowe.yaml` must be stored in ConfigMap and be mounted under `/home/zowe/instance` directory.
+- If the user is using `instance.env`, content of `<keystore>/zowe-certificates.env` must also be stored in ConfigMap and be mounted to `/home/zowe/keystore`.
+- All certificates must be stored in Secrets. Those files will be mounted under `/home/zowe/keystore` directory.
 - Secrets must be defined manually by system administrator. Zowe Helm Chart and Zowe Operator does NOT define content of Secrets.
 
 ### `zowe-launch-component` Image and initContainers
 
 - `zowe-launch-component` image contains necessary scripts to start Zowe component in Zowe context.
-- This image has a `/zowe` directory and it will be shared and mounted to all Zowe component containers as `/zowe/runtime`.
+- This image has a `/home/zowe` directory and it will be shared and mounted to all Zowe component containers as `/home/zowe/runtime`.
 - In Kubernetes and OpenShift environment, this step is defined with [`initContainers` specification](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/).
 
 ### Zowe Workspace Directory
 
-- Zowe workspace directory `/zowe/instance/workspace` will be defined a persistent volume.
+- Zowe workspace directory `/home/zowe/instance/workspace` will be defined a persistent volume.
 - Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of same component.
 - Components writing to this directory should NOT write container specific information to this directory which may potentially overwritten by another container.
 
@@ -185,7 +191,7 @@ In runtime, the Zowe content are organized in this structure:
 ### Persistent Volume(s)
 
 - These persistent volume(s) MUST be created:
-  * `zowe-workspace` mounted to `/zowe/instance/workspace`.
+  * `zowe-workspace` mounted to `/home/zowe/instance/workspace`.
 - The system administrator MUST define the persistent volume manually. Zowe Helm Chart and Zowe Operator does NOT create consistent volume.
 
 ## CI/CD
