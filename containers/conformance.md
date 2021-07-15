@@ -206,6 +206,7 @@ In runtime, the Zowe content are organized in this structure:
 - Zowe core component images MUST be released before Zowe release.
 - Zowe core components MUST publish release images to `zowe-docker-release.jfrog.io` registry.
 - Release image MUST also update relevant major/minor version tags and `latest` tag. For example, when component release `1.2.3` image, the component CI/CD pipeline MUST also tag the image as `1.2`, `1` and `latest`. Update `lts` tag when it's applicable.
+- Zowe core component release images MUST be signed by Zowe committer(s).
 
 ### Image Scan
 
