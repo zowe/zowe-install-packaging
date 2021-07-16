@@ -368,8 +368,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       def buildName = env.JOB_NAME.replace('/', ' :: ').replace('%2F', ' :: ')
       def branchName = env.BRANCH_NAME   //this field will be "PR-1937" or branch name "users/xxx/xxxx"
       def ZOWE_BUILD_REPOSITORY = 'libs-snapshot-local'
-      def ZOWE_CLI_BUILD_REPOSITORY = 'libs-snapshot-local'
-      def ZOWE_CLI_BUILD_NAME = 'Zowe CLI Bundle :: master'
+      def ZOWE_CLI_BUILD_REPOSITORY = 'libs-release-local'
+      def ZOWE_CLI_BUILD_NAME = "Zowe CLI Bundle :: v${pipeline.getVersion()} :: master"
       
       sourceRegBuildInfo = pipeline.artifactory.getArtifact([
         'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-*.pax",
@@ -377,7 +377,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         'build-number' : env.BUILD_NUMBER
       ])
       cliSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-1*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
       ])
       if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
