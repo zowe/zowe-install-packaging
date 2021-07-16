@@ -138,7 +138,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
       try {
         cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-*.zip",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-1*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
         ])
       } catch (e) {
