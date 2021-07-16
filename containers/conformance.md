@@ -44,7 +44,7 @@ LABEL name="APPLICATION NAME" \
 
 ### Tag
 
-The image tag can be a combination of the following information in this format: `<version>-<linux-distro>[-sources][.<customize-build>]`.
+Zowe core component image tags must be a combination of the following information in this format: `<version>-<linux-distro>[-sources][.<customize-build>]`.
 
 - **version**: must follow [semantic versioning](https://semver.org/) or partial semantic versioning with major or major + minor. It may also be `latest` or `lts`. For example, `1`, `1.23`, `1.23.0`, `lts`, `latest`, etc.
 - **linux-distro**: for example, `ubi`, `ubuntu`, etc.
@@ -79,6 +79,7 @@ For example, these are valid image tags:
 - 1.23.0-alpine.pr-1234
 - 1.23.0-ubi.users-john-test1
 
+Same image tag pattern are recommended for Zowe extensions.
 ### Files and Directories
 
 This is the required folder structure for all Zowe components:
@@ -89,7 +90,7 @@ This is the required folder structure for all Zowe components:
   +- README.md
 ```
 
-- `/licenses` folder holds all license related files. It should include at least the license information for current application. It's recommended to include a license notice file for all pedigree dependencies. All licenses files must be in UTF-8 encoding.
+- `/licenses` folder holds all license related files. It MUST include at least the license information for current application. It's recommended to include a license notice file for all pedigree dependencies. All licenses files must be in UTF-8 encoding.
 - `/component/README.md` provides information about the application for end-user.
 
 These file(s) and folder(s) are recommended:
@@ -102,7 +103,7 @@ These file(s) and folder(s) are recommended:
 ```
 
 - `/component/manifest.(json|yaml)` is recommended for Zowe components. The format of this file is defined at [Zowe component manifest](https://docs.zowe.org/stable/extend/packaging-zos-extensions/#zowe-component-manifest). Components must use the same manifest file as when it's running on z/OS.
-- `/component/bin/<lifecycle-scripts>` should remain the same as what it is when running on z/OS. Components must use the same lifecycle scripts when it's running on z/OS.
+- `/component/bin/<lifecycle-scripts>` must remain the same as what it is when running on z/OS.
 
 ### Environment Variable(s)
 
@@ -112,7 +113,7 @@ These environment variable(s) must be set as a fixed value in the image:
 
 ### User `zowe`
 
-In the Dockerfile, a `zowe` user and group must be created. The `zowe` user `UID` and group `GID` should be defined as `ARG` and with default value `UID=20000` and `GID=20000`. Example commands:
+In the Dockerfile, a `zowe` user and group must be created. The `zowe` user `UID` and group `GID` must be defined as `ARG` and with default value `UID=20000` and `GID=20000`. Example commands:
 
 ```
 ARG UID=20000
@@ -137,7 +138,7 @@ Below sections are mainly targeting Kubernetes or OpenShift environments. Starti
 **Components MUST:**
 
 - NOT be started as root user in the container.
-- listen on only ONE port in the container.
+- listen on only ONE port in the container except for API Mediation Layer Gateway.
 - be cloud vendor neutral and must NOT rely on features provided by specific cloud vendor.
 - NOT rely on host information such as `hostIP`, `hostPort`, `hostPath`, `hostNetwork`, `hostPID` and `hostIPC`.
 - MUST accept either `instance.env` or `zowe.yaml` as a configuration file, the same as when running on z/OS.
@@ -154,6 +155,7 @@ In the runtime, the Zowe content are organized in this structure:
       +- /<component-id>
     +- /instance
       +- instance.env or zowe.yaml
+      +- /logs
       +- /workspace
     +- /keystore
       +- zowe-certificates.env
@@ -163,7 +165,7 @@ In the runtime, the Zowe content are organized in this structure:
 - `/home/zowe/extension/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is `ZOWE_COMPONENT_ID` defined in `ENV`.
 - `/home/zowe/instance/(instance.env|zowe.yaml)` is a Zowe configuration file and MUST be mounted from a ConfigMap.
 - `/home/zowe/keystore/zowe-certificates.env` is optional if the user is using `instance.env`. If this configuration exists, it MUST be mounted from a ConfigMap.
-- Any confidential environment variables, for example, a Redis password, in `instance.env` or `zowe.yaml` should be extracted and stored as Secrets. These configurations must be imported back as environment variables.
+- Any confidential environment variables, for example, a Redis password, in `instance.env` or `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
 ### ConfigMap and Secrets
 
@@ -182,7 +184,7 @@ In the runtime, the Zowe content are organized in this structure:
 
 - Zowe workspace directory `/home/zowe/instance/workspace` will be defined as a persistent volume.
 - Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
-- Components writing to this directory should NOT write container specific information to this directory as it may potentially overwritten by another container.
+- Components writing to this directory must NOT write container specific information to this directory as it may potentially overwritten by another container.
 
 ### Command Override
 
@@ -201,10 +203,9 @@ In the runtime, the Zowe content are organized in this structure:
 - Zowe core component and extension images MUST be built, tested and released on their own cadence.
 - The component CI/CD pipeline MUST NOT rely on the Zowe level CI/CD pipeline and Zowe release schedule.
 - Zowe core component images must be tested. This includes starting the component and verifying the runtime container works as expected.
-- ??? Testing in a Kubernetes/OpenShift environment with multiple instances is recommended.
 - It is recommended to build snapshot images before release. Zowe core components MUST publish snapshot images to the `zowe-docker-snapshot.jfrog.io` registry with proper [tags](#tag).
 - Zowe core component images MUST be released before Zowe is released.
-- Zowe core components MUST publish release images to the `zowe-docker-release.jfrog.io` registry.
+- Zowe core components MUST publish release images to both `zowe-docker-release.jfrog.io` and [Docker hub](https://hub.docker.com/) registry under `ompzowe/` prefix.
 - Release images MUST also update relevant major/minor version tags and the `latest` tag. For example, when a component releases a `1.2.3` image, the component CI/CD pipeline MUST also tag the image as `1.2`, `1` and `latest`. Update the `lts` tag when it is applicable.
 - Zowe core component release images MUST be signed by Zowe committer(s).
 
@@ -225,3 +226,4 @@ In the runtime, the Zowe content are organized in this structure:
 - A separated source build image is required for Zowe core component images.
 - License notice file is recommended for Zowe core component images.
 - Above rules are recommended for Zowe extension images.
+n
