@@ -52,6 +52,9 @@ if [[ -z ${INSTANCE_DIR} ]]; then
   echo "INSTANCE_DIR is not defined. You can either pass the value with -c parameter or define it as global environment variable." >&2
   exit 1
 fi
+# switch to instance/bin directory
+# this should solve issues caused by ZWESVUSR home directory doesn't exist
+cd "${INSTANCE_DIR}/bin"
 
 # find runtime directory if it's not defined
 if [ -z "${ROOT_DIR}" ]; then
