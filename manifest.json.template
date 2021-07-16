@@ -67,10 +67,10 @@
       "artifact": "zss-1.22.0-rc-77-20210602171443.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "1.0.8"
+      "version": "1.0.9"
     },
     "org.zowe.explorer.files": {
-      "version": "1.0.9"
+      "version": "1.0.10"
     },
     "org.zowe.explorer-jes": {
       "version": "1.0.13"
@@ -296,14 +296,14 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v1.0.9",
+        "tag": "v1.0.10",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v1.0.8",
+        "tag": "v1.0.9",
         "destinations": ["Zowe PAX"]
       }]
     }, {
