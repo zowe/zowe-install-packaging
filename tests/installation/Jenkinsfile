@@ -170,7 +170,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     string(
       name: 'ZOWE_CLI_ARTIFACTORY_PATTERN',
       description: 'Zowe artifactory download pattern',
-      defaultValue: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*.zip',
+      defaultValue: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip',
       trim: true,
       required: true
     ),
