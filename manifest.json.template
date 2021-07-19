@@ -400,12 +400,12 @@
         "tag": "v1.17.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
-    }
+    },
     {
       "componentGroup": "Zowe Desktop IP Explorer Plug-in",
       "entries": [{
         "repository": "explorer-ip",
-        "tag": "1.0.0",
+        "tag": "v1.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }
