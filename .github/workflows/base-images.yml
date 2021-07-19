@@ -1,5 +1,7 @@
 name: Build Zowe Base Images
 on:
+  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       release:
