@@ -1,0 +1,47 @@
+name: Build Zowe Base Images
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Set to true if we want to release the base images'
+        required: false
+        default: ''
+
+jobs:
+  build-ubuntu-amd64:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update registry for release
+        if: ${{ github.event.inputs.release == 'true' }}
+        run: |
+          echo "DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+
+      - name: Login Jfrog Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      
+      - name: build image
+        working-directory: containers/base/amd64/ubuntu
+        run: |
+          docker build -t ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64 .
+
+      # - name: build and push image
+      #   run: |
+      #     cd container
+      #     chmod +x *.sh
+      #     ./pull-zowe-install-artifacts.sh
+      #     ./download-zlux.sh
+      #     cd files
+      #     IMAGE_VERSION=$(grep -Po '"version": *\K"[^"]*"'  manifest.json | head -n1)
+      #     IMAGE_VERSION=`echo $IMAGE_VERSION | sed 's/.\(.*\)/\1/' | sed 's/\(.*\)./\1/'`
+      #     cd ..
+      #     ./build.sh
+      #     docker tag zowe-docker-snapshot.jfrog.io/ompzowe/app-server:testing zowe-docker-snapshot.jfrog.io/ompzowe/app-server:$IMAGE_VERSION
+      #     docker push zowe-docker-snapshot.jfrog.io/ompzowe/app-server:$IMAGE_VERSION
