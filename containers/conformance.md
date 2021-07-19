@@ -14,6 +14,10 @@ You are free to choose a base image based on your requirements.
 
 Here are our recommendations for core Zowe components:
 
+- Zowe base images:
+  * base on Ubuntu and/or Red Hat Universal Base Image,
+  * provide common dependencies including JDK and/or node.js,
+  * support both `amd64` and `s390x` architecture.
 - [Red Hat Universal Base Image 8 Minimal](https://developers.redhat.com/articles/ubi-faq?redirect_fragment=resources#ubi_details)
 - [Ubuntu](https://hub.docker.com/_/ubuntu)
 
