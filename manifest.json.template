@@ -73,16 +73,20 @@
       "version": "1.0.10"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.13"
+      "version": "1.0.15"
     },
     "org.zowe.explorer-mvs": {
       "version": "1.0.14"
     },
     "org.zowe.explorer-uss": {
-      "version": "1.0.12"
+      "version": "1.0.15"
     },
     "org.zowe.explorer-ui-server": {
       "version": "0.2.16"
+    },
+    "org.zowe.explorer-ip": {
+      "version": "1.0.0",
+      "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
       "version": "1.23.5",
@@ -105,7 +109,7 @@
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.launcher": {
-      "version": "0.0.4"
+      "version": "0.0.5"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -126,7 +130,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.13.1",
+        "tag": "v4.13.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -198,7 +202,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.31.1",
+        "tag": "v6.32.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -268,7 +272,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.12",
+        "tag": "v1.0.15",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -282,7 +286,7 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.12",
+        "tag": "v1.0.15",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -381,11 +385,11 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v0.0.5",
+        "tag": "v0.0.6",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v0.0.4",
+        "tag": "v0.0.5",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -393,8 +397,16 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.15.1",
+        "tag": "v1.17.0",
         "destinations": ["Visual Studio Code Marketplace"]
+      }]
+    },
+    {
+      "componentGroup": "Zowe Desktop IP Explorer Plug-in",
+      "entries": [{
+        "repository": "explorer-ip",
+        "tag": "v1.0.0",
+        "destinations": ["Zowe PAX"]
       }]
     }
   ],

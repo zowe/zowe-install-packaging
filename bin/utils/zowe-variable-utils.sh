@@ -65,7 +65,7 @@ validate_variables_are_set() {
 # Output          true if the function is defined
 function_exists() {
   fn=$1
-  status=$(LC_ALL=C type $fn | grep 'function')
+  status=$(LC_ALL=C type $fn 2>&1 | grep 'function')
   if [ -n "${status}" ]; then
     echo "true"
   fi
@@ -157,4 +157,6 @@ update_zowe_yaml_variable(){
   config_converter="${utils_dir}/config-converter/src/cli.js"
   
   node "${config_converter}" yaml update "${INSTANCE_DIR}/zowe.yaml" "${variable_name}" "${variable_value}"
+
+  ensure_zowe_yaml_encoding "${INSTANCE_DIR}/zowe.yaml"
 }
