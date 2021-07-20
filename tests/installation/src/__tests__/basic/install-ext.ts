@@ -46,7 +46,8 @@ describe(testSuiteName, () => {
         {
           'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
           'zowe_lock_keystore': 'false',
-        }
+        },
+        true
       );
     }
     beforeAllResult = true;
