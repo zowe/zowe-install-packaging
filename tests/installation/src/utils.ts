@@ -372,7 +372,7 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}, doublePTF: boolean = false): Promise<void> {
   debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
@@ -396,6 +396,17 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   );
 
   expect(resultPtf.code).toBe(0);
+
+  if (doublePTF == true) {
+    debug(`run install-ptf.yml a second time on ${serverId}`);
+    const resultPtf = await runAnsiblePlaybook(
+      testcase,
+      'install-ptf.yml',
+      serverId,
+      extraVars
+    );
+    expect(resultPtf.code).toBe(0);
+  }
 
   // sleep extra 2 minutes
   debug(`wait extra 2 min before sanity test`);
