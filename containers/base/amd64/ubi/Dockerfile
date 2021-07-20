@@ -30,4 +30,7 @@ ARG GID=20000
 
 ##################################
 # define zowe user/group
-RUN groupadd -g $GID -r zowe && useradd --no-log-init -u $UID -d /home/zowe -r -g zowe zowe
+# shadow-utils is needed for having adduser groupadd commands
+RUN microdnf install shadow-utils \
+    && groupadd --gid ${GID} zowe \
+    && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe
