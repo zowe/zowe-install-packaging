@@ -126,8 +126,11 @@ install_zis_plugin() {
                       LOADLIB="loadlib" # default
                       SAMPLIB="samplib" # default
                       # Need to cd because zis-plugin-install script relies on other relative scripts
-                      cd "${ZIS_INSTALL_DIR}" && ./zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}${LOADLIB}" "${ZIS_PATH_DIR}${SAMPLIB}"
+                      set -e # Honor any errors from zis-plugin-install
+                      cd "${ZIS_INSTALL_DIR}"
+                      sh zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}${LOADLIB}" "${ZIS_PATH_DIR}${SAMPLIB}"
                       # ZIS Plugin install script has its own logging, no need to send success message
+                      set +e
                   else 
                       log_message "No ZIS plugins detected in manifest."
                   fi
@@ -136,7 +139,6 @@ install_zis_plugin() {
       fi
       iterator_index=`expr $iterator_index + 1`
       ZIS_PATH_DIR=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
-      
     done
 }
 
