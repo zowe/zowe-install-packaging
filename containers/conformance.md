@@ -15,7 +15,7 @@ You are free to choose a base image based on your requirements.
 Here are our recommendations for core Zowe components:
 
 - Zowe base images:
-  * base on Ubuntu and/or Red Hat Universal Base Image,
+  * base on Ubuntu and Red Hat Universal Base Image,
   * provide common dependencies including JDK and/or node.js,
   * support both `amd64` and `s390x` architecture.
 - [Red Hat Universal Base Image 8 Minimal](https://developers.redhat.com/articles/ubi-faq?redirect_fragment=resources#ubi_details)
@@ -27,7 +27,6 @@ The image should contain as few software packages as possible for security, and 
 
 - Zowe core components must release images based on both `amd64` and `s390x` CPU architecture.
 - Zowe core component images must use multiple manifests to define if the image supports multiple CPU architecture.
-- CPU architecture like `amd64` and `s390x` must NOT appear in released component image tags.
 
 ### Image Label
 
@@ -48,10 +47,11 @@ LABEL name="APPLICATION NAME" \
 
 ### Tag
 
-Zowe core component image tags must be a combination of the following information in this format: `<version>-<linux-distro>[-sources][.<customize-build>]`.
+Zowe core component image tags must be a combination of the following information in this format: `<version>-<linux-distro>[-<cpu-arch>][-sources][.<customize-build>]`.
 
 - **version**: must follow [semantic versioning](https://semver.org/) or partial semantic versioning with major or major + minor. It may also be `latest` or `lts`. For example, `1`, `1.23`, `1.23.0`, `lts`, `latest`, etc.
 - **linux-distro**: for example, `ubi`, `ubuntu`, etc.
+- **cpu-arch**: for example, `amd64`, `s390x`, etc.
 - **customize-build**: string sanitized by converting non-letters and non-digits to dashes. For example, `pr-1234`, `users-john-fix123`, etc.
 - **Source Build**: must be string `-sources` appended to the end of tag.
   * If this is a source build, the tag must contain full version number (major+minor+patch) information.
@@ -77,10 +77,12 @@ For example, these are valid image tags:
 - 1.23-ubi
 - 1.23.0
 - 1.23.0-ubuntu
+- 1.23.0-ubuntu-amd64
 - 1.23.0-ubuntu-sources
 - 1.23.0-ubi
+- 1.23.0-ubi-s390x
 - 1.23.0-ubi-sources
-- 1.23.0-alpine.pr-1234
+- 1.23.0-ubuntu.pr-1234
 - 1.23.0-ubi.users-john-test1
 
 Same image tag pattern are recommended for Zowe extensions.
