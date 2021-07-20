@@ -9,7 +9,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM ubuntu:latest
+FROM registry.redhat.io/ubi8/ubi-minimal:latest
 
 ##################################
 # labels
