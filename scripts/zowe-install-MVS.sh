@@ -12,7 +12,6 @@
 
 sizeAUTH='space(30,15) tracks'
 sizeSAMP='space(15,15) tracks'
-sizePLUG='space(30,15) tracks'
 members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl ZWEKRING.jcl ZWENOKYR.jcl ZWECSVSM.jcl ZWESSOTK.jcl ZWENOSSO.jcl'
 
 # info: construct ${variable%%.*} keeps up to first . (exclusive)
@@ -132,20 +131,6 @@ then
     done
 else
     echo "  $script failed to create ${ZOWE_DSN_PREFIX}.SZWESAMP, RC=$rc" >> $LOG_FILE
-fi
-
-# 3. {datasetprefix}.SZWEPLUG
-
-# TODO replace by allocate-dataset.sh call to resuse VOLSER support
-tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEPLUG') " \
-    "dsntype(library) dsorg(po) recfm(u) lrecl(0) bLKSIZE(32760)" \
-    "unit(sysallda) $sizePLUG" >> $LOG_FILE 2>&1
-rc=$?
-if test $rc -eq 0
-then
-    echo "  ${ZOWE_DSN_PREFIX}.SZWEPLUG successfully created" >> $LOG_FILE
-else
-    echo "  $script failed to create ${ZOWE_DSN_PREFIX}.SZWEPLUG, RC=$rc" >> $LOG_FILE
 fi
 
 rm -rf $TEMP_DIR/${script%%.*}
