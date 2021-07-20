@@ -33,6 +33,11 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
+      - name: show environment
+        run: |
+          env | sort && \
+          pwd && \
+          ls -la
       - name: build amd64 image
         working-directory: containers/base/amd64/ubuntu
         run: |
