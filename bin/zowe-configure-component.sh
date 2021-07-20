@@ -128,7 +128,7 @@ install_zis_plugin() {
                       # Need to cd because zis-plugin-install script relies on other relative scripts
                       set -e # Honor any errors from zis-plugin-install
                       cd "${ZIS_INSTALL_DIR}"
-                      sh zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}${LOADLIB}" "${ZIS_PATH_DIR}${SAMPLIB}"
+                      sh zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}/${LOADLIB}" "${ZIS_PATH_DIR}/${SAMPLIB}"
                       # ZIS Plugin install script has its own logging, no need to send success message
                       set +e
                   else 
