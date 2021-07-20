@@ -38,7 +38,7 @@ jobs:
       - name: define manifest
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu --amend ompzowe/base:latest-ubuntu-amd64
+          docker manifest create ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu --amend ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64
           docker manifest push ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu
 
   build-ubi-amd64:
@@ -76,5 +76,5 @@ jobs:
       - name: define manifest
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi --amend ompzowe/base:latest-ubi-amd64
+          docker manifest create ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi --amend ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64
           docker manifest push ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi
