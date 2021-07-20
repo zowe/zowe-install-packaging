@@ -15,7 +15,7 @@ import {
   installAndVerifyConvenienceBuild,
   installAndVerifySmpePtf,
 } from '../../utils';
-import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
+import {TEST_TIMEOUT_SMPE_PTF} from '../../constants';
 
 let beforeAllResult = false;
 const testSuiteName = 'Test sample extensions installation and verify';
@@ -51,7 +51,7 @@ describe(testSuiteName, () => {
       );
     }
     beforeAllResult = true;
-  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+  }, TEST_TIMEOUT_SMPE_PTF);
 
   process.env.EXTENSIONS_LIST.split(',').forEach((extension) => {
     if (!extension){
@@ -72,7 +72,7 @@ describe(testSuiteName, () => {
           'component_id': extensionArray[0],
         }
       );
-    }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+    }, TEST_TIMEOUT_SMPE_PTF);
   });
 
   afterAll(async () => {
