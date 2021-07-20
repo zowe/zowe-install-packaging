@@ -39,6 +39,7 @@ DEFAULT_TARGET_DIR=/global/zowe/extensions
 
 #######################################################################
 # Prepare shell environment
+
 if [ -z "${ZOWE_ROOT_DIR}" ]; then
   export ZOWE_ROOT_DIR=$(cd $(dirname $0)/../;pwd)
 fi
@@ -85,6 +86,60 @@ enable_component(){
             update_zowe_yaml_variable "components.${COMPONENT_NAME}.enabled" "true"
         fi
     fi
+}
+
+install_zis_plugin() {
+    iterator_index=0
+    ZIS_PATH_DIR=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
+    ZIS_INSTALL_DIR="${TARGET_DIR}/zss/bin"
+    ZIS_INSTALL_FILE="${ZIS_INSTALL_DIR}/zis-plugin-install.sh"
+
+    while [ "${ZIS_PATH_DIR}" != "null" ] && [ -n "${ZIS_PATH_DIR}" ]; do
+
+      if [ -e "${INSTANCE_DIR}/instance.env" ]; then
+          if [ -n "$(read_zowe_instance_variable "ZWES_ZIS_PARMLIB")" ]; then
+              export ZIS_PARMLIB=$(read_zowe_instance_variable "ZWES_ZIS_PARMLIB")
+          fi
+          if [ -n "$(read_zowe_instance_variable "ZWES_ZIS_PLUGINLIB")" ]; then
+              export ZIS_PLUGINLIB=$(read_zowe_instance_variable "ZWES_ZIS_PLUGINLIB")
+          fi
+      fi
+
+      if [ -n "${ZWES_ZIS_PARMLIB}" ]; then #Checks existing env variables
+          export ZIS_PARMLIB="${ZWES_ZIS_PARMLIB}"
+      fi
+          
+      if [ -n "${ZWES_ZIS_PLUGINLIB}" ]; then
+          export ZIS_PLUGINLIB="${ZWES_ZIS_PLUGINLIB}"
+      fi
+
+      if [[ -z "${ZIS_PARMLIB}" ]]; then
+          log_message "ZIS_PARMLIB N/A from env or instance. Skipping ZIS plugin check."
+      else
+          if [[ -z "${ZIS_PLUGINLIB}" ]]; then
+              log_message "ZIS_PLUGINLIB N/A from env or instance. Skipping ZIS plugin check."
+          else
+              log_message "Received ZIS_PARMLIB: ${ZIS_PARMLIB}"
+              log_message "Received ZIS_PLUGINLIB: ${ZIS_PLUGINLIB}"
+              if test -f "$ZIS_INSTALL_FILE"; then
+                  if [ -n "${ZIS_PATH_DIR}" ]; then 
+                      LOADLIB="loadlib" # default
+                      SAMPLIB="samplib" # default
+                      # Need to cd because zis-plugin-install script relies on other relative scripts
+                      set -e # Honor any errors from zis-plugin-install
+                      cd "${ZIS_INSTALL_DIR}"
+                      sh zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}/${LOADLIB}" "${ZIS_PATH_DIR}/${SAMPLIB}"
+                      # ZIS Plugin install script has its own logging, no need to send success message
+                      set +e
+                  else 
+                      log_message "No ZIS plugins detected in manifest."
+                  fi
+              fi
+          fi
+      fi
+      iterator_index=`expr $iterator_index + 1`
+      ZIS_PATH_DIR=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
+    done
 }
 
 install_app_framework_plugin(){
@@ -250,6 +305,7 @@ if [ "${IS_ZOWE_CORE}" = "false" ]; then
     install_app_framework_plugin
 fi
 enable_component
+install_zis_plugin
 
 #######################################################################
 # Conclude
