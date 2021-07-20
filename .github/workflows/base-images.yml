@@ -36,8 +36,11 @@ jobs:
       - name: show environment
         run: |
           env | sort && \
+          echo =================== && \
           pwd && \
-          ls -la
+          ls -la \
+          echo =================== && \
+          cat $GITHUB_ENV
       - name: build amd64 image
         working-directory: containers/base/amd64/ubuntu
         run: |
