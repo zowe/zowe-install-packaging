@@ -123,16 +123,10 @@ install_zis_plugin() {
               log_message "Received ZIS_PLUGINLIB: ${ZIS_PLUGINLIB}"
               if test -f "$ZIS_INSTALL_FILE"; then
                   if [ -n "${ZIS_PATH_DIR}" ]; then 
-                      LOADLIB=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].loadlib" 2>/dev/null)
-                      if [ "${LOADLIB}" = "null" ] || [ -z "${LOADLIB}" ]; then # Check custom defined lib directories in manifest.yaml
-                          LOADLIB="loadlib" # default
-                      fi
-                      SAMPLIB=$(read_component_manifest "${TARGET_DIR}/${component_name}" ".zisPlugins[${iterator_index}].samplib" 2>/dev/null)
-                      if [ "${SAMPLIB}" = "null" ] || [ -z "${SAMPLIB}" ]; then
-                          SAMPLIB="samplib" #default
-                      fi
+                      LOADLIB="loadlib" # default
+                      SAMPLIB="samplib" # default
                       # Need to cd because zis-plugin-install script relies on other relative scripts
-                      cd "${ZIS_INSTALL_DIR}" && ./zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}/${LOADLIB}" "${ZIS_PATH_DIR}/${SAMPLIB}"
+                      cd "${ZIS_INSTALL_DIR}" && ./zis-plugin-install.sh extended-install "${ZIS_PATH_DIR}${LOADLIB}" "${ZIS_PATH_DIR}${SAMPLIB}"
                       # ZIS Plugin install script has its own logging, no need to send success message
                   else 
                       log_message "No ZIS plugins detected in manifest."
