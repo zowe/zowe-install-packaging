@@ -5,11 +5,12 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: 'Set to true if we want to release the base images'
+        description: 'Set to "true" if we want to release the base images'
         required: false
         default: ''
 env:
   IMAGE_BASE_DIR: containers/base
+  ZOWE_DOCKER_REGISTRY_FOR_RELEASE: zowe-docker-release.jfrog.io
 
 jobs:
   build-ubuntu-amd64:
@@ -21,17 +22,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name and version
+      - name: Set image name, version, metadata and registry
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-
-      - name: Update registry for release
-        if: ${{ github.event.inputs.release == 'true' }}
-        run: |
-          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+          IMAGE_METADATA=
+          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -43,8 +46,8 @@ jobs:
       - name: build image
         working-directory: ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
         run: |
-          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} .
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
 
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
@@ -55,17 +58,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name and version
+      - name: Set image name, version, metadata and registry
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-
-      - name: Update registry for release
-        if: ${{ github.event.inputs.release == 'true' }}
-        run: |
-          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+          IMAGE_METADATA=
+          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
       - name: Configure SSH
         run: |
@@ -114,8 +119,8 @@ jobs:
           ls -l
           echo "************ build image"
           cd ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
-          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
-          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} .
+          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
           sudo chmod 644 zlinux-image.tar
           EOF
           echo "************ download image from zLinux:"
@@ -127,8 +132,8 @@ jobs:
           echo "************ display images:"
           docker images
           echo "************ publish image:"
-          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
@@ -151,17 +156,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name and version
+      - name: Set image name, version, metadata and registry
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-
-      - name: Update registry for release
-        if: ${{ github.event.inputs.release == 'true' }}
-        run: |
-          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+          IMAGE_METADATA=
+          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -173,8 +180,8 @@ jobs:
       - name: define manifest
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x
-          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}
+          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x${{ env.IMAGE_METADATA }}
+          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }}
 
   build-ubi-amd64:
     runs-on: ubuntu-latest
@@ -185,17 +192,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name and version
+      - name: Set image name, version, metadata and registry
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-
-      - name: Update registry for release
-        if: ${{ github.event.inputs.release == 'true' }}
-        run: |
-          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+          IMAGE_METADATA=
+          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -214,8 +223,8 @@ jobs:
       - name: build image
         working-directory: ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
         run: |
-          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} .
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
 
   build-ubi-s390x:
     runs-on: ubuntu-latest
@@ -226,17 +235,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name and version
+      - name: Set image name, version, metadata and registry
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-
-      - name: Update registry for release
-        if: ${{ github.event.inputs.release == 'true' }}
-        run: |
-          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+          IMAGE_METADATA=
+          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
       - name: Configure SSH
         run: |
@@ -286,8 +297,8 @@ jobs:
           echo "************ build image"
           cd ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
           echo "${{ env.REDHAT_PASSWORD }}" | sudo docker login --username "${{ env.REDHAT_USER }}" --password-stdin registry.redhat.io
-          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
-          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} .
+          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
           sudo chmod 644 zlinux-image.tar
           EOF
           echo "************ download image from zLinux:"
@@ -299,8 +310,8 @@ jobs:
           echo "************ display images:"
           docker images
           echo "************ publish image:"
-          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}${{ env.IMAGE_METADATA }}
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
           REDHAT_USER: ${{ secrets.REDHAT_DEVELOPER_USER }}
@@ -325,17 +336,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name and version
+      - name: Set image name, version, metadata and registry
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-
-      - name: Update registry for release
-        if: ${{ github.event.inputs.release == 'true' }}
-        run: |
-          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+          IMAGE_METADATA=
+          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -347,5 +360,5 @@ jobs:
       - name: define manifest
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x
-          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}
+          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x${{ env.IMAGE_METADATA }}
+          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }}
