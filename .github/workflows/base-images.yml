@@ -264,6 +264,7 @@ jobs:
           ls -l
           echo "************ build image"
           cd ${{ env.IMAGE_BASE_DIR }}/ubi/s390x
+          echo "${{ env.REDHAT_PASSWORD }}" | sudo docker login --username "${{ env.REDHAT_USER }}" --password-stdin
           sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x .
           sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
           sudo chmod 644 zlinux-image.tar
@@ -281,6 +282,8 @@ jobs:
           docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          REDHAT_USER: ${{ secrets.REDHAT_DEVELOPER_USER }}
+          REDHAT_PASSWORD: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
       - name: clean up remote workspace
         if: ${{ always() }}
