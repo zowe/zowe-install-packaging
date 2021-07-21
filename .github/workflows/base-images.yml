@@ -104,11 +104,11 @@ jobs:
           sudo docker save -o base.latest-ubuntu-s390x.tar ompzowe/base:latest-ubuntu-s390x
           EOF
           echo "************ download image from zLinux:"
-          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/containers/base/ubuntu/s390x/base.latest-ubuntu-s390x.tar" base.latest-ubuntu-s390x.tar
-          ls -l base.latest-ubuntu-s390x.tar
+          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/containers/base/ubuntu/s390x/base.latest-ubuntu-s390x.tar" zlinux-image.tar
+          ls -l zlinux-image.tar
           echo "************ load image:"
-          docker load --input base.latest-ubuntu-s390x.tar
-          rm -fr base.latest-ubuntu-s390x.tar
+          docker load --input zlinux-image.tar
+          rm -fr zlinux-image.tar
           docker images
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
