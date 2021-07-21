@@ -65,13 +65,6 @@ jobs:
             IdentityFile ~/.ssh/zlinux.key
             StrictHostKeyChecking no
           END
-          cat >~/.ssh/zlinux.pass <<END
-          echo "$SSH_PASSPHRASE"
-          END
-          chmod 700 ~/.ssh/zlinux.pass
-          cat ~/.ssh/zlinux.key | SSH_ASKPASS=~/.ssh/zlinux.pass ssh-add -
-          rm ~/.ssh/zlinux.pass
-          ssh-add -l
         env:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
           SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
