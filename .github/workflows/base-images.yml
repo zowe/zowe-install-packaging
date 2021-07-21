@@ -10,71 +10,120 @@ on:
         default: ''
 
 jobs:
-  build-ubuntu-amd64:
+  # build-ubuntu-amd64:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Update registry for release
+  #       if: ${{ github.event.inputs.release == 'true' }}
+  #       run: |
+  #         echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+
+  #     - name: Login to Zowe registry
+  #       uses: docker/login-action@v1
+  #       with:
+  #         registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+  #         username: ${{ secrets.ARTIFACTORY_USERNAME }}
+  #         password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+  #     - name: build amd64 image
+  #       working-directory: containers/base/ubuntu/amd64
+  #       run: |
+  #         docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64 .
+  #         docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64
+
+  #     - name: define manifest
+  #       run: |
+  #         export DOCKER_CLI_EXPERIMENTAL=enabled
+  #         docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64
+  #         docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu
+
+  build-ubuntu-s390x:
     runs-on: ubuntu-latest
     env:
-      DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
     steps:
       - uses: actions/checkout@v2
 
       - name: Update registry for release
         if: ${{ github.event.inputs.release == 'true' }}
         run: |
-          echo "DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/zlinux.key
+          chmod 600 ~/.ssh/zlinux.key
+          cat >>~/.ssh/config <<END
+          Host zlinux
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/zlinux.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
+          SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
+          SSH_HOST: ${{ secrets.ZLINUX_HOST }}
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
         with:
-          registry: ${{ env.DOCKER_REGISTRY }}
+          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      - name: build amd64 image
-        working-directory: containers/base/ubuntu/amd64
+      - name: build s390x image
         run: |
-          docker build --no-cache=true -t ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64 .
-          docker push ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64
+          ssh zlinux ' \
+          pwd \
+          whoami \
+          '
 
-      - name: define manifest
-        run: |
-          export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu --amend ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64
-          docker manifest push ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu
+      # - name: define manifest
+      #   run: |
+      #     export DOCKER_CLI_EXPERIMENTAL=enabled
+      #     docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64
+      #     docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu
 
-  build-ubi-amd64:
-    runs-on: ubuntu-latest
-    env:
-      DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
-    steps:
-      - uses: actions/checkout@v2
+  # build-ubi-amd64:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Update registry for release
-        if: ${{ github.event.inputs.release == 'true' }}
-        run: |
-          echo "DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+  #     - name: Update registry for release
+  #       if: ${{ github.event.inputs.release == 'true' }}
+  #       run: |
+  #         echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
 
-      - name: Login to Zowe registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+  #     - name: Login to Zowe registry
+  #       uses: docker/login-action@v1
+  #       with:
+  #         registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+  #         username: ${{ secrets.ARTIFACTORY_USERNAME }}
+  #         password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      - name: Login to registry.redhat.io
-        uses: docker/login-action@v1
-        with:
-          registry: registry.redhat.io
-          username: ${{ secrets.REDHAT_DEVELOPER_USER }}
-          password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
+  #     - name: Login to registry.redhat.io
+  #       uses: docker/login-action@v1
+  #       with:
+  #         registry: registry.redhat.io
+  #         username: ${{ secrets.REDHAT_DEVELOPER_USER }}
+  #         password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
-      - name: build ubi image
-        working-directory: containers/base/ubi/amd64
-        run: |
-          docker build --no-cache=true -t ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64 .
-          docker push ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64
+  #     - name: build ubi image
+  #       working-directory: containers/base/ubi/amd64
+  #       run: |
+  #         docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64 .
+  #         docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64
 
-      - name: define manifest
-        run: |
-          export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi --amend ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64
-          docker manifest push ${{ env.DOCKER_REGISTRY }}/ompzowe/base:latest-ubi
+  #     - name: define manifest
+  #       run: |
+  #         export DOCKER_CLI_EXPERIMENTAL=enabled
+  #         docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64
+  #         docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi
