@@ -372,18 +372,30 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}, doublePTF: boolean = false): Promise<void> {
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}, doublePTF: boolean = false, fmidRemote: boolean = false ): Promise<void> {
   debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
-  const resultFmid = await runAnsiblePlaybook(
-    testcase,
-    'install-fmid.yml',
-    serverId,
-    {
-      'zowe_build_remote': ZOWE_FMID
-    }
-  );
+  let resultFmid;
+  if (fmidRemote == true){
+    resultFmid = await runAnsiblePlaybook(
+      testcase,
+      'install-fmid.yml',
+      serverId,
+      {
+        'zowe_build_remote': ZOWE_FMID
+      }
+    );
+  } else {
+    resultFmid = await runAnsiblePlaybook(
+      testcase,
+      'install-fmid.yml',
+      serverId,
+      {
+        'zowe_build_url': "https://zowe.jfrog.io/zowe/libs-release-local/org/zowe/1.9.0/zowe-smpe-package-1.9.0.zip"
+      }
+    );
+  }
 
   expect(resultFmid.code).toBe(0);
 
