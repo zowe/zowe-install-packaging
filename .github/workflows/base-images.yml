@@ -96,8 +96,20 @@ jobs:
           cd "${{ env.BUILD_WORKSPACE }}"
           tar zxf build-workspace.tar.gz
           rm build-workspace.tar.gz
+          echo "************ workspace prepared:"
           ls -l
+          echo "************ build image"
+          cd containers/base/ubuntu/s390x
+          sudo docker build --no-cache=true -t ompzowe/base:latest-ubuntu-s390x .
+          sudo docker save -o base.latest-ubuntu-s390x.tar ompzowe/base:latest-ubuntu-s390x
           EOF
+          echo "************ download image from zLinux:"
+          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/containers/base/ubuntu/s390x/base.latest-ubuntu-s390x.tar" base.latest-ubuntu-s390x.tar
+          ls -l base.latest-ubuntu-s390x.tar
+          echo "************ load image:"
+          docker load --input base.latest-ubuntu-s390x.tar
+          rm -fr base.latest-ubuntu-s390x.tar
+          docker images
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
