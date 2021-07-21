@@ -64,6 +64,7 @@ jobs:
             User $SSH_USER
             IdentityFile ~/.ssh/zlinux.key
             StrictHostKeyChecking no
+            LogLevel QUIET
           END
         env:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
@@ -77,14 +78,33 @@ jobs:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
+      - name: create remote workspace
+        run: |
+          BUILD_WORKSPACE=$(sshpass -e -P "passphrase for key" ssh zlinux 'mktemp -d -p /home/${SSH_USER} -t build-XXXXXXXX')
+          echo "BUILD_WORKSPACE=${BUILD_WORKSPACE}" >> $GITHUB_ENV
+        env:
+          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
+        timeout-minutes: 1
+
       - name: build s390x image
         run: |
-          sshpass -p "${SSH_PASSPHRASE}" -P "passphrase for key" ssh -t -q zlinux << EOF
-          pwd
-          whoami
+          tar --exclude .git --exclude .tmp -zcvf build-workspace.tar.gz .
+          sshpass -e -P "passphrase for key" scp build-workspace.tar.gz zlinux:${BUILD_WORKSPACE}
+          rm -f build-workspace.tar.gz
+          sshpass -e -P "passphrase for key" ssh zlinux << EOF
+          cd ${BUILD_WORKSPACE}
+          ls -la
           EOF
         env:
-          SSH_PASSPHRASE: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+        timeout-minutes: 1
+
+      - name: clean up remote workspace
+        run: |
+          sshpass -e -P "passphrase for key" ssh zlinux 'rm -f ${{ env.BUILD_WORKSPACE }}'
+        env:
+          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
         timeout-minutes: 1
 
       # - name: define manifest
