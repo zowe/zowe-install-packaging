@@ -102,6 +102,7 @@ jobs:
           cd containers/base/ubuntu/s390x
           sudo docker build --no-cache=true -t ompzowe/base:latest-ubuntu-s390x .
           sudo docker save -o zlinux-image.tar ompzowe/base:latest-ubuntu-s390x
+          sudo chmod 644 zlinux-image.tar
           EOF
           echo "************ download image from zLinux:"
           sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/containers/base/ubuntu/s390x/zlinux-image.tar" .
