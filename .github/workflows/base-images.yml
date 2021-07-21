@@ -24,7 +24,7 @@ jobs:
 
       - name: Set image name, version, metadata and registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
@@ -61,7 +61,7 @@ jobs:
 
       - name: Set image name, version, metadata and registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
@@ -160,7 +160,7 @@ jobs:
 
       - name: Set image name, version, metadata and registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
@@ -197,7 +197,7 @@ jobs:
 
       - name: Set image name, version, metadata and registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
@@ -241,7 +241,7 @@ jobs:
 
       - name: Set image name, version, metadata and registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
@@ -343,7 +343,7 @@ jobs:
 
       - name: Set image name, version, metadata and registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
