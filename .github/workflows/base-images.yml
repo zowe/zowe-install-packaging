@@ -30,9 +30,10 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           IMAGE_METADATA=
           [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
           [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
@@ -66,9 +67,10 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           IMAGE_METADATA=
           [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
           [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
@@ -164,9 +166,10 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           IMAGE_METADATA=
           [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
           [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
@@ -200,9 +203,10 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           IMAGE_METADATA=
           [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
           [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
@@ -243,9 +247,10 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           IMAGE_METADATA=
           [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
           [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
@@ -344,9 +349,10 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           IMAGE_METADATA=
           [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF##*/}
+          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
           [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
+          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
+          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
 
