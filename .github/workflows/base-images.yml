@@ -71,6 +71,7 @@ jobs:
           chmod 700 ~/.ssh/zlinux.pass
           which ssh-add
           which ssh-agent
+          which sshpass
           ps aux
         env:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
