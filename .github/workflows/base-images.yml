@@ -149,6 +149,8 @@ jobs:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
       IMAGE_LINUX_DISTRO: ubuntu
     steps:
+      - uses: actions/checkout@v2
+
       - name: Set image name and version
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
@@ -321,6 +323,8 @@ jobs:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
       IMAGE_LINUX_DISTRO: ubi
     steps:
+      - uses: actions/checkout@v2
+
       - name: Set image name and version
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | tr -d '[[:space:]]')
