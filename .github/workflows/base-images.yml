@@ -68,6 +68,8 @@ jobs:
           cat >~/.ssh/zlinux.pass <<END
           echo "$SSH_PASSPHRASE"
           END
+          chmod 700 ~/.ssh/zlinux.pass
+          ssh-add -l
         env:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
           SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
