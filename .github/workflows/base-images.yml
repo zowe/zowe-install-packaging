@@ -101,7 +101,7 @@ jobs:
           echo "************ build image"
           cd containers/base/ubuntu/s390x
           sudo docker build --no-cache=true -t ompzowe/base:latest-ubuntu-s390x .
-          sudo docker save -o base.latest-ubuntu-s390x.tar ompzowe/base:latest-ubuntu-s390x
+          sudo docker save -o zlinux-image.tar ompzowe/base:latest-ubuntu-s390x
           EOF
           echo "************ download image from zLinux:"
           sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/containers/base/ubuntu/s390x/base.latest-ubuntu-s390x.tar" zlinux-image.tar
@@ -109,7 +109,11 @@ jobs:
           echo "************ load image:"
           docker load --input zlinux-image.tar
           rm -fr zlinux-image.tar
+          echo "************ display images:"
           docker images
+          echo "************ publish image:"
+          docker tag zlinux-image ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
