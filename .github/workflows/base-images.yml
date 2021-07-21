@@ -113,7 +113,7 @@ jobs:
           echo "************ display images:"
           docker images
           echo "************ publish image:"
-          docker tag zlinux-image ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
+          docker tag ompzowe/base:latest-ubuntu-s390x ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
           docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
