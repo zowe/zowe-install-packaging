@@ -8,6 +8,8 @@ on:
         description: 'Set to true if we want to release the base images'
         required: false
         default: ''
+env:
+  IMAGE_BASE_DIR: containers/base
 
 jobs:
   build-ubuntu-amd64:
@@ -16,6 +18,11 @@ jobs:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set image name
+        run: |
+          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
         if: ${{ github.event.inputs.release == 'true' }}
@@ -30,10 +37,10 @@ jobs:
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
       - name: build amd64 image
-        working-directory: containers/base/ubuntu/amd64
+        working-directory: ${{ env.IMAGE_BASE_DIR }}/ubuntu/amd64
         run: |
-          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64 .
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64
+          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-amd64 .
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-amd64
 
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
@@ -41,6 +48,11 @@ jobs:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set image name
+        run: |
+          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
         if: ${{ github.event.inputs.release == 'true' }}
@@ -93,13 +105,13 @@ jobs:
           echo "************ workspace prepared:"
           ls -l
           echo "************ build image"
-          cd containers/base/ubuntu/s390x
-          sudo docker build --no-cache=true -t ompzowe/base:latest-ubuntu-s390x .
-          sudo docker save -o zlinux-image.tar ompzowe/base:latest-ubuntu-s390x
+          cd ${{ env.IMAGE_BASE_DIR }}/ubuntu/s390x
+          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x .
+          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
           sudo chmod 644 zlinux-image.tar
           EOF
           echo "************ download image from zLinux:"
-          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/containers/base/ubuntu/s390x/zlinux-image.tar" .
+          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/ubuntu/s390x/zlinux-image.tar" .
           ls -l zlinux-image.tar
           echo "************ load image:"
           docker load --input zlinux-image.tar
@@ -107,8 +119,8 @@ jobs:
           echo "************ display images:"
           docker images
           echo "************ publish image:"
-          docker tag ompzowe/base:latest-ubuntu-s390x ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
+          docker tag ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
@@ -128,6 +140,11 @@ jobs:
     env:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
     steps:
+      - name: Set image name
+        run: |
+          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
+
       - name: Update registry for release
         if: ${{ github.event.inputs.release == 'true' }}
         run: |
@@ -143,43 +160,163 @@ jobs:
       - name: define manifest
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu-s390x
-          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubuntu
+          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
+          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu
 
-  # build-ubi-amd64:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
-  #   steps:
-  #     - uses: actions/checkout@v2
+  build-ubi-amd64:
+    runs-on: ubuntu-latest
+    env:
+      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Update registry for release
-  #       if: ${{ github.event.inputs.release == 'true' }}
-  #       run: |
-  #         echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+      - name: Set image name
+        run: |
+          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
-  #     - name: Login to Zowe registry
-  #       uses: docker/login-action@v1
-  #       with:
-  #         registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
-  #         username: ${{ secrets.ARTIFACTORY_USERNAME }}
-  #         password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      - name: Update registry for release
+        if: ${{ github.event.inputs.release == 'true' }}
+        run: |
+          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
 
-  #     - name: Login to registry.redhat.io
-  #       uses: docker/login-action@v1
-  #       with:
-  #         registry: registry.redhat.io
-  #         username: ${{ secrets.REDHAT_DEVELOPER_USER }}
-  #         password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
+      - name: Login to Zowe registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-  #     - name: build ubi image
-  #       working-directory: containers/base/ubi/amd64
-  #       run: |
-  #         docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64 .
-  #         docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64
+      - name: Login to registry.redhat.io
+        uses: docker/login-action@v1
+        with:
+          registry: registry.redhat.io
+          username: ${{ secrets.REDHAT_DEVELOPER_USER }}
+          password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
-  #     - name: define manifest
-  #       run: |
-  #         export DOCKER_CLI_EXPERIMENTAL=enabled
-  #         docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi-amd64
-  #         docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/base:latest-ubi
+      - name: build ubi image
+        working-directory: ${{ env.IMAGE_BASE_DIR }}/ubi/amd64
+        run: |
+          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-amd64 .
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-amd64
+
+  build-ubi-s390x:
+    runs-on: ubuntu-latest
+    env:
+      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set image name
+        run: |
+          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
+
+      - name: Update registry for release
+        if: ${{ github.event.inputs.release == 'true' }}
+        run: |
+          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/zlinux.key
+          chmod 600 ~/.ssh/zlinux.key
+          cat >>~/.ssh/config <<END
+          Host zlinux
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/zlinux.key
+            StrictHostKeyChecking no
+            LogLevel QUIET
+          END
+        env:
+          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
+          SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
+          SSH_HOST: ${{ secrets.ZLINUX_HOST }}
+
+      - name: Login to Zowe registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: create remote workspace
+        run: |
+          BUILD_WORKSPACE=$(sshpass -e -P "passphrase for key" ssh zlinux 'mktemp -d -p /home/${{ env.SSH_USER }} -t build-XXXXXXXX')
+          echo "BUILD_WORKSPACE=${BUILD_WORKSPACE}" >> $GITHUB_ENV
+        env:
+          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
+        timeout-minutes: 1
+
+      - name: build s390x image
+        run: |
+          tar --exclude .git --exclude .tmp --exclude build-workspace.tar.gz -zcf build-workspace.tar.gz *
+          sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.BUILD_WORKSPACE }}"
+          rm -f build-workspace.tar.gz
+          sshpass -e -P "passphrase for key" ssh zlinux << EOF
+          cd "${{ env.BUILD_WORKSPACE }}"
+          tar zxf build-workspace.tar.gz
+          rm build-workspace.tar.gz
+          echo "************ workspace prepared:"
+          ls -l
+          echo "************ build image"
+          cd ${{ env.IMAGE_BASE_DIR }}/ubi/s390x
+          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x .
+          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
+          sudo chmod 644 zlinux-image.tar
+          EOF
+          echo "************ download image from zLinux:"
+          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/ubi/s390x/zlinux-image.tar" .
+          ls -l zlinux-image.tar
+          echo "************ load image:"
+          docker load --input zlinux-image.tar
+          rm -fr zlinux-image.tar
+          echo "************ display images:"
+          docker images
+          echo "************ publish image:"
+          docker tag ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
+        env:
+          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+
+      - name: clean up remote workspace
+        if: ${{ always() }}
+        run: |
+          sshpass -e -P "passphrase for key" ssh zlinux '[ -n "${{ env.BUILD_WORKSPACE }}" ] && rm -fr ${{ env.BUILD_WORKSPACE }}'
+        env:
+          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+        timeout-minutes: 1
+  
+  define-ubi-manifest:
+    needs:
+      - build-ubi-amd64
+      - build-ubi-s390x
+    runs-on: ubuntu-latest
+    env:
+      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+    steps:
+      - name: Set image name
+        run: |
+          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
+
+      - name: Update registry for release
+        if: ${{ github.event.inputs.release == 'true' }}
+        run: |
+          echo "ZOWE_DOCKER_REGISTRY=zowe-docker-release.jfrog.io" >> $GITHUB_ENV
+
+      - name: Login to Zowe registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: define manifest
+        run: |
+          export DOCKER_CLI_EXPERIMENTAL=enabled
+          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
+          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi
