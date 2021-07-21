@@ -25,25 +25,18 @@ jobs:
       - name: Set image name, version, metadata and registry
         run: |
           IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
-          echo "IMAGE_VERSION=${IMAGE_VERSION}"
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
-          echo "IMAGE_NAME=${IMAGE_NAME}"
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           IMAGE_METADATA=
           [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          echo "IMAGE_METADATA1=${IMAGE_METADATA}"
           [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
-          echo "IMAGE_METADATA2=${IMAGE_METADATA}"
           [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          echo "IMAGE_METADATA3=${IMAGE_METADATA}"
           IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
-          echo "IMAGE_METADATA4=${IMAGE_METADATA}"
           [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
-          echo "IMAGE_METADATA5=${IMAGE_METADATA}"
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-          echo "IMAGE_METADATA6=${IMAGE_METADATA}"
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -81,6 +74,7 @@ jobs:
           [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Configure SSH
         run: |
@@ -180,6 +174,7 @@ jobs:
           [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -217,6 +212,7 @@ jobs:
           [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -261,6 +257,7 @@ jobs:
           [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Configure SSH
         run: |
@@ -363,6 +360,7 @@ jobs:
           [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
           [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
           [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
