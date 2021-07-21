@@ -320,7 +320,7 @@ jobs:
           echo "************ display images:"
           docker images
           echo "************ publish image:"
-          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}${{ env.IMAGE_METADATA }}
+          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
           docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
