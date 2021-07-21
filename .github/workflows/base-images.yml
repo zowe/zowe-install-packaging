@@ -69,7 +69,9 @@ jobs:
           echo "$SSH_PASSPHRASE"
           END
           chmod 700 ~/.ssh/zlinux.pass
-          ssh-add -l
+          which ssh-add
+          which ssh-agent
+          ps aux
         env:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
           SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
