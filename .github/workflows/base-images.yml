@@ -79,7 +79,7 @@ jobs:
 
       - name: build s390x image
         run: |
-          sshpass -p "${SSH_PASSPHRASE}" ssh zlinux << EOF
+          sshpass -p "${SSH_PASSPHRASE}" ssh -tt zlinux << EOF
           pwd
           whoami
           EOF
