@@ -79,10 +79,9 @@ jobs:
 
       - name: build s390x image
         run: |
-          sshpass -v -p "${SSH_PASSPHRASE}" ssh -t -v zlinux << EOF
+          sshpass -p "${SSH_PASSPHRASE}" -P "passphrase for key" ssh -t zlinux << EOF
           pwd
           whoami
-          exit 0
           EOF
         env:
           SSH_PASSPHRASE: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
