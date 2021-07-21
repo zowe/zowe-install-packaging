@@ -89,7 +89,7 @@ jobs:
 
       - name: build s390x image
         run: |
-          tar --exclude .git --exclude .tmp -zcf build-workspace.tar.gz .
+          tar --exclude .git --exclude .tmp --exclude build-workspace.tar.gz -zcf build-workspace.tar.gz .
           ls -l build-workspace.tar.gz
           sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.BUILD_WORKSPACE }}"
           rm -f build-workspace.tar.gz
