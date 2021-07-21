@@ -16,12 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+      IMAGE_LINUX_DISTRO: ubuntu
+      IMAGE_CPU_ARCH: amd64
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name
+      - name: Set image name and version
         run: |
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
@@ -36,22 +40,26 @@ jobs:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      - name: build amd64 image
-        working-directory: ${{ env.IMAGE_BASE_DIR }}/ubuntu/amd64
+      - name: build image
+        working-directory: ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
         run: |
-          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-amd64 .
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-amd64
+          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
 
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
     env:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+      IMAGE_LINUX_DISTRO: ubuntu
+      IMAGE_CPU_ARCH: s390x
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name
+      - name: Set image name and version
         run: |
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
@@ -93,7 +101,7 @@ jobs:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
         timeout-minutes: 1
 
-      - name: build s390x image
+      - name: build image
         run: |
           tar --exclude .git --exclude .tmp --exclude build-workspace.tar.gz -zcf build-workspace.tar.gz *
           sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.BUILD_WORKSPACE }}"
@@ -105,13 +113,13 @@ jobs:
           echo "************ workspace prepared:"
           ls -l
           echo "************ build image"
-          cd ${{ env.IMAGE_BASE_DIR }}/ubuntu/s390x
-          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x .
-          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
+          cd ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
+          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
+          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
           sudo chmod 644 zlinux-image.tar
           EOF
           echo "************ download image from zLinux:"
-          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/ubuntu/s390x/zlinux-image.tar" .
+          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/zlinux-image.tar" .
           ls -l zlinux-image.tar
           echo "************ load image:"
           docker load --input zlinux-image.tar
@@ -119,8 +127,8 @@ jobs:
           echo "************ display images:"
           docker images
           echo "************ publish image:"
-          docker tag ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
+          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
@@ -139,10 +147,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+      IMAGE_LINUX_DISTRO: ubuntu
     steps:
-      - name: Set image name
+      - name: Set image name and version
         run: |
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
@@ -160,19 +171,23 @@ jobs:
       - name: define manifest
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu-s390x
-          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubuntu
+          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x
+          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}
 
   build-ubi-amd64:
     runs-on: ubuntu-latest
     env:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+      IMAGE_LINUX_DISTRO: ubi
+      IMAGE_CPU_ARCH: amd64
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name
+      - name: Set image name and version
         run: |
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
@@ -194,22 +209,26 @@ jobs:
           username: ${{ secrets.REDHAT_DEVELOPER_USER }}
           password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
-      - name: build ubi image
-        working-directory: ${{ env.IMAGE_BASE_DIR }}/ubi/amd64
+      - name: build image
+        working-directory: ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
         run: |
-          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-amd64 .
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-amd64
+          docker build --no-cache=true -t ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
 
   build-ubi-s390x:
     runs-on: ubuntu-latest
     env:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+      IMAGE_LINUX_DISTRO: ubi
+      IMAGE_CPU_ARCH: s390x
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name
+      - name: Set image name and version
         run: |
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
@@ -251,7 +270,7 @@ jobs:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
         timeout-minutes: 1
 
-      - name: build s390x image
+      - name: build image
         run: |
           tar --exclude .git --exclude .tmp --exclude build-workspace.tar.gz -zcf build-workspace.tar.gz *
           sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.BUILD_WORKSPACE }}"
@@ -263,14 +282,14 @@ jobs:
           echo "************ workspace prepared:"
           ls -l
           echo "************ build image"
-          cd ${{ env.IMAGE_BASE_DIR }}/ubi/s390x
+          cd ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
           echo "${{ env.REDHAT_PASSWORD }}" | sudo docker login --username "${{ env.REDHAT_USER }}" --password-stdin registry.redhat.io
-          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x .
-          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
+          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} .
+          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
           sudo chmod 644 zlinux-image.tar
           EOF
           echo "************ download image from zLinux:"
-          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/ubi/s390x/zlinux-image.tar" .
+          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/zlinux-image.tar" .
           ls -l zlinux-image.tar
           echo "************ load image:"
           docker load --input zlinux-image.tar
@@ -278,8 +297,8 @@ jobs:
           echo "************ display images:"
           docker images
           echo "************ publish image:"
-          docker tag ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
+          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
+          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
           REDHAT_USER: ${{ secrets.REDHAT_DEVELOPER_USER }}
@@ -300,10 +319,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
+      IMAGE_LINUX_DISTRO: ubi
     steps:
-      - name: Set image name
+      - name: Set image name and version
         run: |
+          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g')
           IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Update registry for release
@@ -321,5 +343,5 @@ jobs:
       - name: define manifest
         run: |
           export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
-          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:latest-ubi
+          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64 --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x
+          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}
