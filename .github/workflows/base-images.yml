@@ -79,10 +79,10 @@ jobs:
 
       - name: build s390x image
         run: |
-          sshpass -p "${SSH_PASSPHRASE}" ssh zlinux ' \
-          pwd \
-          whoami \
-          '
+          sshpass -p "${SSH_PASSPHRASE}" ssh zlinux << EOF
+          pwd
+          whoami
+          EOF
         env:
           SSH_PASSPHRASE: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
