@@ -82,9 +82,11 @@ jobs:
           sshpass -p "${SSH_PASSPHRASE}" ssh -tt zlinux << EOF
           pwd
           whoami
+          exit 0
           EOF
         env:
           SSH_PASSPHRASE: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+        timeout-minutes: 1
 
       # - name: define manifest
       #   run: |
