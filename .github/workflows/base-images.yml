@@ -80,7 +80,7 @@ jobs:
 
       - name: create remote workspace
         run: |
-          BUILD_WORKSPACE=$(sshpass -e -P "passphrase for key" ssh zlinux 'mktemp -d -p /home/${SSH_USER} -t build-XXXXXXXX')
+          BUILD_WORKSPACE=$(sshpass -e -P "passphrase for key" ssh zlinux 'mktemp -d -p /home/${{ env.SSH_USER }} -t build-XXXXXXXX')
           echo "BUILD_WORKSPACE=${BUILD_WORKSPACE}" >> $GITHUB_ENV
         env:
           SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
@@ -90,10 +90,10 @@ jobs:
       - name: build s390x image
         run: |
           tar --exclude .git --exclude .tmp -zcvf build-workspace.tar.gz .
-          sshpass -e -P "passphrase for key" scp build-workspace.tar.gz zlinux:${BUILD_WORKSPACE}
+          sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.BUILD_WORKSPACE }}"
           rm -f build-workspace.tar.gz
           sshpass -e -P "passphrase for key" ssh zlinux << EOF
-          cd ${BUILD_WORKSPACE}
+          cd "${{ env.BUILD_WORKSPACE }}"
           ls -la
           EOF
         env:
