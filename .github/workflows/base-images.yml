@@ -65,6 +65,9 @@ jobs:
             IdentityFile ~/.ssh/zlinux.key
             StrictHostKeyChecking no
           END
+          cat >~/.ssh/zlinux.pass <<END
+          echo "$SSH_PASSPHRASE"
+          END
         env:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
           SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
