@@ -175,7 +175,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     string(
       name: 'ZOWE_CLI_ARTIFACTORY_PATTERN',
       description: 'Zowe artifactory download pattern',
-      defaultValue: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*.zip',
+      defaultValue: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip',
       trim: true,
       required: true
     ),
@@ -380,9 +380,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         int prNumber = prNumberString as Integer   // convert to int
         commentText = "Test scope: ${params.TEST_SCOPE}\n"
         commentText += "Test job number: ${env.BUILD_NUMBER}\n"
-        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
-        commentText += "Test status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
-        commentText += "<i>Click the icon to see details</i>\n"
+        commentText += "Test status: <a href=\"${env.BUILD_URL}\">Click me!</a>\n"
         prPostCommentID = pipeline.github.postComment(prNumber, commentText)
       }
       
