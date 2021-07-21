@@ -65,10 +65,19 @@ jobs:
             IdentityFile ~/.ssh/zlinux.key
             StrictHostKeyChecking no
           END
+          cat >>~/.ssh/zlinux.pass <<END
+          #!/bin/sh
+          echo "$SSH_PASS"
+          END
+          chmod 600 ~/.ssh/zlinux.pass
+          DISPLAY= SSH_ASKPASS=~/.ssh/zlinux.pass ssh-add ~/.ssh/zlinux.key
+          rm ~/.ssh/zlinux.pass
+          ssh-add -l
         env:
           SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
           SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
           SSH_HOST: ${{ secrets.ZLINUX_HOST }}
+          SSH_PASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
