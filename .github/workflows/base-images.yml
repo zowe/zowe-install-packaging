@@ -264,7 +264,7 @@ jobs:
           ls -l
           echo "************ build image"
           cd ${{ env.IMAGE_BASE_DIR }}/ubi/s390x
-          echo "${{ env.REDHAT_PASSWORD }}" | sudo docker login --username "${{ env.REDHAT_USER }}" --password-stdin
+          echo "${{ env.REDHAT_PASSWORD }}" | sudo docker login --username "${{ env.REDHAT_USER }}" --password-stdin registry.redhat.io
           sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x .
           sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:latest-ubi-s390x
           sudo chmod 644 zlinux-image.tar
