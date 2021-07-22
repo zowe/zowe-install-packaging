@@ -43,46 +43,16 @@ jobs:
 
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
-    env:
-      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
-      IMAGE_LINUX_DISTRO: ubuntu
-      IMAGE_CPU_ARCH: s390x
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name, version, metadata and registry
-        run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
-          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
-          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-          IMAGE_METADATA=
-          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
-          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
-          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
-          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
-          exit 0
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Configure SSH
+      - name: Set target registry
         run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/zlinux.key
-          chmod 600 ~/.ssh/zlinux.key
-          cat >>~/.ssh/config <<END
-          Host zlinux
-            HostName $SSH_HOST
-            User $SSH_USER
-            IdentityFile ~/.ssh/zlinux.key
-            StrictHostKeyChecking no
-            LogLevel QUIET
-          END
-        env:
-          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
-          SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
-          SSH_HOST: ${{ secrets.ZLINUX_HOST }}
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -91,54 +61,18 @@ jobs:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      - name: create remote workspace
-        run: |
-          BUILD_WORKSPACE=$(sshpass -e -P "passphrase for key" ssh zlinux 'mktemp -d -p /home/${{ env.SSH_USER }} -t build-XXXXXXXX')
-          echo "BUILD_WORKSPACE=${BUILD_WORKSPACE}" >> $GITHUB_ENV
-        env:
-          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
-        timeout-minutes: 1
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/docker-actions
+        with:
+          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          release: ${{ github.event.inputs.release }}
+          base-directory: ${{ env.IMAGE_BASE_DIR }}
+          linux-distro: ubuntu
+          cpu-arch: s390x
+          zlinux-host: ${{ secrets.ZLINUX_HOST }}
+          zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
+          zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
+          zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
-      - name: build image
-        run: |
-          tar --exclude .git --exclude .tmp --exclude build-workspace.tar.gz -zcf build-workspace.tar.gz *
-          sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.BUILD_WORKSPACE }}"
-          rm -f build-workspace.tar.gz
-          sshpass -e -P "passphrase for key" ssh zlinux << EOF
-          cd "${{ env.BUILD_WORKSPACE }}"
-          tar zxf build-workspace.tar.gz
-          rm build-workspace.tar.gz
-          echo "************ workspace prepared:"
-          ls -l
-          echo "************ build image"
-          cd ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
-          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} .
-          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
-          sudo chmod 644 zlinux-image.tar
-          EOF
-          echo "************ download image from zLinux:"
-          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/zlinux-image.tar" .
-          ls -l zlinux-image.tar
-          echo "************ load image:"
-          docker load --input zlinux-image.tar
-          rm -fr zlinux-image.tar
-          echo "************ display images:"
-          docker images
-          echo "************ publish image:"
-          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
-        env:
-          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-
-      - name: clean up remote workspace
-        if: ${{ always() }}
-        run: |
-          sshpass -e -P "passphrase for key" ssh zlinux '[ -n "${{ env.BUILD_WORKSPACE }}" ] && rm -fr ${{ env.BUILD_WORKSPACE }}'
-        env:
-          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-        timeout-minutes: 1
-  
   define-ubuntu-manifest:
     needs:
       - build-ubuntu-amd64
@@ -181,10 +115,6 @@ jobs:
 
   build-ubi-amd64:
     runs-on: ubuntu-latest
-    env:
-      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
-      IMAGE_LINUX_DISTRO: ubi
-      IMAGE_CPU_ARCH: amd64
     steps:
       - uses: actions/checkout@v2
 
@@ -220,46 +150,16 @@ jobs:
 
   build-ubi-s390x:
     runs-on: ubuntu-latest
-    env:
-      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
-      IMAGE_LINUX_DISTRO: ubi
-      IMAGE_CPU_ARCH: s390x
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name, version, metadata and registry
-        run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
-          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
-          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-          IMAGE_METADATA=
-          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
-          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
-          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
-          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
-          exit 0
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Configure SSH
+      - name: Set target registry
         run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/zlinux.key
-          chmod 600 ~/.ssh/zlinux.key
-          cat >>~/.ssh/config <<END
-          Host zlinux
-            HostName $SSH_HOST
-            User $SSH_USER
-            IdentityFile ~/.ssh/zlinux.key
-            StrictHostKeyChecking no
-            LogLevel QUIET
-          END
-        env:
-          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
-          SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
-          SSH_HOST: ${{ secrets.ZLINUX_HOST }}
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
+          exit 0
 
       - name: Login to Zowe registry
         uses: docker/login-action@v1
@@ -268,57 +168,21 @@ jobs:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
-      - name: create remote workspace
-        run: |
-          BUILD_WORKSPACE=$(sshpass -e -P "passphrase for key" ssh zlinux 'mktemp -d -p /home/${{ env.SSH_USER }} -t build-XXXXXXXX')
-          echo "BUILD_WORKSPACE=${BUILD_WORKSPACE}" >> $GITHUB_ENV
-        env:
-          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-          SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
-        timeout-minutes: 1
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/docker-actions
+        with:
+          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          release: ${{ github.event.inputs.release }}
+          base-directory: ${{ env.IMAGE_BASE_DIR }}
+          linux-distro: ubi
+          cpu-arch: s390x
+          zlinux-host: ${{ secrets.ZLINUX_HOST }}
+          zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
+          zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
+          zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
+          redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
+          redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
-      - name: build image
-        run: |
-          tar --exclude .git --exclude .tmp --exclude build-workspace.tar.gz -zcf build-workspace.tar.gz *
-          sshpass -e -P "passphrase for key" scp build-workspace.tar.gz "zlinux:${{ env.BUILD_WORKSPACE }}"
-          rm -f build-workspace.tar.gz
-          sshpass -e -P "passphrase for key" ssh zlinux << EOF
-          cd "${{ env.BUILD_WORKSPACE }}"
-          tar zxf build-workspace.tar.gz
-          rm build-workspace.tar.gz
-          echo "************ workspace prepared:"
-          ls -l
-          echo "************ build image"
-          cd ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}
-          echo "${{ env.REDHAT_PASSWORD }}" | sudo docker login --username "${{ env.REDHAT_USER }}" --password-stdin registry.redhat.io
-          sudo docker build --no-cache=true -t ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} .
-          sudo docker save -o zlinux-image.tar ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
-          sudo chmod 644 zlinux-image.tar
-          EOF
-          echo "************ download image from zLinux:"
-          sshpass -e -P "passphrase for key" scp "zlinux:${{ env.BUILD_WORKSPACE }}/${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/${{ env.IMAGE_CPU_ARCH }}/zlinux-image.tar" .
-          ls -l zlinux-image.tar
-          echo "************ load image:"
-          docker load --input zlinux-image.tar
-          rm -fr zlinux-image.tar
-          echo "************ display images:"
-          docker images
-          echo "************ publish image:"
-          docker tag ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }} ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
-          docker push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-${{ env.IMAGE_CPU_ARCH }}${{ env.IMAGE_METADATA }}
-        env:
-          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-          REDHAT_USER: ${{ secrets.REDHAT_DEVELOPER_USER }}
-          REDHAT_PASSWORD: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-
-      - name: clean up remote workspace
-        if: ${{ always() }}
-        run: |
-          sshpass -e -P "passphrase for key" ssh zlinux '[ -n "${{ env.BUILD_WORKSPACE }}" ] && rm -fr ${{ env.BUILD_WORKSPACE }}'
-        env:
-          SSHPASS: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-        timeout-minutes: 1
-  
   define-ubi-manifest:
     needs:
       - build-ubi-amd64
