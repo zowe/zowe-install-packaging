@@ -19,15 +19,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Set target registry
-        run: |
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
-          exit 0
-
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
           registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
@@ -45,15 +38,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Set target registry
-        run: |
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
-          exit 0
-
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
           registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
@@ -81,15 +67,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Set target registry
-        run: |
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
-          exit 0
-
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
           registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
@@ -109,15 +88,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Set target registry
-        run: |
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
-          exit 0
-
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
           registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
@@ -138,15 +110,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Set target registry
-        run: |
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
-          exit 0
-
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
           registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
@@ -175,15 +140,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
 
-      - name: Set target registry
-        run: |
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
-          exit 0
-
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
           registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
