@@ -42,7 +42,5 @@ RUN microdnf module enable nodejs:$NODE_VERSION \
     && MODULE_DEPS="make gcc gcc-c++ libatomic_ops git openssl-devel" \
     && INSTALL_PKGS="$MODULE_DEPS nodejs npm nodejs-nodemon nss_wrapper" \
     && microdnf install --setopt=tsflags=nodocs $INSTALL_PKGS \
-    && ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon \
-    && ln -s /usr/libexec/platform-python /usr/bin/python3 \
     && rpm -V $INSTALL_PKGS \
     && microdnf clean all --enablerepo='*'
