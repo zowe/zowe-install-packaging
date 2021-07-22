@@ -34,3 +34,15 @@ ARG GID=20000
 RUN microdnf install shadow-utils \
     && groupadd --gid ${GID} zowe \
     && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe
+
+##################################
+# Install node.js which is mandatory for now
+ENV NODE_VERSION=lts.x
+RUN apt-get update \
+  && apt-get install -y \
+    curl \
+    gnupg \
+  && curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION} | bash - \
+  && apt-get install -y nodejs \
+  && node -v \
+  && rm -rf /var/lib/apt/lists/*

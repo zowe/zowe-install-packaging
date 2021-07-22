@@ -32,3 +32,15 @@ ARG GID=20000
 # define zowe user/group
 RUN groupadd -g $GID -r zowe \
     && useradd --no-log-init -u $UID -d /home/zowe -r -g zowe zowe
+
+##################################
+# Install node.js which is mandatory for now
+ENV NODE_VERSION=lts.x
+RUN apt-get update \
+  && apt-get install -y \
+    curl \
+    gnupg \
+  && curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - \
+  && apt-get install -y nodejs \
+  && node -v \
+  && rm -rf /var/lib/apt/lists/*
