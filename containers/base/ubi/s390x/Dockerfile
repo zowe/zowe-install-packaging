@@ -43,4 +43,7 @@ RUN microdnf module enable nodejs:$NODE_VERSION \
     && INSTALL_PKGS="$MODULE_DEPS nodejs npm nodejs-nodemon nss_wrapper" \
     && microdnf install --setopt=tsflags=nodocs $INSTALL_PKGS \
     && rpm -V $INSTALL_PKGS \
-    && microdnf clean all --enablerepo='*'
+    && microdnf clean all --enablerepo='*' \
+    # smoke tests
+    && node --version \
+    && npm --version
