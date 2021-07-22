@@ -9,7 +9,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM registry.redhat.io/ubi8/nodejs-14:latest
+FROM registry.redhat.io/ubi8/ubi-minimal:latest
 
 ##################################
 # labels
@@ -34,3 +34,15 @@ ARG GID=20000
 RUN microdnf install shadow-utils \
     && groupadd --gid ${GID} zowe \
     && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe
+
+##################################
+# Install node.js which is mandatory for now
+ENV NODE_VERSION=14
+RUN microdnf module enable nodejs:$NODE_VERSION \
+    && MODULE_DEPS="make gcc gcc-c++ libatomic_ops git openssl-devel" \
+    && INSTALL_PKGS="$MODULE_DEPS nodejs npm nodejs-nodemon nss_wrapper" \
+    && microdnf install --setopt=tsflags=nodocs $INSTALL_PKGS \
+    && ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon \
+    && ln -s /usr/libexec/platform-python /usr/bin/python3 \
+    && rpm -V $INSTALL_PKGS \
+    && microdnf clean all --enablerepo='*'
