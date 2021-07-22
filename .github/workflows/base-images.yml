@@ -10,7 +10,6 @@ on:
         default: ''
 env:
   IMAGE_BASE_DIR: containers/base
-  ZOWE_DOCKER_REGISTRY_FOR_RELEASE: zowe-docker-release.jfrog.io
 
 jobs:
   build-ubuntu-amd64:
