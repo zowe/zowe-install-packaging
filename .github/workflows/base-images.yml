@@ -26,20 +26,17 @@ jobs:
           [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
           exit 0
 
-      - name: Login to Zowe registry
-        uses: docker/login-action@v1
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
           registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-
-      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/docker-actions
-        with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
           cpu-arch: amd64
+
+      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/docker-actions
 
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
@@ -54,20 +51,18 @@ jobs:
           [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
           exit 0
 
-      - name: Login to Zowe registry
-        uses: docker/login-action@v1
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
           registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/docker-actions
-        with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
           cpu-arch: s390x
+
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/docker-actions
+        with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
@@ -79,39 +74,31 @@ jobs:
       - build-ubuntu-s390x
     runs-on: ubuntu-latest
     env:
-      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
       IMAGE_LINUX_DISTRO: ubuntu
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name, version, metadata and registry
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
+
+      - name: Set target registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
-          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
-          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-          IMAGE_METADATA=
-          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
-          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
-          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
-          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
           exit 0
 
-      - name: Login to Zowe registry
-        uses: docker/login-action@v1
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
           registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          release: ${{ github.event.inputs.release }}
+          base-directory: ${{ env.IMAGE_BASE_DIR }}
+          linux-distro: ubuntu
 
-      - name: define manifest
-        run: |
-          export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x${{ env.IMAGE_METADATA }}
-          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }}
+      - uses: zowe-actions/shared-actions/docker-manifest@users/jack/docker-actions
+        with:
+          linux-distro: ubuntu
+          cpu-arch-list: "amd64 s390x"
 
   build-ubi-amd64:
     runs-on: ubuntu-latest
@@ -126,27 +113,20 @@ jobs:
           [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
           exit 0
 
-      - name: Login to Zowe registry
-        uses: docker/login-action@v1
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
           registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-
-      - name: Login to registry.redhat.io
-        uses: docker/login-action@v1
-        with:
-          registry: registry.redhat.io
-          username: ${{ secrets.REDHAT_DEVELOPER_USER }}
-          password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-
-      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/docker-actions
-        with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
           cpu-arch: amd64
+          redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
+          redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
+          redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
+
+      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/docker-actions
 
   build-ubi-s390x:
     runs-on: ubuntu-latest
@@ -161,20 +141,18 @@ jobs:
           [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
           exit 0
 
-      - name: Login to Zowe registry
-        uses: docker/login-action@v1
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
           registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/docker-actions
-        with:
-          registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
+          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
           cpu-arch: s390x
+
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/docker-actions
+        with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
@@ -188,37 +166,27 @@ jobs:
       - build-ubi-amd64
       - build-ubi-s390x
     runs-on: ubuntu-latest
-    env:
-      ZOWE_DOCKER_REGISTRY: zowe-docker-snapshot.jfrog.io
-      IMAGE_LINUX_DISTRO: ubi
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set image name, version, metadata and registry
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/docker-actions
+
+      - name: Set target registry
         run: |
-          IMAGE_VERSION=$(cat ${{ env.IMAGE_BASE_DIR }}/${{ env.IMAGE_LINUX_DISTRO }}/amd64/Dockerfile |  awk "/LABEL /{x=NR+100}(NR<=x){print}" | grep version= | head -n 1 |  awk -F= '{print $2;}' | sed -e 's/\\//g' | sed -e 's/"//g' | xargs)
-          IMAGE_NAME=$(basename ${{ env.IMAGE_BASE_DIR }})
-          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
-          IMAGE_METADATA=
-          [ -n "${{ github.event.pull_request.number }}" ] && IMAGE_METADATA=pr-${{ github.event.pull_request.number }}
-          [ -z "${IMAGE_METADATA}" ] && IMAGE_METADATA=${GITHUB_REF#refs/heads/}
-          [ "${IMAGE_METADATA}" = "master" ] && IMAGE_METADATA=snapshot
-          IMAGE_METADATA=$(echo "${IMAGE_METADATA}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/\-/g')
-          [ "${{ github.event.inputs.release }}" = "true" ] && IMAGE_METADATA=
-          [ -n "${IMAGE_METADATA}" ] && echo "IMAGE_METADATA=.${IMAGE_METADATA}-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.ZOWE_DOCKER_REGISTRY_FOR_RELEASE }}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" = "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_RELEASE }}" >> $GITHUB_ENV
+          [ "${{ github.event.inputs.release }}" != "true" ] && echo "ZOWE_DOCKER_REGISTRY=${{ env.DEFAULT_ZOWE_DOCKER_REGISTRY_SNAPSHOT }}" >> $GITHUB_ENV
           exit 0
 
-      - name: Login to Zowe registry
-        uses: docker/login-action@v1
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/docker-actions
         with:
           registry: ${{ env.ZOWE_DOCKER_REGISTRY }}
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          release: ${{ github.event.inputs.release }}
+          base-directory: ${{ env.IMAGE_BASE_DIR }}
+          linux-distro: ubi
 
-      - name: define manifest
-        run: |
-          export DOCKER_CLI_EXPERIMENTAL=enabled
-          docker manifest create ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-amd64${{ env.IMAGE_METADATA }} --amend ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}-s390x${{ env.IMAGE_METADATA }}
-          docker manifest push ${{ env.ZOWE_DOCKER_REGISTRY }}/ompzowe/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}-${{ env.IMAGE_LINUX_DISTRO }}${{ env.IMAGE_METADATA }}
+      - uses: zowe-actions/shared-actions/docker-manifest@users/jack/docker-actions
+        with:
+          linux-distro: ubi
+          cpu-arch-list: "amd64 s390x"
