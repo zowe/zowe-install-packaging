@@ -9,7 +9,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM registry.redhat.io/ubi8/ubi-minimal:latest
+FROM registry.redhat.io/ubi8/nodejs-14:latest
 
 ##################################
 # labels
@@ -34,10 +34,3 @@ ARG GID=20000
 RUN microdnf install shadow-utils \
     && groupadd --gid ${GID} zowe \
     && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe
-
-##################################
-# Install node.js which is mandatory for now
-ENV NODE_VERSION=lts.x
-RUN curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION} | bash - \
-  && microdnf install nodejs \
-  && node -v
