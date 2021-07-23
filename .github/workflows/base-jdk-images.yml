@@ -53,7 +53,7 @@ jobs:
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-        timeout-minutes: 10
+        timeout-minutes: 20
 
   define-ubuntu-manifest:
     needs:
@@ -127,7 +127,7 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-        timeout-minutes: 10
+        timeout-minutes: 20
 
   define-ubi-manifest:
     needs:
