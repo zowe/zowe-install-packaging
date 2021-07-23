@@ -27,4 +27,4 @@ RUN microdnf install --nodocs \
       java-1.8.0-openjdk \
     && microdnf clean all --enablerepo='*' \
     # smoke tests
-    && java --version
+    && java -version
