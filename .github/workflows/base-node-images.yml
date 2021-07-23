@@ -1,7 +1,7 @@
-name: Build Zowe Base Images with Node.JS
+name: Build ompzowe/base-node
 on:
-  push:
-  pull_request:
+  # push:
+  # pull_request:
   workflow_dispatch:
     inputs:
       release:

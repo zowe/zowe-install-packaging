@@ -1,4 +1,4 @@
-name: Build ompzowe/base
+name: Build ompzowe/base-jdk
 on:
   # push:
   # pull_request:
@@ -9,7 +9,7 @@ on:
         required: false
         default: ''
 env:
-  IMAGE_BASE_DIR: containers/base
+  IMAGE_BASE_DIR: containers/base-jdk
 
 jobs:
   build-ubuntu-amd64:

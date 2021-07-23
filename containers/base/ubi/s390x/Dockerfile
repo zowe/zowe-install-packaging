@@ -31,7 +31,7 @@ ARG GID=20000
 ##################################
 # define zowe user/group
 # shadow-utils is needed for having adduser groupadd commands
-RUN microdnf install shadow-utils \
+RUN microdnf install --nodocs shadow-utils \
     && groupadd --gid ${GID} zowe \
     && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe
 
@@ -39,7 +39,7 @@ RUN microdnf install shadow-utils \
 # Install node.js which is mandatory for now
 ENV NODE_VERSION=14.17.3
 RUN set -ex \
-    && microdnf install \
+    && microdnf install --nodocs \
       tar \
       xz \
     && ARCH=s390x \
