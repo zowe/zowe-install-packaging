@@ -1,11 +1,14 @@
-name: Dummy workflow to enable manual triggering
+name: Build ompzowe/base
 on:
+  # push:
+  # pull_request:
   workflow_dispatch:
     inputs:
-      test:
-        description: 'dummy input'
+      release:
+        description: 'Set to "true" if we want to release the base images'
         required: false
         default: ''
+
 jobs:
   test:
     runs-on: ubuntu-latest

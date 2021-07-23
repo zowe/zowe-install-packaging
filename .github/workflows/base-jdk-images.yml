@@ -1,0 +1,16 @@
+name: Build ompzowe/base-jdk
+on:
+  # push:
+  # pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Set to "true" if we want to release the base images'
+        required: false
+        default: ''
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
