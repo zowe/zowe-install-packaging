@@ -21,8 +21,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
@@ -40,8 +40,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
@@ -67,8 +67,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
@@ -89,8 +89,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
@@ -111,8 +111,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
@@ -141,8 +141,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
