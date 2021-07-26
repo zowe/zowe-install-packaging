@@ -159,6 +159,12 @@ validate_components() {
         fi
         let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
       fi
+      if [ "$(is_on_zos)" = "false" ]; then
+        zos_deps=$(read_component_manifest "${component_dir}" ".dependencies.zos" 2>/dev/null)
+        if [ -n "${zos_deps}" ]; then
+          print_formatted_warn "ZWELS" "prepare-instance.sh,validate_components:${LINENO}" "- ${component_id} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation"
+        fi
+      fi
     fi
   done
   # exit if there are errors found
@@ -312,6 +318,10 @@ fi
 . ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
 [ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 
+# ignore default value passed from ZWESLSTC
+if [ "${ZWELS_HA_INSTANCE_ID}" = "{{ha_instance_id}}" -o "${ZWELS_HA_INSTANCE_ID}" = "__ha_instance_id__" ]; then
+  ZWELS_HA_INSTANCE_ID=
+fi
 # assign default value
 if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
   ZWELS_HA_INSTANCE_ID=$(get_sysname)
