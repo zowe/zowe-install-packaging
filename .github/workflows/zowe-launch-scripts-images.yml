@@ -36,7 +36,7 @@ jobs:
         run: |
           ./${IMAGE_BASE_DIR}/prepare-workdir.sh
           cp -r ./${IMAGE_BASE_DIR}/tmp ./${IMAGE_BASE_DIR}/ubuntu/amd64/zowe
-        with:
+        env:
           GITHUB_PR_ID: ${{ github.event.pull_request.number }}
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
@@ -66,7 +66,7 @@ jobs:
         run: |
           ./${IMAGE_BASE_DIR}/prepare-workdir.sh
           cp -r ./${IMAGE_BASE_DIR}/tmp ./${IMAGE_BASE_DIR}/ubuntu/s390x/zowe
-        with:
+        env:
           GITHUB_PR_ID: ${{ github.event.pull_request.number }}
 
       - uses: zowe-actions/shared-actions/docker-build-zlinux@main
@@ -129,7 +129,7 @@ jobs:
         run: |
           ./${IMAGE_BASE_DIR}/prepare-workdir.sh
           cp -r ./${IMAGE_BASE_DIR}/tmp ./${IMAGE_BASE_DIR}/ubi/amd64/zowe
-        with:
+        env:
           GITHUB_PR_ID: ${{ github.event.pull_request.number }}
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
@@ -159,7 +159,7 @@ jobs:
         run: |
           ./${IMAGE_BASE_DIR}/prepare-workdir.sh
           cp -r ./${IMAGE_BASE_DIR}/tmp ./${IMAGE_BASE_DIR}/ubi/s390x/zowe
-        with:
+        env:
           GITHUB_PR_ID: ${{ github.event.pull_request.number }}
 
       - uses: zowe-actions/shared-actions/docker-build-zlinux@main
