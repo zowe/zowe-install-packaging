@@ -1,6 +1,6 @@
 # Zowe Component Base Image with Node.JS
 
-[![Build Zowe Base Images](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml)
+[![Build ompzowe/base-node](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-node-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-node-images.yml)
 
 ## General Information
 

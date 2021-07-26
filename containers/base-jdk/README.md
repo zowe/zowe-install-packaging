@@ -1,6 +1,6 @@
 # Zowe Component Base Image with JDK8
 
-[![Build Zowe Base Images](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml)
+[![Build ompzowe/base-jdk](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-jdk-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-jdk-images.yml)
 
 ## General Information
 

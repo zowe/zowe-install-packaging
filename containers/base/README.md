@@ -1,6 +1,6 @@
 # Zowe Component Base Image
 
-[![Build Zowe Base Images](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml)
+[![Build ompzowe/base](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml)
 
 ## General Information
 
