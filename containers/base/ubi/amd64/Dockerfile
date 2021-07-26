@@ -16,7 +16,7 @@ FROM registry.redhat.io/ubi8/ubi-minimal:latest
 LABEL name="Zowe Base Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.1" \
+      version="0.0.2" \
       release="0" \
       summary="Base image for Zowe components" \
       description="Base image for Zowe components"
@@ -33,7 +33,9 @@ ARG GID=20000
 # shadow-utils is needed for having adduser groupadd commands
 RUN microdnf install --nodocs shadow-utils \
     && groupadd --gid ${GID} zowe \
-    && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe
+    && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe \
+    && mkdir -p /licenses \
+    && chmod 777 /licenses
 
 ##################################
 # Install node.js which is mandatory for now
