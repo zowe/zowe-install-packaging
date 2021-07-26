@@ -22,6 +22,11 @@ LABEL name="Zowe Launch Script Image" \
       description="Base Launch Script for Zowe components"
 
 ##################################
+# copy license file
+RUN mkdir /licenses
+COPY zowe/LICENSE /licenses
+
+##################################
 # switch context
 USER zowe
 WORKDIR /home/zowe
@@ -29,11 +34,6 @@ WORKDIR /home/zowe
 ##################################
 # copy files
 COPY zowe .
-
-##################################
-# copy license file
-RUN mkdir /licenses
-COPY zowe/LICENSE /licenses
 
 ##################################
 # start command
