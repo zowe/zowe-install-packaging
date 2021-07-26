@@ -31,5 +31,10 @@ WORKDIR /home/zowe
 COPY zowe .
 
 ##################################
+# copy license file
+RUN mkdir /licenses
+COPY zowe/LICENSE /licenses
+
+##################################
 # start command
 CMD ["/home/zowe/bin/internal/init-container.sh"]
