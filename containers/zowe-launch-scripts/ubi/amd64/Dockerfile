@@ -9,17 +9,27 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubuntu
+FROM zowe-docker-release.jfrog.io/ompzowe/base-node:latest-ubi
 
 ##################################
 # labels
-LABEL name="Zowe Base Image with node.js enabled" \
+LABEL name="Zowe Launch Script Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
       version="0.0.1" \
       release="0" \
-      summary="Base image for Zowe components with node.js enabled" \
-      description="Base image for Zowe components with node.js enabled"
+      summary="Base Launch Script for Zowe components" \
+      description="Base Launch Script for Zowe components"
 
 ##################################
-# node.js is installed in base image, so no actions here
+# switch context
+USER zowe
+WORKDIR /home/zowe
+
+##################################
+# copy files
+COPY zowe .
+
+##################################
+# start command
+CMD ["/home/zowe/bin/internal/init-container.sh"]

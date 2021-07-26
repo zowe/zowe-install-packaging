@@ -9,7 +9,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM zowe-docker-snapshot.jfrog.io/ompzowe/base:0.0.1-ubuntu.users-jack-base-images-65
+FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubuntu
 
 ##################################
 # labels
