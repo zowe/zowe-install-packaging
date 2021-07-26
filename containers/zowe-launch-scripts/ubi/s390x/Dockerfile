@@ -28,8 +28,8 @@ WORKDIR /home/zowe
 
 ##################################
 # copy files
-COPY zowe .
-COPY zowe/LICENSE /licenses
+COPY --chown=zowe:zowe zowe .
+COPY --chown=zowe:zowe zowe/LICENSE /licenses
 
 ##################################
 # start command
