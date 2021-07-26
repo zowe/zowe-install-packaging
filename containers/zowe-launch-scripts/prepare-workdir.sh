@@ -120,7 +120,7 @@ fi
 echo "    - artifact found: ${util_zip}"
 echo "    - download and extract"
 curl -s ${JFROG_URL}${util_zip} --output zowe-utility-tools.zip
-gunzip -S .zip zowe-utility-tools.zip
+unzip zowe-utility-tools.zip
 rm zowe-utility-tools.zip
 echo "    - extract zowe-fconv ..."
 tar zxf zowe-fconv-*.tgz -C "${BASE_DIR}/${WORK_DIR}/bin/utils"
