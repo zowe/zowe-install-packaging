@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 # This program and the accompanying materials are made available under the terms of the
@@ -19,6 +19,9 @@
 # - must provide $GITHUB_PR_ID is it's pull request
 # - must initialize jFrog CLI
 # - requires extra tools like jq, curl, tar, gzip
+
+# exit if there are errors
+set -e
 
 ################################################################################
 # CONSTANTS
