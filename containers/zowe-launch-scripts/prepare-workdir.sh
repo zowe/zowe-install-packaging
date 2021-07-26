@@ -15,10 +15,10 @@
 # image.
 #
 # Prereqs:
-# - must run with Github Actions
+# - must run with Github Actions (with GITHUB_RUN_NUMBER and GITHUB_SHA)
 # - must provide $GITHUB_PR_ID is it's pull request
 # - must initialize jFrog CLI
-# - requires extra tools like jq, curl, tar, gzip
+# - requires extra tools like jq, curl, tar, gzip, date
 
 # exit if there are errors
 set -e
@@ -53,6 +53,9 @@ if [ -n "${GITHUB_PR_ID}" ]; then
 else
   GITHUB_BRANCH=${GITHUB_REF#refs/heads/}
 fi
+echo "    - branch: ${GITHUB_BRANCH}"
+echo "    - build number: ${GITHUB_RUN_NUMBER}"
+echo "    - commit hash: ${GITHUB_SHA}"
 # assume to run in Github Actions
 cat manifest.json.template | \
   sed -e "s/{BUILD_BRANCH}/${GITHUB_BRANCH}/" \
