@@ -58,10 +58,10 @@ echo "    - build number: ${GITHUB_RUN_NUMBER}"
 echo "    - commit hash: ${GITHUB_SHA}"
 # assume to run in Github Actions
 cat manifest.json.template | \
-  sed -e "s/{BUILD_BRANCH}/${GITHUB_BRANCH}/" \
-      -e "s/{BUILD_NUMBER}/${GITHUB_RUN_NUMBER}/" \
-      -e "s/{BUILD_COMMIT_HASH}/${GITHUB_SHA}/" \
-      -e "s/{BUILD_TIMESTAMP}/$(date +%s)/" \
+  sed -e "s#{BUILD_BRANCH}#${GITHUB_BRANCH}#" \
+      -e "s#{BUILD_NUMBER}#${GITHUB_RUN_NUMBER}#" \
+      -e "s#{BUILD_COMMIT_HASH}#${GITHUB_SHA}#" \
+      -e "s#{BUILD_TIMESTAMP}#$(date +%s)#" \
   > "${BASE_DIR}/${WORK_DIR}/manifest.json"
 
 ###############################
