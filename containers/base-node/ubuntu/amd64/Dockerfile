@@ -16,7 +16,7 @@ FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubuntu
 LABEL name="Zowe Base Image with node.js enabled" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.3" \
+      version="0.0.4" \
       release="0" \
       summary="Base image for Zowe components with node.js enabled" \
       description="Base image for Zowe components with node.js enabled"

@@ -1,6 +1,6 @@
 # Zowe Launch Scripts Image
 
-[![Build ompzowe/base](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/base-images.yml)
+[![Build ompzowe/zowe-launch-scripts](https://github.com/zowe/zowe-install-packaging/actions/workflows/zowe-launch-scripts-images.yml/badge.svg)](https://github.com/zowe/zowe-install-packaging/actions/workflows/zowe-launch-scripts-images.yml)
 
 ## General Information
 
