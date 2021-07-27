@@ -29,13 +29,15 @@ ARG UID=20000
 ARG GID=20000
 
 ##################################
-# define zowe user/group
+# define zowe user/group, create /licenses and /component folder
 # shadow-utils is needed for having adduser groupadd commands
 RUN microdnf install --nodocs shadow-utils \
     && groupadd --gid ${GID} zowe \
-    && useradd -M --uid ${UID} --gid ${GID} --home /home/zowe zowe \
+    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} --home /home/zowe zowe \
     && mkdir -p /licenses \
-    && chmod 777 /licenses
+    && chown zowe.zowe /licenses \
+    && mkdir -p /component \
+    && chown zowe.zowe /component
 
 ##################################
 # Install node.js which is mandatory for now

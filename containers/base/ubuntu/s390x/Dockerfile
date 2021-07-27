@@ -29,11 +29,13 @@ ARG UID=20000
 ARG GID=20000
 
 ##################################
-# define zowe user/group, create /licenses folder
+# define zowe user/group, create /licenses and /component folder
 RUN groupadd -g $GID -r zowe \
-    && useradd --no-log-init -u $UID -d /home/zowe -r -g zowe zowe \
+    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} -d /home/zowe zowe \
     && mkdir -p /licenses \
-    && chmod 777 /licenses
+    && chown zowe.zowe /licenses \
+    && mkdir -p /component \
+    && chown zowe.zowe /component
 
 ##################################
 # Install node.js which is mandatory for now
