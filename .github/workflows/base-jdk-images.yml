@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -28,7 +28,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: amd64
 
-      - uses: zowe-actions/shared-actions/docker-build-local@main
+      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/reduce-duplicated-dockerfiles
         timeout-minutes: 5
 
   build-ubuntu-s390x:
@@ -36,9 +36,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -47,7 +47,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: s390x
 
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/reduce-duplicated-dockerfiles
         with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
@@ -63,9 +63,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -73,7 +73,7 @@ jobs:
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
 
-      - uses: zowe-actions/shared-actions/docker-manifest@main
+      - uses: zowe-actions/shared-actions/docker-manifest@users/jack/reduce-duplicated-dockerfiles
         with:
           linux-distro: ubuntu
           cpu-arch-list: "amd64 s390x"
@@ -85,9 +85,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -99,7 +99,7 @@ jobs:
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
-      - uses: zowe-actions/shared-actions/docker-build-local@main
+      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/reduce-duplicated-dockerfiles
         timeout-minutes: 5
 
   build-ubi-s390x:
@@ -107,9 +107,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -118,7 +118,7 @@ jobs:
           linux-distro: ubi
           cpu-arch: s390x
 
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/reduce-duplicated-dockerfiles
         with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
@@ -137,9 +137,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -147,7 +147,7 @@ jobs:
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
 
-      - uses: zowe-actions/shared-actions/docker-manifest@main
+      - uses: zowe-actions/shared-actions/docker-manifest@users/jack/reduce-duplicated-dockerfiles
         with:
           linux-distro: ubi
           cpu-arch-list: "amd64 s390x"
