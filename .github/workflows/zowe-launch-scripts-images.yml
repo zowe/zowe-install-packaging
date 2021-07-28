@@ -82,6 +82,7 @@ jobs:
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
+          skip-prepare-script: "true"
           linux-distro: ubuntu
 
       - uses: zowe-actions/shared-actions/docker-manifest@users/jack/reduce-duplicated-dockerfiles
@@ -167,6 +168,7 @@ jobs:
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
+          skip-prepare-script: "true"
           linux-distro: ubi
 
       - uses: zowe-actions/shared-actions/docker-manifest@users/jack/reduce-duplicated-dockerfiles
