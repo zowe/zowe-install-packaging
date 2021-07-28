@@ -11,6 +11,13 @@
 ################################################################################
 
 ################################################################################
+# prepare docker build context
+#
+# This script will be executed with 2 parameters:
+# - linux-distro
+# - cpu-arch
+
+################################################################################
 # This script prepares all required files we plan to put into zowe-launch-scripts
 # image.
 #
@@ -23,6 +30,19 @@
 # exit if there are errors
 set -e
 
+###############################
+# check parameters
+linux_distro=$1
+cpu_arch=$2
+if [ -z "${linux_distro}" ]; then
+  echo "Error: linux-distro parameter is missing."
+  exit 1
+fi
+if [ -z "${cpu_arch}" ]; then
+  echo "Error: cpu-arch parameter is missing."
+  exit 1
+fi
+
 ################################################################################
 # CONSTANTS
 # this should be containers/zowe-launch-scripts
@@ -32,6 +52,16 @@ WORK_DIR=tmp
 JFROG_REPO_SNAPSHOT=libs-snapshot-local
 JFROG_REPO_RELEASE=libs-release-local
 JFROG_URL=https://zowe.jfrog.io/zowe/
+
+###############################
+# copy Dockerfile
+echo ">>>>> copy Dockerfile to ${linux_distro}/${cpu_arch}/Dockerfile"
+mkdir -p "${linux_distro}/${cpu_arch}"
+if [ ! -f Dockerfile ]; then
+  echo "Error: Dockerfile file is missing."
+  exit 2
+fi
+cp Dockerfile "${linux_distro}/${cpu_arch}/Dockerfile"
 
 ###############################
 echo ">>>>> clean up folder"
@@ -135,6 +165,11 @@ tar zxf zowe-config-converter-*.tgz -C "${BASE_DIR}/${WORK_DIR}/bin/utils"
 mv "${BASE_DIR}/${WORK_DIR}/bin/utils/package" "${BASE_DIR}/${WORK_DIR}/bin/utils/config-converter"
 rm zowe-config-converter-*.tgz
 rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
+
+###############################
+# copy to target context
+echo ">>>>> copy to target build context"
+cp -r "${BASE_DIR}/${WORK_DIR}" "${BASE_DIR}/${linux_distro}/${cpu_arch}/zowe"
 
 ###############################
 # done

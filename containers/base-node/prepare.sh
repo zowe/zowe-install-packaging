@@ -32,7 +32,7 @@ fi
 
 ###############################
 # copy Dockerfile
-echo "Copy Dockerfile to ${linux_distro}/${cpu_arch}/Dockerfile"
+echo ">>>>> copy Dockerfile to ${linux_distro}/${cpu_arch}/Dockerfile"
 mkdir -p "${linux_distro}/${cpu_arch}"
 if [ ! -f Dockerfile ]; then
   echo "Error: Dockerfile file is missing."

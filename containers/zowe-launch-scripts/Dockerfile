@@ -9,7 +9,10 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM zowe-docker-release.jfrog.io/ompzowe/base-node:latest-ubuntu
+# base image tag
+ARG ZOWE_BASE_IMAGE=latest-ubuntu
+
+FROM zowe-docker-release.jfrog.io/ompzowe/base-node:${ZOWE_BASE_IMAGE}
 
 ##################################
 # labels
