@@ -9,7 +9,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM registry.redhat.io/ubi8/ubi-minimal:latest
+FROM ubuntu:latest
 
 ##################################
 # labels
@@ -27,13 +27,13 @@ LABEL name="Zowe Base Image" \
 ARG UID=20000
 # zowe default group id
 ARG GID=20000
+# node build CPU arch
+ARG NODE_CPU_ARCH=x64
 
 ##################################
 # define zowe user/group, create /licenses and /component folder
-# shadow-utils is needed for having adduser groupadd commands
-RUN microdnf install --nodocs shadow-utils \
-    && groupadd --gid ${GID} zowe \
-    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} --home /home/zowe zowe \
+RUN groupadd -g $GID -r zowe \
+    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} -d /home/zowe zowe \
     && mkdir -p /licenses \
     && chown zowe.zowe /licenses \
     && mkdir -p /component \
@@ -43,10 +43,12 @@ RUN microdnf install --nodocs shadow-utils \
 # Install node.js which is mandatory for now
 ENV NODE_VERSION=14.17.3
 RUN set -ex \
-    && microdnf install --nodocs \
-      tar \
-      xz \
-    && ARCH=s390x \
+    && apt-get update \
+    && apt-get install -y \
+      curl \
+      gnupg \
+      xz-utils \
+    && ARCH=${NODE_CPU_ARCH} \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \
       4ED778F539E3634C779C87C6D7062848A1AB005C \
@@ -71,7 +73,7 @@ RUN set -ex \
     && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
     && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
-    && microdnf clean all --enablerepo='*' \
+    && rm -rf /var/lib/apt/lists/* \
     # smoke tests
     && node --version \
     && npm --version

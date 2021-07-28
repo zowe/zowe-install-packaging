@@ -27,6 +27,8 @@ LABEL name="Zowe Base Image" \
 ARG UID=20000
 # zowe default group id
 ARG GID=20000
+# node build CPU arch
+ARG NODE_CPU_ARCH=x64
 
 ##################################
 # define zowe user/group, create /licenses and /component folder
@@ -46,7 +48,7 @@ RUN set -ex \
     && microdnf install --nodocs \
       tar \
       xz \
-    && ARCH=x64 \
+    && ARCH=${NODE_CPU_ARCH} \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \
       4ED778F539E3634C779C87C6D7062848A1AB005C \
