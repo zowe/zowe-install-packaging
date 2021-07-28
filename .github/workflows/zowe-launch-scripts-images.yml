@@ -74,6 +74,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
@@ -82,7 +86,6 @@ jobs:
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
-          skip-prepare-script: "true"
           linux-distro: ubuntu
 
       - uses: zowe-actions/shared-actions/docker-manifest@users/jack/reduce-duplicated-dockerfiles
@@ -160,6 +163,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
       - uses: zowe-actions/shared-actions/envvars-global@users/jack/reduce-duplicated-dockerfiles
 
       - uses: zowe-actions/shared-actions/docker-prepare@users/jack/reduce-duplicated-dockerfiles
@@ -168,7 +175,6 @@ jobs:
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
-          skip-prepare-script: "true"
           linux-distro: ubi
 
       - uses: zowe-actions/shared-actions/docker-manifest@users/jack/reduce-duplicated-dockerfiles
