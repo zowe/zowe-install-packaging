@@ -25,8 +25,8 @@ LABEL name="Zowe Base Image with JDK enabled" \
 # Install JDK
 RUN apt-get update \
     && apt-get install -y \
-      openjdk-8-jdk \
+      openjdk-8-jre \
     && rm -rf /var/lib/apt/lists/* \
     # smoke tests
     && java -version
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
