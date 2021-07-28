@@ -29,3 +29,4 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     # smoke tests
     && java -version
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64

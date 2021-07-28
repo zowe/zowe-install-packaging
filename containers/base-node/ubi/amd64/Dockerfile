@@ -23,3 +23,4 @@ LABEL name="Zowe Base Image with node.js enabled" \
 
 ##################################
 # node.js is installed in base image, so no actions here
+ENV NODE_HOME=/usr/local

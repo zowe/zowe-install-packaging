@@ -28,3 +28,4 @@ RUN microdnf install --nodocs \
     && microdnf clean all --enablerepo='*' \
     # smoke tests
     && java -version
+ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0
