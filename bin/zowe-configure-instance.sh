@@ -112,9 +112,9 @@ get_zis_params() {
     if [ -z "${ZIS_LOADLIB}" -o -z "${ZIS_PARMLIB}" ]; then
       if [ -n "${NO_TEMP}" ]; then
         echo_and_log "ZIS parameters wont be recorded due to missing arguments. You may record them in the instance configuration later."
-      elif [ -d "/tmp/zowe-${ZOWE_VERSION}" ]; then
+      elif [ `ls -l /tmp/zowe-${ZOWE_VERSION}-install-* | wc -l` -ne "0" ]; then
         get_zowe_version
-        for file in /tmp/zowe-$ZOWE_VERSION/install-*.env; do
+        for file in /tmp/zowe-$ZOWE_VERSION-install-*.env; do
           if [[ -f "${file}" ]]; then
             ROOT_DIR_VAL=$(cat "${file}" | grep "^ZOWE_ROOT_DIR=" | cut -d'=' -f2)
             if [ "${ROOT_DIR_VAL}" = "${ZOWE_ROOT_DIR}" ]; then
