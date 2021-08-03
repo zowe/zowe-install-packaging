@@ -279,3 +279,24 @@ $$
 PROFILE
 $$
 //*
+//*******************************************************************
+//*
+//* ACF2 ONLY, customize to meet your system requirements
+//*
+//*******************************************************************
+//RUNACF2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&PRODUCT
+//*
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+  SET PROFILE(USER) DIV(CERTDATA)
+  P11TOKEN ADD TOKEN(&SSOTOKEN.)
+  P11TOKEN BIND TOKEN(&SSOTOKEN.) CERTDATA(&ZOWEUSER..ZOWEJWT)
+  P11TOKEN LIST TOKEN(&SSOTOKEN.)
+PROFILE
+/* Common part - END ............................................... */
+/* only the last RC is returned, this command ensures it is a 0      */
+$$
+//*
