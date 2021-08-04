@@ -9,17 +9,23 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM zowe-docker-snapshot.jfrog.io/ompzowe/base:0.0.1-ubi.users-jack-base-images-65
+FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubi
 
 ##################################
 # labels
-LABEL name="Zowe Base Image with node.js enabled" \
+LABEL name="Zowe Base Image with JDK enabled" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.1" \
+      version="0.0.6" \
       release="0" \
-      summary="Base image for Zowe components with node.js enabled" \
-      description="Base image for Zowe components with node.js enabled"
+      summary="Base image for Zowe components with JDK enabled" \
+      description="Base image for Zowe components with JDK enabled"
 
 ##################################
-# node.js is installed in base image, so no actions here
+# Install JDK
+RUN microdnf install --nodocs \
+      java-1.8.0-openjdk \
+    && microdnf clean all --enablerepo='*' \
+    # smoke tests
+    && java -version
+ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0
