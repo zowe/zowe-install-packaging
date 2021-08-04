@@ -3,7 +3,7 @@ name: build
 on:
   # Triggers the workflow on push or pull request events but only for the staging branch
   pull_request:
-    branches: [ master ]
+    branches: [ staging ]
 
 #  workflow_dispatch:
 #    inputs:
