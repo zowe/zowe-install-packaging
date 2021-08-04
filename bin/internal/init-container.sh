@@ -13,3 +13,23 @@
 
 #######################################################################
 # Prepare runtime directory when Zowe is running in containers
+
+# exit if there are errors
+set -e
+
+#######################################################################
+# Constants
+SOURCE_DIR=/component
+RUNTIME_DIR=/home/zowe/runtime
+INSTANCE_DIR=/home/zowe/instance
+
+#######################################################################
+echo ">>> prepare runtime directory"
+mkdir -p ${RUNTIME_DIR}
+cp -r ${SOURCE_DIR}/. ${RUNTIME_DIR}
+
+#######################################################################
+echo ">>> prepare instance directory"
+mkdir -p ${INSTANCE_DIR}/bin
+mkdir -p ${INSTANCE_DIR}/logs
+cp -r ${RUNTIME_DIR}/bin/instance/. ${INSTANCE_DIR}/bin
