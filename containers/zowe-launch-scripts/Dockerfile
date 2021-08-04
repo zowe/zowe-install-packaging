@@ -27,7 +27,7 @@ LABEL name="Zowe Launch Script Image" \
 ##################################
 # switch context
 USER zowe
-WORKDIR /home/zowe
+WORKDIR /component
 
 ##################################
 # copy files
@@ -36,4 +36,4 @@ COPY --chown=zowe:zowe zowe/LICENSE /licenses
 
 ##################################
 # start command
-CMD ["/home/zowe/bin/internal/init-container.sh"]
+CMD ["/component/bin/internal/init-container.sh"]
