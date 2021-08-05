@@ -107,6 +107,9 @@ prepare_workspace_dir() {
 
   mkdir -p ${WORKSPACE_DIR}
   # DEBUG CODE, REMOVE BEFORE MERGE
+  echo "========= permission of ${INSTANCE_DIR}"
+  ls -la ${INSTANCE_DIR}
+  echo "============"
   echo "========= permission of ${WORKSPACE_DIR}"
   ls -la ${WORKSPACE_DIR}
   echo "============"
@@ -139,8 +142,8 @@ prepare_running_in_container() {
   # we have hardcoded path for component runtime directory
   ln -sfn /component ${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}
 
-  cd ${ROOT_DIR}
-  . $ROOT_DIR/bin/zowe-configure-component.sh \
+  cd ${ROOT_DIR}/bin
+  zowe-configure-component.sh \
     --component-name "${ZOWE_COMPONENT_ID}" \
     --instance-dir "${INSTANCE_DIR}" \
     --target-dir "${ROOT_DIR}/components" \
