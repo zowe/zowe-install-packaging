@@ -108,13 +108,6 @@ mv "${BASE_DIR}/${WORK_DIR}/scripts/tag-files.sh" "${BASE_DIR}/${WORK_DIR}/scrip
 rm "${BASE_DIR}/${WORK_DIR}/scripts/zowe-install-MVS.sh"
 
 ###############################
-# FIXME: which version of install-app.sh we should pull?
-install_app_sh_version=master
-echo ">>>>> pull install-app.sh from zowe/zlux-app-server ${install_app_sh_version} branch"
-curl -s https://raw.githubusercontent.com/zowe/zlux-app-server/${install_app_sh_version}/bin/install-app.sh -o "${BASE_DIR}/${WORK_DIR}/bin/instance/install-app.sh"
-chmod +x "${BASE_DIR}/${WORK_DIR}/bin/instance/install-app.sh"
-
-###############################
 # prepare utility tools
 echo ">>>>> prepare utility tools"
 cd "${REPO_ROOT_DIR}"
@@ -171,7 +164,57 @@ echo "    - extract zowe-config-converter ..."
 tar zxf zowe-config-converter-*.tgz -C "${BASE_DIR}/${WORK_DIR}/bin/utils"
 mv "${BASE_DIR}/${WORK_DIR}/bin/utils/package" "${BASE_DIR}/${WORK_DIR}/bin/utils/config-converter"
 rm zowe-config-converter-*.tgz
-rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
+
+###############################
+# prepare zlux core
+echo ">>>>> prepare zlux core"
+cd "${REPO_ROOT_DIR}"
+zlux_version_pattern=$(cat "${BASE_DIR}/${WORK_DIR}/manifest.json" | awk "/org\.zowe\.zlux\.zlux-core/{x=NR+19;next}(NR<=x){print}" | grep "version" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/^"//' -e 's/"$//')
+echo "    - zlux-core version ${zlux_version_pattern}"
+wildcard_level=
+if [[ "${zlux_version_pattern}" =~ ~* ]]; then
+  wildcard_level=patch
+fi
+if [[ "${zlux_version_pattern}" =~ ^* ]]; then
+  wildcard_level=minor
+fi
+zlux_version=$(echo "${zlux_version_pattern}" | cut -d "-" -f1 | sed -e 's/\^//' -e 's/~//')
+zlux_version_meta=$(echo "${zlux_version_pattern}" | cut -d "-" -f2-)
+zlux_version_major=$(echo "${zlux_version}" | awk -F. '{print $1}')
+zlux_version_minor=$(echo "${zlux_version}" | awk -F. '{print $2}')
+zlux_version_patch=$(echo "${zlux_version}" | awk -F. '{print $3}')
+if [ -n "${zlux_version_meta}" ]; then
+  zlux_version_meta=-${zlux_version_meta}
+fi
+echo "    - zlux-core version interpreted:"
+echo "        - major: ${zlux_version_major}"
+echo "        - minor: ${zlux_version_minor}"
+echo "        - patch: ${zlux_version_patch}"
+echo "        - meta: ${zlux_version_meta}"
+echo "        - wildcard level: ${wildcard_level}"
+if [ "${wildcard_level}" = "patch" ]; then
+  jfrog_path=${JFROG_REPO_SNAPSHOT}/org/zowe/zlux/zlux-core/${zlux_version_major}.${zlux_version_minor}.*${zlux_version_meta}/zlux-core-*.tar
+elif [ "${wildcard_level}" = "minor" ]; then
+  jfrog_path=${JFROG_REPO_SNAPSHOT}/org/zowe/zlux/zlux-core/${zlux_version_major}.*-${zlux_version_meta}/zlux-core-*.tar
+else
+  jfrog_path=${JFROG_REPO_RELEASE}/org/zowe/zlux/zlux-core/${zlux_version_major}.${zlux_version_minor}.${zlux_version_patch}${zlux_version_meta}/zlux-core-*.tar
+fi
+echo "    - artifact path pattern: ${jfrog_path}"
+zlux_tar=$(jfrog rt s "${jfrog_path}" --sort-by created --sort-order desc --limit 1 | jq -r '.[0].path')
+if [ -z "${zlux_tar}" ]; then
+  echo "Error: cannot find org.zowe.zlux.zlux-core artifact."
+  exit 1
+fi
+echo "    - artifact found: ${zlux_tar}"
+echo "    - download and extract"
+curl -s ${JFROG_URL}${zlux_tar} --output zlux-core.tar
+mkdir -p "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
+cd "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
+tar xf "${REPO_ROOT_DIR}/zlux-core.tar"
+rm -fr zlux-app-manager zlux-build zlux-platform zlux-shared
+# should leave zlux-app-server and zlux-server-framework in the folder
+cd "${REPO_ROOT_DIR}"
+rm -f zlux-core.tar
 
 ###############################
 # copy to target context

@@ -106,18 +106,12 @@ prepare_workspace_dir() {
   print_formatted_info "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "prepare workspace directory ..."
 
   mkdir -p ${WORKSPACE_DIR}
-  # DEBUG CODE, REMOVE BEFORE MERGE
-  echo "========= permission of ${INSTANCE_DIR}"
-  ls -la ${INSTANCE_DIR}
-  echo "============"
-  echo "========= permission of ${WORKSPACE_DIR}"
-  ls -la ${WORKSPACE_DIR}
-  echo "============"
+
   # Make accessible to group so owning user can edit?
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
   if [ "$?" != "0" ]; then
-    print_formatted_error "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
-    print_formatted_error "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+    print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
+    print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
   fi
 
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
@@ -139,11 +133,14 @@ prepare_running_in_container() {
     return 0
   fi
 
+  if [ -e "${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}" ]; then
+    rm -fr "${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}"
+  fi
   # we have hardcoded path for component runtime directory
-  ln -sfn /component ${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}
+  ln -sfn /component "${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}"
 
   cd ${ROOT_DIR}/bin
-  zowe-configure-component.sh \
+  ./zowe-configure-component.sh \
     --component-name "${ZOWE_COMPONENT_ID}" \
     --instance-dir "${INSTANCE_DIR}" \
     --target-dir "${ROOT_DIR}/components" \

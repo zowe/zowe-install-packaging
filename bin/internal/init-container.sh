@@ -33,6 +33,6 @@ echo ">>> prepare instance directory"
 # we need to do pretty much same as bin/zowe-configure-instance.sh
 mkdir -p ${INSTANCE_DIR}/bin
 mkdir -p ${INSTANCE_DIR}/logs
-# <instance>/bin/install-app.sh has been pulled into zowe-launch-scripts image and put into <runtime>/bin/instance
 cp -r ${RUNTIME_DIR}/bin/instance/. ${INSTANCE_DIR}/bin
+cp ${RUNTIME_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 # zowe-configure-component.sh will be executed during runtime
