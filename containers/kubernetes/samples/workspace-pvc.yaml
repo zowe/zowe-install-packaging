@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zowe-workspace-claim
+spec:
+  # FIXME: StorageClass should be predefined
+  #        hostpath is a StorageClass created by Docker Desktop
+  storageClassName: hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
