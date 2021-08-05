@@ -154,9 +154,9 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
 # this is running in containers
 # we have hardcoded path for component runtime directory
-if [ -z "${ZOWE_COMPONENT_ID}" ]; then
+if [ -n "${ZOWE_COMPONENT_ID}" ]; then
   ZWE_EXTENSION_DIR=/home/zowe/extensions
-  ln -s /component /home/zowe/extensions/${ZOWE_COMPONENT_ID}
+  ln -sfn /component /home/zowe/extensions/${ZOWE_COMPONENT_ID}
   LAUNCH_COMPONENTS="${ZOWE_COMPONENT_ID}"
 fi
 
