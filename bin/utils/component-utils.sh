@@ -375,7 +375,7 @@ process_component_apiml_static_definitions() {
         all_succeed=false
         break
       fi
-      if [ "$(is_on_zos)" = "true" ]; then
+      if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
         echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
       else
         echo "${parsed_def}" > ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml

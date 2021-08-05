@@ -186,7 +186,7 @@ validate_components() {
         fi
         let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
       fi
-      if [ "$(is_on_zos)" = "false" ]; then
+      if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
         zos_deps=$(read_component_manifest "${component_dir}" ".dependencies.zos" 2>/dev/null)
         if [ -n "${zos_deps}" ]; then
           print_formatted_warn "ZWELS" "prepare-instance.sh,validate_components:${LINENO}" "- ${component_id} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation"
@@ -364,7 +364,7 @@ print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "starting Zowe inst
 print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "use configuration defined in ${ZWELS_CONFIG_LOAD_METHOD}"
 
 # Fix node.js piles up in IPC message queue
-if [ "$(is_on_zos)" = "true" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
   ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
 fi
 

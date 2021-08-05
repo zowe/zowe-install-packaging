@@ -145,8 +145,7 @@ get_zis_params() {
 }
 
 create_new_instance() {
-  RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     get_zis_params #may find nothing, thats ok
   fi
 
