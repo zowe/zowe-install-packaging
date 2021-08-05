@@ -111,7 +111,7 @@ rm "${BASE_DIR}/${WORK_DIR}/scripts/zowe-install-MVS.sh"
 # prepare utility tools
 echo ">>>>> prepare utility tools"
 cd "${REPO_ROOT_DIR}"
-util_version_pattern=$(cat "${BASE_DIR}/${WORK_DIR}/manifest.json" | awk "/org\.zowe\.utility_tools/{x=NR+19;next}(NR<=x){print}" | grep "version" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/^"//' -e 's/"$//')
+util_version_pattern=$(cat "${BASE_DIR}/${WORK_DIR}/manifest.json" | awk "/org\.zowe\.utility_tools/{x=NR+19;next}(NR<=x){print}" | grep "version" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
 echo "    - utility version ${util_version_pattern}"
 wildcard_level=
 if [[ "${util_version_pattern}" =~ ~* ]]; then
@@ -169,7 +169,7 @@ rm zowe-config-converter-*.tgz
 # prepare zlux core
 echo ">>>>> prepare zlux core"
 cd "${REPO_ROOT_DIR}"
-zlux_version_pattern=$(cat "${BASE_DIR}/${WORK_DIR}/manifest.json" | awk "/org\.zowe\.zlux\.zlux-core/{x=NR+19;next}(NR<=x){print}" | grep "version" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/^"//' -e 's/"$//')
+zlux_version_pattern=$(cat "${BASE_DIR}/${WORK_DIR}/manifest.json" | awk "/org\.zowe\.zlux\.zlux-core/{x=NR+19;next}(NR<=x){print}" | grep "version" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
 echo "    - zlux-core version ${zlux_version_pattern}"
 wildcard_level=
 if [[ "${zlux_version_pattern}" =~ ~* ]]; then
