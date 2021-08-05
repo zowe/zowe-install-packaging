@@ -103,7 +103,7 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "~1.23.3-SNAPSHOT",
+      "version": "~1.21.3-SNAPSHOT",
       "artifact": "common-java-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
