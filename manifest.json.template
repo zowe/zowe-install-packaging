@@ -102,6 +102,11 @@
       "artifact": "apiml-common-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
+    "org.zowe.apiml.sdk.common-java-lib-package": {
+      "version": "~1.23.3-SNAPSHOT",
+      "artifact": "common-java-lib-*.zip",
+      "excludePatterns": ["*PR*.zip"]
+    },
     "org.zowe.launcher": {
       "version": "~0.0.3-SNAPSHOT"
     },
