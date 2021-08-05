@@ -211,8 +211,8 @@ curl -s ${JFROG_URL}${zlux_tar} --output zlux-core.tar
 mkdir -p "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
 cd "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
 tar xf "${REPO_ROOT_DIR}/zlux-core.tar"
-rm -fr zlux-app-manager zlux-build zlux-platform zlux-shared
-# should leave zlux-app-server and zlux-server-framework in the folder
+rm -fr zlux-app-manager zlux-build zlux-platform
+# should leave zlux-app-server, zlux-server-framework and zlux-shared in the folder
 cd "${REPO_ROOT_DIR}"
 rm -f zlux-core.tar
 
