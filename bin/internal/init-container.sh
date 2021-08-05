@@ -22,11 +22,16 @@ set -e
 SOURCE_DIR=/component
 RUNTIME_DIR=/home/zowe/runtime
 INSTANCE_DIR=/home/zowe/instance
+EXTENSIONS_DIR=/home/zowe/extensions
 
 #######################################################################
 echo ">>> prepare runtime directory"
 mkdir -p ${RUNTIME_DIR}
 cp -r ${SOURCE_DIR}/. ${RUNTIME_DIR}
+
+#######################################################################
+echo ">>> prepare extensions directory"
+mkdir -p ${EXTENSIONS_DIR}
 
 #######################################################################
 echo ">>> prepare instance directory"

@@ -152,6 +152,14 @@ STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 #               root directory.
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
+# this is running in containers
+# we have hardcoded path for component runtime directory
+if [ -z "${ZOWE_COMPONENT_ID}" ]; then
+  ZWE_EXTENSION_DIR=/home/zowe/extensions
+  ln -s /component /home/zowe/extensions/${ZOWE_COMPONENT_ID}
+  LAUNCH_COMPONENTS="${ZOWE_COMPONENT_ID}"
+fi
+
 # FIXME: ideally this should be handled by component configure.sh lifecycle script.
 #        We may require extensions to have these code in conformance program.
 # prepare-environment.sh shouldn't have any output, but these 2 functions may output:
