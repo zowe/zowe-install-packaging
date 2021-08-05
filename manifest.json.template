@@ -103,7 +103,7 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.launcher": {
-      "version": "~0.0.3-SNAPSHOT"
+      "version": "0.0.6-PR-27"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
