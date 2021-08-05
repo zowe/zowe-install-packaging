@@ -155,12 +155,7 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 # this is running in containers
 # we have hardcoded path for component runtime directory
 if [ -n "${ZOWE_COMPONENT_ID}" ]; then
-  ZWE_EXTENSION_DIR=/home/zowe/extensions
-  echo "double check ${ZWE_EXTENSION_DIR} before"
-  ls -la "${ZWE_EXTENSION_DIR}"
-  ln -sfn /component /home/zowe/extensions/${ZOWE_COMPONENT_ID}
-  echo "double check ${ZWE_EXTENSION_DIR} after"
-  ls -la "${ZWE_EXTENSION_DIR}"
+  ln -sfn /component ${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}
   LAUNCH_COMPONENTS="${ZOWE_COMPONENT_ID}"
 fi
 
