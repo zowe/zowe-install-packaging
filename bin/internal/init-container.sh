@@ -38,3 +38,12 @@ echo ">>> prepare instance directory"
 mkdir -p ${INSTANCE_DIR}/bin
 mkdir -p ${INSTANCE_DIR}/logs
 cp -r ${RUNTIME_DIR}/bin/instance/. ${INSTANCE_DIR}/bin
+
+#######################################################################
+echo ">>> check contents of directories"
+echo "    - ${RUNTIME_DIR}"
+ls -la "${RUNTIME_DIR}"
+echo "    - ${INSTANCE_DIR}"
+ls -la "${INSTANCE_DIR}"
+echo "    - ${EXTENSIONS_DIR}"
+ls -la "${EXTENSIONS_DIR}"
