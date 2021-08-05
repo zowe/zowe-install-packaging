@@ -2,20 +2,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: explorer-jes
+  name: jobs-api
   labels:
     app: zowe
 spec:
   selector:
     matchLabels:
       app: zowe
-      tier: explorer-jes
+      tier: jobs-api
   replicas: 1
   template:
     metadata:
       labels:
         app: zowe
-        tier: explorer-jes
+        tier: jobs-api
     spec:
       securityContext:
         runAsUser: 20000
@@ -39,15 +39,15 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-claim
       containers:
-        - name: explorer-jes
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-jes:latest
+        - name: jobs-api
+          image: zowe-docker-release.jfrog.io/ompzowe/jobs-api:latest
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "100m"
-            limits:
               memory: "128Mi"
-              cpu: "250m"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "400m"
           ports:
             - containerPort: 8080
           command: ["/home/zowe/instance/bin/internal/run-zowe.sh"]
