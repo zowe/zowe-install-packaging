@@ -25,7 +25,7 @@
 # - must run with Github Actions (with GITHUB_RUN_NUMBER and GITHUB_SHA)
 # - must provide $GITHUB_PR_ID is it's pull request
 # - must initialize jFrog CLI
-# - requires extra tools like jq, curl, tar, gzip, date
+# - requires extra tools like git, jq, curl, tar, gzip, date
 
 # exit if there are errors
 set -e
@@ -106,6 +106,13 @@ mv "${BASE_DIR}/${WORK_DIR}/scripts/ocopyshr.sh" "${BASE_DIR}/${WORK_DIR}/script
 mv "${BASE_DIR}/${WORK_DIR}/scripts/opercmd" "${BASE_DIR}/${WORK_DIR}/scripts/internal"
 mv "${BASE_DIR}/${WORK_DIR}/scripts/tag-files.sh" "${BASE_DIR}/${WORK_DIR}/scripts/utils"
 rm "${BASE_DIR}/${WORK_DIR}/scripts/zowe-install-MVS.sh"
+
+###############################
+# FIXME: which version of install-app.sh we should pull?
+install_app_sh_version=master
+echo ">>>>> pull install-app.sh from zowe/zlux-app-server ${install_app_sh_version} branch"
+curl -s https://raw.githubusercontent.com/zowe/zlux-app-server/${install_app_sh_version}/bin/install-app.sh -o "${BASE_DIR}/${WORK_DIR}/bin/instance/install-app.sh"
+chmod +x "${BASE_DIR}/${WORK_DIR}/bin/instance/install-app.sh"
 
 ###############################
 # prepare utility tools

@@ -106,6 +106,10 @@ prepare_workspace_dir() {
   print_formatted_info "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "prepare workspace directory ..."
 
   mkdir -p ${WORKSPACE_DIR}
+  # DEBUG CODE, REMOVE BEFORE MERGE
+  echo "========= permission of ${WORKSPACE_DIR}"
+  ls -la ${WORKSPACE_DIR}
+  echo "============"
   # Make accessible to group so owning user can edit?
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
   if [ "$?" != "0" ]; then
@@ -121,6 +125,26 @@ prepare_workspace_dir() {
     # create static definition directory
     mkdir -p ${STATIC_DEF_CONFIG_DIR}
   fi
+}
+
+########################################################
+# Extra preparisons for running in container
+# - run zowe-configure-component.sh to handle `commands.configureInstance`
+prepare_running_in_container() {
+  # this is running in containers
+  if [ -z "${ZOWE_COMPONENT_ID}" ]; then
+    return 0
+  fi
+
+  # we have hardcoded path for component runtime directory
+  ln -sfn /component ${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}
+
+  cd ${ROOT_DIR}
+  . $ROOT_DIR/bin/zowe-configure-component.sh \
+    --component-name "${ZOWE_COMPONENT_ID}" \
+    --instance-dir "${INSTANCE_DIR}" \
+    --target-dir "${ROOT_DIR}/components" \
+    --core
 }
 
 ########################################################
@@ -347,6 +371,8 @@ prepare_instance_env_directory
 global_validate
 # prepare <instance>/workspace directory
 prepare_workspace_dir
+# extra preparisons for running in container 
+prepare_running_in_container
 
 # FIXME: do we need to do similar if the user is using zowe.yaml?
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then

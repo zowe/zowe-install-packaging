@@ -153,9 +153,7 @@ STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
 # this is running in containers
-# we have hardcoded path for component runtime directory
 if [ -n "${ZOWE_COMPONENT_ID}" ]; then
-  ln -sfn /component ${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}
   LAUNCH_COMPONENTS="${ZOWE_COMPONENT_ID}"
 fi
 
