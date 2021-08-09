@@ -21,6 +21,16 @@
 #######################################################################
 set -x
 
+function call_PSIcreate {  
+  
+    echo "called function to create PSI"  
+    cd ${CURR_PWD}/psi/bld
+    chmod 775 ./prepare-PSI.sh
+    ./prepare-PSI.sh
+  
+  return 0
+ }
+
 SCRIPT_NAME=$(basename "$0")
 CURR_PWD=$(pwd)
 
@@ -267,6 +277,13 @@ mv "${SMPE_BUILD_SHIP_DIR}/${SMPE_PROMOTE_TAR}" ${SMPE_PROMOTE_TAR}
 # leave fixed name for promote.tar to simplify automated processing during promote
 echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
+
+#PSI creation from SMPE
+run_PSI_create=true
+
+if [ "$run_PSI_create" = true ] ; then
+    call_PSIcreate 
+fi
 
 echo "[$SCRIPT_NAME] done"
 
