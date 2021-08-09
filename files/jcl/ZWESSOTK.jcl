@@ -289,6 +289,56 @@ $$
 //SYSTSIN  DD DDNAME=&PRODUCT
 //*
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* ***************************************************************** */
+/* ATTENTION!                                                        */
+/* Import SSO JWT secret certificate for Zowe ...................... */
+/*                                                                   */
+/* If you want to import JWT secret certificate from data set into   */
+/* Top Secret, you can uncomment section "Import JWT secret" below.  */
+/* ***************************************************************** */
+/*                                                                   */
+/* Import JWT secret - BEGINNING ................................... */
+
+* ACF
+*  SET PROFILE(USER) DIV(CERTDATA)
+*  INSERT &ZOWEUSER..ZOWEJWT DSNAME('&JWTDSNAM.') +
+*          LABEL('&JWTLABEL.') TRUST
+
+/* List imported certificate ....................................... */
+*  CHKCERT &ZOWEUSER..ZOWEJWT
+/* Import JWT secret - END ......................................... */
+
+/* ***************************************************************** */
+/* ATTENTION!                                                        */
+/* JWT secret certificate must be defined in ACF2 before             */
+/* binding JWT secret to token profile.                              */
+/*                                                                   */
+/* If it is not already created, you need to uncomment section       */
+/* "Create jwt secret" below.                                        */
+/* ***************************************************************** */
+
+/* Create jwt secret  - BEGINNING .................................. */
+
+/* Create certificate .............................................. */
+*ACF
+//*
+* A common part for all options - BEGINNING ....................... */
+* Create jwt secret ............................................... */
+*   SET PROFILE(USER) DIVISION(CERTDATA)
+*   GENCERT &ZOWEUSER..ZOWEJWT -
+*           SUBJSDN(CN='&CN. JWT' -
+*                   OU='&OU.' -
+*                    O='&O.' -
+*                    L='&L.' -
+*                   SP='&SP.' -
+*                   C='&C.') -
+*           SIZE(2048) -
+*           LABEL(&JWTLABEL.) -
+*           EXPIRE(05/01/30)
+*
+/* Create JWT secret - END ......................................... */
+
 ACF
 //
   SET PROFILE(USER) DIV(CERTDATA)
