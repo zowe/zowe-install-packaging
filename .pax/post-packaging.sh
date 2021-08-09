@@ -279,9 +279,9 @@ echo "mv fmid.zip ${SMPE_FMID_ZIP}" > rename-back.sh.1047
 iconv -f IBM-1047 -t ISO8859-1 rename-back.sh.1047 > rename-back.sh
 
 #PSI creation from SMPE
-run_PSI_create=true
 
-if [ "$run_PSI_create" = true ] ; then
+echo "PSI build is set to : [$BUILD_PSI]"
+if [ "$BUILD_PSI" == "yes" ]; then
     call_PSIcreate 
 fi
 
