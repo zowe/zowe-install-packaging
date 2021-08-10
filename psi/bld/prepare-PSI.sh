@@ -4,7 +4,7 @@
  
 function PSIcreation {  
   
-    echo "called function to create PSI in our script"  
+    echo "Called function to create PSI in our script."  
   
   return 0
  }
