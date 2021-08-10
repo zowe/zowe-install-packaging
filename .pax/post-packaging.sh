@@ -23,7 +23,7 @@ set -x
 
 function call_PSIcreate {  
   
-    echo "called function to create PSI from trigger"  
+    echo "Called function to create PSI from trigger."  
     cd ${CURR_PWD}/psi/bld
     chmod 775 ./prepare-PSI.sh
     ./prepare-PSI.sh
