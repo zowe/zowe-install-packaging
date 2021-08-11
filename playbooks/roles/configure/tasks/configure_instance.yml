@@ -36,7 +36,7 @@
     sed -e "s+^APIML_PREFER_IP_ADDRESS=.*\$+APIML_PREFER_IP_ADDRESS={{ zowe_apiml_prefer_ip_address|string|lower }}+" | \
     sed -e "s+^APIML_GATEWAY_TIMEOUT_MILLIS=.*\$+APIML_GATEWAY_TIMEOUT_MILLIS={{ zowe_apiml_gateway_timeout_millis }}+" | \
     sed -e "s+^APIML_SECURITY_X509_ENABLED=.*\$+APIML_SECURITY_X509_ENABLED={{ zowe_apiml_security_x509_enabled|string|lower }}+" | \
-    sed -e "s+^APIML_SECURITY_ZOSMF_APPLID=.*\$+APIML_SECURITY_ZOSMF_APPLID={{ zowe_apiml_security_zosmf_applid|string|lower }}+" | \
+    sed -e "s+^APIML_SECURITY_ZOSMF_APPLID=.*\$+APIML_SECURITY_ZOSMF_APPLID={{ zowe_apiml_security_zosmf_applid }}+" | \
     sed -e "s+^APIML_SECURITY_AUTH_PROVIDER=.*\$+APIML_SECURITY_AUTH_PROVIDER={{ zowe_apiml_security_auth_provider|string|lower }}+" | \
     sed -e "s+^JOBS_API_PORT=.*\$+JOBS_API_PORT={{ zowe_jobs_api_port }}+" | \
     sed -e "s+^FILES_API_PORT=.*\$+FILES_API_PORT={{ zowe_mvs_api_port }}+" | \
