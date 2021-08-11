@@ -155,6 +155,8 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 # this is running in containers
 if [ -n "${ZOWE_COMPONENT_ID}" ]; then
   LAUNCH_COMPONENTS="${ZOWE_COMPONENT_ID}"
+  ZOWE_EXPLORER_HOST=$(get_sysname)
+  ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
 fi
 
 # FIXME: ideally this should be handled by component configure.sh lifecycle script.
