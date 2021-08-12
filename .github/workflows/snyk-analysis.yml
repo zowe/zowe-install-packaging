@@ -20,8 +20,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run Snyk to check Docker image for vulnerabilities
-
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       continue-on-error: true
+      run: snyk auth SNYK_TOKEN
       uses: snyk/actions/docker@master
 
       with:
@@ -30,8 +32,6 @@ jobs:
     - name: Snyk Test
       run: snyk test --sarif-file-output=snyk.sarif
       continue-on-error: true
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v1
       with:
