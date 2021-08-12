@@ -50,6 +50,7 @@ RUN set -ex \
     && chown zowe.zowe /component \
     # install node.js which is mandatory for now
     && microdnf install --nodocs \
+      findutils \
       tar \
       xz \
     && ARCH=${NODE_CPU_ARCH} \
