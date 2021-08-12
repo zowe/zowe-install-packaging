@@ -9,9 +9,10 @@
 name: Snyk Container
 
 on:
-  # Triggers the workflow on push or pull request events but only for the staging branch
+  push:
+    branches: [staging]
   pull_request:
-    branches: [ staging ]
+    branches: [staging]  
 
 jobs:
   snyk:
