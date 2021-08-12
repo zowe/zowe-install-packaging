@@ -9,14 +9,14 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM ubuntu:latest
+FROM registry.redhat.io/ubi8/ubi-minimal:latest
 
 ##################################
 # labels
 LABEL name="Zowe Base Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.1" \
+      version="0.0.5" \
       release="0" \
       summary="Base image for Zowe components" \
       description="Base image for Zowe components"
@@ -27,22 +27,28 @@ LABEL name="Zowe Base Image" \
 ARG UID=20000
 # zowe default group id
 ARG GID=20000
+# node build CPU arch
+ARG NODE_CPU_ARCH=x64
 
 ##################################
-# define zowe user/group
-RUN groupadd -g $GID -r zowe \
-    && useradd --no-log-init -u $UID -d /home/zowe -r -g zowe zowe
+# define zowe user/group, create /licenses and /component folder
+# shadow-utils is needed for having adduser groupadd commands
+RUN microdnf install --nodocs shadow-utils \
+    && groupadd --gid ${GID} zowe \
+    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} --home /home/zowe zowe \
+    && mkdir -p /licenses \
+    && chown zowe.zowe /licenses \
+    && mkdir -p /component \
+    && chown zowe.zowe /component
 
 ##################################
 # Install node.js which is mandatory for now
 ENV NODE_VERSION=14.17.3
 RUN set -ex \
-    && apt-get update \
-    && apt-get install -y \
-      curl \
-      gnupg \
-      xz-utils \
-    && ARCH=s390x \
+    && microdnf install --nodocs \
+      tar \
+      xz \
+    && ARCH=${NODE_CPU_ARCH} \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \
       4ED778F539E3634C779C87C6D7062848A1AB005C \
@@ -67,7 +73,7 @@ RUN set -ex \
     && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
     && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
-    && rm -rf /var/lib/apt/lists/* \
+    && microdnf clean all --enablerepo='*' \
     # smoke tests
     && node --version \
     && npm --version

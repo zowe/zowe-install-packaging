@@ -21,14 +21,16 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
           cpu-arch: amd64
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
+        with:
+          build-arg-list: NODE_CPU_ARCH=x64
         timeout-minutes: 5
 
   build-ubuntu-s390x:
@@ -40,8 +42,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
@@ -53,6 +55,7 @@ jobs:
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          build-arg-list: NODE_CPU_ARCH=s390x
         timeout-minutes: 10
 
   define-ubuntu-manifest:
@@ -67,8 +70,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
@@ -89,8 +92,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
@@ -100,6 +103,8 @@ jobs:
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
+        with:
+          build-arg-list: NODE_CPU_ARCH=x64
         timeout-minutes: 5
 
   build-ubi-s390x:
@@ -111,8 +116,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
@@ -127,6 +132,7 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
+          build-arg-list: NODE_CPU_ARCH=s390x
         timeout-minutes: 10
 
   define-ubi-manifest:
@@ -141,8 +147,8 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
