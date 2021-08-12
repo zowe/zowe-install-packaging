@@ -24,7 +24,6 @@ jobs:
       uses: snyk/actions/docker@master
       with:
         image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:1.22.0
-        args: --file=Dockerfile
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v1
       with:
