@@ -18,10 +18,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run Snyk to check Docker image for vulnerabilities
-      continue-on-error: true
-      uses: snyk auth && snyk/actions/docker@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      continue-on-error: true
+      uses: snyk auth ${SNYK_TOKEN} && snyk/actions/docker@master
       with:
         image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:1.22.0
         args: --file=Dockerfile
