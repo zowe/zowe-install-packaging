@@ -23,11 +23,15 @@ jobs:
 
       continue-on-error: true
       uses: snyk/actions/docker@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
       with:
         image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:1.22.0
         args: --file=Dockerfile
+    - name: Snyk Test
+      run: snyk test --sarif-file-output=snyk.sarif
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v1
       with:
