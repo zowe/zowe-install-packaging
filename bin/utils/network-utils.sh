@@ -112,7 +112,6 @@ get_ipaddress() {
 
   # dig is preferred than ping
   dig_result=$(dig -4 +short ${hostname} 2>/dev/null || dig +short ${hostname} 2>/dev/null)
-  dig_result=
   if [ -n "${dig_result}" ]; then
     method=dig
     ip=$(echo "${dig_result}" | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | head -1)
