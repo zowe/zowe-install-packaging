@@ -36,3 +36,4 @@ mkdir -p ${INSTANCE_DIR}/logs
 cp -r ${RUNTIME_DIR}/bin/instance/. ${INSTANCE_DIR}/bin
 cp ${RUNTIME_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 # zowe-configure-component.sh will be executed during runtime
+touch ${INSTANCE_DIR}/.init-for-container

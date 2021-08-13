@@ -70,18 +70,32 @@ global_validate() {
   # Validate keystore directory accessible
   validate_directory_is_accessible "${KEYSTORE_DIRECTORY}"
 
-  # ZOWE_PREFIX shouldn't be too long
-  validate_zowe_prefix 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+    # ZOWE_PREFIX shouldn't be too long
+    validate_zowe_prefix 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+  fi
 
-  # currently node is always required
-  # otherwise we should check if these services are starting:
-  # - explorer-mvs, explorer-jes, explorer-uss
-  # - app-server, zss
-  validate_node_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+  if [ ! -f "${INSTANCE_DIR}/.init-for-container" ]; then
+    # only do these check when it's not running in container
 
-  # validate java for some core components
-  if [[ ${LAUNCH_COMPONENTS} == *"gateway"* || ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"api-catalog"* || ${LAUNCH_COMPONENTS} == *"caching-service"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
-    validate_java_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+    # currently node is always required
+    # otherwise we should check if these services are starting:
+    # - explorer-mvs, explorer-jes, explorer-uss
+    # - app-server, zss
+    validate_node_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+
+    # validate java for some core components
+    if [[ ${LAUNCH_COMPONENTS} == *"gateway"* || ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"api-catalog"* || ${LAUNCH_COMPONENTS} == *"caching-service"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
+      validate_java_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+    fi
+  else
+    # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+    # /component is hardcoded path we asked for in conformance
+    export ZOWE_CONTAINER_COMPONENT_ID=(read_component_manifest /component '.name')
+    if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" -o "${ZOWE_CONTAINER_COMPONENT_ID}" = "null" ]; then
+      print_formatted_error "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" "Cannot find name from the component image manifest file"
+      let "ERRORS_FOUND=${ERRORS_FOUND}+1"
+    fi
   fi
 
   # validate z/OSMF for some core components
@@ -128,15 +142,15 @@ prepare_workspace_dir() {
 # Extra preparisons for running in container
 # - run zowe-configure-component.sh to handle `commands.configureInstance`
 prepare_running_in_container() {
-  if [ -e "${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}" ]; then
-    rm -fr "${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}"
+  if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
   fi
   # we have hardcoded path for component runtime directory
-  ln -sfn /component "${ROOT_DIR}/components/${ZOWE_COMPONENT_ID}"
+  ln -sfn /component "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
 
   cd ${ROOT_DIR}/bin
   ./zowe-configure-component.sh \
-    --component-name "${ZOWE_COMPONENT_ID}" \
+    --component-name "${ZOWE_CONTAINER_COMPONENT_ID}" \
     --instance-dir "${INSTANCE_DIR}" \
     --target-dir "${ROOT_DIR}/components" \
     --core
@@ -364,14 +378,12 @@ fi
 prepare_instance_env_directory
 # global validations
 # no validation for running in container
-if [ -z "${ZOWE_COMPONENT_ID}" ]; then
-  global_validate
-fi
+global_validate
 # prepare <instance>/workspace directory
 prepare_workspace_dir
 # extra preparisons for running in container 
 # this is running in containers
-if [ -n "${ZOWE_COMPONENT_ID}" ]; then
+if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
   prepare_running_in_container
 fi
 
@@ -380,7 +392,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
   store_config_archive
 fi
 # no validation for running in container
-if [ -z "${ZOWE_COMPONENT_ID}" ]; then
+if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
   validate_components
 fi
 configure_components
