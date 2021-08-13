@@ -171,6 +171,9 @@ fi
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi
+if [ -z "${NODE_HOME}" ]; then
+  NODE_HOME=$(detect_node_home)
+fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
 fi

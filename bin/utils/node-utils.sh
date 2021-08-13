@@ -70,6 +70,26 @@ ensure_node_is_on_path() {
   fi
 }
 
+detect_node_home() {
+  # do we have which?
+  node_home=$(which node 2>/dev/null)
+  node_home=
+  if [ -z "${node_home}" ]; then
+    (
+      IFS=:
+      for p in ${PATH}; do
+        if [ -f "${p}/node" ]; then
+          cd "${p}/.."
+          pwd
+          break
+        fi
+      done
+    )
+  else
+    echo "${node_home}"
+  fi
+}
+
 validate_node_home() {
   validate_node_home_not_empty
   node_empty_rc=$?
