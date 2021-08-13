@@ -22,7 +22,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       uses: snyk/actions/docker@master
       with:
-        image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:SNYK
+        image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:SNYKbuster
         command: test
         args: --file=Dockerfile.zlux
     - name: Upload result to GitHub Code Scanning
