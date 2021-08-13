@@ -72,6 +72,7 @@ kind: ConfigMap
 apiVersion: v1 
 metadata:
   name: zowe-certificates-cm
+  namespace: zowe
 data:
   zowe-certificates.env: |
     KEY_ALIAS="${KEY_ALIAS}"
@@ -97,6 +98,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: zowe-certificates-secret
+  namespace: zowe
 type: Opaque
 data:
   keystore.p12: $(base64 "${KEYSTORE}")

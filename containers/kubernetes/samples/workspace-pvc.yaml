@@ -13,6 +13,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: zowe-workspace-claim
+  namespace: zowe
 spec:
   # FIXME: StorageClass should be predefined
   #        hostpath is a StorageClass created by Docker Desktop
