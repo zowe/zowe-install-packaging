@@ -30,10 +30,6 @@ data:
     # FIXME: put your real z/OSMF host here
     ZOSMF_HOST=<zosmf-host-name>
 
-    # FIXME: what values we should put here
-    ZOWE_EXPLORER_HOST=<kubernetes-cluster-external-domain-name>
-    ZOWE_IP_ADDRESS=<kubernetes-cluster-external-ip>
-
     # keystore config
     KEYSTORE_DIRECTORY=/home/zowe/keystore
 
