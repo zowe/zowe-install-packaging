@@ -20,10 +20,11 @@ jobs:
     - name: Run Snyk to check Docker image for vulnerabilities
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      continue-on-error: true
       uses: snyk/actions/docker@master
       with:
         image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:SNYK
+        command: test
+        args: --file=Dockerfile.zlux
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v1
       with:
