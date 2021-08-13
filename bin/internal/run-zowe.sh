@@ -23,10 +23,10 @@
 
 # LAUNCH_COMPONENTS can also get from stdout of bin/internal/get-launch-components.sh
 for run_zowe_start_component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g"); do
-  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-    # only run in background when it's on z/OS
-    ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${ZWELS_HA_INSTANCE_ID}" -o "${run_zowe_start_component_id}" -b &
-  else
+  if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
     ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${ZWELS_HA_INSTANCE_ID}" -o "${run_zowe_start_component_id}"
+  else
+    # only run in background when it's not in container, on z/OS
+    ${ROOT_DIR}/bin/internal/start-component.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${ZWELS_HA_INSTANCE_ID}" -o "${run_zowe_start_component_id}" -b &
   fi
 done

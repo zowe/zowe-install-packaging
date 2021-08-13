@@ -91,7 +91,7 @@ global_validate() {
   else
     # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
     # /component is hardcoded path we asked for in conformance
-    export ZOWE_CONTAINER_COMPONENT_ID=(read_component_manifest /component '.name')
+    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
     if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" -o "${ZOWE_CONTAINER_COMPONENT_ID}" = "null" ]; then
       print_formatted_error "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" "Cannot find name from the component image manifest file"
       let "ERRORS_FOUND=${ERRORS_FOUND}+1"
@@ -392,7 +392,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
   store_config_archive
 fi
 # no validation for running in container
-if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
   validate_components
 fi
 configure_components
