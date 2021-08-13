@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: explorer-jes
+  namespace: zowe
   labels:
     app: zowe
 spec:
@@ -41,6 +42,7 @@ spec:
       containers:
         - name: explorer-jes
           image: zowe-docker-release.jfrog.io/ompzowe/explorer-jes:latest
+          imagePullPolicy: IfNotPresent
           resources:
             requests:
               memory: "64Mi"
@@ -50,6 +52,7 @@ spec:
               cpu: "250m"
           ports:
             - containerPort: 8080
+              protocol: TCP
           command: ["/home/zowe/instance/bin/internal/run-zowe.sh"]
           volumeMounts:
             - name: zowe-runtime
@@ -88,7 +91,8 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:0.0.1-ubuntu.users-jack-k8s-yaml-32
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:0.0.1-ubuntu.users-jack-k8s-yaml-33
+          imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
