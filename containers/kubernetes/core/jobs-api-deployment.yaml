@@ -30,12 +30,13 @@ spec:
         - name: zowe-config
           configMap:
             name: zowe-config
-        - name: zowe-certificates-cm
-          configMap:
-            name: zowe-certificates-cm
-        - name: zowe-certificates-secret
-          secret:
-            secretName: zowe-certificates-secret
+        - name: zowe-keystore
+          projected:
+            sources:
+            - configMap:
+                name: zowe-certificates-cm
+            - secret:
+                name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-claim
@@ -63,29 +64,8 @@ spec:
               mountPath: "/home/zowe/instance/instance.env"
               subPath: instance.env
               readOnly: true
-            - name: zowe-certificates-cm
-              mountPath: "/home/zowe/keystore/zowe-certificates.env"
-              subPath: zowe-certificates.env
-              readOnly: true
-            - name: zowe-certificates-secret
-              mountPath: "/home/zowe/keystore/keystore.p12"
-              subPath: keystore.p12
-              readOnly: true
-            - name: zowe-certificates-secret
-              mountPath: "/home/zowe/keystore/truststore.p12"
-              subPath: truststore.p12
-              readOnly: true
-            - name: zowe-certificates-secret
-              mountPath: "/home/zowe/keystore/keystore.key"
-              subPath: keystore.key
-              readOnly: true
-            - name: zowe-certificates-secret
-              mountPath: "/home/zowe/keystore/keystore.cert"
-              subPath: keystore.cert
-              readOnly: true
-            - name: zowe-certificates-secret
-              mountPath: "/home/zowe/keystore/localca.cert"
-              subPath: localca.cert
+            - name: zowe-keystore
+              mountPath: "/home/zowe/keystore/"
               readOnly: true
             - name: zowe-workspace
               mountPath: "/home/zowe/instance/workspace"
