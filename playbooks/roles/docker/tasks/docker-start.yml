@@ -9,6 +9,7 @@
       --env ZWED_agent_https_port={{zowe_zss_port}} \
       --env ZOWE_ZLUX_TELNET_PORT={{zowe_zlux_terminal_telnet_port}} \
       --env ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }} \
+      --env ZOWE_ZLUX_SSH_HOST=zzow01.zowe.marist.cloud \
       --env GATEWAY_PORT={{zowe_apiml_gateway_port}} \
       --expose {{zowe_apiml_gateway_port}} \
       -p {{zowe_apiml_discovery_port}}:7553 \
