@@ -153,7 +153,10 @@ STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
 # this is running in containers
-if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
   LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
   ZOWE_EXPLORER_HOST=$(get_sysname)
   ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")

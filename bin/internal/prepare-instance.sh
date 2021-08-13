@@ -89,9 +89,6 @@ global_validate() {
       validate_java_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
     fi
   else
-    # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
-    # /component is hardcoded path we asked for in conformance
-    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
     if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" -o "${ZOWE_CONTAINER_COMPONENT_ID}" = "null" ]; then
       print_formatted_error "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" "Cannot find name from the component image manifest file"
       let "ERRORS_FOUND=${ERRORS_FOUND}+1"
@@ -368,6 +365,8 @@ export ZWELS_HA_INSTANCE_ID
 # display starting information
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "starting Zowe instance ${ZWELS_HA_INSTANCE_ID} from ${INSTANCE_DIR} ..."
 print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "use configuration defined in ${ZWELS_CONFIG_LOAD_METHOD}"
+print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "Zowe version: $(read_json ${ROOT_DIR}/manifest.json '.version')"
+print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "Build and hash: $(read_json ${ROOT_DIR}/manifest.json '.build.branch')#$(read_json ${ROOT_DIR}/manifest.json '.build.number') ($(read_json ${ROOT_DIR}/manifest.json '.build.commitHash'))"
 
 # Fix node.js piles up in IPC message queue
 if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
