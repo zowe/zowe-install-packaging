@@ -364,7 +364,7 @@ export ZWELS_HA_INSTANCE_ID
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 # display starting information
 print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "Zowe version: $(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')"
-print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "build and hash: $(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'branch')#$(read_json ${ROOT_DIR}/manifest.json 'build' 'number') ($(read_json ${ROOT_DIR}/manifest.json 'build' 'commitHash'))"
+print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "build and hash: $(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'number') ($(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'commitHash'))"
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "starting Zowe instance ${ZWELS_HA_INSTANCE_ID} from ${INSTANCE_DIR} ..."
 print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "use configuration defined in ${ZWELS_CONFIG_LOAD_METHOD}"
 

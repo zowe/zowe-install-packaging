@@ -152,16 +152,6 @@ STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 #               root directory.
 LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 
-# this is running in containers
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
-  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
-  # /component is hardcoded path we asked for in conformance
-  ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
-  LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
-  ZOWE_EXPLORER_HOST=$(get_sysname)
-  ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
-fi
-
 # FIXME: ideally this should be handled by component configure.sh lifecycle script.
 #        We may require extensions to have these code in conformance program.
 # prepare-environment.sh shouldn't have any output, but these 2 functions may output:
@@ -176,6 +166,16 @@ if [ -z "${NODE_HOME}" ]; then
 fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
+fi
+
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+  ZOWE_EXPLORER_HOST=$(get_sysname)
+  ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
 fi
 
 # turn off automatic export
