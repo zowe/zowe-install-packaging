@@ -172,8 +172,11 @@ fi
 if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
   # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
   # /component is hardcoded path we asked for in conformance
-  ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  fi
   LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+  # these 2 important variables will be overwritten from what it may have been configured
   ZOWE_EXPLORER_HOST=$(get_sysname)
   ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
 fi
