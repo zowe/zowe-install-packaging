@@ -8,9 +8,14 @@
 
 name: Snyk Container
 
-on:
-  pull_request:
-    branches: [staging]  
+on: 
+  workflow_dispatch:
+    types:
+      - mytrigger
+    inputs:
+      imageName:
+        description: 'Please enter full path of image'     
+        required: true
 
 jobs:
   snyk:
@@ -20,11 +25,11 @@ jobs:
     - name: Run Snyk to check Docker image for vulnerabilities
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      continue-on-error: true
       uses: snyk/actions/docker@master
       with:
-        image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:SNYKbuster
+        image: ${{ github.event.inputs.imageName }}
         command: test
-        args: --file=Dockerfile.zlux
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v1
       with:
