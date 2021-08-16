@@ -19,7 +19,7 @@ FROM zowe-docker-release.jfrog.io/ompzowe/base-node:${ZOWE_BASE_IMAGE}
 LABEL name="Zowe Launch Script Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.1" \
+      version="0.0.0" \
       release="0" \
       summary="Base Launch Script for Zowe components" \
       description="Base Launch Script for Zowe components"

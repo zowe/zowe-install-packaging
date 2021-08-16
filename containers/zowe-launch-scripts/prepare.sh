@@ -54,14 +54,21 @@ JFROG_REPO_RELEASE=libs-release-local
 JFROG_URL=https://zowe.jfrog.io/zowe/
 
 ###############################
+echo ">>>>> prepare basic files"
+cd "${REPO_ROOT_DIR}"
+package_version=$(jq -r '.version' manifest.json.template)
+package_release=$(echo "${package_version}" | awk -F. '{print $1;}')
+
+###############################
 # copy Dockerfile
 echo ">>>>> copy Dockerfile to ${linux_distro}/${cpu_arch}/Dockerfile"
+cd "${BASE_DIR}"
 mkdir -p "${linux_distro}/${cpu_arch}"
 if [ ! -f Dockerfile ]; then
   echo "Error: Dockerfile file is missing."
   exit 2
 fi
-cp Dockerfile "${linux_distro}/${cpu_arch}/Dockerfile"
+cat Dockerfile | sed -e "s#version=\"0\.0\.0\"#version=\"${package_version}\"#" -e "s#release=\"0\"#release=\"${package_release}\"#" > "${linux_distro}/${cpu_arch}/Dockerfile"
 
 ###############################
 echo ">>>>> clean up folder"
