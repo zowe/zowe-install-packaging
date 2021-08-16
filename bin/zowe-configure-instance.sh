@@ -108,7 +108,7 @@ get_zis_params() {
     ZIS_LOADLIB=${DSN_PREFIX}.SZWEAUTH
     # currently unused
     ZIS_PLUGINLIB=${DSN_PREFIX}.SZWEPLUG
-    . ${ZOWE_ROOT_DIR}/scripts/zowe-create-ZIS-ds.sh
+    . ${ZOWE_ROOT_DIR}/scripts/utils/zowe-create-ZIS-ds.sh
   else
     if [ -z "${ZIS_LOADLIB}" -o -z "${ZIS_PARMLIB}" ]; then
       if [ -n "${NO_TEMP}" ]; then
@@ -132,7 +132,7 @@ get_zis_params() {
           ZIS_LOADLIB=${ZOWE_DSN_PREFIX}.SZWEAUTH
           # currently unused
           ZIS_PLUGINLIB=${ZOWE_DSN_PREFIX}.SZWEPLUG
-          . ${ZOWE_ROOT_DIR}/scripts/zowe-create-ZIS-ds.sh
+          . ${ZOWE_ROOT_DIR}/scripts/utils/zowe-create-ZIS-ds.sh
         fi
       else
         echo_and_log "ZIS parameters wont be recorded because temporary file not found. You may record them in the instance configuration later."
