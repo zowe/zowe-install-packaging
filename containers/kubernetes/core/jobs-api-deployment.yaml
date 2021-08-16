@@ -54,7 +54,9 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
-          command: ["/home/zowe/instance/bin/internal/run-zowe.sh"]
+          command: ["/bin/bash", "-c"]
+          args:
+            - "/home/zowe/instance/bin/internal/run-zowe.sh"
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
