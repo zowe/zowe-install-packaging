@@ -8,6 +8,10 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
+################################################################################
+# It's recommended to run <instance-dir>/bin/utils/convert-keystore-for-k8s.sh
+# on z/OS to convert your existing keystore to this ConfigMap definition.
+
 ---
 kind: ConfigMap 
 apiVersion: v1 
@@ -29,5 +33,5 @@ data:
     ZOWE_APIM_VERIFY_CERTIFICATES=false
     ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=true
     SSO_FALLBACK_TO_NATIVE_AUTH=true
-    PKCS11_TOKEN_NAME="ZWETOKEN"
-    PKCS11_TOKEN_LABEL="jwtsecret"
+    PKCS11_TOKEN_NAME=""
+    PKCS11_TOKEN_LABEL=""
