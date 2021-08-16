@@ -25,7 +25,7 @@
 # - must run with Github Actions (with GITHUB_RUN_NUMBER and GITHUB_SHA)
 # - must provide $GITHUB_PR_ID is it's pull request
 # - must initialize jFrog CLI
-# - requires extra tools like git, jq, curl, tar, gzip, date
+# - requires extra tools like jq, curl, tar, gzip, date
 
 # exit if there are errors
 set -e
