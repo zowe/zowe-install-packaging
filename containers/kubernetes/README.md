@@ -10,24 +10,16 @@
 kubectl create namespace zowe
 ```
 
-### Create And Modify Zowe ConfigMap
-
-Check and modify configurations in `samples/config-cm.yaml`, then run:
-
-```
-kubectl apply -f samples/config-cm.yaml`
-```
-
-### Create Certificates ConfigMap and Secret
+### Create And Modify ConfigMaps and Secrets
 
 On z/OS, run this command in your instance directory:
 
 ```
 cd <instance-dir>
-./bin/utils/convert-keystore-for-k8s.sh
+./bin/utils/convert-for-k8s.sh
 ```
 
-This should display a set of YAML with `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. They should looks similar to `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values. Copy the whole output and save as a YAML file `certificates.yaml` on your local computer. Then run `kubectl apply -f /path/to/your/certificates.yaml`.
+This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values. Copy the whole output and save as a YAML file `configs.yaml` on your local computer, verify and then run `kubectl apply -f /path/to/your/configs.yaml`.
 
 ### Create Persistent Volume
 
@@ -41,7 +33,7 @@ kubectl apply -f samples/workspace-pvc.yaml`
 kubectl apply -f core/
 ```
 
-## Launch Single Image on Local
+## Launch Single Image on Local Computer
 
 ### Init `tmp` Folder
 

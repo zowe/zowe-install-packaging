@@ -8,6 +8,10 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
+################################################################################
+# It's recommended to run <instance-dir>/bin/utils/convert-for-k8s.sh
+# on z/OS to convert your existing keystore to this Secret definition.
+
 ---
 kind: ConfigMap 
 apiVersion: v1 
@@ -18,17 +22,13 @@ data:
   instance.env: |
     #!/bin/sh
 
-    # Note this script is executed like a shell script, so can have embedded variables
-    # TODO LATER - rename variable names to match some consistent naming conventions
-
     # global config
     ROOT_DIR=/home/zowe/runtime
     ZOWE_PREFIX=ZWE
     ZOWE_INSTANCE=1
 
-    # z/OS MF config
+    # FIXME: z/OS MF config
     ZOSMF_PORT=443
-    # FIXME: put your real z/OSMF host here
     ZOSMF_HOST=<zosmf-host-name>
 
     # keystore config

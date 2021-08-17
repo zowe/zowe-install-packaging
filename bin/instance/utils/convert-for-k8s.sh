@@ -39,6 +39,12 @@ indent() {
 INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
 KEYSTORE_DIRECTORY_PARM=$1
 
+# validate INSTANCE_DIR
+if [ ! -f "${INSTANCE_DIR}/instance.env" ]; then
+  echo "Error: instance directory doesn't have instance.env."
+  exit 1
+fi
+
 # import instance configuration
 . ${INSTANCE_DIR}/bin/internal/utils.sh
 read_essential_vars
@@ -48,11 +54,11 @@ if [ -n "${KEYSTORE_DIRECTORY_PARM}" ]; then
   KEYSTORE_DIRECTORY=${KEYSTORE_DIRECTORY_PARM}
 fi
 if [ -z "${KEYSTORE_DIRECTORY}" ]; then
-  echo "Error: cannot determin keystore directory. Please supply with parameter of this script."
+  echo "Error: cannot determine keystore directory. Please supply with parameter of this script."
   exit 1
 fi
 if [ ! -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
-  echo "Unsupported: keystore directory doesn't have zowe-certificates.env."
+  echo "Error: keystore directory doesn't have zowe-certificates.env."
   exit 1
 fi
 
@@ -60,12 +66,25 @@ fi
 . "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
 
 if [ "${KEYSTORE_TYPE}" != "PKCS12" ]; then
-  echo "Unsupported: keystore type ${KEYSTORE_TYPE} is not supported yet."
+  echo "Error: keystore type ${KEYSTORE_TYPE} is not supported yet."
   exit 1
 fi
 
 ################################################################################
 # Prepare configs
+cat << EOF
+---
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: zowe-config
+  namespace: zowe
+data:
+  instance.env: |
+$(cat "${INSTANCE_DIR}"/instance.env | grep -v -E "(ZOWE_EXPLORER_HOST=|ZOWE_IP_ADDRESS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | sed -e 's#ROOT_DIR=.\+$#ROOT_DIR=/home/zowe/runtime#' -e 's#KEYSTORE_DIRECTORY=.\+$#KEYSTORE_DIRECTORY=/home/zowe/keystore#' | indent - "    ")
+EOF
+exit
+
 cat << EOF
 ---
 kind: ConfigMap 

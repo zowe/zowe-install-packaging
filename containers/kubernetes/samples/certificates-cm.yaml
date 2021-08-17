@@ -9,7 +9,7 @@
 ################################################################################
 
 ################################################################################
-# It's recommended to run <instance-dir>/bin/utils/convert-keystore-for-k8s.sh
+# It's recommended to run <instance-dir>/bin/utils/convert-for-k8s.sh
 # on z/OS to convert your existing keystore to this ConfigMap definition.
 
 ---
