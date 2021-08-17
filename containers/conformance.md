@@ -6,7 +6,7 @@ These conformance criteria are applicable for all Zowe components intending to r
 
 ## Image
 
-In general, the image should follow [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/). Below requirements are in addition to the list.
+In general, the image should follow [Best practices for writing Dockerfiles](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/). The below requirements are in addition to the list.
 
 ### Base Image
 
@@ -21,23 +21,23 @@ Here are our recommendations of base images:
 - [Red Hat Universal Base Image 8 Minimal](https://developers.redhat.com/articles/ubi-faq?redirect_fragment=resources#ubi_details)
 - [Ubuntu](https://hub.docker.com/_/ubuntu)
 
-The image should contain as few software packages as possible for security, and should be as small as possible such as by reducing package count and layers.
+The image should contain as few software packages as possible for security and should be as small as possible such as by reducing package count and layers.
 
 Zowe base images,
 - are based on both Ubuntu and Red Hat Universal Base Image,
 - provide common dependencies including JDK and/or node.js,
 - support both `amd64` and `s390x` CPU architecture.
 
-If you use your own base image other than Zowe base images, please check this list and make sure its compatible with Zowe runtime:
+If you use your own base image other than Zowe base images, please check this list and make sure it is compatible with Zowe runtime:
 
-- The default shell `/bin/sh` must be `bash`. If it's not, you can fix it by installing and overwriting `/bin/sh` with symbolic link of `/bin/bash`.
+- The default shell `/bin/sh` must be `bash`. If it's not, you can fix it by installing and overwriting `/bin/sh` with the symbolic link of `/bin/bash`.
 - These softwares must exist in the image: `date`, `awk`, `sed`, `xargs`.
 - These softwares are optional but good to have: `ping`, `dig`, `netstat`.
 
 ### Multi-CPU Architecture
 
 - Zowe core components must release images based on both `amd64` and `s390x` CPU architecture.
-- Zowe core component images must use multiple manifests to define if the image supports multiple CPU architecture.
+- Zowe core component images must use multiple manifests to define if the image supports multiple CPU architectures.
 
 ### Image Label
 
@@ -64,7 +64,7 @@ Zowe core component image tags must be a combination of the following informatio
 - **linux-distro**: for example, `ubi`, `ubuntu`, etc.
 - **cpu-arch**: for example, `amd64`, `s390x`, etc.
 - **customize-build**: string sanitized by converting non-letters and non-digits to dashes. For example, `pr-1234`, `users-john-fix123`, etc.
-- **Source Build**: must be string `-sources` appended to the end of tag.
+- **Source Build**: must be a string `-sources` appended to the end of the tag.
   * If this is a source build, the tag must contain full version number (major+minor+patch) information.
   * Linux Distro information is recommended.
   * Must NOT contain customize build information.
@@ -96,7 +96,7 @@ For example, these are valid image tags:
 - 1.23.0-ubuntu.pr-1234
 - 1.23.0-ubi.users-john-test1
 
-Same image tag pattern are recommended for Zowe extensions.
+The same image tag pattern is recommended for Zowe extensions.
 ### Files and Directories
 
 These file(s) and folder(s) are **REQUIRED** for all Zowe components:
@@ -108,7 +108,7 @@ These file(s) and folder(s) are **REQUIRED** for all Zowe components:
   +- README.md
 ```
 
-- `/licenses` folder holds all license related files. It MUST include at least the license information for current application. It's recommended to include a license notice file for all pedigree dependencies. All licenses files must be in UTF-8 encoding.
+- `/licenses` folder holds all license-related files. It MUST include at least the license information for current application. It's recommended to include a license notice file for all pedigree dependencies. All licenses files must be in UTF-8 encoding.
 - `/component/README.md` provides information about the application for end-user.
 - `/component/manifest.(yaml|yml|json)` provides basic information of the component. The format of this file is defined at [Zowe component manifest](https://docs.zowe.org/stable/extend/packaging-zos-extensions/#zowe-component-manifest). Components must use the same manifest file as when it's running on z/OS.
 
@@ -124,7 +124,7 @@ These file(s) and folder(s) are _recommended_:
 
 ### User `zowe`
 
-In the Dockerfile, a `zowe` user and group must be created. The `zowe` user `UID` and group `GID` must be defined as `ARG` and with default value `UID=20000` and `GID=20000`. Example commands:
+In the Dockerfile, a `zowe` user and group must be created. The `zowe` user `UID` and group `GID` must be defined as `ARG` and with default values of `UID=20000` and `GID=20000`. Example commands:
 
 ```
 ARG UID=20000
@@ -138,27 +138,27 @@ If you use Zowe base images, `zowe` user and group are already created.
 
 ### Multi-Stage Build
 
-Multi-stage build is recommended to keep images small and concise. Learn more from [Use multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/).
+A multi-stage build is recommended to keep images small and concise. Learn more from [Use multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/).
 
 ## Runtime
 
 This section is mainly for information. No actions are required for components except where it's specified explicitly.
 
-Below sections are mainly targeting Kubernetes or OpenShift environments. Starting Zowe containers in a Docker environment with `docker-compose` is in a planning stage and may change some of the requirements.
+The below sections are mainly targeting Kubernetes or OpenShift environments. Starting Zowe containers in a Docker environment with `docker-compose` is in a planning stage and may change some of the requirements.
 
 ### General rules
 
 **Components MUST:**
 
 - NOT be started as root user in the container.
-- listen on only ONE port in the container except for API Mediation Layer Gateway.
-- be cloud vendor neutral and must NOT rely on features provided by specific cloud vendor.
+- listen to only ONE port in the container except for API Mediation Layer Gateway.
+- be cloud-vendor neutral and must NOT rely on features provided by a specific cloud vendor.
 - NOT rely on host information such as `hostIP`, `hostPort`, `hostPath`, `hostNetwork`, `hostPID` and `hostIPC`.
 - MUST accept either `instance.env` or `zowe.yaml` as a configuration file, the same as when running on z/OS.
 
 ### Files and Directories
 
-In the runtime, the Zowe content are organized in this structure:
+In the runtime, the Zowe content is organized in this structure:
 
 ```
 /home
@@ -178,7 +178,7 @@ In the runtime, the Zowe content are organized in this structure:
 - `/home/zowe/runtime` is a shared volume initialized by the `zowe-launch-scripts` container.
 - `/home/zowe/runtime/components/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is the `name` entry defined in `/component/manifest.(yaml|yml|json)`.
 - `/home/zowe/instance/(instance.env|zowe.yaml)` is a Zowe configuration file and MUST be mounted from a ConfigMap.
-- `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component containers. Please be aware of potential writing conflicts if you write to workspace directory.
+- `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component container. Please be aware of potential writing conflicts if you write to the workspace directory.
 - `/home/zowe/keystore/zowe-certificates.env` is optional if the user is using `instance.env`. If this configuration exists, it MUST be mounted from a ConfigMap.
 - Any confidential environment variables, for example, a Redis password, in `instance.env` or `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
@@ -187,7 +187,7 @@ In the runtime, the Zowe content are organized in this structure:
 - `instance.env` or `zowe.yaml` must be stored in a ConfigMap and be mounted under `/home/zowe/instance` directory.
 - If the user is using `instance.env`, `<keystore>/zowe-certificates.env` content must also be stored in a ConfigMap and be mounted to `/home/zowe/keystore`.
 - All certificates must be stored in Secrets. Those files will be mounted under the `/home/zowe/keystore` directory.
-- Secrets must be defined manually by a system administrator. Zowe Helm Chart and Zowe Operator do NOT define content of Secrets.
+- Secrets must be defined manually by a system administrator. Zowe Helm Chart and Zowe Operator do NOT define the content of Secrets.
 
 ### `ompzowe/zowe-launch-scripts` Image and initContainers
 
@@ -199,7 +199,7 @@ In the runtime, the Zowe content are organized in this structure:
 
 - Zowe workspace directory `/home/zowe/instance/workspace` will be defined as a persistent volume.
 - Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
-- Components writing to this directory must NOT write container specific information to this directory as it may potentially overwritten by another container.
+- Components writing to this directory must NOT write container-specific information to this directory as it may potentially be overwritten by another container.
 
 ### Command Override
 
@@ -207,7 +207,7 @@ In the runtime, the Zowe content are organized in this structure:
 
 ### Persistent Volume(s)
 
-- These persistent volume(s) MUST be created:
+- This persistent volume MUST be created:
   * `zowe-workspace` mounted to `/home/zowe/instance/workspace`.
 - The system administrator MUST define the persistent volume manually. Zowe Helm Chart and Zowe Operator do NOT create persistent volumes.
 
@@ -215,18 +215,18 @@ In the runtime, the Zowe content are organized in this structure:
 
 ### Build, Test and Release
 
-- Zowe core component and extension images MUST be built, tested and released on their own cadence.
+- Zowe core component and extension images MUST be built, tested, and released on their own cadence.
 - The component CI/CD pipeline MUST NOT rely on the Zowe level CI/CD pipeline and Zowe release schedule.
 - Zowe core component images must be tested. This includes starting the component and verifying the runtime container works as expected.
 - It is recommended to build snapshot images before release. Zowe core components MUST publish snapshot images to the `zowe-docker-snapshot.jfrog.io` registry with proper [tags](#tag).
 - Zowe core component images MUST be released before Zowe is released.
-- Zowe core components MUST publish release images to both `zowe-docker-release.jfrog.io` and [Docker hub](https://hub.docker.com/) registry under `ompzowe/` prefix.
-- Release images MUST also update relevant major/minor version tags and the `latest` tag. For example, when a component releases a `1.2.3` image, the component CI/CD pipeline MUST also tag the image as `1.2`, `1` and `latest`. Update the `lts` tag when it is applicable.
+- Zowe core components MUST publish release images to both `zowe-docker-release.jfrog.io` and [Docker Hub](https://hub.docker.com/) registry under `ompzowe/` prefix.
+- Release images MUST also update relevant major/minor version tags and the `latest` tag. For example, when a component releases a `1.2.3` image, the component CI/CD pipeline MUST also tag the image as `1.2`, `1`, and `latest`. Update the `lts` tag when it is applicable.
 - Zowe core component release images MUST be signed by Zowe committer(s).
 
 ### Image Scan
 
-#### Security Scam
+#### Security Scan
 
 - Zowe core component images MUST be scanned with security scanning tool(s) to test against a CVE database and all identified vulnerabilities must be handled in a timely process. Recommended tool(s) are:
   * [docker scan](https://docs.docker.com/engine/scan/)
@@ -234,7 +234,7 @@ In the runtime, the Zowe content are organized in this structure:
   * Any other tools received [Red Hat Vulnerability Scanner Certification](https://www.redhat.com/en/blog/introducing-red-hat-vulnerability-scanner-certification)
 - Security scan is recommended for Zowe extension images.
 
-#### License Scan, Notice file and Source Build
+#### License Scan, Notice file, and Source Build
 
 - License scan is required for Zowe core component images. Recommended tool(s) are:
   * [Tern](https://github.com/tern-tools/tern)
