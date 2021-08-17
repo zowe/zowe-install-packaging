@@ -21,7 +21,7 @@ echo "Creating dataset for ZIS plugins ... " >> $LOG_FILE
 # TODO replace by allocate-dataset.sh call to resuse VOLSER support
 tsocmd "allocate new da('${ZOWE_DSN_PREFIX}.SZWEPLUG') " \
     "dsntype(library) dsorg(po) recfm(u) lrecl(0) bLKSIZE(32760)" \
-    "unit(sysallda) $sizePLUG" >> $LOG_FILE 2>&1
+    "unit(sysallda) $sizePLUG" < /dev/null >> $LOG_FILE 2>&1
 rc=$?
 if test $rc -eq 0
 then
