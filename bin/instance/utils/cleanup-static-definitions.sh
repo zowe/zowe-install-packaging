@@ -31,6 +31,8 @@ check_instance() {
 ################################################################################
 # Constants and variables
 INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
+# dns resolution cool down minutes
+POD_DNS_COOL_DOWN=15
 
 # import instance configuration
 . ${INSTANCE_DIR}/bin/internal/utils.sh
@@ -57,7 +59,7 @@ if [ ! -d "${STATIC_DEF_CONFIG_DIR}" ]; then
 fi
 
 # check static definitions
-for one in $(find "${STATIC_DEF_CONFIG_DIR}" -type f -mmin +1); do
+for one in $(find "${STATIC_DEF_CONFIG_DIR}" -type f -mmin "+${POD_DNS_COOL_DOWN}"); do
   echo "Validating ${one}"
   instance_urls=$(read_yaml "${one}" ".services[].instanceBaseUrls[]" 2>/dev/null)
   if [ -n "${instance_urls}" ]; then
@@ -66,11 +68,14 @@ for one in $(find "${STATIC_DEF_CONFIG_DIR}" -type f -mmin +1); do
       check_instance "${url}"
       if [ $? -gt 0 ]; then
         rm -f "${one}"
-        echo "    - invalid and removed"
+        echo "    * invalid and removed"
       else
-        echo "    - valid"
+        echo "    * valid"
       fi
     done
   fi
   echo
 done
+
+echo
+echo "done"
