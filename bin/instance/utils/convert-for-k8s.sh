@@ -49,6 +49,15 @@ fi
 . ${INSTANCE_DIR}/bin/internal/utils.sh
 read_essential_vars
 
+# validate ROOT_DIR
+if [ -z "${ROOT_DIR}" ]; then
+  echo "Error: cannot determine runtime root directory."
+  exit 1
+fi
+
+# import common environment variables to make sure node runs properly
+. "${ROOT_DIR}/bin/internal/zowe-set-env.sh"
+
 # validate KEYSTORE_DIRECTORY
 if [ -n "${KEYSTORE_DIRECTORY_PARM}" ]; then
   KEYSTORE_DIRECTORY=${KEYSTORE_DIRECTORY_PARM}
