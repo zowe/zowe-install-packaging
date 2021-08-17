@@ -12,16 +12,27 @@ In general, the image should follow [Best practices for writing Dockerfiles](htt
 
 You are free to choose a base image based on your requirements.
 
-Here are our recommendations for core Zowe components:
+Here are our recommendations of base images:
 
 - Zowe base images:
-  * base on Ubuntu and Red Hat Universal Base Image,
-  * provide common dependencies including JDK and/or node.js,
-  * support both `amd64` and `s390x` architecture.
+  * `ompzowe/base`: `zowe-docker-release.jfrog.io/ompzowe/base:latest-ubuntu` and `zowe-docker-release.jfrog.io/ompzowe/base:latest-ubi`.
+  * `ompzowe/base-node`: `zowe-docker-release.jfrog.io/ompzowe/base-node:latest-ubuntu` and `zowe-docker-release.jfrog.io/ompzowe/base-node:latest-ubi` has node.js LTS (v14) version pre-installed.
+  * `ompzowe/base-jdk`: `zowe-docker-release.jfrog.io/ompzowe/base-jdk:latest-ubuntu` and `zowe-docker-release.jfrog.io/ompzowe/base-jdk:latest-ubi` has JRE v8 pre-installed.
 - [Red Hat Universal Base Image 8 Minimal](https://developers.redhat.com/articles/ubi-faq?redirect_fragment=resources#ubi_details)
 - [Ubuntu](https://hub.docker.com/_/ubuntu)
 
 The image should contain as few software packages as possible for security, and should be as small as possible such as by reducing package count and layers.
+
+Zowe base images,
+- are based on both Ubuntu and Red Hat Universal Base Image,
+- provide common dependencies including JDK and/or node.js,
+- support both `amd64` and `s390x` CPU architecture.
+
+If you use your own base image other than Zowe base images, please check this list and make sure its compatible with Zowe runtime:
+
+- The default shell `/bin/sh` must be `bash`. If it's not, you can fix it by installing and overwriting `/bin/sh` with symbolic link of `/bin/bash`.
+- These softwares must exist in the image: `date`, `awk`, `sed`, `xargs`.
+- These softwares are optional but good to have: `ping`, `dig`, `netstat`.
 
 ### Multi-CPU Architecture
 
@@ -88,34 +99,28 @@ For example, these are valid image tags:
 Same image tag pattern are recommended for Zowe extensions.
 ### Files and Directories
 
-This is the required folder structure for all Zowe components:
+These file(s) and folder(s) are **REQUIRED** for all Zowe components:
 
 ```
 /licenses
 /component
+  +- manifest.yaml, manifest.yml or manifest.json
   +- README.md
 ```
 
 - `/licenses` folder holds all license related files. It MUST include at least the license information for current application. It's recommended to include a license notice file for all pedigree dependencies. All licenses files must be in UTF-8 encoding.
 - `/component/README.md` provides information about the application for end-user.
+- `/component/manifest.(yaml|yml|json)` provides basic information of the component. The format of this file is defined at [Zowe component manifest](https://docs.zowe.org/stable/extend/packaging-zos-extensions/#zowe-component-manifest). Components must use the same manifest file as when it's running on z/OS.
 
-These file(s) and folder(s) are recommended:
+These file(s) and folder(s) are _recommended_:
 
 ```
 /component
-  +- manifest.json or manifest.yaml
   +- /bin/<lifecycle-scripts>
   +- <other-application-files>
 ```
 
-- `/component/manifest.(json|yaml)` is recommended for Zowe components. The format of this file is defined at [Zowe component manifest](https://docs.zowe.org/stable/extend/packaging-zos-extensions/#zowe-component-manifest). Components must use the same manifest file as when it's running on z/OS.
 - `/component/bin/<lifecycle-scripts>` must remain the same as what it is when running on z/OS.
-
-### Environment Variable(s)
-
-These environment variable(s) must be set as a fixed value in the image:
-
-- `ZOWE_COMPONENT_ID`: this is the Zowe component ID for current image. For example: `ENV ZOWE_COMPONENT_ID=gateway`.
 
 ### User `zowe`
 
@@ -128,6 +133,8 @@ RUN groupadd -g $GID -r zowe && useradd --no-log-init -u $UID -d /home/zowe -r -
 ```
 
 `USER zowe` must be specified before the first `CMD` or `ENTRYPOINT`.
+
+If you use Zowe base images, `zowe` user and group are already created.
 
 ### Multi-Stage Build
 
@@ -232,4 +239,3 @@ In the runtime, the Zowe content are organized in this structure:
 - A separated source build image is required for Zowe core component images.
 - License notice file is recommended for Zowe core component images.
 - Above rules are recommended for Zowe extension images.
-n
