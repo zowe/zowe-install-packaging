@@ -156,6 +156,12 @@ The below sections are mainly targeting Kubernetes or OpenShift environments. St
 - NOT rely on host information such as `hostIP`, `hostPort`, `hostPath`, `hostNetwork`, `hostPID` and `hostIPC`.
 - MUST accept either `instance.env` or `zowe.yaml` as a configuration file, the same as when running on z/OS.
 
+### Persistent Volume(s)
+
+- This persistent volume MUST be created:
+  * `zowe-workspace` mounted to `/home/zowe/instance/workspace`.
+- The system administrator MUST define the persistent volume manually. Zowe Helm Chart and Zowe Operator do NOT create persistent volumes.
+
 ### Files and Directories
 
 In the runtime, the Zowe content is organized in this structure:
@@ -178,7 +184,9 @@ In the runtime, the Zowe content is organized in this structure:
 - `/home/zowe/runtime` is a shared volume initialized by the `zowe-launch-scripts` container.
 - `/home/zowe/runtime/components/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is the `name` entry defined in `/component/manifest.(yaml|yml|json)`.
 - `/home/zowe/instance/(instance.env|zowe.yaml)` is a Zowe configuration file and MUST be mounted from a ConfigMap.
-- `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component container. Please be aware of potential writing conflicts if you write to the workspace directory.
+- `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component container.
+  * Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
+  * Components writing to this directory must NOT write container-specific information to this directory as it may potentially be overwritten by another container.
 - `/home/zowe/keystore/zowe-certificates.env` is optional if the user is using `instance.env`. If this configuration exists, it MUST be mounted from a ConfigMap.
 - Any confidential environment variables, for example, a Redis password, in `instance.env` or `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
@@ -195,21 +203,9 @@ In the runtime, the Zowe content is organized in this structure:
 - This image has a `/component` directory and it will be used to prepare `/home/zowe/runtime` and `/home/zowe/instance` volumes to help Zowe component start.
 - In Kubernetes and OpenShift environments this step is defined with [`initContainers` specification](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/).
 
-### Zowe Workspace Directory
-
-- Zowe workspace directory `/home/zowe/instance/workspace` will be defined as a persistent volume.
-- Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
-- Components writing to this directory must NOT write container-specific information to this directory as it may potentially be overwritten by another container.
-
 ### Command Override
 
 - Component `CMD` and `ENTRYPOINT` directives will be overwritten with the Zowe launch script used to start it in Zowe context.
-
-### Persistent Volume(s)
-
-- This persistent volume MUST be created:
-  * `zowe-workspace` mounted to `/home/zowe/instance/workspace`.
-- The system administrator MUST define the persistent volume manually. Zowe Helm Chart and Zowe Operator do NOT create persistent volumes.
 
 ## CI/CD
 
