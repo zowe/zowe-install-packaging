@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -85,7 +85,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -107,7 +107,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -137,7 +137,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
