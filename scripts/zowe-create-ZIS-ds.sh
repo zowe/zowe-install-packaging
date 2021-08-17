@@ -10,6 +10,10 @@
 # Copyright Contributors to the Zowe Project. 2019, 2019
 #######################################################################
 
+if [ ! -z "${DSN_PREFIX}" ]; then
+    ZOWE_DSN_PREFIX=${DSN_PREFIX}
+fi
+
 sizePLUG='space(30,15) tracks'
 
 script=zowe-create-ZIS-ds.sh
