@@ -164,8 +164,9 @@ In the runtime, the Zowe content are organized in this structure:
 /home
   +- /zowe
     +- /runtime
-    +- /extension
-      +- /<component-id>
+      +- /bin
+      +- /components
+        +- /<component-id>
     +- /instance
       +- instance.env or zowe.yaml
       +- /logs
@@ -175,8 +176,9 @@ In the runtime, the Zowe content are organized in this structure:
 ```
 
 - `/home/zowe/runtime` is a shared volume initialized by the `zowe-launch-scripts` container.
-- `/home/zowe/extension/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is `ZOWE_COMPONENT_ID` defined in `ENV`.
+- `/home/zowe/runtime/components/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is the `name` entry defined in `/component/manifest.(yaml|yml|json)`.
 - `/home/zowe/instance/(instance.env|zowe.yaml)` is a Zowe configuration file and MUST be mounted from a ConfigMap.
+- `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component containers. Please be aware of potential writing conflicts if you write to workspace directory.
 - `/home/zowe/keystore/zowe-certificates.env` is optional if the user is using `instance.env`. If this configuration exists, it MUST be mounted from a ConfigMap.
 - Any confidential environment variables, for example, a Redis password, in `instance.env` or `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
@@ -187,10 +189,10 @@ In the runtime, the Zowe content are organized in this structure:
 - All certificates must be stored in Secrets. Those files will be mounted under the `/home/zowe/keystore` directory.
 - Secrets must be defined manually by a system administrator. Zowe Helm Chart and Zowe Operator do NOT define content of Secrets.
 
-### `zowe-launch-component` Image and initContainers
+### `ompzowe/zowe-launch-scripts` Image and initContainers
 
-- The `zowe-launch-component` image contains necessary scripts to start Zowe components in the Zowe context.
-- This image has a `/home/zowe` directory and it will be shared and mounted to all Zowe component containers as `/home/zowe/runtime`.
+- The `zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest-ubuntu` or `zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest-ubi` image contains necessary scripts to start Zowe components in Zowe context.
+- This image has a `/component` directory and it will be used to prepare `/home/zowe/runtime` and `/home/zowe/instance` volumes to help Zowe component start.
 - In Kubernetes and OpenShift environments this step is defined with [`initContainers` specification](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/).
 
 ### Zowe Workspace Directory
