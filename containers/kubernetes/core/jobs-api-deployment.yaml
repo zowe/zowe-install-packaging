@@ -52,7 +52,7 @@ spec:
               memory: "256Mi"
               cpu: "400m"
           ports:
-            - containerPort: 8080
+            - containerPort: 8545
               protocol: TCP
           command: ["/bin/bash", "-c"]
           args:

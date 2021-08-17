@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: explorer-jes
+  name: explorer-mvs
   namespace: zowe
   labels:
     app: zowe
@@ -10,13 +10,13 @@ spec:
   selector:
     matchLabels:
       app: zowe
-      tier: explorer-jes
+      tier: explorer-mvs
   replicas: 1
   template:
     metadata:
       labels:
         app: zowe
-        tier: explorer-jes
+        tier: explorer-mvs
     spec:
       securityContext:
         runAsUser: 20000
@@ -41,8 +41,8 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-claim
       containers:
-        - name: explorer-jes
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-jes:latest
+        - name: explorer-mvs
+          image: zowe-docker-release.jfrog.io/ompzowe/explorer-mvs:latest
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -52,7 +52,7 @@ spec:
               memory: "128Mi"
               cpu: "250m"
           ports:
-            - containerPort: 8546
+            - containerPort: 8548
               protocol: TCP
           command: ["/bin/bash", "-c"]
           args:
