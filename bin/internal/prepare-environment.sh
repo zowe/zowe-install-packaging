@@ -179,6 +179,10 @@ if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
   # these 2 important variables will be overwritten from what it may have been configured
   ZOWE_EXPLORER_HOST=$(get_sysname)
   ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
+  if [ -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    # in kubernetes, replace it with pod dns name
+    ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).pod.cluster.local"
+  fi
 fi
 
 # turn off automatic export

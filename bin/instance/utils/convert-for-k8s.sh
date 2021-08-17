@@ -92,7 +92,6 @@ data:
   instance.env: |
 $(cat "${INSTANCE_DIR}"/instance.env | grep -v -E "(ZOWE_EXPLORER_HOST=|ZOWE_IP_ADDRESS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | sed -e 's#ROOT_DIR=.\+$#ROOT_DIR=/home/zowe/runtime#' -e 's#KEYSTORE_DIRECTORY=.\+$#KEYSTORE_DIRECTORY=/home/zowe/keystore#' | indent - "    ")
 EOF
-exit
 
 cat << EOF
 ---

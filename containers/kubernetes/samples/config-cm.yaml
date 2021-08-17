@@ -35,9 +35,9 @@ data:
     KEYSTORE_DIRECTORY=/home/zowe/keystore
 
     # APIML variables
-    CATALOG_PORT=8080
-    DISCOVERY_PORT=8080
-    GATEWAY_PORT=8080
+    CATALOG_PORT=7552
+    DISCOVERY_PORT=7553
+    GATEWAY_PORT=7554
     APIML_ALLOW_ENCODED_SLASHES=true
     APIML_CORS_ENABLED=false
     # this configuration is deprecated. Zowe start script will ignore this value and always set it to false
@@ -58,7 +58,7 @@ data:
     ####################
     # caching service
     # TCP port of caching service
-    ZWE_CACHING_SERVICE_PORT=8080
+    ZWE_CACHING_SERVICE_PORT=7555
     # specify amount of records before eviction strategies start evicting
     ZWE_CACHING_STORAGE_SIZE=10000
     # specify eviction strategy to be used when the storage size is achieved
@@ -70,15 +70,15 @@ data:
     ZWE_CACHING_SERVICE_VSAM_DATASET=IBMUSER.ZWE.CACHE1
 
     # explorer variables
-    JOBS_API_PORT=8080
-    FILES_API_PORT=8080
-    JES_EXPLORER_UI_PORT=8080
-    MVS_EXPLORER_UI_PORT=8080
-    USS_EXPLORER_UI_PORT=8080
+    JOBS_API_PORT=8545
+    FILES_API_PORT=8547
+    JES_EXPLORER_UI_PORT=8546
+    MVS_EXPLORER_UI_PORT=8548
+    USS_EXPLORER_UI_PORT=8550
     ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*" # comma seperated list of hosts allowed to embed explorers
 
     # Zowe Desktop/app framework variables
-    ZOWE_ZLUX_SERVER_HTTPS_PORT=8080
+    ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
     ZOWE_ZSS_SERVER_PORT=8542
     ZOWE_ZSS_XMEM_SERVER_NAME=ZWESIS_STD
     ZOWE_ZSS_SERVER_TLS=true # Set this to false if you need to use ZSS without TLS (Backward-compat). May be needed if encountering desktop login failure due to app-server to ZSS communication failure
