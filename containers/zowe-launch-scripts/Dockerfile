@@ -26,7 +26,7 @@ LABEL name="Zowe Launch Script Image" \
 
 ##################################
 # switch context
-USER zowe
+USER zowe:zowe
 WORKDIR /component
 
 ##################################
