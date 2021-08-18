@@ -73,8 +73,8 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          # image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.users-jack-k8s-yaml-43
+          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu-amd64.users-jack-k8s-yaml
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: zowe-runtime

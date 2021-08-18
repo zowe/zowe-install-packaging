@@ -21,9 +21,9 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
-      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -32,7 +32,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: amd64
 
-      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
           build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
         timeout-minutes: 5
@@ -46,9 +46,9 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
-      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -57,7 +57,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: s390x
 
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
         with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
@@ -78,9 +78,9 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
-      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -88,7 +88,7 @@ jobs:
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
 
-      - uses: zowe-actions/shared-actions/docker-manifest@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-manifest@main
         with:
           linux-distro: ubuntu
           cpu-arch-list: "amd64 s390x"
@@ -103,9 +103,9 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
-      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -117,7 +117,7 @@ jobs:
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
-      - uses: zowe-actions/shared-actions/docker-build-local@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
           build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
         timeout-minutes: 5
@@ -131,9 +131,9 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
-      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -142,7 +142,7 @@ jobs:
           linux-distro: ubi
           cpu-arch: s390x
 
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
         with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
@@ -166,9 +166,9 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/envvars-global@main
 
-      - uses: zowe-actions/shared-actions/docker-prepare@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -176,7 +176,7 @@ jobs:
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
 
-      - uses: zowe-actions/shared-actions/docker-manifest@users/jack/snapshot-manifests
+      - uses: zowe-actions/shared-actions/docker-manifest@main
         with:
           linux-distro: ubi
           cpu-arch-list: "amd64 s390x"
