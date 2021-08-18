@@ -392,7 +392,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
   store_config_archive
 fi
 # no validation for running in container
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+if [ ! -f "${INSTANCE_DIR}/.init-for-container" ]; then
   validate_components
 fi
 configure_components
