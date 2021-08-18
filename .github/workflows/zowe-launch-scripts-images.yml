@@ -21,7 +21,7 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -46,7 +46,7 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -78,7 +78,7 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -103,7 +103,7 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -131,7 +131,7 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -166,7 +166,7 @@ jobs:
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
