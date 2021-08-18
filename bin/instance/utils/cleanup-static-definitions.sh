@@ -77,5 +77,8 @@ for one in $(find "${STATIC_DEF_CONFIG_DIR}" -type f -mmin "+${POD_DNS_COOL_DOWN
   echo
 done
 
+# refresh static definition services
+# TODO: use client certificate auth and make request to https://<host>:<gateway>/api/v1/apicatalog/static-api/refresh
+
 echo
 echo "done"
