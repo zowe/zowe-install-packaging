@@ -21,7 +21,7 @@
 ################################################################################
 # Functions
 check_instance() {
-  result=$(node "${ROOT_DIR}"/bin/utils/curl.js "$1" -k 2>&1 | grep -E '(ENOTFOUND)')
+  result=$(node "${ROOT_DIR}"/bin/utils/curl.js "$1" -k 2>&1 | grep -E '(ENOTFOUND|EHOSTUNREACH)')
   if [ -n "${result}" ]; then
     echo "    - ${result}"
     return 1
