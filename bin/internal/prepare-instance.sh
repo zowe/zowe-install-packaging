@@ -137,35 +137,20 @@ prepare_workspace_dir() {
 
 ########################################################
 # Extra preparisons for running in container
+# - link component runtime under zowe <runtime>/components
 # - run zowe-configure-component.sh to handle `commands.configureInstance`
 prepare_running_in_container() {
-  # write tmp to here so we can enable readOnlyRootFilesystem
-  if [ -d "${INSTANCE_DIR}/tmp" ]; then
-    export TMPDIR=${INSTANCE_DIR}/tmp
-    export TMP=${INSTANCE_DIR}/tmp
+  if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
   fi
-  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
-  # /component is hardcoded path we asked for in conformance
-  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
-    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
-  fi
-  export ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
-  # these 2 important variables will be overwritten from what it may have been configured
-  export ZOWE_EXPLORER_HOST=$(get_sysname)
-  export ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
-  if [ -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
-    # in kubernetes, replace it with pod dns name
-    export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).pod.cluster.local"
-  fi
+  # we have hardcoded path for component runtime directory
+  ln -sfn /component "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
 
-  # link component runtime under zowe <runtime>/components
-  if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
-    if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
-      rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
-    fi
-    # we have hardcoded path for component runtime directory
-    ln -sfn /component "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
-  fi
+  ${ROOT_DIR}/bin/zowe-configure-component.sh \
+    --component-name "${ZOWE_CONTAINER_COMPONENT_ID}" \
+    --instance-dir "${INSTANCE_DIR}" \
+    --target-dir "${ROOT_DIR}/components" \
+    --core
 }
 
 ########################################################
@@ -378,11 +363,6 @@ export ZWELS_HA_INSTANCE_ID
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 
-# this is running in containers
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
-  prepare_running_in_container
-fi
-
 # display starting information
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "Zowe version: v$(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')"
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "build and hash: $(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'number') ($(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'commitHash'))"
@@ -403,12 +383,8 @@ global_validate
 prepare_workspace_dir
 # extra preparisons for running in container 
 # this is running in containers
-if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
-  ${ROOT_DIR}/bin/zowe-configure-component.sh \
-    --component-name "${ZOWE_CONTAINER_COMPONENT_ID}" \
-    --instance-dir "${INSTANCE_DIR}" \
-    --target-dir "${ROOT_DIR}/components" \
-    --core
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  prepare_running_in_container
 fi
 
 # FIXME: do we need to do similar if the user is using zowe.yaml?
@@ -416,7 +392,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
   store_config_archive
 fi
 # no validation for running in container
-if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
   validate_components
 fi
 configure_components

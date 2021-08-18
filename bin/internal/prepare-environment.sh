@@ -86,6 +86,21 @@ fi
 # sanitize instance id
 ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # write tmp to here so we can enable readOnlyRootFilesystem
+  if [ -d "${INSTANCE_DIR}/tmp" ]; then
+    export TMPDIR=${INSTANCE_DIR}/tmp
+    export TMP=${INSTANCE_DIR}/tmp
+  fi
+  # these 2 important variables will be overwritten from what it may have been configured
+  export ZOWE_EXPLORER_HOST=$(get_sysname)
+  export ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
+  if [ -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    # in kubernetes, replace it with pod dns name
+    export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).pod.cluster.local"
+  fi
+fi
+
 # read the instance environment variables to make sure they exists
 . ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" -a -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
@@ -175,14 +190,8 @@ if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
   if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
     ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
   fi
+  ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
   LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
-  # these 2 important variables will be overwritten from what it may have been configured
-  ZOWE_EXPLORER_HOST=$(get_sysname)
-  ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
-  if [ -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
-    # in kubernetes, replace it with pod dns name
-    ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).pod.cluster.local"
-  fi
 fi
 
 # turn off automatic export
