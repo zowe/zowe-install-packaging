@@ -22,7 +22,7 @@ kubectl apply -f samples/zowe-sa.yaml
 ### Create Persistent Volume
 
 ```
-kubectl apply -f samples/workspace-pvc.yaml`
+kubectl apply -f samples/workspace-pvc.yaml
 ```
 
 ### Create And Modify ConfigMaps and Secrets

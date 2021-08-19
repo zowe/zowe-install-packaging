@@ -363,6 +363,12 @@ export ZWELS_HA_INSTANCE_ID
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
 
+# write tmp to here so we can enable readOnlyRootFilesystem
+if [ -f "${INSTANCE_DIR}/.init-for-container" -a -d "${INSTANCE_DIR}/tmp" ]; then
+  export TMPDIR=${INSTANCE_DIR}/tmp
+  export TMP=${INSTANCE_DIR}/tmp
+fi
+
 # display starting information
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "Zowe version: v$(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')"
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "build and hash: $(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'number') ($(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'commitHash'))"
