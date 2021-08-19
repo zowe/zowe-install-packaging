@@ -22,6 +22,7 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
+      serviceAccountName: zowe-sa
       volumes:
         - name: zowe-runtime
           emptyDir: {}
@@ -57,6 +58,8 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"
+          securityContext:
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
@@ -74,8 +77,10 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu-amd64.users-jack-k8s-yaml
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.users-jack-k8s-yaml
           imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"

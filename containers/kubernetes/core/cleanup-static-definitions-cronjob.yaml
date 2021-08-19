@@ -17,6 +17,7 @@ spec:
             runAsUser: 20000
             runAsGroup: 20000
             fsGroup: 20000
+          serviceAccountName: zowe-sa
           volumes:
             - name: zowe-runtime
               emptyDir: {}
@@ -32,12 +33,14 @@ spec:
           containers:
             - name: cleanup-static-definitions
               # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu-amd64.users-jack-k8s-yaml
+              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.users-jack-k8s-yaml
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/bash
                 - -c
                 - /component/bin/internal/init-container.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
+              securityContext:
+                readOnlyRootFilesystem: true
               volumeMounts:
                 - name: zowe-runtime
                   mountPath: "/home/zowe/runtime"

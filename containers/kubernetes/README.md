@@ -4,10 +4,25 @@
 
 ## Preparations
 
-### Create `zowe` Namespace
+### Create Namespace and Service Account
+
+Our default namespace is `zowe`, default service account name is `zowe-sa`.
 
 ```
 kubectl create namespace zowe
+kubectl create serviceaccount zowe-sa --namespace zowe
+```
+
+or
+```
+kubectl apply -f samples/zowe-ns.yaml
+kubectl apply -f samples/zowe-sa.yaml
+```
+
+### Create Persistent Volume
+
+```
+kubectl apply -f samples/workspace-pvc.yaml`
 ```
 
 ### Create And Modify ConfigMaps and Secrets
@@ -20,12 +35,6 @@ cd <instance-dir>
 ```
 
 This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values. Copy the whole output and save as a YAML file `configs.yaml` on your local computer, verify and then run `kubectl apply -f /path/to/your/configs.yaml`.
-
-### Create Persistent Volume
-
-```
-kubectl apply -f samples/workspace-pvc.yaml`
-```
 
 ## Apply Zowe Services and Start
 
