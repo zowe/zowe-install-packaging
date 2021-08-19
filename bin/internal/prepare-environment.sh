@@ -89,16 +89,22 @@ ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:
 if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
   # write tmp to here so we can enable readOnlyRootFilesystem
   if [ -d "${INSTANCE_DIR}/tmp" ]; then
-    export TMPDIR=${INSTANCE_DIR}/tmp
-    export TMP=${INSTANCE_DIR}/tmp
+    TMPDIR=${INSTANCE_DIR}/tmp
+    TMP=${INSTANCE_DIR}/tmp
   fi
   # these 2 important variables will be overwritten from what it may have been configured
-  export ZOWE_EXPLORER_HOST=$(get_sysname)
-  export ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
-  if [ -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
-    # in kubernetes, replace it with pod dns name
-    export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).pod.cluster.local"
+  ZOWE_EXPLORER_HOST=$(get_sysname)
+  ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
+  if [ -z "${ZWE_POD_NAMESPACE}" -a -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    # try to detect ZWE_POD_NAMESPACE, this requires automountServiceAccountToken to be true
+    ZWE_POD_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null)
   fi
+  if [ -z "${ZWE_POD_NAMESPACE}" ]; then
+    # fall back to default value
+    ZWE_POD_NAMESPACE=zowe
+  fi
+  # in kubernetes, replace it with pod dns name
+  ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_POD_NAMESPACE}.pod.cluster.local"
 fi
 
 # read the instance environment variables to make sure they exists

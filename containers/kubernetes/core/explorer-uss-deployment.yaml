@@ -40,7 +40,7 @@ spec:
                 name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
-            claimName: zowe-workspace-claim
+            claimName: zowe-workspace-pvc
       containers:
         - name: explorer-uss
           image: zowe-docker-release.jfrog.io/ompzowe/explorer-uss:latest
@@ -58,6 +58,11 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"
+          env:
+            - name: ZWE_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

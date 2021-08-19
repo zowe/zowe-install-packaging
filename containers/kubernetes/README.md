@@ -6,14 +6,8 @@
 
 ### Create Namespace and Service Account
 
-Our default namespace is `zowe`, default service account name is `zowe-sa`.
+Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
-```
-kubectl create namespace zowe
-kubectl create serviceaccount zowe-sa --namespace zowe
-```
-
-or
 ```
 kubectl apply -f samples/zowe-ns.yaml
 kubectl apply -f samples/zowe-sa.yaml

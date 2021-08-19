@@ -12,7 +12,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: zowe-workspace-claim
+  name: zowe-workspace-pvc
   namespace: zowe
 spec:
   # FIXME: StorageClass should be predefined

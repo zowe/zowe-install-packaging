@@ -28,7 +28,7 @@ spec:
                 name: zowe-config
             - name: zowe-workspace
               persistentVolumeClaim:
-                claimName: zowe-workspace-claim
+                claimName: zowe-workspace-pvc
           restartPolicy: OnFailure
           containers:
             - name: cleanup-static-definitions

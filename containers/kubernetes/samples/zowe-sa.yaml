@@ -3,3 +3,4 @@ kind: ServiceAccount
 metadata:
   name: zowe-sa
   namespace: zowe
+automountServiceAccountToken: false
