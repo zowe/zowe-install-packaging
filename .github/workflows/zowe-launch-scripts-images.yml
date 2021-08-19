@@ -1,21 +1,25 @@
-name: Build ompzowe/base-jdk
+name: Build ompzowe/zowe-launch-scripts
 on:
   # push:
   # pull_request:
   workflow_dispatch:
     inputs:
       release:
-        description: 'Set to "true" if we want to release the base images'
+        description: 'Set to "true" if we want to release the images'
         required: false
         default: ''
 env:
-  IMAGE_BASE_DIR: containers/base-jdk
+  IMAGE_BASE_DIR: containers/zowe-launch-scripts
 
 jobs:
   build-ubuntu-amd64:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/envvars-global@main
 
@@ -29,12 +33,18 @@ jobs:
           cpu-arch: amd64
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
+        with:
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
         timeout-minutes: 5
 
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/envvars-global@main
 
@@ -53,7 +63,8 @@ jobs:
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-        timeout-minutes: 20
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
+        timeout-minutes: 10
 
   define-ubuntu-manifest:
     needs:
@@ -62,6 +73,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/envvars-global@main
 
@@ -85,6 +100,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
       - uses: zowe-actions/shared-actions/envvars-global@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
@@ -100,12 +119,18 @@ jobs:
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
+        with:
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
         timeout-minutes: 5
 
   build-ubi-s390x:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/envvars-global@main
 
@@ -127,7 +152,8 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-        timeout-minutes: 20
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
+        timeout-minutes: 10
 
   define-ubi-manifest:
     needs:
@@ -136,6 +162,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/envvars-global@main
 

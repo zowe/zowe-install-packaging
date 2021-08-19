@@ -108,13 +108,14 @@ get_zis_params() {
     ZIS_LOADLIB=${DSN_PREFIX}.SZWEAUTH
     # currently unused
     ZIS_PLUGINLIB=${DSN_PREFIX}.SZWEPLUG
+    . ${ZOWE_ROOT_DIR}/scripts/utils/zowe-create-ZIS-ds.sh
   else
     if [ -z "${ZIS_LOADLIB}" -o -z "${ZIS_PARMLIB}" ]; then
+      get_zowe_version
       if [ -n "${NO_TEMP}" ]; then
         echo_and_log "ZIS parameters wont be recorded due to missing arguments. You may record them in the instance configuration later."
-      elif [ -d "/tmp/zowe-${ZOWE_VERSION}" ]; then
-        get_zowe_version
-        for file in /tmp/zowe-$ZOWE_VERSION/install-*.env; do
+      elif [ `ls -l /tmp/zowe-${ZOWE_VERSION}-install-* | wc -l` -ne "0" ]; then
+        for file in /tmp/zowe-$ZOWE_VERSION-install-*.env; do
           if [[ -f "${file}" ]]; then
             ROOT_DIR_VAL=$(cat "${file}" | grep "^ZOWE_ROOT_DIR=" | cut -d'=' -f2)
             if [ "${ROOT_DIR_VAL}" = "${ZOWE_ROOT_DIR}" ]; then
@@ -131,6 +132,7 @@ get_zis_params() {
           ZIS_LOADLIB=${ZOWE_DSN_PREFIX}.SZWEAUTH
           # currently unused
           ZIS_PLUGINLIB=${ZOWE_DSN_PREFIX}.SZWEPLUG
+          . ${ZOWE_ROOT_DIR}/scripts/utils/zowe-create-ZIS-ds.sh
         fi
       else
         echo_and_log "ZIS parameters wont be recorded because temporary file not found. You may record them in the instance configuration later."
@@ -141,7 +143,7 @@ get_zis_params() {
   echo "ZIS_PARMLIB=$ZIS_PARMLIB" >> ${LOG_FILE}
   echo "ZIS_LOADLIB=$ZIS_LOADLIB" >> ${LOG_FILE}
 #  pluginlib code temporarily disabled but will be used again soon.
-#  echo "ZIS_PLUGINLIB=$ZIS_PLUGINLIB" >> ${LOG_FILE}
+  echo "ZIS_PLUGINLIB=$ZIS_PLUGINLIB" >> ${LOG_FILE}
 }
 
 create_new_instance() {

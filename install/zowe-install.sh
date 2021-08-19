@@ -151,6 +151,7 @@ copy_runtime_support_files() {
   cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
   cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
   cp $INSTALL_DIR/scripts/tag-files.sh $ZOWE_ROOT_DIR/scripts/utils/tag-files.sh
+  cp $INSTALL_DIR/scripts/zowe-create-ZIS-ds.sh $ZOWE_ROOT_DIR/scripts/utils/zowe-create-ZIS-ds.sh
 }
 
 copy_workflow() {
@@ -215,9 +216,8 @@ record_zis_info() {
   # Later retrieve this info by looking in a known folder location with info that helps to disambiguate which install it originated from
   # This is not foolproof, but will use the info from the latest install of a given ROOT_DIR
   if [ "${RUN_ON_ZOS}" = "true" ]; then
-    mkdir -p /tmp/zowe-${ZOWE_VERSION}
     CURRENT_TIME=`date +%Y%j%H%M%S`
-    INSTALL_VAR_FILE=/tmp/zowe-${ZOWE_VERSION}/install-${CURRENT_TIME}.env
+    INSTALL_VAR_FILE=/tmp/zowe-${ZOWE_VERSION}-install-${CURRENT_TIME}.env
     echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX\nZOWE_ROOT_DIR=$ZOWE_ROOT_DIR\nZOWE_VERSION=$ZOWE_VERSION" >> $INSTALL_VAR_FILE
   fi
 }
