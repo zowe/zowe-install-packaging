@@ -50,7 +50,7 @@ kubectl apply -f core/
 - Init with `zowe-launch-scripts` image:
 
   ```
-  docker run -it --rm -v $(pwd):/home/zowe zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:0.0.1-ubuntu.users-jack-k8s-yaml-35
+  docker run -it --rm -v $(pwd):/home/zowe zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:0.0.1-ubuntu.staging
   ```
 
 - Create `tmp/instance/instance.env` with your desired content. This content you can modify from `samples/config-cm.yaml`.
