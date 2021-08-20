@@ -160,7 +160,6 @@ The below sections are mainly targeting Kubernetes or OpenShift environments. St
 
 - This persistent volume MUST be created:
   * `zowe-workspace` mounted to `/home/zowe/instance/workspace`.
-- The system administrator MUST define the persistent volume manually. Zowe Helm Chart and Zowe Operator do NOT create persistent volumes.
 
 ### Files and Directories
 
@@ -176,6 +175,7 @@ In the runtime, the Zowe content is organized in this structure:
     +- /instance
       +- instance.env or zowe.yaml
       +- /logs
+      +- /tmp
       +- /workspace
     +- /keystore
       +- zowe-certificates.env
@@ -184,6 +184,8 @@ In the runtime, the Zowe content is organized in this structure:
 - `/home/zowe/runtime` is a shared volume initialized by the `zowe-launch-scripts` container.
 - `/home/zowe/runtime/components/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is the `name` entry defined in `/component/manifest.(yaml|yml|json)`.
 - `/home/zowe/instance/(instance.env|zowe.yaml)` is a Zowe configuration file and MUST be mounted from a ConfigMap.
+- `/home/zowe/instance/logs` is the logs directory of Zowe instance. This folder will be created automatically by `zowe-launch-scripts` container.
+- `/home/zowe/instance/tmp` is the temporary directory of Zowe instance. This folder will be created automatically by `zowe-launch-scripts` container.
 - `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component container.
   * Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
   * Components writing to this directory must NOT write container-specific information to this directory as it may potentially be overwritten by another container.
@@ -206,6 +208,21 @@ In the runtime, the Zowe content is organized in this structure:
 ### Command Override
 
 - Component `CMD` and `ENTRYPOINT` directives will be overwritten with the Zowe launch script used to start it in Zowe context.
+
+### Environment Variables
+
+These runtime environment variable(s) are **REQUIRED** to start Zowe components.
+
+- `ZWE_POD_NAMESPACE`: holds the current Kubernetes namespace. This variable can be _optional_ if the service account `automountServiceAccountToken` attribute is `true`. The value of this variable can be assigned from metadata from `Pod` `spec` section:
+
+  ```
+  env:
+    - name: ZWE_POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+  ```
 
 ## CI/CD
 
