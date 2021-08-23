@@ -29,7 +29,7 @@
 #% -r rootDir    use the specified root directory
 #%               ignored when -c is specified
 #% -s stopAt.sh  stop before this sub-script is invoked          #debug
-#% -S psi.sh     execute script to create zowe PSI
+#% -S            execute script to create zowe PSI
 #% -V volume     allocate data sets on specified volume(s)
 #% -v vrm        FMID 3-char version/release/modification (position 5-7)
 #%               ignored when -c is specified
@@ -151,12 +151,12 @@ _cmd umask 0022                                  # similar to chmod 755
 
 # clear input variables
 unset alter BUILD BRANCH YAML SuCcEsS count HLQ input reqPTF VERSION \
-      ROOT stopAt VOLSER VRM fmid1 fmid2
+      ROOT psi stopAt VOLSER VRM fmid1 fmid2
 # do NOT unset debug errorRC
 errorRC=8  # default RC 8 on error
 
 # get startup arguments
-while getopts a:B:b:c:E:f:h:i:p:r:S:s:V:v:1:2:?dP opt
+while getopts a:B:b:c:E:f:h:i:p:r:s:V:v:1:2:?dP opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
   B)   export BUILD="-B $OPTARG";;
@@ -170,7 +170,7 @@ do case "$opt" in
   P)   export reqPTF="-P";;
   p)   export VERSION="-p $OPTARG";;
   r)   export ROOT="$OPTARG";;
-  S)   export psi="$OPTARG";;
+  S)   export psi="-S";;
   s)   export stopAt="$OPTARG";;  
   V)   export VOLSER="$OPTARG";;
   v)   export VRM="$OPTARG";;
@@ -275,10 +275,13 @@ _cmd $here/smpe-service.sh $debug -c $YAML $opts
 # result (final): $ship                      # zip with sysmod & readme
 
 # create psi
-opts=""
-test "$BUILD_PSI" == "yes" && opt="$opt -S"
-_stopAt prepare-PSI.sh $debug -c $YAML $opts
-_cmd $here/psi/bld/prepare-PSI.sh $debug -c $YAML $opts
+if test -n "$psi"
+then
+  opts=""
+  _stopAt prepare-PSI.sh $debug -c $YAML $opts
+  _cmd $here/prepare-PSI.sh $debug -c $YAML $opts
+  # TODO create real PSI script
+fi # $psi
 
 #  signal that we ended successfully
 test -n "$SuCcEsS" && _cmd touch "$SuCcEsS"
