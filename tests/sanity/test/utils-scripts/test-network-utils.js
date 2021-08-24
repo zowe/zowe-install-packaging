@@ -53,7 +53,7 @@ describe('verify network-utils', function() {
     async function test_port_available(port, expected_process = undefined) {
       let command = `${validate_port_is_available} ${port}`;
       const expected_rc = expected_process ? 1 : 0;
-      const expected_err = expected_process ? `Port ${port} is already in use by process ${expected_process}` : '';
+      const expected_err = expected_process ? `Port ${port} is already in use by process (${expected_process}` : '';
       await test_network_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
   });

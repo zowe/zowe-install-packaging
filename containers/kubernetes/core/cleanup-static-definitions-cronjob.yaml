@@ -1,0 +1,54 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cleanup-static-definitions
+  namespace: zowe
+  labels:
+    app: zowe
+spec:
+  schedule: "*/15 * * * *"
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          securityContext:
+            runAsUser: 20000
+            runAsGroup: 20000
+            fsGroup: 20000
+          serviceAccountName: zowe-sa
+          volumes:
+            - name: zowe-runtime
+              emptyDir: {}
+            - name: zowe-instance
+              emptyDir: {}
+            - name: zowe-config
+              configMap:
+                name: zowe-config
+            - name: zowe-workspace
+              persistentVolumeClaim:
+                claimName: zowe-workspace-pvc
+          restartPolicy: OnFailure
+          containers:
+            - name: cleanup-static-definitions
+              # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
+              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/bash
+                - -c
+                - /component/bin/internal/init-container.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
+              securityContext:
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - name: zowe-runtime
+                  mountPath: "/home/zowe/runtime"
+                - name: zowe-instance
+                  mountPath: "/home/zowe/instance"
+                - name: zowe-config
+                  mountPath: "/home/zowe/instance/instance.env"
+                  subPath: instance.env
+                  readOnly: true
+                - name: zowe-workspace
+                  mountPath: "/home/zowe/instance/workspace"

@@ -145,10 +145,10 @@ $(echo "${message}")
 EOF
 
   # reset values
-  service=
-  logger=
-  level=
-  message=
+  export service=
+  export logger=
+  export level=
+  export message=
 }
 
 print_formatted_trace() {
