@@ -18,8 +18,6 @@
 # - optional, path to keystore directory. By default it will use the keystore
 #             and certificates used by current instance.
 #
-# Note: this utility requires node.js.
-#
 # FIXME: to support keyring
 # FIXME: to support external certificates
 # FIXME: to support zowe.yaml
@@ -28,7 +26,7 @@
 ################################################################################
 # Functions
 base64() {
-  node -e "const fs=require('fs');console.log(Buffer.from(fs.readFileSync('$1'), 'utf8').toString('base64'));"
+  uuencode -m "$1" dummy | sed '1d;$d' | tr -d '\n'
 }
 indent() {
   cat "$1" | sed "s/^/$2/"

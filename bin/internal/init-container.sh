@@ -24,6 +24,13 @@ RUNTIME_DIR=/home/zowe/runtime
 INSTANCE_DIR=/home/zowe/instance
 
 #######################################################################
+echo ">>> before preparation"
+echo "  - whoami?" && whoami
+echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
+echo "  - /home" && ls -la "/home"
+echo "  - /home/zowe" && ls -la "/home/zowe"
+
+#######################################################################
 echo ">>> prepare runtime directory"
 mkdir -p ${RUNTIME_DIR}/components
 cp -r ${SOURCE_DIR}/. ${RUNTIME_DIR}
@@ -38,3 +45,13 @@ cp -r ${RUNTIME_DIR}/bin/instance/. ${INSTANCE_DIR}/bin
 cp ${RUNTIME_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 # zowe-configure-component.sh will be executed during runtime
 touch ${INSTANCE_DIR}/.init-for-container
+
+#######################################################################
+echo ">>> after preparation"
+echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
+echo "  - /home/zowe" && ls -la "/home/zowe"
+echo "  - ${RUNTIME_DIR}" && ls -la "${RUNTIME_DIR}"
+echo "  - ${INSTANCE_DIR}" && ls -la "${INSTANCE_DIR}"
+
+#######################################################################
+echo ">>> done"
