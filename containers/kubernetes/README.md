@@ -13,7 +13,9 @@ kubectl apply -f samples/zowe-ns.yaml
 kubectl apply -f samples/zowe-sa.yaml
 ```
 
-### Create Persistent Volume
+### Create Persistent Volume Claim
+
+Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and customize to your own value.
 
 ```
 kubectl apply -f samples/workspace-pvc.yaml
@@ -36,7 +38,9 @@ This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificat
 kubectl apply -f core/
 ```
 
-## Launch Single Image on Local Computer
+## Launch single image on local computer without Kubernetes
+
+**NOTES,** this is for debugging image purpose and it's not recommended for end-user.
 
 ### Init `tmp` Folder
 
@@ -50,13 +54,13 @@ kubectl apply -f core/
 - Init with `zowe-launch-scripts` image:
 
   ```
-  docker run -it --rm -v $(pwd):/home/zowe zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:0.0.1-ubuntu.staging
+  docker run -it --rm -v $(pwd):/home/zowe zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
   ```
 
 - Create `tmp/instance/instance.env` with your desired content. This content you can modify from `samples/config-cm.yaml`.
 - Create `tmp/keystore/` and `tmp/keystore/zowe-certificates.env` with your desired content.
 
-### Start Component Container
+### Start component container
 
 For example, starting `explorer-jes` with `bash`:
 

@@ -15,11 +15,11 @@ metadata:
   name: zowe-workspace-pvc
   namespace: zowe
 spec:
-  # FIXME: StorageClass should be predefined
-  #        hostpath is a StorageClass created by Docker Desktop
+  # FIXME: StorageClass should be predefined by Kubernetes admin
+  #        hostpath is a StorageClass created by Docker Desktop by default
   storageClassName: hostpath
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 10Mi
