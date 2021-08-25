@@ -25,6 +25,7 @@ INSTANCE_DIR=/home/zowe/instance
 
 #######################################################################
 echo ">>> before preparation"
+echo "  - whoami?" && whoami
 echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
 echo "  - /home" && ls -la "/home"
 echo "  - /home/zowe" && ls -la "/home/zowe"
