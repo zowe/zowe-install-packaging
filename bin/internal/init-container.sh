@@ -25,8 +25,9 @@ INSTANCE_DIR=/home/zowe/instance
 
 #######################################################################
 echo ">>> before preparation"
-echo "  - ${SOURCE_DIR}" && cd "${SOURCE_DIR}" && ls -la
-echo "  - /home/zowe" && cd "/home/zowe" && ls -la
+echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
+echo "  - /home" && ls -la "/home"
+echo "  - /home/zowe" && ls -la "/home/zowe"
 
 #######################################################################
 echo ">>> prepare runtime directory"
@@ -46,10 +47,10 @@ touch ${INSTANCE_DIR}/.init-for-container
 
 #######################################################################
 echo ">>> after preparation"
-echo "  - ${SOURCE_DIR}" && cd "${SOURCE_DIR}" && ls -la
-echo "  - /home/zowe" && cd "/home/zowe" && ls -la
-echo "  - ${RUNTIME_DIR}" && cd "${RUNTIME_DIR}" && ls -la
-echo "  - ${INSTANCE_DIR}" && cd "${INSTANCE_DIR}" && ls -la
+echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
+echo "  - /home/zowe" && ls -la "/home/zowe"
+echo "  - ${RUNTIME_DIR}" && ls -la "${RUNTIME_DIR}"
+echo "  - ${INSTANCE_DIR}" && ls -la "${INSTANCE_DIR}"
 
 #######################################################################
 echo ">>> done"
