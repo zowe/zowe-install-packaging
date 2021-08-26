@@ -156,7 +156,7 @@ unset alter BUILD BRANCH YAML SuCcEsS count HLQ input reqPTF VERSION \
 errorRC=8  # default RC 8 on error
 
 # get startup arguments
-while getopts a:B:b:c:E:f:h:i:p:r:s:V:v:1:2:?dP opt
+while getopts a:B:b:c:E:f:h:i:p:r:s:V:v:1:2:?dPS opt
 do case "$opt" in
   a)   export alter="$OPTARG";;
   B)   export BUILD="-B $OPTARG";;
