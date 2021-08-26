@@ -19,15 +19,15 @@ FROM zowe-docker-release.jfrog.io/ompzowe/base-node:${ZOWE_BASE_IMAGE}
 LABEL name="Zowe Launch Script Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.1" \
+      version="0.0.0" \
       release="0" \
       summary="Base Launch Script for Zowe components" \
       description="Base Launch Script for Zowe components"
 
 ##################################
 # switch context
-USER zowe
-WORKDIR /home/zowe
+USER zowe:zowe
+WORKDIR /component
 
 ##################################
 # copy files
@@ -36,4 +36,4 @@ COPY --chown=zowe:zowe zowe/LICENSE /licenses
 
 ##################################
 # start command
-CMD ["/home/zowe/bin/internal/init-container.sh"]
+CMD ["/component/bin/internal/init-container.sh"]
