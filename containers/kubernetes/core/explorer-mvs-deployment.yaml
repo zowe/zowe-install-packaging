@@ -43,7 +43,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: explorer-mvs
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-mvs:latest
+          image: zowe-docker-release.jfrog.io/ompzowe/explorer-mvs:latest-ubuntu
           imagePullPolicy: IfNotPresent
           resources:
             requests:
