@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: explorer-uss
+  name: <my-component-name>
   namespace: zowe
   labels:
     app: zowe
@@ -10,13 +10,13 @@ spec:
   selector:
     matchLabels:
       app: zowe
-      tier: explorer-uss
+      tier: <my-component-name>
   replicas: 1
   template:
     metadata:
       labels:
         app: zowe
-        tier: explorer-uss
+        tier: <my-component-name>
     spec:
       securityContext:
         runAsUser: 20000
@@ -42,8 +42,8 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: explorer-uss
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-uss:latest-ubuntu
+        - name: <my-component-name>
+          image: <my-component-image>
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -53,7 +53,7 @@ spec:
               memory: "128Mi"
               cpu: "250m"
           ports:
-            - containerPort: 8550
+            - containerPort: <my-component-port>
               protocol: TCP
           command: ["/bin/bash", "-c"]
           args:
@@ -81,7 +81,6 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
           imagePullPolicy: IfNotPresent
           securityContext:
