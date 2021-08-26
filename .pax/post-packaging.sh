@@ -166,7 +166,7 @@ echo
 #% -E success    exit with RC 0, create file on successful completion
 #% -p version    product version
 #% -P            fail build if APAR/USERMOD is created instead of PTF
-#% -S            create PSI package (Portable Software Instance)
+#% -S            create PSI package (Portable Software Instance for z/osmf)
 #% -V volume     allocate data sets on specified volume(s)
 
 external=""
