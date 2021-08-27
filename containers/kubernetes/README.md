@@ -44,7 +44,25 @@ To verify this step,
 - `kubectl get configmaps --namespace zowe` should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
 - `kubectl get secrets --namespace zowe` should show a Secret `zowe-certificates-secret`.
 
-## Apply Zowe Core Services and Start Zowe
+### Create Service and Ingress
+
+Double check these values of `samples/gateway-service-ingress.yaml` file:
+
+- `spec.type` of `Service` which default value is `LoadBalancer`.
+- `spec.rules[0].http.host` of `Ingress` which is commented out by default.
+
+Then:
+
+```
+kubectl apply -f samples/gateway-service-ingress.yaml
+```
+
+To verify this step,
+
+- `kubectl get services --namespace zowe` should show a Namespace `gateway-service`.
+- `kubectl get ingresses --namespace zowe` should show a ServiceAccount `gateway-ingress`.
+
+## Apply Zowe Core Components and Start Zowe
 
 ```
 kubectl apply -f core/
