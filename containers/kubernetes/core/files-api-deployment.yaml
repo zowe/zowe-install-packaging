@@ -44,7 +44,7 @@ spec:
       containers:
         - name: files-api
           image: zowe-docker-release.jfrog.io/ompzowe/files-api:latest-ubuntu
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "128Mi"
@@ -83,7 +83,7 @@ spec:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

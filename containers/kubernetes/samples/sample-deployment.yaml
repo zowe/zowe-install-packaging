@@ -44,7 +44,7 @@ spec:
       containers:
         - name: <my-component-name>
           image: <my-component-image>
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "64Mi"
@@ -82,7 +82,7 @@ spec:
       initContainers:
         - name: init-zowe
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

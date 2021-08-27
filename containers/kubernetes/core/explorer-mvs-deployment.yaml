@@ -44,7 +44,7 @@ spec:
       containers:
         - name: explorer-mvs
           image: zowe-docker-release.jfrog.io/ompzowe/explorer-mvs:latest-ubuntu
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "64Mi"
@@ -83,7 +83,7 @@ spec:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
