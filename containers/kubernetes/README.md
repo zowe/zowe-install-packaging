@@ -13,13 +13,20 @@ kubectl apply -f samples/zowe-ns.yaml
 kubectl apply -f samples/zowe-sa.yaml
 ```
 
+To verify this step,
+
+- `kubectl get namespaces` should show a Namespace `zowe`.
+- `kubectl get serviceaccounts --namespace zowe` should show a ServiceAccount `zowe-sa`.
+
 ### Create Persistent Volume Claim
 
-Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and customize to your own value.
+Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and customize to your own value. You can use `kubectl get sc` to list all StorageClass-es on your cluster.
 
 ```
 kubectl apply -f samples/workspace-pvc.yaml
 ```
+
+To verify this step, `kubectl get pvc --namespace zowe` should show a PersistentVolumeClaim `zowe-workspace-pvc` and the `STATUS` should be `Bound`.
 
 ### Create And Modify ConfigMaps and Secrets
 
@@ -32,11 +39,21 @@ cd <instance-dir>
 
 This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values. Copy the whole output and save as a YAML file `configs.yaml` on your local computer, verify and then run `kubectl apply -f /path/to/your/configs.yaml`.
 
+To verify this step,
+
+- `kubectl get configmaps --namespace zowe` should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
+- `kubectl get secrets --namespace zowe` should show a Secret `zowe-certificates-secret`.
+
 ## Apply Zowe Core Services and Start Zowe
 
 ```
 kubectl apply -f core/
 ```
+
+To verify this step,
+
+- `kubectl get deployments --namespace zowe` should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. For each of deployment, it should show `1/1` in `READY` column.
+- `kubectl get cronjobs --namespace zowe` should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be `False`.
 
 ## Import New Component
 

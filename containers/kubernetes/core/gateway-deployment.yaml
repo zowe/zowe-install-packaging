@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: zowe
+  labels:
+    app: zowe
+spec:
+  selector:
+    matchLabels:
+      app: zowe
+      tier: gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zowe
+        tier: gateway
+    spec:
+      securityContext:
+        runAsUser: 20000
+        runAsGroup: 20000
+        fsGroup: 20000
+      serviceAccountName: zowe-sa
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: zowe-runtime
+          emptyDir: {}
+        - name: zowe-instance
+          emptyDir: {}
+        - name: zowe-config
+          configMap:
+            name: zowe-config
+        - name: zowe-keystore
+          projected:
+            sources:
+            - configMap:
+                name: zowe-certificates-cm
+            - secret:
+                name: zowe-certificates-secret
+        - name: zowe-workspace
+          persistentVolumeClaim:
+            claimName: zowe-workspace-pvc
+      containers:
+        - name: gateway
+          image: zowe-docker-release.jfrog.io/ompzowe/gateway-service:latest-ubuntu
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "400m"
+          ports:
+            - containerPort: 7554
+              protocol: TCP
+          command: ["/bin/bash", "-c"]
+          args:
+            - "/home/zowe/instance/bin/internal/run-zowe.sh"
+          env:
+            - name: ZWE_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CMMN_LB
+              value: apiml-common-lib/bin/api-layer-lite-lib-all.jar
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: zowe-runtime
+              mountPath: "/home/zowe/runtime"
+            - name: zowe-instance
+              mountPath: "/home/zowe/instance"
+            - name: zowe-config
+              mountPath: "/home/zowe/instance/instance.env"
+              subPath: instance.env
+              readOnly: true
+            - name: zowe-keystore
+              mountPath: "/home/zowe/keystore/"
+              readOnly: true
+            - name: zowe-workspace
+              mountPath: "/home/zowe/instance/workspace"
+      initContainers:
+        - name: init-zowe
+          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: zowe-runtime
+              mountPath: "/home/zowe/runtime"
+            - name: zowe-instance
+              mountPath: "/home/zowe/instance"
