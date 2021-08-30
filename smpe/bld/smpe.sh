@@ -280,7 +280,7 @@ then
   opts=""
   _stopAt prepare-PSI.sh $debug -c $YAML $opts
   _cmd $here/prepare-PSI.sh $debug -c $YAML $opts
-  # TODO create real PSI script
+  # TODO create real PSI script from smpe
 fi # $psi
 
 #  signal that we ended successfully
