@@ -5,18 +5,25 @@ metadata:
   name: explorer-uss
   namespace: zowe
   labels:
-    app: zowe
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/component: explorer-uss
+    app.kubernetes.io/part-of: explorer-ui
+    app.kubernetes.io/managed-by: manual
 spec:
   selector:
     matchLabels:
-      app: zowe
-      tier: explorer-uss
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+      app.kubernetes.io/component: explorer-uss
   replicas: 1
   template:
     metadata:
       labels:
-        app: zowe
-        tier: explorer-uss
+        app.kubernetes.io/name: zowe
+        app.kubernetes.io/instance: zowe
+        app.kubernetes.io/component: explorer-uss
     spec:
       securityContext:
         runAsUser: 20000
@@ -63,6 +70,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","cd /home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

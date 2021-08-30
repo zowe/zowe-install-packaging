@@ -5,18 +5,25 @@ metadata:
   name: gateway
   namespace: zowe
   labels:
-    app: zowe
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: apiml
+    app.kubernetes.io/managed-by: manual
 spec:
   selector:
     matchLabels:
-      app: zowe
-      tier: gateway
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+      app.kubernetes.io/component: gateway
   replicas: 1
   template:
     metadata:
       labels:
-        app: zowe
-        tier: gateway
+        app.kubernetes.io/name: zowe
+        app.kubernetes.io/instance: zowe
+        app.kubernetes.io/component: gateway
     spec:
       securityContext:
         runAsUser: 20000
@@ -57,6 +64,10 @@ spec:
           ports:
             - containerPort: 7554
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 7554
+            initialDelaySeconds: 180
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"
@@ -67,6 +78,10 @@ spec:
                   fieldPath: metadata.namespace
             - name: CMMN_LB
               value: apiml-common-lib/bin/api-layer-lite-lib-all.jar
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","cd /home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

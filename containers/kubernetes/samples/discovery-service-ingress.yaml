@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway-service
+  name: discovery-service
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: gateway
+    app.kubernetes.io/component: discovery
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
@@ -17,23 +17,23 @@ spec:
   selector:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/component: gateway
+    app.kubernetes.io/component: discovery
   ports:
     - protocol: TCP
-      port: 7554
-      targetPort: 7554
+      port: 7553
+      targetPort: 7553
       appProtocol: https
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gateway-ingress
+  name: discovery-ingress
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: gateway
+    app.kubernetes.io/component: discovery
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
@@ -44,8 +44,8 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: gateway-service
+              name: discovery-service
               port:
-                number: 7554
+                number: 7553
     # FIXME: customize this value to match your environment
     # host: localhost
