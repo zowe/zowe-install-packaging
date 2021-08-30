@@ -66,9 +66,6 @@ if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path
 fi
 
-# is on z/OS?
-RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
-
 #######################################################################
 # Functions
 error_handler(){
@@ -109,7 +106,7 @@ extract_to_target_dir(){
     fi
 
     # automatically tag files
-    if [ "${RUN_ON_ZOS}" = "true" ]; then
+    if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
         manifest_encoding=$(detect_component_manifest_encoding "${TARGET_DIR}/temp-ext-dir")
         log_message "Component manifest encoding=${manifest_encoding}, requested auto_encoding=${AUTO_ENCODING}"
         #the autotag script we have is for tagging when files are ascii, so we assume tagging cant be done unless ascii

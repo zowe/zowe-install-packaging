@@ -31,7 +31,7 @@ separator() {
 }
 
 usage() {
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
   else
     echo "Usage: $0 -i <zowe_install_path> [-l <log_directory>]"
@@ -160,7 +160,7 @@ copy_workflow() {
 }
 
 install_mvs() {
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
     . $INSTALL_DIR/scripts/zowe-install-MVS.sh
   fi
@@ -184,7 +184,7 @@ upgrade_components() {
 }
 
 install_buildin_components() {
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
   else
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
@@ -215,7 +215,7 @@ record_zis_info() {
   # Record useful user input specified at install time that would otherwise be lost at configure & runtime
   # Later retrieve this info by looking in a known folder location with info that helps to disambiguate which install it originated from
   # This is not foolproof, but will use the info from the latest install of a given ROOT_DIR
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     CURRENT_TIME=`date +%Y%j%H%M%S`
     INSTALL_VAR_FILE=/tmp/zowe-${ZOWE_VERSION}-install-${CURRENT_TIME}.env
     echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX\nZOWE_ROOT_DIR=$ZOWE_ROOT_DIR\nZOWE_VERSION=$ZOWE_VERSION" >> $INSTALL_VAR_FILE
@@ -264,8 +264,6 @@ shift $(($OPTIND-1))
 
 export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
 
-RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
-
 . ${INSTALL_DIR}/bin/internal/zowe-set-env.sh
 
 # Source main utils script
@@ -279,7 +277,7 @@ separator
 if [[ -z "$INSTALL_TARGET" ]]; then
   show_usage_error_and_exit "-i parameter not set"
 fi
-if [ "${RUN_ON_ZOS}" = "true" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
   if [[ -z "$DSN_PREFIX" ]]; then
     show_usage_error_and_exit "-h parameter not set"
   fi
