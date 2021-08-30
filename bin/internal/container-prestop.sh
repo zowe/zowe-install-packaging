@@ -22,36 +22,17 @@ set -e
 SOURCE_DIR=/component
 RUNTIME_DIR=/home/zowe/runtime
 INSTANCE_DIR=/home/zowe/instance
+WORKSPACE_DIR=${INSTANCE_DIR}/workspace
+STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
+POD_NAME=$(hostname -s 2>/dev/null)
 
 #######################################################################
-echo ">>> before preparation"
-echo "  - whoami?" && whoami
-echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
-echo "  - /home" && ls -la "/home"
-echo "  - /home/zowe" && ls -la "/home/zowe"
-
-#######################################################################
-echo ">>> prepare runtime directory"
-mkdir -p ${RUNTIME_DIR}/components
-cp -r ${SOURCE_DIR}/. ${RUNTIME_DIR}
-
-#######################################################################
-echo ">>> prepare instance directory"
-# we need to do pretty much same as bin/zowe-configure-instance.sh
-mkdir -p ${INSTANCE_DIR}/bin
-mkdir -p ${INSTANCE_DIR}/logs
-mkdir -p ${INSTANCE_DIR}/tmp
-cp -r ${RUNTIME_DIR}/bin/instance/. ${INSTANCE_DIR}/bin
-cp ${RUNTIME_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
-# zowe-configure-component.sh will be executed during runtime
-touch ${INSTANCE_DIR}/.init-for-container
-
-#######################################################################
-echo ">>> after preparation"
-echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
-echo "  - /home/zowe" && ls -la "/home/zowe"
-echo "  - ${RUNTIME_DIR}" && ls -la "${RUNTIME_DIR}"
-echo "  - ${INSTANCE_DIR}" && ls -la "${INSTANCE_DIR}"
+echo ">>> delete static definitions written by current pod ${POD_NAME}"
+if [ -d "${STATIC_DEF_CONFIG_DIR}" -a -n "${POD_NAME}" ]; then
+  cd "${STATIC_DEF_CONFIG_DIR}"
+  ls *.${POD_NAME}.yaml
+  rm -f *.${POD_NAME}.yaml
+fi
 
 #######################################################################
 echo ">>> done"
