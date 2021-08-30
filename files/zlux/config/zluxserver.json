@@ -72,5 +72,8 @@
       }
       
     }
+  },
+  "logLevels": {
+    "_zss.jwtTrace": 5
   }
 }

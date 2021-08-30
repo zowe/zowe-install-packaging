@@ -55,5 +55,8 @@
     }
   },
   // internal port, do not connect browser to this port
-  "zssPort":8542
+  "zssPort":8542,
+  "logLevels": {
+    "_zss.jwtTrace": 5
+  }
 }
