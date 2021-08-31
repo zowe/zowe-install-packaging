@@ -52,7 +52,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: discovery
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/discovery-service:1.24.3-SNAPSHOT-ubuntu.pr-1731
+          image: zowe-docker-release.jfrog.io/ompzowe/discovery-service:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
