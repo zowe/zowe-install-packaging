@@ -88,7 +88,7 @@ if [ "${KEYSTORE_TYPE}" != "PKCS12" ]; then
   exit 1
 fi
 
-ORIGINAL_ZOWE_EXPLORER_HOST=$(. /var/zowe/instance/instance.env && echo $ZOWE_EXPLORER_HOST)
+ORIGINAL_ZOWE_EXPLORER_HOST=$(. "${INSTANCE_DIR}/instance.env" && echo $ZOWE_EXPLORER_HOST)
 NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
   grep -v -E "(ZWE_EXTERNAL_HOSTS=|ZOWE_EXTERNAL_HOST=|ZOWE_ZOS_HOST=|ZOWE_IP_ADDRESS=|ZWE_LAUNCH_COMPONENTS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | \
   sed -e "/ZOWE_EXPLORER_HOST=.*/a\\
