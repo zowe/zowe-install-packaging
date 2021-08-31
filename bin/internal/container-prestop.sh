@@ -29,13 +29,12 @@ POD_NAME=$(hostname -s 2>/dev/null)
 #######################################################################
 echo ">>> delete static definitions written by current pod ${POD_NAME}"
 if [ -d "${STATIC_DEF_CONFIG_DIR}" -a -n "${POD_NAME}" ]; then
+  ZWELS_HA_INSTANCE_ID=$(echo "${POD_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
   echo "    - listing ${STATIC_DEF_CONFIG_DIR}"
   cd "${STATIC_DEF_CONFIG_DIR}"
-  ls -l *.${POD_NAME}.yaml || true
-  ls -l *.${POD_NAME}.yml || true
+  ls -l *.${ZWELS_HA_INSTANCE_ID}.* || true
   echo "    - deleting"
-  rm -f *.${POD_NAME}.yaml
-  rm -f *.${POD_NAME}.yml
+  rm -f *.${ZWELS_HA_INSTANCE_ID}.*
 fi
 
 #######################################################################

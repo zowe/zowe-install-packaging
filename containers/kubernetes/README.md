@@ -39,17 +39,17 @@ cd <instance-dir>
 
 This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values. Copy the whole output and save as a YAML file `configs.yaml` on your local computer, verify and then run `kubectl apply -f /path/to/your/configs.yaml`.
 
-If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences:
+If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences comparing running on z/OS:
 
 - `ZOWE_EXPLORER_HOST`, `ZOWE_IP_ADDRESS`, `ZWE_LAUNCH_COMPONENTS`and `SKIP_NODE` are not needed for Zowe running in Kubernetes and will be ignored. You can remove them.
-- `JAVA_HOME` and `NODE_HOME` and `SKIP_NODE` are not usually needed if you are using Zowe base images.
+- `JAVA_HOME` and `NODE_HOME` are not usually needed if you are using Zowe base images.
 - `ROOT_DIR` must be set to `/home/zowe/runtime`.
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
 - `ZWE_DISCOVERY_SERVICES_LIST` should be set to `https://discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/`.
 - `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
-- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://\${ZOWE_EXTERNAL_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth`.
+- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
 - `ZWE_CACHING_SERVICE_PERSISTENT` should NOT be set to `VSAM`. `redis` is suggested. Follow [Redis configuration](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-redis/#redis-configuration) documentation to customize other redis related variables. Leave the value to empty for debugging purpose.
 - Must append and customize these 2 values:
@@ -88,7 +88,7 @@ kubectl apply -f core/
 
 To verify this step,
 
-- `kubectl get deployments --namespace zowe` should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. For each of deployment, it should show `1/1` in `READY` column.
+- `kubectl get deployments --namespace zowe` should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. Each deployment should show `1/1` in `READY` column.
 - `kubectl get cronjobs --namespace zowe` should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be `False`.
 
 ## Import New Component
@@ -138,13 +138,15 @@ There are many ways to monitor workload running in Kubernetes, Kubernetes Dashbo
 
 If you are using a development Kubernetes shipped with Docker Desktop, the dashboard is already installed and `kubernetes-dashboard` namespace is already configuration. 
 
-### Stop Or Remove Component
+### Pause, Resume Or Remove Component
 
 To temporarily stop a component, you can find the component `Deployment` and scale down to `0`. To use `jobs-api` as example, run this command:
 
 ```
 kubectl scale -n zowe deployment jobs-api --replicas=0
 ```
+
+Scaling the component back to 1 or more to re-enable the component.
 
 If you want to permanently remove a component, you can delete the component `Deployment`. To use `jobs-api` as example, run this command:
 
