@@ -81,7 +81,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","cd /home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
