@@ -56,11 +56,11 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "200m"
+              memory: "256Mi"
+              cpu: "150m"
             limits:
               memory: "512Mi"
-              cpu: "400m"
+              cpu: "300m"
           ports:
             - containerPort: 7554
               protocol: TCP

@@ -55,10 +55,10 @@ spec:
           resources:
             requests:
               memory: "128Mi"
-              cpu: "200m"
+              cpu: "50m"
             limits:
               memory: "256Mi"
-              cpu: "400m"
+              cpu: "200m"
           ports:
             - containerPort: 8545
               protocol: TCP
