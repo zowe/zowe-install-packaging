@@ -39,6 +39,23 @@ cd <instance-dir>
 
 This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values. Copy the whole output and save as a YAML file `configs.yaml` on your local computer, verify and then run `kubectl apply -f /path/to/your/configs.yaml`.
 
+If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences:
+
+- `ZOWE_EXPLORER_HOST`, `ZOWE_IP_ADDRESS`, `ZWE_LAUNCH_COMPONENTS`and `SKIP_NODE` are not needed for Zowe running in Kubernetes and will be ignored. You can remove them.
+- `JAVA_HOME` and `NODE_HOME` and `SKIP_NODE` are not usually needed if you are using Zowe base images.
+- `ROOT_DIR` must be set to `/home/zowe/runtime`.
+- `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
+- `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
+- `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
+- `ZWE_DISCOVERY_SERVICES_LIST` should be set to `https://discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/`.
+- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
+- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://\${ZOWE_EXTERNAL_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth`.
+- `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
+- `ZWE_CACHING_SERVICE_PERSISTENT` should NOT be set to `VSAM`. `redis` is suggested. Follow [Redis configuration](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-redis/#redis-configuration) documentation to customize other redis related variables. Leave the value to empty for debugging purpose.
+- Must append and customize these 2 values:
+  * `ZWED_agent_host=${ZOWE_ZOS_HOST}`
+  * `ZWED_agent_https_port=${ZOWE_ZSS_SERVER_PORT}`
+
 To verify this step,
 
 - `kubectl get configmaps --namespace zowe` should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
@@ -110,7 +127,29 @@ Continue to customize the specification to fit in your component requirements:
 
 Once you defined your component `Deployment` object, you can run `kubectl apply -f /path/to/your/component-deployment.yaml` to apply it to Kubernetes cluster running Zowe. Now you can follow common Kubernetes practice to mange your component workload.
 
-## Troubleshooting Tips
+## Configuration, Operation And Troubleshooting Tips
+
+When Zowe workload running in Kubernetes cluster, it follows common Kubernetes operation recommendations.
+
+### Monitoring Zowe Workload Running In Kubernetes
+
+There are many ways to monitor workload running in Kubernetes, Kubernetes Dashboard could be a quick choice. Please follow this [Deploy and Access the Kubernetes Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) instruction.
+
+If you are using a development Kubernetes shipped with Docker Desktop, the dashboard is already installed and `kubernetes-dashboard` namespace is already configuration. 
+
+### Stop Or Remove Component
+
+To temporarily stop a component, you can find the component `Deployment` and scale down to `0`. To use `jobs-api` as example, run this command:
+
+```
+kubectl scale -n zowe deployment jobs-api --replicas=0
+```
+
+If you want to permanently remove a component, you can delete the component `Deployment`. To use `jobs-api` as example, run this command:
+
+```
+kubectl delete -n zowe deployment jobs-api
+```
 
 ### ISSUE: `/tmp` Directory Is Not Writable
 
