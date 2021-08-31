@@ -71,22 +71,26 @@
 //*
 //RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
+/* Delete Token .................................................... */
+    RACDCERT DELTOKEN(&SSOTOKEN.)
+
+/* List Zowe token certificates .................................... */
+    RACDCERT LISTTOKEN(&SSOTOKEN.)
+
+/* Delete JWT secret certificate ................................... */
+    RACDCERT ID(&ZOWEUSER.) DELETE(LABEL('&JWTLABEL.')
+    SETROPTS RACLIST(DIGTCERT) REFRESH
+
+/* List JWT secret certificate ..................................... */
+    RACDCERT LIST(LABEL('&JWTLABEL.')) ID(&ZOWEUSER.)
+
 /* Delete CRYPTOZ SO.<token> and USER.<token> profiles ............. */
     RDELETE CRYPTOZ (SO.&SSOTOKEN.)
     RDELETE CRYPTOZ (USER.&SSOTOKEN.)
 
-/* Refresh and Verify                                                */
+/* Refresh and Verify .............................................. */
     SETROPTS RACLIST(CRYPTOZ) REFRESH
     RLIST CRYPTOZ * AUTHUSER
-
-/* Delete Token .................................................... */
-    RACDCERT DELTOKEN(&SSOTOKEN.) FORCE
-
-/* Delete JWT secret certificate                                     */
-    RACDCERT ID(&ZOWEUSER.) DELETE(LABEL('&JWTLABEL.')
-
-/* List Zowe token certificates                                      */
-    RACDCERT LISTTOKEN(&SSOTOKEN.)
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
@@ -99,22 +103,25 @@ $$
 //*
 //TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
+/* Delete token .................................................... */
+    TSS P11TOKEN TOKENDEL LABLCTKN(&SSOTOKEN.)
+
+/* List Zowe token certificates .................................... */
+    TSS P11TOKEN TOKENLST LABLCTKN(&SSOTOKEN.)
+
+/* Delete JWT secret certificate ................................... */
+    TSS REM(&ZOWEUSER.) DIGICERT(&JWTLABEL.)
+
+/* List JWT secret certificate ..................................... */
+    TSS LIST(&ZOWEUSER.) DIGICERT(ALL)
+
 /* Delete CRYPTOZ SO.<token> and USER.<token> profiles ............. */
     TSS REVOKE(&ZOWEUSER.) CRYPTOZ(SO.&SSOTOKEN.)
     TSS REVOKE(&ZOWEUSER.) CRYPTOZ(USER.&SSOTOKEN.)
 
-/* Refresh and Verify                                                */
+/* Refresh and Verify .............................................. */
     TSS WHOHAS CRYPTOZ(SO.&SSOTOKEN.)
     TSS WHOHAS CRYPTOZ(USER.&SSOTOKEN.)
-
-/* Delete token .................................................... */
-    TSS P11TOKEN TOKENDEL LABLCTKN(&SSOTOKEN.) FORCE
-
-/* Delete JWT secret certificate                                     */
-    TSS REM(&ZOWEUSER.) DIGICERT(&JWTLABEL.)
-
-/* List Zowe token certificates                                      */
-    TSS P11TOKEN TOKENLST LABLCTKN(&SSOTOKEN.)
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
