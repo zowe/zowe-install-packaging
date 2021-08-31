@@ -5,18 +5,25 @@ metadata:
   name: jobs-api
   namespace: zowe
   labels:
-    app: zowe
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/component: jobs-api
+    app.kubernetes.io/part-of: explorer-api
+    app.kubernetes.io/managed-by: manual
 spec:
   selector:
     matchLabels:
-      app: zowe
-      tier: jobs-api
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+      app.kubernetes.io/component: jobs-api
   replicas: 1
   template:
     metadata:
       labels:
-        app: zowe
-        tier: jobs-api
+        app.kubernetes.io/name: zowe
+        app.kubernetes.io/instance: zowe
+        app.kubernetes.io/component: jobs-api
     spec:
       securityContext:
         runAsUser: 20000
@@ -43,15 +50,15 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: jobs-api
-          image: zowe-docker-release.jfrog.io/ompzowe/jobs-api:latest
-          imagePullPolicy: IfNotPresent
+          image: zowe-docker-release.jfrog.io/ompzowe/jobs-api:latest-ubuntu
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "128Mi"
-              cpu: "200m"
+              cpu: "50m"
             limits:
               memory: "256Mi"
-              cpu: "400m"
+              cpu: "200m"
           ports:
             - containerPort: 8545
               protocol: TCP
@@ -63,6 +70,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
@@ -83,7 +94,7 @@ spec:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
