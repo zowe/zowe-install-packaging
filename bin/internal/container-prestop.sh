@@ -29,9 +29,13 @@ POD_NAME=$(hostname -s 2>/dev/null)
 #######################################################################
 echo ">>> delete static definitions written by current pod ${POD_NAME}"
 if [ -d "${STATIC_DEF_CONFIG_DIR}" -a -n "${POD_NAME}" ]; then
+  echo "    - listing ${STATIC_DEF_CONFIG_DIR}"
   cd "${STATIC_DEF_CONFIG_DIR}"
-  ls *.${POD_NAME}.yaml
+  ls -l *.${POD_NAME}.yaml || true
+  ls -l *.${POD_NAME}.yml || true
+  echo "    - deleting"
   rm -f *.${POD_NAME}.yaml
+  rm -f *.${POD_NAME}.yml
 fi
 
 #######################################################################
