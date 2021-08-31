@@ -119,6 +119,10 @@ apiVersion: v1
 metadata:
   name: zowe-config
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 data:
   instance.env: |
 $(echo "${NEW_INSATNCE_ENV_CONTENT}" | indent - "    ")
@@ -131,6 +135,10 @@ apiVersion: v1
 metadata:
   name: zowe-certificates-cm
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 data:
   zowe-certificates.env: |
     KEY_ALIAS="${KEY_ALIAS}"
@@ -157,6 +165,10 @@ kind: Secret
 metadata:
   name: zowe-certificates-secret
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 type: Opaque
 data:
   keystore.p12: $(base64 "${KEYSTORE}")
