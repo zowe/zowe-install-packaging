@@ -86,6 +86,35 @@ source_env() {
 }
 
 ###############################
+# Read JSON configuration from shell script
+#
+# Note: this is not a reliable way to read JSON file. The JSON file must be
+#       properly formatted, each key/value pair takes one line.
+#
+# FIXME: we should have a language neutral JSON reading tool, not using shell script.
+#
+# @param string   JSON file name
+# @param string   parent key to read after
+# @param string   which key to read
+# @param string   if this variable is required. If this is true and we cannot
+#                 find the value of the key, an error will be displayed.
+shell_read_json_config() {
+  json_file=$1
+  parent_key=$2
+  key=$3
+  required=$4
+
+  val=$(cat "${json_file}" | awk "/\"${parent_key}\":/{x=NR+200}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
+  if [ -z "${val}" ]; then
+    if [ "${required}" = "true" ]; then
+      exit_with_error "cannot find ${parent_key}.${key} defined in $(basename $json_file)" "instance/bin/internal/utils.sh,shell_read_json_config:${LINENO}"
+    fi
+  else
+    echo "${val}"
+  fi
+}
+
+###############################
 # Read YAML configuration from shell script
 #
 # Note: this is not a reliable way to read YAML file, but we need this to find

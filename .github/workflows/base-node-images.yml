@@ -17,18 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
           cpu-arch: amd64
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
+        with:
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
         timeout-minutes: 5
 
   build-ubuntu-s390x:
@@ -36,12 +38,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
@@ -53,6 +55,7 @@ jobs:
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
         timeout-minutes: 10
 
   define-ubuntu-manifest:
@@ -63,12 +66,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
@@ -77,7 +80,6 @@ jobs:
         with:
           linux-distro: ubuntu
           cpu-arch-list: "amd64 s390x"
-          extra-manifests: "latest {major} {major}.{minor} {major}.{minor}.{patch} latest-ubuntu {major}-ubuntu {major}.{minor}-ubuntu"
         timeout-minutes: 2
 
   build-ubi-amd64:
@@ -85,12 +87,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
@@ -100,6 +102,8 @@ jobs:
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
+        with:
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
         timeout-minutes: 5
 
   build-ubi-s390x:
@@ -107,12 +111,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
@@ -127,6 +131,7 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
         timeout-minutes: 10
 
   define-ubi-manifest:
@@ -137,12 +142,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: zowe-actions/shared-actions/envvars-global@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
-          registry-user: ${{ secrets.ARTIFACTORY_USERNAME }}
-          registry-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
           release: ${{ github.event.inputs.release }}
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
@@ -151,5 +156,4 @@ jobs:
         with:
           linux-distro: ubi
           cpu-arch-list: "amd64 s390x"
-          extra-manifests: "latest-ubi {major}-ubi {major}.{minor}-ubi"
         timeout-minutes: 2
