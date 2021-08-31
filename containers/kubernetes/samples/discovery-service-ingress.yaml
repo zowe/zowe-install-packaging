@@ -12,7 +12,6 @@ metadata:
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
-  # FIXME: customize this value to match your environment
   type: LoadBalancer
   selector:
     app.kubernetes.io/name: zowe
@@ -47,5 +46,3 @@ spec:
               name: discovery-service
               port:
                 number: 7553
-    # FIXME: customize this value to match your environment
-    # host: localhost

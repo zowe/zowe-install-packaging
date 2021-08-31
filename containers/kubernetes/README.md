@@ -63,7 +63,7 @@ To verify this step,
 
 ### Create Service and Ingress
 
-Double check these values of `samples/gateway-service-ingress.yaml` file:
+Double check these values of `samples/gateway-service-ingress.yaml` and `samples/discovery-service-ingress.yaml` file:
 
 - `spec.type` of `Service` which default value is `LoadBalancer`.
 - `spec.rules[0].http.host` of `Ingress` which is commented out by default.
@@ -72,12 +72,13 @@ Then:
 
 ```
 kubectl apply -f samples/gateway-service-ingress.yaml
+kubectl apply -f samples/discovery-service-ingress.yaml
 ```
 
 To verify this step,
 
-- `kubectl get services --namespace zowe` should show a Namespace `gateway-service`.
-- `kubectl get ingresses --namespace zowe` should show a ServiceAccount `gateway-ingress`.
+- `kubectl get services --namespace zowe` should show two Services `gateway-service` and `discovery-service`.
+- `kubectl get ingresses --namespace zowe` should show two Ingresses `gateway-ingress` and `discovery-ingress`.
 
 ## Apply Zowe Core Components and Start Zowe
 
