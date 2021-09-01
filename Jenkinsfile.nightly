@@ -161,7 +161,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         def build_result = build(
           job: '/zowe-install-packaging/staging',
           parameters: [
-            choice(name: 'BUILD_SMPE', value: 'SMPE'),
+            string(name: 'BUILD_SMPE', value: 'SMPE'),
             booleanParam(name: 'BUILD_DOCKER', value: true),
             booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
           ],
