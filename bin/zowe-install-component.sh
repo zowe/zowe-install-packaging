@@ -65,6 +65,9 @@ export ROOT_DIR="${ZOWE_ROOT_DIR}"
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path
 fi
+if [ -n "${JAVA_HOME}" ]; then
+  ensure_java_is_on_path
+fi
 
 #######################################################################
 # Functions
@@ -334,6 +337,18 @@ fi
 
 if [ -z "${LOG_FILE}" -a -z "${LOG_DIRECTORY}" -a -n "${INSTANCE_DIR}" ]; then
     LOG_DIRECTORY="${INSTANCE_DIR}/logs"
+fi
+
+# validate node and java
+$(validate_node_home 2>/dev/null 1>/dev/null)
+if [ $? -gt 0 ]; then
+    error_handler "NODE_HOME environment variable is required to process component package."
+fi
+if [[ "$COMPONENT_FILE" = *.zip ]]; then
+    $(validate_java_home 2>/dev/null 1>/dev/null)
+    if [ $? -gt 0 ]; then
+        error_handler "JAVA_HOME environment variable is required to process zip format component package."
+    fi
 fi
 
 #######################################################################
