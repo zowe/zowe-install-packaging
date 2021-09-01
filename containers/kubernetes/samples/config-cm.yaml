@@ -10,7 +10,7 @@
 
 ################################################################################
 # It's recommended to run <instance-dir>/bin/utils/convert-for-k8s.sh
-# on z/OS to convert your existing keystore to this Secret definition.
+# on z/OS to convert your existing keystore to this ConfigMap definition.
 
 ---
 kind: ConfigMap 
@@ -18,6 +18,10 @@ apiVersion: v1
 metadata:
   name: zowe-config
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 data:
   instance.env: |
     #!/bin/sh
@@ -26,6 +30,11 @@ data:
     ROOT_DIR=/home/zowe/runtime
     ZOWE_PREFIX=ZWE
     ZOWE_INSTANCE=1
+
+    # FIXME: your Kubernetes cluster domain names
+    ZWE_EXTERNAL_HOSTS=localhost
+    ZOWE_EXTERNAL_HOST=localhost
+    ZOWE_ZOS_HOST=zzow01.zowe.marist.cloud
 
     # FIXME: z/OS MF config
     ZOSMF_PORT=443
@@ -47,13 +56,13 @@ data:
     APIML_SECURITY_ZOSMF_APPLID=izudflt
     APIML_SECURITY_AUTH_PROVIDER=zosmf
     # List of discovery service URLs separated by comma
-    ZWE_DISCOVERY_SERVICES_LIST=https://${ZOWE_EXPLORER_HOST}:${DISCOVERY_PORT}/eureka/
+    ZWE_DISCOVERY_SERVICES_LIST=https://discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/
     # Enable debug logging for Api Mediation Layer services
     APIML_DEBUG_MODE_ENABLED=false
     APIML_MAX_CONNECTIONS_PER_ROUTE=100
     APIML_MAX_TOTAL_CONNECTIONS=1000
-    APIML_GATEWAY_EXTERNAL_MAPPER=https://${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map
-    APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth
+    APIML_GATEWAY_EXTERNAL_MAPPER=https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map
+    APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth
 
     ####################
     # caching service
@@ -65,7 +74,7 @@ data:
     ZWE_CACHING_EVICTION_STRATEGY=reject
     # specify persistent method of caching service
     # possible options: <empty> (will fall back to inMemory), VSAM, redis
-    ZWE_CACHING_SERVICE_PERSISTENT=VSAM
+    ZWE_CACHING_SERVICE_PERSISTENT=
     # specify the data set name of the caching service VSAM data set
     ZWE_CACHING_SERVICE_VSAM_DATASET=IBMUSER.ZWE.CACHE1
 
@@ -75,7 +84,7 @@ data:
     JES_EXPLORER_UI_PORT=8546
     MVS_EXPLORER_UI_PORT=8548
     USS_EXPLORER_UI_PORT=8550
-    ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*" # comma seperated list of hosts allowed to embed explorers
+    ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXTERNAL_HOST}:*,${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*" # comma seperated list of hosts allowed to embed explorers
 
     # Zowe Desktop/app framework variables
     ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
@@ -93,3 +102,6 @@ data:
     ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES= # For third-party extender to add the full path to the directory containing their static yml definition semi-colon separated
     EXTERNAL_COMPONENTS= # For third-party extender to add the full path to the directory containing their component lifecycle scripts
     APIML_SECURITY_ZOSMF_JWT_AUTOCONFIGURATION_MODE=LTPA
+
+    ZWED_agent_host=${ZOWE_ZOS_HOST}
+    ZWED_agent_https_port=${ZOWE_ZSS_SERVER_PORT}
