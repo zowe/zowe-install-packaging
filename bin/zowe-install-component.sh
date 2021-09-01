@@ -61,14 +61,6 @@ export ROOT_DIR="${ZOWE_ROOT_DIR}"
 # this utils usually be sourced from instance dir, but here we are too early
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${ZOWE_ROOT_DIR}/bin/instance/internal/utils.sh
 
-# node is required for read_component_manifest
-if [ -n "${NODE_HOME}" ]; then
-  ensure_node_is_on_path
-fi
-if [ -n "${JAVA_HOME}" ]; then
-  ensure_java_is_on_path
-fi
-
 #######################################################################
 # Functions
 error_handler(){
@@ -338,23 +330,34 @@ fi
 if [ -z "${LOG_FILE}" -a -z "${LOG_DIRECTORY}" -a -n "${INSTANCE_DIR}" ]; then
     LOG_DIRECTORY="${INSTANCE_DIR}/logs"
 fi
+prepare_log_file
 
-# validate node and java
+# node is required for read_component_manifest
+prompt_for_node_home_if_required
+if [ -n "${NODE_HOME}" ]; then
+  ensure_node_is_on_path
+fi
 $(validate_node_home 2>/dev/null 1>/dev/null)
 if [ $? -gt 0 ]; then
-    error_handler "NODE_HOME environment variable is required to process component package."
+    error_handler "NODE_HOME envrionement variable is required to continue."
 fi
+
+# only need java to handle zip file
 if [[ "$COMPONENT_FILE" = *.zip ]]; then
+    prompt_java_home_if_required
+    if [ -n "${JAVA_HOME}" ]; then
+        ensure_java_is_on_path
+    fi
+
     $(validate_java_home 2>/dev/null 1>/dev/null)
     if [ $? -gt 0 ]; then
-        error_handler "JAVA_HOME environment variable is required to process zip format component package."
+        error_handler "JAVA_HOME envrionement variable is required to continue."
     fi
 fi
 
+
 #######################################################################
 # Install
-
-prepare_log_file
 
 print_and_log_message "Install Zowe component ${COMPONENT_FILE} to ${TARGET_DIR}"
 
