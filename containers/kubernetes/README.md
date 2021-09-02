@@ -67,15 +67,15 @@ This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificat
 
 If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences comparing running on z/OS:
 
-- `ZOWE_EXPLORER_HOST`, `ZOWE_IP_ADDRESS`, `ZWE_LAUNCH_COMPONENTS`and `SKIP_NODE` are not needed for Zowe running in Kubernetes and will be ignored. You can remove them.
+- `ZOWE_EXPLORER_HOST`, `ZOWE_IP_ADDRESS`, `ZWE_LAUNCH_COMPONENTS`, `ZWE_DISCOVERY_SERVICES_LIST` and `SKIP_NODE` are not needed for Zowe running in Kubernetes and will be ignored. You can remove them.
 - `JAVA_HOME` and `NODE_HOME` are not usually needed if you are using Zowe base images.
 - `ROOT_DIR` must be set to `/home/zowe/runtime`.
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
-- `ZWE_DISCOVERY_SERVICES_LIST` should be set to `https://discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/`.
-- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
-- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
+- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `core/discovery-statefulset.yaml`.
+- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
+- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
 - `ZWE_CACHING_SERVICE_PERSISTENT` should NOT be set to `VSAM`. `redis` is suggested. Follow [Redis configuration](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-redis/#redis-configuration) documentation to customize other redis related variables. Leave the value to empty for debugging purpose.
 - Must append and customize these 2 values:

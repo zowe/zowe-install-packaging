@@ -193,6 +193,21 @@ fi
 
 # this is running in containers
 if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
+  ZWE_DISCOVERY_SERVICES_REPLICAS=$(echo "${ZWE_DISCOVERY_SERVICES_REPLICAS}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]')
+  if [ -z "${ZWE_DISCOVERY_SERVICES_REPLICAS}" ]; then
+    ZWE_DISCOVERY_SERVICES_REPLICAS=1
+  fi
+  discovery_index=0
+  ZWE_DISCOVERY_SERVICES_LIST=
+  while [ $discovery_index -lt ${ZWE_DISCOVERY_SERVICES_REPLICAS} ]; do
+    if [ -n "${ZWE_DISCOVERY_SERVICES_LIST}" ]; then
+      ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST},"
+    fi
+    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/"
+    discovery_index=`expr $discovery_index + 1`
+  done
+
   # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
   # /component is hardcoded path we asked for in conformance
   if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
