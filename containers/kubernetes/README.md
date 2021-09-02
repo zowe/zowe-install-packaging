@@ -2,7 +2,33 @@
 
 **NOTES**, all paths below are relative to current directory `containers/kubernetes`.
 
+## Prerequisites
+
+### Kubernetes Cluster
+
+There are many ways to prepare a Kubernetes cluster based on your requirements.
+
+For development purpose, you can setup a Kubernetes cluster on your local computer by:
+
+- [enabling Kubernetes shipped with Docker Desktop](https://docs.docker.com/desktop/kubernetes/)
+- or [setting up minikube](https://minikube.sigs.k8s.io/docs/start/)
+
+For production purpose, you can:
+
+- bootstrap your own cluster by following this official document [Installing Kubernetes with deployment tools](https://kubernetes.io/docs/setup/production-environment/tools/).
+- or provision a Kubernetes cluster from popular Cloud vendors:
+  * [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/)
+  * [Microsfot Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes)
+  * [IBM Cloud Kubernetes Service](https://www.ibm.com/ca-en/cloud/kubernetes-service)
+  * [Google Cloud Kubernetes Engine](https://cloud.google.com/kubernetes-engine)
+
+### `kubectl` Tool
+
+You need `kubectl` CLI tool installed on your local computer where you want to manage the Kubernetes cluster. Please follow appropriate steps from official documentation [Install Tools](https://kubernetes.io/docs/tasks/tools/).
+
 ## Preparations
+
+This section assumes you already have a Kubernetes cluster setup and have `kubectl` tool installed.
 
 ### Create Namespace and Service Account
 
@@ -41,15 +67,15 @@ This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificat
 
 If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences comparing running on z/OS:
 
-- `ZOWE_EXPLORER_HOST`, `ZOWE_IP_ADDRESS`, `ZWE_LAUNCH_COMPONENTS`and `SKIP_NODE` are not needed for Zowe running in Kubernetes and will be ignored. You can remove them.
+- `ZOWE_EXPLORER_HOST`, `ZOWE_IP_ADDRESS`, `ZWE_LAUNCH_COMPONENTS`, `ZWE_DISCOVERY_SERVICES_LIST` and `SKIP_NODE` are not needed for Zowe running in Kubernetes and will be ignored. You can remove them.
 - `JAVA_HOME` and `NODE_HOME` are not usually needed if you are using Zowe base images.
 - `ROOT_DIR` must be set to `/home/zowe/runtime`.
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
-- `ZWE_DISCOVERY_SERVICES_LIST` should be set to `https://discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/`.
-- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
-- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
+- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `core/discovery-statefulset.yaml`.
+- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
+- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
 - `ZWE_CACHING_SERVICE_PERSISTENT` should NOT be set to `VSAM`. `redis` is suggested. Follow [Redis configuration](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-redis/#redis-configuration) documentation to customize other redis related variables. Leave the value to empty for debugging purpose.
 - Must append and customize these 2 values:
@@ -89,6 +115,7 @@ kubectl apply -f core/
 To verify this step,
 
 - `kubectl get deployments --namespace zowe` should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. Each deployment should show `1/1` in `READY` column.
+- `kubectl get statefulsets --namespace zowe` should show you a StatefulSet `discovery` which `READY` column should be `1/1`.
 - `kubectl get cronjobs --namespace zowe` should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be `False`.
 
 ## Import New Component

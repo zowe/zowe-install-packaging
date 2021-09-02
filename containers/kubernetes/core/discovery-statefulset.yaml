@@ -1,6 +1,6 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: discovery
   namespace: zowe
@@ -12,6 +12,7 @@ metadata:
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
+  serviceName: discovery-service
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
@@ -30,6 +31,7 @@ spec:
         runAsGroup: 20000
         fsGroup: 20000
       serviceAccountName: zowe-sa
+      subdomain: discovery-service
       volumes:
         - name: tmp
           emptyDir: {}
