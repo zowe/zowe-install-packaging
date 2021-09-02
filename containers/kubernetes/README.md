@@ -2,7 +2,33 @@
 
 **NOTES**, all paths below are relative to current directory `containers/kubernetes`.
 
+## Prerequisites
+
+### Kubernetes Cluster
+
+There are many ways to prepare a Kubernetes cluster based on your requirements.
+
+For development purpose, you can setup a Kubernetes cluster on your local computer by:
+
+- [enabling Kubernetes shipped with Docker Desktop](https://docs.docker.com/desktop/kubernetes/)
+- or [setting up minikube](https://minikube.sigs.k8s.io/docs/start/)
+
+For production purpose, you can:
+
+- bootstrap your own cluster by following this official document [Installing Kubernetes with deployment tools](https://kubernetes.io/docs/setup/production-environment/tools/).
+- or provision a Kubernetes cluster from popular Cloud vendors:
+  * [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/)
+  * [Microsfot Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes)
+  * [IBM Cloud Kubernetes Service](https://www.ibm.com/ca-en/cloud/kubernetes-service)
+  * [Google Cloud Kubernetes Engine](https://cloud.google.com/kubernetes-engine)
+
+### `kubectl` Tool
+
+You need `kubectl` CLI tool installed on your local computer where you want to manage the Kubernetes cluster. Please follow appropriate steps from official documentation [Install Tools](https://kubernetes.io/docs/tasks/tools/).
+
 ## Preparations
+
+This section assumes you already have a Kubernetes cluster setup and have `kubectl` tool installed.
 
 ### Create Namespace and Service Account
 
