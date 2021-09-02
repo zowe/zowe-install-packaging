@@ -115,6 +115,7 @@ kubectl apply -f core/
 To verify this step,
 
 - `kubectl get deployments --namespace zowe` should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. Each deployment should show `1/1` in `READY` column.
+- `kubectl get statefulsets --namespace zowe` should show you a StatefulSet `discovery` which `READY` column should be `1/1`.
 - `kubectl get cronjobs --namespace zowe` should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be `False`.
 
 ## Import New Component
