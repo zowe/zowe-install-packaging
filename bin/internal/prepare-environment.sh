@@ -105,6 +105,8 @@ if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
   fi
   # in kubernetes, replace it with pod dns name
   ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_POD_NAMESPACE}.pod.cluster.local"
+  # kubernetes gateway service internal dns name
+  GATEWAY_HOST=gateway-service.${ZWE_POD_NAMESPACE}.svc.cluster.local
 fi
 
 # read the instance environment variables to make sure they exists

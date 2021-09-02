@@ -2,6 +2,10 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
   annotations:
     # make sure we have correct UID/GID range when running in OpenShift
     openshift.io/sa.scc.supplemental-groups: 20000/1

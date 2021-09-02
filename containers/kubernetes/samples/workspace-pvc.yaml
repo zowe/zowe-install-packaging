@@ -14,6 +14,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: zowe-workspace-pvc
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 spec:
   # FIXME: StorageClass should be predefined by Kubernetes admin
   #        hostpath is a StorageClass created by Docker Desktop by default
