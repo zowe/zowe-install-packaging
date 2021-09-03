@@ -109,7 +109,7 @@
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.launcher": {
-      "version": "0.0.5"
+      "version": "0.0.6"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
