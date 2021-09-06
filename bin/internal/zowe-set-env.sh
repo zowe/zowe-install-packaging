@@ -10,6 +10,8 @@
 # Copyright IBM Corporation 2020, 2021
 ################################################################################
 
+export ZWE_RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
+
 export _CEE_RUNOPTS="FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
 export _TAG_REDIR_IN=txt
 export _TAG_REDIR_OUT=txt

@@ -70,6 +70,26 @@ ensure_node_is_on_path() {
   fi
 }
 
+detect_node_home() {
+  # do we have which?
+  node_home=$(which node 2>/dev/null)
+  node_home=
+  if [ -z "${node_home}" ]; then
+    (
+      IFS=:
+      for p in ${PATH}; do
+        if [ -f "${p}/node" ]; then
+          cd "${p}/.."
+          pwd
+          break
+        fi
+      done
+    )
+  else
+    echo "${node_home}"
+  fi
+}
+
 validate_node_home() {
   validate_node_home_not_empty
   node_empty_rc=$?
@@ -117,9 +137,9 @@ check_node_version() {
   current_year=$(date +"%Y")
   current_month=$(date +"%m")
 
-  if [[ ${node_version} == "v8.16.1" ]]
+  if [ "${node_version}" = "v8.16.1" -o "${node_version}" = "v14.17.2" ]
   then
-    print_error_message "Node v8.16.1 specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
+    print_error_message "Node ${node_version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
     return 1
   fi
 
