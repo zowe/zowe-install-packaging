@@ -145,6 +145,13 @@
         "destinations": ["Zowe PAX"]
       }]
     }, {
+       "componentGroup": "Zowe common java libraries",
+       "entries": [{
+         "repository": "common-java",
+         "tag": "master",
+         "destinations": ["Zowe PAX"]
+       }]
+     }, {
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
