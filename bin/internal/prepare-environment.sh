@@ -86,6 +86,29 @@ fi
 # sanitize instance id
 ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # write tmp to here so we can enable readOnlyRootFilesystem
+  if [ -d "${INSTANCE_DIR}/tmp" ]; then
+    TMPDIR=${INSTANCE_DIR}/tmp
+    TMP=${INSTANCE_DIR}/tmp
+  fi
+  # these 2 important variables will be overwritten from what it may have been configured
+  ZOWE_EXPLORER_HOST=$(get_sysname)
+  ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
+  if [ -z "${ZWE_POD_NAMESPACE}" -a -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    # try to detect ZWE_POD_NAMESPACE, this requires automountServiceAccountToken to be true
+    ZWE_POD_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null)
+  fi
+  if [ -z "${ZWE_POD_NAMESPACE}" ]; then
+    # fall back to default value
+    ZWE_POD_NAMESPACE=zowe
+  fi
+  # in kubernetes, replace it with pod dns name
+  ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_POD_NAMESPACE}.pod.cluster.local"
+  # kubernetes gateway service internal dns name
+  GATEWAY_HOST=gateway-service.${ZWE_POD_NAMESPACE}.svc.cluster.local
+fi
+
 # read the instance environment variables to make sure they exists
 . ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" -a -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
@@ -136,7 +159,7 @@ fi
 
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
-if [ `uname` != "OS/390" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" != "true" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
   # to avoid potential retries on starting caching-service, do not start caching-service
   LAUNCH_COMPONENTS=$(echo "${LAUNCH_COMPONENTS}" | sed -e 's#caching-service##' | sed -e 's#,,#,#')
 fi
@@ -161,8 +184,37 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi
+if [ -z "${NODE_HOME}" ]; then
+  NODE_HOME=$(detect_node_home)
+fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
+fi
+
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
+  ZWE_DISCOVERY_SERVICES_REPLICAS=$(echo "${ZWE_DISCOVERY_SERVICES_REPLICAS}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]')
+  if [ -z "${ZWE_DISCOVERY_SERVICES_REPLICAS}" ]; then
+    ZWE_DISCOVERY_SERVICES_REPLICAS=1
+  fi
+  discovery_index=0
+  ZWE_DISCOVERY_SERVICES_LIST=
+  while [ $discovery_index -lt ${ZWE_DISCOVERY_SERVICES_REPLICAS} ]; do
+    if [ -n "${ZWE_DISCOVERY_SERVICES_LIST}" ]; then
+      ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST},"
+    fi
+    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/"
+    discovery_index=`expr $discovery_index + 1`
+  done
+
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  fi
+  ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+  LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
 fi
 
 # turn off automatic export
