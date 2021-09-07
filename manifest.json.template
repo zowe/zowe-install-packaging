@@ -107,6 +107,10 @@
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
       "version": "1.24.4",
       "artifact": "apiml-common-lib-*.zip"
+    },            
+    "org.zowe.apiml.sdk.common-java-lib-package": {
+      "version": "1.21.3",
+      "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.launcher": {
       "version": "0.0.5"
@@ -141,6 +145,13 @@
         "destinations": ["Zowe PAX"]
       }]
     }, {
+       "componentGroup": "Zowe common java libraries",
+       "entries": [{
+         "repository": "common-java",
+         "tag": "master",
+         "destinations": ["Zowe PAX"]
+       }]
+     }, {
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
