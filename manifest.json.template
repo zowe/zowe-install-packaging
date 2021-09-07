@@ -62,13 +62,13 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-ui-server": {
       "version": "~0.2.0-STAGING"
