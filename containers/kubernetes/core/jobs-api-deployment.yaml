@@ -63,6 +63,10 @@ spec:
             - name: jobs-api-port
               containerPort: 8545
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8545
+            initialDelaySeconds: 120
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"

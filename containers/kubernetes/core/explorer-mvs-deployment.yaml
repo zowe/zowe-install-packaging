@@ -63,6 +63,10 @@ spec:
             - name: mvs-port
               containerPort: 8548
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8548
+            initialDelaySeconds: 30
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"

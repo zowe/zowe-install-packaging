@@ -63,6 +63,10 @@ spec:
             - name: files-api-port
               containerPort: 8547
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8547
+            initialDelaySeconds: 120
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"

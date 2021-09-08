@@ -63,6 +63,10 @@ spec:
             - name: uss-port
               containerPort: 8550
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8550
+            initialDelaySeconds: 30
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"

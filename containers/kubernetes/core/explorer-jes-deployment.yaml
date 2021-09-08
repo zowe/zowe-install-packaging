@@ -63,6 +63,10 @@ spec:
             - name: jes-port
               containerPort: 8546
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8546
+            initialDelaySeconds: 30
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"
