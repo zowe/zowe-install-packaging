@@ -62,7 +62,8 @@ spec:
               memory: "512Mi"
               cpu: "300m"
           ports:
-            - containerPort: 7552
+            - name: apicatalog-port
+              containerPort: 7552
               protocol: TCP
           readinessProbe:
             tcpSocket:
@@ -105,6 +106,13 @@ spec:
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
