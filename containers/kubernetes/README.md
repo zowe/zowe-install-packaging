@@ -35,8 +35,8 @@ This section assumes you already have a Kubernetes cluster setup and have `kubec
 Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
 ```
-kubectl apply -f samples/zowe-ns.yaml
-kubectl apply -f samples/zowe-sa.yaml
+kubectl apply -f common/zowe-ns.yaml
+kubectl apply -f common/zowe-sa.yaml
 ```
 
 To verify this step,
@@ -73,9 +73,9 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
-- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `core/discovery-statefulset.yaml`.
-- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
-- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
+- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/discovery-statefulset.yaml`.
+- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
+- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
 - `ZWE_CACHING_SERVICE_PERSISTENT` should NOT be set to `VSAM`. `redis` is suggested. Follow [Redis configuration](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-redis/#redis-configuration) documentation to customize other redis related variables. Leave the value to empty for debugging purpose.
 - Must append and customize these 2 values:
@@ -87,29 +87,89 @@ To verify this step,
 - `kubectl get configmaps --namespace zowe` should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
 - `kubectl get secrets --namespace zowe` should show a Secret `zowe-certificates-secret`.
 
-### Create Service and Ingress
+### Expose Gateway and Discovery
 
-Double check these values of `samples/gateway-service-ingress.yaml` and `samples/discovery-service-ingress.yaml` file:
+This section is highly related to your Kubernetes cluster configuration. If you are not sure about these sections, please contact your Kubernetes administrator or us.
 
-- `spec.type` of `Service` which default value is `LoadBalancer`.
-- `spec.rules[0].http.host` of `Ingress` which is commented out by default.
+#### Create Service
 
-Then:
+Depends on how your Kubernetes network setup, you may choose from `LoadBalancer` or `NodePort` service.
+
+Choose `LoadBalancer` (`samples/gateway-service-lb.yaml` and `samples/discovery-service-lb.yaml`) if you are using Kubernetes provided by:
+
+- Cloud vendors,
+- Docker Desktop.
+
+Choose `NodePort` (`samples/gateway-service-np.yaml` and `samples/discovery-service-np.yaml`) if you are using Kubernetes is created on Bare Metal and you don't have load balancer.
+
+Double check these values of files you choose:
+
+- `spec.type`.
+- `spec.ports[0].nodePort`, this will be the port be exposed to external. Which means, if you are using `NodePort` service, the default gateway port is not `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
+
+If you choose `LoadBalancer` services, run these commands:
 
 ```
-kubectl apply -f samples/gateway-service-ingress.yaml
-kubectl apply -f samples/discovery-service-ingress.yaml
+kubectl apply -f samples/gateway-service-lb.yaml
+kubectl apply -f samples/discovery-service-lb.yaml
+```
+
+If you choose `NodePort` services, run these commands:
+
+```
+kubectl apply -f samples/gateway-service-np.yaml
+kubectl apply -f samples/discovery-service-np.yaml
 ```
 
 To verify this step,
 
 - `kubectl get services --namespace zowe` should show two Services `gateway-service` and `discovery-service`.
-- `kubectl get ingresses --namespace zowe` should show two Ingresses `gateway-ingress` and `discovery-ingress`.
 
-## Apply Zowe Core Components and Start Zowe
+#### Create Ingress
+
+You may not need to define `Ingress` if are using Kubernetes and:
+
+- you choose `NodePort` services,
+- the Kubernetes is provided by Cloud vendors or Docker Desktop.
+
+Double check this value of file `samples/gateway-ingress.yaml` and `samples/discovery-ingress.yaml` before apply:
+
+- `spec.rules[0].http.host` which is not defined by default.
+
+Then:
 
 ```
-kubectl apply -f core/
+kubectl apply -f samples/gateway-ingress.yaml
+kubectl apply -f samples/discovery-ingress.yaml
+```
+
+To verify this step,
+
+- `kubectl get ingresses --namespace zowe` should show two Ingresses `gateway-ingress` and `discovery-ingress`.
+
+#### Create Route
+
+If you are using OpenShift, usually you need to define `Route` instead of `Ingress`.
+
+Double check this value of file `samples/gateway-route.yaml` and `samples/discovery-route.yaml`:
+
+- `spec.port.targetPort`.
+
+Then:
+
+```
+oc apply -f samples/gateway-route.yaml
+oc apply -f samples/discovery-route.yaml
+```
+
+To verify this step,
+
+- `oc get routes --namespace zowe` should show two Services `gateway` and `discovery`.
+
+## Apply Zowe Core Components Workloads and Start Zowe
+
+```
+kubectl apply -f workloads/
 ```
 
 To verify this step,
@@ -163,7 +223,9 @@ When Zowe workload running in Kubernetes cluster, it follows common Kubernetes o
 
 There are many ways to monitor workload running in Kubernetes, Kubernetes Dashboard could be a quick choice. Please follow this [Deploy and Access the Kubernetes Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) instruction.
 
-If you are using a development Kubernetes shipped with Docker Desktop, the dashboard is already installed and `kubernetes-dashboard` namespace is already configuration. 
+If you are using a development Kubernetes shipped with Docker Desktop, the dashboard is already installed and `kubernetes-dashboard` namespace is already configuration.
+
+[Metrics Server](https://github.com/kubernetes-sigs/metrics-server) is also recommended and is required if you want to define [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/). Check if you have `metrics-server` `Service` in `kube-system` namespace with this command `kubectl get services --namespace kube-system`. If you don't have, you can follow this [Installation](https://github.com/kubernetes-sigs/metrics-server#installation) instruction to install.
 
 ### Pause, Resume Or Remove Component
 
