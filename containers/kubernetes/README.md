@@ -105,7 +105,7 @@ Choose `NodePort` (`samples/gateway-service-np.yaml` and `samples/discovery-serv
 Double check these values of files you choose:
 
 - `spec.type`.
-- `spec.ports[0].nodePort`, this will be the port be exposed to external.
+- `spec.ports[0].nodePort`, this will be the port be exposed to external. Which means, if you are using `NodePort` service, the default gateway port is not `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
 
 If you choose `LoadBalancer` services, run these commands:
 
@@ -223,7 +223,9 @@ When Zowe workload running in Kubernetes cluster, it follows common Kubernetes o
 
 There are many ways to monitor workload running in Kubernetes, Kubernetes Dashboard could be a quick choice. Please follow this [Deploy and Access the Kubernetes Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) instruction.
 
-If you are using a development Kubernetes shipped with Docker Desktop, the dashboard is already installed and `kubernetes-dashboard` namespace is already configuration. 
+If you are using a development Kubernetes shipped with Docker Desktop, the dashboard is already installed and `kubernetes-dashboard` namespace is already configuration.
+
+[Metrics Server](https://github.com/kubernetes-sigs/metrics-server) is also recommended and is required if you want to define [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/). Check if you have `metrics-server` `Service` in `kube-system` namespace with this command `kubectl get services --namespace kube-system`. If you don't have, you can follow this [Installation](https://github.com/kubernetes-sigs/metrics-server#installation) instruction to install.
 
 ### Pause, Resume Or Remove Component
 
