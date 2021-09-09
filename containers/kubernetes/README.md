@@ -74,8 +74,8 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
 - `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/discovery-statefulset.yaml`.
-- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
-- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
+- `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
+- `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
 - `ZWE_CACHING_SERVICE_PERSISTENT` should NOT be set to `VSAM`. `redis` is suggested. Follow [Redis configuration](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-redis/#redis-configuration) documentation to customize other redis related variables. Leave the value to empty for debugging purpose.
 - Must append and customize these 2 values:
