@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: discovery-service
+  name: gateway-service
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: discovery
+    app.kubernetes.io/component: gateway
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
@@ -16,11 +16,9 @@ spec:
   selector:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/component: discovery
+    app.kubernetes.io/component: gateway
   ports:
-    - name: discovery
-      protocol: TCP
-      port: 7553
-      # nodePort: 32553
-      targetPort: discovery-port
+    - protocol: TCP
+      port: 7554
+      targetPort: gateway-port
       appProtocol: https
