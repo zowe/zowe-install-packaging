@@ -69,6 +69,8 @@ spec:
             tcpSocket:
               port: 7555
             initialDelaySeconds: 120
+            # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
+            failureThreshold: 90
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"
