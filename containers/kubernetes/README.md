@@ -35,8 +35,8 @@ This section assumes you already have a Kubernetes cluster setup and have `kubec
 Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
 ```
-kubectl apply -f samples/zowe-ns.yaml
-kubectl apply -f samples/zowe-sa.yaml
+kubectl apply -f common/zowe-ns.yaml
+kubectl apply -f common/zowe-sa.yaml
 ```
 
 To verify this step,
@@ -73,7 +73,7 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
-- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `core/discovery-statefulset.yaml`.
+- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/discovery-statefulset.yaml`.
 - `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
 - `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
@@ -166,10 +166,10 @@ To verify this step,
 
 - `oc get routes --namespace zowe` should show two Services `gateway` and `discovery`.
 
-## Apply Zowe Core Components and Start Zowe
+## Apply Zowe Core Components Workloads and Start Zowe
 
 ```
-kubectl apply -f core/
+kubectl apply -f workloads/
 ```
 
 To verify this step,
