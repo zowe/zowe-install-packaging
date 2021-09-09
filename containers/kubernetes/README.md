@@ -87,24 +87,84 @@ To verify this step,
 - `kubectl get configmaps --namespace zowe` should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
 - `kubectl get secrets --namespace zowe` should show a Secret `zowe-certificates-secret`.
 
-### Create Service and Ingress
+### Expose Gateway and Discovery
 
-Double check these values of `samples/gateway-service-ingress.yaml` and `samples/discovery-service-ingress.yaml` file:
+This section is highly related to your Kubernetes cluster configuration. If you are not sure about these sections, please contact your Kubernetes administrator or us.
 
-- `spec.type` of `Service` which default value is `LoadBalancer`.
-- `spec.rules[0].http.host` of `Ingress` which is commented out by default.
+#### Create Service
 
-Then:
+Depends on how your Kubernetes network setup, you may choose from `LoadBalancer` or `NodePort` service.
+
+Choose `LoadBalancer` (`samples/gateway-service-lb.yaml` and `samples/discovery-service-lb.yaml`) if you are using Kubernetes provided by:
+
+- Cloud vendors,
+- Docker Desktop.
+
+Choose `NodePort` (`samples/gateway-service-np.yaml` and `samples/discovery-service-np.yaml`) if you are using Kubernetes is created on Bare Metal and you don't have load balancer.
+
+Double check these values of files you choose:
+
+- `spec.type`.
+- `spec.ports[0].nodePort`, this will be the port be exposed to external.
+
+If you choose `LoadBalancer` services, run these commands:
 
 ```
-kubectl apply -f samples/gateway-service-ingress.yaml
-kubectl apply -f samples/discovery-service-ingress.yaml
+kubectl apply -f samples/gateway-service-lb.yaml
+kubectl apply -f samples/discovery-service-lb.yaml
+```
+
+If you choose `NodePort` services, run these commands:
+
+```
+kubectl apply -f samples/gateway-service-np.yaml
+kubectl apply -f samples/discovery-service-np.yaml
 ```
 
 To verify this step,
 
 - `kubectl get services --namespace zowe` should show two Services `gateway-service` and `discovery-service`.
+
+#### Create Ingress
+
+You may not need to define `Ingress` if are using Kubernetes and:
+
+- you choose `NodePort` services,
+- the Kubernetes is provided by Cloud vendors or Docker Desktop.
+
+Double check this value of file `samples/gateway-ingress.yaml` and `samples/discovery-ingress.yaml` before apply:
+
+- `spec.rules[0].http.host` which is not defined by default.
+
+Then:
+
+```
+kubectl apply -f samples/gateway-ingress.yaml
+kubectl apply -f samples/discovery-ingress.yaml
+```
+
+To verify this step,
+
 - `kubectl get ingresses --namespace zowe` should show two Ingresses `gateway-ingress` and `discovery-ingress`.
+
+#### Create Route
+
+If you are using OpenShift, usually you need to define `Route` instead of `Ingress`.
+
+Double check this value of file `samples/gateway-route.yaml` and `samples/discovery-route.yaml`:
+
+- `spec.port.targetPort`.
+
+Then:
+
+```
+oc apply -f samples/gateway-route.yaml
+oc apply -f samples/discovery-route.yaml
+```
+
+To verify this step,
+
+- `oc get routes --namespace zowe` should show two Services `gateway` and `discovery`.
 
 ## Apply Zowe Core Components and Start Zowe
 
