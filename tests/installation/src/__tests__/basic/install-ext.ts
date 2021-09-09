@@ -17,6 +17,9 @@ import {
 } from '../../utils';
 import {TEST_TIMEOUT_SMPE_PTF} from '../../constants';
 
+import Debug from 'debug';
+const debug = Debug('zowe-install-test:install-ext');
+
 let beforeAllResult = false;
 const testSuiteName = 'Test sample extensions installation and verify';
 describe(testSuiteName, () => {
@@ -53,11 +56,15 @@ describe(testSuiteName, () => {
     beforeAllResult = true;
   }, TEST_TIMEOUT_SMPE_PTF);
 
+  debug(`EXTENSIONS_LIST=${process.env.EXTENSIONS_LIST}`);
+
   process.env.EXTENSIONS_LIST.split(',').forEach((extension) => {
+    debug(`identified extension to test (original string): ${extension}`);
     if (!extension){
       return;
     }
     const extensionArray = extension.split(':');
+    debug(`identified extension to test (extracted): ${extensionArray}`);
     if (extensionArray.length !== 2){
       return;
     }
