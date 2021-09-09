@@ -79,7 +79,7 @@
       "version": "1.0.15"
     },
     "org.zowe.explorer-uss": {
-      "version": "1.0.16"
+      "version": "1.0.15"
     },
     "org.zowe.explorer-ui-server": {
       "version": "0.2.16"
@@ -297,7 +297,7 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.16",
+        "tag": "v1.0.15",
         "destinations": ["Zowe PAX"]
       }]
     }, {
