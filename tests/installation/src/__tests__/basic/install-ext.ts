@@ -69,6 +69,7 @@ describe(testSuiteName, () => {
       return;
     }
 
+    debug(`define test for ${extensionArray[0]} with ${extensionArray[1]}`);
     test(`install and verify ${extensionArray[0]}`, async () => {
       expect(beforeAllResult).toBe(true);
       await installAndVerifyExtension(
