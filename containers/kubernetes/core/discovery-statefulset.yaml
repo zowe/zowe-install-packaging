@@ -58,11 +58,11 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "256Mi"
+              memory: "384Mi"
               cpu: "150m"
             limits:
               memory: "512Mi"
-              cpu: "300m"
+              cpu: "700m"
           ports:
             - name: discovery-port
               containerPort: 7553
@@ -70,7 +70,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 7553
-            initialDelaySeconds: 180
+            initialDelaySeconds: 120
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"

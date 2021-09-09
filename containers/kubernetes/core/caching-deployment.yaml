@@ -60,7 +60,7 @@ spec:
               cpu: "100m"
             limits:
               memory: "512Mi"
-              cpu: "200m"
+              cpu: "400m"
           ports:
             - name: caching-port
               containerPort: 7555
@@ -68,7 +68,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 7555
-            initialDelaySeconds: 180
+            initialDelaySeconds: 120
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/instance/bin/internal/run-zowe.sh"

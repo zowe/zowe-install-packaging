@@ -54,11 +54,11 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "128Mi"
+              memory: "256Mi"
               cpu: "50m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "384Mi"
+              cpu: "300m"
           ports:
             - name: jobs-api-port
               containerPort: 8545
