@@ -57,11 +57,13 @@ then
 # Statements below must not exceed col 80
 #----------------------------------------------------------------------------80|
 cat > ${TEMP_DIR}/${script%%.*}/SAMPLIB/ZWESIPRG <<EndOfZWESIPRG
-/* issue this console command to authorize the loadlib temporarily */
+/* issue this console command to authorize loadlib, pluginlib temporarily */
 SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEAUTH,VOLUME=${volume}
+SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEPLUG,VOLUME=${volume}
 /* Add this statement to SYS1.PARMLIB(PROGxx) or equivalent
-   to authorize the loadlib permanently */
+   to authorize loadlib, pluginlib permanently */
 APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume})
+APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEPLUG) VOLUME(${volume})
 EndOfZWESIPRG
 #----------------------------------------------------------------------------80|
 fi

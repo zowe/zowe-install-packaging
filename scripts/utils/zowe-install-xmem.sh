@@ -201,6 +201,7 @@ script_exit 1
 fi
 
 authlib=`echo ${data_set_prefix}.SZWEAUTH | tr '[:lower:]' '[:upper:]'`
+pluglib=`echo ${data_set_prefix}.SZWEPLUG | tr '[:lower:]' '[:upper:]'`
 samplib=`echo ${data_set_prefix}.SZWESAMP | tr '[:lower:]' '[:upper:]'`
 
 if [[ -z ${parmlib} ]]
@@ -210,6 +211,7 @@ else
   parmlib=`echo ${parmlib} | tr '[:lower:]' '[:upper:]'`
 fi
 
+
 if [[ -z ${proclib} ]]
 then
   proclib=auto
@@ -218,11 +220,12 @@ else
 fi
 
 echo    "authlib =" $authlib >> $LOG_FILE
+echo    "pluglib =" $pluglib >> $LOG_FILE
 echo    "samplib =" $samplib >> $LOG_FILE
 echo    "parmlib =" $parmlib >> $LOG_FILE
 echo    "proclib =" $proclib >> $LOG_FILE
 
-for dsname in $authlib $samplib $parmlib $proclib
+for dsname in $authlib $samplib $parmlib $proclib $pluglib
 do
   if [[ $proclib = auto ]]
   then
@@ -239,7 +242,12 @@ do
   if [[ $? -ne 0 ]]
   then
     echo Dataset \"$dsname\" not found | tee -a ${LOG_FILE}
-    script_exit 4
+    if [[ $dsname = $pluglib ]]
+    then
+      echo If ZIS plugin library desired, create \"$pluglib\" before installing ZIS plugins
+    else
+      script_exit 4
+    fi
   fi
 done
 
@@ -297,7 +305,7 @@ ZWEXMP00=ZWESIP00  # for ZWESIS01
 ZWEXASTC=ZWESASTC  # for ZWESAUX
 ZWEXMSTC=ZWESISTC  # for ZWESIS01
 
-# the extra parms ${authlib} ${parmlib} are used to replace DSNs in PROCLIB members
+# the extra parms ${authlib} ${parmlib} ${pluglib} are used to replace DSNs in PROCLIB members
 ./zowe-copy-to-JES.sh \
   -s ${samplib} \
   -i ${ZWEXASTC} \
@@ -305,6 +313,7 @@ ZWEXMSTC=ZWESISTC  # for ZWESIS01
   -o ${ZWEXASTC} \
   -b ${authlib} \
   -a ${parmlib} \
+  -p ${pluglib} \
   -f ${LOG_FILE}
 aux_rc=$?
 echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
@@ -315,6 +324,7 @@ echo "ZWEXASTC rc from zowe-copy-to-JES.sh is ${aux_rc}" >> ${LOG_FILE}
   -o ${ZWEXMSTC} \
   -b ${authlib} \
   -a ${parmlib} \
+  -p ${pluglib} \
   -f ${LOG_FILE}
 xmem_rc=$?
 echo "ZWEXMSTC rc from zowe-copy-to-JES.sh is ${xmem_rc}" >> ${LOG_FILE}

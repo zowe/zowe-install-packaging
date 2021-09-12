@@ -10,7 +10,7 @@
 ################################################################################
 
 # Function: Copy SAMPLIB member into JES PROCLIB concatenation
-# Usage:  ./zowe-copy-to-JES.sh -s $samplib -i ${input_member} -r $proclib -o ${output_member} [-b $loadlib -a $parmlib]
+# Usage:  ./zowe-copy-to-JES.sh -s $samplib -i ${input_member} -r $proclib -o ${output_member} [-b $loadlib -a $parmlib -p $pluglib]
 
 # Needs ../internal/opercmd to check JES concatenation
 # Needs ./mcopyshr.clist to write to the target PDS
@@ -24,12 +24,13 @@
 # The changes made are equivalent to this:
 # sed -e "s/${XMEM_ELEMENT_ID}.SISLOAD/${XMEM_LOADLIB}/g" \
 #     -e "s/${XMEM_ELEMENT_ID}.SISSAMP/${XMEM_PARMLIB}/g" \
+#     -e "s/${XMEM_ELEMENT_ID}.SISPLUG/${XMEM_PLUBLIB}/g" \
 #     -e "s/NAME='ZWESIS_STD'/NAME='${XMEM_SERVER_NAME}'/g" \ (this default is not edited)
 #     ${ZSS}/SAMPLIB/ZWESIS01 > ${ZSS}/SAMPLIB/${XMEM_JCL}.tmp
 # sed -e "s/zis-loadlib/${XMEM_LOADLIB}/g" \
 #     ${ZSS}/SAMPLIB/ZWESAUX > ${ZSS}/SAMPLIB/${XMEM_AUX_JCL}.tmp
 
-while getopts "a:b:f:i:l:o:r:s:" opt; do
+while getopts "a:b:f:i:l:o:p:r:s:" opt; do
   case $opt in
     a) parmlib=$OPTARG;;
     b) loadlib=$OPTARG;;
@@ -37,6 +38,7 @@ while getopts "a:b:f:i:l:o:r:s:" opt; do
     i) input_member=$OPTARG;;
     l) LOG_DIRECTORY=$OPTARG;;
     o) output_member=$OPTARG;;
+    p) pluglib=$OPTARG;;
     r) proclib=$OPTARG;;
     s) samplib=$OPTARG;;
     \?)
@@ -167,11 +169,13 @@ else
   # Edit the JCL in flight using parms 5 and 6 ...
   # These strings are in ZWESISTC
       # ZWES.SISLOAD
-      # ZWES.SISSAMP 
+      # ZWES.SISSAMP
+      # ZWES.SISPLUG
   # These strings are in ZWESASTC
       # zis-loadlib
   #
   sed -e "s/ZWES.SISLOAD/${loadlib}/g" \
+      -e "s/ZWES.SISPLUG/${pluglib}/g" \
       -e "s/ZWES.SISSAMP/${parmlib}/g" \
       -e "s/zis-loadlib/${loadlib}/g" \
       "//'$samplib(${input_member})'" > $TEMP_DIR/$samplib.${input_member}.jcl

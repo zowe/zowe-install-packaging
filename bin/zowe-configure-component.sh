@@ -112,7 +112,9 @@ install_zis_plugin() {
       if [ -n "${ZWES_ZIS_PLUGINLIB}" ]; then
           export ZIS_PLUGINLIB="${ZWES_ZIS_PLUGINLIB}"
       fi
-
+      if [ -n "${ZWES_ZIS_INSTALL_TO_PLUGINLIB}" ]; then
+          export ZIS_INSTALL_TOPLUGINLIB="${ZWES_ZIS_INSTALL_TO_PLUGINLIB}"
+      fi
       if [[ -z "${ZIS_PARMLIB}" ]]; then
           log_message "ZIS_PARMLIB N/A from env or instance. Skipping ZIS plugin check."
       else

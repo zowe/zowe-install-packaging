@@ -396,8 +396,8 @@
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
-/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly     */
-/*   advised to protect it against updates.                          */
+/* - HLQ..SZWEAUTH and SZWEPLUG are APF authorized data sets.        */
+/*   It is strongly advised to protect it against updates.           */
 /* - The sample commands assume that EGN (Enhanced Generic Naming)   */
 /*   is active, which allows the usage of ** to represent any number */
 /*   of qualifiers in the DATASET class. Substitute *.** with * if   */
@@ -613,8 +613,8 @@ F ACF2,REBUILD(FAC)
 *
 * DEFINE ZOWE DATA SET PROTECTION .................................
 *
-* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly
-*   advised to protect it against updates.
+* - HLQ..SZWEAUTH and SZWEPLUG are APF authorized data sets.
+*   It is strongly advised to protect it against updates.
 *
 *  HLQ stub
 SET RULE
@@ -812,8 +812,8 @@ $$
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
-/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
-/*   advised to protect it against updates.                          */
+/* - HLQ..SZWEAUTH and SZWEPLUG are APF authorized data sets.        */
+/*   It is strongly advised to protect it against updates.           */
 
 /* HLQ stub                                                          */
   TSS ADD(&ADMINDEP.) DATASET(&HLQ..)
