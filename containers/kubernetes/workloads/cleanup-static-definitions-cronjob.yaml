@@ -4,7 +4,11 @@ metadata:
   name: cleanup-static-definitions
   namespace: zowe
   labels:
-    app: zowe
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/component: job-cleanup-static-definitions
+    app.kubernetes.io/managed-by: manual
 spec:
   schedule: "*/15 * * * *"
   successfulJobsHistoryLimit: 5
@@ -26,6 +30,13 @@ spec:
             - name: zowe-config
               configMap:
                 name: zowe-config
+            - name: zowe-keystore
+              projected:
+                sources:
+                - configMap:
+                    name: zowe-certificates-cm
+                - secret:
+                    name: zowe-certificates-secret
             - name: zowe-workspace
               persistentVolumeClaim:
                 claimName: zowe-workspace-pvc
@@ -34,11 +45,18 @@ spec:
             - name: cleanup-static-definitions
               # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
               image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "128Mi"
+                  cpu: "100m"
               command:
                 - /bin/bash
                 - -c
-                - /component/bin/internal/init-container.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
+                - /component/bin/internal/container-init.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
               securityContext:
                 readOnlyRootFilesystem: true
               volumeMounts:
@@ -49,6 +67,9 @@ spec:
                 - name: zowe-config
                   mountPath: "/home/zowe/instance/instance.env"
                   subPath: instance.env
+                  readOnly: true
+                - name: zowe-keystore
+                  mountPath: "/home/zowe/keystore/"
                   readOnly: true
                 - name: zowe-workspace
                   mountPath: "/home/zowe/instance/workspace"

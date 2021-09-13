@@ -15,10 +15,9 @@
 # configurations you can use in Kubernetes deployment.
 #
 # parameter(s):
-# - optional, path to keystore directory. By default it will use the keystore
-#             and certificates used by current instance.
-#
-# Note: this utility requires node.js.
+# - c    Optional. Path to instance directory
+# - x    Optional. Kubernetes cluster external domain names separated by comma.
+#        Default is localhost.
 #
 # FIXME: to support keyring
 # FIXME: to support external certificates
@@ -28,7 +27,7 @@
 ################################################################################
 # Functions
 base64() {
-  node -e "const fs=require('fs');console.log(Buffer.from(fs.readFileSync('$1'), 'utf8').toString('base64'));"
+  uuencode -m "$1" dummy | sed '1d;$d' | tr -d '\n'
 }
 indent() {
   cat "$1" | sed "s/^/$2/"
@@ -37,7 +36,20 @@ indent() {
 ################################################################################
 # Constants and variables
 INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
-KEYSTORE_DIRECTORY_PARM=$1
+
+# command line parameters
+OPTIND=1
+while getopts "c:x:" opt; do
+  case ${opt} in
+    c) INSTANCE_DIR=${OPTARG};;
+    x) ZWE_EXTERNAL_HOSTS=${OPTARG};;
+    \?)
+      echo "Invalid option: -${OPTARG}" >&2
+      exit 1
+      ;;
+  esac
+done
+shift $(($OPTIND-1))
 
 # validate INSTANCE_DIR
 if [ ! -f "${INSTANCE_DIR}/instance.env" ]; then
@@ -59,9 +71,6 @@ fi
 . "${ROOT_DIR}/bin/internal/zowe-set-env.sh"
 
 # validate KEYSTORE_DIRECTORY
-if [ -n "${KEYSTORE_DIRECTORY_PARM}" ]; then
-  KEYSTORE_DIRECTORY=${KEYSTORE_DIRECTORY_PARM}
-fi
 if [ -z "${KEYSTORE_DIRECTORY}" ]; then
   echo "Error: cannot determine keystore directory. Please supply with parameter of this script."
   exit 1
@@ -79,6 +88,38 @@ if [ "${KEYSTORE_TYPE}" != "PKCS12" ]; then
   exit 1
 fi
 
+ORIGINAL_ZOWE_EXPLORER_HOST=$(. "${INSTANCE_DIR}/instance.env" && echo $ZOWE_EXPLORER_HOST)
+NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
+  grep -v -E "(ZWE_EXTERNAL_HOSTS=|ZOWE_EXTERNAL_HOST=|ZOWE_ZOS_HOST=|ZOWE_IP_ADDRESS=|ZWE_LAUNCH_COMPONENTS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | \
+  sed -e "/ZOWE_EXPLORER_HOST=.*/a\\
+  ZWE_EXTERNAL_HOSTS=${ZWE_EXTERNAL_HOSTS:-localhost}" | \
+  sed -e "/ZWE_EXTERNAL_HOSTS=.*/a\\
+  ZOWE_EXTERNAL_HOST=\$(echo \"\${ZWE_EXTERNAL_HOSTS}\" | awk -F, '{print \$1}' | tr -d '[[:space:]]')" | \
+  sed -e "/ZOWE_EXPLORER_HOST=.*/a\\
+  ZOWE_ZOS_HOST=${ORIGINAL_ZOWE_EXPLORER_HOST}" | \
+  grep -v -E "ZOWE_EXPLORER_HOST=" | \
+  sed -e "s#ROOT_DIR=.\+\$#ROOT_DIR=/home/zowe/runtime#" | \
+  sed -e "s#KEYSTORE_DIRECTORY=.\+\$#KEYSTORE_DIRECTORY=/home/zowe/keystore#" | \
+  sed -e "s#CATALOG_PORT=.\+\$#CATALOG_PORT=7552#" | \
+  sed -e "s#DISCOVERY_PORT=.\+\$#DISCOVERY_PORT=7553#" | \
+  sed -e "s#GATEWAY_PORT=.\+\$#GATEWAY_PORT=7554#" | \
+  sed -e "s#ZWE_CACHING_SERVICE_PORT=.\+\$#ZWE_CACHING_SERVICE_PORT=7555#" | \
+  sed -e "s#JOBS_API_PORT=.\+\$#JOBS_API_PORT=8545#" | \
+  sed -e "s#FILES_API_PORT=.\+\$#FILES_API_PORT=8547#" | \
+  sed -e "s#JES_EXPLORER_UI_PORT=.\+\$#JES_EXPLORER_UI_PORT=8546#" | \
+  sed -e "s#MVS_EXPLORER_UI_PORT=.\+\$#MVS_EXPLORER_UI_PORT=8548#" | \
+  sed -e "s#USS_EXPLORER_UI_PORT=.\+\$#USS_EXPLORER_UI_PORT=8550#" | \
+  sed -e "s#ZOWE_ZLUX_SERVER_HTTPS_PORT=.\+\$#ZOWE_ZLUX_SERVER_HTTPS_PORT=8544#" | \
+  sed -e "s#ZWE_DISCOVERY_SERVICES_LIST=.\+\$#ZWE_DISCOVERY_SERVICES_REPLICAS=1#" | \
+  sed -e "s#APIML_GATEWAY_EXTERNAL_MAPPER=.\+\$#APIML_GATEWAY_EXTERNAL_MAPPER=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map#" | \
+  sed -e "s#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=.\+\$#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth#" | \
+  sed -e "s#ZOWE_EXPLORER_FRAME_ANCESTORS=.\+\$#ZOWE_EXPLORER_FRAME_ANCESTORS=\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*#" | \
+  sed -e "s#ZWE_CACHING_SERVICE_PERSISTENT=.\+\$#ZWE_CACHING_SERVICE_PERSISTENT=#" | \
+  sed -e "\$a\\
+  \\
+  ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
+  ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}")
+
 ################################################################################
 # Prepare configs
 cat << EOF
@@ -88,9 +129,13 @@ apiVersion: v1
 metadata:
   name: zowe-config
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 data:
   instance.env: |
-$(cat "${INSTANCE_DIR}"/instance.env | grep -v -E "(ZOWE_EXPLORER_HOST=|ZOWE_IP_ADDRESS=|ZWE_LAUNCH_COMPONENTS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | sed -e 's#ROOT_DIR=.\+$#ROOT_DIR=/home/zowe/runtime#' -e 's#KEYSTORE_DIRECTORY=.\+$#KEYSTORE_DIRECTORY=/home/zowe/keystore#' | indent - "    ")
+$(echo "${NEW_INSATNCE_ENV_CONTENT}" | indent - "    ")
 EOF
 
 cat << EOF
@@ -100,6 +145,10 @@ apiVersion: v1
 metadata:
   name: zowe-certificates-cm
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 data:
   zowe-certificates.env: |
     KEY_ALIAS="${KEY_ALIAS}"
@@ -126,6 +175,10 @@ kind: Secret
 metadata:
   name: zowe-certificates-secret
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 type: Opaque
 data:
   keystore.p12: $(base64 "${KEYSTORE}")
@@ -138,3 +191,4 @@ $(indent "${KEYSTORE_CERTIFICATE}" "    ")
   localca.cert: |
 $(indent "${KEYSTORE_CERTIFICATE_AUTHORITY}" "    ")
 EOF
+
