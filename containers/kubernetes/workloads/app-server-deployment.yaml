@@ -2,28 +2,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: explorer-uss
+  name: app-server
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: explorer-uss
-    app.kubernetes.io/part-of: explorer-ui
+    app.kubernetes.io/component: app-server
+    app.kubernetes.io/part-of: app-server
     app.kubernetes.io/managed-by: manual
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: explorer-uss
+      app.kubernetes.io/component: app-server
   replicas: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: explorer-uss
+        app.kubernetes.io/component: app-server
     spec:
       securityContext:
         runAsUser: 20000
@@ -49,23 +49,23 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: explorer-uss
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-uss:latest-ubuntu
+        - name: app-server
+          image: zowe-docker-release.jfrog.io/ompzowe/app-server:1.24.0-ubuntu-amd64
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "10m"
-            limits:
               memory: "128Mi"
-              cpu: "100m"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
           ports:
-            - name: uss-port
-              containerPort: 8550
+            - name: app-server-port
+              containerPort: 8544
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8550
+              port: 8544
             initialDelaySeconds: 15
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             failureThreshold: 18
@@ -120,7 +120,7 @@ spec:
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: explorer-uss-pdb
+  name: app-server-pdb
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
@@ -134,4 +134,5 @@ spec:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: explorer-uss
+      app.kubernetes.io/component: app-server
+

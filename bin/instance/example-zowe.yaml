@@ -155,7 +155,7 @@ components:
   app-server:
     enabled: true
     port: "8544"
-    # we can customize zss certificate
+    # we can customize app-server certificate
     # the missing definitions will be picked from "zowe.internalCertificate"
     certificate:
       keystore:

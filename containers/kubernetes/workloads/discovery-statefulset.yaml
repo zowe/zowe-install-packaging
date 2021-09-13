@@ -59,10 +59,10 @@ spec:
           resources:
             requests:
               memory: "384Mi"
-              cpu: "150m"
+              cpu: "300m"
             limits:
               memory: "512Mi"
-              cpu: "700m"
+              cpu: "800m"
           ports:
             - name: discovery-port
               containerPort: 7553
@@ -70,7 +70,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 7553
-            initialDelaySeconds: 120
+            initialDelaySeconds: 90
             # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
             failureThreshold: 90
           command: ["/bin/bash", "-c"]

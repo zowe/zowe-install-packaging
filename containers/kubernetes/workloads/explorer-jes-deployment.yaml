@@ -66,7 +66,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8546
-            initialDelaySeconds: 30
+            initialDelaySeconds: 15
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             failureThreshold: 18
           command: ["/bin/bash", "-c"]
