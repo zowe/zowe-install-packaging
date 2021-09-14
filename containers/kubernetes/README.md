@@ -73,7 +73,20 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
+- `ZOWE_ZOS_HOST` is recommended to be set to where the z/OS system where your Zowe ZSS/ZIS is running.
 - `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/discovery-statefulset.yaml`.
+- All components running in Kubernetes should use default ports:
+  * `CATALOG_PORT` is `7552`,
+  * `DISCOVERY_PORT` is `7553`,
+  * `GATEWAY_PORT` is `7554`,
+  * `ZWE_CACHING_SERVICE_PORT` is `7555`,
+  * `JOBS_API_PORT` is `8545`,
+  * `FILES_API_PORT` is `8547`,
+  * `JES_EXPLORER_UI_PORT` is `8546`,
+  * `MVS_EXPLORER_UI_PORT` is `8548`,
+  * `USS_EXPLORER_UI_PORT` is `8550`,
+  * `ZOWE_ZLUX_SERVER_HTTPS_PORT` is `8544`.
+- `ZOWE_ZSS_SERVER_PORT` should be set to the port where your Zowe ZSS is running on `ZOWE_ZOS_HOST`.
 - `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
 - `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
