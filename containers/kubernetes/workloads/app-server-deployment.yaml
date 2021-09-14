@@ -116,6 +116,7 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
+---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
