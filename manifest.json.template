@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.24.0-STAGING",
+      "version": "~1.24.0-333-zlux-server-framework",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zss-auth": {
