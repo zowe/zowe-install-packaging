@@ -32,12 +32,13 @@ This section assumes you already have a Kubernetes cluster setup and have `kubec
 
 ### Create Namespace and Service Account
 
-Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
+Run:
 
 ```
 kubectl apply -f common/zowe-ns.yaml
 kubectl apply -f common/zowe-sa.yaml
 ```
+Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
 To verify this step,
 
@@ -46,7 +47,7 @@ To verify this step,
 
 ### Create Persistent Volume Claim
 
-Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and customize to your own value. You can use `kubectl get sc` to list all StorageClass-es on your cluster.
+Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and customize to your own value. You can use `kubectl get sc` to list all StorageClass-es on your cluster. Then run:
 
 ```
 kubectl apply -f samples/workspace-pvc.yaml
