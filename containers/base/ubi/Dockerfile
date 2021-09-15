@@ -29,10 +29,13 @@ ARG UID=20000
 ARG GID=20000
 # node build CPU arch
 ARG NODE_CPU_ARCH=x64
+# tini CPU arch
+ARG TINI_ARCH=amd64
 
 ##################################
 # environments
 ENV NODE_VERSION=14.17.3
+ENV TINI_VERSION=v0.19.0
 
 ##################################
 # customize
@@ -48,6 +51,11 @@ RUN set -ex \
     # create /component folder
     && mkdir -p /component \
     && chown zowe.zowe /component \
+    # install tini \
+    && cd /usr/bin \
+    && curl -fsSLO https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TINI_ARCH} \
+    && mv tini-${TINI_ARCH} tini \
+    && chmod +x tini \
     # install node.js which is mandatory for now
     && microdnf install --nodocs \
       findutils \
