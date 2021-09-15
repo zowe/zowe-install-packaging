@@ -50,7 +50,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     'marist-4': [
       ansible_host     : 'marist-4',
       ssh_hostport     : 'ssh-marist-server-zzow04-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow01'
+      ssh_userpass     : 'ssh-marist-server-zzow01',
       node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x' //temp
     ]
   ];
