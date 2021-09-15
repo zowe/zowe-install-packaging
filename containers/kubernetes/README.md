@@ -47,7 +47,15 @@ To verify this step,
 
 ### Create Persistent Volume Claim
 
-Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and customize to your own value. You can use `kubectl get sc` to list all StorageClass-es on your cluster. Then run:
+Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and replace `hostpath` to customize to your own value. You can use `kubectl get sc` to list all StorageClass-es on your cluster. 
+For example:
+```
+kubectl get sc
+  NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+  standard (default)   k8s.io/minikube-hostpath   Delete          Immediate           false                  29m
+```
+Your `storageClassName` line in `workspace-pvc.yaml` shall be `storageClassName: standard`
+After making all necessary changes, run the following command to apply:
 
 ```
 kubectl apply -f samples/workspace-pvc.yaml
