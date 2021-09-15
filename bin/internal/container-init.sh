@@ -22,6 +22,9 @@ set -e
 SOURCE_DIR=/component
 RUNTIME_DIR=/home/zowe/runtime
 INSTANCE_DIR=/home/zowe/instance
+WORKSPACE_DIR=${INSTANCE_DIR}/workspace
+PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 
 #######################################################################
 echo ">>> before preparation"
@@ -51,7 +54,11 @@ echo ">>> after preparation"
 echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
 echo "  - /home/zowe" && ls -la "/home/zowe"
 echo "  - ${RUNTIME_DIR}" && ls -la "${RUNTIME_DIR}"
+echo "  - ${RUNTIME_DIR}/components" && ls -la "${RUNTIME_DIR}/components"
 echo "  - ${INSTANCE_DIR}" && ls -la "${INSTANCE_DIR}"
+echo "  - ${WORKSPACE_DIR}" && ls -la "${WORKSPACE_DIR}"
+echo "  - ${PLUGINS_DIR}" && ls -la "${PLUGINS_DIR}"
+echo "  - ${STATIC_DEF_CONFIG_DIR}" && ls -la "${STATIC_DEF_CONFIG_DIR}"
 
 #######################################################################
 echo ">>> done"
