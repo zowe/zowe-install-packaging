@@ -105,13 +105,13 @@ wait_for_process_exit() {
     found=$(ps -p ${pid} -o pid 2>/dev/null | tail -n +2)
   done
   if [ -n "${found}" ]; then
-    echo "process $pid does NOT exit before timeout"
+    print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "process $pid does NOT exit before timeout"
     return 1
   elif [ ${iterator_index} -eq 0 ]; then
-    echo "process $pid does NOT exist or already exited"
+    print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "process $pid does NOT exist or already exited"
     return 0
   else
-    echo "process $pid exited gracefully"
+    print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "process $pid exited gracefully"
     return 0
   fi
 }
@@ -129,12 +129,13 @@ gracefully_shutdown() {
 
   if [ -n "${pid}" ]; then
     children=$(find_all_child_processes $pid)
-    echo "process ${pid} has children: ${children}"
+    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "process ${pid} has children: ${children}, sending SIGTERM signal to them"
     # send SIGTERM to all children
     kill -15 ${children} 2>/dev/null
     for pid in ${children}; do
       wait_for_process_exit $pid
     done
+    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "all child processes exited"
   fi
 
   exit 0
