@@ -51,6 +51,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       ansible_host     : 'marist-4',
       ssh_hostport     : 'ssh-marist-server-zzow04-hostport',
       ssh_userpass     : 'ssh-marist-server-zzow01'
+      node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x' //temp
     ]
   ];
   // Test scopes, what test should we run
@@ -76,6 +77,10 @@ node('zowe-jenkins-agent-dind-wdc') {
     'test keyring': [
       test_files: 'dist/__tests__/extended/keyring.js',
     ],
+    'test multiple node versions': [
+      test_files: 'dist/__tests__/extended/node-versions/',
+      jenkins_primary_lock: 'marist4',
+    ],
     'install smpe ptf 2 times': [
       test_files: 'dist/__tests__/extended/ptf/install-ptf-two-times.js',
     ],
@@ -93,10 +98,6 @@ node('zowe-jenkins-agent-dind-wdc') {
     ],
     'enabled NONSTRICT_VERIFY_CERTIFICATES with external certificate': [
       test_files: 'dist/__tests__/extended/certificates/nonstrict-verify-external-certificate.js',
-    ],
-    'bundle: multiple node versions': [
-      test_files: 'dist/__tests__/extended/node-versions/',
-      jenkins_primary_lock: 'marist',
     ],
     'bundle: convenience build on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/convenience/',
