@@ -125,7 +125,7 @@ wait_for_process_exit() {
 # @param string   PID to shutdown
 # Output          process shutdown information
 gracefully_shutdown() {
-  pid=${1:-${current_process_id:-$$}}
+  pid=${1:-${ZWE_GRACEFULL_SHUTDOWN_PID:-1}}
 
   if [ -n "${pid}" ]; then
     children=$(find_all_child_processes $pid)
