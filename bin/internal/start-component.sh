@@ -67,6 +67,7 @@ fi
 # when running in containers, kubernetes will send SIGTERM to PID 1
 # gracefully shutdown all child processes by sending SIGTERM to them all
 if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  print_formatted_debug "ZWELS" "start-component.sh:${LINENO}" "trap SIGTERM signal handler registered"
   trap gracefully_shutdown 15
 fi
 
