@@ -21,14 +21,6 @@
 # prepare instance/.env and instance/workspace directories
 . ${ROOT_DIR}/bin/internal/prepare-instance.sh
 
-########################################################
-# when running in containers, kubernetes will send SIGTERM to PID 1
-# gracefully shutdown all child processes by sending SIGTERM to them all
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
-  print_formatted_debug "ZWELS" "run-zowe.sh:${LINENO}" "trap SIGTERM signal handler registered"
-  trap gracefully_shutdown 15
-fi
-
 # LAUNCH_COMPONENTS can also get from stdout of bin/internal/get-launch-components.sh
 for run_zowe_start_component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g"); do
   if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
