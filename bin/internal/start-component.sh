@@ -64,6 +64,13 @@ fi
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 
 ########################################################
+# when running in containers, kubernetes will send SIGTERM to PID 1
+# gracefully shutdown all child processes by sending SIGTERM to them all
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  trap gracefully_shutdown 15
+fi
+
+########################################################
 # find component root directory and execute start script
 component_dir=$(find_component_directory "${ZWELS_START_COMPONENT_ID}")
 # backward compatible purpose, some may expect this variable to be component lifecycle directory
