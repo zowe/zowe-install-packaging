@@ -134,7 +134,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.15.0",
+        "tag": "v4.15.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -213,7 +213,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.33.1",
+        "tag": "v6.33.3",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
