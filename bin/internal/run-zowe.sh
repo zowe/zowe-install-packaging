@@ -21,6 +21,11 @@
 # prepare instance/.env and instance/workspace directories
 . ${ROOT_DIR}/bin/internal/prepare-instance.sh
 
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  trap gracefully_shutdown 15
+fi
+
 # LAUNCH_COMPONENTS can also get from stdout of bin/internal/get-launch-components.sh
 for run_zowe_start_component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g"); do
   if [ -n "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
