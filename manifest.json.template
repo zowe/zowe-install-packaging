@@ -148,7 +148,7 @@
        "componentGroup": "Zowe common java libraries",
        "entries": [{
          "repository": "common-java",
-         "tag": "master",
+         "tag": "v1.21.3",
          "destinations": ["Zowe PAX"]
        }]
      }, {
