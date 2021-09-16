@@ -19,15 +19,22 @@
 ################################################################################
 
 # find ROOT_DIR if it's not defined
+if [ -n "${ROOT_DIR}" ]; then
+  if [ -f "${ROOT_DIR}/manifest.json" ]; then
+    if [ "$(cat ${ROOT_DIR}/manifest.json | grep '"name": "Zowe"')" = "" ]; then
+      # not Zowe manifest
+      export ROOT_DIR=
+    fi
+  else
+    # wrong value
+    export ROOT_DIR=
+  fi
+fi
 if [ -z "${ROOT_DIR}" ]; then
   export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
 fi
-if [ ! -f "${ROOT_DIR}/manifest.json" -o "$(cat ${ROOT_DIR}/manifest.json | grep '"name": "Zowe"')" = "" ]; then
-  # let's try again, could be assigned to wrong value
-  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
-fi
 # validate if this is zowe root path
-if [ ! -f "${ROOT_DIR}/manifest.json" -o "$(cat ${ROOT_DIR}/manifest.json | grep '"name": "Zowe"')" = "" ]; then
+if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
   echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
   exit 1
 fi
