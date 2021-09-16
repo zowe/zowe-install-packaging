@@ -202,7 +202,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     string(
       name: 'CLIENT_NODE_VERSION',
       description: 'Overwrite the default node.js version running in Jenkins agent. Optional, leave it enmpty to use default version. Input value like "v12.18.3" to use a specific version.',
-      defaultValue: '',
+      defaultValue: 'v12.18.3',
       trim: true
     ),
     string(

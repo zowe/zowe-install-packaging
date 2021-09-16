@@ -1,0 +1,41 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+################################################################################
+# It's recommended to run <instance-dir>/bin/utils/convert-for-k8s.sh
+# on z/OS to convert your existing keystore to this ConfigMap definition.
+
+---
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: zowe-certificates-cm
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+data:
+  zowe-certificates.env: |
+    KEY_ALIAS="localhost"
+    KEYSTORE_PASSWORD="password"
+    KEYSTORE="/home/zowe/keystore/keystore.p12"
+    KEYSTORE_TYPE="PKCS12"
+    TRUSTSTORE="/home/zowe/keystore/truststore.p12"
+    KEYSTORE_KEY="/home/zowe/keystore/keystore.key"
+    KEYSTORE_CERTIFICATE="/home/zowe/keystore/keystore.cert"
+    KEYSTORE_CERTIFICATE_AUTHORITY="/home/zowe/keystore/localca.cert"
+    EXTERNAL_ROOT_CA=""
+    EXTERNAL_CERTIFICATE_AUTHORITIES=""
+    ZOWE_APIM_VERIFY_CERTIFICATES=false
+    ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=true
+    SSO_FALLBACK_TO_NATIVE_AUTH=true
+    PKCS11_TOKEN_NAME=""
+    PKCS11_TOKEN_LABEL=""
