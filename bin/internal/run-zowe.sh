@@ -26,7 +26,7 @@ if [ -z "${ROOT_DIR}" ]; then
     echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
     exit 1
   fi
-}
+fi
 . ${ROOT_DIR}/bin/internal/prepare-instance.sh
 
 # this is running in containers
