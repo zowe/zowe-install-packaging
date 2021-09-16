@@ -31,7 +31,8 @@ Zowe base images,
 If you use your own base image other than Zowe base images, please check this list and make sure it is compatible with Zowe runtime:
 
 - The default shell `/bin/sh` must be `bash`. If it's not, you can fix it by installing and overwriting `/bin/sh` with the symbolic link of `/bin/bash`.
-- These softwares must exist in the image: `date`, `awk`, `sed`, `xargs`.
+- These softwares must exist in the image: `date`, `awk`, `sed`, `xargs`, `tini`.
+  * `tini` is a utility to help propagating `SIGTERM` signals to all processes running in the container. Check the project repository [krallin/tini](https://github.com/krallin/tini) to get more information.
 - These softwares are optional but good to have: `ping`, `dig`, `netstat`.
 
 ### Multi-CPU Architecture
@@ -208,6 +209,14 @@ In the runtime, the Zowe content is organized in this structure:
 ### Command Override
 
 - Component `CMD` and `ENTRYPOINT` directives will be overwritten with the Zowe launch script used to start it in Zowe context.
+- Components running in Zowe context requires to be started with `tini` along with `bash` and should be `/home/zowe/instance/bin/internal/run-zowe.sh`. Here is example start command:
+  ```yaml
+  command: ["tini", "-g", "--"]
+  args:
+    - "/bin/bash"
+    - "-c"
+    - "/home/zowe/instance/bin/internal/run-zowe.sh"
+  ```
 
 ### Environment Variables
 
@@ -215,7 +224,7 @@ These runtime environment variable(s) are **REQUIRED** to start Zowe components.
 
 - `ZWE_POD_NAMESPACE`: holds the current Kubernetes namespace. This variable can be _optional_ if the service account `automountServiceAccountToken` attribute is `true`. The value of this variable can be assigned from metadata from `Pod` `spec` section:
 
-  ```
+  ```yaml
   env:
     - name: ZWE_POD_NAMESPACE
       valueFrom:
