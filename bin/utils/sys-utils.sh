@@ -80,10 +80,17 @@ find_all_child_processes() {
     tree=$(ps -o pid,ppid,comm -A | tail -n +2)
   fi
 
-  for child in $(find_direct_child_processes "${parent}" "${tree}"); do
-    printf "${child} "
-    find_all_child_processes "${child}" "${tree}"
-  done
+  if [ "${parent}" = "1" ]; then
+    # assume all processes are child of PID 1
+    # this should be much faster
+    echo "${tree}" | awk '{print $1;}' | sed '/^1$/d' | tr '\n' ' '
+  else
+    # have to recursively check slowly
+    for child in $(find_direct_child_processes "${parent}" "${tree}"); do
+      printf "${child} "
+      find_all_child_processes "${child}" "${tree}"
+    done
+  fi
 }
 
 ###############################
@@ -95,6 +102,8 @@ find_all_child_processes() {
 # Output          message about how this PID exits
 wait_for_process_exit() {
   pid=$1
+
+  print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "waiting for process $pid to exit"
 
   iterator_index=0
   max_iterator_index=30
