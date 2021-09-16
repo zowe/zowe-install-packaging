@@ -19,4 +19,6 @@ then
 fi
 
 . ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
-${ROOT_DIR}/bin/internal/run-zowe.sh -c "${INSTANCE_DIR}" -i "${ZWELS_HA_INSTANCE_ID}"
+${ROOT_DIR}/bin/internal/run-zowe.sh -c "${INSTANCE_DIR}" -i "${ZWELS_HA_INSTANCE_ID}" &
+# make wait more explicit
+wait
