@@ -21,11 +21,15 @@
 # prepare instance/.env and instance/workspace directories
 if [ -z "${ROOT_DIR}" ]; then
   export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
-  # validate if this is zowe root path
-  if [ ! -f "${ROOT_DIR}/manifest.json" ]; then
-    echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
-    exit 1
-  fi
+fi
+if [ ! -f "${ROOT_DIR}/manifest.json" -o "$(cat ${ROOT_DIR}/manifest.json | grep '"name": "Zowe"')" = "" ]; then
+  # let's try again, could be assigned to wrong value
+  export ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+fi
+# validate if this is zowe root path
+if [ ! -f "${ROOT_DIR}/manifest.json" -o "$(cat ${ROOT_DIR}/manifest.json | grep '"name": "Zowe"')" = "" ]; then
+  echo "ROOT_DIR is not defined. You can either pass the value with -r parameter or define it as global environment variable." >&2
+  exit 1
 fi
 . ${ROOT_DIR}/bin/internal/prepare-instance.sh
 
