@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "EPL-2.0",
   "devDependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.2",
     "chai": "^4.3.4",
     "chromedriver": "^2.46.0",
     "debug": "^3.2.7",
