@@ -103,7 +103,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          build-arg-list: NODE_CPU_ARCH=x64 TINI_ARCH=amd64
+          build-arg-list: NODE_CPU_ARCH=x64
         timeout-minutes: 5
 
   build-ubi-s390x:
@@ -131,7 +131,7 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-          build-arg-list: NODE_CPU_ARCH=s390x  TINI_ARCH=s390x
+          build-arg-list: NODE_CPU_ARCH=s390x
         timeout-minutes: 10
 
   define-ubi-manifest:
