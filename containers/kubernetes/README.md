@@ -1,8 +1,10 @@
 # Kubernetes YAML Configurations
 
 **NOTES:** all paths below are relative to current directory `containers/kubernetes`.
- <br>
- <br>
+<br>
+<br>
+<br>
+
 ## Prerequisites
 
 ### 1. Kubernetes Cluster
@@ -26,9 +28,10 @@ For production purpose, you can:
 ### 2. `kubectl` Tool
 
 You need `kubectl` CLI tool installed on your local computer where you want to manage the Kubernetes cluster. Please follow appropriate steps from official documentation [Install Tools](https://kubernetes.io/docs/tasks/tools/).
- <br>
- <br>
- <br>
+<br>
+<br>
+<br>
+ 
 ## Preparations
 
 This section assumes you already have a Kubernetes cluster setup and have `kubectl` tool installed.
@@ -216,6 +219,7 @@ and it should show two Services `gateway` and `discovery`.
 <br>
 <br>
 <br>
+
 ## Apply Zowe Core Components Workloads and Start Zowe
 Run:
 ```
@@ -243,7 +247,6 @@ should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be
 <br>
 
 ## Import New Component
-            
 ### 1. Build and Push Component Image
 
 Component must create container image and the component image must follow Zowe Containerization Conformance to make sure it can be started within a Zowe cluster.
@@ -279,12 +282,11 @@ Continue to customize the specification to fit in your component requirements:
 ### 3. Start Your Component
 
 Once you defined your component `Deployment` object, you can run `kubectl apply -f /path/to/your/component-deployment.yaml` to apply it to Kubernetes cluster running Zowe. Now you can follow common Kubernetes practice to mange your component workload.
+<br>
+<br>
+<br>
 
-<br>
-<br>
-<br>
 ## Configuration, Operation
-
 When Zowe workload running in Kubernetes cluster, it follows common Kubernetes operation recommendations.
 
 ### 1. Monitoring Zowe Workload Running In Kubernetes
@@ -312,7 +314,7 @@ kubectl delete -n zowe deployment jobs-api
 ```
 <br>
 <br>
-<br>
+
 ## Troubleshooting Tips
 ### ISSUE: `/tmp` Directory Is Not Writable
 
@@ -343,12 +345,11 @@ spec:
 ```
 
 With this added to your `Deployment`, your component should be able to write to `/tmp` directory.
+<br>
+<br>
+<br>
 
-<br>
-<br>
-<br>
 ## Launch Single Image On Local Computer Without Kubernetes
-
 **NOTES,** this is for debugging purpose and it's not recommended for end-user.
 
 ### 1. Init `tmp` Folder
