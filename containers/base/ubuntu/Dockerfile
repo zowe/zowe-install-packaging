@@ -54,7 +54,6 @@ RUN set -ex \
     && apt-get install -y \
       curl \
       gnupg \
-      tini \
       xz-utils \
     && ARCH=${NODE_CPU_ARCH} \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
