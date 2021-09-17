@@ -1,10 +1,11 @@
 # Kubernetes YAML Configurations
 
 **NOTES**, all paths below are relative to current directory `containers/kubernetes`.
-
+ <br>
+ <br>
 ## Prerequisites
 
-### Kubernetes Cluster
+### 1. Kubernetes Cluster
 
 There are many ways to prepare a Kubernetes cluster based on your requirements.
 
@@ -22,18 +23,18 @@ For production purpose, you can:
   * [IBM Cloud Kubernetes Service](https://www.ibm.com/ca-en/cloud/kubernetes-service)
   * [Google Cloud Kubernetes Engine](https://cloud.google.com/kubernetes-engine)
 
-### `kubectl` Tool
+### 2. `kubectl` Tool
 
 You need `kubectl` CLI tool installed on your local computer where you want to manage the Kubernetes cluster. Please follow appropriate steps from official documentation [Install Tools](https://kubernetes.io/docs/tasks/tools/).
-
+ <br>
+ <br>
+ <br>
 ## Preparations
 
 This section assumes you already have a Kubernetes cluster setup and have `kubectl` tool installed.
 
-### Create Namespace and Service Account
-
+### 1. Create Namespace and Service Account
 Run:
-
 ```
 kubectl apply -f common/zowe-ns.yaml
 kubectl apply -f common/zowe-sa.yaml
@@ -41,38 +42,63 @@ kubectl apply -f common/zowe-sa.yaml
 Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
 To verify this step,
+- run:
+```
+kubectl get namespaces
+```
+and it should show a Namespace `zowe`.
+- run:
+```
+kubectl get serviceaccounts --namespace zowe
+```
+and it should show a ServiceAccount `zowe-sa`.
 
-- `kubectl get namespaces` should show a Namespace `zowe`.
-- `kubectl get serviceaccounts --namespace zowe` should show a ServiceAccount `zowe-sa`.
+### 2. Create Persistent Volume Claim
 
-### Create Persistent Volume Claim
-
-Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and replace `hostpath` to customize to your own value. You can use `kubectl get sc` to list all StorageClass-es on your cluster. 
-For example:
+Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and replace `hostpath` to customize to your own value. You can run 
 ```
 kubectl get sc
-  NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-  standard (default)   k8s.io/minikube-hostpath   Delete          Immediate           false                  29m
+``` 
+to list all StorageClass-es on your cluster. A sample output will look like this:
 ```
-Your `storageClassName` line in `workspace-pvc.yaml` shall be `storageClassName: standard`
+  NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+  standard (default)   k8s.io/example-hostpath    Delete          Immediate           false                  29m
+```
+Following the example above, your `storageClassName` line in `workspace-pvc.yaml` should be `storageClassName: standard`. Note that this is just an example, you should have a different storageClassName value based on your specific environment. 
+
 After making all necessary changes, run the following command to apply:
 
 ```
 kubectl apply -f samples/workspace-pvc.yaml
 ```
 
-To verify this step, `kubectl get pvc --namespace zowe` should show a PersistentVolumeClaim `zowe-workspace-pvc` and the `STATUS` should be `Bound`.
+To verify this step, run 
+```
+kubectl get pvc --namespace zowe
+``` 
+and it should show a PersistentVolumeClaim `zowe-workspace-pvc`, and the `STATUS` should be `Bound`.
 
-### Create And Modify ConfigMaps and Secrets
+### 3. Create And Modify ConfigMaps and Secrets
 
-On z/OS, run this command in your instance directory:
+On the z/OS you have, run this command in your instance directory:
 
 ```
 cd <instance-dir>
 ./bin/utils/convert-for-k8s.sh
 ```
 
-This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values. Copy the whole output and save as a YAML file `configs.yaml` on your local computer, verify and then run `kubectl apply -f /path/to/your/configs.yaml`.
+This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values.
+
+Now, copy the whole output and save as a YAML file `configs.yaml` on your server setting up kubernetes, next run following command to apply configurations:
+```
+kubectl apply -f /path/to/your/configs.yaml
+```
+If no issue, you should see the following output:
+```
+configmap/zowe-config created
+configmap/zowe-certificates-cm created
+secret/zowe-certificates-secret created
+```
 
 If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences comparing running on z/OS:
 
@@ -106,14 +132,23 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 
 To verify this step,
 
-- `kubectl get configmaps --namespace zowe` should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
-- `kubectl get secrets --namespace zowe` should show a Secret `zowe-certificates-secret`.
+- run 
+```
+kubectl get configmaps --namespace zowe
+```
+and it should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
 
-### Expose Gateway and Discovery
+- run 
+```
+kubectl get secrets --namespace zowe
+```
+and it should show a Secret `zowe-certificates-secret`.
+
+### 4. Expose Gateway and Discovery
 
 This section is highly related to your Kubernetes cluster configuration. If you are not sure about these sections, please contact your Kubernetes administrator or us.
 
-#### Create Service
+#### 4a. Create Service
 
 Depends on how your Kubernetes network setup, you may choose from `LoadBalancer` or `NodePort` service.
 
@@ -125,29 +160,35 @@ Choose `LoadBalancer` (`samples/gateway-service-lb.yaml` and `samples/discovery-
 Choose `NodePort` (`samples/gateway-service-np.yaml` and `samples/discovery-service-np.yaml`) if you are using Kubernetes is created on Bare Metal and you don't have load balancer.
 
 Double check these values of files you choose:
+- `spec.type` should reflect if you are using `LoadBalancer` or `NodePort`
+- If you are using `NodePort` service, examine `spec.ports[0].nodePort` as this will be the port to be exposed to external. The default gateway port is not `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
 
-- `spec.type`.
-- `spec.ports[0].nodePort`, this will be the port be exposed to external. Which means, if you are using `NodePort` service, the default gateway port is not `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
-
-If you choose `LoadBalancer` services, run these commands:
-
-```
-kubectl apply -f samples/gateway-service-lb.yaml
-kubectl apply -f samples/discovery-service-lb.yaml
-```
-
-If you choose `NodePort` services, run these commands:
+Next,
+- If you choose `LoadBalancer` services, run:
 
 ```
-kubectl apply -f samples/gateway-service-np.yaml
-kubectl apply -f samples/discovery-service-np.yaml
+kubectl apply -f samples/gateway-service-lb.yaml && kubectl apply -f samples/discovery-service-lb.yaml
 ```
 
-To verify this step,
+- If you choose `NodePort` services, run:
 
-- `kubectl get services --namespace zowe` should show two Services `gateway-service` and `discovery-service`.
+```
+kubectl apply -f samples/gateway-service-np.yaml && kubectl apply -f samples/discovery-service-np.yaml
+```
 
-#### Create Ingress
+Either way, if no issue, you should see following output:
+```
+service/gateway-service created`
+service/discovery-service created
+```
+
+To verify this step, run 
+```
+kubectl get services --namespace zowe
+````
+and it should show two Services `gateway-service` and `discovery-service`.
+
+#### 4b. Create Ingress
 
 You may not need to define `Ingress` if are using Kubernetes and:
 
