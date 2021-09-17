@@ -71,7 +71,7 @@ spec:
             failureThreshold: 60
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/instance/bin/internal/run-zowe.sh"
+            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
