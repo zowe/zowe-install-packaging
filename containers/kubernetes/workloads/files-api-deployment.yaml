@@ -69,11 +69,9 @@ spec:
             initialDelaySeconds: 45
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
             failureThreshold: 60
-          command: ["tini", "-g", "--"]
+          command: ["/bin/bash", "-c"]
           args:
-            - "/bin/bash"
-            - "-c"
-            - "/home/zowe/instance/bin/internal/run-zowe.sh"
+            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:

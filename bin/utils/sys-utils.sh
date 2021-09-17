@@ -80,10 +80,17 @@ find_all_child_processes() {
     tree=$(ps -o pid,ppid,comm -A | tail -n +2)
   fi
 
-  for child in $(find_direct_child_processes "${parent}" "${tree}"); do
-    printf "${child} "
-    find_all_child_processes "${child}" "${tree}"
-  done
+  if [ "${parent}" = "1" ]; then
+    # assume all processes are child of PID 1
+    # this should be much faster
+    echo "${tree}" | awk '{print $1;}' | sed '/^1$/d' | tr '\n' ' '
+  else
+    # have to recursively check slowly
+    for child in $(find_direct_child_processes "${parent}" "${tree}"); do
+      printf "${child} "
+      find_all_child_processes "${child}" "${tree}"
+    done
+  fi
 }
 
 ###############################
@@ -95,6 +102,8 @@ find_all_child_processes() {
 # Output          message about how this PID exits
 wait_for_process_exit() {
   pid=$1
+
+  print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "waiting for process $pid to exit"
 
   iterator_index=0
   max_iterator_index=30
@@ -120,16 +129,17 @@ wait_for_process_exit() {
 # Gracefully shutdown - send SIGTERM to all child processes before shutting down
 #
 # Usage: trap SIGTERM (15) signal and do gracefully shutdown
-#     trap gracefully_shutdown 15
+#     trap gracefully_shutdown SIGTERM
 #
 # @param string   PID to shutdown
 # Output          process shutdown information
 gracefully_shutdown() {
   pid=${1:-${ZWE_GRACEFULL_SHUTDOWN_PID:-1}}
 
+  print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "SIGTERM signal received, shutting down process ${pid} and all child processes"
   if [ -n "${pid}" ]; then
     children=$(find_all_child_processes $pid)
-    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "process ${pid} has children: ${children}, sending SIGTERM signal to them"
+    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "propagate SIGTERM to all children: ${children}"
     # send SIGTERM to all children
     kill -15 ${children} 2>/dev/null
     for pid in ${children}; do
