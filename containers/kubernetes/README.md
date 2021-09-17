@@ -36,8 +36,7 @@ This section assumes you already have a Kubernetes cluster setup and have `kubec
 ### 1. Create Namespace and Service Account
 Run:
 ```
-kubectl apply -f common/zowe-ns.yaml
-kubectl apply -f common/zowe-sa.yaml
+kubectl apply -f common/zowe-ns.yaml && kubectl apply -f common/zowe-sa.yaml
 ```
 Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
@@ -93,12 +92,7 @@ Now, copy the whole output and save as a YAML file `configs.yaml` on your server
 ```
 kubectl apply -f /path/to/your/configs.yaml
 ```
-If no issue, you should see the following output:
-```
-configmap/zowe-config created
-configmap/zowe-certificates-cm created
-secret/zowe-certificates-secret created
-```
+If no issue, you should see the following output: `configmap/zowe-config created`, `configmap/zowe-certificates-cm created`, and `secret/zowe-certificates-secret created`
 
 If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences comparing running on z/OS:
 
@@ -176,11 +170,7 @@ kubectl apply -f samples/gateway-service-lb.yaml && kubectl apply -f samples/dis
 kubectl apply -f samples/gateway-service-np.yaml && kubectl apply -f samples/discovery-service-np.yaml
 ```
 
-Either way, if no issue, you should see following output:
-```
-service/gateway-service created`
-service/discovery-service created
-```
+Either way, if no issue, you should see following output: `service/gateway-service created` and `service/discovery-service created`
 
 To verify this step, run 
 ```
