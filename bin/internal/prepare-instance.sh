@@ -140,6 +140,11 @@ prepare_workspace_dir() {
 # - link component runtime under zowe <runtime>/components
 # - run zowe-configure-component.sh to handle `commands.configureInstance`
 prepare_running_in_container() {
+  # gracefully shutdown all processes
+  print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_instance_env_directory:${LINENO}" "register SIGTERM handler for graceful shutdown"
+  trap gracefully_shutdown SIGTERM
+  print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_instance_env_directory:${LINENO}" "Current trap(s): $(trap)"
+
   if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
     rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
   fi
