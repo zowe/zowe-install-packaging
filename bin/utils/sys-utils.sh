@@ -129,7 +129,7 @@ wait_for_process_exit() {
 # Gracefully shutdown - send SIGTERM to all child processes before shutting down
 #
 # Usage: trap SIGTERM (15) signal and do gracefully shutdown
-#     trap gracefully_shutdown 15
+#     trap gracefully_shutdown SIGTERM
 #
 # @param string   PID to shutdown
 # Output          process shutdown information
@@ -139,7 +139,7 @@ gracefully_shutdown() {
   print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "SIGTERM signal received, shutting down process ${pid} and all child processes"
   if [ -n "${pid}" ]; then
     children=$(find_all_child_processes $pid)
-    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "process ${pid} has children: ${children}, sending SIGTERM signal to them"
+    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "propagate SIGTERM to all children: ${children}"
     # send SIGTERM to all children
     kill -15 ${children} 2>/dev/null
     for pid in ${children}; do
