@@ -1,6 +1,6 @@
 # Kubernetes YAML Configurations
 
-**NOTES**, all paths below are relative to current directory `containers/kubernetes`.
+**NOTES:** all paths below are relative to current directory `containers/kubernetes`.
  <br>
  <br>
 ## Prerequisites
