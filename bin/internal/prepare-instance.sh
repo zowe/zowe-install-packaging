@@ -342,7 +342,10 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
+# overwrite ZOWE_ROOT_DIR with correct value anyway
 export ZOWE_ROOT_DIR="${ROOT_DIR}"
+# this is runtime, this value should be empty
+export INSTALL_DIR=
 
 # source utility scripts
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh

@@ -42,11 +42,9 @@ fi
 . ${ROOT_DIR}/bin/internal/prepare-instance.sh
 
 # this is running in containers
-echo "INSTANCE_DIR=${INSTANCE_DIR}"
-ls -la "${INSTANCE_DIR}"
 if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
   # gracefully shutdown all processes
-  echo "!!!!!!!REGISTER!!!!!!!!!"
+  print_formatted_debug "ZWELS" "run-zowe.sh:${LINENO}" "register SIGTERM handler for graceful shutdown"
   trap gracefully_shutdown 15
 fi
 

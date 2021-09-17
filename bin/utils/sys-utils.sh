@@ -136,6 +136,7 @@ wait_for_process_exit() {
 gracefully_shutdown() {
   pid=${1:-${ZWE_GRACEFULL_SHUTDOWN_PID:-1}}
 
+  print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "SIGTERM signal received, shutting down process ${pid} and all child processes"
   if [ -n "${pid}" ]; then
     children=$(find_all_child_processes $pid)
     print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "process ${pid} has children: ${children}, sending SIGTERM signal to them"
