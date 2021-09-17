@@ -40,13 +40,13 @@ kubectl apply -f common/zowe-ns.yaml && kubectl apply -f common/zowe-sa.yaml
 ```
 Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
-To verify this step,
-- run:
+To verify this step, \
+run:
 ```
 kubectl get namespaces
 ```
-and it should show a Namespace `zowe`.
-- run:
+and it should show a Namespace `zowe`. \
+run:
 ```
 kubectl get serviceaccounts --namespace zowe
 ```
@@ -124,15 +124,13 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
   * `ZWED_agent_host=${ZOWE_ZOS_HOST}`
   * `ZWED_agent_https_port=${ZOWE_ZSS_SERVER_PORT}`
 
-To verify this step,
-
-- run 
+To verify this step, \
+run:  
 ```
 kubectl get configmaps --namespace zowe
 ```
-and it should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
-
-- run 
+and it should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`. \
+run:
 ```
 kubectl get secrets --namespace zowe
 ```
@@ -178,7 +176,7 @@ kubectl get services --namespace zowe
 ````
 and it should show two Services `gateway-service` and `discovery-service`.
 
-#### 4b. Create Ingress
+#### 4b. Create Ingress (if necessary)
 
 You may not need to define `Ingress` if are using Kubernetes and:
 
@@ -200,40 +198,53 @@ To verify this step,
 
 - `kubectl get ingresses --namespace zowe` should show two Ingresses `gateway-ingress` and `discovery-ingress`.
 
-#### Create Route
+#### 4c. Create Route (if necessary)
 
 If you are using OpenShift, usually you need to define `Route` instead of `Ingress`.
 
-Double check this value of file `samples/gateway-route.yaml` and `samples/discovery-route.yaml`:
-
-- `spec.port.targetPort`.
-
-Then:
-
+Open files `samples/gateway-route.yaml` and `samples/discovery-route.yaml`, double check the value of `spec.port.targetPort`. Then run:
 ```
 oc apply -f samples/gateway-route.yaml
 oc apply -f samples/discovery-route.yaml
 ```
 
-To verify this step,
-
-- `oc get routes --namespace zowe` should show two Services `gateway` and `discovery`.
-
+To verify this step, run:
+```
+oc get routes --namespace zowe
+``` 
+and it should show two Services `gateway` and `discovery`.
+<br>
+<br>
+<br>
 ## Apply Zowe Core Components Workloads and Start Zowe
-
+Run:
 ```
 kubectl apply -f workloads/
 ```
 
 To verify this step,
-
-- `kubectl get deployments --namespace zowe` should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. Each deployment should show `1/1` in `READY` column.
-- `kubectl get statefulsets --namespace zowe` should show you a StatefulSet `discovery` which `READY` column should be `1/1`.
-- `kubectl get cronjobs --namespace zowe` should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be `False`.
+run:
+```
+kubectl get deployments --namespace zowe
+``` 
+should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. Wait for a bit as it takes time to bring each deployment up. If no issue, eventually each deployment should show `1/1` in `READY` column.  \
+Run:
+```
+kubectl get statefulsets --namespace zowe
+```
+should show you a StatefulSet `discovery` which `READY` column should be `1/1`. \
+Run:
+```
+kubectl get cronjobs --namespace zowe
+```
+should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be `False`.
+<br>
+<br>
+<br>
 
 ## Import New Component
-
-### Build and Push Component Image
+            
+### 1. Build and Push Component Image
 
 Component must create container image and the component image must follow Zowe Containerization Conformance to make sure it can be started within a Zowe cluster.
 
@@ -250,7 +261,8 @@ There are several shared Github Actions may help you build your own image:
 - `zowe-actions/shared-actions/docker-manifest` can collect all related images and define them as docker manifests. This is useful for end-user to automatically pull the correct image based on cluster node CPU architecture, and also pull images based on popular tags like `latest`, `latest-ubuntu`, etc.
 
 Component image must be pushed to a container image registry.
-### Define `Deployment` Object
+
+### 2. Define `Deployment` Object
 
 In order to start your component in Kubernetes, you need to define a `Deployment` object. To define `Deployment` for your component, you can copy from `samples/sample-deployment.yaml` and modify all occurrences of these variables:
 
@@ -264,15 +276,18 @@ Continue to customize the specification to fit in your component requirements:
 - `spec.template.spec.containers[0].resources`: adjust the memory and CPU resource required to start the container,
 - `metadata.annotations`, `spec.template.spec.volumes` and `spec.template.spec.securityContext` etc.
 
-### Start Your Component
+### 3. Start Your Component
 
 Once you defined your component `Deployment` object, you can run `kubectl apply -f /path/to/your/component-deployment.yaml` to apply it to Kubernetes cluster running Zowe. Now you can follow common Kubernetes practice to mange your component workload.
 
-## Configuration, Operation And Troubleshooting Tips
+<br>
+<br>
+<br>
+## Configuration, Operation
 
 When Zowe workload running in Kubernetes cluster, it follows common Kubernetes operation recommendations.
 
-### Monitoring Zowe Workload Running In Kubernetes
+### 1. Monitoring Zowe Workload Running In Kubernetes
 
 There are many ways to monitor workload running in Kubernetes, Kubernetes Dashboard could be a quick choice. Please follow this [Deploy and Access the Kubernetes Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) instruction.
 
@@ -280,7 +295,7 @@ If you are using a development Kubernetes shipped with Docker Desktop, the dashb
 
 [Metrics Server](https://github.com/kubernetes-sigs/metrics-server) is also recommended and is required if you want to define [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/). Check if you have `metrics-server` `Service` in `kube-system` namespace with this command `kubectl get services --namespace kube-system`. If you don't have, you can follow this [Installation](https://github.com/kubernetes-sigs/metrics-server#installation) instruction to install.
 
-### Pause, Resume Or Remove Component
+### 2. Pause, Resume Or Remove Component
 
 To temporarily stop a component, you can find the component `Deployment` and scale down to `0`. To use `jobs-api` as example, run this command:
 
@@ -295,7 +310,10 @@ If you want to permanently remove a component, you can delete the component `Dep
 ```
 kubectl delete -n zowe deployment jobs-api
 ```
-
+<br>
+<br>
+<br>
+## Troubleshooting Tips
 ### ISSUE: `/tmp` Directory Is Not Writable
 
 We enabled `readOnlyRootFilesystem` SecurityContext by default in `Deployment` object definition. This will result in `/tmp` is readonly and not writable to `zowe` runtime user.
@@ -326,11 +344,14 @@ spec:
 
 With this added to your `Deployment`, your component should be able to write to `/tmp` directory.
 
+<br>
+<br>
+<br>
 ## Launch Single Image On Local Computer Without Kubernetes
 
 **NOTES,** this is for debugging purpose and it's not recommended for end-user.
 
-### Init `tmp` Folder
+### 1. Init `tmp` Folder
 
 - Create `tmp` folder:
 
@@ -348,7 +369,7 @@ With this added to your `Deployment`, your component should be able to write to 
 - Create `tmp/instance/instance.env` with your desired content. This content you can modify from `samples/config-cm.yaml`.
 - Create `tmp/keystore/` and `tmp/keystore/zowe-certificates.env` with your desired content.
 
-### Start Component Container
+### 2. Start Component Container
 
 For example, starting `explorer-jes` with `bash`:
 
