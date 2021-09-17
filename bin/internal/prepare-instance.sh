@@ -342,6 +342,7 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
+export ZOWE_ROOT_DIR="${ROOT_DIR}"
 
 # source utility scripts
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
