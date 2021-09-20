@@ -140,6 +140,10 @@ prepare_workspace_dir() {
 # - link component runtime under zowe <runtime>/components
 # - run zowe-configure-component.sh to handle `commands.configureInstance`
 prepare_running_in_container() {
+  # gracefully shutdown all processes
+  print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_instance_env_directory:${LINENO}" "register SIGTERM handler for graceful shutdown"
+  trap gracefully_shutdown SIGTERM
+
   if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
     rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
   fi
@@ -342,6 +346,10 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
+# overwrite ZOWE_ROOT_DIR with correct value anyway
+export ZOWE_ROOT_DIR="${ROOT_DIR}"
+# this is runtime, this value should be empty
+export INSTALL_DIR=
 
 # source utility scripts
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh

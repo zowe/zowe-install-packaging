@@ -1,37 +1,35 @@
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: discovery
+  name: gateway
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: discovery
+    app.kubernetes.io/component: gateway
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
-  serviceName: discovery-service
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: discovery
+      app.kubernetes.io/component: gateway
   replicas: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: discovery
+        app.kubernetes.io/component: gateway
     spec:
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
       serviceAccountName: zowe-sa
-      subdomain: discovery-service
       volumes:
         - name: tmp
           emptyDir: {}
@@ -53,26 +51,29 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: discovery
-          image: zowe-docker-release.jfrog.io/ompzowe/discovery-service:latest-ubuntu
+        - name: gateway
+          image: zowe-docker-release.jfrog.io/ompzowe/gateway-service:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "256Mi"
+              memory: "384Mi"
               cpu: "150m"
             limits:
               memory: "512Mi"
-              cpu: "300m"
+              cpu: "700m"
           ports:
-            - containerPort: 7553
+            - name: gateway-port
+              containerPort: 7554
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 7553
-            initialDelaySeconds: 180
+              port: 7554
+            initialDelaySeconds: 90
+            # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
+            failureThreshold: 90
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/instance/bin/internal/run-zowe.sh"
+            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
@@ -107,6 +108,13 @@ spec:
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
@@ -114,3 +122,22 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: gateway-pdb
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/component: pdb
+    app.kubernetes.io/managed-by: manual
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+      app.kubernetes.io/component: gateway

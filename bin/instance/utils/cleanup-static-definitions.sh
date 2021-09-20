@@ -44,14 +44,9 @@ if [ -z "${ROOT_DIR}" ]; then
   exit 1
 fi
 
-# import common environment variables to make sure node runs properly
-. "${ROOT_DIR}/bin/internal/zowe-set-env.sh"
-# import utilities
-. ${ROOT_DIR}/bin/utils/utils.sh
+# prepare runtime environment variables
+. ${ROOT_DIR}/bin/internal/prepare-environment.sh -c ${INSTANCE_DIR} -r ${ROOT_DIR}
 
-# find static def directory with same logic in bin/internal/prepare-environment.sh
-WORKSPACE_DIR=${INSTANCE_DIR}/workspace
-STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 # validate STATIC_DEF_CONFIG_DIR
 if [ ! -d "${STATIC_DEF_CONFIG_DIR}" ]; then
   echo "Error: cannot determine API static definitions directory."
@@ -59,6 +54,7 @@ if [ ! -d "${STATIC_DEF_CONFIG_DIR}" ]; then
 fi
 
 # check static definitions
+modified=
 for one in $(find "${STATIC_DEF_CONFIG_DIR}" -type f -mmin "+${POD_DNS_COOL_DOWN}"); do
   echo "Validating ${one}"
   instance_urls=$(read_yaml "${one}" ".services[].instanceBaseUrls[]" 2>/dev/null)
@@ -69,6 +65,7 @@ for one in $(find "${STATIC_DEF_CONFIG_DIR}" -type f -mmin "+${POD_DNS_COOL_DOWN
       if [ $? -gt 0 ]; then
         rm -f "${one}"
         echo "    * invalid and removed"
+        modified=true
       else
         echo "    * valid"
       fi
@@ -78,7 +75,10 @@ for one in $(find "${STATIC_DEF_CONFIG_DIR}" -type f -mmin "+${POD_DNS_COOL_DOWN
 done
 
 # refresh static definition services
-# TODO: use client certificate auth and make request to https://<host>:<gateway>/api/v1/apicatalog/static-api/refresh
+if [ "${modified}" = "true" ]; then
+  echo "Refreshing static definitions"
+  node ${ROOT_DIR}/bin/utils/curl.js -k https://${GATEWAY_HOST}:${GATEWAY_PORT}/api/v1/apicatalog/static-api/refresh -X POST --key ${KEYSTORE_DIRECTORY}/keystore.key --cert ${KEYSTORE_DIRECTORY}/keystore.cert --cacert ${KEYSTORE_DIRECTORY}/localca.cert
+fi
 
 echo
 echo "done"

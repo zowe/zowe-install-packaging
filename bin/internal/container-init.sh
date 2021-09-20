@@ -22,6 +22,9 @@ set -e
 SOURCE_DIR=/component
 RUNTIME_DIR=/home/zowe/runtime
 INSTANCE_DIR=/home/zowe/instance
+WORKSPACE_DIR=${INSTANCE_DIR}/workspace
+PLUGINS_DIR=${WORKSPACE_DIR}/app-server/plugins
+STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 
 #######################################################################
 echo ">>> before preparation"
@@ -50,8 +53,12 @@ touch ${INSTANCE_DIR}/.init-for-container
 echo ">>> after preparation"
 echo "  - ${SOURCE_DIR}" && ls -la "${SOURCE_DIR}"
 echo "  - /home/zowe" && ls -la "/home/zowe"
-echo "  - ${RUNTIME_DIR}" && ls -la "${RUNTIME_DIR}"
-echo "  - ${INSTANCE_DIR}" && ls -la "${INSTANCE_DIR}"
+[ -d "${RUNTIME_DIR}" ] && echo "  - ${RUNTIME_DIR}" && ls -la "${RUNTIME_DIR}"
+[ -d "${RUNTIME_DIR}/components" ] && echo "  - ${RUNTIME_DIR}/components" && ls -la "${RUNTIME_DIR}/components"
+[ -d "${INSTANCE_DIR}" ] && echo "  - ${INSTANCE_DIR}" && ls -la "${INSTANCE_DIR}"
+[ -d "${WORKSPACE_DIR}" ] && echo "  - ${WORKSPACE_DIR}" && ls -la "${WORKSPACE_DIR}"
+[ -d "${PLUGINS_DIR}" ] && echo "  - ${PLUGINS_DIR}" && ls -la "${PLUGINS_DIR}"
+[ -d "${STATIC_DEF_CONFIG_DIR}" ] && echo "  - ${STATIC_DEF_CONFIG_DIR}" && ls -la "${STATIC_DEF_CONFIG_DIR}"
 
 #######################################################################
 echo ">>> done"

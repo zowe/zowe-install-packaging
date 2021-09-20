@@ -60,11 +60,18 @@ spec:
               memory: "128Mi"
               cpu: "100m"
           ports:
-            - containerPort: 8546
+            - name: jes-port
+              containerPort: 8546
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8546
+            initialDelaySeconds: 15
+            # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
+            failureThreshold: 18
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/instance/bin/internal/run-zowe.sh"
+            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
@@ -95,6 +102,13 @@ spec:
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
           image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
@@ -102,3 +116,22 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: explorer-jes-pdb
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/component: pdb
+    app.kubernetes.io/managed-by: manual
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+      app.kubernetes.io/component: explorer-jes
