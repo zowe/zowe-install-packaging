@@ -538,6 +538,10 @@ process_component_appfw_plugin() {
         break
       fi
 
+      # apply values if appfw_plugin_path has variables
+      appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
+
+      # install app
       ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
       # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
