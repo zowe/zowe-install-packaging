@@ -539,7 +539,10 @@ process_component_appfw_plugin() {
       fi
 
       # apply values if appfw_plugin_path has variables
+      echo "before appfw_plugin_path=${appfw_plugin_path}"
       appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
+      echo "after appfw_plugin_path=${appfw_plugin_path}"
+      echo ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
 
       # install app
       ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
