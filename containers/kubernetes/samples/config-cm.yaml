@@ -55,14 +55,14 @@ data:
     APIML_SECURITY_X509_ENABLED=true
     APIML_SECURITY_ZOSMF_APPLID=izudflt
     APIML_SECURITY_AUTH_PROVIDER=zosmf
-    # List of discovery service URLs separated by comma
-    ZWE_DISCOVERY_SERVICES_LIST=https://discovery-service.zowe.svc.cluster.local:${DISCOVERY_PORT}/eureka/
+    # Number of discovery services
+    ZWE_DISCOVERY_SERVICES_REPLICAS=2
     # Enable debug logging for Api Mediation Layer services
     APIML_DEBUG_MODE_ENABLED=false
     APIML_MAX_CONNECTIONS_PER_ROUTE=100
     APIML_MAX_TOTAL_CONNECTIONS=1000
-    APIML_GATEWAY_EXTERNAL_MAPPER=https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map
-    APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://${ZOWE_EXTERNAL_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth
+    APIML_GATEWAY_EXTERNAL_MAPPER=https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map
+    APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://gateway-service.zowe.svc.cluster.local:${GATEWAY_PORT}/zss/api/v1/saf-auth
 
     ####################
     # caching service

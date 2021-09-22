@@ -61,6 +61,9 @@ const params = {
   auth: null,
   data: null,
   output: null,
+  key: null,
+  cert: null,
+  cacert: null,
 };
 let prettifyJson = false;
 let responseType = '';
@@ -92,6 +95,15 @@ for (let i = 0; i < args.length; i++) {
   } else if (args[i] === '-k') {
     params.rejectUnauthorized = false;
     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+  } else if (args[i] === '--cacert') {
+    i++;
+    params.cacert = args[i];
+  } else if (args[i] === '-E' || args[i] === '--cert') {
+    i++;
+    params.cert = args[i];
+  } else if (args[i] === '--key') {
+    i++;
+    params.key = args[i];
   } else if (args[i] === '-v') {
     verbose = true;
   } else if (args[i] === '-J') {
@@ -117,6 +129,9 @@ const options = {
   path: params.url.pathname + (params.url.search || ''),
   method: params.method,
   headers: params.headers,
+  key: params.key ? fs.readFileSync(params.key) : null,
+  cert: params.cert ? fs.readFileSync(params.cert) : null,
+  ca: params.cacert ? [ fs.readFileSync(params.cacert) ] : null,
 };
 if (params.url.protocol === 'https') {
   options.rejectUnauthorized = params.rejectUnauthorized;
@@ -128,8 +143,17 @@ if (params.auth) {
 if (verbose) {
   process.stdout.write(`> ${params.method} ${params.url}\n`);
   process.stdout.write(`> Headers:\n`);
-  for (const k in params.headers) {
-    process.stdout.write(`> - ${k}: ${params.headers[k]}\n`);
+  for (const k in options.headers) {
+    process.stdout.write(`> - ${k}: ${options.headers[k]}\n`);
+  }
+  if (options.ca) {
+    process.stdout.write(`> CA(s):\n${options.ca}\n`);
+  }
+  if (options.cert) {
+    process.stdout.write(`> Cert:\n${options.cert}\n`);
+  }
+  if (options.key) {
+    process.stdout.write(`> Key:\n${options.key}\n`);
   }
   if (params.data) {
     process.stdout.write(`> Body:\n${params.data}\n`);
