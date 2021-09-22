@@ -52,7 +52,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~1.25.0-PR-349",
+      "version": "~1.25.0-PR-345",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
