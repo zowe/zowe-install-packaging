@@ -241,18 +241,12 @@ Note: Because kubectl port-forward is running in foreground, thus we run in back
 
 #### 4c. Create Ingress (for bare-metal only)
 
-Before applying, in files `samples/gateway-ingress.yaml` and `samples/discovery-ingress.yaml`, check `spec.rules[0].http.host` because it is not defined by default.  
+Before applying, in files [samples/bare-metal/gateway-ingress.yaml](samples/bare-metal/gateway-ingress.yaml) and [samples/bare-metal/discovery-ingress.yaml](samples/bare-metal/discovery-ingress.yaml), check `spec.rules[0].http.host` because it is not defined by default.  
   
 Then:
 
 ```bash
-kubectl apply -f samples/gateway-ingress.yaml
-```
-
-Apply discovery ingress (optional):
-
-```bash
-kubectl apply -f samples/discovery-ingress.yaml
+kubectl apply -f samples/bare-metal/gateway-ingress.yaml && kubectl apply -f samples/bare-metal/discovery-ingress.yaml
 ```
 
 To verify this step,
@@ -263,10 +257,10 @@ To verify this step,
 
 If you are using OpenShift, usually you need to define `Route` instead of `Ingress`.
 
-Open files `samples/gateway-route.yaml` and `samples/discovery-route.yaml`, double check the value of `spec.port.targetPort`. Then run:
+Open files [samples/openshift/gateway-route.yaml](samples/openshift/gateway-route.yaml) and [samples/openshift/discovery-route.yaml](samples/openshift/discovery-route.yaml), double check the value of `spec.port.targetPort`. Then run:
 
 ```bash
-oc apply -f samples/gateway-route.yaml && oc apply -f samples/discovery-route.yaml
+oc apply -f samples/openshift/gateway-route.yaml && oc apply -f samples/openshift/discovery-route.yaml
 ```
 
 To verify this step, run:
