@@ -102,7 +102,7 @@ This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificat
 
 Now, copy the whole output and save as a YAML file `configs.yaml` on your server setting up kubernetes, next run following command to apply configurations:
 
-```
+```bash
 kubectl apply -f /path/to/your/configs.yaml
 ```
 
