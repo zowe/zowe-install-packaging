@@ -160,35 +160,50 @@ This section is highly related to your Kubernetes cluster configuration. If you 
 
 #### 4a. Create Service
 
-Depends on how your Kubernetes network setup, you may choose from `LoadBalancer` or `NodePort` service.
+You may choose between `LoadBalancer` or `NodePort` service depending on your kubenetes provider.  
+The table below provides a guidance for you:
 
-Choose `LoadBalancer` (`samples/gateway-service-lb.yaml` and `samples/discovery-service-lb.yaml`) if you are using Kubernetes provided by:
+| Kubernetes provider       | Service (_preferred_)      | Additional setups required                                  |
+| :------------------------ | :------------------------  | :---------------------------------------------------------  |
+| minikube                  | NodePort                   | [Port forward](#4b.-Port-forward-(for-minikube-only))       |
+| docker-desktop            | LoadBalancer               |                                                             |
+| bare-metal                | _NodePort_ or LoadBalancer | [Create Ingress](#4c.-Create-Ingress-(for-bare-metal-only)) |
+| cloud-vendors             | LoadBalancer               |                                                             |
+| openshift                 | _LoadBalancer_ or NodePort | [Create route](#4d.-Create-Route-(for-openshift-only))      |
 
-- Cloud vendors,
-- Docker Desktop.
-
-Choose `NodePort` (`samples/gateway-service-np.yaml` and `samples/discovery-service-np.yaml`) if you are using Kubernetes is created on Bare Metal and you don't have load balancer.
-
-Double check these values of files you choose:
-
-- `spec.type` should reflect if you are using `LoadBalancer` or `NodePort`
-- If you are using `NodePort` service, examine `spec.ports[0].nodePort` as this will be the port to be exposed to external. The default gateway port is not `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
-
-Next,
+__Note__: Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table.
 
 - If you choose `LoadBalancer` services, run:
 
 ```bash
-kubectl apply -f samples/gateway-service-lb.yaml && kubectl apply -f samples/discovery-service-lb.yaml
+kubectl apply -f samples/gateway-service-lb.yaml
 ```
 
-- If you choose `NodePort` services, run:
+- If you choose `NodePort` services, 
+  - First check `spec.ports[0].nodePort` as this will be the port to be exposed to external. The default gateway port is __not__ `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
+  - Then run:
 
-```bash
-kubectl apply -f samples/gateway-service-np.yaml && kubectl apply -f samples/discovery-service-np.yaml
-```
+    ```bash
+    kubectl apply -f samples/gateway-service-np.yaml 
+    ```
 
-Either way, if no issue, you should see following output: `service/gateway-service created` and `service/discovery-service created`
+Either way, if no issue, you should see following output: `service/gateway-service created`
+
+Note that there is also discovery service which is optional, in order to enable, run the following steps:
+
+- If using `LoadBalancer`, run:
+
+  ```bash
+  kubectl apply -f samples/discovery-service-lb.yaml
+  ```
+
+- If using `NodePort`, run:
+
+  ```bash
+  kubectl apply -f samples/discovery-service-np.yaml
+  ```
+
+Like-wise, upon success, you shall see `service/discovery-service created`
 
 To verify this step, run
 
@@ -196,9 +211,25 @@ To verify this step, run
 kubectl get services --namespace zowe
 ```
 
-and it should show two Services `gateway-service` and `discovery-service`.
+and it should show two Services `gateway-service` and/or `discovery-service`.
 
-#### 4b. Create Ingress (if necessary)
+#### 4b. Port forward (for minikube only)
+
+Run following two commands to enable port-forward:
+
+```bash
+kubectl port-forward --address 0.0.0.0 --namespace zowe service/gateway-service 7554:7554 &
+```
+
+and
+
+```bash
+kubectl port-forward --address 0.0.0.0 --namespace zowe service/discovery-service 7553:7553 &
+```
+
+Note: Because kubectl port-forward is running in foreground, thus we run in background by default.
+
+#### 4c. Create Ingress (for bare-metal only)
 
 You may not need to define `Ingress` if are using Kubernetes and:
 
@@ -220,7 +251,7 @@ To verify this step,
 
 - `kubectl get ingresses --namespace zowe` should show two Ingresses `gateway-ingress` and `discovery-ingress`.
 
-#### 4c. Create Route (if necessary)
+#### 4d. Create Route (for openshift only)
 
 If you are using OpenShift, usually you need to define `Route` instead of `Ingress`.
 
