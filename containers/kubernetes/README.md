@@ -163,17 +163,17 @@ This section is highly related to your Kubernetes cluster configuration. If you 
 You may choose between `LoadBalancer` or `NodePort` service depending on your kubenetes provider.  
 The table below provides a guidance for you:
 
-| Kubernetes provider       | Service (_preferred_)      | Additional setups required                                  |
-| :------------------------ | :------------------------  | :---------------------------------------------------------  |
-| minikube                  | NodePort                   | [Port forward](#4b.-Port-forward-(for-minikube-only))       |
-| docker-desktop            | LoadBalancer               |                                                             |
-| bare-metal                | _NodePort_ or LoadBalancer | [Create Ingress](#4c.-Create-Ingress-(for-bare-metal-only)) |
-| cloud-vendors             | LoadBalancer               |                                                             |
-| openshift                 | _LoadBalancer_ or NodePort | [Create route](#4d.-Create-Route-(for-openshift-only))      |
+| Kubernetes provider       | Service (_preferred_)      | Additional setups required                                 |
+| :------------------------ | :------------------------  | :--------------------------------------------------------- |
+| minikube                  | NodePort                   | [Port forward](#4b-port-forward-for-minikube-only)         |
+| docker-desktop            | LoadBalancer               |                                                            |
+| bare-metal                | _NodePort_ or LoadBalancer | [Create Ingress](#4c-create-ingress-for-bare-metal-only)   |
+| cloud-vendors             | LoadBalancer               |                                                            |
+| openshift                 | _LoadBalancer_ or NodePort | [Create route](#4d-create-route-for-openshift-only)        |
 
-__Note__: Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table.
+##### Expose gateway service
 
-- If you choose `LoadBalancer` services, run:
+- If you choose `LoadBalancer` service, run:
 
 ```bash
 kubectl apply -f samples/gateway-service-lb.yaml
@@ -189,7 +189,11 @@ kubectl apply -f samples/gateway-service-lb.yaml
 
 Either way, if no issue, you should see following output: `service/gateway-service created`
 
-Note that there is also discovery service which is optional, in order to enable, run the following steps:
+##### Expose discovery service
+
+Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of k8s) and requries doing dynamic registration.  
+
+If you choose to enable, run the following steps:
 
 - If using `LoadBalancer`, run:
 
@@ -203,15 +207,21 @@ Note that there is also discovery service which is optional, in order to enable,
   kubectl apply -f samples/discovery-service-np.yaml
   ```
 
-Like-wise, upon success, you shall see `service/discovery-service created`
+If you choose not to expose discovery service, you must do one extra step before applying above command.  
+Depending on `LoadBalancer` or `NodePort` used, in [discovery-service-lb.yaml](samples/discovery-service-lb.yaml) or [discovery-service-np.yaml](samples/discovery-service-np.yaml), line 15, specify `ClusterIP` as type.
 
-To verify this step, run
+Upon success, you shall see `service/discovery-service created`
+
+<br>
+To verify above steps, run
 
 ```bash
 kubectl get services --namespace zowe
 ```
 
-and it should show two Services `gateway-service` and/or `discovery-service`.
+and it should show services `gateway-service` and `discovery-service`.
+
+Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table.
 
 #### 4b. Port forward (for minikube only)
 
@@ -231,25 +241,23 @@ Note: Because kubectl port-forward is running in foreground, thus we run in back
 
 #### 4c. Create Ingress (for bare-metal only)
 
-You may not need to define `Ingress` if are using Kubernetes and:
-
-- you choose `NodePort` services,
-- the Kubernetes is provided by Cloud vendors or Docker Desktop.
-
-Double check this value of file `samples/gateway-ingress.yaml` and `samples/discovery-ingress.yaml` before apply:
-
-- `spec.rules[0].http.host` which is not defined by default.
-
+Before applying, in files `samples/gateway-ingress.yaml` and `samples/discovery-ingress.yaml`, check `spec.rules[0].http.host` because it is not defined by default.  
+  
 Then:
 
 ```bash
 kubectl apply -f samples/gateway-ingress.yaml
+```
+
+Apply discovery ingress (optional):
+
+```bash
 kubectl apply -f samples/discovery-ingress.yaml
 ```
 
 To verify this step,
 
-- `kubectl get ingresses --namespace zowe` should show two Ingresses `gateway-ingress` and `discovery-ingress`.
+- `kubectl get ingresses --namespace zowe` should show Ingresses `gateway-ingress` and `discovery-ingress`.
 
 #### 4d. Create Route (for openshift only)
 
@@ -258,8 +266,7 @@ If you are using OpenShift, usually you need to define `Route` instead of `Ingre
 Open files `samples/gateway-route.yaml` and `samples/discovery-route.yaml`, double check the value of `spec.port.targetPort`. Then run:
 
 ```bash
-oc apply -f samples/gateway-route.yaml
-oc apply -f samples/discovery-route.yaml
+oc apply -f samples/gateway-route.yaml && oc apply -f samples/discovery-route.yaml
 ```
 
 To verify this step, run:
@@ -269,7 +276,7 @@ oc get routes --namespace zowe
 ```
 
 and it should show two Services `gateway` and `discovery`.
-<br /><br />
+<br /><br /><br />
 
 ## Apply Zowe Core Components Workloads and Start Zowe
 
@@ -301,7 +308,12 @@ kubectl get cronjobs --namespace zowe
 ```
 
 should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be `False`.
-<br /><br />
+<br /><br /><br />
+
+## Access Zowe
+
+TODO
+<br /><br /><br />
 
 ## Import New Component
 
@@ -340,7 +352,7 @@ Continue to customize the specification to fit in your component requirements:
 ### 3. Start Your Component
 
 Once you defined your component `Deployment` object, you can run `kubectl apply -f /path/to/your/component-deployment.yaml` to apply it to Kubernetes cluster running Zowe. Now you can follow common Kubernetes practice to mange your component workload.
-<br /><br />
+<br /><br /><br />
 
 ## Configuration, Operation
 
@@ -370,7 +382,7 @@ If you want to permanently remove a component, you can delete the component `Dep
 kubectl delete -n zowe deployment jobs-api
 ```
 
-<br /><br />
+<br />
 
 ## Troubleshooting Tips
 
@@ -403,9 +415,7 @@ spec:
 ```
 
 With this added to your `Deployment`, your component should be able to write to `/tmp` directory.
-<br>
-<br>
-<br>
+<br /><br />
 
 ## Launch Single Image On Local Computer Without Kubernetes
 
