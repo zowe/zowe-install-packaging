@@ -219,7 +219,7 @@ else
     ensure_java_is_on_path 1>/dev/null 2>&1
 
     # PKCS#12 keystores should be tagged as binary to avoid node.js tries to convert encoding
-    find "${KEYSTORE}" -name '*.p12' | xargs chtag -b
+    find "${KEYSTORE_DIRECTORY}" -name '*.p12' | xargs chtag -b
 
     cp "${KEYSTORE}" "${k8s_temp_keystore}"
     if [ ! -f "${k8s_temp_keystore}" ]; then
@@ -228,6 +228,9 @@ else
     fi
 
     generate_k8s_certificate "${k8s_temp_keystore}"
+
+    # this is our new keystore for k8s
+    KEYSTORE="${k8s_temp_keystore}"
   elif [ "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" = "true" ]; then
     echo "You are using Non-Strict verify certificate mode. You existing certificates"
     echo "should work in Kubernetes without change."
