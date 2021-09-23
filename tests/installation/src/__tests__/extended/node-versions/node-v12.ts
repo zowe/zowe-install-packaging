@@ -16,7 +16,7 @@ import {
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
 // hard code to use marist-1 which we have uploaded correct versions in
-const testServer = 'marist-1';
+const testServer = process.env.TEST_SERVER;
 const testSuiteName = 'Test convenience build installation with node.js v12';
 describe(testSuiteName, () => {
   beforeAll(() => {

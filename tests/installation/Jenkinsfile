@@ -40,12 +40,20 @@ node('zowe-jenkins-agent-dind-wdc') {
     'marist-2': [
       ansible_host     : 'marist-2',
       ssh_hostport     : 'ssh-marist-server-zzow02-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow02'
+      ssh_userpass     : 'ssh-marist-server-zzow02',
+      node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
     ],
     'marist-3': [
       ansible_host     : 'marist-3',
       ssh_hostport     : 'ssh-marist-server-zzow03-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow03'
+      ssh_userpass     : 'ssh-marist-server-zzow03',
+      node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
+    ],
+    'marist-4': [
+      ansible_host     : 'marist-4',
+      ssh_hostport     : 'ssh-marist-server-zzow04-hostport',
+      ssh_userpass     : 'ssh-marist-server-zzow01',
+      node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
     ]
   ];
   // Test scopes, what test should we run
@@ -90,8 +98,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       test_files: 'dist/__tests__/extended/certificates/nonstrict-verify-external-certificate.js',
     ],
     'bundle: multiple node versions': [
-      test_files: 'dist/__tests__/extended/node-versions/',
-      jenkins_primary_lock: 'marist',
+      test_files: 'dist/__tests__/extended/node-versions/'
     ],
     'bundle: convenience build on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/convenience/',
