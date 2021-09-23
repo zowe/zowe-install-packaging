@@ -34,7 +34,7 @@ data:
     # FIXME: your Kubernetes cluster domain names
     ZWE_EXTERNAL_HOSTS=localhost
     ZOWE_EXTERNAL_HOST=localhost
-    ZOWE_ZOS_HOST=zzow01.zowe.marist.cloud
+    ZOWE_ZOS_HOST=<zowe-on-zos-host-name>
 
     # FIXME: z/OS MF config
     ZOSMF_PORT=443
