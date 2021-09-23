@@ -42,15 +42,15 @@ kubectl apply -f common/zowe-ns.yaml && kubectl apply -f common/zowe-sa.yaml
 
 Our default namespace is `zowe`, default service account name is `zowe-sa`. Please note that by default, `zowe-sa` service account has `automountServiceAccountToken` disabled for security purpose.
 
-To verify this step, \
-run:
+To verify this step, run:
 
 ```bash
 kubectl get namespaces
 ```
 
-and it should show a Namespace `zowe`. \
-run:
+and it should show a Namespace `zowe`;  
+
+then run:
 
 ```bash
 kubectl get serviceaccounts --namespace zowe
@@ -60,13 +60,13 @@ and it should show a ServiceAccount `zowe-sa`.
 
 ### 2. Create Persistent Volume Claim
 
-Double check the `storageClassName` value of `samples/workspace-pvc.yaml` and replace `hostpath` to customize to your own value. You can run
+Open [samples/workspace-pvc.yaml](samples/workspace-pvc.yaml), Double check `storageClassName` value (line 24) and replace `hostpath` to customize to your own value. You can run
 
 ```bash
 kubectl get sc
 ```
 
-to list all StorageClass-es on your cluster. A sample output will look like this:
+to list all StorageClasses on your cluster. A sample output will look like this:
 
 ```bash
   NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -91,22 +91,22 @@ and it should show a PersistentVolumeClaim `zowe-workspace-pvc`, and the `STATUS
 
 ### 3. Create And Modify ConfigMaps and Secrets
 
-On the z/OS you have, run this command in your instance directory:
+On the z/OS you have, run `convert-for-k8s.sh` in your instance directory:
 
 ```bash
 cd <instance-dir>
 ./bin/utils/convert-for-k8s.sh
 ```
 
-This should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should looks similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values.
+This script should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should look similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values.
 
-Now, copy the whole output and save as a YAML file `configs.yaml` on your server setting up kubernetes, next run following command to apply configurations:
+Now, copy the whole output and save as a YAML file `configs.yaml` on your server that you have set up kubernetes, next run following command to apply configurations:
 
 ```bash
 kubectl apply -f /path/to/your/configs.yaml
 ```
 
-If no issue, you should see the following output: `configmap/zowe-config created`, `configmap/zowe-certificates-cm created`, and `secret/zowe-certificates-secret created`
+Upon success, you should see the following output: `configmap/zowe-config created`, `configmap/zowe-certificates-cm created`, and `secret/zowe-certificates-secret created`
 
 If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences comparing running on z/OS:
 
@@ -138,15 +138,14 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
   - `ZWED_agent_host=${ZOWE_ZOS_HOST}`
   - `ZWED_agent_https_port=${ZOWE_ZSS_SERVER_PORT}`
 
-To verify this step, \
-run:  
+To verify this step, run:  
 
 ```bash
 kubectl get configmaps --namespace zowe
 ```
 
-and it should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`. \
-run:
+and it should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.  
+Run:
 
 ```bash
 kubectl get secrets --namespace zowe
@@ -162,22 +161,24 @@ This section is highly related to your Kubernetes cluster configuration. If you 
 
 You may choose between `LoadBalancer` or `NodePort` service depending on your kubenetes provider.  
 The table below provides a guidance for you:
-
+<a id="table"></a>
 | Kubernetes provider       | Service (_preferred_)      | Additional setups required                                 |
 | :------------------------ | :------------------------  | :--------------------------------------------------------- |
-| minikube                  | NodePort                   | [Port forward](#4b-port-forward-for-minikube-only)         |
-| docker-desktop            | LoadBalancer               |                                                            |
+| minikube                  | NodePort                   | [Port Forward](#4b-port-forward-for-minikube-only)         |
+| docker-desktop            | LoadBalancer               | none                                                       |
 | bare-metal                | _NodePort_ or LoadBalancer | [Create Ingress](#4c-create-ingress-for-bare-metal-only)   |
-| cloud-vendors             | LoadBalancer               |                                                            |
-| openshift                 | _LoadBalancer_ or NodePort | [Create route](#4d-create-route-for-openshift-only)        |
+| cloud-vendors             | LoadBalancer               | none                                                       |
+| openshift                 | _LoadBalancer_ or NodePort | [Create Route](#4d-create-route-for-openshift-only)        |
 
-##### Expose gateway service
+__Note__: Complete current section "4a. Create Service section" first, then work on additional setups listed in the table above if necessary.
+
+##### <ins>Expose gateway service</ins>
 
 - If you choose `LoadBalancer` service, run:
 
-```bash
-kubectl apply -f samples/gateway-service-lb.yaml
-```
+    ```bash
+    kubectl apply -f samples/gateway-service-lb.yaml
+    ```
 
 - If you choose `NodePort` services, 
   - First check `spec.ports[0].nodePort` as this will be the port to be exposed to external. The default gateway port is __not__ `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
@@ -187,13 +188,13 @@ kubectl apply -f samples/gateway-service-lb.yaml
     kubectl apply -f samples/gateway-service-np.yaml 
     ```
 
-Either way, if no issue, you should see following output: `service/gateway-service created`
+Either way, upon success, you should see following output: `service/gateway-service created`
 
-##### Expose discovery service
+##### <ins>Expose discovery service</ins>
 
-Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of k8s) and requries doing dynamic registration.  
+Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of kubernetes) and requries doing dynamic registration.  
 
-If you choose to enable, run the following steps:
+If you choose to enable, simply run the following step:
 
 - If using `LoadBalancer`, run:
 
@@ -207,10 +208,10 @@ If you choose to enable, run the following steps:
   kubectl apply -f samples/discovery-service-np.yaml
   ```
 
-If you choose not to expose discovery service, you must do one extra step before applying above command.  
-Depending on `LoadBalancer` or `NodePort` used, in [discovery-service-lb.yaml](samples/discovery-service-lb.yaml) or [discovery-service-np.yaml](samples/discovery-service-np.yaml), line 15, specify `ClusterIP` as type.
+However, if you choose not to expose discovery service, you must do one extra step before applying above command.  
+Depending on `LoadBalancer` or `NodePort` used, in [discovery-service-lb.yaml](samples/discovery-service-lb.yaml) or [discovery-service-np.yaml](samples/discovery-service-np.yaml) (line 15), specify `ClusterIP` as type. Then apply discovery-service yaml file depending on what service you are using (see above).
 
-Upon success, you shall see `service/discovery-service created`
+Upon success, you shall see `service/discovery-service created`.
 
 <br>
 To verify above steps, run
@@ -221,9 +222,10 @@ kubectl get services --namespace zowe
 
 and it should show services `gateway-service` and `discovery-service`.
 
-Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table.
+Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table. [Return to table](#table)  
+If you don't need additional setups, you can skip 4b, 4c, 4d and jump directly to [Apply Zowe](#apply-zowe-core-components-workloads-and-start-zowe) section.
 
-#### 4b. Port forward (for minikube only)
+#### 4b. Port Forward (for minikube only)
 
 Run following two commands to enable port-forward:
 
@@ -237,11 +239,13 @@ and
 kubectl port-forward --address 0.0.0.0 --namespace zowe service/discovery-service 7553:7553 &
 ```
 
-Note: Because kubectl port-forward is running in foreground, thus we run in background by default.
+Note: Because kubectl port-forward is running in foreground, because we have more commands to run in next steps, so we need to run in background here.
+
+Upon completion, next [apply zowe](#apply-zowe-core-components-workloads-and-start-zowe).
 
 #### 4c. Create Ingress (for bare-metal only)
 
-Before applying, in files [samples/bare-metal/gateway-ingress.yaml](samples/bare-metal/gateway-ingress.yaml) and [samples/bare-metal/discovery-ingress.yaml](samples/bare-metal/discovery-ingress.yaml), check `spec.rules[0].http.host` because it is not defined by default.  
+Before applying, in files [samples/bare-metal/gateway-ingress.yaml](samples/bare-metal/gateway-ingress.yaml) and [samples/bare-metal/discovery-ingress.yaml](samples/bare-metal/discovery-ingress.yaml), check `spec.rules[0].http.host` (line 19), uncomment and fill in the value because it is not defined by default.  
   
 Then:
 
@@ -253,11 +257,13 @@ To verify this step,
 
 - `kubectl get ingresses --namespace zowe` should show Ingresses `gateway-ingress` and `discovery-ingress`.
 
-#### 4d. Create Route (for openshift only)
+Upon completion, next [apply zowe](#apply-zowe-core-components-workloads-and-start-zowe).
+
+#### 4d. Create Route (for OpenShift only)
 
 If you are using OpenShift, usually you need to define `Route` instead of `Ingress`.
 
-Open files [samples/openshift/gateway-route.yaml](samples/openshift/gateway-route.yaml) and [samples/openshift/discovery-route.yaml](samples/openshift/discovery-route.yaml), double check the value of `spec.port.targetPort`. Then run:
+Open files [samples/openshift/gateway-route.yaml](samples/openshift/gateway-route.yaml) and [samples/openshift/discovery-route.yaml](samples/openshift/discovery-route.yaml), double check the value of `spec.port.targetPort` (line 18). Then run:
 
 ```bash
 oc apply -f samples/openshift/gateway-route.yaml && oc apply -f samples/openshift/discovery-route.yaml
@@ -270,6 +276,7 @@ oc get routes --namespace zowe
 ```
 
 and it should show two Services `gateway` and `discovery`.
+Upon completion, next [apply zowe](#apply-zowe-core-components-workloads-and-start-zowe).
 <br /><br /><br />
 
 ## Apply Zowe Core Components Workloads and Start Zowe
@@ -280,21 +287,23 @@ Run:
 kubectl apply -f workloads/
 ```
 
-To verify this step,
-run:
+To verify this step, run:
 
 ```bash
 kubectl get deployments --namespace zowe
 ```
 
-should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, etc. Wait for a bit as it takes time to bring each deployment up. If no issue, eventually each deployment should show `1/1` in `READY` column.  \
+It should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, and etc. Wait for a bit as it takes time to bring each deployment up; time varies depending on your machine environment.  
+Upon success, eventually each deployment should show `1/1` in `READY` column.  
+
 Run:
 
 ```bash
 kubectl get statefulsets --namespace zowe
 ```
 
-should show you a StatefulSet `discovery` which `READY` column should be `1/1`. \
+should show you a StatefulSet `discovery` which `READY` column should be `1/1`.  
+
 Run:
 
 ```bash
