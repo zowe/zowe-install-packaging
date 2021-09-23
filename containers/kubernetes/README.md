@@ -245,7 +245,12 @@ Upon completion, next [apply zowe](#apply-zowe-core-components-workloads-and-sta
 
 #### 4c. Create Ingress (for bare-metal only)
 
-Before applying, in files [samples/bare-metal/gateway-ingress.yaml](samples/bare-metal/gateway-ingress.yaml) and [samples/bare-metal/discovery-ingress.yaml](samples/bare-metal/discovery-ingress.yaml), check `spec.rules[0].http.host` (line 19), uncomment and fill in the value because it is not defined by default.  
+Before applying, here are a series of steps to do:
+- Open files [samples/bare-metal/gateway-ingress.yaml](samples/bare-metal/gateway-ingress.yaml) and [samples/bare-metal/discovery-ingress.yaml](samples/bare-metal/discovery-ingress.yaml),
+- Go to line 19 `spec.rules[0].host`,
+- Uncomment line 19 and 20,
+- Fill in the value of host on line 19,
+- Comment out line 21
   
 Then:
 
