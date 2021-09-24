@@ -18,6 +18,7 @@ spec:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
       app.kubernetes.io/component: discovery
+  # FIXME: please match this with ZWE_DISCOVERY_SERVICES_REPLICAS defined in ConfigMap zowe-config instance.env section
   replicas: 1
   template:
     metadata:
