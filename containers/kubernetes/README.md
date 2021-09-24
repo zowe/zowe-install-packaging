@@ -302,7 +302,7 @@ With this added to your `Deployment`, your component should be able to write to 
 - Init with `zowe-launch-scripts` image:
 
   ```
-  docker run -it --rm -v $(pwd):/home/zowe zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
+  docker run -it --rm -v $(pwd):/home/zowe zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
   ```
 
 - Create `tmp/instance/instance.env` with your desired content. This content you can modify from `samples/config-cm.yaml`.
