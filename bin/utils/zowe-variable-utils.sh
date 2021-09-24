@@ -72,6 +72,12 @@ function_exists() {
 }
 
 ###############################
+# if a string has any env variables, replace them with values
+parse_string_vars() {
+  eval echo "${1}"
+}
+
+###############################
 # get all environment variable exports line by line
 get_environment_exports() {
   export -p | \
