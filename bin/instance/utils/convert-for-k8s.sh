@@ -80,6 +80,14 @@ generate_k8s_certificate() {
     >&2 echo "Error: failed to generate keystore for Kubernetes"
     exit 1
   fi
+  # tag as binary to avoid node.js convert encoding
+  chtag -b "${new_k8s_keystore}"
+
+  # export new key and cert
+  _cmd node "${zct}" pkcs12 export \
+    "${new_k8s_keystore}" "${KEY_ALIAS}" -p "${KEYSTORE_PASSWORD}" -f "${k8s_temp_keystore}-cert"
+  _cmd node "${zct}" pkcs12 export \
+    "${new_k8s_keystore}" "${KEY_ALIAS}" -p "${KEYSTORE_PASSWORD}" -k -f "${k8s_temp_keystore}-key"
 
   # import to original keystore
   echo "> Merge new keystore with original, and store as ${k8s_temp_keystore}"
@@ -98,7 +106,7 @@ generate_k8s_certificate() {
   if [ -n "${VERBOSE_MODE}" ]; then
     # show content of the keystore
     echo "> New keystore information"
-    _cmd node "${zct}" pkcs12 info "${k8s_temp_keystore}" -p "${KEYSTORE_PASSWORD}"
+    _cmd node "${zct}" pkcs12 info "${k8s_temp_keystore}" -p "${KEYSTORE_PASSWORD}" ${VERBOSE_MODE}
   fi
 
   echo
@@ -231,6 +239,8 @@ else
 
     # this is our new keystore for k8s
     KEYSTORE="${k8s_temp_keystore}"
+    KEYSTORE_KEY="${k8s_temp_keystore}-key"
+    KEYSTORE_CERTIFICATE="${k8s_temp_keystore}-cert"
   elif [ "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" = "true" ]; then
     echo "You are using Non-Strict verify certificate mode. You existing certificates"
     echo "should work in Kubernetes without change."
@@ -352,5 +362,5 @@ EOF
 
 # remove temporary keystore
 if [ -f "${k8s_temp_keystore}" ]; then
-  rm -f "${k8s_temp_keystore}"
+  rm -f "${tmp_dir}/${prefix}"*
 fi
