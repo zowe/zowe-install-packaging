@@ -78,27 +78,27 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "~1.24.0-SNAPSHOT",
+      "version": "~1.25.0-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "~1.24.0-SNAPSHOT",
+      "version": "~1.25.0-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "~1.24.0-SNAPSHOT",
+      "version": "~1.25.0-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "~1.24.0-SNAPSHOT",
+      "version": "~1.25.0-SNAPSHOT",
       "artifact": "caching-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "~1.24.0-SNAPSHOT",
+      "version": "~1.25.0-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
@@ -119,7 +119,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~0.0.4-SNAPSHOT"
+      "version": "~0.0.8-SNAPSHOT"
     },
     "org.zowe.licenses": {
       "version": "1.10.0"

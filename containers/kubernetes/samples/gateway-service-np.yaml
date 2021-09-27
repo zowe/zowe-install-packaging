@@ -18,7 +18,8 @@ spec:
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/component: gateway
   ports:
-    - protocol: TCP
+    - name: gateway
+      protocol: TCP
       port: 7554
       nodePort: 32554
       targetPort: gateway-port

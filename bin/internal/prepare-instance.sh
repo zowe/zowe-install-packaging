@@ -258,6 +258,25 @@ configure_components() {
 
       print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "- configure ${component_id}"
 
+      # check configure script
+      preconfigure_script=$(read_component_manifest "${component_dir}" ".commands.preConfigure" 2>/dev/null)
+      if [ "${preconfigure_script}" = "null" ]; then
+        preconfigure_script=
+      fi
+      if [ -x "${preconfigure_script}" ]; then
+        print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
+        # execute configure step and snapshot environment
+        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${preconfigure_script} ; rc=$? ; return $rc)
+        retval=$?
+        if [ -n "${result}" ]; then
+          if [ "${retval}" = "0" ]; then
+            print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+          else
+            print_formatted_error "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+          fi
+        fi
+      fi
+
       # default build-in behaviors
       # - apiml static definitions
       result=$(process_component_apiml_static_definitions "${component_dir}" 2>&1)
