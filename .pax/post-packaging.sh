@@ -53,7 +53,7 @@ FMID=AZWE${FMID_VERSION}
 # to package on another server, we may need different settings
 export TMPDIR=/ZOWE/tmp
 SMPE_BUILD_HLQ=ZOWEAD3
-SMPE_BUILD_VOLSER=ZOWE01
+SMPE_BUILD_VOLSER=ZOWE03
 
 # write data sets list we want to clean up
 echo "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" > ${CURR_PWD}/cleanup-smpe-packaging-datasets.txt
