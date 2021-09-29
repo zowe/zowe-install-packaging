@@ -28,8 +28,6 @@
 #       Default is localca.
 # -v    Optional. Enable verbose mode to display more debugging information.
 #
-# FIXME: to support keyring
-# FIXME: to support external certificates
 # FIXME: to support zowe.yaml
 ################################################################################
 
@@ -47,6 +45,288 @@ base64() {
 }
 indent() {
   cat "$1" | sed "s/^/$2/"
+}
+item_in_list() {
+  list=$1
+  item=$2
+
+  OLDIFS=$IFS
+  IFS=,
+  found=
+  for one in ${list}; do
+    if [ "${one}" = "${item}" ]; then
+      found=true
+    fi
+  done
+  IFS=$OLDIFS
+
+  printf "${found}"
+}
+is_certificate_generated_by_zowe() {
+  utils_dir="${ROOT_DIR}/bin/utils"
+  zct="${utils_dir}/ncert/src/cli.js"
+
+  if [ "${KEYSTORE_TYPE}" = "PKCS12" ]; then
+    info=$(node "${zct}" pkcs12 info "${KEYSTORE}" -p "${KEYSTORE_PASSWORD}" -a "${KEY_ALIAS}" | grep "Issuer:")
+    if [ -z "${info}" ]; then
+      >&2 echo "Error: cannot find certificate ${KEY_ALIAS} in ${KEYSTORE}."
+      exit 1
+    fi
+    found=$(echo "${info}" | grep "Zowe Development Instances")
+    if [ -n "${found}" ]; then
+      echo "true"
+    fi
+  elif [ "${KEYSTORE_TYPE}" = "JCERACFKS" ]; then
+    info=$(tsocmd "RACDCERT LIST(LABEL('${KEY_ALIAS}')) ID(${KEYRING_OWNER})" | sed -n '/Issuer/{n;p;}')
+    if [ -z "${info}" ]; then
+      >&2 echo "Error: cannot find certificate ${KEY_ALIAS} in ${KEYSTORE}."
+      exit 1
+    fi
+    found=$(echo "${info}" | grep "Zowe Development Instances")
+    if [ -n "${found}" ]; then
+      echo "true"
+    fi
+  fi
+}
+export_certificate_from_keyring_to_pkcs12() {
+  owner=$1
+  label=$2
+  tmp_hlq=$3
+  uss_target=$4
+  password=$5
+
+  if [ -n "${VERBOSE_MODE}" ]; then
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "> export ${label} (${owner}) from safkeyring:////${KEYRING_OWNER}/${KEYRING_NAME}"
+  fi
+
+  # QUESTION: is irrcerta a bug of keyring_js?
+  if [ "${owner}" = "irrcerta" ]; then
+    owner=CERTAUTH
+  fi
+
+  # delete hlq if it exists and ignore errors
+  tsocmd DELETE "'${hlq}'" 2>/dev/null 1>/dev/null || true
+
+  # export cert to p12 format
+  if [ "${owner}" = "CERTAUTH" ]; then
+    result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
+  else
+    result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
+  fi
+  # IRRD147I EXPORT in PKCS12 format requires a certificate with an associated non-ICSF private key.  The request is not processed.
+  if [ -n "$(echo "${result}" | grep IRRD147I)" ]; then
+    if [ -n "${VERBOSE_MODE}" ]; then
+      echo "- certificate doesn't have private key"
+    fi
+    # export cert to PEM format
+    if [ "${owner}" = "CERTAUTH" ]; then
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${hlq}') FORMAT(CERTB64)" 2>&1)
+    else
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${hlq}') FORMAT(CERTB64)" 2>&1)
+    fi
+    rm -f "${uss_target}-tmp"
+    cp "//'${hlq}'" "${uss_target}-tmp"
+    rm -f "${uss_target}-850"
+    iconv -f IBM-1047 -t IBM-850 "${uss_target}-tmp" > "${uss_target}-850"
+    # if [ -n "${VERBOSE_MODE}" ]; then
+    #   keytool -printcert -file "${uss_target}-850"
+    #   echo
+    # fi
+
+    _cmd keytool -importcert ${VERBOSE_MODE} -noprompt -trustcacerts \
+      -alias "${label}" \
+      -file "${uss_target}-850" \
+      -keypass "${password}" \
+      -keystore "${uss_target}" \
+      -storetype PKCS12 \
+      -storepass "${password}"
+    rm -f "${uss_target}-tmp"
+    rm -f "${uss_target}-850"
+  else
+    rm -f "${uss_target}-tmp"
+    cp -B "//'${hlq}'" "${uss_target}-tmp"
+    # if [ -n "${VERBOSE_MODE}" ]; then
+    #   keytool -list -v -keystore "${uss_target}-tmp" -storepass "${password}" -storetype PKCS12
+    # fi
+
+    _cmd keytool -importkeystore ${VERBOSE_MODE} -noprompt \
+      -srckeystore "${uss_target}-tmp" \
+      -srcstoretype PKCS12 \
+      -srcstorepass "${password}" \
+      -keypass "${password}" \
+      -destkeystore "${uss_target}" \
+      -deststoretype PKCS12 \
+      -deststorepass "${password}"
+    rm -f "${uss_target}-tmp"
+  fi
+  if [ -n "${VERBOSE_MODE}" ]; then
+    echo
+  fi
+
+  # delete hlq if it exists and ignore errors
+  tsocmd DELETE "'${hlq}'" 2>/dev/null 1>/dev/null || true
+}
+export_certificate_from_keyring_to_pem() {
+  label=$1
+  target=$2
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  zct="${utils_dir}/ncert/src/cli.js"
+
+  if [ -n "${VERBOSE_MODE}" ]; then
+    echo "> export certificate ${label} from safkeyring:////${KEYRING_OWNER}/${KEYRING_NAME} to ${target}"
+  fi
+  _cmd node "${zct}" keyring export "${KEYRING_OWNER}" "${KEYRING_NAME}" "${label}" -f "${target}"
+  if [ -n "${VERBOSE_MODE}" ]; then
+    echo
+  fi
+}
+export_private_key_from_keyring_to_pem() {
+  label=$1
+  target=$2
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  zct="${utils_dir}/ncert/src/cli.js"
+
+  if [ -n "${VERBOSE_MODE}" ]; then
+    echo "> export private key ${label} from safkeyring:////${KEYRING_OWNER}/${KEYRING_NAME} to ${target}"
+  fi
+  _cmd node "${zct}" keyring export "${KEYRING_OWNER}" "${KEYRING_NAME}" "${label}" -k -f "${target}"
+  if [ -n "${VERBOSE_MODE}" ]; then
+    echo
+  fi
+}
+export_certificates_from_keyring() {
+  hlq=$1
+  uss_prefix=$2
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+  zct="${utils_dir}/ncert/src/cli.js"
+  dummy_cert=convert-for-k8s-dummy
+
+  certs=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -u PERSONAL --label-only)
+  keystore=${uss_prefix}keystore.p12
+  rm -f "${keystore}"
+  rm -f "${keystore}-cert"
+  rm -f "${keystore}-key"
+  # create keystore by generating a dummy key
+   keytool -genkeypair \
+    -alias "${dummy_cert}" \
+    -dname "CN=Zowe Dummy Cert, OU=ZWELS, O=Zowe, C=US" \
+    -keystore "${keystore}" \
+    -storetype PKCS12 \
+    -storepass "${KEYSTORE_PASSWORD}" \
+    -validity 90 \
+    -keyalg RSA -keysize 2048
+  chtag -b "${keystore}"
+  # import all certificates
+  while read -r cert; do
+    if [ -n "${cert}" ]; then
+      owner=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -l "${cert}" --owner-only)
+      export_certificate_from_keyring_to_pkcs12 "${owner}" "${cert}" "${hlq}" "${keystore}" "${KEYSTORE_PASSWORD}"
+
+      if [ "${cert}" = "${KEY_ALIAS}" ]; then
+        export_certificate_from_keyring_to_pem "${cert}" "${keystore}-cert"
+        export_private_key_from_keyring_to_pem "${cert}" "${keystore}-key"
+      fi
+    fi
+  done <<EOF
+$(echo "${certs}")
+EOF
+  # delete dummy cert
+   keytool -delete \
+    -alias "${dummy_cert}" \
+    -keystore "${keystore}" \
+    -storetype PKCS12 \
+    -storepass "${KEYSTORE_PASSWORD}"
+
+  if [ -n "${VERBOSE_MODE}" ]; then
+    # show content of the keystore
+    echo "> Exported keystore information"
+    chtag -b "${keystore}"
+    _cmd node "${zct}" pkcs12 info "${keystore}" -p "${KEYSTORE_PASSWORD}" ${VERBOSE_MODE}
+  fi
+
+  cas=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -u CERTAUTH --label-only)
+  truststore=${uss_prefix}truststore.p12
+  rm -f "${truststore}"
+  rm -f "${truststore}-cert"
+  rm -f "${truststore}-cert-tmp"
+  # create truststore by generating a dummy key
+   keytool -genkeypair \
+    -alias "${dummy_cert}" \
+    -dname "CN=Zowe Dummy Cert, OU=ZWELS, O=Zowe, C=US" \
+    -keystore "${truststore}" \
+    -storetype PKCS12 \
+    -storepass "${KEYSTORE_PASSWORD}" \
+    -validity 90 \
+    -keyalg RSA -keysize 2048
+  chtag -b "${truststore}"
+  # import all CAs
+  while read -r ca; do
+    if [ -n "${ca}" ]; then
+      owner=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -l "${ca}" --owner-only)
+      export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${truststore}" "${KEYSTORE_PASSWORD}"
+
+      found=$(item_in_list "${EXTERNAL_CERTIFICATE_AUTHORITIES}" "${ca}")
+      if [ "${found}" = "true" ]; then
+        export_certificate_from_keyring_to_pem "${ca}" "${truststore}-cert-tmp"
+        cat "${truststore}-cert-tmp" >> "${truststore}-cert"
+        echo >> "${truststore}-cert"
+      fi
+    fi
+  done <<EOF
+$(echo "${cas}")
+EOF
+  # delete dummy cert
+   keytool -delete \
+    -alias "${dummy_cert}" \
+    -keystore "${truststore}" \
+    -storetype PKCS12 \
+    -storepass "${KEYSTORE_PASSWORD}"
+
+  if [ -n "${VERBOSE_MODE}" ]; then
+    # show content of the keystore
+    echo "> Exported truststore information"
+    chtag -b "${truststore}"
+    _cmd node "${zct}" pkcs12 info "${truststore}" -p "${KEYSTORE_PASSWORD}" ${VERBOSE_MODE}
+  fi
+
+  # convert variables
+  # >>>>>> FROM
+  # KEY_ALIAS="ZoweCert"
+  # KEYSTORE_PASSWORD="password"
+  # KEYRING_OWNER="ZWESVUSR"
+  # KEYRING_NAME="ZoweKeyring"
+  # KEYSTORE="safkeyring:////${KEYRING_OWNER}/${KEYRING_NAME}"
+  # KEYSTORE_TYPE="JCERACFKS"
+  # TRUSTSTORE="safkeyring:////${KEYRING_OWNER}/${KEYRING_NAME}"
+  # EXTERNAL_ROOT_CA="localca"
+  # EXTERNAL_CERTIFICATE_AUTHORITIES="localca,"
+  # >>>>>> TO
+  # KEY_ALIAS="localhost"
+  # KEYSTORE_PASSWORD=password
+  # KEYSTORE="/var/zowe/keystore/localhost/localhost.keystore.p12"
+  # KEYSTORE_TYPE="PKCS12"
+  # TRUSTSTORE="/var/zowe/keystore/localhost/localhost.truststore.p12"
+  # KEYSTORE_KEY="/var/zowe/keystore/localhost/localhost.keystore.key"
+  # KEYSTORE_CERTIFICATE="/var/zowe/keystore/localhost/localhost.keystore.cer-ebcdic"
+  # KEYSTORE_CERTIFICATE_AUTHORITY="/var/zowe/keystore/local_ca/localca.cer-ebcdic"
+  # EXTERNAL_ROOT_CA=""
+  # EXTERNAL_CERTIFICATE_AUTHORITIES=""
+  # after exported, RACDCERT converts label to lowe case
+  KEY_ALIAS=$(echo "${KEY_ALIAS}" | tr [A-Z] [a-z])
+  KEYSTORE="${keystore}"
+  KEYSTORE_TYPE="PKCS12"
+  TRUSTSTORE="${truststore}"
+  KEYSTORE_KEY="${keystore}-key"
+  KEYSTORE_CERTIFICATE="${keystore}-cert"
+  KEYSTORE_CERTIFICATE_AUTHORITY="${truststore}-cert"
+  EXTERNAL_ROOT_CA=""
+  EXTERNAL_CERTIFICATE_AUTHORITIES=""
+  KEYRING_OWNER=
+  KEYRING_NAME=
 }
 generate_k8s_certificate() {
   k8s_temp_keystore=$1
@@ -159,6 +439,15 @@ if [ -z "${ROOT_DIR}" ]; then
   exit 1
 fi
 
+echo "Info: NODE_HOME and JAVA_HOME are required to use this utility"
+echo
+
+# we need node and keytool for following commands
+ensure_node_is_on_path 1>/dev/null 2>&1
+ensure_java_is_on_path 1>/dev/null 2>&1
+
+# KEYSTORE_DIRECTORY=/var/zowe/k2
+
 # import common environment variables to make sure node runs properly
 . "${ROOT_DIR}/bin/internal/zowe-set-env.sh"
 
@@ -175,10 +464,8 @@ fi
 # import keystore configs
 . "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
 
-if [ "${KEYSTORE_TYPE}" != "PKCS12" ]; then
-  >&2 echo "Error: keystore type ${KEYSTORE_TYPE} is not supported yet."
-  exit 1
-fi
+# PKCS#12 keystores should be tagged as binary to avoid node.js tries to convert encoding
+find "${KEYSTORE_DIRECTORY}" -name '*.p12' | xargs chtag -b
 
 if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" != "true" -a "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" != "true" ]; then
   >&2 echo "!WARNING!: it's not recommended to turn both VERIFY_CERTIFICATES and NONSTRICT_VERIFY_CERTIFICATES off for security reasons."
@@ -186,14 +473,24 @@ if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" != "true" -a "${ZOWE_APIM_NONSTRICT_VERI
 fi
 
 tmp_dir=$(get_tmp_dir)
-prefix=zowe-convert-for-k8s-$(echo $RANDOM)-
+rnd=$(echo $RANDOM)
+userid=$(echo "${USER:-${USERNAME:-${LOGNAME}}}" | tr [a-z] [A-Z])
+prefix=zowe-convert-for-k8s-$(echo ${rnd})-
+hlq=${userid}.K8S${rnd}
 k8s_temp_keystore="${tmp_dir}/${prefix}${KEY_ALIAS}.keystore.p12"
-if [ -n "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]; then
-  echo "It seems you are using certficates NOT generated by Zowe."
+
+if [ "${KEYSTORE_TYPE}" = "JCERACFKS" ]; then
+  # export keyring to PKCS#12 format
+  echo "You are using z/OS Keyring. All certificates used by Zowe will be exported."
+  export_certificates_from_keyring "${hlq}" "${tmp_dir}/${prefix}"
+  echo
+fi
+if [ "$(is_certificate_generated_by_zowe)" != "true" ]; then
+  echo "It seems you are using certificates NOT generated by Zowe."
   echo
 
   if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" = "true" ]; then
-    echo "To make certificates working in Kubernetes, the certficate you are using should have"
+    echo "To make certificates working in Kubernetes, the certificate you are using should have"
     echo "these domains defined in Subject Alt Name (SAN):"
     echo
     echo "- ${ZWE_EXTERNAL_HOSTS}"
@@ -210,24 +507,14 @@ if [ -n "${EXTERNAL_CERTIFICATE_AUTHORITIES}" ]; then
     echo
   fi
 else
-  echo "It seems you are using Zowe generated certficates."
+  echo "It seems you are using Zowe generated certificates."
   echo
 
   if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" = "true" ]; then
-    echo "To make the certficates working properly in Kubernetes, we need to generate"
+    echo "To make the certificates working properly in Kubernetes, we need to generate"
     echo "a new certificate with proper domains."
     echo "You can customize domains by passing -x option to this utility script."
     echo
-
-    echo "Info: NODE_HOME and JAVA_HOME are required to generate new certificate"
-    echo
-
-    # we need node and keytool for following commands
-    ensure_node_is_on_path 1>/dev/null 2>&1
-    ensure_java_is_on_path 1>/dev/null 2>&1
-
-    # PKCS#12 keystores should be tagged as binary to avoid node.js tries to convert encoding
-    find "${KEYSTORE_DIRECTORY}" -name '*.p12' | xargs chtag -b
 
     cp "${KEYSTORE}" "${k8s_temp_keystore}"
     if [ ! -f "${k8s_temp_keystore}" ]; then
@@ -361,6 +648,4 @@ $(indent "${KEYSTORE_CERTIFICATE_AUTHORITY}" "    ")
 EOF
 
 # remove temporary keystore
-if [ -f "${k8s_temp_keystore}" ]; then
-  rm -f "${tmp_dir}/${prefix}"*
-fi
+rm -f "${tmp_dir}/${prefix}"*
