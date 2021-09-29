@@ -357,7 +357,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     },
     stage : {
       if (params.BUILD_KUBERNETES) {
-          sh 'cd containers && zip -r kubernetes.zip kubernetes'
+          sh 'cd containers && zip -r zowe-containerization.zip kubernetes'
           sh 'mv containers/kubernetes.zip .'
           pipeline.uploadArtifacts([ 'kubernetes.zip' ])
       }
