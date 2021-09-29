@@ -439,9 +439,6 @@ if [ -z "${ROOT_DIR}" ]; then
   exit 1
 fi
 
-echo "Info: NODE_HOME and JAVA_HOME are required to use this utility"
-echo
-
 # we need node and keytool for following commands
 ensure_node_is_on_path 1>/dev/null 2>&1
 ensure_java_is_on_path 1>/dev/null 2>&1
