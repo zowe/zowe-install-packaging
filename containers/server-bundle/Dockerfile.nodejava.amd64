@@ -84,8 +84,8 @@ RUN mkdir -p /usr/share/man/man1/ && touch /usr/share/man/man1/sh.distrib.1.gz &
     echo "dash dash/sh boolean false" | debconf-set-selections && \
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
 
-RUN groupadd --gid 8544 zowe \
-    && useradd --uid 8544 --gid zowe --shell /bin/bash --create-home zowe \
+RUN groupadd --gid 7556 zowe \
+    && useradd --uid 7556 --gid zowe --shell /bin/bash --create-home zowe \
     && mkdir /root/zowe && chown zowe:zowe /root/zowe \
     && mkdir /global && chown zowe:zowe /global \
     && cd /home/zowe && \

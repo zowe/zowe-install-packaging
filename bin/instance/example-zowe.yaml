@@ -154,7 +154,7 @@ components:
           nonStrictVerifySslCertificatesOfServices: true
   app-server:
     enabled: true
-    port: "8544"
+    port: "7556"
     # we can customize app-server certificate
     # the missing definitions will be picked from "zowe.internalCertificate"
     certificate:
@@ -253,7 +253,7 @@ haInstances:
         enabled: false
       app-server:
         enabled: false
-        port: "28544"
+        port: "27556"
       zss:
         port: "28542"
       jobs-api:

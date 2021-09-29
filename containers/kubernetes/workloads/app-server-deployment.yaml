@@ -61,11 +61,11 @@ spec:
               cpu: "200m"
           ports:
             - name: app-server-port
-              containerPort: 8544
+              containerPort: 7556
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8544
+              port: 7556
             initialDelaySeconds: 15
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             failureThreshold: 18

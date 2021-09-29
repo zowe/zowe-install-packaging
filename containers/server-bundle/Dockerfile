@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
-EXPOSE 8544/tcp
+EXPOSE 7556/tcp
 
 #ENV ZOWE_ZOSMF_HOST='zosmf.host.com'
 #ENV ZOWE_ZSS_HOST='zss.host.com'
@@ -112,7 +112,7 @@ FROM ompzowe/zowecicd-node12-java8:v2.1
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
-EXPOSE 8544/tcp
+EXPOSE 7556/tcp
 
 #ENV ZOWE_ZOSMF_HOST='zosmf.host.com'
 #ENV ZOWE_ZSS_HOST='zss.host.com'

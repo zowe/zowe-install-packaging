@@ -7,7 +7,7 @@
 
 DISCOVERY_PORT=7553
 GATEWAY_PORT=7554
-APP_SERVER_PORT=8544
+APP_SERVER_PORT=7556
 # If using external instance (recommended), put the path to it on the host computer here
 # EXT_INSTANCE_PATH=
 
@@ -33,6 +33,6 @@ docker run -it \
     --env ZWED_agent_https_port=8542 \
     -p ${DISCOVERY_PORT}:7553 \
     -p ${GATEWAY_PORT}:7554 \
-    -p ${APP_SERVER_PORT}:8544 \
+    -p ${APP_SERVER_PORT}:7556 \
     ${instance_mount} \
     ompzowe/server-bundle:latest $@

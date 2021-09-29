@@ -90,7 +90,7 @@ zowe_xmem_proclib_member_aux: ZWESASTC
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_stc_group: ZWEADMIN
 zowe_xmem_stc_user: ZWESIUSR
-zowe_zlux_port: 8544
+zowe_zlux_port: 7556
 zowe_zlux_terminal_ssh_port: 22
 zowe_zlux_terminal_telnet_port: 23
 zowe_zlux_terminal_telnet_security_type:
