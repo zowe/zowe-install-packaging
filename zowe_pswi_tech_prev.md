@@ -10,7 +10,7 @@ The Zowe PSWI was build on top of SMP/E data sets of Zowe version 1.24.
 
 To be able to use the Zowe PSWI, you need to fulfill a few prerequisites: 
 - The current version of the Zowe PSWI was built for the z/OSMF 2.3 and higher. The z/OSMF 2.2 and lower is not supported.
-- The user ID you are using for the Zowe PSWI deployment must have READ access to the System Authorization Facility (SAF) resource that protects the Zowe data sets that are produced during the creation of the Zowe PSWI. That is, your user ID requires READ access to data set names that begin with ZOWEPSI. Please note, that the prefix is subject to change as the current Zowe PSWI is a technology preview.
+- The user ID you are using for the Zowe PSWI deployment must have READ access to the System Authorization Facility (SAF) resource that protects the Zowe data sets that are produced during the creation of the Zowe PSWI. That is, your user ID requires READ access to data set names that begin with **ZWE**. Please note, that the prefix is subject to change as the current Zowe PSWI is a technology preview.
 - The Zowe PSWI package has about 1.2 GB, please make sure you have enough space available on your system.
 
 ## Installation
