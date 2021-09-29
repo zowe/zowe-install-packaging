@@ -36,7 +36,7 @@ zowe_uss_explorer_port: 8550
 # zlux ports
 zowe_zlux_port: 7556
 zowe_zss_https: True
-zowe_zss_port: 8542
+zowe_zss_port: 7557
 # make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
 zowe_zss_xmem_name: ZWESIS_STD
 zowe_zlux_terminal_ssh_port: 22

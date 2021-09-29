@@ -55,5 +55,5 @@
     }
   },
   // internal port, do not connect browser to this port
-  "zssPort":8542
+  "zssPort":7557
 }

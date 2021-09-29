@@ -97,5 +97,5 @@ zowe_zlux_terminal_telnet_security_type:
 zowe_zos_host:
 zowe_zosmf_certificate:
 zowe_zss_https: True
-zowe_zss_port: 8542
+zowe_zss_port: 7557
 zowe_zss_xmem_name: ZWESIS_STD

@@ -37,7 +37,7 @@
     "https": {
       "ipAddresses": ["127.0.0.1"],
       //to be a replacement for zssPort
-      "port": 8542
+      "port": 7557
     },
     "mediationLayer": {
       "serviceName": "zss",

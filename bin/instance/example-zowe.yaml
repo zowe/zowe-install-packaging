@@ -165,7 +165,7 @@ components:
         certificate: /global/zowe/keystore/localhost/localhost.keystore.app-server.cer-ebcdic
   zss:
     enabled: true
-    port: "8542"
+    port: "7557"
     crossMemoryServerName: ZWESIS_STD
     tls: true
     # we can customize zss certificate
@@ -255,7 +255,7 @@ haInstances:
         enabled: false
         port: "27556"
       zss:
-        port: "28542"
+        port: "27557"
       jobs-api:
         enabled: true
       files-api:

@@ -202,7 +202,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         <category>Zowe Desktop/app framework variables</category>
         <integer>
             <!-- validation -->
-            <default>8542</default>
+            <default>7557</default>
         </integer>
     </variable>
     <variable name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" visibility="public">
