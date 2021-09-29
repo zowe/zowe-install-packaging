@@ -39,6 +39,11 @@ node('zowe-jenkins-agent-dind-wdc') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_KUBERNETES',
+      description: 'If we want to build zowe kubernetes.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
