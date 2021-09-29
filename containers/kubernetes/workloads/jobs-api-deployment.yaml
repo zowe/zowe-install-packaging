@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -116,22 +115,3 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: jobs-api-pdb
-  namespace: zowe
-  labels:
-    app.kubernetes.io/name: zowe
-    app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: pdb
-    app.kubernetes.io/managed-by: manual
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: zowe
-      app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: jobs-api
