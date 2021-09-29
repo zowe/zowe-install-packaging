@@ -46,7 +46,7 @@
     register: zosmf_ca_output
   - name: Update zos_zosmf_ca
     set_fact:
-      zos_zosmf_ca: zosmf_ca_output.stdout
+      zos_zosmf_ca: "{{ zosmf_ca_output.stdout }}"
 
 - name: Show z/OSMF CA
   debug:
