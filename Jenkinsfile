@@ -349,6 +349,22 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   pipeline.createStage(
+    name: "Build Kubernetes",
+    timeout: [ time: 10, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_KUBERNETES
+    },
+    stage : {
+      if (params.BUILD_KUBERNETES) {
+          sh 'cd containers && zip -r kubernetes.zip kubernetes'
+          sh 'mv containers/kubernetes.zip .'
+          pipeline.uploadArtifacts([ 'kubernetes.zip' ])
+      }
+    }
+  )
+
+  pipeline.createStage(
     name              : "Update comment to signify build pass status",
     timeout: [time: 2, unit: 'MINUTES'],
     isSkippable: false,
