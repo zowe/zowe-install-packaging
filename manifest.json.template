@@ -426,7 +426,7 @@
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "1.24.0-ubuntu-amd64"
+      "tag" : "latest-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
