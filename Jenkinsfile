@@ -86,10 +86,10 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       pipeline.setVersion(manifest['version'])
 
       sh """
-VERSION=v4.13.2 
-BINARY=yq_linux_amd64
-wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
-  tar xz && mv ${BINARY} /usr/bin/yq
+VERSION=v4.13.2 && \
+BINARY=yq_linux_amd64 && \
+wget https://github.com/mikefarah/yq/releases/download/$VERSION/$BINARY.tar.gz -O - |\
+  tar xz && mv $BINARY /usr/bin/yq
 """
       echo "test on yq"
       sh "yq"
