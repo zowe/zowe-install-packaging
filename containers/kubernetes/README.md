@@ -390,6 +390,66 @@ If you want to permanently remove a component, you can delete the component `Dep
 kubectl delete -n zowe deployment jobs-api
 ```
 
+### 3. `PodDisruptionBudget`
+
+Zowe provides default `PodDisruptionBudget` which can help on providing high availability during upgrade. By default, Zowe defines `minAvailable` to be `1` for all deployments. This configuration is optional but recommended. To apply `PodDisruptionBudget`, run this command:
+
+```
+kubectl apply -f samples/pod-disruption-budget/
+```
+
+To verify this step, run:
+
+```bash
+kubectl get pdb --namespace zowe
+```
+
+should show you list of `PodDisruptionBudget` like this:
+
+```
+NAME               MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+api-catalog-pdb    1               N/A               0                     1d
+app-server-pdb     1               N/A               0                     1d
+caching-pdb        1               N/A               0                     1d
+discovery-pdb      1               N/A               0                     1d
+explorer-jes-pdb   1               N/A               0                     1d
+explorer-mvs-pdb   1               N/A               0                     1d
+explorer-uss-pdb   1               N/A               0                     1d
+files-api-pdb      1               N/A               0                     1d
+gateway-pdb        1               N/A               0                     1d
+jobs-api-pdb       1               N/A               0                     1d
+```
+
+### 4. `HorizontalPodAutoscaler`
+
+Zowe provides default `HorizontalPodAutoscaler` which can help on automatically scaling Zowe components based on resource usage. By default, each workload has minimal 1 replica and maximum 3 to 5 replicas based on CPU usage. This configuration is optional but recommended. `HorizontalPodAutoscaler` relies on Kubernetes [Metrics server](https://github.com/kubernetes-sigs/metrics-server) monitoring to provide metrics through the [Metrics API](https://github.com/kubernetes/metrics). To learn how to deploy the metrics-server, see the [metrics-server documentation](https://github.com/kubernetes-sigs/metrics-server#deployment). Please adjust the `HorizontalPodAutoscaler` definitions based on your cluster resources, then run this command to apply them to your cluster:
+
+```
+kubectl apply -f samples/horizontal-pod-autoscaler/
+```
+
+To verify this step, run:
+
+```bash
+kubectl get hpa --namespace zowe
+```
+
+should show you list of `HorizontalPodAutoscaler` like this:
+
+```
+NAME               REFERENCE                 TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+api-catalog-hpa    Deployment/api-catalog    60%/70%   1         3         1          20m
+app-server-hpa     Deployment/app-server     2%/70%    1         5         1          9m59s
+caching-hpa        Deployment/caching        7%/70%    1         3         1          9m59s
+discovery-hpa      StatefulSet/discovery     34%/70%   1         3         1          8m15s
+explorer-jes-hpa   Deployment/explorer-jes   10%/70%   1         3         1          9m59s
+explorer-mvs-hpa   Deployment/explorer-mvs   10%/70%   1         3         1          9m59s
+explorer-uss-hpa   Deployment/explorer-uss   10%/70%   1         3         1          9m59s
+files-api-hpa      Deployment/files-api      8%/70%    1         3         1          9m59s
+gateway-hpa        Deployment/gateway        20%/60%   1         5         1          9m59s
+jobs-api-hpa       Deployment/jobs-api       8%/70%    1         3         1          9m59s
+```
+
 <br />
 
 ## Troubleshooting Tips
