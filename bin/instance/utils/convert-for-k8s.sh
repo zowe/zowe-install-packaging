@@ -341,8 +341,10 @@ generate_k8s_certificate() {
   alt_names="${alt_names} --alt localhost.localdomain"
   alt_names="${alt_names} --alt localhost"
   alt_names="${alt_names} --alt 127.0.0.1"
-  alt_names="${alt_names} --alt '*.${ZWE_KUBERNETES_NAMESPACE}.pod.${ZWE_KUBERNETES_CLUSTERNAME}'"
   alt_names="${alt_names} --alt '*.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}'"
+  alt_names="${alt_names} --alt '*.${ZWE_KUBERNETES_NAMESPACE}.pod.${ZWE_KUBERNETES_CLUSTERNAME}'"
+  alt_names="${alt_names} --alt '*.discovery-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}'"
+  alt_names="${alt_names} --alt '*.gateway-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}'"
 
   new_k8s_keystore="${k8s_temp_keystore}-k8s"
 
@@ -492,6 +494,8 @@ if [ "$(is_certificate_generated_by_zowe)" != "true" ]; then
     echo
     echo "- ${ZWE_EXTERNAL_HOSTS}"
     echo "- *.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
+    echo "- *.discovery-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
+    echo "- *.gateway-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
     echo "- *.${ZWE_KUBERNETES_NAMESPACE}.pod.${ZWE_KUBERNETES_CLUSTERNAME}"
     echo
     echo "Otherwise you may see warnings/errors related to certificate validation."
