@@ -425,7 +425,7 @@ jobs-api-pdb       1               N/A               0                     1d
 Zowe provides default `HorizontalPodAutoscaler` which can help on automatically scaling Zowe components based on resource usage. By default, each workload has minimal 1 replica and maximum 3 to 5 replicas based on CPU usage. This configuration is optional but recommended. `HorizontalPodAutoscaler` relies on Kubernetes [Metrics server](https://github.com/kubernetes-sigs/metrics-server) monitoring to provide metrics through the [Metrics API](https://github.com/kubernetes/metrics). To learn how to deploy the metrics-server, see the [metrics-server documentation](https://github.com/kubernetes-sigs/metrics-server#deployment). Please adjust the `HorizontalPodAutoscaler` definitions based on your cluster resources, then run this command to apply them to your cluster:
 
 ```
-kubectl apply -f samples/pod-disruption-budget/
+kubectl apply -f samples/horizontal-pod-autoscaler/
 ```
 
 To verify this step, run:
