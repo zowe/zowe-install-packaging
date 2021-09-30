@@ -178,10 +178,10 @@ components:
         certificate: /global/zowe/keystore/localhost/localhost.keystore.zss.cer-ebcdic
   jobs-api:
     enabled: true
-    port: "8545"
+    port: "7558"
   files-api:
     enabled: true
-    port: "8547"
+    port: "7559"
   explorer-jes:
     enabled: true
     port: "8546"
@@ -228,9 +228,9 @@ haInstances:
         # no app-server in this instance
         enabled: false
       jobs-api:
-        port: "18545"
+        port: "17558"
       files-api:
-        port: "18547"
+        port: "17559"
       explorer-jes:
         port: "18546"
       explorer-mvs:

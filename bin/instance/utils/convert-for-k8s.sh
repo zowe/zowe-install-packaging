@@ -264,8 +264,8 @@ NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
   sed -e "s#DISCOVERY_PORT=.\+\$#DISCOVERY_PORT=7553#" | \
   sed -e "s#GATEWAY_PORT=.\+\$#GATEWAY_PORT=7554#" | \
   sed -e "s#ZWE_CACHING_SERVICE_PORT=.\+\$#ZWE_CACHING_SERVICE_PORT=7555#" | \
-  sed -e "s#JOBS_API_PORT=.\+\$#JOBS_API_PORT=8545#" | \
-  sed -e "s#FILES_API_PORT=.\+\$#FILES_API_PORT=8547#" | \
+  sed -e "s#JOBS_API_PORT=.\+\$#JOBS_API_PORT=7558#" | \
+  sed -e "s#FILES_API_PORT=.\+\$#FILES_API_PORT=7559#" | \
   sed -e "s#JES_EXPLORER_UI_PORT=.\+\$#JES_EXPLORER_UI_PORT=8546#" | \
   sed -e "s#MVS_EXPLORER_UI_PORT=.\+\$#MVS_EXPLORER_UI_PORT=8548#" | \
   sed -e "s#USS_EXPLORER_UI_PORT=.\+\$#USS_EXPLORER_UI_PORT=8550#" | \

@@ -61,11 +61,11 @@ spec:
               cpu: "300m"
           ports:
             - name: jobs-api-port
-              containerPort: 8545
+              containerPort: 7558
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8545
+              port: 7558
             initialDelaySeconds: 45
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
             failureThreshold: 60
