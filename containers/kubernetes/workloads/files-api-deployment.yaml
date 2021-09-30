@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/version: 1.25.0
     app.kubernetes.io/component: files-api
     app.kubernetes.io/part-of: explorer-api
     app.kubernetes.io/managed-by: manual

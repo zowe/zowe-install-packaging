@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/version: 1.25.0
     app.kubernetes.io/component: app-server
     app.kubernetes.io/part-of: app-server
     app.kubernetes.io/managed-by: manual
@@ -115,4 +115,3 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
-
