@@ -81,9 +81,9 @@ data:
     # explorer variables
     JOBS_API_PORT=7558
     FILES_API_PORT=7559
-    JES_EXPLORER_UI_PORT=8546
-    MVS_EXPLORER_UI_PORT=8548
-    USS_EXPLORER_UI_PORT=8550
+    JES_EXPLORER_UI_PORT=7560
+    MVS_EXPLORER_UI_PORT=7561
+    USS_EXPLORER_UI_PORT=7562
     ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXTERNAL_HOST}:*,${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*" # comma seperated list of hosts allowed to embed explorers
 
     # app framework (app-server, zss, zis) variables

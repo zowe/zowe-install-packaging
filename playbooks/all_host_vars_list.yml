@@ -49,7 +49,7 @@ zowe_instance_dir: ~/.zowe/instance
 zowe_instance_id: 1
 zowe_job_prefix: ZWE
 zowe_jobs_api_port: 7558
-zowe_jobs_explorer_port: 8546
+zowe_jobs_explorer_port: 7560
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
@@ -62,7 +62,7 @@ zowe_launch_components:
 zowe_lock_keystore: true
 zowe_logs_dir: ~/.zowe/logs
 zowe_mvs_api_port: 7559
-zowe_mvs_explorer_port: 8548
+zowe_mvs_explorer_port: 7561
 zowe_proclib_dsname: auto
 zowe_proclib_membername: ZWESVSTC
 zowe_ptf_install_jcls:
@@ -81,7 +81,7 @@ zowe_test_user:
 zowe_token_label: jwtsecret
 zowe_token_name: ZWETOKEN
 zowe_user_profile: ~/.zowe_profile
-zowe_uss_explorer_port: 8550
+zowe_uss_explorer_port: 7562
 # this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib:
 zowe_xmem_parmlib:

@@ -184,15 +184,15 @@ components:
     port: "7559"
   explorer-jes:
     enabled: true
-    port: "8546"
+    port: "7560"
     frameAncestors: dvipa.my-company.com:*
   explorer-mvs:
     enabled: true
-    port: "8548"
+    port: "7561"
     frameAncestors: dvipa.my-company.com:*
   explorer-uss:
     enabled: true
-    port: "8550"
+    port: "7562"
     frameAncestors: dvipa.my-company.com:*
   # for extensions, you can add your definition like this
   # my-extension:
@@ -232,11 +232,11 @@ haInstances:
       files-api:
         port: "17559"
       explorer-jes:
-        port: "18546"
+        port: "17560"
       explorer-mvs:
-        port: "18548"
+        port: "17561"
       explorer-uss:
-        port: "18550"
+        port: "17562"
       caching-service:
         port: "17555"
   lpar2b:
