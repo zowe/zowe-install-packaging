@@ -42,10 +42,10 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-            - configMap:
-                name: zowe-certificates-cm
-            - secret:
-                name: zowe-certificates-secret
+              - configMap:
+                  name: zowe-certificates-cm
+              - secret:
+                  name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
@@ -83,7 +83,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
