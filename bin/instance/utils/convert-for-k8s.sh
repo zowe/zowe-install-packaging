@@ -575,6 +575,10 @@ echo "then apply it to your Kubernetes cluster."
 echo
 echo "  Example: kubectl apply -f /path/to/my/local-saved.yaml"
 echo
+echo "SECURITY WARNING: Below content includes sensitive private keys. After you apply"
+echo "                  these configurations to your Kubernetes cluster, the temporary"
+echo "                  file should be deleted and destroyed from your local computer."
+echo
 
 ################################################################################
 # Prepare configs
