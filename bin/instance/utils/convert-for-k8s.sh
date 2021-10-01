@@ -94,6 +94,7 @@ export_certificate_from_keyring_to_pkcs12() {
   tmp_hlq=$3
   uss_target=$4
   password=$5
+  cert_only=$6
 
   if [ -n "${VERBOSE_MODE}" ]; then
     echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -108,14 +109,21 @@ export_certificate_from_keyring_to_pkcs12() {
   # delete hlq if it exists and ignore errors
   tsocmd DELETE "'${hlq}'" 2>/dev/null 1>/dev/null || true
 
-  # export cert to p12 format
-  if [ "${owner}" = "CERTAUTH" ]; then
-    result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
-  else
-    result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
+  if [ "${cert_only}" != "true" ]; then
+    # export cert to p12 format
+    if [ "${owner}" = "CERTAUTH" ]; then
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
+    else
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
+    fi
+    # IRRD147I EXPORT in PKCS12 format requires a certificate with an associated non-ICSF private key.  The request is not processed.
+    no_private_key=$(echo "${result}" | grep IRRD147I)
+    if [ -n "${no_private_key}" ]; then
+      # we can only export cert
+      cert_only=true
+    fi
   fi
-  # IRRD147I EXPORT in PKCS12 format requires a certificate with an associated non-ICSF private key.  The request is not processed.
-  if [ -n "$(echo "${result}" | grep IRRD147I)" ]; then
+  if [ "${cert_only}" = "true" ]; then
     if [ -n "${VERBOSE_MODE}" ]; then
       echo "- certificate doesn't have private key"
     fi
@@ -267,13 +275,20 @@ EOF
   while read -r ca; do
     if [ -n "${ca}" ]; then
       owner=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -l "${ca}" --owner-only)
-      export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${truststore}" "${KEYSTORE_PASSWORD}"
+      # always put it into keystore
+      export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${keystore}" "${KEYSTORE_PASSWORD}" "true"
 
       found=$(item_in_list "${EXTERNAL_CERTIFICATE_AUTHORITIES}" "${ca}")
       if [ "${found}" = "true" ]; then
+        # this is Zowe CA, will try to export both cert and private key
+        export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${truststore}" "${KEYSTORE_PASSWORD}"
+
         export_certificate_from_keyring_to_pem "${ca}" "${truststore}-cert-tmp"
         cat "${truststore}-cert-tmp" >> "${truststore}-cert"
         echo >> "${truststore}-cert"
+      else
+        # Not Zowe CA, we only export cert without private key
+        export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${truststore}" "${KEYSTORE_PASSWORD}" "true"
       fi
     fi
   done <<EOF
@@ -315,6 +330,11 @@ EOF
   # KEYSTORE_CERTIFICATE_AUTHORITY="/var/zowe/keystore/local_ca/localca.cer-ebcdic"
   # EXTERNAL_ROOT_CA=""
   # EXTERNAL_CERTIFICATE_AUTHORITIES=""
+
+  # CA is stored in truststore
+  LOCAL_CA_KEYSTORE="${truststore}"
+  LOCAL_CA_PASSWORD="${KEYSTORE_PASSWORD}"
+  LOCAL_CA_ALIAS="${EXTERNAL_ROOT_CA}"
   # after exported, RACDCERT converts label to lowe case
   KEY_ALIAS=$(echo "${KEY_ALIAS}" | tr [A-Z] [a-z])
   KEYSTORE="${keystore}"
@@ -351,7 +371,7 @@ generate_k8s_certificate() {
   echo "> Generate new keystore suitable for Kubernetes - ${new_k8s_keystore}"
   _cmd node "${zct}" pkcs12 generate "${KEY_ALIAS}" \
     ${VERBOSE_MODE} \
-    --ca "${KEYSTORE_DIRECTORY}/${LOCAL_CA_FILENAME}.keystore.p12" \
+    --ca "${LOCAL_CA_KEYSTORE}" \
     --cap "${LOCAL_CA_PASSWORD}" \
     --caa "${LOCAL_CA_ALIAS}" \
     -f "${new_k8s_keystore}" \
@@ -402,6 +422,8 @@ ZWE_KUBERNETES_CLUSTERNAME=cluster.local
 LOCAL_CA_PASSWORD=local_ca_password
 LOCAL_CA_ALIAS=localca
 LOCAL_CA_FILENAME="local_ca/localca"
+# will be defined later
+LOCAL_CA_KEYSTORE=
 ZWE_EXTERNAL_HOSTS=localhost
 VERBOSE_MODE=
 
@@ -445,8 +467,6 @@ fi
 ensure_node_is_on_path 1>/dev/null 2>&1
 ensure_java_is_on_path 1>/dev/null 2>&1
 
-# KEYSTORE_DIRECTORY=/var/zowe/k2
-
 # import common environment variables to make sure node runs properly
 . "${ROOT_DIR}/bin/internal/zowe-set-env.sh"
 
@@ -462,21 +482,37 @@ fi
 
 # import keystore configs
 . "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
+LOCAL_CA_KEYSTORE="${KEYSTORE_DIRECTORY}/${LOCAL_CA_FILENAME}.keystore.p12"
 
 # PKCS#12 keystores should be tagged as binary to avoid node.js tries to convert encoding
 find "${KEYSTORE_DIRECTORY}" -name '*.p12' | xargs chtag -b
 
+ZOWE_APIM_VERIFY_CERTIFICATES=true
+
 if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" != "true" -a "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" != "true" ]; then
-  >&2 echo "!WARNING!: it's not recommended to turn both VERIFY_CERTIFICATES and NONSTRICT_VERIFY_CERTIFICATES off for security reasons."
+  >&2 echo "SECURITY WARNING: It's not recommended to turn both VERIFY_CERTIFICATES and "
+  >&2 echo "                  NONSTRICT_VERIFY_CERTIFICATES off for security reasons."
   >&2 echo
 fi
 
+# temp data sets and files
 tmp_dir=$(get_tmp_dir)
 rnd=$(echo $RANDOM)
 userid=$(echo "${USER:-${USERNAME:-${LOGNAME}}}" | tr [a-z] [A-Z])
 prefix=zowe-convert-for-k8s-$(echo ${rnd})-
 hlq=${userid}.K8S${rnd}
 k8s_temp_keystore="${tmp_dir}/${prefix}${KEY_ALIAS}.keystore.p12"
+
+echo "SECURITY WARNING: This script may generate information including sensitive private"
+echo "                  keys. Please make sure the content will not be left on any devices"
+echo "                  after the process is done."
+echo "                  During the process, this utility script may generate temporary"
+echo "                  files under ${tmp_dir}/${prefix}*."
+echo "                  Normally those files will be automatically deleted after the script"
+echo "                  exits. If the scipt exits with error, please double check if any of"
+echo "                  those files are left on the system and they MUST be manually"
+echo "                  deleted for security reason."
+echo
 
 if [ "${KEYSTORE_TYPE}" = "JCERACFKS" ]; then
   # export keyring to PKCS#12 format
@@ -571,13 +607,10 @@ NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
 ################################################################################
 # start official output
 echo "Please copy all output below, save them as a YAML file on your local computer,"
-echo "then apply it to your Kubernetes cluster."
+echo "then apply it to your Kubernetes cluster. After apply, you MUST delete and"
+echo "destroy the temporary file from your local computer."
 echo
 echo "  Example: kubectl apply -f /path/to/my/local-saved.yaml"
-echo
-echo "SECURITY WARNING: Below content includes sensitive private keys. After you apply"
-echo "                  these configurations to your Kubernetes cluster, the temporary"
-echo "                  file should be deleted and destroyed from your local computer."
 echo
 
 ################################################################################
