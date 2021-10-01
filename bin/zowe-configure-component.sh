@@ -149,7 +149,7 @@ install_app_framework_plugin(){
         log_message "- install Zowe App Framework plugin"
         cd "${component_path}"
 
-        appfw_plugin_path=$(get_full_path ${appfw_plugin_path})
+        appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
 
         if [ ! -r "${appfw_plugin_path}" ]; then
             log_message "  App Framework plugin directory ${appfw_plugin_path} is not accessible"
@@ -159,7 +159,7 @@ install_app_framework_plugin(){
             log_message "  App Framework plugin directory ${appfw_plugin_path} does not have pluginDefinition.json"
             break
         fi
-        appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" "identifier")
+        appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
         if [ -z "${plugin_id}" -o "${plugin_id}" = "null" ]; then
             log_message "  Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
             break

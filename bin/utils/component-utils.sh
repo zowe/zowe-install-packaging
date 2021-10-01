@@ -535,7 +535,7 @@ process_component_appfw_plugin() {
 
       # apply values if appfw_plugin_path has variables
       appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
-      appfw_plugin_path=$(get_full_path ${appfw_plugin_path})
+      appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
 
       if [ ! -r "${appfw_plugin_path}" ]; then
         >&2 echo "App Framework plugin directory ${appfw_plugin_path} is not accessible"
@@ -547,7 +547,7 @@ process_component_appfw_plugin() {
         all_succeed=false
         break
       fi
-      appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" "identifier")
+      appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
       if [ -z "${plugin_id}" -o "${plugin_id}" = "null" ]; then
         >&2 echo "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
         all_succeed=false
