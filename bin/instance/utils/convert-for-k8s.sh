@@ -487,7 +487,7 @@ LOCAL_CA_KEYSTORE="${KEYSTORE_DIRECTORY}/${LOCAL_CA_FILENAME}.keystore.p12"
 # PKCS#12 keystores should be tagged as binary to avoid node.js tries to convert encoding
 find "${KEYSTORE_DIRECTORY}" -name '*.p12' | xargs chtag -b
 
-ZOWE_APIM_VERIFY_CERTIFICATES=true
+# ZOWE_APIM_VERIFY_CERTIFICATES=true
 
 if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" != "true" -a "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" != "true" ]; then
   >&2 echo "SECURITY WARNING: It's not recommended to turn both VERIFY_CERTIFICATES and "
