@@ -160,7 +160,7 @@ install_app_framework_plugin(){
             break
         fi
         appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
-        if [ -z "${plugin_id}" -o "${plugin_id}" = "null" ]; then
+        if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
             log_message "  Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
             break
         fi

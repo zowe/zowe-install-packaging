@@ -548,7 +548,7 @@ process_component_appfw_plugin() {
         break
       fi
       appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
-      if [ -z "${plugin_id}" -o "${plugin_id}" = "null" ]; then
+      if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
         >&2 echo "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
         all_succeed=false
         break
