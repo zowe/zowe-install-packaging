@@ -359,8 +359,8 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (params.BUILD_KUBERNETES) {
           sh './containers/build/parse-manifest-to-deployment.sh'
           sh 'cd containers && zip -r zowe-containerization.zip kubernetes'
-          sh 'mv containers/kubernetes.zip .'
-          pipeline.uploadArtifacts([ 'kubernetes.zip' ])
+          sh 'mv containers/zowe-containerization.zip .'
+          pipeline.uploadArtifacts([ 'zowe-containerization.zip' ])
       }
     }
   )
