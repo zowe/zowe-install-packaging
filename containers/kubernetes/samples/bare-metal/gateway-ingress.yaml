@@ -15,16 +15,15 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 spec:
   rules:
-  # uncomment line 19&20 to fill in host, then comment out line 21
-  # - host: <fill in here>
-  #   http:
-  - http: #comment out this line if uncommenting line 19&20
-      paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: gateway-service
-              port:
-                number: 7554
-
+    # uncomment line 19&20 to fill in host, then comment out line 21
+    # - host: <fill in here>
+    #   http:
+    - http: #comment out this line if uncommenting line 19&20
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 7554
