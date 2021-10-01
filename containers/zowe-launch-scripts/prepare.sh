@@ -172,9 +172,9 @@ tar zxf zowe-config-converter-*.tgz -C "${BASE_DIR}/${WORK_DIR}/bin/utils"
 mv "${BASE_DIR}/${WORK_DIR}/bin/utils/package" "${BASE_DIR}/${WORK_DIR}/bin/utils/config-converter"
 rm zowe-config-converter-*.tgz
 echo "    - extract zowe-ncert ..."
-tar zxf zowe-ncert-*.tgz -C "${BASE_DIR}/${WORK_DIR}/bin/utils"
-mv "${BASE_DIR}/${WORK_DIR}/bin/utils/package" "${BASE_DIR}/${WORK_DIR}/bin/utils/ncert"
-rm zowe-ncert-*.tgz
+mkdir -p "${BASE_DIR}/${WORK_DIR}/bin/utils/ncert"
+tar xvf zowe-ncert-*.pax -C "${BASE_DIR}/${WORK_DIR}/bin/utils/ncert"
+rm zowe-ncert-*.pax
 
 ###############################
 # prepare zlux core
