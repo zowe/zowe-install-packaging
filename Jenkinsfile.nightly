@@ -94,18 +94,23 @@ node('zowe-jenkins-agent-dind-wdc') {
 
       // check artifactory for latest build with SMP/E and docker amd64 image
       try {
+        def buildNumberLatestStaging = Jenkins.instance.getItemByFullName('zowe-install-packaging/staging').lastSuccessfulBuild.number
+        echo "Last successful build on zowe-install-packaging/staging is: '${buildNumberLatestStaging}'"
+
         def smpeBuild = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
-          'build-name'   : ZOWE_BUILD_NAME
+          'build-name'   : ZOWE_BUILD_NAME,
+          'build-number' : ${buildNumberLatestStaging}
         ])
 
         def dockerAmd64Build = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
-          'build-name'   : ZOWE_BUILD_NAME
+          'build-name'   : ZOWE_BUILD_NAME,
+          'build-number' : ${buildNumberLatestStaging}
         ])
 
         // extract build information
-        def buildNumber = smpeBuild['build.number']
+        //def buildNumber = smpeBuild['build.number']
         def buildTimestamp = smpeBuild['build.timestamp']
         long buildTimestampInt = buildTimestamp as Long
         def currentTimestamp = sh(script: 'date +"%s"', returnStdout: true).trim()
@@ -126,11 +131,15 @@ node('zowe-jenkins-agent-dind-wdc') {
 
       echo "Checking last CLI build of \"${ZOWE_CLI_BUILD_NAME}\" ..."
 
+      def buildNumberLatestCLIBundle = Jenkins.instance.getItemByFullName('Zowe CLI Bundle/master').lastSuccessfulBuild.number
+      echo "Last successful build on Zowe CLI Bundle/master is: '${buildNumberLatestCLIBundle}'"
+
       // check artifactory for latest CLI build
       try {
         cliSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          'build-name'   : ZOWE_CLI_BUILD_NAME,
+          'build-number' : ${buildNumberLatestCLIBundle}
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -139,7 +148,8 @@ node('zowe-jenkins-agent-dind-wdc') {
       try {
         cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          'build-name'   : ZOWE_CLI_BUILD_NAME,
+          'build-number' : ${buildNumberLatestCLIBundle}
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -172,17 +182,19 @@ node('zowe-jenkins-agent-dind-wdc') {
         //   error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
         // }
 
-        def buildNumber = Jenkins.instance.getItemByFullName('zowe-install-packaging/staging').lastSuccessfulBuild.number
-        echo "LAST SUCCESSFUL BUILD ON STAGING IS: '${buildNumber}'"
+        def buildNumberLatestStaging = Jenkins.instance.getItemByFullName('zowe-install-packaging/staging').lastSuccessfulBuild.number
+        echo "Last successful build on zowe-install-packaging/staging is: '${buildNumberLatestStaging}'"
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
-          'build-name'   : ZOWE_BUILD_NAME
+          'build-name'   : ZOWE_BUILD_NAME,
+          'build-number' : ${buildNumberLatestStaging}
         ])
         sourceDockerAmd64BuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
-          'build-name'   : ZOWE_BUILD_NAME
+          'build-name'   : ZOWE_BUILD_NAME,
+          'build-number' : ${buildNumberLatestStaging}
         ])
         
       } else {
