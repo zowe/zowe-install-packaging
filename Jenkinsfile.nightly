@@ -100,13 +100,13 @@ node('zowe-jenkins-agent-dind-wdc') {
         def smpeBuild = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME,
-          'build-number' : ${buildNumberLatestStaging}
+          'build-number' : "${buildNumberLatestStaging}"
         ])
 
         def dockerAmd64Build = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
           'build-name'   : ZOWE_BUILD_NAME,
-          'build-number' : ${buildNumberLatestStaging}
+          'build-number' : "${buildNumberLatestStaging}"
         ])
 
         // extract build information
@@ -139,7 +139,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         cliSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME,
-          'build-number' : ${buildNumberLatestCLIBundle}
+          'build-number' : "${buildNumberLatestCLIBundle}"
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -149,7 +149,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-1*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME,
-          'build-number' : ${buildNumberLatestCLIBundle}
+          'build-number' : "${buildNumberLatestCLIBundle}"
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -189,12 +189,12 @@ node('zowe-jenkins-agent-dind-wdc') {
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
           'build-name'   : ZOWE_BUILD_NAME,
-          'build-number' : ${buildNumberLatestStaging}
+          'build-number' : "${buildNumberLatestStaging}"
         ])
         sourceDockerAmd64BuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
           'build-name'   : ZOWE_BUILD_NAME,
-          'build-number' : ${buildNumberLatestStaging}
+          'build-number' : "${buildNumberLatestStaging}"
         ])
         
       } else {
