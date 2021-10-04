@@ -500,6 +500,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   # convert to instance.env
   generate_instance_env_from_yaml_config convert-for-k8s
   . "${ZWELS_INSTANCE_ENV_DIR}/.instance-convert-for-k8s.env"
+  LOCAL_CA_KEYSTORE="${KEYSTORE_DIRECTORY}/${LOCAL_CA_FILENAME}.keystore.p12"
 else
   # validate KEYSTORE_DIRECTORY
   if [ -z "${KEYSTORE_DIRECTORY}" ]; then
@@ -608,6 +609,21 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.runtimeDirectory" "/home/zowe/runtime"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYSTORE_DIRECTORY" "/home/zowe/keystore"
 
+  iterator_index=0
+  frame_ancestors=
+  for host in $(echo "${NEW_ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
+    update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalDomains[${iterator_index}]" "${host}"
+    if [ -n "${frame_ancestors}" ]; then
+      frame_ancestors=${frame_ancestors},
+    fi
+    frame_ancestors="${frame_ancestors}${host}:*"
+    if [ "${iterator_index}" = "0" ]; then
+      ZOWE_EXTERNAL_HOST="${host}"
+      update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_EXTERNAL_HOST" "${ZOWE_EXTERNAL_HOST}"
+    fi
+    iterator_index=`expr $iterator_index + 1`
+  done
+
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.port" "7554"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.port" "7553"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.api-catalog.port" "7552"
@@ -623,20 +639,10 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" "https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.caching-service.storage.mode" ""
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-jes.frameAncestors" "\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.frameAncestors" "\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.frameAncestors" "\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-jes.frameAncestors" "${frame_ancestors}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.frameAncestors" "${frame_ancestors}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.frameAncestors" "${frame_ancestors}"
 
-  iterator_index=0
-  for host in $(echo "${NEW_ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
-    update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalDomains[${iterator_index}]" "${host}"
-    if [ "${iterator_index}" = "0" ]; then
-      update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_EXTERNAL_HOST" "${host}"
-    fi
-    iterator_index=`expr $iterator_index + 1`
-  done
-
-  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZOS_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZOS_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_host" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_https_port" "${ZOWE_ZSS_SERVER_PORT}"
@@ -655,7 +661,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.keystore.password" "${KEYSTORE_PASSWORD}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.keystore.file" "/home/zowe/keystore/keystore.p12"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.keystore.type" "${KEYSTORE_TYPE}"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.trustStore.file" "/home/zowe/keystore/truststore.p1"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.trustStore.file" "/home/zowe/keystore/truststore.p12"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.trustStore.certificateAuthorities" ""
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.key" "/home/zowe/keystore/keystore.key"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.certificate" "/home/zowe/keystore/keystore.cert"
