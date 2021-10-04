@@ -172,7 +172,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         //   error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
         // }
 
-        def buildNumber = Jenkins.instance.getItem('/zowe-install-packaging/staging').lastSuccessfulBuild.number
+        def buildNumber = Jenkins.instance.getItemByFullName('zowe-install-packaging/staging').lastSuccessfulBuild.number
         echo "LAST SUCCESSFUL BUILD ON STAGING IS: '${buildNumber}'"
 
         // load build info
