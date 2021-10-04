@@ -136,13 +136,23 @@ prepare_workspace_dir() {
 }
 
 ########################################################
-# Extra preparisons for running in container
+# Extra preparations for running in container
 # - link component runtime under zowe <runtime>/components
 # - run zowe-configure-component.sh to handle `commands.configureInstance`
 prepare_running_in_container() {
   # gracefully shutdown all processes
   print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_instance_env_directory:${LINENO}" "register SIGTERM handler for graceful shutdown"
   trap gracefully_shutdown SIGTERM
+
+  if [ -z "${NODE_HOME}" ]; then
+    export NODE_HOME=$(detect_node_home)
+  fi
+
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  fi
 
   if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
     rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
@@ -407,6 +417,12 @@ if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
   ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
 fi
 
+# extra preparations for running in container 
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  prepare_running_in_container
+fi
+
 # init <instance>/.env directory and load environment variables
 prepare_instance_env_directory
 # global validations
@@ -414,11 +430,6 @@ prepare_instance_env_directory
 global_validate
 # prepare <instance>/workspace directory
 prepare_workspace_dir
-# extra preparisons for running in container 
-# this is running in containers
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
-  prepare_running_in_container
-fi
 
 # FIXME: do we need to do similar if the user is using zowe.yaml?
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
