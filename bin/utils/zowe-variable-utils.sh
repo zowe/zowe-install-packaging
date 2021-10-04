@@ -173,14 +173,24 @@ update_zowe_instance_variable(){
   fi
 }
 
-update_zowe_yaml_variable(){                                                                            
-  variable_name=$1
-  variable_value=$2
-
+update_yaml_variable() {
   utils_dir="${ROOT_DIR}/bin/utils"
   config_converter="${utils_dir}/config-converter/src/cli.js"
   
-  node "${config_converter}" yaml update "${INSTANCE_DIR}/zowe.yaml" "${variable_name}" "${variable_value}"
+  node "${config_converter}" yaml update "${1}" "${2}" "${3}"
 
-  ensure_zowe_yaml_encoding "${INSTANCE_DIR}/zowe.yaml"
+  ensure_zowe_yaml_encoding "${1}"
+}
+
+delete_yaml_variable() {
+  utils_dir="${ROOT_DIR}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  
+  node "${config_converter}" yaml delete "${1}" "${2}"
+
+  ensure_zowe_yaml_encoding "${1}"
+}
+
+update_zowe_yaml_variable() {
+  update_yaml_variable "${INSTANCE_DIR}/zowe.yaml" "${1}" "${2}"
 }

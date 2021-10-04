@@ -27,8 +27,6 @@
 # -a    Optional. Certificate alias of local certificate authority.
 #       Default is localca.
 # -v    Optional. Enable verbose mode to display more debugging information.
-#
-# FIXME: to support zowe.yaml
 ################################################################################
 
 ################################################################################
@@ -91,7 +89,7 @@ is_certificate_generated_by_zowe() {
 export_certificate_from_keyring_to_pkcs12() {
   owner=$1
   label=$2
-  tmp_hlq=$3
+  temp_hlq=$3
   uss_target=$4
   password=$5
   cert_only=$6
@@ -107,14 +105,14 @@ export_certificate_from_keyring_to_pkcs12() {
   fi
 
   # delete hlq if it exists and ignore errors
-  tsocmd DELETE "'${hlq}'" 2>/dev/null 1>/dev/null || true
+  tsocmd DELETE "'${temp_hlq}'" 2>/dev/null 1>/dev/null || true
 
   if [ "${cert_only}" != "true" ]; then
     # export cert to p12 format
     if [ "${owner}" = "CERTAUTH" ]; then
-      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${temp_hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
     else
-      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${temp_hlq}') FORMAT(PKCS12DER) PASSWORD('${KEYSTORE_PASSWORD}')" 2>&1)
     fi
     # IRRD147I EXPORT in PKCS12 format requires a certificate with an associated non-ICSF private key.  The request is not processed.
     no_private_key=$(echo "${result}" | grep IRRD147I)
@@ -129,12 +127,12 @@ export_certificate_from_keyring_to_pkcs12() {
     fi
     # export cert to PEM format
     if [ "${owner}" = "CERTAUTH" ]; then
-      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${hlq}') FORMAT(CERTB64)" 2>&1)
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) CERTAUTH DSN('${temp_hlq}') FORMAT(CERTB64)" 2>&1)
     else
-      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${hlq}') FORMAT(CERTB64)" 2>&1)
+      result=$(tsocmd "RACDCERT EXPORT(LABEL('${label}')) ID(${owner}) DSN('${temp_hlq}') FORMAT(CERTB64)" 2>&1)
     fi
     rm -f "${uss_target}-tmp"
-    cp "//'${hlq}'" "${uss_target}-tmp"
+    cp "//'${temp_hlq}'" "${uss_target}-tmp"
     rm -f "${uss_target}-850"
     iconv -f IBM-1047 -t IBM-850 "${uss_target}-tmp" > "${uss_target}-850"
     # if [ -n "${VERBOSE_MODE}" ]; then
@@ -153,7 +151,7 @@ export_certificate_from_keyring_to_pkcs12() {
     rm -f "${uss_target}-850"
   else
     rm -f "${uss_target}-tmp"
-    cp -B "//'${hlq}'" "${uss_target}-tmp"
+    cp -B "//'${temp_hlq}'" "${uss_target}-tmp"
     # if [ -n "${VERBOSE_MODE}" ]; then
     #   keytool -list -v -keystore "${uss_target}-tmp" -storepass "${password}" -storetype PKCS12
     # fi
@@ -173,7 +171,7 @@ export_certificate_from_keyring_to_pkcs12() {
   fi
 
   # delete hlq if it exists and ignore errors
-  tsocmd DELETE "'${hlq}'" 2>/dev/null 1>/dev/null || true
+  tsocmd DELETE "'${temp_hlq}'" 2>/dev/null 1>/dev/null || true
 }
 export_certificate_from_keyring_to_pem() {
   label=$1
@@ -206,15 +204,15 @@ export_private_key_from_keyring_to_pem() {
   fi
 }
 export_certificates_from_keyring() {
-  hlq=$1
-  uss_prefix=$2
+  temp_hlq=$1
+  temp_dir=$2
 
   utils_dir="${ROOT_DIR}/bin/utils"
   zct="${utils_dir}/ncert/src/cli.js"
   dummy_cert=convert-for-k8s-dummy
 
   certs=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -u PERSONAL --label-only)
-  keystore=${uss_prefix}keystore.p12
+  keystore=${temp_dir}/keystore.p12
   rm -f "${keystore}"
   rm -f "${keystore}-cert"
   rm -f "${keystore}-key"
@@ -232,7 +230,7 @@ export_certificates_from_keyring() {
   while read -r cert; do
     if [ -n "${cert}" ]; then
       owner=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -l "${cert}" --owner-only)
-      export_certificate_from_keyring_to_pkcs12 "${owner}" "${cert}" "${hlq}" "${keystore}" "${KEYSTORE_PASSWORD}"
+      export_certificate_from_keyring_to_pkcs12 "${owner}" "${cert}" "${temp_hlq}" "${keystore}" "${KEYSTORE_PASSWORD}"
 
       if [ "${cert}" = "${KEY_ALIAS}" ]; then
         export_certificate_from_keyring_to_pem "${cert}" "${keystore}-cert"
@@ -257,7 +255,7 @@ EOF
   fi
 
   cas=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -u CERTAUTH --label-only)
-  truststore=${uss_prefix}truststore.p12
+  truststore=${temp_dir}/truststore.p12
   rm -f "${truststore}"
   rm -f "${truststore}-cert"
   rm -f "${truststore}-cert-tmp"
@@ -276,19 +274,19 @@ EOF
     if [ -n "${ca}" ]; then
       owner=$(node "${zct}" keyring info "${KEYRING_OWNER}" "${KEYRING_NAME}" -l "${ca}" --owner-only)
       # always put it into keystore
-      export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${keystore}" "${KEYSTORE_PASSWORD}" "true"
+      export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${temp_hlq}" "${keystore}" "${KEYSTORE_PASSWORD}" "true"
 
       found=$(item_in_list "${EXTERNAL_CERTIFICATE_AUTHORITIES}" "${ca}")
       if [ "${found}" = "true" ]; then
         # this is Zowe CA, will try to export both cert and private key
-        export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${truststore}" "${KEYSTORE_PASSWORD}"
+        export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${temp_hlq}" "${truststore}" "${KEYSTORE_PASSWORD}"
 
         export_certificate_from_keyring_to_pem "${ca}" "${truststore}-cert-tmp"
         cat "${truststore}-cert-tmp" >> "${truststore}-cert"
         echo >> "${truststore}-cert"
       else
         # Not Zowe CA, we only export cert without private key
-        export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${hlq}" "${truststore}" "${KEYSTORE_PASSWORD}" "true"
+        export_certificate_from_keyring_to_pkcs12 "${owner}" "${ca}" "${temp_hlq}" "${truststore}" "${KEYSTORE_PASSWORD}" "true"
       fi
     fi
   done <<EOF
@@ -355,7 +353,7 @@ generate_k8s_certificate() {
   zct="${utils_dir}/ncert/src/cli.js"
 
   alt_names=
-  for host in $(echo "${ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
+  for host in $(echo "${NEW_ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
     alt_names="${alt_names} --alt ${host}"
   done
   alt_names="${alt_names} --alt localhost.localdomain"
@@ -422,17 +420,21 @@ ZWE_KUBERNETES_CLUSTERNAME=cluster.local
 LOCAL_CA_PASSWORD=local_ca_password
 LOCAL_CA_ALIAS=localca
 LOCAL_CA_FILENAME="local_ca/localca"
+NEW_ZWE_EXTERNAL_HOSTS=localhost
+VERBOSE_MODE=
 # will be defined later
 LOCAL_CA_KEYSTORE=
-ZWE_EXTERNAL_HOSTS=localhost
-VERBOSE_MODE=
+ZWELS_CONFIG_LOAD_METHOD=
+# variables
+rnd=$(echo $RANDOM)
+userid=$(echo "${USER:-${USERNAME:-${LOGNAME}}}" | tr [a-z] [A-Z])
 
 # command line parameters
 OPTIND=1
 while getopts "c:x:n:u:p:a:v" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
-    x) ZWE_EXTERNAL_HOSTS=${OPTARG};;
+    x) NEW_ZWE_EXTERNAL_HOSTS=${OPTARG};;
     n) ZWE_KUBERNETES_NAMESPACE=${OPTARG};;
     u) ZWE_KUBERNETES_CLUSTERNAME=${OPTARG};;
     p) LOCAL_CA_PASSWORD=${OPTARG};;
@@ -447,21 +449,42 @@ done
 shift $(($OPTIND-1))
 
 # validate INSTANCE_DIR
-if [ ! -f "${INSTANCE_DIR}/instance.env" ]; then
-  >&2 echo "Error: instance directory doesn't have instance.env."
+if [ -f "${INSTANCE_DIR}/instance.env" ]; then
+  ZWELS_CONFIG_LOAD_METHOD="instance.env"
+elif [ -f "${INSTANCE_DIR}/zowe.yaml" ]; then
+  ZWELS_CONFIG_LOAD_METHOD="zowe.yaml"
+else
+  >&2 echo "Error: instance directory doesn't have instance.env or zowe.yaml."
   exit 1
 fi
 
 # source utility scripts
-[ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
+. ${INSTANCE_DIR}/bin/internal/utils.sh
 read_essential_vars
-[ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
-
 # validate ROOT_DIR
 if [ -z "${ROOT_DIR}" ]; then
   >&2 echo "Error: cannot determine runtime root directory."
   exit 1
 fi
+. ${ROOT_DIR}/bin/utils/utils.sh
+
+# temp data sets and files
+temp_dir="$(get_tmp_dir)/zowe-convert-for-k8s-$(echo ${rnd})"
+rm -fr "${temp_dir}"
+mkdir -p "${temp_dir}"
+k8s_temp_keystore="${temp_dir}/${KEY_ALIAS}.keystore.p12"
+temp_hlq=${userid}.K8S${rnd}
+
+echo "SECURITY WARNING: This script may generate information including sensitive private"
+echo "                  keys. Please make sure the content will not be left on any devices"
+echo "                  after the process is done."
+echo "                  During the process, this utility script may generate temporary"
+echo "                  files under ${temp_dir}/."
+echo "                  Normally those files will be automatically deleted after the script"
+echo "                  exits. If the scipt exits with error, please double check if any of"
+echo "                  those files are left on the system and they MUST be manually"
+echo "                  deleted for security reason."
+echo
 
 # we need node and keytool for following commands
 ensure_node_is_on_path 1>/dev/null 2>&1
@@ -470,22 +493,39 @@ ensure_java_is_on_path 1>/dev/null 2>&1
 # import common environment variables to make sure node runs properly
 . "${ROOT_DIR}/bin/internal/zowe-set-env.sh"
 
-# validate KEYSTORE_DIRECTORY
-if [ -z "${KEYSTORE_DIRECTORY}" ]; then
-  >&2 echo "Error: cannot determine keystore directory. Please supply with parameter of this script."
-  exit 1
-fi
-if [ ! -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
-  >&2 echo "Error: keystore directory doesn't have zowe-certificates.env."
-  exit 1
+if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
+  ZWELS_INSTANCE_ENV_DIR="${temp_dir}/.env"
+  mkdir -p "${ZWELS_INSTANCE_ENV_DIR}"
+  cp "${INSTANCE_DIR}/zowe.yaml" "${temp_dir}/zowe.yaml"
+  # convert to instance.env
+  generate_instance_env_from_yaml_config convert-for-k8s
+  . "${ZWELS_INSTANCE_ENV_DIR}/.instance-convert-for-k8s.env"
+else
+  # validate KEYSTORE_DIRECTORY
+  if [ -z "${KEYSTORE_DIRECTORY}" ]; then
+    >&2 echo "Error: cannot determine keystore directory. Please supply with parameter of this script."
+    exit 1
+  fi
+  if [ ! -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
+    >&2 echo "Error: keystore directory doesn't have zowe-certificates.env."
+    exit 1
+  fi
+
+  # import keystore configs
+  . "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
+  LOCAL_CA_KEYSTORE="${KEYSTORE_DIRECTORY}/${LOCAL_CA_FILENAME}.keystore.p12"
 fi
 
-# import keystore configs
-. "${KEYSTORE_DIRECTORY}/zowe-certificates.env"
-LOCAL_CA_KEYSTORE="${KEYSTORE_DIRECTORY}/${LOCAL_CA_FILENAME}.keystore.p12"
-
-# PKCS#12 keystores should be tagged as binary to avoid node.js tries to convert encoding
-find "${KEYSTORE_DIRECTORY}" -name '*.p12' | xargs chtag -b
+# make sure p12 file are tagged as binary to avoid node.js tries to convert encoding
+if [ -n "${KEYSTORE_DIRECTORY}" -a -d "${KEYSTORE_DIRECTORY}" ]; then
+  find "${KEYSTORE_DIRECTORY}" -name '*.p12' 2>/dev/null | xargs chtag -b
+fi
+if [ -f "${KEYSTORE}" ]; then
+  chtag -b "${KEYSTORE}"
+fi
+if [ -f "${TRUSTSTORE}" ]; then
+  chtag -b "${TRUSTSTORE}"
+fi
 
 # ZOWE_APIM_VERIFY_CERTIFICATES=true
 
@@ -495,31 +535,13 @@ if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" != "true" -a "${ZOWE_APIM_NONSTRICT_VERI
   >&2 echo
 fi
 
-# temp data sets and files
-tmp_dir=$(get_tmp_dir)
-rnd=$(echo $RANDOM)
-userid=$(echo "${USER:-${USERNAME:-${LOGNAME}}}" | tr [a-z] [A-Z])
-prefix=zowe-convert-for-k8s-$(echo ${rnd})-
-hlq=${userid}.K8S${rnd}
-k8s_temp_keystore="${tmp_dir}/${prefix}${KEY_ALIAS}.keystore.p12"
-
-echo "SECURITY WARNING: This script may generate information including sensitive private"
-echo "                  keys. Please make sure the content will not be left on any devices"
-echo "                  after the process is done."
-echo "                  During the process, this utility script may generate temporary"
-echo "                  files under ${tmp_dir}/${prefix}*."
-echo "                  Normally those files will be automatically deleted after the script"
-echo "                  exits. If the scipt exits with error, please double check if any of"
-echo "                  those files are left on the system and they MUST be manually"
-echo "                  deleted for security reason."
-echo
-
 if [ "${KEYSTORE_TYPE}" = "JCERACFKS" ]; then
   # export keyring to PKCS#12 format
   echo "You are using z/OS Keyring. All certificates used by Zowe will be exported."
-  export_certificates_from_keyring "${hlq}" "${tmp_dir}/${prefix}"
+  export_certificates_from_keyring "${temp_hlq}" "${temp_dir}"
   echo
 fi
+
 if [ "$(is_certificate_generated_by_zowe)" != "true" ]; then
   echo "It seems you are using certificates NOT generated by Zowe."
   echo
@@ -528,7 +550,9 @@ if [ "$(is_certificate_generated_by_zowe)" != "true" ]; then
     echo "To make certificates working in Kubernetes, the certificate you are using should have"
     echo "these domains defined in Subject Alt Name (SAN):"
     echo
-    echo "- ${ZWE_EXTERNAL_HOSTS}"
+    for host in $(echo "${NEW_ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
+      echo "- ${host}"
+    done
     echo "- *.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
     echo "- *.discovery-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
     echo "- *.gateway-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
@@ -572,37 +596,105 @@ else
   fi
 fi
 
-ORIGINAL_ZOWE_EXPLORER_HOST=$(. "${INSTANCE_DIR}/instance.env" && echo $ZOWE_EXPLORER_HOST)
-NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
-  grep -v -E "(ZWE_EXTERNAL_HOSTS=|ZOWE_EXTERNAL_HOST=|ZOWE_ZOS_HOST=|ZOWE_IP_ADDRESS=|ZWE_LAUNCH_COMPONENTS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | \
-  sed -e "/ZOWE_EXPLORER_HOST=.*/a\\
-  ZWE_EXTERNAL_HOSTS=${ZWE_EXTERNAL_HOSTS}" | \
-  sed -e "/ZWE_EXTERNAL_HOSTS=.*/a\\
-  ZOWE_EXTERNAL_HOST=\$(echo \"\${ZWE_EXTERNAL_HOSTS}\" | awk -F, '{print \$1}' | tr -d '[[:space:]]')" | \
-  sed -e "/ZOWE_EXPLORER_HOST=.*/a\\
-  ZOWE_ZOS_HOST=${ORIGINAL_ZOWE_EXPLORER_HOST}" | \
-  grep -v -E "ZOWE_EXPLORER_HOST=" | \
-  sed -e "s#ROOT_DIR=.\+\$#ROOT_DIR=/home/zowe/runtime#" | \
-  sed -e "s#KEYSTORE_DIRECTORY=.\+\$#KEYSTORE_DIRECTORY=/home/zowe/keystore#" | \
-  sed -e "s#CATALOG_PORT=.\+\$#CATALOG_PORT=7552#" | \
-  sed -e "s#DISCOVERY_PORT=.\+\$#DISCOVERY_PORT=7553#" | \
-  sed -e "s#GATEWAY_PORT=.\+\$#GATEWAY_PORT=7554#" | \
-  sed -e "s#ZWE_CACHING_SERVICE_PORT=.\+\$#ZWE_CACHING_SERVICE_PORT=7555#" | \
-  sed -e "s#JOBS_API_PORT=.\+\$#JOBS_API_PORT=8545#" | \
-  sed -e "s#FILES_API_PORT=.\+\$#FILES_API_PORT=8547#" | \
-  sed -e "s#JES_EXPLORER_UI_PORT=.\+\$#JES_EXPLORER_UI_PORT=8546#" | \
-  sed -e "s#MVS_EXPLORER_UI_PORT=.\+\$#MVS_EXPLORER_UI_PORT=8548#" | \
-  sed -e "s#USS_EXPLORER_UI_PORT=.\+\$#USS_EXPLORER_UI_PORT=8550#" | \
-  sed -e "s#ZOWE_ZLUX_SERVER_HTTPS_PORT=.\+\$#ZOWE_ZLUX_SERVER_HTTPS_PORT=8544#" | \
-  sed -e "s#ZWE_DISCOVERY_SERVICES_LIST=.\+\$#ZWE_DISCOVERY_SERVICES_REPLICAS=1#" | \
-  sed -e "s#APIML_GATEWAY_EXTERNAL_MAPPER=.\+\$#APIML_GATEWAY_EXTERNAL_MAPPER=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map#" | \
-  sed -e "s#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=.\+\$#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth#" | \
-  sed -e "s#ZOWE_EXPLORER_FRAME_ANCESTORS=.\+\$#ZOWE_EXPLORER_FRAME_ANCESTORS=\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*#" | \
-  sed -e "s#ZWE_CACHING_SERVICE_PERSISTENT=.\+\$#ZWE_CACHING_SERVICE_PERSISTENT=#" | \
-  sed -e "\$a\\
-  \\
-  ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
-  ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}")
+ORIGINAL_ZOWE_EXPLORER_HOST=$ZOWE_EXPLORER_HOST
+if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "java.home"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "node.home"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.SKIP_NODE"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZOS_HOST"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_EXTERNAL_HOST"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWE_EXTERNAL_HOSTS"
+
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.runtimeDirectory" "/home/zowe/runtime"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYSTORE_DIRECTORY" "/home/zowe/keystore"
+
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.port" "7554"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.port" "7553"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.api-catalog.port" "7552"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.caching-service.port" "7555"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.app-server.port" "8544"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.jobs-api.port" "8545"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.files-api.port" "8547"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-jes.port" "8546"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.port" "8548"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.port" "8550"
+
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" "https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" "https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.caching-service.storage.mode" ""
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-jes.frameAncestors" "\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.frameAncestors" "\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.frameAncestors" "\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*"
+
+  iterator_index=0
+  for host in $(echo "${NEW_ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
+    update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalDomains[${iterator_index}]" "${host}"
+    if [ "${iterator_index}" = "0" ]; then
+      update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_EXTERNAL_HOST" "${host}"
+    fi
+    iterator_index=`expr $iterator_index + 1`
+  done
+
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZOS_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZOS_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_host" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_https_port" "${ZOWE_ZSS_SERVER_PORT}"
+
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.keystore.alias" "${KEY_ALIAS}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.keystore.password" "${KEYSTORE_PASSWORD}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.keystore.file" "/home/zowe/keystore/keystore.p12"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.keystore.type" "${KEYSTORE_TYPE}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.trustStore.file" "/home/zowe/keystore/truststore.p1"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.trustStore.certificateAuthorities" ""
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.pem.key" "/home/zowe/keystore/keystore.key"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.pem.certificate" "/home/zowe/keystore/keystore.cert"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.pem.certificateAuthority" "/home/zowe/keystore/localca.cert"
+
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.keystore.alias" "${KEY_ALIAS}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.keystore.password" "${KEYSTORE_PASSWORD}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.keystore.file" "/home/zowe/keystore/keystore.p12"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.keystore.type" "${KEYSTORE_TYPE}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.trustStore.file" "/home/zowe/keystore/truststore.p1"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.trustStore.certificateAuthorities" ""
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.key" "/home/zowe/keystore/keystore.key"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.certificate" "/home/zowe/keystore/keystore.cert"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.certificateAuthority" "/home/zowe/keystore/localca.cert"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_OWNER"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_NAME"
+  delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.LOCAL_CA"
+else
+  NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
+    grep -v -E "(ZWE_EXTERNAL_HOSTS=|ZOWE_EXTERNAL_HOST=|ZOWE_ZOS_HOST=|ZOWE_IP_ADDRESS=|ZWE_LAUNCH_COMPONENTS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | \
+    sed -e "/ZOWE_EXPLORER_HOST=.*/a\\
+    ZWE_EXTERNAL_HOSTS=${NEW_ZWE_EXTERNAL_HOSTS}" | \
+    sed -e "/ZWE_EXTERNAL_HOSTS=.*/a\\
+    ZOWE_EXTERNAL_HOST=\$(echo \"\${ZWE_EXTERNAL_HOSTS}\" | awk -F, '{print \$1}' | tr -d '[[:space:]]')" | \
+    sed -e "/ZOWE_EXPLORER_HOST=.*/a\\
+    ZOWE_ZOS_HOST=${ORIGINAL_ZOWE_EXPLORER_HOST}" | \
+    grep -v -E "ZOWE_EXPLORER_HOST=" | \
+    sed -e "s#ROOT_DIR=.\+\$#ROOT_DIR=/home/zowe/runtime#" | \
+    sed -e "s#KEYSTORE_DIRECTORY=.\+\$#KEYSTORE_DIRECTORY=/home/zowe/keystore#" | \
+    sed -e "s#CATALOG_PORT=.\+\$#CATALOG_PORT=7552#" | \
+    sed -e "s#DISCOVERY_PORT=.\+\$#DISCOVERY_PORT=7553#" | \
+    sed -e "s#GATEWAY_PORT=.\+\$#GATEWAY_PORT=7554#" | \
+    sed -e "s#ZWE_CACHING_SERVICE_PORT=.\+\$#ZWE_CACHING_SERVICE_PORT=7555#" | \
+    sed -e "s#JOBS_API_PORT=.\+\$#JOBS_API_PORT=8545#" | \
+    sed -e "s#FILES_API_PORT=.\+\$#FILES_API_PORT=8547#" | \
+    sed -e "s#JES_EXPLORER_UI_PORT=.\+\$#JES_EXPLORER_UI_PORT=8546#" | \
+    sed -e "s#MVS_EXPLORER_UI_PORT=.\+\$#MVS_EXPLORER_UI_PORT=8548#" | \
+    sed -e "s#USS_EXPLORER_UI_PORT=.\+\$#USS_EXPLORER_UI_PORT=8550#" | \
+    sed -e "s#ZOWE_ZLUX_SERVER_HTTPS_PORT=.\+\$#ZOWE_ZLUX_SERVER_HTTPS_PORT=8544#" | \
+    sed -e "s#ZWE_DISCOVERY_SERVICES_LIST=.\+\$#ZWE_DISCOVERY_SERVICES_REPLICAS=1#" | \
+    sed -e "s#APIML_GATEWAY_EXTERNAL_MAPPER=.\+\$#APIML_GATEWAY_EXTERNAL_MAPPER=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map#" | \
+    sed -e "s#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=.\+\$#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth#" | \
+    sed -e "s#ZOWE_EXPLORER_FRAME_ANCESTORS=.\+\$#ZOWE_EXPLORER_FRAME_ANCESTORS=\${ZOWE_EXTERNAL_HOST}:*,\${ZOWE_EXPLORER_HOST}:*,\${ZOWE_IP_ADDRESS}:*#" | \
+    sed -e "s#ZWE_CACHING_SERVICE_PERSISTENT=.\+\$#ZWE_CACHING_SERVICE_PERSISTENT=#" | \
+    sed -e "\$a\\
+    \\
+    ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
+    ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}")
+fi
 
 ################################################################################
 # start official output
@@ -615,7 +707,24 @@ echo
 
 ################################################################################
 # Prepare configs
-cat << EOF
+if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
+  cat << EOF
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: zowe-config
+  namespace: ${ZWE_KUBERNETES_NAMESPACE}
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+data:
+  zowe.yaml: |
+$(cat "${temp_dir}/zowe.yaml" | indent - "    ")
+EOF
+else
+  cat << EOF
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -631,7 +740,7 @@ data:
 $(echo "${NEW_INSATNCE_ENV_CONTENT}" | indent - "    ")
 EOF
 
-cat << EOF
+  cat << EOF
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -660,6 +769,7 @@ data:
     PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
     PKCS11_TOKEN_LABEL="${PKCS11_TOKEN_LABEL}"
 EOF
+fi
 
 cat << EOF
 ---
@@ -685,5 +795,5 @@ $(indent "${KEYSTORE_CERTIFICATE}" "    ")
 $(indent "${KEYSTORE_CERTIFICATE_AUTHORITY}" "    ")
 EOF
 
-# remove temporary keystore
-rm -f "${tmp_dir}/${prefix}"*
+# remove temporary directory
+rm -fr "${temp_dir}"
