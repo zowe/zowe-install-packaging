@@ -168,23 +168,24 @@ node('zowe-jenkins-agent-dind-wdc') {
         echo "Building new driver ..."
 
         // run build
-        // def build_result = build(
-        //   job: '/zowe-install-packaging/staging',
-        //   parameters: [
-        //     string(name: 'BUILD_SMPE', value: 'SMPE'),
-        //     booleanParam(name: 'BUILD_DOCKER', value: true),
-        //     booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
-        //   ],
-        //   propagate: false
-        // )
-        // echo "Build result: ${build_result.result}"
-        // if (build_result.result != 'SUCCESS') {
-        //   error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
-        // }
+        def build_result = build(
+          job: '/zowe-install-packaging/staging',
+          parameters: [
+            string(name: 'BUILD_SMPE', value: 'SMPE'),
+            booleanParam(name: 'BUILD_DOCKER', value: true),
+            booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
+          ],
+          propagate: false
+        )
+        echo "Build result: ${build_result.result}"
+        if (build_result.result != 'SUCCESS') {
+          error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
+        }
 
         def buildNumberLatestStaging = Jenkins.instance.getItemByFullName('zowe-install-packaging/staging').lastSuccessfulBuild.number
         echo "Last successful build on zowe-install-packaging/staging is: '${buildNumberLatestStaging}'"
 
+        // those two blocks below must pass before proceeding as the full build (smpe and docker) should be made in prior steps
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-smpe-*.zip",
