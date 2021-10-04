@@ -624,6 +624,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
     iterator_index=`expr $iterator_index + 1`
   done
 
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalPort" "7554"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.port" "7554"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.port" "7553"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.api-catalog.port" "7552"
