@@ -158,19 +158,21 @@ node('zowe-jenkins-agent-dind-wdc') {
         echo "Building new driver ..."
 
         // run build
-        def build_result = build(
-          job: '/zowe-install-packaging/staging',
-          parameters: [
-            string(name: 'BUILD_SMPE', value: 'SMPE'),
-            booleanParam(name: 'BUILD_DOCKER', value: true),
-            booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
-          ],
-          propagate: false
-        )
-        echo "Build result: ${build_result.result}"
-        if (build_result.result != 'SUCCESS') {
-          error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
-        }
+        // def build_result = build(
+        //   job: '/zowe-install-packaging/staging',
+        //   parameters: [
+        //     string(name: 'BUILD_SMPE', value: 'SMPE'),
+        //     booleanParam(name: 'BUILD_DOCKER', value: true),
+        //     booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
+        //   ],
+        //   propagate: false
+        // )
+        // echo "Build result: ${build_result.result}"
+        // if (build_result.result != 'SUCCESS') {
+        //   error "Failed to build a new Zowe driver, check failure details at ${build_result.absoluteUrl}"
+        // }
+
+        def buildNumber = Jenkins.instance.getItem('/zowe-install-packaging/staging').lastSuccessfulBuild.number
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
