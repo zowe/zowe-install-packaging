@@ -173,6 +173,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         // }
 
         def buildNumber = Jenkins.instance.getItem('/zowe-install-packaging/staging').lastSuccessfulBuild.number
+        echo "LAST SUCCESSFUL BUILD ON STAGING IS: '${buildNumber}'"
 
         // load build info
         sourceSmpeBuildInfo = pipeline.artifactory.getArtifact([
