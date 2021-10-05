@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.25.0
+    app.kubernetes.io/version: "1.25.0"
     app.kubernetes.io/component: caching
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
@@ -43,8 +43,8 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-            - secret:
-                name: zowe-certificates-secret
+              - secret:
+                  name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
@@ -82,7 +82,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
