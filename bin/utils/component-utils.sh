@@ -821,22 +821,23 @@ prepare_container_runtime_environments() {
   export LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
 
   # why we need to set this variable for HA?
-  export EUREKA_INSTANCE_HOMEPAGEURL=
-  export ZWED_node_mediationLayer_cachingService_enabled=
-  export ZWED_node_mediationLayer_enabled=
-  export ZWED_node_mediationLayer_server_gatewayHostname=
-  export ZWED_node_mediationLayer_server_gatewayPort=
-  export ZWED_node_mediationLayer_server_hostname=
-  export ZWED_node_mediationLayer_server_port=
-  export ZWE_INTERNAL_HOST=
-  export ZWE_REFERRER_HOSTS=
-  unset EUREKA_INSTANCE_HOMEPAGEURL
-  unset ZWED_node_mediationLayer_cachingService_enabled
-  unset ZWED_node_mediationLayer_enabled
-  unset ZWED_node_mediationLayer_server_gatewayHostname
-  unset ZWED_node_mediationLayer_server_gatewayPort
-  unset ZWED_node_mediationLayer_server_hostname
-  unset ZWED_node_mediationLayer_server_port
-  unset ZWE_INTERNAL_HOST
-  unset ZWE_REFERRER_HOSTS
+  export EUREKA_INSTANCE_HOMEPAGEURL=https://${GATEWAY_HOST}:${GATEWAY_PORT}/
+  # export EUREKA_INSTANCE_HOMEPAGEURL=
+  # export ZWED_node_mediationLayer_cachingService_enabled=
+  # export ZWED_node_mediationLayer_enabled=
+  # export ZWED_node_mediationLayer_server_gatewayHostname=
+  # export ZWED_node_mediationLayer_server_gatewayPort=
+  # export ZWED_node_mediationLayer_server_hostname=
+  # export ZWED_node_mediationLayer_server_port=
+  # export ZWE_INTERNAL_HOST=
+  # export ZWE_REFERRER_HOSTS=
+  # unset EUREKA_INSTANCE_HOMEPAGEURL
+  # unset ZWED_node_mediationLayer_cachingService_enabled
+  # unset ZWED_node_mediationLayer_enabled
+  # unset ZWED_node_mediationLayer_server_gatewayHostname
+  # unset ZWED_node_mediationLayer_server_gatewayPort
+  # unset ZWED_node_mediationLayer_server_hostname
+  # unset ZWED_node_mediationLayer_server_port
+  # unset ZWE_INTERNAL_HOST
+  # unset ZWE_REFERRER_HOSTS
 }
