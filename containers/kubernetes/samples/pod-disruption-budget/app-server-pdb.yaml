@@ -17,4 +17,3 @@ spec:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
       app.kubernetes.io/component: app-server
-

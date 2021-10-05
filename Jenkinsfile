@@ -39,6 +39,11 @@ node('zowe-jenkins-agent-dind-wdc') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_KUBERNETES',
+      description: 'If we want to build zowe kubernetes.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -339,6 +344,23 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             pipeline.uploadArtifacts([ 'server-bundle.amd64.tar' ])
           }
         }      
+      }
+    }
+  )
+
+  pipeline.createStage(
+    name: "Build Kubernetes",
+    timeout: [ time: 10, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_KUBERNETES
+    },
+    stage : {
+      if (params.BUILD_KUBERNETES) {
+          sh './containers/build/parse-manifest-to-deployment.sh'
+          sh 'cd containers && zip -r zowe-containerization.zip kubernetes'
+          sh 'mv containers/zowe-containerization.zip .'
+          pipeline.uploadArtifacts([ 'zowe-containerization.zip' ])
       }
     }
   )

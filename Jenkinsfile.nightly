@@ -163,6 +163,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           parameters: [
             string(name: 'BUILD_SMPE', value: 'SMPE'),
             booleanParam(name: 'BUILD_DOCKER', value: true),
+            booleanParam(name: 'BUILD_KUBERNETES', value: true),
             booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
           ],
           propagate: false
