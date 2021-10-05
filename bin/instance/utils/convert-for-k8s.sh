@@ -667,6 +667,16 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.key" "/home/zowe/keystore/keystore.key"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.certificate" "/home/zowe/keystore/keystore.cert"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.internalCertificate.pem.certificateAuthority" "/home/zowe/keystore/localca.cert"
+
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.ssl.verifySslCertificatesOfServices" "${ZOWE_APIM_VERIFY_CERTIFICATES}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.ssl.nonStrictVerifySslCertificatesOfServices" "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.apiml.security.ssl.verifySslCertificatesOfServices" "${ZOWE_APIM_VERIFY_CERTIFICATES}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.apiml.security.ssl.nonStrictVerifySslCertificatesOfServices" "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.api-catalog.apiml.security.ssl.verifySslCertificatesOfServices" "${ZOWE_APIM_VERIFY_CERTIFICATES}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.api-catalog.apiml.security.ssl.nonStrictVerifySslCertificatesOfServices" "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.caching-service.apiml.security.ssl.verifySslCertificatesOfServices" "${ZOWE_APIM_VERIFY_CERTIFICATES}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.caching-service.apiml.security.ssl.nonStrictVerifySslCertificatesOfServices" "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
+
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_OWNER"
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_NAME"
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.LOCAL_CA"
