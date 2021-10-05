@@ -794,6 +794,8 @@ prepare_container_runtime_environments() {
   fi
   # in kubernetes, replace it with pod dns name
   export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_POD_NAMESPACE}.pod.${ZWE_POD_CLUSTERNAME}"
+  # this should be same as ZOWE_EXPLORER_HOST, app-server is using this variable
+  export ZWE_INTERNAL_HOST=${ZOWE_EXPLORER_HOST}
   # kubernetes gateway service internal dns name
   export GATEWAY_HOST=gateway-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}
 
@@ -820,24 +822,16 @@ prepare_container_runtime_environments() {
   export ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
   export LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
 
-  # why we need to set this variable for HA?
-  export EUREKA_INSTANCE_HOMEPAGEURL=https://${GATEWAY_HOST}:${GATEWAY_PORT}/
-  # export EUREKA_INSTANCE_HOMEPAGEURL=
-  # export ZWED_node_mediationLayer_cachingService_enabled=
-  # export ZWED_node_mediationLayer_enabled=
-  # export ZWED_node_mediationLayer_server_gatewayHostname=
-  # export ZWED_node_mediationLayer_server_gatewayPort=
-  # export ZWED_node_mediationLayer_server_hostname=
-  # export ZWED_node_mediationLayer_server_port=
-  # export ZWE_INTERNAL_HOST=
-  # export ZWE_REFERRER_HOSTS=
-  # unset EUREKA_INSTANCE_HOMEPAGEURL
-  # unset ZWED_node_mediationLayer_cachingService_enabled
-  # unset ZWED_node_mediationLayer_enabled
-  # unset ZWED_node_mediationLayer_server_gatewayHostname
-  # unset ZWED_node_mediationLayer_server_gatewayPort
-  # unset ZWED_node_mediationLayer_server_hostname
-  # unset ZWED_node_mediationLayer_server_port
-  # unset ZWE_INTERNAL_HOST
-  # unset ZWE_REFERRER_HOSTS
+  # FIXME: below variables are different from HA configuration, we should consolidate and make them consistent
+  # in HA setup, this is used to point where is gateway accessible from internal
+  # export EUREKA_INSTANCE_HOMEPAGEURL=https://${GATEWAY_HOST}:${GATEWAY_PORT}/
+  # apiml can handle this correctly now
+  unset EUREKA_INSTANCE_HOMEPAGEURL
+  # app-server can handle these variable correctly now, unset them
+  unset ZWED_node_mediationLayer_server_gatewayHostname
+  unset ZWED_node_mediationLayer_server_gatewayPort
+  unset ZWED_node_mediationLayer_server_hostname
+  unset ZWED_node_mediationLayer_server_port
+  unset ZWED_node_mediationLayer_enabled
+  unset ZWED_node_mediationLayer_cachingService_enabled
 }
