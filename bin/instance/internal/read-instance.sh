@@ -40,6 +40,12 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   # sanitize instance id
   ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
+  if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+    # some variables like GATEWAY_HOST, ZOWE_EXPLORER_HOST, etc maybe needed by other variables
+    # so we prepare before sourcing others
+    prepare_container_runtime_environments
+  fi
+
   # Source appropriate instance.env variables based on HA instance ID and component.
   if [ "${ZWELS_START_COMPONENT_ID}" != "" -a -f "${ZWELS_INSTANCE_ENV_DIR}/${ZWELS_START_COMPONENT_ID}/.instance-${ZWELS_HA_INSTANCE_ID}.env" ]; then
     message="loading ${ZWELS_INSTANCE_ENV_DIR}/${ZWELS_START_COMPONENT_ID}/.instance-${ZWELS_HA_INSTANCE_ID}.env"
@@ -61,5 +67,10 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
       message="compatible version of <instance>/.env/.instance-${ZWELS_HA_INSTANCE_ID}.env does not exist"
     fi
     exit_with_error "${message}" "read-instance.sh:${LINENO}"
+  fi
+
+  if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+    # these values cannot be modified by other logics, so execute these again
+    prepare_container_runtime_environments
   fi
 fi

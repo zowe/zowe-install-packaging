@@ -86,19 +86,10 @@ fi
 # sanitize instance id
 ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
-  prepare_container_runtime_environments
-fi
-
 # read the instance environment variables to make sure they exists
 . ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" -a -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
   . ${INSTANCE_DIR}/bin/internal/read-keystore.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
-fi
-
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
-  # these values cannot be modified by other logics
-  prepare_container_runtime_environments
 fi
 
 # this variable is used by Gateway to fetch Zowe version and build information
