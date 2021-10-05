@@ -819,4 +819,7 @@ prepare_container_runtime_environments() {
   fi
   export ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
   export LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+
+  # why we need to set this variable?
+  export EUREKA_INSTANCE_HOMEPAGEURL=
 }
