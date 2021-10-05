@@ -286,6 +286,10 @@ node('zowe-jenkins-agent-dind-wdc') {
     name          : "Download Zowe",
     isSkippable   : true,
     stage         : {
+
+      def buildNumberLatestStaging = Jenkins.instance.getItemByFullName('zowe-install-packaging/staging').lastSuccessfulBuild.number
+      def buildNumberLatestCLIBundle = Jenkins.instance.getItemByFullName('Zowe CLI Bundle/master').lastSuccessfulBuild.number
+
       pipeline.artifactory.download(
         specContent : """
 {
@@ -293,12 +297,12 @@ node('zowe-jenkins-agent-dind-wdc') {
     "pattern": "${params.ZOWE_ARTIFACTORY_PATTERN}",
     "target": ".tmp/zowe/",
     "flat": "true",
-    "build": "${params.ZOWE_ARTIFACTORY_BUILD}/LATEST"
+    "build": "${params.ZOWE_ARTIFACTORY_BUILD}/${buildNumberLatestStaging}"
   }, {
     "pattern": "${params.ZOWE_CLI_ARTIFACTORY_PATTERN}",
     "target": ".tmp/cli/",
     "flat": "true",
-    "build": "${params.ZOWE_CLI_ARTIFACTORY_BUILD}/LATEST",
+    "build": "${params.ZOWE_CLI_ARTIFACTORY_BUILD}/${buildNumberLatestCLIBundle}",
     "explode": "true"
   }]
 }
