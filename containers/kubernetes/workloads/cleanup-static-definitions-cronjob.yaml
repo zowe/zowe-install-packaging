@@ -33,10 +33,10 @@ spec:
             - name: zowe-keystore
               projected:
                 sources:
-                - configMap:
-                    name: zowe-certificates-cm
-                - secret:
-                    name: zowe-certificates-secret
+                  - configMap:
+                      name: zowe-certificates-cm
+                  - secret:
+                      name: zowe-certificates-secret
             - name: zowe-workspace
               persistentVolumeClaim:
                 claimName: zowe-workspace-pvc
