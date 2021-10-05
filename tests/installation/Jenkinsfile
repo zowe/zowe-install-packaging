@@ -293,12 +293,12 @@ node('zowe-jenkins-agent-dind-wdc') {
     "pattern": "${params.ZOWE_ARTIFACTORY_PATTERN}",
     "target": ".tmp/zowe/",
     "flat": "true",
-    "build": "${params.ZOWE_ARTIFACTORY_BUILD}"
+    "build": "${params.ZOWE_ARTIFACTORY_BUILD}/LATEST"
   }, {
     "pattern": "${params.ZOWE_CLI_ARTIFACTORY_PATTERN}",
     "target": ".tmp/cli/",
     "flat": "true",
-    "build": "${params.ZOWE_CLI_ARTIFACTORY_BUILD}",
+    "build": "${params.ZOWE_CLI_ARTIFACTORY_BUILD}/LATEST",
     "explode": "true"
   }]
 }
