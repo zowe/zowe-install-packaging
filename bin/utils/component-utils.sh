@@ -764,3 +764,59 @@ list_all_components() {
   # done
   
 }
+
+# prepare all environment variables used in containerization
+# these variables shouldn't be modified
+prepare_container_runtime_environments() {
+  if [ -z "${NODE_HOME}" ]; then
+    export NODE_HOME=$(detect_node_home)
+  fi
+
+  # write tmp to here so we can enable readOnlyRootFilesystem
+  if [ -d "${INSTANCE_DIR}/tmp" ]; then
+    export TMPDIR=${INSTANCE_DIR}/tmp
+    export TMP=${INSTANCE_DIR}/tmp
+  fi
+  # these 2 important variables will be overwritten from what it may have been configured
+  export ZOWE_EXPLORER_HOST=$(get_sysname)
+  export ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
+  if [ -z "${ZWE_KUBERNETES_NAMESPACE}" -a -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    # try to detect ZWE_KUBERNETES_NAMESPACE, this requires automountServiceAccountToken to be true
+    ZWE_KUBERNETES_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null)
+  fi
+  if [ -z "${ZWE_KUBERNETES_NAMESPACE}" ]; then
+    # fall back to default value
+    export ZWE_KUBERNETES_NAMESPACE=zowe
+  fi
+  if [ -z "${ZWE_KUBERNETES_CLUSTERNAME}" ]; then
+    # fall back to default value
+    export ZWE_KUBERNETES_CLUSTERNAME=cluster.local
+  fi
+  # in kubernetes, replace it with pod dns name
+  export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_KUBERNETES_NAMESPACE}.pod.${ZWE_KUBERNETES_CLUSTERNAME}"
+  # kubernetes gateway service internal dns name
+  export GATEWAY_HOST=gateway-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}
+
+  # overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
+  ZWE_DISCOVERY_SERVICES_REPLICAS=$(echo "${ZWE_DISCOVERY_SERVICES_REPLICAS}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]')
+  if [ -z "${ZWE_DISCOVERY_SERVICES_REPLICAS}" ]; then
+    export ZWE_DISCOVERY_SERVICES_REPLICAS=1
+  fi
+  discovery_index=0
+  export ZWE_DISCOVERY_SERVICES_LIST=
+  while [ $discovery_index -lt ${ZWE_DISCOVERY_SERVICES_REPLICAS} ]; do
+    if [ -n "${ZWE_DISCOVERY_SERVICES_LIST}" ]; then
+      ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST},"
+    fi
+    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}:${DISCOVERY_PORT}/eureka/"
+    discovery_index=`expr $discovery_index + 1`
+  done
+
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  fi
+  export ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+  export LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+}

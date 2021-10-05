@@ -141,7 +141,7 @@ prepare_workspace_dir() {
 # - run zowe-configure-component.sh to handle `commands.configureInstance`
 prepare_running_in_container() {
   # gracefully shutdown all processes
-  print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_instance_env_directory:${LINENO}" "register SIGTERM handler for graceful shutdown"
+  print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_running_in_container:${LINENO}" "register SIGTERM handler for graceful shutdown"
   trap gracefully_shutdown SIGTERM
 
   if [ -z "${NODE_HOME}" ]; then
