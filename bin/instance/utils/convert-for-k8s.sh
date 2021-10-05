@@ -359,10 +359,10 @@ generate_k8s_certificate() {
   alt_names="${alt_names} --alt localhost.localdomain"
   alt_names="${alt_names} --alt localhost"
   alt_names="${alt_names} --alt 127.0.0.1"
-  alt_names="${alt_names} --alt '*.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}'"
-  alt_names="${alt_names} --alt '*.${ZWE_KUBERNETES_NAMESPACE}.pod.${ZWE_KUBERNETES_CLUSTERNAME}'"
-  alt_names="${alt_names} --alt '*.discovery-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}'"
-  alt_names="${alt_names} --alt '*.gateway-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}'"
+  alt_names="${alt_names} --alt '*.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}'"
+  alt_names="${alt_names} --alt '*.${ZWE_POD_NAMESPACE}.pod.${ZWE_POD_CLUSTERNAME}'"
+  alt_names="${alt_names} --alt '*.discovery-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}'"
+  alt_names="${alt_names} --alt '*.gateway-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}'"
 
   new_k8s_keystore="${k8s_temp_keystore}-k8s"
 
@@ -415,8 +415,8 @@ generate_k8s_certificate() {
 ################################################################################
 # Constants and variables
 INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
-ZWE_KUBERNETES_NAMESPACE=zowe
-ZWE_KUBERNETES_CLUSTERNAME=cluster.local
+ZWE_POD_NAMESPACE=zowe
+ZWE_POD_CLUSTERNAME=cluster.local
 LOCAL_CA_PASSWORD=local_ca_password
 LOCAL_CA_ALIAS=localca
 LOCAL_CA_FILENAME="local_ca/localca"
@@ -435,8 +435,8 @@ while getopts "c:x:n:u:p:a:v" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     x) NEW_ZWE_EXTERNAL_HOSTS=${OPTARG};;
-    n) ZWE_KUBERNETES_NAMESPACE=${OPTARG};;
-    u) ZWE_KUBERNETES_CLUSTERNAME=${OPTARG};;
+    n) ZWE_POD_NAMESPACE=${OPTARG};;
+    u) ZWE_POD_CLUSTERNAME=${OPTARG};;
     p) LOCAL_CA_PASSWORD=${OPTARG};;
     a) LOCAL_CA_ALIAS=${OPTARG};;
     v) VERBOSE_MODE="-v";;
@@ -554,10 +554,10 @@ if [ "$(is_certificate_generated_by_zowe)" != "true" ]; then
     for host in $(echo "${NEW_ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
       echo "- ${host}"
     done
-    echo "- *.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
-    echo "- *.discovery-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
-    echo "- *.gateway-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}"
-    echo "- *.${ZWE_KUBERNETES_NAMESPACE}.pod.${ZWE_KUBERNETES_CLUSTERNAME}"
+    echo "- *.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}"
+    echo "- *.discovery-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}"
+    echo "- *.gateway-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}"
+    echo "- *.${ZWE_POD_NAMESPACE}.pod.${ZWE_POD_CLUSTERNAME}"
     echo
     echo "Otherwise you may see warnings/errors related to certificate validation."
     echo
@@ -721,7 +721,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: zowe-config
-  namespace: ${ZWE_KUBERNETES_NAMESPACE}
+  namespace: ${ZWE_POD_NAMESPACE}
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
@@ -737,7 +737,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: zowe-config
-  namespace: ${ZWE_KUBERNETES_NAMESPACE}
+  namespace: ${ZWE_POD_NAMESPACE}
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
@@ -753,7 +753,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: zowe-certificates-cm
-  namespace: ${ZWE_KUBERNETES_NAMESPACE}
+  namespace: ${ZWE_POD_NAMESPACE}
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
@@ -784,7 +784,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: zowe-certificates-secret
-  namespace: ${ZWE_KUBERNETES_NAMESPACE}
+  namespace: ${ZWE_POD_NAMESPACE}
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe

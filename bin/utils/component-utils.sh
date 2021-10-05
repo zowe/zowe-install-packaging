@@ -780,22 +780,22 @@ prepare_container_runtime_environments() {
   # these 2 important variables will be overwritten from what it may have been configured
   export ZOWE_EXPLORER_HOST=$(get_sysname)
   export ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
-  if [ -z "${ZWE_KUBERNETES_NAMESPACE}" -a -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
-    # try to detect ZWE_KUBERNETES_NAMESPACE, this requires automountServiceAccountToken to be true
-    ZWE_KUBERNETES_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null)
+  if [ -z "${ZWE_POD_NAMESPACE}" -a -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    # try to detect ZWE_POD_NAMESPACE, this requires automountServiceAccountToken to be true
+    ZWE_POD_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null)
   fi
-  if [ -z "${ZWE_KUBERNETES_NAMESPACE}" ]; then
+  if [ -z "${ZWE_POD_NAMESPACE}" ]; then
     # fall back to default value
-    export ZWE_KUBERNETES_NAMESPACE=zowe
+    export ZWE_POD_NAMESPACE=zowe
   fi
-  if [ -z "${ZWE_KUBERNETES_CLUSTERNAME}" ]; then
+  if [ -z "${ZWE_POD_CLUSTERNAME}" ]; then
     # fall back to default value
-    export ZWE_KUBERNETES_CLUSTERNAME=cluster.local
+    export ZWE_POD_CLUSTERNAME=cluster.local
   fi
   # in kubernetes, replace it with pod dns name
-  export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_KUBERNETES_NAMESPACE}.pod.${ZWE_KUBERNETES_CLUSTERNAME}"
+  export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_POD_NAMESPACE}.pod.${ZWE_POD_CLUSTERNAME}"
   # kubernetes gateway service internal dns name
-  export GATEWAY_HOST=gateway-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}
+  export GATEWAY_HOST=gateway-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}
 
   # overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
   ZWE_DISCOVERY_SERVICES_REPLICAS=$(echo "${ZWE_DISCOVERY_SERVICES_REPLICAS}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]')
@@ -808,7 +808,7 @@ prepare_container_runtime_environments() {
     if [ -n "${ZWE_DISCOVERY_SERVICES_LIST}" ]; then
       ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST},"
     fi
-    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.${ZWE_KUBERNETES_NAMESPACE}.svc.${ZWE_KUBERNETES_CLUSTERNAME}:${DISCOVERY_PORT}/eureka/"
+    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}:${DISCOVERY_PORT}/eureka/"
     discovery_index=`expr $discovery_index + 1`
   done
 
