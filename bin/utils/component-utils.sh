@@ -824,9 +824,7 @@ prepare_container_runtime_environments() {
 
   # FIXME: below variables are different from HA configuration, we should consolidate and make them consistent
   # in HA setup, this is used to point where is gateway accessible from internal
-  # export EUREKA_INSTANCE_HOMEPAGEURL=https://${GATEWAY_HOST}:${GATEWAY_PORT}/
-  # apiml can handle this correctly now
-  unset EUREKA_INSTANCE_HOMEPAGEURL
+  export EUREKA_INSTANCE_HOMEPAGEURL=https://${GATEWAY_HOST}:${GATEWAY_PORT}/
   # app-server can handle these variable correctly now, unset them
   unset ZWED_node_mediationLayer_server_gatewayHostname
   unset ZWED_node_mediationLayer_server_gatewayPort

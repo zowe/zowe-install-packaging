@@ -30,23 +30,16 @@ check_instance() {
 
 ################################################################################
 # Constants and variables
-INSTANCE_DIR=$(cd $(dirname $0)/../../;pwd)
+ROOT_DIR=/home/zowe/runtime
+INSTANCE_DIR=/home/zowe/instance
+WORKSPACE_DIR=${INSTANCE_DIR}/workspace
+STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 # dns resolution cool down minutes
 POD_DNS_COOL_DOWN=15
 
 # import instance configuration
 . ${INSTANCE_DIR}/bin/internal/utils.sh
-read_essential_vars
-# validate ROOT_DIR
-if [ -z "${ROOT_DIR}" ]; then
-  echo "Error: cannot determine runtime root directory."
-  exit 1
-fi
 . ${ROOT_DIR}/bin/utils/utils.sh
-
-INSTANCE_DIR=/home/zowe/instance
-WORKSPACE_DIR=${INSTANCE_DIR}/workspace
-STATIC_DEF_CONFIG_DIR=${WORKSPACE_DIR}/api-mediation/api-defs
 
 # check static definitions
 modified=
