@@ -7,6 +7,8 @@
 
 ### 1. Kubernetes Cluster
 
+Zowe containerization solition is compatible with Kubernetes v1.19+ or OpenShift v4.6+.
+
 There are many ways to prepare a Kubernetes cluster based on your requirements.
 
 For development purpose, you can setup a Kubernetes cluster on your local computer by:
@@ -455,6 +457,13 @@ files-api-hpa      Deployment/files-api      8%/70%    1         3         1    
 gateway-hpa        Deployment/gateway        20%/60%   1         5         1          9m59s
 jobs-api-hpa       Deployment/jobs-api       8%/70%    1         3         1          9m59s
 ```
+
+### 5. Kubernetes v1.21+
+
+If you have Kubernetes v1.21+, there are few changes recommended based on [Deprecated API Migration Guide](https://kubernetes.io/docs/reference/using-api/deprecation-guide/).
+
+- Kind `CronJob`: change `apiVersion: batch/v1beta1` to `apiVersion: batch/v1` on `workloads/zowe-yaml/cleanup-static-definitions-cronjob.yaml` and `workloads/instance-env/cleanup-static-definitions-cronjob.yaml`. `apiVersion: batch/v1beta1` will stop working on Kubernetes v1.25.
+- Kind `PodDisruptionBudget`: change `apiVersion: policy/v1beta1` to `apiVersion: policy/v1` on all files in `samples/pod-disruption-budget/`. `apiVersion: policy/v1beta1` will stop working on Kubernetes v1.25.
 
 <br />
 
