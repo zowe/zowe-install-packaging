@@ -70,18 +70,29 @@ global_validate() {
   # Validate keystore directory accessible
   validate_directory_is_accessible "${KEYSTORE_DIRECTORY}"
 
-  # ZOWE_PREFIX shouldn't be too long
-  validate_zowe_prefix 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+    # ZOWE_PREFIX shouldn't be too long
+    validate_zowe_prefix 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+  fi
 
-  # currently node is always required
-  # otherwise we should check if these services are starting:
-  # - explorer-mvs, explorer-jes, explorer-uss
-  # - app-server, zss
-  validate_node_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+  if [ ! -f "${INSTANCE_DIR}/.init-for-container" ]; then
+    # only do these check when it's not running in container
 
-  # validate java for some core components
-  if [[ ${LAUNCH_COMPONENTS} == *"gateway"* || ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"api-catalog"* || ${LAUNCH_COMPONENTS} == *"caching-service"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
-    validate_java_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+    # currently node is always required
+    # otherwise we should check if these services are starting:
+    # - explorer-mvs, explorer-jes, explorer-uss
+    # - app-server, zss
+    validate_node_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+
+    # validate java for some core components
+    if [[ ${LAUNCH_COMPONENTS} == *"gateway"* || ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"api-catalog"* || ${LAUNCH_COMPONENTS} == *"caching-service"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
+      validate_java_home 2>&1 | print_formatted_info "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" -
+    fi
+  else
+    if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" -o "${ZOWE_CONTAINER_COMPONENT_ID}" = "null" ]; then
+      print_formatted_error "ZWELS" "prepare-instance.sh,global_validate:${LINENO}" "Cannot find name from the component image manifest file"
+      let "ERRORS_FOUND=${ERRORS_FOUND}+1"
+    fi
   fi
 
   # validate z/OSMF for some core components
@@ -106,11 +117,12 @@ prepare_workspace_dir() {
   print_formatted_info "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "prepare workspace directory ..."
 
   mkdir -p ${WORKSPACE_DIR}
+
   # Make accessible to group so owning user can edit?
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
   if [ "$?" != "0" ]; then
-    print_formatted_error "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
-    print_formatted_error "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
+    print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
+    print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
   fi
 
   # Copy manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
@@ -121,6 +133,38 @@ prepare_workspace_dir() {
     # create static definition directory
     mkdir -p ${STATIC_DEF_CONFIG_DIR}
   fi
+}
+
+########################################################
+# Extra preparations for running in container
+# - link component runtime under zowe <runtime>/components
+# - run zowe-configure-component.sh to handle `commands.configureInstance`
+prepare_running_in_container() {
+  # gracefully shutdown all processes
+  print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_running_in_container:${LINENO}" "register SIGTERM handler for graceful shutdown"
+  trap gracefully_shutdown SIGTERM
+
+  if [ -z "${NODE_HOME}" ]; then
+    export NODE_HOME=$(detect_node_home)
+  fi
+
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  fi
+
+  if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
+  fi
+  # we have hardcoded path for component runtime directory
+  ln -sfn /component "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
+
+  ${ROOT_DIR}/bin/zowe-configure-component.sh \
+    --component-name "${ZOWE_CONTAINER_COMPONENT_ID}" \
+    --instance-dir "${INSTANCE_DIR}" \
+    --target-dir "${ROOT_DIR}/components" \
+    --core
 }
 
 ########################################################
@@ -159,7 +203,7 @@ validate_components() {
         fi
         let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
       fi
-      if [ "$(is_on_zos)" = "false" ]; then
+      if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
         zos_deps=$(read_component_manifest "${component_dir}" ".dependencies.zos" 2>/dev/null)
         if [ -n "${zos_deps}" ]; then
           print_formatted_warn "ZWELS" "prepare-instance.sh,validate_components:${LINENO}" "- ${component_id} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation"
@@ -224,6 +268,25 @@ configure_components() {
 
       print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "- configure ${component_id}"
 
+      # check configure script
+      preconfigure_script=$(read_component_manifest "${component_dir}" ".commands.preConfigure" 2>/dev/null)
+      if [ "${preconfigure_script}" = "null" ]; then
+        preconfigure_script=
+      fi
+      if [ -x "${preconfigure_script}" ]; then
+        print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
+        # execute configure step and snapshot environment
+        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${preconfigure_script} ; rc=$? ; return $rc)
+        retval=$?
+        if [ -n "${result}" ]; then
+          if [ "${retval}" = "0" ]; then
+            print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+          else
+            print_formatted_error "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+          fi
+        fi
+      fi
+
       # default build-in behaviors
       # - apiml static definitions
       result=$(process_component_apiml_static_definitions "${component_dir}" 2>&1)
@@ -268,7 +331,7 @@ configure_components() {
       if [ -x "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
-        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${configure_script} ; rc=$? ; export -p | grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|_=)' > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env" ; return $rc)
+        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -312,6 +375,10 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
+# overwrite ZOWE_ROOT_DIR with correct value anyway
+export ZOWE_ROOT_DIR="${ROOT_DIR}"
+# this is runtime, this value should be empty
+export INSTALL_DIR=
 
 # source utility scripts
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
@@ -332,18 +399,34 @@ export ZWELS_HA_INSTANCE_ID
 
 # prepare some environment variables we always need
 . ${ROOT_DIR}/bin/internal/zowe-set-env.sh
+
+# write tmp to here so we can enable readOnlyRootFilesystem
+if [ -f "${INSTANCE_DIR}/.init-for-container" -a -d "${INSTANCE_DIR}/tmp" ]; then
+  export TMPDIR=${INSTANCE_DIR}/tmp
+  export TMP=${INSTANCE_DIR}/tmp
+fi
+
 # display starting information
+print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "Zowe version: v$(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')"
+print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "build and hash: $(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'number') ($(shell_read_json_config ${ROOT_DIR}/manifest.json 'build' 'commitHash'))"
 print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "starting Zowe instance ${ZWELS_HA_INSTANCE_ID} from ${INSTANCE_DIR} ..."
 print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "use configuration defined in ${ZWELS_CONFIG_LOAD_METHOD}"
 
 # Fix node.js piles up in IPC message queue
-if [ "$(is_on_zos)" = "true" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
   ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
+fi
+
+# extra preparations for running in container 
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  prepare_running_in_container
 fi
 
 # init <instance>/.env directory and load environment variables
 prepare_instance_env_directory
 # global validations
+# no validation for running in container
 global_validate
 # prepare <instance>/workspace directory
 prepare_workspace_dir
@@ -352,7 +435,10 @@ prepare_workspace_dir
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then
   store_config_archive
 fi
-validate_components
+# no validation for running in container
+if [ ! -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  validate_components
+fi
 configure_components
 
 ########################################################

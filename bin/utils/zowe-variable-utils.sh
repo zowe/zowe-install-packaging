@@ -71,6 +71,30 @@ function_exists() {
   fi
 }
 
+###############################
+# if a string has any env variables, replace them with values
+parse_string_vars() {
+  eval echo "${1}"
+}
+
+###############################
+# get all environment variable exports line by line
+get_environment_exports() {
+  export -p | \
+    grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)' | \
+    grep -v -E '^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)'
+}
+
+###############################
+# get all environment variable exports line by line
+get_environments() {
+  export -p | \
+    grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)' | \
+    grep -v -E '^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)' | \
+    sed -e 's#^export ##' | \
+    sed -e 's#^declare -x ##'
+}
+
 # ZOWE_PREFIX + instance - should be <=6 char long and exist.
 # TODO - any lower bound (other than 0)?
 # Requires ZOWE_PREFIX to be set as a shell variable
@@ -149,14 +173,94 @@ update_zowe_instance_variable(){
   fi
 }
 
-update_zowe_yaml_variable(){                                                                            
-  variable_name=$1
-  variable_value=$2
-
+update_yaml_variable() {
   utils_dir="${ROOT_DIR}/bin/utils"
   config_converter="${utils_dir}/config-converter/src/cli.js"
   
-  node "${config_converter}" yaml update "${INSTANCE_DIR}/zowe.yaml" "${variable_name}" "${variable_value}"
+  node "${config_converter}" yaml update "${1}" "${2}" "${3}"
 
-  ensure_zowe_yaml_encoding "${INSTANCE_DIR}/zowe.yaml"
+  ensure_zowe_yaml_encoding "${1}"
+}
+
+delete_yaml_variable() {
+  utils_dir="${ROOT_DIR}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  
+  node "${config_converter}" yaml delete "${1}" "${2}"
+
+  ensure_zowe_yaml_encoding "${1}"
+}
+
+update_zowe_yaml_variable() {
+  update_yaml_variable "${INSTANCE_DIR}/zowe.yaml" "${1}" "${2}"
+}
+
+# prepare all environment variables used in containerization
+# these variables shouldn't be modified
+prepare_container_runtime_environments() {
+  if [ -z "${NODE_HOME}" ]; then
+    export NODE_HOME=$(detect_node_home)
+  fi
+
+  # write tmp to here so we can enable readOnlyRootFilesystem
+  if [ -d "${INSTANCE_DIR}/tmp" ]; then
+    export TMPDIR=${INSTANCE_DIR}/tmp
+    export TMP=${INSTANCE_DIR}/tmp
+  fi
+  # these 2 important variables will be overwritten from what it may have been configured
+  export ZOWE_EXPLORER_HOST=$(get_sysname)
+  export ZOWE_IP_ADDRESS=$(get_ipaddress "${ZOWE_EXPLORER_HOST}")
+  if [ -z "${ZWE_POD_NAMESPACE}" -a -f /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    # try to detect ZWE_POD_NAMESPACE, this requires automountServiceAccountToken to be true
+    ZWE_POD_NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null)
+  fi
+  if [ -z "${ZWE_POD_NAMESPACE}" ]; then
+    # fall back to default value
+    export ZWE_POD_NAMESPACE=zowe
+  fi
+  if [ -z "${ZWE_POD_CLUSTERNAME}" ]; then
+    # fall back to default value
+    export ZWE_POD_CLUSTERNAME=cluster.local
+  fi
+  # in kubernetes, replace it with pod dns name
+  export ZOWE_EXPLORER_HOST="$(echo "${ZOWE_IP_ADDRESS}" | sed -e 's#\.#-#g').${ZWE_POD_NAMESPACE}.pod.${ZWE_POD_CLUSTERNAME}"
+  # this should be same as ZOWE_EXPLORER_HOST, app-server is using this variable
+  export ZWE_INTERNAL_HOST=${ZOWE_EXPLORER_HOST}
+  # kubernetes gateway service internal dns name
+  export GATEWAY_HOST=gateway-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}
+
+  # overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
+  ZWE_DISCOVERY_SERVICES_REPLICAS=$(echo "${ZWE_DISCOVERY_SERVICES_REPLICAS}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]')
+  if [ -z "${ZWE_DISCOVERY_SERVICES_REPLICAS}" ]; then
+    export ZWE_DISCOVERY_SERVICES_REPLICAS=1
+  fi
+  discovery_index=0
+  export ZWE_DISCOVERY_SERVICES_LIST=
+  while [ $discovery_index -lt ${ZWE_DISCOVERY_SERVICES_REPLICAS} ]; do
+    if [ -n "${ZWE_DISCOVERY_SERVICES_LIST}" ]; then
+      ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST},"
+    fi
+    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}:${DISCOVERY_PORT}/eureka/"
+    discovery_index=`expr $discovery_index + 1`
+  done
+
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  fi
+  export ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+  export LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+
+  # FIXME: below variables are different from HA configuration, we should consolidate and make them consistent
+  # in HA setup, this is used to point where is gateway accessible from internal
+  # export EUREKA_INSTANCE_HOMEPAGEURL=https://${GATEWAY_HOST}:${GATEWAY_PORT}/
+  unset EUREKA_INSTANCE_HOMEPAGEURL
+  # app-server can handle these variable correctly now, unset them
+  unset ZWED_node_mediationLayer_server_gatewayHostname
+  unset ZWED_node_mediationLayer_server_gatewayPort
+  unset ZWED_node_mediationLayer_server_hostname
+  unset ZWED_node_mediationLayer_server_port
+  unset ZWED_node_mediationLayer_enabled
+  unset ZWED_node_mediationLayer_cachingService_enabled
 }

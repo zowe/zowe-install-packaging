@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: gateway
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: apiml
+    app.kubernetes.io/managed-by: manual
+spec:
+  to:
+    kind: Service
+    name: gateway-service
+  port:
+    targetPort: 7554
+  wildcardPolicy: None

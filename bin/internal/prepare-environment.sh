@@ -52,6 +52,11 @@ if [[ -z ${INSTANCE_DIR} ]]; then
   echo "INSTANCE_DIR is not defined. You can either pass the value with -c parameter or define it as global environment variable." >&2
   exit 1
 fi
+if [ "$(pwd 2>&1)" = "" ]; then
+  # switch to instance/bin directory
+  # this should solve issues caused by ZWESVUSR home directory doesn't exist
+  cd "${INSTANCE_DIR}/bin"
+fi
 
 # find runtime directory if it's not defined
 if [ -z "${ROOT_DIR}" ]; then
@@ -131,7 +136,7 @@ fi
 
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
-if [ `uname` != "OS/390" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" != "true" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
   # to avoid potential retries on starting caching-service, do not start caching-service
   LAUNCH_COMPONENTS=$(echo "${LAUNCH_COMPONENTS}" | sed -e 's#caching-service##' | sed -e 's#,,#,#')
 fi
@@ -156,8 +161,17 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi
+if [ -z "${NODE_HOME}" ]; then
+  NODE_HOME=$(detect_node_home)
+fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
+fi
+
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # these values cannot be modified by other logics
+  prepare_container_runtime_environments
 fi
 
 # turn off automatic export

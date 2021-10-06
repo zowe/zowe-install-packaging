@@ -1,0 +1,7 @@
+# temporary context
+tmp/
+# temporary context for each Dockerfile
+*/*/zowe
+# build results
+ubuntu/
+ubi/

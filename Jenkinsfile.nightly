@@ -129,7 +129,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       // check artifactory for latest CLI build
       try {
         cliSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
         ])
       } catch (e) {
@@ -138,7 +138,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
       try {
         cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-*.zip",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-1*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
         ])
       } catch (e) {
@@ -161,8 +161,9 @@ node('zowe-jenkins-agent-dind-wdc') {
         def build_result = build(
           job: '/zowe-install-packaging/staging',
           parameters: [
-            booleanParam(name: 'BUILD_SMPE', value: true),
+            string(name: 'BUILD_SMPE', value: 'SMPE'),
             booleanParam(name: 'BUILD_DOCKER', value: true),
+            booleanParam(name: 'BUILD_KUBERNETES', value: true),
             booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
           ],
           propagate: false
@@ -233,6 +234,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: docker_amd64_url),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -291,6 +293,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -349,6 +352,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -407,6 +411,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -461,6 +466,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: keyring on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -517,6 +523,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'external certificate'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),

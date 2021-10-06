@@ -22,10 +22,11 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
-    booleanParam(
+    choice(
       name: 'BUILD_SMPE',
       description: 'If we want to build SMP/e package.',
-      defaultValue: false
+      choices: ['NONE', 'SMPE', 'PSIANDSMPE'],
+      defaultValue: 'NONE'
     ),
     booleanParam(
       name: 'BUILD_DOCKER',
@@ -35,6 +36,11 @@ node('zowe-jenkins-agent-dind-wdc') {
     booleanParam(
       name: 'BUILD_DOCKER_SOURCES',
       description: 'If we want to build docker image with included source files.',
+      defaultValue: false
+    ),
+    booleanParam(
+      name: 'BUILD_KUBERNETES',
+      description: 'If we want to build zowe kubernetes.',
       defaultValue: false
     ),
     booleanParam(
@@ -91,9 +97,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         int prNumber = prNumberString as Integer   // convert to int
         String commentText = "Building Zowe sources...\n"
         commentText += "Build number: ${env.BUILD_NUMBER}\n"
-        //FIXME: img src is hardcoded, when changing jenkins build machine, this will be broken
-        commentText += "Status: <a href=\"${env.BUILD_URL}\"><img src=\"https://wash.zowe.org:8443/buildStatus/icon?job=${env.JOB_NAME}&build=${env.BUILD_NUMBER}\"></a>\n"
-        commentText += "<i>Click the icon above to see details</i>\n"
+        commentText += "Status: <a href=\"${env.BUILD_URL}\">Click me!</a>\n"
         prPostCommentID = pipeline.github.postComment(prNumber, commentText)
       }
 
@@ -107,11 +111,11 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 27
+        expected    : 28
       )
 
       // we want build log pulled in for SMP/e build
-      if (params.BUILD_SMPE) {
+      if (params.BUILD_SMPE != 'NONE') {
         def buildLogSpec = readJSON(text: '{"files":[]}')
         buildLogSpec['files'].push([
           "target": ".pax/content/smpe/",
@@ -150,14 +154,15 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           filename            : 'zowe.pax',
           environments        : [
             'ZOWE_VERSION'    : pipeline.getVersion(),
-            'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : ''),
+            'BUILD_SMPE'      : (params.BUILD_SMPE == 'NONE' ? '' : 'yes'),
+            'BUILD_PSI'       : (params.BUILD_SMPE == 'PSIANDSMPE' ? 'yes' : ''),
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
-          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
+          extraFiles          : (params.BUILD_SMPE == 'NONE' ? '' : 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh'),
           keepTempFolder      : params.KEEP_TEMP_FOLDER,
           paxOptions          : '-o saveext'
       )
-      if (params.BUILD_SMPE) {
+      if (params.BUILD_SMPE != 'NONE') {
         // rename SMP/e build with correct FMID name
         sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
       }
@@ -344,6 +349,23 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   pipeline.createStage(
+    name: "Build Kubernetes",
+    timeout: [ time: 10, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_KUBERNETES
+    },
+    stage : {
+      if (params.BUILD_KUBERNETES) {
+          sh './containers/build/parse-manifest-to-deployment.sh'
+          sh 'cd containers && zip -r zowe-containerization.zip kubernetes'
+          sh 'mv containers/zowe-containerization.zip .'
+          pipeline.uploadArtifacts([ 'zowe-containerization.zip' ])
+      }
+    }
+  )
+
+  pipeline.createStage(
     name              : "Update comment to signify build pass status",
     timeout: [time: 2, unit: 'MINUTES'],
     isSkippable: false,
@@ -379,7 +401,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
         'build-number' : env.BUILD_NUMBER
       ])
       cliSourceBuildInfo = pipeline.artifactory.getArtifact([
-          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-package-*.zip",
+          'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
           'build-name'   : ZOWE_CLI_BUILD_NAME
       ])
       if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
@@ -390,6 +412,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           string(name: 'TEST_SCOPE', value: 'convenience build'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: buildName),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
