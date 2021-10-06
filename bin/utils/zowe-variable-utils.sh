@@ -202,6 +202,14 @@ prepare_container_runtime_environments() {
     export NODE_HOME=$(detect_node_home)
   fi
 
+  # to fix issues:
+  # - https://github.com/zowe/api-layer/issues/1768
+  # - https://github.com/spring-cloud/spring-cloud-netflix/issues/3941
+  # if you run Gateway on mainframe or locally, it will register with eureka health status - that is UP or DOWN, but
+  # in kubernetes, Gateway creates 2 additional health indicators and they are causing this OUT_OF_SERVICE, but this
+  # status is coming from spring, not from eureka
+  export MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED=false
+
   # write tmp to here so we can enable readOnlyRootFilesystem
   if [ -d "${INSTANCE_DIR}/tmp" ]; then
     export TMPDIR=${INSTANCE_DIR}/tmp
