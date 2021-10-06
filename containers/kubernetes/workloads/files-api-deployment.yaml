@@ -61,11 +61,11 @@ spec:
               cpu: "300m"
           ports:
             - name: files-api-port
-              containerPort: 8547
+              containerPort: 7559
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8547
+              port: 7559
             initialDelaySeconds: 45
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
             failureThreshold: 60

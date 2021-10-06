@@ -154,7 +154,7 @@ components:
           nonStrictVerifySslCertificatesOfServices: true
   app-server:
     enabled: true
-    port: "8544"
+    port: "7556"
     # we can customize app-server certificate
     # the missing definitions will be picked from "zowe.internalCertificate"
     certificate:
@@ -165,7 +165,7 @@ components:
         certificate: /global/zowe/keystore/localhost/localhost.keystore.app-server.cer-ebcdic
   zss:
     enabled: true
-    port: "8542"
+    port: "7557"
     crossMemoryServerName: ZWESIS_STD
     tls: true
     # we can customize zss certificate
@@ -178,21 +178,21 @@ components:
         certificate: /global/zowe/keystore/localhost/localhost.keystore.zss.cer-ebcdic
   jobs-api:
     enabled: true
-    port: "8545"
+    port: "7558"
   files-api:
     enabled: true
-    port: "8547"
+    port: "7559"
   explorer-jes:
     enabled: true
-    port: "8546"
+    port: "7560"
     frameAncestors: dvipa.my-company.com:*
   explorer-mvs:
     enabled: true
-    port: "8548"
+    port: "7561"
     frameAncestors: dvipa.my-company.com:*
   explorer-uss:
     enabled: true
-    port: "8550"
+    port: "7562"
     frameAncestors: dvipa.my-company.com:*
   # for extensions, you can add your definition like this
   # my-extension:
@@ -228,15 +228,15 @@ haInstances:
         # no app-server in this instance
         enabled: false
       jobs-api:
-        port: "18545"
+        port: "17558"
       files-api:
-        port: "18547"
+        port: "17559"
       explorer-jes:
-        port: "18546"
+        port: "17560"
       explorer-mvs:
-        port: "18548"
+        port: "17561"
       explorer-uss:
-        port: "18550"
+        port: "17562"
       caching-service:
         port: "17555"
   lpar2b:
@@ -253,9 +253,9 @@ haInstances:
         enabled: false
       app-server:
         enabled: false
-        port: "28544"
+        port: "27556"
       zss:
-        port: "28542"
+        port: "27557"
       jobs-api:
         enabled: true
       files-api:

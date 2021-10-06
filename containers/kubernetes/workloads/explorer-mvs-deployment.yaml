@@ -61,11 +61,11 @@ spec:
               cpu: "100m"
           ports:
             - name: mvs-port
-              containerPort: 8548
+              containerPort: 7561
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8548
+              port: 7561
             initialDelaySeconds: 15
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             failureThreshold: 18

@@ -61,11 +61,11 @@ spec:
               cpu: "100m"
           ports:
             - name: uss-port
-              containerPort: 8550
+              containerPort: 7562
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8550
+              port: 7562
             initialDelaySeconds: 15
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             failureThreshold: 18

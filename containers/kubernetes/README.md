@@ -123,12 +123,12 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
   - `DISCOVERY_PORT` is `7553`,
   - `GATEWAY_PORT` is `7554`,
   - `ZWE_CACHING_SERVICE_PORT` is `7555`,
-  - `JOBS_API_PORT` is `8545`,
-  - `FILES_API_PORT` is `8547`,
-  - `JES_EXPLORER_UI_PORT` is `8546`,
-  - `MVS_EXPLORER_UI_PORT` is `8548`,
-  - `USS_EXPLORER_UI_PORT` is `8550`,
-  - `ZOWE_ZLUX_SERVER_HTTPS_PORT` is `8544`.
+  - `JOBS_API_PORT` is `7558`,
+  - `FILES_API_PORT` is `7559`,
+  - `JES_EXPLORER_UI_PORT` is `7560`,
+  - `MVS_EXPLORER_UI_PORT` is `7561`,
+  - `USS_EXPLORER_UI_PORT` is `7562`,
+  - `ZOWE_ZLUX_SERVER_HTTPS_PORT` is `7556`.
 - `ZOWE_ZSS_SERVER_PORT` should be set to the port where your Zowe ZSS is running on `ZOWE_ZOS_HOST`.
 - `APIML_GATEWAY_EXTERNAL_MAPPER` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/certificate/x509/map`.
 - `APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL` should be set to `https://${GATEWAY_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth`.
