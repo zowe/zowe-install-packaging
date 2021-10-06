@@ -532,13 +532,35 @@ process_component_appfw_plugin() {
   appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
       cd "${component_dir}"
+
+      # apply values if appfw_plugin_path has variables
+      appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
+      appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
+
       if [ ! -r "${appfw_plugin_path}" ]; then
         >&2 echo "App Framework plugin directory ${appfw_plugin_path} is not accessible"
         all_succeed=false
         break
       fi
+      if [ ! -r "${appfw_plugin_path}/pluginDefinition.json" ]; then
+        >&2 echo "App Framework plugin directory ${appfw_plugin_path} does not have pluginDefinition.json"
+        all_succeed=false
+        break
+      fi
+      appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
+      if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
+        >&2 echo "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
+        all_succeed=false
+        break
+      fi
 
-      ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+      # copy to workspace/app-server/pluginDirs
+      appfw_plugin_workspace_path="${WORKSPACE_DIR}/app-server/pluginDirs/${appfw_plugin_id}"
+      mkdir -p "${appfw_plugin_workspace_path}"
+      cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
+
+      # install app
+      ${INSTANCE_DIR}/bin/install-app.sh "${appfw_plugin_workspace_path}"
       # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
       iterator_index=`expr $iterator_index + 1`

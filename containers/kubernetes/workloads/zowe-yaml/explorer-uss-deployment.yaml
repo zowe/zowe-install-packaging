@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.24.0
+    app.kubernetes.io/version: "1.25.0"
     app.kubernetes.io/component: explorer-uss
     app.kubernetes.io/part-of: explorer-ui
     app.kubernetes.io/managed-by: manual
@@ -41,10 +41,8 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-            - configMap:
-                name: zowe-certificates-cm
-            - secret:
-                name: zowe-certificates-secret
+              - secret:
+                  name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
@@ -80,7 +78,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
@@ -89,8 +87,8 @@ spec:
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
             - name: zowe-config
-              mountPath: "/home/zowe/instance/instance.env"
-              subPath: instance.env
+              mountPath: "/home/zowe/instance/zowe.yaml"
+              subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
               mountPath: "/home/zowe/keystore/"
@@ -100,7 +98,7 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
           imagePullPolicy: Always
           resources:
             requests:
@@ -116,22 +114,3 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: explorer-uss-pdb
-  namespace: zowe
-  labels:
-    app.kubernetes.io/name: zowe
-    app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: pdb
-    app.kubernetes.io/managed-by: manual
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: zowe
-      app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: explorer-uss

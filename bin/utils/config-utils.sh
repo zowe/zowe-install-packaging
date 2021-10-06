@@ -13,7 +13,7 @@
 ########################################################
 # convert components YAML manifest to JSON format
 convert_all_component_manifests_to_json() {
-  print_formatted_info "ZWELS" "config-utils.sh,convert_all_component_manifests_to_json:${LINENO}" "prepare component manifest ..."
+  print_formatted_info "ZWELS" "config-utils.sh,convert_all_component_manifests_to_json:${LINENO}" "prepare component manifests for ${LAUNCH_COMPONENTS} ..."
   for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
   do
     component_dir=$(find_component_directory "${component_id}")

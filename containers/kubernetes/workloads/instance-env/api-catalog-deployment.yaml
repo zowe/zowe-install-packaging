@@ -1,37 +1,34 @@
----
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: discovery
+  name: api-catalog
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: discovery
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: api-catalog
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
-  serviceName: discovery-service
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: discovery
+      app.kubernetes.io/component: api-catalog
   replicas: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: discovery
+        app.kubernetes.io/component: api-catalog
     spec:
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
       serviceAccountName: zowe-sa
-      subdomain: discovery-service
       volumes:
         - name: tmp
           emptyDir: {}
@@ -45,32 +42,32 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-            - configMap:
-                name: zowe-certificates-cm
-            - secret:
-                name: zowe-certificates-secret
+              - configMap:
+                  name: zowe-certificates-cm
+              - secret:
+                  name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: discovery
-          image: zowe-docker-release.jfrog.io/ompzowe/discovery-service:latest-ubuntu
+        - name: api-catalog
+          image: zowe-docker-release.jfrog.io/ompzowe/api-catalog-services:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
               memory: "384Mi"
-              cpu: "300m"
+              cpu: "100m"
             limits:
               memory: "512Mi"
-              cpu: "800m"
+              cpu: "700m"
           ports:
-            - name: discovery-port
-              containerPort: 7553
+            - name: apicatalog-port
+              containerPort: 7552
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 7553
-            initialDelaySeconds: 90
+              port: 7552
+            initialDelaySeconds: 60
             # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
             failureThreshold: 90
           command: ["/bin/bash", "-c"]
@@ -86,7 +83,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
@@ -108,7 +105,7 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
           imagePullPolicy: Always
           resources:
             requests:
