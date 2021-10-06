@@ -417,6 +417,64 @@
       }]
     }
   ],
+  "imageDependencies": {
+    "zowe-launch-scripts": {
+      "registry": "zowe-docker-snapshot.jfrog.io",
+      "name": "ompzowe/zowe-launch-scripts",
+      "tag" : "1.25.0-ubuntu.staging"
+    },
+    "api-catalog": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/api-catalog-services",
+      "tag" : "latest-ubuntu"
+    },
+    "caching": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/caching-service",
+      "tag" : "latest-ubuntu"
+    },
+    "discovery": {
+      "kind": "statefulset",
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/discovery-service",
+      "tag" : "latest-ubuntu"
+    },
+    "gateway": {
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/gateway-service",
+        "tag" : "latest-ubuntu"
+    },
+    "app-server": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/app-server",
+      "tag" : "latest-ubuntu"
+    },
+    "explorer-jes": {
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/explorer-jes",
+        "tag" : "latest-ubuntu"
+    },
+    "explorer-mvs": {
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/explorer-mvs",
+        "tag" : "latest-ubuntu"
+    },
+    "explorer-uss": {
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/explorer-uss",
+        "tag" : "latest-ubuntu"
+    },
+    "files-api": {
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/files-api",
+        "tag" : "latest-ubuntu"
+    },
+    "jobs-api": {
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/jobs-api",
+        "tag" : "latest-ubuntu"
+    }
+  },
   "dependencyDecisions": {
     "rel": ".dependency/doc/dependency_decisions.yml"
   }
