@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway
+  name: caching
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.25.0
-    app.kubernetes.io/component: gateway
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: caching
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
@@ -15,14 +15,14 @@ spec:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: gateway
+      app.kubernetes.io/component: caching
   replicas: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: gateway
+        app.kubernetes.io/component: caching
     spec:
       securityContext:
         runAsUser: 20000
@@ -50,24 +50,24 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: gateway
-          image: zowe-docker-release.jfrog.io/ompzowe/gateway-service:latest-ubuntu
+        - name: caching
+          image: zowe-docker-release.jfrog.io/ompzowe/caching-service:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "384Mi"
-              cpu: "150m"
+              memory: "256Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
-              cpu: "700m"
+              cpu: "400m"
           ports:
-            - name: gateway-port
-              containerPort: 7554
+            - name: caching-port
+              containerPort: 7555
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 7554
-            initialDelaySeconds: 90
+              port: 7555
+            initialDelaySeconds: 60
             # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
             failureThreshold: 90
           command: ["/bin/bash", "-c"]

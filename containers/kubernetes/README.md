@@ -117,7 +117,7 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
 - `ZOWE_ZOS_HOST` is recommended to be set to where the z/OS system where your Zowe ZSS/ZIS is running.
-- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/discovery-statefulset.yaml`.
+- `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/instance-env/discovery-statefulset.yaml` or `workloads/zowe-yaml/discovery-statefulset.yaml`.
 - All components running in Kubernetes should use default ports:
   - `CATALOG_PORT` is `7552`,
   - `DISCOVERY_PORT` is `7553`,
@@ -286,10 +286,16 @@ Upon completion, next [apply zowe](#apply-zowe-core-components-workloads-and-sta
 
 ## Apply Zowe Core Components Workloads and Start Zowe
 
-Run:
+Depends on whether you are using `instance.env` or `zowe.yaml` to start Zowe, run:
 
 ```bash
-kubectl apply -f workloads/
+kubectl apply -f workloads/instance-env/
+```
+
+or,
+
+```bash
+kubectl apply -f workloads/zowe-yaml/
 ```
 
 To verify this step, run:

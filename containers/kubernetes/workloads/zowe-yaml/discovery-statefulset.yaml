@@ -1,36 +1,41 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: <my-component-name>
+  name: discovery
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    # app.kubernetes.io/version:
-    app.kubernetes.io/component: <my-component-name>
-    # app.kubernetes.io/part-of:
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: discovery
+    app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
+  serviceName: discovery-service
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: <my-component-name>
+      app.kubernetes.io/component: discovery
+  # FIXME: please match this with ZWE_DISCOVERY_SERVICES_REPLICAS defined in ConfigMap zowe-config zowe.yaml section
   replicas: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: <my-component-name>
+        app.kubernetes.io/component: discovery
     spec:
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
       serviceAccountName: zowe-sa
+      subdomain: discovery-service
       volumes:
+        - name: tmp
+          emptyDir: {}
         - name: zowe-runtime
           emptyDir: {}
         - name: zowe-instance
@@ -41,34 +46,32 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-              - configMap:
-                  name: zowe-certificates-cm
               - secret:
                   name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: <my-component-name>
-          image: <my-component-image>
+        - name: discovery
+          image: zowe-docker-release.jfrog.io/ompzowe/discovery-service:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "10m"
+              memory: "384Mi"
+              cpu: "300m"
             limits:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "512Mi"
+              cpu: "800m"
           ports:
-            - name: <my-component-port-name>
-              containerPort: <my-component-port>
+            - name: discovery-port
+              containerPort: 7553
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: <my-component-port>
-            initialDelaySeconds: 30
-            # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
-            failureThreshold: 18
+              port: 7553
+            initialDelaySeconds: 90
+            # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
+            failureThreshold: 90
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
@@ -77,6 +80,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: CMMN_LB
+              value: apiml-common-lib/bin/api-layer-lite-lib-all.jar
           lifecycle:
             preStop:
               exec:
@@ -84,13 +89,15 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
             - name: zowe-config
-              mountPath: "/home/zowe/instance/instance.env"
-              subPath: instance.env
+              mountPath: "/home/zowe/instance/zowe.yaml"
+              subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
               mountPath: "/home/zowe/keystore/"
@@ -99,7 +106,8 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest-ubuntu
+          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
           imagePullPolicy: Always
           resources:
             requests:
@@ -115,22 +123,3 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: <my-component-name>-pdb
-  namespace: zowe
-  labels:
-    app.kubernetes.io/name: zowe
-    app.kubernetes.io/instance: zowe
-    # app.kubernetes.io/version:
-    app.kubernetes.io/component: pdb
-    app.kubernetes.io/managed-by: manual
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: zowe
-      app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: <my-component-name>

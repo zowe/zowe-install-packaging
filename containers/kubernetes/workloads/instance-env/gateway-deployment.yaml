@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-catalog
+  name: gateway
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.25.0
-    app.kubernetes.io/component: api-catalog
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: gateway
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
@@ -15,14 +15,14 @@ spec:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: api-catalog
+      app.kubernetes.io/component: gateway
   replicas: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: api-catalog
+        app.kubernetes.io/component: gateway
     spec:
       securityContext:
         runAsUser: 20000
@@ -50,24 +50,24 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: api-catalog
-          image: zowe-docker-release.jfrog.io/ompzowe/api-catalog-services:latest-ubuntu
+        - name: gateway
+          image: zowe-docker-release.jfrog.io/ompzowe/gateway-service:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
               memory: "384Mi"
-              cpu: "100m"
+              cpu: "150m"
             limits:
               memory: "512Mi"
               cpu: "700m"
           ports:
-            - name: apicatalog-port
-              containerPort: 7552
+            - name: gateway-port
+              containerPort: 7554
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 7552
-            initialDelaySeconds: 60
+              port: 7554
+            initialDelaySeconds: 90
             # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
             failureThreshold: 90
           command: ["/bin/bash", "-c"]
