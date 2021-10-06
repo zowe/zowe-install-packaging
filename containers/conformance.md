@@ -219,7 +219,7 @@ In the runtime, the Zowe content is organized in this structure:
 
 These runtime environment variable(s) are **REQUIRED** to start Zowe components.
 
-- `ZWE_POD_NAMESPACE`: holds the current Kubernetes namespace. This variable can be _optional_ if the service account `automountServiceAccountToken` attribute is `true`. The value of this variable can be assigned from metadata from `Pod` `spec` section:
+- `ZWE_POD_NAMESPACE`: holds the current Kubernetes namespace. This variable can be _optional_ if the service account `automountServiceAccountToken` attribute is `true`. The value of this variable can be assigned to `metadata.namespace` (which default value is `zowe`) in `Pod` `spec` section:
 
   ```yaml
   env:
@@ -228,6 +228,16 @@ These runtime environment variable(s) are **REQUIRED** to start Zowe components.
         fieldRef:
           apiVersion: v1
           fieldPath: metadata.namespace
+  ```
+
+These runtime environment variable(s) are **OPTIONAL** to start Zowe components.
+
+- `ZWE_POD_CLUSTERNAME`: holds the Kubernetes cluster name. This variable has default value `cluster.local`. If your cluster name is not default value, you should pass the variable to all workloads. The value of this variable can be assigned in `Pod` `spec` section:
+
+  ```yaml
+  env:
+    - name: ZWE_POD_CLUSTERNAME
+      value: "my.cluster.name"
   ```
 
 ## CI/CD
