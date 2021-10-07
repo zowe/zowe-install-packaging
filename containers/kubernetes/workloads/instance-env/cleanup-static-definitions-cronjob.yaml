@@ -13,6 +13,7 @@ spec:
   schedule: "*/15 * * * *"
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 1200
   jobTemplate:
     spec:
       template:
