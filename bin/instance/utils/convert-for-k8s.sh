@@ -636,6 +636,17 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.port" "8548"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.port" "8550"
 
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.api-catalog.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.caching-service.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.app-server.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.jobs-api.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.files-api.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-jes.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.enabled" "true"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.enabled" "true"
+
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" "https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" "https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"

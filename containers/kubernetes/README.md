@@ -7,6 +7,8 @@
 
 ### 1. Kubernetes Cluster
 
+Zowe containerization solition is compatible with Kubernetes v1.19+ or OpenShift v4.6+.
+
 There are many ways to prepare a Kubernetes cluster based on your requirements.
 
 For development purpose, you can setup a Kubernetes cluster on your local computer by:
@@ -48,7 +50,7 @@ To verify this step, run:
 kubectl get namespaces
 ```
 
-and it should show a Namespace `zowe`;  
+and it should show a Namespace `zowe`;
 
 then run:
 
@@ -91,29 +93,36 @@ and it should show a PersistentVolumeClaim `zowe-workspace-pvc`, and the `STATUS
 
 ### 3. Create And Modify ConfigMaps and Secrets
 
-On the z/OS you have, run `convert-for-k8s.sh` in your instance directory:
+Same as running Zowe on z/OS, you can use either `instance.env` or `zowe.yaml` to customize Zowe. You can modify `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` directly. Or more conveniently, if you have Zowe ZSS/ZIS running on z/OS, you can run `<instance-dir>/bin/utils/convert-for-k8s.sh` to migrate configurations for Kubernetes deployment:
 
 ```bash
 cd <instance-dir>
-./bin/utils/convert-for-k8s.sh
+./bin/utils/convert-for-k8s.sh -x "my-k8s-cluster.company.com,9.10.11.12"
 ```
 
-This script should display a set of YAML with `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap and `zowe-certificates-secret` Secret. The content should look similar to `samples/config-cm.yaml`, `samples/certificates-cm.yaml` and `samples/certificates-secret.yaml` but with real values.
+This migration script supports these parameters:
 
-Now, copy the whole output and save as a YAML file `configs.yaml` on your server that you have set up kubernetes, next run following command to apply configurations:
+- `-x`: is the list of domains you will use to visit Zowe Kubernetes cluster separated by comma. These domains and IP addresses will be added to your new certificate if needed. This is optional, default value is `localhost`.
+- `-n`: is the Zowe Kubernetes cluster namespace. This is optional, default value is `zowe`.
+- `-u`: is the Kubernetes cluster name. This is optional, default value is `cluster.local`.
+- `-p`: is the password of local certificate authority PKCS#12 file. This is optional, default value is `local_ca_password`.
+- `-a`: is the certificate alias of local certificate authority. This is optional, default value is `localca`.
+- `-v`: is a switch to enable verbose mode which will display more debugging information.
+
+As a result, this script will display a set of YAML format content of `zowe-config` ConfigMap, `zowe-certificates-cm` ConfigMap (if you are using `instance.env`) and `zowe-certificates-secret` Secret. Follow the instruction on script output to copy the output and save as a YAML file `configs.yaml` on your server that you have set up kubernetes, next run following command to apply configurations:
 
 ```bash
 kubectl apply -f /path/to/your/configs.yaml
 ```
 
-Upon success, you should see the following output: `configmap/zowe-config created`, `configmap/zowe-certificates-cm created`, and `secret/zowe-certificates-secret created`
+Upon success, you should see the following output: `configmap/zowe-config created`, `configmap/zowe-certificates-cm created`, and `secret/zowe-certificates-secret created`.
 
 If you want to manually define `zowe-config` ConfigMap based on your `instance.env`, please notice these differences comparing running on z/OS:
 
 - `ZOWE_EXPLORER_HOST`, `ZOWE_IP_ADDRESS`, `ZWE_LAUNCH_COMPONENTS`, `ZWE_DISCOVERY_SERVICES_LIST` and `SKIP_NODE` are not needed for Zowe running in Kubernetes and will be ignored. You can remove them.
 - `JAVA_HOME` and `NODE_HOME` are not usually needed if you are using Zowe base images.
 - `ROOT_DIR` must be set to `/home/zowe/runtime`.
-- `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`.
+- `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`. This is not needed if you are using `zowe.yaml`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
 - `ZOWE_ZOS_HOST` is recommended to be set to where the z/OS system where your Zowe ZSS/ZIS is running.
@@ -135,16 +144,18 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `ZOWE_EXPLORER_FRAME_ANCESTORS` should be set to `${ZOWE_EXTERNAL_HOST}:*`
 - `ZWE_CACHING_SERVICE_PERSISTENT` should NOT be set to `VSAM`. `redis` is suggested. Follow [Redis configuration](https://docs.zowe.org/stable/extend/extend-apiml/api-mediation-redis/#redis-configuration) documentation to customize other redis related variables. Leave the value to empty for debugging purpose.
 - Must append and customize these 2 values:
-  - `ZWED_agent_host=${ZOWE_ZOS_HOST}`
+  - `ZWED_agent_host=${ZOWE_ZOS_HOST}` is telling App-Server the z/OS system when ZSS and ZIS components are running.
   - `ZWED_agent_https_port=${ZOWE_ZSS_SERVER_PORT}`
 
-To verify this step, run:  
+If you are using `zowe.yaml`, the above instructions are still valid, but should use the matching `zowe.yaml` configuration entries. Check [Updating the zowe.yaml configuration file](https://docs.zowe.org/stable/user-guide/configure-instance-directory/#updating-the-zoweyaml-configuration-file) for more details.
+
+To verify this step, run:
 
 ```bash
 kubectl get configmaps --namespace zowe
 ```
 
-and it should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.  
+and it should show two ConfigMaps `zowe-config` and `zowe-certificates-cm`.
 Run:
 
 ```bash
@@ -159,16 +170,17 @@ This section is highly related to your Kubernetes cluster configuration. If you 
 
 #### 4a. Create Service
 
-You may choose between `LoadBalancer` or `NodePort` service depending on your kubenetes provider.  
+You may choose between `LoadBalancer` or `NodePort` service depending on your Kubernetes provider. Please note `NodePort` services should be avoided as they are insecure, and can not be used together with `NetworkPolicies`. `LoadBalancers` or use of an `Ingress` is recommended over `NodePorts`.
+
 The table below provides a guidance for you:
 <a id="table"></a>
-| Kubernetes provider       | Service (_preferred_)      | Additional setups required                                 |
-| :------------------------ | :------------------------  | :--------------------------------------------------------- |
-| minikube                  | NodePort                   | [Port Forward](#4b-port-forward-for-minikube-only)         |
-| docker-desktop            | LoadBalancer               | none                                                       |
-| bare-metal                | _NodePort_ or LoadBalancer | [Create Ingress](#4c-create-ingress-for-bare-metal-only)   |
-| cloud-vendors             | LoadBalancer               | none                                                       |
-| openshift                 | _LoadBalancer_ or NodePort | [Create Route](#4d-create-route-for-openshift-only)        |
+| Kubernetes provider       | Service                  | Additional setups required                                 |
+| :------------------------ | :----------------------  | :--------------------------------------------------------- |
+| minikube                  | LoadBalancer or NodePort | [Port Forward](#4b-port-forward-for-minikube-only)         |
+| docker-desktop            | LoadBalancer             | none                                                       |
+| bare-metal                | LoadBalancer or NodePort | [Create Ingress](#4c-create-ingress-for-bare-metal-only)   |
+| cloud-vendors             | LoadBalancer             | none                                                       |
+| OpenShift                 | LoadBalancer or NodePort | [Create Route](#4d-create-route-for-openshift-only)        |
 
 __Note__: Complete current section "4a. Create Service section" first, then work on additional setups listed in the table above if necessary.
 
@@ -180,19 +192,19 @@ __Note__: Complete current section "4a. Create Service section" first, then work
     kubectl apply -f samples/gateway-service-lb.yaml
     ```
 
-- If you choose `NodePort` services, 
+- If you choose `NodePort` services,
   - First check `spec.ports[0].nodePort` as this will be the port to be exposed to external. The default gateway port is __not__ `7554` but `32554`. You can use `https://<your-k8s-node>:32554/` to access APIML Gateway.
   - Then run:
 
     ```bash
-    kubectl apply -f samples/gateway-service-np.yaml 
+    kubectl apply -f samples/gateway-service-np.yaml
     ```
 
 Either way, upon success, you should see following output: `service/gateway-service created`
 
 ##### <ins>Expose discovery service</ins>
 
-Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of kubernetes) and requries doing dynamic registration.  
+Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of kubernetes) and requries doing dynamic registration.
 
 If you choose to enable, simply run the following step:
 
@@ -208,7 +220,7 @@ If you choose to enable, simply run the following step:
   kubectl apply -f samples/discovery-service-np.yaml
   ```
 
-However, if you choose not to expose discovery service, you must do one extra step before applying above command.  
+However, if you choose not to expose discovery service, you must do one extra step before applying above command.
 Depending on `LoadBalancer` or `NodePort` used, in [discovery-service-lb.yaml](samples/discovery-service-lb.yaml) or [discovery-service-np.yaml](samples/discovery-service-np.yaml) (line 15), specify `ClusterIP` as type. Then apply discovery-service yaml file depending on what service you are using (see above).
 
 Upon success, you shall see `service/discovery-service created`.
@@ -222,7 +234,7 @@ kubectl get services --namespace zowe
 
 and it should show services `gateway-service` and `discovery-service`.
 
-Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table. [Return to table](#table)  
+Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table. [Return to table](#table)
 If you don't need additional setups, you can skip 4b, 4c, 4d and jump directly to [Apply Zowe](#apply-zowe-core-components-workloads-and-start-zowe) section.
 
 #### 4b. Port Forward (for minikube only)
@@ -251,7 +263,7 @@ Before applying, here are a series of steps to do:
 - Uncomment line 19 and 20,
 - Fill in the value of host on line 19,
 - Comment out line 21
-  
+
 Then:
 
 ```bash
@@ -304,8 +316,8 @@ To verify this step, run:
 kubectl get deployments --namespace zowe
 ```
 
-It should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, and etc. Wait for a bit as it takes time to bring each deployment up; time varies depending on your machine environment.  
-Upon success, eventually each deployment should show `1/1` in `READY` column.  
+It should show you a list of deployments including `explorer-jes`, `explorer-mvs`, `explorer-uss`, `files-api`, `jobs-api`, and etc. Wait for a bit as it takes time to bring each deployment up; time varies depending on your machine environment.
+Upon success, eventually each deployment should show `1/1` in `READY` column.
 
 Run:
 
@@ -313,7 +325,7 @@ Run:
 kubectl get statefulsets --namespace zowe
 ```
 
-should show you a StatefulSet `discovery` which `READY` column should be `1/1`.  
+should show you a StatefulSet `discovery` which `READY` column should be `1/1`.
 
 Run:
 
@@ -455,6 +467,13 @@ files-api-hpa      Deployment/files-api      8%/70%    1         3         1    
 gateway-hpa        Deployment/gateway        20%/60%   1         5         1          9m59s
 jobs-api-hpa       Deployment/jobs-api       8%/70%    1         3         1          9m59s
 ```
+
+### 5. Kubernetes v1.21+
+
+If you have Kubernetes v1.21+, there are few changes recommended based on [Deprecated API Migration Guide](https://kubernetes.io/docs/reference/using-api/deprecation-guide/).
+
+- Kind `CronJob`: change `apiVersion: batch/v1beta1` to `apiVersion: batch/v1` on `workloads/zowe-yaml/cleanup-static-definitions-cronjob.yaml` and `workloads/instance-env/cleanup-static-definitions-cronjob.yaml`. `apiVersion: batch/v1beta1` will stop working on Kubernetes v1.25.
+- Kind `PodDisruptionBudget`: change `apiVersion: policy/v1beta1` to `apiVersion: policy/v1` on all files in `samples/pod-disruption-budget/`. `apiVersion: policy/v1beta1` will stop working on Kubernetes v1.25.
 
 <br />
 
