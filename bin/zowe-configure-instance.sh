@@ -250,10 +250,11 @@ else
   create_new_instance
 fi
 
-#Make install-app.sh present per-instance for convenience
+#Make plugin install scripts present per-instance for convenience
+mkdir -p ${INSTANCE_DIR}/bin/utils
 # TODO V2: These shouldn't be in bin, these should be called by the component installer. Put them in bin/utils
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
-cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/uninstall-app.sh ${INSTANCE_DIR}/bin/uninstall-app.sh
+cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/uninstall-app.sh ${INSTANCE_DIR}/bin/uninstall-app.shmkdir -p ${INSTANCE_DIR}/bin/utils
 cp ${ZOWE_ROOT_DIR}/components/zss/bin/zis-plugin-install.sh ${INSTANCE_DIR}/bin/utils/zis-plugin-install.sh
 # copy other files we needed for <instance>/bin
 cp -R ${ZOWE_ROOT_DIR}/bin/instance/* ${INSTANCE_DIR}/bin
