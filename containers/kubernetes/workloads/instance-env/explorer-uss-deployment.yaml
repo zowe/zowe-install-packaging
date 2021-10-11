@@ -1,29 +1,27 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-server
+  name: explorer-uss
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.25.0
-    app.kubernetes.io/component: app-server
-    app.kubernetes.io/part-of: app-server
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: explorer-uss
+    app.kubernetes.io/part-of: explorer-ui
     app.kubernetes.io/managed-by: manual
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: app-server
-  replicas: 1
+      app.kubernetes.io/component: explorer-uss
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: app-server
+        app.kubernetes.io/component: explorer-uss
     spec:
       securityContext:
         runAsUser: 20000
@@ -41,31 +39,31 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-            - configMap:
-                name: zowe-certificates-cm
-            - secret:
-                name: zowe-certificates-secret
+              - configMap:
+                  name: zowe-certificates-cm
+              - secret:
+                  name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: app-server
-          image: zowe-docker-release.jfrog.io/ompzowe/app-server:1.24.0-ubuntu-amd64
+        - name: explorer-uss
+          image: zowe-docker-release.jfrog.io/ompzowe/explorer-uss:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "50m"
+              memory: "64Mi"
+              cpu: "10m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "128Mi"
+              cpu: "100m"
           ports:
-            - name: app-server-port
-              containerPort: 8544
+            - name: uss-port
+              containerPort: 8550
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8544
+              port: 8550
             initialDelaySeconds: 15
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             failureThreshold: 18
@@ -80,7 +78,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
