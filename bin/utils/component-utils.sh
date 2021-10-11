@@ -368,7 +368,7 @@ process_component_apiml_static_definitions() {
       parsed_def=$( ( echo "cat <<EOF" ; cat "${one_def}" ; echo ; echo EOF ) | sh 2>&1)
       retval=$?
       if [ "${retval}" != "0" ]; then
-        >&2 echo "failed to parse ${component_name} API Mdeialtion Layer static definition file ${one_def}: ${parsed_def}"
+        >&2 echo "failed to parse ${component_name} API Mediation Layer static definition file ${one_def}: ${parsed_def}"
         if [[ "${parsed_def}" == *unclosed* ]]; then
           >&2 echo "this is very likely an encoding issue that file is not tagged properly"
         fi

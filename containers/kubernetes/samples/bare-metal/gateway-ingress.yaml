@@ -26,4 +26,4 @@ spec:
               service:
                 name: gateway-service
                 port:
-                  number: 7554
+                  name: gateway-port
