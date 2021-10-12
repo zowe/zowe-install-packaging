@@ -17,7 +17,6 @@ spec:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
       app.kubernetes.io/component: jobs-api
-  replicas: 1
   template:
     metadata:
       labels:
