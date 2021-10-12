@@ -202,7 +202,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     // >>>>>>>> parametters for test cases
     choice(
       name: 'NODE_VERSION',
-      choices: ['v8.16.0', 'v8.17.0', 'v12.13.0', 'v12.16.1', 'v12.18.4', 'v14.15.1'],
+      choices: ['v12.18.4', 'v8.16.0', 'v8.17.0', 'v12.13.0', 'v12.16.1', 'v14.15.1'],
       description: 'This option is only valid for Marist server and specify node.js version on z/OS side. The installation will set NODE_HOME to /ZOWE/node/node-{{version}}-os390-s390x.',
       trim: true
     ),
@@ -292,13 +292,11 @@ node('zowe-jenkins-agent-dind-wdc') {
   "files": [{
     "pattern": "${params.ZOWE_ARTIFACTORY_PATTERN}",
     "target": ".tmp/zowe/",
-    "flat": "true",
-    "build": "${params.ZOWE_ARTIFACTORY_BUILD}"
+    "flat": "true"
   }, {
     "pattern": "${params.ZOWE_CLI_ARTIFACTORY_PATTERN}",
     "target": ".tmp/cli/",
     "flat": "true",
-    "build": "${params.ZOWE_CLI_ARTIFACTORY_BUILD}",
     "explode": "true"
   }]
 }
