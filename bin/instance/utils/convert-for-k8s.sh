@@ -691,6 +691,13 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_OWNER"
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_NAME"
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.LOCAL_CA"
+
+  echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
+  echo "you need to match \"zowe.externalPort\" to be the port you are using. For example:"
+  echo
+  echo "zowe:"
+  echo "  externalPort: \"32554\""
+  echo
 else
   NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
     grep -v -E "(ZWE_EXTERNAL_HOSTS=|ZOWE_EXTERNAL_HOST=|ZOWE_ZOS_HOST=|ZOWE_IP_ADDRESS=|ZWE_LAUNCH_COMPONENTS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | \
@@ -720,8 +727,15 @@ else
     sed -e "s#ZWE_CACHING_SERVICE_PERSISTENT=.\+\$#ZWE_CACHING_SERVICE_PERSISTENT=#" | \
     sed -e "\$a\\
     \\
+    ZWE_EXTERNAL_PORT=7554\\
     ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
     ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}")
+
+  echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
+  echo "you need to match \"ZWE_EXTERNAL_PORT\" to be the port you are using. For example:"
+  echo
+  echo "ZWE_EXTERNAL_PORT=32554"
+  echo
 fi
 
 ################################################################################

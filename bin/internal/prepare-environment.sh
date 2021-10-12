@@ -106,6 +106,11 @@ NONSTRICT_VERIFY_CERTIFICATES="${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
 # this configuration is deprecated and settings in instance.env will not affect how Zowe is starting
 APIML_PREFER_IP_ADDRESS=false
 
+# by default, set ZWE_EXTERNAL_PORT to be same as GATEWAY_PORT
+if [ -z "${ZWE_EXTERNAL_PORT}" ]; then
+  ZWE_EXTERNAL_PORT="${GATEWAY_PORT}"
+fi
+
 LAUNCH_COMPONENTS=""
 # FIXME: if ZOWE_INSTANCE is same as last character of ZOWE_PREFIX, it will never be appended
 if [[ "${ZOWE_PREFIX}" != *"${ZOWE_INSTANCE}" ]]; then
