@@ -145,7 +145,7 @@ describe('verify node-utils', function () {
       const command = `${check_node_version} "${version}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_out = expected_valid ? `Node ${version} is supported.` : '';
-      const expected_err = expected_valid ? '' : `Node ${version} is less than the minimum level required of v6.14.4`;
+      const expected_err = expected_valid ? '' : `Node ${version} is less than the minimum level required of v8+`;
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, expected_err);
     }
   });
