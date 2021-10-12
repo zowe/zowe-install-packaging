@@ -168,11 +168,11 @@ kubectl get secrets --namespace zowe
 
 and it should show a Secret `zowe-certificates-secret`.
 
-### 4. Expose Gateway and Discovery
+### 4. Expose API Catalog, Gateway and Discovery
 
 This section is highly related to your Kubernetes cluster configuration. If you are not sure about these sections, please contact your Kubernetes administrator or us.
 
-#### 4a. Create Service
+#### 4a. Create Services
 
 You may choose between `LoadBalancer` or `NodePort` service depending on your Kubernetes provider. Please note `NodePort` services should be avoided as they are insecure, and can not be used together with `NetworkPolicies`. `LoadBalancers` or use of an `Ingress` is recommended over `NodePorts`.
 
@@ -187,6 +187,16 @@ The table below provides a guidance for you:
 | OpenShift                 | LoadBalancer or NodePort | [Create Route](#4d-create-route-for-openshift-only)        |
 
 __Note__: Complete current section "4a. Create Service section" first, then work on additional setups listed in the table above if necessary.
+
+##### <ins>Define api-catalog service</ins>
+
+`api-catalog-service` is required by Zowe, but not necessarily exposed to external users. So `api-catalog-service` is defined as type `ClusterIP`. To define this service, run:
+
+```bash
+kubectl apply -f samples/api-catalog-service.yaml
+```
+
+Upon success, you should see following output: `service/api-catalog-service created`
 
 ##### <ins>Expose gateway service</ins>
 

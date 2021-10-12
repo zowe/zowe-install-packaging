@@ -764,3 +764,53 @@ list_all_components() {
   # done
   
 }
+
+###############################
+# Call API Catalog to refresh static registration
+#
+# @param string   API Catalog hostname
+# @param string   API Catalog port
+# @param string   Path to Authentication private key
+# @param string   Path to Authentication certificate
+# @param string   Path to Certificate Authority certificate
+refresh_static_registration() {
+  apicatalog_host=$1
+  apicatalog_port=$2
+  auth_key=$3
+  auth_cert=$4
+  ca_cert=$5
+
+  if [ -z "$NODE_HOME" ]; then
+    >&2 echo "NODE_HOME is required by this function"
+    return 1
+  fi
+  # node should have already been put into PATH
+
+  if [ -z "${apicatalog_host}" ]; then
+    apicatalog_host=${ZOWE_EXPLORER_HOST}
+  fi
+  if [ -z "${apicatalog_port}" ]; then
+    apicatalog_port=${CATALOG_PORT}
+  fi
+  if [ -z "${auth_key}" ]; then
+    auth_key=${KEYSTORE_KEY}
+  fi
+  if [ -z "${auth_cert}" ]; then
+    auth_cert=${KEYSTORE_CERTIFICATE}
+  fi
+  if [ -z "${ca_cert}" ]; then
+    ca_cert=${KEYSTORE_CERTIFICATE_AUTHORITY}
+  fi
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+
+  "${NODE_HOME}/bin/node" \
+    "${utils_dir}/curl.js" \
+    "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
+    -X POST \
+    --key "${auth_key}" \
+    --cert "${auth_cert}" \
+    --cacert "${ca_cert}"
+
+  return $?
+}
