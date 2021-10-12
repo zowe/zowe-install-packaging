@@ -125,6 +125,10 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`. This is not needed if you are using `zowe.yaml`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
+- `ZWE_EXTERNAL_PORT` (or `zowe.externalPort` if you are using `zowe.yaml`) must be the port you expose to end-user. This value is optional if it's same as default `GATEWAY_PORT` `7554`. With default settings,
+  * if you choose `LoadBalancer` `gateway-service`, this value is optional, or set to `7554`,
+  * if you choose `NodePort` `gateway-service` and access the service directly, this value should be same as `spec.ports[0].nodePort` with default value `32554`,
+  * if you choose `NodePort` `gateway-service` and access the service through port forwarding, the value should be the forwarded port you set.
 - `ZOWE_ZOS_HOST` is recommended to be set to where the z/OS system where your Zowe ZSS/ZIS is running.
 - `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/instance-env/discovery-statefulset.yaml` or `workloads/zowe-yaml/discovery-statefulset.yaml`.
 - All components running in Kubernetes should use default ports:
