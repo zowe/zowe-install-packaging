@@ -176,24 +176,6 @@ components:
       pem:
         key: /global/zowe/keystore/localhost/localhost.keystore.zss.key
         certificate: /global/zowe/keystore/localhost/localhost.keystore.zss.cer-ebcdic
-  jobs-api:
-    enabled: true
-    port: "7558"
-  files-api:
-    enabled: true
-    port: "7559"
-  explorer-jes:
-    enabled: true
-    port: "7560"
-    frameAncestors: dvipa.my-company.com:*
-  explorer-mvs:
-    enabled: true
-    port: "7561"
-    frameAncestors: dvipa.my-company.com:*
-  explorer-uss:
-    enabled: true
-    port: "7562"
-    frameAncestors: dvipa.my-company.com:*
   # for extensions, you can add your definition like this
   # my-extension:
   #   enabled: true
@@ -227,16 +209,6 @@ haInstances:
       zss:
         # no app-server in this instance
         enabled: false
-      jobs-api:
-        port: "17558"
-      files-api:
-        port: "17559"
-      explorer-jes:
-        port: "17560"
-      explorer-mvs:
-        port: "17561"
-      explorer-uss:
-        port: "17562"
       caching-service:
         port: "17555"
   lpar2b:
