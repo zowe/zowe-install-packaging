@@ -63,6 +63,7 @@ package_release=$(echo "${package_version}" | awk -F. '{print $1;}')
 # copy Dockerfile
 echo ">>>>> copy Dockerfile to ${linux_distro}/${cpu_arch}/Dockerfile"
 cd "${BASE_DIR}"
+rm -fr "${linux_distro}/${cpu_arch}"
 mkdir -p "${linux_distro}/${cpu_arch}"
 if [ ! -f Dockerfile ]; then
   echo "Error: Dockerfile file is missing."

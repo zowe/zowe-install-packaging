@@ -1,13 +1,14 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: explorer-uss
+  name: explorer-jes
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.25.0
-    app.kubernetes.io/component: explorer-uss
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: explorer-jes
     app.kubernetes.io/part-of: explorer-ui
     app.kubernetes.io/managed-by: manual
 spec:
@@ -15,14 +16,13 @@ spec:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: explorer-uss
-  replicas: 1
+      app.kubernetes.io/component: explorer-jes
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: explorer-uss
+        app.kubernetes.io/component: explorer-jes
     spec:
       securityContext:
         runAsUser: 20000
@@ -40,16 +40,14 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-              - configMap:
-                  name: zowe-certificates-cm
               - secret:
                   name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: explorer-uss
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-uss:latest-ubuntu
+        - name: explorer-jes
+          image: zowe-docker-release.jfrog.io/ompzowe/explorer-jes:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
@@ -59,12 +57,12 @@ spec:
               memory: "128Mi"
               cpu: "100m"
           ports:
-            - name: uss-port
-              containerPort: 8550
+            - name: jes-port
+              containerPort: 8546
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 8550
+              port: 8546
             initialDelaySeconds: 15
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             failureThreshold: 18
@@ -88,8 +86,8 @@ spec:
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
             - name: zowe-config
-              mountPath: "/home/zowe/instance/instance.env"
-              subPath: instance.env
+              mountPath: "/home/zowe/instance/zowe.yaml"
+              subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
               mountPath: "/home/zowe/keystore/"

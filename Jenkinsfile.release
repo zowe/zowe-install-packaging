@@ -332,16 +332,16 @@ node('zowe-jenkins-agent-dind-wdc') {
       // get CLI CORE build source artifact
       releaseArtifacts['cli']['source'] = pipeline.artifactory.getArtifact([
         'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/${params.ZOWE_CLI_BUILD_PATH}/${ZOWE_RELEASE_CLI_CORE_FILEPATTERN}",
-        'build-name'   : releaseArtifacts['cli']['buildName'],
-        'build-number' : releaseArtifacts['cli']['buildNumber']
+        // 'build-name'   : releaseArtifacts['cli']['buildName'],       // we no longer rely on jenkins to find artifacts
+        // 'build-number' : releaseArtifacts['cli']['buildNumber']      // we no longer rely on jenkins to find artifacts
       ])
       echo ">>> Found Zowe CLI build ${releaseArtifacts['cli']['source']['path']}."
 
       // get CLI PLUGINS builds source artifact
       releaseArtifacts['cli-plugins']['source'] = pipeline.artifactory.getArtifact([
         'pattern'      : "${params.ZOWE_CLI_BUILD_REPOSITORY}/${params.ZOWE_CLI_BUILD_PATH}/${ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN}",
-        'build-name'   : releaseArtifacts['cli-plugins']['buildName'],
-        'build-number' : releaseArtifacts['cli-plugins']['buildNumber']
+        // 'build-name'   : releaseArtifacts['cli-plugins']['buildName'],       // we no longer rely on jenkins to find artifacts
+        // 'build-number' : releaseArtifacts['cli-plugins']['buildNumber']      // we no longer rely on jenkins to find artifacts
       ])
       echo ">>> Found Zowe CLI Plugins ${releaseArtifacts['cli-plugins']['source']['path']}."
 
