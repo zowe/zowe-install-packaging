@@ -162,7 +162,7 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 # prepare-environment.sh shouldn't have any output, but these 2 functions may output:
 #   Prepending JAVA_HOME/bin to the PATH...
 #   Prepending NODE_HOME/bin to the PATH...
-# so we surpressed all output for those 2 functions
+# so we suppressed all output for those 2 functions
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi

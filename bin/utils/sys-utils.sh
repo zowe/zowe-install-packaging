@@ -134,7 +134,7 @@ wait_for_process_exit() {
 # @param string   PID to shutdown
 # Output          process shutdown information
 gracefully_shutdown() {
-  pid=${1:-${ZWE_GRACEFULL_SHUTDOWN_PID:-1}}
+  pid=${1:-${ZWE_GRACEFULLY_SHUTDOWN_PID:-1}}
 
   print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "SIGTERM signal received, shutting down process ${pid} and all child processes"
   if [ -n "${pid}" ]; then

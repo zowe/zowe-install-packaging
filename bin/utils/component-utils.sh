@@ -748,7 +748,7 @@ verify_component_instance() {
 # - EXTERNAL_COMPONENTS
 #
 # Example:
-# - This will display all components that is currentally installled on a zowe instance
+# - This will display all components that is currently installed on a zowe instance
 #   i.e: list_all_components
 #
 list_all_components() {

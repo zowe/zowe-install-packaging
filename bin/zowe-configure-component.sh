@@ -253,7 +253,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
 done
 
 #######################################################################
-# Check and sanitize valiables
+# Check and sanitize variables
 if [ -z "${COMPONENT_NAME}" -o -z "${INSTANCE_DIR}" ]; then
     #Ensures that the required parameters are entered, otherwise exit the program
     error_handler "Missing parameters, try: zowe-configure-component.sh -c <COMPONENT_NAME> -i <ZOWE_INSTANCE_DIR>"
