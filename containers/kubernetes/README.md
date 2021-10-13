@@ -352,7 +352,7 @@ should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be
 
 ## Access Zowe
 
-If you are using `LoadBalancer`, Zowe instance is accessible through port 7554: `https://\<ip-adress\>:7554`
+If you are using `LoadBalancer`, Zowe instance is accessible through port 7554: `https://\<ip-address\>:7554`
 <br /><br /><br />
 
 ## Import New Component
