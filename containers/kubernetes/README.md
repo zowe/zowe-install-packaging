@@ -21,7 +21,7 @@ For production purpose, you can:
 - bootstrap your own cluster by following this official document [Installing Kubernetes with deployment tools](https://kubernetes.io/docs/setup/production-environment/tools/).
 - or provision a Kubernetes cluster from popular Cloud vendors:
   - [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/)
-  - [Microsfot Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes)
+  - [Microsoft Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes)
   - [IBM Cloud Kubernetes Service](https://www.ibm.com/ca-en/cloud/kubernetes-service)
   - [Google Cloud Kubernetes Engine](https://cloud.google.com/kubernetes-engine)
 
@@ -218,7 +218,7 @@ Either way, upon success, you should see following output: `service/gateway-serv
 
 ##### <ins>Expose discovery service</ins>
 
-Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of kubernetes) and requries doing dynamic registration.
+Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of kubernetes) and requires doing dynamic registration.
 
 If you choose to enable, simply run the following step:
 
