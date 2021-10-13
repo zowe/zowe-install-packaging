@@ -39,7 +39,7 @@ const exitWithError = (code, message) => {
   process.exit(code);
 };
 
-// supress Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+// suppress Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
 const originalEmitWarning = process.emitWarning;
 process.emitWarning = (warning, opts) => {
   if (warning && `${warning}`.indexOf('NODE_TLS_REJECT_UNAUTHORIZED') > -1) {
