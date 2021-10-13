@@ -294,7 +294,16 @@ node('zowe-jenkins-agent-dind-wdc') {
     "target": ".tmp/zowe/",
     "flat": "true",
     "build": "${params.ZOWE_ARTIFACTORY_BUILD}"    //Zowe still needs build to find artifacts (for now)
-  }, {
+  }]
+}
+""",
+        expected    : 1
+      )
+
+    pipeline.artifactory.download(
+        specContent : """
+{
+  "files": [{
     "pattern": "${params.ZOWE_CLI_ARTIFACTORY_PATTERN}",
     "target": ".tmp/cli/",
     "flat": "true",
@@ -302,7 +311,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   }]
 }
 """,
-        expected    : 2
+        expected    : 1
       )
     },
     timeout: [time: 20, unit: 'MINUTES']
