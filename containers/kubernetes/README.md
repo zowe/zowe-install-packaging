@@ -246,7 +246,7 @@ To verify above steps, run
 kubectl get services --namespace zowe
 ```
 
-and it should show services `gateway-service` and `discovery-service`.
+and it should show services `api-catalog-service`, `gateway-service` and `discovery-service`.
 
 Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table. [Return to table](#table)
 If you don't need additional setups, you can skip 4b, 4c, 4d and jump directly to [Apply Zowe](#apply-zowe-core-components-workloads-and-start-zowe) section.
