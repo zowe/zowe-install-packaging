@@ -559,6 +559,69 @@ spec:
             runAsGroup: 0
 ```
 
+### ISSUE: Gateway Shows API Catalog, Discovery, Authentication Services Are Not Running
+
+This issue is potentially caused by DNS resolution on some Kubernetes systems. In this case, gateway failed to resolve `discovery-0.discovery-service.zowe.svc.cluster.local` domain name. To confirm this is the cause, you can run curl utility tool from any running pod.
+
+First let's find pods by running
+
+```
+kubectl get pods -n zowe -o wide
+```
+
+. Then pick a pod from the list. For example, `explorer-jes-dccbf7479-5qn48`.
+
+Now issue this command to attach to the pod:
+
+```
+DEBUG= kubectl exec -it explorer-jes-dccbf7479-5qn48 -n zowe -- bash
+```
+
+. In the pod command line, input this command:
+
+```
+node /home/zowe/runtime/bin/utils/curl.js https://discovery-0.discovery-service.zowe.svc.cluster.local:7553/ -k
+```
+
+. If you see result like this:
+
+```
+zowe@explorer-jes-dccbf7479-5qn48:/component$ node /home/zowe/runtime/bin/utils/curl.js https://discovery-0.discovery-service.zowe.svc.cluster.local:7553/ -k
+Request failed (ENOTFOUND): getaddrinfo ENOTFOUND discovery-0.discovery-service.zowe.svc.cluster.local
+```
+
+, `ENOTFOUND` means the pod cannot resolve domain `discovery-0.discovery-service.zowe.svc.cluster.local`.
+
+This is caused by `discovery-service` must be defined as [Headless Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) on this Kubernetes. Please note, by changing `discovery-service` to headless service, you lose the ability to expose the service to z/OS components. We will continue to look for other solutions.
+
+To make the change, we need to remove all workloads and `discovery-service` first:
+
+```
+kubectl delete -f workloads/instance-env/
+kubectl delete -f workloads/zowe-yaml/
+kubectl delete svc/discovery-service -n zowe
+```
+
+Then create `discovery-service` as headless service by running:
+
+```
+kubectl apply -f samples/discovery-service-ci.yaml 
+```
+
+Now you can apply your workloads back by running:
+
+```
+kubectl apply -f workloads/instance-env/
+```
+
+or
+
+```
+kubectl apply -f workloads/zowe-yaml/
+```
+
+.
+
 <br /><br />
 
 ## Launch Single Image On Local Computer Without Kubernetes
