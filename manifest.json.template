@@ -426,7 +426,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.25.0"
+      "tag" : "1.25.0-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
