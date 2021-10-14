@@ -522,6 +522,43 @@ spec:
 ```
 
 With this added to your `Deployment`, your component should be able to write to `/tmp` directory.
+
+### ISSUE: `Permission denied` Showing In Pod Log
+
+If you see error messages like in your pod log
+
+```
+cp: cannot create regular file '/home/zowe/instance/workspace/manifest.json': Permission denied
+mkdir: cannot create directory '/home/zowe/instance/workspace/api-mediation': Permission denied
+mkdir: cannot create directory '/home/zowe/instance/workspace/backups': Permission denied
+cp: cannot create regular file '/home/zowe/instance/workspace/active_configuration.cfg': Permission denied
+/home/zowe/runtime/bin/internal/prepare-instance.sh: line 236: /home/zowe/instance/workspace/active_configuration.cfg: Permission denied
+/home/zowe/runtime/bin/internal/prepare-instance.sh: line 240: /home/zowe/instance/workspace/active_configuration.cfg: Permission denied
+/home/zowe/runtime/bin/internal/prepare-instance.sh: line 241: /home/zowe/instance/workspace/active_configuration.cfg: Permission denied
+```
+
+, it means `zowe` user (UID `20000`) does not have write permission to your persistent volume. It's very likely the persistent volume is mounted as `root` user.
+
+To solve this issue, you can modify workload files with extra `initContainers` item like this:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: update-workspace-permission
+          image: busybox:1.28
+          command: ['sh', '-c', 'OWNER=`stat -c "%U:%G" /home/zowe/instance/workspace` && if [ $OWNER == "root:root" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+          volumeMounts:
+            - name: zowe-workspace
+              mountPath: "/home/zowe/instance/workspace"
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+```
+
 <br /><br />
 
 ## Launch Single Image On Local Computer Without Kubernetes
