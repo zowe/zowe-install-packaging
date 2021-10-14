@@ -32,7 +32,6 @@ spec:
         runAsGroup: 20000
         fsGroup: 20000
       serviceAccountName: zowe-sa
-      subdomain: discovery-service
       volumes:
         - name: tmp
           emptyDir: {}
