@@ -65,7 +65,7 @@
       "version": "~1.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "1.0.17-PR-198"
     },
     "org.zowe.explorer-uss": {
       "version": "~1.0.0-SNAPSHOT"
