@@ -18,7 +18,7 @@ spec:
     # FIXME: follow this guidance https://cloud.google.com/filestore/docs/accessing-fileshares to create Filestore instance.
     #        this should be Filestore instance file share name and IP address.
     path: /zowe_workspace
-    server: 10.195.3.178
+    server: 12.34.56.78
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
