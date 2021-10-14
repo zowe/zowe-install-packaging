@@ -658,6 +658,8 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZOS_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_host" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_https_port" "${ZOWE_ZSS_SERVER_PORT}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_TELNET_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_SSH_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
 
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.keystore.alias" "${KEY_ALIAS}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.externalCertificate.keystore.password" "${KEYSTORE_PASSWORD}"
@@ -729,7 +731,9 @@ else
     \\
     ZWE_EXTERNAL_PORT=7554\\
     ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
-    ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}")
+    ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}\\
+    ZOWE_ZLUX_TELNET_HOST=\${ZWED_agent_host}\\
+    ZOWE_ZLUX_SSH_HOST=\${ZWED_agent_host}")
 
   echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
   echo "you need to match \"ZWE_EXTERNAL_PORT\" to be the port you are using. For example:"
