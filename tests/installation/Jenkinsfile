@@ -293,7 +293,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     "pattern": "${params.ZOWE_ARTIFACTORY_PATTERN}",
     "target": ".tmp/zowe/",
     "flat": "true",
-    "build": "${params.ZOWE_ARTIFACTORY_BUILD}"    //Zowe still needs build to find artifacts (for now)
+    "build": "${params.ZOWE_ARTIFACTORY_BUILD}"
   }]
 }
 """,
