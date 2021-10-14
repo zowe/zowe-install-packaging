@@ -122,7 +122,8 @@
       "version": "~0.0.8-SNAPSHOT"
     },
     "org.zowe.licenses": {
-      "version": "1.10.0"
+      "version": "1.25.0",
+      "artifact": "zowe_licenses_full.zip"
     }
   },
   "sourceDependencies": [
