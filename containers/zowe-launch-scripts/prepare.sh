@@ -63,6 +63,7 @@ package_release=$(echo "${package_version}" | awk -F. '{print $1;}')
 # copy Dockerfile
 echo ">>>>> copy Dockerfile to ${linux_distro}/${cpu_arch}/Dockerfile"
 cd "${BASE_DIR}"
+rm -fr "${linux_distro}/${cpu_arch}"
 mkdir -p "${linux_distro}/${cpu_arch}"
 if [ ! -f Dockerfile ]; then
   echo "Error: Dockerfile file is missing."
@@ -171,6 +172,10 @@ echo "    - extract zowe-config-converter ..."
 tar zxf zowe-config-converter-*.tgz -C "${BASE_DIR}/${WORK_DIR}/bin/utils"
 mv "${BASE_DIR}/${WORK_DIR}/bin/utils/package" "${BASE_DIR}/${WORK_DIR}/bin/utils/config-converter"
 rm zowe-config-converter-*.tgz
+echo "    - extract zowe-ncert ..."
+mkdir -p "${BASE_DIR}/${WORK_DIR}/bin/utils/ncert"
+tar xvf zowe-ncert-*.pax -C "${BASE_DIR}/${WORK_DIR}/bin/utils/ncert"
+rm zowe-ncert-*.pax
 
 ###############################
 # prepare zlux core

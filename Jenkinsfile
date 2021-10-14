@@ -39,6 +39,11 @@ node('zowe-jenkins-agent-dind-wdc') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_KUBERNETES',
+      description: 'If we want to build zowe kubernetes.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -344,6 +349,23 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   pipeline.createStage(
+    name: "Build Kubernetes",
+    timeout: [ time: 10, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_KUBERNETES
+    },
+    stage : {
+      if (params.BUILD_KUBERNETES) {
+          sh './containers/build/parse-manifest-to-deployment.sh'
+          sh 'cd containers && zip -r zowe-containerization.zip kubernetes'
+          sh 'mv containers/zowe-containerization.zip .'
+          pipeline.uploadArtifacts([ 'zowe-containerization.zip' ])
+      }
+    }
+  )
+
+  pipeline.createStage(
     name              : "Update comment to signify build pass status",
     timeout: [time: 2, unit: 'MINUTES'],
     isSkippable: false,
@@ -380,7 +402,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       ])
       cliSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          //'build-name'   : ZOWE_CLI_BUILD_NAME     // we no longer rely on jenkins to find artifacts
       ])
       if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
         def testParameters = [

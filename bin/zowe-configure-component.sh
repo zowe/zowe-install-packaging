@@ -148,11 +148,33 @@ install_app_framework_plugin(){
     while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
         log_message "- install Zowe App Framework plugin"
         cd "${component_path}"
+
+        appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
+
+        if [ ! -r "${appfw_plugin_path}" ]; then
+            log_message "  App Framework plugin directory ${appfw_plugin_path} is not accessible"
+            break
+        fi
+        if [ ! -r "${appfw_plugin_path}/pluginDefinition.json" ]; then
+            log_message "  App Framework plugin directory ${appfw_plugin_path} does not have pluginDefinition.json"
+            break
+        fi
+        appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
+        if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
+            log_message "  Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
+            break
+        fi
+
+        # copy to workspace/app-server/pluginDirs
+        appfw_plugin_workspace_path="${INSTANCE_DIR}/workspace/app-server/pluginDirs/${appfw_plugin_id}"
+        mkdir -p "${appfw_plugin_workspace_path}"
+        cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
+
         # Uses install-app.sh in zowe-instance-dir to automatically set up the component onto zowe
         if [[ -n "${LOG_FILE}" ]] && [[ -w "${LOG_FILE}" ]]; then
-            ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})" >> $LOG_FILE
+            ${INSTANCE_DIR}/bin/install-app.sh "${appfw_plugin_workspace_path}" >> $LOG_FILE
         else
-            ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+            ${INSTANCE_DIR}/bin/install-app.sh "${appfw_plugin_workspace_path}"
         fi
         iterator_index=`expr $iterator_index + 1`
         appfw_plugin_path=$(read_component_manifest "${component_path}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
@@ -231,7 +253,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
 done
 
 #######################################################################
-# Check and sanitize valiables
+# Check and sanitize variables
 if [ -z "${COMPONENT_NAME}" -o -z "${INSTANCE_DIR}" ]; then
     #Ensures that the required parameters are entered, otherwise exit the program
     error_handler "Missing parameters, try: zowe-configure-component.sh -c <COMPONENT_NAME> -i <ZOWE_INSTANCE_DIR>"

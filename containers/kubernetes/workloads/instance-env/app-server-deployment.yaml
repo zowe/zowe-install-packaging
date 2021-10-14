@@ -1,40 +1,34 @@
----
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: discovery
+  name: app-server
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.24.0
-    app.kubernetes.io/component: discovery
-    app.kubernetes.io/part-of: apiml
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: app-server
+    app.kubernetes.io/part-of: app-server
     app.kubernetes.io/managed-by: manual
 spec:
-  serviceName: discovery-service
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: discovery
-  replicas: 1
+      app.kubernetes.io/component: app-server
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: discovery
+        app.kubernetes.io/component: app-server
     spec:
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
       serviceAccountName: zowe-sa
-      subdomain: discovery-service
       volumes:
-        - name: tmp
-          emptyDir: {}
         - name: zowe-runtime
           emptyDir: {}
         - name: zowe-instance
@@ -45,50 +39,49 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-            - configMap:
-                name: zowe-certificates-cm
-            - secret:
-                name: zowe-certificates-secret
+              - configMap:
+                  name: zowe-certificates-cm
+              - secret:
+                  name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: discovery
-          image: zowe-docker-release.jfrog.io/ompzowe/discovery-service:latest-ubuntu
+        - name: app-server
+          image: zowe-docker-release.jfrog.io/ompzowe/app-server:latest-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "150m"
+              memory: "128Mi"
+              cpu: "50m"
             limits:
-              memory: "512Mi"
-              cpu: "300m"
+              memory: "256Mi"
+              cpu: "200m"
           ports:
-            - containerPort: 7553
+            - name: app-server-port
+              containerPort: 8544
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: 7553
-            initialDelaySeconds: 180
+              port: 8544
+            initialDelaySeconds: 15
+            # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
+            failureThreshold: 18
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/instance/bin/internal/run-zowe.sh"
+            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: CMMN_LB
-              value: apiml-common-lib/bin/api-layer-lite-lib-all.jar
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
@@ -105,8 +98,15 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

@@ -130,7 +130,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       try {
         cliSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          //'build-name'   : ZOWE_CLI_BUILD_NAME      // we no longer rely on jenkins to find artifacts
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -139,7 +139,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       try {
         cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          //'build-name'   : ZOWE_CLI_BUILD_NAME      // we no longer rely on jenkins to find artifacts
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -163,6 +163,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           parameters: [
             string(name: 'BUILD_SMPE', value: 'SMPE'),
             booleanParam(name: 'BUILD_DOCKER', value: true),
+            booleanParam(name: 'BUILD_KUBERNETES', value: true),
             booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
           ],
           propagate: false
