@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # uncomment next line to enable debug mode
-# debug=true
+debug=true
 
 # constants
 SCRIPT_NAME=$(basename "$0")
