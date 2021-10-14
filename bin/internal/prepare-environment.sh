@@ -106,6 +106,11 @@ NONSTRICT_VERIFY_CERTIFICATES="${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
 # this configuration is deprecated and settings in instance.env will not affect how Zowe is starting
 APIML_PREFER_IP_ADDRESS=false
 
+# by default, set ZWE_EXTERNAL_PORT to be same as GATEWAY_PORT
+if [ -z "${ZWE_EXTERNAL_PORT}" ]; then
+  ZWE_EXTERNAL_PORT="${GATEWAY_PORT}"
+fi
+
 LAUNCH_COMPONENTS=""
 # FIXME: if ZOWE_INSTANCE is same as last character of ZOWE_PREFIX, it will never be appended
 if [[ "${ZOWE_PREFIX}" != *"${ZOWE_INSTANCE}" ]]; then
@@ -157,7 +162,7 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 # prepare-environment.sh shouldn't have any output, but these 2 functions may output:
 #   Prepending JAVA_HOME/bin to the PATH...
 #   Prepending NODE_HOME/bin to the PATH...
-# so we surpressed all output for those 2 functions
+# so we suppressed all output for those 2 functions
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi

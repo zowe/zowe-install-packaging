@@ -251,7 +251,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
 done
 
 #######################################################################
-# Check and sanitize valiables
+# Check and sanitize variables
 if [ -z "${COMPONENT_FILE}" ]; then
     #Ensures that the required parameters are entered, otherwise exit the program
     error_handler "Missing parameters, try: zowe-install-component.sh -o <PATH_TO_COMPONENT>"
@@ -339,7 +339,7 @@ if [ -n "${NODE_HOME}" ]; then
 fi
 $(validate_node_home 2>/dev/null 1>/dev/null)
 if [ $? -gt 0 ]; then
-    error_handler "NODE_HOME envrionement variable is required to continue."
+    error_handler "NODE_HOME environment variable is required to continue."
 fi
 
 # only need java to handle zip file
@@ -351,7 +351,7 @@ if [[ "$COMPONENT_FILE" = *.zip ]]; then
 
     $(validate_java_home 2>/dev/null 1>/dev/null)
     if [ $? -gt 0 ]; then
-        error_handler "JAVA_HOME envrionement variable is required to continue."
+        error_handler "JAVA_HOME environment variable is required to continue."
     fi
 fi
 

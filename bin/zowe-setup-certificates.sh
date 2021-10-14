@@ -388,7 +388,7 @@ else
 fi
 
 # set up privileges and ownership
-chmod -R $permissions ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/* 2> /dev/null # In some keystore scenarios these directories might be empty, so supress error
+chmod -R $permissions ${KEYSTORE_DIRECTORY}/${LOCAL_KEYSTORE_SUBDIR}/* ${KEYSTORE_DIRECTORY}/${KEYSTORE_ALIAS}/* 2> /dev/null # In some keystore scenarios these directories might be empty, so suppress error
 echo "Trying to change an owner of the ${KEYSTORE_DIRECTORY}."
 
 if ! chown -R "${ZOWE_USER_ID}" "${KEYSTORE_DIRECTORY}" >> "${LOG_FILE}" 2>&1 ; then
