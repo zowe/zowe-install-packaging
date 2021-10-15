@@ -184,7 +184,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     string(
       name: 'ZOWE_CLI_ARTIFACTORY_BUILD',
       description: 'Zowe artifactory download build',
-      defaultValue: 'Zowe CLI Bundle :: master',
+      defaultValue: '',
       trim: true
     ),
     string(
