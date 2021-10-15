@@ -130,12 +130,12 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (!params.ZOWE_BUILD_NUMBER) {
         error "ZOWE_BUILD_NUMBER is required to promote build."
       }
-      if (!params.ZOWE_CLI_BUILD_NAME) {
-        error "ZOWE_CLI_BUILD_NAME is required to promote build."
-      }
-      if (!params.ZOWE_CLI_BUILD_NUMBER) {
-        error "ZOWE_CLI_BUILD_NUMBER is required to promote build."
-      }
+    //   if (!params.ZOWE_CLI_BUILD_NAME) {
+    //     error "ZOWE_CLI_BUILD_NAME is required to promote build."
+    //   }
+    //   if (!params.ZOWE_CLI_BUILD_NUMBER) {
+    //     error "ZOWE_CLI_BUILD_NUMBER is required to promote build."
+    //   }
       if (!params.ZOWE_RELEASE_VERSION) {
         error "ZOWE_RELEASE_VERSION is required to promote build."
       }
