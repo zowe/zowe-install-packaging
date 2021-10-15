@@ -89,14 +89,14 @@ node('zowe-jenkins-agent-dind-wdc') {
       description: 'Zowe CLI successful build name',
       defaultValue: 'Zowe CLI Bundle :: master',
       trim: true,
-      required: true
+      required: false
     ),
     string(
       name: 'ZOWE_CLI_BUILD_NUMBER',
       description: 'REQUIRED if ZOWE_CLI_BUILD_RC_PATH is empty. Zowe CLI successful build number',
       defaultValue: '',
       trim: true,
-      required: true
+      required: false
     ),
     string(
       name: 'ZOWE_RELEASE_VERSION',
