@@ -62,7 +62,7 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "1.0.18-PR-292"
     },
     "org.zowe.explorer-mvs": {
       "version": "1.0.17-PR-198"
