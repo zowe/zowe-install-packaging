@@ -73,21 +73,21 @@ node('zowe-jenkins-agent-dind-wdc') {
     string(
       name: 'ZOWE_CLI_BUILD_REPOSITORY',
       description: 'Zowe CLI successful build repository',
-      defaultValue: 'libs-snapshot-local',
+      defaultValue: 'libs-release-local',
       trim: true,
       required: true
     ),
     string(
       name: 'ZOWE_CLI_BUILD_PATH',
       description: 'Zowe CLI successful build path. For example, "org/zowe/cli/*".',
-      defaultValue: '*',
+      defaultValue: 'org/zowe/cli/*',
       trim: true,
       required: true
     ),
     string(
       name: 'ZOWE_CLI_BUILD_NAME',
       description: 'Zowe CLI successful build name',
-      defaultValue: 'Zowe CLI Bundle :: master',
+      defaultValue: '',
       trim: true,
       required: false
     ),
