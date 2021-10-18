@@ -72,7 +72,7 @@
 //RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* Delete Token .................................................... */
-    RACDCERT DELTOKEN(&SSOTOKEN.)
+    RACDCERT DELTOKEN(&SSOTOKEN.) FORCE
 
 /* List Zowe token certificates .................................... */
     RACDCERT LISTTOKEN(&SSOTOKEN.)

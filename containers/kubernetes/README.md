@@ -7,7 +7,7 @@
 
 ### 1. Kubernetes Cluster
 
-Zowe containerization solition is compatible with Kubernetes v1.19+ or OpenShift v4.6+.
+Zowe containerization solution is compatible with Kubernetes v1.19+ or OpenShift v4.6+.
 
 There are many ways to prepare a Kubernetes cluster based on your requirements.
 
@@ -21,7 +21,7 @@ For production purpose, you can:
 - bootstrap your own cluster by following this official document [Installing Kubernetes with deployment tools](https://kubernetes.io/docs/setup/production-environment/tools/).
 - or provision a Kubernetes cluster from popular Cloud vendors:
   - [Amazon Elastic Kubernetes Service](https://aws.amazon.com/eks/)
-  - [Microsfot Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes)
+  - [Microsoft Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/intro-kubernetes)
   - [IBM Cloud Kubernetes Service](https://www.ibm.com/ca-en/cloud/kubernetes-service)
   - [Google Cloud Kubernetes Engine](https://cloud.google.com/kubernetes-engine)
 
@@ -125,6 +125,10 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - `KEYSTORE_DIRECTORY` must be set to `/home/zowe/keystore`. This is not needed if you are using `zowe.yaml`.
 - `ZWE_EXTERNAL_HOSTS` is suggested to define as a list domains you are using to access your Kubernetes cluster.
 - `ZOWE_EXTERNAL_HOST=$(echo "${ZWE_EXTERNAL_HOSTS}" | awk -F, '{print $1}' | tr -d '[[:space:]]')` is needed to define after `ZWE_EXTERNAL_HOSTS`. It's the primary external domain.
+- `ZWE_EXTERNAL_PORT` (or `zowe.externalPort` if you are using `zowe.yaml`) must be the port you expose to end-user. This value is optional if it's same as default `GATEWAY_PORT` `7554`. With default settings,
+  * if you choose `LoadBalancer` `gateway-service`, this value is optional, or set to `7554`,
+  * if you choose `NodePort` `gateway-service` and access the service directly, this value should be same as `spec.ports[0].nodePort` with default value `32554`,
+  * if you choose `NodePort` `gateway-service` and access the service through port forwarding, the value should be the forwarded port you set.
 - `ZOWE_ZOS_HOST` is recommended to be set to where the z/OS system where your Zowe ZSS/ZIS is running.
 - `ZWE_DISCOVERY_SERVICES_REPLICAS` should be set to same value of `spec.replicas` defined in `workloads/instance-env/discovery-statefulset.yaml` or `workloads/zowe-yaml/discovery-statefulset.yaml`.
 - All components running in Kubernetes should use default ports:
@@ -146,6 +150,8 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - Must append and customize these 2 values:
   - `ZWED_agent_host=${ZOWE_ZOS_HOST}` is telling App-Server the z/OS system when ZSS and ZIS components are running.
   - `ZWED_agent_https_port=${ZOWE_ZSS_SERVER_PORT}`
+  - `ZOWE_ZLUX_TELNET_HOST=${ZWED_agent_host}` is telling App-Server TN3270 Terminal application what should be the default host.
+  - `ZOWE_ZLUX_SSH_HOST=${ZWED_agent_host}` is telling App-Server VT Terminal application what should be the default host.
 
 If you are using `zowe.yaml`, the above instructions are still valid, but should use the matching `zowe.yaml` configuration entries. Check [Updating the zowe.yaml configuration file](https://docs.zowe.org/stable/user-guide/configure-instance-directory/#updating-the-zoweyaml-configuration-file) for more details.
 
@@ -164,11 +170,11 @@ kubectl get secrets --namespace zowe
 
 and it should show a Secret `zowe-certificates-secret`.
 
-### 4. Expose Gateway and Discovery
+### 4. Expose API Catalog, Gateway and Discovery
 
 This section is highly related to your Kubernetes cluster configuration. If you are not sure about these sections, please contact your Kubernetes administrator or us.
 
-#### 4a. Create Service
+#### 4a. Create Services
 
 You may choose between `LoadBalancer` or `NodePort` service depending on your Kubernetes provider. Please note `NodePort` services should be avoided as they are insecure, and can not be used together with `NetworkPolicies`. `LoadBalancers` or use of an `Ingress` is recommended over `NodePorts`.
 
@@ -183,6 +189,16 @@ The table below provides a guidance for you:
 | OpenShift                 | LoadBalancer or NodePort | [Create Route](#4d-create-route-for-openshift-only)        |
 
 __Note__: Complete current section "4a. Create Service section" first, then work on additional setups listed in the table above if necessary.
+
+##### <ins>Define api-catalog service</ins>
+
+`api-catalog-service` is required by Zowe, but not necessarily exposed to external users. So `api-catalog-service` is defined as type `ClusterIP`. To define this service, run:
+
+```bash
+kubectl apply -f samples/api-catalog-service.yaml
+```
+
+Upon success, you should see following output: `service/api-catalog-service created`
 
 ##### <ins>Expose gateway service</ins>
 
@@ -204,7 +220,7 @@ Either way, upon success, you should see following output: `service/gateway-serv
 
 ##### <ins>Expose discovery service</ins>
 
-Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of kubernetes) and requries doing dynamic registration.
+Exposing discovery service is mandatory when there is zowe component running on z/OS side (outside of kubernetes) and requires doing dynamic registration.
 
 If you choose to enable, simply run the following step:
 
@@ -232,7 +248,7 @@ To verify above steps, run
 kubectl get services --namespace zowe
 ```
 
-and it should show services `gateway-service` and `discovery-service`.
+and it should show services `api-catalog-service`, `gateway-service` and `discovery-service`.
 
 Upon completion of this 4a. Create Service section, you would probably need to run additional setups. Refer to "Additional setups required" in the table. [Return to table](#table)
 If you don't need additional setups, you can skip 4b, 4c, 4d and jump directly to [Apply Zowe](#apply-zowe-core-components-workloads-and-start-zowe) section.
@@ -338,7 +354,7 @@ should show you a CronJob `cleanup-static-definitions` which `SUSPEND` should be
 
 ## Access Zowe
 
-If you are using `LoadBalancer`, Zowe instance is accessible through port 7554: `https://\<ip-adress\>:7554`
+If you are using `LoadBalancer`, Zowe instance is accessible through port 7554: `https://\<ip-address\>:7554`
 <br /><br /><br />
 
 ## Import New Component

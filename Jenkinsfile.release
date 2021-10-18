@@ -22,6 +22,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def ZOWE_RELEASE_DOCKER_AMD64_SOURCE_FILEPATTERN = "server-bundle.sources.amd64-*.tar"
   def ZOWE_RELEASE_DOCKER_S390X_FILEPATTERN = "server-bundle.s390x-*.tar"
   def ZOWE_RELEASE_DOCKER_S390X_SOURCE_FILEPATTERN = "server-bundle.sources.s390x-*.tar"
+  def ZOWE_RELEASE_CONTAINERIZATION_FILEPATTERN = "zowe-containerization-*.zip"
   def ZOWE_RELEASE_CLI_CORE_FILEPATTERN = "zowe-cli-package-1*.zip"
   def ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN = "zowe-cli-plugins-1*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
@@ -73,30 +74,30 @@ node('zowe-jenkins-agent-dind-wdc') {
     string(
       name: 'ZOWE_CLI_BUILD_REPOSITORY',
       description: 'Zowe CLI successful build repository',
-      defaultValue: 'libs-snapshot-local',
+      defaultValue: 'libs-release-local',
       trim: true,
       required: true
     ),
     string(
       name: 'ZOWE_CLI_BUILD_PATH',
       description: 'Zowe CLI successful build path. For example, "org/zowe/cli/*".',
-      defaultValue: '*',
+      defaultValue: 'org/zowe/cli/*',
       trim: true,
       required: true
     ),
     string(
       name: 'ZOWE_CLI_BUILD_NAME',
       description: 'Zowe CLI successful build name',
-      defaultValue: 'Zowe CLI Bundle :: master',
+      defaultValue: '',
       trim: true,
-      required: true
+      required: false
     ),
     string(
       name: 'ZOWE_CLI_BUILD_NUMBER',
       description: 'REQUIRED if ZOWE_CLI_BUILD_RC_PATH is empty. Zowe CLI successful build number',
       defaultValue: '',
       trim: true,
-      required: true
+      required: false
     ),
     string(
       name: 'ZOWE_RELEASE_VERSION',
@@ -130,12 +131,12 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (!params.ZOWE_BUILD_NUMBER) {
         error "ZOWE_BUILD_NUMBER is required to promote build."
       }
-      if (!params.ZOWE_CLI_BUILD_NAME) {
-        error "ZOWE_CLI_BUILD_NAME is required to promote build."
-      }
-      if (!params.ZOWE_CLI_BUILD_NUMBER) {
-        error "ZOWE_CLI_BUILD_NUMBER is required to promote build."
-      }
+    //   if (!params.ZOWE_CLI_BUILD_NAME) {
+    //     error "ZOWE_CLI_BUILD_NAME is required to promote build."
+    //   }
+    //   if (!params.ZOWE_CLI_BUILD_NUMBER) {
+    //     error "ZOWE_CLI_BUILD_NUMBER is required to promote build."
+    //   }
       if (!params.ZOWE_RELEASE_VERSION) {
         error "ZOWE_RELEASE_VERSION is required to promote build."
       }
@@ -314,6 +315,23 @@ node('zowe-jenkins-agent-dind-wdc') {
         echo ">>> no Docker image s390x sources version found in the build."
       }
 
+      // get containerization
+      try {
+        def containerization = pipeline.artifactory.getArtifact([
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/${params.ZOWE_BUILD_PATH}/${ZOWE_RELEASE_CONTAINERIZATION_FILEPATTERN}",
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (containerization['path']) {
+          echo ">>> Found containerization version ${containerization['path']}."
+          def FMID = containerization['path'].split('/').last().split('-').first()
+          releaseArtifacts['containerization'] = [:]
+          releaseArtifacts['containerization']['source'] = containerization
+          releaseArtifacts['containerization']['target'] = "zowe-containerization-${params.ZOWE_RELEASE_VERSION}.zip".toString()
+        }
+      } catch (e1) {
+        echo ">>> no containerization version found in the build."
+      }
       
       // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
@@ -346,11 +364,13 @@ node('zowe-jenkins-agent-dind-wdc') {
       echo ">>> Found Zowe CLI Plugins ${releaseArtifacts['cli-plugins']['source']['path']}."
 
       // try to get Zowe CLI CORE build commit hash
-      def cliBuildInfo = pipeline.artifactory.getBuildInfo(
-        releaseArtifacts['cli']['buildName'],
-        releaseArtifacts['cli']['buildNumber'],
-        'zowe-cli'
-      )
+      if (releaseArtifacts['cli']['buildName'] && releaseArtifacts['cli']['buildNumber']) {
+        def cliBuildInfo = pipeline.artifactory.getBuildInfo(
+            releaseArtifacts['cli']['buildName'],
+            releaseArtifacts['cli']['buildNumber'],
+            'zowe-cli'
+        )
+      }
       // releaseArtifacts['cli']['revision'] = cliBuildInfo && cliBuildInfo['vcsRevision']
       // if (!("${releaseArtifacts['cli']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
       //   error "Cannot extract git revision from build \"${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']}\""
@@ -358,11 +378,13 @@ node('zowe-jenkins-agent-dind-wdc') {
       // echo ">>>> Build ${releaseArtifacts['cli']['buildName']}/${releaseArtifacts['cli']['buildNumber']} commit hash is ${releaseArtifacts['cli']['revision']}, may proceed."
 
       // try to get Zowe CLI Plugins build commit hash
-      def cliPluginsBuildInfo = pipeline.artifactory.getBuildInfo(
-        releaseArtifacts['cli-plugins']['buildName'],
-        releaseArtifacts['cli-plugins']['buildNumber'],
-        'zowe-cli'
-      )
+      if (releaseArtifacts['cli-plugins']['buildName'] && releaseArtifacts['cli-plugins']['buildNumber']) {
+        def cliPluginsBuildInfo = pipeline.artifactory.getBuildInfo(
+            releaseArtifacts['cli-plugins']['buildName'],
+            releaseArtifacts['cli-plugins']['buildNumber'],
+            'zowe-cli'
+        )
+      }
       // releaseArtifacts['cli-plugins']['revision'] = cliPluginsBuildInfo && cliPluginsBuildInfo['vcsRevision']
       // if (!("${releaseArtifacts['cli-plugins']['revision']}" ==~ /^[0-9a-fA-F]{40}$/)) { // if it's a SHA-1 commit hash
       //   error "Cannot extract git revision from build \"${releaseArtifacts['cli-plugins']['buildName']}/${releaseArtifacts['cli-plugins']['buildNumber']}\""
@@ -677,7 +699,8 @@ ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifac
 
 """
       }
-def dockeramd64Message = ''
+
+      def dockeramd64Message = ''
       if (releaseArtifacts['docker-amd64'] && releaseArtifacts['docker-amd64']['target']) {
 dockeramd64Message = """
 docker amd64 image:
@@ -685,11 +708,21 @@ ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifac
 
 """
       }
-def dockers390xMessage = ''
+
+      def dockers390xMessage = ''
       if (releaseArtifacts['docker-s390x'] && releaseArtifacts['docker-s390x']['target']) {
 dockers390xMessage = """
 docker s390x image:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['docker-s390x']['target']}
+
+"""
+      }
+
+      def containerizationMessage = ''
+      if (releaseArtifacts['containerization'] && releaseArtifacts['containerization']['target']) {
+containerizationMessage = """
+containerization:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['containerization']['target']}
 
 """
       }
@@ -703,6 +736,7 @@ ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifac
 ${smpeMessage}
 ${dockeramd64Message}
 ${dockers390xMessage}
+${containerizationMessage}
 The CLI Core Package is published here:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
 
