@@ -250,13 +250,14 @@ else
   create_new_instance
 fi
 
-#Make install-app.sh present per-instance for convenience
+#Make plugin install scripts present per-instance for convenience
 # TODO V2: These shouldn't be in bin, these should be called by the component installer. Put them in bin/utils
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/install-app.sh ${INSTANCE_DIR}/bin/install-app.sh
 cp ${ZOWE_ROOT_DIR}/components/app-server/share/zlux-app-server/bin/uninstall-app.sh ${INSTANCE_DIR}/bin/uninstall-app.sh
-cp ${ZOWE_ROOT_DIR}/components/zss/bin/zis-plugin-install.sh ${INSTANCE_DIR}/bin/utils/zis-plugin-install.sh
 # copy other files we needed for <instance>/bin
 cp -R ${ZOWE_ROOT_DIR}/bin/instance/* ${INSTANCE_DIR}/bin
+cp ${ZOWE_ROOT_DIR}/components/zss/bin/zis-plugin-install.sh ${INSTANCE_DIR}/bin/utils/zis-plugin-install.sh
+
 
 # Make the instance directory writable by the owner and zowe process , but not the bin directory so people can't maliciously edit it
 # If this step fails it is likely because the user running this script is not part of the ZOWE group, so have to give more permissions
