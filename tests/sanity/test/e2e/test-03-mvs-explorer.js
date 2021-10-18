@@ -127,7 +127,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug('qualifier updated');
 
     // wait for results
-    await driver.sleep(1000);
+    await driver.sleep(10000);
     await waitUntilElementIsGone(driver, 'svg#loading-icon', treeContent);
     debug('page reloaded');
 
