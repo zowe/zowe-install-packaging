@@ -90,13 +90,13 @@
 			<default>#ZWEADMIN</default>
 		</string>
 	</variable>
-    <variable name="STCGROUP" scope="instance" visibility="public">
-		<label>STCGROUP</label>
+    <variable name="STCGRP" scope="instance" visibility="public">
+		<label>STCGRP</label>
 		<abstract>Group for Zowe started tasks</abstract>
 		<description>Group for Zowe started tasks</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#STCGROUP</default>
+			<default>#STCGRP</default>
 		</string>
 	</variable>
     <variable name="ZOWEUSER" scope="instance" visibility="public">
@@ -267,7 +267,7 @@
 		<description>Step to define the variables</description>
 		<variableValue name="PRODUCT" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="ADMINGRP" noPromptIfSet="false" required="false" scope="instance"/>
-   		<variableValue name="STCGROUP" noPromptIfSet="false" required="false" scope="instance"/>
+   		<variableValue name="STCGRP" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="ZOWEUSER" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="XMEMUSER" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="AUXUSER" noPromptIfSet="false" required="false" scope="instance"/>
@@ -285,22 +285,23 @@
     	<variableValue name="STCGDEP" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="STCUDEP" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="FACACID" noPromptIfSet="false" required="false" scope="instance"/>
+      <variableValue name="ZLNCHSTC" noPromptIfSet="false" required="false" scope="instance"/>
 		<instructions substitution="false">Run this step to initialize variable values.&lt;br/&gt;
     Note(s):&lt;br/&gt;
        1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY &lt;br/&gt;
        TO ALTER SECURITY DEFINITONS &lt;br/&gt;
        2. The sample ACF2 commands create ROLEs that match the group &lt;br/&gt;
-       names. Due to permits assigned to the &amp;STCGROUP ROLE, it is &lt;br/&gt;
+       names. Due to permits assigned to the &amp;STCGRP ROLE, it is &lt;br/&gt;
        advised to ensure this ROLE has a unique identifier. &lt;br/&gt;
        3. The Zowe started task user ID (variable ZOWEUSER) must be able &lt;br/&gt;
        to write persistent data in the zlux-app-server/deploy directory &lt;br/&gt;
        structure. This sample JCL makes the Zowe started task part of &lt;br/&gt;
-       the Zowe administrator group (SET STCGROUP=&amp;ADMINGRP. statement) &lt;br/&gt;
+       the Zowe administrator group (SET STCGRP=&amp;ADMINGRP. statement) &lt;br/&gt;
        to achieve this goal. Another solution, also below, which you can &lt;br/&gt;
        comment out, is giving the Zowe started task CONTROL access to &lt;br/&gt;
        the UNIXPRIV SUPERUSER.FILESYS profile. &lt;br/&gt;</instructions>
 		<weight>1</weight>
-		<autoEnable>false</autoEnable>
+		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 	</step>
 	<step name="ZWESECUR_JCL" optional="false">
