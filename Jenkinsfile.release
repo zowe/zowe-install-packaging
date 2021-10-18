@@ -22,6 +22,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def ZOWE_RELEASE_DOCKER_AMD64_SOURCE_FILEPATTERN = "server-bundle.sources.amd64-*.tar"
   def ZOWE_RELEASE_DOCKER_S390X_FILEPATTERN = "server-bundle.s390x-*.tar"
   def ZOWE_RELEASE_DOCKER_S390X_SOURCE_FILEPATTERN = "server-bundle.sources.s390x-*.tar"
+  def ZOWE_RELEASE_CONTAINERIZATION_FILEPATTERN = "zowe-containerization-*.zip"
   def ZOWE_RELEASE_CLI_CORE_FILEPATTERN = "zowe-cli-package-1*.zip"
   def ZOWE_RELEASE_CLI_PLUGINS_FILEPATTERN = "zowe-cli-plugins-1*.zip"
   def ZOWE_INSTALL_PACKAGING_REPO = 'zowe/zowe-install-packaging'
@@ -314,6 +315,23 @@ node('zowe-jenkins-agent-dind-wdc') {
         echo ">>> no Docker image s390x sources version found in the build."
       }
 
+      // get containerization
+      try {
+        def containerization = pipeline.artifactory.getArtifact([
+          'pattern'      : "${params.ZOWE_BUILD_REPOSITORY}/${params.ZOWE_BUILD_PATH}/${ZOWE_RELEASE_CONTAINERIZATION_FILEPATTERN}",
+          'build-name'   : releaseArtifacts['zowe']['buildName'],
+          'build-number' : releaseArtifacts['zowe']['buildNumber']
+        ])
+        if (containerization['path']) {
+          echo ">>> Found containerization version ${containerization['path']}."
+          def FMID = containerization['path'].split('/').last().split('-').first()
+          releaseArtifacts['containerization'] = [:]
+          releaseArtifacts['containerization']['source'] = containerization
+          releaseArtifacts['containerization']['target'] = "zowe-containerization-${params.ZOWE_RELEASE_VERSION}.zip".toString()
+        }
+      } catch (e1) {
+        echo ">>> no containerization version found in the build."
+      }
       
       // find the Zowe CLI build number will be promoted
       releaseArtifacts['cli'] = [:]
@@ -681,7 +699,8 @@ ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifac
 
 """
       }
-def dockeramd64Message = ''
+
+      def dockeramd64Message = ''
       if (releaseArtifacts['docker-amd64'] && releaseArtifacts['docker-amd64']['target']) {
 dockeramd64Message = """
 docker amd64 image:
@@ -689,11 +708,21 @@ ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifac
 
 """
       }
-def dockers390xMessage = ''
+
+      def dockers390xMessage = ''
       if (releaseArtifacts['docker-s390x'] && releaseArtifacts['docker-s390x']['target']) {
 dockers390xMessage = """
 docker s390x image:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['docker-s390x']['target']}
+
+"""
+      }
+
+      def containerizationMessage = ''
+      if (releaseArtifacts['containerization'] && releaseArtifacts['containerization']['target']) {
+containerizationMessage = """
+containerization:
+${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['containerization']['target']}
 
 """
       }
@@ -707,6 +736,7 @@ ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifac
 ${smpeMessage}
 ${dockeramd64Message}
 ${dockers390xMessage}
+${containerizationMessage}
 The CLI Core Package is published here:
 ${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${releaseFilePath}/${releaseArtifacts['cli']['target']}
 
