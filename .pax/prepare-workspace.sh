@@ -145,6 +145,7 @@ echo "[${SCRIPT_NAME}] extract zowe-config-converter ..."
 tar zxvf zowe-config-converter-*.tgz
 mv package config-converter
 rm zowe-config-converter-*.tgz
+# zowe-ncert.pax will be extracted on z/OS side
 cd "$ROOT_DIR"
 rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 
