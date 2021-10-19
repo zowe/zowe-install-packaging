@@ -73,10 +73,10 @@
       "version": "1.0.12"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.17"
+      "version": "1.0.18"
     },
     "org.zowe.explorer-mvs": {
-      "version": "1.0.16"
+      "version": "1.0.17"
     },
     "org.zowe.explorer-uss": {
       "version": "1.0.18"
@@ -270,7 +270,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.16",
+        "tag": "v1.0.17",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -284,7 +284,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.17",
+        "tag": "v1.0.18",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -457,12 +457,12 @@
     "explorer-jes": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-jes",
-        "tag" : "1.0.17-ubuntu"
+        "tag" : "1.0.18-ubuntu"
     },
     "explorer-mvs": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-mvs",
-        "tag" : "1.0.16-ubuntu"
+        "tag" : "1.0.17-ubuntu"
     },
     "explorer-uss": {
         "registry": "zowe-docker-release.jfrog.io",
