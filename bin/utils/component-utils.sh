@@ -554,6 +554,49 @@ process_component_appfw_plugin() {
 }
 
 ###############################
+# Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
+#
+# The supported manifest entry is ".gatewaySharedLibs". All shared libs
+# defined will be passed to install-app.sh for proper installation.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# Required environment variables:
+# - INSTANCE_DIR
+# - NODE_HOME
+#
+# @param string   component directory
+process_component_gateway_shared_libs() {
+  component_dir=$1
+
+  all_succeed=true
+  iterator_index=0
+  gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}].path" 2>/dev/null)
+  while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
+      cd "${component_dir}"
+      if [ ! -r "${gateway_shared_libs_path}" ]; then
+        >&2 echo "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
+        all_succeed=false
+        break
+      fi
+
+      ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${gateway_shared_libs_path})"
+      # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
+
+      iterator_index=`expr $iterator_index + 1`
+      gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}].path" 2>/dev/null)
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+###############################
 # Lists the service IDs of a specified component
 #
 # Note: this function calls is dependent on various utility functions and
