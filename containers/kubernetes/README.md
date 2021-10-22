@@ -178,13 +178,13 @@ You may choose between `LoadBalancer` or `NodePort` service depending on your Ku
 
 The table below provides a guidance for you:
 <a id="table"></a>
-| Kubernetes provider       | Service                  | Additional setups required                                 |
-| :------------------------ | :----------------------  | :--------------------------------------------------------- |
-| minikube                  | LoadBalancer or NodePort | [Port Forward](#4b-port-forward-for-minikube-only)         |
-| docker-desktop            | LoadBalancer             | none                                                       |
-| bare-metal                | LoadBalancer or NodePort | [Create Ingress](#4c-create-ingress-for-bare-metal-only)   |
-| cloud-vendors             | LoadBalancer             | none                                                       |
-| OpenShift                 | LoadBalancer or NodePort | [Create Route](#4d-create-route-for-openshift-only)        |
+| Kubernetes provider       | Service                   | Additional setups required                                 |
+| :------------------------ | :------------------------ | :--------------------------------------------------------- |
+| minikube                  | LoadBalancer or NodePort  | [Port Forward](#4b-port-forward-for-minikube-only)         |
+| docker-desktop            | LoadBalancer              | none                                                       |
+| bare-metal                | LoadBalancer or NodePort  | [Create Ingress](#4c-create-ingress-for-bare-metal-only)   |
+| cloud-vendors             | LoadBalancer              | none                                                       |
+| OpenShift                 | LoadBalancer or ClusterIP | [Create Route](#4d-create-route-for-openshift-only)        |
 
 __Note__: Complete current section "4a. Create Service section" first, then work on additional setups listed in the table above if necessary.
 
@@ -292,9 +292,17 @@ Upon completion, next [apply zowe](#apply-zowe-core-components-workloads-and-sta
 
 #### 4d. Create Route (for OpenShift only)
 
-If you are using OpenShift, usually you need to define `Route` instead of `Ingress`.
+If you are using OpenShift and choose to use `LoadBalancer` services, you may already have an external IP for the service. You can use that external IP to access Zowe APIML Gateway. To verify your service external IP, run:
 
-Open files [samples/openshift/gateway-route.yaml](samples/openshift/gateway-route.yaml) and [samples/openshift/discovery-route.yaml](samples/openshift/discovery-route.yaml), double check the value of `spec.port.targetPort` (line 18). Then run:
+```
+oc get svc -n zowe
+```
+
+If you see a IP in `EXTERNAL-IP` column, that means your OpenShift is properly configured and can provision external IP for you. If you see `<pending>` and it won't change after waiting for a while, that means you may not be able to `LoadBalancer` services with your current configuration. Please try `ClusterIP` services.
+
+If you are using OpenShift and choose to use `ClusterIP` services, for example `samples/gateway-service-ci.yaml`, you will need to define `Route` to access Zowe APIML Gateway.
+
+Open files [samples/openshift/gateway-route.yaml](samples/openshift/gateway-route.yaml) and [samples/openshift/discovery-route.yaml](samples/openshift/discovery-route.yaml), double check the value. You can customize `host` in line 15 if you have your own domain name. Then run:
 
 ```bash
 oc apply -f samples/openshift/gateway-route.yaml && oc apply -f samples/openshift/discovery-route.yaml
@@ -495,6 +503,8 @@ If you have Kubernetes v1.21+, there are few changes recommended based on [Depre
 
 ### ISSUE: `/tmp` Directory Is Not Writable
 
+**Problem**
+
 We enabled `readOnlyRootFilesystem` SecurityContext by default in `Deployment` object definition. This will result in `/tmp` is readonly and not writable to `zowe` runtime user.
 
 **Recommended fix:**
@@ -525,6 +535,8 @@ With this added to your `Deployment`, your component should be able to write to 
 
 ### ISSUE: `Permission denied` Showing In Pod Log
 
+**Problem**
+
 If you see error messages like in your pod log
 
 ```
@@ -538,6 +550,8 @@ cp: cannot create regular file '/home/zowe/instance/workspace/active_configurati
 ```
 
 , it means `zowe` user (UID `20000`) does not have write permission to your persistent volume. It's very likely the persistent volume is mounted as `root` user.
+
+**Recommended fix:**
 
 To solve this issue, you can modify workload files with extra `initContainers` item like this:
 
@@ -560,6 +574,8 @@ spec:
 ```
 
 ### ISSUE: Gateway Shows API Catalog, Discovery, Authentication Services Are Not Running
+
+**Problem**
 
 This issue is potentially caused by DNS resolution on some Kubernetes systems. In this case, gateway failed to resolve `discovery-0.discovery-service.zowe.svc.cluster.local` domain name. To confirm this is the cause, you can run curl utility tool from any running pod.
 
@@ -594,6 +610,8 @@ Request failed (ENOTFOUND): getaddrinfo ENOTFOUND discovery-0.discovery-service.
 
 This is caused by `discovery-service` must be defined as [Headless Service](https://kubernetes.io/docs/concepts/services-networking/service/#headless-services) on this Kubernetes. Please note, by changing `discovery-service` to headless service, you lose the ability to expose the service to z/OS components. We will continue to look for other solutions.
 
+**Recommended fix:**
+
 To make the change, we need to remove all workloads and `discovery-service` first:
 
 ```
@@ -621,6 +639,47 @@ kubectl apply -f workloads/zowe-yaml/
 ```
 
 .
+
+### ISSUE: Deployment and ReplicaSet cannot create any pod
+
+**Problem**
+
+If you are using OpenShift and see these error messages in `ReplicaSet` Events:
+
+```
+Generated from replicaset-controller
+Error creating: pods "api-catalog-??????????-" is forbidden: unable to validate against any security context constraint: []
+```
+
+That means the Zowe ServiceAccount `zowe-sa` doesn't have any SecurityContextConstraint attached.
+
+**Recommended fix:**
+
+You can run this command to grant certain level of permission, for example, `privileged`, to `zowe-sa` ServiceAccount:
+
+```
+oc admin policy add-scc-to-user privileged -z zowe-sa -n zowe
+```
+
+### ISSUE: Failed to create services
+
+**Problem**
+
+If you are using OpenShift and apply services, you may see this error:
+
+```
+The Service "api-catalog-service" is invalid: spec.ports[0].appProtocol: Forbidden: This field can be enabled with the ServiceAppProtocol feature gate
+```
+
+**Recommended fix:**
+
+To fix this issue, you can simply find and comment out this line in the `Service` definition files:
+
+```
+      appProtocol: https
+```
+
+With OpenShift, we can define a `PassThrough` `Route` to let Zowe to handle TLS connections.
 
 <br /><br />
 
