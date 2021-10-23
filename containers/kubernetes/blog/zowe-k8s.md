@@ -16,18 +16,18 @@ Kubernetes is a **container orchestration platform** for scheduling and automati
 
 Containerization in general and Kubernetes provide many benefits like,
 
-**Portability**: A container is able to run uniformly and consistently across any platform or cloud.
-**Fault isolation**: Each containerized application is isolated and operates independently of others.
-**Efficiency**: Software running in containerized environments shares the machine’s OS kernel, and application layers within a container can be shared across containers.
-**Security**: The isolation of applications as containers inherently prevents the invasion of malicious code from affecting other containers or the host system.
-**Ease of management**: Kubernetes automates the application lifecycle, including:
-- **Deployment**: Deploy containers and keep them running in a desired state.
-- **Rollouts**: Kubernetes lets you initiate, pause, resume, or roll back rollouts to update your application.
-- **Service discovery**: Kubernetes can expose a service to external or within the cluster.
-Storage provisioning: Kubernetes can mount local or cloud storage for application.
-- **Load balancing**: Kubernetes can distribute the workload based on CPU utilization or custom metrics.
-- **Autoscaling**: Kubernetes autoscaling can spin up or drain containers based on realtime workload.
-- **Self-healing for high availability**: Kubernetes can restart or replace failed containers to prevent downtime.
+- **Portability**: A container is able to run uniformly and consistently across any platform or cloud.
+- **Fault isolation**: Each containerized application is isolated and operates independently of others.
+- **Efficiency**: Software running in containerized environments shares the machine’s OS kernel, and application layers within a container can be shared across containers.
+- **Security**: The isolation of applications as containers inherently prevents the invasion of malicious code from affecting other containers or the host system.
+- **Ease of management**: Kubernetes automates the application lifecycle, including:
+  * **Deployment**: Deploy containers and keep them running in a desired state.
+  * **Rollouts**: Kubernetes lets you initiate, pause, resume, or roll back rollouts to update your application.
+  * **Service discovery**: Kubernetes can expose a service to external or within the cluster.
+  * **Storage provisioning**: Kubernetes can mount local or cloud storage for application.
+  * **Load balancing**: Kubernetes can distribute the workload based on CPU utilization or custom metrics.
+  * **Autoscaling**: Kubernetes autoscaling can spin up or drain containers based on realtime workload.
+  * **Self-healing for high availability**: Kubernetes can restart or replace failed containers to prevent downtime.
 
 ## Overview of Zowe Kubernetes deployment
 
@@ -192,7 +192,7 @@ You will need a Google Cloud account, proper billing setup, Google cloud CLI and
   ./bin/utils/convert-for-k8s.sh -x "35.192.15.148"
   ```
 
-  Please note the IP showing above is the `gateway-sercice` external IP showing in step 9.
+  Please note the IP showing above is the `gateway-service` external IP showing in step 9.
 
   Follow the instructions showing on the screen and copy all the content of ConfigMaps and Secret and save to your local computer. Now apply the configs to your cluster by running:
 
