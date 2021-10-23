@@ -144,7 +144,7 @@ done
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 SCRIPT_NAME=$(basename "$0")  # $0=./pre-packaging.sh
-BASE_DIR=$(dirname "$0")      # <something>/.pax
+BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
@@ -167,6 +167,14 @@ chmod +x content/templates/*.rex
 
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x content/zowe-$ZOWE_VERSION/bin/utils/keyring-util/keyring-util
+
+echo "[$SCRIPT_NAME] extract zowe-ncert ..."
+cd content/zowe-$ZOWE_VERSION/bin/utils
+mkdir -p ncert
+cd ncert
+pax -ppx -rf ../zowe-ncert-*.pax
+rm -f ../zowe-ncert-*.pax
+cd "${BASE_DIR}"
 
 # prepare for SMPE
 echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."

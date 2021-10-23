@@ -136,10 +136,24 @@ prepare_workspace_dir() {
 }
 
 ########################################################
-# Extra preparisons for running in container
+# Extra preparations for running in container
 # - link component runtime under zowe <runtime>/components
 # - run zowe-configure-component.sh to handle `commands.configureInstance`
 prepare_running_in_container() {
+  # gracefully shutdown all processes
+  print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_running_in_container:${LINENO}" "register SIGTERM handler for graceful shutdown"
+  trap gracefully_shutdown SIGTERM
+
+  if [ -z "${NODE_HOME}" ]; then
+    export NODE_HOME=$(detect_node_home)
+  fi
+
+  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # /component is hardcoded path we asked for in conformance
+  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
+    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  fi
+
   if [ -e "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
     rm -fr "${ROOT_DIR}/components/${ZOWE_CONTAINER_COMPONENT_ID}"
   fi
@@ -254,6 +268,25 @@ configure_components() {
 
       print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "- configure ${component_id}"
 
+      # check configure script
+      preconfigure_script=$(read_component_manifest "${component_dir}" ".commands.preConfigure" 2>/dev/null)
+      if [ "${preconfigure_script}" = "null" ]; then
+        preconfigure_script=
+      fi
+      if [ -x "${preconfigure_script}" ]; then
+        print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
+        # execute configure step and snapshot environment
+        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${component_id}" && . ${preconfigure_script} ; rc=$? ; return $rc)
+        retval=$?
+        if [ -n "${result}" ]; then
+          if [ "${retval}" = "0" ]; then
+            print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+          else
+            print_formatted_error "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+          fi
+        fi
+      fi
+
       # default build-in behaviors
       # - apiml static definitions
       result=$(process_component_apiml_static_definitions "${component_dir}" 2>&1)
@@ -342,6 +375,10 @@ if [ -z "${ROOT_DIR}" ]; then
     exit 1
   fi
 fi
+# overwrite ZOWE_ROOT_DIR with correct value anyway
+export ZOWE_ROOT_DIR="${ROOT_DIR}"
+# this is runtime, this value should be empty
+export INSTALL_DIR=
 
 # source utility scripts
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
@@ -380,6 +417,12 @@ if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
   ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
 fi
 
+# extra preparations for running in container 
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  prepare_running_in_container
+fi
+
 # init <instance>/.env directory and load environment variables
 prepare_instance_env_directory
 # global validations
@@ -387,11 +430,6 @@ prepare_instance_env_directory
 global_validate
 # prepare <instance>/workspace directory
 prepare_workspace_dir
-# extra preparisons for running in container 
-# this is running in containers
-if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
-  prepare_running_in_container
-fi
 
 # FIXME: do we need to do similar if the user is using zowe.yaml?
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" ]; then

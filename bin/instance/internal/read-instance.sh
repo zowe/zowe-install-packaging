@@ -10,6 +10,12 @@
 # Copyright IBM Corporation 2021
 ################################################################################
 
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # some variables like GATEWAY_HOST, ZOWE_EXPLORER_HOST, etc maybe needed by other variables
+  # so we prepare before sourcing others
+  prepare_container_runtime_environments
+fi
+
 # Requires INSTANCE_DIR to be set
 . ${INSTANCE_DIR}/bin/internal/read-essential-vars.sh
 
@@ -62,4 +68,9 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
     fi
     exit_with_error "${message}" "read-instance.sh:${LINENO}"
   fi
+fi
+
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # these values cannot be modified by other logics, so execute these again
+  prepare_container_runtime_environments
 fi

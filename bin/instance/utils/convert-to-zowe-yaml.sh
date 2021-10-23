@@ -44,6 +44,9 @@ fi
 read_essential_vars
 [ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 
+# import common environment variables to make sure node runs properly
+. "${ROOT_DIR}/bin/internal/zowe-set-env.sh"
+
 # generate zowe.yaml.sample
 # we need node for following commands
 ensure_node_is_on_path 1>/dev/null 2>&1
