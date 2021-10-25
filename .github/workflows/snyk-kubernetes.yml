@@ -5,64 +5,48 @@ jobs:
     strategy:
       matrix:
         k8s-manifests:
-        - workloads/instance-env/app-server-deployment.yaml
-        - workloads/instance-env/caching-deployment.yaml
+        # we run 3 kinds as example: CronJob, Deployment, StatefulSet
+        # all other Deployments should be similar
         - workloads/instance-env/discovery-statefulset.yaml
-        - workloads/instance-env/explorer-uss-deployment.yaml
-        - workloads/instance-env/explorer-mvs-deployment.yaml
-        - workloads/instance-env/api-catalog-deployment.yaml
-        - workloads/instance-env/jobs-api-deployment.yaml
-        - workloads/instance-env/files-api-deployment.yaml
         - workloads/instance-env/cleanup-static-definitions-cronjob.yaml
-        - workloads/instance-env/explorer-jes-deployment.yaml
         - workloads/instance-env/gateway-deployment.yaml
-        # - workloads/zowe-yaml/app-server-deployment.yaml
-        # - workloads/zowe-yaml/caching-deployment.yaml
-        # - workloads/zowe-yaml/discovery-statefulset.yaml
-        # - workloads/zowe-yaml/explorer-uss-deployment.yaml
-        # - workloads/zowe-yaml/explorer-mvs-deployment.yaml
-        # - workloads/zowe-yaml/api-catalog-deployment.yaml
-        # - workloads/zowe-yaml/jobs-api-deployment.yaml
-        # - workloads/zowe-yaml/files-api-deployment.yaml
-        # - workloads/zowe-yaml/cleanup-static-definitions-cronjob.yaml
-        # - workloads/zowe-yaml/explorer-jes-deployment.yaml
-        # - workloads/zowe-yaml/gateway-deployment.yaml
-        # - samples/pod-disruption-budget/app-server-pdb.yaml
-        # - samples/pod-disruption-budget/caching-pdb.yaml
-        # - samples/pod-disruption-budget/api-catalog-pdb.yaml
-        # - samples/pod-disruption-budget/jobs-api-pdb.yaml
-        # - samples/pod-disruption-budget/discovery-pdb.yaml
-        # - samples/pod-disruption-budget/explorer-jes-pdb.yaml
-        # - samples/pod-disruption-budget/gateway-pdb.yaml
-        # - samples/pod-disruption-budget/files-api-pdb.yaml
-        # - samples/pod-disruption-budget/explorer-uss-pdb.yaml
-        # - samples/pod-disruption-budget/explorer-mvs-pdb.yaml
-        # - samples/gateway-service-np.yaml
-        # - samples/gateway-service-lb.yaml
-        # - samples/bare-metal/gateway-ingress.yaml
-        # - samples/bare-metal/discovery-ingress.yaml
-        # - samples/sample-deployment.yaml
-        # - samples/certificates-cm.yaml
-        # - samples/config-cm.yaml
-        # - samples/api-catalog-service.yaml
-        # - samples/openshift/discovery-route.yaml
-        # - samples/openshift/gateway-route.yaml
-        # - samples/discovery-service-lb.yaml
-        # - samples/certificates-secret.yaml
-        # - samples/horizontal-pod-autoscaler/jobs-api-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/discovery-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/app-server-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/caching-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/api-catalog-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/explorer-uss-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/files-api-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/gateway-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/explorer-mvs-hpa.yaml
-        # - samples/horizontal-pod-autoscaler/explorer-jes-hpa.yaml
-        # - samples/workspace-pvc.yaml
-        # - samples/discovery-service-np.yaml
-        # - common/zowe-ns.yaml
-        # - common/zowe-sa.yaml
+        # try out other Kinds
+        - samples/pod-disruption-budget/app-server-pdb.yaml
+        - samples/pod-disruption-budget/caching-pdb.yaml
+        - samples/pod-disruption-budget/api-catalog-pdb.yaml
+        - samples/pod-disruption-budget/jobs-api-pdb.yaml
+        - samples/pod-disruption-budget/discovery-pdb.yaml
+        - samples/pod-disruption-budget/explorer-jes-pdb.yaml
+        - samples/pod-disruption-budget/gateway-pdb.yaml
+        - samples/pod-disruption-budget/files-api-pdb.yaml
+        - samples/pod-disruption-budget/explorer-uss-pdb.yaml
+        - samples/pod-disruption-budget/explorer-mvs-pdb.yaml
+        - samples/gateway-service-np.yaml
+        - samples/gateway-service-lb.yaml
+        - samples/bare-metal/gateway-ingress.yaml
+        - samples/bare-metal/discovery-ingress.yaml
+        - samples/sample-deployment.yaml
+        - samples/certificates-cm.yaml
+        - samples/config-cm.yaml
+        - samples/api-catalog-service.yaml
+        - samples/openshift/discovery-route.yaml
+        - samples/openshift/gateway-route.yaml
+        - samples/discovery-service-lb.yaml
+        - samples/certificates-secret.yaml
+        - samples/horizontal-pod-autoscaler/jobs-api-hpa.yaml
+        - samples/horizontal-pod-autoscaler/discovery-hpa.yaml
+        - samples/horizontal-pod-autoscaler/app-server-hpa.yaml
+        - samples/horizontal-pod-autoscaler/caching-hpa.yaml
+        - samples/horizontal-pod-autoscaler/api-catalog-hpa.yaml
+        - samples/horizontal-pod-autoscaler/explorer-uss-hpa.yaml
+        - samples/horizontal-pod-autoscaler/files-api-hpa.yaml
+        - samples/horizontal-pod-autoscaler/gateway-hpa.yaml
+        - samples/horizontal-pod-autoscaler/explorer-mvs-hpa.yaml
+        - samples/horizontal-pod-autoscaler/explorer-jes-hpa.yaml
+        - samples/workspace-pvc.yaml
+        - samples/discovery-service-np.yaml
+        - common/zowe-ns.yaml
+        - common/zowe-sa.yaml
 
     runs-on: ubuntu-latest
     steps:
