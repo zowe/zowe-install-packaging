@@ -6,16 +6,9 @@
 # issues, monitor images for newly disclosed vulnerabilities in Snyk and
 # fail PR checks for new vulnerabilities, see https://github.com/snyk/actions/
 
-name: Snyk Container
+name: Scan all containers used in Kubernetes
 
-on: 
-  workflow_dispatch:
-    types:
-      - mytrigger
-    inputs:
-      imageName:
-        description: 'Please enter full path of image'     
-        required: true
+on: push
 
 jobs:
   setup-matrix:
