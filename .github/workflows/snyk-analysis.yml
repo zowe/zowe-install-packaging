@@ -14,6 +14,7 @@ jobs:
   setup-matrix:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Setup image list matrix
         id: setup-image-matrix
         run: |
