@@ -11,42 +11,12 @@ jobs:
         - workloads/instance-env/cleanup-static-definitions-cronjob.yaml
         - workloads/instance-env/gateway-deployment.yaml
         # try out other Kinds
-        - samples/pod-disruption-budget/app-server-pdb.yaml
-        - samples/pod-disruption-budget/caching-pdb.yaml
-        - samples/pod-disruption-budget/api-catalog-pdb.yaml
-        - samples/pod-disruption-budget/jobs-api-pdb.yaml
-        - samples/pod-disruption-budget/discovery-pdb.yaml
-        - samples/pod-disruption-budget/explorer-jes-pdb.yaml
-        - samples/pod-disruption-budget/gateway-pdb.yaml
-        - samples/pod-disruption-budget/files-api-pdb.yaml
-        - samples/pod-disruption-budget/explorer-uss-pdb.yaml
-        - samples/pod-disruption-budget/explorer-mvs-pdb.yaml
+        - samples/api-catalog-service.yaml
         - samples/gateway-service-np.yaml
         - samples/gateway-service-lb.yaml
         - samples/bare-metal/gateway-ingress.yaml
-        - samples/bare-metal/discovery-ingress.yaml
-        - samples/sample-deployment.yaml
-        - samples/certificates-cm.yaml
-        - samples/config-cm.yaml
-        - samples/api-catalog-service.yaml
-        - samples/openshift/discovery-route.yaml
         - samples/openshift/gateway-route.yaml
-        - samples/discovery-service-lb.yaml
-        - samples/certificates-secret.yaml
-        - samples/horizontal-pod-autoscaler/jobs-api-hpa.yaml
-        - samples/horizontal-pod-autoscaler/discovery-hpa.yaml
-        - samples/horizontal-pod-autoscaler/app-server-hpa.yaml
-        - samples/horizontal-pod-autoscaler/caching-hpa.yaml
-        - samples/horizontal-pod-autoscaler/api-catalog-hpa.yaml
-        - samples/horizontal-pod-autoscaler/explorer-uss-hpa.yaml
-        - samples/horizontal-pod-autoscaler/files-api-hpa.yaml
-        - samples/horizontal-pod-autoscaler/gateway-hpa.yaml
-        - samples/horizontal-pod-autoscaler/explorer-mvs-hpa.yaml
-        - samples/horizontal-pod-autoscaler/explorer-jes-hpa.yaml
         - samples/workspace-pvc.yaml
-        - samples/discovery-service-np.yaml
-        - common/zowe-ns.yaml
-        - common/zowe-sa.yaml
 
     runs-on: ubuntu-latest
     steps:
