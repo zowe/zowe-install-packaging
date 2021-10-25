@@ -16,7 +16,7 @@ FROM ubuntu:latest
 LABEL name="Zowe Base Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.5" \
+      version="0.0.7" \
       release="0" \
       summary="Base image for Zowe components" \
       description="Base image for Zowe components"
@@ -31,18 +31,25 @@ ARG GID=20000
 ARG NODE_CPU_ARCH=x64
 
 ##################################
-# define zowe user/group, create /licenses and /component folder
-RUN groupadd -g $GID -r zowe \
-    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} -d /home/zowe zowe \
-    && mkdir -p /licenses \
-    && chown zowe.zowe /licenses \
-    && mkdir -p /component \
-    && chown zowe.zowe /component
+# environments
+ENV NODE_VERSION=14.17.3
 
 ##################################
-# Install node.js which is mandatory for now
-ENV NODE_VERSION=14.17.3
+# customize
 RUN set -ex \
+    # define zowe user/group
+    && groupadd -g $GID -r zowe \
+    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} -d /home/zowe zowe \
+    # use bash as default shell
+    && cd /bin \
+    && ln -sfn bash sh \
+    # create /licenses folder
+    && mkdir -p /licenses \
+    && chown zowe.zowe /licenses \
+    # create /component folder
+    && mkdir -p /component \
+    && chown zowe.zowe /component \
+    # install node.js which is mandatory for now
     && apt-get update \
     && apt-get install -y \
       curl \
@@ -73,7 +80,8 @@ RUN set -ex \
     && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
     && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
-    && rm -rf /var/lib/apt/lists/* \
     # smoke tests
     && node --version \
-    && npm --version
+    && npm --version \
+    # clean up
+    && rm -rf /var/lib/apt/lists/*

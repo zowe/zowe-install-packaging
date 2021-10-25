@@ -31,7 +31,7 @@ separator() {
 }
 
 usage() {
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     echo "Usage: $0 -i <zowe_install_path> -h <zowe_dsn_prefix> [-l <log_directory>]"
   else
     echo "Usage: $0 -i <zowe_install_path> [-l <log_directory>]"
@@ -81,7 +81,7 @@ get_and_validate_zowe_version() {
   fi
 }
 
-backup_priror_version() {
+backup_prior_version() {
   NEW_INSTALL="true"
 
   # warn about any prior installation
@@ -151,6 +151,7 @@ copy_runtime_support_files() {
   cp $INSTALL_DIR/scripts/instance.template.env ${ZOWE_ROOT_DIR}/scripts/instance.template.env
   cp -r $INSTALL_DIR/scripts/utils/. ${ZOWE_ROOT_DIR}/scripts/utils
   cp $INSTALL_DIR/scripts/tag-files.sh $ZOWE_ROOT_DIR/scripts/utils/tag-files.sh
+  cp $INSTALL_DIR/scripts/zowe-create-ZIS-ds.sh $ZOWE_ROOT_DIR/scripts/utils/zowe-create-ZIS-ds.sh
 }
 
 copy_workflow() {
@@ -159,7 +160,7 @@ copy_workflow() {
 }
 
 install_mvs() {
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     echo "Creating MVS artefacts SZWEAUTH and SZWESAMP" >> $LOG_FILE
     . $INSTALL_DIR/scripts/zowe-install-MVS.sh
   fi
@@ -183,7 +184,7 @@ upgrade_components() {
 }
 
 install_buildin_components() {
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
   else
       component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
@@ -214,7 +215,7 @@ record_zis_info() {
   # Record useful user input specified at install time that would otherwise be lost at configure & runtime
   # Later retrieve this info by looking in a known folder location with info that helps to disambiguate which install it originated from
   # This is not foolproof, but will use the info from the latest install of a given ROOT_DIR
-  if [ "${RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     CURRENT_TIME=`date +%Y%j%H%M%S`
     INSTALL_VAR_FILE=/tmp/zowe-${ZOWE_VERSION}-install-${CURRENT_TIME}.env
     echo "ZOWE_DSN_PREFIX=$ZOWE_DSN_PREFIX\nZOWE_ROOT_DIR=$ZOWE_ROOT_DIR\nZOWE_VERSION=$ZOWE_VERSION" >> $INSTALL_VAR_FILE
@@ -263,8 +264,6 @@ shift $(($OPTIND-1))
 
 export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
 
-RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
-
 . ${INSTALL_DIR}/bin/internal/zowe-set-env.sh
 
 # Source main utils script
@@ -273,12 +272,12 @@ RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
 separator
 
 ################################################################################
-# Validat command line options
+# Validate command line options
 
 if [[ -z "$INSTALL_TARGET" ]]; then
   show_usage_error_and_exit "-i parameter not set"
 fi
-if [ "${RUN_ON_ZOS}" = "true" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
   if [[ -z "$DSN_PREFIX" ]]; then
     show_usage_error_and_exit "-h parameter not set"
   fi
@@ -298,7 +297,7 @@ get_and_validate_zowe_version
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
-backup_priror_version
+backup_prior_version
 prepare_target_dir
 copy_runtime_support_files
 copy_fingerprint
@@ -313,7 +312,7 @@ finish_and_cleanup
 echo "zowe-install.sh completed. In order to use Zowe:"
 if [[ ${NEW_INSTALL} == "true" ]]
 then
-  echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}.SZWESAMP(ZWESECUR)'"
+  echo " - 1-time only: Setup the security definitions by submitting '${ZOWE_DSN_PREFIX}.SZWESAMP(ZWESECUR)'"
   echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
   echo " - You must ensure that the Zowe Proclibs are added to your PROCLIB JES concatenation path"
   echo " - You must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"

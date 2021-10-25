@@ -28,6 +28,7 @@ node('zowe-jenkins-agent-dind-wdc') {
   def sourceRegBuildInfo
   def sourceSmpeBuildInfo
   def sourceDockerAmd64BuildInfo
+  def sourceContainerizationBuildInfo
   def cliSourceBuildInfo
   def cliPluginsSourceBuildInfo
 
@@ -104,6 +105,11 @@ node('zowe-jenkins-agent-dind-wdc') {
           'build-name'   : ZOWE_BUILD_NAME
         ])
 
+        def containerizationBuild = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-containerization-*.zip",
+          'build-name'   : ZOWE_BUILD_NAME
+        ])
+
         // extract build information
         def buildNumber = smpeBuild['build.number']
         def buildTimestamp = smpeBuild['build.timestamp']
@@ -116,11 +122,12 @@ node('zowe-jenkins-agent-dind-wdc') {
           echo "Will skip re-build."
           sourceSmpeBuildInfo = smpeBuild
           sourceDockerAmd64BuildInfo = dockerAmd64Build
+          sourceContainerizationBuildInfo = containerizationBuild
         } else {
           echo "Will need to re-build."
         }
       } catch (es) {
-        echo "getArtifact zowe-smpe-*.zip, or server-bundle.amd64-*.tar failed: ${es}"
+        echo "getArtifact zowe-smpe-*.zip, or server-bundle.amd64-*.tar, or zowe-containerization-*.zip failed: ${es}"
         echo "Will need to re-build."
       }
 
@@ -130,7 +137,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       try {
         cliSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          //'build-name'   : ZOWE_CLI_BUILD_NAME      // we no longer rely on jenkins to find artifacts
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -139,7 +146,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       try {
         cliPluginsSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/*/zowe-cli-plugins-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          //'build-name'   : ZOWE_CLI_BUILD_NAME      // we no longer rely on jenkins to find artifacts
         ])
       } catch (e) {
         // CLI build missing, will not promote CLI
@@ -161,8 +168,9 @@ node('zowe-jenkins-agent-dind-wdc') {
         def build_result = build(
           job: '/zowe-install-packaging/staging',
           parameters: [
-            booleanParam(name: 'BUILD_SMPE', value: true),
+            string(name: 'BUILD_SMPE', value: 'SMPE'),
             booleanParam(name: 'BUILD_DOCKER', value: true),
+            booleanParam(name: 'BUILD_KUBERNETES', value: true),
             booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),
           ],
           propagate: false
@@ -179,6 +187,10 @@ node('zowe-jenkins-agent-dind-wdc') {
         ])
         sourceDockerAmd64BuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/server-bundle.amd64-*.tar",
+          'build-name'   : ZOWE_BUILD_NAME
+        ])
+        sourceContainerizationBuildInfo = pipeline.artifactory.getArtifact([
+          'pattern'      : "${ZOWE_BUILD_REPOSITORY}/*/zowe-containerization-*.zip",
           'build-name'   : ZOWE_BUILD_NAME
         ])
         
@@ -233,6 +245,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
           string(name: 'ZOWE_DOCKER_ARTIFACTORY_BUILD', value: docker_amd64_url),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -291,6 +304,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -349,6 +363,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: smpe ptf on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceSmpeBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -407,6 +422,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: multiple node versions'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -461,6 +477,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'bundle: keyring on multiple security systems'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -517,6 +534,7 @@ node('zowe-jenkins-agent-dind-wdc') {
           string(name: 'TEST_SCOPE', value: 'external certificate'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
+          string(name: 'CLIENT_NODE_VERSION', value: 'v12.18.3'),
           string(name: 'INSTALL_TEST_DEBUG_INFORMATION', value: 'zowe-install-test:*'),
           string(name: 'SANITY_TEST_DEBUG_INFORMATION', value: 'zowe-sanity-test:*'),
           booleanParam(name: 'Skip Stage: Lint', value: true),
@@ -550,7 +568,8 @@ node('zowe-jenkins-agent-dind-wdc') {
     isSkippable   : true,
     shouldExecute : {
       return sourceSmpeBuildInfo && sourceSmpeBuildInfo['path'] &&
-             sourceRegBuildInfo && sourceRegBuildInfo['path']
+             sourceRegBuildInfo && sourceRegBuildInfo['path'] &&
+             sourceContainerizationBuildInfo && sourceContainerizationBuildInfo['path']
     },
     stage         : {
       // promote Zowe nightly build
@@ -564,6 +583,10 @@ node('zowe-jenkins-agent-dind-wdc') {
       ])
       targetDockeramd64FullPath = pipeline.artifactory.promote([
         'source'     : sourceDockerAmd64BuildInfo,
+        'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
+      ])
+      targetContainerizationFullPath = pipeline.artifactory.promote([
+        'source'     : sourceContainerizationBuildInfo,
         'targetPath' : "${ZOWE_RELEASE_REPOSITORY}${ZOWE_RELEASE_PATH}/"
       ])
 
@@ -603,7 +626,8 @@ node('zowe-jenkins-agent-dind-wdc') {
       def message = "Zowe Build ${ZOWE_BUILD_NAME}#${sourceRegBuildInfo['build.number']} is promoted as nightly build. You can download from:\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetRegFullPath}\n\n" +
                     "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetSmpeFullPath}\n\n" +
-                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetDockeramd64FullPath}\n\n"
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetDockeramd64FullPath}\n\n" +
+                    "${lib.Constants.DEFAULT_LFJ_ARTIFACTORY_URL}/${targetContainerizationFullPath}\n\n"
       if (cliSourceBuildInfo) {
         if (cliTargetFullPath) {
           message += "\n\n" +

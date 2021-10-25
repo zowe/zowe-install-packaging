@@ -106,6 +106,11 @@ NONSTRICT_VERIFY_CERTIFICATES="${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
 # this configuration is deprecated and settings in instance.env will not affect how Zowe is starting
 APIML_PREFER_IP_ADDRESS=false
 
+# by default, set ZWE_EXTERNAL_PORT to be same as GATEWAY_PORT
+if [ -z "${ZWE_EXTERNAL_PORT}" ]; then
+  ZWE_EXTERNAL_PORT="${GATEWAY_PORT}"
+fi
+
 LAUNCH_COMPONENTS=""
 # FIXME: if ZOWE_INSTANCE is same as last character of ZOWE_PREFIX, it will never be appended
 if [[ "${ZOWE_PREFIX}" != *"${ZOWE_INSTANCE}" ]]; then
@@ -136,7 +141,7 @@ fi
 
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
-if [ `uname` != "OS/390" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" != "true" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
   # to avoid potential retries on starting caching-service, do not start caching-service
   LAUNCH_COMPONENTS=$(echo "${LAUNCH_COMPONENTS}" | sed -e 's#caching-service##' | sed -e 's#,,#,#')
 fi
@@ -157,12 +162,21 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 # prepare-environment.sh shouldn't have any output, but these 2 functions may output:
 #   Prepending JAVA_HOME/bin to the PATH...
 #   Prepending NODE_HOME/bin to the PATH...
-# so we surpressed all output for those 2 functions
+# so we suppressed all output for those 2 functions
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi
+if [ -z "${NODE_HOME}" ]; then
+  NODE_HOME=$(detect_node_home)
+fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
+fi
+
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # these values cannot be modified by other logics
+  prepare_container_runtime_environments
 fi
 
 # turn off automatic export

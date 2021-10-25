@@ -53,15 +53,81 @@ JFROG_REPO_SNAPSHOT=libs-snapshot-local
 JFROG_REPO_RELEASE=libs-release-local
 JFROG_URL=https://zowe.jfrog.io/zowe/
 
+################################################################################
+# FUNCTIONS
+interpret_artifact_pattern() {
+  component_id=$1
+  artifact=$2
+
+  component_id_regex=$(echo "${component_id}" | sed "s#\.#\\\.#g")
+  component_id_path=$(echo "${component_id}" | sed "s#\.#/#g")
+
+  cd "${REPO_ROOT_DIR}"
+
+  if [ -n "${BASE_DIR}" -a -n "${WORK_DIR}" ]; then
+    manifest="${BASE_DIR}/${WORK_DIR}/manifest.json"
+  else
+    manifest="manifest.json.template"
+  fi
+  artifact_version_pattern=$(cat "${manifest}" | awk "/${component_id_regex}/{x=NR+10;next}(NR<=x){print}" | sed -e '/\}/,+10d' | grep "\"version\":" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
+  artifact_repository=$(cat "${manifest}" | awk "/${component_id_regex}/{x=NR+10;next}(NR<=x){print}" | sed -e '/\}/,+10d' | grep "\"repository\":" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
+  artifact_file_pattern=$(cat "${manifest}" | awk "/${component_id_regex}/{x=NR+10;next}(NR<=x){print}" | sed -e '/\}/,+10d' | grep "\"artifact\":" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
+  echo "    - artifact version: ${artifact_version_pattern}"
+  echo "            repository: ${artifact_repository:-<empty>}"
+  echo "                  file: ${artifact_file_pattern:-<empty>}"
+  first_char=$(echo "${artifact_version_pattern}" | cut -c1-1)
+  wildcard_level=
+  if [ "${first_char}" = "~" ]; then
+    wildcard_level=patch
+  fi
+  if [ "${first_char}" = "^" ]; then
+    wildcard_level=minor
+  fi
+  artifact_version=$(echo "${artifact_version_pattern}" | cut -d "-" -f1 | sed -e 's/\^//' -e 's/~//')
+  has_meta=$(echo "${artifact_version_pattern}" | grep "-" || true)
+  if [ -n "${has_meta}" ]; then
+    artifact_version_meta=$(echo "${artifact_version_pattern}" | cut -d "-" -f2-)
+  else
+    artifact_version_meta=
+  fi
+  artifact_version_major=$(echo "${artifact_version}" | awk -F. '{print $1}')
+  artifact_version_minor=$(echo "${artifact_version}" | awk -F. '{print $2}')
+  artifact_version_patch=$(echo "${artifact_version}" | awk -F. '{print $3}')
+  if [ -n "${artifact_version_meta}" ]; then
+    artifact_version_meta=-${artifact_version_meta}
+  fi
+  echo "                 major: ${artifact_version_major}"
+  echo "                 minor: ${artifact_version_minor}"
+  echo "                 patch: ${artifact_version_patch}"
+  echo "                  meta: ${artifact_version_meta}"
+  echo "        wildcard level: ${wildcard_level}"
+  if [ "${wildcard_level}" = "patch" ]; then
+    jfrog_path=${artifact_repository:-${JFROG_REPO_SNAPSHOT}}/${component_id_path}/${artifact_version_major}.${artifact_version_minor}.*${artifact_version_meta}/${artifact:-${artifact_file_pattern}}
+  elif [ "${wildcard_level}" = "minor" ]; then
+    jfrog_path=${artifact_repository:-${JFROG_REPO_SNAPSHOT}}/${component_id_path}/${artifact_version_major}.*-${artifact_version_meta}/${artifact:-${artifact_file_pattern}}
+  else
+    jfrog_path=${artifact_repository:-${JFROG_REPO_RELEASE}}/${component_id_path}/${artifact_version_major}.${artifact_version_minor}.${artifact_version_patch}${artifact_version_meta}/${artifact:-${artifact_file_pattern}}
+  fi
+  echo "       > final pattern: ${jfrog_path}"
+}
+
+###############################
+echo ">>>>> prepare basic files"
+cd "${REPO_ROOT_DIR}"
+package_version=$(jq -r '.version' manifest.json.template)
+package_release=$(echo "${package_version}" | awk -F. '{print $1;}')
+
 ###############################
 # copy Dockerfile
 echo ">>>>> copy Dockerfile to ${linux_distro}/${cpu_arch}/Dockerfile"
+cd "${BASE_DIR}"
+rm -fr "${linux_distro}/${cpu_arch}"
 mkdir -p "${linux_distro}/${cpu_arch}"
 if [ ! -f Dockerfile ]; then
   echo "Error: Dockerfile file is missing."
   exit 2
 fi
-cp Dockerfile "${linux_distro}/${cpu_arch}/Dockerfile"
+cat Dockerfile | sed -e "s#version=\"0\.0\.0\"#version=\"${package_version}\"#" -e "s#release=\"0\"#release=\"${package_release}\"#" > "${linux_distro}/${cpu_arch}/Dockerfile"
 
 ###############################
 echo ">>>>> clean up folder"
@@ -110,38 +176,8 @@ rm "${BASE_DIR}/${WORK_DIR}/scripts/zowe-install-MVS.sh"
 ###############################
 # prepare utility tools
 echo ">>>>> prepare utility tools"
-cd "${REPO_ROOT_DIR}"
-util_version_pattern=$(cat "${BASE_DIR}/${WORK_DIR}/manifest.json" | awk "/org\.zowe\.utility_tools/{x=NR+19;next}(NR<=x){print}" | grep "version" | head -n 1 | awk -F: '{print $2;}' | xargs | sed -e 's/^"//' -e 's/"$//')
-echo "    - utility version ${util_version_pattern}"
-wildcard_level=
-if [[ "${util_version_pattern}" =~ ~* ]]; then
-  wildcard_level=patch
-fi
-if [[ "${util_version_pattern}" =~ ^* ]]; then
-  wildcard_level=minor
-fi
-util_version=$(echo "${util_version_pattern}" | cut -d "-" -f1 | sed -e 's/\^//' -e 's/~//')
-util_version_meta=$(echo "${util_version_pattern}" | cut -d "-" -f2-)
-util_version_major=$(echo "${util_version}" | awk -F. '{print $1}')
-util_version_minor=$(echo "${util_version}" | awk -F. '{print $2}')
-util_version_patch=$(echo "${util_version}" | awk -F. '{print $3}')
-if [ -n "${util_version_meta}" ]; then
-  util_version_meta=-${util_version_meta}
-fi
-echo "    - utility version interpreted:"
-echo "        - major: ${util_version_major}"
-echo "        - minor: ${util_version_minor}"
-echo "        - patch: ${util_version_patch}"
-echo "        - meta: ${util_version_meta}"
-echo "        - wildcard level: ${wildcard_level}"
-if [ "${wildcard_level}" = "patch" ]; then
-  jfrog_path=${JFROG_REPO_SNAPSHOT}/org/zowe/utility_tools/${util_version_major}.${util_version_minor}.*${util_version_meta}/*.zip
-elif [ "${wildcard_level}" = "minor" ]; then
-  jfrog_path=${JFROG_REPO_SNAPSHOT}/org/zowe/utility_tools/${util_version_major}.*-${util_version_meta}/*.zip
-else
-  jfrog_path=${JFROG_REPO_RELEASE}/org/zowe/utility_tools/${util_version_major}.${util_version_minor}.${util_version_patch}${util_version_meta}/*.zip
-fi
-echo "    - artifact path pattern: ${jfrog_path}"
+jfrog_path=
+interpret_artifact_pattern "org.zowe.utility_tools" "*.zip"
 util_zip=$(jfrog rt s "${jfrog_path}" --sort-by created --sort-order desc --limit 1 | jq -r '.[0].path')
 if [ -z "${util_zip}" ]; then
   echo "Error: cannot find org.zowe.utility_tools artifact."
@@ -164,7 +200,31 @@ echo "    - extract zowe-config-converter ..."
 tar zxf zowe-config-converter-*.tgz -C "${BASE_DIR}/${WORK_DIR}/bin/utils"
 mv "${BASE_DIR}/${WORK_DIR}/bin/utils/package" "${BASE_DIR}/${WORK_DIR}/bin/utils/config-converter"
 rm zowe-config-converter-*.tgz
-rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
+echo "    - extract zowe-ncert ..."
+mkdir -p "${BASE_DIR}/${WORK_DIR}/bin/utils/ncert"
+tar xvf zowe-ncert-*.pax -C "${BASE_DIR}/${WORK_DIR}/bin/utils/ncert"
+rm zowe-ncert-*.pax
+
+###############################
+# prepare zlux core
+echo ">>>>> prepare zlux core"
+jfrog_path=
+interpret_artifact_pattern "org.zowe.zlux.zlux-core" "zlux-core-*.tar"
+zlux_tar=$(jfrog rt s "${jfrog_path}" --sort-by created --sort-order desc --limit 1 | jq -r '.[0].path')
+if [ -z "${zlux_tar}" ]; then
+  echo "Error: cannot find org.zowe.zlux.zlux-core artifact."
+  exit 1
+fi
+echo "    - artifact found: ${zlux_tar}"
+echo "    - download and extract"
+curl -s ${JFROG_URL}${zlux_tar} --output zlux-core.tar
+mkdir -p "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
+cd "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
+tar xf "${REPO_ROOT_DIR}/zlux-core.tar"
+rm -fr zlux-app-manager zlux-build zlux-platform
+# should leave zlux-app-server, zlux-server-framework and zlux-shared in the folder
+cd "${REPO_ROOT_DIR}"
+rm -f zlux-core.tar
 
 ###############################
 # copy to target context

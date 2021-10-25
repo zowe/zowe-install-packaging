@@ -2,6 +2,19 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `1.25.0`
+
+### New feautres and enhancements
+- app-server's uninstall-app.sh script is now available in the instance bin folder.
+- zss's zis-plugin-install.sh script is now available in the instance bin/utils folder.
+
+## `1.24.0`
+
+### New features and enhancements
+- A new dataset is created during instance creation. The dataset is to be used for holding ZIS plugins, as an alternative to putting the plugins inside of the ZIS loadlib which is still the default.
+- New instance parameters describing ZIS are available and automatically recorded in instance.env if a new install is done via a convenience build. These parameters can be used in future automation of detecting ZIS and installing ZIS plugins
+- New instance creation parameters -d or -l, -p, and -z are now available in the instance creation script for manually specifying the new ZIS parameters. 
+
 ## `1.20.0`
 
 ### New features and enhancements

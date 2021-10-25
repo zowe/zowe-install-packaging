@@ -16,7 +16,7 @@ FROM registry.redhat.io/ubi8/ubi-minimal:latest
 LABEL name="Zowe Base Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.5" \
+      version="0.0.7" \
       release="0" \
       summary="Base image for Zowe components" \
       description="Base image for Zowe components"
@@ -31,21 +31,26 @@ ARG GID=20000
 ARG NODE_CPU_ARCH=x64
 
 ##################################
-# define zowe user/group, create /licenses and /component folder
-# shadow-utils is needed for having adduser groupadd commands
-RUN microdnf install --nodocs shadow-utils \
-    && groupadd --gid ${GID} zowe \
-    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} --home /home/zowe zowe \
-    && mkdir -p /licenses \
-    && chown zowe.zowe /licenses \
-    && mkdir -p /component \
-    && chown zowe.zowe /component
+# environments
+ENV NODE_VERSION=14.17.3
 
 ##################################
-# Install node.js which is mandatory for now
-ENV NODE_VERSION=14.17.3
+# customize
 RUN set -ex \
+    # shadow-utils is needed for having adduser groupadd commands
+    && microdnf install --nodocs shadow-utils \
+    # define zowe user/group
+    && groupadd --gid ${GID} zowe \
+    && useradd -r -m --no-log-init --uid ${UID} --gid ${GID} --home /home/zowe zowe \
+    # create /licenses folder
+    && mkdir -p /licenses \
+    && chown zowe.zowe /licenses \
+    # create /component folder
+    && mkdir -p /component \
+    && chown zowe.zowe /component \
+    # install node.js which is mandatory for now
     && microdnf install --nodocs \
+      findutils \
       tar \
       xz \
     && ARCH=${NODE_CPU_ARCH} \
@@ -73,7 +78,8 @@ RUN set -ex \
     && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
     && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
-    && microdnf clean all --enablerepo='*' \
     # smoke tests
     && node --version \
-    && npm --version
+    && npm --version \
+    # clean up
+    && microdnf clean all --enablerepo='*'
