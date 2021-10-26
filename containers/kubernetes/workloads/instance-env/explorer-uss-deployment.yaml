@@ -125,6 +125,14 @@ spec:
         - name: update-workspace-permission
           image: busybox:1.28
           command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && echo "Owner of workspace is ${OWNER}" && if [ $OWNER != "20000:20000" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
           volumeMounts:
             - name: zowe-workspace
               mountPath: "/home/zowe/instance/workspace"
