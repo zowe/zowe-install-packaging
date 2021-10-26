@@ -30,11 +30,6 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
-        readOnlyRootFilesystem: true
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - all
       serviceAccountName: zowe-sa
       volumes:
         - name: tmp
@@ -91,6 +86,12 @@ spec:
             preStop:
               exec:
                 command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
           volumeMounts:
             - name: tmp
               mountPath: /tmp
@@ -119,6 +120,12 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
