@@ -1,0 +1,34 @@
+name: Kubernetes Containers Scan
+
+on: push
+
+jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup image list matrix
+        id: setup-image-matrix
+        run: |
+          IMAGES_LIST=$(cat manifest.json.template | jq -r '.imageDependencies[] | "{\"image\": \"" + .registry + "/" + .name + ":" + .tag + "\"},"')
+          echo ::set-output name=image-matrix::{\"include\":[$IMAGES_LIST]}
+    outputs:
+      image-matrix: ${{ steps.setup-image-matrix.outputs.image-matrix }}
+
+  snyk:
+    runs-on: ubuntu-latest
+    needs: setup-matrix
+    strategy:
+      matrix: ${{ fromJson(needs.setup-matrix.outputs.image-matrix) }}
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run Snyk to check Docker image for vulnerabilities
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      # we don't have original Dockerfile, cannot generate and upload sarif 
+      with:
+        image: ${{ matrix.image }}
+        command: test

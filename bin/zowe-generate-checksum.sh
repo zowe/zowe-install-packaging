@@ -38,7 +38,7 @@ echo; echo $SCRIPT Usage:
 cat <<EndOfUsage
 $SCRIPT runtimePath hashPath
 
-   Parameter subsitutions:
+   Parameter substitutions:
  
     Parm name       Sample value    Meaning
     ---------       ------------    -------

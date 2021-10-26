@@ -368,7 +368,7 @@ process_component_apiml_static_definitions() {
       parsed_def=$( ( echo "cat <<EOF" ; cat "${one_def}" ; echo ; echo EOF ) | sh 2>&1)
       retval=$?
       if [ "${retval}" != "0" ]; then
-        >&2 echo "failed to parse ${component_name} API Mdeialtion Layer static definition file ${one_def}: ${parsed_def}"
+        >&2 echo "failed to parse ${component_name} API Mediation Layer static definition file ${one_def}: ${parsed_def}"
         if [[ "${parsed_def}" == *unclosed* ]]; then
           >&2 echo "this is very likely an encoding issue that file is not tagged properly"
         fi
@@ -532,13 +532,35 @@ process_component_appfw_plugin() {
   appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
       cd "${component_dir}"
+
+      # apply values if appfw_plugin_path has variables
+      appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
+      appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
+
       if [ ! -r "${appfw_plugin_path}" ]; then
         >&2 echo "App Framework plugin directory ${appfw_plugin_path} is not accessible"
         all_succeed=false
         break
       fi
+      if [ ! -r "${appfw_plugin_path}/pluginDefinition.json" ]; then
+        >&2 echo "App Framework plugin directory ${appfw_plugin_path} does not have pluginDefinition.json"
+        all_succeed=false
+        break
+      fi
+      appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
+      if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
+        >&2 echo "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
+        all_succeed=false
+        break
+      fi
 
-      ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${appfw_plugin_path})"
+      # copy to workspace/app-server/pluginDirs
+      appfw_plugin_workspace_path="${WORKSPACE_DIR}/app-server/pluginDirs/${appfw_plugin_id}"
+      mkdir -p "${appfw_plugin_workspace_path}"
+      cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
+
+      # install app
+      ${INSTANCE_DIR}/bin/install-app.sh "${appfw_plugin_workspace_path}"
       # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
       iterator_index=`expr $iterator_index + 1`
@@ -769,7 +791,7 @@ verify_component_instance() {
 # - EXTERNAL_COMPONENTS
 #
 # Example:
-# - This will display all components that is currentally installled on a zowe instance
+# - This will display all components that is currently installed on a zowe instance
 #   i.e: list_all_components
 #
 list_all_components() {
@@ -784,4 +806,54 @@ list_all_components() {
   #   echo ${directories}
   # done
   
+}
+
+###############################
+# Call API Catalog to refresh static registration
+#
+# @param string   API Catalog hostname
+# @param string   API Catalog port
+# @param string   Path to Authentication private key
+# @param string   Path to Authentication certificate
+# @param string   Path to Certificate Authority certificate
+refresh_static_registration() {
+  apicatalog_host=$1
+  apicatalog_port=$2
+  auth_key=$3
+  auth_cert=$4
+  ca_cert=$5
+
+  if [ -z "$NODE_HOME" ]; then
+    >&2 echo "NODE_HOME is required by this function"
+    return 1
+  fi
+  # node should have already been put into PATH
+
+  if [ -z "${apicatalog_host}" ]; then
+    apicatalog_host=${ZOWE_EXPLORER_HOST}
+  fi
+  if [ -z "${apicatalog_port}" ]; then
+    apicatalog_port=${CATALOG_PORT}
+  fi
+  if [ -z "${auth_key}" ]; then
+    auth_key=${KEYSTORE_KEY}
+  fi
+  if [ -z "${auth_cert}" ]; then
+    auth_cert=${KEYSTORE_CERTIFICATE}
+  fi
+  if [ -z "${ca_cert}" ]; then
+    ca_cert=${KEYSTORE_CERTIFICATE_AUTHORITY}
+  fi
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+
+  "${NODE_HOME}/bin/node" \
+    "${utils_dir}/curl.js" \
+    "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
+    -X POST \
+    --key "${auth_key}" \
+    --cert "${auth_cert}" \
+    --cacert "${ca_cert}"
+
+  return $?
 }
