@@ -88,6 +88,7 @@ spec:
                 command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
           volumeMounts:
             - name: tmp
               mountPath: /tmp
@@ -118,6 +119,7 @@ spec:
               cpu: "100m"
           securityContext:
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"

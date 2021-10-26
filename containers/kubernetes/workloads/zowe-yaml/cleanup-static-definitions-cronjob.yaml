@@ -58,6 +58,7 @@ spec:
                 - /component/bin/internal/container-init.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
               securityContext:
                 readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
               volumeMounts:
                 - name: zowe-runtime
                   mountPath: "/home/zowe/runtime"
