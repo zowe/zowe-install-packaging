@@ -313,7 +313,12 @@
 		<prereqStep name="define_variables"/>
 		<instructions substitution="false">Run this step to submit the JCL. &lt;br/&gt;
 			Review the instructions in JCL before submitting. &lt;br/&gt;
-			You can customize it to meet your system requirements.
+			You can customize it to meet your system requirements.  &lt;br/&gt;
+      When you run this workflow, it does not perform the following initialization steps:&lt;br/&gt;
+      <i>Grant users permission to access z/OSMF </i>&lt;br/&gt;
+      <i>Configure an ICSF cryptographic services environment </i>&lt;br/&gt;
+      <i>Configure multi-user address space (for TSS only)</i>&lt;br/&gt;
+      For details see documentation, chapter Configuring the z/OS system for Zowe&lt;br/&gt;
  		</instructions>
 		<weight>1</weight>
 		<autoEnable>true</autoEnable>
