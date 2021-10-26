@@ -7,9 +7,9 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    # app.kubernetes.io/version: 
+    # app.kubernetes.io/version:
     app.kubernetes.io/component: <my-component-name>
-    # app.kubernetes.io/part-of: 
+    # app.kubernetes.io/part-of:
     app.kubernetes.io/managed-by: manual
 spec:
   selector:
@@ -17,7 +17,6 @@ spec:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
       app.kubernetes.io/component: <my-component-name>
-  replicas: 1
   template:
     metadata:
       labels:
@@ -41,10 +40,10 @@ spec:
         - name: zowe-keystore
           projected:
             sources:
-            - configMap:
-                name: zowe-certificates-cm
-            - secret:
-                name: zowe-certificates-secret
+              - configMap:
+                  name: zowe-certificates-cm
+              - secret:
+                  name: zowe-certificates-secret
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
@@ -55,16 +54,23 @@ spec:
           resources:
             requests:
               memory: "64Mi"
-              cpu: "100m"
+              cpu: "10m"
             limits:
               memory: "128Mi"
-              cpu: "250m"
+              cpu: "100m"
           ports:
-            - containerPort: <my-component-port>
+            - name: <my-component-port-name>
+              containerPort: <my-component-port>
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: <my-component-port>
+            initialDelaySeconds: 30
+            # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
+            failureThreshold: 18
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/instance/bin/internal/run-zowe.sh"
+            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
@@ -73,7 +79,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh","-c","/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
@@ -92,8 +98,15 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.24.0-ubuntu.staging
+          image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest-ubuntu
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
@@ -101,3 +114,22 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: <my-component-name>-pdb
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    # app.kubernetes.io/version:
+    app.kubernetes.io/component: pdb
+    app.kubernetes.io/managed-by: manual
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+      app.kubernetes.io/component: <my-component-name>

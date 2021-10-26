@@ -33,6 +33,21 @@ jobs:
           build-arg-list: NODE_CPU_ARCH=x64
         timeout-minutes: 5
 
+      - name: Run Snyk to check Docker image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        with:
+          image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
+          args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
+          command: test
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
+
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
     steps:
@@ -57,6 +72,21 @@ jobs:
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
           build-arg-list: NODE_CPU_ARCH=s390x
         timeout-minutes: 10
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        with:
+          image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
+          args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
+          command: test
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
 
   define-ubuntu-manifest:
     needs:
@@ -106,6 +136,21 @@ jobs:
           build-arg-list: NODE_CPU_ARCH=x64
         timeout-minutes: 5
 
+      - name: Run Snyk to check Docker image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        with:
+          image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
+          args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
+          command: test
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
+
   build-ubi-s390x:
     runs-on: ubuntu-latest
     steps:
@@ -133,6 +178,21 @@ jobs:
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
           build-arg-list: NODE_CPU_ARCH=s390x
         timeout-minutes: 10
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        with:
+          image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
+          args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
+          command: test
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
 
   define-ubi-manifest:
     needs:

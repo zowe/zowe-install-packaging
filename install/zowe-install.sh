@@ -81,7 +81,7 @@ get_and_validate_zowe_version() {
   fi
 }
 
-backup_priror_version() {
+backup_prior_version() {
   NEW_INSTALL="true"
 
   # warn about any prior installation
@@ -272,7 +272,7 @@ export INSTALL_DIR=$(cd $(dirname $0)/../;pwd)
 separator
 
 ################################################################################
-# Validat command line options
+# Validate command line options
 
 if [[ -z "$INSTALL_TARGET" ]]; then
   show_usage_error_and_exit "-i parameter not set"
@@ -297,7 +297,7 @@ get_and_validate_zowe_version
 
 echo "Beginning install of Zowe ${ZOWE_VERSION} into directory " $ZOWE_ROOT_DIR
 
-backup_priror_version
+backup_prior_version
 prepare_target_dir
 copy_runtime_support_files
 copy_fingerprint
@@ -312,7 +312,7 @@ finish_and_cleanup
 echo "zowe-install.sh completed. In order to use Zowe:"
 if [[ ${NEW_INSTALL} == "true" ]]
 then
-  echo " - 1-time only: Setup the security defintions by submitting '${ZOWE_DSN_PREFIX}.SZWESAMP(ZWESECUR)'"
+  echo " - 1-time only: Setup the security definitions by submitting '${ZOWE_DSN_PREFIX}.SZWESAMP(ZWESECUR)'"
   echo " - 1-time only: Setup the Zowe certificates by running '${ZOWE_ROOT_DIR}/bin/zowe-setup-certificates.sh -p <certificate_config>'"
   echo " - You must ensure that the Zowe Proclibs are added to your PROCLIB JES concatenation path"
   echo " - You must choose an instance directory and create it by running '${ZOWE_ROOT_DIR}/bin/zowe-configure-instance.sh -c <INSTANCE_DIR>'"
