@@ -157,6 +157,9 @@ else
   fi
 fi
 
+# Directory containing all the Gateway shared jars to be added in the classpath
+ZWE_GATEWAY_SHARED_LIBS = ${WORKSPACE_DIR}/gateway/sharedLibs/
+
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
 if [ "${ZWE_RUN_ON_ZOS}" != "true" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then

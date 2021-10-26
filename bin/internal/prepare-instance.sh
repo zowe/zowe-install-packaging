@@ -286,7 +286,7 @@ configure_components() {
         fi
       fi
 
-      # - generic gateway shared lib
+      # - gateway shared lib
       result=$(process_component_gateway_shared_libs "${component_dir}" 2>&1)
       retval=$?
       if [ -n "${result}" ]; then
