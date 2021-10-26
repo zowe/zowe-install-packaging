@@ -140,7 +140,7 @@ else
 fi
 
 # Directory containing all the Gateway shared jars to be added in the classpath
-ZWE_GATEWAY_SHARED_LIBS = ${WORKSPACE_DIR}/gateway/sharedLibs/
+ZWE_GATEWAY_SHARED_LIBS=${WORKSPACE_DIR}/gateway/sharedLibs/
 
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
