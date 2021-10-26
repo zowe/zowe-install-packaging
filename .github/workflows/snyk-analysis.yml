@@ -31,4 +31,4 @@ jobs:
       # we don't have original Dockerfile, cannot generate and upload sarif 
       with:
         image: ${{ matrix.image }}
-        command: test
+        command: monitor
