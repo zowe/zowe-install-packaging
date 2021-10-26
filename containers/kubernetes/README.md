@@ -150,6 +150,8 @@ If you want to manually define `zowe-config` ConfigMap based on your `instance.e
 - Must append and customize these 2 values:
   - `ZWED_agent_host=${ZOWE_ZOS_HOST}` is telling App-Server the z/OS system when ZSS and ZIS components are running.
   - `ZWED_agent_https_port=${ZOWE_ZSS_SERVER_PORT}`
+  - `ZOWE_ZLUX_TELNET_HOST=${ZWED_agent_host}` is telling App-Server TN3270 Terminal application what should be the default host.
+  - `ZOWE_ZLUX_SSH_HOST=${ZWED_agent_host}` is telling App-Server VT Terminal application what should be the default host.
 
 If you are using `zowe.yaml`, the above instructions are still valid, but should use the matching `zowe.yaml` configuration entries. Check [Updating the zowe.yaml configuration file](https://docs.zowe.org/stable/user-guide/configure-instance-directory/#updating-the-zoweyaml-configuration-file) for more details.
 
