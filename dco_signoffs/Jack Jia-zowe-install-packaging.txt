@@ -3,3 +3,5 @@ I, Jack (Tiefeng) Jia hereby sign-off-by all of my past commits to this repo sub
 d60b716462018c54c168dc100cf0ceacf03079a2 Merge pull request #2091 from zowe/rip/ac/save_zosfm_jwt
 22a43b3048076c70a329e596dff2b67162f8a03f Merge pull request #2103 from zowe/users/jack/lock-for-keyring-test
 9006cc4dc7acc23972d62b9c0c856b90da638b5a Merge pull request #2119 from zowe/users/jack/fix-domain-validation
+b5a623b63a21942dfd18dddf1428d928f0f60cea Merge pull request #2378 from 1000TurquoisePogs/bugfix/target-missing
+23b45561b089e32056efbd7b0803fd8ed693b3b4 Merge pull request #2361 from zowe/nayer-inst
