@@ -579,6 +579,13 @@ spec:
             - name: zowe-workspace
               mountPath: "/home/zowe/instance/workspace"
           securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+              add:
+                - CAP_CHOWN
             runAsUser: 0
             runAsGroup: 0
 ```
