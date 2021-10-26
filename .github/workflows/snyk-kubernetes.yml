@@ -12,8 +12,11 @@ jobs:
         - workloads/instance-env/gateway-deployment.yaml
         # try out other Kinds
         - samples/api-catalog-service.yaml
+        - samples/gateway-service-ci.yaml
         - samples/gateway-service-np.yaml
         - samples/gateway-service-lb.yaml
+        - samples/horizontal-pod-autoscaler/gateway-hpa.yaml
+        - samples/pod-disruption-budget/gateway-pdb.yaml
         - samples/bare-metal/gateway-ingress.yaml
         - samples/openshift/gateway-route.yaml
         - samples/workspace-pvc.yaml
