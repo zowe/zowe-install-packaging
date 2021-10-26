@@ -22,6 +22,11 @@ spec:
             runAsUser: 20000
             runAsGroup: 20000
             fsGroup: 20000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
           serviceAccountName: zowe-sa
           volumes:
             - name: zowe-runtime
@@ -56,9 +61,6 @@ spec:
                 - /bin/bash
                 - -c
                 - /component/bin/internal/container-init.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
-              securityContext:
-                readOnlyRootFilesystem: true
-                allowPrivilegeEscalation: false
               volumeMounts:
                 - name: zowe-runtime
                   mountPath: "/home/zowe/runtime"
