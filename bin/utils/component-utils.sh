@@ -603,11 +603,13 @@ process_component_gateway_shared_libs() {
         break
       fi
 
-      ${INSTANCE_DIR}/bin/install-app.sh "$(get_full_path ${gateway_shared_libs_path})"
-      # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
+      # copy to workspace/gateway/sharedLibs/
+      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs}"
+      mkdir -p "${gateway_shared_libs_workspace_path}"
+      cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/"
 
       iterator_index=`expr $iterator_index + 1`
-      gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}].path" 2>/dev/null)
+      gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   done
 
   if [ "${all_succeed}" = "true" ]; then
