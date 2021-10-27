@@ -59,7 +59,7 @@ jobs:
             CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
           fi
           sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
-              -e "s#{BUILD_NUMBER}#${{ github.run_number }}.#g" \
+              -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
               -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
               -e "s#{BUILD_TIMESTAMP}#${CURRENT_TIME}#g" \
               manifest.json.template > manifest.json
@@ -74,11 +74,11 @@ jobs:
           github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
           extra-init: |
-            const fs = require('fs')
-            var projectRootPath = process.env.GITHUB_WORKSPACE
-            var mjson = `${projectRootPath}/manifest.json`
-            var _manifestObject = JSON.parse(fs.readFileSync(mjson))
+            const fs = require('fs');
+            var projectRootPath = process.env.GITHUB_WORKSPACE;
+            var mjson = `${projectRootPath}/manifest.json`;
+            var _manifestObject = JSON.parse(fs.readFileSync(mjson));
             if (!_manifestObject || !_manifestObject['name'] || _manifestObject['name'] != 'Zowe' || !_manifestObject['version']) {
-              console.error('Cannot read manifest or manifest is invalid.')
+              console.error('Cannot read manifest or manifest is invalid.');
             }
             
