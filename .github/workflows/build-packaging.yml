@@ -1,0 +1,84 @@
+name: Build and Packaging Workflow
+on:
+  push:
+    branches:
+      - staging 
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      BUILD_SMPE:
+        description: 'Build SMPE'
+        required: false
+      BUILD_PSIANDSMPE:
+        description: 'Build PSI and SMPE'
+        required: false
+      BUILD_DOCKER:
+        description: 'Build Docker'
+        required: false
+      BUILD_DOCKER_SOURCES:
+        description: 'Build Docker sources'
+        required: false
+      BUILD_KUBERNETES:
+        description: 'Build Kubernetes'
+        required: false
+
+jobs:
+  check-permission:
+    runs-on: ubuntu-latest
+    steps:
+      # this action will fail the whole workflow if permission check fails
+      - name: check permission
+        uses: zowe-actions/shared-actions/permission-check@main
+        with:
+          user: ${{ github.actor }}
+          github-repo: ${{ github.repository }}
+          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+  
+  regular-build:
+    runs-on: ubuntu-latest
+    needs: check-permission
+    steps: 
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+  
+      - name: '[Prep 2] Setup jFrog CLI'
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      
+      - name: '[Prep 3] Convert manifest template to manifest.json'
+        run: |
+          COMMIT_HASH=$(git rev-parse --verify HEAD)
+          CURRENT_TIME=$(date +%s)
+          if [ -z ${{ github.event.pull_request.number }} ]
+          then
+            CURRENT_BRANCH=${GITHUB_REF#refs/heads/} 
+          else
+            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
+          fi
+          sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
+              -e "s#{BUILD_NUMBER}#${{ github.run_number }}.#g" \
+              -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
+              -e "s#{BUILD_TIMESTAMP}#${CURRENT_TIME}#g" \
+              manifest.json.template > manifest.json
+          
+          echo "Current manifest.json is:"
+          cat manifest.json
+
+      - name: '[Prep 3] Prepare workflow'
+        uses: zowe-actions/shared-actions/prepare-workflow@main
+        with:
+          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+          github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+          extra-init: |
+            const fs = require('fs')
+            var projectRootPath = process.env.GITHUB_WORKSPACE
+            var mjson = `${projectRootPath}/manifest.json`
+            var _manifestObject = JSON.parse(fs.readFileSync(mjson))
+            if (!_manifestObject || !_manifestObject['name'] || _manifestObject['name'] != 'Zowe' || !_manifestObject['version']) {
+              console.error('Cannot read manifest or manifest is invalid.')
+            }
+            
