@@ -60,12 +60,18 @@ spec:
             - name: files-api-port
               containerPort: 8547
               protocol: TCP
-          readinessProbe:
+          startupProbe:
             tcpSocket:
               port: 8547
-            initialDelaySeconds: 45
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
+            periodSeconds: 10
             failureThreshold: 60
+          livenessProbe:
+            tcpSocket:
+              port: 8547
+            # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
+            periodSeconds: 10
+            failureThreshold: 3
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
