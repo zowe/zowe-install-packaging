@@ -594,7 +594,7 @@ process_component_gateway_shared_libs() {
 
   all_succeed=true
   iterator_index=0
-  gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}].path" 2>/dev/null)
+  gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
       cd "${component_dir}"
       if [ ! -r "${gateway_shared_libs_path}" ]; then
@@ -604,7 +604,7 @@ process_component_gateway_shared_libs() {
       fi
 
       # copy to workspace/gateway/sharedLibs/
-      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs}"
+      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs"
       mkdir -p "${gateway_shared_libs_workspace_path}"
       cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/"
 
