@@ -75,8 +75,7 @@ jobs:
           github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
           extra-init: |
             const fs = require('fs');
-            var projectRootPath = process.env.GITHUB_WORKSPACE;
-            var mjson = `${projectRootPath}/manifest.json`;
+            var mjson = '${{ env.GITHUB_WORKSPACE }}/manifest.json;
             var _manifestObject = JSON.parse(fs.readFileSync(mjson));
             if (!_manifestObject || !_manifestObject['name'] || _manifestObject['name'] != 'Zowe' || !_manifestObject['version']) {
               console.error('Cannot read manifest or manifest is invalid.');
