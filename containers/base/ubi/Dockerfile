@@ -81,5 +81,9 @@ RUN set -ex \
     # smoke tests
     && node --version \
     && npm --version \
+    # remove unused pacakges
+    && microdnf remove \
+      findutils \
+      xz \
     # clean up
     && microdnf clean all --enablerepo='*'

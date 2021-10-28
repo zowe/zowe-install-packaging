@@ -83,5 +83,10 @@ RUN set -ex \
     # smoke tests
     && node --version \
     && npm --version \
+    # remove unused pacakges
+    && apt-get purge --auto-remove \
+      curl \
+      gnupg \
+      xz-utils \
     # clean up
     && rm -rf /var/lib/apt/lists/*
