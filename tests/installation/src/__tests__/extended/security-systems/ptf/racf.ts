@@ -20,8 +20,7 @@ import {TEST_TIMEOUT_SMPE_PTF} from '../../../../constants';
  *
  * @worker marist-1
  */
-// hard code to use marist-1 which we started with RACF
-const testServer = 'marist-1';
+const testServer = process.env.TEST_SERVER;
 const testSuiteName = 'Test SMPE PTF installation with RACF';
 describe(testSuiteName, () => {
   beforeAll(() => {

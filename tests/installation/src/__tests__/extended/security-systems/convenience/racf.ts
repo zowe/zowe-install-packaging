@@ -20,8 +20,7 @@ import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../../constants';
  *
  * @worker marist-1
  */
-// hard code to use marist-1 which we started with RACF
-const testServer = 'marist-1';
+const testServer = process.env.TEST_SERVER;
 const testSuiteName = 'Test convenience build installation with RACF';
 describe(testSuiteName, () => {
   beforeAll(() => {

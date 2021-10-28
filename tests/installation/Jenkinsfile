@@ -31,12 +31,6 @@ node('zowe-jenkins-agent-dind-wdc') {
   // - credential id for ssh server hostname and port
   // - credential id for ssh username and password
   Map TEST_SERVERS = [
-    'marist': [
-      ansible_host     : 'marist-1',
-      ssh_hostport     : 'ssh-marist-server-zzow01-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow01',
-      node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
-    ],
     'marist-2': [
       ansible_host     : 'marist-2',
       ssh_hostport     : 'ssh-marist-server-zzow02-hostport',
