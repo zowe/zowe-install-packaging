@@ -43,6 +43,7 @@ jobs:
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif
 
@@ -82,6 +83,7 @@ jobs:
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif
 
@@ -143,6 +145,7 @@ jobs:
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif
 
@@ -185,6 +188,7 @@ jobs:
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif
 
