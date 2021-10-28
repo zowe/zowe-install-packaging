@@ -18,7 +18,7 @@ import {
   KEYSTORE_MODE_KEYRING,
 } from '../../../constants';
 
-const testServer = process.env.TEST_SERVER;
+const testServer = 'marist-4';
 const testSuiteName = 'Test convenience build installation with keystore pointing to a RACF keyring';
 describe(testSuiteName, () => {
   beforeAll(() => {

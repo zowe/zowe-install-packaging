@@ -46,7 +46,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     'marist-4': [
       ansible_host     : 'marist-4',
       ssh_hostport     : 'ssh-marist-server-zzow04-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow01',
+      ssh_userpass     : 'ssh-marist-server-credential',
       node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
     ]
   ];
@@ -96,32 +96,32 @@ node('zowe-jenkins-agent-dind-wdc') {
     ],
     'bundle: convenience build on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/convenience/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: smpe fmid on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/fmid/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: smpe ptf on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/ptf/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: all extended tests': [
       test_files: 'dist/__tests__/extended/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: keyring on multiple security systems': [
       test_files: 'dist/__tests__/extended/keyring-modes/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'generate api documentation': [
       test_files: 'dist/__tests__/basic/install-api-gen.js',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
     ]
   ]
 
