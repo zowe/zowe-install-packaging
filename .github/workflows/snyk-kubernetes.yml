@@ -1,4 +1,4 @@
-name: Kubernetes IoC Scan
+name: Kubernetes IaC Scan
 on: push
 jobs:
   snyk:
