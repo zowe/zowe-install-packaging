@@ -84,7 +84,7 @@ RUN set -ex \
     && node --version \
     && npm --version \
     # remove unused pacakges
-    && apt-get purge --auto-remove \
+    && apt-get purge --auto-remove -y \
       curl \
       gnupg \
       xz-utils \
