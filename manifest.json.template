@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "1.25.0-187-zlux-app-serve",
+      "version": "1.25.0-187-zlux-app-server",
       "repository": "libs-snapshot-local",
       "artifact": "zlux-core-1.25.0-20211028.150205.pax"
     },
