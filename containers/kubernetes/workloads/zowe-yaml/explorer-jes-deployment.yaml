@@ -129,7 +129,7 @@ spec:
               mountPath: "/home/zowe/instance"
         - name: update-workspace-permission
           image: busybox:1.28
-          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && echo "Owner of workspace is ${OWNER}" && if [ $OWNER != "20000:20000" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
           imagePullPolicy: Always
           resources:
             requests:
@@ -148,6 +148,6 @@ spec:
               drop:
                 - all
               add:
-                - CAP_CHOWN
+                - CHOWN
             runAsUser: 0
             runAsGroup: 0
