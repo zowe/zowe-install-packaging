@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~1.25.0-STAGING",
+      "version": "~1.25.0-PR-236",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-workflow": {
