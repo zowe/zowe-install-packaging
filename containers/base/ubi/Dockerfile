@@ -84,6 +84,7 @@ RUN set -ex \
     # remove unused pacakges
     && microdnf remove \
       findutils \
+      tar \
       xz \
     # clean up
     && microdnf clean all --enablerepo='*'
