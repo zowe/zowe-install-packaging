@@ -67,7 +67,7 @@ jobs:
           echo "Current manifest.json is:"
           cat manifest.json
 
-      - name: '[Prep 3] Prepare workflow'
+      - name: '[Prep 4] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
         with:
           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
@@ -80,4 +80,10 @@ jobs:
             if (!_manifestObject || !_manifestObject['name'] || _manifestObject['name'] != 'Zowe' || !_manifestObject['version']) {
               console.error('Cannot read manifest or manifest is invalid.');
             }
+
+      - name: '[Prep 5] Downlaod from jfrog according to manifest'
+        uses: zowe-actions/shared-actions/jfrog-download@jfrog-download
+        with:
+          manifest-file-path: ${{ github.workspace }}/manifest.json
+          default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
             
