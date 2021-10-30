@@ -86,4 +86,5 @@ jobs:
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
+          expected-count: 28
             
