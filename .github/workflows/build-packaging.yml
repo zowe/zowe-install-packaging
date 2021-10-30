@@ -88,5 +88,5 @@ jobs:
           default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
           expected-count: 28
         env: 
-          debug: zowe-actions:shared-actions:jfrog-download
+          DEBUG: zowe-actions:shared-actions:jfrog-download
             
