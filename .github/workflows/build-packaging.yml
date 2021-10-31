@@ -81,7 +81,7 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
-      - name: '[Prep 5] Downlaod from jfrog according to manifest'
+      - name: '[Download 1] Downlaod from jfrog according to manifest'
         uses: zowe-actions/shared-actions/jfrog-download@jfrog-download
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
@@ -89,4 +89,22 @@ jobs:
           expected-count: 28
         #env: 
         #  DEBUG: zowe-actions:shared-actions:jfrog-download
-            
+        
+      # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
+      # and it will be used in the next step
+      - name: '[Download 2] Get publish target path'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE== 'true'
+        uses: zowe-actions/shared-actions/publish@jfrog-download
+        with:
+          perform-release: false
+
+      - name: '[Download 2.1] Download SMPE build log'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE== 'true'
+        uses: zowe-actions/shared-actions/jfrog-download@jfrog-download
+        with:
+            source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
+            default-target-path: .pax/content/smpe/
+            extra-options: --flat=true --sort-by "created" --sort-order "desc" --limit 1
+
+          
+
