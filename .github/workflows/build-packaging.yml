@@ -10,18 +10,23 @@ on:
       BUILD_SMPE:
         description: 'Build SMPE'
         required: false
+        default: 'true'
       BUILD_PSIANDSMPE:
         description: 'Build PSI and SMPE'
         required: false
+        default: 'true'
       BUILD_DOCKER:
         description: 'Build Docker'
         required: false
+        default: 'true'
       BUILD_DOCKER_SOURCES:
         description: 'Build Docker sources'
         required: false
+        default: 'true'
       BUILD_KUBERNETES:
         description: 'Build Kubernetes'
         required: false
+        default: 'true'
 
 jobs:
   check-permission:
