@@ -107,9 +107,9 @@ jobs:
         if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE== 'true'
         uses: zowe-actions/shared-actions/jfrog-download@jfrog-download
         with:
-            source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
-            default-target-path: .pax/content/smpe/
-            extra-options: --flat=true --sort-by "created" --sort-order "desc" --limit 1
+          source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
+          default-target-path: .pax/content/smpe/
+          extra-options: --flat=true --sort-by "created" --sort-order "desc" --limit 1
 
           
 
