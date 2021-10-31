@@ -118,7 +118,7 @@ jobs:
       - name: '[Pax 1] Make pax preparation (process some pax inputs)'
         id: pax-prep
         run: |
-          if [ ${{ github.event.inputs.BUILD_SMPE }} == "true" ] || [ ${{ github.event.inputs.BUILD_PSIANDSMPE }} == "true" ] ; then
+          if [ "${{ github.event.inputs.BUILD_SMPE }}" == "true" ] || [ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == "true" ] ; then
             echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
             echo ::set-output name=BUILD_SMPE::yes
           else
@@ -126,13 +126,13 @@ jobs:
             echo ::set-output name=BUILD_SMPE::
           fi
 
-          if [ ${{ github.event.inputs.BUILD_PSIANDSMPE }} == "true" ] ; then
+          if [ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == "true" ] ; then
             echo ::set-output name=BUILD_PSI::yes
           else
             echo ::set-output name=BUILD_PSI::
           fi
 
-          if [ ${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} == "true" ] ; then
+          if [ "${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
             echo ::set-output name=KEEP_TEMP_FOLDER::yes
           else
             echo ::set-output name=KEEP_TEMP_FOLDER::
