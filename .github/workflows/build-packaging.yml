@@ -10,23 +10,27 @@ on:
       BUILD_SMPE:
         description: 'Build SMPE'
         required: false
-        default: 'true'
+        default: 'false'
       BUILD_PSIANDSMPE:
         description: 'Build PSI and SMPE'
         required: false
-        default: 'true'
+        default: 'false'
       BUILD_DOCKER:
         description: 'Build Docker'
         required: false
-        default: 'true'
+        default: 'false'
       BUILD_DOCKER_SOURCES:
         description: 'Build Docker sources'
         required: false
-        default: 'true'
+        default: 'false'
       BUILD_KUBERNETES:
         description: 'Build Kubernetes'
         required: false
-        default: 'true'
+        default: 'false'
+      KEEP_TEMP_PAX_FOLDER:
+        description: 'do we need to keep temp pax folder?'
+        required: false
+        default: 'false'
 
 jobs:
   check-permission:
@@ -98,18 +102,53 @@ jobs:
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step
       - name: '[Download 2] Get publish target path'
-        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE== 'true'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/publish@jfrog-download
         with:
           perform-release: false
 
       - name: '[Download 2.1] Download SMPE build log'
-        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE== 'true'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@jfrog-download
         with:
           source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
           default-target-path: .pax/content/smpe/
           extra-options: --flat=true --sort-by "created" --sort-order "desc" --limit 1
 
-          
+      - name: '[Pax 1] Make pax preparation (process some pax inputs)'
+        run: |
+          if [ ${{ github.event.inputs.BUILD_SMPE }} == "true" ] || [ ${{ github.event.inputs.BUILD_PSIANDSMPE }} == "true" ] ; then
+            echo "EXTRA_FILES=zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh" >> $GITHUB_ENV
+          fi
 
+          if [ ${{ github.event.inputs.BUILD_PSIANDSMPE }} == "true" ] ; then
+            echo "BUILD_PSI=yes" >> $GITHUB_ENV
+          fi
+
+
+
+
+      - name: '[Pax 2] Make pax'
+        timeout-minutes: 90
+        uses: zowe-actions/shared-actions/make-pax@jfrog-download
+        with: 
+          pax-name: zowe.pax
+          pax-options: '-o saveext'
+          pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
+          pax-ssh-password: ${{ secrets.SSH_MARIST_PASSWORD }}
+          keep-temp-folders: ${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}
+          extra-files: ${{ env.EXTRA_FILES }}
+          extra-environment-vars: |
+            ZOWE_VERSION=${{ env.P_VERSION }}
+            BUILD_SMPE=
+            BUILD_PSI=
+            KEEP_TEMP_FOLDER=
+
+
+
+          
+          
+            'BUILD_SMPE'      : (params.BUILD_SMPE == 'NONE' ? '' : 'yes'),
+            'BUILD_PSI'       : (params.BUILD_SMPE == 'PSIANDSMPE' ? 'yes' : ''),
+            'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
+          
