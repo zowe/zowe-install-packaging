@@ -154,10 +154,14 @@ jobs:
             BUILD_SMPE=${{ steps.pax-prep.outputs.BUILD_SMPE }}
             BUILD_PSI=${{ steps.pax-prep.outputs.BUILD_PSI }}
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
-      
-      - name: 'debug'
+
+      - name: '[Pax 3] Post make pax'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         run: |
-          ls .pax
+          cd .pax
+          chmod +x rename-back.sh
+          cat rename-back.sh
+          ./rename-back.sh
 
       - name: '[Publish] Upload to artifactory'
         uses: zowe-actions/shared-actions/publish@main
