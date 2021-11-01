@@ -77,8 +77,9 @@ jobs:
           cat manifest.json
 
       - name: '[Prep 4] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
+        uses: zowe-actions/shared-actions/prepare-workflow@testSemver
         with:
+          package-name: org.zowe
           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
           github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
@@ -91,7 +92,7 @@ jobs:
             }
 
       - name: '[Download 1] Downlaod from jfrog according to manifest'
-        uses: zowe-actions/shared-actions/jfrog-download@jfrog-download
+        uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
@@ -103,13 +104,13 @@ jobs:
       # and it will be used in the next step
       - name: '[Download 2] Get publish target path'
         if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
-        uses: zowe-actions/shared-actions/publish@jfrog-download
+        uses: zowe-actions/shared-actions/publish@main
         with:
           perform-release: false
 
       - name: '[Download 2.1] Download SMPE build log'
         if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
-        uses: zowe-actions/shared-actions/jfrog-download@jfrog-download
+        uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
           default-target-path: .pax/content/smpe/
@@ -140,7 +141,7 @@ jobs:
 
       - name: '[Pax 2] Make pax'
         timeout-minutes: 90
-        uses: zowe-actions/shared-actions/make-pax@jfrog-download
+        uses: zowe-actions/shared-actions/make-pax@main
         with: 
           pax-name: zowe.pax
           pax-options: '-o saveext'
@@ -154,15 +155,15 @@ jobs:
             BUILD_PSI=${{ steps.pax-prep.outputs.BUILD_PSI }}
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
       
-      - name: '[Publish] Upload to artifactory'
-        uses: zowe-actions/shared-actions/publish@main
-        with:
-          perform-release: false
-          artifacts: |
-            '.pax/zowe.pax',
-            '.pax/zowe-smpe.zip',
-            '.pax/smpe-promote.tar',
-            '.pax/pd.htm',
-            '.pax/smpe-build-logs.pax.Z',
-            '.pax/AZWE*'
+      # - name: '[Publish] Upload to artifactory'
+      #   uses: zowe-actions/shared-actions/publish@main
+      #   with:
+      #     perform-release: false
+      #     artifacts: |
+      #       '.pax/zowe.pax',
+      #       '.pax/zowe-smpe.zip',
+      #       '.pax/smpe-promote.tar',
+      #       '.pax/pd.htm',
+      #       '.pax/smpe-build-logs.pax.Z',
+      #       '.pax/AZWE*'
           
