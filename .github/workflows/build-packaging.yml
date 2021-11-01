@@ -114,7 +114,7 @@ jobs:
         with:
           source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
           default-target-path: .pax/content/smpe/
-          extra-options: --flat=true --sort-by "created" --sort-order "desc" --limit 1
+          extra-options: --flat "true" --sort-by "created" --sort-order "desc" --limit 1
 
       - name: '[Pax 1] Make pax preparation (process some pax inputs)'
         id: pax-prep
