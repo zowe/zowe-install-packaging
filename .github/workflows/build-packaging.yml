@@ -1,0 +1,32 @@
+name: Build and Packaging Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      BUILD_SMPE:
+        description: 'Build SMPE'
+        required: false
+      BUILD_PSIANDSMPE:
+        description: 'Build PSI and SMPE'
+        required: false
+      BUILD_DOCKER:
+        description: 'Build Docker'
+        required: false
+      BUILD_DOCKER_SOURCES:
+        description: 'Build Docker sources'
+        required: false
+      BUILD_KUBERNETES:
+        description: 'Build Kubernetes'
+        required: false
+ 
+jobs:
+  check-permission:
+    runs-on: ubuntu-latest
+    steps:
+      # this action will fail the whole workflow if permission check fails
+      - name: check permission
+        uses: zowe-actions/shared-actions/permission-check@main
+        with:
+          user: ${{ github.actor }}
+          github-repo: ${{ github.repository }}
+          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}
