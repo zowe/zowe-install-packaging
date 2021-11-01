@@ -608,7 +608,17 @@ process_component_gateway_shared_libs() {
       # copy to workspace/gateway/sharedLibs/
       gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
       mkdir -p "${gateway_shared_libs_workspace_path}"
-      cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/"
+      if [[ "$gateway_shared_libs_path" == *".jar"* ]]
+      then
+        gateway_shared_libs_path=$(pwd "${gateway_shared_libs_path}")
+      fi
+
+      if [[ "${gateway_shared_libs_path: -1}" == "/" ]]
+      then
+        cp -r "${gateway_shared_libs_path}." "${gateway_shared_libs_workspace_path}/"
+      else
+        cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/"
+      fi
 
       iterator_index=`expr $iterator_index + 1`
       gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
