@@ -155,6 +155,10 @@ jobs:
             BUILD_PSI=${{ steps.pax-prep.outputs.BUILD_PSI }}
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
       
+      - name: 'debug'
+        run: |
+          ls .pax
+
       - name: '[Publish] Upload to artifactory'
         uses: zowe-actions/shared-actions/publish@main
         with:
