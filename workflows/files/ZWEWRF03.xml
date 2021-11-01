@@ -469,6 +469,56 @@ valid values are blank('') for telnet, or 'tls'</description>
             <choice>debug</choice>
         </string>
     </variable>
+    <variable name="JOBS_API_PORT" scope="instance" visibility="public">
+        <label>Jobs API port</label>
+        <abstract>The port the jobs API service will use</abstract>
+        <description>The port the jobs API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8545</default>
+        </integer>
+    </variable>
+    <variable name="FILES_API_PORT" scope="instance" visibility="public">
+        <label>Files API port</label>
+        <abstract>The port the files API service will use</abstract>
+        <description>The port the files API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8547</default>
+        </integer>
+    </variable>
+    <variable name="JES_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>JES-explorer UI port</label>
+        <abstract>The port the jes-explorer UI service will use</abstract>
+        <description>The port the jes-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8546</default>
+        </integer>
+    </variable>
+    <variable name="MVS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>MVS-explorer UI port</label>
+        <abstract>The port the mvs-explorer UI service will use</abstract>
+        <description>The port the mvs-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8548</default>
+        </integer>
+    </variable>
+    <variable name="USS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>USS-explorer UI port</label>
+        <abstract>The port the uss-explorer UI service will use</abstract>
+        <description>The port the uss-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8550</default>
+        </integer>
+    </variable>
     <!--atCreate-->
     <step name="define_variables" optional="false">
         <title>Define Variables</title>
@@ -518,6 +568,11 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="ZWES_ZIS_PARMLIB" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZWES_ZIS_PARMLIB_MEMBER" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZWE_LOG_LEVEL_ZWELS" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="JOBS_API_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="FILES_API_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="JES_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="MVS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="USS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="true" required="false"/>
         <instructions substitution="true">Define the variables for the workflow execution</instructions>
         <weight>1</weight>
         <skills>None</skills>
@@ -599,6 +654,7 @@ export FILES_API_PORT=${instance-FILES_API_PORT}
 export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
 export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
 export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+export ZOWE_EXPLORER_FRAME_ANCESTORS="${instance-ZOWE_EXPLORER_HOST}:*,${instance-ZOWE_IP_ADDRESS}:*"
 
 # app framework (app-server, zss, zis) variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
@@ -717,6 +773,7 @@ FILES_API_PORT=${instance-FILES_API_PORT}
 JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
 MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
 USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+ZOWE_EXPLORER_FRAME_ANCESTORS="${instance-ZOWE_EXPLORER_HOST}:*,${instance-ZOWE_IP_ADDRESS}:*"
 
 # app framework (app-server, zss, zis) variables
 ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
@@ -833,6 +890,7 @@ export FILES_API_PORT=${instance-FILES_API_PORT}
 export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
 export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
 export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
+export ZOWE_EXPLORER_FRAME_ANCESTORS="${instance-ZOWE_EXPLORER_HOST}:*,${instance-ZOWE_IP_ADDRESS}:*"
 
 # app framework (app-server, zss, zis) variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
