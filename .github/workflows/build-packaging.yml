@@ -155,15 +155,15 @@ jobs:
             BUILD_PSI=${{ steps.pax-prep.outputs.BUILD_PSI }}
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
       
-      # - name: '[Publish] Upload to artifactory'
-      #   uses: zowe-actions/shared-actions/publish@main
-      #   with:
-      #     perform-release: false
-      #     artifacts: |
-      #       '.pax/zowe.pax',
-      #       '.pax/zowe-smpe.zip',
-      #       '.pax/smpe-promote.tar',
-      #       '.pax/pd.htm',
-      #       '.pax/smpe-build-logs.pax.Z',
-      #       '.pax/AZWE*'
+      - name: '[Publish] Upload to artifactory'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          perform-release: false
+          artifacts: |
+            '.pax/zowe.pax',
+            '.pax/zowe-smpe.zip',
+            '.pax/smpe-promote.tar',
+            '.pax/pd.htm',
+            '.pax/smpe-build-logs.pax.Z',
+            '.pax/AZWE*'
           
