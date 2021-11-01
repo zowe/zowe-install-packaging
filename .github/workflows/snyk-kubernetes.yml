@@ -1,4 +1,4 @@
-name: Kubernetes IoC Scan
+name: Kubernetes IaC Scan
 on: push
 jobs:
   snyk:
@@ -12,8 +12,11 @@ jobs:
         - workloads/instance-env/gateway-deployment.yaml
         # try out other Kinds
         - samples/api-catalog-service.yaml
+        - samples/gateway-service-ci.yaml
         - samples/gateway-service-np.yaml
         - samples/gateway-service-lb.yaml
+        - samples/horizontal-pod-autoscaler/gateway-hpa.yaml
+        - samples/pod-disruption-budget/gateway-pdb.yaml
         - samples/bare-metal/gateway-ingress.yaml
         - samples/openshift/gateway-route.yaml
         - samples/workspace-pvc.yaml
@@ -31,5 +34,6 @@ jobs:
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif

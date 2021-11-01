@@ -16,7 +16,7 @@ FROM ubuntu:latest
 LABEL name="Zowe Base Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.7" \
+      version="0.0.8" \
       release="0" \
       summary="Base image for Zowe components" \
       description="Base image for Zowe components"
@@ -83,5 +83,12 @@ RUN set -ex \
     # smoke tests
     && node --version \
     && npm --version \
+    # remove unused pacakges
+    && apt-get purge --auto-remove -y \
+      bzip2 \
+      curl \
+      gnupg \
+      tini \
+      xz-utils \
     # clean up
     && rm -rf /var/lib/apt/lists/*
