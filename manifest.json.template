@@ -450,6 +450,11 @@
       "name": "ompzowe/app-server",
       "tag" : "latest-ubuntu"
     },
+    "explorer-ip": {
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/explorer-ip",
+        "tag" : "latest-ubuntu"
+    },
     "explorer-jes": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-jes",
