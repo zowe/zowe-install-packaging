@@ -61,12 +61,18 @@ spec:
             - name: files-api-port
               containerPort: 8547
               protocol: TCP
-          readinessProbe:
+          startupProbe:
             tcpSocket:
               port: 8547
-            initialDelaySeconds: 45
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
+            periodSeconds: 10
             failureThreshold: 60
+          livenessProbe:
+            tcpSocket:
+              port: 8547
+            # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
+            periodSeconds: 10
+            failureThreshold: 3
           command: ["/bin/bash", "-c"]
           args:
             - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
@@ -81,6 +87,10 @@ spec:
                 command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
           securityContext:
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
@@ -109,8 +119,36 @@ spec:
               cpu: "100m"
           securityContext:
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
             - name: zowe-instance
               mountPath: "/home/zowe/instance"
+        - name: update-workspace-permission
+          image: busybox:1.28
+          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: zowe-workspace
+              mountPath: "/home/zowe/instance/workspace"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+            runAsUser: 0
+            runAsGroup: 0
