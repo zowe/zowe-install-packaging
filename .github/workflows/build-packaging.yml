@@ -77,7 +77,7 @@ jobs:
           cat manifest.json
 
       - name: '[Prep 4] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@testSemver
+        uses: zowe-actions/shared-actions/prepare-workflow@main
         with:
           package-name: org.zowe
           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
