@@ -603,8 +603,10 @@ process_component_gateway_shared_libs() {
         break
       fi
 
+      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
+
       # copy to workspace/gateway/sharedLibs/
-      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs"
+      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
       mkdir -p "${gateway_shared_libs_workspace_path}"
       cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/"
 
