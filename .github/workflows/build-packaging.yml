@@ -143,7 +143,7 @@ jobs:
         timeout-minutes: 90
         uses: zowe-actions/shared-actions/make-pax@main
         with: 
-          pax-name: zowe.pax
+          pax-name: zowe
           pax-options: '-o saveext'
           pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
           pax-ssh-password: ${{ secrets.SSH_MARIST_PASSWORD }}
