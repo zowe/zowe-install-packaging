@@ -97,7 +97,7 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
-      - name: '[Download 1] Downlaod from jfrog according to manifest'
+      - name: '[Download] Downlaod from jfrog according to manifest'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
@@ -136,7 +136,6 @@ jobs:
       - name: '[Publish] Upload to artifactory'
         uses: zowe-actions/shared-actions/publish@main
         with:
-          perform-release: false
           artifacts: .pax/zowe.pax
 
 
@@ -197,8 +196,6 @@ jobs:
       # and it will be used in the next step: [Download 3] Download SMPE build log
       - name: '[Download 2] Get publish target path'
         uses: zowe-actions/shared-actions/publish@main
-        with:
-          perform-release: false
 
       - name: '[Download 3] Download SMPE build log'
         uses: zowe-actions/shared-actions/jfrog-download@main
@@ -252,7 +249,6 @@ jobs:
       - name: '[Publish] Upload to artifactory'
         uses: zowe-actions/shared-actions/publish@main
         with:
-          perform-release: false
           artifacts: |
             .pax/zowe-smpe.zip
             .pax/smpe-promote.tar
@@ -265,44 +261,43 @@ jobs:
 
 
     
-  # build-zlinux-docker-tech-preview:
-  #   runs-on: ubuntu-latest
-  #   needs: regular-build-pax-smpe
-  #   steps: 
-  #     - name: '[Prep 1] Checkout'
-  #       uses: actions/checkout@v2
+#   build-zlinux-docker-tech-preview:
+#     runs-on: ubuntu-latest
+#     needs: regular-build-pax
+#     if: github.event.inputs.BUILD_DOCKER == 'true'
+#     steps: 
+#       - name: '[Prep 1] Checkout'
+#         uses: actions/checkout@v2
   
-  #     - name: '[Prep 2] Setup jFrog CLI'
-  #       uses: jfrog/setup-jfrog-cli@v2
-  #       env:
-  #         JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+#       - name: '[Prep 2] Setup jFrog CLI'
+#         uses: jfrog/setup-jfrog-cli@v2
+#         env:
+#           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
-  #     - name: '[Prep 3] Prepare workflow'
-  #       uses: zowe-actions/shared-actions/prepare-workflow@main
-  #       with:
-  #         package-name: org.zowe
-  #         github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-  #         github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-  #         github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+#       - name: '[Prep 3] Prepare workflow'
+#         uses: zowe-actions/shared-actions/prepare-workflow@main
+#         with:
+#           package-name: org.zowe
+#           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+#           github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+#           github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
 
-  #     - name: '[Publish] Upload to artifactory'
-  #       uses: zowe-actions/shared-actions/publish@main
-  #       with:
-  #         perform-release: false
-  #         artifacts: |
-  #           .pax/zowe.pax
+#       - name: '[Publish] Upload to artifactory'
+#         uses: zowe-actions/shared-actions/publish@main
+#         with:
+#           artifacts: .pax/zowe.pax
+#           skip-upload: true
   
-  #     - name: '[Docker 1] zLinux Docker'
-  #       timeout-minutes: 60
-  #       if: github.event.inputs.BUILD_DOCKER == 'true'
-  #       run:
+#       - name: '[Docker 1] zLinux Docker'
+#         timeout-minutes: 60
+#         run: 
 
 
-
-
-  #           ${{ secrets.DOCKERHUB_USER }}
-  #           ${{ secrets.DOCKERHUB_PASSWORD }}
-  #           ${{ secrets.ZLINUX_HOST }}
-  #           ${{ secrets.ZLINUX_SSH_KEY }}
-  #           ${{ secrets.ZLINUX_SSH_USER }}
-  #           ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+# ${{ env.ZOWE_PAX_JFROG_UPLOAD_TARGET }}
+# ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
+# ${{ secrets.DOCKERHUB_USER }}
+# ${{ secrets.DOCKERHUB_PASSWORD }}
+# ${{ secrets.ZLINUX_HOST }}
+# ${{ secrets.ZLINUX_SSH_KEY }}
+# ${{ secrets.ZLINUX_SSH_USER }}
+# ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
