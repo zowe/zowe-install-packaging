@@ -11,9 +11,11 @@ metadata:
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
+  # FIXME: you can uncomment and modify this line if you have your own domain name.
+  # host: my-domain-name.com
   to:
     kind: Service
     name: discovery-service
-  port:
-    targetPort: 7553
+  tls:
+    termination: passthrough
   wildcardPolicy: None
