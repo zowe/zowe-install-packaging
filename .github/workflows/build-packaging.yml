@@ -261,43 +261,47 @@ jobs:
 
 
     
-#   build-zlinux-docker-tech-preview:
-#     runs-on: ubuntu-latest
-#     needs: regular-build-pax
-#     if: github.event.inputs.BUILD_DOCKER == 'true'
-#     steps: 
-#       - name: '[Prep 1] Checkout'
-#         uses: actions/checkout@v2
+  build-zlinux-docker-tech-preview:
+    runs-on: ubuntu-latest
+    needs: regular-build-pax
+    if: github.event.inputs.BUILD_DOCKER == 'true'
+    steps: 
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
   
-#       - name: '[Prep 2] Setup jFrog CLI'
-#         uses: jfrog/setup-jfrog-cli@v2
-#         env:
-#           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      - name: '[Prep 2] Setup jFrog CLI'
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
-#       - name: '[Prep 3] Prepare workflow'
-#         uses: zowe-actions/shared-actions/prepare-workflow@main
-#         with:
-#           package-name: org.zowe
-#           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-#           github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-#           github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+      - name: '[Prep 3] Prepare workflow'
+        uses: zowe-actions/shared-actions/prepare-workflow@main
+        with:
+          package-name: org.zowe
+          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+          github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
 
-#       - name: '[Publish] Upload to artifactory'
-#         uses: zowe-actions/shared-actions/publish@main
-#         with:
-#           artifacts: .pax/zowe.pax
-#           skip-upload: true
+      - name: '[Publish] Upload to artifactory'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: .pax/zowe.pax
+          skip-upload: true
   
-#       - name: '[Docker 1] zLinux Docker'
-#         timeout-minutes: 60
-#         run: 
+      - name: '[Docker] Build zLinux Docker'
+        timeout-minutes: 60
+        uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@tp-build-docker
+        with: 
+          run-number: ${{ github.run_number }}
+          zowe-pax-jfrog-upload-target: ${{ env.ZOWE_PAX_JFROG_UPLOAD_TARGET }}
+          build-docker-sources: ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
+          dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          zlinux-host: ${{ secrets.ZLINUX_HOST }}
+          zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
+          zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
+          zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
 
-# ${{ env.ZOWE_PAX_JFROG_UPLOAD_TARGET }}
-# ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
-# ${{ secrets.DOCKERHUB_USER }}
-# ${{ secrets.DOCKERHUB_PASSWORD }}
-# ${{ secrets.ZLINUX_HOST }}
-# ${{ secrets.ZLINUX_SSH_KEY }}
-# ${{ secrets.ZLINUX_SSH_USER }}
-# ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          # pipeline.uploadArtifacts([ 'server-bundle.sources.s390x.tar', 'server-bundle.s390x.tar' ])
+          # pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
