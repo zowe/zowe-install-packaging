@@ -123,9 +123,8 @@
         <prereqStep name="allocate_xmem"/>
         <!--variableValues-->
         <!-- condition -->
-        <instructions substitution="false"><![CDATA[<p>Run this step to populate the previously allocated data sets and copy the STC procedures.<br/>
-<p>For this step is used pre-set zowe sh script.</p>
-<p>More info about used zowe-install-xmem.sh script is under this documentation link <a href="https://docs.zowe.org/stable/user-guide/scripted-configure-server">zowe-install-xmem sh script</a> (open the link via right-click in new window or tab).</p>]]></instructions>
+        <instructions substitution="false"><![CDATA[<p>Run this step to execute zowe-install-xmem.sh script with pre-set input values.<br/>
+<p>More info about used zowe-install-xmem.sh script is under this documentation link <a href="https://docs.zowe.org/stable/user-guide/scripted-configure-server">zowe-install-xmem.sh script</a> (open the link via right-click in new window or tab).</p>]]></instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
         <autoEnable>true</autoEnable>
