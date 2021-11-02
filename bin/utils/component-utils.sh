@@ -594,34 +594,39 @@ process_component_gateway_shared_libs() {
 
   all_succeed=true
   iterator_index=0
+  plugin_id=
+  gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
-      cd "${component_dir}"
-      if [ ! -r "${gateway_shared_libs_path}" ]; then
-        >&2 echo "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
-        all_succeed=false
-        break
-      fi
+    cd "${component_dir}"
 
+    if [ -z "${plugin_id}" ]; then
+      # prepare plugin directory
       plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
-
-      # copy to workspace/gateway/sharedLibs/
       gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
       mkdir -p "${gateway_shared_libs_workspace_path}"
-      if [[ "$gateway_shared_libs_path" == *".jar"* ]]
-      then
-        gateway_shared_libs_path=$(pwd "${gateway_shared_libs_path}")
-      fi
+    fi
 
-      if [[ "${gateway_shared_libs_path: -1}" == "/" ]]
-      then
-        cp -r "${gateway_shared_libs_path}." "${gateway_shared_libs_workspace_path}/"
+    # copy to workspace/gateway/sharedLibs/
+    if [ -f "${gateway_shared_libs_path}" ]; then
+      gateway_shared_libs_path_dir=$(dirname "${gateway_shared_libs_path}")
+      if [ "${gateway_shared_libs_path_dir}" = "." ]; then
+        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}"
       else
-        cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/"
+        mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
+        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
       fi
+    elif [ -d "${gateway_shared_libs_path}" ]; then
+      mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
+      cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
+    else
+      >&2 echo "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
+      all_succeed=false
+      break
+    fi
 
-      iterator_index=`expr $iterator_index + 1`
-      gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
+    iterator_index=`expr $iterator_index + 1`
+    gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   done
 
   if [ "${all_succeed}" = "true" ]; then
