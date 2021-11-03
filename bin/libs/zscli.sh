@@ -31,9 +31,9 @@ zscli_load_parameters_definition() {
       fi
     else
       if [ -z "${last_command}" ]; then
-        >&2 echo "Error: invalid command <${command}>"
+        >&2 echo "Error: invalid command \"${command}\""
       else
-        >&2 echo "Error: invalid sub-command <${command}> of command <${last_command}>"
+        >&2 echo "Error: invalid sub-command \"${command}\" of command \"${last_command}\""
       fi
       >&2 echo "Try --help to get information about what command(s) are available."
       exit 1
@@ -79,7 +79,7 @@ EOF
   fi
 }
 
-zscli_get_parameter() {
+zscli_get_parameter_value() {
   param_id=$1
 
   param_var=$(echo "ZSCLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum)
@@ -210,7 +210,7 @@ $(echo "${ZSCLI_PARAMETERS_DEFINITIONS}")
 EOF
 
   for param in ${required_params}; do
-    val=$(zscli_get_parameter "${param}")
+    val=$(zscli_get_parameter_value "${param}")
     if [ -z "${val}" ]; then
       >&2 echo "Error: ${param} is required"
       >&2 echo "Try --help to get information about how to use this command."

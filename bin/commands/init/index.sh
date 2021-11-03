@@ -17,7 +17,7 @@ echo
 echo "-----------------"
 echo "Parameters passed:"
 for param in ${ZSCLI_PARAMETERS_LIST}; do
-  echo "- ${param}: $(zscli_get_parameter "${param}")"
+  echo "- ${param}: $(zscli_get_parameter_value "${param}")"
 done
 echo
 
