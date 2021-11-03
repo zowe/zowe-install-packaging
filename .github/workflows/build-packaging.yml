@@ -92,7 +92,7 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
-      - name: '[Download 1] Download from jfrog according to manifest'
+      - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
@@ -101,11 +101,11 @@ jobs:
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
-      - name: '[Download 2] Get publish target path'
+      - name: '[SMPE Download 2] Get publish target path'
         if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/publish@main
 
-      - name: '[Download 3] Download SMPE build log'
+      - name: '[SMPE Download 3] Download SMPE build log'
         if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
@@ -114,7 +114,7 @@ jobs:
           extra-options: --flat=true --sort-by=created --sort-order=desc --limit=1
           bypass-validation: true
 
-      - name: '[Pax 1] Pre-make pax'
+      - name: '[PAX/SMPE 1] Pre-packaging'
         id: pax-prep
         run: |
           if [ "${{ github.event.inputs.BUILD_SMPE }}" == "true" || "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == "true" ] ; then
@@ -137,7 +137,7 @@ jobs:
             echo ::set-output name=KEEP_TEMP_FOLDER::
           fi
 
-      - name: '[Pax 2] Make pax'
+      - name: '[PAX/SMPE Pax 2] Packaging'
         timeout-minutes: 90
         uses: zowe-actions/shared-actions/make-pax@main
         with: 
@@ -153,7 +153,7 @@ jobs:
             BUILD_PSI=${{ steps.pax-prep.outputs.BUILD_PSI }}
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
 
-      - name: '[Pax 3] Post-make pax'
+      - name: '[SMPE Pax 3] Post-make pax'
         if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         run: |
           cd .pax
@@ -161,7 +161,7 @@ jobs:
           cat rename-back.sh
           ./rename-back.sh
 
-      - name: '[Publish] Upload to artifactory'
+      - name: '[PAX/SMPE Publish] Upload to artifactory'
         id: publish
         uses: zowe-actions/shared-actions/publish@main
         with:
@@ -173,7 +173,7 @@ jobs:
             .pax/smpe-build-logs.pax.Z
             .pax/AZWE*
 
-      - name: Configure SSH
+      - name: '[TP_ZLINUX_DOCKER 1] Configure SSH'
         if: github.event.inputs.BUILD_DOCKER == 'true'
         run: |
           mkdir -p ~/.ssh/
@@ -189,7 +189,7 @@ jobs:
           END
         shell: bash
 
-      - name: '[Docker] Build zLinux Docker'
+      - name: '[TP_ZLINUX_DOCKER 2] Build zLinux Docker'
         if: github.event.inputs.BUILD_DOCKER == 'true'
         timeout-minutes: 60
         uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@main
@@ -202,14 +202,78 @@ jobs:
           zlinux-ssh-server: zlinux
           zlinux-ssh-key-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
-      # - name: '[Publish zLinux Docker] Upload to artifactory'
-      #   if: github.event.inputs.BUILD_DOCKER == 'true'
-      #   uses: zowe-actions/shared-actions/publish@main
-      #   with:
-      #     artifacts: server-bundle.s390x.tar
+      - name: '[TP_ZLINUX_DOCKER 3] Upload zlinux docker to artifactory'
+        if: github.event.inputs.BUILD_DOCKER == 'true'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: server-bundle.s390x.tar
 
-      # - name: '[Publish zLinux Docker Sources] Upload to artifactory'
-      #   if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
-      #   uses: zowe-actions/shared-actions/publish@main
-      #   with:
-      #     artifacts: server-bundle.sources.s390x.tar
+      - name: '[TP_ZLINUX_DOCKER 4] Upload zlinux docker sources to artifactory'
+        if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: server-bundle.sources.s390x.tar
+
+      - name: '[TP_LINUX_DOCKER 1] Download zowe.pax'
+        if: github.event.inputs.BUILD_DOCKER == 'true'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ steps.publish.outputs.zowe-pax-jfrog-upload-target }}
+          default-target-path: 'containers/server-bundle/zowe.pax'
+          extra-options: --flat=true
+          expected-count: 1
+      
+      - name: '[TP_LINUX_DOCKER 2] Build Linux Docker'
+        if: github.event.inputs.BUILD_DOCKER == 'true'
+        working-directory: containers/server-bundle
+        run: |
+          // copy utils to docker build folder
+          mkdir -p utils
+          cp -r ../utils/* ./utils
+
+          // show files
+          echo ">>>>>>>>>>>>>>>>>> sub-node: "
+          pwd && ls -ltr .
+          
+          // build docker image
+          docker login -u \"${{ secrets.DOCKERHUB_USER }}\" -p \"${{ secrets.DOCKERHUB_PASSWORD }}\" 
+          docker build -t ompzowe/server-bundle:amd64 .
+          docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64
+            
+          if [ "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" == "true" ] ; then
+            docker login -u \"${{ secrets.DOCKERHUB_USER }}\" -p \"${{ secrets.DOCKERHUB_PASSWORD }}\"
+            docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=amd64 -t ompzowe/server-bundle:amd64-sources .
+            docker save -o server-bundle.sources.amd64.tar ompzowe/server-bundle:amd64-sources
+          fi
+          
+          // show files
+          echo ">>>>>>>>>>>>>>>>>> docker tar: "
+          pwd && ls -ltr server-bundle.*
+          
+      - name: '[TP_LINUX_DOCKER 3] Upload linux docker to artifactory'
+        if: github.event.inputs.BUILD_DOCKER == 'true'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: containers/server-bundle/server-bundle.amd64.tar
+
+      - name: '[TP_LINUX_DOCKER 4] Upload linux docker sources to artifactory'
+        if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: containers/server-bundle/server-bundle.sources.amd64.tar
+
+      - name: '[K8S 1] Build Kubernetes'
+        timeout-minutes: 10
+        if: github.event.inputs.BUILD_KUBERNETES == 'true'
+        working-directory: containers
+        run: |
+          ./build/parse-manifest-to-deployment.sh
+          zip -r zowe-containerization.zip kubernetes
+
+      - name: '[K8S 2] Upload k8s zip to artifactory'
+        if: github.event.inputs.BUILD_KUBERNETES == 'true'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: containers/zowe-containerization.zip
+  
+     
