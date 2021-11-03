@@ -127,8 +127,10 @@ zscli_display_parameters_help() {
         line_params_type=string
       fi
 
-      line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|##')
-      echo "  ${display_param} (${line_params_type})"
+      line_params_requirement=$(echo "${line}" | awk -F"|" '{print $4};' | lower_case)
+
+      line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
+      echo "  ${display_param}: ${line_params_type}, ${line_params_requirement:-optional}"
       padding "${line_params_help}" "    "
     fi
   done <<EOF
@@ -190,6 +192,31 @@ zscli_process_help() {
 
     exit 99
   fi
+}
+
+zscli_validate_parameters() {
+  required_params=
+  while read -r line; do
+    line=$(trim "${line}")
+    if [ -n "${line}" ]; then
+      param_id=$(echo "${line}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
+      param_requirement=$(echo "${line}" | awk -F"|" '{print $4}' | lower_case)
+      if [ "${param_requirement}" = "required" ]; then
+        required_params=$(echo "${required_params} ${param_id}" | trim)
+      fi
+    fi
+  done <<EOF
+$(echo "${ZSCLI_PARAMETERS_DEFINITIONS}")
+EOF
+
+  for param in ${required_params}; do
+    val=$(zscli_get_parameter "${param}")
+    if [ -z "${val}" ]; then
+      >&2 echo "Error: ${param} is required"
+      >&2 echo "Try --help to get information about how to use this command."
+      exit 1
+    fi
+  done
 }
 
 zscli_process_command() {

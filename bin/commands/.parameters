@@ -1,4 +1,4 @@
-help|h|boolean|Display this help.
-debug,verbose|v|boolean|Enable verbose mode.
-trace|vv|boolean|Enable trace level debug mode.
-log|l|string|Write logs to this directory specified.
+help|h|boolean||||Display this help.
+debug,verbose|v|boolean||||Enable verbose mode.
+trace|vv|boolean||||Enable trace level debug mode.
+log|l|string||||Write logs to this directory specified.

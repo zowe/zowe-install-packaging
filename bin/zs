@@ -59,5 +59,7 @@ done
 zscli_process_loglevel
 # if it's in help mode, the script will exit with code 99
 zscli_process_help
+# validate parameter before execute command
+zscli_validate_parameters
 # handle command
 zscli_process_command

@@ -1,1 +1,1 @@
-config|c|string|Path to Zowe configuration zowe.yaml file
+config|c|string|required|||Path to Zowe configuration zowe.yaml file

@@ -26,7 +26,10 @@ Each command is represented as a directory with some assistant files.
   3. is the parameter type. This column is required and must be value of `boolean` or `string`, or abbreviation of them like `b`, `bool`, `s`, `str`. This indicates how the user can pass parameter value.
     * If it's `boolean` parameter, the user can just pass the parameter itself. For example, `--verbose` or `-v`.
     * If it's `string` parameter, the user must pass a value along with the parameter. For example, `--config /path/to/my/config/file`.
-  4. is the parameter help. This help message will be displayed if the user issue `--help` or `-h` parameter.
+  4. is the requirement of this parameter. If this parameter is required, put value `required` in this column.
+  5. is reserved for future.
+  6. is reserved for future.
+  7. is the parameter help. This help message will be displayed if the user issue `--help` or `-h` parameter.
 - `.experimental`: This is an _optional_ file indicate this command is for experimental purpose. It may be changed or improved in the future, and it may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
 - `index.sh`: This is required file to process the command. This file will be sourced to `zs` when it's executed.
 
