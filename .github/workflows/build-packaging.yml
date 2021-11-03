@@ -227,15 +227,15 @@ jobs:
         if: github.event.inputs.BUILD_DOCKER == 'true'
         working-directory: containers/server-bundle
         run: |
-          // copy utils to docker build folder
+          # copy utils to docker build folder
           mkdir -p utils
           cp -r ../utils/* ./utils
 
-          // show files
+          # show files
           echo ">>>>>>>>>>>>>>>>>> sub-node: "
           pwd && ls -ltr .
           
-          // build docker image
+          # build docker image
           docker login -u \"${{ secrets.DOCKERHUB_USER }}\" -p \"${{ secrets.DOCKERHUB_PASSWORD }}\" 
           docker build -t ompzowe/server-bundle:amd64 .
           docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64
@@ -246,7 +246,7 @@ jobs:
             docker save -o server-bundle.sources.amd64.tar ompzowe/server-bundle:amd64-sources
           fi
           
-          // show files
+          # show files
           echo ">>>>>>>>>>>>>>>>>> docker tar: "
           pwd && ls -ltr server-bundle.*
           
