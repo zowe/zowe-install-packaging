@@ -273,6 +273,24 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v2
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
+      - name: '[Prep 3] Convert manifest template to manifest.json'
+        run: |
+          COMMIT_HASH=$(git rev-parse --verify HEAD)
+          if [ -z ${{ github.event.pull_request.number }} ]
+          then
+            CURRENT_BRANCH=${GITHUB_REF#refs/heads/} 
+          else
+            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
+          fi
+          sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
+              -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
+              -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
+              -e "s#{BUILD_TIMESTAMP}#${{ needs.check-permission-get-current-time.outputs.CURRENT_TIME }}#g" \
+              manifest.json.template > manifest.json
+          
+          echo "Current manifest.json is:"
+          cat manifest.json
       
       - name: '[Prep 3] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
