@@ -344,9 +344,6 @@ export GATEWAY_PORT=${instance-GATEWAY_PORT}
 # explorer variables
 export JOBS_API_PORT=${instance-JOBS_API_PORT}
 export FILES_API_PORT=${instance-FILES_API_PORT}
-export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
-export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
-export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
 
 # Zowe Desktop/app framework variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
@@ -422,9 +419,6 @@ GATEWAY_PORT=${instance-GATEWAY_PORT}
 # explorer variables
 JOBS_API_PORT=${instance-JOBS_API_PORT}
 FILES_API_PORT=${instance-FILES_API_PORT}
-JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
-MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
-USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
 
 # Zowe Desktop/app framework variables
 ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
@@ -498,9 +492,6 @@ export GATEWAY_PORT=${instance-GATEWAY_PORT}
 # explorer variables
 export JOBS_API_PORT=${instance-JOBS_API_PORT}
 export FILES_API_PORT=${instance-FILES_API_PORT}
-export JES_EXPLORER_UI_PORT=${instance-JES_EXPLORER_UI_PORT}
-export MVS_EXPLORER_UI_PORT=${instance-MVS_EXPLORER_UI_PORT}
-export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
 
 # Zowe Desktop/app framework variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}

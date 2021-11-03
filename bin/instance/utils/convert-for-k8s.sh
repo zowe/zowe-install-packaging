@@ -632,9 +632,6 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.app-server.port" "8544"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.jobs-api.port" "8545"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.files-api.port" "8547"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-jes.port" "8546"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.port" "8548"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.port" "8550"
 
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.enabled" "true"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.enabled" "true"
@@ -718,9 +715,6 @@ else
     sed -e "s#ZWE_CACHING_SERVICE_PORT=.\+\$#ZWE_CACHING_SERVICE_PORT=7555#" | \
     sed -e "s#JOBS_API_PORT=.\+\$#JOBS_API_PORT=8545#" | \
     sed -e "s#FILES_API_PORT=.\+\$#FILES_API_PORT=8547#" | \
-    sed -e "s#JES_EXPLORER_UI_PORT=.\+\$#JES_EXPLORER_UI_PORT=8546#" | \
-    sed -e "s#MVS_EXPLORER_UI_PORT=.\+\$#MVS_EXPLORER_UI_PORT=8548#" | \
-    sed -e "s#USS_EXPLORER_UI_PORT=.\+\$#USS_EXPLORER_UI_PORT=8550#" | \
     sed -e "s#ZOWE_ZLUX_SERVER_HTTPS_PORT=.\+\$#ZOWE_ZLUX_SERVER_HTTPS_PORT=8544#" | \
     sed -e "s#ZWE_DISCOVERY_SERVICES_LIST=.\+\$#ZWE_DISCOVERY_SERVICES_REPLICAS=1#" | \
     sed -e "s#APIML_GATEWAY_EXTERNAL_MAPPER=.\+\$#APIML_GATEWAY_EXTERNAL_MAPPER=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map#" | \

@@ -67,13 +67,14 @@
       "repository": "libs-snapshot-local"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "2.0.0-PR-201",
+      "artifact": "explorer-mvs-2.0.0-pr-201-78-20211101205943.pax",
+      "repository": "libs-snapshot-local"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-SNAPSHOT"
-    },
-    "org.zowe.explorer-ui-server": {
-      "version": "~0.2.0-STAGING"
+      "version": "2.0.0-PR-142",
+      "artifact": "explorer-uss-2.0.0-pr-142-41-20211101203520.pax",
+      "repository": "libs-snapshot-local"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
