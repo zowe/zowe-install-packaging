@@ -228,7 +228,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         <description>The z/OSMF APPLID used for PassTicket.</description>
         <category>API Mediation Layer</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <regularExpression>^[^ ]$</regularExpression>
+            <regularExpression>^[^ ]+$</regularExpression>
             <errorMessage>Wrong syntax of the value</errorMessage>
             <!-- Specify choices here -->
             <default>IZUDFLT</default>
