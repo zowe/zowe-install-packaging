@@ -1,0 +1,3 @@
+Init Zowe instance based on zowe.yaml configuration.
+
+You can find an example zowe.yaml in Zowe runtime directory bin folder.

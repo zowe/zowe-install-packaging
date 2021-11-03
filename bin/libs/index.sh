@@ -16,6 +16,7 @@ if [ -z "${ZOWE_RUNTIME_DIRECTORY}" ]; then
   exit 1
 fi
 
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/file.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/string.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/logging.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/zscli.sh"

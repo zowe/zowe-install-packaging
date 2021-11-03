@@ -35,6 +35,7 @@ zscli_load_parameters_definition() {
       else
         >&2 echo "Error: invalid sub-command <${command}> of command <${last_command}>"
       fi
+      >&2 echo "Try --help to get information about what command(s) are available."
       exit 1
     fi
   done
@@ -86,7 +87,7 @@ zscli_get_parameter() {
 }
 
 zscli_process_loglevel() {
-  if [ "${ZSCLI_PARAMETER_VERBOSE}" = "true" ]; then
+  if [ "${ZSCLI_PARAMETER_DEBUG}" = "true" -o "${ZSCLI_PARAMETER_VERBOSE}" = "true" ]; then
     ZSCLI_LOGLEVEL=debug
   fi
   if [ "${ZSCLI_PARAMETER_TRACE}" = "true" ]; then
