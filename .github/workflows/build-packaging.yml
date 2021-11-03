@@ -305,6 +305,21 @@ jobs:
         with:
           artifacts: .pax/zowe.pax
           skip-upload: true
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.ZLINUX_SSH_KEY }}" > ~/.ssh/zlinux.key
+          chmod 600 ~/.ssh/zlinux.key
+          cat >>~/.ssh/config <<END
+          Host zlinux
+            HostName ${{ secrets.ZLINUX_HOST }}
+            User ${{ secrets.ZLINUX_SSH_USER }}
+            IdentityFile ~/.ssh/zlinux.key
+            StrictHostKeyChecking no
+            LogLevel QUIET
+          END
+        shell: bash
   
       - name: '[Docker] Build zLinux Docker'
         timeout-minutes: 60
@@ -315,10 +330,8 @@ jobs:
           build-docker-sources: ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
           dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
           dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          zlinux-host: ${{ secrets.ZLINUX_HOST }}
-          zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
-          zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
-          zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          zlinux-ssh-server: zlinux
+          zlinux-ssh-key-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
 
           # pipeline.uploadArtifacts([ 'server-bundle.sources.s390x.tar', 'server-bundle.s390x.tar' ])
