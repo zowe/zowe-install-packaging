@@ -301,7 +301,7 @@ jobs:
           github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
 
       - name: '[Publish] Upload to artifactory'
-        uses: zowe-actions/shared-actions/publish@@tp-build-docker
+        uses: zowe-actions/shared-actions/publish@tp-build-docker
         with:
           artifacts: .pax/zowe.pax
           skip-upload: true
