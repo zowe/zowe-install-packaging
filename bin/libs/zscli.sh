@@ -192,14 +192,12 @@ zscli_process_help() {
 
     # find sub-commands
     command_path=$(zscli_calculate_command_path)
-    subdirs=$(find "${command_path}" -type d -d 1)
+    subdirs=$(find "${command_path}" -type d -d 1 | sort)
     if [ -n "${subdirs}" ]; then
       >&2 echo "------------------"
       >&2 echo "Available sub-command(s):"
       while read -r line; do
-        if [ -d "${line}" -a -f "${line}/index.sh" ]; then
-          echo "  - $(basename "${line}")"
-        fi
+        echo "  - $(basename "${line}")"
       done <<EOF
 $(echo "${subdirs}")
 EOF
