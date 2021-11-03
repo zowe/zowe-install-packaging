@@ -34,7 +34,7 @@ on:
 
 jobs:
 
-  check-permission-get-current-time:
+  check-permission:
     runs-on: ubuntu-latest
     steps:
       # this action will fail the whole workflow if permission check fails
@@ -44,17 +44,11 @@ jobs:
           user: ${{ github.actor }}
           github-repo: ${{ github.repository }}
           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-      
-      - id: get-current-time
-        run: echo "::set-output name=CURRENT_TIME::$(date +%s)"
-    outputs:
-      CURRENT_TIME: ${{ steps.get-current-time.outputs.CURRENT_TIME }}
-      
+          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}      
   
-  regular-build-pax:
+  regular-build:
     runs-on: ubuntu-latest
-    needs: check-permission-get-current-time
+    needs: check-permission
     steps: 
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
@@ -67,6 +61,7 @@ jobs:
       - name: '[Prep 3] Convert manifest template to manifest.json'
         run: |
           COMMIT_HASH=$(git rev-parse --verify HEAD)
+          CURRENT_TIME=$(date +%s)
           if [ -z ${{ github.event.pull_request.number }} ]
           then
             CURRENT_BRANCH=${GITHUB_REF#refs/heads/} 
@@ -76,7 +71,7 @@ jobs:
           sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
               -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
               -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
-              -e "s#{BUILD_TIMESTAMP}#${{ needs.check-permission-get-current-time.outputs.CURRENT_TIME }}#g" \
+              -e "s#{BUILD_TIMESTAMP}#${CURRENT_TIME}#g" \
               manifest.json.template > manifest.json
           
           echo "Current manifest.json is:"
@@ -97,107 +92,21 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
-      - name: '[Download] Downlaod from jfrog according to manifest'
+      - name: '[Download 1] Download from jfrog according to manifest'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
           expected-count: 28
-
-      - name: '[Pax 1] Pre-make pax'
-        id: pax-prep
-        run: |
-          echo ::set-output name=EXTRA_FILES::
-          echo ::set-output name=BUILD_SMPE::
-          echo ::set-output name=BUILD_PSI::
-
-          if [ "${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
-            echo ::set-output name=KEEP_TEMP_FOLDER::yes
-          else
-            echo ::set-output name=KEEP_TEMP_FOLDER::
-          fi
-
-      - name: '[Pax 2] Make pax'
-        timeout-minutes: 90
-        uses: zowe-actions/shared-actions/make-pax@main
-        with: 
-          pax-name: zowe
-          pax-options: '-o saveext'
-          pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
-          pax-ssh-password: ${{ secrets.SSH_MARIST_PASSWORD }}
-          keep-temp-folders: ${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}
-          extra-files: ${{ steps.pax-prep.outputs.EXTRA_FILES }}
-          extra-environment-vars: |
-            ZOWE_VERSION=${{ env.P_VERSION }}
-            BUILD_SMPE=${{ steps.pax-prep.outputs.BUILD_SMPE }}
-            BUILD_PSI=${{ steps.pax-prep.outputs.BUILD_PSI }}
-            KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
-
-      - name: '[Publish] Upload to artifactory'
-        uses: zowe-actions/shared-actions/publish@main
-        with:
-          artifacts: .pax/zowe.pax
-
-
-  regular-build-smpe:
-    runs-on: ubuntu-latest
-    needs: check-permission-get-current-time
-    if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
-    steps: 
-      - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
-  
-      - name: '[Prep 2] Setup jFrog CLI'
-        uses: jfrog/setup-jfrog-cli@v2
-        env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
-      - name: '[Prep 3] Convert manifest template to manifest.json'
-        run: |
-          COMMIT_HASH=$(git rev-parse --verify HEAD)
-          if [ -z ${{ github.event.pull_request.number }} ]
-          then
-            CURRENT_BRANCH=${GITHUB_REF#refs/heads/} 
-          else
-            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
-          fi
-          sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
-              -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
-              -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
-              -e "s#{BUILD_TIMESTAMP}#${{ needs.check-permission-get-current-time.outputs.CURRENT_TIME }}#g" \
-              manifest.json.template > manifest.json
-          
-          echo "Current manifest.json is:"
-          cat manifest.json
-
-      - name: '[Prep 4] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
-        with:
-          package-name: org.zowe
-          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-          github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
-          extra-init: |
-            const fs = require('fs');
-            var mjson = '${{ github.workspace }}/manifest.json';
-            var _manifestObject = JSON.parse(fs.readFileSync(mjson));
-            if (!_manifestObject || !_manifestObject['name'] || _manifestObject['name'] != 'Zowe' || !_manifestObject['version']) {
-              console.error('Cannot read manifest or manifest is invalid.');
-            }
-
-      - name: '[Download 1] Downlaod from jfrog according to manifest'
-        uses: zowe-actions/shared-actions/jfrog-download@main
-        with:
-          manifest-file-path: ${{ github.workspace }}/manifest.json
-          default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
-          expected-count: 28
-        
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
       - name: '[Download 2] Get publish target path'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/publish@main
 
       - name: '[Download 3] Download SMPE build log'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
@@ -208,8 +117,13 @@ jobs:
       - name: '[Pax 1] Pre-make pax'
         id: pax-prep
         run: |
-          echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
-          echo ::set-output name=BUILD_SMPE::yes
+          if [ "${{ github.event.inputs.BUILD_SMPE }}" == "true" || "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == "true" ] ; then
+            echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
+            echo ::set-output name=BUILD_SMPE::yes
+          else
+            echo ::set-output name=EXTRA_FILES::
+            echo ::set-output name=BUILD_SMPE::
+          fi
 
           if [ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == "true" ] ; then
             echo ::set-output name=BUILD_PSI::yes
@@ -240,6 +154,7 @@ jobs:
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
 
       - name: '[Pax 3] Post-make pax'
+        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
         run: |
           cd .pax
           chmod +x rename-back.sh
@@ -247,66 +162,19 @@ jobs:
           ./rename-back.sh
 
       - name: '[Publish] Upload to artifactory'
+        id: publish
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: |
+            .pax/zowe.pax
             .pax/zowe-smpe.zip
             .pax/smpe-promote.tar
             .pax/pd.htm
             .pax/smpe-build-logs.pax.Z
             .pax/AZWE*
 
-
-
-
-
-    
-  build-zlinux-docker-tech-preview:
-    runs-on: ubuntu-latest
-    needs: regular-build-pax
-    if: github.event.inputs.BUILD_DOCKER == 'true'
-    steps: 
-      - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
-  
-      - name: '[Prep 2] Setup jFrog CLI'
-        uses: jfrog/setup-jfrog-cli@v2
-        env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
-
-      - name: '[Prep 3] Convert manifest template to manifest.json'
-        run: |
-          COMMIT_HASH=$(git rev-parse --verify HEAD)
-          if [ -z ${{ github.event.pull_request.number }} ]
-          then
-            CURRENT_BRANCH=${GITHUB_REF#refs/heads/} 
-          else
-            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
-          fi
-          sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
-              -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
-              -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
-              -e "s#{BUILD_TIMESTAMP}#${{ needs.check-permission-get-current-time.outputs.CURRENT_TIME }}#g" \
-              manifest.json.template > manifest.json
-          
-          echo "Current manifest.json is:"
-          cat manifest.json
-      
-      - name: '[Prep 3] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
-        with:
-          package-name: org.zowe
-          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-          github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
-
-      - name: '[Publish] Upload to artifactory'
-        uses: zowe-actions/shared-actions/publish@tp-build-docker
-        with:
-          artifacts: .pax/zowe.pax
-          skip-upload: true
-
       - name: Configure SSH
+        if: github.event.inputs.BUILD_DOCKER == 'true'
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.ZLINUX_SSH_KEY }}" > ~/.ssh/zlinux.key
@@ -320,19 +188,28 @@ jobs:
             LogLevel QUIET
           END
         shell: bash
-  
+
       - name: '[Docker] Build zLinux Docker'
+        if: github.event.inputs.BUILD_DOCKER == 'true'
         timeout-minutes: 60
-        uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@tp-build-docker
+        uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@main
         with: 
           run-number: ${{ github.run_number }}
-          zowe-pax-jfrog-upload-target: ${{ env.ZOWE_PAX_JFROG_UPLOAD_TARGET }}
+          zowe-pax-jfrog-upload-target: ${{ steps.publish.outputs.zowe-pax-jfrog-upload-target }}
           build-docker-sources: ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
           dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
           dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
           zlinux-ssh-server: zlinux
           zlinux-ssh-key-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
+      # - name: '[Publish zLinux Docker] Upload to artifactory'
+      #   if: github.event.inputs.BUILD_DOCKER == 'true'
+      #   uses: zowe-actions/shared-actions/publish@main
+      #   with:
+      #     artifacts: server-bundle.s390x.tar
 
-          # pipeline.uploadArtifacts([ 'server-bundle.sources.s390x.tar', 'server-bundle.s390x.tar' ])
-          # pipeline.uploadArtifacts([ 'server-bundle.s390x.tar' ])
+      # - name: '[Publish zLinux Docker Sources] Upload to artifactory'
+      #   if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
+      #   uses: zowe-actions/shared-actions/publish@main
+      #   with:
+      #     artifacts: server-bundle.sources.s390x.tar
