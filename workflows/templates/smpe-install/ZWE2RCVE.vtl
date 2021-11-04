@@ -99,10 +99,15 @@
 //            UNIT=SYSALLDA
 #end
 //SMPHOLD  DD DUMMY
+#if($ibmTemplate == 'NO') 
 #if( $hlq and $hlq != "" and $hlq != '#hlq')
 //SMPPTFIN DD DISP=SHR,DSN=&HLQ..[RFDSNPFX].[FMID].SMPMCS
 #else
 //SMPPTFIN DD DISP=SHR,DSN=[RFDSNPFX].[FMID].SMPMCS
+#end
+#end
+#if($ibmTemplate == 'YES')
+//SMPPTFIN DD DISP=SHR,DSN=&HLQ..[RFDSNPFX].[FMID].SMPMCS
 #end
 //SMPCNTL  DD *,SYMBOLS=JCLONLY
    SET BOUNDARY(GLOBAL) .
