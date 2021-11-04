@@ -19,7 +19,7 @@ const { ZOWE_JOB_NAME } = require('../constants');
 const {
   DEFAULT_PAGE_LOADING_TIMEOUT,
   DEFAULT_ELEMENT_CHECK_INTERVAL,
-  MVD_IFRAME_APP_CONTENT,
+  MVD_IFRAME_APP_CONTEXT,
   saveScreenshot,
   getDefaultDriver,
   getElement,
@@ -60,7 +60,7 @@ describe(`test ${APP_TO_TEST}`, function() {
       process.env.SSH_USER, 	
       process.env.SSH_PASSWD, 	
       `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/explorer-jes`	
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/zlux/ZLUX/plugins/org.zowe.explorer-jes/web/index.html`	
     );
 
     // load MVD login page
@@ -89,11 +89,6 @@ describe(`test ${APP_TO_TEST}`, function() {
     expect(iframe).to.be.an('object');
     debug('app iframe found');
 
-    // wait for atlas iframe
-    const atlas = await waitUntilIframe(driver, 'iframe#zluxIframe');
-    expect(atlas).to.be.an('object');
-    debug('atlas iframe is ready');
-
     // wait for page is loaded
     const treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
     expect(treeContent).to.be.an('object');
@@ -103,7 +98,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug('page is fully loaded');
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'app-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'app-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
 
     appLaunched = true;
   });
@@ -177,7 +172,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     await driver.sleep(3 * 1000);
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'reset-filter', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'reset-filter', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
     treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
 
     // submit filter
@@ -233,7 +228,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     }
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'zowe-job-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'zowe-job-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
     treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
 
     expect(findZoweJob).to.be.above(-1);
@@ -246,7 +241,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     }
 
     // prepare app context and find the li of DS_TO_TEST
-    await switchToIframeAppContext(driver, APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await switchToIframeAppContext(driver, APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
     let treeContent = await getElement(driver, MVD_EXPLORER_TREE_SECTION);
     expect(treeContent).to.be.an('object');
     // await driver.sleep(10 * 60 * 1000);
@@ -312,7 +307,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug(`Active ${JOB_TO_TEST} ${JCL_TO_TEST} file content link is clicked`);
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'jcl-loading', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'jcl-loading', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
 
     // wait for right panel updated
     await driver.sleep(1000);
@@ -367,7 +362,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug(`Active ${JOB_TO_TEST} ${JCL_TO_TEST} file content is loaded`);
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'jcl-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'jcl-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
   });
 
 
