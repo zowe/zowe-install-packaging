@@ -192,7 +192,7 @@ zscli_process_help() {
 
     # find sub-commands
     command_path=$(zscli_calculate_command_path)
-    subdirs=$(find "${command_path}" -type d -d 1 | sort)
+    subdirs=$(find_sub_directories "${command_path}")
     if [ -n "${subdirs}" ]; then
       >&2 echo "------------------"
       >&2 echo "Available sub-command(s):"
@@ -238,7 +238,9 @@ zscli_process_command() {
   if [ -f "${command_path}/index.sh" ]; then
     . "${command_path}/index.sh"
   else
-    >&2 echo "Error: no handler defined for command \"${ZSCLI_COMMANDS_LIST}\"."
+    if [ -n "${ZSCLI_COMMANDS_LIST}" ]; then
+      >&2 echo "Error: no handler defined for command \"${ZSCLI_COMMANDS_LIST}\"."
+    fi
     >&2 echo "Try --help to get information about how to use this command."
     exit 2
   fi

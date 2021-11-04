@@ -11,13 +11,22 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-if [ -z "${ZOWE_RUNTIME_DIRECTORY}" ]; then
-  >&2 echo "Error: ZOWE_RUNTIME_DIRECTORY is not defined"
-  exit 1
-fi
+###############################
+# List all first level child directories
+#
+# Note: the result is sorted.
+#
+# @param string   Path to parent directory
+find_sub_directories() {
+  parent=$1
 
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/fs.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/json.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/logging.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/string.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/zscli.sh"
+  # find on z/OS USS doesn't support -d
+  children=$(ls -1 "${parent}" | sort)
+  while read -r child; do
+    if [ -d "${parent}/${child}" ]; then
+      echo "${child}"
+    fi
+  done <<EOF
+$(echo "${children}")
+EOF
+}

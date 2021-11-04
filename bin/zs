@@ -27,7 +27,7 @@ ZOWE_RUNTIME_DIRECTORY=$(cd $(dirname $0)/../;pwd)
 zscli_load_parameters_definition
 while [ $# -gt 0 ]; do
   arg="$1"
-  if [[ "${arg}" =~ -* ]] &&  [[ "${arg}" =~ --* ]]; then
+  if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
     definition=$(zscli_locate_parameter_definition $arg)
     if [ $? -gt 0 ]; then
       >&2 echo "Error: invalid parameter ${arg}"
