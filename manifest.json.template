@@ -287,13 +287,6 @@
         "destinations": ["Zowe PAX"]
       }]
     }, {
-      "componentGroup": "Zowe Desktop Web Plug-in Server",
-      "entries": [{
-        "repository": "explorer-ui-server",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }]
-    }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
