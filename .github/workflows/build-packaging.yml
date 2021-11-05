@@ -172,46 +172,46 @@ jobs:
             .pax/smpe-build-logs.pax.Z
             .pax/AZWE*
 
-      - name: '[TP_ZLINUX_DOCKER 1] Configure SSH'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.ZLINUX_SSH_KEY }}" > ~/.ssh/zlinux.key
-          chmod 600 ~/.ssh/zlinux.key
-          cat >>~/.ssh/config <<END
-          Host zlinux
-            HostName ${{ secrets.ZLINUX_HOST }}
-            User ${{ secrets.ZLINUX_SSH_USER }}
-            IdentityFile ~/.ssh/zlinux.key
-            StrictHostKeyChecking no
-            LogLevel QUIET
-          END
-        shell: bash
+      # - name: '[TP_ZLINUX_DOCKER 1] Configure SSH'
+      #   if: github.event.inputs.BUILD_DOCKER == 'true'
+      #   run: |
+      #     mkdir -p ~/.ssh/
+      #     echo "${{ secrets.ZLINUX_SSH_KEY }}" > ~/.ssh/zlinux.key
+      #     chmod 600 ~/.ssh/zlinux.key
+      #     cat >>~/.ssh/config <<END
+      #     Host zlinux
+      #       HostName ${{ secrets.ZLINUX_HOST }}
+      #       User ${{ secrets.ZLINUX_SSH_USER }}
+      #       IdentityFile ~/.ssh/zlinux.key
+      #       StrictHostKeyChecking no
+      #       LogLevel QUIET
+      #     END
+      #   shell: bash
 
-      - name: '[TP_ZLINUX_DOCKER 2] Build zLinux Docker'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
-        timeout-minutes: 60
-        uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@main
-        with: 
-          run-number: ${{ github.run_number }}
-          zowe-pax-jfrog-upload-target: ${{ steps.publish.outputs.zowe-pax-jfrog-upload-target }}
-          build-docker-sources: ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
-          dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
-          dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          zlinux-ssh-server: zlinux
-          zlinux-ssh-key-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+      # - name: '[TP_ZLINUX_DOCKER 2] Build zLinux Docker'
+      #   if: github.event.inputs.BUILD_DOCKER == 'true'
+      #   timeout-minutes: 60
+      #   uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@main
+      #   with: 
+      #     run-number: ${{ github.run_number }}
+      #     zowe-pax-jfrog-upload-target: ${{ steps.publish.outputs.zowe-pax-jfrog-upload-target }}
+      #     build-docker-sources: ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
+      #     dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
+      #     dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      #     zlinux-ssh-server: zlinux
+      #     zlinux-ssh-key-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
-      - name: '[TP_ZLINUX_DOCKER 3] Upload zlinux docker to artifactory'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
-        uses: zowe-actions/shared-actions/publish@main
-        with:
-          artifacts: server-bundle.s390x.tar
+      # - name: '[TP_ZLINUX_DOCKER 3] Upload zlinux docker to artifactory'
+      #   if: github.event.inputs.BUILD_DOCKER == 'true'
+      #   uses: zowe-actions/shared-actions/publish@main
+      #   with:
+      #     artifacts: server-bundle.s390x.tar
 
-      - name: '[TP_ZLINUX_DOCKER 4] Upload zlinux docker sources to artifactory'
-        if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
-        uses: zowe-actions/shared-actions/publish@main
-        with:
-          artifacts: server-bundle.sources.s390x.tar
+      # - name: '[TP_ZLINUX_DOCKER 4] Upload zlinux docker sources to artifactory'
+      #   if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
+      #   uses: zowe-actions/shared-actions/publish@main
+      #   with:
+      #     artifacts: server-bundle.sources.s390x.tar
 
       - name: '[TP_LINUX_DOCKER 1] Download zowe.pax'
         if: github.event.inputs.BUILD_DOCKER == 'true'
