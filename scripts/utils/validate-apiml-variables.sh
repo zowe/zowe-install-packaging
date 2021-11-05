@@ -18,3 +18,5 @@
 validate_variables_are_set "KEYSTORE KEYSTORE_PASSWORD KEY_ALIAS"
 
 validate_directory_is_writable ${STATIC_DEF_CONFIG_DIR}
+
+validate_directory_is_writable ${ZWE_GATEWAY_SHARED_LIBS}
