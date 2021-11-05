@@ -16,19 +16,19 @@ echo
 
 echo "-----------------"
 echo "Parameters passed:"
-for param in ${ZSCLI_PARAMETERS_LIST}; do
-  echo "- ${param}: $(zscli_get_parameter_value "${param}")"
+for param in ${ZWECLI_PARAMETERS_LIST}; do
+  echo "- ${param}: $(zwecli_get_parameter_value "${param}")"
 done
 echo
 
 echo "-----------------"
-if [ -z "${ZSCLI_PARAMETER_CONFIG}" ]; then
+if [ -z "${ZWECLI_PARAMETER_CONFIG}" ]; then
   >&2 echo "Error: config file is required."
   exit 1
-elif [ ! -f "${ZSCLI_PARAMETER_CONFIG}" ]; then
+elif [ ! -f "${ZWECLI_PARAMETER_CONFIG}" ]; then
   >&2 echo "Error: config file does not exist."
   exit 1
 else
-  echo "Content of ${ZSCLI_PARAMETER_CONFIG}"
-  cat "${ZSCLI_PARAMETER_CONFIG}"
+  echo "Content of ${ZWECLI_PARAMETER_CONFIG}"
+  cat "${ZWECLI_PARAMETER_CONFIG}"
 fi

@@ -23,9 +23,9 @@ fi
 ZOWE_VERSION=$(shell_read_json_config "${manifest}" version version)
 # $(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')
 echo "Zowe v${ZOWE_VERSION}"
-if [ "${ZSCLI_LOGLEVEL}" = "debug" -o "${ZSCLI_LOGLEVEL}" = "trace" ]; then
+if [ "${ZWECLI_LOGLEVEL}" = "debug" -o "${ZWECLI_LOGLEVEL}" = "trace" ]; then
   echo "build and hash: $(shell_read_json_config "${manifest}" 'build' 'branch')#$(shell_read_json_config "${manifest}" 'build' 'number') ($(shell_read_json_config "${manifest}" 'build' 'commitHash'))"
 fi
-if [ "${ZSCLI_LOGLEVEL}" = "trace" ]; then
+if [ "${ZWECLI_LOGLEVEL}" = "trace" ]; then
   echo "Zowe directory: ${ZOWE_RUNTIME_DIRECTORY}"
 fi

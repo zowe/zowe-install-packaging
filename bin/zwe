@@ -24,42 +24,42 @@ ZOWE_RUNTIME_DIRECTORY=$(cd $(dirname $0)/../;pwd)
 
 #######################################################################
 # parse parameters
-zscli_load_parameters_definition
+zwecli_load_parameters_definition
 while [ $# -gt 0 ]; do
   arg="$1"
   if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
-    definition=$(zscli_locate_parameter_definition $arg)
+    definition=$(zwecli_locate_parameter_definition $arg)
     if [ $? -gt 0 ]; then
       >&2 echo "Error: invalid parameter ${arg}"
       exit 1
     fi
     param_id=$(echo "${definition}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
     param_type=$(echo "${definition}" | awk -F"|" '{print $3}' | lower_case)
-    param_var=$(echo "ZSCLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum)
+    param_var=$(echo "ZWECLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum)
     if [ "${param_type}" = "b" -o "${param_type}" = "bool" -o "${param_type}" = "boolean" ]; then
-      ZSCLI_PARAMETERS_LIST=$(trim "${ZSCLI_PARAMETERS_LIST} ${param_id}")
+      ZWECLI_PARAMETERS_LIST=$(trim "${ZWECLI_PARAMETERS_LIST} ${param_id}")
       eval "${param_var}=true"
     elif [ "${param_type}" = "s" -o "${param_type}" = "str" -o "${param_type}" = "string" ]; then
       shift
-      ZSCLI_PARAMETERS_LIST=$(trim "${ZSCLI_PARAMETERS_LIST} ${param_id}")
+      ZWECLI_PARAMETERS_LIST=$(trim "${ZWECLI_PARAMETERS_LIST} ${param_id}")
       eval "${param_var}=\"${1}\""
     else
       >&2 echo "Error: invalid parameter type of ${arg}"
       exit 1
     fi
   else
-    ZSCLI_COMMANDS_LIST=$(trim "${ZSCLI_COMMANDS_LIST} ${arg}")
-    zscli_load_parameters_definition
+    ZWECLI_COMMANDS_LIST=$(trim "${ZWECLI_COMMANDS_LIST} ${arg}")
+    zwecli_load_parameters_definition
   fi
   shift
 done
 
 #######################################################################
 # process
-zscli_process_loglevel
+zwecli_process_loglevel
 # if it's in help mode, the script will exit with code 99
-zscli_process_help
+zwecli_process_help
 # validate parameter before execute command
-zscli_validate_parameters
+zwecli_validate_parameters
 # handle command
-zscli_process_command
+zwecli_process_command

@@ -13,21 +13,21 @@
 
 #######################################################################
 # Global variables
-export ZSCLI_PARAMETERS_LIST=
-export ZSCLI_COMMANDS_LIST=
-export ZSCLI_LOGLEVEL=
-export ZSCLI_PARAMETERS_DEFINITIONS=
+export ZWECLI_PARAMETERS_LIST=
+export ZWECLI_COMMANDS_LIST=
+export ZWECLI_LOGLEVEL=
+export ZWECLI_PARAMETERS_DEFINITIONS=
 
-zscli_load_parameters_definition() {
+zwecli_load_parameters_definition() {
   command_path=${ZOWE_RUNTIME_DIRECTORY}/bin/commands
-  ZSCLI_PARAMETERS_DEFINITIONS="${ZSCLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
+  ZWECLI_PARAMETERS_DEFINITIONS="${ZWECLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
   last_command=
-  for command in ${ZSCLI_COMMANDS_LIST}; do
+  for command in ${ZWECLI_COMMANDS_LIST}; do
     if [ -d "${command_path}/${command}" ]; then
       command_path="${command_path}/${command}"
       last_command=$(trim "${last_command} ${command}")
       if [ -f "${command_path}/.parameters" ]; then
-        ZSCLI_PARAMETERS_DEFINITIONS="${ZSCLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
+        ZWECLI_PARAMETERS_DEFINITIONS="${ZWECLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
       fi
     else
       if [ -z "${last_command}" ]; then
@@ -41,7 +41,7 @@ zscli_load_parameters_definition() {
   done
 }
 
-zscli_locate_parameter_definition() {
+zwecli_locate_parameter_definition() {
   param=$1
 
   match=
@@ -68,7 +68,7 @@ zscli_locate_parameter_definition() {
       fi
     fi
   done <<EOF
-$(echo "${ZSCLI_PARAMETERS_DEFINITIONS}")
+$(echo "${ZWECLI_PARAMETERS_DEFINITIONS}")
 EOF
 
   if [ -n "${match}" ]; then
@@ -79,23 +79,23 @@ EOF
   fi
 }
 
-zscli_get_parameter_value() {
+zwecli_get_parameter_value() {
   param_id=$1
 
-  param_var=$(echo "ZSCLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum)
+  param_var=$(echo "ZWECLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum)
   eval "echo \"\$${param_var}\""
 }
 
-zscli_process_loglevel() {
-  if [ "${ZSCLI_PARAMETER_DEBUG}" = "true" -o "${ZSCLI_PARAMETER_VERBOSE}" = "true" ]; then
-    ZSCLI_LOGLEVEL=debug
+zwecli_process_loglevel() {
+  if [ "${ZWECLI_PARAMETER_DEBUG}" = "true" -o "${ZWECLI_PARAMETER_VERBOSE}" = "true" ]; then
+    ZWECLI_LOGLEVEL=debug
   fi
-  if [ "${ZSCLI_PARAMETER_TRACE}" = "true" ]; then
-    ZSCLI_LOGLEVEL=trace
+  if [ "${ZWECLI_PARAMETER_TRACE}" = "true" ]; then
+    ZWECLI_LOGLEVEL=trace
   fi
 }
 
-zscli_display_parameters_help() {
+zwecli_display_parameters_help() {
   file=$1
 
   while read -r line; do
@@ -131,16 +131,16 @@ zscli_display_parameters_help() {
 
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
       echo "  ${display_param}: ${line_params_type}, ${line_params_requirement:-optional}"
-      padding "${line_params_help}" "    "
+      padding_left "${line_params_help}" "    "
     fi
   done <<EOF
 $(cat ${file})
 EOF
 }
 
-zscli_calculate_command_path() {
+zwecli_calculate_command_path() {
   if [ $# -eq 0 ]; then
-    commands="${ZSCLI_COMMANDS_LIST}"
+    commands="${ZWECLI_COMMANDS_LIST}"
   else
     commands="${1}"
   fi
@@ -152,13 +152,13 @@ zscli_calculate_command_path() {
   fi
 }
 
-zscli_process_help() {
-  if [ "${ZSCLI_PARAMETER_HELP}" = "true" ]; then
-    >&2 echo "Zowe Server CLI: zs ${ZSCLI_COMMANDS_LIST}"
+zwecli_process_help() {
+  if [ "${ZWECLI_PARAMETER_HELP}" = "true" ]; then
+    >&2 echo "Zowe Server CLI: zwe ${ZWECLI_COMMANDS_LIST}"
     >&2 echo
 
     # display help message if exists
-    command_path=$(zscli_calculate_command_path)
+    command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
       >&2 cat "${command_path}/.help"
       >&2 echo
@@ -168,14 +168,14 @@ zscli_process_help() {
     if [ -f "${ZOWE_RUNTIME_DIRECTORY}/bin/commands/.parameters" ]; then
       >&2 echo "------------------"
       >&2 echo "Global parameters:"
-      >&2 zscli_display_parameters_help "${ZOWE_RUNTIME_DIRECTORY}/bin/commands/.parameters"
+      >&2 zwecli_display_parameters_help "${ZOWE_RUNTIME_DIRECTORY}/bin/commands/.parameters"
       >&2 echo
     fi
 
     # display command parameters
     command_tree=
     command_path="${ZOWE_RUNTIME_DIRECTORY}/bin/commands"
-    for command in ${ZSCLI_COMMANDS_LIST}; do
+    for command in ${ZWECLI_COMMANDS_LIST}; do
       command_tree=$(echo "${command_tree} ${command}" | trim)
       command_path="${command_path}/${command}"
       if [ -f "${command_path}/.experimental" ]; then
@@ -185,13 +185,13 @@ zscli_process_help() {
       if [ -f "${command_path}/.parameters" ]; then
         >&2 echo "------------------"
         >&2 echo "Parameters for command \"${command_tree}\":"
-        >&2 zscli_display_parameters_help "${command_path}/.parameters"
+        >&2 zwecli_display_parameters_help "${command_path}/.parameters"
         >&2 echo
       fi
     done
 
     # find sub-commands
-    command_path=$(zscli_calculate_command_path)
+    command_path=$(zwecli_calculate_command_path)
     subdirs=$(find_sub_directories "${command_path}")
     if [ -n "${subdirs}" ]; then
       >&2 echo "------------------"
@@ -208,7 +208,7 @@ EOF
   fi
 }
 
-zscli_validate_parameters() {
+zwecli_validate_parameters() {
   required_params=
   while read -r line; do
     line=$(trim "${line}")
@@ -220,26 +220,26 @@ zscli_validate_parameters() {
       fi
     fi
   done <<EOF
-$(echo "${ZSCLI_PARAMETERS_DEFINITIONS}")
+$(echo "${ZWECLI_PARAMETERS_DEFINITIONS}")
 EOF
 
   for param in ${required_params}; do
-    val=$(zscli_get_parameter_value "${param}")
+    val=$(zwecli_get_parameter_value "${param}")
     if [ -z "${val}" ]; then
-      >&2 echo "Error: ${param} is required"
+      >&2 echo "Error: ${param} parameter is required"
       >&2 echo "Try --help to get information about how to use this command."
       exit 1
     fi
   done
 }
 
-zscli_process_command() {
-  command_path=$(zscli_calculate_command_path)
+zwecli_process_command() {
+  command_path=$(zwecli_calculate_command_path)
   if [ -f "${command_path}/index.sh" ]; then
     . "${command_path}/index.sh"
   else
-    if [ -n "${ZSCLI_COMMANDS_LIST}" ]; then
-      >&2 echo "Error: no handler defined for command \"${ZSCLI_COMMANDS_LIST}\"."
+    if [ -n "${ZWECLI_COMMANDS_LIST}" ]; then
+      >&2 echo "Error: no handler defined for command \"${ZWECLI_COMMANDS_LIST}\"."
     fi
     >&2 echo "Try --help to get information about how to use this command."
     exit 2
