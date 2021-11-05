@@ -223,7 +223,7 @@ jobs:
           expected-count: 1
       
       - name: '[TP_LINUX_DOCKER 2] Build Linux Docker'
-        # if: github.event.inputs.BUILD_DOCKER == 'true'
+        if: github.event.inputs.BUILD_DOCKER == 'true'
         working-directory: containers/server-bundle
         run: |
           # copy utils to docker build folder
