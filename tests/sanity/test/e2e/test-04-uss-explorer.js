@@ -65,6 +65,13 @@ describe(`test ${APP_TO_TEST}`, function() {
       `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
       `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/zlux/ZLUX/plugins/org.zowe.explorer-uss/web/index.html`	
     );
+
+    await loginMVD(
+      driver,
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/zlux/ZLUX/plugins/org.zowe.zlux.bootstrap/web/`,
+      process.env.SSH_USER,
+      process.env.SSH_PASSWD
+    );
   });
 
 
