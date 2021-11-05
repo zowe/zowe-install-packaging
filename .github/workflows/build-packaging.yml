@@ -235,7 +235,7 @@ jobs:
           pwd && ls -ltr .
           
           # build docker image
-          docker login -u \"${{ secrets.DOCKERHUB_USER }}\" -p \"${{ secrets.DOCKERHUB_PASSWORD }}\" 
+          docker login -u "${{ secrets.DOCKERHUB_USER }}" -p "${{ secrets.DOCKERHUB_PASSWORD }}" 
           # docker build -t ompzowe/server-bundle:amd64 .
           # docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64
             
