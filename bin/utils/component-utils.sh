@@ -576,6 +576,68 @@ process_component_appfw_plugin() {
 }
 
 ###############################
+# Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
+#
+# The supported manifest entry is ".gatewaySharedLibs". All shared libs
+# defined will be passed to install-app.sh for proper installation.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# Required environment variables:
+# - INSTANCE_DIR
+# - NODE_HOME
+#
+# @param string   component directory
+process_component_gateway_shared_libs() {
+  component_dir=$1
+
+  all_succeed=true
+  iterator_index=0
+  plugin_id=
+  gateway_shared_libs_workspace_path=
+  gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
+  while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
+    cd "${component_dir}"
+
+    if [ -z "${plugin_id}" ]; then
+      # prepare plugin directory
+      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
+      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
+      mkdir -p "${gateway_shared_libs_workspace_path}"
+    fi
+
+    # copy to workspace/gateway/sharedLibs/
+    if [ -f "${gateway_shared_libs_path}" ]; then
+      gateway_shared_libs_path_dir=$(dirname "${gateway_shared_libs_path}")
+      if [ "${gateway_shared_libs_path_dir}" = "." ]; then
+        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}"
+      else
+        mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
+        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
+      fi
+    elif [ -d "${gateway_shared_libs_path}" ]; then
+      mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
+      cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
+    else
+      >&2 echo "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
+      all_succeed=false
+      break
+    fi
+
+    iterator_index=`expr $iterator_index + 1`
+    gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+###############################
 # Lists the service IDs of a specified component
 #
 # Note: this function calls is dependent on various utility functions and
