@@ -2,9 +2,12 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `Unreleased`
+
+- Updated ZWEWRF03 workflow to be up to date with the installed software
 ## `1.25.0`
 
-### New feautres and enhancements
+### New features and enhancements
 - app-server's uninstall-app.sh script is now available in the instance bin folder.
 - zss's zis-plugin-install.sh script is now available in the instance bin/utils folder.
 

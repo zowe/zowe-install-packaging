@@ -319,6 +319,17 @@ configure_components() {
         fi
       fi
 
+      # - gateway shared lib
+      result=$(process_component_gateway_shared_libs "${component_dir}" 2>&1)
+      retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+        else
+          print_formatted_error "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
+        fi
+      fi
+
       # check configure script
       configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
       if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then

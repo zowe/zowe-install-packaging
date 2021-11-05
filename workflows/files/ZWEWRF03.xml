@@ -185,6 +185,150 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>7554</default>
         </integer>
     </variable>
+    <variable name="APIML_ALLOW_ENCODED_SLASHES" scope="instance" visibility="public">
+        <label>Allow encoded slashes</label>
+        <abstract>Check to allow the Gateway to accept encoded characters in the URL requests</abstract>
+        <description>When this parameter is set to true, the Gateway allows encoded characters to be part of URL requests redirected through the Gateway.</description>
+        <category>API Mediation Layer</category>
+        <boolean>
+            <default>true</default>
+        </boolean>
+    </variable>
+    <variable name="APIML_CORS_ENABLED" scope="instance" visibility="public">
+        <label>Enable CORS</label>
+        <abstract>Set to true to enable CORS for Gateway routes</abstract>
+        <description>When this parameter is set to true, CORS are enabled in the API Gateway for Gateway routes</description>
+        <category>API Mediation Layer</category>
+        <boolean>
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="APIML_GATEWAY_TIMEOUT_MILLIS" scope="instance" visibility="public">
+        <label>Gateway timeout</label>
+        <abstract>Timeout for connection to services in milliseconds</abstract>
+        <description>Specifies the timeout for connection to the services in milliseconds.</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>600000</default>
+        </integer>
+    </variable>
+    <variable name="APIML_SECURITY_X509_ENABLED" scope="instance" visibility="public">
+        <label>Enable X509 Security</label>
+        <abstract>Enable the client certificate authentication through ZSS.</abstract>
+        <description>Set this parameter to true, to enable the client certificate authentication functionality through ZSS.</description>
+        <category>API Mediation Layer</category>
+        <boolean>
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="APIML_SECURITY_ZOSMF_APPLID" scope="instance" visibility="public">
+        <label>Security z/OSMF APPLID</label>
+        <abstract>The z/OSMF APPLID used for PassTicket.</abstract>
+        <description>The z/OSMF APPLID used for PassTicket.</description>
+        <category>API Mediation Layer</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^[^ ]+$</regularExpression>
+            <errorMessage>Wrong syntax of the value</errorMessage>
+            <!-- Specify choices here -->
+            <default>IZUDFLT</default>
+        </string>
+    </variable>
+    <variable name="APIML_SECURITY_AUTH_PROVIDER" scope="instance" visibility="public">
+        <label>Security Authorization Provider</label>
+        <abstract>Authentication provider used by the API Gateway.</abstract>
+        <description>The authentication provider used by the API Gateway. By default, the API Gateway uses z/OSMF as an authentication provider. It is possible to switch to SAF as the authentication provider instead of z/OSMF.</description>
+        <category>API Mediation Layer</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>zosmf</choice>
+            <choice>saf</choice>
+            <default>zosmf</default>
+        </string>
+    </variable>
+    <variable name="APIML_DEBUG_MODE_ENABLED" scope="instance" visibility="public">
+        <label>Debug mode</label>
+        <abstract>Choose whether you want detailed logging of the APIML.</abstract>
+        <description>When this parameter is set to true, detailed logging of activity by the API mediation layer occurs. This can be useful to diagnose unexpected behavior of the API gateway, API discovery, or API catalog services. Default value is false.</description>
+        <category>API Mediation Layer</category>
+        <boolean>
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="APIML_MAX_CONNECTIONS_PER_ROUTE" scope="instance" visibility="public">
+        <label>Max connections per route</label>
+        <abstract>Maximum number of connections per a single route</abstract>
+        <description>Set the maximum number of accepted connections per a single route in API Mediation Layer</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>100</default>
+        </integer>
+    </variable>
+    <variable name="APIML_MAX_TOTAL_CONNECTIONS" scope="instance" visibility="public">
+        <label>Maximum total connections</label>
+        <abstract>Maximum number of total connections for all routes</abstract>
+        <description>Set the maximum amount of all the connections for the API Mediation Layer</description>
+        <category>API Mediation Layer</category>
+        <integer>
+            <!-- validation -->
+            <default>1000</default>
+        </integer>
+    </variable>
+    <variable name="ZWE_CACHING_SERVICE_PORT" scope="instance" visibility="public">
+        <label>The port the Caching Service will use.</label>
+        <abstract>The port the Caching Service will use.</abstract>
+        <description>description</description>
+        <category>Caching service</category>
+        <integer>
+            <!-- validation -->
+            <default>7555</default>
+        </integer>
+    </variable>
+    <variable name="ZWE_CACHING_STORAGE_SIZE" scope="instance" visibility="public">
+        <label>Caching storage size</label>
+        <abstract>Number of records before eviction strategies kick in.</abstract>
+        <description>Specify amount of records before eviction strategies start evicting</description>
+        <category>Caching service</category>
+        <integer>
+            <!-- validation -->
+            <default>10000</default>
+        </integer>
+    </variable>
+    <variable name="ZWE_CACHING_EVICTION_STRATEGY" scope="instance" visibility="public">
+        <label>Eviction strategy</label>
+        <abstract>Specifies eviction strategy to be used when the storage size is achieved.</abstract>
+        <description>Specifies eviction strategy to be used when the storage size is achieved.</description>
+        <category>Caching service</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>reject</choice>
+            <choice>removeOldest</choice>
+            <default>reject</default>
+        </string>
+    </variable>
+    <variable name="ZWE_CACHING_SERVICE_PERSISTENT" scope="instance" visibility="public">
+        <label>Caching service persistent</label>
+        <abstract>Select a proper caching service</abstract>
+        <description>This field sets the storage type used to persist data in the Caching Service. Valid values are REDIS, VSAM or empty for inMemory storage.</description>
+        <category>Caching service</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^(VSAM|REDIS)?$</regularExpression>
+            <errorMessage>Valid values are VSAM, REDIS or empty</errorMessage>
+            <choice>VSAM</choice>
+            <choice>REDIS</choice>
+        </string>
+    </variable>
+    <variable name="ZWE_CACHING_SERVICE_VSAM_DATASET" scope="instance" visibility="public">
+        <label>Caching service VSAM dataset</label>
+        <abstract>VSAM dataset for caching</abstract>
+        <description>This field sets the VSAM dataset name to be used to store Caching Service data. This field is required if ZWE_CACHING_SERVICE_PERSISTENT is set to VSAM, otherwise this field is not needed.</description>
+        <category>Caching service</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <!-- Specify choices here -->
+        </string>
+    </variable>
     <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX Server HTTPS Port</label>
         <abstract>Zowe ZLUX Server HTTPS Port</abstract>
@@ -205,6 +349,15 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>8542</default>
         </integer>
     </variable>
+    <variable name="ZOWE_ZSS_SERVER_TLS" scope="instance" visibility="public">
+        <label>ZSS Server TLS</label>
+        <abstract>Zowe ZSS Server TLS (HTTPS)</abstract>
+        <description>Zowe ZSS Server TLS. Uncheck if you do not want to use HTTPS on ZSS.</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <boolean>
+            <default>true</default>
+        </boolean>
+    </variable>
     <variable name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" visibility="public">
         <label>Zowe ZSS XMEM Server Name</label>
         <abstract>Zowe ZSS XMEM Server Name</abstract>
@@ -214,11 +367,50 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>ZWESIS_STD</default>
         </string>
     </variable>
+    <variable name="ZWES_ZIS_LOADLIB" scope="instance" visibility="public">
+        <label>ZIS LOADLIB</label>
+        <abstract>Location of the ZIS LOADLIB</abstract>
+        <description>The dataset name where the Zowe cross memory server (ZIS) load library resides. Having this value defined can help in automation around ZIS and ZIS plugins.</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+        </string>
+    </variable>
+    <variable name="ZWES_ZIS_PLUGINLIB" scope="instance" visibility="public">
+        <label>ZIS Plugin Library</label>
+        <abstract>The dataset name where plugins for ZIS should be placed</abstract>
+        <description>The dataset name where plugins for ZIS should be placed. When this is specified, components that contain ZIS plugins will have their load library content placed here.</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="ZWES_ZIS_PARMLIB_MEMBER" scope="instance" visibility="public">
+        <label>ZIS PARMLIB member</label>
+        <abstract>Active ZIS PARMLIB member</abstract>
+        <description>Active ZIS PARMLIB member.</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSMEMBERNAME</validationType>
+            <default>ZWESIP00</default>
+        </string>
+    </variable>
+    <variable name="ZWES_ZIS_PARMLIB" scope="instance" visibility="public">
+        <label>ZIS PARMLIB</label>
+        <abstract>The dataset name where parameters about ZIS should be placed</abstract>
+        <description>The dataset name where parameters about ZIS should be placed. Having this value defined is necessary for automatically installing ZIS plugins that are within a component.</description>
+        <category>Zowe Desktop/app framework variables</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <!-- Specify choices here -->
+        </string>
+    </variable>
     <variable name="ZOWE_ZLUX_SSH_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX SSH Port</label>
         <abstract>Zowe ZLUX SSH Port</abstract>
         <description>Zowe ZLUX SSH Port</description>
-        <category>Zowe Desktop/app framework variables</category>
+        <category>Terminal app variables</category>
         <integer>
             <!-- validation -->
             <default>22</default>
@@ -228,7 +420,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         <label>Zowe ZLUX Telnet Port</label>
         <abstract>Zowe ZLUX Telnet Port</abstract>
         <description>Zowe ZLUX Telnet Port</description>
-        <category>Zowe Desktop/app framework variables</category>
+        <category>Terminal app variables</category>
         <integer>
             <!-- validation -->
             <default>23</default>
@@ -239,7 +431,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         <abstract>The security type of the tn3270 connection</abstract>
         <description>The security type of the tn3270 connection
 valid values are blank('') for telnet, or 'tls'</description>
-        <category>Zowe Desktop/app framework variables</category>
+        <category>Terminal app variables</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
             <choice>''</choice>
@@ -266,6 +458,66 @@ valid values are blank('') for telnet, or 'tls'</description>
             <regularExpression>~?(\/[^\/]+)+</regularExpression>
             <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
         </string>
+    </variable>
+    <variable name="ZWE_LOG_LEVEL_ZWELS" scope="instance" visibility="public">
+        <label>ZWE LOG level ZWELS</label>
+        <abstract>Log level for launch scripts. set to debug</abstract>
+        <description>Log level for launch scripts. set to &lt;i&gt;debug&lt;/i&gt; to see detail of validate and configure steps.</description>
+        <category>logging</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <choice>debug</choice>
+        </string>
+    </variable>
+    <variable name="JOBS_API_PORT" scope="instance" visibility="public">
+        <label>Jobs API port</label>
+        <abstract>The port the jobs API service will use</abstract>
+        <description>The port the jobs API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8545</default>
+        </integer>
+    </variable>
+    <variable name="FILES_API_PORT" scope="instance" visibility="public">
+        <label>Files API port</label>
+        <abstract>The port the files API service will use</abstract>
+        <description>The port the files API service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8547</default>
+        </integer>
+    </variable>
+    <variable name="JES_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>JES-explorer UI port</label>
+        <abstract>The port the jes-explorer UI service will use</abstract>
+        <description>The port the jes-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8546</default>
+        </integer>
+    </variable>
+    <variable name="MVS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>MVS-explorer UI port</label>
+        <abstract>The port the mvs-explorer UI service will use</abstract>
+        <description>The port the mvs-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8548</default>
+        </integer>
+    </variable>
+    <variable name="USS_EXPLORER_UI_PORT" scope="instance" visibility="public">
+        <label>USS-explorer UI port</label>
+        <abstract>The port the uss-explorer UI service will use</abstract>
+        <description>The port the uss-explorer UI service will use</description>
+        <category>Explorer variables</category>
+        <integer>
+            <!-- validation -->
+            <default>8550</default>
+        </integer>
     </variable>
     <!--atCreate-->
     <step name="define_variables" optional="false">
@@ -296,6 +548,31 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="ZOWE_ZLUX_SECURITY_TYPE" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="EXTERNAL_COMPONENTS" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="APIML_ALLOW_ENCODED_SLASHES" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_CORS_ENABLED" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_GATEWAY_TIMEOUT_MILLIS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_SECURITY_X509_ENABLED" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_SECURITY_ZOSMF_APPLID" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_SECURITY_AUTH_PROVIDER" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_DEBUG_MODE_ENABLED" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_MAX_CONNECTIONS_PER_ROUTE" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="APIML_MAX_TOTAL_CONNECTIONS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWE_CACHING_SERVICE_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWE_CACHING_STORAGE_SIZE" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWE_CACHING_EVICTION_STRATEGY" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWE_CACHING_SERVICE_PERSISTENT" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="ZWE_CACHING_SERVICE_VSAM_DATASET" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="ZOWE_ZSS_SERVER_TLS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWES_ZIS_LOADLIB" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWES_ZIS_PLUGINLIB" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWES_ZIS_PARMLIB" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWES_ZIS_PARMLIB_MEMBER" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWE_LOG_LEVEL_ZWELS" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="JOBS_API_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="FILES_API_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="JES_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="MVS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="true" required="false"/>
+        <variableValue name="USS_EXPLORER_UI_PORT" scope="instance" noPromptIfSet="true" required="false"/>
         <instructions substitution="true">Define the variables for the workflow execution</instructions>
         <weight>1</weight>
         <skills>None</skills>
@@ -340,18 +617,58 @@ export KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
 export CATALOG_PORT=${instance-CATALOG_PORT}
 export DISCOVERY_PORT=${instance-DISCOVERY_PORT}
 export GATEWAY_PORT=${instance-GATEWAY_PORT}
+export APIML_ALLOW_ENCODED_SLASHES=${instance-APIML_ALLOW_ENCODED_SLASHES}
+export APIML_CORS_ENABLED=${instance-APIML_CORS_ENABLED}
+# this configuration is deprecated. Zowe start script will ignore this value and always set it to false
+export APIML_PREFER_IP_ADDRESS=false
+export APIML_GATEWAY_TIMEOUT_MILLIS=${instance-APIML_GATEWAY_TIMEOUT_MILLIS}
+export APIML_SECURITY_X509_ENABLED=${instance-APIML_SECURITY_X509_ENABLED}
+export APIML_SECURITY_ZOSMF_APPLID=${instance-APIML_SECURITY_ZOSMF_APPLID}
+export APIML_SECURITY_AUTH_PROVIDER=${instance-APIML_SECURITY_AUTH_PROVIDER}
+# List of discovery service URLs separated by comma
+export ZWE_DISCOVERY_SERVICES_LIST=https://${instance-ZOWE_EXPLORER_HOST}:${instance-DISCOVERY_PORT}/eureka/
+# Enable debug logging for Api Mediation Layer services
+export APIML_DEBUG_MODE_ENABLED=${instance-APIML_DEBUG_MODE_ENABLED}
+export APIML_MAX_CONNECTIONS_PER_ROUTE=${instance-APIML_MAX_CONNECTIONS_PER_ROUTE}
+export APIML_MAX_TOTAL_CONNECTIONS=${instance-APIML_MAX_TOTAL_CONNECTIONS}
+export APIML_GATEWAY_EXTERNAL_MAPPER=https://${instance-ZOWE_EXPLORER_HOST}:${instance-GATEWAY_PORT}/zss/api/v1/certificate/x509/map
+export APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://${instance-ZOWE_EXPLORER_HOST}:${instance-GATEWAY_PORT}/zss/api/v1/saf-auth
+
+####################
+# caching service
+# TCP port of caching service
+export ZWE_CACHING_SERVICE_PORT=${instance-ZWE_CACHING_SERVICE_PORT}
+# specify amount of records before eviction strategies start evicting
+export ZWE_CACHING_STORAGE_SIZE=${instance-ZWE_CACHING_STORAGE_SIZE}
+# specify eviction strategy to be used when the storage size is achieved
+export ZWE_CACHING_EVICTION_STRATEGY=${instance-ZWE_CACHING_EVICTION_STRATEGY}
+# specify persistent method of caching service
+# possible options: &lt;empty&gt; (will fall back to inMemory), VSAM, redis
+export ZWE_CACHING_SERVICE_PERSISTENT=${instance-ZWE_CACHING_SERVICE_PERSISTENT}
+# specify the data set name of the caching service VSAM data set
+export ZWE_CACHING_SERVICE_VSAM_DATASET=${instance-ZWE_CACHING_SERVICE_VSAM_DATASET}
 
 # explorer variables
 export JOBS_API_PORT=${instance-JOBS_API_PORT}
 export FILES_API_PORT=${instance-FILES_API_PORT}
 
-# Zowe Desktop/app framework variables
+# app framework (app-server, zss, zis) variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
 export ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
+ZOWE_ZSS_SERVER_TLS=${instance-ZOWE_ZSS_SERVER_TLS}
 export ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+export ZWES_ZIS_LOADLIB=${instance-ZWES_ZIS_LOADLIB}
+export ZWES_ZIS_PLUGINLIB=${instance-ZWES_ZIS_PLUGINLIB}
+export ZWES_ZIS_PARMLIB=${instance-ZWES_ZIS_PARMLIB}
+export ZWES_ZIS_PARMLIB_MEMBER=${instance-ZWES_ZIS_PARMLIB_MEMBER}
+
+# terminal app variables
 export ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
 export ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
 export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+
+# Log level for launch scripts. Set this to "debug" to see detail of validate and configure steps.
+export ZWE_LOG_LEVEL_ZWELS=${instance-ZWE_LOG_LEVEL_ZWELS}
 
 # Extender variables
 export ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
@@ -415,18 +732,58 @@ KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
 CATALOG_PORT=${instance-CATALOG_PORT}
 DISCOVERY_PORT=${instance-DISCOVERY_PORT}
 GATEWAY_PORT=${instance-GATEWAY_PORT}
+APIML_ALLOW_ENCODED_SLASHES=${instance-APIML_ALLOW_ENCODED_SLASHES}
+APIML_CORS_ENABLED=${instance-APIML_CORS_ENABLED}
+# this configuration is deprecated. Zowe start script will ignore this value and always set it to false
+APIML_PREFER_IP_ADDRESS=false
+APIML_GATEWAY_TIMEOUT_MILLIS=${instance-APIML_GATEWAY_TIMEOUT_MILLIS}
+APIML_SECURITY_X509_ENABLED=${instance-APIML_SECURITY_X509_ENABLED}
+APIML_SECURITY_ZOSMF_APPLID=${instance-APIML_SECURITY_ZOSMF_APPLID}
+APIML_SECURITY_AUTH_PROVIDER=${instance-APIML_SECURITY_AUTH_PROVIDER}
+# List of discovery service URLs separated by comma
+ZWE_DISCOVERY_SERVICES_LIST=https://${instance-ZOWE_EXPLORER_HOST}:${instance-DISCOVERY_PORT}/eureka/
+# Enable debug logging for Api Mediation Layer services
+APIML_DEBUG_MODE_ENABLED=${instance-APIML_DEBUG_MODE_ENABLED}
+APIML_MAX_CONNECTIONS_PER_ROUTE=${instance-APIML_MAX_CONNECTIONS_PER_ROUTE}
+APIML_MAX_TOTAL_CONNECTIONS=${instance-APIML_MAX_TOTAL_CONNECTIONS}
+APIML_GATEWAY_EXTERNAL_MAPPER=https://${instance-ZOWE_EXPLORER_HOST}:${instance-GATEWAY_PORT}/zss/api/v1/certificate/x509/map
+APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://${instance-ZOWE_EXPLORER_HOST}:${instance-GATEWAY_PORT}/zss/api/v1/saf-auth
+
+####################
+# caching service
+# TCP port of caching service
+ZWE_CACHING_SERVICE_PORT=${instance-ZWE_CACHING_SERVICE_PORT}
+# specify amount of records before eviction strategies start evicting
+ZWE_CACHING_STORAGE_SIZE=${instance-ZWE_CACHING_STORAGE_SIZE}
+# specify eviction strategy to be used when the storage size is achieved
+ZWE_CACHING_EVICTION_STRATEGY=${instance-ZWE_CACHING_EVICTION_STRATEGY}
+# specify persistent method of caching service
+# possible options: &lt;empty&gt; (will fall back to inMemory), VSAM, redis
+ZWE_CACHING_SERVICE_PERSISTENT=${instance-ZWE_CACHING_SERVICE_PERSISTENT}
+# specify the data set name of the caching service VSAM data set
+ZWE_CACHING_SERVICE_VSAM_DATASET=${instance-ZWE_CACHING_SERVICE_VSAM_DATASET}
 
 # explorer variables
 JOBS_API_PORT=${instance-JOBS_API_PORT}
 FILES_API_PORT=${instance-FILES_API_PORT}
 
-# Zowe Desktop/app framework variables
+# app framework (app-server, zss, zis) variables
 ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
 ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
+ZOWE_ZSS_SERVER_TLS=${instance-ZOWE_ZSS_SERVER_TLS}
 ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+ZWES_ZIS_LOADLIB=${instance-ZWES_ZIS_LOADLIB}
+ZWES_ZIS_PLUGINLIB=${instance-ZWES_ZIS_PLUGINLIB}
+ZWES_ZIS_PARMLIB=${instance-ZWES_ZIS_PARMLIB}
+ZWES_ZIS_PARMLIB_MEMBER=${instance-ZWES_ZIS_PARMLIB_MEMBER}
+
+# terminal app variables
 ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
 ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
 ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+
+# Log level for launch scripts. Set this to "debug" to see detail of validate and configure steps.
+export ZWE_LOG_LEVEL_ZWELS=${instance-ZWE_LOG_LEVEL_ZWELS}
 
 # Extender variables
 ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
@@ -488,18 +845,58 @@ export KEYSTORE_DIRECTORY=${instance-KEYSTORE_DIRECTORY}
 export CATALOG_PORT=${instance-CATALOG_PORT}
 export DISCOVERY_PORT=${instance-DISCOVERY_PORT}
 export GATEWAY_PORT=${instance-GATEWAY_PORT}
+export APIML_ALLOW_ENCODED_SLASHES=${instance-APIML_ALLOW_ENCODED_SLASHES}
+export APIML_CORS_ENABLED=${instance-APIML_CORS_ENABLED}
+# this configuration is deprecated. Zowe start script will ignore this value and always set it to false
+export APIML_PREFER_IP_ADDRESS=false
+export APIML_GATEWAY_TIMEOUT_MILLIS=${instance-APIML_GATEWAY_TIMEOUT_MILLIS}
+export APIML_SECURITY_X509_ENABLED=${instance-APIML_SECURITY_X509_ENABLED}
+export APIML_SECURITY_ZOSMF_APPLID=${instance-APIML_SECURITY_ZOSMF_APPLID}
+export APIML_SECURITY_AUTH_PROVIDER=${instance-APIML_SECURITY_AUTH_PROVIDER}
+# List of discovery service URLs separated by comma
+export ZWE_DISCOVERY_SERVICES_LIST=https://${instance-ZOWE_EXPLORER_HOST}:${instance-DISCOVERY_PORT}/eureka/
+# Enable debug logging for Api Mediation Layer services
+export APIML_DEBUG_MODE_ENABLED=${instance-APIML_DEBUG_MODE_ENABLED}
+export APIML_MAX_CONNECTIONS_PER_ROUTE=${instance-APIML_MAX_CONNECTIONS_PER_ROUTE}
+export APIML_MAX_TOTAL_CONNECTIONS=${instance-APIML_MAX_TOTAL_CONNECTIONS}
+export APIML_GATEWAY_EXTERNAL_MAPPER=https://${instance-ZOWE_EXPLORER_HOST}:${instance-GATEWAY_PORT}/zss/api/v1/certificate/x509/map
+export APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://${instance-ZOWE_EXPLORER_HOST}:${instance-GATEWAY_PORT}/zss/api/v1/saf-auth
+
+####################
+# caching service
+# TCP port of caching service
+export ZWE_CACHING_SERVICE_PORT=${instance-ZWE_CACHING_SERVICE_PORT}
+# specify amount of records before eviction strategies start evicting
+export ZWE_CACHING_STORAGE_SIZE=${instance-ZWE_CACHING_STORAGE_SIZE}
+# specify eviction strategy to be used when the storage size is achieved
+export ZWE_CACHING_EVICTION_STRATEGY=${instance-ZWE_CACHING_EVICTION_STRATEGY}
+# specify persistent method of caching service
+# possible options: &lt;empty&gt; (will fall back to inMemory), VSAM, redis
+export ZWE_CACHING_SERVICE_PERSISTENT=${instance-ZWE_CACHING_SERVICE_PERSISTENT}
+# specify the data set name of the caching service VSAM data set
+export ZWE_CACHING_SERVICE_VSAM_DATASET=${instance-ZWE_CACHING_SERVICE_VSAM_DATASET}
 
 # explorer variables
 export JOBS_API_PORT=${instance-JOBS_API_PORT}
 export FILES_API_PORT=${instance-FILES_API_PORT}
 
-# Zowe Desktop/app framework variables
+# app framework (app-server, zss, zis) variables
 export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
 export ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
+ZOWE_ZSS_SERVER_TLS=${instance-ZOWE_ZSS_SERVER_TLS}
 export ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+export ZWES_ZIS_LOADLIB=${instance-ZWES_ZIS_LOADLIB}
+export ZWES_ZIS_PLUGINLIB=${instance-ZWES_ZIS_PLUGINLIB}
+export ZWES_ZIS_PARMLIB=${instance-ZWES_ZIS_PARMLIB}
+export ZWES_ZIS_PARMLIB_MEMBER=${instance-ZWES_ZIS_PARMLIB_MEMBER}
+
+# terminal app variables
 export ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
 export ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
 export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+
+# Log level for launch scripts. Set this to "debug" to see detail of validate and configure steps.
+export ZWE_LOG_LEVEL_ZWELS=${instance-ZWE_LOG_LEVEL_ZWELS}
 
 # Extender variables
 export ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES=${instance-ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES}
