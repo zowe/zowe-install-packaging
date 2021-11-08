@@ -1,4 +1,4 @@
-name: Build and Packaging Workflow
+name: Zowe Build and Packaging
 on:
   push:
     branches:
