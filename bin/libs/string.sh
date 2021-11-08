@@ -11,6 +11,10 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+###############################
+# Trim string (remove all spaces at the beginning or end of the string)
+#
+# @param string   optional string
 trim() {
   if [ $# -eq 0 ]; then
     read input
@@ -21,6 +25,10 @@ trim() {
   echo "${input}" | xargs
 }
 
+###############################
+# Sanitize a string by converting all non-alphanum letters to underscore
+#
+# @param string   optional string
 sanitize_alphanum() {
   if [ $# -eq 0 ]; then
     read input
@@ -31,6 +39,10 @@ sanitize_alphanum() {
   echo "${input}" | sed 's/[^a-zA-Z0-9]/_/g'
 }
 
+###############################
+# Sanitize a string by converting all non-alphabetical letters to underscore
+#
+# @param string   optional string
 sanitize_alpha() {
   if [ $# -eq 0 ]; then
     read input
@@ -41,6 +53,10 @@ sanitize_alpha() {
   echo "${input}" | sed 's/[^a-zA-Z]/_/g'
 }
 
+###############################
+# Sanitize a string by converting all non-numeric letters to underscore
+#
+# @param string   optional string
 sanitize_num() {
   if [ $# -eq 0 ]; then
     read input
@@ -51,6 +67,10 @@ sanitize_num() {
   echo "${input}" | sed 's/[^0-9]/_/g'
 }
 
+###############################
+# Convert string to lower case
+#
+# @param string   optional string
 lower_case() {
   if [ $# -eq 0 ]; then
     read input
@@ -61,6 +81,10 @@ lower_case() {
   echo "${input}" | tr '[:upper:]' '[:lower:]'
 }
 
+###############################
+# Convert string to upper case
+#
+# @param string   optional string
 upper_case() {
   if [ $# -eq 0 ]; then
     read input
@@ -71,7 +95,11 @@ upper_case() {
   echo "${input}" | tr '[:lower:]' '[:upper:]'
 }
 
-padding() {
+###############################
+# Padding string of every line of a multiple-line string
+#
+# @param string   optional string
+padding_left() {
   str=$1
   pad=$2
 

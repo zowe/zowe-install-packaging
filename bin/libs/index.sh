@@ -17,7 +17,14 @@ if [ -z "${ZOWE_RUNTIME_DIRECTORY}" ]; then
 fi
 
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/fs.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/http.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/java.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/json.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/logging.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/network.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/node.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/string.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/zscli.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/sys.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/var.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/zosmf.sh"
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/zwecli.sh"
