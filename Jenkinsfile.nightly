@@ -515,7 +515,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       if (params.TEST_RUN) {
         echo "Skip testing with parameters:\n\n" +
              "STARTED_BY_AUTOMATION: true\n" +
-             "TEST_SERVER: marist\n" +
+             "TEST_SERVER: marist-4\n" +
              "TEST_SCOPE: external certificate\n" +
              "ZOWE_ARTIFACTORY_PATTERN: '${sourceRegBuildInfo.path}'\n" +
              "ZOWE_ARTIFACTORY_BUILD: ''\n" +
@@ -530,7 +530,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SERVER', value: 'marist'),
+          string(name: 'TEST_SERVER', value: 'marist-4'),
           string(name: 'TEST_SCOPE', value: 'external certificate'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
