@@ -241,6 +241,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       } else {
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
+          string(name: 'TEST_SERVER', value: 'marist-4'),
           string(name: 'TEST_SCOPE', value: 'test docker'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),
           string(name: 'ZOWE_ARTIFACTORY_BUILD', value: ''),
