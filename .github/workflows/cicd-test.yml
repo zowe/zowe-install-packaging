@@ -1,0 +1,122 @@
+name: Zowe CICD Integration Tests (Single)
+on:
+  workflow_dispatch:
+    inputs:
+      convenience-pax:
+        description: convenience-pax
+        required: false
+      smpe-fmid:
+        description: smpe-fmid
+        required: false
+      smpe-ptf:
+        description: smpe-ptf
+        required: false
+      test-docker: 
+        description: test-docker
+        required: false
+      test-ext: 
+        description: test-ext
+        required: false
+      test-keyring: 
+        description: test-keyring
+        required: false
+      install-smpe-ptf-2-times: 
+        description: install-smpe-ptf-2-times
+        required: false
+      enable-verify-certificates: 
+        description: enable-verify-certificates
+        required: false
+      enable-nonstrict-verify-certificates: 
+        description: enable-nonstrict-verify-certificates
+        required: false
+      external-certificate:
+        description: external-certificate
+        required: false 
+      enabled-verify-certificates-with-external-certificate: 
+        description: enabled-verify-certificates-with-external-certificate
+        required: false
+      enabled-nonstrict-verify-certificate-with-external-certificate: 
+        description: enabled-nonstrict-verify-certificate-with-external-certificate
+        required: false
+      
+jobs:
+  check-permission:
+    runs-on: ubuntu-latest
+    steps:
+      # this action will fail the whole workflow if permission check fails
+      - name: check permission
+        uses: zowe-actions/shared-actions/permission-check@main
+        with:
+          user: ${{ github.actor }}
+          github-repo: ${{ github.repository }}
+          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+
+  single-cicd-test:
+    needs: check-permission
+    runs-on: ubuntu-latest
+    steps:
+      # only one input can be provided at a time
+      - name: '[Prep 1] Validate inputs'
+        id: validate-inputs
+        run: |
+          INPUT_COUNT=0
+          if [ "${{ github.event.inputs.convenience-pax }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install.js
+          fi
+          if [ "${{ github.event.inputs.smpe-fmid }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-fmid.js
+          fi
+          if [ "${{ github.event.inputs.smpe-ptf }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-ptf.js
+          fi
+          if [ "${{ github.event.inputs.test-docker }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-docker.js
+          fi
+          if [ "${{ github.event.inputs.test-ext }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-ext.js
+          fi
+          if [ "${{ github.event.inputs.test-keyring }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/extended/keyring.js
+          fi
+          if [ "${{ github.event.inputs.install-smpe-ptf-2-times }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/extended/ptf/install-ptf-two-times.js
+          fi
+          if [ "${{ github.event.inputs.enable-verify-certificates }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/verify-certificates.js
+          fi
+          if [ "${{ github.event.inputs.enable-nonstrict-verify-certificates }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/nonstrict-verify-certificates.js
+          fi
+          if [ "${{ github.event.inputs.external-certificate }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/external-certificate.js
+          fi
+          if [ "${{ github.event.inputs.enabled-verify-certificates-with-external-certificate }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/verify-external-certificate.js
+          fi
+          if [ "${{ github.event.inputs.enabled-nonstrict-verify-certificate-with-external-certificate }}" == "true" ] ; then
+            INPUT_COUNT=$((INPUT_COUNT+1))
+            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/nonstrict-verify-external-certificate.js
+          fi
+
+          if [ "$INPUT_COUNT" != "1" ]; then
+            echo "You can only set one test configuration at a time"
+            exit 1
+          fi
+
+      - run: echo ${{ steps.validate-inputs.outputs.TEST_FILE }}
+
+
+
+
