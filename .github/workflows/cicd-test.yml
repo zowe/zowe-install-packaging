@@ -1,43 +1,40 @@
-name: Zowe CICD Integration Tests (Single)
+name: Zowe CICD Integration Tests
 on:
   workflow_dispatch:
     inputs:
-      convenience-pax:
-        description: convenience-pax
+      test-scope:
+        description: 'Test Scope: (specify test file path); comma separated if multiple'
+        required: true
+      test-server:
+        description: 'Test Server: (choose from RACF, ACF2 or TSS); comma separated if multiple'
+        required: true
+      zowe-artifactory-pattern:
+        description: 'Zowe Artifactory Pattern: (usually leave as-is unless specify static path)'
+        required: true
+        default: 'libs-snapshot-local/org/zowe/*{branch-name}*.pax'
+      zowe-cli-artifactory-pattern:
+        description: 'Zowe CLI Artifactory Pattern:'
+        required: true
+        default: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip'
+      extension-list:
+        description: 'Extension List:'
         required: false
-      smpe-fmid:
-        description: smpe-fmid
+      zowe-docker-artifactory-build:
+        description: 'Zowe Docker Artifactory Build:'
         required: false
-      smpe-ptf:
-        description: smpe-ptf
-        required: false
-      test-docker: 
-        description: test-docker
-        required: false
-      test-ext: 
-        description: test-ext
-        required: false
-      test-keyring: 
-        description: test-keyring
-        required: false
-      install-smpe-ptf-2-times: 
-        description: install-smpe-ptf-2-times
-        required: false
-      enable-verify-certificates: 
-        description: enable-verify-certificates
-        required: false
-      enable-nonstrict-verify-certificates: 
-        description: enable-nonstrict-verify-certificates
-        required: false
-      external-certificate:
-        description: external-certificate
-        required: false 
-      enabled-verify-certificates-with-external-certificate: 
-        description: enabled-verify-certificates-with-external-certificate
-        required: false
-      enabled-nonstrict-verify-certificate-with-external-certificate: 
-        description: enabled-nonstrict-verify-certificate-with-external-certificate
-        required: false
+
+# create a new branch to overwrite following defaults if necessary
+env: 
+  # constants
+  INSTALL_TEST_PATH: tests/installation
+  SANITY_TEST_PATH: tests/sanity
+
+  # can be overwritten
+  ZOS_NODE_VERSION: v12.18.4
+  # ZOS_NODE_VERSION more to choose from: v8.16.0, v8.17.0, v12.13.0, v12.16.1, v14.15.1
+  CLIENT_NODE_VERSION: v12.18.3
+  INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
+  SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
       
 jobs:
   check-permission:
@@ -52,70 +49,72 @@ jobs:
           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
           github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}
 
-  single-cicd-test:
+  cicd-test:
     needs: check-permission
     runs-on: ubuntu-latest
     steps:
-      # only one input can be provided at a time
-      - name: '[Prep 1] Validate inputs'
-        id: validate-inputs
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+
+      - name: '[Prep 2] Cache node modules'
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/.npm
+            ~/.nvm/.cache
+            ~/.nvm/versions
+          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-cache-node-modules-
+      
+      - name: '[Prep 3] Setup jFrog CLI'
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          
+      - name: '[Prep 4] Prepare workflow'
+        uses: zowe-actions/shared-actions/prepare-workflow@main
+        with:
+          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+          github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+
+      - name: '[Prep 5] Additional Prep work'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            core.exportVariable('NODE_HOME_PATTERN', '/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x')
+            var zoweArtifactoryPattern=${{ github.event.inputs.zowe-artifactory-pattern }}
+            var currentBranch=${{ env.CURRENT_BRANCH }}.toLowerCase()
+
+            if (zoweArtifactoryPattern.includes('{branch-name}') {
+              zoweArtifactoryPattern=zoweArtifactoryPattern.replace('{branch-name}', currentBranch)
+              core.exportVariable('ZOWE_ARTIFACTORY_PATTERN_FINAL', zoweArtifactoryPattern)
+            }
+
+      - name: '[Setup 1] Project Setup 1'
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
         run: |
-          INPUT_COUNT=0
-          if [ "${{ github.event.inputs.convenience-pax }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install.js
-          fi
-          if [ "${{ github.event.inputs.smpe-fmid }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-fmid.js
-          fi
-          if [ "${{ github.event.inputs.smpe-ptf }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-ptf.js
-          fi
-          if [ "${{ github.event.inputs.test-docker }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-docker.js
-          fi
-          if [ "${{ github.event.inputs.test-ext }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/basic/install-ext.js
-          fi
-          if [ "${{ github.event.inputs.test-keyring }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/extended/keyring.js
-          fi
-          if [ "${{ github.event.inputs.install-smpe-ptf-2-times }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/extended/ptf/install-ptf-two-times.js
-          fi
-          if [ "${{ github.event.inputs.enable-verify-certificates }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/verify-certificates.js
-          fi
-          if [ "${{ github.event.inputs.enable-nonstrict-verify-certificates }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/nonstrict-verify-certificates.js
-          fi
-          if [ "${{ github.event.inputs.external-certificate }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/external-certificate.js
-          fi
-          if [ "${{ github.event.inputs.enabled-verify-certificates-with-external-certificate }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/verify-external-certificate.js
-          fi
-          if [ "${{ github.event.inputs.enabled-nonstrict-verify-certificate-with-external-certificate }}" == "true" ] ; then
-            INPUT_COUNT=$((INPUT_COUNT+1))
-            echo ::set-output name=TEST_FILE::dist/__tests__/extended/certificates/nonstrict-verify-external-certificate.js
-          fi
+          npm ci
+          npm run build
+      
+      - name: '[Setup 2] Project Setup 2'
+        working-directory: ${{ env.SANITY_TEST_PATH }}
+        run: |
+          npm ci
 
-          if [ "$INPUT_COUNT" != "1" ]; then
-            echo "You can only set one test configuration at a time"
-            exit 1
-          fi
-
-      - run: echo ${{ steps.validate-inputs.outputs.TEST_FILE }}
+      - name: '[Lint 1] Lint 1'
+        timeout-minutes: 2
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: |
+          npm run lint
+      
+      - name: '[Lint 2] Lint 2'
+        timeout-minutes: 2
+        working-directory: ${{ env.SANITY_TEST_PATH }}
+        run: |
+          npm run lint
 
 
 
