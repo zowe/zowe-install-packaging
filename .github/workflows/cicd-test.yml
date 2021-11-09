@@ -1,0 +1,50 @@
+name: Zowe CICD Integration Tests
+on:
+  workflow_dispatch:
+    inputs: 
+      test-scope:
+        description: 'Test Scope: (specify test file path); comma separated if multiple'
+        required: true
+      test-server:
+        description: 'Test Server: (choose from RACF, ACF2 or TSS); comma separated if multiple'
+        required: true
+      zowe-artifactory-pattern:
+        description: 'Zowe Artifactory Pattern: (usually leave as-is unless specify static path)'
+        required: true
+        default: 'libs-snapshot-local/org/zowe/*{branch-name}*.pax'
+      zowe-cli-artifactory-pattern:
+        description: 'Zowe CLI Artifactory Pattern:'
+        required: true
+        default: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip'
+      extension-list:
+        description: 'Extension List:'
+        required: false
+      zowe-docker-artifactory-build:
+        description: 'Zowe Docker Artifactory Build:'
+        required: false
+
+# create a new branch to overwrite following defaults if necessary
+env: 
+  # constants
+  INSTALL_TEST_PATH: tests/installation
+  SANITY_TEST_PATH: tests/sanity
+
+  # can be overwritten
+  ZOS_NODE_VERSION: v12.18.4
+  # ZOS_NODE_VERSION more to choose from: v8.16.0, v8.17.0, v12.13.0, v12.16.1, v14.15.1
+  CLIENT_NODE_VERSION: v12.18.3
+  INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
+  SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
+      
+jobs:
+  check-permission:
+    runs-on: ubuntu-latest
+    steps:
+      # this action will fail the whole workflow if permission check fails
+      - name: check permission
+        uses: zowe-actions/shared-actions/permission-check@main
+        with:
+          user: ${{ github.actor }}
+          github-repo: ${{ github.repository }}
+          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}
