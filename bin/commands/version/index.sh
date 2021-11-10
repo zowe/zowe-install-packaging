@@ -16,16 +16,15 @@ if [ -f "${ZOWE_RUNTIME_DIRECTORY}/manifest.json" ]; then
 elif [ -f "${ZOWE_RUNTIME_DIRECTORY}/manifest.json.template" ]; then
   manifest="${ZOWE_RUNTIME_DIRECTORY}/manifest.json.template"
 else
-  >&2 echo "Error: failed to find Zowe manifest.json"
-  exit 1
+  print_error_and_exit "Error: failed to find Zowe manifest.json"
 fi
 
 ZOWE_VERSION=$(shell_read_json_config "${manifest}" version version)
 # $(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')
-echo "Zowe v${ZOWE_VERSION}"
+print_message "Zowe v${ZOWE_VERSION}"
 if [ "${ZWECLI_LOGLEVEL}" = "debug" -o "${ZWECLI_LOGLEVEL}" = "trace" ]; then
-  echo "build and hash: $(shell_read_json_config "${manifest}" 'build' 'branch')#$(shell_read_json_config "${manifest}" 'build' 'number') ($(shell_read_json_config "${manifest}" 'build' 'commitHash'))"
+  print_message "build and hash: $(shell_read_json_config "${manifest}" 'build' 'branch')#$(shell_read_json_config "${manifest}" 'build' 'number') ($(shell_read_json_config "${manifest}" 'build' 'commitHash'))"
 fi
 if [ "${ZWECLI_LOGLEVEL}" = "trace" ]; then
-  echo "Zowe directory: ${ZOWE_RUNTIME_DIRECTORY}"
+  print_message "Zowe directory: ${ZOWE_RUNTIME_DIRECTORY}"
 fi

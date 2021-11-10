@@ -31,12 +31,11 @@ zwecli_load_parameters_definition() {
       fi
     else
       if [ -z "${last_command}" ]; then
-        >&2 echo "Error: invalid command \"${command}\""
+        print_error "Error: invalid command \"${command}\""
       else
-        >&2 echo "Error: invalid sub-command \"${command}\" of command \"${last_command}\""
+        print_error "Error: invalid sub-command \"${command}\" of command \"${last_command}\""
       fi
-      >&2 echo "Try --help to get information about what command(s) are available."
-      exit 1
+      print_error_and_exit "Try --help to get information about what command(s) are available."
     fi
   done
 }
@@ -92,6 +91,27 @@ zwecli_process_loglevel() {
   fi
   if [ "${ZWECLI_PARAMETER_TRACE}" = "true" ]; then
     ZWECLI_LOGLEVEL=trace
+  fi
+}
+
+zwecli_process_logfile() {
+  if [ -n "${ZWECLI_PARAMETER_LOG}" ]; then
+    log_prefix=zwe
+    if [ -n "${ZWECLI_COMMANDS_LIST}" ]; then
+      log_prefix=zwe-$(echo "${ZWECLI_COMMANDS_LIST}" | trim | sed 's/ /-/g')
+    fi
+    prepare_log_file "${ZWECLI_PARAMETER_LOG}" "${log_prefix}"
+
+    # write initial information
+    print_message "Zowe Server CLI: zwe ${ZWECLI_COMMANDS_LIST}" "log"
+    print_message "- timestamp: $(date +"%Y-%m-%d %H:%M:%S")" "log"
+    print_message "- parameters:" "log"
+    for param in ${ZWECLI_PARAMETERS_LIST}; do
+      print_message "  * ${param}: $(zwecli_get_parameter_value "${param}")" "log"
+    done
+    print_message "" "log"
+echo
+
   fi
 }
 
@@ -226,9 +246,8 @@ EOF
   for param in ${required_params}; do
     val=$(zwecli_get_parameter_value "${param}")
     if [ -z "${val}" ]; then
-      >&2 echo "Error: ${param} parameter is required"
-      >&2 echo "Try --help to get information about how to use this command."
-      exit 1
+      print_error "Error: ${param} parameter is required"
+      print_error_and_exit "Try --help to get information about how to use this command."
     fi
   done
 }
@@ -239,9 +258,8 @@ zwecli_process_command() {
     . "${command_path}/index.sh"
   else
     if [ -n "${ZWECLI_COMMANDS_LIST}" ]; then
-      >&2 echo "Error: no handler defined for command \"${ZWECLI_COMMANDS_LIST}\"."
+      print_error "Error: no handler defined for command \"${ZWECLI_COMMANDS_LIST}\"."
     fi
-    >&2 echo "Try --help to get information about how to use this command."
-    exit 2
+    print_error_and_exit "Try --help to get information about how to use this command." 2
   fi
 }

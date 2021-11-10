@@ -16,6 +16,7 @@ if [ -z "${ZOWE_RUNTIME_DIRECTORY}" ]; then
   exit 1
 fi
 
+. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/common.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/fs.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/http.sh"
 . "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/java.sh"

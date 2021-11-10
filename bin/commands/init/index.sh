@@ -11,24 +11,15 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-echo "I'm the init command"
-echo
+print_message "I'm the init command"
+print_message
 
-echo "-----------------"
-echo "Parameters passed:"
-for param in ${ZWECLI_PARAMETERS_LIST}; do
-  echo "- ${param}: $(zwecli_get_parameter_value "${param}")"
-done
-echo
-
-echo "-----------------"
+print_message "-----------------"
 if [ -z "${ZWECLI_PARAMETER_CONFIG}" ]; then
-  >&2 echo "Error: config file is required."
-  exit 1
+  print_error_and_exit "Error: config file is required."
 elif [ ! -f "${ZWECLI_PARAMETER_CONFIG}" ]; then
-  >&2 echo "Error: config file does not exist."
-  exit 1
+  print_error_and_exit "Error: config file does not exist."
 else
-  echo "Content of ${ZWECLI_PARAMETER_CONFIG}"
+  print_message "Content of ${ZWECLI_PARAMETER_CONFIG}"
   cat "${ZWECLI_PARAMETER_CONFIG}"
 fi

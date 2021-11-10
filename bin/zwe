@@ -59,6 +59,8 @@ done
 zwecli_process_loglevel
 # if it's in help mode, the script will exit with code 99
 zwecli_process_help
+# prepare log file if directory specified
+zwecli_process_logfile
 # validate parameter before execute command
 zwecli_validate_parameters
 # handle command
