@@ -72,26 +72,24 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v2
         env:
           JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
+      - name: '[Prep 4] Validate package.json'
+        uses: zowe-actions/shared-actions/validate-package-json@main
           
-      - name: '[Prep 4] Prepare workflow'
+      - name: '[Prep 5] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
         with:
           github-user: ${{ secrets.ZOWE_ROBOT_USER }}
           github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
 
-      - name: '[Prep 5] Additional Prep work'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            core.exportVariable('NODE_HOME_PATTERN', '/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x')
-            var zoweArtifactoryPattern=${{ github.event.inputs.zowe-artifactory-pattern }}
-            var currentBranch=${{ env.CURRENT_BRANCH }}.toLowerCase()
-
-            if (zoweArtifactoryPattern.includes('{branch-name}') {
-              zoweArtifactoryPattern=zoweArtifactoryPattern.replace('{branch-name}', currentBranch)
-              core.exportVariable('ZOWE_ARTIFACTORY_PATTERN_FINAL', zoweArtifactoryPattern)
-            }
+      - name: '[Prep 6] Additional Prep work'
+        run: |
+          echo NODE_HOME_PATTERN="/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x" >> $GITHUB_ENV
+          CURRENT_BRANCH_NEW=$(echo ${{ env.CURRENT_BRANCH }} | tr '[:upper:]' '[:lower:]' | sed "s#\/#-#g")
+          if [[ "${{ github.event.inputs.zowe-artifactory-pattern }}" == *"{branch-name}"* ]]; then
+            echo ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "${{ github.event.inputs.zowe-artifactory-pattern }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g") >> $GITHUB_ENV
+          fi
 
       - name: '[Setup 1] Project Setup 1'
         working-directory: ${{ env.INSTALL_TEST_PATH }}
@@ -104,17 +102,17 @@ jobs:
         run: |
           npm ci
 
-      - name: '[Lint 1] Lint 1'
-        timeout-minutes: 2
-        working-directory: ${{ env.INSTALL_TEST_PATH }}
-        run: |
-          npm run lint
+      # - name: '[Lint 1] Lint 1'
+      #   timeout-minutes: 2
+      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
+      #   run: |
+      #     npm run lint
       
-      - name: '[Lint 2] Lint 2'
-        timeout-minutes: 2
-        working-directory: ${{ env.SANITY_TEST_PATH }}
-        run: |
-          npm run lint
+      # - name: '[Lint 2] Lint 2'
+      #   timeout-minutes: 2
+      #   working-directory: ${{ env.SANITY_TEST_PATH }}
+      #   run: |
+      #     npm run lint
 
 
 
