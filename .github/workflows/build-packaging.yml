@@ -77,7 +77,10 @@ jobs:
           echo "Current manifest.json is:"
           cat manifest.json
 
-      - name: '[Prep 4] Prepare workflow'
+      - name: '[Prep 4] Validate package.json'
+        uses: zowe-actions/shared-actions/validate-package-json@main
+
+      - name: '[Prep 5] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
         with:
           package-name: org.zowe
