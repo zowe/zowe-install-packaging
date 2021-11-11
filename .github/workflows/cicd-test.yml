@@ -161,7 +161,7 @@ jobs:
       - name: '[Test] Test starts from here'
         timeout-minutes: 360
         working-directory: ${{ env.INSTALL_TEST_PATH }}
-        run: npm test -- --testPathPattern --detectOpenHandles ${{ github.event.inputs.test-scope }} || npm run merge-reports
+        run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/${{ github.event.inputs.test-scope }} || npm run merge-reports
         env:
           ANSIBLE_FORCE_COLOR: true
           TEST_SERVER: marist-4
