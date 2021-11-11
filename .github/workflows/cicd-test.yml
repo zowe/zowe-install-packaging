@@ -66,10 +66,11 @@ jobs:
         MATRIX_JSON_STRING="{\"include\":["
         for testfile in $(echo "${{ github.event.inputs.test-scope }}" | sed "s/,/ /g")
         do
+          # sanitize whitespace
+          testfile=$(echo "$testfile" | xargs)
           for testserver in $(echo "${{ github.event.inputs.test-server }}" | sed "s/,/ /g")
           do
             # sanitize whitespace
-            testfile=$(echo "$testfile" | xargs)
             testserver=$(echo "$testserver" | xargs)
             MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$testfile\",\"env\":\"MARIST_$testserver\"},"
           done
