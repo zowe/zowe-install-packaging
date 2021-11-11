@@ -91,55 +91,56 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
     environment: ${{ matrix.env }}
+    concurrency: ${{ matrix.env }}
     steps:
-      - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+      # - name: '[Prep 1] Checkout'
+      #   uses: actions/checkout@v2
 
-      - name: '[Prep 2] Cache node modules'
-        uses: actions/cache@v2
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: |
-            ~/.npm
-            ~/.nvm/.cache
-            ~/.nvm/versions
-          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-cache-node-modules-
+      # - name: '[Prep 2] Cache node modules'
+      #   uses: actions/cache@v2
+      #   with:
+      #     # npm cache files are stored in `~/.npm` on Linux/macOS
+      #     path: |
+      #       ~/.npm
+      #       ~/.nvm/.cache
+      #       ~/.nvm/versions
+      #     key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-build-cache-node-modules-
       
-      - name: '[Prep 3] Setup jFrog CLI'
-        uses: jfrog/setup-jfrog-cli@v2
-        env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      # - name: '[Prep 3] Setup jFrog CLI'
+      #   uses: jfrog/setup-jfrog-cli@v2
+      #   env:
+      #     JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - name: '[Prep 4] Validate package.json'
-        uses: zowe-actions/shared-actions/validate-package-json@main
+      # - name: '[Prep 4] Validate package.json'
+      #   uses: zowe-actions/shared-actions/validate-package-json@main
           
-      - name: '[Prep 5] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
-        with:
-          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-          github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+      # - name: '[Prep 5] Prepare workflow'
+      #   uses: zowe-actions/shared-actions/prepare-workflow@main
+      #   with:
+      #     github-user: ${{ secrets.ZOWE_ROBOT_USER }}
+      #     github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+      #     github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
 
-      - name: '[Prep 6] Additional Prep work'
-        run: |
-          echo NODE_HOME_PATTERN="/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x" >> $GITHUB_ENV
-          CURRENT_BRANCH_NEW=$(echo ${{ env.CURRENT_BRANCH }} | tr '[:upper:]' '[:lower:]' | sed "s#\/#-#g")
-          if [[ "${{ github.event.inputs.zowe-artifactory-pattern }}" == *"{branch-name}"* ]]; then
-            echo ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "${{ github.event.inputs.zowe-artifactory-pattern }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g") >> $GITHUB_ENV
-          fi
+      # - name: '[Prep 6] Additional Prep work'
+      #   run: |
+      #     echo NODE_HOME_PATTERN="/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x" >> $GITHUB_ENV
+      #     CURRENT_BRANCH_NEW=$(echo ${{ env.CURRENT_BRANCH }} | tr '[:upper:]' '[:lower:]' | sed "s#\/#-#g")
+      #     if [[ "${{ github.event.inputs.zowe-artifactory-pattern }}" == *"{branch-name}"* ]]; then
+      #       echo ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "${{ github.event.inputs.zowe-artifactory-pattern }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g") >> $GITHUB_ENV
+      #     fi
 
-      - name: '[Setup 1] Project Setup 1'
-        working-directory: ${{ env.INSTALL_TEST_PATH }}
-        run: |
-          npm ci
-          npm run build
+      # - name: '[Setup 1] Project Setup 1'
+      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
+      #   run: |
+      #     npm ci
+      #     npm run build
       
-      - name: '[Setup 2] Project Setup 2'
-        working-directory: ${{ env.SANITY_TEST_PATH }}
-        run: |
-          npm ci
+      # - name: '[Setup 2] Project Setup 2'
+      #   working-directory: ${{ env.SANITY_TEST_PATH }}
+      #   run: |
+      #     npm ci
 
       # - name: '[Lint 1] Lint 1'
       #   timeout-minutes: 2
@@ -153,44 +154,47 @@ jobs:
       #   run: |
       #     npm run lint
 
-      - name: '[Pre-Download 1] Determine if we need to pick latest artifact'
-        id: process-extra-options-1
-        run: |
-          if [[ "${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}" == *'*'* ]] ; then
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true --sort-by=created --sort-order=desc --limit=1
-          else
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true
-          fi
+      # - name: '[Pre-Download 1] Determine if we need to pick latest artifact'
+      #   id: process-extra-options-1
+      #   run: |
+      #     if [[ "${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}" == *'*'* ]] ; then
+      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true --sort-by=created --sort-order=desc --limit=1
+      #     else
+      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true
+      #     fi
 
-      - name: '[Download 1] Download zowe.pax'
-        uses: zowe-actions/shared-actions/jfrog-download@main
-        with:
-          source-path-or-pattern: ${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}
-          default-target-path: ${{ runner.temp }}/zowe/
-          extra-options: ${{ steps.process-extra-options-1.outputs.EXTRA_OPTIONS }}
-          expected-count: 1
+      # - name: '[Download 1] Download zowe.pax'
+      #   uses: zowe-actions/shared-actions/jfrog-download@main
+      #   with:
+      #     source-path-or-pattern: ${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}
+      #     default-target-path: ${{ runner.temp }}/zowe/
+      #     extra-options: ${{ steps.process-extra-options-1.outputs.EXTRA_OPTIONS }}
+      #     expected-count: 1
 
-      - name: '[Pre-Download 2] Determine if we need to pick latest artifact'
-        id: process-extra-options-2
-        run: |
-          if [[ "${{ github.event.inputs.zowe-cli-artifactory-pattern }}" == *'*'* ]] ; then
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true --sort-by=created --sort-order=desc --limit=1
-          else
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true
-          fi
+      # - name: '[Pre-Download 2] Determine if we need to pick latest artifact'
+      #   id: process-extra-options-2
+      #   run: |
+      #     if [[ "${{ github.event.inputs.zowe-cli-artifactory-pattern }}" == *'*'* ]] ; then
+      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true --sort-by=created --sort-order=desc --limit=1
+      #     else
+      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true
+      #     fi
       
-      - name: '[Download 2] Download cli package'
-        uses: zowe-actions/shared-actions/jfrog-download@main
-        with:
-          source-path-or-pattern: ${{ github.event.inputs.zowe-cli-artifactory-pattern }}
-          default-target-path: ${{ runner.temp }}/cli/
-          extra-options: ${{ steps.process-extra-options-2.outputs.EXTRA_OPTIONS }}
-          expected-count: 1
+      # - name: '[Download 2] Download cli package'
+      #   uses: zowe-actions/shared-actions/jfrog-download@main
+      #   with:
+      #     source-path-or-pattern: ${{ github.event.inputs.zowe-cli-artifactory-pattern }}
+      #     default-target-path: ${{ runner.temp }}/cli/
+      #     extra-options: ${{ steps.process-extra-options-2.outputs.EXTRA_OPTIONS }}
+      #     expected-count: 1
 
-      - name: '[Install] Install CLI'
-        timeout-minutes: 10
-        working-directory: ${{ runner.temp }}/cli
-        run: npm install -g zowe-cli*.tgz
+      # - name: '[Install] Install CLI'
+      #   timeout-minutes: 10
+      #   working-directory: ${{ runner.temp }}/cli
+      #   run: npm install -g zowe-cli*.tgz
+
+      - name: pretend I am running test now
+        run: sleep 60
 
       # - name: '[Test Prep] Additional command to run to prepare for test'
       #   id: more-test-prep
