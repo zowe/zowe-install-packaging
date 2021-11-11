@@ -146,7 +146,7 @@ jobs:
           pax-name: zowe
           pax-options: '-o saveext'
           pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
-          pax-ssh-password: ${{ secrets.SSH_MARIST_PASSWORD }}
+          pax-ssh-password: ${{ secrets.SSH_MARIST_RACF_PASSWORD  }}
           keep-temp-folders: ${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}
           extra-files: ${{ steps.pax-prep.outputs.EXTRA_FILES }}
           extra-environment-vars: |
