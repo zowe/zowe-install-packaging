@@ -140,7 +140,7 @@ jobs:
             echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true
           fi
       
-      - name: '[Download 1] Download cli package'
+      - name: '[Download 2] Download cli package'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ github.event.inputs.zowe-cli-artifactory-pattern }}
@@ -148,6 +148,9 @@ jobs:
           extra-options: ${{ steps.process-extra-options-2.outputs.EXTRA_OPTIONS }}
           expected-count: 1
 
-
+      - name: '[Install] Install CLI'
+        timeout-minutes: 10
+        working-directory: ${{ runner.temp }}/cli
+        run: npm install -g zowe-cli*.tgz
 
 
