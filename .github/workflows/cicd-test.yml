@@ -114,6 +114,40 @@ jobs:
       #   run: |
       #     npm run lint
 
+      - name: '[Pre-Download 1] Determine if we need to pick latest artifact'
+        id: process-extra-options-1
+        run: |
+          if [[ "${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}" == *'*'* ]] ; then
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true --sort-by=created --sort-order=desc --limit=1
+          else
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true
+          fi
+
+      - name: '[Download 1] Download zowe.pax'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}
+          default-target-path: ${{ runner.temp }}/zowe/
+          extra-options: ${{ steps.process-extra-options-1.outputs.EXTRA_OPTIONS }}
+          expected-count: 1
+
+      - name: '[Pre-Download 2] Determine if we need to pick latest artifact'
+        id: process-extra-options-2
+        run: |
+          if [[ "${{ github.event.inputs.zowe-cli-artifactory-pattern }}" == *'*'* ]] ; then
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true --sort-by=created --sort-order=desc --limit=1
+          else
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true
+          fi
+      
+      - name: '[Download 1] Download cli package'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ github.event.inputs.zowe-cli-artifactory-pattern }}
+          default-target-path: ${{ runner.temp }}/cli/
+          extra-options: ${{ steps.process-extra-options-2.outputs.EXTRA_OPTIONS }}
+          expected-count: 1
+
 
 
 
