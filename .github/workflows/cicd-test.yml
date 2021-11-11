@@ -52,6 +52,7 @@ jobs:
   cicd-test:
     needs: check-permission
     runs-on: ubuntu-latest
+    environment: MARIST_RACF
     steps:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
@@ -153,4 +154,25 @@ jobs:
         working-directory: ${{ runner.temp }}/cli
         run: npm install -g zowe-cli*.tgz
 
+      - name: '[Test Prep] Additional command to run to prepare for test'
+        id: more-test-prep
+        run: echo ::set-output name=ZOWEPAXFILE::$(ls -1 ${{ runner.temp }}/zowe/)
 
+      - name: '[Test] Test starts from here'
+        timeout-minutes: 360
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: npm test -- --testPathPattern --detectOpenHandles ${{ github.event.inputs.test-scope }} || npm run merge-reports
+        env:
+          ANSIBLE_FORCE_COLOR: true
+          TEST_SERVER: marist-4
+          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWEPAXFILE}}"
+          ZOWE_DOCKER_URL: ${{ github.event.inputs.zowe-docker-artifactory-build }}
+          EXTENSIONS_LIST: ${{ github.event.inputs.extension-list }}
+          SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
+          DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USERNAME }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          ZOS_NODE_HOME: ${{ env.NODE_HOME_PATTERN }}
+          # ANSIBLE_VERBOSE: -vvv
