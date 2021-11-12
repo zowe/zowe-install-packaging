@@ -18,6 +18,12 @@ export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 export _BPXK_AUTOCVT="ON"
 
+# enforce encoding of stdio/stdout/stderr
+# sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding
+export NODE_STDOUT_CCSID=1047
+export NODE_STDERR_CCSID=1047
+export NODE_STDIN_CCSID=1047
+
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 umask 0002                                       # similar to chmod 755
