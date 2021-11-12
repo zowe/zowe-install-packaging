@@ -83,9 +83,8 @@ jobs:
         uses: zowe-actions/shared-actions/prepare-workflow@main
         with:
           package-name: org.zowe
-          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-          github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+          github-user: ${{ github.actor }}
+          github-email: 'dummy-email@email.com'
           extra-init: |
             const fs = require('fs');
             var mjson = '${{ github.workspace }}/manifest.json';
