@@ -43,8 +43,7 @@ jobs:
         with:
           user: ${{ github.actor }}
           github-repo: ${{ github.repository }}
-          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}      
+          github-token: ${{ secrets.GITHUB_TOKEN }}  
   
   regular-build:
     runs-on: ubuntu-latest
