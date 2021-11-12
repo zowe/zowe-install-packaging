@@ -42,7 +42,7 @@ jobs:
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
-        uses: zowe-actions/shared-actions/permission-check@test-tom
+        uses: zowe-actions/shared-actions/permission-check@test-tom2
         with:
           user: ${{ github.actor }}
           github-repo: ${{ github.repository }}
