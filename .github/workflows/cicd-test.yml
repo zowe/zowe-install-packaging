@@ -42,12 +42,12 @@ jobs:
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
-        uses: zowe-actions/shared-actions/permission-check@main
+        uses: zowe-actions/shared-actions/permission-check@test-tom
         with:
           user: ${{ github.actor }}
           github-repo: ${{ github.repository }}
-          github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-          github-passwd: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
 
   make-matrix:
     runs-on: ubuntu-latest
@@ -91,7 +91,6 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
     environment: ${{ matrix.env }}
-    concurrency: ${{ matrix.env }}
     steps:
       # - name: '[Prep 1] Checkout'
       #   uses: actions/checkout@v2
