@@ -118,9 +118,8 @@ jobs:
       # - name: '[Prep 5] Prepare workflow'
       #   uses: zowe-actions/shared-actions/prepare-workflow@main
       #   with:
-      #     github-user: ${{ secrets.ZOWE_ROBOT_USER }}
-      #     github-password: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-      #     github-email: ${{ secrets.ZOWE_ROBOT_EMAIL }}
+      #     github-user: ${{ github.actor }}
+      #     github-email: 'dummy-email@email.com'
 
       # - name: '[Prep 6] Additional Prep work'
       #   run: |
