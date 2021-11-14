@@ -96,9 +96,22 @@ jobs:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
     environment: ${{ matrix.env }}
     steps:
+      - run: echo LOCK_ID=$(date +%s) >> $GITHUB_ENV
+      
+      - run : echo ${{ github.context.payload.repository.id }}
 
-      - run: |
-          curl -H 'authorization: Bearer ${{ secrets.ZOWE_ROBOT_TOKEN }}' \ -H "Accept: application/vnd.github.v3+json" -X GET https://api.github.com/repositories/144592776/environments/MARIST_RACF/secrets/TEST_RUN_LOCK
+      - run : echo ${{ github.repository.id }}
+
+      - run : echo ${{ github.context.repository.id }}
+
+      - run : echo ${{ github.context }}
+
+      # - uses: zowe-actions/shared-actions/lock-marist@lock-marist
+      #   with:
+      #     repository-id: ${{ github.context.payload.repository.id }}
+      #     github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+      #     lock-id: ${{ env.LOCK_ID }}
+      #     environment: ${{ matrix.env }}
       # - name: '[Prep 1] Checkout'
       #   uses: actions/checkout@v2
 
