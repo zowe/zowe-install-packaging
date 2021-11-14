@@ -94,7 +94,7 @@ jobs:
     steps:
 
       - run: |
-          curl -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \ -H "Accept: application/vnd.github.v3+json" -X GET https://api.github.com/repositories/144592776/environments/MARIST_RACF/secrets
+          curl -H 'authorization: Bearer ${{ secrets.ZOWE_ROBOT_TOKEN }}' \ -H "Accept: application/vnd.github.v3+json" -X GET https://api.github.com/repositories/144592776/environments/MARIST_RACF/secrets
       # - name: '[Prep 1] Checkout'
       #   uses: actions/checkout@v2
 
