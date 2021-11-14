@@ -98,14 +98,12 @@ jobs:
     steps:
       - run: echo LOCK_ID=$(date +%s) >> $GITHUB_ENV
 
-      - run : echo "${{ toJson(github) }}"
-
-      # - uses: zowe-actions/shared-actions/lock-marist@lock-marist
-      #   with:
-      #     repository-id: ${{ github.context.payload.repository.id }}
-      #     github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-      #     lock-id: ${{ env.LOCK_ID }}
-      #     environment: ${{ matrix.env }}
+      - uses: zowe-actions/shared-actions/lock-marist@lock-marist
+        with:
+          repository-id: ${{ github.event.repository.id }}
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          lock-id: ${{ env.LOCK_ID }}
+          environment: ${{ matrix.env }}
       # - name: '[Prep 1] Checkout'
       #   uses: actions/checkout@v2
 
