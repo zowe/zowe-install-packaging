@@ -72,6 +72,10 @@ jobs:
           do
             # sanitize whitespace
             testserver=$(echo "$testserver" | xargs)
+            if [[ "$testserver" != "RACF" ]] && [[ "$testserver" != "ACF2" ]] && [[ "$testserver" != "TSS" ]] ; then
+              echo "input 'test server' must be at exactly 'RACF', 'ACF2' or 'TSS'"
+              exit 1
+            fi
             MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$testfile\",\"env\":\"MARIST_$testserver\"},"
           done
         done
@@ -94,7 +98,7 @@ jobs:
     steps:
 
       - run: |
-          curl -H 'authorization: Bearer ${{ secrets.ZOWE_ROBOT_TOKEN }}' \ -H "Accept: application/vnd.github.v3+json" -X GET https://api.github.com/repositories/144592776/environments/MARIST_RACF/secrets/HAHAHA
+          curl -H 'authorization: Bearer ${{ secrets.ZOWE_ROBOT_TOKEN }}' \ -H "Accept: application/vnd.github.v3+json" -X GET https://api.github.com/repositories/144592776/environments/MARIST_RACF/secrets/TEST_RUN_LOCK
       # - name: '[Prep 1] Checkout'
       #   uses: actions/checkout@v2
 
