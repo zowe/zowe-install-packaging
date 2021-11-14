@@ -97,14 +97,8 @@ jobs:
     environment: ${{ matrix.env }}
     steps:
       - run: echo LOCK_ID=$(date +%s) >> $GITHUB_ENV
-      
-      - run : echo ${{ github.context.payload.repository.id }}
 
-      - run : echo ${{ github.repository.id }}
-
-      - run : echo ${{ github.context.repository.id }}
-
-      - run : echo ${{ github }}
+      - run : echo ${{ toJson(github) }}
 
       # - uses: zowe-actions/shared-actions/lock-marist@lock-marist
       #   with:
