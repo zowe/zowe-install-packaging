@@ -92,6 +92,9 @@ jobs:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
     environment: ${{ matrix.env }}
     steps:
+
+      - run: |
+          curl -u "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" -sS -H "Accept: application/vnd.github.v3+json" -X GET https://api.github.com/repositories/144592776/environments/MARIST_RACF/secrets
       # - name: '[Prep 1] Checkout'
       #   uses: actions/checkout@v2
 
@@ -191,8 +194,8 @@ jobs:
       #   working-directory: ${{ runner.temp }}/cli
       #   run: npm install -g zowe-cli*.tgz
 
-      - name: pretend I am running test now
-        run: sleep 60
+      # - name: pretend I am running test now
+      #   run: sleep 60
 
       # - name: '[Test Prep] Additional command to run to prepare for test'
       #   id: more-test-prep
