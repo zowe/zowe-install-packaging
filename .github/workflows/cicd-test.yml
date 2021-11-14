@@ -100,6 +100,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/lock-marist@lock-marist
         with:
+          what-to-do: lock
           repository-id: ${{ github.event.repository.id }}
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           lock-id: ${{ env.LOCK_ID }}
