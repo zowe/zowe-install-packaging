@@ -52,7 +52,7 @@
       "artifact": "zlux-editor-1.25.0-20211013.181050.pax"
     },
     "org.zowe.zlux.zlux-workflow": {
-      "version": "1.25.0-PR-371",
+      "version": "1.25.0-RC",
       "repository": "libs-snapshot-local",
       "artifact": "zlux-workflow-1.25.0-20211013.180719.pax"
     },
@@ -62,7 +62,7 @@
       "artifact": "zosmf-auth-1.25.0-20211013.180331.pax"
     },
     "org.zowe.zss": {
-      "version": "1.25.0-RC",
+      "version": "1.25.0-PR-371",
       "repository": "libs-snapshot-local",
       "artifact": "zss-1.25.0-rc-80-20211013180138.pax"
     },
