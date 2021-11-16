@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.zlux.ng2desktop.settings",
-  "pluginLocation": "zlux-app-manager/system-apps/system-settings-preferences",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}

@@ -1,4 +1,0 @@
-I, Pavel Jareš (PJ892031) sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: pavel.jares@broadcom.com
-
-ff96f258f774937937d641028a3c0a65cea9870d Merge pull request #2183 from protectors/sanityTestEndpointServices
-f8bc471069c7f61a708a52722f55ee6eb7bfe82b Merge pull request #2183 from protectors/sanityTestEndpointServices

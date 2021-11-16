@@ -1,8 +1,0 @@
-{
-  "plugins": [
-    "org.zowe.terminal.tn3270",
-    "org.zowe.terminal.vt",
-    "org.zowe.explorer-jes",
-    "org.zowe.editor"
-  ]
-}
