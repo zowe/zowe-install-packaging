@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="IBM-1047"?>
+<workflow>
+    <autoTakeOwnership>true</autoTakeOwnership>
+    <workflowInfo>
+        <workflowID scope="none">PTFsZOWE</workflowID>
+        <workflowDefaultName>PTFs for ZOWE</workflowDefaultName>
+        <workflowDescription>Workflow for receive and apply PTFs for ZOWE. </workflowDescription>
+        <workflowVersion>1.0</workflowVersion>
+        <vendor>Broadcom</vendor>
+        <General/>
+    </workflowInfo>
+    <variable name="CSI" scope="instance" visibility="private">
+        <label>CSI</label>
+        <abstract>Data Set Name Prefix</abstract>
+        <description>Enter the prefix for the CSI. Without ending 'CSI', just prefix.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <default>ZOWEPSI.ZOWE.SMPE</default>
+        </string>
+    </variable>
+    <variable name="PTFDATASET" scope="instance" visibility="public">
+        <label>PTFDATASET</label>
+        <abstract>Prefix for dataset with PTFs.</abstract>
+        <description>Provide prefix for dataset name where are PTF located.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+			<default>ZOWEP.AZWE001</default>
+        </string>
+    </variable>
+    <variable name="TARGET" scope="instance" visibility="public">
+        <label>TARGET</label>
+        <abstract>TARGET zone</abstract>
+        <description>Specify the target zone associated with the target libraries in which the SYSMODs are installed.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <minLength>1</minLength>
+            <maxLength>10</maxLength>
+           <default>TZONE</default>
+        </string>
+    </variable>
+    <variable name="DISTRIBUTION" scope="instance" visibility="public">
+        <label>DZONE</label>
+        <abstract>Distribution zone</abstract>
+        <description>Specify the distribution zone associated with the distributed libraries in which the SYSMODs are installed.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <minLength>1</minLength>
+            <maxLength>10</maxLength>
+           <default>DZONE</default>
+        </string>
+    </variable>
+    <variable name="PTF1" scope="instance" visibility="public">
+        <label>PTF1</label>
+        <abstract>Temporary fix 1</abstract>
+        <description>Specify the name of the PTF 1.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <minLength>1</minLength>
+            <maxLength>10</maxLength>
+            <default>UO01992</default>
+        </string>
+    </variable>
+    <variable name="PTF2" scope="instance" visibility="public">
+        <label>PTF2</label>
+        <abstract>Temporary fix 2</abstract>
+        <description>Specify the name of the PTF 2.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <minLength>1</minLength>
+            <maxLength>10</maxLength>
+            <default>UO01993</default>
+        </string>
+    </variable>
+    <step name="DefineVariables" optional="false">
+        <title>Workflow variables</title>
+        <description> Prerequisite for the wf is that ptfs are already downloaded on system. On CA32 datasets with PTFs have prefix: PUBLIC.SMPE.AZWE001 </description>         
+        <variableValue name="CSI" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="TARGET" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="PTFDATASET" scope="instance" noPromptIfSet="false" required="false"/>
+	    <variableValue name="DISTRIBUTION" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="PTF1" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="PTF2" scope="instance" noPromptIfSet="false" required="false"/>
+        <instructions substitution="false"> </instructions>
+        <weight>1</weight>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+    </step>
+        <step name="Increase" optional="false">
+        <title>Increase space on SYSUT1 and SMPWRK6 DDDEFs</title>
+        <description> This step will increase space on SYSUT1 and SMPWRK6 DDDEF work files</description>
+        <instructions substitution="false">This step will increase space. </instructions>
+        <weight>1</weight>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+        <inlineTemplate substitution="true">//SYSU1UPD EXEC PGM=GIMSMP,REGION=0M 
+//SMPCSI   DD DISP=SHR,DSN=ZWE.PSWI.AZWE001.CSI
+//SMPCNTL  DD *                                 
+ SET BOUNDARY(GLOBAL).                          
+ UCLIN.                                         
+ REP DDDEF(SYSUT1)                              
+     CYL SPACE(200,60) UNIT(SYSDA) NEW DELETE . 
+ ENDUCL.                                                   
+SET BOUNDARY(${instance-DISTRIBUTION}).
+ UCLIN.                                                    
+REP DDDEF(SYSUT1)                                          
+    CYL SPACE(200,60) UNIT(SYSDA)       NEW DELETE         
+     .                                                     
+ ENDUCL.                                                   
+SET BOUNDARY(${instance-TARGET}).
+ UCLIN.                                                    
+ REP DDDEF(SYSUT1)                                         
+     CYL SPACE(200,60) UNIT(SYSDA)       NEW DELETE        
+      .
+ ENDUCL.                                                   
+//*	    
+//WRK6UPD  EXEC PGM=GIMSMP,REGION=0M 
+//SMPCSI   DD DISP=SHR,DSN=${instance-CSI}.CSI         
+//SMPCNTL  DD *                              
+SET BOUNDARY(${instance-DISTRIBUTION}). 
+ UCLIN.                                                  
+ REP DDDEF(SMPWRK6)                                      
+     CYL SPACE(100,30) UNIT(SYSDA) NEW DELETE .          
+ ENDUCL.                                                 
+SET BOUNDARY(${instance-TARGET}). 
+ UCLIN. 
+ REP DDDEF(SMPWRK6)
+     CYL SPACE(100,30) UNIT(SYSDA) NEW DELETE .
+ ENDUCL.                                       
+//*
+</inlineTemplate>
+            <submitAs maxRc="0">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+        </template>
+    </step>  
+    <step name="ReceivePTFs" optional="false">
+        <title>Receive PTFs</title>
+        <description> This step will receive both PTFs. </description>
+        <instructions substitution="false">This step will receive both PTFs. </instructions>
+        <weight>1</weight>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+        <inlineTemplate substitution="true">//RECEIVE  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
+//SMPPTFIN DD DISP=SHR,DSN=${instance-PTFDATASET}.${instance-PTF1}
+//         DD DISP=SHR,DSN=${instance-PTFDATASET}.${instance-PTF2}
+//SMPCNTL  DD *
+   SET BOUNDARY(GLOBAL) .
+   RECEIVE SELECT(
+     ${instance-PTF1}
+     ${instance-PTF2}
+   ) SYSMODS LIST .
+//*	    </inlineTemplate>
+            <submitAs maxRc="0">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+        </template>
+    </step>
+    <step name="ApplyCheck" optional="true">
+        <title>Apply Check</title>
+        <description/>
+        <instructions substitution="false">Only check before apply. If the Return Code is CC 0004, it means HOLDDATA were bypassed.</instructions>
+        <weight>1</weight>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
+//SMPCNTL  DD *
+   SET BOUNDARY(${instance-TARGET}) .
+   APPLY SELECT(
+     ${instance-PTF1}
+     ${instance-PTF2}
+   )
+   CHECK
+   BYPASS(HOLDSYS,HOLDERROR)
+   REDO COMPRESS(ALL) .
+//*     </inlineTemplate>
+            <submitAs maxRc="04">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+        </template>
+    </step>
+    <step name="ApplyPTFs" optional="false">
+        <title>Apply PTFs</title>
+        <description/>
+        <instructions substitution="false">Apply PTFs. If the Return Code is CC 0004, it means HOLDDATA were bypassed.</instructions>
+        <weight>1</weight>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
+//SMPCNTL  DD *
+   SET BOUNDARY(${instance-TARGET}) .
+   APPLY SELECT(
+     ${instance-PTF1}
+     ${instance-PTF2}
+   )
+    BYPASS(HOLDSYS,HOLDERROR)
+    REDO COMPRESS(ALL) .
+//*     </inlineTemplate>
+            <submitAs maxRc="04">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+        </template>
+    </step>
+    <step name="AcceptPTFs" optional="false">
+        <title>Accept PTFs</title>
+        <description/>
+        <instructions substitution="false">Accept PTFs. If the Return Code is CC 0004, it means HOLDDATA were bypassed.</instructions>
+        <weight>1</weight>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
+//SMPCNTL  DD *
+   SET BOUNDARY(${instance-DISTRIBUTION}) .
+   ACCEPT SELECT(
+     ${instance-PTF1}
+     ${instance-PTF2}
+   ) 
+     REDO COMPRESS(ALL) 
+     BYPASS(HOLDSYS,HOLDERROR).
+//*     </inlineTemplate>
+            <submitAs maxRc="04">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+        </template>
+    </step>
+</workflow>

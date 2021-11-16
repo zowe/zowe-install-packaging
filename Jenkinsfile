@@ -28,6 +28,11 @@ node('zowe-jenkins-agent-dind-wdc') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_PSWI',
+      description: 'If we want to build Portable Software Instance.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'BUILD_DOCKER',
       description: 'If we want to build docker image.',
       defaultValue: false
@@ -177,6 +182,30 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/smpe-build-logs.pax.Z',
       '.pax/AZWE*'
     ]
+  )
+  
+  pipeline.createStage(
+    name: "Build PSWI",
+    timeout: [ time: 60, unit: 'MINUTES' ],
+    isSkippable: true,
+     environments        : [
+            'VERSION'    : pipeline.getVersion()
+          ],
+    showExecute: {
+      return params.BUILD_PSWI
+    },
+    stage : {
+      withCredentials([
+          usernamePassword(
+            credentialsId: 'zzow03-ad2',
+            usernameVariable: 'ZOSMF_USER',
+            passwordVariable: 'ZOSMF_PASS'
+          )
+        ])
+      if (params.BUILD_PSWI) {
+      sh "cd PSWI && chmod +x PSWI-marist.sh && ./PSWI-marist.sh" 
+      }
+    }
   )
   
   pipeline.createStage(
