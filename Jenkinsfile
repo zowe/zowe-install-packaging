@@ -188,22 +188,23 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     name: "Build PSWI",
     timeout: [ time: 60, unit: 'MINUTES' ],
     isSkippable: true,
-     environments        : [
+    environments: [
             'VERSION'    : pipeline.getVersion()
           ],
     showExecute: {
       return params.BUILD_PSWI
     },
     stage : {
+      if (params.BUILD_PSWI) {
       withCredentials([
           usernamePassword(
             credentialsId: 'zzow03-ad2',
             usernameVariable: 'ZOSMF_USER',
             passwordVariable: 'ZOSMF_PASS'
           )
-        ])
-      if (params.BUILD_PSWI) {
+        ]){
       sh "cd PSWI && chmod +x PSWI-marist.sh && ./PSWI-marist.sh" 
+        }
       }
     }
   )
