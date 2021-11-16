@@ -20,7 +20,7 @@ ACTION_ZOWE_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${ZOWE_ZFS}"
 # JSONs  
 UNMOUNT_ZFS_JSON='{"action":"unmount"}'
 
-function check_response {
+check_response() {
   RESP=$1
   RESPCODE=$2
   

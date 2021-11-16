@@ -33,7 +33,7 @@ WORKFLOW_DSN_URL="${BASE_URL}/zosmf/restfiles/ds/${WORKFLOW_DSN}"
 UNMOUNT_ZFS_JSON='{"action":"unmount"}'
 
 
-function check_response {
+check_response() {
   RESP=$1
   RESPCODE=$2
   

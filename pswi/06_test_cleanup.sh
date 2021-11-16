@@ -35,7 +35,7 @@ WORK_ACTION_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${TMP_ZFS}"
 UNMOUNT_ZFS_JSON='{"action":"unmount"}'
 
 
-function check_response {
+check_response() {
   RESP=$1
   RESPCODE=$2
   
