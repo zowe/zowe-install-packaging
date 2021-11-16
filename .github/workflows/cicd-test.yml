@@ -132,7 +132,7 @@ jobs:
       - uses: zowe-actions/shared-actions/lock-marist@lock-marist
         with:
           what-to-do: lock
-          #repository-id: ${{ github.event.repository.id }}
+          repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-id: ${{ github.run_id }}
           marist-server: ${{ env.TEST_SERVER }}
@@ -244,7 +244,7 @@ jobs:
         if: always()
         with:
           what-to-do: unlock
-          #repository-id: ${{ github.event.repository.id }}
+          repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-id: ${{ github.run_id }}
           marist-server: ${{ env.TEST_SERVER }}
