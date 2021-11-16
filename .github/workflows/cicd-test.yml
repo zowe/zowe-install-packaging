@@ -2,11 +2,8 @@ name: Zowe CICD Integration Tests
 on:
   workflow_dispatch:
     inputs:
-      test-scope:
-        description: 'Test Scope: (specify test file path); comma separated if multiple'
-        required: true
-      test-server:
-        description: 'Test Server: (choose from RACF, ACF2 or TSS); comma separated if multiple'
+      test-file-server:
+        description: 'Test file and on which server (colon separated if multiple). eg. tests/file1.js(server1,server2);tests/file2.js(server2)'
         required: true
       zowe-artifactory-pattern:
         description: 'Zowe Artifactory Pattern: (usually leave as-is unless specify static path)'
@@ -48,35 +45,32 @@ jobs:
           github-repo: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           
-
   make-matrix:
     runs-on: ubuntu-latest
     needs: check-permission
-    steps:
-    - name: validation
-      run: |
-        if [[ "${{ github.event.inputs.test-server}}" != *"RACF"* ]] && [[ "${{ github.event.inputs.test-server}}" != *"ACF2"* ]] && [[ "${{ github.event.inputs.test-server}}" != *"TSS"* ]] ; then
-          echo "input 'test server' must be at least 'RACF', 'ACF2' or 'TSS'"
-          exit 1
-        fi
-
+    steps: 
     - name: make matrix
       id: set-matrix
       run: |
+        # sanitize all whitespaces
+        TEST_FILE_SERVER=echo "${{ github.event.inputs.test-file-server }}" | tr -d "[:space:]"
+
+        # validate
+        if [[ $TEST_FILE_SERVER =~ ^([A-Za-z0-9/]+\.js\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))(;[A-Za-z0-9/]+\.js\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))*$ ]]; then
+        else
+          echo "Input test-file-server is not valid."
+          echo "Format:{testpath}/{testfile}.js(zzow02[,zzow03][,zzow04]) semi-colon separated if multiple"
+          echo "Examples: tests/file1.js(zzow02,zzow04);tests/file2.js(zzow03)"
+          exit 1
+        fi
+
         MATRIX_JSON_STRING="{\"include\":["
-        for testfile in $(echo "${{ github.event.inputs.test-scope }}" | sed "s/,/ /g")
+        for each_test_file_server in $(echo "$TEST_FILE_SERVER" | sed "s/;/ /g")
         do
-          # sanitize whitespace
-          testfile=$(echo "$testfile" | xargs)
-          for testserver in $(echo "${{ github.event.inputs.test-server }}" | sed "s/,/ /g")
+          test_file=$(echo "$each_test_file_server" | cut -d "(" -f1)
+          for test_server in $(echo "$each_test_file_server" | cut -d "(" -f2 | cut -d ")" -f1 | sed "s/,/ /g")
           do
-            # sanitize whitespace
-            testserver=$(echo "$testserver" | xargs)
-            if [[ "$testserver" != "RACF" ]] && [[ "$testserver" != "ACF2" ]] && [[ "$testserver" != "TSS" ]] ; then
-              echo "input 'test server' must be at exactly 'RACF', 'ACF2' or 'TSS'"
-              exit 1
-            fi
-            MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$testfile\",\"env\":\"MARIST_$testserver\"},"
+            MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$test_file\",\"env\":\"marist-$test_server\"},"
           done
         done
 
@@ -96,17 +90,8 @@ jobs:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
     environment: ${{ matrix.env }}
     steps:
-      - run: echo LOCK_ID=$(date +%s) >> $GITHUB_ENV
-
-      - uses: zowe-actions/shared-actions/lock-marist@lock-marist
-        with:
-          what-to-do: lock
-          repository-id: ${{ github.event.repository.id }}
-          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          lock-id: ${{ env.LOCK_ID }}
-          environment: ${{ matrix.env }}
-      # - name: '[Prep 1] Checkout'
-      #   uses: actions/checkout@v2
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
 
       # - name: '[Prep 2] Cache node modules'
       #   uses: actions/cache@v2
@@ -128,11 +113,19 @@ jobs:
       # - name: '[Prep 4] Validate package.json'
       #   uses: zowe-actions/shared-actions/validate-package-json@main
           
-      # - name: '[Prep 5] Prepare workflow'
-      #   uses: zowe-actions/shared-actions/prepare-workflow@main
-      #   with:
-      #     github-user: ${{ github.actor }}
-      #     github-email: 'dummy-email@email.com'
+      - name: '[Prep 5] Prepare workflow'
+        uses: zowe-actions/shared-actions/prepare-workflow@main
+        with:
+          github-user: ${{ github.actor }}
+          github-email: 'dummy-email@email.com'
+
+      - uses: zowe-actions/shared-actions/lock-marist@lock-marist
+        with:
+          what-to-do: lock
+          #repository-id: ${{ github.event.repository.id }}
+          #github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-id: ${{ github.run_id }}
+          marist-server: ${{ matrix.env }}
 
       # - name: '[Prep 6] Additional Prep work'
       #   run: |
@@ -229,7 +222,7 @@ jobs:
       #     DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
       #     SSH_HOST: ${{ secrets.SSH_HOST }}
       #     SSH_PORT: ${{ secrets.SSH_PORT }}
-      #     SSH_USER: ${{ secrets.SSH_USERNAME }}
+      #     SSH_USER: ${{ secrets.SSH_USER }}
       #     SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       #     ZOS_NODE_HOME: ${{ env.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
