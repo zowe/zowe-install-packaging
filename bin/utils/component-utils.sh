@@ -576,6 +576,68 @@ process_component_appfw_plugin() {
 }
 
 ###############################
+# Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
+#
+# The supported manifest entry is ".gatewaySharedLibs". All shared libs
+# defined will be passed to install-app.sh for proper installation.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# Required environment variables:
+# - INSTANCE_DIR
+# - NODE_HOME
+#
+# @param string   component directory
+process_component_gateway_shared_libs() {
+  component_dir=$1
+
+  all_succeed=true
+  iterator_index=0
+  plugin_id=
+  gateway_shared_libs_workspace_path=
+  gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
+  while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
+    cd "${component_dir}"
+
+    if [ -z "${plugin_id}" ]; then
+      # prepare plugin directory
+      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
+      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
+      mkdir -p "${gateway_shared_libs_workspace_path}"
+    fi
+
+    # copy to workspace/gateway/sharedLibs/
+    if [ -f "${gateway_shared_libs_path}" ]; then
+      gateway_shared_libs_path_dir=$(dirname "${gateway_shared_libs_path}")
+      if [ "${gateway_shared_libs_path_dir}" = "." ]; then
+        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}"
+      else
+        mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
+        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
+      fi
+    elif [ -d "${gateway_shared_libs_path}" ]; then
+      mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
+      cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
+    else
+      >&2 echo "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
+      all_succeed=false
+      break
+    fi
+
+    iterator_index=`expr $iterator_index + 1`
+    gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+###############################
 # Lists the service IDs of a specified component
 #
 # Note: this function calls is dependent on various utility functions and
@@ -748,7 +810,7 @@ verify_component_instance() {
 # - EXTERNAL_COMPONENTS
 #
 # Example:
-# - This will display all components that is currentally installled on a zowe instance
+# - This will display all components that is currently installed on a zowe instance
 #   i.e: list_all_components
 #
 list_all_components() {
@@ -763,4 +825,54 @@ list_all_components() {
   #   echo ${directories}
   # done
   
+}
+
+###############################
+# Call API Catalog to refresh static registration
+#
+# @param string   API Catalog hostname
+# @param string   API Catalog port
+# @param string   Path to Authentication private key
+# @param string   Path to Authentication certificate
+# @param string   Path to Certificate Authority certificate
+refresh_static_registration() {
+  apicatalog_host=$1
+  apicatalog_port=$2
+  auth_key=$3
+  auth_cert=$4
+  ca_cert=$5
+
+  if [ -z "$NODE_HOME" ]; then
+    >&2 echo "NODE_HOME is required by this function"
+    return 1
+  fi
+  # node should have already been put into PATH
+
+  if [ -z "${apicatalog_host}" ]; then
+    apicatalog_host=${ZOWE_EXPLORER_HOST}
+  fi
+  if [ -z "${apicatalog_port}" ]; then
+    apicatalog_port=${CATALOG_PORT}
+  fi
+  if [ -z "${auth_key}" ]; then
+    auth_key=${KEYSTORE_KEY}
+  fi
+  if [ -z "${auth_cert}" ]; then
+    auth_cert=${KEYSTORE_CERTIFICATE}
+  fi
+  if [ -z "${ca_cert}" ]; then
+    ca_cert=${KEYSTORE_CERTIFICATE_AUTHORITY}
+  fi
+
+  utils_dir="${ROOT_DIR}/bin/utils"
+
+  "${NODE_HOME}/bin/node" \
+    "${utils_dir}/curl.js" \
+    "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
+    -X POST \
+    --key "${auth_key}" \
+    --cert "${auth_cert}" \
+    --cacert "${ca_cert}"
+
+  return $?
 }

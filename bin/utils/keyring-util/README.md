@@ -16,7 +16,7 @@ Execute the `build.sh` script
 ```bash
 keyring-util function userid keyring label
 ```
-**Parametres:**
+**Parameters:**
  1. `function` see [Functions](##Functions) section below
  2. `userid` - an owner of the `keyring` and `label` certificate
  3. `keyring` - a name of the keyring
