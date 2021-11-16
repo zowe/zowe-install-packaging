@@ -71,7 +71,7 @@ jobs:
           test_file=$(echo "$each_test_file_server" | cut -d "(" -f1)
           for test_server in $(echo "$each_test_file_server" | cut -d "(" -f2 | cut -d ")" -f1 | sed "s/,/ /g")
           do
-            MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$test_file\",\"env\":\"marist-$test_server\"},"
+            MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$test_file\",\"server\":\"marist-$test_server\"},"
           done
         done
 
@@ -89,7 +89,7 @@ jobs:
     needs: make-matrix
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
-    environment: ${{ matrix.env }}
+    environment: ${{ matrix.server }}
     steps:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
@@ -120,21 +120,22 @@ jobs:
           github-user: ${{ github.actor }}
           github-email: 'dummy-email@email.com'
 
+      - name: '[Prep 6] Additional Prep work'
+        run: |
+          echo NODE_HOME_PATTERN="/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x" >> $GITHUB_ENV
+          CURRENT_BRANCH_NEW=$(echo ${{ env.CURRENT_BRANCH }} | tr '[:upper:]' '[:lower:]' | sed "s#\/#-#g")
+          if [[ "${{ github.event.inputs.zowe-artifactory-pattern }}" == *"{branch-name}"* ]]; then
+            echo ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "${{ github.event.inputs.zowe-artifactory-pattern }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g") >> $GITHUB_ENV
+          fi
+          echo TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2) >> $GITHUB_ENV
+
       - uses: zowe-actions/shared-actions/lock-marist@lock-marist
         with:
           what-to-do: lock
           #repository-id: ${{ github.event.repository.id }}
-          #github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-id: ${{ github.run_id }}
-          marist-server: ${{ matrix.env }}
-
-      # - name: '[Prep 6] Additional Prep work'
-      #   run: |
-      #     echo NODE_HOME_PATTERN="/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x" >> $GITHUB_ENV
-      #     CURRENT_BRANCH_NEW=$(echo ${{ env.CURRENT_BRANCH }} | tr '[:upper:]' '[:lower:]' | sed "s#\/#-#g")
-      #     if [[ "${{ github.event.inputs.zowe-artifactory-pattern }}" == *"{branch-name}"* ]]; then
-      #       echo ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "${{ github.event.inputs.zowe-artifactory-pattern }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g") >> $GITHUB_ENV
-      #     fi
+          marist-server: ${{ env.TEST_SERVER }}
 
       # - name: '[Setup 1] Project Setup 1'
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
@@ -205,17 +206,23 @@ jobs:
       #   id: more-test-prep
       #   run: |
       #     echo ::set-output name=ZOWEPAXFILE::$(ls -1 ${{ runner.temp }}/zowe/)
-      #     if [[ "${{ github.event.inputs.test-server }}" == "RACF" ]] ; then
-      #   TODO:
-          
-
+      #     if [[ "${{ env.TEST_SERVER }}" == "zzow02" ]] ; then
+      #       echo ::set-output name=TEST_SERVER_NICKNAME::marist-2
+      #     fi
+      #     if [[ "${{ env.TEST_SERVER }}" == "zzow03" ]] ; then
+      #       echo ::set-output name=TEST_SERVER_NICKNAME::marist-3
+      #     fi
+      #     if [[ "${{ env.TEST_SERVER }}" == "zzow04" ]] ; then
+      #       echo ::set-output name=TEST_SERVER_NICKNAME::marist-4
+      #     fi
+        
       # - name: '[Test] Test starts from here'
       #   timeout-minutes: 360
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
       #   run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/${{ github.event.inputs.test-scope }}
       #   env:
       #     ANSIBLE_FORCE_COLOR: true
-      #     TEST_SERVER: marist-4
+      #     TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME}}
       #     ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWEPAXFILE}}"
       #     ZOWE_DOCKER_URL: ${{ github.event.inputs.zowe-docker-artifactory-build }}
       #     EXTENSIONS_LIST: ${{ github.event.inputs.extension-list }}
@@ -232,3 +239,12 @@ jobs:
       #   if: always()
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
       #   run: npm run merge-reports
+
+      - uses: zowe-actions/shared-actions/lock-marist@lock-marist
+        if: always()
+        with:
+          what-to-do: unlock
+          #repository-id: ${{ github.event.repository.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-id: ${{ github.run_id }}
+          marist-server: ${{ env.TEST_SERVER }}
