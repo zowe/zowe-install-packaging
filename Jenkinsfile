@@ -203,7 +203,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
             passwordVariable: 'ZOSMF_PASS'
           )
         ]){
-      sh "cd PSWI && chmod +x PSWI-marist.sh && ./PSWI-marist.sh" 
+      sh "cd pswi && chmod +x PSWI-marist.sh && ./PSWI-marist.sh" 
         }
       }
     }
