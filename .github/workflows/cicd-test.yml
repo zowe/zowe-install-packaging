@@ -53,7 +53,7 @@ jobs:
       id: set-matrix
       run: |
         # sanitize all whitespaces
-        TEST_FILE_SERVER=echo "${{ github.event.inputs.test-file-server }}" | tr -d "[:space:]"
+        TEST_FILE_SERVER=$(echo "${{ github.event.inputs.test-file-server }}" | tr -d "[:space:]")
 
         # validate
         if [[ $TEST_FILE_SERVER =~ ^([A-Za-z0-9/]+\.js\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))(;[A-Za-z0-9/]+\.js\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))*$ ]]; then
