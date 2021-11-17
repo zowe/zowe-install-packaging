@@ -131,7 +131,8 @@ jobs:
 
       - run: echo ${{ env.STATE_isPost }}
 
-      - uses: zowe-actions/shared-actions/lock-marist@lock-marist
+      - name: '[LOCK] Lock marist servers'
+        uses: zowe-actions/shared-actions/lock-resource@lock-marist
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
