@@ -136,6 +136,7 @@ jobs:
           repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-id: ${{ env.CURRENT_TIME_IN_NANO }}
+          test-file: ${{ matrix.test }}
           marist-server: ${{ env.TEST_SERVER }}
 
       # - name: '[Setup 1] Project Setup 1'
@@ -248,4 +249,6 @@ jobs:
           repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-id: ${{ env.CURRENT_TIME_IN_NANO }}
+          test-file: ${{ matrix.test }}
           marist-server: ${{ env.TEST_SERVER }}
+
