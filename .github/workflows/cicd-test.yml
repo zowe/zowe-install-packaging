@@ -240,11 +240,11 @@ jobs:
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
       #   run: npm run merge-reports
 
-      - uses: zowe-actions/shared-actions/lock-marist@lock-marist
-        if: always()
-        with:
-          what-to-do: unlock
-          repository: ${{ github.repository }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-id: ${{ github.run_id }}
-          marist-server: ${{ env.TEST_SERVER }}
+      # - uses: zowe-actions/shared-actions/lock-marist@lock-marist
+      #   if: always()
+      #   with:
+      #     what-to-do: unlock
+      #     repository: ${{ github.repository }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     lock-id: ${{ github.run_id }}
+      #     marist-server: ${{ env.TEST_SERVER }}
