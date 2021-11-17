@@ -128,13 +128,14 @@ jobs:
             echo ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "${{ github.event.inputs.zowe-artifactory-pattern }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g") >> $GITHUB_ENV
           fi
           echo TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2) >> $GITHUB_ENV
+          echo CURRENT_TIME_IN_NANO=$(date +%s%N) >> $GITHUB_ENV
 
       - uses: zowe-actions/shared-actions/lock-marist@lock-marist
         with:
           what-to-do: lock
           repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-id: ${{ github.run_id }}
+          lock-id: ${{ env.CURRENT_TIME_IN_NANO }}
           marist-server: ${{ env.TEST_SERVER }}
 
       # - name: '[Setup 1] Project Setup 1'
@@ -246,5 +247,5 @@ jobs:
           what-to-do: unlock
           repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-id: ${{ github.run_id }}
+          lock-id: ${{ env.CURRENT_TIME_IN_NANO }}
           marist-server: ${{ env.TEST_SERVER }}
