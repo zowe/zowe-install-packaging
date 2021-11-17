@@ -201,7 +201,7 @@ jobs:
       #   run: npm install -g zowe-cli*.tgz
 
       - name: pretend I am running test now
-        run: sleep 60
+        run: sleep 40
 
       # - name: '[Test Prep] Additional command to run to prepare for test'
       #   id: more-test-prep
