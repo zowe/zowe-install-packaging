@@ -135,7 +135,7 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: ${{ matrix.server }}
+          lock-resource-name: zowe-install-test-${{ env.TEST_SERVER }}-lock 
           lock-avg-retry-interval: 60
           
       # - name: '[Setup 1] Project Setup 1'
@@ -201,7 +201,7 @@ jobs:
       #   run: npm install -g zowe-cli*.tgz
 
       - name: pretend I am running test now
-        run: sleep 20
+        run: sleep 60
 
       # - name: '[Test Prep] Additional command to run to prepare for test'
       #   id: more-test-prep
