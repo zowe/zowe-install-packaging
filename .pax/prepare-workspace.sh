@@ -181,7 +181,6 @@ mkdir -p "${CONTENT_DIR}/files/zlux"
 cd "${CONTENT_DIR}/files"
 mv zlux-core-*.pax          app-server-${ZOWE_VERSION}.pax
 mv zlux-editor-*.pax        zlux/zlux-editor.pax
-mv zlux-workflow-*.pax      zlux/zlux-workflow.pax
 mv tn3270-ng2-*.pax         zlux/tn3270-ng2.pax
 mv vt-ng2-*.pax             zlux/vt-ng2.pax
 mv sample-react-app-*.pax   zlux/sample-react-app.pax

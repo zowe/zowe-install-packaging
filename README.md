@@ -112,7 +112,6 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - org.zowe.zlux.vt-ng2
     - org.zowe.zlux.zlux-core
     - org.zowe.zlux.zlux-editor
-    - org.zowe.zlux.zlux-workflow
     - org.zowe.zss
   * Source Dependencies
     - zlux-app-manager
@@ -132,7 +131,6 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - sample-react-app
     - vt-ng2
     - zlux-editor
-    - zlux-workflow
 - Explorer APIs / UI Plugins: Jordan Cain
   * Binary Dependencies
     - org.zowe.explorer.data.sets

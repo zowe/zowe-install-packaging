@@ -39,10 +39,6 @@
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
     },
-    "org.zowe.zlux.zlux-workflow": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
-    },
     "org.zowe.zss": {
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
@@ -354,14 +350,6 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }]
-    },
-    {
-      "componentGroup": "Zowe Desktop Workflows Plugin-in",
-      "entries": [{
-        "repository": "zlux-workflow",
         "tag": "staging",
         "destinations": ["Zowe PAX"]
       }]
