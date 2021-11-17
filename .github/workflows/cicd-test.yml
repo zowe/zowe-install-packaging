@@ -130,6 +130,8 @@ jobs:
           echo TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2) >> $GITHUB_ENV
           echo CURRENT_TIME_IN_NANO=$(date +%s%N) >> $GITHUB_ENV
 
+      - run: echo ${{ env.STATE_isPost }}
+
       - uses: zowe-actions/shared-actions/lock-marist@lock-marist
         with:
           what-to-do: lock
