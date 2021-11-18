@@ -41,8 +41,6 @@ jobs:
       - name: check permission
         uses: zowe-actions/shared-actions/permission-check@main
         with:
-          user: ${{ github.actor }}
-          github-repo: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}  
   
   regular-build:
@@ -83,8 +81,6 @@ jobs:
         uses: zowe-actions/shared-actions/prepare-workflow@main
         with:
           package-name: org.zowe
-          github-user: ${{ github.actor }}
-          github-email: 'dummy-email@email.com'
           extra-init: |
             const fs = require('fs');
             var mjson = '${{ github.workspace }}/manifest.json';
@@ -274,5 +270,3 @@ jobs:
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: containers/zowe-containerization.zip
-  
-     
