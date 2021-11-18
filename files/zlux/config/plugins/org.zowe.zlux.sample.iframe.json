@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.zlux.sample.iframe",
-  "pluginLocation": "sample-iframe-app",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}
