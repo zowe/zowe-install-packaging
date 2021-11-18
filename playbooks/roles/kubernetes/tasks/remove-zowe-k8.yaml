@@ -1,0 +1,130 @@
+---
+  - name: Get all the pods in the Zowe namespace
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      api_version: v1
+      kind: Pod 
+      namespace: zowe
+    register: pod_list 
+  - name: Collect all the deployment files from workloads instance environment
+    delegate_to: localhost
+    find:
+      paths: ../containers/kubernetes/workloads/instance-env/
+      file_type: file
+      recurse: yes
+    register: k8s_manifests
+  - name: Remove all pods in the Zowe namespace
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: absent 
+      src: "{{ item.path }}"
+      wait: true
+    with_items: "{{ k8s_manifests.files }}"
+  - name: Validate and Remove any other existing pod in Zowe 
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: pod
+      namespace: zowe
+      api_version: v1
+      name: "{{ item }}"
+      state: absent
+      wait: true
+    with_items: "{{ pod_list | json_query('resources[*].metadata.name') }}"
+
+  - name: Get all the ingress running in zowe
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      api_version: v1
+      kind: Ingress 
+      namespace: zowe
+    register: ingress_list 
+  - name: Remove all the gatherd ingress in Zowe
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: Ingress 
+      namespace: zowe
+      api_version: v1
+      name: "{{ item }}"
+      state: absent
+      wait: true
+    with_items: "{{ ingress_list | json_query('resources[*].metadata.name') }}"
+
+  - name: Get all the configmap deployed in zowe
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      api_version: v1
+      kind: ConfigMap 
+      namespace: zowe
+    register: cm_list 
+  - name: Remove all the gathered ConfigMap in Zowe.
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: ConfigMap 
+      namespace: zowe
+      api_version: v1
+      name: "{{ item }}"
+      state: absent
+      wait: true
+    with_items: "{{ cm_list | json_query('resources[*].metadata.name') }}"
+
+  - name: Get all the secret deployed in Zowe
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      api_version: v1
+      kind: Secret 
+      namespace: zowe
+    register: secret_list 
+  - name: Remove all the Secrets found in Zowe
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: Secret
+      namespace: zowe
+      api_version: v1
+      name: "{{ item }}"
+      state: absent
+      wait: true
+    with_items: "{{ secret_list | json_query('resources[*].metadata.name') }}"
+ 
+  - name: Get all the PersistentVolumeClaim provisioned in Zowe
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      api_version: v1
+      kind: PersistentVolumeClaim 
+      namespace: zowe
+    register: pvc_list 
+  - name: Remove all the PersistentVolumeClaim in Zowe
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: PersistentVolumeClaim
+      namespace: zowe
+      api_version: v1
+      name: "{{ item }}"
+      state: absent
+      wait: true
+    with_items: "{{ pvc_list | json_query('resources[*].metadata.name') }}"
+  - name: Get namespace and service account files
+    delegate_to: localhost
+    find:
+      paths: ../containers/kubernetes/common/
+      file_type: file
+      recurse: yes
+    register: k8s_ns
+  - name: Remove the Zowe namespace and service account 
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: absent 
+      src: "{{ item.path }}"
+      wait: true
+    with_items: "{{ k8s_ns.files }}"

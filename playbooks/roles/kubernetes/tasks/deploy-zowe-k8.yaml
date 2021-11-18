@@ -1,0 +1,170 @@
+---
+  - name: Get namespace and service account files
+    delegate_to: localhost
+    find:
+      paths: ../containers/kubernetes/common/
+      file_type: file
+      recurse: yes
+    register: k8s_ns
+  - name: Apply Zowe namespace and service account 
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: "{{ item.path }}"
+    with_items: "{{ k8s_ns.files }}"
+  - name: Get storageclass name
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: StorageClass
+    register: sc_list
+  - name: Edit workspace-pvc file to update storageclass name
+    delegate_to: localhost
+    yedit:
+      src: ../containers/kubernetes/samples/workspace-pvc.yaml
+      edits:
+      - key: spec.storageClassName
+        value: "{{ sc_list | json_query('resources[0].metadata.name') }}"
+  - name: Deploy workspace-pvc manifest 
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: ../containers/kubernetes/samples/workspace-pvc.yaml
+
+  - name: Get list of nodes provisioned for kubernetes
+    delegate_to: localhost
+    kubernetes.core.k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: nodes 
+    register: node_list
+  - name: Get the Node IP address
+    set_fact:
+      node_ip: "{{ node_list | json_query('resources[0].status.addresses[0].address') }}"
+      
+  - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system.
+    delegate_to: "{{ ansible_ssh_host }}"
+    raw: >-
+      {{ convert_for_k8s }} -q -x {{ node_ip }}.nio.io,{{ node_ip }} > /tmp/config_secret.yaml
+  - name: Copy the created ConfigMap & Secret to local system 
+    delegate_to: localhost
+    raw: >-
+      sshpass -P "{{ ansible_password }}" scp "{{ ansible_user }}"@"{{ ansible_ssh_host }}":/tmp/config_secret.yaml .
+  - name: Remove the ConfigMap & Secret file from the z/OS system 
+    delegate_to: "{{ ansible_ssh_host }}" 
+    raw: rm -f /tmp/config_secret.yaml
+  - name: Deploy the ConfigMaps and Secrets on Zowe K8s
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: config_secret.yaml
+  - name: Remove the ConfigMap & Secret file from the local
+    delegate_to: localhost 
+    raw: rm -f config_secret.yaml
+
+  - name: Deploy API Catalog Service on Zowe K8s
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: ../containers/kubernetes/samples/api-catalog-service.yaml
+  - name: Expose Gateway Service on Zowe K8s 
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: ../containers/kubernetes/samples/gateway-service-lb.yaml
+  - name: Expose Discovery Service on Zowe K8s
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: ../containers/kubernetes/samples/discovery-service-lb.yaml
+
+  - name: Edit BareMetal Gateway Ingress file to update host info
+    delegate_to: localhost
+    yedit:
+      src: ../containers/kubernetes/samples/bare-metal/gateway-ingress.yaml
+      edits:
+      - key: spec.rules
+        value:
+          - host: "*.nio.io"
+            http:
+             paths:
+               - path: /
+                 pathType: Prefix
+                 backend:
+                   service:
+                     name: gateway-service
+                     port:
+                       name: gateway-port
+  - name: Edit BareMetal Discovery Ingress file to update host info
+    delegate_to: localhost
+    yedit:
+      src: ../containers/kubernetes/samples/bare-metal/discovery-ingress.yaml
+      edits:
+      - key: spec.rules
+        value:
+          - host: "*.nio.io"
+            http:
+             paths:
+               - path: /
+                 pathType: Prefix
+                 backend:
+                   service:
+                     name: discovery-service
+                     port:
+                       name: discovery-port
+  - name: Deploy Baremetal Gateway Ingress on Zowe K8s
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: ../containers/kubernetes/samples/bare-metal/gateway-ingress.yaml 
+  - name: Deploy Baremetal Discovery Ingress on Zowe K8s
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: ../containers/kubernetes/samples/bare-metal/discovery-ingress.yaml
+
+  - name: Find all the deployment files in the workloads instance-env
+    delegate_to: localhost
+    find:
+      paths: ../containers/kubernetes/workloads/instance-env/
+      file_type: file
+      recurse: yes
+    register: k8s_manifests
+  - name: Deploy all the workload pods to Zowe K8s
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      state: present 
+      src: "{{ item.path }}"
+    with_items: "{{ k8s_manifests.files }}"
+  - name: Wait till all the essential pods are in Ready status 
+    delegate_to: localhost
+    k8s_info:
+      kubeconfig: "{{ kubeconfig }}"
+      kind: pod 
+      namespace: zowe
+      label_selectors: 
+        - app.kubernetes.io/component={{ item }}
+      wait: true
+      wait_sleep: "{{wait_for_pod_ready}}"
+      wait_timeout: "{{timeout_for_pod_ready}}"
+      wait_condition:
+        type: "Ready"
+        status: "True"
+    with_items:
+      - "api-catalog"
+      - "app-server"
+      - "caching"
+      - "discovery"
+      - "explorer-jes"
+      - "explorer-mvs"
+      - "files-api"
+      - "gateway"
+      - "jobs-api"

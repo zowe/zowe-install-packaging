@@ -1,0 +1,35 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+# 360 * 10 seconds = 1hour
+wait_for_zowe_service_retries: 60
+# Every 10 seconds
+wait_for_zowe_service_delay: 5
+# Timeout after 900sec = 15min for Zowe Pods to become ready status
+timeout_for_pod_ready: 900
+# Every 60 seconds check if Zowe pods are ready status
+wait_for_pod_ready: 60
+
+
+# ==============================================================================
+# Variables should be verified and overwrittern.
+# ==============================================================================
+# default z/OSMF port. Optional, default value is ansible_ssh_host
+zos_zosmf_host:
+# default z/OSMF port
+zos_zosmf_port: 10443
+zowe_zss_https: True
+zowe_zss_port: 8542
+zowe_launch_components: zss
+
+zowe_zlux_terminal_telnet_port: 23
+# The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'
+zowe_zlux_terminal_telnet_security_type:
+
+# convert-for-k8s script for generating configmap and secrets in z/OS host for Kubernetes
+# Please make sure to get the latest script, which has Silent option (-q), to avoid deployment failure.
+# Default location is from marist. 
+convert_for_k8s: /ZOWE/tmp/.zowe/bin/utils/convert-for-k8s.sh
+
+zowe_root_dir: ~/
