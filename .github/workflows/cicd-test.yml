@@ -41,8 +41,6 @@ jobs:
       - name: check permission
         uses: zowe-actions/shared-actions/permission-check@main
         with:
-          user: ${{ github.actor }}
-          github-repo: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           
   make-matrix:
@@ -116,9 +114,6 @@ jobs:
           
       - name: '[Prep 5] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
-        with:
-          github-user: ${{ github.actor }}
-          github-email: 'dummy-email@email.com'
 
       - name: '[Prep 6] Additional Prep work'
         run: |
