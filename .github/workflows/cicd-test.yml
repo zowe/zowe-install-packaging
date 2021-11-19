@@ -125,7 +125,7 @@ jobs:
           echo TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2) >> $GITHUB_ENV
 
       - name: '[LOCK] Lock marist servers'
-        uses: zowe-actions/shared-actions/lock-resource@lock-marist
+        uses: zowe-actions/shared-actions/lock-resource@main
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
