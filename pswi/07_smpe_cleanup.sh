@@ -27,20 +27,20 @@ check_response() {
   REASON=`echo $RESP | grep -o '"reason":'`
   EMPTY=`echo $RESP | grep -o '\[\]'`
   MSG=`echo $RESP | grep -o '"messageText":'`
-  if [ "$REASON" != "" ] || [ "$MSG" != "" ] 
+  if [[ "$REASON" != "" ]] || [[ "$MSG" != "" ]] 
   then
     echo  "Info: Logging to file ${LOG_FILE}."
     echo   "$RESP" >> $LOG_FILE
   fi
-  if [ "$EMPTY" != "" ]
+  if [[ "$EMPTY" != "" ]]
   then
     echo  "Info: Logging to file ${LOG_FILE}."
     echo   "$RESP" >> $LOG_FILE
   fi
-  if [ $RESPCODE -ne 0 ]
+  if [[ $RESPCODE -ne 0 ]]
     then
     echo  "Info: Logging to file ${LOG_FILE}."
-    if [ "$RESP" != "" ]
+    if [[ "$RESP" != "" ]]
     then
       echo   "$RESP" >> $LOG_FILE
     else

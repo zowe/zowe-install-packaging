@@ -6,7 +6,7 @@ JOBNAME=${1}
 
 RESP=`curl -s ${BASE_URL}/zosmf/restjobs/jobs/${IDENTIFIER}/files -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 sh scripts/check_response.sh "$RESP" $?
-if [ $? -gt 0 ];then exit $?;fi
+if [[ $? -gt 0 ]];then exit $?;fi
 
 echo $RESP | sed 's/},/},\n/g' | grep -o '"records-url":".*records"' | cut -f4 -d\" | tr -d '\' 2>/dev/null 1>urls
   
