@@ -52,7 +52,7 @@ cd workflows
 HOST=${ZOSMF_URL#https:\/\/}
 
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
-cd '${WORKFLOW_DS}'
+cd ${DIR}
 put SMPE19
 EOF
 #ftp -nv ${FTP} << EOF
@@ -67,7 +67,6 @@ EOF
 #EOF
 
 cd ..
-scp -P 22 workflows/WFPTF ${ZOSMF_USER}@${HOST}:\'${WORKFLOW_DS}\'
 exit -1
 # Get workflowKey for SMPE workflow owned by user
 echo "Get workflowKey for SMPE workflow if it exists."
