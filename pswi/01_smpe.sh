@@ -48,19 +48,27 @@ if [ $? -gt 0 ];then exit -1;fi
 # Store SMPE wokflow in the WORKFLOW dataset
 echo "Uploading workflow SMPE into ${WORKFLOW_DS} data set thru FTP"
 
+cd workflows
+HOST=${ZOSMF_URL#https:\/\/}
 
-FTP=${ZOSMF_URL#https:\/\/} #:${FTPPORT}
-ftp -nv ${FTP} << EOF
-quote USER $ZOSMF_USER
-quote PASS $ZOSMF_PASS
-prompt
-ascii
+sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd '${WORKFLOW_DS}'
-lcd workflows
 put SMPE19
-quit
 EOF
+#ftp -nv ${FTP} << EOF
+#quote USER $ZOSMF_USER
+#quote PASS $ZOSMF_PASS
+#prompt
+#ascii
+#cd '${WORKFLOW_DS}'
+#lcd workflows
+#put SMPE19
+#quit
+#EOF
 
+cd ..
+scp -P 22 workflows/SMPE19 ${ZOSMF_USER}@${HOST}:\'${WORKFLOW_DS}\'
+exit -1
 # Get workflowKey for SMPE workflow owned by user
 echo "Get workflowKey for SMPE workflow if it exists."
 
