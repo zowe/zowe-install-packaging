@@ -210,13 +210,22 @@ fi
 
 # Unpax the directory (create directory for test_mount)
 echo "UnPAXing the final PSWI."
-sshpass -p${ZOSMF_PASS} ssh -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
-mkdir -p ${TEST_MOUNT}
-mkdir -p ${EXPORT}
-cd ${EXPORT}
-pax -rv -f ${OUTPUT_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z
-EOF
+
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//UNPAXDIR EXEC PGM=BPXBATCH" >> JCL
+echo "//STDOUT DD SYSOUT=*" >> JCL
+echo "//STDERR DD SYSOUT=*" >> JCL
+echo "//STDPARM  DD *" >> JCL
+echo "SH mkdir -p ${TEST_MOUNT};" >> JCL
+echo "mkdir -p ${EXPORT};" >> JCL
+echo "cd ${EXPORT};" >> JCL
+echo "pax -rv -f ${OUTPUT_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z" >> JCL
+echo "/*" >> JCL
+
+sh scripts/submit_jcl.sh "`cat JCL`"
 if [ $? -gt 0 ];then exit -1;fi
+rm JCL
 
 
 if [ "$ZOSMF_V" == "2.4" ]; then

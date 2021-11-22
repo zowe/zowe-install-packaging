@@ -556,11 +556,19 @@ rm ./EXPORT
 # Pax the directory 
 echo "PAXing the final PSWI."
 
-sshpass -p${ZOSMF_PASS} ssh -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
-cd ${EXPORT}
-pax -wv -f ${OUTPUT_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z .
-EOF
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//UNPAXDIR EXEC PGM=BPXBATCH" >> JCL
+echo "//STDOUT DD SYSOUT=*" >> JCL
+echo "//STDERR DD SYSOUT=*" >> JCL
+echo "//STDPARM  DD *" >> JCL
+echo "SH cd ${EXPORT};" >> JCL
+echo "pax -wv -f ${OUTPUT_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z ." >> JCL
+echo "/*" >> JCL
+
+sh scripts/submit_jcl.sh "`cat JCL`"
 if [ $? -gt 0 ];then exit -1;fi
+rm JCL
 
 
 
