@@ -28,7 +28,8 @@ env:
 
   # can be overwritten
   ZOS_NODE_VERSION: v12.18.4
-  # ZOS_NODE_VERSION more to choose from: v8.16.0, v8.17.0, v12.13.0, v12.16.1, v14.15.1
+  # ZOS_NODE_VERSION more to choose from: v8.16.0, v8.17.0, v12.13.0, v14.15.1
+  # v12.16.1 is problematic, use it cautiously
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -92,25 +93,25 @@ jobs:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
 
-      # - name: '[Prep 2] Cache node modules'
-      #   uses: actions/cache@v2
-      #   with:
-      #     # npm cache files are stored in `~/.npm` on Linux/macOS
-      #     path: |
-      #       ~/.npm
-      #       ~/.nvm/.cache
-      #       ~/.nvm/versions
-      #     key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-build-cache-node-modules-
+      - name: '[Prep 2] Cache node modules'
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/.npm
+            ~/.nvm/.cache
+            ~/.nvm/versions
+          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-cache-node-modules-
       
-      # - name: '[Prep 3] Setup jFrog CLI'
-      #   uses: jfrog/setup-jfrog-cli@v2
-      #   env:
-      #     JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      - name: '[Prep 3] Setup jFrog CLI'
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      # - name: '[Prep 4] Validate package.json'
-      #   uses: zowe-actions/shared-actions/validate-package-json@main
+      - name: '[Prep 4] Validate package.json'
+        uses: zowe-actions/shared-actions/validate-package-json@main
           
       - name: '[Prep 5] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
@@ -132,16 +133,16 @@ jobs:
           lock-resource-name: zowe-install-test-${{ env.TEST_SERVER }}-lock 
           lock-avg-retry-interval: 60
           
-      # - name: '[Setup 1] Project Setup 1'
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: |
-      #     npm ci
-      #     npm run build
+      - name: '[Setup 1] Project Setup 1'
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: |
+          npm ci
+          npm run build
       
-      # - name: '[Setup 2] Project Setup 2'
-      #   working-directory: ${{ env.SANITY_TEST_PATH }}
-      #   run: |
-      #     npm ci
+      - name: '[Setup 2] Project Setup 2'
+        working-directory: ${{ env.SANITY_TEST_PATH }}
+        run: |
+          npm ci
 
       # - name: '[Lint 1] Lint 1'
       #   timeout-minutes: 2
@@ -155,83 +156,80 @@ jobs:
       #   run: |
       #     npm run lint
 
-      # - name: '[Pre-Download 1] Determine if we need to pick latest artifact'
-      #   id: process-extra-options-1
-      #   run: |
-      #     if [[ "${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}" == *'*'* ]] ; then
-      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true --sort-by=created --sort-order=desc --limit=1
-      #     else
-      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true
-      #     fi
+      - name: '[Pre-Download 1] Determine if we need to pick latest artifact'
+        id: process-extra-options-1
+        run: |
+          if [[ "${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}" == *'*'* ]] ; then
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true --sort-by=created --sort-order=desc --limit=1
+          else
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true
+          fi
 
-      # - name: '[Download 1] Download zowe.pax'
-      #   uses: zowe-actions/shared-actions/jfrog-download@main
-      #   with:
-      #     source-path-or-pattern: ${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}
-      #     default-target-path: ${{ runner.temp }}/zowe/
-      #     extra-options: ${{ steps.process-extra-options-1.outputs.EXTRA_OPTIONS }}
-      #     expected-count: 1
+      - name: '[Download 1] Download zowe.pax'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}
+          default-target-path: ${{ runner.temp }}/zowe/
+          extra-options: ${{ steps.process-extra-options-1.outputs.EXTRA_OPTIONS }}
+          expected-count: 1
 
-      # - name: '[Pre-Download 2] Determine if we need to pick latest artifact'
-      #   id: process-extra-options-2
-      #   run: |
-      #     if [[ "${{ github.event.inputs.zowe-cli-artifactory-pattern }}" == *'*'* ]] ; then
-      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true --sort-by=created --sort-order=desc --limit=1
-      #     else
-      #       echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true
-      #     fi
+      - name: '[Pre-Download 2] Determine if we need to pick latest artifact'
+        id: process-extra-options-2
+        run: |
+          if [[ "${{ github.event.inputs.zowe-cli-artifactory-pattern }}" == *'*'* ]] ; then
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true --sort-by=created --sort-order=desc --limit=1
+          else
+            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true
+          fi
       
-      # - name: '[Download 2] Download cli package'
-      #   uses: zowe-actions/shared-actions/jfrog-download@main
-      #   with:
-      #     source-path-or-pattern: ${{ github.event.inputs.zowe-cli-artifactory-pattern }}
-      #     default-target-path: ${{ runner.temp }}/cli/
-      #     extra-options: ${{ steps.process-extra-options-2.outputs.EXTRA_OPTIONS }}
-      #     expected-count: 1
+      - name: '[Download 2] Download cli package'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ github.event.inputs.zowe-cli-artifactory-pattern }}
+          default-target-path: ${{ runner.temp }}/cli/
+          extra-options: ${{ steps.process-extra-options-2.outputs.EXTRA_OPTIONS }}
+          expected-count: 1
 
-      # - name: '[Install] Install CLI'
-      #   timeout-minutes: 10
-      #   working-directory: ${{ runner.temp }}/cli
-      #   run: npm install -g zowe-cli*.tgz
+      - name: '[Install] Install CLI'
+        timeout-minutes: 10
+        working-directory: ${{ runner.temp }}/cli
+        run: npm install -g zowe-cli*.tgz
 
-      - name: pretend I am running test now
-        run: sleep 60
-
-      # - name: '[Test Prep] Additional command to run to prepare for test'
-      #   id: more-test-prep
-      #   run: |
-      #     echo ::set-output name=ZOWEPAXFILE::$(ls -1 ${{ runner.temp }}/zowe/)
-      #     if [[ "${{ env.TEST_SERVER }}" == "zzow02" ]] ; then
-      #       echo ::set-output name=TEST_SERVER_NICKNAME::marist-2
-      #     fi
-      #     if [[ "${{ env.TEST_SERVER }}" == "zzow03" ]] ; then
-      #       echo ::set-output name=TEST_SERVER_NICKNAME::marist-3
-      #     fi
-      #     if [[ "${{ env.TEST_SERVER }}" == "zzow04" ]] ; then
-      #       echo ::set-output name=TEST_SERVER_NICKNAME::marist-4
-      #     fi
+      - name: '[Test Prep] Additional command to run to prepare for test'
+        id: more-test-prep
+        run: |
+          echo ::set-output name=ZOWEPAXFILE::$(ls -1 ${{ runner.temp }}/zowe/)
+          if [[ "${{ env.TEST_SERVER }}" == "zzow02" ]] ; then
+            echo ::set-output name=TEST_SERVER_NICKNAME::marist-2
+          fi
+          if [[ "${{ env.TEST_SERVER }}" == "zzow03" ]] ; then
+            echo ::set-output name=TEST_SERVER_NICKNAME::marist-3
+          fi
+          if [[ "${{ env.TEST_SERVER }}" == "zzow04" ]] ; then
+            echo ::set-output name=TEST_SERVER_NICKNAME::marist-4
+          fi
         
-      # - name: '[Test] Test starts from here'
-      #   timeout-minutes: 360
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/${{ github.event.inputs.test-scope }}
-      #   env:
-      #     ANSIBLE_FORCE_COLOR: true
-      #     TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME}}
-      #     ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWEPAXFILE}}"
-      #     ZOWE_DOCKER_URL: ${{ github.event.inputs.zowe-docker-artifactory-build }}
-      #     EXTENSIONS_LIST: ${{ github.event.inputs.extension-list }}
-      #     SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
-      #     DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
-      #     SSH_HOST: ${{ secrets.SSH_HOST }}
-      #     SSH_PORT: ${{ secrets.SSH_PORT }}
-      #     SSH_USER: ${{ secrets.SSH_USER }}
-      #     SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-      #     ZOS_NODE_HOME: ${{ env.NODE_HOME_PATTERN }}
-      #     # ANSIBLE_VERBOSE: -vvv
+      - name: '[Test] Test starts from here'
+        timeout-minutes: 360
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/${{ github.event.inputs.test-scope }}
+        env:
+          ANSIBLE_FORCE_COLOR: true
+          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME}}
+          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWEPAXFILE}}"
+          ZOWE_DOCKER_URL: ${{ github.event.inputs.zowe-docker-artifactory-build }}
+          EXTENSIONS_LIST: ${{ github.event.inputs.extension-list }}
+          SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
+          DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          ZOS_NODE_HOME: ${{ env.NODE_HOME_PATTERN }}
+          # ANSIBLE_VERBOSE: -vvv
       
-      # - name: '[After Test] Merge Report'
-      #   if: always()
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: npm run merge-reports
+      - name: '[After Test] Merge Report'
+        if: always()
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: npm run merge-reports
 
