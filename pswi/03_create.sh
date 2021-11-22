@@ -556,7 +556,7 @@ rm ./EXPORT
 # Pax the directory 
 echo "PAXing the final PSWI."
 
-sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} ssh -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${EXPORT}
 pax -wv -f ${OUTPUT_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z .
 EOF

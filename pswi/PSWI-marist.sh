@@ -88,7 +88,7 @@ fi
 fi
 
 # Cleanup of SMP/E
-sh 07_smpe_cleanup.sh
+#sh 07_smpe_cleanup.sh # testing - leaving SMP/E on the system
 
 echo ""
 echo ""
@@ -101,7 +101,7 @@ then
   elif [ $ptf -ne 0 ]; then
     echo "Applying PTFs wasn't successful."
   elif [ $create -ne 0 ]; then
-    echo "Creation of SMP/E wasn't successful."
+    echo "Creation of PSWI wasn't successful."
   elif [ $test -ne 0 ]; then
     echo "Testing of PSWI wasn't successful."
   fi

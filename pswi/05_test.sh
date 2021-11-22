@@ -210,7 +210,7 @@ fi
 
 # Unpax the directory (create directory for test_mount)
 echo "UnPAXing the final PSWI."
-sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} ssh -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 mkdir -p ${TEST_MOUNT}
 mkdir -p ${EXPORT}
 cd ${EXPORT}
