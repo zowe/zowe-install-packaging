@@ -228,7 +228,7 @@ if [ $? -gt 0 ];then exit -1;fi
 rm JCL
 
 
-if [ "$ZOSMF_V" == "2.4" ]; then
+if [ "$ZOSMF_V" = "2.4" ]; then
   echo "Not covering deployment on z/OSMF 2.4 yet."
 # z/OSMF 2.4
 

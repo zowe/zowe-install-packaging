@@ -573,5 +573,6 @@ rm JCL
 
 
 #TODO: send e-mail that PSWI is ready in the output mount?
+#TODO: Or download pax and put the build before Publish: Package stage?
 #TODO: redirect everything to $log/x ? 
 #TODO: Check why there is name in mountpoints responses and it still doesn't show (although the mount points are different so it's good it is not doing anything)                      

@@ -60,13 +60,13 @@ export OUTPUT_ZFS="ZOWEAD2.OUTPUT.PSWI.ZFS"
 export OUTPUT_MOUNT="/u/zowead2/PSWI"
 
 # Create SMP/E
-#sh 01_smpe.sh # last time didnt delete smpe - testing
-smpe=0
+sh 01_smpe.sh # last time didnt delete smpe - testing
+smpe=$?
 
 if [ $smpe -eq 0 ];then
 # Apply PTFs
-#sh 02_ptf.sh
-ptf=0
+sh 02_ptf.sh
+ptf=$?
 
 if [ $ptf -eq 0 ];then
 # Create PSWI
@@ -88,7 +88,7 @@ fi
 fi
 
 # Cleanup of SMP/E
-#sh 07_smpe_cleanup.sh # testing - leaving SMP/E on the system
+sh 07_smpe_cleanup.sh
 
 echo ""
 echo ""
@@ -108,6 +108,5 @@ then
   exit -1
 else
   echo "Build successful!"
-  sh 07_smpe_cleanup.sh 
   exit 0
 fi
