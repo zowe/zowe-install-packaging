@@ -67,7 +67,7 @@ EOF
 #EOF
 
 cd ..
-scp -P 22 workflows/SMPE19 ${ZOSMF_USER}@${HOST}:\'${WORKFLOW_DS}\'
+scp -P 22 workflows/WFPTF ${ZOSMF_USER}@${HOST}:\'${WORKFLOW_DS}\'
 exit -1
 # Get workflowKey for SMPE workflow owned by user
 echo "Get workflowKey for SMPE workflow if it exists."

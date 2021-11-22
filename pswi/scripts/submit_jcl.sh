@@ -1,5 +1,10 @@
 JCL=$1
 
+if [ "$JCL" == "" ]
+then
+  exit -1
+fi 
+
 echo "JCL to be submitted:"
 echo "$JCL"
 

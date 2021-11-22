@@ -62,7 +62,7 @@ RESP=`curl -s $ACTION_ZOWE_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Conten
 check_response "${RESP}" $?
 
 # Delete SMPE datasets
-read -r -d '' DELJCL << END
+read -r '' DELJCL << END
 ${JOBST1}
 ${JOBST2}
 //DELTZOWE EXEC PGM=IDCAMS
