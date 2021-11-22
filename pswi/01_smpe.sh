@@ -15,13 +15,12 @@ echo "SMPE workflow name          :" $SMPE_WF_NAME
 
 # URLs
 CREATE_SMPE_WF_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows"
-WORKFLOW_DS_URL="${BASE_URL}/zosmf/restfiles/ds/${WORKFLOW_DS}"
 SMPE_WF_LIST_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows?owner=${ZOSMF_USER}&workflowName=${SMPE_WF_NAME}"
 
 # JSONs 
-NEW_DSN_JSON='{"dirblk":5,"avgblk":25000,"dsorg":"PO","alcunit":"TRK","primary":80,"secondary":40,"recfm":"VB","blksize":26000,"lrecl":4096,"volser":"'${VOLUME}'"}'
+
 ADD_WORKFLOW_JSON='{"workflowName":"'$SMPE_WF_NAME'",
-"workflowDefinitionFile":"'${WORKFLOW_DS}'(SMPE19)",
+"workflowDefinitionFile":"'${DIR}'/SMPE19",
 "system":"'$ZOSMF_SYSTEM'",
 "owner":"'$ZOSMF_USER'",
 "assignToOwner" :true,
@@ -55,19 +54,8 @@ sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o Pubk
 cd ${DIR}
 put SMPE19
 EOF
-#ftp -nv ${FTP} << EOF
-#quote USER $ZOSMF_USER
-#quote PASS $ZOSMF_PASS
-#prompt
-#ascii
-#cd '${WORKFLOW_DS}'
-#lcd workflows
-#put SMPE19
-#quit
-#EOF
-
 cd ..
-exit -1
+
 # Get workflowKey for SMPE workflow owned by user
 echo "Get workflowKey for SMPE workflow if it exists."
 

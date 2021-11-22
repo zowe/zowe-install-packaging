@@ -62,15 +62,16 @@ RESP=`curl -s $ACTION_ZOWE_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Conten
 check_response "${RESP}" $?
 
 # Delete SMPE datasets
-read -r DELJCL << END
-${JOBST1}
-${JOBST2}
-//DELTZOWE EXEC PGM=IDCAMS
-//SYSPRINT DD SYSOUT=*
-//SYSIN    DD *
- DELETE ${CSIHLQ}.** MASK
- SET MAXCC=0
-/*
-END
-if [ $? -gt 0 ];then echo "JCL that deletes SMP/E wasn't successfully read.";exit -1;fi
-sh scripts/submit_jcl.sh "$DELJCL"
+
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//DELTZOWE EXEC PGM=IDCAMS" >> JCL
+echo "//SYSPRINT DD SYSOUT=*" >> JCL
+echo "//SYSIN    DD *" >> JCL
+echo " DELETE ${CSIHLQ}.** MASK" >> JCL
+echo " SET MAXCC=0" >> JCL
+echo "/*" >> JCL
+
+sh scripts/submit_jcl.sh "`cat JCL`"
+
+rm JCL
