@@ -61,7 +61,7 @@ export OUTPUT_MOUNT="/u/zowead2/PSWI"
 
 # Create SMP/E
 sh 01_smpe.sh
-smpe=1
+smpe=$?
 
 if [ $smpe -eq 0 ];then
 # Apply PTFs
