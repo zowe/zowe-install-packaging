@@ -27,20 +27,20 @@ check_response() {
   REASON=`echo $RESP | grep -o '"reason":'`
   EMPTY=`echo $RESP | grep -o '\[\]'`
   MSG=`echo $RESP | grep -o '"messageText":'`
-  if [[ "$REASON" != "" ]] || [[ "$MSG" != "" ]] 
+  if [ -n "$REASON" ] || [ -n "$MSG" ] 
   then
     echo  "Info: Logging to file ${LOG_FILE}."
     echo   "$RESP" >> $LOG_FILE
   fi
-  if [[ "$EMPTY" != "" ]]
+  if [ -n "$EMPTY" ]
   then
     echo  "Info: Logging to file ${LOG_FILE}."
     echo   "$RESP" >> $LOG_FILE
   fi
-  if [[ $RESPCODE -ne 0 ]]
+  if [ $RESPCODE -ne 0 ]
     then
     echo  "Info: Logging to file ${LOG_FILE}."
-    if [[ "$RESP" != "" ]]
+    if [ -n "$RESP" ]
     then
       echo   "$RESP" >> $LOG_FILE
     else
@@ -73,5 +73,4 @@ echo " SET MAXCC=0" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
-
 rm JCL

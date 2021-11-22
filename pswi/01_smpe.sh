@@ -54,7 +54,7 @@ echo "Get workflowKey for SMPE workflow if it exists."
 
 RESP=`curl -s $SMPE_WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 WFKEY=`echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\"`
-if [[ "$WFKEY" != "" ]]
+if [ -n "$WFKEY" ]
 then
 SMPE_WORKFLOW_URL="${CREATE_SMPE_WF_URL}/${WFKEY}"
 
@@ -68,7 +68,7 @@ echo 'Invoking REST API to create SMPE workflow.'
 
 RESP=`curl -s $CREATE_SMPE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 sh scripts/check_response.sh "${RESP}" $?
-if [[ $? -gt 0 ]];then exit -1;fi
+if [ $? -gt 0 ];then exit -1;fi
 WFKEY=`echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\"`
 WORKFLOW_URL="${CREATE_SMPE_WF_URL}/${WFKEY}"
 
@@ -77,24 +77,24 @@ echo "Invoking REST API to start a SMPE workflow."
 
 RESP=`curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 sh scripts/check_response.sh "${RESP}" $?
-if [[ $? -gt 0 ]];then exit -1;fi
+if [ $? -gt 0 ];then exit -1;fi
 STATUS=""
-until [[ "$STATUS" == "FINISHED" ]]
+until [ "$STATUS" = "FINISHED" ]
 do
 sleep 20
 
 
 # Get the result of the workflow
 RESP=`curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-if [[ $? -gt 0 ]];then exit -1;fi
+if [ $? -gt 0 ];then exit -1;fi
 STATUS_NAME=`echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\"`
 
-if [[ "$STATUS_NAME" == "in-progress" ]]
+if [ "$STATUS_NAME" = "in-progress" ]
 then
   echo "Workflow ended with an error."
   echo $RESP
   exit -1
-elif [[ "$STATUS_NAME" == "complete" ]]
+elif [ "$STATUS_NAME" = "complete" ]
 then
   echo "Workflow finished successfully."
   STATUS="FINISHED"

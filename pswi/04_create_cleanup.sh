@@ -40,20 +40,20 @@ check_response() {
   REASON=`echo $RESP | grep -o '"reason":'`
   EMPTY=`echo $RESP | grep -o '\[\]'`
   MSG=`echo $RESP | grep -o '"messageText":'`
-  if [[ "$REASON" != "" ]] || [[ "$MSG" != "" ]] 
+  if [ -n "$REASON" ] || [ -n "$MSG" ] 
   then
     echo  "Info: Logging to file ${LOG_FILE}."
     echo   "$RESP" >> $LOG_FILE
   fi
-  if [[ "$EMPTY" != "" ]]
+  if [ -n "$EMPTY" ]
   then
     echo  "Info: Logging to file ${LOG_FILE}."
     echo   "$RESP" >> $LOG_FILE
   fi
-  if [[ $RESPCODE -ne 0 ]]
+  if [ $RESPCODE -ne 0 ]
     then
     echo  "Info: Logging to file ${LOG_FILE}."
-    if [[ "$RESP" != "" ]]
+    if [ "$RESP" != "" ]
     then
       echo   "$RESP" >> $LOG_FILE
     else
@@ -93,7 +93,7 @@ echo "Invoking REST API to unmount zFS ${TMP_ZFS} from its mountpoint."
 RESP=`curl -s $ACTION_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 check_response "${RESP}" $?
 
-if [[ "$ZOSMF_V" == "2.3" ]]
+if [ "$ZOSMF_V" = "2.3" ]
 then
 echo "Invoking REST API to unmount zFS ${WORK_ZFS} from its mountpoint."
 

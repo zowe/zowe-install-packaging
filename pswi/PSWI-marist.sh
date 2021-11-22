@@ -35,7 +35,7 @@ export PTF1="UO01994"
 export PTF2="UO01995"
 
 export JOBNAME="ZWEPSWI1"
-if [[ "$ACCOUNT" != "" ]]
+if [ -n "$ACCOUNT" ]
 then
 export JOBST1="//"${JOBNAME}" JOB ("${ACCOUNT}"),'PSWI',MSGCLASS=A,REGION=0M"
 else
@@ -63,12 +63,12 @@ export OUTPUT_MOUNT="/u/zowead2/PSWI"
 sh 01_smpe.sh
 smpe=1
 
-if [[ $smpe -eq 0 ]];then
+if [ $smpe -eq 0 ];then
 # Apply PTFs
 sh 02_ptf.sh
 ptf=$?
 
-if [[ $ptf -eq 0 ]];then
+if [ $ptf -eq 0 ];then
 # Create PSWI
 sh 03_create.sh
 create=$?
@@ -76,7 +76,7 @@ create=$?
 # Cleanup after the creation of PSWI
 sh 04_create_cleanup.sh
 
-if [[ $create -eq 0 ]];then 
+if [ $create -eq 0 ];then 
 # Test PSWI
 sh 05_test.sh
 test=$?
@@ -93,16 +93,16 @@ sh 07_smpe_cleanup.sh
 echo ""
 echo ""
 
-if [[ $smpe -ne 0 ]] || [[ $ptf -ne 0 ]] || [[ $create -ne 0 ]] || [[ $test -ne 0 ]]
+if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ]
 then
   echo "Build unsuccessful!"
-  if [[ $smpe -ne 0 ]]; then
+  if [ $smpe -ne 0 ]; then
     echo "SMP/E wasn't successful."
-  elif [[ $ptf -ne 0 ]]; then
+  elif [ $ptf -ne 0 ]; then
     echo "Applying PTFs wasn't successful."
-  elif [[ $create -ne 0 ]]; then
+  elif [ $create -ne 0 ]; then
     echo "Creation of SMP/E wasn't successful."
-  elif [[ $test -ne 0 ]]; then
+  elif [ $test -ne 0 ]; then
     echo "Testing of PSWI wasn't successful."
   fi
   exit -1
