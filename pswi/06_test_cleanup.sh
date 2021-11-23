@@ -71,11 +71,11 @@ check_response() {
 # Create a log file
 touch $LOG_FILE
  
-# Delete the Software instance
-echo "Invoking REST API to delete the Software Instance created by deployment."
-
-RESP=`curl -s $DELETE_DEPL_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
+## Delete the Software instance
+#echo "Invoking REST API to delete the Software Instance created by deployment."
+#
+#RESP=`curl -s $DELETE_DEPL_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
+#check_response "${RESP}" $?
 
 if [ "$ZOSMF_V" = "2.4" ]
 then

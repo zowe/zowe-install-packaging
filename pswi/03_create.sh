@@ -31,7 +31,11 @@ echo "z/OSMF version     :" $ZOSMF_V
 # JSONs      
 ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description":"ZOWE v'${VERSION}' Portable Software Instance",
 "globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${ZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWE9MNT)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Security Workflow","description":"This workflow configure zowe security manager.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWESECUR)"}},{"name":"ZOWE Certificates Workflow","description":"This workflow configure zowe security certificates.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF05)"}},{"name":"ZOWE Cross-memmory Workflow","description":"This workflow configure cross-memmory server.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF06)"}},{"name":"ZOWE Instance and STC Workflow","description":"This workflow create zowe instance and STC.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF03)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
 if [ -n "$STORCLAS" ] # there has to be either STORCLAS or VOLUME
 then
   ADD_WORKFLOW_DSN_JSON='{"dirblk":5,"avgblk":25000,"dsorg":"PO","alcunit":"TRK","primary":80,"secondary":40,"recfm":"VB","blksize":26000,"lrecl":4096,"storclass":"'${STORCLAS}'"}'
@@ -329,7 +333,7 @@ echo "Deleting PAX files from ${OUTPUT_MOUNT} if there are any."
 
 echo ${JOBST1} > JCL
 echo ${JOBST2} >> JCL
-echo "//MKDIR  EXEC PGM=BPXBATCH" >> JCL
+echo "//REMPAX EXEC PGM=BPXBATCH" >> JCL
 echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
@@ -393,18 +397,46 @@ else
   fi  
 fi
 
-# Store ZWE9MNT wokflow in the WORKFLOW dataset
-echo "Uploading workflow ZWE9MNT into ${DIR} directory thru SSH"
+# Store ZWEWRF02 wokflow in the WORKFLOW dataset
+echo "Uploading workflow ZWEWRF02 into ${DIR} directory thru SSH"
 
 cd workflows
 HOST=${ZOSMF_URL#https:\/\/}
 
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
-cd ${DIR}
-put ZWE9MNT
+cd ${WORK_MOUNT}
+put ZWEWRF02
 EOF
 cd ..
-#TODO: copy workflows to WORKFLOW_DSN data set
+
+echo "Copying workflows to ${WORKFLOW_DSN} data set."
+
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//COPYWRFS EXEC PGM=BPXBATCH" >> JCL
+echo "//STDOUT DD SYSOUT=*" >> JCL
+echo "//STDERR DD SYSOUT=*" >> JCL
+echo "//STDPARM  DD *" >> JCL
+echo "SH set -x;" >> JCL 
+echo "source=\"${ZOWE_MOUNT}workflows/ZWESECUR.xml\";" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWESECUR)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF03.xml\";" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF03)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF05.xml\";" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF05)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF06.xml\";" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
+echo "/*" >> JCL
+
+sh scripts/submit_jcl.sh "`cat JCL`"
+if [ $? -gt 0 ];then exit -1;fi
+rm JCL
 
 # Add data set for export jobs
 echo "Checking if the data set for export jobs already exists."
@@ -558,7 +590,7 @@ echo "PAXing the final PSWI."
 
 echo ${JOBST1} > JCL
 echo ${JOBST2} >> JCL
-echo "//UNPAXDIR EXEC PGM=BPXBATCH" >> JCL
+echo "//PAXDIREC EXEC PGM=BPXBATCH" >> JCL
 echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
