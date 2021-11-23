@@ -9,6 +9,7 @@ export ZOWE_ZFS="${CSIHLQ}.ZFS"
 export ZOWE_MOUNT="/u/zwe/zowe-smpe/"
 export VOLUME="ZOS003"
 export TEST_HLQ="ZOWEAD2.PSWIT"
+export VERSION="1.24.0"
 export SYSAFF=2964 
 export ACCOUNT=1
 

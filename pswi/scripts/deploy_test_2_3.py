@@ -192,10 +192,23 @@ class Deploy_test:
             "description": "Zowe Deploy test",
             "globalzone": self.new_name(self.definition["globalzone"]),
             "targetzones": [self.target],
-            "workflows": [{
-                "name": "ZOWE Mount Workflow",
+            "workflows": [
+               {"name": "ZOWE Mount Workflow",
                 "description": "This workflow performs mount action of ZOWE zFS.",
-                "location": {"dsname": self.hlq + ".WORKFLOW(ZWE9MNT)"}}]
+                "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF02)"}},
+               {"name":"ZOWE Security Workflow",
+                "description":"This workflow configure zowe security manager.",
+                "location": {"dsname": self.hlq + ".WORKFLOW(ZWESECUR)"}},
+               {"name":"ZOWE Certificates Workflow",
+                "description":"This workflow configure zowe security certificates.",
+                "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF05)"}},
+               {"name":"ZOWE Cross-memory Workflow",
+                "description":"This workflow configure cross-memory server.",
+                "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF06)"}},
+               {"name":"ZOWE Instance and STC Workflow",
+                "description":"This workflow create zowe instance and STC.",
+                "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF03)"}}
+            ]
         }
         swi_url = "{0}/zosmf/swmgmt/swi".format(self.url)
         swi_resp = requests.post(swi_url, headers=self.headers, auth=(user, password), data=json.dumps(parms), verify=False)

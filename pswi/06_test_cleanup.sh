@@ -23,7 +23,6 @@ echo "z/OSMF version              :" $ZOSMF_V
 
 # URLs
 DELETE_PSWI_URL="${BASE_URL}/zosmf/swmgmt/pswi/${ZOSMF_SYSTEM}/${PSWI}"
-LIST_ZFS_URL="${BASE_URL}/zosmf/restfiles/ds?dslevel=${TEST_HLQ}.**.ZFS"
 WORKFLOW_LIST_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows?owner=${ZOSMF_USER}&workflowName=${WORKFLOW_NAME}.*"
 DELETE_DEPL_SWI_URL="${BASE_URL}/zosmf/swmgmt/swi/${ZOSMF_SYSTEM}/${DEPLOY_NAME}"
 ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${TMP_ZFS}"
@@ -71,11 +70,11 @@ check_response() {
 # Create a log file
 touch $LOG_FILE
  
-## Delete the Software instance
-#echo "Invoking REST API to delete the Software Instance created by deployment."
-#
-#RESP=`curl -s $DELETE_DEPL_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-#check_response "${RESP}" $?
+# Delete the Software instance
+echo "Invoking REST API to delete the Software Instance created by deployment."
+
+RESP=`curl -s $DELETE_DEPL_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
+check_response "${RESP}" $?
 
 if [ "$ZOSMF_V" = "2.4" ]
 then
@@ -87,22 +86,11 @@ RESP=`curl -s $DELETE_PSWI_URL -k -X "DELETE" -H "Content-Type: application/json
 check_response "${RESP}" $?
 fi
 
-# Obtain the list of ZFS
-echo "Obtaining list of ${TEST_HLQ}.**.ZFS datasets."
-RESP=`curl -s $LIST_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
-ZFSLIST=`echo $RESP | sed 's/},/},\n/g' | grep -oP '"dsname":".*"' | cut -f4 -d\"`
-
 # Unmount
-IFS=$'\n'
-for ZFS in $ZFSLIST
-do
-echo "Invoking REST API to unmount zFS ${ZFS} from its mountpoint."
+echo "Invoking REST API to unmount zFS ${TEST_HLQ}.ZFS from its mountpoint."
 
-RESP=`curl -s ${BASE_URL}/zosmf/restfiles/mfs/${ZFS} -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
+RESP=`curl -s ${BASE_URL}/zosmf/restfiles/mfs/${TEST_HLQ}.ZFS -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 check_response "${RESP}" $?
-
-done
 
 # Unmount temporary ZFS
 echo "Invoking REST API to unmount zFS ${TMP_ZFS} from its mountpoint."
@@ -118,7 +106,7 @@ echo "Invoking REST API to delete ${TMP_ZFS} zFS."
 RESP=`curl -s $ZFS_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 check_response "${RESP}" $?
 
-if [ "$ZOSMF_V" == "2.3" ]
+if [ "$ZOSMF_V" = "2.3" ]
 then
 # Unmount work ZFS
 echo "Invoking REST API to unmount zFS ${WORK_ZFS} from its mountpoint."

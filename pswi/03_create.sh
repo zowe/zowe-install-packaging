@@ -33,7 +33,7 @@ ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description"
 "globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${ZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Security Workflow","description":"This workflow configure zowe security manager.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESECUR)"}},{"name":"ZOWE Certificates Workflow","description":"This workflow configure zowe security certificates.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF05)"}},{"name":"ZOWE Cross-memmory Workflow","description":"This workflow configure cross-memmory server.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF05)"}},{"name":"ZOWE Cross-memory Workflow","description":"This workflow configure cross-memory server.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF06)"}},{"name":"ZOWE Instance and STC Workflow","description":"This workflow create zowe instance and STC.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF03)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
 if [ -n "$STORCLAS" ] # there has to be either STORCLAS or VOLUME
