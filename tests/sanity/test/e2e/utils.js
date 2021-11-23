@@ -36,9 +36,9 @@ const PRE_INSTALLED_APPS = [
   // 'ZOS Subsystems',
   'API Catalog',
   'Editor',
-  'Sample Angular App',
-  'Sample React App',
-  'IFrame Sample',
+  //'Sample Angular App',
+  //'Sample React App',
+  //'IFrame Sample',
   // 'Hello World',
   'IP Explorer',
 ];

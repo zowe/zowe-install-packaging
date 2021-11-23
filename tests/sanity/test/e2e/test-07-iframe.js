@@ -33,7 +33,7 @@ const APP_NAME_TO_LAUNCH = 'TN3270';
 
 let appLaunched = false;
 
-describe(`test ${APP_TO_TEST}`, function() {
+describe.skip(`test ${APP_TO_TEST}`, function() {
   before('verify environment variable and load login page', async function() {
     expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
