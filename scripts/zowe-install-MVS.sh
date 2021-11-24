@@ -12,7 +12,7 @@
 
 sizeAUTH='space(30,15) tracks'
 sizeSAMP='space(15,15) tracks'
-members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl ZWEKRING.jcl ZWENOKYR.jcl ZWECSVSM.jcl ZWESSOTK.jcl ZWENOSSO.jcl'
+members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl ZWEKRING.jcl ZWENOKYR.jcl ZWECSVSM.jcl ZWESSOTK.jcl ZWENOSSO.jcl ZWESECKG.jcl'
 
 # info: construct ${variable%%.*} keeps up to first . (exclusive)
 
