@@ -3,21 +3,20 @@ on:
   workflow_dispatch:
     inputs:
       test-file-server:
-        description: 'Test file and on which server (colon separated if multiple). eg. tests/file1.js(server1,server2);tests/file2.js(server2)'
+        description: 'Test File and Running Server:'
         required: true
-      zowe-artifactory-pattern:
-        description: 'Zowe Artifactory Pattern: (usually leave as-is unless specify static path)'
-        required: true
-        default: 'libs-snapshot-local/org/zowe/*{branch-name}*.pax'
-      zowe-cli-artifactory-pattern:
-        description: 'Zowe CLI Artifactory Pattern:'
-        required: true
-        default: 'libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip'
-      extension-list:
-        description: 'Extension List:'
+      custom-zowe-artifactory-pattern:
+        description: 'Custom Zowe Artifactory Pattern:'
         required: false
-      zowe-docker-artifactory-build:
-        description: 'Zowe Docker Artifactory Build:'
+      custom-zowe-cli-artifactory-pattern:
+        description: 'Custom Zowe CLI Artifactory Pattern:'
+        required: false
+      custom-extension-list:
+        description: 'Custom Extension List:'
+        required: false
+        default: 'sample-node-api;sample-trial-app'
+      custom-zowe-tp-docker-artifactory-pattern:
+        description: 'Custom Zowe Tech Preview Docker Artifactory Pattern:'
         required: false
 
 # create a new branch to overwrite following defaults if necessary
@@ -25,8 +24,13 @@ env:
   # constants
   INSTALL_TEST_PATH: tests/installation
   SANITY_TEST_PATH: tests/sanity
-
-  # can be overwritten
+  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*{branch-name}*.pax
+  DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
+  DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar
+  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
+  DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
+  
+  # can be overwritten, adjusted by DevOps only
   ZOS_NODE_VERSION: v12.18.4
   # ZOS_NODE_VERSION more to choose from: v8.16.0, v8.17.0, v12.13.0, v14.15.1
   # v12.16.1 is problematic, use it cautiously
@@ -117,20 +121,125 @@ jobs:
         uses: zowe-actions/shared-actions/prepare-workflow@main
 
       - name: '[Prep 6] Additional Prep work'
+        id: more-test-prep
         run: |
-          echo NODE_HOME_PATTERN="/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x" >> $GITHUB_ENV
           CURRENT_BRANCH_NEW=$(echo ${{ env.CURRENT_BRANCH }} | tr '[:upper:]' '[:lower:]' | sed "s#\/#-#g")
-          if [[ "${{ github.event.inputs.zowe-artifactory-pattern }}" == *"{branch-name}"* ]]; then
-            echo ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "${{ github.event.inputs.zowe-artifactory-pattern }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g") >> $GITHUB_ENV
-          fi
-          echo TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2) >> $GITHUB_ENV
 
+          function jfrog_search {
+            search_pattern=$1
+            if [[ -z "$search_pattern" ]]; then
+              echo "In jfrog search function, search pattern is not provided"
+              exit 1
+            fi
+            out=$(jfrog rt search --sort-by=created --sort-order=desc --limit=1 $search_pattern | jq -r '.[].path')
+            if [[ -z "$out" ]]; then
+              echo "Cannot find latest artifact in pattern: $search_pattern"
+              exit 1
+            fi
+            return $out
+          }
+
+          ##################################################################################################
+          ### Process custom-zowe-artifactory-pattern
+          ##################################################################################################
+          ZOWE_ARTIFACTORY_PATTERN_INTERIM=
+          if [[ -z "${{ github.event.inputs.custom-zowe-artifactory-pattern }}" ]]; then
+            if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]; then
+              ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
+            else
+              ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
+            fi
+          else
+            ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ github.event.inputs.custom-zowe-artifactory-pattern }}"
+          fi
+
+          ##################################################################################################
+          ### Process TEST_SERVER_NICKNAME
+          ##################################################################################################
+          TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2)
+          TEST_SERVER_NICKNAME=
+          if [[ "$TEST_SERVER" == "zzow02" ]] ; then
+            TEST_SERVER_NICKNAME=marist-2
+          fi
+          if [[ "$TEST_SERVER" == "zzow03" ]] ; then
+            TEST_SERVER_NICKNAME=marist-3
+          fi
+          if [[ "$TEST_SERVER" == "zzow04" ]] ; then
+            TEST_SERVER_NICKNAME=marist-4
+          fi
+
+          ##################################################################################################
+          ### Process custom-extension-list
+          ##################################################################################################
+          if [[ "${{ matrix.test }}" == *"install-ext"* ]]; then
+            EXTENSION_LIST=
+            if [[ -z "${{ github.event.inputs.custom-extension-list }}" ]]; then
+              echo "You are running install-ext test, but input 'custom-extension-list' is missing"
+              exit 1
+            fi
+
+            for each_ext in $(echo "${{ github.event.inputs.custom-extension-list }}" | sed "s/;/ /g")
+            do
+              ext_name=
+              ext_pattern=
+              if [[ "$each_ext" *":"* ]]; then
+                # user provides custom artifactory pattern
+                ext_name=$(echo "$each_ext" | cut -d ":" -f1)
+                ext_pattern=$(echo "$each_ext" | cut -d ":" -f2)
+              else
+                # use default
+                ext_name="$each_ext"
+                ext_pattern=$(echo "${{ env.DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN }} | sed "s#{ext-name}#$ext_name#g")
+              fi
+              ext_full_path=$(jfrog_search $ext_pattern)
+              EXTENSION_LIST="$EXTENSION_LIST$ext_name:$ext_full_path,"
+            done
+
+            # remove trailing comma
+            EXTENSION_LIST=$(echo $EXTENSION_LIST | sed 's/,$//g')
+          fi
+
+          ##################################################################################################
+          ### Process custom-zowe-cli-artifactory-pattern
+          ##################################################################################################
+          ZOWE_CLI_ARTIFACTORY_PATTERN=
+          if [[ -z "${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}" ]]; then
+            ZOWE_CLI_ARTIFACTORY_PATTERN="${{ env.DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN }}"
+          else
+            ZOWE_CLI_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}"
+          fi
+
+          ##################################################################################################
+          ### Process custom-zowe-tp-docker-artifactory-pattern
+          ##################################################################################################
+          if [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
+            ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=
+            if [[ -z "${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}" ]]; then
+              ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
+            else
+              ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}"
+            fi
+            ZOWE_TP_DOCKER_ARTIFACTORY_FULL="https://zowe.jfrog.io/zowe/$(jfrog_search $ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN)"
+          fi  
+
+          ##################################################################################################
+          ### Set outputs
+          ##################################################################################################
+          echo ::set-output name=ZOWE_ARTIFACTORY_PATTERN_FINAL::$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
+          echo ::set-output name=NODE_HOME_PATTERN::/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x
+          echo ::set-output name=TEST_SERVER::$TEST_SERVER
+          echo ::set-output name=TEST_SERVER_NICKNAME::$TEST_SERVER_NICKNAME
+          echo ::set-output name=ZOWEPAXFILE::$(ls -1 ${{ runner.temp }}/zowe/)
+          echo ::set-output name=EXTENSION_LIST::$EXTENSION_LIST
+          echo ::set-output name=ZOWE_CLI_ARTIFACTORY_PATTERN::$ZOWE_CLI_ARTIFACTORY_PATTERN
+          echo ::set-output name=ZOWE_TP_DOCKER_ARTIFACTORY_FULL::$ZOWE_TP_DOCKER_ARTIFACTORY_FULL
+          
       - name: '[LOCK] Lock marist servers'
         uses: zowe-actions/shared-actions/lock-resource@main
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-install-test-${{ env.TEST_SERVER }}-lock 
+          lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock 
           lock-avg-retry-interval: 60
           
       - name: '[Setup 1] Project Setup 1'
@@ -156,58 +265,26 @@ jobs:
       #   run: |
       #     npm run lint
 
-      - name: '[Pre-Download 1] Determine if we need to pick latest artifact'
-        id: process-extra-options-1
-        run: |
-          if [[ "${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}" == *'*'* ]] ; then
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true --sort-by=created --sort-order=desc --limit=1
-          else
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true
-          fi
-
-      - name: '[Download 1] Download zowe.pax'
+      - name: '[Download 1] Download zowe.pax or smpe-zowe.zip'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
-          source-path-or-pattern: ${{ env.ZOWE_ARTIFACTORY_PATTERN_FINAL }}
+          source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_PATTERN_FINAL }}
           default-target-path: ${{ runner.temp }}/zowe/
-          extra-options: ${{ steps.process-extra-options-1.outputs.EXTRA_OPTIONS }}
+          extra-options: --flat=true --sort-by=created --sort-order=desc --limit=1
           expected-count: 1
-
-      - name: '[Pre-Download 2] Determine if we need to pick latest artifact'
-        id: process-extra-options-2
-        run: |
-          if [[ "${{ github.event.inputs.zowe-cli-artifactory-pattern }}" == *'*'* ]] ; then
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true --sort-by=created --sort-order=desc --limit=1
-          else
-            echo ::set-output name=EXTRA_OPTIONS::--flat=true --explode=true
-          fi
       
       - name: '[Download 2] Download cli package'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ github.event.inputs.zowe-cli-artifactory-pattern }}
           default-target-path: ${{ runner.temp }}/cli/
-          extra-options: ${{ steps.process-extra-options-2.outputs.EXTRA_OPTIONS }}
+          extra-options: --flat=true --sort-by=created --sort-order=desc --limit=1
           expected-count: 1
 
       - name: '[Install] Install CLI'
         timeout-minutes: 10
         working-directory: ${{ runner.temp }}/cli
         run: npm install -g zowe-cli*.tgz
-
-      - name: '[Test Prep] Additional command to run to prepare for test'
-        id: more-test-prep
-        run: |
-          echo ::set-output name=ZOWEPAXFILE::$(ls -1 ${{ runner.temp }}/zowe/)
-          if [[ "${{ env.TEST_SERVER }}" == "zzow02" ]] ; then
-            echo ::set-output name=TEST_SERVER_NICKNAME::marist-2
-          fi
-          if [[ "${{ env.TEST_SERVER }}" == "zzow03" ]] ; then
-            echo ::set-output name=TEST_SERVER_NICKNAME::marist-3
-          fi
-          if [[ "${{ env.TEST_SERVER }}" == "zzow04" ]] ; then
-            echo ::set-output name=TEST_SERVER_NICKNAME::marist-4
-          fi
         
       - name: '[Test] Test starts from here'
         timeout-minutes: 360
@@ -215,17 +292,17 @@ jobs:
         run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/${{ github.event.inputs.test-scope }}
         env:
           ANSIBLE_FORCE_COLOR: true
-          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME}}
-          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWEPAXFILE}}"
-          ZOWE_DOCKER_URL: ${{ github.event.inputs.zowe-docker-artifactory-build }}
-          EXTENSIONS_LIST: ${{ github.event.inputs.extension-list }}
+          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWEPAXFILE }}"
+          ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_FULL }}
+          EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
           SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
           DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          ZOS_NODE_HOME: ${{ env.NODE_HOME_PATTERN }}
+          ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
           # ANSIBLE_VERBOSE: -vvv
       
       - name: '[After Test] Merge Report'
