@@ -31,6 +31,12 @@ parse_string_vars() {
 }
 
 ###############################
+# return value of the variable
+get_var_value() {
+  eval "echo \"\${${1}}\""
+}
+
+###############################
 # get all environment variable exports line by line
 get_environment_exports() {
   export -p | \

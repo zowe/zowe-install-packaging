@@ -27,7 +27,7 @@ Each command is represented as a directory with some assistant files.
     * If it's `boolean` parameter, the user can just pass the parameter itself. For example, `--verbose` or `-v`.
     * If it's `string` parameter, the user must pass a value along with the parameter. For example, `--config /path/to/my/config/file`.
   4. is the requirement of this parameter. If this parameter is required, put value `required` in this column.
-  5. is reserved for future.
+  5. is the default value of the parameter. This is only valid for `string` parameters.
   6. is reserved for future.
   7. is the parameter help. This help message will be displayed if the user issue `--help` or `-h` parameter.
 - `.experimental`: This is an _optional_ file indicate this command is for experimental purpose. It may be changed or improved in the future, and it may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
@@ -37,13 +37,18 @@ Each command is represented as a directory with some assistant files.
 
 To define a new command, create the right folder structure under `bin/commands` and then create the assistant files described above.
 
-### Exit codes
+### Error message IDs and exit codes
 
-`zwe` command may exit with non-zero code with errors.
+`zwe` command may exit with non-zero code with error messages ID.
 
-- `99`
-- `1`:
-- `2`:
+- Error `ZWEI0200E` with exit code `200`: `ZWE_zowe_runtimeDirectory` is not defined when sourcing `bin/libs/index.sh`.
+- Exit code `201`: when the user pass `--help` or `-h` parameter, the exit code is always `201`.
+- Error `ZWEI0202E` with exit code `202`: invalid parameter %s.
+- Error `ZWEI0203E` with exit code `203`: invalid type of parameter %s.
+- Error `ZWEI0204E` with exit code `204`: invalid command %s.
+- Error `ZWEI0205E` with exit code `205`: invalid sub-command %s of command %s.
+- Error `ZWEI0206E` with exit code `206`: %s parameter is required.
+- Error `ZWEI0207E` with exit code `207`: no handler defined for command %s.
 
 ### Error codes and messages
 
@@ -63,3 +68,40 @@ Please be aware of using functions marked as `@experimental`. These functions ma
 - `bin/utils/curl.js`: This is node.js script works similar to popular Linux tool `curl`. It can make HTTP/HTTPS request and display response.
 
 Please be aware of using utilities marked as `@experimental`. These utilities may be changed or improved in the future, and they may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
+
+## Environment variables
+
+### Global Zowe environment variables
+
+These Zowe environment variables are created globally. Any Zowe modules, extensions can use these variables.
+
+- `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` CLI command is located.
+- `ZWE_CLI_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current CLI command chain.
+- `ZWE_CLI_COMMANDS_LIST`, list of CLI command chain separated by comma.
+- `ZWE_CLI_PARAMETERS_LIST`, CLI command parameter names separated by comma.
+- `ZWE_CLI_PARAMETER_<parameter-name>`, value of CLI parameter `<parameter-name>`.
+- `ZWE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
+- `ZWE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
+- `ZWE_CORE_COMPONENTS` is a constant holds names of core components.
+- `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
+- `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
+
+### Global shell environment variables
+
+These environment variables are initialized globally to customize shell behaviors.
+
+- `_CEE_RUNOPTS`: with value `FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)`
+- `_TAG_REDIR_IN`: with value `txt`
+- `_TAG_REDIR_OUT`: with value `txt`
+- `_TAG_REDIR_ERR`: with value `txt`
+- `_BPXK_AUTOCVT`: with value `"ON"`
+- `_EDC_ADD_ERRNO2`: with value `1`
+
+### Global node.js environment variables
+
+These environment variables are initialized globally to customize node.js behaviors.
+
+- `NODE_STDOUT_CCSID`: with value `1047`
+- `NODE_STDERR_CCSID`: with value `1047`
+- `NODE_STDIN_CCSID`: with value `1047`
+- `__UNTAGGED_READ_MODE`: with value `V6`

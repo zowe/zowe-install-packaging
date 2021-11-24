@@ -10,3 +10,40 @@
 #
 # Copyright Contributors to the Zowe Project.
 #######################################################################
+
+ensure_java_is_on_path() {
+  if [[ ":${PATH}:" != *":${JAVA_HOME}/bin:"* ]]; then
+    export PATH=${JAVA_HOME}/bin:${PATH}
+  fi
+}
+
+detect_java_home() {
+  # do we have which?
+  java_home=$(which java 2>/dev/null)
+  if [ -z "${java_home}" ]; then
+    (
+      IFS=:
+      for p in ${PATH}; do
+        if [ -f "${p}/node" ]; then
+          cd "${p}/.."
+          pwd
+          break
+        fi
+      done
+    )
+  else
+    echo "${java_home}"
+  fi
+}
+
+require_java() {
+  if [ -z "${JAVA_HOME}" ]; then
+    export JAVA_HOME=$(detect_java_home)
+  fi
+
+  if [ -z "${JAVA_HOME}" ]; then
+    print_error_and_exit "Cannot find node. Please define JAVA_HOME environment variable."
+  fi
+
+  ensure_java_is_on_path
+}

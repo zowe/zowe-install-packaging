@@ -109,3 +109,17 @@ padding_left() {
 $(echo "${str}")
 EOF
 }
+
+###############################
+# Remove / if it's the last character of the input string
+#
+# @param string   optional string
+remove_trailing_slash() {
+  if [ $# -eq 0 ]; then
+    read input
+  else
+    input=${1}
+  fi
+
+  echo "${input}" | sed 's#/$##'
+}

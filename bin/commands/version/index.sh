@@ -11,10 +11,10 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-if [ -f "${ZOWE_RUNTIME_DIRECTORY}/manifest.json" ]; then
-  manifest="${ZOWE_RUNTIME_DIRECTORY}/manifest.json"
-elif [ -f "${ZOWE_RUNTIME_DIRECTORY}/manifest.json.template" ]; then
-  manifest="${ZOWE_RUNTIME_DIRECTORY}/manifest.json.template"
+if [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json" ]; then
+  manifest="${ZWE_zowe_runtimeDirectory}/manifest.json"
+elif [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json.template" ]; then
+  manifest="${ZWE_zowe_runtimeDirectory}/manifest.json.template"
 else
   print_error_and_exit "Error: failed to find Zowe manifest.json"
 fi
@@ -22,9 +22,5 @@ fi
 ZOWE_VERSION=$(shell_read_json_config "${manifest}" version version)
 # $(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')
 print_message "Zowe v${ZOWE_VERSION}"
-if [ "${ZWECLI_LOGLEVEL}" = "debug" -o "${ZWECLI_LOGLEVEL}" = "trace" ]; then
-  print_message "build and hash: $(shell_read_json_config "${manifest}" 'build' 'branch')#$(shell_read_json_config "${manifest}" 'build' 'number') ($(shell_read_json_config "${manifest}" 'build' 'commitHash'))"
-fi
-if [ "${ZWECLI_LOGLEVEL}" = "trace" ]; then
-  print_message "Zowe directory: ${ZOWE_RUNTIME_DIRECTORY}"
-fi
+print_debug "build and hash: $(shell_read_json_config "${manifest}" 'build' 'branch')#$(shell_read_json_config "${manifest}" 'build' 'number') ($(shell_read_json_config "${manifest}" 'build' 'commitHash'))"
+print_trace "Zowe directory: ${ZWE_zowe_runtimeDirectory}"

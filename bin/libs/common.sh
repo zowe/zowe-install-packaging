@@ -11,6 +11,15 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+# these are shell environments we want to enforce in all cases
+export _CEE_RUNOPTS="FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
+export _TAG_REDIR_IN=txt
+export _TAG_REDIR_OUT=txt
+export _TAG_REDIR_ERR=txt
+export _BPXK_AUTOCVT="ON"
+export _EDC_ADD_ERRNO2=1                        # show details on error
+unset ENV             # just in case, as it can cause unexpected output
+
 # return current user id
 get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME:-$(whoami 2>/dev/null)}}}
@@ -39,8 +48,8 @@ print_raw_message() {
     fi
   fi
   if [[ "${write_to}" = *log* ]]; then
-    if [ -n "${ZOWE_LOG_FILE}" -a -w "${ZOWE_LOG_FILE}" ]; then
-      echo "${message}" >> $ZOWE_LOG_FILE
+    if [ -n "${ZWE_LOG_FILE}" -a -w "${ZWE_LOG_FILE}" ]; then
+      echo "${message}" >> $ZWE_LOG_FILE
     fi
   fi
 }
@@ -61,18 +70,108 @@ print_error() {
   print_raw_message "${message}" "true" "${write_to}"
 }
 
+print_debug() {
+  message=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  if [ "${ZWE_LOG_LEVEL_CLI}" = "DEBUG" -o "${ZWE_LOG_LEVEL_CLI}" = "TRACE" ]; then
+    print_raw_message "${message}" "false" "${write_to}"
+  fi
+}
+
+print_trace() {
+  message=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  if [ "${ZWE_LOG_LEVEL_CLI}" = "TRACE" ]; then
+    print_raw_message "${message}" "false" "${write_to}"
+  fi
+}
+
 print_error_and_exit() {
   message=$1
   # can be combination of log and/or console
   write_to=$2
-  exit_code=$3
-
-  if [ -z "${exit_code}" ]; then
-    exit_code=1
-  fi
+  # default exit code is 1
+  exit_code=${3:-1}
 
   print_error "${message}" "${write_to}"
   exit ${exit_code}
+}
+
+print_empty_line() {
+  # can be combination of log and/or console
+  write_to=$1
+
+  print_message "" "${write_to}"
+}
+
+print_level0_message() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_message "===============================================================================" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_message ">>>>>>>>>> $(echo "${title}" | upper_case )" "${write_to}"
+  fi
+}
+
+print_level1_message() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_message "-------------------------------------------------------------------------------" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_message ">>>>>>>>>> ${title}" "${write_to}"
+  fi
+}
+
+print_level0_debug() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_debug "===============================================================================" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_debug ">>>>>>>>>> $(echo "${title}" | upper_case )" "${write_to}"
+  fi
+}
+
+print_level1_debug() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_debug "-------------------------------------------------------------------------------" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_debug ">>>>>>>>>> ${title}" "${write_to}"
+  fi
+}
+
+print_level0_trace() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_trace "===============================================================================" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_trace ">>>>>>>>>> $(echo "${title}" | upper_case )" "${write_to}"
+  fi
+}
+
+print_level1_trace() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_trace "-------------------------------------------------------------------------------" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_trace ">>>>>>>>>> ${title}" "${write_to}"
+  fi
 }
 
 # runtime logging functions, follow zowe service logging standard
@@ -91,12 +190,10 @@ print_formatted_message() {
   fi
 
   # always use upper case
-  level=$(echo "${level}" | tr '[:lower:]' '[:upper:]')
+  level=$(echo "${level}" | upper_case)
 
   # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
-  expected_log_level_var=ZWE_LOG_LEVEL_${service}
-  expected_log_level_val=$(eval "echo \${$expected_log_level_var}")
-  expected_log_level_val=$(echo "${expected_log_level_val}" | tr '[:lower:]' '[:upper:]')
+  expected_log_level_val=$(parse_string_vars "ZWE_LOG_LEVEL_${service}" | upper_case)
   if [ -z "${expected_log_level_val}" ]; then
     expected_log_level_val=INFO
   fi
@@ -147,12 +244,6 @@ print_formatted_message() {
   done <<EOF
 $(echo "${message}")
 EOF
-
-  # reset values
-  export service=
-  export logger=
-  export level=
-  export message=
 }
 
 print_formatted_trace() {

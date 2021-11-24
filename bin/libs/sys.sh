@@ -10,3 +10,6 @@
 #
 # Copyright Contributors to the Zowe Project.
 #######################################################################
+
+export ZWE_RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
+export ZWE_PWD=$(pwd)

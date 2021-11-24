@@ -13,29 +13,30 @@
 
 #######################################################################
 # Global variables
-export ZWECLI_PARAMETERS_LIST=
-export ZWECLI_COMMANDS_LIST=
-export ZWECLI_LOGLEVEL=
-export ZWECLI_PARAMETERS_DEFINITIONS=
+export ZWE_CLI_COMMANDS_LIST=
+export ZWE_CLI_PARAMETERS_LIST=
+export ZWE_CLI_PARAMETERS_DEFINITIONS=
+export ZWE_LOG_LEVEL_CLI=INFO
 
 zwecli_load_parameters_definition() {
-  command_path=${ZOWE_RUNTIME_DIRECTORY}/bin/commands
-  ZWECLI_PARAMETERS_DEFINITIONS="${ZWECLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
+  command_path=${ZWE_zowe_runtimeDirectory}/bin/commands
+  ZWE_CLI_PARAMETERS_DEFINITIONS=$(cat "${command_path}/.parameters")
   last_command=
-  for command in ${ZWECLI_COMMANDS_LIST}; do
+  for command in ${ZWE_CLI_COMMANDS_LIST}; do
     if [ -d "${command_path}/${command}" ]; then
       command_path="${command_path}/${command}"
       last_command=$(trim "${last_command} ${command}")
       if [ -f "${command_path}/.parameters" ]; then
-        ZWECLI_PARAMETERS_DEFINITIONS="${ZWECLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
+        ZWE_CLI_PARAMETERS_DEFINITIONS="${ZWE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
       fi
     else
       if [ -z "${last_command}" ]; then
-        print_error "Error: invalid command \"${command}\""
+        print_error "Error ZWEI0204E: invalid command \"${command}\""
+        print_error_and_exit "Try --help to get information about what command(s) are available." "" 204
       else
-        print_error "Error: invalid sub-command \"${command}\" of command \"${last_command}\""
+        print_error "Error ZWEI0205E: invalid sub-command \"${command}\" of command \"${last_command}\""
+        print_error_and_exit "Try --help to get information about what command(s) are available." "" 205
       fi
-      print_error_and_exit "Try --help to get information about what command(s) are available."
     fi
   done
 }
@@ -45,9 +46,9 @@ zwecli_locate_parameter_definition() {
 
   match=
   while read -r line; do
-    line=$(trim "${line}")
-    if [ -n "${line}" ]; then
-      line_params_full=$(echo "${line}" | awk -F"|" '{print $1};' | tr "," " ")
+    first_line=$(echo "${line}" | head -n 1 | trim)
+    if [ -n "${first_line}" ]; then
+      line_params_full=$(echo "${first_line}" | awk -F"|" '{print $1};' | tr "," " ")
       if [ -n "${line_params_full}" ]; then
         for one in ${line_params_full}; do
           if [ "${param}" = "--${one}" ]; then
@@ -57,7 +58,7 @@ zwecli_locate_parameter_definition() {
         done
       fi
       if [ -z "${match}" ]; then
-        line_params_alias=$(echo "${line}" | awk -F"|" '{print $2};')
+        line_params_alias=$(echo "${first_line}" | awk -F"|" '{print $2};')
         if [ "${param}" = "-${line_params_alias}" ]; then
           match=${line}
         fi
@@ -67,7 +68,7 @@ zwecli_locate_parameter_definition() {
       fi
     fi
   done <<EOF
-$(echo "${ZWECLI_PARAMETERS_DEFINITIONS}")
+$(echo "${ZWE_CLI_PARAMETERS_DEFINITIONS}")
 EOF
 
   if [ -n "${match}" ]; then
@@ -78,40 +79,69 @@ EOF
   fi
 }
 
+zwecli_get_parameter_variable() {
+  param_id=$1
+
+  echo "ZWE_CLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum
+}
+
 zwecli_get_parameter_value() {
   param_id=$1
 
-  param_var=$(echo "ZWECLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum)
-  eval "echo \"\$${param_var}\""
+  get_var_value "$(zwecli_get_parameter_variable "${param_id}")"
+}
+
+zwecli_set_parameter_value() {
+  param_id=$1
+  value=$2
+
+  eval "export $(zwecli_get_parameter_variable "${param_id}")=${value}"
+}
+
+zwecli_load_parameters_default_value() {
+  while read -r line; do
+    first_line=$(echo "${line}" | head -n 1 | trim)
+    if [ -n "${first_line}" ]; then
+      param_id=$(echo "${first_line}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
+      param_default_value=$(echo "${first_line}" | awk -F"|" '{print $5}')
+      if [ -n "${param_default_value}" ]; then
+        param_value=$(zwecli_get_parameter_value "${param_id}")
+        if [ -z "${param_value}" ]; then
+          ZWE_CLI_PARAMETERS_LIST=$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")
+          zwecli_set_parameter_value "${param_id}" "${param_default_value}"
+        fi
+      fi
+    fi
+  done <<EOF
+$(echo "${ZWE_CLI_PARAMETERS_DEFINITIONS}")
+EOF
 }
 
 zwecli_process_loglevel() {
-  if [ "${ZWECLI_PARAMETER_DEBUG}" = "true" -o "${ZWECLI_PARAMETER_VERBOSE}" = "true" ]; then
-    ZWECLI_LOGLEVEL=debug
+  if [ "${ZWE_CLI_PARAMETER_DEBUG}" = "true" -o "${ZWE_CLI_PARAMETER_VERBOSE}" = "true" ]; then
+    ZWE_LOG_LEVEL_CLI=DEBUG
   fi
-  if [ "${ZWECLI_PARAMETER_TRACE}" = "true" ]; then
-    ZWECLI_LOGLEVEL=trace
+  if [ "${ZWE_CLI_PARAMETER_TRACE}" = "true" ]; then
+    ZWE_LOG_LEVEL_CLI=TRACE
   fi
 }
 
 zwecli_process_logfile() {
-  if [ -n "${ZWECLI_PARAMETER_LOG}" ]; then
+  if [ -n "${ZWE_CLI_PARAMETER_LOG_DIR}" ]; then
     log_prefix=zwe
-    if [ -n "${ZWECLI_COMMANDS_LIST}" ]; then
-      log_prefix=zwe-$(echo "${ZWECLI_COMMANDS_LIST}" | trim | sed 's/ /-/g')
+    if [ -n "${ZWE_CLI_COMMANDS_LIST}" ]; then
+      log_prefix=zwe-$(echo "${ZWE_CLI_COMMANDS_LIST}" | trim | sed 's/ /-/g')
     fi
-    prepare_log_file "${ZWECLI_PARAMETER_LOG}" "${log_prefix}"
+    prepare_log_file "${ZWE_CLI_PARAMETER_LOG_DIR}" "${log_prefix}"
 
     # write initial information
-    print_message "Zowe Server CLI: zwe ${ZWECLI_COMMANDS_LIST}" "log"
+    print_message "Zowe Server CLI: zwe ${ZWE_CLI_COMMANDS_LIST}" "log"
     print_message "- timestamp: $(date +"%Y-%m-%d %H:%M:%S")" "log"
     print_message "- parameters:" "log"
-    for param in ${ZWECLI_PARAMETERS_LIST}; do
+    for param in ${ZWE_CLI_PARAMETERS_LIST}; do
       print_message "  * ${param}: $(zwecli_get_parameter_value "${param}")" "log"
     done
     print_message "" "log"
-echo
-
   fi
 }
 
@@ -119,10 +149,10 @@ zwecli_display_parameters_help() {
   file=$1
 
   while read -r line; do
-    line=$(trim "${line}")
+    first_line=$(echo "${line}" | trim | head -n 1)
     if [ -n "${line}" ]; then
       display_param=
-      line_params_full=$(echo "${line}" | awk -F"|" '{print $1};' | tr "," " ")
+      line_params_full=$(echo "${first_line}" | awk -F"|" '{print $1};' | tr "," " ")
       for one in ${line_params_full}; do
         if [ -z "${display_param}" ]; then
           display_param="--${one}"
@@ -131,7 +161,7 @@ zwecli_display_parameters_help() {
         fi
       done
 
-      line_params_alias=$(echo "${line}" | awk -F"|" '{print $2};')
+      line_params_alias=$(echo "${first_line}" | awk -F"|" '{print $2};')
       if [ -n "${line_params_alias}" ]; then
         if [ -z "${display_param}" ]; then
           display_param="-${line_params_alias}"
@@ -140,14 +170,14 @@ zwecli_display_parameters_help() {
         fi
       fi
 
-      line_params_type=$(echo "${line}" | awk -F"|" '{print $3};' | lower_case)
+      line_params_type=$(echo "${first_line}" | awk -F"|" '{print $3};' | lower_case)
       if [ "${line_params_type}" = "b" -o "${line_params_type}" = "bool" ]; then
         line_params_type=boolean
       elif [ "${line_params_type}" = "s" -o "${line_params_type}" = "str" ]; then
         line_params_type=string
       fi
 
-      line_params_requirement=$(echo "${line}" | awk -F"|" '{print $4};' | lower_case)
+      line_params_requirement=$(echo "${first_line}" | awk -F"|" '{print $4};' | lower_case)
 
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
       echo "  ${display_param}: ${line_params_type}, ${line_params_requirement:-optional}"
@@ -160,21 +190,21 @@ EOF
 
 zwecli_calculate_command_path() {
   if [ $# -eq 0 ]; then
-    commands="${ZWECLI_COMMANDS_LIST}"
+    commands="${ZWE_CLI_COMMANDS_LIST}"
   else
     commands="${1}"
   fi
 
   if [ -z "${commands}" ]; then
-    echo "${ZOWE_RUNTIME_DIRECTORY}/bin/commands"
+    echo "${ZWE_zowe_runtimeDirectory}/bin/commands"
   else
-    echo "${ZOWE_RUNTIME_DIRECTORY}/bin/commands/$(echo "${commands}" | sed -e 's# #/#')"
+    echo "${ZWE_zowe_runtimeDirectory}/bin/commands/$(echo "${commands}" | sed -e 's# #/#g')"
   fi
 }
 
 zwecli_process_help() {
-  if [ "${ZWECLI_PARAMETER_HELP}" = "true" ]; then
-    >&2 echo "Zowe Server CLI: zwe ${ZWECLI_COMMANDS_LIST}"
+  if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
+    >&2 echo "Zowe Server CLI: zwe ${ZWE_CLI_COMMANDS_LIST}"
     >&2 echo
 
     # display help message if exists
@@ -185,17 +215,17 @@ zwecli_process_help() {
     fi
 
     # display global parameters
-    if [ -f "${ZOWE_RUNTIME_DIRECTORY}/bin/commands/.parameters" ]; then
+    if [ -f "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters" ]; then
       >&2 echo "------------------"
       >&2 echo "Global parameters:"
-      >&2 zwecli_display_parameters_help "${ZOWE_RUNTIME_DIRECTORY}/bin/commands/.parameters"
+      >&2 zwecli_display_parameters_help "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters"
       >&2 echo
     fi
 
     # display command parameters
     command_tree=
-    command_path="${ZOWE_RUNTIME_DIRECTORY}/bin/commands"
-    for command in ${ZWECLI_COMMANDS_LIST}; do
+    command_path="${ZWE_zowe_runtimeDirectory}/bin/commands"
+    for command in ${ZWE_CLI_COMMANDS_LIST}; do
       command_tree=$(echo "${command_tree} ${command}" | trim)
       command_path="${command_path}/${command}"
       if [ -f "${command_path}/.experimental" ]; then
@@ -224,30 +254,30 @@ EOF
       echo
     fi
 
-    exit 99
+    exit 201
   fi
 }
 
 zwecli_validate_parameters() {
   required_params=
   while read -r line; do
-    line=$(trim "${line}")
-    if [ -n "${line}" ]; then
-      param_id=$(echo "${line}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
-      param_requirement=$(echo "${line}" | awk -F"|" '{print $4}' | lower_case)
+    first_line=$(echo "${line}" | head -n 1 | trim)
+    if [ -n "${first_line}" ]; then
+      param_id=$(echo "${first_line}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
+      param_requirement=$(echo "${first_line}" | awk -F"|" '{print $4}' | lower_case)
       if [ "${param_requirement}" = "required" ]; then
         required_params=$(echo "${required_params} ${param_id}" | trim)
       fi
     fi
   done <<EOF
-$(echo "${ZWECLI_PARAMETERS_DEFINITIONS}")
+$(echo "${ZWE_CLI_PARAMETERS_DEFINITIONS}")
 EOF
 
   for param in ${required_params}; do
     val=$(zwecli_get_parameter_value "${param}")
     if [ -z "${val}" ]; then
-      print_error "Error: ${param} parameter is required"
-      print_error_and_exit "Try --help to get information about how to use this command."
+      print_error "Error ZWEI0206E: ${param} parameter is required"
+      print_error_and_exit "Try --help to get information about how to use this command." "" 206
     fi
   done
 }
@@ -257,9 +287,9 @@ zwecli_process_command() {
   if [ -f "${command_path}/index.sh" ]; then
     . "${command_path}/index.sh"
   else
-    if [ -n "${ZWECLI_COMMANDS_LIST}" ]; then
-      print_error "Error: no handler defined for command \"${ZWECLI_COMMANDS_LIST}\"."
+    if [ -n "${ZWE_CLI_COMMANDS_LIST}" ]; then
+      print_error "Error ZWEI0207E: no handler defined for command \"${ZWE_CLI_COMMANDS_LIST}\"."
     fi
-    print_error_and_exit "Try --help to get information about how to use this command." 2
+    print_error_and_exit "Try --help to get information about how to use this command." "console" 207
   fi
 }

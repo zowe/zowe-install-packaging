@@ -11,15 +11,16 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_message "I'm the init command"
+print_level0_message "Command: sample sub deep"
+print_message "I'm the sample sub deep command"
 print_message
 
-print_message "-----------------"
-if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-  print_error_and_exit "Error: config file is required."
-elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-  print_error_and_exit "Error: config file does not exist."
-else
-  print_message "Content of ${ZWE_CLI_PARAMETER_CONFIG}"
-  cat "${ZWE_CLI_PARAMETER_CONFIG}"
-fi
+print_level1_message "require_node"
+require_node
+echo "NODE_HOME=${NODE_HOME}"
+print_message
+
+print_level1_message "require_java"
+require_java
+echo "JAVA_HOME=${JAVA_HOME}"
+print_message

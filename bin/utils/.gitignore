@@ -1,0 +1,5 @@
+# ignore local copy of utility tools
+config-converter/
+fconv/
+ncert/
+njq/

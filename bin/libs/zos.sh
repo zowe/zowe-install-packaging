@@ -11,15 +11,3 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_message "I'm the init command"
-print_message
-
-print_message "-----------------"
-if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-  print_error_and_exit "Error: config file is required."
-elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-  print_error_and_exit "Error: config file does not exist."
-else
-  print_message "Content of ${ZWE_CLI_PARAMETER_CONFIG}"
-  cat "${ZWE_CLI_PARAMETER_CONFIG}"
-fi

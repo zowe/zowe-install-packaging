@@ -11,21 +11,24 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-if [ -z "${ZOWE_RUNTIME_DIRECTORY}" ]; then
-  >&2 echo "Error: ZOWE_RUNTIME_DIRECTORY is not defined"
-  exit 1
+if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
+  >&2 echo "Error ZWEI0900E: ZWE_zowe_runtimeDirectory is not defined"
+  exit 200
 fi
 
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/common.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/fs.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/http.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/java.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/json.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/logging.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/network.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/node.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/string.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/sys.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/var.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/zosmf.sh"
-. "${ZOWE_RUNTIME_DIRECTORY}/bin/libs/zwecli.sh"
+export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,app-server,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss"
+
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/common.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/component.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/fs.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/http.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/java.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/json.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/logging.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/network.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/node.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/string.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/sys.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/var.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/zosmf.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/zwecli.sh"

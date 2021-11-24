@@ -68,3 +68,26 @@ shell_read_yaml_config() {
     echo "${val}"
   fi
 }
+
+read_yaml() {
+  file=$1
+  key=$2
+
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  fconv="${utils_dir}/fconv/src/index.js"
+  jq="${utils_dir}/njq/src/index.js"
+
+  node "${fconv}" --input-format=yaml "${file}" | node "${jq}" -r "${key}"
+  return $?
+}
+
+read_json() {
+  file=$1
+  key=$2
+
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  jq="${utils_dir}/njq/src/index.js"
+
+  cat "${file}" | node "${jq}" -r "${key}"
+  return $?
+}
