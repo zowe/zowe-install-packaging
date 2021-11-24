@@ -59,12 +59,12 @@ jobs:
         TEST_FILE_SERVER=$(echo "${{ github.event.inputs.test-file-server }}" | tr -d "[:space:]")
 
         # validate
-        if [[ $TEST_FILE_SERVER =~ ^([A-Za-z0-9/]+\.js\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))(;[A-Za-z0-9/]+\.js\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))*$ ]]; then
+        if [[ $TEST_FILE_SERVER =~ ^([A-Za-z0-9/]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))(;[A-Za-z0-9/]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))*$ ]]; then
           echo "Syntax validation success!"
         else
           echo "Input test-file-server is not valid."
-          echo "Format:{testpath}/{testfile}.js(zzow02[,zzow03][,zzow04]) semi-colon separated if multiple"
-          echo "Examples: tests/file1.js(zzow02,zzow04);tests/file2.js(zzow03)"
+          echo "Format:{testpath}/{testfile}.ts(zzow02[,zzow03][,zzow04]) semi-colon separated if multiple"
+          echo "Examples: tests/file1.ts(zzow02,zzow04);tests/file2.ts(zzow03)"
           exit 1
         fi
 
