@@ -242,7 +242,7 @@ jobs:
           ### Set outputs
           ##################################################################################################
           echo ::set-output name=ZOWE_ARTIFACTORY_FINAL::$ZOWE_ARTIFACTORY_FINAL
-          echo ::set-output name=ZOWE_ARTIFACTORY_FINAL_FILENAME:$ZOWE_ARTIFACTORY_FINAL_FILENAME
+          echo ::set-output name=ZOWE_ARTIFACTORY_FINAL_FILENAME::$ZOWE_ARTIFACTORY_FINAL_FILENAME
           echo ::set-output name=NODE_HOME_PATTERN::/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x
           echo ::set-output name=TEST_SERVER::$TEST_SERVER
           echo ::set-output name=TEST_SERVER_NICKNAME::$TEST_SERVER_NICKNAME
