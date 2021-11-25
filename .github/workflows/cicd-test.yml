@@ -269,14 +269,6 @@ jobs:
           echo "Test server: "$TEST_SERVER
           echo "Test server nickname: "$TEST_SERVER_NICKNAME
           echo "Node home pattern on z/OS: /ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x"
-
-      - name: '[LOCK] Lock marist servers'
-        uses: zowe-actions/shared-actions/lock-resource@main
-        with:
-          lock-repository: ${{ github.repository }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock 
-          lock-avg-retry-interval: 60
           
       - name: '[Setup 1] Project Setup 1'
         working-directory: ${{ env.INSTALL_TEST_PATH }}
@@ -321,6 +313,14 @@ jobs:
         timeout-minutes: 10
         working-directory: ${{ runner.temp }}/cli
         run: npm install -g zowe-cli*.tgz
+
+      - name: '[LOCK] Lock marist servers'
+        uses: zowe-actions/shared-actions/lock-resource@main
+        with:
+          lock-repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock 
+          lock-avg-retry-interval: 60
         
       - name: '[Test] Test starts from here'
         timeout-minutes: 360
