@@ -1,1 +1,14 @@
-""
+{
+  "lockAcquiredTime": "Thu Nov 25 2021 22:13:45 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1637878425445485090",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/tom/GHA-test",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "FlappiTomic",
+  "runId": 1505407874,
+  "runNumber": 102
+}
