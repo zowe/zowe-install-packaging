@@ -20,7 +20,7 @@ on:
         required: false
 
 # create a new branch to overwrite following defaults if necessary
-env: 
+env:
   # constants
   INSTALL_TEST_PATH: tests/installation
   SANITY_TEST_PATH: tests/sanity
@@ -29,7 +29,7 @@ env:
   DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar
   DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
-  
+
   # can be overwritten, adjusted by DevOps only
   ZOS_NODE_VERSION: v12.18.4
   # ZOS_NODE_VERSION more to choose from: v8.16.0, v8.17.0, v12.13.0, v14.15.1
@@ -37,7 +37,7 @@ env:
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
-      
+
 jobs:
   check-permission:
     runs-on: ubuntu-latest
@@ -47,11 +47,11 @@ jobs:
         uses: zowe-actions/shared-actions/permission-check@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          
+
   make-matrix:
     runs-on: ubuntu-latest
     needs: check-permission
-    steps: 
+    steps:
     - name: make matrix
       id: set-matrix
       run: |
@@ -109,7 +109,7 @@ jobs:
           key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-cache-node-modules-
-      
+
       - name: '[Prep 3] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
         env:
@@ -117,7 +117,7 @@ jobs:
 
       - name: '[Prep 4] Validate package.json'
         uses: zowe-actions/shared-actions/validate-package-json@main
-          
+
       - name: '[Prep 5] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -171,24 +171,24 @@ jobs:
                 if [[ "$each_zowe_art_pattern" == *"zowe-smpe"* ]] && [[ "$each_zowe_art_pattern" == *"zip"* ]]; then
                   # if it is valid smpe.zip format, we will hornour this custom input
                   ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                  echo "I am here 1"
+                  echo "smpe custom"
                 else
                   # otherwise use smpe default
                   ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
-                  echo "I am here 2"
+                  echo "smpe default"
                 fi
-              else 
+              else
                 if [[ "$each_zowe_art_pattern" == *"pax"* ]]; then
                   # if it is valid pax format, we will hornour this custom input
                   ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                  echo "I am here 3"
+                  echo "pax custom"
                 else
                   # otherwise use pax default
                   ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
-                  echo "I am here 4"
+                  echo "pax default"
                 fi
               fi
-              
+
             done
           fi
           ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
@@ -222,7 +222,7 @@ jobs:
               echo "You are running install-ext test, but input 'custom-extension-list' is missing"
               exit 1
             fi
-            
+
             # validate extension list input
             if [[ "${{ github.event.inputs.custom-extension-list }}" =~ ^([^;:]+(:[^;:]+)*)(;[^;:]+(:[^;:]+)*)*$ ]]; then
               echo "extension list syntax validation success!"
@@ -280,7 +280,7 @@ jobs:
             fi
             ZOWE_TP_DOCKER_ARTIFACTORY_FINAL="https://zowe.jfrog.io/zowe/$(jfrog_search $ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN)"
             echo "Zowe tech preview docker artifactory full path processing complete!"
-          fi  
+          fi
 
           ##################################################################################################
           ### Set outputs
@@ -297,7 +297,7 @@ jobs:
           ##################################################################################################
           ### Echo all processed outputs
           ##################################################################################################
-          echo 
+          echo
           echo "########Summary of outputs:########"
           echo "Zowe artifactory path: "$ZOWE_ARTIFACTORY_FINAL
           echo "Zowe artifactory file name: "$ZOWE_ARTIFACTORY_FINAL_FILENAME
@@ -307,13 +307,13 @@ jobs:
           echo "Test server: "$TEST_SERVER
           echo "Test server nickname: "$TEST_SERVER_NICKNAME
           echo "Node home pattern on z/OS: /ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x"
-          
+
       - name: '[Setup 1] Project Setup 1'
         working-directory: ${{ env.INSTALL_TEST_PATH }}
         run: |
           npm ci
           npm run build
-      
+
       - name: '[Setup 2] Project Setup 2'
         working-directory: ${{ env.SANITY_TEST_PATH }}
         run: |
@@ -324,7 +324,7 @@ jobs:
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
       #   run: |
       #     npm run lint
-      
+
       # - name: '[Lint 2] Lint 2'
       #   timeout-minutes: 2
       #   working-directory: ${{ env.SANITY_TEST_PATH }}
@@ -357,9 +357,9 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock 
+          lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
           lock-avg-retry-interval: 60
-        
+
       # - name: '[Test] Test starts from here'
       #   timeout-minutes: 360
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
@@ -378,7 +378,7 @@ jobs:
       #     SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       #     ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
-      
+
       # - name: '[After Test] Merge Report'
       #   if: always()
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
