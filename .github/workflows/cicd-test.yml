@@ -146,19 +146,41 @@ jobs:
           ZOWE_ARTIFACTORY_PATTERN_INTERIM=
           input_custom_zowe_art=${{ github.event.inputs.custom-zowe-artifactory-pattern }}
           if [[ -z "$input_custom_zowe_art" ]]; then
+            # custom input is empty, we set default no matter running smpe test or not
             if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]; then
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
             else
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
             fi
           else
-            if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]; then
-              if [[ "$input_custom_zowe_art" != *"zowe-smpe"* ]] || [[ "$input_custom_zowe_art" != *"zip"* ]]; then
-                echo "You are going to run install smpe test, but zowe artifact you customized is not a proper zowe-smpe*.zip format"
-                exit 1
-              fi
+            # validate custom zowe artifactory path input
+            if [[ "$input_custom_zowe_art" =~ ^([^;]+)(;[^;]+)?$ ]]; then
+              echo "custom zowe artifactory path input validation success!"
+            else
+              echo "custom zowe artifactory path input validation failed"
+              echo "You must follow the format: {path1};{path2}"
+              echo "Example input will be:"
+              echo "path1/zowe.pax;path2/zowe-smpe.pax"
+              echo "You can at most supply two customized paths, one for pax one for smpe and separated by semi-colon."
             fi
-            ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
+
+            for each_zowe_art_pattern in $(echo "$input_custom_zowe_art" | sed "s/;/ /g")
+            do
+              if ([[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]) && [[ "$input_custom_zowe_art" != *"zowe-smpe"* ]] && [[ "$input_custom_zowe_art" != *"zip"* ]]; then
+                # if it is valid smpe.zip format, we will hornour this custom input
+                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
+              else
+                # otherwise use smpe default
+                ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
+              fi
+              if [[ "${{ matrix.test }}" == *"install.ts"* ]] && [[ "$input_custom_zowe_art" != *"pax"* ]]; then
+                # if it is valid pax format, we will hornour this custom input
+                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
+              else
+                # otherwise use pax default
+                ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
+              fi
+            done
           fi
           ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
