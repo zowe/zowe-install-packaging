@@ -170,19 +170,23 @@ jobs:
                 # if it is valid smpe.zip format, we will hornour this custom input
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
                 echo "I am here 1"
+                continue
               else
                 # otherwise use smpe default
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
                 echo "I am here 2"
+                continue
               fi
               if [[ "${{ matrix.test }}" == *"install.ts"* ]] && [[ "$input_custom_zowe_art" == *"pax"* ]]; then
                 # if it is valid pax format, we will hornour this custom input
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
                 echo "I am here 3"
+                continue
               else
                 # otherwise use pax default
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
                 echo "I am here 4"
+                continue
               fi
             done
           fi
