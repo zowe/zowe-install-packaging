@@ -111,7 +111,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 27
+        expected    : 24
       )
 
       // we want build log pulled in for SMP/e build
@@ -407,7 +407,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SERVER', value: 'marist'),
+          string(name: 'TEST_SERVER', value: 'marist-4'),
           //string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'TEST_SCOPE', value: 'convenience build'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),

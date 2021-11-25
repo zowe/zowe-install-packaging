@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "1.26.0",
+  "version": "2.0.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -12,10 +12,6 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zss-auth": {
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
     },
@@ -43,14 +39,6 @@
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
     },
-    "org.zowe.zlux.zlux-workflow": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zosmf-auth": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
-    },
     "org.zowe.zss": {
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
@@ -74,28 +62,28 @@
       "version": "~1.0.0-SNAPSHOT",
       "artifact": "*.pax"
     },
-    "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.api-catalog-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.discovery-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.discovery-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.gateway-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.gateway-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.caching-service-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "caching-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.apiml-common-lib-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
@@ -308,17 +296,6 @@
         "tag": "staging",
         "destinations": ["Zowe PAX"]
       }]
-    }, {
-      "componentGroup": "Zowe Application Framework Authentication Handlers",
-      "entries": [{
-        "repository": "zss-auth",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }, {
-        "repository": "zosmf-auth",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }]
     },
     {
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
@@ -363,14 +340,6 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }]
-    },
-    {
-      "componentGroup": "Zowe Desktop Workflows Plugin-in",
-      "entries": [{
-        "repository": "zlux-workflow",
         "tag": "staging",
         "destinations": ["Zowe PAX"]
       }]
