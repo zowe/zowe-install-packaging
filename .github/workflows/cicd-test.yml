@@ -166,27 +166,26 @@ jobs:
 
             for each_zowe_art_pattern in $(echo "$input_custom_zowe_art" | sed "s/;/ /g")
             do
-              if ([[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]) && [[ "$input_custom_zowe_art" == *"zowe-smpe"* ]] && [[ "$input_custom_zowe_art" == *"zip"* ]]; then
-                # if it is valid smpe.zip format, we will hornour this custom input
-                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
-                echo "I am here 1"
-                continue
-              else
-                # otherwise use smpe default
-                ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
-                echo "I am here 2"
-                continue
-              fi
-              if [[ "${{ matrix.test }}" == *"install.ts"* ]] && [[ "$input_custom_zowe_art" == *"pax"* ]]; then
-                # if it is valid pax format, we will hornour this custom input
-                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
-                echo "I am here 3"
-                continue
-              else
-                # otherwise use pax default
-                ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
-                echo "I am here 4"
-                continue
+              if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]] ; then
+                if [[ "$input_custom_zowe_art" == *"zowe-smpe"* ]] && [[ "$input_custom_zowe_art" == *"zip"* ]]; then
+                  # if it is valid smpe.zip format, we will hornour this custom input
+                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
+                  echo "I am here 1"
+                else
+                  # otherwise use smpe default
+                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
+                  echo "I am here 2"
+                fi
+              else 
+                if [[ "$input_custom_zowe_art" == *"pax"* ]]; then
+                  # if it is valid pax format, we will hornour this custom input
+                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
+                  echo "I am here 3"
+                else
+                  # otherwise use pax default
+                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
+                  echo "I am here 4"
+                fi
               fi
             done
           fi
