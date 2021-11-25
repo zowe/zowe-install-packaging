@@ -156,6 +156,7 @@ jobs:
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
           # next line is just to get the pax file name - extract the part after last occurance of slash
           ZOWE_ARTIFACTORY_FINAL_FILENAME=${ZOWE_ARTIFACTORY_FINAL##*/}
+          echo "Zowe pax or smpe.zip artifactory full path processing complete!"
 
           ##################################################################################################
           ### Process TEST_SERVER_NICKNAME
@@ -171,6 +172,7 @@ jobs:
           if [[ "$TEST_SERVER" == "zzow04" ]] ; then
             TEST_SERVER_NICKNAME=marist-4
           fi
+          echo "Test server name processing complete!"
 
           ##################################################################################################
           ### Process custom-extension-list
@@ -212,6 +214,7 @@ jobs:
 
             # remove trailing comma
             EXTENSION_LIST=$(echo $EXTENSION_LIST | sed 's/,$//g')
+            echo "Zowe extension list processing complete!"
           fi
 
           ##################################################################################################
@@ -224,6 +227,7 @@ jobs:
             ZOWE_CLI_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}"
           fi
           ZOWE_CLI_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_CLI_ARTIFACTORY_PATTERN)
+          echo "Zowe CLI artifactory full path processing complete!"
 
           ##################################################################################################
           ### Process custom-zowe-tp-docker-artifactory-pattern
@@ -236,6 +240,7 @@ jobs:
               ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}"
             fi
             ZOWE_TP_DOCKER_ARTIFACTORY_FINAL="https://zowe.jfrog.io/zowe/$(jfrog_search $ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN)"
+            echo "Zowe tech preview docker artifactory full path processing complete!"
           fi  
 
           ##################################################################################################
@@ -253,6 +258,8 @@ jobs:
           ##################################################################################################
           ### Echo all processed outputs
           ##################################################################################################
+          echo 
+          echo "########Summary of outputs:########"
           echo "Zowe artifactory path: "$ZOWE_ARTIFACTORY_FINAL
           echo "Zowe artifactory file name: "$ZOWE_ARTIFACTORY_FINAL_FILENAME
           echo "Zowe CLI artifactory path: "$ZOWE_CLI_ARTIFACTORY_FINAL
