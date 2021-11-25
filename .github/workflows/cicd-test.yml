@@ -295,7 +295,7 @@ jobs:
           source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
           default-target-path: ${{ runner.temp }}/zowe/
           expected-count: 1
-      
+      - run: ls ${{ runner.temp }}/zowe/
       - name: '[Download 2] Download cli package'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
