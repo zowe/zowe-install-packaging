@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.zlux.sample.angular",
-  "pluginLocation": "sample-angular-app",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}
