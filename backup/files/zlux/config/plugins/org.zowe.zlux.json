@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.zlux",
-  "pluginLocation": "zlux-server-framework/plugins/zlux-server",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}

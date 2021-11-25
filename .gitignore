@@ -36,6 +36,3 @@ output/
 
 # workflow folder
 files/workflows/
-
-# test zowe.yaml
-bin/zowe.yaml

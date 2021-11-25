@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.terminal.vt",
-  "pluginLocation": "vt-ng2",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}

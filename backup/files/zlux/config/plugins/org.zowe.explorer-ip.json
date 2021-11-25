@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.explorer-ip",
-  "pluginLocation": "explorer-ip",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}
