@@ -92,6 +92,7 @@ jobs:
     needs: make-matrix
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
+      fail-fast: false
     environment: ${{ matrix.server }}
     steps:
       - name: '[Prep 1] Checkout'
