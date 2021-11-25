@@ -144,14 +144,21 @@ jobs:
           ### Process custom-zowe-artifactory-pattern
           ##################################################################################################
           ZOWE_ARTIFACTORY_PATTERN_INTERIM=
-          if [[ -z "${{ github.event.inputs.custom-zowe-artifactory-pattern }}" ]]; then
+          input_custom_zowe_art=${{ github.event.inputs.custom-zowe-artifactory-pattern }}
+          if [[ -z "$input_custom_zowe_art" ]]; then
             if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]; then
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
             else
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
             fi
           else
-            ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ github.event.inputs.custom-zowe-artifactory-pattern }}"
+            if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]; then
+              if [[ "$input_custom_zowe_art" != *"zowe-smpe"* ]] || [[ "$input_custom_zowe_art" != *"zip"* ]]; then
+                echo "You are going to run install smpe test, but zowe artifact you customized is not a proper zowe-smpe*.zip format"
+                exit 1
+              fi
+            fi
+            ZOWE_ARTIFACTORY_PATTERN_INTERIM="$input_custom_zowe_art"
           fi
           ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
