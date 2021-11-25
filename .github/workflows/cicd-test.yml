@@ -154,6 +154,8 @@ jobs:
           fi
           ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
+          # next line is just to get the pax file name - extract the part after last occurance of slash
+          ZOWE_ARTIFACTORY_FINAL_FILENAME=${ZOWE_ARTIFACTORY_FINAL##*/}
 
           ##################################################################################################
           ### Process TEST_SERVER_NICKNAME
@@ -240,6 +242,7 @@ jobs:
           ### Set outputs
           ##################################################################################################
           echo ::set-output name=ZOWE_ARTIFACTORY_FINAL::$ZOWE_ARTIFACTORY_FINAL
+          echo ::set-output name=ZOWE_ARTIFACTORY_FINAL_FILENAME:$ZOWE_ARTIFACTORY_FINAL_FILENAME
           echo ::set-output name=NODE_HOME_PATTERN::/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x
           echo ::set-output name=TEST_SERVER::$TEST_SERVER
           echo ::set-output name=TEST_SERVER_NICKNAME::$TEST_SERVER_NICKNAME
@@ -251,6 +254,7 @@ jobs:
           ### Echo all processed outputs
           ##################################################################################################
           echo "Zowe artifactory path: "$ZOWE_ARTIFACTORY_FINAL
+          echo "Zowe artifactory file name: "$ZOWE_ARTIFACTORY_FINAL_FILENAME
           echo "Zowe CLI artifactory path: "$ZOWE_CLI_ARTIFACTORY_FINAL
           echo "Zowe TP Docker artifactory path: "$ZOWE_TP_DOCKER_ARTIFACTORY_FINAL
           echo "Zowe extension list: "$EXTENSION_LIST
@@ -294,8 +298,9 @@ jobs:
         with:
           source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
           default-target-path: ${{ runner.temp }}/zowe/
+          extra-options: --flat=true
           expected-count: 1
-      - run: ls ${{ runner.temp }}/zowe/
+
       - name: '[Download 2] Download cli package'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
@@ -316,7 +321,7 @@ jobs:
         env:
           ANSIBLE_FORCE_COLOR: true
           TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
-          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}"
+          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
           ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_FINAL }}
           EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
           SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
