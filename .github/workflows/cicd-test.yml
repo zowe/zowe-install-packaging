@@ -162,6 +162,7 @@ jobs:
               echo "Example input will be:"
               echo "path1/zowe.pax;path2/zowe-smpe.pax"
               echo "You can at most supply two customized paths, one for pax one for smpe and separated by semi-colon."
+              exit 1
             fi
 
             for each_zowe_art_pattern in $(echo "$input_custom_zowe_art" | sed "s/;/ /g")
@@ -187,6 +188,7 @@ jobs:
                   echo "I am here 4"
                 fi
               fi
+              
             done
           fi
           ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
