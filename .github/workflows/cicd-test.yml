@@ -144,7 +144,7 @@ jobs:
           ### Process custom-zowe-artifactory-pattern
           ##################################################################################################
           ZOWE_ARTIFACTORY_PATTERN_INTERIM=
-          input_custom_zowe_art=${{ github.event.inputs.custom-zowe-artifactory-pattern }}
+          input_custom_zowe_art="${{ github.event.inputs.custom-zowe-artifactory-pattern }}"
           if [[ -z "$input_custom_zowe_art" ]]; then
             # custom input is empty, we set default no matter running smpe test or not
             if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]; then
