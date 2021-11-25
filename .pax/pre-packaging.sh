@@ -158,6 +158,7 @@ echo "[$SCRIPT_NAME] content current directory: ls -A $(pwd)/"
 ls -A "$(pwd)/" || true
 
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
+chmod +x content/zowe-$ZOWE_VERSION/bin/zwe
 chmod +x content/zowe-$ZOWE_VERSION/bin/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
 chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd

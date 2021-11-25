@@ -21,7 +21,7 @@
 #######################################################################
 set -x
 
-# expected input workspace layout ($ROOT_DIR):
+# expected input workspace layout (${ROOT_DIR}):
 # ./.pax/keyring-util/
 # ./bin/
 # ./files/
@@ -39,24 +39,24 @@ set -x
 # $wf_to: target location (customized workfiles)
 # ---------------------------------------------------------------------
 _customizeWorkflow () {
-echo "[${SCRIPT_NAME}] creating workflows in $wf_to ..."
-mkdir -p "$wf_to"
+  echo "[${SCRIPT_NAME}] creating workflows in $wf_to ..."
+  mkdir -p "$wf_to"
 
-wf_files=$(ls "$wf_from")  # processes all files (.xml, .vtl & .properties)
-for wf_file in $wf_files
-do
-  # skip if directory
-  test -d "$wf_from/$wf_file" && continue
-  # fill in Zowe version in the workflow file
-  sed -e "s/###ZOWE_VERSION###/${ZOWE_VERSION}/g" \
-      -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" \
-      "$wf_from/$wf_file" \
-      > "$wf_to/$wf_file"
-  # remove raw workflow file if requested
-  test -n "$1" && rm "$wf_from/$wf_file"
-done
+  wf_files=$(ls "$wf_from")  # processes all files (.xml, .vtl & .properties)
+  for wf_file in $wf_files
+  do
+    # skip if directory
+    test -d "$wf_from/$wf_file" && continue
+    # fill in Zowe version in the workflow file
+    sed -e "s/###ZOWE_VERSION###/${ZOWE_VERSION}/g" \
+        -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" \
+        "$wf_from/$wf_file" \
+        > "$wf_to/$wf_file"
+    # remove raw workflow file if requested
+    test -n "$1" && rm "$wf_from/$wf_file"
+  done
 
-return 0
+  return 0
 }    # _customizeWorkflow
 
 # ---------------------------------------------------------------------
@@ -65,30 +65,36 @@ return 0
 # $wf_to: target location (customized workfiles)
 # ---------------------------------------------------------------------
 _templateWorkflow () {
-wf_temp="${PAX_WORKSPACE_DIR}/ascii/wf_temp"  # temp dir for sed
-mkdir -p "$wf_temp"
-mkdir -p "$wf_to"
+  wf_temp="${PAX_WORKSPACE_DIR}/ascii/wf_temp"  # temp dir for sed
+  mkdir -p "$wf_temp"
+  mkdir -p "$wf_to"
 
-# stage input
-cp -R $wf_from/. "$wf_temp"
+  # stage input
+  cp -R $wf_from/. "$wf_temp"
 
-# customize & move from temp
-wf_from="$wf_temp"
-_customizeWorkflow move
+  # customize & move from temp
+  wf_from="$wf_temp"
+  _customizeWorkflow move
 
-# move remaining sub-dirs from temp
-cp -R $wf_temp/. "$wf_to"
-rm -rf $wf_temp
+  # move remaining sub-dirs from temp
+  cp -R $wf_temp/. "$wf_to"
+  rm -rf $wf_temp
 
-return 0
+  return 0
 }    # _templateWorkflow
 
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 SCRIPT_NAME=$(basename "$0")  # $0=./.pax/prepare-workspace.sh
-BASE_DIR=$(dirname "$0")      # <something>/.pax
+PAX_WORKSPACE_DIR=$(cd "$(dirname "$0")";pwd)      # <something>/.pax
+ROOT_DIR=$(cd "${BASE_DIR}/../";pwd)
 
+if [ -f "${ROOT_DIR}/manifest.json" ]; then
+  ZOWE_VERSION=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+elif [ -f "${ROOT_DIR}/manifest.json.template" ]; then
+  ZOWE_VERSION=$(cat ${ROOT_DIR}/manifest.json.template | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+fi
 if [ -z "$ZOWE_VERSION" ]; then
   echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
   exit 1
@@ -96,41 +102,30 @@ else
   echo "[$SCRIPT_NAME] working on Zowe v${ZOWE_VERSION} ..."
 fi
 
-cd $BASE_DIR
-cd ..
-ROOT_DIR=$(pwd)
-PAX_WORKSPACE_DIR=${ROOT_DIR}/.pax
+cd "${ROOT_DIR}"
 
-# show what's already present
-echo "[${SCRIPT_NAME}] content \$PAX_WORKSPACE_DIR: ls -l ${PAX_WORKSPACE_DIR}/"
-ls -l "${PAX_WORKSPACE_DIR}/" || true
-
-# workspace path abbreviations, relative to $ROOT_DIR
+# workspace path abbreviations, relative to ${ROOT_DIR}
 ASCII_DIR="${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 CONTENT_DIR="${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}"
 
 # prepare pax workspace
 echo "[${SCRIPT_NAME}] preparing folders ..."
-mkdir -p "${ASCII_DIR}"
-mkdir -p "${CONTENT_DIR}/bin"
-mkdir -p "${CONTENT_DIR}/install"
-mkdir -p "${CONTENT_DIR}/scripts"
+rm -fr "${ASCII_DIR}" && mkdir -p "${ASCII_DIR}"
+rm -fr "${CONTENT_DIR}" && mkdir -p "${CONTENT_DIR}/bin"
 mkdir -p "${CONTENT_DIR}/files"
 
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
 cp manifest.json       "${CONTENT_DIR}"
+cp ZOWE.md             "${CONTENT_DIR}/README.md"
 cp -R bin/*            "${CONTENT_DIR}/bin"
-cp -R install/*        "${CONTENT_DIR}/install"
-cp -R scripts/*        "${CONTENT_DIR}/scripts"
-cp -R shared/scripts/* "${CONTENT_DIR}/scripts"
 cp -R files/*          "${CONTENT_DIR}/files"
 
 # extract packaging utility tools to bin/utils
 echo "[${SCRIPT_NAME}] prepare utility tools ..."
-cd "$ROOT_DIR" && cd "${CONTENT_DIR}/files"
+cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/files"
 mv zowe-utility-tools-*.zip zowe-utility-tools.zip
-cd "$ROOT_DIR" && cd "${CONTENT_DIR}/bin/utils"
+cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
 jar -xf "../../files/zowe-utility-tools.zip"
 # we should get 2 tgz files as npm packages
 echo "[${SCRIPT_NAME}] extract zowe-fconv ..."
@@ -146,7 +141,7 @@ tar zxvf zowe-config-converter-*.tgz
 mv package config-converter
 rm zowe-config-converter-*.tgz
 # zowe-ncert.pax will be extracted on z/OS side
-cd "$ROOT_DIR"
+cd "${ROOT_DIR}"
 rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
 
 # put text files into ascii folder (recursive & verbose)
@@ -167,7 +162,6 @@ KEYRING_UTIL_SRC="${PAX_WORKSPACE_DIR}/keyring-util"
 KEYRING_UTIL_DEST="${CONTENT_DIR}/bin/utils/keyring-util"
 mkdir -p "$KEYRING_UTIL_DEST"
 cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
-
 # cleanup working files
 rm -rf "$KEYRING_UTIL_SRC"
 
@@ -191,7 +185,7 @@ mv sample-iframe-app-*.pax  zlux/sample-iframe-app.pax
 mv sample-angular-app-*.pax zlux/sample-angular-app.pax
 mv explorer-ip-*.pax        zlux/explorer-ip.pax
 mv zss-*.pax                zss-${ZOWE_VERSION}.pax
-cd "$ROOT_DIR"
+cd "${ROOT_DIR}"
 
 # create customized workflows
 wf_from="workflows/files"
