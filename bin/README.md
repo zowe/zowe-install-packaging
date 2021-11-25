@@ -60,15 +60,20 @@ Please be aware of using utilities marked as `@experimental`. These utilities ma
 
 ## Environment variables
 
+All Zowe initialized variables are prefixed with `ZWE_`.
+
 ### Global Zowe environment variables
 
 These Zowe environment variables are created globally. Any Zowe modules, extensions can use these variables.
 
 - `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` CLI command is located.
-- `ZWE_CLI_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current CLI command chain.
 - `ZWE_CLI_COMMANDS_LIST`, list of CLI command chain separated by comma.
 - `ZWE_CLI_PARAMETERS_LIST`, CLI command parameter names separated by comma.
 - `ZWE_CLI_PARAMETER_<parameter-name>`, value of CLI parameter `<parameter-name>`.
+- `ZWE_CLI_INTERNAL_*` are variables used by Zowe launch script internally. It's not suggested for component to use or modify.
+  * `ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current CLI command chain.
+  * `ZWE_CLI_INTERNAL_LIBRARY_LOADED` indicates is `bin/libs` are already sourced or not.
+  * `ZWE_CLI_INTERNAL_IS_TOP_LEVEL_COMMAND` indicates if currently is running as top-level command, or triggered by top-level command.
 - `ZWE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
 - `ZWE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
 - `ZWE_CORE_COMPONENTS` is a constant holds names of core components.

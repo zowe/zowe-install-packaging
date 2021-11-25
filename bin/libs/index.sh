@@ -34,4 +34,4 @@ export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,ap
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zosmf.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zwecli.sh"
 
-export ZWE_LIBRARY_SOURCED=true
+export ZWE_CLI_INTERNAL_LIBRARY_LOADED=true
