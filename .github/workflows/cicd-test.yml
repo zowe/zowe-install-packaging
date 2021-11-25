@@ -40,7 +40,7 @@ env:
       
 jobs:
   check-permission:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
@@ -49,7 +49,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           
   make-matrix:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: check-permission
     steps: 
     - name: make matrix
@@ -88,7 +88,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   cicd-test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: make-matrix
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
