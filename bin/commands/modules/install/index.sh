@@ -11,10 +11,10 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_message "I'm the init command"
-print_message
-
-print_message "-----------------"
-require_zowe_yaml
-print_message "Content of ${ZWE_CLI_PARAMETER_CONFIG}"
-cat "${ZWE_CLI_PARAMETER_CONFIG}"
+zwecli_inline_execute_command modules install extract
+# ZWE_MODULES_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
+if [ -n "${ZWE_MODULES_INSTALL_EXTRACT_COMPONENT_NAME}" ]; then
+  zwecli_inline_execute_command modules install process-hook --module-name "${ZWE_MODULES_INSTALL_EXTRACT_COMPONENT_NAME}"
+else
+  print_error_and_exit "Error ZWEI0156E: Component name is not initialized after extract step." "" 156
+fi

@@ -29,6 +29,14 @@ get_tmp_dir() {
   echo ${TMPDIR:-${TMP:-/tmp}}
 }
 
+require_zowe_yaml() {
+  if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+    print_error_and_exit "Error ZWEI0108E: Zowe YAML config file is required." "" 108
+  elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+    print_error_and_exit "Error ZWEI0109E: The Zowe YAML config file specified does not exist." "" 109
+  fi
+}
+
 print_raw_message() {
   message=$1
   is_error=$2
@@ -48,8 +56,12 @@ print_raw_message() {
     fi
   fi
   if [[ "${write_to}" = *log* ]]; then
-    if [ -n "${ZWE_LOG_FILE}" -a -w "${ZWE_LOG_FILE}" ]; then
-      echo "${message}" >> $ZWE_LOG_FILE
+    if [ -n "${ZWE_LOG_FILE}" ]; then
+      if [ -w "${ZWE_LOG_FILE}" ]; then
+        echo "${message}" >> $ZWE_LOG_FILE
+      else
+        >&2 echo "WARNING: cannot write to ${ZWE_LOG_FILE}"
+      fi
     fi
   fi
 }

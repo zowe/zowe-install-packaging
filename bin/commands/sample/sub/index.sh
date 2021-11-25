@@ -23,3 +23,7 @@ print_debug
 print_level1_trace "Environments"
 print_trace "$(get_environments)"
 print_trace ""
+
+print_level0_message "Execute sub commands"
+zwecli_inline_execute_command sample sub deep --another-parameter
+zwecli_inline_execute_command sample sub second --auto-encoding no

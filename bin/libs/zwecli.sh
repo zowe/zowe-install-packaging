@@ -18,27 +18,51 @@ export ZWE_CLI_PARAMETERS_LIST=
 export ZWE_CLI_PARAMETERS_DEFINITIONS=
 export ZWE_LOG_LEVEL_CLI=INFO
 
-zwecli_load_parameters_definition() {
-  command_path=${ZWE_zowe_runtimeDirectory}/bin/commands
-  ZWE_CLI_PARAMETERS_DEFINITIONS=$(cat "${command_path}/.parameters")
-  last_command=
-  for command in ${ZWE_CLI_COMMANDS_LIST}; do
-    if [ -d "${command_path}/${command}" ]; then
-      command_path="${command_path}/${command}"
-      last_command=$(trim "${last_command} ${command}")
-      if [ -f "${command_path}/.parameters" ]; then
-        ZWE_CLI_PARAMETERS_DEFINITIONS="${ZWE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
-      fi
-    else
-      if [ -z "${last_command}" ]; then
-        print_error "Error ZWEI0204E: invalid command \"${command}\""
-        print_error_and_exit "Try --help to get information about what command(s) are available." "" 204
-      else
-        print_error "Error ZWEI0205E: invalid sub-command \"${command}\" of command \"${last_command}\""
-        print_error_and_exit "Try --help to get information about what command(s) are available." "" 205
-      fi
+zwecli_append_parameters_definition() {
+  if [ $# -eq 0 ]; then
+    commands="${ZWE_CLI_COMMANDS_LIST}"
+  else
+    commands="${1}"
+  fi
+
+  command_path=$(zwecli_calculate_command_path "${commands}")
+  if [ -d "${command_path}" ]; then
+    if [ -f "${command_path}/.parameters" ]; then
+      ZWE_CLI_PARAMETERS_DEFINITIONS="${ZWE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
     fi
+  elif [ -n "${commands}" ]; then
+    print_error "Error ZWEI0104E: Invalid command \"${commands}\""
+    print_error_and_exit "Try --help to get information about what command(s) are available." "" 104
+  fi
+}
+
+zwecli_append_exclusive_parameters_definition() {
+  if [ $# -eq 0 ]; then
+    commands="${ZWE_CLI_COMMANDS_LIST}"
+  else
+    commands="${1}"
+  fi
+
+  command_path=$(zwecli_calculate_command_path "${commands}")
+  if [ -d "${command_path}" ]; then
+    if [ -f "${command_path}/.exclusive-parameters" ]; then
+      ZWE_CLI_PARAMETERS_DEFINITIONS="${ZWE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.exclusive-parameters")"
+    fi
+  elif [ -n "${commands}" ]; then
+    print_error "Error ZWEI0104E: Invalid command \"${commands}\""
+    print_error_and_exit "Try --help to get information about what command(s) are available." "" 104
+  fi
+}
+
+zwecli_load_parameters_definition() {
+  ZWE_CLI_PARAMETERS_DEFINITIONS=
+  zwecli_append_parameters_definition ""
+  sub_command_list=
+  for command in ${ZWE_CLI_COMMANDS_LIST}; do
+    sub_command_list="$(echo "${sub_command_list} ${command}" | trim)"
+    zwecli_append_parameters_definition "${sub_command_list}"
   done
+  zwecli_append_exclusive_parameters_definition
 }
 
 zwecli_locate_parameter_definition() {
@@ -128,6 +152,8 @@ zwecli_process_loglevel() {
 
 zwecli_process_logfile() {
   if [ -n "${ZWE_CLI_PARAMETER_LOG_DIR}" ]; then
+    cd "${ZWE_PWD}"
+
     log_prefix=zwe
     if [ -n "${ZWE_CLI_COMMANDS_LIST}" ]; then
       log_prefix=zwe-$(echo "${ZWE_CLI_COMMANDS_LIST}" | trim | sed 's/ /-/g')
@@ -179,7 +205,7 @@ zwecli_display_parameters_help() {
 
       line_params_requirement=$(echo "${first_line}" | awk -F"|" '{print $4};' | lower_case)
 
-      line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
+      line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
       echo "  ${display_param}: ${line_params_type}, ${line_params_requirement:-optional}"
       padding_left "${line_params_help}" "    "
     fi
@@ -232,10 +258,15 @@ zwecli_process_help() {
         >&2 echo "WARNING: command \"${command_tree}\" is for experimental purpose."
         >&2 echo
       fi
-      if [ -f "${command_path}/.parameters" ]; then
+      if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" ]; then
         >&2 echo "------------------"
         >&2 echo "Parameters for command \"${command_tree}\":"
-        >&2 zwecli_display_parameters_help "${command_path}/.parameters"
+        if [ -f "${command_path}/.parameters" ]; then
+          >&2 zwecli_display_parameters_help "${command_path}/.parameters"
+        fi
+        if [ -f "${command_path}/.exclusive-parameters" ]; then
+          >&2 zwecli_display_parameters_help "${command_path}/.exclusive-parameters"
+        fi
         >&2 echo
       fi
     done
@@ -254,7 +285,7 @@ EOF
       echo
     fi
 
-    exit 201
+    exit 100
   fi
 }
 
@@ -276,20 +307,37 @@ EOF
   for param in ${required_params}; do
     val=$(zwecli_get_parameter_value "${param}")
     if [ -z "${val}" ]; then
-      print_error "Error ZWEI0206E: ${param} parameter is required"
-      print_error_and_exit "Try --help to get information about how to use this command." "" 206
+      print_error "Error ZWEI0106E: ${param} parameter is required"
+      print_error_and_exit "Try --help to get information about how to use this command." "" 106
     fi
   done
 }
 
 zwecli_process_command() {
+  cd "${ZWE_PWD}"
   command_path=$(zwecli_calculate_command_path)
   if [ -f "${command_path}/index.sh" ]; then
     . "${command_path}/index.sh"
   else
     if [ -n "${ZWE_CLI_COMMANDS_LIST}" ]; then
-      print_error "Error ZWEI0207E: no handler defined for command \"${ZWE_CLI_COMMANDS_LIST}\"."
+      print_error "Error ZWEI0107E: No handler defined for command \"${ZWE_CLI_COMMANDS_LIST}\"."
     fi
-    print_error_and_exit "Try --help to get information about how to use this command." "console" 207
+    print_error_and_exit "Try --help to get information about how to use this command." "console" 107
   fi
+}
+
+zwecli_inline_execute_command() {
+  # save current command
+  saved_cli_commands_list="${ZWE_CLI_COMMANDS_LIST}"
+  saved_cli_parameters_list="${ZWE_CLI_PARAMETERS_LIST}"
+  saved_cli_parameters_definitions="${ZWE_CLI_PARAMETERS_DEFINITIONS}"
+
+  # process new command
+  cd "${ZWE_zowe_runtimeDirectory}/bin"
+  . zwe
+
+  # restore original command
+  ZWE_CLI_COMMANDS_LIST="${saved_cli_commands_list}"
+  ZWE_CLI_PARAMETERS_LIST="${saved_cli_parameters_list}"
+  ZWE_CLI_PARAMETERS_DEFINITIONS="${saved_cli_parameters_definitions}"
 }

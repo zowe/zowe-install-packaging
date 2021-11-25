@@ -12,8 +12,8 @@
 #######################################################################
 
 if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
-  >&2 echo "Error ZWEI0900E: ZWE_zowe_runtimeDirectory is not defined"
-  exit 200
+  >&2 echo "Error ZWEI0101E: ZWE_zowe_runtimeDirectory is not defined"
+  exit 101
 fi
 
 export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,app-server,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss"
@@ -30,5 +30,8 @@ export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,ap
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/string.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/sys.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/var.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/zos.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zosmf.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zwecli.sh"
+
+export ZWE_LIBRARY_SOURCED=true

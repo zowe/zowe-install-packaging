@@ -24,17 +24,35 @@ ZWE_zowe_runtimeDirectory=$(cd $(dirname $0)/../;pwd)
 
 #######################################################################
 # import all shared libraries
-. ${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh
+if [ -z "${ZWE_LIBRARY_SOURCED}" ]; then
+  is_top_level=true
+  . ${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh
+fi
 
 #######################################################################
 # parse parameters
+ZWE_CLI_COMMANDS_LIST=
+# load ZWE_CLI_COMMANDS_LIST
+for idx in 1 2 3 4 5 6 7 8 9 10; do
+  eval "arg=\"\${${idx}}\""
+  if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
+    break
+  else
+    ZWE_CLI_COMMANDS_LIST="${ZWE_CLI_COMMANDS_LIST} ${arg}"
+  fi
+done
+ZWE_CLI_COMMANDS_LIST=$(trim "${ZWE_CLI_COMMANDS_LIST}")
+# load ZWE_CLI_PARAMETERS_DEFINITIONS=
 zwecli_load_parameters_definition
+# load ZWE_CLI_PARAMETERS_LIST and ZWE_CLI_PARAMETER_*
+ZWE_CLI_PARAMETERS_LIST=
+zwecli_load_parameters_default_value
 while [ $# -gt 0 ]; do
   arg="$1"
   if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
     definition=$(zwecli_locate_parameter_definition $arg)
     if [ $? -gt 0 ]; then
-      print_error_and_exit "Error ZWEI0202E: invalid parameter ${arg}" "" 202
+      print_error_and_exit "Error ZWEI0102E: Invalid parameter ${arg}" "" 102
     fi
     param_id=$(echo "${definition}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
     param_type=$(echo "${definition}" | awk -F"|" '{print $3}' | lower_case)
@@ -46,23 +64,30 @@ while [ $# -gt 0 ]; do
       ZWE_CLI_PARAMETERS_LIST=$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")
       zwecli_set_parameter_value "${param_id}" "${1}"
     else
-      print_error_and_exit "Error ZWEI0203E: invalid type of parameter ${arg}" "" 203
+      print_error_and_exit "Error ZWEI0103E: Invalid type of parameter ${arg}" "" 103
     fi
-  else
-    ZWE_CLI_COMMANDS_LIST=$(trim "${ZWE_CLI_COMMANDS_LIST} ${arg}")
-    zwecli_load_parameters_definition
   fi
   shift
 done
-zwecli_load_parameters_default_value
+
+# debug results
+# print_message "ZWE_CLI_COMMANDS_LIST=${ZWE_CLI_COMMANDS_LIST}"
+# print_message "ZWE_CLI_PARAMETERS_LIST=${ZWE_CLI_PARAMETERS_LIST}"
+# print_message "ZWE_CLI_PARAMETERS_DEFINITIONS=${ZWE_CLI_PARAMETERS_DEFINITIONS}"
+# exit 1
 
 #######################################################################
 # process
-zwecli_process_loglevel
-# if it's in help mode, the script will exit with code 201
-zwecli_process_help
-# prepare log file if directory specified
-zwecli_process_logfile
+# If we source a sub-command, these steps will be ignored
+if [ "${is_top_level}" = "true" ]; then
+  zwecli_process_loglevel
+  # if it's in help mode, the script will exit with code 100
+  zwecli_process_help
+  # prepare log file if directory specified
+  zwecli_process_logfile
+
+  is_top_level=false
+fi
 # validate parameter before execute command
 zwecli_validate_parameters
 # handle command

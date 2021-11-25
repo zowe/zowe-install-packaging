@@ -30,3 +30,18 @@ find_sub_directories() {
 $(echo "${children}")
 EOF
 }
+
+# Takes in the file that should be expanded and echos out the result, which the caller needs to read
+convert_to_absolute_path() {
+  file=$1
+
+  # If the value starts with a ~ for the home variable then evaluate it
+  file=$(echo "${file}")
+
+  # If the path is relative, then expand it
+  if [[ "${file}" != /* ]]; then
+    file="$(pwd)/${file}"
+  fi
+
+  echo "${file}"
+}

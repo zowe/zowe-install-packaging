@@ -11,10 +11,11 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_message "I'm the init command"
+print_level0_message "Command: sample sub second"
+print_message "I'm the sample sub second command"
 print_message
 
-print_message "-----------------"
-require_zowe_yaml
-print_message "Content of ${ZWE_CLI_PARAMETER_CONFIG}"
-cat "${ZWE_CLI_PARAMETER_CONFIG}"
+print_level1_debug "Inherited Parameters"
+print_debug "ZWE_CLI_PARAMETER_TARGET_DIR=${ZWE_CLI_PARAMETER_TARGET_DIR}"
+print_debug "ZWE_CLI_PARAMETER_AUTO_ENCODING=${ZWE_CLI_PARAMETER_AUTO_ENCODING}"
+print_debug

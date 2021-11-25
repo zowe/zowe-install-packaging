@@ -20,7 +20,11 @@ The `bin/commands` directory defines available commands.
 Each command is represented as a directory with some assistant files.
 
 - `.help`: This is an _optional_ plain text help message. You can put any text here and it will be displayed if the user issue `--help` with your command.
-- `.parameters`: This is an _optional_ definition of command line parameters for this command. Parameters defined in this file will be combined with all upper level `.parameters` file and be available for this command. `zwe` command has global parameters like `--help`, `--verbose`, etc, which are defined in `bin/commands/.parameters` file. Every line of this file represents a CLI parameter. Each parameter definition is separated by `|` into 5 fields:
+- `.errors`: This is a documentation file lists all possible error codes and exit codes for this command. Each line represents one error and is separated by `|` into 3 fields:
+  1. is the error code like `ZWEI0102E`.
+  2. is the command exit code in a range of 1 to 255. The caller can check the command exit code to determine what's the error caused the command to exit prematurely.
+  3. is the error message.
+- `.parameters`: This is an _optional_ definition of command line parameters for this command. Parameters defined in this file will be combined with all upper level `.parameters` file and be available for this command. Please note if the command has embedded sub-commands, all parameters defined in parent will also be propagated to all sub-commands. `zwe` command has global parameters like `--help`, `--verbose`, etc, which are defined in `bin/commands/.parameters` file. Every line of this file represents a CLI parameter. Each parameter definition is separated by `|` into 8 fields:
   1. is the parameter id, or full name. This column is required and the user can use `--` prefix to customize this parameter. For example, with `config` definition, the user can use `--config` to pass value to `zwe` command.
   2. is the parameter alias. This column is optional. This column is usually with one letter and the user can use `-` prefix to customize this parameter. For example, with `c` definition, the user can use `-c` to pass value to `zwe` command.
   3. is the parameter type. This column is required and must be value of `boolean` or `string`, or abbreviation of them like `b`, `bool`, `s`, `str`. This indicates how the user can pass parameter value.
@@ -28,31 +32,16 @@ Each command is represented as a directory with some assistant files.
     * If it's `string` parameter, the user must pass a value along with the parameter. For example, `--config /path/to/my/config/file`.
   4. is the requirement of this parameter. If this parameter is required, put value `required` in this column.
   5. is the default value of the parameter. This is only valid for `string` parameters.
-  6. is reserved for future.
-  7. is the parameter help. This help message will be displayed if the user issue `--help` or `-h` parameter.
+  6. is reserved for future usage.
+  7. is reserved for future usage.
+  8. is the parameter help. This help message will be displayed if the user issue `--help` or `-h` parameter.
+- `.exclusive-parameters`: is in same format of `.parameters` except all parameters defined in this file will NOT be propagated to sub-commands.
 - `.experimental`: This is an _optional_ file indicate this command is for experimental purpose. It may be changed or improved in the future, and it may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
 - `index.sh`: This is required file to process the command. This file will be sourced to `zwe` when it's executed.
 
 ### Extend new command
 
 To define a new command, create the right folder structure under `bin/commands` and then create the assistant files described above.
-
-### Error message IDs and exit codes
-
-`zwe` command may exit with non-zero code with error messages ID.
-
-- Error `ZWEI0200E` with exit code `200`: `ZWE_zowe_runtimeDirectory` is not defined when sourcing `bin/libs/index.sh`.
-- Exit code `201`: when the user pass `--help` or `-h` parameter, the exit code is always `201`.
-- Error `ZWEI0202E` with exit code `202`: invalid parameter %s.
-- Error `ZWEI0203E` with exit code `203`: invalid type of parameter %s.
-- Error `ZWEI0204E` with exit code `204`: invalid command %s.
-- Error `ZWEI0205E` with exit code `205`: invalid sub-command %s of command %s.
-- Error `ZWEI0206E` with exit code `206`: %s parameter is required.
-- Error `ZWEI0207E` with exit code `207`: no handler defined for command %s.
-
-### Error codes and messages
-
-Errors may show in `stderr` and here is a list of error codes.
 
 ## Libraries
 

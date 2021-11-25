@@ -8,16 +8,65 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
+zowe.runtimeDirectory: /global/zowe
+components.explorer-jes.enable: true
+
 zowe:
+  setup:
+    logDirecotory: ${USER}/logs
+
+    runtimeUsers:
+        ZWESVUSR: ZWESVUSR
+
+    # z/OS configurations
+    mvs:  # used by zwe install - copy datasets
+      hlq: IBMUSER.ZWE
+      loadlib: SZWEAUTH
+      parmlib: SZWESAMP
+      pluginlib: SZWEPLUG
+
+        # /D PARMLIB
+      custJcllib: MYSAMPLIB  ZWESECUR
+      proclib: USER.PROCLIB  # <auto>
+
+    sso: true
+      
+    mfa: true
+
+    certificates:
+      StrictVerifyCertificates: true|false
+        # SAN/Common Name
+      nonStrictVerifySslCertificates: true
+      format: Keyring|PKCS12
+      imported:
+        certificate:
+        certificateAuthorities:
+          -
+          -
+      generated:
+        commonName:
+        country:
+        state:
+
+
   runtimeDirectory: /global/zowe/runtime
+  # runtime logs
+  logDirecotory: /global/zowe/logs
+  # instance workspace directory
+  workspaceDirectory: /global/zowe/workspace
   # where extensions are installed
-  # extensionDirectory: /global/zowe/extensions
-  jobPrefix: ZWE
-  identifier: "1"
+  extensionDirectory: /global/zowe/extensions
+
+  # runtime z/OS job name
+  jobname: ZWE1SV
+
   externalDomains:
     # this should be the domain name of you Dynamic VIP Address (DVIPA)
     - dvipa.my-company.com
   
+  # this should be the port you defined on DVIPA for gateway external port
+  externalPort: "7554"
+
   # you can define any extra environment variables here
   environments:
     # this is optional and be kept for backward compatible purpose
@@ -30,11 +79,9 @@ zowe:
     SSO_FALLBACK_TO_NATIVE_AUTH: "true"
 
   # enable debug mode for zowe launch scripts
-  # launchScript:
-  #   logLevel: debug
-
-  # this should be the port you defined on DVIPA for gateway external port
-  externalPort: "7554"
+  launchScript:
+    # set to debug mode to display more information
+    logLevel: ""
 
   # default certificate for gateway external connector
   # this is required.
@@ -66,10 +113,6 @@ zowe:
       key: /global/zowe/keystore/localhost/localhost.keystore.key
       certificate: /global/zowe/keystore/localhost/localhost.keystore.cer-ebcdic
       certificateAuthority: /global/zowe/keystore/local_ca/localca.cer-ebcdic
-  sso:
-    token:
-      name: ""
-      label: ""
 
 # customize java
 java:
@@ -90,23 +133,6 @@ components:
     enabled: true
     port: "7554"
     apiml:
-      service:
-        allowEncodedSlashes: true
-        corsEnabled: false
-        preferIpAddress: false
-      gateway:
-        timeoutMillis: "600000"
-      security:
-        x509:
-          enabled: false
-          externalMapperUrl: https://dvipa.my-company.com:7554/zss/api/v1/certificate/x509/map
-        zosmf:
-          applid: IZUDFLT
-        auth:
-          provider: zosmf
-        authorization:
-          endpoint:
-            url: https://dvipa.my-company.com:7554/zss/api/v1/saf-auth
         ssl:
           verifySslCertificatesOfServices: false
           nonStrictVerifySslCertificatesOfServices: true
@@ -209,7 +235,6 @@ haInstances:
   lpar1:
     # hostname where this instance will be started
     hostname: lpar1.my-company.com
-    ip: 10.0.0.10
     # for this HA instance, we didn't customize "components", so it will use default value.
   
   # HA instance ID, we will start 2 instances on LPAR2
@@ -217,7 +242,6 @@ haInstances:
   lpar2a:
     # hostname where this instance will be started
     hostname: lpar2.my-company.com
-    ip: 10.0.0.11
 
     # these configurations will overwrite highest level "components" definitions
     components:

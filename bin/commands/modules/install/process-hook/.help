@@ -1,0 +1,4 @@
+Process module install hook if exists.
+
+NOTE: this sub-command will be automatically executed by `zwe modules install`,
+      so usually you don't need to execute this manually.

@@ -1,2 +1,2 @@
-target-dir,target|d|string|required|||This parameter is required.
-auto-encoding|e|string||auto||This parameter has default value.\nThis help message has multiple lines.\n  - another line
+target-dir,target|d|string|required||||This parameter is required.
+auto-encoding|e|string||auto|||This parameter has default value.\nThis help message has multiple lines.\n  - another line

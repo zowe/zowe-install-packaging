@@ -42,7 +42,7 @@ require_java() {
   fi
 
   if [ -z "${JAVA_HOME}" ]; then
-    print_error_and_exit "Cannot find node. Please define JAVA_HOME environment variable."
+    print_error_and_exit "Error ZWEI0131E: Cannot find java. Please define JAVA_HOME environment variable." "" 131
   fi
 
   ensure_java_is_on_path

@@ -11,6 +11,18 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+get_component_manifest() {
+  component_dir=$1
+
+  if [ -f "${component_dir}/manifest.yaml" ]; then
+    echo "${component_dir}/manifest.yaml"
+  elif [ -f "${component_dir}/manifest.yml" ]; then
+    echo "${component_dir}/manifest.yml"
+  elif [ -f "${component_dir}/manifest.json" ]; then
+    echo "${component_dir}/manifest.json"
+  fi
+}
+
 ###############################
 # Read component manifest
 #
@@ -48,6 +60,45 @@ read_component_manifest() {
     read_json "${component_dir}/manifest.json" "${manifest_key}"
     return $?
   else
-    print_error_and_exit "No manifest file found in ${component_dir}"
+    print_error_and_exit "Error ZWEI0132E: No manifest file found in ${component_dir}." "" 132
+  fi
+}
+
+###############################
+# Detect and verify component manifest encoding
+#
+# Note: this function always returns 0 and if succeeds, it will output encoding
+#       to stdout.
+#
+# Example:
+# - detect manifest encoding of my-component
+#   detect_component_manifest_encoding "/path/to/zowe/components/my-component"
+#
+# @param string   component directory
+detect_component_manifest_encoding() {
+  component_dir=$1
+
+  component_manifest=$(get_component_manifest "${component_dir}")
+  if [ -n "${component_manifest}" ]; then
+    # manifest at least should have name defined
+    confirmed_encoding=$(detect_file_encoding "${component_manifest}" "name")
+    if [ -n "${confirmed_encoding}" ]; then
+      echo "${confirmed_encoding}"
+    fi
+  fi
+}
+
+detect_if_component_tagged() {
+  component_dir=$1
+
+  component_manifest=$(get_component_manifest "${component_dir}")
+  if [ -n "${component_manifest}" ]; then
+      # manifest at least should have name defined
+    tag=$(chtag -p ${component_manifest} | cut -f 2 -d\ )
+    if [ ! "${tag}" = "untagged" ]; then
+      echo "true"
+    else
+      echo "false"
+    fi
   fi
 }
