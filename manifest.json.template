@@ -50,16 +50,13 @@
       "version": "~1.0.0-STAGING"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "~2.0.0-V2-X-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "~2.0.0-V2-X-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-SNAPSHOT"
-    },
-    "org.zowe.explorer-ui-server": {
-      "version": "~0.2.0-STAGING"
+      "version": "~2.0.0-V2-X-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
@@ -272,13 +269,6 @@
         "destinations": ["Zowe PAX"]
       }]
     }, {
-      "componentGroup": "Zowe Desktop Web Plug-in Server",
-      "entries": [{
-        "repository": "explorer-ui-server",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }]
-    }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
@@ -396,58 +386,58 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "latest-ubuntu"
+      "tag" : "2-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "latest-ubuntu"
+      "tag" : "2-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "latest-ubuntu"
+      "tag" : "2-ubuntu"
     },
     "gateway": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/gateway-service",
-        "tag" : "latest-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "latest-ubuntu"
+      "tag" : "2-ubuntu"
     },
     "explorer-ip": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-ip",
-        "tag" : "latest-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "explorer-jes": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-jes",
-        "tag" : "latest-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "explorer-mvs": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-mvs",
-        "tag" : "latest-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "explorer-uss": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-uss",
-        "tag" : "latest-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "files-api": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/files-api",
-        "tag" : "latest-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "jobs-api": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/jobs-api",
-        "tag" : "latest-ubuntu"
+        "tag" : "2-ubuntu"
     }
   },
   "dependencyDecisions": {

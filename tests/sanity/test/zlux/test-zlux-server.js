@@ -98,12 +98,12 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
   describe('GET /ZLUX/plugins', function() {
     
-    it('/org.zowe.explorer-jes/iframe is a protected path needs authentication', function() {
+    it('/org.zowe.explorer-jes/web/index.html is an unprotected path', function() {
       const _this = this;
 
       const req = {
         method: 'get',
-        url: '/ZLUX/plugins/org.zowe.explorer-jes/iframe',
+        url: '/ZLUX/plugins/org.zowe.explorer-jes/web/index.html',
       };
       debug('request', req);
 
@@ -117,22 +117,16 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
         });
 
         expect(res).to.have.property('status');
-        expect(res.status).to.equal(401);
-        expect(res).to.have.property('data');
-        expect(res.data).to.have.property('result');
-        expect(res.data.result).to.have.property('authenticated');
-        expect(res.data.result.authenticated).to.be.false;
-        expect(res.data.result).to.have.property('authorized');
-        expect(res.data.result.authenticated).to.be.false;
+        expect(res.status).to.equal(200);
       });
     });
 
-    it('/org.zowe.explorer-jes/iframe should return ok', function() {
+    it('/org.zowe.explorer-mvs/web/index.html should return ok', function() {
       const _this = this;
 
       const req = {
         method: 'get',
-        url: '/ZLUX/plugins/org.zowe.explorer-jes/iframe',
+        url: '/ZLUX/plugins/org.zowe.explorer-mvs/web/index.html',
         headers: {
           cookie: apimlAuthCookie
         }
@@ -149,20 +143,17 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          let respStr = JSON.stringify(res.data).toLowerCase();
-          expect(respStr).to.contain('zluxiframe');
-          expect(respStr).to.contain(`${apimlBaseUrl.toLowerCase()}/ui/v1/explorer-jes`);
         }).catch(function(err) {
           throw err;
         });
     });
 
-    it('/org.zowe.explorer-mvs/iframe should return ok', function() {
+    it('/org.zowe.explorer-uss/web/index.html should return ok', function() {
       const _this = this;
 
       const req = {
         method: 'get',
-        url: '/ZLUX/plugins/org.zowe.explorer-mvs/iframe',
+        url: '/ZLUX/plugins/org.zowe.explorer-uss/web/index.html',
         headers: {
           cookie: apimlAuthCookie
         }
@@ -179,39 +170,6 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
           expect(res).to.have.property('status');
           expect(res.status).to.equal(200);
-          let respStr = JSON.stringify(res.data).toLowerCase();
-          expect(respStr).to.contain('zluxiframe');
-          expect(respStr).to.contain(`${apimlBaseUrl.toLowerCase()}/ui/v1/explorer-mvs`);
-        }).catch(function(err) {
-          throw err;
-        });
-    });
-
-    it('/org.zowe.explorer-uss/iframe should return ok', function() {
-      const _this = this;
-
-      const req = {
-        method: 'get',
-        url: '/ZLUX/plugins/org.zowe.explorer-uss/iframe',
-        headers: {
-          cookie: apimlAuthCookie
-        }
-      };
-      debug('request', req);
-
-      return REQ.request(req)
-        .then(function(res) {
-          debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
-          addContext(_this, {
-            title: 'http response',
-            value: res && res.data
-          });
-
-          expect(res).to.have.property('status');
-          expect(res.status).to.equal(200);
-          let respStr = JSON.stringify(res.data).toLowerCase();
-          expect(respStr).to.contain('zluxiframe');
-          expect(respStr).to.contain(`${apimlBaseUrl.toLowerCase()}/ui/v1/explorer-uss`);
         }).catch(function(err) {
           throw err;
         });
@@ -322,8 +280,3 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     
   });
 });
-
-
-
-
-

@@ -47,7 +47,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: explorer-jes
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-jes:latest-ubuntu
+          image: zowe-docker-release.jfrog.io/ompzowe/explorer-jes:2-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
