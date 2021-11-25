@@ -15,10 +15,6 @@
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
     },
-    "org.zowe.zlux.zss-auth": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
-    },
     "org.zowe.zlux.sample-angular-app": {
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
@@ -40,14 +36,6 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zlux-workflow": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.zlux.zosmf-auth": {
       "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
     },
@@ -318,17 +306,6 @@
         "tag": "staging",
         "destinations": ["Zowe PAX"]
       }]
-    }, {
-      "componentGroup": "Zowe Application Framework Authentication Handlers",
-      "entries": [{
-        "repository": "zss-auth",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }, {
-        "repository": "zosmf-auth",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }]
     },
     {
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
@@ -373,14 +350,6 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "staging",
-        "destinations": ["Zowe PAX"]
-      }]
-    },
-    {
-      "componentGroup": "Zowe Desktop Workflows Plugin-in",
-      "entries": [{
-        "repository": "zlux-workflow",
         "tag": "staging",
         "destinations": ["Zowe PAX"]
       }]
