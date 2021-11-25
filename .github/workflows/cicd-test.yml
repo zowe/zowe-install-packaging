@@ -283,7 +283,6 @@ jobs:
         with:
           source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
           default-target-path: ${{ runner.temp }}/zowe/
-          extra-options: --flat=true
           expected-count: 1
       
       - name: '[Download 2] Download cli package'
