@@ -181,7 +181,7 @@ jobs:
             fi
             
             # validate extension list input
-            if [[ ${{ github.event.inputs.custom-extension-list }} =~ ^([^;:]+(:[^;:]+)*)(;[^;:]+(:[^;:]+)*)*$ ]]; then
+            if [[ "${{ github.event.inputs.custom-extension-list }}" =~ ^([^;:]+(:[^;:]+)*)(;[^;:]+(:[^;:]+)*)*$ ]]; then
               echo "extension list syntax validation success!"
             else
               echo "extension list validation failed"
