@@ -2,4 +2,16 @@ After you extract Zowe convenience build, you can run this command to install
 MVS datasets.
 
 If you are using SMPE build, you can ignore this command since MVS datasets are
-already prepared by SMPE APPLY step.
+already prepared by SMPE install.
+
+These Zowe YAML configurations are required by this command:
+
+```
+zowe:
+  install:
+    logDirectory: ${USER}/logs
+    mvs:
+      hlq: IBMUSER.ZWE
+      loadlib: SZWEAUTH
+      parmlib: SZWESAMP
+```
