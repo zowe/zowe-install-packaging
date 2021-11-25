@@ -179,6 +179,17 @@ jobs:
               echo "You are running install-ext test, but input 'custom-extension-list' is missing"
               exit 1
             fi
+            
+            # validate extension list input
+            if [[ ${{ github.event.inputs.custom-extension-list }} =~ ^([^;:]+(:[^;:]+)*)(;[^;:]+(:[^;:]+)*)*$ ]]; then
+              echo "extension list syntax validation success!"
+            else
+              echo "extension list validation failed"
+              echo "You must follow the format: {ext-name}[:{custom-ext-pattern}][;...]"
+              echo "Example input will be:"
+              echo "sample-ext;sample-ext2;sample-myext"
+              echo "sample-ext:myown/path;sample-myext"
+            fi
 
             for each_ext in $(echo "${{ github.event.inputs.custom-extension-list }}" | sed "s/;/ /g")
             do
