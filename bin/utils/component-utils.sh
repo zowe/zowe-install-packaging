@@ -733,7 +733,7 @@ list_component_plugin_id() {
 # - ROOT_DIR
 # - ZOWE_EXPLORER_HOST
 # - DISCOVERY_PORT
-# - ZOWE_ZLUX_SERVER_HTTPS_PORT
+# - ZWED_SERVER_HTTPS_PORT
 #
 # Example:
 # - Verify service and desktop plugin of explorer-jes component
@@ -780,7 +780,7 @@ verify_component_instance() {
   fi
   
   desktop_ids=$(list_component_plugin_id "${component_dir}")
-  desktop_identifiers=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZOWE_ZLUX_SERVER_HTTPS_PORT}"/plugins -k | read_json - .pluginDefinitions[].identifier)
+  desktop_identifiers=$(node "${ROOT_DIR}"/bin/utils/curl.js https://"${ZOWE_EXPLORER_HOST}":"${ZWED_SERVER_HTTPS_PORT}"/plugins -k | read_json - .pluginDefinitions[].identifier)
   log_message "Identifiers for desktop plugins currently registered: ${desktop_identifiers}"
 
   for desktop_id in $desktop_ids; do

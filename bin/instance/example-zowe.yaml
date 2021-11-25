@@ -23,9 +23,9 @@ zowe:
     # this is optional and be kept for backward compatible purpose
     # all certificate configuration are defined in this file
     KEYSTORE_DIRECTORY: /global/zowe/keystore
-    ZOWE_ZLUX_SSH_PORT: "22"
-    ZOWE_ZLUX_TELNET_PORT: "23"
-    ZOWE_ZLUX_SECURITY_TYPE: ""
+    ZWED_SSH_PORT: "22"
+    ZWED_TELNET_PORT: "23"
+    ZWED_SECURITY_TYPE: ""
     EXTERNAL_ROOT_CA: ""
     SSO_FALLBACK_TO_NATIVE_AUTH: "true"
 

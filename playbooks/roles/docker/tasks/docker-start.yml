@@ -7,8 +7,8 @@
       --env ZOSMF_PORT={{zos_zosmf_port}} \
       --env ZWED_agent_host={{zowe_zos_host}} \
       --env ZWED_agent_https_port={{zowe_zss_port}} \
-      --env ZOWE_ZLUX_TELNET_PORT={{zowe_zlux_terminal_telnet_port}} \
-      --env ZOWE_ZLUX_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }} \
+      --env ZWED_TELNET_PORT={{zowe_zlux_terminal_telnet_port}} \
+      --env ZWED_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }} \
       --env ZOWE_ZLUX_SSH_HOST={{zowe_zos_host}} \
       --env GATEWAY_PORT={{zowe_apiml_gateway_port}} \
       --expose {{zowe_apiml_gateway_port}} \

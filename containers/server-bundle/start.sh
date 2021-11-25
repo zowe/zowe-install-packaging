@@ -21,7 +21,7 @@ fi
 # You may wish to set --env ZOWE_EXPLOERER_HOST to the value of hostname if iframe apps do not load
 
 #add non-default settings with --env, using same properties as seen in instance.env
-#   --env ZOWE_ZLUX_TELNET_PORT=23
+#   --env ZWED_TELNET_PORT=23
 docker run -it \
     --env ZOWE_START=1 \
     -h your_hostname \

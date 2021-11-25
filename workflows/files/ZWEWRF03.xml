@@ -329,7 +329,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <!-- Specify choices here -->
         </string>
     </variable>
-    <variable name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" visibility="public">
+    <variable name="ZWED_SERVER_HTTPS_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX Server HTTPS Port</label>
         <abstract>Zowe ZLUX Server HTTPS Port</abstract>
         <description>Zowe ZLUX Server HTTPS Port</description>
@@ -339,7 +339,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>8544</default>
         </integer>
     </variable>
-    <variable name="ZOWE_ZSS_SERVER_PORT" scope="instance" visibility="public">
+    <variable name="ZWES_SERVER_PORT" scope="instance" visibility="public">
         <label>Zowe ZSS Server Port</label>
         <abstract>Zowe ZSS Server Port</abstract>
         <description>Zowe ZSS Server Port</description>
@@ -349,7 +349,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>8542</default>
         </integer>
     </variable>
-    <variable name="ZOWE_ZSS_SERVER_TLS" scope="instance" visibility="public">
+    <variable name="ZWES_SERVER_TLS" scope="instance" visibility="public">
         <label>ZSS Server TLS</label>
         <abstract>Zowe ZSS Server TLS (HTTPS)</abstract>
         <description>Zowe ZSS Server TLS. Uncheck if you do not want to use HTTPS on ZSS.</description>
@@ -358,7 +358,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>true</default>
         </boolean>
     </variable>
-    <variable name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" visibility="public">
+    <variable name="ZWES_XMEM_SERVER_NAME" scope="instance" visibility="public">
         <label>Zowe ZSS XMEM Server Name</label>
         <abstract>Zowe ZSS XMEM Server Name</abstract>
         <description>Zowe ZSS XMEM Server Name</description>
@@ -406,7 +406,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <!-- Specify choices here -->
         </string>
     </variable>
-    <variable name="ZOWE_ZLUX_SSH_PORT" scope="instance" visibility="public">
+    <variable name="ZWED_SSH_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX SSH Port</label>
         <abstract>Zowe ZLUX SSH Port</abstract>
         <description>Zowe ZLUX SSH Port</description>
@@ -416,7 +416,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>22</default>
         </integer>
     </variable>
-    <variable name="ZOWE_ZLUX_TELNET_PORT" scope="instance" visibility="public">
+    <variable name="ZWED_TELNET_PORT" scope="instance" visibility="public">
         <label>Zowe ZLUX Telnet Port</label>
         <abstract>Zowe ZLUX Telnet Port</abstract>
         <description>Zowe ZLUX Telnet Port</description>
@@ -426,7 +426,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
             <default>23</default>
         </integer>
     </variable>
-    <variable name="ZOWE_ZLUX_SECURITY_TYPE" scope="instance" visibility="public">
+    <variable name="ZWED_SECURITY_TYPE" scope="instance" visibility="public">
         <label>Zowe ZLUX Security Type</label>
         <abstract>The security type of the tn3270 connection</abstract>
         <description>The security type of the tn3270 connection
@@ -540,12 +540,12 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="CATALOG_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="DISCOVERY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="GATEWAY_PORT" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="ZOWE_ZLUX_SERVER_HTTPS_PORT" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="ZOWE_ZSS_SERVER_PORT" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="ZOWE_ZSS_XMEM_SERVER_NAME" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="ZOWE_ZLUX_SSH_PORT" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="ZOWE_ZLUX_TELNET_PORT" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="ZOWE_ZLUX_SECURITY_TYPE" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="ZWED_SERVER_HTTPS_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWES_SERVER_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWES_XMEM_SERVER_NAME" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWED_SSH_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWED_TELNET_PORT" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWED_SECURITY_TYPE" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="ZWEAD_EXTERNAL_STATIC_DEF_DIRECTORIES" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="EXTERNAL_COMPONENTS" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="APIML_ALLOW_ENCODED_SLASHES" scope="instance" noPromptIfSet="false" required="true"/>
@@ -562,7 +562,7 @@ valid values are blank('') for telnet, or 'tls'</description>
         <variableValue name="ZWE_CACHING_EVICTION_STRATEGY" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZWE_CACHING_SERVICE_PERSISTENT" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="ZWE_CACHING_SERVICE_VSAM_DATASET" scope="instance" noPromptIfSet="false" required="false"/>
-        <variableValue name="ZOWE_ZSS_SERVER_TLS" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="ZWES_SERVER_TLS" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZWES_ZIS_LOADLIB" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZWES_ZIS_PLUGINLIB" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="ZWES_ZIS_PARMLIB" scope="instance" noPromptIfSet="false" required="true"/>
@@ -657,19 +657,19 @@ export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
 export ZOWE_EXPLORER_FRAME_ANCESTORS="${instance-ZOWE_EXPLORER_HOST}:*,${instance-ZOWE_IP_ADDRESS}:*"
 
 # app framework (app-server, zss, zis) variables
-export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
-export ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
-ZOWE_ZSS_SERVER_TLS=${instance-ZOWE_ZSS_SERVER_TLS}
-export ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+export ZWED_SERVER_HTTPS_PORT=${instance-ZWED_SERVER_HTTPS_PORT}
+export ZWES_SERVER_PORT=${instance-ZWES_SERVER_PORT}
+ZWES_SERVER_TLS=${instance-ZWES_SERVER_TLS}
+export ZWES_XMEM_SERVER_NAME=${instance-ZWES_XMEM_SERVER_NAME}
 export ZWES_ZIS_LOADLIB=${instance-ZWES_ZIS_LOADLIB}
 export ZWES_ZIS_PLUGINLIB=${instance-ZWES_ZIS_PLUGINLIB}
 export ZWES_ZIS_PARMLIB=${instance-ZWES_ZIS_PARMLIB}
 export ZWES_ZIS_PARMLIB_MEMBER=${instance-ZWES_ZIS_PARMLIB_MEMBER}
 
 # terminal app variables
-export ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
-export ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
-export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+export ZWED_SSH_PORT=${instance-ZWED_SSH_PORT}
+export ZWED_TELNET_PORT=${instance-ZWED_TELNET_PORT}
+export ZWED_SECURITY_TYPE=${instance-ZWED_SECURITY_TYPE}
 
 # Log level for launch scripts. Set this to "debug" to see detail of validate and configure steps.
 export ZWE_LOG_LEVEL_ZWELS=${instance-ZWE_LOG_LEVEL_ZWELS}
@@ -776,19 +776,19 @@ USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
 ZOWE_EXPLORER_FRAME_ANCESTORS="${instance-ZOWE_EXPLORER_HOST}:*,${instance-ZOWE_IP_ADDRESS}:*"
 
 # app framework (app-server, zss, zis) variables
-ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
-ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
-ZOWE_ZSS_SERVER_TLS=${instance-ZOWE_ZSS_SERVER_TLS}
-ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+ZWED_SERVER_HTTPS_PORT=${instance-ZWED_SERVER_HTTPS_PORT}
+ZWES_SERVER_PORT=${instance-ZWES_SERVER_PORT}
+ZWES_SERVER_TLS=${instance-ZWES_SERVER_TLS}
+ZWES_XMEM_SERVER_NAME=${instance-ZWES_XMEM_SERVER_NAME}
 ZWES_ZIS_LOADLIB=${instance-ZWES_ZIS_LOADLIB}
 ZWES_ZIS_PLUGINLIB=${instance-ZWES_ZIS_PLUGINLIB}
 ZWES_ZIS_PARMLIB=${instance-ZWES_ZIS_PARMLIB}
 ZWES_ZIS_PARMLIB_MEMBER=${instance-ZWES_ZIS_PARMLIB_MEMBER}
 
 # terminal app variables
-ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
-ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
-ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+ZWED_SSH_PORT=${instance-ZWED_SSH_PORT}
+ZWED_TELNET_PORT=${instance-ZWED_TELNET_PORT}
+ZWED_SECURITY_TYPE=${instance-ZWED_SECURITY_TYPE}
 
 # Log level for launch scripts. Set this to "debug" to see detail of validate and configure steps.
 export ZWE_LOG_LEVEL_ZWELS=${instance-ZWE_LOG_LEVEL_ZWELS}
@@ -893,19 +893,19 @@ export USS_EXPLORER_UI_PORT=${instance-USS_EXPLORER_UI_PORT}
 export ZOWE_EXPLORER_FRAME_ANCESTORS="${instance-ZOWE_EXPLORER_HOST}:*,${instance-ZOWE_IP_ADDRESS}:*"
 
 # app framework (app-server, zss, zis) variables
-export ZOWE_ZLUX_SERVER_HTTPS_PORT=${instance-ZOWE_ZLUX_SERVER_HTTPS_PORT}
-export ZOWE_ZSS_SERVER_PORT=${instance-ZOWE_ZSS_SERVER_PORT}
-ZOWE_ZSS_SERVER_TLS=${instance-ZOWE_ZSS_SERVER_TLS}
-export ZOWE_ZSS_XMEM_SERVER_NAME=${instance-ZOWE_ZSS_XMEM_SERVER_NAME}
+export ZWED_SERVER_HTTPS_PORT=${instance-ZWED_SERVER_HTTPS_PORT}
+export ZWES_SERVER_PORT=${instance-ZWES_SERVER_PORT}
+ZWES_SERVER_TLS=${instance-ZWES_SERVER_TLS}
+export ZWES_XMEM_SERVER_NAME=${instance-ZWES_XMEM_SERVER_NAME}
 export ZWES_ZIS_LOADLIB=${instance-ZWES_ZIS_LOADLIB}
 export ZWES_ZIS_PLUGINLIB=${instance-ZWES_ZIS_PLUGINLIB}
 export ZWES_ZIS_PARMLIB=${instance-ZWES_ZIS_PARMLIB}
 export ZWES_ZIS_PARMLIB_MEMBER=${instance-ZWES_ZIS_PARMLIB_MEMBER}
 
 # terminal app variables
-export ZOWE_ZLUX_SSH_PORT=${instance-ZOWE_ZLUX_SSH_PORT}
-export ZOWE_ZLUX_TELNET_PORT=${instance-ZOWE_ZLUX_TELNET_PORT}
-export ZOWE_ZLUX_SECURITY_TYPE=${instance-ZOWE_ZLUX_SECURITY_TYPE}
+export ZWED_SSH_PORT=${instance-ZWED_SSH_PORT}
+export ZWED_TELNET_PORT=${instance-ZWED_TELNET_PORT}
+export ZWED_SECURITY_TYPE=${instance-ZWED_SECURITY_TYPE}
 
 # Log level for launch scripts. Set this to "debug" to see detail of validate and configure steps.
 export ZWE_LOG_LEVEL_ZWELS=${instance-ZWE_LOG_LEVEL_ZWELS}

@@ -657,7 +657,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
 
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZOS_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_host" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_https_port" "${ZOWE_ZSS_SERVER_PORT}"
+  update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_https_port" "${ZWES_SERVER_PORT}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_TELNET_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
   update_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_SSH_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
 
@@ -721,7 +721,7 @@ else
     sed -e "s#JES_EXPLORER_UI_PORT=.\+\$#JES_EXPLORER_UI_PORT=8546#" | \
     sed -e "s#MVS_EXPLORER_UI_PORT=.\+\$#MVS_EXPLORER_UI_PORT=8548#" | \
     sed -e "s#USS_EXPLORER_UI_PORT=.\+\$#USS_EXPLORER_UI_PORT=8550#" | \
-    sed -e "s#ZOWE_ZLUX_SERVER_HTTPS_PORT=.\+\$#ZOWE_ZLUX_SERVER_HTTPS_PORT=8544#" | \
+    sed -e "s#ZWED_SERVER_HTTPS_PORT=.\+\$#ZWED_SERVER_HTTPS_PORT=8544#" | \
     sed -e "s#ZWE_DISCOVERY_SERVICES_LIST=.\+\$#ZWE_DISCOVERY_SERVICES_REPLICAS=1#" | \
     sed -e "s#APIML_GATEWAY_EXTERNAL_MAPPER=.\+\$#APIML_GATEWAY_EXTERNAL_MAPPER=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map#" | \
     sed -e "s#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=.\+\$#APIML_SECURITY_AUTHORIZATION_ENDPOINT_URL=https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth#" | \
@@ -731,7 +731,7 @@ else
     \\
     ZWE_EXTERNAL_PORT=7554\\
     ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
-    ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}\\
+    ZWED_agent_https_port=\${ZWES_SERVER_PORT}\\
     ZOWE_ZLUX_TELNET_HOST=\${ZWED_agent_host}\\
     ZOWE_ZLUX_SSH_HOST=\${ZWED_agent_host}")
 
