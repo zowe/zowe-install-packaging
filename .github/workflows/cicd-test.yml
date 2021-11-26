@@ -140,6 +140,11 @@ jobs:
             echo $out
           }
 
+          total_check=3
+          if [[ "${{ matrix.test }}" == *"install-ext"* ]] || [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
+            ((total_check++))
+          fi
+
           ##################################################################################################
           ### Process custom-zowe-artifactory-pattern
           ##################################################################################################
@@ -168,13 +173,13 @@ jobs:
                 && ([[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]); then
                 # if it is valid smpe.zip format, test run is smpe related, we will hornour this custom input
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                echo "custom smpe artifactory path detected"
+                echo "custom smpe artifactory path will be used"
                 break
               elif [[ "$each_filename" == *"zowe"* ]] && [[ "$each_filename" == *pax ]] \
                 && [[ "${{ matrix.test }}" != *install-fmid.ts ]] && [[ "${{ matrix.test }}" != *install-ptf.ts ]]; then
                 # if it is valid pax format, test run is not smpe related, we will hornour this custom input
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                echo "custom pax artifactory path detected"
+                echo "custom pax artifactory path will be used"
                 break
               fi
             done
@@ -192,7 +197,7 @@ jobs:
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
           # next line is just to get the pax file name - extract the part after last occurance of slash
           ZOWE_ARTIFACTORY_FINAL_FILENAME=${ZOWE_ARTIFACTORY_FINAL##*/}
-          echo "Zowe pax or smpe.zip artifactory full path processing complete!"
+          echo "[Check 1/$total_check] Zowe pax or smpe.zip artifactory full path processing complete!"
 
           ##################################################################################################
           ### Process TEST_SERVER_NICKNAME
@@ -208,7 +213,19 @@ jobs:
           if [[ "$TEST_SERVER" == "zzow04" ]] ; then
             TEST_SERVER_NICKNAME=marist-4
           fi
-          echo "Test server name processing complete!"
+          echo "[Check 2/$total_check] Test server name processing complete!"
+
+          ##################################################################################################
+          ### Process custom-zowe-cli-artifactory-pattern
+          ##################################################################################################
+          ZOWE_CLI_ARTIFACTORY_PATTERN=
+          if [[ -z "${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}" ]]; then
+            ZOWE_CLI_ARTIFACTORY_PATTERN="${{ env.DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN }}"
+          else
+            ZOWE_CLI_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}"
+          fi
+          ZOWE_CLI_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_CLI_ARTIFACTORY_PATTERN)
+          echo "[Check 3/$total_check] Zowe CLI artifactory full path processing complete!"
 
           ##################################################################################################
           ### Process custom-extension-list
@@ -250,20 +267,8 @@ jobs:
 
             # remove trailing comma
             EXTENSION_LIST=$(echo $EXTENSION_LIST | sed 's/,$//g')
-            echo "Zowe extension list processing complete!"
+            echo "[Check 4/$total_check] Zowe extension list processing complete!"
           fi
-
-          ##################################################################################################
-          ### Process custom-zowe-cli-artifactory-pattern
-          ##################################################################################################
-          ZOWE_CLI_ARTIFACTORY_PATTERN=
-          if [[ -z "${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}" ]]; then
-            ZOWE_CLI_ARTIFACTORY_PATTERN="${{ env.DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN }}"
-          else
-            ZOWE_CLI_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}"
-          fi
-          ZOWE_CLI_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_CLI_ARTIFACTORY_PATTERN)
-          echo "Zowe CLI artifactory full path processing complete!"
 
           ##################################################################################################
           ### Process custom-zowe-tp-docker-artifactory-pattern
@@ -276,7 +281,8 @@ jobs:
               ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}"
             fi
             ZOWE_TP_DOCKER_ARTIFACTORY_FINAL="https://zowe.jfrog.io/zowe/$(jfrog_search $ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN)"
-            echo "Zowe tech preview docker artifactory full path processing complete!"
+            if 
+            echo "[Check 4/$total_check] Zowe tech preview docker artifactory full path processing complete!"
           fi
 
           ##################################################################################################
