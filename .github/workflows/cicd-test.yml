@@ -162,7 +162,7 @@ jobs:
 
             for each_zowe_art_pattern in $(echo "$input_custom_zowe_art" | sed "s/;/ /g")
             do
-              # first extract the filename of the artifactory path to avoid string check confusion
+              #first extract the filename of the artifactory path to avoid string check confusion
               each_filename=${each_zowe_art_pattern##*/}
               if [[ "$each_filename" == *"zowe-smpe"* ]] && [[ "$each_filename" == *zip ]] \
                 && ([[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]); then
