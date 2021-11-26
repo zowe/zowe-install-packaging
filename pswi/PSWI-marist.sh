@@ -82,6 +82,11 @@ if [ $create -eq 0 ];then
 sh 05_test.sh
 test=$?
 
+if [ $test -eq 0 ];then
+sh 08_download.sh
+download=$?
+fi
+
 # Cleanup after the test
 sh 06_test_cleanup.sh
 fi 
@@ -105,6 +110,8 @@ then
     echo "Creation of PSWI wasn't successful."
   elif [ $test -ne 0 ]; then
     echo "Testing of PSWI wasn't successful."
+  elif [ $download -ne 0 ]; then
+    echo "Downloading of PSWI wasn't successful."
   fi
   exit -1
 else
