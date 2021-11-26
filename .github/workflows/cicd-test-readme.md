@@ -47,7 +47,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
 ### Custom Zowe Artifactory Pattern
 
 - This input is optional, it is designed to take in customized zowe.pax or zowe-smpe.zip path on artifactory.  
-- If not specified, default will be `libs-snapshot-local/org/zowe/*{branch-name}*.pax`. If workflows detects you are running SMPE related tests (install-fmid.ts or install-ptf.ts or install-ptf-two-times.ts), default will select `libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip` where `{branch-name}` will be substituted with the branch where you triggered your workflow. Then the latest uploaded artifact will be used.
+- If not specified, default will be `libs-snapshot-local/org/zowe/*{branch-name}*.pax`. If workflows detects you are running SMPE related tests (install-fmid.ts or install-ptf.ts or install-ptf-two-times.ts), default will select `libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip`. Note that `{branch-name}` will be substituted with the branch where you triggered your workflow. Then the latest uploaded artifact will be used.
 - If specified, you must put valid path on artifactory, otherwise your input will be ignored.
   - for customized pax, your pax file must contain `zowe` and end with `.pax`
   - for customized smpe, your smpe file must contain `zowe-smpe` and end with `.zip`
