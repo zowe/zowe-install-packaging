@@ -111,5 +111,5 @@ data:
 
     ZWED_agent_host=${ZOWE_ZOS_HOST}
     ZWED_agent_https_port=${ZWES_SERVER_PORT}
-    ZOWE_ZLUX_TELNET_HOST=${ZWED_agent_host}
-    ZOWE_ZLUX_SSH_HOST=${ZWED_agent_host}
+    ZWED_TELNET_HOST=${ZWED_agent_host}
+    ZWED_SSH_HOST=${ZWED_agent_host}
