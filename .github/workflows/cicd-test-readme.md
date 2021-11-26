@@ -88,5 +88,5 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
 ### Custom Zowe Tech Preview Docker Artifactory Pattern
 
 - This input is optional, it is designed to take in customized technical preview docker path on artifactory.  
-- If not specified, default will be `libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar`. The latest uploaded artifact will be used. Note that `{branch-name}` will be substituted with the branch where you triggered your workflow.
+- If not specified, default will be `libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar` where `{branch-name}` will be substituted with the branch where you triggered your workflow. Then the latest uploaded artifact will be used. 
 - This input is only honored when you are running `install-docker.ts` test.
