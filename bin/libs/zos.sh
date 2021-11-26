@@ -83,3 +83,64 @@ detect_file_encoding() {
     echo "${confirmed_encoding}"
   fi
 }
+
+is_dataset_exists() {
+  ds=$1
+
+  (cat "//'${ds}'" 1>/dev/null 2>&1)
+  if [ $? -eq 0 ]; then
+    echo "true"
+  fi
+}
+
+create_dataset() {
+  ds_name=$1
+  ds_opts=$2
+
+  print_debug "- ALLOCATE NEW DA(${ds_name}) ${ds_opts}"
+  result=$(tsocmd "ALLOCATE NEW DA('${ds_name}') ${ds_opts}" 2>&1)
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    print_trace "$(padding_left "${result}" "    ")"
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    print_error "$(padding_left "${result}" "    ")"
+  fi
+
+  return ${code}
+}
+
+copy_to_dataset() {
+  uss_file=$1
+  ds_name=$2
+  cp_opts=$3
+  allow_overwrite=$4
+
+  if [ "${allow_overwrite}" != "true" ]; then
+    if [ "$(is_dataset_exists "//'${ds_name}'")" = "true" ]; then
+      print_error_and_exit "Error ZWEI0133E: Dataset ${ds_name} already exists" "" 133
+    fi
+  fi
+
+  print_debug "- cp ${cp_opts} -v ${uss_file} //'${ds_name}'"
+  result=$(cp ${cp_opts} -v "${uss_file}" "//'${ds_name}'" 2>&1)
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    print_trace "$(padding_left "${result}" "    ")"
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    print_error "$(padding_left "${result}" "    ")"
+  fi
+
+  return ${code}
+}

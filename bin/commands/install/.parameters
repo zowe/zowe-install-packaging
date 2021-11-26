@@ -1,1 +1,1 @@
-config|c|string|required||||Path to Zowe configuration zowe.yaml file
+allow-overwritten||boolean|||||Allow overwritten existing MVS dataset.

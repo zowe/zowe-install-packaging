@@ -4,14 +4,12 @@ MVS datasets.
 If you are using SMPE build, you can ignore this command since MVS datasets are
 already prepared by SMPE install.
 
-These Zowe YAML configurations are required by this command:
+These Zowe YAML configurations showing with sample values are required:
 
 ```
 zowe:
   install:
-    logDirectory: ${USER}/logs
+    logDirectory: /my/log/directory
     mvs:
       hlq: IBMUSER.ZWE
-      loadlib: SZWEAUTH
-      parmlib: SZWESAMP
 ```

@@ -2,3 +2,4 @@ help|h|boolean|||||Display this help.
 debug,verbose|v|boolean|||||Enable verbose mode.
 trace|vv|boolean|||||Enable trace level debug mode.
 log-dir,log|l|string|||||Write logs to this directory.
+config|c|string|||||Path to Zowe configuration zowe.yaml file.
