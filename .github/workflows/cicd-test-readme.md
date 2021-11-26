@@ -104,7 +104,7 @@ When running CICD integration tests during RC stage, put the following string in
 basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v8.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
 ```
 
-Total elapsed time when running in parallel is approximately 3.5 hours.
+Total elapsed time when running in parallel is approximately 3.5 hours on paper idealy if all parallel jobs are executing at the same time. In reality Github Actions may see some traffic congestion so that some of the VMs are not allocated in time - this is something we cannot control. There are 21 jobs generated as a result of above inputs. We are looking at around 4 hours to finish all testing in reality.
 
 ## Appendix
 
