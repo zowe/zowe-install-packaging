@@ -162,17 +162,19 @@ jobs:
 
             for each_zowe_art_pattern in $(echo "$input_custom_zowe_art" | sed "s/;/ /g")
             do
-              if [[ "$each_zowe_art_pattern" == *"zowe-smpe"* ]] && [[ "$each_zowe_art_pattern" == *zip ]] \
+              # first extract the filename of the artifactory path to avoid string check confusion
+              each_filename=${each_zowe_art_pattern##*/}
+              if [[ "$each_filename" == *"zowe-smpe"* ]] && [[ "$each_filename" == *zip ]] \
                 && ([[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]); then
                 # if it is valid smpe.zip format, test run is smpe related, we will hornour this custom input
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                echo "smpe custom"
+                echo "custom smpe artifactory path detected"
                 break
-              elif [[ "$each_zowe_art_pattern" == *"zowe"* ]] && [[ "$each_zowe_art_pattern" == *pax ]] \
+              elif [[ "$each_filename" == *"zowe"* ]] && [[ "$each_filename" == *pax ]] \
                 && [[ "${{ matrix.test }}" != *install-fmid.ts ]] && [[ "${{ matrix.test }}" != *install-ptf.ts ]]; then
                 # if it is valid pax format, test run is not smpe related, we will hornour this custom input
                 ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                echo "pax custom"
+                echo "custom pax artifactory path detected"
                 break
               fi
             done
@@ -181,10 +183,8 @@ jobs:
           if [[ -z "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" ]]; then
             if [[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]; then
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
-              echo "smpe default"
             else
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
-              echo "pax default"
             fi
           fi
 
