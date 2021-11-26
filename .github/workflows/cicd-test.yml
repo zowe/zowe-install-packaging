@@ -281,7 +281,6 @@ jobs:
               ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}"
             fi
             ZOWE_TP_DOCKER_ARTIFACTORY_FINAL="https://zowe.jfrog.io/zowe/$(jfrog_search $ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN)"
-            if 
             echo "[Check 4/$total_check] Zowe tech preview docker artifactory full path processing complete!"
           fi
 
