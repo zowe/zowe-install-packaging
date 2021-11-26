@@ -145,14 +145,9 @@ jobs:
           ##################################################################################################
           ZOWE_ARTIFACTORY_PATTERN_INTERIM=
           input_custom_zowe_art="${{ github.event.inputs.custom-zowe-artifactory-pattern }}"
-          if [[ -z "$input_custom_zowe_art" ]]; then
-            # custom input is empty, we set default no matter running smpe test or not
-            if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]]; then
-              ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
-            else
-              ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
-            fi
-          else
+
+          if [[ -n "$input_custom_zowe_art" ]]; then
+            # if custom zowe artifactory input is provided
             # validate custom zowe artifactory path input
             if [[ "$input_custom_zowe_art" =~ ^([^;]+)(;[^;]+)?$ ]]; then
               echo "custom zowe artifactory path input validation success!"
@@ -167,30 +162,31 @@ jobs:
 
             for each_zowe_art_pattern in $(echo "$input_custom_zowe_art" | sed "s/;/ /g")
             do
-              if [[ "${{ matrix.test }}" == *"install-fmid"* ]] || [[ "${{ matrix.test }}" == *"install-ptf"* ]] ; then
-                if [[ "$each_zowe_art_pattern" == *"zowe-smpe"* ]] && [[ "$each_zowe_art_pattern" == *"zip"* ]]; then
-                  # if it is valid smpe.zip format, we will hornour this custom input
-                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                  echo "smpe custom"
-                else
-                  # otherwise use smpe default
-                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
-                  echo "smpe default"
-                fi
-              else
-                if [[ "$each_zowe_art_pattern" == *"pax"* ]]; then
-                  # if it is valid pax format, we will hornour this custom input
-                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                  echo "pax custom"
-                else
-                  # otherwise use pax default
-                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
-                  echo "pax default"
-                fi
+              if [[ "$each_zowe_art_pattern" == *"zowe-smpe"* ]] && [[ "$each_zowe_art_pattern" == *zip ]]
+                && ([[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]); then
+                # if it is valid smpe.zip format, test run is smpe related, we will hornour this custom input
+                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
+                echo "smpe custom"
+                break
+              elif [[ "$each_zowe_art_pattern" == *"zowe"* ]] && [[ "$each_zowe_art_pattern" == *pax ]]; then
+                # if it is valid pax format, we will hornour this custom input
+                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
+                echo "pax custom"
+                break
               fi
-
             done
           fi
+
+          if [[ -z "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" ]]; then
+            if [[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]; then
+              ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
+              echo "smpe default"
+            else
+              ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
+              echo "pax default"
+            fi
+          fi
+
           ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
           # next line is just to get the pax file name - extract the part after last occurance of slash
