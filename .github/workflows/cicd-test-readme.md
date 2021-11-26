@@ -80,7 +80,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   ^([^;:]+(:[^;:]+)*)(;[^;:]+(:[^;:]+)*)*$
   ```
 - Examples:
-  - `sample-node-api:my/new/path/sample-node-api-cus.pax`
+  - `sample-node-api`
   - `sample-node-api:my/new/path/sample-node-api-cus.pax;sample-trial-app`
   - `sample-node-api:my/new/path/sample-node-api-cus.pax;sample-trial-app:my/old/path/cust.pax;sample-new-zowe-ext`
 - This input is only honored when you are running `install-ext.ts` test.
