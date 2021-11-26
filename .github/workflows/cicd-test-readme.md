@@ -8,7 +8,7 @@ Currently we support three testing z/OS servers:
 - zzow03 (Top Secret/TSS)
 - zzow04 (RACF)
 
-Testing pipeline is running tests in parallel. The workflow will try to acquire the resource lock if available. If it is occupied, the workflow will wait until the lock is succesfully acquired.
+Testing pipeline is running tests in parallel. The workflow will try to acquire the resource lock if available. If the resource lock is occupied, the workflow will wait until the lock is succesfully acquired.
 
 Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packaging/actions/workflows/cicd-test.yml)
 
@@ -44,7 +44,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - Install PTF two times: `extended/install-ptf-two-times.ts(zzow04)`
   - Generate API documentation: `basic/install-api-gen.ts(zzow04)`
 
-### custom-zowe-artifactory-pattern
+### Custom Zowe Artifactory Pattern
 
 - This input is optional, it is designed to take in customized zowe.pax or zowe-smpe.zip path on artifactory.  
 - If not specified, default will be `libs-snapshot-local/org/zowe/*{branch-name}*.pax`. If workflows detects you are running SMPE related tests (install-fmid.ts or install-ptf.ts or install-ptf-two-times.ts), default will select `libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip` where `{branch-name}` will be substituted with the branch where you triggered your workflow. Then the latest uploaded artifact will be used.
@@ -65,12 +65,12 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - `my/path/zowe-containerization-456.zip`
   - `my/path/zowe-164.pax;my/path/zowe-smpe-644.zip;my/path/smpe-877.pax`
 
-### custom-zowe-cli-artifactory-pattern
+### Custom Zowe CLI Artifactory Pattern
 
 - This input is optional, it is designed to take in customized Zowe CLI path on artifactory.  
 - If not specified, default will be `libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip`. Then the latest uploaded artifact will be used.
 
-### custom-extension-list
+### Custom Extension List
 
 - This input is prefilled with `sample-node-api;sample-trial-app` to test [sample-node-api](https://github.com/zowe/sample-node-api) and [sample-trial-app](https://github.com/zowe/sample-trial-app) projects. In normal circumstances, you probably don't need to modify the prefilled value here.
 - By default, the extension artifact pattern is using format `libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax` where `{ext-name}` will be processed and substituted from this input. Then the latest uploaded artifact will be used.
@@ -85,7 +85,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - `sample-node-api:my/new/path/sample-node-api-cus.pax;sample-trial-app:my/old/path/cust.pax;sample-new-zowe-ext`
 - This input is only honored when you are running `install-ext.ts` test.
 
-### custom-zowe-tp-docker-artifactory-pattern
+### Custom Zowe Tech Preview Docker Artifactory Pattern
 
 - This input is optional, it is designed to take in customized technical preview docker path on artifactory.  
 - If not specified, default will be `libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar`. The latest uploaded artifact will be used. Note that `{branch-name}` will be substituted with the branch where you triggered your workflow.
