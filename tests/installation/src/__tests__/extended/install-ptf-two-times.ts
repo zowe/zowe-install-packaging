@@ -15,8 +15,8 @@ import {
   runAnsiblePlaybook,
   showZoweRuntimeLogs,
   sleep,
-} from '../../../utils';
-import { TEST_TIMEOUT_SMPE_PTF, ZOWE_FMID } from '../../../constants';
+} from '../../utils';
+import { TEST_TIMEOUT_SMPE_PTF, ZOWE_FMID } from '../../constants';
 
 import Debug from 'debug';
 const debug = Debug('zowe-install-test:utils');

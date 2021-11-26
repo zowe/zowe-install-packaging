@@ -160,7 +160,7 @@ jobs:
               echo "custom zowe artifactory path input validation failed"
               echo "You must follow the format: {path1};{path2}"
               echo "Example input will be:"
-              echo "path1/zowe.pax;path2/zowe-smpe.pax"
+              echo "path1/zowe.pax;path2/zowe-smpe.zip"
               echo "You can at most supply two customized paths, one for pax one for smpe and separated by semi-colon."
               exit 1
             fi
