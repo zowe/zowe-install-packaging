@@ -79,7 +79,6 @@ on:
         type: boolean
 
 jobs:
-
   check-permission:
     runs-on: ubuntu-latest
     steps:
@@ -135,6 +134,44 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
+      - name: '[Prep 6] Process github.event.inputs and inputs'
+        run: |
+          if [[ -z "${{ github.event.inputs.BUILD_SMPE }}" ]]; then
+            echo INPUTS_BUILD_SMPE=${{ inputs.BUILD_SMPE }} >> $GITHUB_ENV
+          else 
+            echo INPUTS_BUILD_SMPE=${{ github.event.inputs.BUILD_SMPE }} >> $GITHUB_ENV
+          fi
+          
+          if [[ -z "${{ github.event.inputs.BUILD_PSIANDSMPE }}" ]]; then
+            echo INPUTS_BUILD_PSIANDSMPE=${{ inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
+          else 
+            echo INPUTS_BUILD_PSIANDSMPE=${{ github.event.inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
+          fi
+
+          if [[ -z "${{ github.event.inputs.BUILD_DOCKER }}" ]]; then
+            echo INPUTS_BUILD_DOCKER=${{ inputs.BUILD_DOCKER }} >> $GITHUB_ENV
+          else 
+            echo INPUTS_BUILD_DOCKER=${{ github.event.inputs.BUILD_DOCKER }} >> $GITHUB_ENV
+          fi
+
+          if [[ -z "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" ]]; then
+            echo INPUTS_BUILD_DOCKER_SOURCES=${{ inputs.BUILD_DOCKER_SOURCES }} >> $GITHUB_ENV
+          else 
+            echo INPUTS_BUILD_DOCKER_SOURCES=${{ github.event.inputs.BUILD_DOCKER_SOURCES }} >> $GITHUB_ENV
+          fi
+
+          if [[ -z "${{ github.event.inputs.BUILD_KUBERNETES }}" ]]; then
+            echo INPUTS_BUILD_KUBERNETES=${{ inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
+          else 
+            echo INPUTS_BUILD_KUBERNETES=${{ github.event.inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
+          fi
+
+          if [[ -z "${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}" ]]; then
+            echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
+          else 
+            echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
+          fi
+
       - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
@@ -145,11 +182,11 @@ jobs:
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
       - name: '[SMPE Download 2] Get publish target path'
-        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/publish@main
 
       - name: '[SMPE Download 3] Download SMPE build log'
-        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
@@ -160,7 +197,7 @@ jobs:
       - name: '[PAX/SMPE 1] Pre-packaging'
         id: pax-prep
         run: |
-          if [ "${{ github.event.inputs.BUILD_SMPE }}" == "true" ] || [ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == "true" ] ; then
+          if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSIANDSMPE }}" == "true" ] ; then
             echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
             echo ::set-output name=BUILD_SMPE::yes
           else
@@ -168,12 +205,12 @@ jobs:
             echo ::set-output name=BUILD_SMPE::
           fi
           
-          if [ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == "true" ] ; then
+          if [ "${{ env.INPUTS_BUILD_PSIANDSMPE }}" == "true" ] ; then
             echo ::set-output name=BUILD_PSI::yes
           else
             echo ::set-output name=BUILD_PSI::
           fi
-          if [ "${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
+          if [ "${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
             echo ::set-output name=KEEP_TEMP_FOLDER::yes
           else
             echo ::set-output name=KEEP_TEMP_FOLDER::
@@ -187,7 +224,7 @@ jobs:
           pax-options: '-o saveext'
           pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
           pax-ssh-password: ${{ secrets.SSH_MARIST_RACF_PASSWORD  }}
-          keep-temp-folders: ${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}
+          keep-temp-folders: ${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}
           extra-files: ${{ steps.pax-prep.outputs.EXTRA_FILES }}
           extra-environment-vars: |
             ZOWE_VERSION=${{ env.P_VERSION }}
@@ -196,7 +233,7 @@ jobs:
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
 
       - name: '[SMPE Pax 3] Post-make pax'
-        if: github.event.inputs.BUILD_SMPE == 'true' || github.event.inputs.BUILD_PSIANDSMPE == 'true'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
         run: |
           cd .pax
           chmod +x rename-back.sh
@@ -216,7 +253,7 @@ jobs:
             .pax/AZWE*
 
       - name: '[TP_ZLINUX_DOCKER 1] Configure SSH'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
+        if: env.INPUTS_BUILD_DOCKER == 'true'
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.ZLINUX_SSH_KEY }}" > ~/.ssh/zlinux.key
@@ -232,32 +269,32 @@ jobs:
         shell: bash
 
       - name: '[TP_ZLINUX_DOCKER 2] Build zLinux Docker'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
+        if: env.INPUTS_BUILD_DOCKER == 'true'
         timeout-minutes: 60
         uses: zowe-actions/shared-actions/tech-preview-build-zlinux-docker@main
         with: 
           run-number: ${{ github.run_number }}
           zowe-pax-jfrog-upload-target: ${{ steps.publish.outputs.zowe-pax-jfrog-upload-target }}
-          build-docker-sources: ${{ github.event.inputs.BUILD_DOCKER_SOURCES }}
+          build-docker-sources: ${{ env.INPUTS_BUILD_DOCKER_SOURCES }}
           dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
           dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
           zlinux-ssh-server: zlinux
           zlinux-ssh-key-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
       - name: '[TP_ZLINUX_DOCKER 3] Upload zlinux docker to artifactory'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
+        if: env.INPUTS_BUILD_DOCKER == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: server-bundle.s390x.tar
 
       - name: '[TP_ZLINUX_DOCKER 4] Upload zlinux docker sources to artifactory'
-        if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
+        if: env.INPUTS_BUILD_DOCKER_SOURCES == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: server-bundle.sources.s390x.tar
 
       - name: '[TP_LINUX_DOCKER 1] Download zowe.pax'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
+        if: env.INPUTS_BUILD_DOCKER == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ steps.publish.outputs.zowe-pax-jfrog-upload-target }}
@@ -266,7 +303,7 @@ jobs:
           expected-count: 1
       
       - name: '[TP_LINUX_DOCKER 2] Build Linux Docker'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
+        if: env.INPUTS_BUILD_DOCKER == 'true'
         working-directory: containers/server-bundle
         run: |
           # copy utils to docker build folder
@@ -282,7 +319,7 @@ jobs:
           docker build -t ompzowe/server-bundle:amd64 .
           docker save -o server-bundle.amd64.tar ompzowe/server-bundle:amd64
             
-          if [ "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" == "true" ] ; then
+          if [ "${{ env.INPUTS_BUILD_DOCKER_SOURCES }}" == "true" ] ; then
             docker build -f Dockerfile.sources --build-arg BUILD_PLATFORM=amd64 -t ompzowe/server-bundle:amd64-sources .
             docker save -o server-bundle.sources.amd64.tar ompzowe/server-bundle:amd64-sources
           fi
@@ -292,27 +329,27 @@ jobs:
           pwd && ls -ltr server-bundle.*
           
       - name: '[TP_LINUX_DOCKER 3] Upload linux docker to artifactory'
-        if: github.event.inputs.BUILD_DOCKER == 'true'
+        if: env.INPUTS_BUILD_DOCKER == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: containers/server-bundle/server-bundle.amd64.tar
 
       - name: '[TP_LINUX_DOCKER 4] Upload linux docker sources to artifactory'
-        if: github.event.inputs.BUILD_DOCKER_SOURCES == 'true'
+        if: env.INPUTS_BUILD_DOCKER_SOURCES == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: containers/server-bundle/server-bundle.sources.amd64.tar
 
       - name: '[K8S 1] Build Kubernetes'
         timeout-minutes: 10
-        if: github.event.inputs.BUILD_KUBERNETES == 'true'
+        if: env.INPUTS_BUILD_KUBERNETES == 'true'
         working-directory: containers
         run: |
           ./build/parse-manifest-to-deployment.sh
           zip -r zowe-containerization.zip kubernetes
 
       - name: '[K8S 2] Upload k8s zip to artifactory'
-        if: github.event.inputs.BUILD_KUBERNETES == 'true'
+        if: env.INPUTS_BUILD_KUBERNETES == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: containers/zowe-containerization.zip
