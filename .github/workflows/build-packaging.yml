@@ -5,6 +5,26 @@ on:
   #     - staging 
   # pull_request:
   #   types: [opened, synchronize]
+  workflow_call:
+    inputs:
+      BUILD_SMPE:
+        required: false
+        type: boolean
+      BUILD_PSIANDSMPE:
+        required: false
+        type: boolean
+      BUILD_DOCKER:
+        required: false
+        type: boolean
+      BUILD_DOCKER_SOURCES:
+        required: false
+        type: boolean
+      BUILD_KUBERNETES:
+        required: false
+        type: boolean
+      KEEP_TEMP_PAX_FOLDER:
+        required: false
+        type: boolean
   workflow_dispatch:
     inputs:
       BUILD_SMPE:
