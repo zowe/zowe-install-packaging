@@ -27,14 +27,24 @@ on:
         type: boolean
     secrets:
       JF_ARTIFACTORY_TOKEN:
+        required: true
       SSH_MARIST_USERNAME:
+        required: true
       SSH_MARIST_RACF_PASSWORD:
+        required: true
       ZLINUX_SSH_KEY:
+        required: true
       ZLINUX_HOST:
+        required: true
       ZLINUX_SSH_USER:
+        required: true
       ZLINUX_SSH_PASSPHRASE:
+        required: true
       DOCKERHUB_USER:
+        required: true
       DOCKERHUB_PASSWORD:
+        required: true
+
   workflow_dispatch:
     inputs:
       BUILD_SMPE:
