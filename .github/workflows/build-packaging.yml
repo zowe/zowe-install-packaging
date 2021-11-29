@@ -31,26 +31,32 @@ on:
         description: 'Build SMPE'
         required: false
         default: 'false'
+        type: boolean
       BUILD_PSIANDSMPE:
         description: 'Build PSI and SMPE'
         required: false
         default: 'false'
+        type: boolean
       BUILD_DOCKER:
         description: 'Build Docker'
         required: false
         default: 'false'
+        type: boolean
       BUILD_DOCKER_SOURCES:
         description: 'Build Docker sources'
         required: false
         default: 'false'
+        type: boolean
       BUILD_KUBERNETES:
         description: 'Build Kubernetes'
         required: false
         default: 'false'
+        type: boolean
       KEEP_TEMP_PAX_FOLDER:
         description: 'do we need to keep temp pax folder?'
         required: false
         default: 'false'
+        type: boolean
 
 jobs:
 
