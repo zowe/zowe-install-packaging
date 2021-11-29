@@ -427,58 +427,58 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "latest-ubuntu"
+      "tag" : "1-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "latest-ubuntu"
+      "tag" : "1-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "latest-ubuntu"
+      "tag" : "1-ubuntu"
     },
     "gateway": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/gateway-service",
-        "tag" : "latest-ubuntu"
+        "tag" : "1-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "latest-ubuntu"
+      "tag" : "1-ubuntu"
     },
     "explorer-ip": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-ip",
-        "tag" : "latest-ubuntu"
+        "tag" : "1-ubuntu"
     },
     "explorer-jes": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-jes",
-        "tag" : "latest-ubuntu"
+        "tag" : "1-ubuntu"
     },
     "explorer-mvs": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-mvs",
-        "tag" : "latest-ubuntu"
+        "tag" : "1-ubuntu"
     },
     "explorer-uss": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-uss",
-        "tag" : "latest-ubuntu"
+        "tag" : "1-ubuntu"
     },
     "files-api": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/files-api",
-        "tag" : "latest-ubuntu"
+        "tag" : "1-ubuntu"
     },
     "jobs-api": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/jobs-api",
-        "tag" : "latest-ubuntu"
+        "tag" : "1-ubuntu"
     }
   },
   "dependencyDecisions": {
