@@ -6,7 +6,7 @@ on:
 
 jobs:
   call-build-workflow:
-    uses: zowe/zowe-install-packaging/.github/workflows/build-packaging.yml@staging
+    uses: zowe/zowe-install-packaging/.github/workflows/build-packaging.yml@users/tom/gha-nightly
     with:
       BUILD_SMPE: true
       BUILD_DOCKER: true
