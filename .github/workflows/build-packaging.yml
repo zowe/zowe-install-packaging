@@ -25,6 +25,16 @@ on:
       KEEP_TEMP_PAX_FOLDER:
         required: false
         type: boolean
+    secrets:
+      JF_ARTIFACTORY_TOKEN:
+      SSH_MARIST_USERNAME:
+      SSH_MARIST_RACF_PASSWORD:
+      ZLINUX_SSH_KEY:
+      ZLINUX_HOST:
+      ZLINUX_SSH_USER:
+      ZLINUX_SSH_PASSPHRASE:
+      DOCKERHUB_USER:
+      DOCKERHUB_PASSWORD:
   workflow_dispatch:
     inputs:
       BUILD_SMPE:
