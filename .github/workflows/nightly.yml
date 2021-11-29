@@ -4,11 +4,20 @@ on:
     branches: 
       - users/tom/gha-nightly
 
-
 jobs:
   call-build-workflow:
-    uses: zowe/zowe-install-packaging/.github/workflows/build-packaging.yml@staging
+    uses: zowe/zowe-install-packaging/.github/workflows/build-packaging.yml@users/tom/gha-nightly
     with:
       BUILD_SMPE: true
       BUILD_DOCKER: true
       BUILD_KUBERNETES: true
+    secrets:
+      JF_ARTIFACTORY_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      SSH_MARIST_USERNAME: ${{ secrets.SSH_MARIST_USERNAME }}
+      SSH_MARIST_RACF_PASSWORD: ${{ secrets.SSH_MARIST_RACF_PASSWORD }}
+      ZLINUX_SSH_KEY: ${{ secrets.ZLINUX_SSH_KEY }}
+      ZLINUX_HOST: ${{ secrets.ZLINUX_HOST }}
+      ZLINUX_SSH_USER: ${{ secrets.ZLINUX_SSH_USER }}
+      ZLINUX_SSH_PASSPHRASE: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
