@@ -9,8 +9,11 @@ jobs:
     uses: zowe/zowe-install-packaging/.github/workflows/build-packaging.yml@users/tom/gha-nightly
     with:
       BUILD_SMPE: true
+      BUILD_PSIANDSMPE: false
       BUILD_DOCKER: true
+      BUILD_DOCKER_SOURCES: false
       BUILD_KUBERNETES: true
+      KEEP_TEMP_PAX_FOLDER: false
     secrets:
       JF_ARTIFACTORY_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       SSH_MARIST_USERNAME: ${{ secrets.SSH_MARIST_USERNAME }}
