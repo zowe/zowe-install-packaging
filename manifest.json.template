@@ -21,15 +21,15 @@
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
+      "artifact": "sample-angular-app-1.26.0-20211122.195808.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
       "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
+      "artifact": "sample-iframe-app-1.26.0-20211122.194856.pax"
     },
     "org.zowe.zlux.sample-react-app": {
       "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
+      "artifact": "sample-react-app-1.26.0-20211122.194918.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
       "version": "~1.26.0-STAGING",
