@@ -30,6 +30,21 @@ zowe_zlux_terminal_telnet_security_type:
 # convert-for-k8s script for generating configmap and secrets in z/OS host for Kubernetes
 # Please make sure to get the latest script, which has Silent option (-q), to avoid deployment failure.
 # Default location is from marist. 
-convert_for_k8s: /ZOWE/tmp/.zowe/bin/utils/convert-for-k8s.sh
+convert_for_k8s:
+
+# Kubernetes environmental variables.  
+kubeconfig:
+k8s_context:
+k8s_storageclass: 
+k8s_pv_name:
+k8s_pvc_labels:
+k8s_service: loadbalancer
+k8s_service_annot:
+k8s_list_domain_ip: localhost
+k8s_networking:
+k8s_domain_name:
+
+#list of the apps required for zowe
+k8s_required_apps: ["api-catalog", "app-server", "caching", "explorer-jes", "explorer-mvs", "explorer-uss", "discovery", "files-api", "gateway", "jobs-api"]
 
 zowe_root_dir: ~/

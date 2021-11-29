@@ -28,6 +28,8 @@
 #       Default is localca.
 # -q    Optional. Disable any instructions/comments display. 
 # -v    Optional. Enable verbose mode to display more debugging information.
+# -e    Optional. Zowe External Port.
+#       Default is 7554
 ################################################################################
 
 ################################################################################
@@ -422,6 +424,7 @@ LOCAL_CA_PASSWORD=local_ca_password
 LOCAL_CA_ALIAS=localca
 LOCAL_CA_FILENAME="local_ca/localca"
 NEW_ZWE_EXTERNAL_HOSTS=localhost
+NEW_ZWE_EXTERNAL_PORT=7445
 VERBOSE_MODE=
 SILENT_MODE=1
 # will be defined later
@@ -433,7 +436,7 @@ userid=$(echo "${USER:-${USERNAME:-${LOGNAME}}}" | tr [a-z] [A-Z])
 
 # command line parameters
 OPTIND=1
-while getopts "c:x:n:u:p:a:v:q" opt; do
+while getopts "c:x:n:u:p:a:e:v:q" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     x) NEW_ZWE_EXTERNAL_HOSTS=${OPTARG};;
@@ -441,6 +444,7 @@ while getopts "c:x:n:u:p:a:v:q" opt; do
     u) ZWE_POD_CLUSTERNAME=${OPTARG};;
     p) LOCAL_CA_PASSWORD=${OPTARG};;
     a) LOCAL_CA_ALIAS=${OPTARG};;
+    e) NEW_ZWE_EXTERNAL_PORT=${OPTARG};;
     v) VERBOSE_MODE="-v";;
     q) SILENT_MODE=;;
     \?)
@@ -738,7 +742,7 @@ else
     sed -e "s#ZWE_CACHING_SERVICE_PERSISTENT=.\+\$#ZWE_CACHING_SERVICE_PERSISTENT=#" | \
     sed -e "\$a\\
     \\
-    ZWE_EXTERNAL_PORT=7554\\
+    ZWE_EXTERNAL_PORT=${NEW_ZWE_EXTERNAL_PORT}\\
     ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
     ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}\\
     ZOWE_ZLUX_TELNET_HOST=\${ZWED_agent_host}\\
