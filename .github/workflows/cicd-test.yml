@@ -5,19 +5,6 @@ on:
       test-file-server:
         type: string
         required: true
-      custom-zowe-artifactory-pattern:
-        type: string
-        required: false
-      custom-zowe-cli-artifactory-pattern:
-        type: string
-        required: false
-      custom-extension-list:
-        type: string
-        required: false
-        default: 'sample-node-api;sample-trial-app'
-      custom-zowe-tp-docker-artifactory-pattern:
-        type: string
-        required: false
   workflow_dispatch:
     inputs:
       test-file-server:
