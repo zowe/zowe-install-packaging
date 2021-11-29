@@ -1,0 +1,14 @@
+name: Zowe Nightly Pipeline
+on:
+  push: 
+    branches: 
+      - users/tom/gha-nightly
+
+
+jobs:
+  call-build-workflow:
+    uses: zowe/zowe-install-packaging/.github/workflows/build-packaging.yml@staging
+    with:
+      BUILD_SMPE: true
+      BUILD_DOCKER: true
+      BUILD_KUBERNETES: true
