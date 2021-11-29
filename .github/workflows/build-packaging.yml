@@ -1,50 +1,5 @@
 name: Zowe Build and Packaging
 on:
-  # push:
-  #   branches:
-  #     - staging 
-  # pull_request:
-  #   types: [opened, synchronize]
-  workflow_call:
-    inputs:
-      BUILD_SMPE:
-        required: false
-        type: boolean
-      BUILD_PSIANDSMPE:
-        required: false
-        type: boolean
-      BUILD_DOCKER:
-        required: false
-        type: boolean
-      BUILD_DOCKER_SOURCES:
-        required: false
-        type: boolean
-      BUILD_KUBERNETES:
-        required: false
-        type: boolean
-      KEEP_TEMP_PAX_FOLDER:
-        required: false
-        type: boolean
-    secrets:
-      JF_ARTIFACTORY_TOKEN:
-        required: true
-      SSH_MARIST_USERNAME:
-        required: true
-      SSH_MARIST_RACF_PASSWORD:
-        required: true
-      ZLINUX_SSH_KEY:
-        required: true
-      ZLINUX_HOST:
-        required: true
-      ZLINUX_SSH_USER:
-        required: true
-      ZLINUX_SSH_PASSPHRASE:
-        required: true
-      DOCKERHUB_USER:
-        required: true
-      DOCKERHUB_PASSWORD:
-        required: true
-
   workflow_dispatch:
     inputs:
       BUILD_SMPE:
