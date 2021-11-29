@@ -148,11 +148,6 @@ case $artifact_name in
     artifact_name=apiml-common-lib-package
     download_apiml_artifacts
     ;;
-  explorer-ui-server*)
-    artifact_name=explorer-ui-server
-    full_name=$artifact_name-[RELEASE].pax
-    download_other_artifacts "explorer-ui-server" "libs-snapshot-local"
-    ;;
   explorer-jes*)
     artifact_name=explorer-jes
     full_name=$artifact_name-[RELEASE].pax

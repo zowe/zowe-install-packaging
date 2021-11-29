@@ -632,9 +632,6 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.app-server.port" "8544"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.jobs-api.port" "8545"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.files-api.port" "8547"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-jes.port" "8546"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-mvs.port" "8548"
-  update_yaml_variable "${temp_dir}/zowe.yaml" "components.explorer-uss.port" "8550"
 
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.gateway.enabled" "true"
   update_yaml_variable "${temp_dir}/zowe.yaml" "components.discovery.enabled" "true"
