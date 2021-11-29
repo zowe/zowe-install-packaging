@@ -46,7 +46,8 @@ Here is the list of environmental variables with example or default value:
 |k8s_service_annot		|               |       [“ip-type”,”zone”,”vlan”]               |
 |k8s_list_domain_ip	    | localhost 	|                                               |
 |k8s_networking		    |               |       ingress                                 |
-|k8s_domain_name		|               |       *.nio.io                                |
+|k8s_gateway_domain		|               |       *.nio.io                                |
+|k8s_discovery_domain	|               |       *.nio.io                                |
 
 
 ### More details about the environmental variables: 
@@ -95,24 +96,25 @@ Here is the list of environmental variables with example or default value:
 |bare-metal	         |  Ingress         |
 |OpenShift	         |  Route           |
 
-**k8s_domain_name**: If you’re using k8s_networking, and if you have your own domain name then please provided it here. i.e. k8s_domain_name: ”*.nio.io”
+**k8s_gateway_domain**: If you’re using k8s_networking, and if you have your own domain name for gatway service then please provided it here. i.e. k8s_gateway_domain: ”gateway.io”
 
+**k8s_discovery_domain**: If you’re using k8s_networking, and if you have your own domain name for discovery service then please provided it here. i.e. k8s_discovery_domain: ”discovery.io”
 
 ## Examples:
 
 **Install Zowe containers on local Kubernetes service provisioned by Docker-Desktop:**
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e k8s_context=docker-desktop -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e convert_for_k8s=<zowe_instance>/bin/utils/convert-for-k8s.sh
+ansible-playbook -l <server> install-kubernetes.yml -e k8s_context=docker-desktop -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e zowe_instance_dir=/ZOWE/tmp/.zowe
 ```
 **Install Zowe containers on Kubernetes running on BareMetal:**
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_domain_name="*.nio.io" -e k8s_storageclass=<storageclassname> -e k8s_service=nodeport -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=ingress -e convert_for_k8s=<zowe_instance>/bin/utils/convert-for-k8s.sh
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e k8s_storageclass=<storageclassname> -e k8s_service=nodeport -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=ingress -e zowe_instance_dir=/ZOWE/tmp/.zowe
 ```
 **Install Zowe containers on OpenShift:**
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=route -e convert_for_k8s=<zowe_instance>/bin/utils/convert-for-k8s.sh
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.gate.io,1.2.3.4.discover.io" -e k8s_networking=route -e zowe_instance_dir=/ZOWE/tmp/.zowe -e k8s_gateway_domain="gate.io" -e k8s_discovery_domain="discover.io"
 ```
 **Install Zowe containers on IBM Cloud Kubernetes:**
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" --extra-vars=’{“ k8s_service_annot”: [“type”, “zone”, “vlan”]}’ --extra-vars=’{“k8s_pvc_labels”: [“billingType”, “region”, “zone”]}’ -e convert_for_k8s=<zowe_instance>/bin/utils/convert-for-k8s.sh
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" --extra-vars=’{“ k8s_service_annot”: [“type”, “zone”, “vlan”]}’ --extra-vars=’{“k8s_pvc_labels”: [“billingType”, “region”, “zone”]}’ -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e zowe_instance_dir=/ZOWE/tmp/.zowe
 ```

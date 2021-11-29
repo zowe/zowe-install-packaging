@@ -78,16 +78,20 @@
 #    copy: 
 #      content: "{{ k8s_conf_secret.stdout }}"
 #      dest: config_secret.yaml 
-  - name: Verify if convert_for_k8s file location is defined. 
-    fail: msg="Please provide convert_for_k8s script location on z/OS host"
-    when: convert_for_k8s is none 
+  - name: Verify if zowe_instance_dir variable is defined. 
+    fail: msg="Please provide zowe_instance_dir; it's required for to run convert_for_k8s script"
+    when: zowe_instance_dir is none 
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for loadbalancer service. 
     raw: >-
-      {{ convert_for_k8s }} -q -x {{ k8s_list_domain_ip }} > /tmp/config_secret.yaml
-    when: k8s_service|lower == "loadbalancer"
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} > /tmp/config_secret.yaml
+    when: k8s_service|lower == "loadbalancer" and k8s_networking != "route"
+  - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for OpenShift. 
+    raw: >-
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 443 > /tmp/config_secret.yaml
+    when: k8s_service|lower == "loadbalancer" and k8s_networking == "route"
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for nodeport service. 
     raw: >-
-      {{ convert_for_k8s }} -q -x {{ k8s_list_domain_ip }} -e 32554 > /tmp/config_secret.yaml
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 32554 > /tmp/config_secret.yaml
     when: k8s_service|lower == "nodeport"
   - name: Copy the created ConfigMap & Secret to local system 
     delegate_to: localhost
@@ -180,7 +184,7 @@
       edits:
       - key: spec.rules
         value:
-          - host: "{{ k8s_domain_name }}"
+          - host: "{{ k8s_gateway_domain }}"
             http:
              paths:
                - path: /
@@ -190,7 +194,7 @@
                      name: gateway-service
                      port:
                        name: gateway-port
-    when: k8s_networking|lower == "ingress" and k8s_domain_name != none
+    when: k8s_networking|lower == "ingress" and k8s_gateway_domain != none
   - name: Edit BareMetal Discovery Ingress file to update host info
     delegate_to: localhost
     yedit:
@@ -198,7 +202,7 @@
       edits:
       - key: spec.rules
         value:
-          - host: "{{ k8s_domain_name }}"
+          - host: "{{ k8s_discovery_domain }}"
             http:
              paths:
                - path: /
@@ -208,7 +212,7 @@
                      name: discovery-service
                      port:
                        name: discovery-port
-    when: k8s_networking|lower == "ingress" and k8s_domain_name != none
+    when: k8s_networking|lower == "ingress" and k8s_discovery_domain != none
   - name: Deploy Baremetal Gateway Ingress on Zowe K8s
     delegate_to: localhost
     kubernetes.core.k8s:
@@ -233,14 +237,14 @@
       edits:
       - key: spec
         value:
-          host: "{{ k8s_domain_name }}" 
+          host: "{{ k8s_gateway_domain }}" 
           to:
             kind: Service
             name: gateway-service
           tls:
             termination: passthrough
           wildcardPolicy: None
-    when: k8s_networking|lower == "route" and k8s_domain_name != none
+    when: k8s_networking|lower == "route" and k8s_gateway_domain != none
   - name: Edit Openshift Discovery Route file to update host info
     delegate_to: localhost
     yedit:
@@ -248,14 +252,14 @@
       edits:
       - key: spec
         value:
-          host: "{{ k8s_domain_name }}" 
+          host: "{{ k8s_discovery_domain }}" 
           to:
             kind: Service
             name: discovery-service
           tls:
             termination: passthrough
           wildcardPolicy: None
-    when: k8s_networking|lower == "route" and k8s_domain_name != none
+    when: k8s_networking|lower == "route" and k8s_discovery_domain != none
   - name: Deploy Openshift Gateway Route on Zowe K8s
     delegate_to: localhost
     kubernetes.core.k8s:
