@@ -1,5 +1,10 @@
 name: Zowe CICD Integration Tests
 on:
+  workflow_call:
+    inputs:
+      test-file-server:
+        type: string
+        required: true
   workflow_dispatch:
     inputs:
       test-file-server:
