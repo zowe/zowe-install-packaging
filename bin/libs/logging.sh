@@ -24,7 +24,7 @@ prepare_log_file() {
     # create and echo message if log file doesn't exist
     mkdir -p "${log_dir}"
     if [ ! -w "${log_dir}" ]; then
-      print_error_and_exit "Error ZWEI0110E: Doesn't have write permission on ${1} directory." "" 110
+      print_error_and_exit "Error ZWES0110E: Doesn't have write permission on ${1} directory." "" 110
     fi
     touch ${ZWE_LOG_FILE}
     print_debug "Log file created: ${ZWE_LOG_FILE}" "console"

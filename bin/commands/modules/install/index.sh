@@ -16,5 +16,5 @@ zwecli_inline_execute_command modules install extract
 if [ -n "${ZWE_MODULES_INSTALL_EXTRACT_COMPONENT_NAME}" ]; then
   zwecli_inline_execute_command modules install process-hook --module-name "${ZWE_MODULES_INSTALL_EXTRACT_COMPONENT_NAME}"
 else
-  print_error_and_exit "Error ZWEI0156E: Component name is not initialized after extract step." "" 156
+  print_error_and_exit "Error ZWES0156E: Component name is not initialized after extract step." "" 156
 fi

@@ -32,7 +32,7 @@ zwecli_append_parameters_definition() {
       ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS="${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
     fi
   elif [ -n "${commands}" ]; then
-    print_error "Error ZWEI0104E: Invalid command \"${commands}\""
+    print_error "Error ZWES0104E: Invalid command \"${commands}\""
     print_error_and_exit "Try --help to get information about what command(s) are available." "" 104
   fi
 }
@@ -50,7 +50,7 @@ zwecli_append_exclusive_parameters_definition() {
       ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS="${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.exclusive-parameters")"
     fi
   elif [ -n "${commands}" ]; then
-    print_error "Error ZWEI0104E: Invalid command \"${commands}\""
+    print_error "Error ZWES0104E: Invalid command \"${commands}\""
     print_error_and_exit "Try --help to get information about what command(s) are available." "" 104
   fi
 }
@@ -162,7 +162,7 @@ zwecli_process_logfile() {
     prepare_log_file "${ZWE_CLI_PARAMETER_LOG_DIR}" "${log_prefix}"
 
     # write initial information
-    print_message "Zowe Server CLI: zwe ${ZWE_CLI_COMMANDS_LIST}" "log"
+    print_message "Zowe server command: zwe ${ZWE_CLI_COMMANDS_LIST}" "log"
     print_message "- timestamp: $(date +"%Y-%m-%d %H:%M:%S")" "log"
     print_message "- parameters:" "log"
     for param in ${ZWE_CLI_PARAMETERS_LIST}; do
@@ -231,7 +231,7 @@ zwecli_calculate_command_path() {
 
 zwecli_process_help() {
   if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
-    >&2 echo "Zowe Server CLI: zwe ${ZWE_CLI_COMMANDS_LIST}"
+    >&2 echo "Zowe server command: zwe ${ZWE_CLI_COMMANDS_LIST}"
     >&2 echo
 
     # display help message if exists
@@ -308,7 +308,7 @@ EOF
   for param in ${required_params}; do
     val=$(zwecli_get_parameter_value "${param}")
     if [ -z "${val}" ]; then
-      print_error "Error ZWEI0106E: ${param} parameter is required"
+      print_error "Error ZWES0106E: ${param} parameter is required"
       print_error_and_exit "Try --help to get information about how to use this command." "" 106
     fi
   done
@@ -321,7 +321,7 @@ zwecli_process_command() {
     . "${command_path}/index.sh"
   else
     if [ -n "${ZWE_CLI_COMMANDS_LIST}" ]; then
-      print_error "Error ZWEI0107E: No handler defined for command \"${ZWE_CLI_COMMANDS_LIST}\"."
+      print_error "Error ZWES0107E: No handler defined for command \"${ZWE_CLI_COMMANDS_LIST}\"."
     fi
     print_error_and_exit "Try --help to get information about how to use this command." "console" 107
   fi

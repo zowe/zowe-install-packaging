@@ -1,6 +1,6 @@
 # Zowe bin/ directory
 
-## Zowe server CLI command
+## Zowe server command
 
 Zowe provides `zwe` command can help you manage Zowe instance.
 
@@ -21,10 +21,10 @@ Each command is represented as a directory with some assistant files.
 
 - `.help`: This is an _optional_ plain text help message. You can put any text here and it will be displayed if the user issue `--help` with your command.
 - `.errors`: This is a documentation file lists all possible error codes and exit codes for this command. Each line represents one error and is separated by `|` into 3 fields:
-  1. is the error code like `ZWEI0102E`.
+  1. is the error code like `ZWES0102E`.
   2. is the command exit code in a range of 1 to 255. The caller can check the command exit code to determine what's the error caused the command to exit prematurely.
   3. is the error message.
-- `.parameters`: This is an _optional_ definition of command line parameters for this command. Parameters defined in this file will be combined with all upper level `.parameters` file and be available for this command. Please note if the command has embedded sub-commands, all parameters defined in parent will also be propagated to all sub-commands. `zwe` command has global parameters like `--help`, `--verbose`, etc, which are defined in `bin/commands/.parameters` file. Every line of this file represents a CLI parameter. Each parameter definition is separated by `|` into 8 fields:
+- `.parameters`: This is an _optional_ definition of command line parameters for this command. Parameters defined in this file will be combined with all upper level `.parameters` file and be available for this command. Please note if the command has embedded sub-commands, all parameters defined in parent will also be propagated to all sub-commands. `zwe` command has global parameters like `--help`, `--verbose`, etc, which are defined in `bin/commands/.parameters` file. Every line of this file represents a command line parameter. Each parameter definition is separated by `|` into 8 fields:
   1. is the parameter id, or full name. This column is required and the user can use `--` prefix to customize this parameter. For example, with `config` definition, the user can use `--config` to pass value to `zwe` command.
   2. is the parameter alias. This column is optional. This column is usually with one letter and the user can use `-` prefix to customize this parameter. For example, with `c` definition, the user can use `-c` to pass value to `zwe` command.
   3. is the parameter type. This column is required and must be value of `boolean` or `string`, or abbreviation of them like `b`, `bool`, `s`, `str`. This indicates how the user can pass parameter value.
@@ -66,16 +66,21 @@ All Zowe initialized variables are prefixed with `ZWE_`.
 
 These Zowe environment variables are created globally. Any Zowe modules, extensions can use these variables.
 
-- `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` CLI command is located.
-- `ZWE_CLI_COMMANDS_LIST`, list of CLI command chain separated by comma.
-- `ZWE_CLI_PARAMETERS_LIST`, CLI command parameter names separated by comma.
-- `ZWE_CLI_PARAMETER_<parameter-name>`, value of CLI parameter `<parameter-name>`.
+- `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` server command is located.
+- `ZWE_CLI_COMMANDS_LIST`, list of command chain separated by comma.
+- `ZWE_CLI_PARAMETERS_LIST`, command parameter names separated by comma.
+- `ZWE_CLI_PARAMETER_<parameter-name>`, value of parameter `<parameter-name>`.
 - `ZWE_CLI_INTERNAL_*` are variables used by Zowe launch script internally. It's not suggested for component to use or modify.
-  * `ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current CLI command chain.
+  * `ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current command chain.
   * `ZWE_CLI_INTERNAL_LIBRARY_LOADED` indicates is `bin/libs` are already sourced or not.
   * `ZWE_CLI_INTERNAL_IS_TOP_LEVEL_COMMAND` indicates if currently is running as top-level command, or triggered by top-level command.
 - `ZWE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
 - `ZWE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
+- `ZWE_DS_SZWEAUTH` is the data set name for Zowe load modules. Default value is `SZWEAUTH`.
+- `ZWE_DS_SZWEPLUG` is the data set name for load modules from Zowe plug-ins. Default value is `SZWEPLUG`.
+- `ZWE_DS_SZWESAMP` is the data set name for Zowe sample configurations . Default value is `SZWESAMP`.
+- `ZWE_DS_SZWCLIB` is the data set name for Zowe CLIST library. Default value is `SZWCLIB`.
+- `ZWE_DS_JCLLIB` is the data set name for Zowe JCL library . Default value is `JCLLIB`.
 - `ZWE_CORE_COMPONENTS` is a constant holds names of core components.
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.

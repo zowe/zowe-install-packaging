@@ -33,7 +33,7 @@ Copy the `sample-zowe.yaml` located in Zowe bin directory to your preferred loca
 
 ## Install and configure
 
-If you are using Zowe convenience build, you should run `zwe install --config /path/to/my/zowe.yaml` command to initialize Zowe MVS datasets. If you are using Zowe SMPE build, you can go straight to next step.
+If you are using Zowe convenience build, you should run `zwe install --config /path/to/my/zowe.yaml` command to initialize Zowe MVS data sets. If you are using Zowe SMPE build, you can go straight to next step.
 
 Run `zwe init` command to initialize environment and permissions required by Zowe.
 

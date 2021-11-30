@@ -26,10 +26,10 @@ require_node
 # clean up
 cd "${ZWE_PWD}" && cd "${target_dir}"
 if [ "$(pwd)" = "/" ]; then
-  print_error_and_exit "Error ZWEI0153E: Cannot install Zowe module to system root directory." "" 153
+  print_error_and_exit "Error ZWES0153E: Cannot install Zowe module to system root directory." "" 153
 fi
 if [ -z "${tmp_ext_dir}" ]; then
-  print_error_and_exit "Error ZWEI0154E: Temporary directory is empty." "" 154
+  print_error_and_exit "Error ZWES0154E: Temporary directory is empty." "" 154
 fi
 rm -fr "${tmp_ext_dir}"
 
@@ -98,7 +98,7 @@ print_debug "- Component name found as ${component_name}"
 export ZWE_MODULES_INSTALL_EXTRACT_COMPONENT_NAME="${component_name}"
 if [ -e "${component_name}" ]; then
   rm -fr "${tmp_ext_dir}"
-  print_error_and_exit "Error ZWEI0155E: Component ${component_name} already exists in ${target_dir}." "" 155
+  print_error_and_exit "Error ZWES0155E: Component ${component_name} already exists in ${target_dir}." "" 155
 fi
 
 print_debug "- Rename temporary directory to ${component_name}."

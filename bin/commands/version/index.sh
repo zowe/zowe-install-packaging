@@ -16,7 +16,7 @@ if [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json" ]; then
 elif [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json.template" ]; then
   manifest="${ZWE_zowe_runtimeDirectory}/manifest.json.template"
 else
-  print_error_and_exit "Error ZWEI0150E: Failed to find Zowe manifest.json. Zowe runtimeDirectory is invalid." "" 150
+  print_error_and_exit "Error ZWES0150E: Failed to find Zowe manifest.json. Zowe runtimeDirectory is invalid." "" 150
 fi
 
 ZOWE_VERSION=$(shell_read_json_config "${manifest}" version version)

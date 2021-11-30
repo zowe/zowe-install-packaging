@@ -1,0 +1,18 @@
+This command will copy Zowe started tasks `ZWESLSTC`, `ZWESISTC` and 
+`ZWESASTC` to your target procedure library.
+
+NOTE: You may need proper permission to write to target procedure library.
+
+These Zowe YAML configurations showing with sample values are required:
+
+```
+zowe:
+  setup:
+    logDirectory: /my/log/directory
+    mvs:
+      hlq: IBMUSER.ZWE
+      proclib: USER.PROCLIB
+```
+
+The `zowe.setup.mvs.hlq` shows where the original STCs are, and the
+`zowe.setup.mvs.proclib` shows where is the target PROCLIB.

@@ -1,0 +1,24 @@
+/* A CLIST to copy a PDS member to a another in a different pds, DISP=SHR. */
+/* The target dataset will be enqueued because it is part of the JES PROCLIB */
+/* concatenation, so this CLIST allocates it DISP=SHR to enable the CLIST */
+/* to write to it */
+
+/* Do not place this CLIST in a dataset already enqueued to a user or job */
+
+PROC 2 FROMPDS TOPDS 
+CONTROL ASIS 
+/* WRITE &STR(CLIST copy file from MVS dataset &FROMPDS to &TOPDS */
+free  fi(zwesin zwesout) /* in case it was already allocated */
+
+alloc fi(zwesin) dataset('&FROMPDS') shr 
+/* WRITE &STR(return code from alloc zwesin is &LASTCC) */
+
+alloc fi(zwesout) dataset('&TOPDS') shr 
+/* WRITE &STR(return code from alloc zwesout is &LASTCC) */
+
+repro infile(zwesin) outfile(zwesout)  
+SET   MYRC = &LASTCC
+/* WRITE &STR(return code from ocopy is &MYRC) */
+
+free  fi(zwesin zwesout)
+EXIT CODE(&MYRC)

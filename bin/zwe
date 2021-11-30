@@ -53,7 +53,7 @@ while [ $# -gt 0 ]; do
   if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
     definition=$(zwecli_locate_parameter_definition $arg)
     if [ $? -gt 0 ]; then
-      print_error_and_exit "Error ZWEI0102E: Invalid parameter ${arg}" "" 102
+      print_error_and_exit "Error ZWES0102E: Invalid parameter ${arg}" "" 102
     fi
     param_id=$(echo "${definition}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
     param_type=$(echo "${definition}" | awk -F"|" '{print $3}' | lower_case)
@@ -65,7 +65,7 @@ while [ $# -gt 0 ]; do
       ZWE_CLI_PARAMETERS_LIST=$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")
       zwecli_set_parameter_value "${param_id}" "${1}"
     else
-      print_error_and_exit "Error ZWEI0103E: Invalid type of parameter ${arg}" "" 103
+      print_error_and_exit "Error ZWES0103E: Invalid type of parameter ${arg}" "" 103
     fi
   fi
   shift

@@ -19,7 +19,7 @@ zowe:
         ZWESVUSR: ZWESVUSR
 
     # z/OS configurations
-    mvs:  # used by zwe install - copy datasets
+    mvs:  # used by zwe install - copy data sets
       hlq: IBMUSER.ZWE
       loadlib: SZWEAUTH
       parmlib: SZWESAMP

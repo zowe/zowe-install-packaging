@@ -31,9 +31,9 @@ get_tmp_dir() {
 
 require_zowe_yaml() {
   if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    print_error_and_exit "Error ZWEI0108E: Zowe YAML config file is required." "" 108
+    print_error_and_exit "Error ZWES0108E: Zowe YAML config file is required." "" 108
   elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    print_error_and_exit "Error ZWEI0109E: The Zowe YAML config file specified does not exist." "" 109
+    print_error_and_exit "Error ZWES0109E: The Zowe YAML config file specified does not exist." "" 109
   fi
 }
 
@@ -127,7 +127,7 @@ print_level0_message() {
 
   print_message "===============================================================================" "${write_to}"
   if [ -n "${title}" ]; then
-    print_message ">>>>>>>>>> $(echo "${title}" | upper_case )" "${write_to}"
+    print_message ">> $(echo "${title}" | upper_case )" "${write_to}"
   fi
 }
 
@@ -138,7 +138,7 @@ print_level1_message() {
 
   print_message "-------------------------------------------------------------------------------" "${write_to}"
   if [ -n "${title}" ]; then
-    print_message ">>>>>>>>>> ${title}" "${write_to}"
+    print_message ">> ${title}" "${write_to}"
   fi
 }
 
@@ -149,7 +149,7 @@ print_level0_debug() {
 
   print_debug "===============================================================================" "${write_to}"
   if [ -n "${title}" ]; then
-    print_debug ">>>>>>>>>> $(echo "${title}" | upper_case )" "${write_to}"
+    print_debug ">> $(echo "${title}" | upper_case )" "${write_to}"
   fi
 }
 
@@ -160,7 +160,7 @@ print_level1_debug() {
 
   print_debug "-------------------------------------------------------------------------------" "${write_to}"
   if [ -n "${title}" ]; then
-    print_debug ">>>>>>>>>> ${title}" "${write_to}"
+    print_debug ">> ${title}" "${write_to}"
   fi
 }
 
@@ -171,7 +171,7 @@ print_level0_trace() {
 
   print_trace "===============================================================================" "${write_to}"
   if [ -n "${title}" ]; then
-    print_trace ">>>>>>>>>> $(echo "${title}" | upper_case )" "${write_to}"
+    print_trace ">> $(echo "${title}" | upper_case )" "${write_to}"
   fi
 }
 
@@ -182,7 +182,7 @@ print_level1_trace() {
 
   print_trace "-------------------------------------------------------------------------------" "${write_to}"
   if [ -n "${title}" ]; then
-    print_trace ">>>>>>>>>> ${title}" "${write_to}"
+    print_trace ">> ${title}" "${write_to}"
   fi
 }
 
