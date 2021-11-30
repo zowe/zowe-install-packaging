@@ -5,6 +5,10 @@ on:
       test-file-server:
         type: string
         required: true
+    secrets:
+      JF_ARTIFACTORY_TOKEN:
+        required: true
+      
   workflow_dispatch:
     inputs:
       test-file-server:
