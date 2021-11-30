@@ -1,1 +1,14 @@
-""
+{
+  "lockAcquiredTime": "Tue Nov 30 2021 20:43:25 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1638305005188350788",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/tom/nightly2ma5ter",
+  "workflow": "Zowe Nightly Pipeline",
+  "job": "cicd-test",
+  "actor": "FlappiTomic",
+  "runId": 1522792957,
+  "runNumber": 32
+}
