@@ -194,12 +194,12 @@ There are many environmental variables for this playbook. Since there are differ
 For example, Install Zowe containers on local Kubernetes service provisioned by Docker-Desktop:
 
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e k8s_context=docker-desktop -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host>
+ansible-playbook -l <server> install-kubernetes.yml -e k8s_context=docker-desktop -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e zowe_instance_dir=<zowe-instance-location>
 ```
 
 Install Zowe containers on Kubernetes running on BareMetal:
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_domain_name="*.nio.io" -e k8s_storageclass=<storageclassname> -e k8s_service=nodeport -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=ingress
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e k8s_storageclass=<storageclassname> -e k8s_service=nodeport -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=ingress -e zowe_instance_dir=<zowe-instance-location>
 ```
 
 ### Install Zowe Extensions
