@@ -452,7 +452,7 @@
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "1.25.0-ubuntu"
+      "tag" : "1.26.0-ubuntu"
     },
     "explorer-jes": {
         "registry": "zowe-docker-release.jfrog.io",
