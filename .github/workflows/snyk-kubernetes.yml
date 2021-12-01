@@ -1,0 +1,39 @@
+name: Kubernetes IaC Scan
+on: push
+jobs:
+  snyk:
+    strategy:
+      matrix:
+        k8s-manifests:
+        # we run 3 kinds as example: CronJob, Deployment, StatefulSet
+        # all other Deployments should be similar
+        - workloads/instance-env/discovery-statefulset.yaml
+        - workloads/instance-env/cleanup-static-definitions-cronjob.yaml
+        - workloads/instance-env/gateway-deployment.yaml
+        # try out other Kinds
+        - samples/api-catalog-service.yaml
+        - samples/gateway-service-ci.yaml
+        - samples/gateway-service-np.yaml
+        - samples/gateway-service-lb.yaml
+        - samples/horizontal-pod-autoscaler/gateway-hpa.yaml
+        - samples/pod-disruption-budget/gateway-pdb.yaml
+        - samples/bare-metal/gateway-ingress.yaml
+        - samples/openshift/gateway-route.yaml
+        - samples/workspace-pvc.yaml
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Snyk to check configuration files for security issues
+        continue-on-error: true
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          file: containers/kubernetes/${{ matrix.k8s-manifests }}
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
+        with:
+          sarif_file: snyk.sarif
