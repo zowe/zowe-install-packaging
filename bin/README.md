@@ -21,7 +21,7 @@ Each command is represented as a directory with some assistant files.
 
 - `.help`: This is an _optional_ plain text help message. You can put any text here and it will be displayed if the user issue `--help` with your command.
 - `.errors`: This is a documentation file lists all possible error codes and exit codes for this command. Each line represents one error and is separated by `|` into 3 fields:
-  1. is the error code like `ZWES0102E`.
+  1. is the error code like `ZWEL0102E`.
   2. is the command exit code in a range of 1 to 255. The caller can check the command exit code to determine what's the error caused the command to exit prematurely.
   3. is the error message.
 - `.parameters`: This is an _optional_ definition of command line parameters for this command. Parameters defined in this file will be combined with all upper level `.parameters` file and be available for this command. Please note if the command has embedded sub-commands, all parameters defined in parent will also be propagated to all sub-commands. `zwe` command has global parameters like `--help`, `--verbose`, etc, which are defined in `bin/commands/.parameters` file. Every line of this file represents a command line parameter. Each parameter definition is separated by `|` into 8 fields:

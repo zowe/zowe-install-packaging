@@ -53,7 +53,7 @@ require_node() {
   fi
 
   if [ -z "${NODE_HOME}" ]; then
-    print_error_and_exit "Error ZWES0130E: Cannot find node. Please define NODE_HOME environment variable." "" 130
+    print_error_and_exit "Error ZWEL0130E: Cannot find node. Please define NODE_HOME environment variable." "" 130
   fi
 
   ensure_node_is_on_path

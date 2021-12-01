@@ -31,9 +31,9 @@ get_tmp_dir() {
 
 require_zowe_yaml() {
   if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    print_error_and_exit "Error ZWES0108E: Zowe YAML config file is required." "" 108
+    print_error_and_exit "Error ZWEL0108E: Zowe YAML config file is required." "" 108
   elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    print_error_and_exit "Error ZWES0109E: The Zowe YAML config file specified does not exist." "" 109
+    print_error_and_exit "Error ZWEL0109E: The Zowe YAML config file specified does not exist." "" 109
   fi
 }
 

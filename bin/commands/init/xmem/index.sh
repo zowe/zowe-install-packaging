@@ -25,17 +25,17 @@ require_zowe_yaml
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
-  print_error_and_exit "Error ZWES0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read PROCLIB and validate
 proclib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.proclib")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
-  print_error_and_exit "Error ZWES0157E: PROCLIB (zowe.setup.mvs.proclib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: PROCLIB (zowe.setup.mvs.proclib) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read PARMLIB and validate
 parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
-  print_error_and_exit "Error ZWES0157E: PARMLIB (zowe.setup.mvs.parmlib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: PARMLIB (zowe.setup.mvs.parmlib) is not defined in Zowe YAML configuration file." "" 157
 fi
 
 # check existence
@@ -44,10 +44,10 @@ for mb in ${proclibs}; do
   if [ "${stc_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
       # warning
-      print_message "Warning ZWES0159W: ${proclib}(${mb}) already exists. This data set member will be overwritten during install."
+      print_message "Warning ZWEL0159W: ${proclib}(${mb}) already exists. This data set member will be overwritten during install."
     else
       # error
-      print_error_and_exit "Error ZWES0158E: ${proclib}(${mb}) already exists. Installation aborts." "" 158
+      print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists. Installation aborts." "" 158
     fi
   fi
 done
@@ -59,7 +59,7 @@ if [ "${parmlib_existence}" != "true" ]; then
   print_message "Creating ${parmlib}"
   create_data_set "${parmlib}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_parmlib"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 fi
 
@@ -68,7 +68,7 @@ fi
 print_message "Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESIP00) to ${parmlib}(ZWESIP00)"
 data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWESAMP}(ZWESIP00)" "${parmlib}(ZWESIP00)" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
 if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+  print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
 fi
 
 ###############################
@@ -78,7 +78,7 @@ for mb in ${proclibs}; do
   print_message "Copy ${hlq}.${ZWE_DS_SZWESAMP}(${mb}) to ${proclib}(${mb})"
   data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWESAMP}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
 

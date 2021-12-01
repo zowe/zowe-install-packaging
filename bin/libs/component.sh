@@ -60,7 +60,7 @@ read_component_manifest() {
     read_json "${component_dir}/manifest.json" "${manifest_key}"
     return $?
   else
-    print_error_and_exit "Error ZWES0132E: No manifest file found in module ${component_dir}." "" 132
+    print_error_and_exit "Error ZWEL0132E: No manifest file found in module ${component_dir}." "" 132
   fi
 }
 

@@ -27,7 +27,7 @@ require_zowe_yaml
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
-  print_error_and_exit "Error ZWES0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
 fi
 
 # check existence
@@ -38,30 +38,30 @@ jcllib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_JCLLIB}")
 if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
   # warning
   if [ "${authlib_existence}" = "true" ]; then
-    print_message "Warning ZWES0158W: ${hlq}.${ZWE_DS_SZWEAUTH} already exists. Members in this data set will be overwritten during install."
+    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWEAUTH} already exists. Members in this data set will be overwritten during install."
   fi
   if [ "${samplib_existence}" = "true" ]; then
-    print_message "Warning ZWES0158W: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Members in this data set will be overwritten during install."
+    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Members in this data set will be overwritten during install."
   fi
   if [ "${clib_existence}" = "true" ]; then
-    print_message "Warning ZWES0158W: ${hlq}.${ZWE_DS_SZWCLIB} already exists. Members in this data set will be overwritten during install."
+    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWCLIB} already exists. Members in this data set will be overwritten during install."
   fi
   if [ "${jcllib_existence}" = "true" ]; then
-    print_message "Warning ZWES0158W: ${hlq}.${ZWE_DS_JCLLIB} already exists. Members in this data set will be overwritten during install."
+    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_JCLLIB} already exists. Members in this data set will be overwritten during install."
   fi
 else
   # error
   if [ "${authlib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWES0158E: ${hlq}.${ZWE_DS_SZWEAUTH} already exists. Installation aborts." "" 158
+    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWEAUTH} already exists. Installation aborts." "" 158
   fi
   if [ "${samplib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWES0158E: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Installation aborts." "" 158
+    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Installation aborts." "" 158
   fi
   if [ "${clib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWES0158E: ${hlq}.${ZWE_DS_SZWCLIB} already exists. Installation aborts." "" 158
+    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWCLIB} already exists. Installation aborts." "" 158
   fi
   if [ "${jcllib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWES0158E: ${hlq}.${ZWE_DS_JCLLIB} already exists. Installation aborts." "" 158
+    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_JCLLIB} already exists. Installation aborts." "" 158
   fi
 fi
 
@@ -71,28 +71,28 @@ if [ "${authlib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_SZWEAUTH}"
   create_data_set "${hlq}.${ZWE_DS_SZWEAUTH}" "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) $size_szweauth"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 fi
 if [ "${samplib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_SZWESAMP}"
   create_data_set "${hlq}.${ZWE_DS_SZWESAMP}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szwesamp"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 fi
 if [ "${clib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_SZWCLIB}"
   create_data_set "${hlq}.${ZWE_DS_SZWCLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szwclib"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 fi
 if [ "${jcllib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_JCLLIB}"
   create_data_set "${hlq}.${ZWE_DS_JCLLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_jcllib"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 fi
 
@@ -103,7 +103,7 @@ for mb in $(find . -type f); do
   print_message "Copy files/${ZWE_DS_SZWESAMP}/$(basename ${mb}) to ${hlq}.SZWESAMP"
   copy_to_data_set "${mb}" "${hlq}.SZWESAMP" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
 
@@ -112,7 +112,7 @@ for mb in $(find . -type f); do
   print_message "Copy files/${ZWE_DS_SZWCLIB}/$(basename ${mb}) to ${hlq}.${ZWE_DS_SZWCLIB}"
   copy_to_data_set "${mb}" "${hlq}.${ZWE_DS_SZWCLIB}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
 
@@ -121,7 +121,7 @@ for mb in $(find . -type f); do
   print_message "Copy files/${ZWE_DS_JCLLIB}/$(basename ${mb}) to ${hlq}.${ZWE_DS_JCLLIB}"
   copy_to_data_set "${mb}" "${hlq}.${ZWE_DS_JCLLIB}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
 
@@ -132,7 +132,7 @@ for mb in ${zss_samplib}; do
   print_message "Copy components/zss/${mb} to ${hlq}.${ZWE_DS_SZWEAUTH}"
   copy_to_data_set "SAMPLIB/${mb}" "${hlq}.SZWESAMP" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
 zss_loadlib="ZWESIS01 ZWESAUX"
@@ -140,7 +140,7 @@ for mb in ${zss_loadlib}; do
   print_message "Copy components/zss/${mb} to ${hlq}.${ZWE_DS_SZWEAUTH}"
   copy_to_data_set "LOADLIB/${mb}" "${hlq}.${ZWE_DS_SZWEAUTH}" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
 

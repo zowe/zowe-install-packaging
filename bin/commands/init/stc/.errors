@@ -1,3 +1,3 @@
-ZWES0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
-ZWES0159W||%s already exists. This data set member will be overwritten during install.
-ZWES0158E|158|%s already exists. Installation aborts.
+ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
+ZWEL0159W||%s already exists. This data set member will be overwritten during install.
+ZWEL0158E|158|%s already exists. Installation aborts.

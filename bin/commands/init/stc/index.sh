@@ -23,12 +23,12 @@ require_zowe_yaml
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
-  print_error_and_exit "Error ZWES0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read PROCLIB and validate
 proclib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.proclib")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
-  print_error_and_exit "Error ZWES0157E: PROCLIB (zowe.setup.mvs.proclib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: PROCLIB (zowe.setup.mvs.proclib) is not defined in Zowe YAML configuration file." "" 157
 fi
 
 # check existence
@@ -36,12 +36,12 @@ slstc_existence=$(is_data_set_exists "${proclib}(ZWESLSTC)")
 if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
   # warning
   if [ "${slstc_existence}" = "true" ]; then
-    print_message "Warning ZWES0159W: ${proclib}(ZWESLSTC) already exists. This data set member will be overwritten during install."
+    print_message "Warning ZWEL0159W: ${proclib}(ZWESLSTC) already exists. This data set member will be overwritten during install."
   fi
 else
   # error
   if [ "${slstc_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWES0158E: ${proclib}(ZWESLSTC) already exists. Installation aborts." "" 158
+    print_error_and_exit "Error ZWEL0158E: ${proclib}(ZWESLSTC) already exists. Installation aborts." "" 158
   fi
 fi
 
@@ -52,7 +52,7 @@ fi
 print_message "Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC) to ${proclib}(ZWESLSTC)"
 data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)" "${proclib}(ZWESLSTC)" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
 if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
+  print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
 fi
 
 ###############################
