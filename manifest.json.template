@@ -104,6 +104,10 @@
       "version": "1.26.9",
       "artifact": "caching-service*.zip"
     },
+    "org.zowe.apiml.sdk.metrics-service-package": {
+      "version": "1.26.9",
+      "artifact": "metrics-service*.zip"
+    },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
       "version": "1.26.9",
       "artifact": "apiml-common-lib-*.zip"
