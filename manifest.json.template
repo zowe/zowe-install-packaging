@@ -98,7 +98,7 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "~1.26.0-SNAPHOST",
+      "version": "~1.26.0-SNAPSHOT",
       "artifact": "metrics-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
