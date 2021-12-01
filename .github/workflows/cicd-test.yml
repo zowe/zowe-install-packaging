@@ -11,9 +11,35 @@ on:
       
   workflow_dispatch:
     inputs:
-      test-file-server:
-        description: 'Test File and Running Server:'
+      test-server:
+        description: 'Choose Test Server'
+        type: choice
         required: true
+        default: 'zzow04'
+        options: 
+          - zzow02
+          - zzow03
+          - zzow04
+          - zzow02,zzow03,zzow04
+      install-test:
+        description: 'Choose Install Test'
+        type: choice
+        required: true
+        default: Convenience Pax
+        options:
+          - Convenience Pax
+          - SMPE FMID
+          - SMPE PTF
+          - Tech Preview Docker
+          - Extensions
+          - Keyring
+          - z/OS node v8
+          - z/OS node v12
+          - z/OS node v14
+          - Non-strict Verify External Certificate
+          - Install PTF Twice
+          - Generate API Documentation
+          - Zowe Release Tests
       custom-zowe-artifactory-pattern:
         description: 'Custom Zowe Artifactory Pattern:'
         required: false
@@ -47,6 +73,21 @@ env:
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
 
+  # catalogue of files associated with install test configurations
+  CONVENIENCE_PAX_TESTFILE: basic/install.ts
+  SMPE_FMID_TESTFILE: basic/install-fmid.ts
+  SMPE_PTF_TESTFILE: basic/install-ptf.ts
+  TECH_PREVIEW_DOCKER_TESTFILE: basic/install-docker.ts
+  EXTENSIONS_TESTFILE: basic/install-ext.ts
+  KEYRING_TESTFILE: extended/keyring.ts
+  ZOS_NODE_V8_TESTFILE: extended/node-versions/node-v8.ts
+  ZOS_NODE_V12_TESTFILE: extended/node-versions/node-v12.ts
+  ZOS_NODE_V14_TESTFILE: extended/node-versions/node-v14.ts
+  NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
+  INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
+  GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
+  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v8.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
+
 jobs:
   check-permission:
     runs-on: ubuntu-latest
@@ -64,18 +105,89 @@ jobs:
     - name: make matrix
       id: set-matrix
       run: |
-        # sanitize all whitespaces
-        TEST_FILE_SERVER=$(echo "${{ github.event.inputs.test-file-server }}" | tr -d "[:space:]")
+        TEST_SERVER="${{ github.event.inputs.test-server }}"
+        INSTALL_TEST_CHOICE="${{ github.event.inputs.install-test }}"
+        TEST_FILE=
+        case $INSTALL_TEST_CHOICE in
+
+          "Convenience Pax")
+            TEST_FILE="${{ env.CONVENIENCE_PAX_TESTFILE }}"
+            ;;
+
+          "SMPE FMID")
+            TEST_FILE="${{ env.SMPE_FMID_TESTFILE }}"
+            ;;
+
+          "SMPE PTF")
+            TEST_FILE="${{ env.SMPE_PTF_TESTFILE }}"
+            ;;
+
+          "Tech Preview Docker")
+            TEST_FILE="${{ env.TECH_PREVIEW_DOCKER_TESTFILE }}"
+            ;;
+
+          "Extensions")
+            TEST_FILE="${{ env.EXTENSIONS_TESTFILE }}"
+            ;;
+
+          "Keyring")
+            TEST_FILE="${{ env.KEYRING_TESTFILE }}"
+            ;;
+
+          "z/OS node v8")
+            TEST_FILE="${{ env.ZOS_NODE_V8_TESTFILE }}"
+            ;;
+          
+          "z/OS node v12")
+            TEST_FILE="${{ env.ZOS_NODE_V12_TESTFILE }}"
+            ;;
+
+          "z/OS node v14")
+            TEST_FILE="${{ env.ZOS_NODE_V14_TESTFILE }}"
+            ;;
+
+          "Non-strict Verify External Certificate")
+            TEST_FILE="${{ env.NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE }}"
+            ;;
+
+          "Install PTF Twice")
+            TEST_FILE="${{ env.INSTALL_PTF_TWICE_TESTFILE }}"
+            ;;
+
+          "Generate API Documentation")
+            TEST_FILE="${{ env.GENERAL_API_DOCUMENTATION_TESTFILE }}"
+            ;;
+
+          "Zowe Release Tests")
+            TEST_FILE="${{ env.ZOWE_RELEAE_TESTS_FULL }}"
+            RELEASE_TESTS=true
+            ;;
+          
+          *)
+            echo "Something went wrong when parsing install test choice input"
+            exit 1
+            ;;
+        esac
+
+        if [[ -z "$RELEASE_TESTS" ]]; then
+          TEST_FILE_SERVER="$TEST_FILE($TEST_SERVER)"
+        else
+          TEST_FILE_SERVER="$TEST_FILE"
+        fi
+        echo "TEST_FILE_SERVER is "$TEST_FILE_SERVER
+
+        # sanitize all whitespaces just in case
+        TEST_FILE_SERVER=$TEST_FILE_SERVER | tr -d "[:space:]"
 
         # validate
-        if [[ $TEST_FILE_SERVER =~ ^([A-Za-z0-9/-]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))(;[A-Za-z0-9/-]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))*$ ]]; then
-          echo "Syntax validation success!"
-        else
-          echo "Input test-file-server is not valid."
-          echo "Format:{testpath}/{testfile}.ts(zzow02[,zzow03][,zzow04]) semi-colon separated if multiple"
-          echo "Examples: tests/file1.ts(zzow02,zzow04);tests/file2.ts(zzow03)"
-          exit 1
-        fi
+        # if [[ $TEST_FILE_SERVER =~ ^([A-Za-z0-9/-]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))(;[A-Za-z0-9/-]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))*$ ]]; then
+        #   echo "Syntax validation success!"
+        # else
+        #   echo "Input test-file-server is not valid."
+        #   echo "Format:{testpath}/{testfile}.ts(zzow02[,zzow03][,zzow04]) semi-colon separated if multiple"
+        #   echo "Examples: tests/file1.ts(zzow02,zzow04);tests/file2.ts(zzow03)"
+        #   exit 1
+        # fi
 
         MATRIX_JSON_STRING="{\"include\":["
         for each_test_file_server in $(echo "$TEST_FILE_SERVER" | sed "s/;/ /g")
@@ -202,7 +314,7 @@ jobs:
             fi
             
             # determine if we shall libs-snapshot-local or libs-release-local
-            if [[ "${{ env.CURRENT_BRANCH }}" == 'rc']] || [[ "${{ env.CURRENT_BRANCH }}" == 'master']] ; then
+            if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
               ZOWE_ARTIFACTORY_PATTERN_INTERIM=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#PLACE-HOLDER#libs-release-local#g")
             else
               ZOWE_ARTIFACTORY_PATTERN_INTERIM=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#PLACE-HOLDER#libs-snapshot-local#g")
@@ -220,15 +332,27 @@ jobs:
           ##################################################################################################
           TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2)
           TEST_SERVER_NICKNAME=
-          if [[ "$TEST_SERVER" == "zzow02" ]] ; then
+
+          case $TEST_SERVER in
+
+          "zzow02")
             TEST_SERVER_NICKNAME=marist-2
-          fi
-          if [[ "$TEST_SERVER" == "zzow03" ]] ; then
+            ;;
+          
+          "zzow03")
             TEST_SERVER_NICKNAME=marist-3
-          fi
-          if [[ "$TEST_SERVER" == "zzow04" ]] ; then
+            ;;
+          
+          "zzow04")
             TEST_SERVER_NICKNAME=marist-4
-          fi
+            ;;
+
+          *)
+            echo "Something went wrong when parsing test server nickname"
+            exit 1
+            ;;
+          esac
+          
           echo "[Check 2/$total_check] Test server name processing complete!"
 
           ##################################################################################################
@@ -238,7 +362,7 @@ jobs:
           if [[ -z "${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}" ]]; then
             ZOWE_CLI_ARTIFACTORY_PATTERN="${{ env.DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN }}"
             # determine if we shall libs-snapshot-local or libs-release-local
-            if [[ "${{ env.CURRENT_BRANCH }}" == 'rc']] || [[ "${{ env.CURRENT_BRANCH }}" == 'master']] ; then
+            if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
               ZOWE_CLI_ARTIFACTORY_PATTERN=$(echo "$ZOWE_CLI_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-release-local#g")
             else
               ZOWE_CLI_ARTIFACTORY_PATTERN=$(echo "$ZOWE_CLI_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-snapshot-local#g")
@@ -300,7 +424,7 @@ jobs:
             if [[ -z "${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}" ]]; then
               ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
               # determine if we shall libs-snapshot-local or libs-release-local
-              if [[ "${{ env.CURRENT_BRANCH }}" == 'rc']] || [[ "${{ env.CURRENT_BRANCH }}" == 'master']] ; then
+              if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
                 ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "$ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-release-local#g")
               else
                 ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "$ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-snapshot-local#g")
