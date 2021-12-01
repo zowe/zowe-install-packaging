@@ -36,6 +36,7 @@ export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,ap
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/sys.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/var.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zos.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/zos-dataset.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zosmf.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zwecli.sh"
 

@@ -15,8 +15,10 @@ print_level0_message "Install Zowe MVS data sets"
 
 ###############################
 # constants
-sizeAUTH='space(30,15) tracks'
-sizeSAMP='space(15,15) tracks'
+size_szweauth='space(30,15) tracks'
+size_szwesamp='space(15,15) tracks'
+size_szwclib='space(15,15) tracks'
+size_jcllib='space(15,15) tracks'
 
 ###############################
 # validation
@@ -67,28 +69,28 @@ fi
 # create data sets if they are not exist
 if [ "${authlib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_SZWEAUTH}"
-  create_data_set "${hlq}.${ZWE_DS_SZWEAUTH}" "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) $sizeAUTH"
+  create_data_set "${hlq}.${ZWE_DS_SZWEAUTH}" "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) $size_szweauth"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
   fi
 fi
 if [ "${samplib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_SZWESAMP}"
-  create_data_set "${hlq}.${ZWE_DS_SZWESAMP}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $sizeSAMP"
+  create_data_set "${hlq}.${ZWE_DS_SZWESAMP}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szwesamp"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
   fi
 fi
 if [ "${clib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_SZWCLIB}"
-  create_data_set "${hlq}.${ZWE_DS_SZWCLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $sizeSAMP"
+  create_data_set "${hlq}.${ZWE_DS_SZWCLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szwclib"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
   fi
 fi
 if [ "${jcllib_existence}" != "true" ]; then
   print_message "Creating ${hlq}.${ZWE_DS_JCLLIB}"
-  create_data_set "${hlq}.${ZWE_DS_JCLLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $sizeSAMP"
+  create_data_set "${hlq}.${ZWE_DS_JCLLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_jcllib"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWES0111E: Command aborts with error." "" 111
   fi
