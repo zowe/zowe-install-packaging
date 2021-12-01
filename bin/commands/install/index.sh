@@ -125,19 +125,33 @@ for mb in $(find . -type f); do
   fi
 done
 
+# FIXME: this is handled by Zowe launcher commands.install
+cd "${ZWE_zowe_runtimeDirectory}/components/launcher"
+print_message "Copy components/launcher/samplib/ZWESLSTC to ${hlq}.${ZWE_DS_SZWEAUTH}"
+copy_to_data_set "samplib/ZWESLSTC" "${hlq}.SZWESAMP" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+fi
+
 # FIXME: move these parts to zss commands.install
+# FIXME: ZWESIPRG
 cd "${ZWE_zowe_runtimeDirectory}/components/zss"
-zss_samplib="ZWESAUX ZWESIP00 ZWESIS01 ZWESISCH ZWESIPRG"
+zss_samplib="ZWESAUX=ZWESASTC ZWESIP00 ZWESIS01=ZWESISTC ZWESISCH"
 for mb in ${zss_samplib}; do
-  print_message "Copy components/zss/${mb} to ${hlq}.${ZWE_DS_SZWEAUTH}"
-  copy_to_data_set "SAMPLIB/${mb}" "${hlq}.SZWESAMP" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  mb_from=$(echo "${mb}" | awk -F= '{print $1}')
+  mb_to=$(echo "${mb}" | awk -F= '{print $2}')
+  if [ -z "${mb_to}" ]; then
+    mb_to="${mb_from}"
+  fi
+  print_message "Copy components/zss/SAMPLIB/${mb_from} to ${hlq}.${ZWE_DS_SZWEAUTH}(${mb_to})"
+  copy_to_data_set "SAMPLIB/${mb_from}" "${hlq}.SZWESAMP(${mb_to})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
 zss_loadlib="ZWESIS01 ZWESAUX"
 for mb in ${zss_loadlib}; do
-  print_message "Copy components/zss/${mb} to ${hlq}.${ZWE_DS_SZWEAUTH}"
+  print_message "Copy components/zss/LOADLIB/${mb} to ${hlq}.${ZWE_DS_SZWEAUTH}"
   copy_to_data_set "LOADLIB/${mb}" "${hlq}.${ZWE_DS_SZWEAUTH}" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111

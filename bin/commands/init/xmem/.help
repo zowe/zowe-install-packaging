@@ -18,6 +18,6 @@ zowe:
       parmlib: IBMUSER.PARMLIB
 ```
 
-- `zowe.setup.mvs.parmlib` shows what is the target PARMLIB,
-- `zowe.setup.mvs.hlq` shows where the original STCs are,
+- `zowe.setup.mvs.parmlib` shows what is the target PARMLIB.
+- `zowe.setup.mvs.hlq` shows where the original STCs are.
 - `zowe.setup.mvs.proclib` shows what is the target PROCLIB.

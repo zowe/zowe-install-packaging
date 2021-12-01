@@ -83,6 +83,21 @@ for mb in ${proclibs}; do
 done
 
 ###############################
+# APF authorize loadlib
+if [ "${ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP}" = "true" ]; then
+  print_message "Security setup is skipped."
+else
+  print_message "APF authorize ${hlq}.${ZWE_DS_SZWEAUTH}"
+  apf_authorize_data_set "${hlq}.${ZWE_DS_SZWEAUTH}"
+  code=$?
+  if [ $code -ne 0 ]; then
+    exit $code
+  else
+    print_debug "- APF authorized succeeded."
+  fi
+fi
+
+###############################
 # exit message
 print_message
 print_level1_message "Zowe Cross Memory Server is configured successfully."

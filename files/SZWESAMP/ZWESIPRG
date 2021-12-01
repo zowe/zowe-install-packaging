@@ -1,0 +1,5 @@
+/* issue this console command to authorize the loadlib temporarily */
+SETPROG APF,ADD,DSNAME=${ZOWE_DSN_PREFIX}.SZWEAUTH,VOLUME=${volume}
+/* Add this statement to SYS1.PARMLIB(PROGxx) or equivalent
+   to authorize the loadlib permanently */
+APF ADD DSNAME(${ZOWE_DSN_PREFIX}.SZWEAUTH) VOLUME(${volume})

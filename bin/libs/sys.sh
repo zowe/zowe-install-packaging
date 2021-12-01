@@ -144,3 +144,25 @@ gracefully_shutdown() {
 
   exit 0
 }
+
+execute_command() {
+  message="- $@"
+  print_debug "${message}" "log"
+  result=$($@ 2>&1)
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded" "log"
+    print_trace "  * Exit code: ${code}" "log"
+    print_trace "  * Output:" "log"
+    print_trace "$(padding_left "${result}" "    ")" "log"
+  else
+    print_debug "  * Failed" "log"
+    print_error "  * Exit code: ${code}" "log"
+    print_error "  * Output:" "log"
+    print_error "$(padding_left "${result}" "    ")" "log"
+  fi
+
+  echo "${result}"
+
+  return ${code}
+}

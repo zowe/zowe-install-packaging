@@ -83,3 +83,51 @@ detect_file_encoding() {
     echo "${confirmed_encoding}"
   fi
 }
+
+tso_command() {
+  message="- tsocmd $@"
+  print_debug "${message}" "log"
+  result=$(tsocmd $@ 2>&1)
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded" "log"
+    print_trace "  * Exit code: ${code}" "log"
+    print_trace "  * Output:" "log"
+    print_trace "$(padding_left "${result}" "    ")" "log"
+  else
+    print_debug "  * Failed" "log"
+    print_error "  * Exit code: ${code}" "log"
+    print_error "  * Output:" "log"
+    print_error "$(padding_left "${result}" "    ")" "log"
+  fi
+
+  echo "${result}"
+
+  return ${code}
+}
+
+operator_command() {
+  cmd=$1
+
+  opercmd=${ZWE_zowe_runtimeDirectory}/bin/utils/opercmd.rex
+
+  message="- opercmd ${cmd}"
+  print_debug "${message}" "log"
+  result=$("${opercmd}" "${cmd}" 2>&1)
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded" "log"
+    print_trace "  * Exit code: ${code}" "log"
+    print_trace "  * Output:" "log"
+    print_trace "$(padding_left "${result}" "    ")" "log"
+  else
+    print_debug "  * Failed" "log"
+    print_error "  * Exit code: ${code}" "log"
+    print_error "  * Output:" "log"
+    print_error "$(padding_left "${result}" "    ")" "log"
+  fi
+
+  echo "${result}"
+
+  return ${code}
+}
