@@ -449,39 +449,45 @@
       "tag" : "1.25.4-ubuntu"
     },
     "gateway": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/gateway-service",
-        "tag" : "1.25.4-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/gateway-service",
+      "tag" : "1.25.4-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
       "tag" : "1.25.0-ubuntu"
     },
+    "explorer-ip": {
+      "kind": "job",
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-ip",
+      "tag" : "1-ubuntu"
+    },
     "explorer-jes": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/explorer-jes",
-        "tag" : "1.0.18-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-jes",
+      "tag" : "1.0.18-ubuntu"
     },
     "explorer-mvs": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/explorer-mvs",
-        "tag" : "1.0.17-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-mvs",
+      "tag" : "1.0.17-ubuntu"
     },
     "explorer-uss": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/explorer-uss",
-        "tag" : "1.0.18-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-uss",
+      "tag" : "1.0.18-ubuntu"
     },
     "files-api": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/files-api",
-        "tag" : "1.0.13-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/files-api",
+      "tag" : "1.0.13-ubuntu"
     },
     "jobs-api": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/jobs-api",
-        "tag" : "1.0.12-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/jobs-api",
+      "tag" : "1.0.12-ubuntu"
     }
   },
   "dependencyDecisions": {
