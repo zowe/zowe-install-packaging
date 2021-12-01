@@ -442,11 +442,6 @@
       "name": "ompzowe/caching-service",
       "tag" : "1.25.4-ubuntu"
     },
-    "metrics": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/metrics-service",
-      "tag" : "1.26.9-ubuntu"
-    },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
