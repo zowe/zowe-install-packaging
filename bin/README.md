@@ -64,7 +64,7 @@ All Zowe initialized variables are prefixed with `ZWE_`.
 
 ### Global Zowe environment variables
 
-These Zowe environment variables are created globally. Any Zowe modules, extensions can use these variables.
+These Zowe environment variables are created globally. Any Zowe components, extensions can use these variables.
 
 - `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` server command is located.
 - `ZWE_CLI_COMMANDS_LIST`, list of command chain separated by comma.

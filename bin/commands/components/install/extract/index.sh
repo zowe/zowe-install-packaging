@@ -95,7 +95,7 @@ if [ -z "${component_name}" -o "${component_name}" = "null" ]; then
 fi
 print_debug "- Component name found as ${component_name}"
 # export for next step
-export ZWE_MODULES_INSTALL_EXTRACT_COMPONENT_NAME="${component_name}"
+export ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME="${component_name}"
 if [ -e "${component_name}" ]; then
   rm -fr "${tmp_ext_dir}"
   print_error_and_exit "Error ZWEL0155E: Component ${component_name} already exists in ${target_dir}." "" 155
