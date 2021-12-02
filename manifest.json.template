@@ -127,7 +127,7 @@
       "flat": "true"
    },
     "org.zowe.utility_tools": {
-      "version": "0.0.9"
+      "version": "0.0.10"
     },
     "org.zowe.licenses": {
       "version": "1.25.0",
@@ -401,7 +401,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v0.0.9",
+        "tag": "v0.0.10",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
