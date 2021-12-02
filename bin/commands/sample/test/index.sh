@@ -56,3 +56,43 @@ code=$?
 print_message "code=${code}" "console"
 print_message "result=${result}" "console"
 print_message
+
+print_level1_message "submit_job TSTFAST"
+jobid=$(submit_job "${ZWE_zowe_runtimeDirectory}/bin/commands/sample/test/TSTFAST.jcl")
+code=$?
+print_message "code=${code}" "console"
+print_message "jobid=${jobid}" "console"
+if [ -n "${jobid}" ]; then
+  result=$(wait_for_job "${jobid}")
+  code=$?
+  print_message "code=${code}" "console"
+  print_message "result=${result}" "console"
+fi
+print_message
+
+print_level1_message "submit_job TSTFAST"
+jobid=$(submit_job "${ZWE_zowe_runtimeDirectory}/bin/commands/sample/test/TSTFAIL.jcl")
+code=$?
+print_message "code=${code}" "console"
+print_message "jobid=${jobid}" "console"
+if [ -n "${jobid}" ]; then
+  result=$(wait_for_job "${jobid}")
+  code=$?
+  print_message "code=${code}" "console"
+  print_message "result=${result}" "console"
+fi
+print_message
+
+
+print_level1_message "submit_job TSTFAST"
+jobid=$(submit_job "${ZWE_zowe_runtimeDirectory}/bin/commands/sample/test/TSTSLOW.jcl")
+code=$?
+print_message "code=${code}" "console"
+print_message "jobid=${jobid}" "console"
+if [ -n "${jobid}" ]; then
+  result=$(wait_for_job "${jobid}")
+  code=$?
+  print_message "code=${code}" "console"
+  print_message "result=${result}" "console"
+fi
+print_message
