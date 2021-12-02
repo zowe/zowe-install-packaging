@@ -17,8 +17,7 @@ print_level0_message "Install Zowe MVS data sets"
 # constants
 size_szweauth='space(30,15) tracks'
 size_szwesamp='space(15,15) tracks'
-size_szwclib='space(15,15) tracks'
-size_jcllib='space(15,15) tracks'
+size_szweclib='space(15,15) tracks'
 
 ###############################
 # validation
@@ -33,8 +32,7 @@ fi
 # check existence
 authlib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_SZWEAUTH}")
 samplib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_SZWESAMP}")
-clib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_SZWCLIB}")
-jcllib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_JCLLIB}")
+clib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_SZWECLIB}")
 if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
   # warning
   if [ "${authlib_existence}" = "true" ]; then
@@ -44,10 +42,7 @@ if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
     print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Members in this data set will be overwritten during install."
   fi
   if [ "${clib_existence}" = "true" ]; then
-    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWCLIB} already exists. Members in this data set will be overwritten during install."
-  fi
-  if [ "${jcllib_existence}" = "true" ]; then
-    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_JCLLIB} already exists. Members in this data set will be overwritten during install."
+    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWECLIB} already exists. Members in this data set will be overwritten during install."
   fi
 else
   # error
@@ -58,10 +53,7 @@ else
     print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Installation aborts." "" 158
   fi
   if [ "${clib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWCLIB} already exists. Installation aborts." "" 158
-  fi
-  if [ "${jcllib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_JCLLIB} already exists. Installation aborts." "" 158
+    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWECLIB} already exists. Installation aborts." "" 158
   fi
 fi
 
@@ -82,15 +74,8 @@ if [ "${samplib_existence}" != "true" ]; then
   fi
 fi
 if [ "${clib_existence}" != "true" ]; then
-  print_message "Creating ${hlq}.${ZWE_DS_SZWCLIB}"
-  create_data_set "${hlq}.${ZWE_DS_SZWCLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szwclib"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-fi
-if [ "${jcllib_existence}" != "true" ]; then
-  print_message "Creating ${hlq}.${ZWE_DS_JCLLIB}"
-  create_data_set "${hlq}.${ZWE_DS_JCLLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_jcllib"
+  print_message "Creating ${hlq}.${ZWE_DS_SZWECLIB}"
+  create_data_set "${hlq}.${ZWE_DS_SZWECLIB}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szweclib"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
@@ -107,19 +92,10 @@ for mb in $(find . -type f); do
   fi
 done
 
-cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_DS_SZWCLIB}"
+cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_DS_SZWECLIB}"
 for mb in $(find . -type f); do
-  print_message "Copy files/${ZWE_DS_SZWCLIB}/$(basename ${mb}) to ${hlq}.${ZWE_DS_SZWCLIB}"
-  copy_to_data_set "${mb}" "${hlq}.${ZWE_DS_SZWCLIB}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-done
-
-cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_DS_JCLLIB}"
-for mb in $(find . -type f); do
-  print_message "Copy files/${ZWE_DS_JCLLIB}/$(basename ${mb}) to ${hlq}.${ZWE_DS_JCLLIB}"
-  copy_to_data_set "${mb}" "${hlq}.${ZWE_DS_JCLLIB}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  print_message "Copy files/${ZWE_DS_SZWECLIB}/$(basename ${mb}) to ${hlq}.${ZWE_DS_SZWECLIB}"
+  copy_to_data_set "${mb}" "${hlq}.${ZWE_DS_SZWECLIB}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi

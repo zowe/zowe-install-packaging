@@ -110,7 +110,7 @@ data_set_copy_to_data_set() {
     fi
   fi
 
-  cmd="exec '${hlq}.${ZWE_DS_SZWCLIB}(MCOPYSHR)' '${ds_from} ${ds_to}'"
+  cmd="exec '${hlq}.${ZWE_DS_SZWECLIB}(MCOPYSHR)' '${ds_from} ${ds_to}'"
   print_debug "- tsocmd ${cmd}"
   result=$(tsocmd "${cmd}" 2>&1)
   code=$?

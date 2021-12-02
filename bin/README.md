@@ -77,10 +77,8 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
 - `ZWE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
 - `ZWE_DS_SZWEAUTH` is the data set name for Zowe load modules. Default value is `SZWEAUTH`.
-- `ZWE_DS_SZWEPLUG` is the data set name for load modules from Zowe plug-ins. Default value is `SZWEPLUG`.
 - `ZWE_DS_SZWESAMP` is the data set name for Zowe sample configurations . Default value is `SZWESAMP`.
-- `ZWE_DS_SZWCLIB` is the data set name for Zowe CLIST library. Default value is `SZWCLIB`.
-- `ZWE_DS_JCLLIB` is the data set name for Zowe JCL library . Default value is `JCLLIB`.
+- `ZWE_DS_SZWECLIB` is the data set name for Zowe CLIST library. Default value is `SZWECLIB`.
 - `ZWE_CORE_COMPONENTS` is a constant holds names of core components.
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
