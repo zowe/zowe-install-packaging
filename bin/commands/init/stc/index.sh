@@ -11,7 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_level0_message "Install Zowe main started task"
+print_level1_message "Install Zowe main started task"
 
 ###############################
 # constants
@@ -57,5 +57,4 @@ fi
 
 ###############################
 # exit message
-print_message
-print_level1_message "Zowe main started task is installed successfully."
+print_level2_message "Zowe main started task is installed successfully."

@@ -11,13 +11,3 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_level0_message "Configure Zowe"
-print_message
-
-zwecli_inline_execute_command init xmem
-print_message
-zwecli_inline_execute_command init stc
-print_message
-
-print_level1_message "Zowe is configured successfully."
-print_message

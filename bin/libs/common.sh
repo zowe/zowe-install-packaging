@@ -142,6 +142,17 @@ print_level1_message() {
   fi
 }
 
+print_level2_message() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_message "" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_message ">> ${title}" "${write_to}"
+  fi
+}
+
 print_level0_debug() {
   title=$1
   # can be combination of log and/or console
@@ -164,6 +175,17 @@ print_level1_debug() {
   fi
 }
 
+print_level2_debug() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_debug "" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_debug ">> ${title}" "${write_to}"
+  fi
+}
+
 print_level0_trace() {
   title=$1
   # can be combination of log and/or console
@@ -181,6 +203,17 @@ print_level1_trace() {
   write_to=$2
 
   print_trace "-------------------------------------------------------------------------------" "${write_to}"
+  if [ -n "${title}" ]; then
+    print_trace ">> ${title}" "${write_to}"
+  fi
+}
+
+print_level2_trace() {
+  title=$1
+  # can be combination of log and/or console
+  write_to=$2
+
+  print_trace "" "${write_to}"
   if [ -n "${title}" ]; then
     print_trace ">> ${title}" "${write_to}"
   fi

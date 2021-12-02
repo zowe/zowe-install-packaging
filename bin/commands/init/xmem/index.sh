@@ -11,7 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_level0_message "Configure Zowe Cross Memory Server"
+print_level1_message "Configure Zowe Cross Memory Server"
 
 ###############################
 # constants
@@ -99,5 +99,4 @@ fi
 
 ###############################
 # exit message
-print_message
-print_level1_message "Zowe Cross Memory Server is configured successfully."
+print_level2_message "Zowe Cross Memory Server is configured successfully."
