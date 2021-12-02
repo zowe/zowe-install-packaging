@@ -93,7 +93,7 @@ else
   if [ $code -ne 0 ]; then
     exit $code
   else
-    print_debug "- APF authorized succeeded."
+    print_debug "- APF authorized successfully."
   fi
 fi
 
