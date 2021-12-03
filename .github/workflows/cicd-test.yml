@@ -179,16 +179,6 @@ jobs:
         # sanitize all whitespaces just in case
         TEST_FILE_SERVER=$TEST_FILE_SERVER | tr -d "[:space:]"
 
-        # validate
-        # if [[ $TEST_FILE_SERVER =~ ^([A-Za-z0-9/-]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))(;[A-Za-z0-9/-]+\.ts\((zzow02|zzow03|zzow04)(,(zzow02|zzow03|zzow04))*\))*$ ]]; then
-        #   echo "Syntax validation success!"
-        # else
-        #   echo "Input test-file-server is not valid."
-        #   echo "Format:{testpath}/{testfile}.ts(zzow02[,zzow03][,zzow04]) semi-colon separated if multiple"
-        #   echo "Examples: tests/file1.ts(zzow02,zzow04);tests/file2.ts(zzow03)"
-        #   exit 1
-        # fi
-
         MATRIX_JSON_STRING="{\"include\":["
         for each_test_file_server in $(echo "$TEST_FILE_SERVER" | sed "s/;/ /g")
         do
@@ -352,7 +342,7 @@ jobs:
             exit 1
             ;;
           esac
-          
+
           echo "[Check 2/$total_check] Test server name processing complete!"
 
           ##################################################################################################
@@ -384,35 +374,35 @@ jobs:
             fi
 
             # validate extension list input
-            if [[ "${{ github.event.inputs.custom-extension-list }}" =~ ^([^;:]+(:[^;:]+)*)(;[^;:]+(:[^;:]+)*)*$ ]]; then
+            if [[ "${{ github.event.inputs.custom-extension-list }}" =~ ^([^;()]+(\([^;()]+\))*)(;[^;()]+(\([^;()]+\))*)*$ ]]; then
               echo "extension list syntax validation success!"
             else
               echo "extension list validation failed"
-              echo "You must follow the format: {ext-name}[:{custom-ext-pattern}][;...]"
+              echo "You must follow the format: {ext-name}[({custom-ext-pattern})][;...]"
               echo "Example input will be:"
               echo "sample-ext;sample-ext2;sample-myext"
-              echo "sample-ext:myown/path;sample-myext"
+              echo "sample-ext(myown/path);sample-myext"
             fi
 
             for each_ext in $(echo "${{ github.event.inputs.custom-extension-list }}" | sed "s/;/ /g")
             do
               ext_name=
               ext_pattern=
-              if [[ "$each_ext" == *":"* ]]; then
+              if [[ "$each_ext" == *"("* ]] && [[ "$each_ext" == *")"* ]] ; then
                 # user provides custom artifactory pattern
-                ext_name=$(echo "$each_ext" | cut -d ":" -f1)
-                ext_pattern=$(echo "$each_ext" | cut -d ":" -f2)
+                ext_name=$(echo "$each_ext" | cut -d "(" -f1)
+                ext_pattern=$(echo "$each_ext" | cut -d "(" -f2 | cut -d ")" -f1)
               else
                 # use default
                 ext_name="$each_ext"
                 ext_pattern=$(echo "${{ env.DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN }}" | sed "s#{ext-name}#$ext_name#g")
               fi
               ext_full_path=$(jfrog_search $ext_pattern)
-              EXTENSION_LIST="$EXTENSION_LIST$ext_name:$ext_full_path,"
+              EXTENSION_LIST="$EXTENSION_LIST$ext_name($ext_full_path);"
             done
 
             # remove trailing comma
-            EXTENSION_LIST=$(echo $EXTENSION_LIST | sed 's/,$//g')
+            EXTENSION_LIST=$(echo $EXTENSION_LIST | sed 's/;$//g')
             echo "[Check 4/$total_check] Zowe extension list processing complete!"
           fi
 
@@ -514,24 +504,24 @@ jobs:
           lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
           lock-avg-retry-interval: 60
 
-      - name: '[Test] Test starts from here'
-        timeout-minutes: 360
-        working-directory: ${{ env.INSTALL_TEST_PATH }}
-        run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo ${{ matrix.test }} | sed "s/.ts/.js/g")
-        env:
-          ANSIBLE_FORCE_COLOR: true
-          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
-          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
-          ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_FINAL }}
-          EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
-          SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
-          DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
-          # ANSIBLE_VERBOSE: -vvv
+      # - name: '[Test] Test starts from here'
+      #   timeout-minutes: 360
+      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
+      #   run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo ${{ matrix.test }} | sed "s/.ts/.js/g")
+      #   env:
+      #     ANSIBLE_FORCE_COLOR: true
+      #     TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+      #     ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
+      #     ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_FINAL }}
+      #     EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
+      #     SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
+      #     DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
+      #     SSH_HOST: ${{ secrets.SSH_HOST }}
+      #     SSH_PORT: ${{ secrets.SSH_PORT }}
+      #     SSH_USER: ${{ secrets.SSH_USER }}
+      #     SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+      #     ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
+      #     # ANSIBLE_VERBOSE: -vvv
 
       # - name: '[After Test] Merge Report'
       #   if: always()
