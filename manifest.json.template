@@ -82,7 +82,7 @@
       "version": "1.0.19"
     },
     "org.zowe.explorer-ui-server": {
-      "version": "0.2.18"
+      "version": "0.2.19"
     },
     "org.zowe.explorer-ip": {
       "version": "1.0.0",
@@ -295,7 +295,7 @@
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-        "tag": "v0.2.18",
+        "tag": "v0.2.19",
         "destinations": ["Zowe PAX"]
       }]
     }, {
