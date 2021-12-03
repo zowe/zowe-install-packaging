@@ -78,10 +78,9 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
     done && \
     rm -f zss*.pax && \
     cd zlux && \
-    echo "DEBUG print all the files in zlux folder" &&\
-    ls -al &&\
     for f in *.pax; do \
         echo "Processing tagged pax $f" &&\
+        cd /tmp/zowe-install/files/zlux &&\
         rm -rf tmp &&\
         mkdir tmp &&\
         cd tmp &&\
@@ -89,13 +88,15 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
         pwd &&\
         echo "DEBUG test to list all files in parent dir" &&\
         ls .. &&\
+        echo "Doing unpax now" &&\
         pax -rf ../$f &&\
         rm ../$f &&\
         find . -type f -iregex '.*\.\(sh\)$' -exec sh -c "conv '{}' | sponge '{}'" \; && \
         find . -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \; &&\
         find . -type f -name '*.sh' -exec sh -c "sed -i 's/-px //' {}" \; && \
+        echo "Create a new pax" &&\
         pax -wf ../$f . &&\
-        cd .. \
+        cd .. ; \
     done && \
     mv app-server-*.pax .. && \
     \
