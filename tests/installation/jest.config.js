@@ -25,5 +25,6 @@ module.exports = {
         titleTemplate: "{classname} - {title}",
       }
     ]
-  ]
+  ],
+  testTimeout: 3600000
 };
