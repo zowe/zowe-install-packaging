@@ -19,4 +19,4 @@ Expected outputs:
 - Will create these data sets under `zowe.setup.mvs.hlq` definition:
   * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
   * `SZWESAMP` contains several sample configurations.
-  * `SZWECLIB` contains few utilities used by Zowe.
+  * `SZWEEXEC` contains few utilities used by Zowe.
