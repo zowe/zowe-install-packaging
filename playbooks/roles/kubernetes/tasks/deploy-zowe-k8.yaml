@@ -1,22 +1,21 @@
 ---
-  - name: Get namespace and service account files
-    delegate_to: localhost
-    find:
-      paths: ../containers/kubernetes/common/
-      file_type: file
-      recurse: yes
-    register: k8s_ns
-  - name: Apply Zowe namespace and service account 
+  - name: Deploy Zowe namespace 
     delegate_to: localhost
     kubernetes.core.k8s:
       kubeconfig: "{{ kubeconfig }}" 
       context: "{{ k8s_context }}"
       state: present 
-      src: "{{ item.path }}"
-    with_items: "{{ k8s_ns.files }}"
+      src: ../containers/kubernetes/common/zowe-ns.yaml
+  - name: Deploy Zowe ServiceAccount 
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      context: "{{ k8s_context }}"
+      state: present 
+      src: ../containers/kubernetes/common/zowe-sa.yaml
   - name: Git checkout unmodified file
     delegate_to: localhost
-    command: git checkout -- ../containers/kubernetes/samples/workspace-pvc.yaml 
+    command: git checkout -- ../containers/kubernetes/samples/* 
     ignore_errors: True
   - name: Edit workspace-pvc file to update storageclass name
     delegate_to: localhost
@@ -26,35 +25,27 @@
       - key: spec.storageClassName
         value: "{{ k8s_storageclass }}"
     when: k8s_storageclass != none
-  - name: Edit workspace-pvc file to update pv label 
+  - name: Edit workspace-pvc file to update pvc label 
     delegate_to: localhost
     yedit:
       src: ../containers/kubernetes/samples/workspace-pvc.yaml
+      separator: ','
       edits:
-      - key: metadata.labels
+      - key: metadata,labels,{{ item.key }}
         value:
-          app.kubernetes.io/name: zowe
-          app.kubernetes.io/instance: zowe
-          app.kubernetes.io/managed-by: manual
-          billingType: "{{ k8s_pvc_labels[0] }}" 
-          region: "{{ k8s_pvc_labels[1] }}"
-          zone: "{{ k8s_pvc_labels[2] }}"
+          "{{ item.value }}"
+    loop: "{{ k8s_pvc_labels | default({}) | dict2items }}"
     when: k8s_pvc_labels != none
   - name: Edit workspace-pvc file to update pv name
     delegate_to: localhost
+    when: k8s_pv_name != none
     yedit:
       src: ../containers/kubernetes/samples/workspace-pvc.yaml
       edits:
-      - key: spec
-        value: 
-          storageClassName: ""
-          volumeName: "{{ k8s_pv_name }}" 
-          accessModes:
-            - ReadWriteMany
-          resources:
-            requests:
-              storage: 50Mi
-    when: k8s_pv_name != none
+      - key: spec.storageClassName
+        value: ""
+      - key: spec.volumeName
+        value: "{{ k8s_pv_name }}" 
   - name: Deploy workspace-pvc manifest 
     delegate_to: localhost
     kubernetes.core.k8s:
@@ -83,22 +74,22 @@
     when: zowe_instance_dir is none 
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for loadbalancer service. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} > /tmp/config_secret.yaml
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} > {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "loadbalancer" and k8s_networking != "route"
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for OpenShift. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 443 > /tmp/config_secret.yaml
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 443 > {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "loadbalancer" and k8s_networking == "route"
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for nodeport service. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 32554 > /tmp/config_secret.yaml
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 32554 > {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "nodeport"
   - name: Copy the created ConfigMap & Secret to local system 
     delegate_to: localhost
     raw: >-
-      sshpass -P "{{ ansible_password }}" scp "{{ ansible_user }}"@"{{ ansible_ssh_host }}":/tmp/config_secret.yaml .
+      sshpass -P "{{ ansible_password }}" scp "{{ ansible_user }}"@"{{ ansible_ssh_host }}":{{ work_dir_remote }}/config_secret.yaml .
   - name: Remove the ConfigMap & Secret file from the z/OS system 
-    raw: rm -f /tmp/config_secret.yaml
+    raw: rm -f {{ work_dir_remote }}/config_secret.yaml
   - name: Deploy the ConfigMaps and Secrets on Zowe K8s
     delegate_to: localhost
     kubernetes.core.k8s:
@@ -115,33 +106,27 @@
       state: present 
       src: ../containers/kubernetes/samples/api-catalog-service.yaml
 
-  - name: Git checkout unmodified discovery-service-lb file
-    delegate_to: localhost
-    command: git checkout -- ../containers/kubernetes/samples/discovery-service-lb.yaml
-    ignore_errors: True
   - name: Edit discovery loadbalancer file to update annotations
     delegate_to: localhost
     yedit:
       src: ../containers/kubernetes/samples/discovery-service-lb.yaml
-      key: metadata.annotations 
-      value: 
-        service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: "{{ k8s_service_annot[0] }}"
-        service.kubernetes.io/ibm-load-balancer-cloud-provider-zone: "{{ k8s_service_annot[1] }}"
-        service.kubernetes.io/ibm-load-balancer-cloud-provider-vlan: "{{ k8s_service_annot[2] }}"
+      separator: ','
+      edits:
+      - key: metadata,annotations,{{ item.key }}
+        value:
+          "{{ item.value }}"
+    with_items: "{{ k8s_service_annot | default({}) | dict2items }}" 
     when: k8s_service_annot != none and k8s_service == "loadbalancer"
-  - name: Git checkout unmodified gateway-service-lb file
-    delegate_to: localhost
-    command: git checkout -- ../containers/kubernetes/samples/gateway-service-lb.yaml
-    ignore_errors: True
   - name: Edit gateway loadbalancer file to update annotations
     delegate_to: localhost
     yedit:
       src: ../containers/kubernetes/samples/gateway-service-lb.yaml
-      key: metadata.annotations 
-      value: 
-        service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: "{{ k8s_service_annot[0] }}"
-        service.kubernetes.io/ibm-load-balancer-cloud-provider-zone: "{{ k8s_service_annot[1] }}"
-        service.kubernetes.io/ibm-load-balancer-cloud-provider-vlan: "{{ k8s_service_annot[2] }}"
+      separator: ','
+      edits:
+      - key: metadata,annotations,{{ item.key }}
+        value:
+          "{{ item.value }}"
+    with_items: "{{ k8s_service_annot | default({}) | dict2items }}" 
     when: k8s_service_annot != none and k8s_service == "loadbalancer"
 
   - name: Deploy Gateway Service on Zowe K8s using loadbalancer 
@@ -176,42 +161,21 @@
       state: present 
       src: ../containers/kubernetes/samples/discovery-service-np.yaml
     when: k8s_service|lower == "nodeport" 
-
   - name: Edit BareMetal Gateway Ingress file to update host info
     delegate_to: localhost
     yedit:
       src: ../containers/kubernetes/samples/bare-metal/gateway-ingress.yaml
       edits:
-      - key: spec.rules
-        value:
-          - host: "{{ k8s_gateway_domain }}"
-            http:
-             paths:
-               - path: /
-                 pathType: Prefix
-                 backend:
-                   service:
-                     name: gateway-service
-                     port:
-                       name: gateway-port
+      - key: spec.rules[0].host
+        value: '"{{ k8s_gateway_domain }}"'
     when: k8s_networking|lower == "ingress" and k8s_gateway_domain != none
   - name: Edit BareMetal Discovery Ingress file to update host info
     delegate_to: localhost
     yedit:
       src: ../containers/kubernetes/samples/bare-metal/discovery-ingress.yaml
       edits:
-      - key: spec.rules
-        value:
-          - host: "{{ k8s_discovery_domain }}"
-            http:
-             paths:
-               - path: /
-                 pathType: Prefix
-                 backend:
-                   service:
-                     name: discovery-service
-                     port:
-                       name: discovery-port
+      - key: spec.rules[0].host
+        value: '"{{ k8s_discovery_domain }}"'
     when: k8s_networking|lower == "ingress" and k8s_discovery_domain != none
   - name: Deploy Baremetal Gateway Ingress on Zowe K8s
     delegate_to: localhost
@@ -229,36 +193,21 @@
       state: present 
       src: ../containers/kubernetes/samples/bare-metal/discovery-ingress.yaml
     when: k8s_networking|lower == "ingress" 
-
   - name: Edit Openshift Gateway Route file to update host info
     delegate_to: localhost
     yedit:
       src: ../containers/kubernetes/samples/openshift/gateway-route.yaml
       edits:
-      - key: spec
-        value:
-          host: "{{ k8s_gateway_domain }}" 
-          to:
-            kind: Service
-            name: gateway-service
-          tls:
-            termination: passthrough
-          wildcardPolicy: None
+      - key: spec.host
+        value: '"{{ k8s_gateway_domain }}"'
     when: k8s_networking|lower == "route" and k8s_gateway_domain != none
   - name: Edit Openshift Discovery Route file to update host info
     delegate_to: localhost
     yedit:
       src: ../containers/kubernetes/samples/openshift/discovery-route.yaml
       edits:
-      - key: spec
-        value:
-          host: "{{ k8s_discovery_domain }}" 
-          to:
-            kind: Service
-            name: discovery-service
-          tls:
-            termination: passthrough
-          wildcardPolicy: None
+      - key: spec.host
+        value: '"{{ k8s_discovery_domain }}"'
     when: k8s_networking|lower == "route" and k8s_discovery_domain != none
   - name: Deploy Openshift Gateway Route on Zowe K8s
     delegate_to: localhost

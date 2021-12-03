@@ -426,7 +426,7 @@ LOCAL_CA_FILENAME="local_ca/localca"
 NEW_ZWE_EXTERNAL_HOSTS=localhost
 NEW_ZWE_EXTERNAL_PORT=7445
 VERBOSE_MODE=
-SILENT_MODE=1
+SILENT_MODE=
 # will be defined later
 LOCAL_CA_KEYSTORE=
 ZWELS_CONFIG_LOAD_METHOD=
@@ -446,7 +446,7 @@ while getopts "c:x:n:u:p:a:e:v:q" opt; do
     a) LOCAL_CA_ALIAS=${OPTARG};;
     e) NEW_ZWE_EXTERNAL_PORT=${OPTARG};;
     v) VERBOSE_MODE="-v";;
-    q) SILENT_MODE=;;
+    q) SILENT_MODE=true;;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -482,7 +482,7 @@ mkdir -p "${temp_dir}"
 k8s_temp_keystore="${temp_dir}/${KEY_ALIAS}.keystore.p12"
 temp_hlq=${userid}.K8S${rnd}
 
-if [ -n "${SILENT_MODE}" ]; then
+if [ "${SILENT_MODE}" != "true" ]; then
   echo "SECURITY WARNING: This script may generate information including sensitive private"
   echo "                  keys. Please make sure the content will not be left on any devices"
   echo "                  after the process is done."
@@ -578,7 +578,7 @@ if [ "$(is_certificate_generated_by_zowe)" != "true" ]; then
     echo
   fi
 else
-  if [ -n "${SILENT_MODE}" ]; then
+  if [ "${SILENT_MODE}" != "true" ]; then
     echo "It seems you are using Zowe generated certificates."
     echo
   fi
@@ -601,7 +601,7 @@ else
     KEYSTORE="${k8s_temp_keystore}"
     KEYSTORE_KEY="${k8s_temp_keystore}-key"
     KEYSTORE_CERTIFICATE="${k8s_temp_keystore}-cert"
-  elif [ "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" = "true" -a -n "${SILENT_MODE}" ]; then
+  elif [ "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" = "true" -a "${SILENT_MODE}" != "true" ]; then
     echo "You are using Non-Strict verify certificate mode. You existing certificates"
     echo "should work in Kubernetes without change."
     echo
@@ -705,7 +705,7 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_NAME"
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.LOCAL_CA"
 
-  if [ -n "${SILENT_MODE}" ]; then
+  if [ "${SILENT_MODE}" != "true" ]; then
     echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
     echo "you need to match \"zowe.externalPort\" to be the port you are using. For example:"
     echo
@@ -748,7 +748,7 @@ else
     ZOWE_ZLUX_TELNET_HOST=\${ZWED_agent_host}\\
     ZOWE_ZLUX_SSH_HOST=\${ZWED_agent_host}")
 
-  if [ -n "${SILENT_MODE}" ]; then
+  if [ "${SILENT_MODE}" != "true" ]; then
     echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
     echo "you need to match \"ZWE_EXTERNAL_PORT\" to be the port you are using. For example:"
     echo
@@ -759,7 +759,7 @@ fi
 
 ################################################################################
 # start official output
-if [ -n "${SILENT_MODE}" ]; then
+if [ "${SILENT_MODE}" != "true" ]; then
   echo "Please copy all output below, save them as a YAML file on your local computer,"
   echo "then apply it to your Kubernetes cluster. After apply, you MUST delete and"
   echo "destroy the temporary file from your local computer."
