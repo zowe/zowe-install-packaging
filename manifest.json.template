@@ -28,8 +28,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~1.26.0-STAGING",
-      "artifact": "*.pax"
+      "version": "~1.26.0-PR-52",
+      "artifact": "sample-react-app-1.26.0-20211102.11111.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
       "version": "~1.26.0-STAGING",
