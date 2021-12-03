@@ -153,7 +153,7 @@
 //         SET  PRODUCT=${PRODUCT}       * RACF, ACF2, or TSS
 //*                     12345678
 //         SET ADMINGRP=${ADMINGRP}  * group for Zowe administrators
-//         SET STCGROUP=${STCGROUP}  * group for Zowe started tasks
+//         SET   STCGRP=${STCGRP}    * group for Zowe started tasks
 //         SET ZOWEUSER=${ZOWEUSER}  * userid for Zowe started task
 //         SET XMEMUSER=${XMEMUSER}  * userid for xmem started task
 //         SET  AUXUSER=${AUXUSER}   * userid for xmem AUX started task
@@ -424,6 +424,9 @@
 /*   sensitive Zowe resources.                                       */
 /* - Defines resource APIML.SERVICES that controls access to         */
 /*   detailed information about API services to Zowe users.          */
+
+/* uncomment to activate CDT class to define ZOWE resource class     */
+/* SETROPTS CLASSACT(CDT) RACLIST(CDT)                               */
 
 /* define ZOWE resource class                                        */
 /* skip this command if the ZOWE resource class already exists       */

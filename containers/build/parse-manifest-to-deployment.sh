@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # uncomment next line to enable debug mode
-# debug=true
+debug=true
 
 # constants
 SCRIPT_NAME=$(basename "$0")
@@ -36,7 +36,7 @@ do
         tag=
     fi
     if [ -z "${tag}" ]; then
-        tag=latest-ubuntu
+        tag=1-ubuntu
     fi
     # construct image line
     image="${registry}/${name}:${tag}"
@@ -50,7 +50,7 @@ do
     for config in $(echo "instance-env zowe-yaml") ; do
         if [ "${eachImageDep}" = "zowe-launch-scripts" ]; then
             cd "${PROJECT_ROOT_PWD}/containers/kubernetes/workloads/${config}"
-            for file in $(find . -type file -name "*.yaml"); do
+            for file in $(find . -type f -name "*.yaml"); do
                 if [ -n "${debug}" ]; then
                     echo "    updating: workloads/${config}/${file}"
                 fi
