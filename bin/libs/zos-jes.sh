@@ -60,7 +60,8 @@ wait_for_job() {
   print_debug "- Wait for job ${jobid} completed, starting at $(date)."
   # wait for job to finish
   for secs in 1 5 10 30 100 300 500 ; do
-    sleep $secs
+    print_trace "  * Wait for ${secs} seconds"
+    sleep ${secs}
     result=$(operator_command "\$D ${jobid},CC")
     # $DJ gives ...
     # ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value

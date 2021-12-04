@@ -77,8 +77,20 @@ read_yaml() {
   fconv="${utils_dir}/fconv/src/index.js"
   jq="${utils_dir}/njq/src/index.js"
 
-  node "${fconv}" --input-format=yaml "${file}" | node "${jq}" -r "${key}"
-  return $?
+  print_trace "- read_yaml ${key} from ${file}"
+  result=$(node "${fconv}" --input-format=yaml "${file}" | node "${jq}" -r "${key}" 2>&1)
+  code=$?
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  if [ -n "${result}" ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  fi
+
+  if [ ${code} -eq 0 ]; then
+    echo "${result}"
+  fi
+
+  return ${code}
 }
 
 read_json() {
@@ -88,6 +100,18 @@ read_json() {
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   jq="${utils_dir}/njq/src/index.js"
 
-  cat "${file}" | node "${jq}" -r "${key}"
-  return $?
+  print_trace "- read_json ${key} from ${file}"
+  result=$(cat "${file}" | node "${jq}" -r "${key}" 2>&1)
+  code=$?
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  if [ -n "${result}" ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  fi
+
+  if [ ${code} -eq 0 ]; then
+    echo "${result}"
+  fi
+
+  return ${code}
 }

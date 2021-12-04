@@ -1,0 +1,36 @@
+This command will run ZWECSVSM jcl to create VSAM data set for Zowe APIML
+Caching Service.
+
+These Zowe YAML configurations showing with sample values are required:
+
+```
+zowe:
+  setup:
+    mvs:
+      hlq: IBMUSER.ZWE
+      jcllib: IBMUSER.ZWE.CUST.JCLLIB
+    vsam:
+      mode: NONRLS
+      volume: VOL123
+      storageClass:
+components:
+  caching-service:
+    storage:
+      mode: VSAM
+      vsam:
+        name: IBMUSER.ZWE.CUST.CACHE2
+```
+
+- `zowe.setup.mvs.hlq` shows where the `SZWESAMP` data set is installed,
+- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe will create customized
+  ZWESECUR JCL here before applying it.
+- `zowe.setup.vsam.mode` indicates whether the VSAM will utilize Record Level
+  Sharing (RLS) services or not. Valid value is `RLS` or `NONRLS`.
+- `zowe.setup.vsam.volume` indicates the name of volume.
+  This field is required if VSAM mode is `NONRLS`.
+- `zowe.setup.vsam.storageClass` indicates the name of RLS storage class.
+  This field is required if VSAM mode is `RLS`.
+- `components.caching-service.storage.mode` indicates what storage Zowe Caching
+  Service will use. Only if this value is `VSAM`, this command will try to
+  create VSAM data set.
+- `components.caching-service.storage.vsam.name` defines the VSAM data set name.

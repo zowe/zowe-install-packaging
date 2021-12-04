@@ -137,13 +137,17 @@ else
   print_debug "- job id ${jobid}"
   jobstate=$(wait_for_job "${jobid}")
   code=$?
-  if [ ${code} -ne 0 ]; then
+  if [ ${code} -eq 1 ]; then
     print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
   fi
   jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
   jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
   jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-  print_message "- Job ${jobname} ends with code ${jobcccode} (${jobcctext})."
+  if [ ${code} -eq 0 ]; then
+    print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+  else
+    print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+  fi
 fi
 
 ###############################
