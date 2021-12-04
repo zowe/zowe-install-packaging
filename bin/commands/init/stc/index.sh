@@ -15,6 +15,7 @@ print_level1_message "Install Zowe main started task"
 
 ###############################
 # constants
+proclibs="ZWESLSTC ZWESISTC ZWESASTC"
 
 ###############################
 # validation
@@ -32,29 +33,30 @@ if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
 fi
 
 # check existence
-slstc_existence=$(is_data_set_exists "${proclib}(ZWESLSTC)")
-if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
-  # warning
-  if [ "${slstc_existence}" = "true" ]; then
-    print_message "Warning ZWEL0159W: ${proclib}(ZWESLSTC) already exists. This data set member will be overwritten during install."
+for mb in ${proclibs}; do
+  stc_existence=$(is_data_set_exists "${proclib}(${mb})")
+  if [ "${stc_existence}" = "true" ]; then
+    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+      # warning
+      print_message "Warning ZWEL0158W: ${proclib}(${mb}) already exists. This data set member will be overwritten during install."
+    else
+      # error
+      print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists. Installation aborts." "" 158
+    fi
   fi
-else
-  # error
-  if [ "${slstc_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWEL0158E: ${proclib}(ZWESLSTC) already exists. Installation aborts." "" 158
-  fi
-fi
-
-# TODO: modify values in STC before copy
+done
 
 ###############################
-# put ZWESLSTC into proclib
-print_message "Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC) to ${proclib}(ZWESLSTC)"
-data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)" "${proclib}(ZWESLSTC)" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
-if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-fi
+# put into proclib
+# TODO: modify values in STC before copy
+for mb in ${proclibs}; do
+  print_message "Copy ${hlq}.${ZWE_DS_SZWESAMP}(${mb}) to ${proclib}(${mb})"
+  data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWESAMP}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  if [ $? -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+  fi
+done
 
 ###############################
 # exit message
-print_level2_message "Zowe main started task is installed successfully."
+print_level2_message "Zowe main started tasks are installed successfully."

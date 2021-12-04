@@ -15,9 +15,9 @@ print_level0_message "Install Zowe MVS data sets"
 
 ###############################
 # constants
-size_szweauth='space(30,15) tracks'
-size_szwesamp='space(15,15) tracks'
-size_szweexec='space(15,15) tracks'
+cust_ds_list="${ZWE_DS_SZWESAMP}|Zowe sample library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks
+${ZWE_DS_SZWEAUTH}|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
+${ZWE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks"
 
 ###############################
 # validation
@@ -29,64 +29,42 @@ if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
 fi
 
-# check existence
-authlib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_SZWEAUTH}")
-samplib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_SZWESAMP}")
-clib_existence=$(is_data_set_exists "${hlq}.${ZWE_DS_SZWEEXEC}")
-if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
-  # warning
-  if [ "${authlib_existence}" = "true" ]; then
-    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWEAUTH} already exists. Members in this data set will be overwritten during install."
-  fi
-  if [ "${samplib_existence}" = "true" ]; then
-    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Members in this data set will be overwritten during install."
-  fi
-  if [ "${clib_existence}" = "true" ]; then
-    print_message "Warning ZWEL0158W: ${hlq}.${ZWE_DS_SZWEEXEC} already exists. Members in this data set will be overwritten during install."
-  fi
-else
-  # error
-  if [ "${authlib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWEAUTH} already exists. Installation aborts." "" 158
-  fi
-  if [ "${samplib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWESAMP} already exists. Installation aborts." "" 158
-  fi
-  if [ "${clib_existence}" = "true" ]; then
-    print_error_and_exit "Error ZWEL0158E: ${hlq}.${ZWE_DS_SZWEEXEC} already exists. Installation aborts." "" 158
-  fi
-fi
-
 ###############################
 # create data sets if they are not exist
-if [ "${authlib_existence}" != "true" ]; then
-  print_message "Creating ${hlq}.${ZWE_DS_SZWEAUTH}"
-  create_data_set "${hlq}.${ZWE_DS_SZWEAUTH}" "dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) $size_szweauth"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+print_message "Create MVS data sets if they are not exist"
+while read -r line; do
+  ds=$(echo "${line}" | awk -F"|" '{print $1}')
+  name=$(echo "${line}" | awk -F"|" '{print $2}')
+  spec=$(echo "${line}" | awk -F"|" '{print $3}')
+  
+  # check existence
+  ds_existence=$(is_data_set_exists "${hlq}.${ds}")
+  if [ "${ds_existence}" = "true" ]; then
+    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+      # warning
+      print_message "Warning ZWEL0158W: ${hlq}.${ds} already exists. Members in this data set will be overwritten."
+    else
+      # error
+      print_error_and_exit "Error ZWEL0158E: ${hlq}.${ds} already exists. Installation aborts." "" 158
+    fi
+  else
+    print_message "Creating ${name} - ${hlq}.${ds}"
+    create_data_set "${hlq}.${ds}" "${spec}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
   fi
-fi
-if [ "${samplib_existence}" != "true" ]; then
-  print_message "Creating ${hlq}.${ZWE_DS_SZWESAMP}"
-  create_data_set "${hlq}.${ZWE_DS_SZWESAMP}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szwesamp"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-fi
-if [ "${clib_existence}" != "true" ]; then
-  print_message "Creating ${hlq}.${ZWE_DS_SZWEEXEC}"
-  create_data_set "${hlq}.${ZWE_DS_SZWEEXEC}" "dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) $size_szweexec"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-fi
+done <<EOF
+$(echo "${cust_ds_list}")
+EOF
+print_message
 
 ###############################
 # copy members
 cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_DS_SZWESAMP}"
 for mb in $(find . -type f); do
-  print_message "Copy files/${ZWE_DS_SZWESAMP}/$(basename ${mb}) to ${hlq}.SZWESAMP"
-  copy_to_data_set "${mb}" "${hlq}.SZWESAMP" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  print_message "Copy files/${ZWE_DS_SZWESAMP}/$(basename ${mb}) to ${hlq}.${ZWE_DS_SZWESAMP}"
+  copy_to_data_set "${mb}" "${hlq}.${ZWE_DS_SZWESAMP}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
@@ -103,8 +81,13 @@ done
 
 # FIXME: this is handled by Zowe launcher commands.install
 cd "${ZWE_zowe_runtimeDirectory}/components/launcher"
-print_message "Copy components/launcher/samplib/ZWESLSTC to ${hlq}.${ZWE_DS_SZWEAUTH}"
-copy_to_data_set "samplib/ZWESLSTC" "${hlq}.SZWESAMP" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+print_message "Copy components/launcher/samplib/ZWESLSTC to ${hlq}.${ZWE_DS_SZWESAMP}"
+copy_to_data_set "samplib/ZWESLSTC" "${hlq}.${ZWE_DS_SZWESAMP}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+fi
+print_message "Copy components/launcher/bin/zowe_launcher to ${hlq}.${ZWE_DS_SZWEAUTH}"
+copy_to_data_set "bin/zowe_launcher" "${hlq}.${ZWE_DS_SZWEAUTH}(ZWELNCH)" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
 if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
 fi
@@ -119,8 +102,8 @@ for mb in ${zss_samplib}; do
   if [ -z "${mb_to}" ]; then
     mb_to="${mb_from}"
   fi
-  print_message "Copy components/zss/SAMPLIB/${mb_from} to ${hlq}.${ZWE_DS_SZWEAUTH}(${mb_to})"
-  copy_to_data_set "SAMPLIB/${mb_from}" "${hlq}.SZWESAMP(${mb_to})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  print_message "Copy components/zss/SAMPLIB/${mb_from} to ${hlq}.${ZWE_DS_SZWESAMP}(${mb_to})"
+  copy_to_data_set "SAMPLIB/${mb_from}" "${hlq}.${ZWE_DS_SZWESAMP}(${mb_to})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
@@ -133,8 +116,8 @@ for mb in ${zss_loadlib}; do
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 done
+print_message
 
 ###############################
 # exit message
-print_message
 print_level1_message "Zowe MVS data sets are installed successfully."

@@ -14,31 +14,37 @@
 submit_job() {
   jcl=$1
 
-  print_debug "- submit job ${jcl}" "log"
+  print_debug "- submit job ${jcl}"
   result=$(submit "${jcl}")
   # expected: JOB JOB????? submitted from path '...'
   code=$?
   if [ ${code} -eq 0 ]; then
     jobid=$(echo "${result}" | grep submitted | awk '{print $2}')
     if [ -z "${jobid}" ]; then
-      print_debug "  * Failed to find job ID" "log"
-      print_error "  * Exit code: ${code}" "log"
-      print_error "  * Output:" "log"
-      print_error "$(padding_left "${result}" "    ")" "log"
+      print_debug "  * Failed to find job ID"
+      print_error "  * Exit code: ${code}"
+      print_error "  * Output:"
+      if [ -n "${result}" ]; then
+        print_error "$(padding_left "${result}" "    ")"
+      fi
       return 1
     else
       echo "${jobid}"
-      print_debug "  * Succeeded with job ID ${jobid}" "log"
-      print_trace "  * Exit code: ${code}" "log"
-      print_trace "  * Output:" "log"
-      print_trace "$(padding_left "${result}" "    ")" "log"
+      print_debug "  * Succeeded with job ID ${jobid}"
+      print_trace "  * Exit code: ${code}"
+      print_trace "  * Output:"
+      if [ -n "${result}" ]; then
+        print_trace "$(padding_left "${result}" "    ")"
+      fi
       return 0
     fi
   else
-    print_debug "  * Failed" "log"
-    print_error "  * Exit code: ${code}" "log"
-    print_error "  * Output:" "log"
-    print_error "$(padding_left "${result}" "    ")" "log"
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
 
     return ${code}
   fi
@@ -51,7 +57,7 @@ wait_for_job() {
   jobcctext=
   jobcccode=
 
-  print_debug "- Wait for job ${jobid} completed, starting at $(date)." "log"
+  print_debug "- Wait for job ${jobid} completed, starting at $(date)."
   # wait for job to finish
   for secs in 1 5 10 30 100 300 500 ; do
     sleep $secs
@@ -63,17 +69,17 @@ wait_for_job() {
     jobname=$(echo "${jobstatus}" | awk -F, '{print $1}')
     jobcctext=$(echo "${jobstatus}" | awk -F, '{print $2}')
     jobcccode=$(echo "${jobstatus}" | awk -F, '{print $3}' | awk -F= '{print $2}')
-    print_trace "  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}" "log"
+    print_trace "  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}"
     if [ -n "${jobcctext}" -o -n "${jobcccode}" ]; then
       # job have CC state
       break
     fi
   done
-  print_trace "  * Job status check done at $(date)." "log"
+  print_trace "  * Job status check done at $(date)."
 
   echo "${jobid},${jobname},${jobcctext},${jobcccode}"
   if [ -n "${jobcctext}" -o -n "${jobcccode}" ]; then
-    print_debug "  * Job (${jobname}) exits with code ${jobcccode} (${jobcctext})." "log"
+    print_debug "  * Job (${jobname}) exits with code ${jobcccode} (${jobcctext})."
     if [ "${jobcccode}" = "0" ]; then
       return 0
     else
@@ -81,7 +87,7 @@ wait_for_job() {
       return 2
     fi
   else
-    print_error "  * Job (${jobname:-${jobid}}) doesn't finish within max waiting period." "log"
+    print_error "  * Job (${jobname:-${jobid}}) doesn't finish within max waiting period."
     return 1
   fi
 }

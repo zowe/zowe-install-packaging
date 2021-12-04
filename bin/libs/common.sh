@@ -41,12 +41,8 @@ print_raw_message() {
   message=$1
   is_error=$2
   # can be combination of log and/or console
-  write_to=$3
-
-  if [ -z "${write_to}" ]; then
-    # default to write to both
-    write_to=console,log
-  fi
+  # default to write to both
+  write_to=${3:-console,log}
 
   if [[ "${write_to}" = *console* ]]; then
     if [ "${is_error}" = "true" ]; then
@@ -68,43 +64,41 @@ print_raw_message() {
 
 print_message() {
   message=$1
-  # can be combination of log and/or console
   write_to=$2
 
   print_raw_message "${message}" "false" "${write_to}"
 }
 
+# errors are written to STDERR
 print_error() {
   message=$1
-  # can be combination of log and/or console
   write_to=$2
 
   print_raw_message "${message}" "true" "${write_to}"
 }
 
+# debug message are written to STDERR
 print_debug() {
   message=$1
-  # can be combination of log and/or console
   write_to=$2
 
   if [ "${ZWE_LOG_LEVEL_CLI}" = "DEBUG" -o "${ZWE_LOG_LEVEL_CLI}" = "TRACE" ]; then
-    print_raw_message "${message}" "false" "${write_to}"
+    print_raw_message "${message}" "true" "${write_to}"
   fi
 }
 
+# trace messages are written to STDERR
 print_trace() {
   message=$1
-  # can be combination of log and/or console
   write_to=$2
 
   if [ "${ZWE_LOG_LEVEL_CLI}" = "TRACE" ]; then
-    print_raw_message "${message}" "false" "${write_to}"
+    print_raw_message "${message}" "true" "${write_to}"
   fi
 }
 
 print_error_and_exit() {
   message=$1
-  # can be combination of log and/or console
   write_to=$2
   # default exit code is 1
   exit_code=${3:-1}
@@ -129,6 +123,7 @@ print_level0_message() {
   if [ -n "${title}" ]; then
     print_message ">> $(echo "${title}" | upper_case )" "${write_to}"
   fi
+  print_message "" "${write_to}"
 }
 
 print_level1_message() {
@@ -140,6 +135,7 @@ print_level1_message() {
   if [ -n "${title}" ]; then
     print_message ">> ${title}" "${write_to}"
   fi
+  print_message "" "${write_to}"
 }
 
 print_level2_message() {
@@ -151,6 +147,7 @@ print_level2_message() {
   if [ -n "${title}" ]; then
     print_message ">> ${title}" "${write_to}"
   fi
+  print_message "" "${write_to}"
 }
 
 print_level0_debug() {
@@ -162,6 +159,7 @@ print_level0_debug() {
   if [ -n "${title}" ]; then
     print_debug ">> $(echo "${title}" | upper_case )" "${write_to}"
   fi
+  print_debug "" "${write_to}"
 }
 
 print_level1_debug() {
@@ -173,6 +171,7 @@ print_level1_debug() {
   if [ -n "${title}" ]; then
     print_debug ">> ${title}" "${write_to}"
   fi
+  print_debug "" "${write_to}"
 }
 
 print_level2_debug() {
@@ -184,6 +183,7 @@ print_level2_debug() {
   if [ -n "${title}" ]; then
     print_debug ">> ${title}" "${write_to}"
   fi
+  print_debug "" "${write_to}"
 }
 
 print_level0_trace() {
@@ -195,6 +195,7 @@ print_level0_trace() {
   if [ -n "${title}" ]; then
     print_trace ">> $(echo "${title}" | upper_case )" "${write_to}"
   fi
+  print_trace "" "${write_to}"
 }
 
 print_level1_trace() {
@@ -206,6 +207,7 @@ print_level1_trace() {
   if [ -n "${title}" ]; then
     print_trace ">> ${title}" "${write_to}"
   fi
+  print_trace "" "${write_to}"
 }
 
 print_level2_trace() {
@@ -217,6 +219,7 @@ print_level2_trace() {
   if [ -n "${title}" ]; then
     print_trace ">> ${title}" "${write_to}"
   fi
+  print_trace "" "${write_to}"
 }
 
 # runtime logging functions, follow zowe service logging standard

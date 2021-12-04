@@ -64,7 +64,7 @@ create_data_set() {
   ds_name=$1
   ds_opts=$2
 
-  tso_command "ALLOCATE NEW DA('${ds_name}') ${ds_opts}"
+  result=$(tso_command "ALLOCATE NEW DA('${ds_name}') ${ds_opts}")
   return $?
 }
 
@@ -249,23 +249,23 @@ is_data_set_sms_managed() {
   #
   # SMS flag is in `FORMAT 1 DSCB` section second line, after 780037
 
-  print_trace "- Check if ${ds} is SMS managed" "log"
+  print_trace "- Check if ${ds} is SMS managed"
   ds_label=$(tso_command listds "'${ds}'" label)
   code=$?
   if [ ${code} -eq 0 ]; then
     dscb_fmt1=$(echo "${ds_label}" | sed -e '1,/--FORMAT 1 DSCB--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d')
     if [ -z "${dscb_fmt1}" ]; then
-      print_error "  * Failed to find format 1 data set control block information." "log"
+      print_error "  * Failed to find format 1 data set control block information."
       return 2
     else
       ds1smsfg=$(echo "${dscb_fmt1}" | head -n 2 | tail -n 1 | sed -e 's#^.\{6\}\(.\{2\}\).*#\1#')
-      print_trace "  * DS1SMSFG: ${ds1smsfg}" "log"
+      print_trace "  * DS1SMSFG: ${ds1smsfg}"
       if [ -z "${ds1smsfg}" ]; then
-        print_error "  * Failed to find system managed storage indicators from format 1 data set control block." "log"
+        print_error "  * Failed to find system managed storage indicators from format 1 data set control block."
         return 3
       else
         ds1smsds=$((0x${ds1smsfg} & 0x80))
-        print_trace "  * DS1SMSDS: ${ds1smsds}" "log"
+        print_trace "  * DS1SMSDS: ${ds1smsds}"
         if [ "${ds1smsds}" = "128" ]; then
           # sms managed
           echo "true"
@@ -281,13 +281,13 @@ is_data_set_sms_managed() {
 get_data_set_volume() {
   ds=$1
 
-  print_trace "- Find volume of data set ${ds}" "log"
+  print_trace "- Find volume of data set ${ds}"
   ds_info=$(tso_command listds "'${ds}'")
   code=$?
   if [ ${code} -eq 0 ]; then
     volume=$(echo "${ds_info}" | sed -e '1,/--VOLUMES--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d' | tr -d '[:space:]')
     if [ -z "${volume}" ]; then
-      print_error "  * Failed to find volume information of the data set." "log"
+      print_error "  * Failed to find volume information of the data set."
       return 2
     else
       echo "${volume}"
