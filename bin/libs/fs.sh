@@ -45,3 +45,20 @@ convert_to_absolute_path() {
 
   echo "${file}"
 }
+
+get_tmp_dir() {
+  echo ${TMPDIR:-${TMP:-/tmp}}
+}
+
+create_tmp_file() {
+  prefix=${1:-zwe}
+
+  tmpdir=$(get_tmp_dir)
+  while true ; do
+    file="${tmpdir}/${prefix}-${RANDOM}"
+    if [ ! -f "${file}" ]; then
+      echo "${file}"
+      break
+    fi
+  done
+}

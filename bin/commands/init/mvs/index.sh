@@ -56,7 +56,7 @@ while read -r line; do
       print_message "Warning ZWEL0158W: ${ds} already exists. Members in this data set will be overwritten."
     else
       # error
-      print_error_and_exit "Error ZWEL0158E: ${ds} already exists. Installation aborts." "" 158
+      print_error_and_exit "Error ZWEL0158E: ${ds} already exists." "" 158
     fi
   else
     print_message "Creating ${ds}"

@@ -1,6 +1,6 @@
 This command will APF authorize load library for you.
 
-NOTE: You may need proper permission to write to target procedure library.
+NOTE: You require proper permission to run APF authorize command.
 
 These Zowe YAML configurations showing with sample values are required:
 
@@ -15,6 +15,6 @@ zowe:
 
 - `zowe.setup.mvs.hlq` shows where the `SZWEAUTH` data set is installed.
 - `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
-  optional. If it's not defined, `SZWEAUTH` under HLQ will be APF authorized.
+  optional. If it's not defined, `SZWEAUTH` from HLQ will be APF authorized.
 - `zowe.setup.mvs.authPluginLib` is the user custom APF PLUGINLIB.
   You can install Zowe ZIS plugins into this load library.

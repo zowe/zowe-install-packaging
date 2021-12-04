@@ -34,6 +34,11 @@ get_sysname() {
   echo "${sysname}" | lower_case
 }
 
+# return current user id
+get_user_id() {
+  echo ${USER:-${USERNAME:-${LOGNAME:-$(whoami 2>/dev/null)}}}
+}
+
 ###############################
 # List direct children PIDs of a process
 #

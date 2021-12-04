@@ -31,9 +31,36 @@ proclib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.proclib")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: PROCLIB (zowe.setup.mvs.proclib) is not defined in Zowe YAML configuration file." "" 157
 fi
+# read JCL library and validate
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
+if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
+fi
+# read PARMLIB and validate
+parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
+if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe custom parameter library (zowe.setup.mvs.parmlib) is not defined in Zowe YAML configuration file." "" 157
+fi
+# read LOADLIB and validate
+authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
+if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+  # authLoadlib can be empty
+  authLoadlib="${hlq}.${ZWE_DS_SZWEAUTH}"
+fi
 
 # check existence
 for mb in ${proclibs}; do
+  jcl_existence=$(is_data_set_exists "${jcllib}(${mb})")
+  if [ "${jcl_existence}" = "true" ]; then
+    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+      # warning
+      print_message "Warning ZWEL0158W: ${jcllib}(${mb}) already exists. This data set member will be overwritten during install."
+    else
+      # error
+      print_error_and_exit "Error ZWEL0158E: ${jcllib}(${mb}) already exists." "" 158
+    fi
+  fi
+
   stc_existence=$(is_data_set_exists "${proclib}(${mb})")
   if [ "${stc_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
@@ -41,17 +68,129 @@ for mb in ${proclibs}; do
       print_message "Warning ZWEL0158W: ${proclib}(${mb}) already exists. This data set member will be overwritten during install."
     else
       # error
-      print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists. Installation aborts." "" 158
+      print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists." "" 158
     fi
   fi
 done
 
 ###############################
-# put into proclib
-# TODO: modify values in STC before copy
+# prepare STCs
+# ZWESLSTC
+print_message "Modify ZWESLSTC"
+tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
+result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)'" | sed "s#^INSTANCE_DIR=.*\$#INSTANCE_DIR=${ZWE_CLI_PARAMETER_CONFIG}#" > "${tmpfile}")
+code=$?
+if [ ${code} -eq 0 ]; then
+  print_debug "  * Succeeded"
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  if [ -n "${result}" ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  fi
+else
+  print_debug "  * Failed"
+  print_error "  * Exit code: ${code}"
+  print_error "  * Output:"
+  if [ -n "${result}" ]; then
+    print_error "$(padding_left "${result}" "    ")"
+  fi
+fi
+if [ ! -f "${tmpfile}" ]; then
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)" "" 159
+fi
+print_trace "- ${tmpfile} created, copy to ${jcllib}(ZWESLSTC)"
+copy_to_data_set "${tmpfile}" "${jcllib}(ZWESLSTC)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+code=$?
+print_trace "- Delete ${tmpfile}"
+rm -f "${tmpfile}"
+if [ ${code} -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(ZWESLSTC). Please check if target data set is opened by others." "" 160
+fi
+print_debug "- ${jcllib}(ZWESLSTC) is prepared"
+
+# ZWESISTC
+print_message "Modify ZWESISTC"
+tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
+result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESISTC)'" | \
+        sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
+        sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
+        > "${tmpfile}")
+code=$?
+if [ ${code} -eq 0 ]; then
+  print_debug "  * Succeeded"
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  if [ -n "${result}" ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  fi
+else
+  print_debug "  * Failed"
+  print_error "  * Exit code: ${code}"
+  print_error "  * Output:"
+  if [ -n "${result}" ]; then
+    print_error "$(padding_left "${result}" "    ")"
+  fi
+  exit 1
+fi
+if [ ! -f "${tmpfile}" ]; then
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWESISTC)" "" 159
+fi
+print_trace "- ${tmpfile} created, copy to ${jcllib}(ZWESISTC)"
+copy_to_data_set "${tmpfile}" "${jcllib}(ZWESISTC)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+code=$?
+print_trace "- Delete ${tmpfile}"
+rm -f "${tmpfile}"
+if [ ${code} -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(ZWESISTC). Please check if target data set is opened by others." "" 160
+fi
+print_debug "- ${jcllib}(ZWESISTC) is prepared"
+
+# ZWESASTC
+print_message "Modify ZWESASTC"
+tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
+result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESASTC)'" | \
+        sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" \
+        > "${tmpfile}")
+code=$?
+if [ ${code} -eq 0 ]; then
+  print_debug "  * Succeeded"
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  if [ -n "${result}" ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  fi
+else
+  print_debug "  * Failed"
+  print_error "  * Exit code: ${code}"
+  print_error "  * Output:"
+  if [ -n "${result}" ]; then
+    print_error "$(padding_left "${result}" "    ")"
+  fi
+  exit 1
+fi
+if [ ! -f "${tmpfile}" ]; then
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWESASTC)" "" 159
+fi
+print_trace "- ${tmpfile} created, copy to ${jcllib}(ZWESASTC)"
+copy_to_data_set "${tmpfile}" "${jcllib}(ZWESASTC)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+code=$?
+print_trace "- Delete ${tmpfile}"
+rm -f "${tmpfile}"
+if [ ${code} -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(ZWESASTC). Please check if target data set is opened by others." "" 160
+fi
+print_debug "- ${jcllib}(ZWESASTC) is prepared"
+
+print_message
+
+###############################
+# copy to proclib
 for mb in ${proclibs}; do
-  print_message "Copy ${hlq}.${ZWE_DS_SZWESAMP}(${mb}) to ${proclib}(${mb})"
-  data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWESAMP}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
+  data_set_copy_to_data_set "${hlq}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi

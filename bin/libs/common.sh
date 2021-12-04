@@ -20,15 +20,6 @@ export _BPXK_AUTOCVT="ON"
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 
-# return current user id
-get_user_id() {
-  echo ${USER:-${USERNAME:-${LOGNAME:-$(whoami 2>/dev/null)}}}
-}
-
-get_tmp_dir() {
-  echo ${TMPDIR:-${TMP:-/tmp}}
-}
-
 require_zowe_yaml() {
   if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     print_error_and_exit "Error ZWEL0108E: Zowe YAML config file is required." "" 108

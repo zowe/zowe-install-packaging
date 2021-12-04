@@ -1,7 +1,7 @@
 This command will copy Zowe started tasks `ZWESLSTC`, `ZWESISTC`, `ZWESASTC` to
 your target procedure library.
 
-NOTE: You may need proper permission to write to target procedure library.
+NOTE: You require proper permission to write to target procedure library.
 
 These Zowe YAML configurations showing with sample values are required:
 
@@ -11,7 +11,17 @@ zowe:
     mvs:
       hlq: IBMUSER.ZWE
       proclib: USER.PROCLIB
+      parmlib: IBMUSER.ZWE.CUST.PARMLIB
+      jcllib: IBMUSER.ZWE.CUST.JCLLIB
+      authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
 ```
 
 - `zowe.setup.mvs.hlq` shows where the `SZWESAMP` data set is installed,
 - `zowe.setup.mvs.proclib` shows what is the target procedure library.
+- `zowe.setup.mvs.parmlib` is the user custom parameter library. Zowe server
+  command may generate sample PARMLIB members and stores here.
+- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe will create temporary
+  started tasks here before putting into target procedure library.
+- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
+  optional. If this is not defined, `SZWEAUTH` from HLQ will be used as STEPLIB
+  in STCs.
