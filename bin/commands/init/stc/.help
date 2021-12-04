@@ -14,6 +14,11 @@ zowe:
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
       authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
+    security:
+      stcs:
+        zowe: ZWESLSTC
+        xmem: ZWESISTC
+        aux: ZWESASTC
 ```
 
 - `zowe.setup.mvs.hlq` shows where the `SZWESAMP` data set is installed,
@@ -25,3 +30,9 @@ zowe:
 - `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
   optional. If this is not defined, `SZWEAUTH` from HLQ will be used as STEPLIB
   in STCs.
+- `zowe.setup.security.stcs.zowe` is Zowe started task name.
+  This configuration is optional. Default value is `ZWESLSTC`.
+- `zowe.setup.security.stcs.xmem` is xmem started task name.
+  This configuration is optional. Default value is `ZWESISTC`.
+- `zowe.setup.security.stcs.aux` is xmem AUX started task name.
+  This configuration is optional. Default value is `ZWESASTC`.

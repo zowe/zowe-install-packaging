@@ -16,6 +16,7 @@ print_level0_message "Configure Zowe"
 zwecli_inline_execute_command init mvs
 if [ "${ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP}" != "true" ]; then
   zwecli_inline_execute_command init apfauth
+  zwecli_inline_execute_command init security
 fi
 zwecli_inline_execute_command init stc
 

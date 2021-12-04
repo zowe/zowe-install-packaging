@@ -344,3 +344,17 @@ apf_authorize_data_set() {
     fi
   fi
 }
+
+create_data_set_tmp_member() {
+  ds=${1}
+  prefix=${2:-ZW}
+
+  while true ; do
+    member=$(echo "${prefix}${RANDOM}" | cut -c1-8)
+    member_exist=$(is_data_set_exists "${ds}(${member})")
+    if [ "${member_exist}" != "true" ]; then
+      echo "${member}"
+      break
+    fi
+  done
+}
