@@ -41,7 +41,12 @@ while read -r line; do
   # read def and validate
   ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.${key}")
   if [ -z "${ds}" -o "${ds}" = "null" ]; then
-    print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.mvs.${key}) is not defined in Zowe YAML configuration file." "" 157
+    # authLoadlib can be empty
+    if [ "${key}" = "authLoadlib" ]; then
+      continue
+    else
+      print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.mvs.${key}) is not defined in Zowe YAML configuration file." "" 157
+    fi
   fi
   # check existence
   ds_existence=$(is_data_set_exists "${ds}")
@@ -79,13 +84,15 @@ done
 ###############################
 # copy auth lib members
 authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
-for ds in ZWESIS01 ZWESAUX ZWELNCH; do
-  print_message "Copy ${hlq}.${ZWE_DS_SZWEAUTH}(${ds}) to ${authLoadlib}(${ds})"
-  data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-done
+if [ -n "${authLoadlib}" -a "${authLoadlib}" != "null" ]; then
+  for ds in ZWESIS01 ZWESAUX ZWELNCH; do
+    print_message "Copy ${hlq}.${ZWE_DS_SZWEAUTH}(${ds}) to ${authLoadlib}(${ds})"
+    data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
+fi
 
 ###############################
 # exit message

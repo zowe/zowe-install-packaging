@@ -22,8 +22,9 @@ Below data sets will be initialized by this command:
   command may generate sample PARMLIB members and stores here.
 - `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe server command may
   generate sample JCLs and put into this data set.
-- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB.
-  Members of `SZWEAUTH` will be copied over to this data set.
+- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
+  optional. If this is defined, members of `SZWEAUTH` will be copied over to
+  this data set.
   This loadlib requires APF authorize.
 - `zowe.setup.mvs.authPluginLib` is the user custom APF PLUGINLIB.
   You can install Zowe ZIS plugins into this load library.

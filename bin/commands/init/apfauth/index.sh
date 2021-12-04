@@ -21,13 +21,24 @@ auth_libs="authLoadlib authPluginLib"
 # validation
 require_zowe_yaml
 
+# read HLQ and validate
+hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
+if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe high level qualifier (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+fi
+
 ###############################
 # APF authorize loadlib
 for key in ${auth_libs}; do
   # read def and validate
   ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.${key}")
   if [ -z "${ds}" -o "${ds}" = "null" ]; then
-    print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.mvs.${key}) is not defined in Zowe YAML configuration file." "" 157
+    # authLoadlib can be empty
+    if [ "${key}" = "authLoadlib" ]; then
+      ds="${hlq}.${ZWE_DS_SZWEAUTH}"
+    else
+      print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.mvs.${key}) is not defined in Zowe YAML configuration file." "" 157
+    fi
   fi
 
   print_message "APF authorize ${ds}"
