@@ -126,8 +126,8 @@ rm -fr "${CONTENT_DIR}" && mkdir -p "${CONTENT_DIR}/bin"
 mkdir -p "${CONTENT_DIR}/components"
 mkdir -p "${CONTENT_DIR}/files"
 # FIXME: remove these debug code
-rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
-cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
+# rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
+# cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
 
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
