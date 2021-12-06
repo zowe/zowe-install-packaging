@@ -211,7 +211,7 @@ done
 
 echo "[$SCRIPT_NAME] process commands.install hooks"
 # not all core components has commands.install
-for component in launcher app-server; do
+for component in app-server; do
   echo "[$SCRIPT_NAME] - ${component}"
   # FIXME: these environment variables
   ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \

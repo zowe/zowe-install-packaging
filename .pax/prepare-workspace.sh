@@ -90,7 +90,11 @@ SCRIPT_NAME=$(basename "$0")  # $0=./.pax/prepare-workspace.sh
 PAX_WORKSPACE_DIR=$(cd "$(dirname "$0")";pwd)      # <something>/.pax
 PAX_BINARY_DEPENDENCIES="${PAX_WORKSPACE_DIR}/binaryDependencies"
 ROOT_DIR=$(cd "${PAX_WORKSPACE_DIR}/../";pwd)
-BUILD_BRANCH=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+# BUILD_BRANCH should be a Jenkins variable
+if [ -z "${BUILD_BRANCH}" ]; then
+  # generate if it's not running on Jenkins
+  BUILD_BRANCH=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+fi
 BUILD_COMMIT_HASH=$(git rev-parse --verify HEAD)
 BUILD_TIMESTAMP=$(node -e "console.log((new Date()).getTime())")
 
