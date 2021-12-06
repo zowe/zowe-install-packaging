@@ -1,0 +1,10 @@
+---
+## Remove existing Zowe Kubernetes
+- import_role:
+    name: kubernetes
+    tasks_from: remove-zowe-k8
+
+# Deploy Zowe to Kubernetes
+- import_role:
+    name: kubernetes
+    tasks_from: deploy-zowe-k8 
