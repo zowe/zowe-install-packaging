@@ -123,7 +123,6 @@ CONTENT_DIR="${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}"
 echo "[${SCRIPT_NAME}] preparing folders ..."
 rm -fr "${ASCII_DIR}" && mkdir -p "${ASCII_DIR}"
 rm -fr "${CONTENT_DIR}" && mkdir -p "${CONTENT_DIR}/bin"
-mkdir -p "${CONTENT_DIR}/components"
 mkdir -p "${CONTENT_DIR}/files"
 # FIXME: remove these debug code
 # rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
@@ -149,15 +148,15 @@ echo "[${SCRIPT_NAME}] extract zowe-utility-tools.zip ..."
 jar -xf "${PAX_BINARY_DEPENDENCIES}"/zowe-utility-tools*.zip
 # we should get 2 tgz files as npm packages
 echo "[${SCRIPT_NAME}] extract zowe-fconv ..."
-tar zxvf zowe-fconv-*.tgz
+tar zxf zowe-fconv-*.tgz
 mv package fconv
 rm zowe-fconv-*.tgz
 echo "[${SCRIPT_NAME}] extract zowe-njq ..."
-tar zxvf zowe-njq-*.tgz
+tar zxf zowe-njq-*.tgz
 mv package njq
 rm zowe-njq-*.tgz
 echo "[${SCRIPT_NAME}] extract zowe-config-converter ..."
-tar zxvf zowe-config-converter-*.tgz
+tar zxf zowe-config-converter-*.tgz
 mv package config-converter
 rm zowe-config-converter-*.tgz
 # zowe-ncert.pax will be extracted on z/OS side
@@ -185,15 +184,13 @@ mv "${PAX_BINARY_DEPENDENCIES}"/keyring-util-* keyring-util/keyring-util
 
 # move binary dependencies and prepare to extract on z/OS
 echo "[${SCRIPT_NAME}] move binary dependencies ..."
-mkdir -p "${CONTENT_DIR}/components/zlux"
+mkdir -p "${CONTENT_DIR}/files/zlux"
 cd "${PAX_BINARY_DEPENDENCIES}"
 for zlux_dep in zlux-editor tn3270-ng2 vt-ng2 sample-react-app sample-iframe-app sample-angular-app explorer-ip ; do
-  mv ${zlux_dep}-*.pax        "${CONTENT_DIR}/components/zlux/${zlux_dep}.pax"
+  mv ${zlux_dep}-*.pax        "${CONTENT_DIR}/files/zlux/${zlux_dep}.pax"
 done
-mv zlux-core-*.pax          "${CONTENT_DIR}/components/app-server.pax"
-mv zss-*.pax                "${CONTENT_DIR}/components/zss.pax"
-mv *.pax "${CONTENT_DIR}/components/"
-mv *.zip "${CONTENT_DIR}/components/"
+mv *.pax "${CONTENT_DIR}/files/"
+mv *.zip "${CONTENT_DIR}/files/"
 # PAX_BINARY_DEPENDENCIES should be empty now
 if [ -n "$(ls -1)" ]; then
   echo "[$SCRIPT_NAME] Error: binaryDependencies directory is not clean"
@@ -202,6 +199,12 @@ fi
 cd "${ROOT_DIR}"
 rm -r "${PAX_BINARY_DEPENDENCIES}"
 
+echo "[${SCRIPT_NAME}] prepare fingerprints related scripts ..."
+# copy fingerprints scripts -- build usage only
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/fingerprints"
+cp -R fingerprints/. "${PAX_WORKSPACE_DIR}/ascii/fingerprints"
+
+echo "[${SCRIPT_NAME}] create customized workflows ..."
 # create customized workflows
 wf_from="workflows/files"
 wf_to="${ASCII_DIR}/files/workflows"
@@ -213,6 +216,7 @@ wf_to="${PAX_WORKSPACE_DIR}/ascii/templates"
 _templateWorkflow
 cp workflows/*.rex "$wf_to"                               # add tooling
 
+echo "[${SCRIPT_NAME}] copy smpe scripts ..."
 # copy smpe scripts -- build usage only
 mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe"
 cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"

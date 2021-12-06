@@ -19,10 +19,7 @@
 # runs on z/OS, before creating zowe.pax
 #
 #######################################################################
-set -x
-
-echo "exit for debugging"
-exit 1
+# set -x
 
 # expected workspace layout:
 # ./content/smpe/
@@ -38,47 +35,47 @@ exit 1
 # ---------------------------------------------------------------------
 function _createJCL
 {
-VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
-# vtl-cli source: https://github.com/plavjanik/vtl-cli
+  VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
+  # vtl-cli source: https://github.com/plavjanik/vtl-cli
 
-if [ -f "$1/$2.vtl" ]; then
-  vtlList="$2.vtl"                             # process just this file
-  vtlPath="$1"
-elif [ -d "$1/$2" ]; then
-  vtlList="$(ls $1/$2/)"           # process all if directory passed in
-  vtlPath="$1/${2:-.}"
-else
-  echo "[$SCRIPT_NAME] $1/$2.vtl not found"
-  exit 1
-fi
+  if [ -f "$1/$2.vtl" ]; then
+    vtlList="$2.vtl"                             # process just this file
+    vtlPath="$1"
+  elif [ -d "$1/$2" ]; then
+    vtlList="$(ls $1/$2/)"           # process all if directory passed in
+    vtlPath="$1/${2:-.}"
+  else
+    echo "[$SCRIPT_NAME] $1/$2.vtl not found"
+    exit 1
+  fi
 
-for vtlEntry in $vtlList
-do
-  if [ "${vtlEntry##*.}" = "vtl" ]       # keep from last . (exclusive)
-  then
-    vtlBase="${vtlEntry%.*}"            # keep up to last . (exclusive)
-    JCL="${JCL_PATH}/${vtlBase}.jcl"
-    VTL="${vtlPath}/${vtlEntry}"
-    if [ -f ${vtlPath}/${vtlBase}.properties ]; then
-      YAML="${vtlPath}/${vtlBase}.properties"
-#    elif [ -f ${vtlPath}/${vtlBase}.yaml ]; then
-#      YAML="${vtlPath}/${vtlBase}.yaml"
-#    elif [ -f ${vtlPath}/${vtlBase}.yml ]; then
-#      YAML="${vtlPath}/${vtlBase}.yml"
-    else
-      echo "[$SCRIPT_NAME] ${vtlPath}/${vtlBase}.properties not found"
-      exit 1
-    fi
+  for vtlEntry in $vtlList
+  do
+    if [ "${vtlEntry##*.}" = "vtl" ]       # keep from last . (exclusive)
+    then
+      vtlBase="${vtlEntry%.*}"            # keep up to last . (exclusive)
+      JCL="${JCL_PATH}/${vtlBase}.jcl"
+      VTL="${vtlPath}/${vtlEntry}"
+      if [ -f ${vtlPath}/${vtlBase}.properties ]; then
+        YAML="${vtlPath}/${vtlBase}.properties"
+  #    elif [ -f ${vtlPath}/${vtlBase}.yaml ]; then
+  #      YAML="${vtlPath}/${vtlBase}.yaml"
+  #    elif [ -f ${vtlPath}/${vtlBase}.yml ]; then
+  #      YAML="${vtlPath}/${vtlBase}.yml"
+      else
+        echo "[$SCRIPT_NAME] ${vtlPath}/${vtlBase}.properties not found"
+        exit 1
+      fi
 
-    echo "[$SCRIPT_NAME] creating $JCL"
+      echo "[$SCRIPT_NAME] creating $JCL"
 
-    # TODO match variables used in .vtl and .properties
+      # TODO match variables used in .vtl and .properties
 
-    # assumes java is in $PATH
-    java -jar ${VTLCLI_PATH}/vtl-cli.jar \
-      -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
-  fi    # vtl found
-done
+      # assumes java is in $PATH
+      java -jar ${VTLCLI_PATH}/vtl-cli.jar \
+        -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
+    fi    # vtl found
+  done
 }    # _createJCL
 
 # ---------------------------------------------------------------------
@@ -91,56 +88,56 @@ done
 # ---------------------------------------------------------------------
 function _createWorkflow
 {
-here=$(pwd)
-CREAXML_PATH="${here}/templates"   # tools, path must be absolute
+  here=$(pwd)
+  CREAXML_PATH="${here}/templates"   # tools, path must be absolute
 
-if [ -f "$1/$2.xml" ]; then
-  xmlList="$2.xml"                             # process just this file
-  xmlPath="$1"
-elif [ -d "$1/$2" ]; then
-  xmlList="$(ls $1/$2/)"           # process all if directory passed in
-  xmlPath="$1/${2:-.}"
-else
-  echo "[$SCRIPT_NAME] $1/$2.xml not found"
-  exit 1
-fi
+  if [ -f "$1/$2.xml" ]; then
+    xmlList="$2.xml"                             # process just this file
+    xmlPath="$1"
+  elif [ -d "$1/$2" ]; then
+    xmlList="$(ls $1/$2/)"           # process all if directory passed in
+    xmlPath="$1/${2:-.}"
+  else
+    echo "[$SCRIPT_NAME] $1/$2.xml not found"
+    exit 1
+  fi
 
-for xmlEntry in $xmlList
-do
-  if [ "${xmlEntry##*.}" = "xml" ]       # keep from last . (exclusive)
-  then
-    xmlBase="${xmlEntry%.*}"            # keep up to last . (exclusive)
-    XML="${here}/${WORKFLOW_PATH}/${xmlBase}.xml"   # use absolute path
+  for xmlEntry in $xmlList
+  do
+    if [ "${xmlEntry##*.}" = "xml" ]       # keep from last . (exclusive)
+    then
+      xmlBase="${xmlEntry%.*}"            # keep up to last . (exclusive)
+      XML="${here}/${WORKFLOW_PATH}/${xmlBase}.xml"   # use absolute path
 
-    if [ -d ${xmlBase} ]; then
-      # TODO ensure workflow yaml has all variables of JCL yamls
-    fi
-    
-    # create JCL related to this workflow
-    _createJCL ${xmlPath} ${xmlBase}    # ${xmlBase} can be a directory
+      if [ -d ${xmlBase} ]; then
+        # TODO ensure workflow yaml has all variables of JCL yamls
+      fi
+      
+      # create JCL related to this workflow
+      _createJCL ${xmlPath} ${xmlBase}    # ${xmlBase} can be a directory
 
-    # create workflow
-    echo "[$SCRIPT_NAME] creating $XML"
-    # inlineTemplate definition in xml expects us to be in $xmlPath
-    cd "${xmlPath}"
-    ${CREAXML_PATH}/build-workflow.rex -d -i ${xmlEntry} -o ${XML}
-    rm -f ${xmlEntry}                # remove to avoid processing twice
-    cd -                                 # return to previous directory
+      # create workflow
+      echo "[$SCRIPT_NAME] creating $XML"
+      # inlineTemplate definition in xml expects us to be in $xmlPath
+      cd "${xmlPath}"
+      ${CREAXML_PATH}/build-workflow.rex -d -i ${xmlEntry} -o ${XML}
+      rm -f ${xmlEntry}                # remove to avoid processing twice
+      cd -                                 # return to previous directory
 
-    # copy default variable definitions to ${WORKFLOW_PATH}
-    if [ -f ${xmlPath}/${xmlBase}.properties ]; then
-      YAML="${xmlPath}/${xmlBase}.properties"
-#    elif [ -f ${xmlPath}/${xmlBase}.yaml ]; then
-#      YAML="${xmlPath}/${xmlBase}.yaml"
-#    elif [ -f ${xmlPath}/${xmlBase}.yml ]; then
-#      YAML="${xmlPath}/${xmlBase}.yml"
-    else
-      echo "[$SCRIPT_NAME] ${xmlPath}/${xmlBase}.properties not found"
-      exit 1
-    fi
-    cp "${YAML}" "${WORKFLOW_PATH}/${xmlBase}.properties"
-  fi    # xml found
-done
+      # copy default variable definitions to ${WORKFLOW_PATH}
+      if [ -f ${xmlPath}/${xmlBase}.properties ]; then
+        YAML="${xmlPath}/${xmlBase}.properties"
+  #    elif [ -f ${xmlPath}/${xmlBase}.yaml ]; then
+  #      YAML="${xmlPath}/${xmlBase}.yaml"
+  #    elif [ -f ${xmlPath}/${xmlBase}.yml ]; then
+  #      YAML="${xmlPath}/${xmlBase}.yml"
+      else
+        echo "[$SCRIPT_NAME] ${xmlPath}/${xmlBase}.properties not found"
+        exit 1
+      fi
+      cp "${YAML}" "${WORKFLOW_PATH}/${xmlBase}.properties"
+    fi    # xml found
+  done
 }    # _createWorkflow
 
 # ---------------------------------------------------------------------
@@ -149,31 +146,41 @@ done
 SCRIPT_NAME=$(basename "$0")  # $0=./pre-packaging.sh
 BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 
+cd "${BASE_DIR}"
+ZOWE_ROOT_DIR="${BASE_DIR}/content/$(ls -1 content | grep zowe-)"
+ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+# add zwe command to PATH
+export PATH=${ZOWE_ROOT_DIR}/bin:${PATH}
+
 if [ -z "$ZOWE_VERSION" ]; then
-  echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
+  echo "[$SCRIPT_NAME] Error: failed to extract version from manifest.json"
   exit 1
 else
   echo "[$SCRIPT_NAME] working on Zowe v${ZOWE_VERSION} ..."
 fi
 
 # show what's already present
-echo "[$SCRIPT_NAME] content current directory: ls -A $(pwd)/"
-ls -A "$(pwd)/" || true
+# echo "[$SCRIPT_NAME] content current directory: ls -A $(pwd)/"
+# ls -A "$(pwd)/" || true
+# should have content of
+# - catchall-packaging.sh
+# - content
+# - post-packaging.sh
+# - pre-packaging.sh
+# - prepare-workspace.sh
+# FIXME: remove/comment this debug code
+cd "${BASE_DIR}" && rm -fr content && rm -fr smpe && rm -fr templates && cp -r content.bak content
 
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
-chmod +x content/zowe-$ZOWE_VERSION/bin/zwe
-chmod +x content/zowe-$ZOWE_VERSION/bin/*.sh
-chmod +x content/zowe-$ZOWE_VERSION/scripts/*.sh
-chmod +x content/zowe-$ZOWE_VERSION/scripts/opercmd
-chmod +x content/zowe-$ZOWE_VERSION/scripts/ocopyshr.clist
-chmod +x content/zowe-$ZOWE_VERSION/install/*.sh
-chmod +x content/templates/*.rex
+chmod +x "${ZOWE_ROOT_DIR}"/bin/zwe
+chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
+chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.rex
 
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
-chmod +x content/zowe-$ZOWE_VERSION/bin/utils/keyring-util/keyring-util
+chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
 
 echo "[$SCRIPT_NAME] extract zowe-ncert ..."
-cd content/zowe-$ZOWE_VERSION/bin/utils
+cd "${ZOWE_ROOT_DIR}/bin/utils"
 mkdir -p ncert
 cd ncert
 pax -ppx -rf ../zowe-ncert-*.pax
@@ -188,8 +195,55 @@ mv ./content/smpe  .
 # >>>
 echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
+chmod +x templates/*.rex
+
+echo "[$SCRIPT_NAME] extract components"
+mkdir -p "${ZOWE_ROOT_DIR}/components"
+# FIXME: common-java-lib? in v1, we don't extract it
+for component in launcher zlux-core zss apiml-common-lib common-java-lib gateway caching-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
+  echo "[$SCRIPT_NAME] - ${component}"
+  component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
+  "${ZOWE_ROOT_DIR}/bin/zwe" components install extract --module-file "${component_file}" --target-dir "${ZOWE_ROOT_DIR}/components"
+  rm "${component_file}"
+done
+
+echo "[$SCRIPT_NAME] extract pre-bundled zlux plugins"
+# should have components
+if [ ! -d "${ZOWE_ROOT_DIR}/components/app-server/share" ]; then
+  echo "[$SCRIPT_NAME] Error: app-server directory is not created."
+  exit 1
+fi
+cd "${ZOWE_ROOT_DIR}/components/app-server/share"
+for component in explorer-ip sample-angular-app sample-iframe-app sample-react-app tn3270-ng2 vt-ng2 zlux-editor ; do
+  echo "[$SCRIPT_NAME] - ${component}"
+  mkdir "${ZOWE_ROOT_DIR}/components/app-server/share/${component}"
+  cd "${ZOWE_ROOT_DIR}/components/app-server/share/${component}"
+  pax -ppx -rf "${ZOWE_ROOT_DIR}/files/zlux/"${component}*.pax
+  rm "${ZOWE_ROOT_DIR}/files/zlux/"${component}*.pax
+done
+# we don't have tar format plugins now, otherwise we should also use tar to extract
+
+echo "[$SCRIPT_NAME] move pre-bundled zlux configs"
+cd "${ZOWE_ROOT_DIR}/components/app-server/share"
+chtag -tc 1047 ${ZOWE_ROOT_DIR}/files/zlux/config/*.json
+chtag -tc 1047 ${ZOWE_ROOT_DIR}/files/zlux/config/plugins/*.json
+chmod -R u+w zlux-app-server 2>/dev/null
+mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
+cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins
+cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/allowedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins/
+cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/serverConfig/server.json
+cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
+rm -fr ${ZOWE_ROOT_DIR}/files/zlux/config
+if [ -n "$(ls -1 "${ZOWE_ROOT_DIR}/files/zlux")" ]; then
+  echo "[$SCRIPT_NAME] Error: zlux directory is not empty after processed."
+  exit 1
+fi
+rm -fr ${ZOWE_ROOT_DIR}/files/zlux
 
 #1. create SMP/E workflow & JCL
+echo "[$SCRIPT_NAME] create SMP/E workflow & JCL"
+cd "${BASE_DIR}"
 WORKFLOW_PATH="./smpe/pax/USS"
 JCL_PATH="./smpe/pax/MVS"
 _createWorkflow "./templates" "smpe-install"
@@ -198,56 +252,39 @@ mv -f "$WORKFLOW_PATH/smpe-install.xml" "$WORKFLOW_PATH/ZWEWRF01.xml"
 mv -f "$WORKFLOW_PATH/smpe-install.properties" "$WORKFLOW_PATH/ZWEYML01.yml"
 
 #2. create all other workflow & JCL, must be last in workflow creation
+echo "[$SCRIPT_NAME] create all other workflow & JCL, must be last in workflow creation"
+cd "${BASE_DIR}"
 WORKFLOW_PATH="./content/zowe-$ZOWE_VERSION/files/workflows"
-JCL_PATH="./content/zowe-$ZOWE_VERSION/files/jcl"
+JCL_PATH="./content/zowe-$ZOWE_VERSION/files/SZWESAMP"
 _createWorkflow "./templates"
+if [ -f "${ZOWE_ROOT_DIR}/files/SZWESAMP/ZWESECUR.jcl" ]; then
+  mv "${ZOWE_ROOT_DIR}/files/SZWESAMP/ZWESECUR.jcl" "${ZOWE_ROOT_DIR}/files/SZWESAMP/ZWESECUR"
+else
+  echo "[$SCRIPT_NAME] Error: failed to generate ZWESECUR"
+  exit 1
+fi
 
 #3. clean up working files
+echo "[$SCRIPT_NAME] clean up working files"
 rm -rf "./templates"
 
-# <<<
-
-# # . . . . . . . . . . . start of fingerprint . . . . . . . . . . . . . . . . . . . . . . .
-
-# This is the script where we create the fingerprint in the zowe.pax file.
-# To do this, we will create a runtime directory, somewhat like smpe.sh does today,
-# by running zowe-install.sh
-
-# For the moment, I will let smpe.sh continue to create its own runtime folder, but this creation
-# will be removed later for efficiency.
-
-# Note that zowe-install.sh creates USS files ... but also datasets, which need to be deleted.
-# TODO
-# To delete them, amend catchall-packaging.sh in this directory.
-
-# # Generate reference hash keys of runtime files
-echo "----- Generate reference hash keys of runtime files -----"
-echo Installing Zowe in temporary runtime directory
-mkdir zowe-runtime-dir 
-userid=${USER:-${USERNAME:-${LOGNAME}}}
-tempDSNlevel=T$(($$ % 10000000)) # the lower 7 digits of the PID
-./content/zowe-$ZOWE_VERSION/install/zowe-install.sh -i zowe-runtime-dir -l logs -h $userid.$tempDSNlevel # temp DSN based on PID
-find logs -name "zowe-install-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {} && echo "<<<<<<<<<<<<<<<<<<<<<<<< {} <<<<<<<<<<<<<<<<<<<<<<<"'
-for szweDSN in SZWESAMP SZWEAUTH # delete temp DSNs 
-do
-  tsocmd delete $tempDSNlevel.$szweDSN # 1> /dev/null 2> /dev/null
-done
-utilsDir=`pwd`/content/zowe-$ZOWE_VERSION/scripts/utils 
-mkdir $utilsDir/hash # create work directory
-cp content/zowe-$ZOWE_VERSION/files/HashFiles.java $utilsDir/hash
-
-# Compile the hash program and calculate the checksums of runtime
-./content/zowe-$ZOWE_VERSION/bin/zowe-generate-checksum.sh `pwd`/zowe-runtime-dir $utilsDir/hash 
-
-# save derived runtime hash file and class into the source tree that will be PAXed
-mkdir -p content/zowe-$ZOWE_VERSION/fingerprint
-cp   $utilsDir/hash/RefRuntimeHash.txt content/zowe-$ZOWE_VERSION/fingerprint/RefRuntimeHash-$ZOWE_VERSION.txt 
-cp   $utilsDir/hash/HashFiles.class    content/zowe-$ZOWE_VERSION/bin/internal
-
-rm -r $utilsDir/hash # delete work directory
-rm -r zowe-runtime-dir # delete runtime directory.  TODO: Don't do this when smpe.sh does not create its own.  
-
-echo "----- Hash keys of runtime files were generated -----"
-# # . . . . . . . . . . end of fingerprint . . . . . . . . . . . . . . . . . . . . . . . . .
+# prepare for SMPE
+echo "[$SCRIPT_NAME] move fingerprints dir out of content..."
+cd "${BASE_DIR}"
+mv ./content/fingerprints  .
+cd "${BASE_DIR}/fingerprints"
+javac HashFiles.java
+cp HashFiles.class "${ZOWE_ROOT_DIR}/bin/utils"
+echo "[$SCRIPT_NAME] generate fingerprints"
+cd "${ZOWE_ROOT_DIR}"
+find . -name ./SMPE             -prune \
+    -o -name "./ZWE*"           -prune \
+    -o -name ./fingerprint      -prune \
+    -o -type f -print > "${BASE_DIR}/fingerprints/files.in"
+java -cp "${BASE_DIR}/fingerprints" HashFiles "${BASE_DIR}/fingerprints/files.in" > "${BASE_DIR}/fingerprints/RefRuntimeHash.txt"
+mkdir -p "${ZOWE_ROOT_DIR}/fingerprint"
+mv "${BASE_DIR}/fingerprints/RefRuntimeHash.txt" "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
+echo "[$SCRIPT_NAME] cleanup fingerprints code"
+rm -fr "${BASE_DIR}/fingerprints"
 
 echo "[$SCRIPT_NAME] done"

@@ -1,0 +1,5 @@
+{
+  "identifier": "org.zowe.editor",
+  "pluginLocation": "zlux-editor",
+  "relativeTo": "$ZLUX_ROOT_DIR"
+}

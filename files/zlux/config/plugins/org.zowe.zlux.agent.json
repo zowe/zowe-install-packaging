@@ -1,0 +1,5 @@
+{
+  "identifier": "org.zowe.zlux.agent",
+  "pluginLocation": "zlux-server-framework/plugins/zlux-agent",
+  "relativeTo": "$ZLUX_ROOT_DIR"
+}
