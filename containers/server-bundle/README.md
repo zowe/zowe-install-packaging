@@ -13,7 +13,7 @@ export GATEWAY_PORT=7554
 export APP_SERVER_PORT=8544
 
 #add non-default settings with --env, using same properties as seen in instance.env
-#   --env ZWED_TELNET_PORT=23
+#   --env ZWED_TN3270_PORT=23
 docker run -it \
     -h your_hostname \
     --env ZOWE_IP_ADDRESS=your.external.ip \
@@ -120,7 +120,7 @@ set GATEWAY_PORT=7554
 set APP_SERVER_PORT=8544
 
 #add non-default settings with --env, using same properties as seen in instance.env
-#   --env ZWED_TELNET_PORT=23
+#   --env ZWED_TN3270_PORT=23
 docker run -it ^
     -h your_hostname ^
     --env ZOWE_IP_ADDRESS=your.external.ip ^

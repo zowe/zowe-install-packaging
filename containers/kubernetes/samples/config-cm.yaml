@@ -98,8 +98,8 @@ data:
 
     # terminal app variables
     ZWED_SSH_PORT=22
-    ZWED_TELNET_PORT=23
-    ZWED_SECURITY_TYPE=
+    ZWED_TN3270_PORT=23
+    ZWED_TN3270_SECURITY=
 
     # Log level for launch scripts. Set this to "debug" to see detail of validate and configure steps.
     ZWE_LOG_LEVEL_ZWELS=
@@ -111,5 +111,5 @@ data:
 
     ZWED_agent_host=${ZOWE_ZOS_HOST}
     ZWED_agent_https_port=${ZWES_SERVER_PORT}
-    ZWED_TELNET_HOST=${ZWED_agent_host}
+    ZWED_TN3270_HOST=${ZWED_agent_host}
     ZWED_SSH_HOST=${ZWED_agent_host}

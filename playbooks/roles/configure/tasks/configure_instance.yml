@@ -47,8 +47,8 @@
     sed -e "s+^ZWES_SERVER_PORT=.*\$+ZWES_SERVER_PORT={{ zowe_zss_port }}+" | \
     sed -e "s+^ZWES_XMEM_SERVER_NAME=.*\$+ZWES_XMEM_SERVER_NAME={{ zowe_zss_xmem_name }}+" | \
     sed -e "s+^ZWED_SSH_PORT=.*\$+ZWED_SSH_PORT={{ zowe_zlux_terminal_ssh_port }}+" | \
-    sed -e "s+^ZWED_TELNET_PORT=.*\$+ZWED_TELNET_PORT={{ zowe_zlux_terminal_telnet_port }}+" | \
-    sed -e "s+^ZWED_SECURITY_TYPE=.*\$+ZWED_SECURITY_TYPE={{ zowe_zlux_terminal_telnet_security_type }}+" | \
+    sed -e "s+^ZWED_TN3270_PORT=.*\$+ZWED_TN3270_PORT={{ zowe_zlux_terminal_telnet_port }}+" | \
+    sed -e "s+^ZWED_TN3270_SECURITY=.*\$+ZWED_TN3270_SECURITY={{ zowe_zlux_terminal_telnet_security_type }}+" | \
     sed -e "s+^ZWE_LAUNCH_COMPONENTS=.*\$+ZWE_LAUNCH_COMPONENTS={{ zowe_launch_components }}+" \
     > "{{ zowe_instance_dir }}/instance.env.tmp" && \
     mv "{{ zowe_instance_dir }}/instance.env.tmp" "{{ zowe_instance_dir }}/instance.env"
