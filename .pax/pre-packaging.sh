@@ -21,6 +21,9 @@
 #######################################################################
 set -x
 
+echo "exit for debugging"
+exit 1
+
 # expected workspace layout:
 # ./content/smpe/
 # ./content/templates/
