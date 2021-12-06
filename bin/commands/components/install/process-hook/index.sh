@@ -19,12 +19,12 @@ target_dir=$(remove_trailing_slash "${ZWE_CLI_PARAMETER_TARGET_DIR}")
 # node is required to read module manifest
 require_node
 
-commands_install=$(read_component_manifest "${target_dir}/${ZWE_CLI_PARAMETER_MODULE_NAME}" ".commands.install" 2>/dev/null)
+commands_install=$(read_component_manifest "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}" ".commands.install" 2>/dev/null)
 if [ -n "${commands_install}" -a "${commands_install}" != "null" ]; then
   print_message "Process ${commands_install} defined in manifest commands.install:"
-  cd "${target_dir}/${ZWE_CLI_PARAMETER_MODULE_NAME}"
+  cd "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
   # run commands
   . ${commands_install}
 else
-  print_debug "Module ${ZWE_CLI_PARAMETER_MODULE_NAME} does not have commands.install defined."
+  print_debug "Module ${ZWE_CLI_PARAMETER_COMPONENT_NAME} does not have commands.install defined."
 fi

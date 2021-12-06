@@ -199,41 +199,60 @@ chmod +x templates/*.rex
 
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
-# FIXME: common-java-lib? in v1, we don't extract it
 for component in launcher zlux-core zss apiml-common-lib common-java-lib gateway caching-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
   component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
-  "${ZOWE_ROOT_DIR}/bin/zwe" components install extract --module-file "${component_file}" --target-dir "${ZOWE_ROOT_DIR}/components"
+  "${ZOWE_ROOT_DIR}/bin/zwe" \
+    components install extract \
+    --component-file "${component_file}" \
+    --target-dir "${ZOWE_ROOT_DIR}/components"
   rm "${component_file}"
 done
 
-echo "[$SCRIPT_NAME] extract pre-bundled zlux plugins"
-# should have components
-if [ ! -d "${ZOWE_ROOT_DIR}/components/app-server/share" ]; then
-  echo "[$SCRIPT_NAME] Error: app-server directory is not created."
-  exit 1
-fi
-cd "${ZOWE_ROOT_DIR}/components/app-server/share"
-for component in explorer-ip sample-angular-app sample-iframe-app sample-react-app tn3270-ng2 vt-ng2 zlux-editor ; do
+echo "[$SCRIPT_NAME] process commands.install hooks"
+# not all core components has commands.install
+for component in launcher app-server; do
   echo "[$SCRIPT_NAME] - ${component}"
-  mkdir "${ZOWE_ROOT_DIR}/components/app-server/share/${component}"
-  cd "${ZOWE_ROOT_DIR}/components/app-server/share/${component}"
-  pax -ppx -rf "${ZOWE_ROOT_DIR}/files/zlux/"${component}*.pax
-  rm "${ZOWE_ROOT_DIR}/files/zlux/"${component}*.pax
+  # FIXME: these environment variables
+  ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \
+  ZWED_INSTALL_DIR=${ZOWE_ROOT_DIR} \
+  "${ZOWE_ROOT_DIR}/bin/zwe" \
+    components install process-hook \
+    --component-name "${component}" \
+    --target-dir "${ZOWE_ROOT_DIR}/components"
 done
+
+# >>>>>
+# this is handled by app-server commands.install hook
+# echo "[$SCRIPT_NAME] extract pre-bundled zlux plugins"
+# # should have components
+# if [ ! -d "${ZOWE_ROOT_DIR}/components/app-server/share" ]; then
+#   echo "[$SCRIPT_NAME] Error: app-server directory is not created."
+#   exit 1
+# fi
+# cd "${ZOWE_ROOT_DIR}/components/app-server/share"
+# for component in explorer-ip sample-angular-app sample-iframe-app sample-react-app tn3270-ng2 vt-ng2 zlux-editor ; do
+#   echo "[$SCRIPT_NAME] - ${component}"
+#   mkdir "${ZOWE_ROOT_DIR}/components/app-server/share/${component}"
+#   cd "${ZOWE_ROOT_DIR}/components/app-server/share/${component}"
+#   pax -ppx -rf "${ZOWE_ROOT_DIR}/files/zlux/"${component}*.pax
+#   rm "${ZOWE_ROOT_DIR}/files/zlux/"${component}*.pax
+# done
 # we don't have tar format plugins now, otherwise we should also use tar to extract
 
-echo "[$SCRIPT_NAME] move pre-bundled zlux configs"
-cd "${ZOWE_ROOT_DIR}/components/app-server/share"
-chtag -tc 1047 ${ZOWE_ROOT_DIR}/files/zlux/config/*.json
-chtag -tc 1047 ${ZOWE_ROOT_DIR}/files/zlux/config/plugins/*.json
-chmod -R u+w zlux-app-server 2>/dev/null
-mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
-cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
-mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins
-cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/allowedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins/
-cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/serverConfig/server.json
-cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
+# echo "[$SCRIPT_NAME] move pre-bundled zlux configs"
+# cd "${ZOWE_ROOT_DIR}/components/app-server/share"
+# chtag -tc 1047 ${ZOWE_ROOT_DIR}/files/zlux/config/*.json
+# chtag -tc 1047 ${ZOWE_ROOT_DIR}/files/zlux/config/plugins/*.json
+# chmod -R u+w zlux-app-server 2>/dev/null
+# mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins
+# cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/pinnedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/ui/launchbar/plugins/
+# mkdir -p zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins
+# cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/allowedPlugins.json zlux-app-server/defaults/ZLUX/pluginStorage/org.zowe.zlux.bootstrap/plugins/
+# cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/zluxserver.json zlux-app-server/defaults/serverConfig/server.json
+# cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
+
+cd "${BASE_DIR}"
 rm -fr ${ZOWE_ROOT_DIR}/files/zlux/config
 if [ -n "$(ls -1 "${ZOWE_ROOT_DIR}/files/zlux")" ]; then
   echo "[$SCRIPT_NAME] Error: zlux directory is not empty after processed."

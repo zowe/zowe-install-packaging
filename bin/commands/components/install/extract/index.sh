@@ -16,7 +16,7 @@
 tmp_ext_dir=tmp_ext_dir
 # Variables
 target_dir=$(remove_trailing_slash "${ZWE_CLI_PARAMETER_TARGET_DIR}")
-module_file_short=$(basename "${ZWE_CLI_PARAMETER_MODULE_FILE}")
+module_file_short=$(basename "${ZWE_CLI_PARAMETER_COMPONENT_FILE}")
 
 ###############################
 # node is required to read module manifest
@@ -35,22 +35,22 @@ rm -fr "${tmp_ext_dir}"
 
 print_message "Install ${module_file_short}"
 
-if [ -d "${ZWE_CLI_PARAMETER_MODULE_FILE}" ]; then
-  print_debug "- Module ${ZWE_CLI_PARAMETER_MODULE_FILE} is a directory, will create symbolic link into target directory."
-  ln -s "${ZWE_CLI_PARAMETER_MODULE_FILE}" "${tmp_ext_dir}"
+if [ -d "${ZWE_CLI_PARAMETER_COMPONENT_FILE}" ]; then
+  print_debug "- Module ${ZWE_CLI_PARAMETER_COMPONENT_FILE} is a directory, will create symbolic link into target directory."
+  ln -s "${ZWE_CLI_PARAMETER_COMPONENT_FILE}" "${tmp_ext_dir}"
 else
   # create temporary directory to lay down extension files in
   mkdir -p "${tmp_ext_dir}" && cd "${tmp_ext_dir}"
 
   print_debug "- Extract file ${module_file_short} to temporary directory."
 
-  if [[ "${ZWE_CLI_PARAMETER_MODULE_FILE}" = *.pax ]]; then
-    pax -ppx -rf "${ZWE_CLI_PARAMETER_MODULE_FILE}"
-  elif [[ "${ZWE_CLI_PARAMETER_MODULE_FILE}" = *.zip ]]; then
+  if [[ "${ZWE_CLI_PARAMETER_COMPONENT_FILE}" = *.pax ]]; then
+    pax -ppx -rf "${ZWE_CLI_PARAMETER_COMPONENT_FILE}"
+  elif [[ "${ZWE_CLI_PARAMETER_COMPONENT_FILE}" = *.zip ]]; then
     require_java
-    jar xf "${ZWE_CLI_PARAMETER_MODULE_FILE}"
-  elif [[ "${ZWE_CLI_PARAMETER_MODULE_FILE}" = *.tar ]]; then
-    _CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "${ZWE_CLI_PARAMETER_MODULE_FILE}"
+    jar xf "${ZWE_CLI_PARAMETER_COMPONENT_FILE}"
+  elif [[ "${ZWE_CLI_PARAMETER_COMPONENT_FILE}" = *.tar ]]; then
+    _CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "${ZWE_CLI_PARAMETER_COMPONENT_FILE}"
   fi
 
   print_trace "  * List extracted files:"

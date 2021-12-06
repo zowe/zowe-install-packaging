@@ -79,7 +79,7 @@ for mb in $(find . -type f); do
   fi
 done
 
-# FIXME: this is handled by Zowe launcher commands.install
+# prepare MVS for launcher
 cd "${ZWE_zowe_runtimeDirectory}/components/launcher"
 print_message "Copy components/launcher/samplib/ZWESLSTC to ${hlq}.${ZWE_DS_SZWESAMP}"
 copy_to_data_set "samplib/ZWESLSTC" "${hlq}.${ZWE_DS_SZWESAMP}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
@@ -92,8 +92,8 @@ if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
 fi
 
-# FIXME: move these parts to zss commands.install
-# FIXME: ZWESIPRG
+# FIXME: move these parts to zss commands.install?
+# FIXME: ZWESIPRG is in zowe-install-packaging
 cd "${ZWE_zowe_runtimeDirectory}/components/zss"
 zss_samplib="ZWESAUX=ZWESASTC ZWESIP00 ZWESIS01=ZWESISTC ZWESISCH"
 for mb in ${zss_samplib}; do
