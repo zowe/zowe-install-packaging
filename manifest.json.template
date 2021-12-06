@@ -56,10 +56,10 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.0-SNAPSHOT"
     },
     "org.zowe.explorer.files": {
-      "version": "~1.0.0-STAGING"
+      "version": "~1.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-jes": {
       "version": "~1.0.0-SNAPSHOT"
@@ -71,7 +71,7 @@
       "version": "~1.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-ui-server": {
-      "version": "~0.2.0-STAGING"
+      "version": "~0.2.0-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
@@ -95,6 +95,11 @@
     "org.zowe.apiml.sdk.caching-service-package": {
       "version": "~1.26.0-SNAPSHOT",
       "artifact": "caching-service-*.zip",
+      "excludePatterns": ["*PR*.zip"]
+    },
+    "org.zowe.apiml.sdk.metrics-service-package": {
+      "version": "~1.26.0-SNAPSHOT",
+      "artifact": "metrics-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
@@ -266,56 +271,56 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Web Plug-in Server",
       "entries": [{
         "repository": "explorer-ui-server",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -451,34 +456,35 @@
       "tag" : "1-ubuntu"
     },
     "explorer-ip": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/explorer-ip",
-        "tag" : "1-ubuntu"
+      "kind": "job",
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-ip",
+      "tag" : "1-ubuntu"
     },
     "explorer-jes": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/explorer-jes",
-        "tag" : "1-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-jes",
+      "tag" : "1-ubuntu"
     },
     "explorer-mvs": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/explorer-mvs",
-        "tag" : "1-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-mvs",
+      "tag" : "1-ubuntu"
     },
     "explorer-uss": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/explorer-uss",
-        "tag" : "1-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/explorer-uss",
+      "tag" : "1-ubuntu"
     },
     "files-api": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/files-api",
-        "tag" : "1-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/files-api",
+      "tag" : "1-ubuntu"
     },
     "jobs-api": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/jobs-api",
-        "tag" : "1-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/jobs-api",
+      "tag" : "1-ubuntu"
     }
   },
   "dependencyDecisions": {
