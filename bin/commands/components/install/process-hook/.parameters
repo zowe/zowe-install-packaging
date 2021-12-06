@@ -1,1 +1,2 @@
+target-dir,target|d|string|required||||Target directory where the component will be installed.
 component-name|n|string|required||||Component name.
