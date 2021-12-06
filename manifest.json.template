@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.26.0-STAGING",
+      "version": "~1.26.0-91-zlux-build",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zss-auth": {
@@ -21,15 +21,15 @@
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "~1.26.0-STAGING",
-      "artifact": "sample-angular-app-1.26.0-20211122.195808.pax"
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
       "version": "~1.26.0-STAGING",
-      "artifact": "sample-iframe-app-1.26.0-20211122.194856.pax"
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
       "version": "~1.26.0-STAGING",
-      "artifact": "sample-react-app-1.26.0-20211122.194918.pax"
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
       "version": "~1.26.0-STAGING",
