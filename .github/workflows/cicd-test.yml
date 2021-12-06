@@ -59,10 +59,10 @@ env:
   # constants
   INSTALL_TEST_PATH: tests/installation
   SANITY_TEST_PATH: tests/sanity
-  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: PLACE-HOLDER/org/zowe/*{branch-name}*.pax
-  DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: PLACE-HOLDER/org/zowe/*zowe-smpe*{branch-name}*.zip
-  DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN: PLACE-HOLDER/org/zowe/*server-bundle.amd64*{branch-name}*.tar
-  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE-HOLDER/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
+  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*{branch-name}*.pax
+  DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
+  DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar
+  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # can be overwritten, adjusted by DevOps only
@@ -301,17 +301,14 @@ jobs:
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
             else
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
-            fi
-            
-            # determine if we shall libs-snapshot-local or libs-release-local
-            if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
-              ZOWE_ARTIFACTORY_PATTERN_INTERIM=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#PLACE-HOLDER#libs-release-local#g")
-            else
-              ZOWE_ARTIFACTORY_PATTERN_INTERIM=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#PLACE-HOLDER#libs-snapshot-local#g")
-            fi
+            fi            
           fi
 
-          ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
+          if [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
+            ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$snapshot#g")
+          else
+            ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
+          fi
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
           # next line is just to get the pax file name - extract the part after last occurance of slash
           ZOWE_ARTIFACTORY_FINAL_FILENAME=${ZOWE_ARTIFACTORY_FINAL##*/}
@@ -351,12 +348,6 @@ jobs:
           ZOWE_CLI_ARTIFACTORY_PATTERN=
           if [[ -z "${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}" ]]; then
             ZOWE_CLI_ARTIFACTORY_PATTERN="${{ env.DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN }}"
-            # determine if we shall libs-snapshot-local or libs-release-local
-            if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
-              ZOWE_CLI_ARTIFACTORY_PATTERN=$(echo "$ZOWE_CLI_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-release-local#g")
-            else
-              ZOWE_CLI_ARTIFACTORY_PATTERN=$(echo "$ZOWE_CLI_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-snapshot-local#g")
-            fi
           else
             ZOWE_CLI_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}"
           fi
@@ -412,12 +403,10 @@ jobs:
           if [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
             ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=
             if [[ -z "${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}" ]]; then
-              ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
-              # determine if we shall libs-snapshot-local or libs-release-local
-              if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
-                ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "$ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-release-local#g")
+              if [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
+                ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#snapshot#g")
               else
-                ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "$ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN" | sed "s#PLACE-HOLDER#libs-snapshot-local#g")
+                ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
               fi
             else
               ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN="${{ github.event.inputs.custom-zowe-tp-docker-artifactory-pattern }}"
