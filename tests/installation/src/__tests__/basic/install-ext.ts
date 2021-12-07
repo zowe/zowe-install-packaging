@@ -13,8 +13,12 @@ import {
   showZoweRuntimeLogs,
   installAndVerifyExtension,
   installAndVerifyConvenienceBuild,
+  installAndVerifySmpePtf,
 } from '../../utils';
-import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../constants';
+import {TEST_TIMEOUT_SMPE_PTF} from '../../constants';
+
+import Debug from 'debug';
+const debug = Debug('zowe-install-test:install-ext');
 
 let beforeAllResult = false;
 const testSuiteName = 'Test sample extensions installation and verify';
@@ -28,27 +32,44 @@ describe(testSuiteName, () => {
     ]);
     //await installConvBuild
     //remove verification of conv build - for optimal runtime purposes
-    await installAndVerifyConvenienceBuild(
-      testSuiteName,
-      process.env.TEST_SERVER,
-      {
-        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_lock_keystore': 'false',
-        //skip_start - for optimal runtime purposes
-      }
-    );
+    if(process.env['ZOWE_BUILD_LOCAL'].includes(".pax")){
+      await installAndVerifyConvenienceBuild(
+        testSuiteName,
+        process.env.TEST_SERVER,
+        {
+          'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+          'zowe_lock_keystore': 'false',
+          //skip_start - for optimal runtime purposes
+        }
+      );
+    } else if(process.env['ZOWE_BUILD_LOCAL'].includes(".zip")){
+      await installAndVerifySmpePtf(
+        testSuiteName,
+        process.env.TEST_SERVER,
+        {
+          'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+          'zowe_lock_keystore': 'false',
+        },
+        true
+      );
+    }
     beforeAllResult = true;
-  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+  }, TEST_TIMEOUT_SMPE_PTF);
+
+  debug(`EXTENSIONS_LIST=${process.env.EXTENSIONS_LIST}`);
 
   process.env.EXTENSIONS_LIST.split(',').forEach((extension) => {
+    debug(`identified extension to test (original string): ${extension}`);
     if (!extension){
       return;
     }
     const extensionArray = extension.split(':');
+    debug(`identified extension to test (extracted): ${extensionArray}`);
     if (extensionArray.length !== 2){
       return;
     }
 
+    debug(`define test for ${extensionArray[0]} with ${extensionArray[1]}`);
     test(`install and verify ${extensionArray[0]}`, async () => {
       expect(beforeAllResult).toBe(true);
       await installAndVerifyExtension(
@@ -59,7 +80,7 @@ describe(testSuiteName, () => {
           'component_id': extensionArray[0],
         }
       );
-    }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+    }, TEST_TIMEOUT_SMPE_PTF);
   });
 
   afterAll(async () => {
