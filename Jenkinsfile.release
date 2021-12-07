@@ -395,6 +395,9 @@ node('zowe-jenkins-agent-dind-wdc') {
   pipeline.createStage(
     name          : "Generate Source Build",
     isSkippable   : true,
+    shouldExecute : {
+      return isFormalRelease
+    },
     stage         : {
       // files should be downloaded to .release/source_zip
       withCredentials([
