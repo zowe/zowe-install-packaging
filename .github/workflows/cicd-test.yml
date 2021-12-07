@@ -379,6 +379,7 @@ jobs:
               echo "Example input will be:"
               echo "sample-ext;sample-ext2;sample-myext"
               echo "sample-ext(myown/path);sample-myext"
+              exit 1
             fi
 
             for each_ext in $(echo "${{ github.event.inputs.custom-extension-list }}" | sed "s/;/ /g")
