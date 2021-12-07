@@ -44,7 +44,7 @@ describe(testSuiteName, () => {
     if (!extension){
       return;
     }
-    const extensionArray = extension.split('/[()]/');
+    const extensionArray = extension.split(/[()]/);
     if (extensionArray.length !== 3){
       return;
     }
