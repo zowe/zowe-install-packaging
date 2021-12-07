@@ -198,6 +198,7 @@ mv ./content/templates  .
 chmod +x templates/*.rex
 
 echo "[$SCRIPT_NAME] extract components"
+mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
 for component in launcher zlux-core zss apiml-common-lib common-java-lib gateway caching-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
@@ -205,7 +206,8 @@ for component in launcher zlux-core zss apiml-common-lib common-java-lib gateway
   "${ZOWE_ROOT_DIR}/bin/zwe" \
     components install extract \
     --component-file "${component_file}" \
-    --target-dir "${ZOWE_ROOT_DIR}/components"
+    --target-dir "${ZOWE_ROOT_DIR}/components" \
+    --log-dir "${BASE_DIR}/logs"
   rm "${component_file}"
 done
 
@@ -213,13 +215,15 @@ echo "[$SCRIPT_NAME] process commands.install hooks"
 # not all core components has commands.install
 for component in app-server; do
   echo "[$SCRIPT_NAME] - ${component}"
-  # FIXME: these environment variables
+  # FIXME: these environment variables are changed in v2
   ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \
   ZWED_INSTALL_DIR=${ZOWE_ROOT_DIR} \
+  LOG_FILE="${BASE_DIR}/logs/zwe-components-install-process-hook.log" \
   "${ZOWE_ROOT_DIR}/bin/zwe" \
     components install process-hook \
     --component-name "${component}" \
-    --target-dir "${ZOWE_ROOT_DIR}/components"
+    --target-dir "${ZOWE_ROOT_DIR}/components" \
+    --log-dir "${BASE_DIR}/logs"
 done
 
 # >>>>>
@@ -256,6 +260,7 @@ cd "${BASE_DIR}"
 rm -fr ${ZOWE_ROOT_DIR}/files/zlux/config
 if [ -n "$(ls -1 "${ZOWE_ROOT_DIR}/files/zlux")" ]; then
   echo "[$SCRIPT_NAME] Error: zlux directory is not empty after processed."
+  ls -la "${ZOWE_ROOT_DIR}/files/zlux"
   exit 1
 fi
 rm -fr ${ZOWE_ROOT_DIR}/files/zlux
