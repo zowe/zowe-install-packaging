@@ -499,23 +499,23 @@ jobs:
           lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
           lock-avg-retry-interval: 60
 
-      # - name: '[Test] Test starts from here'
-      #   timeout-minutes: 360
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo ${{ matrix.test }} | sed "s/.ts/.js/g")
-      #   env:
-      #     ANSIBLE_FORCE_COLOR: true
-      #     TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
-      #     ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
-      #     ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_FINAL }}
-      #     EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
-      #     SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
-      #     DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
-      #     SSH_HOST: ${{ secrets.SSH_HOST }}
-      #     SSH_PORT: ${{ secrets.SSH_PORT }}
-      #     SSH_USER: ${{ secrets.SSH_USER }}
-      #     SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-      #     ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
+      - name: '[Test] Test starts from here'
+        timeout-minutes: 360
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo ${{ matrix.test }} | sed "s/.ts/.js/g")
+        env:
+          ANSIBLE_FORCE_COLOR: true
+          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
+          ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_FINAL }}
+          EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
+          SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
+          DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
       # - name: '[After Test] Merge Report'
