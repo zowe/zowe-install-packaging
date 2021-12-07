@@ -394,7 +394,11 @@ jobs:
                 ext_name="$each_ext"
                 ext_pattern=$(echo "${{ env.DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN }}" | sed "s#{ext-name}#$ext_name#g")
               fi
-              ext_full_path=$(jfrog_search $ext_pattern)
+              if [[ "$ext_pattern" != *"http"* ]]; then
+                ext_full_path=$(jfrog_search $ext_pattern)
+              else
+                ext_full_path=$ext_pattern
+              fi
               EXTENSION_LIST="$EXTENSION_LIST$ext_name($ext_full_path);"
             done
 
