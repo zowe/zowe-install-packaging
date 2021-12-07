@@ -96,4 +96,4 @@ fi
 
 ###############################
 # exit message
-print_level2_message "Zowe MVS data sets are installed successfully."
+print_level2_message "Zowe custom data sets are initialized successfully."

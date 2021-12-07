@@ -11,7 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_level1_message "Run Zowe security configurations"
+print_level1_message "Create VSAM storage for Zowe Caching Service"
 
 ###############################
 # constants
@@ -153,4 +153,4 @@ fi
 
 ###############################
 # exit message
-print_level2_message "Zowe security configurations are applied successfully."
+print_level2_message "Zowe Caching Service VSAM storage is created successfully."
