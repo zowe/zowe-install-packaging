@@ -40,8 +40,8 @@ on:
           - Install PTF Twice
           - Generate API Documentation
           - Zowe Release Tests
-      custom-zowe-artifactory-pattern:
-        description: 'Custom Zowe Artifactory Pattern:'
+      custom-zowe-artifactory-pattern-or-build-number:
+        description: 'Custom Zowe Artifactory Pattern or Build Number:'
         required: false
       custom-zowe-cli-artifactory-pattern:
         description: 'Custom Zowe CLI Artifactory Pattern:'
@@ -251,52 +251,58 @@ jobs:
             echo $out
           }
 
-          total_check=3
-          if [[ "${{ matrix.test }}" == *"install-ext"* ]] || [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
-            ((total_check++))
-          fi
+          total_check=4
 
           ##################################################################################################
-          ### Process custom-zowe-artifactory-pattern
+          ### 1. Process custom-zowe-artifactory-pattern
           ##################################################################################################
           ZOWE_ARTIFACTORY_PATTERN_INTERIM=
-          input_custom_zowe_art="${{ github.event.inputs.custom-zowe-artifactory-pattern }}"
+          input_custom_zowe_art_pat_or_bldnum="${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}"
 
-          if [[ -n "$input_custom_zowe_art" ]]; then
+          if [[ -n "$input_custom_zowe_art_pat_or_bldnum" ]]; then
             # if custom zowe artifactory input is provided
-            # validate custom zowe artifactory path input
-            if [[ "$input_custom_zowe_art" =~ ^([^;]+)(;[^;]+)?$ ]]; then
-              echo "custom zowe artifactory path input validation success!"
+
+            if [[ "$input_custom_zowe_art_pat_or_bldnum" ~= ^[0-9]+$ ]]; then
+              echo "[Check 1 INFO] build number is entered"
+              bld_num=$input_custom_zowe_art_pat_or_bldnum
+
+
+
+            elif [[ "$input_custom_zowe_art_pat_or_bldnum" ~= ^.+\/.+$ ]]; then
+              echo "[Check 1 INFO] artifactory pattern is entered"
+              pattern=$input_custom_zowe_art_pat_or_bldnum
+
+              #first extract the filename of the artifactory path to avoid string check confusion in later steps
+              #filename is after the last forward slash
+              file_name=${pattern##*/}
+
+              if [[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]; then
+                if [[ "$file_name" == *"zowe-smpe"*zip ]] ; then
+                  # if it is valid *zowe-smpe*.zip format, and test run is smpe related, we will hornour this custom input
+                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="$pattern"
+                  echo "[Check 1 INFO] Custom smpe artifactory path will be used"
+                else
+                  echo "[Check 1 ERROR] You are running smpe related test but the file name included in your custom zowe artifactory pattern is not a proper *zowe-smpe*.zip format"
+                  exit 1
+                fi
+              else
+                if [[ "$file_name" == *"zowe"* ]] && [[ "$file_name" == *pax ]]; then
+                  # if it is valid *zowe*.pax format, and test run is not smpe related, we will hornour this custom input
+                  ZOWE_ARTIFACTORY_PATTERN_INTERIM="$pattern"
+                  echo "[Check 1 INFO] Custom pax artifactory path will be used"
+                else
+                  echo "[Check 1 ERROR] You are running pax related test but the file name included in your custom zowe artifactory pattern is not a proper *zowe*.pax format"
+                  exit 1
+                fi
+              fi
             else
-              echo "custom zowe artifactory path input validation failed"
-              echo "You must follow the format: {path1};{path2}"
-              echo "Example input will be:"
-              echo "path1/zowe.pax;path2/zowe-smpe.zip"
-              echo "You can at most supply two customized paths, one for pax one for smpe and separated by semi-colon."
+              echo "[Check 1 ERROR] You should enter either a build number on current running branch or a proper zowe artifactory pattern"
+              echo "Examples:"
+              echo "\'491\' meaning build number 491 on ${{ env.CURRENT_BRANCH }}"
+              echo "or \'my/path/to/file\'"
               exit 1
             fi
-
-            for each_zowe_art_pattern in $(echo "$input_custom_zowe_art" | sed "s/;/ /g")
-            do
-              #first extract the filename of the artifactory path to avoid string check confusion
-              each_filename=${each_zowe_art_pattern##*/}
-              if [[ "$each_filename" == *"zowe-smpe"* ]] && [[ "$each_filename" == *zip ]] \
-                && ([[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]); then
-                # if it is valid smpe.zip format, test run is smpe related, we will hornour this custom input
-                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                echo "custom smpe artifactory path will be used"
-                break
-              elif [[ "$each_filename" == *"zowe"* ]] && [[ "$each_filename" == *pax ]] \
-                && [[ "${{ matrix.test }}" != *install-fmid.ts ]] && [[ "${{ matrix.test }}" != *install-ptf.ts ]]; then
-                # if it is valid pax format, test run is not smpe related, we will hornour this custom input
-                ZOWE_ARTIFACTORY_PATTERN_INTERIM="$each_zowe_art_pattern"
-                echo "custom pax artifactory path will be used"
-                break
-              fi
-            done
-          fi
-
-          if [[ -z "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" ]]; then
+          else
             if [[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]; then
               ZOWE_ARTIFACTORY_PATTERN_INTERIM="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
             else
@@ -309,7 +315,9 @@ jobs:
           else
             ZOWE_ARTIFACTORY_PATTERN_FINAL=$(echo "$ZOWE_ARTIFACTORY_PATTERN_INTERIM" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           fi
+
           ZOWE_ARTIFACTORY_FINAL=$(jfrog_search $ZOWE_ARTIFACTORY_PATTERN_FINAL)
+
           # next line is just to get the pax file name - extract the part after last occurance of slash
           ZOWE_ARTIFACTORY_FINAL_FILENAME=${ZOWE_ARTIFACTORY_FINAL##*/}
           echo "[Check 1/$total_check] Zowe pax or smpe.zip artifactory full path processing complete!"
