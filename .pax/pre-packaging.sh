@@ -257,12 +257,8 @@ done
 # cp -f ${ZOWE_ROOT_DIR}/files/zlux/config/plugins/* zlux-app-server/defaults/plugins
 
 cd "${BASE_DIR}"
-rm -fr ${ZOWE_ROOT_DIR}/files/zlux/config
-if [ -n "$(ls -1 "${ZOWE_ROOT_DIR}/files/zlux")" ]; then
-  echo "[$SCRIPT_NAME] Error: zlux directory is not empty after processed."
-  ls -la "${ZOWE_ROOT_DIR}/files/zlux"
-  exit 1
-fi
+echo "[$SCRIPT_NAME] after installed, files directory:"
+find "${ZOWE_ROOT_DIR}/files" -type f
 rm -fr ${ZOWE_ROOT_DIR}/files/zlux
 
 #1. create SMP/E workflow & JCL
