@@ -31,6 +31,7 @@ export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,ap
 
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/common.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/component.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/config.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/fs.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/http.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/java.sh"
@@ -43,6 +44,7 @@ export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,ap
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/var.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zos.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zos-dataset.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/zos-fs.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zos-jes.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zosmf.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zwecli.sh"

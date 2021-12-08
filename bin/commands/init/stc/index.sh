@@ -92,7 +92,10 @@ done
 print_message "Modify ZWESLSTC"
 tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
 print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)'" | sed "s#^INSTANCE_DIR=.*\$#INSTANCE_DIR=${ZWE_CLI_PARAMETER_CONFIG}#" > "${tmpfile}")
+result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)'" | \
+        sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
+        sed "s#^CONFIG=.*\$#CONFIG=${ZWE_CLI_PARAMETER_CONFIG}#" \
+        > "${tmpfile}")
 code=$?
 if [ ${code} -eq 0 ]; then
   print_debug "  * Succeeded"

@@ -88,6 +88,8 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_CORE_COMPONENTS` is a constant holds names of core components.
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
+- `ZWE_CONTAINER_COMPONENT_ID` indicates the component ID of current container. This variable is only applicable to Zowe running in container.
+- `ZWE_LOG_LEVEL_ZWELS` is the log level defined in zowe.yaml `zowe.launchScript.logLevel`. Default value is `INFO`. This configuration is case insensitive.
 
 ### Global shell environment variables
 

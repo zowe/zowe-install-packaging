@@ -21,6 +21,9 @@ export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 
 require_zowe_yaml() {
+  # node is required to read yaml file
+  require_node
+
   if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     print_error_and_exit "Error ZWEL0108E: Zowe YAML config file is required." "" 108
   elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
@@ -232,7 +235,7 @@ print_formatted_message() {
   level=$(echo "${level}" | upper_case)
 
   # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
-  expected_log_level_val=$(parse_string_vars "ZWE_LOG_LEVEL_${service}" | upper_case)
+  expected_log_level_val=$(get_var_value "ZWE_LOG_LEVEL_${service}" | upper_case)
   if [ -z "${expected_log_level_val}" ]; then
     expected_log_level_val=INFO
   fi

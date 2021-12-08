@@ -29,6 +29,7 @@ get_sysname() {
   if [ -z "${sysname}" ]; then
     # this could be a wild guess for container, check the last entry of /etc/hosts
     # works for containers not running in Kubernetes, and Linux without hostname command, like ubi-minimal
+    print_trace "WARNING: using /etc/hosts to guess SYSNAME may not be reliable."
     sysname=$(cat /etc/hosts | tail -1 | awk '{print $2}')
   fi
   echo "${sysname}" | lower_case

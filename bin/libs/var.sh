@@ -53,3 +53,22 @@ get_environments() {
     sed -e 's#^export ##' | \
     sed -e 's#^declare -x ##'
 }
+
+###############################
+# Shell sourcing an environment env file
+#
+# All variables defined in env file will be exported.
+#
+# @param string   env file name
+source_env() {
+  env_file=$1
+
+  . "${env_file}"
+
+  while read -r line ; do
+    # skip line if first char is #
+    test -z "${line%%#*}" && continue
+    key=${line%%=*}
+    export $key
+  done < "${env_file}"
+}

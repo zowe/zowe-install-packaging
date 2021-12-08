@@ -16,3 +16,4 @@ ZWEL0133E|133|Data set %s already exists.
 ZWEL0134E|134|Failed to find SMS status of data set %s.
 ZWEL0135E|135|Failed to find volume of data set %s.
 ZWEL0136E|136|Failed to APF authorize data set %s.
+ZWEL0140E|140|Failed to translate Zowe configuration (%s).
