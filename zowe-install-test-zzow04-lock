@@ -1,1 +1,14 @@
-""
+{
+  "lockAcquiredTime": "Wed Dec 08 2021 19:08:17 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1638990497014737880",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "rc",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "FlappiTomic",
+  "runId": 1555554286,
+  "runNumber": 170
+}
