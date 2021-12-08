@@ -91,7 +91,7 @@ cd "${ZWE_PWD}" && cd "${target_dir}"
 component_name=$(read_component_manifest "${tmp_ext_dir}" ".name" 2>/dev/null)
 if [ -z "${component_name}" -o "${component_name}" = "null" ]; then
   rm -fr "${tmp_ext_dir}"
-  print_error "Error: Cannot find component name from package manifest."
+  print_error_and_exit "Error ZWEL0167E: Cannot find component name from ${ZWE_CLI_PARAMETER_COMPONENT_FILE} package manifest." "" 167
 fi
 print_debug "- Component name found as ${component_name}"
 # export for next step

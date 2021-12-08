@@ -8,52 +8,70 @@
 # Copyright Contributors to the Zowe Project.
 ################################################################################
 
-zowe.runtimeDirectory: /global/zowe
-components.explorer-jes.enable: true
-
 zowe:
+  # these configurations are used by "zwe install" or "zwe init" commands.
   setup:
-    logDirecotory: ${USER}/logs
-
-    runtimeUsers:
-        ZWESVUSR: ZWESVUSR
-
-    # z/OS configurations
-    mvs:  # used by zwe install - copy data sets
+    # MVS data set related configurations
+    mvs:
+      # where Zowe MVS data sets will be installed
       hlq: IBMUSER.ZWE
-      loadlib: SZWEAUTH
-      parmlib: SZWESAMP
-      pluginlib: SZWEPLUG
+      # PROCLIB where Zowe STCs will be copied over
+      proclib: USER.PROCLIB
+      # Zowe PARMLIB
+      parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
+      # JCL library where Zowe will store temporary JCLs during initialization
+      jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
+      # APF authorized LOADLIB for Zowe
+      # Optional. If it's empty, <hlq>.SZWEAUTH will be APF authorized.
+      authLoadlib: 
+      # APF authorized LOADLIB for Zowe ZIS Plugins
+      authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
 
-        # /D PARMLIB
-      custJcllib: MYSAMPLIB  ZWESECUR
-      proclib: USER.PROCLIB  # <auto>
+    # Security related configurations
+    security:
+      # security product name. Can be RACF, ACF2 or TSS
+      product: RACF
+      # security group name
+      groups:
+        # Zowe admin user group
+        admin: ZWEADMIN
+        # Zowe STC group
+        stc: ZWEADMIN
+        # Zowe SysProg group
+        sysProg: ZWEADMIN
+      # security user name
+      users:
+        # Zowe runtime user name of main service
+        zowe: ZWESVUSR
+        # Zowe runtime user name of Cross Memory Server
+        xmem: ZWESIUSR
+        # Zowe runtime user name of Auxilary Service
+        aux: ZWESIUSR
+      # STC names
+      stcs:
+        # STC name of Zowe main service
+        zowe: ZWESLSTC
+        # STC name of Zowe Cross Memory Server
+        xmem: ZWESISTC
+        # STC name of Zowe Auxilary Service
+        aux: ZWESASTC
 
-    sso: true
-      
-    mfa: true
+    # VSAM configurations if you are using VSAM as Caching Service storage
+    vsam:
+      # VSAM data set with Record-Level-Sharing enabled or not
+      # Valid values could be: NONRLS or RLS.
+      mode: NONRLS
+      # Volume name if you are using VSAM in NONRLS mode
+      volume: VOL123
+      # Storage class name if you are using VSAM in RLS mode
+      storageClass:
 
-    certificates:
-      StrictVerifyCertificates: true|false
-        # SAN/Common Name
-      nonStrictVerifySslCertificates: true
-      format: Keyring|PKCS12
-      imported:
-        certificate:
-        certificateAuthorities:
-          -
-          -
-      generated:
-        commonName:
-        country:
-        state:
-
-
+  # Zowe root directory
   runtimeDirectory: /global/zowe/runtime
   # runtime logs
-  logDirecotory: /global/zowe/logs
-  # instance workspace directory
-  workspaceDirectory: /global/zowe/workspace
+  logDirectory: /global/zowe/instance/logs
+  # runtime workspace directory
+  workspaceDirectory: /global/zowe/instance/workspace
   # where extensions are installed
   extensionDirectory: /global/zowe/extensions
 
@@ -80,7 +98,7 @@ zowe:
 
   # enable debug mode for zowe launch scripts
   launchScript:
-    # set to debug mode to display more information
+    # set to "debug" or "trace" to display more information
     logLevel: ""
 
   # default certificate for gateway external connector

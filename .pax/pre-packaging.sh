@@ -207,6 +207,7 @@ for component in launcher zlux-core zss apiml-common-lib common-java-lib gateway
     components install extract \
     --component-file "${component_file}" \
     --target-dir "${ZOWE_ROOT_DIR}/components" \
+    --trace \
     --log-dir "${BASE_DIR}/logs"
   rm "${component_file}"
 done
@@ -223,6 +224,7 @@ for component in app-server; do
     components install process-hook \
     --component-name "${component}" \
     --target-dir "${ZOWE_ROOT_DIR}/components" \
+    --trace \
     --log-dir "${BASE_DIR}/logs"
 done
 
