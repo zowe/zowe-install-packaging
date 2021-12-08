@@ -146,6 +146,9 @@ function _createWorkflow
 SCRIPT_NAME=$(basename "$0")  # $0=./pre-packaging.sh
 BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 
+# use node v12 to build
+export NODE_HOME=/ZOWE/node/node-v12.18.4-os390-s390x
+
 cd "${BASE_DIR}"
 ZOWE_ROOT_DIR="${BASE_DIR}/content/$(ls -1 content | grep zowe-)"
 ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
