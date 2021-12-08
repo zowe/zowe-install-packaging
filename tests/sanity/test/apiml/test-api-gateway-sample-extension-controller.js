@@ -39,7 +39,7 @@ describe('test api gateway sample extension controller', function() {
 
     it('should return the greeting message from the gateway sample extension controller', function() {
       debug('Verify access to greeting endpoint via /api/v1/greeting');
-      getAndVerifyGreeting('/api/v1/greeting');
+      return getAndVerifyGreeting('/api/v1/greeting');
     });
   }
 
