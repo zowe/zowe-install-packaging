@@ -125,7 +125,7 @@ then
 else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
-    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
+    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,metrics-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
