@@ -115,16 +115,14 @@ validate_this() {
   retval=$?
   if [ "${retval}" = "0" ]; then
     if [ -n "${result}" ]; then
-      print_formatted_debug "ZWELS" "${origin}" "- ${result}."
+      print_formatted_debug "ZWELS" "${origin}" "$(padding_left "${result}" "- ")"
     else
       print_formatted_trace "ZWELS" "${origin}" "- Passed."
     fi
   else
+    print_formatted_trace "ZWELS" "${origin}" "- Failed with exit code ${retval}"
     if [ -n "${result}" ]; then
-      print_formatted_trace "ZWELS" "${origin}" "- Failed with exit code ${retval}: ${result}."
-      print_formatted_error "ZWELS" "${origin}" "- ${result}."
-    else
-      print_formatted_trace "ZWELS" "${origin}" "- Failed with exit code ${retval}."
+      print_formatted_error "ZWELS" "${origin}" "$(padding_left "${result}" "- ")"
     fi
   fi
 

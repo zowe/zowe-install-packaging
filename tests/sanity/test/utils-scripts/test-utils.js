@@ -39,7 +39,7 @@ describe('verify utils', function() {
   });
 
   it('test we can access function from network-utils', async function() {
-    let command = `validate_port_is_available ${process.env.ZOSMF_PORT}`;
+    let command = `is_port_available ${process.env.ZOSMF_PORT}`;
     const expected_err = `Port ${process.env.ZOSMF_PORT} is already in use by process (IZUSVR1`;
     await test_utils_function_has_expected_rc_stdout_stderr(command, 1, '', expected_err);
   });

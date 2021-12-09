@@ -62,3 +62,49 @@ create_tmp_file() {
     fi
   done
 }
+
+is_file_accessible() {
+  file=$1
+
+  if [ ! -f "${file}" ]; then
+    print_error "File '${file}' doesn't exist, or is not accessible to $(get_user_id). If the file exists, check all the parent directories have traversal permission (execute)"
+    return 1
+  fi
+}
+
+is_directory_accessible() {
+  directory=$1
+
+  if [ ! -d "${directory}" ]; then
+    print_error "Directory '${directory}' doesn't exist, or is not accessible to $(get_user_id). If the directory exists, check all the parent directories have traversal permission (execute)"
+    return 1
+  fi
+}
+
+are_directories_accessible() {
+  invalid=0
+
+  for dir in $(echo "${1}" | sed "s/,/ /g"); do
+    is_file_accessible "${dir}"
+    valid_rc=$?
+    if [ ${valid_rc} -ne 0 ]; then
+      let "invalid=${invalid}+1"
+    fi
+  done
+
+  return ${invalid}
+}
+
+is_directory_writable() {
+  directory=$1
+
+  is_directory_accessible "${directory}"
+  accessible_rc=$?
+  if [ ${accessible_rc} -ne 0 ]; then
+    return ${accessible_rc}
+  fi
+  if [ ! -w "${directory}" ]; then
+    print_error "Directory '${directory}' does not have write access"
+    return 1
+  fi
+}

@@ -43,7 +43,7 @@ get_netstat() {
 }
 
 # $1 - should not be bound to a port currently
-validate_port_is_available() {
+is_port_available() {
   port=$1
 
   netstat=$(get_netstat)

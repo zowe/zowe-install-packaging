@@ -133,7 +133,11 @@ validate_components() {
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- commands.validate is ${validate_script:-<undefined>}"
       if [ -n "${validate_script}" -a "${validate_script}" != "null" -a -x "${validate_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- process ${component_id} validate command ..."
-        validate_this "load_environment_variables \"${component_id}\" && . \"${validate_script}\" 2>&1" "zwe-internal-start-prepare,validate_components:${LINENO}"
+        ZWE_PRIVATE_OLD_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}
+        ZWE_PRIVATE_ERRORS_FOUND=0
+        (load_environment_variables "${component_id}" && . "${validate_script}" 2>&1 && return ${ZWE_PRIVATE_ERRORS_FOUND})
+        retval=$?
+        let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+${retval}"
       fi
 
       # check platform dependencies
