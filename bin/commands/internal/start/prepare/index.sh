@@ -329,11 +329,6 @@ require_zowe_yaml
 export ZWE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)
 # overwrite ZWE_LOG_LEVEL_CLI with ZWE_LOG_LEVEL_ZWELS
 ZWE_LOG_LEVEL_CLI="${ZWE_LOG_LEVEL_ZWELS}"
-export ZWE_zowe_logDirectory=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.logDirectory")
-if [ -z "${ZWE_zowe_logDirectory}" -o "${ZWE_zowe_logDirectory}" = "null" ]; then
-  print_formatted_error "ZWELS" "zwe-internal-start-prepare:${LINENO}" "ZWEL0157E: Zowe log directory (zowe.logDirectory) is not defined in Zowe YAML configuration file."
-  exit 157
-fi
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 if [ -z "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
