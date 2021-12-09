@@ -66,7 +66,6 @@ All Zowe initialized variables are prefixed with `ZWE_`.
 
 These Zowe environment variables are created globally. Any Zowe components, extensions can use these variables.
 
-- `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` server command is located.
 - `ZWE_CLI_COMMANDS_LIST`, list of command chain separated by comma.
 - `ZWE_CLI_PARAMETERS_LIST`, command parameter names separated by comma.
 - `ZWE_CLI_PARAMETER_<parameter-name>`, value of parameter `<parameter-name>`.
@@ -74,22 +73,28 @@ These Zowe environment variables are created globally. Any Zowe components, exte
   * `ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current command chain.
   * `ZWE_CLI_INTERNAL_LIBRARY_LOADED` indicates is `bin/libs` are already sourced or not.
   * `ZWE_CLI_INTERNAL_IS_TOP_LEVEL_COMMAND` indicates if currently is running as top-level command, or triggered by top-level command.
-- `ZWE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
+- `ZWE_CORE_COMPONENTS` is a constant holds names of core components.
+- `ZWE_CONTAINER_COMPONENT_ID` indicates the component ID of current container. This variable is only applicable to Zowe running in container.
 - `ZWE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
+- `ZWE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` `zwe` command parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
+- `ZWE_LOG_LEVEL_ZWELS` is the log level defined in zowe.yaml `zowe.launchScript.logLevel` to control Zowe runtime logging. Default value is `INFO`. This configuration is case insensitive.
+- `ZWE_DEFAULT_*` are default values for some configurations.
+  * `ZWE_DEFAULT_ADMIN_GROUP` is the default Zowe admin group. Default value is `ZWEADMIN`.
+  * `ZWE_DEFAULT_ZOWE_USER` is the default Zowe user. Default value is `ZWESVUSR`.
+  * `ZWE_DEFAULT_XMEM_USER` is the default Zowe Cross Memory Server user. Default value is `ZWESIUSR`.
+  * `ZWE_DEFAULT_ZOWE_STC` is the default name of Zowe started task. Default value is `ZWESLSTC`.
+  * `ZWE_DEFAULT_XMEM_STC` is the default name of Zowe Cross Memory Server started task. Default value is `ZWESISTC`.
+  * `ZWE_DEFAULT_AUX_STC` is the default name of Zowe Auxiliary Server started task. Default value is `ZWESASTC`.
 - `ZWE_DS_SZWEAUTH` is the data set name for Zowe load modules. Default value is `SZWEAUTH`.
 - `ZWE_DS_SZWESAMP` is the data set name for Zowe sample configurations . Default value is `SZWESAMP`.
 - `ZWE_DS_SZWEEXEC` is the data set name for Zowe executable utilities library. Default value is `SZWEEXEC`.
-- `ZWE_DEFAULT_ADMIN_GROUP` is the default Zowe admin group. Default value is `ZWEADMIN`.
-- `ZWE_DEFAULT_ZOWE_USER` is the default Zowe user. Default value is `ZWESVUSR`.
-- `ZWE_DEFAULT_XMEM_USER` is the default Zowe Cross Memory Server user. Default value is `ZWESIUSR`.
-- `ZWE_DEFAULT_ZOWE_STC` is the default name of Zowe started task. Default value is `ZWESLSTC`.
-- `ZWE_DEFAULT_XMEM_STC` is the default name of Zowe Cross Memory Server started task. Default value is `ZWESISTC`.
-- `ZWE_DEFAULT_AUX_STC` is the default name of Zowe Auxiliary Server started task. Default value is `ZWESASTC`.
-- `ZWE_CORE_COMPONENTS` is a constant holds names of core components.
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
-- `ZWE_CONTAINER_COMPONENT_ID` indicates the component ID of current container. This variable is only applicable to Zowe running in container.
-- `ZWE_LOG_LEVEL_ZWELS` is the log level defined in zowe.yaml `zowe.launchScript.logLevel`. Default value is `INFO`. This configuration is case insensitive.
+- `ZWE_WORKSPACE_ENV_DIR` is where Zowe stores calculated environment files.
+- `ZWE_STATIC_DEFINITIONS_DIR` is where Zowe stores API-ML static registration files.
+- `ZWE_INSTALLED_COMPONENTS` is a list of all installed components.
+- `ZWE_ENABLED_COMPONENTS` is a list of components will be started in current HA instance.
+- `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` server command is located.
 
 ### Global shell environment variables
 

@@ -19,104 +19,6 @@
 # FUNCTIONS
 
 ########################################################
-# Prepare <instance>/.env directory
-#
-# usually creating instance.env from yaml config has 2 steps:
-# 1. components .manifest.json are not ready yet, we can only generate <.env>/.instance-<ha-id>.env
-# 2. components .manifest.json are ready, we should also generate <.env>/<component>/.instance-<ha-id>.env
-prepare_workspace_directory() {
-  mkdir -p "${ZWE_zowe_workspaceDirectory}/.env"
-
-  # Copy Zowe manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
-  cp ${ZWE_zowe_runtimeDirectory}/manifest.json ${ZWE_zowe_workspaceDirectory}
-
-  # should we do chmod -R?
-  # we lock this folder for zowe runtime user
-  chmod -R 700 "${ZWE_zowe_workspaceDirectory}/.env"
-
-  # FIXME:
-  # this is step 1
-  print_formatted_debug "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "initialize .instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env(s)"
-  generate_instance_env_from_yaml_config "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
-
-  # now we can load all variables, we need LAUNCH_COMPONENTS for next step
-  . ${ZWE_zowe_runtimeDirectory}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ZWE_zowe_runtimeDirectory}" -i "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
-  # copy over component manifest
-  convert_all_component_manifests_to_json
-
-  # this is step 2
-  # at this point, <instance>/.env/<component>/.manifest.json should be in place
-  # re-generate components instance.env
-  print_formatted_debug "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "refresh component copy of .instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env(s)"
-  generate_instance_env_from_yaml_config "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
-
-  # STATIC_DEF_CONFIG_DIR maybe not have a value if discovery is not started in this instance
-  if [ -n "${STATIC_DEF_CONFIG_DIR}" ]; then
-    # create static definition directory
-    mkdir -p ${STATIC_DEF_CONFIG_DIR}
-  fi
-}
-
-########################################################
-# Global validations
-global_validate() {
-  print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "process global validations ..."
-
-  if [ "${USER}" = "IZUSVR" ]; then
-    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
-  fi
-
-  # reset error counter
-  export ERRORS_FOUND=0
-
-  # Make sure INSTANCE_DIR is accessible and writable to the user id running this
-  validate_directory_is_writable "${INSTANCE_DIR}"
-
-  # Validate keystore directory accessible
-  validate_directory_is_accessible "${KEYSTORE_DIRECTORY}"
-
-  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-    # ZOWE_PREFIX shouldn't be too long
-    validate_zowe_prefix 2>&1 | print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" -
-  fi
-
-  if [ ! -f "${INSTANCE_DIR}/.init-for-container" ]; then
-    # only do these check when it's not running in container
-
-    # currently node is always required
-    # otherwise we should check if these services are starting:
-    # - explorer-mvs, explorer-jes, explorer-uss
-    # - app-server, zss
-    validate_node_home 2>&1 | print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" -
-
-    # validate java for some core components
-    if [[ ${LAUNCH_COMPONENTS} == *"gateway"* || ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"api-catalog"* || ${LAUNCH_COMPONENTS} == *"caching-service"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
-      validate_java_home 2>&1 | print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" -
-    fi
-  else
-    if [ -z "${ZWE_CONTAINER_COMPONENT_ID}" -o "${ZWE_CONTAINER_COMPONENT_ID}" = "null" ]; then
-      print_formatted_error "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Cannot find name from the component image manifest file"
-      let "ERRORS_FOUND=${ERRORS_FOUND}+1"
-    fi
-  fi
-
-  # validate z/OSMF for some core components
-  if [ -n "${ZOSMF_HOST}" -a -n "${ZOSMF_PORT}" ]; then
-    if [[ ${LAUNCH_COMPONENTS} == *"discovery"* || ${LAUNCH_COMPONENTS} == *"files-api"* || ${LAUNCH_COMPONENTS} == *"jobs-api"* ]]; then
-      validate_zosmf_host_and_port "${ZOSMF_HOST}" "${ZOSMF_PORT}" 2>&1 | print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" -
-    fi
-  elif [ "${APIML_SECURITY_AUTH_PROVIDER}" = "zosmf" ]; then
-    print_formatted_error "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "z/OSMF is not configured, APIML_SECURITY_AUTH_PROVIDER with value of zosmf is not supported."
-    let "ERRORS_FOUND=${ERRORS_FOUND}+1"
-  fi
-
-  # Summary errors check, exit if errors found
-  runtime_check_for_validation_errors_found
-
-  print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "global validations are successful"
-}
-
-########################################################
 # Extra preparations for running in container
 # - link component runtime under zowe <runtime>/components
 # - `commands.configureInstance` is deprecated in v2
@@ -140,31 +42,131 @@ prepare_running_in_container() {
 }
 
 ########################################################
+# Prepare workspace directory
+prepare_workspace_directory() {
+  export ZWE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
+  export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
+
+  mkdir -p "${ZWE_zowe_workspaceDirectory}"
+
+  if [ ! -w "${ZWE_zowe_workspaceDirectory}" ]; then
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "ZWEL0141E: User $(get_user_id) does not have write permission on ${ZWE_zowe_workspaceDirectory}."
+    exit 141
+  fi
+
+  # create apiml static defs directory
+  mkdir -p "${ZWE_STATIC_DEFINITIONS_DIR}"
+
+  # Copy Zowe manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
+  cp ${ZWE_zowe_runtimeDirectory}/manifest.json ${ZWE_zowe_workspaceDirectory}
+
+  # prepare .env directory
+  mkdir -p "${ZWE_WORKSPACE_ENV_DIR}"
+  # should we do chmod -R?
+  # we lock this folder for zowe runtime user
+  chmod -R 700 "${ZWE_WORKSPACE_ENV_DIR}"
+
+  print_formatted_debug "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "initialize .instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env(s)"
+  generate_instance_env_from_yaml_config "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
+}
+
+########################################################
+# Global validations
+global_validate() {
+  print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "process global validations ..."
+
+  # validate_runtime_user
+  if [ "${USER}" = "IZUSVR" ]; then
+    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "ZWEL0142W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
+  fi
+
+  # reset error counter
+  errors_found=0
+
+  if [ ! -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+    # only do these check when it's not running in container
+
+    # currently node is always required
+    result=$(validate_node_home 2>&1)
+    retval=$?
+    if [ "${retval}" = "0" ]; then
+      print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Node check is successful."
+      if [ -n "${result}" ]; then
+        print_formatted_debug "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "${result}"
+      fi
+    else
+      let "errors_found=${errors_found}+1"
+      print_formatted_error "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "${result}"
+    fi
+
+    # validate java for some core components
+    if [[ ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* || ${ZWE_ENABLED_COMPONENTS} == *"metrics-service"* || ${ZWE_ENABLED_COMPONENTS} == *"files-api"* || ${ZWE_ENABLED_COMPONENTS} == *"jobs-api"* ]]; then
+      result=$(validate_java_home 2>&1)
+      retval=$?
+      if [ "${retval}" = "0" ]; then
+        print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Java check is successful."
+        if [ -n "${result}" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "${result}"
+        fi
+      else
+        let "errors_found=${errors_found}+1"
+        print_formatted_error "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "${result}"
+      fi
+    fi
+  else
+    if [ -z "${ZWE_CONTAINER_COMPONENT_ID}" -o "${ZWE_CONTAINER_COMPONENT_ID}" = "null" ]; then
+      print_formatted_error "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Cannot find name from the component image manifest file"
+      let "errors_found=${errors_found}+1"
+    fi
+  fi
+
+  # validate z/OSMF for some core components
+  if [ -n "${ZOSMF_HOST}" -a -n "${ZOSMF_PORT}" ]; then
+    if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"files-api"* || ${ZWE_ENABLED_COMPONENTS} == *"jobs-api"* ]]; then
+      result=$(validate_zosmf_host_and_port "${ZOSMF_HOST}" "${ZOSMF_PORT}" 2>&1)
+      retval=$?
+      if [ "${retval}" = "0" ]; then
+        print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Successfully checked z/OS MF is available on 'https://${ZOSMF_HOST}:${ZOSMF_PORT}/zosmf/info'"
+        if [ -n "${result}" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "${result}"
+        fi
+      else
+        let "errors_found=${errors_found}+1"
+        print_formatted_error "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "${result}"
+      fi
+    fi
+  elif [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "z/OSMF is not configured, APIML_SECURITY_AUTH_PROVIDER with value of zosmf is not supported."
+    let "errors_found=${errors_found}+1"
+  fi
+
+  # Summary errors check, exit if errors found
+  if [ ${errors_found} -gt 0 ]; then
+    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "${errors_found} errors were found during validation, please check the message, correct any properties required in ${ZWE_CLI_PARAMETER_CONFIG} and re-launch Zowe."
+    exit ${errors_found}
+  fi
+
+  print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "global validations are successful"
+}
+
+########################################################
 # Validate component properties if script exists
 validate_components() {
   print_formatted_info "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "process component validations ..."
-  ERRORS_FOUND=0
-  for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
-  do
+  errors_found=0
+  for component_id in $(echo "${ZWE_ENABLED_COMPONENTS}" | sed "s/,/ /g"); do
+    print_formatted_trace "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- checking ${component_id}"
     component_dir=$(find_component_directory "${component_id}")
+    print_formatted_trace "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- in directory ${component_dir}"
     if [ -n "${component_dir}" ]; then
       cd "${component_dir}"
 
-      # backward compatible purpose, some may expect this variable to be component lifecycle directory
-      export LAUNCH_COMPONENT="${component_dir}/bin"
-
       # check validate script
       validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
-      if [ -z "${validate_script}" -o "${validate_script}" = "null" ]; then
-        # backward compatible purpose
-        if [ $(is_core_component "${component_dir}") != "true" ]; then
-          print_formatted_warn "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- unable to determine validate script from component ${component_id} manifest, fall back to default bin/validate.sh"
-        fi
-        validate_script=bin/validate.sh
-      fi
-      if [ -x "${validate_script}" ]; then
+      print_formatted_trace "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- commands.validate is ${validate_script:-<undefined>}"
+      if [ -n "${validate_script}" -a "${validate_script}" != "null" -a -x "${validate_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- process ${component_id} validate command ..."
-        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWE_CLI_PARAMETER_HA_INSTANCE}" -o "${component_id}" && . ${validate_script})
+        result=$(load_environment_variables "${component_id}" && . "${validate_script}")
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -173,18 +175,26 @@ validate_components() {
             print_formatted_error "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "${result}"
           fi
         fi
-        let "ERRORS_FOUND=${ERRORS_FOUND}+${retval}"
+        let "errors_found=${errors_found}+${retval}"
       fi
+
+      # check platform dependencies
       if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
         zos_deps=$(read_component_manifest "${component_dir}" ".dependencies.zos" 2>/dev/null)
-        if [ -n "${zos_deps}" ]; then
+        if [ -n "${zos_deps}" -a "${zos_deps}" != "null" ]; then
           print_formatted_warn "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- ${component_id} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation"
         fi
       fi
     fi
   done
-  # exit if there are errors found
-  runtime_check_for_validation_errors_found
+  
+  # Summary errors check, exit if errors found
+  if [ ${errors_found} -gt 0 ]; then
+    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "${errors_found} errors were found during validation, please check the message, correct any properties required in ${ZWE_CLI_PARAMETER_CONFIG} and re-launch Zowe."
+    # FIXME: uncomment after we fix all validation scripts
+    # exit ${errors_found}
+  fi
+
   print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "component validations are successful"
 }
 
@@ -192,9 +202,10 @@ validate_components() {
 # Run setup/configure on components if script exists
 configure_components() {
   print_formatted_info "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "process component configurations ..."
-  for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
-  do
+  for component_id in $(echo "${ZWE_ENABLED_COMPONENTS}" | sed "s/,/ /g"); do
+    print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- checking ${component_id}"
     component_dir=$(find_component_directory "${component_id}")
+    print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- in directory ${component_dir}"
     if [ -n "${component_dir}" ]; then
       cd "${component_dir}"
 
@@ -202,20 +213,18 @@ configure_components() {
       component_name=$(basename "${component_dir}")
       mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
 
-      # backward compatible purpose, some may expect this variable to be component lifecycle directory
-      export LAUNCH_COMPONENT="${component_dir}/bin"
-
       print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- configure ${component_id}"
 
       # check configure script
       preconfigure_script=$(read_component_manifest "${component_dir}" ".commands.preConfigure" 2>/dev/null)
+      print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- commands.preConfigure is ${preconfigure_script:-<undefined>}"
       if [ "${preconfigure_script}" = "null" ]; then
         preconfigure_script=
       fi
       if [ -x "${preconfigure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
         # execute configure step and snapshot environment
-        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWE_CLI_PARAMETER_HA_INSTANCE}" -o "${component_id}" && . ${preconfigure_script} ; rc=$? ; return $rc)
+        result=$(load_environment_variables "${component_id}" && . "${preconfigure_script}")
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -229,16 +238,6 @@ configure_components() {
       # default build-in behaviors
       # - apiml static definitions
       result=$(process_component_apiml_static_definitions "${component_dir}" 2>&1)
-      retval=$?
-      if [ -n "${result}" ]; then
-        if [ "${retval}" = "0" ]; then
-          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
-        else
-          print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
-        fi
-      fi
-      # - desktop iframe plugin
-      result=$(process_component_desktop_iframe_plugin "${component_dir}" 2>&1)
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
@@ -271,17 +270,14 @@ configure_components() {
 
       # check configure script
       configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
-      if [ -z "${configure_script}" -o "${configure_script}" = "null" ]; then
-        # backward compatible purpose
-        if [ $(is_core_component "${component_dir}") != "true" ]; then
-          print_formatted_warn "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* unable to determine configure script from component ${component_id} manifest, fall back to default bin/configure.sh"
-        fi
-        configure_script=bin/configure.sh
+      print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- commands.configure is ${configure_script:-<undefined>}"
+      if [ "${configure_script}" = "null" ]; then
+        configure_script=
       fi
       if [ -x "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
-        result=$(. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWE_CLI_PARAMETER_HA_INSTANCE}" -o "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
+        result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -293,6 +289,7 @@ configure_components() {
       fi
     fi
   done
+
   print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "component configurations are successful"
 }
 
@@ -329,11 +326,14 @@ print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "starting Zo
 # validation
 require_zowe_yaml
 
+export ZWE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)
+# overwrite ZWE_LOG_LEVEL_CLI with ZWE_LOG_LEVEL_ZWELS
+ZWE_LOG_LEVEL_CLI="${ZWE_LOG_LEVEL_ZWELS}"
 export ZWE_zowe_logDirectory=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.logDirectory")
 if [ -z "${ZWE_zowe_logDirectory}" -o "${ZWE_zowe_logDirectory}" = "null" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe log directory (zowe.logDirectory) is not defined in Zowe YAML configuration file." "" 157
+  print_formatted_error "ZWELS" "zwe-internal-start-prepare:${LINENO}" "ZWEL0157E: Zowe log directory (zowe.logDirectory) is not defined in Zowe YAML configuration file."
+  exit 157
 fi
-export ZWE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel")
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 if [ -z "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
@@ -350,6 +350,12 @@ fi
 
 # init workspace directory and load environment variables
 prepare_workspace_directory
+
+# now we can load all variables
+load_environment_variables
+print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" ">>> all environmen variables"
+print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "$(env)"
+print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "<<<"
 
 ###############################
 # main lifecycle

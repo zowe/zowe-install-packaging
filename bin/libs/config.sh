@@ -13,25 +13,6 @@
 ################################################################################
 # @internal 
 
-########################################################
-# convert components YAML manifest to JSON format
-convert_all_component_manifests_to_json() {
-  print_formatted_info "ZWELS" "bin/libs/config.sh,convert_all_component_manifests_to_json:${LINENO}" "prepare component manifests for ${LAUNCH_COMPONENTS} ..."
-  for component_id in $(echo "${LAUNCH_COMPONENTS}" | sed "s/,/ /g")
-  do
-    component_dir=$(find_component_directory "${component_id}")
-    if [ -n "${component_dir}" ]; then
-      print_formatted_debug "ZWELS" "bin/libs/config.sh,convert_all_component_manifests_to_json:${LINENO}" "- ${component_id}"
-      component_manifest_conversion_output=$(convert_component_manifest "${component_dir}" 2>&1)
-      if [ "$?" != "0" ]; then
-        print_formatted_warn "ZWELS" "bin/libs/config.sh,convert_all_component_manifests_to_json:${LINENO}" "manifest file of ${component_id} is invalid"
-        print_formatted_error "ZWELS" "bin/libs/config.sh,convert_all_component_manifests_to_json:${LINENO}" "Prepare ${component_id} manifest failed: ${component_manifest_conversion_output}"
-      fi
-    fi
-  done
-  print_formatted_debug "ZWELS" "bin/libs/config.sh,convert_all_component_manifests_to_json:${LINENO}" "component manifests prepared"
-}
-
 ###############################
 # Convert instance.env to zowe.yaml file
 convert_instance_env_to_yaml() {
@@ -116,11 +97,9 @@ generate_instance_env_from_yaml_config() {
 
   # prepare .zowe.json and .zowe-<ha-id>.json
   print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "config-converter yaml convert --ha ${ha_instance} ${ZWE_CLI_PARAMETER_CONFIG}"
-  result=$(node "${ZWE_zowe_runtimeDirectory}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${ZWE_zowe_workspaceDirectory}/.env" --ha "${ha_instance}" "${ZWE_CLI_PARAMETER_CONFIG}")
+  result=$(node "${ZWE_zowe_runtimeDirectory}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${ZWE_zowe_workspaceDirectory}/.env" --ha "${ha_instance}" "${ZWE_CLI_PARAMETER_CONFIG}" --verbose)
   code=$?
-  if [ ${code} -ne 0 ]; then
-    print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "- Exit code: ${code}: ${result}"
-  fi
+  print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "- Exit code: ${code}: ${result}"
   if [ ! -f "${ZWE_zowe_workspaceDirectory}/.env/.zowe.json" ]; then
     print_formatted_error "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "ZWEL0140E: Failed to translate Zowe configuration (${ZWE_CLI_PARAMETER_CONFIG})."
     exit 140
@@ -128,9 +107,26 @@ generate_instance_env_from_yaml_config() {
 
   # convert YAML configurations to backward compatible .instance-<ha-id>.env files
   print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "config-converter yaml env --ha ${ha_instance}"
-  result=$(node "${ZWE_zowe_runtimeDirectory}/bin/utils/config-converter/src/cli.js" yaml env --wd "${ZWE_zowe_workspaceDirectory}/.env" --ha "${ha_instance}")
+  result=$(node "${ZWE_zowe_runtimeDirectory}/bin/utils/config-converter/src/cli.js" yaml env --wd "${ZWE_zowe_workspaceDirectory}/.env" --ha "${ha_instance}" --verbose)
   code=$?
-  if [ ${code} -ne 0 ]; then
-    print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "- Exit code: ${code}: ${result}"
+  print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "- Exit code: ${code}: ${result}"
+  if [ ! -f "${ZWE_zowe_workspaceDirectory}/.env/.instance-${ha_instance}.env" ]; then
+    print_formatted_error "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "ZWEL0140E: Failed to translate Zowe configuration (${ZWE_CLI_PARAMETER_CONFIG})."
+    exit 140
   fi
+}
+
+load_environment_variables() {
+  component_id=$1
+
+  # now we can load all variables
+  if [ -n "${component_id}" -a -f "${ZWE_zowe_workspaceDirectory}/.env/${component_id}/.instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ]; then
+    source_env "${ZWE_zowe_workspaceDirectory}/.env/${component_id}/.instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env"
+  else
+    source_env "${ZWE_zowe_workspaceDirectory}/.env/.instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env"
+  fi
+
+  # generate other variables
+  export ZWE_INSTALLED_COMPONENTS="$(find_all_installed_components)"
+  export ZWE_ENABLED_COMPONENTS="$(find_all_enabled_components)"
 }

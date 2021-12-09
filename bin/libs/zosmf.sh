@@ -17,25 +17,26 @@ validate_zosmf_host_and_port() {
   zosmf_host=$1
   zosmf_port=$2
 
-  if [[ -z "${zosmf_host}" ]]
-  then 
-    print_error_message "The z/OSMF host was not set"
+  if [ -z "${zosmf_host}" ]; then 
+    print_error "z/OSMF host is not set."
     return 1
   fi
 
-  if [[ -z "${zosmf_port}" ]]
-  then 
-    print_error_message "The z/OSMF port was not set"
+  if [ -z "${zosmf_port}" ]; then 
+    print_error "z/OSMF port is not set."
     return 1
   fi
 
   # SH: Note - if node is not available then will continue with a warning
-  if [ -z "${NODE_HOME}" ];
-  then
-    log_message "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
+  if [ -z "${NODE_HOME}" ]; then
+    print_error "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
   else
-    http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/curl.js https://${zosmf_host}:${zosmf_port}/zosmf/info -k -H "X-CSRF-ZOSMF-HEADER: true" --response-type status)
-    check_zosmf_info_response_code "${zosmf_host}" "${zosmf_port}" "${http_response_code}"
-    return $?
+    http_response_code=$("${NODE_HOME}/bin/node" "${ZWE_zowe_runtimeDirectory}/bin/utils/curl.js" "https://${zosmf_host}:${zosmf_port}/zosmf/info" -k -H "X-CSRF-ZOSMF-HEADER: true" --response-type status)
+    if [ -z "${http_response_code}" ]; then
+      print_error "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
+    elif [ ${http_response_code} != 200 ]; then
+      print_error "Could not contact z/OS MF on 'https://${zosmf_host}:${zosmf_port}/zosmf/info' - ${http_response_code}"
+      return 1
+    fi
   fi
 }
