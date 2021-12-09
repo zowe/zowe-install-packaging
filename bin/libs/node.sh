@@ -97,4 +97,6 @@ validate_node_home() {
     print_error "${NODE_HOME}/bin/node is not functioning correctly (exit code ${node_ok_rc}): ${node_ok}"
     return 1
   fi
+
+  print_message "Node check is successful."
 }

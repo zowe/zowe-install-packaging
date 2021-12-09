@@ -21,7 +21,7 @@ require_zowe_yaml
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 echo "security_stcs_zowe=${security_stcs_zowe}"
 if [ -z "${security_stcs_zowe}" -o "${security_stcs_zowe}" = "null" ]; then
-  security_stcs_zowe=${ZWE_DEFAULT_ZOWE_STC}
+  security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
 # read job name and apply default value
 jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.jobname")

@@ -89,8 +89,8 @@ fi
 # ZWESLSTC
 print_message "Modify ZWECSVSM"
 tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWECSVSM)'" | \
+print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
+result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
         sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | \
         sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | \
         sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | \
@@ -113,7 +113,7 @@ else
   fi
 fi
 if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWECSVSM)" "" 159
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
 fi
 print_trace "- ${tmpfile} created with content"
 print_trace "$(cat ${tmpfile})"

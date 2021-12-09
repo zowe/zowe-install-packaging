@@ -86,4 +86,6 @@ validate_java_home() {
     return 1
   fi
   print_debug "Java ${java_version_short} is supported."
+
+  print_message "Java check is successful."
 }

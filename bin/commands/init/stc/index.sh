@@ -45,19 +45,19 @@ fi
 authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
 if [ -z "${authLoadlib}" -o "${authLoadlib}" = "null" ]; then
   # authLoadlib can be empty
-  authLoadlib="${hlq}.${ZWE_DS_SZWEAUTH}"
+  authLoadlib="${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
 fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" -o "${security_stcs_zowe}" = "null" ]; then
-  security_stcs_zowe=${ZWE_DEFAULT_ZOWE_STC}
+  security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
 security_stcs_xmem=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.xmem")
 if [ -z "${security_stcs_xmem}" -o "${security_stcs_xmem}" = "null" ]; then
-  security_stcs_xmem=${ZWE_DEFAULT_XMEM_STC}
+  security_stcs_xmem=${ZWE_PRIVATE_DEFAULT_XMEM_STC}
 fi
 security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
 if [ -z "${security_stcs_aux}" -o "${security_stcs_aux}" = "null" ]; then
-  security_stcs_aux=${ZWE_DEFAULT_AUX_STC}
+  security_stcs_aux=${ZWE_PRIVATE_DEFAULT_AUX_STC}
 fi
 target_proclibs="${security_stcs_zowe} ${security_stcs_xmem} ${security_stcs_aux}"
 
@@ -91,8 +91,8 @@ done
 # ZWESLSTC
 print_message "Modify ZWESLSTC"
 tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)'" | \
+print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
+result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
         sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
         sed "s#^CONFIG=.*\$#CONFIG=${ZWE_CLI_PARAMETER_CONFIG}#" \
         > "${tmpfile}")
@@ -113,7 +113,7 @@ else
   fi
 fi
 if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWESLSTC)" "" 159
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" 159
 fi
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})"
 copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zowe})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
@@ -128,8 +128,8 @@ print_debug "- ${jcllib}(${security_stcs_zowe}) is prepared"
 # ZWESISTC
 print_message "Modify ZWESISTC"
 tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESISTC)'" | \
+print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
+result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
         sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
         sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
         > "${tmpfile}")
@@ -151,7 +151,7 @@ else
   exit 1
 fi
 if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWESISTC)" "" 159
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)" "" 159
 fi
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_xmem})"
 copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_xmem})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
@@ -166,8 +166,8 @@ print_debug "- ${jcllib}(${security_stcs_xmem}) is prepared"
 # ZWESASTC
 print_message "Modify ZWESASTC"
 tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESASTC)'" | \
+print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
+result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
         sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" \
         > "${tmpfile}")
 code=$?
@@ -188,7 +188,7 @@ else
   exit 1
 fi
 if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWESASTC)" "" 159
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)" "" 159
 fi
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})"
 copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_aux})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"

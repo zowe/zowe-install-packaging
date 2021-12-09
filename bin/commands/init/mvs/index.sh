@@ -74,8 +74,8 @@ print_message
 # copy sample lib members
 parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
 for ds in ZWESIP00; do
-  print_message "Copy ${hlq}.${ZWE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
-  data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  print_message "Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
+  data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
@@ -86,8 +86,8 @@ done
 authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
 if [ -n "${authLoadlib}" -a "${authLoadlib}" != "null" ]; then
   for ds in ZWESIS01 ZWESAUX ZWELNCH; do
-    print_message "Copy ${hlq}.${ZWE_DS_SZWEAUTH}(${ds}) to ${authLoadlib}(${ds})"
-    data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+    print_message "Copy ${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds}) to ${authLoadlib}(${ds})"
+    data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi

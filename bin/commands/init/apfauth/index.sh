@@ -35,7 +35,7 @@ for key in ${auth_libs}; do
   if [ -z "${ds}" -o "${ds}" = "null" ]; then
     # authLoadlib can be empty
     if [ "${key}" = "authLoadlib" ]; then
-      ds="${hlq}.${ZWE_DS_SZWEAUTH}"
+      ds="${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
     else
       print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.mvs.${key}) is not defined in Zowe YAML configuration file." "" 157
     fi

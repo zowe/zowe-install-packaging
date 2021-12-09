@@ -26,7 +26,7 @@ fi
 
 #######################################################################
 # import all shared libraries
-if [ -z "${ZWE_CLI_INTERNAL_LIBRARY_LOADED}" ]; then
+if [ -z "${ZWE_PRIVATE_CLI_LIBRARY_LOADED}" ]; then
   . ${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh
 fi
 
@@ -43,7 +43,7 @@ for idx in 1 2 3 4 5 6 7 8 9 10; do
   fi
 done
 ZWE_CLI_COMMANDS_LIST=$(trim "${ZWE_CLI_COMMANDS_LIST}")
-# load ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS=
+# load ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=
 zwecli_load_parameters_definition
 # load ZWE_CLI_PARAMETERS_LIST and ZWE_CLI_PARAMETER_*
 ZWE_CLI_PARAMETERS_LIST=
@@ -74,13 +74,13 @@ done
 # debug results
 # print_message "ZWE_CLI_COMMANDS_LIST=${ZWE_CLI_COMMANDS_LIST}"
 # print_message "ZWE_CLI_PARAMETERS_LIST=${ZWE_CLI_PARAMETERS_LIST}"
-# print_message "ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS=${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}"
+# print_message "ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}"
 # exit 1
 
 #######################################################################
 # process
 # If we source a sub-command, these steps will be ignored
-if [ "${ZWE_CLI_INTERNAL_IS_TOP_LEVEL_COMMAND}" = "true" ]; then
+if [ "${ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND}" = "true" ]; then
   # TODO: separate verbose level by termnimal output and log file
   zwecli_process_loglevel
   # if it's in help mode, the script will exit with code 100

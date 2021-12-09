@@ -36,39 +36,39 @@ if [ -z "${security_product}" -o "${security_product}" = "null" ]; then
 fi
 security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
 if [ -z "${security_groups_admin}" -o "${security_groups_admin}" = "null" ]; then
-  security_groups_admin=${ZWE_DEFAULT_ADMIN_GROUP}
+  security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
 security_groups_stc=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
 if [ -z "${security_groups_stc}" -o "${security_groups_stc}" = "null" ]; then
-  security_groups_stc=${ZWE_DEFAULT_ADMIN_GROUP}
+  security_groups_stc=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
 security_groups_sysProg=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.sysProg")
 if [ -z "${security_groups_sysProg}" -o "${security_groups_sysProg}" = "null" ]; then
-  security_groups_sysProg=${ZWE_DEFAULT_ADMIN_GROUP}
+  security_groups_sysProg=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
 security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
 if [ -z "${security_users_zowe}" -o "${security_users_zowe}" = "null" ]; then
-  security_users_zowe=${ZWE_DEFAULT_ZOWE_USER}
+  security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
 fi
 security_users_xmem=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.xmem")
 if [ -z "${security_users_xmem}" -o "${security_users_xmem}" = "null" ]; then
-  security_users_xmem=${ZWE_DEFAULT_XMEM_USER}
+  security_users_xmem=${ZWE_PRIVATE_DEFAULT_XMEM_USER}
 fi
 security_users_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.aux")
 if [ -z "${security_users_aux}" -o "${security_users_aux}" = "null" ]; then
-  security_users_aux=${ZWE_DEFAULT_XMEM_USER}
+  security_users_aux=${ZWE_PRIVATE_DEFAULT_XMEM_USER}
 fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" -o "${security_stcs_zowe}" = "null" ]; then
-  security_stcs_zowe=${ZWE_DEFAULT_ZOWE_STC}
+  security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
 security_stcs_xmem=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.xmem")
 if [ -z "${security_stcs_xmem}" -o "${security_stcs_xmem}" = "null" ]; then
-  security_stcs_xmem=${ZWE_DEFAULT_XMEM_STC}
+  security_stcs_xmem=${ZWE_PRIVATE_DEFAULT_XMEM_STC}
 fi
 security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
 if [ -z "${security_stcs_aux}" -o "${security_stcs_aux}" = "null" ]; then
-  security_stcs_aux=${ZWE_DEFAULT_AUX_STC}
+  security_stcs_aux=${ZWE_PRIVATE_DEFAULT_AUX_STC}
 fi
 
 ###############################
@@ -77,9 +77,9 @@ fi
 print_message "Modify ZWESECUR"
 tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
 tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
-print_debug "- Copy ${hlq}.${ZWE_DS_SZWESAMP}(ZWESECUR) to ${tmpfile}"
+print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR) to ${tmpfile}"
 # cat "//'IBMUSER.ZWEV2.SZWESAMP(ZWESECUR)'" | sed "s/^\\/\\/ \\+SET \\+PRODUCT=.*\\$/\\/\\         SET  PRODUCT=ACF2         * RACF, ACF2, or TSS/"
-result=$(cat "//'${hlq}.${ZWE_DS_SZWESAMP}(ZWESECUR)'" | \
+result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
         sed "s/^\/\/ \+SET \+ADMINGRP=.*\$/\/\/         SET  ADMINGRP=${security_groups_admin}/" | \
         sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${security_groups_stc}/" | \
@@ -109,7 +109,7 @@ else
   fi
 fi
 if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_DS_SZWESAMP}(ZWESECUR)" "" 159
+  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)" "" 159
 fi
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
 copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"

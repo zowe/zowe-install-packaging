@@ -27,7 +27,7 @@ describe('verify utils', function() {
 
   it('test we can access function from zowe-variable-utils', async function() {
     const variable_name = 'test_unset_variable';
-    const command = `validate_variable_is_set "${variable_name}" "\${${variable_name}}"`;
+    const command = `is_variable_set "${variable_name}" "\${${variable_name}}"`;
     await test_utils_function_has_expected_rc_stdout_stderr(command, 1, '', `${variable_name} is empty`);
   });
 

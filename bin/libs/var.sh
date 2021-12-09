@@ -11,6 +11,9 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+# internal errors counter for validations
+export ZWE_PRIVATE_ERRORS_FOUND=0
+
 ###############################
 # Check if a shell function is defined
 #
@@ -71,4 +74,71 @@ source_env() {
     key=${line%%=*}
     export $key
   done < "${env_file}"
+}
+
+# Takes in a single parameter - the name of the variable
+is_variable_set() {
+  variable_name="${1}"
+  message="${2}"
+  if [ -z "${message}" ]; then
+    message="${variable_name} is not defined or empty."
+  fi
+
+  value=$(get_var_value "${variable_name}")
+  if [ -z "${value}" ]; then
+    print_error "${message}"
+    return 1
+  fi
+}
+
+# Takes in a list of space separated names of the variables
+are_variables_set() {
+  invalid=0
+
+  for var in $(echo $1 | sed "s/,/ /g"); do
+    is_variable_set "${var}"
+    valid_rc=$?
+    if [ ${valid_rc} -ne 0 ]; then
+      let "invalid=${invalid}+1"
+    fi
+  done
+
+  return ${invalid}
+}
+
+validate_this() {
+  cmd="${1}"
+  origin="${2}"
+
+  print_formatted_trace "ZWELS" "${origin}" "Validate: ${cmd}"
+  result=$(eval "${cmd}")
+  retval=$?
+  if [ "${retval}" = "0" ]; then
+    if [ -n "${result}" ]; then
+      print_formatted_debug "ZWELS" "${origin}" "- ${result}."
+    else
+      print_formatted_trace "ZWELS" "${origin}" "- Passed."
+    fi
+  else
+    if [ -n "${result}" ]; then
+      print_formatted_trace "ZWELS" "${origin}" "- Failed with exit code ${retval}: ${result}."
+      print_formatted_error "ZWELS" "${origin}" "- ${result}."
+    else
+      print_formatted_trace "ZWELS" "${origin}" "- Failed with exit code ${retval}."
+    fi
+  fi
+
+  let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}+${retval}"
+
+  return ${retval}
+}
+
+check_runtime_validation_result() {
+  origin="${1}"
+
+  # Summary errors check, exit if errors found
+  if [ ${ZWE_PRIVATE_ERRORS_FOUND} -gt 0 ]; then
+    print_formatted_warn "ZWELS" "${origin}" "${ZWE_PRIVATE_ERRORS_FOUND} errors were found during validation, please check the message, correct any properties required in ${ZWE_CLI_PARAMETER_CONFIG} and re-launch Zowe."
+    exit ${ZWE_PRIVATE_ERRORS_FOUND}
+  fi
 }

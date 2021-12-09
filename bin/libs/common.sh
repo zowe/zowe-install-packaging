@@ -46,11 +46,11 @@ print_raw_message() {
     fi
   fi
   if [[ "${write_to}" = *log* ]]; then
-    if [ -n "${ZWE_LOG_FILE}" ]; then
-      if [ -w "${ZWE_LOG_FILE}" ]; then
-        echo "${message}" >> $ZWE_LOG_FILE
+    if [ -n "${ZWE_PRIVATE_LOG_FILE}" ]; then
+      if [ -w "${ZWE_PRIVATE_LOG_FILE}" ]; then
+        echo "${message}" >> $ZWE_PRIVATE_LOG_FILE
       else
-        >&2 echo "WARNING: cannot write to ${ZWE_LOG_FILE}"
+        >&2 echo "WARNING: cannot write to ${ZWE_PRIVATE_LOG_FILE}"
       fi
     fi
   fi
@@ -76,7 +76,7 @@ print_debug() {
   message=$1
   write_to=$2
 
-  if [ "${ZWE_LOG_LEVEL_CLI}" = "DEBUG" -o "${ZWE_LOG_LEVEL_CLI}" = "TRACE" ]; then
+  if [ "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "TRACE" ]; then
     print_raw_message "${message}" "true" "${write_to}"
   fi
 }
@@ -86,7 +86,7 @@ print_trace() {
   message=$1
   write_to=$2
 
-  if [ "${ZWE_LOG_LEVEL_CLI}" = "TRACE" ]; then
+  if [ "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "TRACE" ]; then
     print_raw_message "${message}" "true" "${write_to}"
   fi
 }
@@ -234,8 +234,8 @@ print_formatted_message() {
   # always use upper case
   level=$(echo "${level}" | upper_case)
 
-  # decide if we need to write log based on log level setting ZWE_LOG_LEVEL_<service>
-  expected_log_level_val=$(get_var_value "ZWE_LOG_LEVEL_${service}" | upper_case)
+  # decide if we need to write log based on log level setting ZWE_PRIVATE_LOG_LEVEL_<service>
+  expected_log_level_val=$(get_var_value "ZWE_PRIVATE_LOG_LEVEL_${service}" | upper_case)
   if [ -z "${expected_log_level_val}" ]; then
     expected_log_level_val=INFO
   fi

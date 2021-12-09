@@ -11,7 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-export ZWE_LOG_FILE=
+export ZWE_PRIVATE_LOG_FILE=
 
 prepare_log_file() {
   # use absolute path to make sure we can always write to correct location even
@@ -19,15 +19,15 @@ prepare_log_file() {
   log_dir=$(convert_to_absolute_path "${1}" | remove_trailing_slash)
   log_file_prefix=$2
 
-  ZWE_LOG_FILE="${log_dir}/${log_file_prefix}-$(date +%Y%m%dT%H%M%S).log"
-  if [ ! -f "${ZWE_LOG_FILE}" ]; then
+  ZWE_PRIVATE_LOG_FILE="${log_dir}/${log_file_prefix}-$(date +%Y%m%dT%H%M%S).log"
+  if [ ! -f "${ZWE_PRIVATE_LOG_FILE}" ]; then
     # create and echo message if log file doesn't exist
     mkdir -p "${log_dir}"
     if [ ! -w "${log_dir}" ]; then
       print_error_and_exit "Error ZWEL0110E: Doesn't have write permission on ${1} directory." "" 110
     fi
-    touch ${ZWE_LOG_FILE}
-    print_debug "Log file created: ${ZWE_LOG_FILE}" "console"
+    touch ${ZWE_PRIVATE_LOG_FILE}
+    print_debug "Log file created: ${ZWE_PRIVATE_LOG_FILE}" "console"
   fi
-  chmod a+rw ${ZWE_LOG_FILE}
+  chmod a+rw ${ZWE_PRIVATE_LOG_FILE}
 }

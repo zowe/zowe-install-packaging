@@ -15,9 +15,9 @@
 # Global variables
 export ZWE_CLI_COMMANDS_LIST=
 export ZWE_CLI_PARAMETERS_LIST=
-export ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS=
-export ZWE_CLI_INTERNAL_IS_TOP_LEVEL_COMMAND=true
-export ZWE_LOG_LEVEL_CLI=INFO
+export ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=
+export ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND=true
+export ZWE_PRIVATE_LOG_LEVEL_CLI=INFO
 
 zwecli_append_parameters_definition() {
   if [ $# -eq 0 ]; then
@@ -29,7 +29,7 @@ zwecli_append_parameters_definition() {
   command_path=$(zwecli_calculate_command_path "${commands}")
   if [ -d "${command_path}" ]; then
     if [ -f "${command_path}/.parameters" ]; then
-      ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS="${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
+      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
     fi
   elif [ -n "${commands}" ]; then
     print_error "Error ZWEL0104E: Invalid command \"${commands}\""
@@ -47,7 +47,7 @@ zwecli_append_exclusive_parameters_definition() {
   command_path=$(zwecli_calculate_command_path "${commands}")
   if [ -d "${command_path}" ]; then
     if [ -f "${command_path}/.exclusive-parameters" ]; then
-      ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS="${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.exclusive-parameters")"
+      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.exclusive-parameters")"
     fi
   elif [ -n "${commands}" ]; then
     print_error "Error ZWEL0104E: Invalid command \"${commands}\""
@@ -56,7 +56,7 @@ zwecli_append_exclusive_parameters_definition() {
 }
 
 zwecli_load_parameters_definition() {
-  ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS=
+  ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=
   zwecli_append_parameters_definition ""
   sub_command_list=
   for command in ${ZWE_CLI_COMMANDS_LIST}; do
@@ -93,7 +93,7 @@ zwecli_locate_parameter_definition() {
       fi
     fi
   done <<EOF
-$(echo "${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}")
+$(echo "${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}")
 EOF
 
   if [ -n "${match}" ]; then
@@ -138,16 +138,16 @@ zwecli_load_parameters_default_value() {
       fi
     fi
   done <<EOF
-$(echo "${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}")
+$(echo "${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}")
 EOF
 }
 
 zwecli_process_loglevel() {
   if [ "${ZWE_CLI_PARAMETER_DEBUG}" = "true" -o "${ZWE_CLI_PARAMETER_VERBOSE}" = "true" ]; then
-    ZWE_LOG_LEVEL_CLI=DEBUG
+    ZWE_PRIVATE_LOG_LEVEL_CLI=DEBUG
   fi
   if [ "${ZWE_CLI_PARAMETER_TRACE}" = "true" ]; then
-    ZWE_LOG_LEVEL_CLI=TRACE
+    ZWE_PRIVATE_LOG_LEVEL_CLI=TRACE
   fi
 }
 
@@ -302,7 +302,7 @@ zwecli_validate_parameters() {
       fi
     fi
   done <<EOF
-$(echo "${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}")
+$(echo "${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}")
 EOF
 
   for param in ${required_params}; do
@@ -331,9 +331,9 @@ zwecli_inline_execute_command() {
   # save current command
   saved_cli_commands_list="${ZWE_CLI_COMMANDS_LIST}"
   saved_cli_parameters_list="${ZWE_CLI_PARAMETERS_LIST}"
-  saved_cli_parameters_definitions="${ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS}"
+  saved_cli_parameters_definitions="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}"
 
-  export ZWE_CLI_INTERNAL_IS_TOP_LEVEL_COMMAND=false
+  export ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND=false
 
   # process new command
   . "${ZWE_zowe_runtimeDirectory}/bin/zwe"
@@ -341,5 +341,5 @@ zwecli_inline_execute_command() {
   # restore original command
   ZWE_CLI_COMMANDS_LIST="${saved_cli_commands_list}"
   ZWE_CLI_PARAMETERS_LIST="${saved_cli_parameters_list}"
-  ZWE_CLI_INTERNAL_PARAMETERS_DEFINITIONS="${saved_cli_parameters_definitions}"
+  ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="${saved_cli_parameters_definitions}"
 }

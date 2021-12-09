@@ -17,8 +17,8 @@ describe('verify zowe-variable-utils', function() {
     await sshHelper.prepareConnection();
   });
 
-  const validate_variable_is_set = 'validate_variable_is_set';
-  describe(`verify ${validate_variable_is_set}`, function() {
+  const is_variable_set = 'is_variable_set';
+  describe(`verify ${is_variable_set}`, function() {
 
     it('test home env_var is set', async function() {
       const input = 'HOME';
@@ -32,20 +32,20 @@ describe('verify zowe-variable-utils', function() {
 
     it('test set variable is set', async function() {
       const variable_name = 'test_set_variable';
-      const command = `export ${variable_name}="true" && ${validate_variable_is_set} "${variable_name}"`;
+      const command = `export ${variable_name}="true" && ${is_variable_set} "${variable_name}"`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, 0, '', '', true);
     });
 
     async function test_validate_variable_set(variable_name, expected_valid) {
-      const command = `${validate_variable_is_set} "${variable_name}"`;
+      const command = `${is_variable_set} "${variable_name}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_err = expected_valid ? '' : `${variable_name} is empty`;
       await test_zowe_variable_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);
     }
   });
 
-  const validate_variables_are_set = 'validate_variables_are_set';
-  describe(`verify ${validate_variables_are_set}`, function() {
+  const are_variables_set = 'are_variables_set';
+  describe(`verify ${are_variables_set}`, function() {
 
     it('test single set variable works', async function() {
       const input = ['HOME'];
@@ -63,7 +63,7 @@ describe('verify zowe-variable-utils', function() {
     });
 
     async function test_validate_variables_set(variables_list, invalid_variables) {
-      const command = `${validate_variables_are_set} "${variables_list.join()}"`;
+      const command = `${are_variables_set} "${variables_list.join()}"`;
       const expected_rc = invalid_variables.length;
       const error_list = invalid_variables.map((variable, index) => {
         return `Error ${index}: ${variable} is empty`;

@@ -16,18 +16,16 @@ if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
   exit 101
 fi
 
-export ZWE_DS_SZWEAUTH=SZWEAUTH
-export ZWE_DS_SZWEPLUG=SZWEPLUG
-export ZWE_DS_SZWESAMP=SZWESAMP
-export ZWE_DS_SZWEEXEC=SZWEEXEC
-export ZWE_DEFAULT_ADMIN_GROUP=ZWEADMIN
-export ZWE_DEFAULT_ZOWE_USER=ZWESVUSR
-export ZWE_DEFAULT_XMEM_USER=ZWESIUSR
-export ZWE_DEFAULT_ZOWE_STC=ZWESLSTC
-export ZWE_DEFAULT_XMEM_STC=ZWESISTC
-export ZWE_DEFAULT_AUX_STC=ZWESASTC
-
-export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,app-server,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss"
+export ZWE_PRIVATE_DS_SZWEAUTH=SZWEAUTH
+export ZWE_PRIVATE_DS_SZWEPLUG=SZWEPLUG
+export ZWE_PRIVATE_DS_SZWESAMP=SZWESAMP
+export ZWE_PRIVATE_DS_SZWEEXEC=SZWEEXEC
+export ZWE_PRIVATE_DEFAULT_ADMIN_GROUP=ZWEADMIN
+export ZWE_PRIVATE_DEFAULT_ZOWE_USER=ZWESVUSR
+export ZWE_PRIVATE_DEFAULT_XMEM_USER=ZWESIUSR
+export ZWE_PRIVATE_DEFAULT_ZOWE_STC=ZWESLSTC
+export ZWE_PRIVATE_DEFAULT_XMEM_STC=ZWESISTC
+export ZWE_PRIVATE_DEFAULT_AUX_STC=ZWESASTC
 
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/common.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/component.sh"
@@ -49,4 +47,4 @@ export ZWE_CORE_COMPONENTS="gateway,discovery,api-catalog,caching-service,zss,ap
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zosmf.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zwecli.sh"
 
-export ZWE_CLI_INTERNAL_LIBRARY_LOADED=true
+export ZWE_PRIVATE_CLI_LIBRARY_LOADED=true

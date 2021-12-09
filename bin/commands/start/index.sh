@@ -24,7 +24,7 @@ if [ "${jobname}" = "null" ]; then
 fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" -o "${security_stcs_zowe}" = "null" ]; then
-  security_stcs_zowe=${ZWE_DEFAULT_ZOWE_STC}
+  security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
 route_sysname=
 if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
