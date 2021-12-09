@@ -20,7 +20,7 @@ const { Key } = require('selenium-webdriver');
 const {
   DEFAULT_PAGE_LOADING_TIMEOUT,
   DEFAULT_ELEMENT_CHECK_INTERVAL,
-  MVD_IFRAME_APP_CONTENT,
+  MVD_IFRAME_APP_CONTEXT,
   saveScreenshot,
   getDefaultDriver,
   getElement,
@@ -64,13 +64,12 @@ describe(`test ${APP_TO_TEST}`, function() {
       process.env.SSH_USER, 	
       process.env.SSH_PASSWD, 	
       `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/explorer-mvs`	
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/zlux/ZLUX/plugins/org.zowe.explorer-mvs/web/index.html`	
     );
 
-    // load MVD login page
     await loginMVD(
       driver,
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`,
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/zlux/ZLUX/plugins/org.zowe.zlux.bootstrap/web/`,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
     );
@@ -93,11 +92,6 @@ describe(`test ${APP_TO_TEST}`, function() {
     expect(iframe).to.be.an('object');
     debug('app iframe found');
 
-    // wait for atlas iframe
-    const atlas = await waitUntilIframe(driver, 'iframe#zluxIframe');
-    expect(atlas).to.be.an('object');
-    debug('atlas iframe is ready');
-
     // wait for page is loaded
     const treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
     expect(treeContent).to.be.an('object');
@@ -107,7 +101,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug('page is fully loaded');
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'app-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'app-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
 
     appLaunched = true;
   });
@@ -132,7 +126,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug('page reloaded');
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'ds-list-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'ds-list-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
     treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
 
     const items = await getElements(treeContent, 'div.node ul li');
@@ -206,7 +200,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug(`found ${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME}) at ${testDsMemberIndex}`);
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'ds-members-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'ds-members-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
   });
 
   it(`should be able to load content of ${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME}) data set member`, async function() {
@@ -215,7 +209,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     }
 
     // prepare app context and find the li of TEST_DATASET_NAME
-    await switchToIframeAppContext(driver, APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await switchToIframeAppContext(driver, APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
     const treeContent = await getElement(driver, MVD_EXPLORER_TREE_SECTION);
     expect(treeContent).to.be.an('object');
     const items = await getElements(treeContent, 'div.node > ul > div > li');
@@ -264,7 +258,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     debug('right panel is loaded');
 
     // save screenshot
-    await saveScreenshotWithIframeAppContext(this, driver, testName, 'ds-content-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+    await saveScreenshotWithIframeAppContext(this, driver, testName, 'ds-content-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
   });
 
 
