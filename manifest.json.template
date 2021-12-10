@@ -65,43 +65,36 @@
     "org.zowe.apiml.api-catalog-package": {
       "repository": "libs-release-local",
       "version": "2.0.2-PR-1964-1",
-      "artifact": "api-catalog-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
       "repository": "libs-release-local",
       "version": "2.0.2-PR-1964-1",
-      "artifact": "discovery-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "repository": "libs-release-local",
       "version": "2.0.2-PR-1964-1",
-      "artifact": "gateway-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
       "repository": "libs-release-local",
       "version": "2.0.2-PR-1964-1",
-      "artifact": "caching-service-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
       "repository": "libs-release-local",
       "version": "2.0.2-PR-1964-1",
-      "artifact": "metrics-service-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "artifact": "metrics-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "repository": "libs-release-local",
       "version": "2.0.2-PR-1964-1",
-      "artifact": "apiml-common-lib-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~1.21.3-SNAPSHOT",
-      "artifact": "common-java-lib-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.launcher": {
       "version": "~2.0.0-USERS-JACK-V2-POC"
