@@ -63,32 +63,32 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "2.0.2-PR-1964*",
+      "version": "2.0.2-PR-1964-1",
       "artifact": "api-catalog-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "2.0.2-PR-1964*",
+      "version": "2.0.2-PR-1964-1",
       "artifact": "discovery-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "2.0.2-PR-1964*",
+      "version": "2.0.2-PR-1964-1",
       "artifact": "gateway-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.0.2-PR-1964*",
+      "version": "2.0.2-PR-1964-1",
       "artifact": "caching-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "2.0.2-PR-1964*",
+      "version": "2.0.2-PR-1964-1",
       "artifact": "metrics-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "2.0.2-PR-1964*",
+      "version": "2.0.2-PR-1964-1",
       "artifact": "apiml-common-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
