@@ -44,10 +44,10 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "~1.0.0-STAGING"
+      "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.explorer.files": {
-      "version": "~1.0.0-STAGING"
+      "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-jes": {
       "version": "~2.0.0-V2-X-SNAPSHOT"
@@ -80,6 +80,11 @@
     "org.zowe.apiml.caching-service-package": {
       "version": "~2.0.0-SNAPSHOT",
       "artifact": "caching-service-*.zip",
+      "excludePatterns": ["*PR*.zip"]
+    },
+    "org.zowe.apiml.sdk.metrics-service-package": {
+      "version": "~2.0.0-SNAPSHOT",
+      "artifact": "metrics-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
@@ -122,7 +127,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "master",
+        "tag": "v2.x.x",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -250,49 +255,49 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "staging",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "staging",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "staging",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "staging",
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "staging",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "staging",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -351,7 +356,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",

@@ -79,6 +79,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
 - `ZWE_STATIC_DEFINITIONS_DIR` is where Zowe stores API-ML static registration files.
 - `ZWE_DISCOVERY_SERVICES_LIST` contains a full list of enabled discovery services.
+- `ZWE_GATEWAY_HOST`.
 
 **`ZWE_PRIVATE_CLI_*` are variables used by Zowe internally. It's not suggested for component to use or modify.**
 
