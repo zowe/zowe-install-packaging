@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.26.0-PR-89",
+      "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~1.26.0-PR-375",
+      "version": "~1.26.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
@@ -62,28 +62,28 @@
       "version": "~1.0.0-SNAPSHOT",
       "artifact": "*.pax"
     },
-    "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.api-catalog-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.discovery-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.discovery-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.gateway-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.gateway-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.caching-service-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "caching-service-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
-    "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "~1.26.0-SNAPSHOT",
+    "org.zowe.apiml.apiml-common-lib-package": {
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "excludePatterns": ["*PR*.zip"]
     },
