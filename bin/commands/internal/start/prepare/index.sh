@@ -46,6 +46,7 @@ prepare_running_in_container() {
 prepare_workspace_directory() {
   export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
   export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
+  export ZWE_GATEWAY_SHARED_LIBS=${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/
 
   mkdir -p "${ZWE_zowe_workspaceDirectory}"
 
@@ -56,6 +57,8 @@ prepare_workspace_directory() {
 
   # create apiml static defs directory
   mkdir -p "${ZWE_STATIC_DEFINITIONS_DIR}"
+  # create apiml gateway share library directory
+  mkdir -p "${ZWE_GATEWAY_SHARED_LIBS}"
 
   # Copy Zowe manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
   cp ${ZWE_zowe_runtimeDirectory}/manifest.json ${ZWE_zowe_workspaceDirectory}

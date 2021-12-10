@@ -198,6 +198,8 @@ components:
     enabled: true
     port: 7553
     debug: false
+    # Define this value to match your number of Discovery StatefulSet if you are running containerized Zowe
+    # replicas: 1
 
   api-catalog:
     enabled: true
@@ -248,6 +250,7 @@ components:
   files-api:
     enabled: false
     port: 8547
+
   explorer-jes:
     enabled: true
   explorer-mvs:

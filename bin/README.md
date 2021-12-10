@@ -73,13 +73,14 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_CLI_PARAMETER_<parameter-name>`, value of parameter `<parameter-name>`.
   * `ZWE_CLI_PARAMETER_CONFIG` is a commonly used variable which shows where is the YAML configuration.
   * `ZWE_CLI_PARAMETER_HA_INSTANCE` is a commonly used variable which indicates the current HA instance ID.
+- `ZWE_DISCOVERY_SERVICES_LIST` contains a full list of enabled discovery services.
 - `ZWE_ENABLED_COMPONENTS` is a list of components will be started in current HA instance.
+- `ZWE_GATEWAY_HOST` contains domain name to access gateway internally.
+- `ZWE_GATEWAY_SHARED_LIBS` contains a directory where gateway shared libraries are installed.
 - `ZWE_INSTALLED_COMPONENTS` is a list of all installed components.
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
 - `ZWE_STATIC_DEFINITIONS_DIR` is where Zowe stores API-ML static registration files.
-- `ZWE_DISCOVERY_SERVICES_LIST` contains a full list of enabled discovery services.
-- `ZWE_GATEWAY_HOST`.
 
 **`ZWE_PRIVATE_CLI_*` are variables used by Zowe internally. It's not suggested for component to use or modify.**
 
