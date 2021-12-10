@@ -71,11 +71,14 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_CLI_COMMANDS_LIST`, list of command chain separated by comma.
 - `ZWE_CLI_PARAMETERS_LIST`, command parameter names separated by comma.
 - `ZWE_CLI_PARAMETER_<parameter-name>`, value of parameter `<parameter-name>`.
+  * `ZWE_CLI_PARAMETER_CONFIG` is a commonly used variable which shows where is the YAML configuration.
+  * `ZWE_CLI_PARAMETER_HA_INSTANCE` is a commonly used variable which indicates the current HA instance ID.
 - `ZWE_ENABLED_COMPONENTS` is a list of components will be started in current HA instance.
 - `ZWE_INSTALLED_COMPONENTS` is a list of all installed components.
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
 - `ZWE_STATIC_DEFINITIONS_DIR` is where Zowe stores API-ML static registration files.
+- `ZWE_DISCOVERY_SERVICES_LIST` contains a full list of enabled discovery services.
 
 **`ZWE_PRIVATE_CLI_*` are variables used by Zowe internally. It's not suggested for component to use or modify.**
 
@@ -115,6 +118,7 @@ Each line of Zowe YAML configuration will have a matching environment variable. 
 For examples:
 
 - `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` server command is located.
+- `ZWE_zowe_workspaceDirectory` is the path of user customized workspace directory.
 - `ZWE_zowe_setup_mvs_hlq` is the high level qualifier where Zowe MVS data sets are installed.
 - `ZWE_zowe_setup_mvs_parmlib` is the data set that end-user configured to store his customized version of parameter library members.
 - `ZWE_zowe_setup_mvs_authPluginLib` is the data set that end-user configured to store his APF authorized ZIS plugins load library.

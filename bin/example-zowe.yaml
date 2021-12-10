@@ -170,8 +170,6 @@ components:
     enabled: true
     port: "7553"
     apiml:
-      service:
-        preferIpAddress: false
       security:
         ssl:
           verifySslCertificatesOfServices: false
@@ -181,13 +179,9 @@ components:
   api-catalog:
     enabled: true
     port: "7552"
-    environment:
-      preferIpAddress: false
     debug: false
   caching-service:
     enabled: true
-    environment:
-      preferIpAddress: false
     port: "7555"
     storage:
       size: "10000"
@@ -226,10 +220,10 @@ components:
         key: /global/zowe/keystore/localhost/localhost.keystore.zss.key
         certificate: /global/zowe/keystore/localhost/localhost.keystore.zss.cer-ebcdic
   jobs-api:
-    enabled: true
+    enabled: false
     port: "8545"
   files-api:
-    enabled: true
+    enabled: false
     port: "8547"
   explorer-jes:
     enabled: true

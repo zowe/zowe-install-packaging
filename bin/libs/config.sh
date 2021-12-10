@@ -69,7 +69,7 @@ zos_convert_env_dir_file_encoding() {
   cat "$file"
   echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
   if [ "${encoding}" != "UNTAGGED" -a "${encoding}" != "IBM-1047" ]; then
-    tmpfile="${ZWELS_INSTANCE_ENV_DIR}/t"
+    tmpfile="${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/t"
     rm -f "${tmpfile}"
     iconv -f "${encoding}" -t "IBM-1047" "${file}" > "${tmpfile}"
     mv "${tmpfile}" "${file}"

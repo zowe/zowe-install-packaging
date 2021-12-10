@@ -75,7 +75,7 @@ find_component_directory() {
 # - NODE_HOME
 #
 # Optional environment variables:
-# - ZWELS_INSTANCE_ENV_DIR
+# - ZWE_PRIVATE_WORKSPACE_ENV_DIR
 #
 # Example:
 # - read my-component commands.start value
@@ -217,15 +217,15 @@ find_all_enabled_components() {
 # Required environment variables:
 # - ZWE_zowe_runtimeDirectory
 # - NODE_HOME
-# - ZWELS_HA_INSTANCE_ID
-# - STATIC_DEF_CONFIG_DIR
+# - ZWE_CLI_PARAMETER_HA_INSTANCE
+# - ZWE_STATIC_DEFINITIONS_DIR
 #
 # @param string   component directory
 process_component_apiml_static_definitions() {
   component_dir=$1
 
-  if [ -z "${STATIC_DEF_CONFIG_DIR}" ]; then
-    >&2 echo "Error: STATIC_DEF_CONFIG_DIR is required to process component definitions for API Mediation Layer."
+  if [ -z "${ZWE_STATIC_DEFINITIONS_DIR}" ]; then
+    print_error "Error: ZWE_STATIC_DEFINITIONS_DIR is required to process component definitions for API Mediation Layer."
     return 1
   fi
 
@@ -243,7 +243,7 @@ process_component_apiml_static_definitions() {
     one_def_trimmed=$(echo "${one_def}" | xargs)
     if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
       if [ ! -r "${one_def}" ]; then
-        >&2 echo "static definition file ${one_def} of component ${component_name} is not accessible"
+        print_error "static definition file ${one_def} of component ${component_name} is not accessible"
         all_succeed=false
         break
       fi
@@ -255,19 +255,20 @@ process_component_apiml_static_definitions() {
       parsed_def=$( ( echo "cat <<EOF" ; cat "${one_def}" ; echo ; echo EOF ) | sh 2>&1)
       retval=$?
       if [ "${retval}" != "0" ]; then
-        >&2 echo "failed to parse ${component_name} API Mediation Layer static definition file ${one_def}: ${parsed_def}"
+        print_error "failed to parse ${component_name} API Mediation Layer static definition file ${one_def}: ${parsed_def}"
         if [[ "${parsed_def}" == *unclosed* ]]; then
-          >&2 echo "this is very likely an encoding issue that file is not tagged properly"
+          print_error "this is very likely an encoding issue that file is not tagged properly"
         fi
         all_succeed=false
         break
       fi
+      print_debug "- writing ${ZWE_STATIC_DEFINITIONS_DIR}/${component_name}.${sanitized_def_name}.${ZWE_CLI_PARAMETER_HA_INSTANCE}.yml"
       if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-        echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
+        echo "${parsed_def}" | iconv -f IBM-1047 -t IBM-850 > ${ZWE_STATIC_DEFINITIONS_DIR}/${component_name}.${sanitized_def_name}.${ZWE_CLI_PARAMETER_HA_INSTANCE}.yml
       else
-        echo "${parsed_def}" > ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
+        echo "${parsed_def}" > ${ZWE_STATIC_DEFINITIONS_DIR}/${component_name}.${sanitized_def_name}.${ZWE_CLI_PARAMETER_HA_INSTANCE}.yml
       fi
-      chmod 770 ${STATIC_DEF_CONFIG_DIR}/${component_name}.${sanitized_def_name}.${ZWELS_HA_INSTANCE_ID}.yml
+      chmod 770 ${ZWE_STATIC_DEFINITIONS_DIR}/${component_name}.${sanitized_def_name}.${ZWE_CLI_PARAMETER_HA_INSTANCE}.yml
     fi
   done <<EOF
 $(echo "${static_defs}")
@@ -290,10 +291,6 @@ EOF
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
 #
-# Required environment variables:
-# - INSTANCE_DIR
-# - NODE_HOME
-#
 # @param string   component directory
 process_component_appfw_plugin() {
   component_dir=$1
@@ -302,40 +299,40 @@ process_component_appfw_plugin() {
   iterator_index=0
   appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
-      cd "${component_dir}"
+    cd "${component_dir}"
 
-      # apply values if appfw_plugin_path has variables
-      appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
-      appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
+    # apply values if appfw_plugin_path has variables
+    appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
+    appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
 
-      if [ ! -r "${appfw_plugin_path}" ]; then
-        >&2 echo "App Framework plugin directory ${appfw_plugin_path} is not accessible"
-        all_succeed=false
-        break
-      fi
-      if [ ! -r "${appfw_plugin_path}/pluginDefinition.json" ]; then
-        >&2 echo "App Framework plugin directory ${appfw_plugin_path} does not have pluginDefinition.json"
-        all_succeed=false
-        break
-      fi
-      appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
-      if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
-        >&2 echo "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
-        all_succeed=false
-        break
-      fi
+    if [ ! -r "${appfw_plugin_path}" ]; then
+      print_error "App Framework plugin directory ${appfw_plugin_path} is not accessible"
+      all_succeed=false
+      break
+    fi
+    if [ ! -r "${appfw_plugin_path}/pluginDefinition.json" ]; then
+      print_error "App Framework plugin directory ${appfw_plugin_path} does not have pluginDefinition.json"
+      all_succeed=false
+      break
+    fi
+    appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
+    if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
+      print_error "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
+      all_succeed=false
+      break
+    fi
 
-      # copy to workspace/app-server/pluginDirs
-      appfw_plugin_workspace_path="${WORKSPACE_DIR}/app-server/pluginDirs/${appfw_plugin_id}"
-      mkdir -p "${appfw_plugin_workspace_path}"
-      cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
+    # copy to workspace/app-server/pluginDirs
+    appfw_plugin_workspace_path="${ZWE_zowe_workspaceDirectory}/app-server/pluginDirs/${appfw_plugin_id}"
+    mkdir -p "${appfw_plugin_workspace_path}"
+    cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
 
-      # install app
-      ${INSTANCE_DIR}/bin/install-app.sh "${appfw_plugin_workspace_path}"
-      # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
+    # install app
+    "${ZWE_zowe_runtimeDirectory}/components/app-server/share/zlux-app-server/bin/install-app.sh" "${appfw_plugin_workspace_path}"
+    # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
-      iterator_index=`expr $iterator_index + 1`
-      appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+    iterator_index=`expr $iterator_index + 1`
+    appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
   done
 
   if [ "${all_succeed}" = "true" ]; then
@@ -355,10 +352,6 @@ process_component_appfw_plugin() {
 # Note: this function requires node, which means NODE_HOME should have been defined,
 #       and ensure_node_is_on_path should have been executed.
 #
-# Required environment variables:
-# - INSTANCE_DIR
-# - NODE_HOME
-#
 # @param string   component directory
 process_component_gateway_shared_libs() {
   component_dir=$1
@@ -374,7 +367,7 @@ process_component_gateway_shared_libs() {
     if [ -z "${plugin_id}" ]; then
       # prepare plugin directory
       plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
-      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
+      gateway_shared_libs_workspace_path="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/${plugin_id}"
       mkdir -p "${gateway_shared_libs_workspace_path}"
     fi
 
@@ -391,7 +384,7 @@ process_component_gateway_shared_libs() {
       mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
       cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
     else
-      >&2 echo "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
+      print_error "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
       all_succeed=false
       break
     fi

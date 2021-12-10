@@ -41,12 +41,12 @@ if [ -n "${component_dir}" ]; then
 
   # source environment snapshot created by configure step
   component_name=$(basename "${component_dir}")
-  if [ -f "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env" ]; then
-    print_formatted_debug "ZWELS" "start-component.sh:${LINENO}" "restoring environment snapshot ${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env ..."
+  if [ -f "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ]; then
+    print_formatted_debug "ZWELS" "start-component.sh:${LINENO}" "restoring environment snapshot ${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env ..."
     # some variables we don't want to be overwritten
     ZWE_OLD_CLI_PARAMETER_COMPONENT=${ZWE_CLI_PARAMETER_COMPONENT}
     # restore environment snapshot created in configure step
-    . "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWELS_HA_INSTANCE_ID}.env"
+    . "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env"
     # restore some backups
     ZWE_CLI_PARAMETER_COMPONENT=${ZWE_OLD_CLI_PARAMETER_COMPONENT}
   fi

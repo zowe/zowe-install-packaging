@@ -168,7 +168,7 @@ configure_components() {
 
       # prepare component workspace
       component_name=$(basename "${component_dir}")
-      mkdir -p "${ZWELS_INSTANCE_ENV_DIR}/${component_name}"
+      mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}"
 
       print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- configure ${component_id}"
 
@@ -234,7 +234,7 @@ configure_components() {
       if [ -x "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
-        result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWELS_INSTANCE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
+        result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
         retval=$?
         if [ -n "${result}" ]; then
           if [ "${retval}" = "0" ]; then
@@ -315,7 +315,7 @@ print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "<<<"
 # no validation for running in container
 global_validate
 # no validation for running in container
-if [ ! -f "${INSTANCE_DIR}/.init-for-container" ]; then
+if [ ! -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
   validate_components
 fi
 configure_components
