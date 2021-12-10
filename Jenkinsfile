@@ -98,7 +98,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 24
+        expected    : 25
       )
 
       // we want build log pulled in for SMP/e build
