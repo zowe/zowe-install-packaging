@@ -27,8 +27,8 @@ if [ -n "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" ]; then
   # explicit wait is required
   wait
 else
-  # ZWE_ENABLED_COMPONENTS can also get from stdout of "zwe internal get-enabled-components"
-  for run_zowe_start_component_id in $(echo "${ZWE_ENABLED_COMPONENTS}" | sed "s/,/ /g"); do
+  # ZWE_LAUNCH_COMPONENTS can also get from stdout of "zwe internal get-launch-components"
+  for run_zowe_start_component_id in $(echo "${ZWE_LAUNCH_COMPONENTS}" | sed "s/,/ /g"); do
     # only run in background when it's not in container, on z/OS
     zwecli_inline_execute_command internal start component --component "${run_zowe_start_component_id}" --run-in-background
   done

@@ -78,6 +78,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_GATEWAY_HOST` contains domain name to access gateway internally.
 - `ZWE_GATEWAY_SHARED_LIBS` contains a directory where gateway shared libraries are installed.
 - `ZWE_INSTALLED_COMPONENTS` is a list of all installed components.
+- `ZWE_LAUNCH_COMPONENTS` is a list of enabled components for current HA instance and has start command defined.
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
 - `ZWE_STATIC_DEFINITIONS_DIR` is where Zowe stores API-ML static registration files.

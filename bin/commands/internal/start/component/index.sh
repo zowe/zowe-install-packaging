@@ -44,7 +44,7 @@ if [ -n "${component_dir}" ]; then
   # source environment snapshot created by configure step
   component_name=$(basename "${component_dir}")
   if [ -f "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ]; then
-    print_formatted_debug "ZWELS" "start-component.sh:${LINENO}" "restoring environment snapshot ${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env ..."
+    print_formatted_debug "ZWELS" "zwe-internal-start-component:${LINENO}" "restoring environment snapshot ${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env ..."
     # some variables we don't want to be overwritten
     ZWE_OLD_CLI_PARAMETER_COMPONENT=${ZWE_CLI_PARAMETER_COMPONENT}
     # restore environment snapshot created in configure step
@@ -59,9 +59,9 @@ if [ -n "${component_dir}" ]; then
     start_script=
   fi
 
-  if [ -x "${start_script}" ]; then
-    print_formatted_info "ZWELS" "start-component.sh:${LINENO}" "starting component ${ZWE_CLI_PARAMETER_COMPONENT} ..."
-    print_formatted_trace "ZWELS" "start-component.sh:${LINENO}" ">>> environment for ${ZWE_CLI_PARAMETER_COMPONENT}\n$(get_environments)\n<<<"
+  if [ -n "${start_script}" -a -x "${start_script}" ]; then
+    print_formatted_info "ZWELS" "zwe-internal-start-component:${LINENO}" "starting component ${ZWE_CLI_PARAMETER_COMPONENT} ..."
+    print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" ">>> environment for ${ZWE_CLI_PARAMETER_COMPONENT}\n$(get_environments)\n<<<"
     # FIXME: we have assumption here start_script is pointing to a shell script
     # if [[ "${start_script}" == *.sh ]]; then
     if [ "${ZWE_CLI_PARAMETER_RUN_IN_BACKGROUND}" = "true" ]; then
@@ -71,5 +71,9 @@ if [ -n "${component_dir}" ]; then
       # re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
       cat "${start_script}" | { echo ". \"${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh
     fi
+  else
+    print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" "Component ${ZWE_CLI_PARAMETER_COMPONENT} doesn't have start command or it's not executable."
   fi
+else
+  print_formatted_error "ZWELS" "zwe-internal-start-component:${LINENO}" "Failed to locate component directory for ${ZWE_CLI_PARAMETER_COMPONENT}."
 fi

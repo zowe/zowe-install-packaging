@@ -142,4 +142,5 @@ load_environment_variables() {
   # generate other variables
   export ZWE_INSTALLED_COMPONENTS="$(find_all_installed_components)"
   export ZWE_ENABLED_COMPONENTS="$(find_all_enabled_components)"
+  export ZWE_LAUNCH_COMPONENTS="$(find_all_launch_components)"
 }

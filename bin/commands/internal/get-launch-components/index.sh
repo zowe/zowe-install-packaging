@@ -26,4 +26,4 @@ fi
 ###############################
 load_environment_variables
 
-echo "${ZWE_ENABLED_COMPONENTS}"
+echo "${ZWE_LAUNCH_COMPONENTS}"

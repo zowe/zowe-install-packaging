@@ -208,6 +208,28 @@ find_all_enabled_components() {
   echo "${components}"
 }
 
+find_all_launch_components() {
+  components=
+
+  for component in $(echo "${ZWE_ENABLED_COMPONENTS}" | sed 's/,/ /g'); do
+    component_dir=$(find_component_directory "${component}")
+    if [ -n "${component_dir}" ]; then
+      start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
+      if [ "${start_script}" = "null" ]; then
+        start_script=
+      fi
+      if [ -n "${start_script}" -a -x "${start_script}" ]; then
+        if [ -n "${components}" ]; then
+          components="${components},"
+        fi
+        components="${components}${component}"
+      fi
+    fi
+  done
+
+  echo "${components}"
+}
+
 ###############################
 # Parse and process manifest service APIML static definition
 #
