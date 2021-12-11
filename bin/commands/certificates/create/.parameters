@@ -1,2 +1,0 @@
-name|n|string|||||Certificate common name
-ca,certificate-authority||string|||||Certificate authority to sign the certificate.

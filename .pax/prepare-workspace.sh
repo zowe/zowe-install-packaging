@@ -203,11 +203,6 @@ fi
 cd "${ROOT_DIR}"
 rm -r "${PAX_BINARY_DEPENDENCIES}"
 
-echo "[${SCRIPT_NAME}] prepare fingerprints related scripts ..."
-# copy fingerprints scripts -- build usage only
-mkdir -p "${PAX_WORKSPACE_DIR}/ascii/fingerprints"
-cp -R fingerprints/. "${PAX_WORKSPACE_DIR}/ascii/fingerprints"
-
 echo "[${SCRIPT_NAME}] create customized workflows ..."
 # create customized workflows
 wf_from="workflows/files"

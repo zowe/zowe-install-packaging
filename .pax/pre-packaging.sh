@@ -294,21 +294,22 @@ echo "[$SCRIPT_NAME] clean up working files"
 rm -rf "./templates"
 
 # prepare for SMPE
-echo "[$SCRIPT_NAME] move fingerprints dir out of content..."
-cd "${BASE_DIR}"
-mv ./content/fingerprints  .
-cd "${BASE_DIR}/fingerprints"
-javac HashFiles.java
-cp HashFiles.class "${ZOWE_ROOT_DIR}/bin/utils"
+
+echo "[$SCRIPT_NAME] compile java utilities ..."
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+javac HashFiles.java && rm HashFiles.java
+javac ExportPrivateKeyLinux.java && rm ExportPrivateKeyLinux.java
+javac ExportPrivateKeyZos.java && rm ExportPrivateKeyZos.java
+
 echo "[$SCRIPT_NAME] generate fingerprints"
+mkdir -p "${BASE_DIR}/fingerprints"
+mkdir -p "${ZOWE_ROOT_DIR}/fingerprint"
 cd "${ZOWE_ROOT_DIR}"
 find . -name ./SMPE             -prune \
     -o -name "./ZWE*"           -prune \
     -o -name ./fingerprint      -prune \
     -o -type f -print > "${BASE_DIR}/fingerprints/files.in"
-java -cp "${BASE_DIR}/fingerprints" HashFiles "${BASE_DIR}/fingerprints/files.in" > "${BASE_DIR}/fingerprints/RefRuntimeHash.txt"
-mkdir -p "${ZOWE_ROOT_DIR}/fingerprint"
-mv "${BASE_DIR}/fingerprints/RefRuntimeHash.txt" "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
+java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" > "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
 echo "[$SCRIPT_NAME] cleanup fingerprints code"
 rm -fr "${BASE_DIR}/fingerprints"
 
