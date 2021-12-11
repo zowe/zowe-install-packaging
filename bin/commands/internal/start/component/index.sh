@@ -14,7 +14,13 @@
 
 ###############################
 # validation
+require_java
+require_node
 require_zowe_yaml
+
+export ZWE_PRIVATE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)
+# overwrite ZWE_PRIVATE_LOG_LEVEL_CLI with ZWE_PRIVATE_LOG_LEVEL_ZWELS
+ZWE_PRIVATE_LOG_LEVEL_CLI="${ZWE_PRIVATE_LOG_LEVEL_ZWELS}"
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 if [ -z "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
@@ -66,7 +72,8 @@ if [ -n "${component_dir}" ]; then
       . "${start_script}" &
     else
       # wait for all background subprocesses created by bin/start.sh exit
-      cat "${start_script}" | { cat ; echo; echo wait; } | /bin/sh
+      # re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
+      cat "${start_script}" | { echo ". \"${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh
     fi
   fi
 fi

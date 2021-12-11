@@ -262,6 +262,8 @@ components:
 #   lpar1:
 #     # hostname where this instance will be started
 #     hostname: lpar1.my-company.com
+#     # your &SYSNAME for this LPAR
+#     sysname: LPR1
 #     # for this HA instance, we didn't customize "components", so it will use default value.
   
 #   # HA instance ID, we will start 2 instances on LPAR2
@@ -269,6 +271,8 @@ components:
 #   lpar2a:
 #     # hostname where this instance will be started
 #     hostname: lpar2.my-company.com
+#     # your &SYSNAME for this LPAR
+#     sysname: LPR2
 
 #     # these configurations will overwrite highest level "components" definitions
 #     components:
@@ -299,6 +303,8 @@ components:
 #         port: 17555
 #   lpar2b:
 #     hostname: lpar2.my-company.com
+#     # your &SYSNAME for this LPAR
+#     sysname: LPR2
 
 #     # these configurations will overwrite highest level "components" definitions
 #     components:

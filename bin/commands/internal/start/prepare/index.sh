@@ -86,6 +86,8 @@ global_validate() {
   # reset error counter
   export ZWE_PRIVATE_ERRORS_FOUND=0
 
+  validate_this "is_directory_writable \"${ZWE_zowe_workspaceDirectory}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
+
   if [ ! -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
     # only do these check when it's not running in container
 
@@ -284,6 +286,8 @@ print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "starting Zo
 
 ###############################
 # validation
+require_java
+require_node
 require_zowe_yaml
 
 export ZWE_PRIVATE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)
