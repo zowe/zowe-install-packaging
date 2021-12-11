@@ -30,6 +30,7 @@ if [ -z "${jobname}" -o "${jobname}" = "null" ]; then
 fi
 # read SYSNAME if --ha-instance is specified
 route_sysname=
+sanitize_ha_instance_id
 if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
   route_sysname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.sysname")
   if [ -z "${route_sysname}" -o "${route_sysname}" = "null" ]; then

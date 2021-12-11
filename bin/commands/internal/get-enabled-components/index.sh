@@ -16,11 +16,7 @@
 require_zowe_yaml
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
-if [ -z "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
-  ZWE_CLI_PARAMETER_HA_INSTANCE=$(get_sysname)
-fi
-# sanitize instance id
-ZWE_CLI_PARAMETER_HA_INSTANCE=$(echo "${ZWE_CLI_PARAMETER_HA_INSTANCE}" | lower_case | sanitize_alphanum)
+sanitize_ha_instance_id
 
 ZWE_zowe_workspaceDirectory=$(read_yaml ${ZWE_CLI_PARAMETER_CONFIG} '.zowe.workspaceDirectory')
 if [ -z "${ZWE_zowe_workspaceDirectory}" -o "${ZWE_zowe_workspaceDirectory}" = "null" ]; then

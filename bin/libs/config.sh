@@ -116,6 +116,19 @@ generate_instance_env_from_yaml_config() {
   fi
 }
 
+# check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
+sanitize_ha_instance_id() {
+  # ignore default value passed from ZWESLSTC
+  if [ "${ZWE_CLI_PARAMETER_HA_INSTANCE}" = "{{ha_instance_id}}" -o "${ZWE_CLI_PARAMETER_HA_INSTANCE}" = "__ha_instance_id__" ]; then
+    ZWE_CLI_PARAMETER_HA_INSTANCE=
+  fi
+  if [ -z "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
+    ZWE_CLI_PARAMETER_HA_INSTANCE=$(get_sysname)
+  fi
+  # sanitize instance id
+  ZWE_CLI_PARAMETER_HA_INSTANCE=$(echo "${ZWE_CLI_PARAMETER_HA_INSTANCE}" | lower_case | sanitize_alphanum)
+}
+
 load_environment_variables() {
   component_id=$1
 

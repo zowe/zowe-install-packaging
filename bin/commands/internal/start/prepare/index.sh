@@ -295,11 +295,7 @@ export ZWE_PRIVATE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".z
 ZWE_PRIVATE_LOG_LEVEL_CLI="${ZWE_PRIVATE_LOG_LEVEL_ZWELS}"
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
-if [ -z "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
-  ZWE_CLI_PARAMETER_HA_INSTANCE=$(get_sysname)
-fi
-# sanitize instance id
-ZWE_CLI_PARAMETER_HA_INSTANCE=$(echo "${ZWE_CLI_PARAMETER_HA_INSTANCE}" | lower_case | sanitize_alphanum)
+sanitize_ha_instance_id
 
 # extra preparations for running in container 
 # this is running in containers
