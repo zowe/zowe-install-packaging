@@ -54,16 +54,16 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
     - `libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax` for almost all tests except SMPE install related.  
     - or `libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip` when running SMPE related install test (SMPE FMID, SMPE PTF or Install PTF twice).
   - Note that `{branch-name}` will be substituted with the current running branch.
-  - **Attention**: when you run SMPE related install tests, if the latest build does not include packaging SMPE (ie. no `zowe-smpe.zip` is found in the latest build), this pipeline will fail and throw an error. A bit of context: all zowe build will produce zowe.pax; other installation method artifacts like SMPE or docker artifact is on demand and can be skipped when building. Therefore, if you run a SMPE install test and not specifying here at this input, you are telling the pipeline to use latest build and the pipeline will assume the latest build contains the SMPE artifact. Error mentioned earlier rises when the latest build does not have SMPE artifact.
+  - **Attention**: when you run SMPE related install tests, if the latest build does not include packaging SMPE (ie. no `zowe-smpe.zip` is found in the latest build), this pipeline will fail and throw an error. A bit of context: all zowe build will produce zowe.pax; other installation method artifacts like SMPE or docker artifact is on demand and can be skipped when building. Therefore, if you run a SMPE install test and not specifying this input, you are telling the pipeline to use latest build and the pipeline will assume the latest build contains the SMPE artifact. Error mentioned earlier rises when the latest build does not have SMPE artifact.
 
 - If this input is specified,
   - you can input either a build number or a **valid existing** path/pattern on artifactory, otherwise an error will be thrown.
-    - Build number must be an integer and most exist on the current running branch.
+    - Build number must be an integer and must exist on the current running branch.
     - for path/pattern:
       - your pax file must contain `zowe` and end with `.pax`
       - or your smpe file must contain `zowe-smpe` and end with `.zip`
       - You can include `*` in the pattern as well, so that if multiple artifacts matches the pattern, last uploaded one will be picked up.
-  - **Attention**: when you run SMPE related install tests, we will firstly find out which branch and what build number your specified zowe-smpe.zip is associated with. Same thing if specifying a build number. If it is not the latest build on this branch, the pipeline will throw a warning to indicate that you are possibly running an outdated code because there are newer builds after this current build (you specified). Pipeline will continue eventually. Warning will be something like this:
+  - **Attention**: when you run SMPE related install tests, we will firstly find out which branch and what build number your specified zowe-smpe.zip is associated with. Same thing if specifying a build number. If it is not the latest build on this branch, the pipeline will throw a warning to indicate that you are possibly testing against an outdated code because there are newer builds after this current build (you specified). Pipeline will continue eventually. Warning will be something like this:
 
     ```
     I see that you are trying to grab an older SMPE build 1891 on zowe-install-packaging :: feature2.
@@ -72,9 +72,9 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
     ```
 
 - Special note when running `Tech Preview Docker` test:
-  - Background: docker artifact pattern will be like `server-bundle.amd64*.tar`, however you don't need to specify it here. Because docker test will rely on `zowe.pax`, so the pipeline is actually looking on the same build of `zowe.pax` to find out if a docker artifact exists.
+  - Background: Docker test will rely on `zowe.pax`, so the pipeline is actually looking on the same build of where `zowe.pax` is made to find out if a docker artifact exists. The docker artifact pattern will be like `server-bundle.amd64*.tar`.  
   - If you don't specify anything in this input, the to-be-used docker artifact will be from latest build number on current branch. If the latest build doesn't have docker artifact, pipeline will throw an error and fail.
-  - If you specify a zowe.pax here (note that here must be pax, because if you specify a smpe.zip here while running docker test, pipeline should already fail beforehand), the pipeline will find out which branch (we call it processed branch) and what build number (call it processed build number) your specified zowe.pax is, then look for the docker artifact on this build. The pipeline will proceed but when the processed build number is not the latest on the processed branch, warning will be given to indicate that you are possibly running an outdated code because there are newer builds after this current processed build (you specified). Warning will see something like this:
+  - If you specify a `zowe.pax` here (note that here must be a pax, because if you specify a `smpe.zip` here while running docker test, pipeline should already fail beforehand), the pipeline will find out which branch (we call it *processed branch*) and what build number (call it *processed build number*) your specified `zowe.pax` is, then look for the docker artifact on this build. The pipeline will continue but when the *processed build number* is not the latest on the *processed branch*, a warning will be given to indicate that you are possibly testing against an outdated code because there are newer builds after this current *processed build*. Warning will be something like this:
     ```
     I see that you are trying to grab an older docker build 101 on zowe-install-packaging/feature1.
     However just be aware that there are more code changes (newer builds) after 101, which is 105.
@@ -100,7 +100,7 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
 
 - This input is pre-filled with `sample-node-api;sample-trial-app` to test [sample-node-api](https://github.com/zowe/sample-node-api) and [sample-trial-app](https://github.com/zowe/sample-trial-app) projects. In normal circumstances, you probably don't need to modify the pre-filled value here.
 - By default, the extension artifact search pattern is using format `libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax` where `{ext-name}` will be processed and substituted from this input (as an example above, `sample-node-api`). Then the latest uploaded artifact will be used.
-- Optionally, you can customized your extension artifact path. Customized jfrog artifactory path should exist, be valid, and enclosed in brackets and put after the extension name, eg. `sample-node-api(my/new/path/sample-node-api-cus.pax)`. A pattern contains `*` is also supported, which the latest artifact will be picked up. If multiple extensions are included, make sure to separate them in semi-colon. In addition to the artifactory path/pattern, you can also put a full http URL to any other remote location that points to an extension pax here.
+- Optionally, you can customized your extension artifact path. Customized jfrog artifactory path should exist, be valid, and enclosed in brackets and put after the extension name, eg. `sample-node-api(my/new/path/sample-node-api-cus.pax)`. A pattern contains `*` is also supported, which the latest artifact will be picked up. If multiple extensions are included, make sure to separate them by semi-colon. In addition to the artifactory path/pattern, you can also put a full http URL to any other remote location that points to an extension pax here.
 - The following regular expression will be used to check against your input
 
   ```
@@ -110,7 +110,7 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
 - Examples:
   - `sample-node-api`
   - `sample-node-api(my/new/path/sample-node-api-cus.pax);sample-trial-app`
-  - `sample-node-api(my/new/path/sample-node-api-cus.pax);sample-trial-app(my/old/path/cust.pax);sample-new-zowe-ext`
+  - `sample-node-api(my/new/path/sample-node-api-cus.pax);sample-trial-app(https://private-repo.org/new-zowe-ext/123.pax);sample-new-zowe-ext`
 - This input is only honored when you are running `Extension` test.  
 
 ## Zowe Release Tests (DevOps only)
