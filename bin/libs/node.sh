@@ -48,7 +48,10 @@ detect_node_home() {
 }
 
 require_node() {
-  if [ -z "${NODE_HOME}" ]; then
+  # prepare the NODE_HOME in zowe.yaml
+  if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+    export NODE_HOME=$(shell_read_yaml_config ${ZWE_CLI_PARAMETER_CONFIG} 'node' 'home')
+  elif [ -z "${NODE_HOME}" ]; then
     export NODE_HOME=$(detect_node_home)
   fi
 
