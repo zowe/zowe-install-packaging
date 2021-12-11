@@ -89,16 +89,10 @@ zowe:
   # this should be the port you defined on DVIPA for gateway external port
   externalPort: "7554"
 
-  # you can define any extra environment variables here
+  # you can define any extra environment variables as key/value pairs here
   environments:
-    # this is optional and be kept for backward compatible purpose
-    # all certificate configuration are defined in this file
-    KEYSTORE_DIRECTORY: /global/zowe/keystore
-    ZOWE_ZLUX_SSH_PORT: "22"
-    ZOWE_ZLUX_TELNET_PORT: "23"
-    ZOWE_ZLUX_SECURITY_TYPE: ""
-    EXTERNAL_ROOT_CA: ""
-    SSO_FALLBACK_TO_NATIVE_AUTH: "true"
+    # example to customize SSH port for VT Terminal Desktop app
+    # ZWES_ZLUX_SSH_PORT: 22
 
   # enable debug mode for zowe launch scripts
   launchScript:
