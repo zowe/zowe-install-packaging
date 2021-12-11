@@ -186,6 +186,24 @@ pkcs12_create_certificate_and_sign() {
       -storetype "PKCS12"
   fi
 
+  # test if we need to import CA into truststore
+  keytool -list -v -noprompt \
+    -alias "${ca_alias}" \
+    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
+    -storepass "${password}" \
+    -storetype "PKCS12" \
+    >/dev/null 2>/dev/null
+  if [ "$?" != "0" ]; then
+    print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the truststore \"${keystore_name}\":"
+    pkeytool -importcert -v \
+      -trustcacerts -noprompt \
+      -file "${keystore_dir}/${ca_alias}/${ca_alias}.cer" \
+      -alias "${ca_alias}" \
+      -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
+      -storepass "${password}" \
+      -storetype "PKCS12"
+  fi
+
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
   pkeytool -importcert -v \
     -trustcacerts -noprompt \

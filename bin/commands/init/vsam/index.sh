@@ -55,8 +55,7 @@ if [ "${vsam_mode}" = "RLS" ]; then
   fi
 fi
 # FIXME: njq cannot handle - in the middle
-# vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
-vsam_name=IBMUSER.ZWEV2.CUST.CACHE2
+vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
 if [ -z "${vsam_name}" -o "${vsam_name}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
 fi

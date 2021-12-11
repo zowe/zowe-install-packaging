@@ -77,8 +77,18 @@ read_yaml() {
   fconv="${utils_dir}/fconv/src/index.js"
   jq="${utils_dir}/njq/src/index.js"
 
-  print_trace "- read_yaml ${key} from ${file}"
-  result=$(node "${fconv}" --input-format=yaml "${file}" | node "${jq}" -r "${key}" 2>&1)
+  print_trace "- read_yaml load content from ${file}"
+  ZWE_PRIVATE_YAML_CACHE=$(node "${fconv}" --input-format=yaml "${file}" 2>&1)
+  code=$?
+  print_trace "  * Exit code: ${code}"
+  if [ ${code} -ne 0 ]; then
+    print_error "  * Output:"
+    print_error "$(padding_left "${ZWE_PRIVATE_YAML_CACHE}" "    ")"
+    return ${code}
+  fi
+
+  print_trace "- read_yaml ${key} from yaml content"
+  result=$(echo "${ZWE_PRIVATE_YAML_CACHE}" | node "${jq}" -r "${key}" 2>&1)
   code=$?
   print_trace "  * Exit code: ${code}"
   print_trace "  * Output:"

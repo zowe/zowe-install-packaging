@@ -11,7 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_level1_message "Creating certificate authority"
+print_level1_message "Creating certificate authority \"${ZWE_CLI_PARAMETER_ALIAS}\""
 
 # check existence
 keystore="${ZWE_CLI_PARAMETER_KEYSTORE_DIR}/${ZWE_CLI_PARAMETER_ALIAS}/${ZWE_CLI_PARAMETER_ALIAS}.keystore.p12"

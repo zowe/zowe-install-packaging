@@ -218,7 +218,7 @@ find_all_launch_components() {
       if [ "${start_script}" = "null" ]; then
         start_script=
       fi
-      if [ -n "${start_script}" -a -x "${start_script}" ]; then
+      if [ -n "${start_script}" -a -x "${component_dir}/${start_script}" ]; then
         if [ -n "${components}" ]; then
           components="${components},"
         fi

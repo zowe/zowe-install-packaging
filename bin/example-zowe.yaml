@@ -56,6 +56,40 @@ zowe:
         # STC name of Zowe Auxilary Service
         aux: ZWESASTC
 
+    # Certificate related configurations
+    certificate:
+      # Type of certificate storage.
+      # Valid values are: PKCS12 or JCERACFKS
+      type: PKCS12
+      # distinguished name for Zowe generated certificates
+      dname:
+        caCommonName: "Zowe Development Instances Certificate Authority"
+        commonName: "Zowe Service"
+        orgUnit: "API Mediation Layer"
+        org: "Zowe Sample"
+        locality: Prague
+        state: Prague
+        country: CZ
+      # validity days for Zowe generated certificates
+      validity: 3650
+      # domain names and IPs should be added to certificate SAN
+      san:
+        - dvipa.my-company.com
+        # sample IP address
+        - 12.34.56.78
+      pkcs12:
+        # Keystore directory to store PKCS12 keystores
+        directory: /global/zowe/keystore
+        # PKCS12 keystore name.
+        name: localhost
+        # PKCS12 keystore name.
+        password: password
+        caAlias: local_ca
+        caPassword: local_ca_password
+      keyring:
+        owner: ZWESVUSR
+        name: ZoweKeyring
+
     # VSAM configurations if you are using VSAM as Caching Service storage
     vsam:
       # VSAM data set with Record-Level-Sharing enabled or not
@@ -106,7 +140,7 @@ zowe:
       password: password
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
       type: PKCS12
-    trustStore:
+    truststore:
       file: /global/zowe/keystore/localhost/localhost.truststore.p12
       certificateAuthorities: ""
     pem:

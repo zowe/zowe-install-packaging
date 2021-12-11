@@ -17,7 +17,6 @@ print_level0_message "Starting Zowe"
 # validation
 require_zowe_yaml
 
-
 # read job name and validate
 jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.job.name")
 if [ "${jobname}" = "null" ]; then
@@ -31,8 +30,8 @@ route_sysname=
 sanitize_ha_instance_id
 if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
   route_sysname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.sysname")
-  if [ -z "${route_sysname}" -o "${route_sysname}" = "null" ]; then
-    print_error_and_exit "Error ZWEL0157E: Zowe HA instance SYSNAME (haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.sysname) is not defined in Zowe YAML configuration file." "" 157
+  if [ "${route_sysname}" = "null" ]; then
+    route_sysname=
   fi
 fi
 
