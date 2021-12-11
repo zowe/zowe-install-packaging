@@ -43,10 +43,10 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
 
 ### Custom Zowe Artifactory Pattern or Build Number
 
-Background: CICD testing relies on a zowe.pax or zowe-smpe.zip (for SMPE install). Thus it is important for a user to tell the pipeline which zowe.pax or zowe-smpe.zip (for SMPE install) shall be picked up and utilized; this input serves this purpose.
+Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE install). Thus it is important for a user to tell the pipeline which `zowe.pax` or `zowe-smpe.zip` (for SMPE install) shall be picked up and utilized; this input serves this purpose.
 
 - This input is optional, it is expecting either:
-  - any `zowe.pax` or `zowe-smpe.zip` path/pattern on jfrog artifactory (ie. the file path/pattern can be on any other branch as long as it exists)
+  - any `zowe.pax` or `zowe-smpe.zip` path/pattern on jfrog artifactory (note: the file path/pattern can be on any other branch as long as it exists)
   - or a specific **build number** on current running branch
 
 - If you leave this input blank,
