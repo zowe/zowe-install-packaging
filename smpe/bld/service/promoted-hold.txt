@@ -223,7 +223,7 @@
     ${ZOWE_EXPLORER_HOST}:${GATEWAY_PORT}/zss/api/v1/saf-auth
     # allow user to customize external client certificate
       authorization url
-  - ZOWE_ZSS_SERVER_TLS=true
+  - ZWES_SERVER_TLS=true
     # Set this to false if you need to use ZSS without TLS
       (Backward-compat). May be needed if encountering desktop
       login failure due to app-server to ZSS communication

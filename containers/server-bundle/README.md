@@ -13,7 +13,7 @@ export GATEWAY_PORT=7554
 export APP_SERVER_PORT=7556
 
 #add non-default settings with --env, using same properties as seen in instance.env
-#   --env ZOWE_ZLUX_TELNET_PORT=23
+#   --env ZWED_TN3270_PORT=23
 docker run -it \
     -h your_hostname \
     --env ZOWE_IP_ADDRESS=your.external.ip \
@@ -30,7 +30,7 @@ docker run -it \
     -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} \
     --env GATEWAY_PORT=${GATEWAY_PORT} \
     --env DISCOVERY_PORT=${DISCOVERY_PORT} \
-    --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
+    --env ZWED_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
     --mount type=bind,source=c:\temp\certs,target=/home/zowe/certs \
     ompzowe/server-bundle:latest
 ```
@@ -83,7 +83,7 @@ docker build -t zowe/docker:latest .
 For example:
 
 ```cmd
-DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=7556 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_https_port=7557 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/root/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/root/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:latest
+DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=7556 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_https_port=7557 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZWED_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/root/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/root/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:latest
 ```
 Note: External certificates are optional and should not be included in the start command if undesired.
 
@@ -120,7 +120,7 @@ set GATEWAY_PORT=7554
 set APP_SERVER_PORT=7556
 
 #add non-default settings with --env, using same properties as seen in instance.env
-#   --env ZOWE_ZLUX_TELNET_PORT=23
+#   --env ZWED_TN3270_PORT=23
 docker run -it ^
     -h your_hostname ^
     --env ZOWE_IP_ADDRESS=your.external.ip ^
@@ -137,7 +137,7 @@ docker run -it ^
     -p %APP_SERVER_PORT%:%APP_SERVER_PORT% ^
     --env GATEWAY_PORT=%GATEWAY_PORT% ^
     --env DISCOVERY_PORT=%DISCOVERY_PORT% ^
-    --env ZOWE_ZLUX_SERVER_HTTPS_PORT=%APP_SERVER_PORT% ^
+    --env ZWED_SERVER_HTTPS_PORT=%APP_SERVER_PORT% ^
     --mount type=bind,c:\workspaces\ZooTainers-Hackathon2019\certs,target=/home/zowe/certs ^
     ompzowe/server-bundle:latest
 ```
@@ -164,7 +164,7 @@ docker run -it \
     -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} \
     --env GATEWAY_PORT=${GATEWAY_PORT} \
     --env DISCOVERY_PORT=${DISCOVERY_PORT} \
-    --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
+    --env ZWED_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
     --mount type=bind,source=c:\temp\certs,target=/home/zowe/certs \
     ompzowe/server-bundle:latest
 ```
@@ -212,7 +212,7 @@ docker run -it \
     -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} \
     --env GATEWAY_PORT=${GATEWAY_PORT} \
     --env DISCOVERY_PORT=${DISCOVERY_PORT} \
-    --env ZOWE_ZLUX_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
+    --env ZWED_SERVER_HTTPS_PORT=${APP_SERVER_PORT} \
 	-v ~/apps:/home/zowe/apps:rw \
     ompzowe/server-bundle:latest $@
 ```
