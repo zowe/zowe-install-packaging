@@ -83,7 +83,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
 - `ZWE_STATIC_DEFINITIONS_DIR` is where Zowe stores API-ML static registration files.
 
-**`ZWE_PRIVATE_CLI_*` are variables used by Zowe internally. It's not suggested for component to use or modify.**
+**`ZWE_PRIVATE_*` are variables used by Zowe internally. It's not suggested for component to use or modify.**
 
 - `ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current command chain.
 - `ZWE_PRIVATE_CLI_LIBRARY_LOADED` indicates is `bin/libs` are already sourced or not.
