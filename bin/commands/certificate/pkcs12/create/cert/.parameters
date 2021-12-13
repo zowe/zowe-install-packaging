@@ -1,0 +1,16 @@
+allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
+keystore|k|string|required||||PKCS12 keystore name.
+alias|a|string|required||||Certificate alias name.
+password|p|string|required||||Password of the certificate keystore.
+common-name|cn|string|||||Common name of certificate.
+domains|d|string|||||Domain list of certificate Subject Alternative Name (SAN).
+ca-alias||string|required||||Alias name of the certificate authority which is used to sign CSR.
+ca-password||string|required||||Password of the certificate authority keystore which is used to sign CSR.
+org-unit||string|||||Organization unit of certificate.
+org||string|||||Organization of certificate.
+locality||string|||||Locality of certificate.
+state||string|||||State of certificate.
+country||string|||||Country of certificate.
+validity||string|||||Validity days of certificate.
+key-usage||string|||||Key usage of certificate.
+extended-key-usage||string|||||Extended key usage of certificate.

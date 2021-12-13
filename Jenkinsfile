@@ -39,6 +39,11 @@ node('zowe-jenkins-agent-dind-wdc') {
       defaultValue: false
     ),
     booleanParam(
+      name: 'BUILD_KUBERNETES',
+      description: 'If we want to build zowe kubernetes.',
+      defaultValue: false
+    ),
+    booleanParam(
       name: 'KEEP_TEMP_FOLDER',
       description: 'If leave the temporary packaging folder on remote server.',
       defaultValue: false
@@ -62,18 +67,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       remoteWorkspace            : lib.Constants.DEFAULT_PAX_PACKAGING_REMOTE_WORKSPACE,
     ],
     extraInit: {
-      def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
-
-      sh """
-sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
-    -e 's#{BUILD_NUMBER}#${env.BUILD_NUMBER}#g' \
-    -e 's#{BUILD_COMMIT_HASH}#${commitHash}#g' \
-    -e 's#{BUILD_TIMESTAMP}#${currentBuild.startTimeInMillis}#g' \
-    manifest.json.template > manifest.json
-"""
-      echo "Current manifest.json is:"
-      sh "cat manifest.json"
-      manifest = readJSON(file: 'manifest.json')
+      manifest = readJSON(file: 'manifest.json.template')
       if (!manifest || !manifest['name'] || manifest['name'] != 'Zowe' || !manifest['version']) {
         error "Cannot read manifest or manifest is invalid."
       }
@@ -98,15 +92,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
       // prepareing download spec
       echo 'prepareing download spec ...'
-      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
+      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/binaryDependencies/" as String])
       writeJSON file: 'artifactory-download-spec.json', json: spec, pretty: 2
-      echo "================ download spec ================"
-      sh "cat artifactory-download-spec.json"
 
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 28
+        expected    : 25
       )
 
       // we want build log pulled in for SMP/e build
@@ -344,6 +336,23 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
   )
 
   pipeline.createStage(
+    name: "Build Kubernetes",
+    timeout: [ time: 10, unit: 'MINUTES' ],
+    isSkippable: true,
+    showExecute: {
+      return params.BUILD_KUBERNETES
+    },
+    stage : {
+      if (params.BUILD_KUBERNETES) {
+          sh './containers/build/parse-manifest-to-deployment.sh'
+          sh 'cd containers && zip -r zowe-containerization.zip kubernetes'
+          sh 'mv containers/zowe-containerization.zip .'
+          pipeline.uploadArtifacts([ 'zowe-containerization.zip' ])
+      }
+    }
+  )
+
+  pipeline.createStage(
     name              : "Update comment to signify build pass status",
     timeout: [time: 2, unit: 'MINUTES'],
     isSkippable: false,
@@ -380,12 +389,12 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       ])
       cliSourceBuildInfo = pipeline.artifactory.getArtifact([
           'pattern'      : "${ZOWE_CLI_BUILD_REPOSITORY}/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip",
-          'build-name'   : ZOWE_CLI_BUILD_NAME
+          //'build-name'   : ZOWE_CLI_BUILD_NAME     // we no longer rely on jenkins to find artifacts
       ])
       if (sourceRegBuildInfo && sourceRegBuildInfo.path) { //run tests when sourceRegBuildInfo exists
         def testParameters = [
           booleanParam(name: 'STARTED_BY_AUTOMATION', value: true),
-          string(name: 'TEST_SERVER', value: 'marist'),
+          string(name: 'TEST_SERVER', value: 'marist-4'),
           //string(name: 'TEST_SCOPE', value: 'bundle: convenience build on multiple security systems'),
           string(name: 'TEST_SCOPE', value: 'convenience build'),
           string(name: 'ZOWE_ARTIFACTORY_PATTERN', value: sourceRegBuildInfo.path),

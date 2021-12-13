@@ -171,7 +171,7 @@ describe('verify utils/common', function() {
     const log_message = 'test message';
     const set_log_level = (lvl) => {
       const envs = {};
-      envs[`ZWE_LOG_LEVEL_${log_service}`] = lvl;
+      envs[`ZWE_PRIVATE_LOG_LEVEL_${log_service}`] = lvl;
       return envs;
     };
 

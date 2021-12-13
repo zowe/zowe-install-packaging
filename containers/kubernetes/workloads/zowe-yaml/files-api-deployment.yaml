@@ -1,0 +1,153 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: files-api
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/component: files-api
+    app.kubernetes.io/part-of: explorer-api
+    app.kubernetes.io/managed-by: manual
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+      app.kubernetes.io/component: files-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zowe
+        app.kubernetes.io/instance: zowe
+        app.kubernetes.io/component: files-api
+    spec:
+      securityContext:
+        runAsUser: 20000
+        runAsGroup: 20000
+        fsGroup: 20000
+      serviceAccountName: zowe-sa
+      volumes:
+        - name: zowe-runtime
+          emptyDir: {}
+        - name: zowe-instance
+          emptyDir: {}
+        - name: zowe-config
+          configMap:
+            name: zowe-config
+        - name: zowe-keystore
+          projected:
+            sources:
+              - secret:
+                  name: zowe-certificates-secret
+        - name: zowe-workspace
+          persistentVolumeClaim:
+            claimName: zowe-workspace-pvc
+      containers:
+        - name: files-api
+          image: zowe-docker-release.jfrog.io/ompzowe/files-api:2-ubuntu
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "50m"
+            limits:
+              memory: "384Mi"
+              cpu: "300m"
+          ports:
+            - name: files-api-port
+              containerPort: 8547
+              protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: 8547
+            # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
+            periodSeconds: 10
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket:
+              port: 8547
+            # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
+            periodSeconds: 10
+            failureThreshold: 3
+          command: ["/bin/bash", "-c"]
+          args:
+            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
+          env:
+            - name: ZWE_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - name: zowe-runtime
+              mountPath: "/home/zowe/runtime"
+            - name: zowe-instance
+              mountPath: "/home/zowe/instance"
+            - name: zowe-config
+              mountPath: "/home/zowe/instance/zowe.yaml"
+              subPath: zowe.yaml
+              readOnly: true
+            - name: zowe-keystore
+              mountPath: "/home/zowe/keystore/"
+              readOnly: true
+            - name: zowe-workspace
+              mountPath: "/home/zowe/instance/workspace"
+      initContainers:
+        - name: init-zowe
+          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - name: zowe-runtime
+              mountPath: "/home/zowe/runtime"
+            - name: zowe-instance
+              mountPath: "/home/zowe/instance"
+        - name: update-workspace-permission
+          image: busybox:1.28
+          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: zowe-workspace
+              mountPath: "/home/zowe/instance/workspace"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+            runAsUser: 0
+            runAsGroup: 0

@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.zlux.sample.react",
-  "pluginLocation": "sample-react-app",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}

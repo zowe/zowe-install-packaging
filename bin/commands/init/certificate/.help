@@ -1,0 +1,59 @@
+This command will generate certificate used by Zowe services.
+
+These Zowe YAML configurations showing with sample values are required:
+
+```
+zowe:
+  setup:
+    certificate:
+      type: PKCS12
+      dname:
+        caCommonName:
+        commonName:
+        orgUnit:
+        org:
+        locality:
+        state:
+        country:
+      validity: 3650
+      pkcs12:
+        directory: /global/zowe/keystore
+        name: localhost
+        password: password
+        caAlias: local_ca
+        caPassword: local_ca_password
+      san:
+        - zos.my-company.com
+        - internal-lpar1.zos.my-company.com
+        - internal-lpar2.zos.my-company.com
+        - internal-lpar3.zos.my-company.com
+  externalDomains:
+   - zos.my-company.com
+  verifyCertificates: STRICT
+zOSMF:
+  host: zosmf.my-company.com
+  port: 443
+```
+
+- `zowe.setup.certificate.type` is the type of certificate. Valid values are
+  "PKCS12" or "JCERACFKS".
+- `zowe.setup.certificate.dname` is the distinguished name of the certificate.
+  You can define `caCommonName`, `commonName`, `orgUnit`, `org`, `locality`,
+  `state`, and / or `country`. These configurations are optional.
+- `zowe.setup.certificate.validity` is the validity days of the certificate.
+  This is optional.
+- `zowe.setup.certificate.pkcs12.directory` is the directory where you plan to
+  store the PKCS12 keystore and truststore. This is required if
+  `zowe.setup.certificate.type` is `PKCS12`.
+- You can also define `name`, `password`, `caAlias` and `caPassword` under
+  `zowe.setup.certificate.pkcs12` to customized keystore and truststore. These
+  configurations are optional, but it is recommended to update them from
+  default values.
+- `zowe.setup.certificate.san` is the `Subject Alternative Name`(s) of the
+  certificate if they are different from `zowe.externalDomains`.
+- `zOSMF.host` and `zOSMF.port` is the z/OSMF service information. This is
+  required if you are using z/OSMF as authentication service.
+- `zowe.verifyCertificates` indicates how Zowe should validate the certificate
+  of services registered under Zowe APIML. Valid values are "STRICT",
+  "NONSTRICT" or "DISABLED". If this is "STRICT", this command will try to
+  validate the z/OSMF service certificate if z/OSMF is defined.

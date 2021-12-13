@@ -1,0 +1,2 @@
+component|o|string|required||||Component to start.
+run-in-background|o|boolean|||||Whether to start this component in background.

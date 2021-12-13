@@ -31,12 +31,6 @@ node('zowe-jenkins-agent-dind-wdc') {
   // - credential id for ssh server hostname and port
   // - credential id for ssh username and password
   Map TEST_SERVERS = [
-    'marist': [
-      ansible_host     : 'marist-1',
-      ssh_hostport     : 'ssh-marist-server-zzow01-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow01',
-      node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
-    ],
     'marist-2': [
       ansible_host     : 'marist-2',
       ssh_hostport     : 'ssh-marist-server-zzow02-hostport',
@@ -52,7 +46,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     'marist-4': [
       ansible_host     : 'marist-4',
       ssh_hostport     : 'ssh-marist-server-zzow04-hostport',
-      ssh_userpass     : 'ssh-marist-server-zzow01',
+      ssh_userpass     : 'ssh-marist-server-credential',
       node_home_pattern: '/ZOWE/node/node-{NODE_VERSION}-os390-s390x'
     ]
   ];
@@ -102,32 +96,32 @@ node('zowe-jenkins-agent-dind-wdc') {
     ],
     'bundle: convenience build on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/convenience/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: smpe fmid on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/fmid/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: smpe ptf on multiple security systems': [
       test_files: 'dist/__tests__/extended/security-systems/ptf/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: all extended tests': [
       test_files: 'dist/__tests__/extended/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'bundle: keyring on multiple security systems': [
       test_files: 'dist/__tests__/extended/keyring-modes/',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
       jenkins_extra_locks: ['marist-2', 'marist-3'],
     ],
     'generate api documentation': [
       test_files: 'dist/__tests__/basic/install-api-gen.js',
-      jenkins_primary_lock: 'marist',
+      jenkins_primary_lock: 'marist-4',
     ]
   ]
 
@@ -184,7 +178,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     string(
       name: 'ZOWE_CLI_ARTIFACTORY_BUILD',
       description: 'Zowe artifactory download build',
-      defaultValue: 'Zowe CLI Bundle :: master',
+      defaultValue: '',
       trim: true
     ),
     string(
@@ -202,7 +196,7 @@ node('zowe-jenkins-agent-dind-wdc') {
     // >>>>>>>> parametters for test cases
     choice(
       name: 'NODE_VERSION',
-      choices: ['v8.16.0', 'v8.17.0', 'v12.13.0', 'v12.16.1', 'v12.18.4', 'v14.15.1'],
+      choices: ['v12.18.4', 'v8.16.0', 'v8.17.0', 'v12.13.0', 'v12.16.1', 'v14.15.1'],
       description: 'This option is only valid for Marist server and specify node.js version on z/OS side. The installation will set NODE_HOME to /ZOWE/node/node-{{version}}-os390-s390x.',
       trim: true
     ),
@@ -294,16 +288,24 @@ node('zowe-jenkins-agent-dind-wdc') {
     "target": ".tmp/zowe/",
     "flat": "true",
     "build": "${params.ZOWE_ARTIFACTORY_BUILD}"
-  }, {
+  }]
+}
+""",
+        expected    : 1
+      )
+
+    pipeline.artifactory.download(
+        specContent : """
+{
+  "files": [{
     "pattern": "${params.ZOWE_CLI_ARTIFACTORY_PATTERN}",
     "target": ".tmp/cli/",
     "flat": "true",
-    "build": "${params.ZOWE_CLI_ARTIFACTORY_BUILD}",
     "explode": "true"
   }]
 }
 """,
-        expected    : 2
+        expected    : 1
       )
     },
     timeout: [time: 20, unit: 'MINUTES']

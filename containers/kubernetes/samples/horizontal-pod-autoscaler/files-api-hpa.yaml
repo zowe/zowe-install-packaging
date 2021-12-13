@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: 1.25.0
+    app.kubernetes.io/version: "1.25.0"
     app.kubernetes.io/component: hpa
     app.kubernetes.io/managed-by: manual
 spec:
@@ -18,9 +18,9 @@ spec:
   minReplicas: 1
   maxReplicas: 3
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
