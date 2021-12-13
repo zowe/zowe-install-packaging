@@ -122,10 +122,9 @@ print_message
 # exit message
 print_level1_message "Zowe MVS data sets are installed successfully."
 
-print_message
 print_message "Zowe installation completed. In order to use Zowe, you need to run \"zwe init\" command to initialize Zowe instance."
 print_message "- Type \"zwe init --help\" to get more information."
 print_message
-print_message "You can also run individual init sub-commands: mvs, certificate, security, vsam, apfauth, stc."
-print_message "- Type \"zwe init <sub-command> --help\" (for example, zwe init stc --help) to get more information."
+print_message "You can also run individual init sub-commands: mvs, certificate, security, vsam, apfauth, and stc."
+print_message "- Type \"zwe init <sub-command> --help\" (for example, \"zwe init stc --help\") to get more information."
 print_message

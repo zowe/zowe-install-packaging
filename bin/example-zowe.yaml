@@ -86,9 +86,10 @@ zowe:
         # password: password
         # caAlias: local_ca
         # caPassword: local_ca_password
-      keyring:
-        owner: ZWESVUSR
-        name: ZoweKeyring
+      # # TODO: support of keyring is undergoing
+      # keyring:
+      #   owner: ZWESVUSR
+      #   name: ZoweKeyring
 
     # VSAM configurations if you are using VSAM as Caching Service storage
     vsam:
