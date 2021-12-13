@@ -79,16 +79,11 @@ data:
     ZWE_CACHING_SERVICE_VSAM_DATASET=IBMUSER.ZWE.CACHE1
 
     # explorer variables
-    JOBS_API_PORT=8545
-    FILES_API_PORT=8547
-    JES_EXPLORER_UI_PORT=8546
-    MVS_EXPLORER_UI_PORT=8548
-    USS_EXPLORER_UI_PORT=8550
     ZOWE_EXPLORER_FRAME_ANCESTORS="${ZOWE_EXTERNAL_HOST}:*,${ZOWE_EXPLORER_HOST}:*,${ZOWE_IP_ADDRESS}:*" # comma seperated list of hosts allowed to embed explorers
 
     # app framework (app-server, zss, zis) variables
-    ZOWE_ZLUX_SERVER_HTTPS_PORT=8544
-    ZOWE_ZSS_SERVER_PORT=8542
+    ZOWE_ZLUX_SERVER_HTTPS_PORT=7556
+    ZOWE_ZSS_SERVER_PORT=7557
     ZOWE_ZSS_SERVER_TLS=true # Set this to false if you need to use ZSS without TLS (Backward-compat). May be needed if encountering desktop login failure due to app-server to ZSS communication failure
     ZOWE_ZSS_XMEM_SERVER_NAME=ZWESIS_STD
     ZWES_ZIS_LOADLIB=

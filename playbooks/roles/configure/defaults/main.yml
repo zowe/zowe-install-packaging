@@ -51,11 +51,11 @@ zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: auto
 # explorer APIs/plugins ports
-zowe_jobs_api_port: 8545
-zowe_mvs_api_port: 8547
-zowe_jobs_explorer_port: 8546
-zowe_mvs_explorer_port: 8548
-zowe_uss_explorer_port: 8550
+zowe_jobs_api_port: 7600
+zowe_mvs_api_port: 7559
+zowe_jobs_explorer_port: 7560
+zowe_mvs_explorer_port: 7561
+zowe_uss_explorer_port: 7562
 # caching service
 zowe_caching_service_port: 7555
 zowe_caching_service_persistent: VSAM
@@ -65,9 +65,9 @@ zowe_caching_service_vsam_dsprefix: CACHE
 zowe_caching_vsam_storage_class:
 zowe_caching_vsam_volume:
 # zlux ports
-zowe_zlux_port: 8544
+zowe_zlux_port: 7556
 zowe_zss_https: True
-zowe_zss_port: 8542
+zowe_zss_port: 7557
 # make sure that this equals to zssCrossMemoryServerName in install in zowe-install-apf-server.yaml
 zowe_zss_xmem_name: ZWESIS_STD
 zowe_zlux_terminal_ssh_port: 22

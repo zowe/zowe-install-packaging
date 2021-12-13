@@ -59,7 +59,7 @@ spec:
               cpu: "300m"
           ports:
             - name: files-api-port
-              containerPort: 8547
+              containerPort: 7559
               protocol: TCP
           startupProbe:
             tcpSocket:

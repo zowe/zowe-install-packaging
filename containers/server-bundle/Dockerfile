@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
-EXPOSE 8544/tcp
+EXPOSE 7556/tcp
 
 #ENV ZOWE_ZOSMF_HOST='zosmf.host.com'
 #ENV ZOWE_ZSS_HOST='zss.host.com'
@@ -24,7 +24,7 @@ ENV ZOWE_IP_ADDRESS=0.0.0.0
 
 ENV ZOWE_ZOSMF_PORT='443'
 #ENV ZOWE_ZSS_SERVER_PORT='00000'
-ENV ZWED_agent_https_port='8542'
+ENV ZWED_agent_https_port='7557'
 
 ENV LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY
 
@@ -112,7 +112,7 @@ FROM ompzowe/zowecicd-node12-java8:v2.1
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
-EXPOSE 8544/tcp
+EXPOSE 7556/tcp
 
 #ENV ZOWE_ZOSMF_HOST='zosmf.host.com'
 #ENV ZOWE_ZSS_HOST='zss.host.com'
@@ -122,7 +122,7 @@ ENV ZOWE_IP_ADDRESS=0.0.0.0
 
 ENV ZOWE_ZOSMF_PORT='443'
 #ENV ZOWE_ZSS_SERVER_PORT='00000'
-ENV ZWED_agent_https_port='8542'
+ENV ZWED_agent_https_port='7557'
 
 # authorization needs to point to zss endpoint
 ENV APIML_SECURITY_AUTHORIZATION_PROVIDER=endpoint
