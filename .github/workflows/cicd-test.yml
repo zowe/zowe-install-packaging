@@ -56,7 +56,7 @@ env:
   # constants
   INSTALL_TEST_PATH: tests/installation
   SANITY_TEST_PATH: tests/sanity
-  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*{branch-name}*.pax
+  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
   DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
   DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar
   DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE-HOLDER/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
