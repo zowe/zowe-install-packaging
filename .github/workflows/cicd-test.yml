@@ -354,8 +354,8 @@ jobs:
 
           # note that below if-else does not always get to run the sed part, as we only replace if {branch-name} exists in the pattern,
           #   which isn't the case for customized path. In either case, $zowe_artifactory_pattern_final should be filled
-          if [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
-            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#$snapshot#g")
+          if [[ "$CURRENT_BRANCH_NEW" == "master" ]] ; then
+            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#snapshot#g")
           else
             zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           fi
