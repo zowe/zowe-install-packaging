@@ -27,34 +27,34 @@ zowe:
       # APF authorized LOADLIB for Zowe ZIS Plugins
       authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
 
-    # Security related configurations
-    security:
-      # security product name. Can be RACF, ACF2 or TSS
-      product: RACF
-      # security group name
-      groups:
-        # Zowe admin user group
-        admin: ZWEADMIN
-        # Zowe STC group
-        stc: ZWEADMIN
-        # Zowe SysProg group
-        sysProg: ZWEADMIN
-      # security user name
-      users:
-        # Zowe runtime user name of main service
-        zowe: ZWESVUSR
-        # Zowe runtime user name of Cross Memory Server
-        xmem: ZWESIUSR
-        # Zowe runtime user name of Auxilary Service
-        aux: ZWESIUSR
-      # STC names
-      stcs:
-        # STC name of Zowe main service
-        zowe: ZWESLSTC
-        # STC name of Zowe Cross Memory Server
-        xmem: ZWESISTC
-        # STC name of Zowe Auxilary Service
-        aux: ZWESASTC
+    # # Security related configurations. This setup is optional.
+    # security:
+    #   # security product name. Can be RACF, ACF2 or TSS
+    #   product: RACF
+    #   # security group name
+    #   groups:
+    #     # Zowe admin user group
+    #     admin: ZWEADMIN
+    #     # Zowe STC group
+    #     stc: ZWEADMIN
+    #     # Zowe SysProg group
+    #     sysProg: ZWEADMIN
+    #   # security user name
+    #   users:
+    #     # Zowe runtime user name of main service
+    #     zowe: ZWESVUSR
+    #     # Zowe runtime user name of Cross Memory Server
+    #     xmem: ZWESIUSR
+    #     # Zowe runtime user name of Auxilary Service
+    #     aux: ZWESIUSR
+    #   # STC names
+    #   stcs:
+    #     # STC name of Zowe main service
+    #     zowe: ZWESLSTC
+    #     # STC name of Zowe Cross Memory Server
+    #     xmem: ZWESISTC
+    #     # STC name of Zowe Auxilary Service
+    #     aux: ZWESASTC
 
     # Certificate related configurations
     certificate:
@@ -80,12 +80,12 @@ zowe:
       pkcs12:
         # Keystore directory to store PKCS12 keystores
         directory: /global/zowe/keystore
-        # PKCS12 keystore name.
-        name: localhost
-        # PKCS12 keystore name.
-        password: password
-        caAlias: local_ca
-        caPassword: local_ca_password
+        # # PKCS12 keystore name.
+        # name: localhost
+        # # PKCS12 keystore name.
+        # password: password
+        # caAlias: local_ca
+        # caPassword: local_ca_password
       keyring:
         owner: ZWESVUSR
         name: ZoweKeyring
