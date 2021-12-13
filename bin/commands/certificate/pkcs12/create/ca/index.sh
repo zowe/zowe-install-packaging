@@ -38,5 +38,8 @@ ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT="${ZWE_CLI_PARAMETER_ORG_UNIT}" \
   "${ZWE_CLI_PARAMETER_ALIAS}" \
   "${ZWE_CLI_PARAMETER_PASSWORD}" \
   "${ZWE_CLI_PARAMETER_COMMON_NAME}"
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0168E: Failed to create certificate authority \"${ZWE_CLI_PARAMETER_ALIAS}\"." "" 168
+fi
 
 print_level2_debug "Certificate authority ${ZWE_CLI_PARAMETER_ALIAS} is created successfully."

@@ -44,5 +44,8 @@ ZWE_PRIVATE_CERTIFICATE_ORG_UNIT="${ZWE_CLI_PARAMETER_ORG_UNIT}" \
   "${ZWE_CLI_PARAMETER_DOMAINS}" \
   "${ZWE_CLI_PARAMETER_CA_ALIAS}" \
   "${ZWE_CLI_PARAMETER_CA_PASSWORD}"
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0169E: Failed to create certificate \"${ZWE_CLI_PARAMETER_ALIAS}\"." "" 169
+fi
 
 print_level2_debug "Certificate ${ZWE_CLI_PARAMETER_ALIAS} is created successfully."

@@ -52,8 +52,11 @@ get_tmp_dir() {
 
 create_tmp_file() {
   prefix=${1:-zwe}
+  tmpdir=${2:-}
 
-  tmpdir=$(get_tmp_dir)
+  if [ -z "${tmpdir}" ]; then
+    tmpdir=$(get_tmp_dir)
+  fi
   while true ; do
     file="${tmpdir}/${prefix}-${RANDOM}"
     if [ ! -f "${file}" ]; then
