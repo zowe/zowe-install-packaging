@@ -2,7 +2,7 @@
   "node": {
     "https": {
       "ipAddresses": ["0.0.0.0"],
-      "port": 8544,
+      "port": 7556,
       //pfx (string), keys, certificates, certificateAuthorities, and certificateRevocationLists are all valid here.
       "keys": ["../defaults/serverConfig/zlux.keystore.key"],
       "certificates": ["../defaults/serverConfig/zlux.keystore.cer"],
@@ -37,7 +37,7 @@
     "https": {
       "ipAddresses": ["127.0.0.1"],
       //to be a replacement for zssPort
-      "port": 8542
+      "port": 7557
     },
     "mediationLayer": {
       "serviceName": "zss",

@@ -10,7 +10,7 @@
 docker pull ompzowe/server-bundle:latest
 export DISCOVERY_PORT=7553
 export GATEWAY_PORT=7554
-export APP_SERVER_PORT=8544
+export APP_SERVER_PORT=7556
 
 #add non-default settings with --env, using same properties as seen in instance.env
 #   --env ZWED_TN3270_PORT=23
@@ -21,7 +21,7 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_https_port=8542 \
+    --env ZWED_agent_https_port=7557 \
     --expose ${DISCOVERY_PORT} \
     --expose ${GATEWAY_PORT} \
     --expose ${APP_SERVER_PORT} \
@@ -36,7 +36,7 @@ docker run -it \
 ```
 Open browser and test it
  - API Mediation Layer: https://myhost.acme.net:7554
- - App Framework: https://myhost.acme.net:8544
+ - App Framework: https://myhost.acme.net:7556
 
 ## Building docker image
 Within this directory are several dockerfiles that have different purposes
@@ -83,7 +83,7 @@ docker build -t zowe/docker:latest .
 For example:
 
 ```cmd
-DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=8544 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_https_port=8542 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZWED_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/root/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/root/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:latest
+DISCOVERY_PORT=7553 GATEWAY_PORT=7554 APP_SERVER_PORT=7556 docker run -it -h your_hostname --env ZOWE_IP_ADDRESS=your.external.ip --env LAUNCH_COMPONENT_GROUPS=DESKTOP,GATEWAY --env ZOSMF_HOST=your.zosmainframe.com --env ZWED_agent_host=your.zosmainframe.com --env ZOSMF_PORT=11443 --env ZWED_agent_https_port=7557 --expose ${DISCOVERY_PORT} --expose ${GATEWAY_PORT} --expose ${APP_SERVER_PORT} -p ${DISCOVERY_PORT}:${DISCOVERY_PORT} -p ${GATEWAY_PORT}:${GATEWAY_PORT} -p ${APP_SERVER_PORT}:${APP_SERVER_PORT} --env GATEWAY_PORT=${GATEWAY_PORT} --env DISCOVERY_PORT=${DISCOVERY_PORT} --env ZWED_SERVER_HTTPS_PORT=${APP_SERVER_PORT} --env EXTERNAL_CERTIFICATE=/root/zowe/ext_certs/my.keystore.p12 --env EXTERNAL_CERTIFICATE_ALIAS=alias --env EXTERNAL_CERTIFICATE_AUTHORITIES=/root/zowe/ext_certs/myCA.cer --mount type=bind,source=<folder with certs>,target=/home/zowe/ext_certs ompzowe/server-bundle:latest
 ```
 Note: External certificates are optional and should not be included in the start command if undesired.
 
@@ -117,7 +117,7 @@ An example of `docker start` command
 ```cmd
 set DISCOVERY_PORT=7553
 set GATEWAY_PORT=7554
-set APP_SERVER_PORT=8544
+set APP_SERVER_PORT=7556
 
 #add non-default settings with --env, using same properties as seen in instance.env
 #   --env ZWED_TN3270_PORT=23
@@ -128,7 +128,7 @@ docker run -it ^
     --env ZOSMF_HOST=your.zosmainframe.com ^
     --env ZWED_agent_host=your.zosmainframe.com ^
     --env ZOSMF_PORT=11443 ^
-    --env ZWED_agent_https_port=8542 ^
+    --env ZWED_agent_https_port=7557 ^
     --expose %DISCOVERY_PORT% ^
     --expose %GATEWAY_PORT% ^
     --expose %APP_SERVER_PORT% ^
@@ -146,7 +146,7 @@ docker run -it ^
 ```cmd
 export DISCOVERY_PORT=7553
 export GATEWAY_PORT=7554
-export APP_SERVER_PORT=8544
+export APP_SERVER_PORT=7556
 
 docker run -it \
     -h your_hostname \
@@ -155,7 +155,7 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_https_port=8542 \
+    --env ZWED_agent_https_port=7557 \
     --expose ${DISCOVERY_PORT} \
     --expose ${GATEWAY_PORT} \
     --expose ${APP_SERVER_PORT} \
@@ -180,7 +180,7 @@ put something here
 Open browser and test it
  - API Mediation Layer: https://mf.acme.net:7554
  - API ML Discovery Service: https://mf.acme.net:7553/
- - App Framework: https://mf.acme.net:8544
+ - App Framework: https://mf.acme.net:7556
 
 ## Using Zowe's Docker with Zowe products & plugins
 To use Zowe-based software with the docker container, you must make that software visible to the Zowe that is within Docker by mapping a folder on your host machine to a folder visible within the docker container.
@@ -194,7 +194,7 @@ An example is to add Apps to the Zowe Docker by sharing the host directory `~/ap
 ```cmd
 export DISCOVERY_PORT=7553
 export GATEWAY_PORT=7554
-export APP_SERVER_PORT=8544
+export APP_SERVER_PORT=7556
 
 docker run -it \
     -h your_hostname \
@@ -203,7 +203,7 @@ docker run -it \
     --env ZOSMF_HOST=your.zosmainframe.com \
     --env ZWED_agent_host=your.zosmainframe.com \
     --env ZOSMF_PORT=11443 \
-    --env ZWED_agent_https_port=8542 \
+    --env ZWED_agent_https_port=7557 \
     --expose ${DISCOVERY_PORT} \
     --expose ${GATEWAY_PORT} \
     --expose ${APP_SERVER_PORT} \

@@ -1,0 +1,3 @@
+Return component list should be started in specified HA instance.
+
+NOTE: This command only returns components with start command.

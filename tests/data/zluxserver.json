@@ -1,7 +1,7 @@
 {
   "node": {
     "https": {
-      "port": 8544,
+      "port": 7556,
       //pfx (string), keys, certificates, certificateAuthorities, and certificateRevocationLists are all valid here.
       "keys": ["../defaults/serverConfig/zlux.keystore.key"],
       "certificates": ["../defaults/serverConfig/zlux.keystore.cer"],
@@ -55,5 +55,5 @@
     }
   },
   // internal port, do not connect browser to this port
-  "zssPort":8542
+  "zssPort":7557
 }

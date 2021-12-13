@@ -59,7 +59,7 @@ spec:
               cpu: "100m"
           ports:
             - name: uss-port
-              containerPort: 8550
+              containerPort: 7562
               protocol: TCP
           startupProbe:
             tcpSocket:

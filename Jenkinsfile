@@ -67,18 +67,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       remoteWorkspace            : lib.Constants.DEFAULT_PAX_PACKAGING_REMOTE_WORKSPACE,
     ],
     extraInit: {
-      def commitHash = sh(script: 'git rev-parse --verify HEAD', returnStdout: true).trim()
-
-      sh """
-sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
-    -e 's#{BUILD_NUMBER}#${env.BUILD_NUMBER}#g' \
-    -e 's#{BUILD_COMMIT_HASH}#${commitHash}#g' \
-    -e 's#{BUILD_TIMESTAMP}#${currentBuild.startTimeInMillis}#g' \
-    manifest.json.template > manifest.json
-"""
-      echo "Current manifest.json is:"
-      sh "cat manifest.json"
-      manifest = readJSON(file: 'manifest.json')
+      manifest = readJSON(file: 'manifest.json.template')
       if (!manifest || !manifest['name'] || manifest['name'] != 'Zowe' || !manifest['version']) {
         error "Cannot read manifest or manifest is invalid."
       }
@@ -103,15 +92,13 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
 
       // prepareing download spec
       echo 'prepareing download spec ...'
-      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/content/zowe-${manifest['version']}/files/" as String])
+      def spec = pipeline.artifactory.interpretArtifactDefinitions(manifest['binaryDependencies'], [ "target": ".pax/binaryDependencies/" as String])
       writeJSON file: 'artifactory-download-spec.json', json: spec, pretty: 2
-      echo "================ download spec ================"
-      sh "cat artifactory-download-spec.json"
 
       // download components
       pipeline.artifactory.download(
         spec        : 'artifactory-download-spec.json',
-        expected    : 24
+        expected    : 25
       )
 
       // we want build log pulled in for SMP/e build

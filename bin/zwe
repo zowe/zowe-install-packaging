@@ -1,0 +1,95 @@
+#!/bin/sh
+
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+#######################################################################
+
+#######################################################################
+# central handle for all Zowe commands
+
+#######################################################################
+# Constants
+# PATH must be set before anything else
+if $(/bin/test -z "${PATH}" 2>/dev/null) ; then
+  export PATH=/bin:.:/usr/bin
+fi
+if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
+  ZWE_zowe_runtimeDirectory=$(cd "$(dirname "$0")/../";pwd)
+fi
+
+#######################################################################
+# import all shared libraries
+if [ -z "${ZWE_PRIVATE_CLI_LIBRARY_LOADED}" ]; then
+  . ${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh
+fi
+
+#######################################################################
+# parse parameters
+ZWE_CLI_COMMANDS_LIST=
+# load ZWE_CLI_COMMANDS_LIST
+for idx in 1 2 3 4 5 6 7 8 9 10; do
+  eval "arg=\"\${${idx}}\""
+  if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
+    break
+  else
+    ZWE_CLI_COMMANDS_LIST="${ZWE_CLI_COMMANDS_LIST} ${arg}"
+  fi
+done
+ZWE_CLI_COMMANDS_LIST=$(trim "${ZWE_CLI_COMMANDS_LIST}")
+# load ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=
+zwecli_load_parameters_definition
+# load ZWE_CLI_PARAMETERS_LIST and ZWE_CLI_PARAMETER_*
+ZWE_CLI_PARAMETERS_LIST=
+zwecli_load_parameters_default_value
+while [ $# -gt 0 ]; do
+  arg="$1"
+  if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
+    definition=$(zwecli_locate_parameter_definition $arg)
+    if [ $? -gt 0 ]; then
+      print_error_and_exit "Error ZWEL0102E: Invalid parameter ${arg}" "" 102
+    fi
+    param_id=$(echo "${definition}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
+    param_type=$(echo "${definition}" | awk -F"|" '{print $3}' | lower_case)
+    if [ "${param_type}" = "b" -o "${param_type}" = "bool" -o "${param_type}" = "boolean" ]; then
+      ZWE_CLI_PARAMETERS_LIST=$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")
+      zwecli_set_parameter_value "${param_id}" "true"
+    elif [ "${param_type}" = "s" -o "${param_type}" = "str" -o "${param_type}" = "string" ]; then
+      shift
+      ZWE_CLI_PARAMETERS_LIST=$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")
+      zwecli_set_parameter_value "${param_id}" "${1}"
+    else
+      print_error_and_exit "Error ZWEL0103E: Invalid type of parameter ${arg}" "" 103
+    fi
+  fi
+  shift
+done
+
+# debug results
+# print_message "ZWE_CLI_COMMANDS_LIST=${ZWE_CLI_COMMANDS_LIST}"
+# print_message "ZWE_CLI_PARAMETERS_LIST=${ZWE_CLI_PARAMETERS_LIST}"
+# print_message "ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}"
+# exit 1
+
+#######################################################################
+# process
+# If we source a sub-command, these steps will be ignored
+if [ "${ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND}" = "true" ]; then
+  # TODO: separate verbose level by termnimal output and log file
+  zwecli_process_loglevel
+  # if it's in help mode, the script will exit with code 100
+  zwecli_process_help
+  # prepare log file if directory specified
+  # TODO: logDirectory could be defined in zowe.yaml different sections
+  zwecli_process_logfile
+fi
+# validate parameter before execute command
+zwecli_validate_parameters
+# handle command
+zwecli_process_command

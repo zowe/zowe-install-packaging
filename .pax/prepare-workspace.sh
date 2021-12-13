@@ -19,9 +19,9 @@
 # runs on Jenkins server, before sending data to z/OS
 #
 #######################################################################
-set -x
+# set -x
 
-# expected input workspace layout ($ROOT_DIR):
+# expected input workspace layout (${ROOT_DIR}):
 # ./.pax/keyring-util/
 # ./bin/
 # ./files/
@@ -39,24 +39,24 @@ set -x
 # $wf_to: target location (customized workfiles)
 # ---------------------------------------------------------------------
 _customizeWorkflow () {
-echo "[${SCRIPT_NAME}] creating workflows in $wf_to ..."
-mkdir -p "$wf_to"
+  echo "[${SCRIPT_NAME}] creating workflows in $wf_to ..."
+  mkdir -p "$wf_to"
 
-wf_files=$(ls "$wf_from")  # processes all files (.xml, .vtl & .properties)
-for wf_file in $wf_files
-do
-  # skip if directory
-  test -d "$wf_from/$wf_file" && continue
-  # fill in Zowe version in the workflow file
-  sed -e "s/###ZOWE_VERSION###/${ZOWE_VERSION}/g" \
-      -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" \
-      "$wf_from/$wf_file" \
-      > "$wf_to/$wf_file"
-  # remove raw workflow file if requested
-  test -n "$1" && rm "$wf_from/$wf_file"
-done
+  wf_files=$(ls "$wf_from")  # processes all files (.xml, .vtl & .properties)
+  for wf_file in $wf_files
+  do
+    # skip if directory
+    test -d "$wf_from/$wf_file" && continue
+    # fill in Zowe version in the workflow file
+    sed -e "s/###ZOWE_VERSION###/${ZOWE_VERSION}/g" \
+        -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" \
+        "$wf_from/$wf_file" \
+        > "$wf_to/$wf_file"
+    # remove raw workflow file if requested
+    test -n "$1" && rm "$wf_from/$wf_file"
+  done
 
-return 0
+  return 0
 }    # _customizeWorkflow
 
 # ---------------------------------------------------------------------
@@ -65,91 +65,110 @@ return 0
 # $wf_to: target location (customized workfiles)
 # ---------------------------------------------------------------------
 _templateWorkflow () {
-wf_temp="${PAX_WORKSPACE_DIR}/ascii/wf_temp"  # temp dir for sed
-mkdir -p "$wf_temp"
-mkdir -p "$wf_to"
+  wf_temp="${PAX_WORKSPACE_DIR}/ascii/wf_temp"  # temp dir for sed
+  mkdir -p "$wf_temp"
+  mkdir -p "$wf_to"
 
-# stage input
-cp -R $wf_from/. "$wf_temp"
+  # stage input
+  cp -R $wf_from/. "$wf_temp"
 
-# customize & move from temp
-wf_from="$wf_temp"
-_customizeWorkflow move
+  # customize & move from temp
+  wf_from="$wf_temp"
+  _customizeWorkflow move
 
-# move remaining sub-dirs from temp
-cp -R $wf_temp/. "$wf_to"
-rm -rf $wf_temp
+  # move remaining sub-dirs from temp
+  cp -R $wf_temp/. "$wf_to"
+  rm -rf $wf_temp
 
-return 0
+  return 0
 }    # _templateWorkflow
 
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
 SCRIPT_NAME=$(basename "$0")  # $0=./.pax/prepare-workspace.sh
-BASE_DIR=$(dirname "$0")      # <something>/.pax
+PAX_WORKSPACE_DIR=$(cd "$(dirname "$0")";pwd)      # <something>/.pax
+PAX_BINARY_DEPENDENCIES="${PAX_WORKSPACE_DIR}/binaryDependencies"
+ROOT_DIR=$(cd "${PAX_WORKSPACE_DIR}/../";pwd)
+# BUILD_BRANCH should be a Jenkins variable
+if [ -z "${BUILD_BRANCH}" ]; then
+  # generate if it's not running on Jenkins
+  BUILD_BRANCH=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+fi
+BUILD_COMMIT_HASH=$(git rev-parse --verify HEAD)
+BUILD_TIMESTAMP=$(node -e "console.log((new Date()).getTime())")
 
+# BUILD_NUMBER should be a Jenkins variable
+cd "${ROOT_DIR}"
+echo "[${SCRIPT_NAME}] preparing manifest.json ..."
+sed -e "s#{BUILD_BRANCH}#${BUILD_BRANCH}#g" \
+    -e "s#{BUILD_NUMBER}#${BUILD_NUMBER}#g" \
+    -e "s#{BUILD_COMMIT_HASH}#${BUILD_COMMIT_HASH}#g" \
+    -e "s#{BUILD_TIMESTAMP}#${BUILD_TIMESTAMP}#g" \
+    manifest.json.template > manifest.json
+echo "[${SCRIPT_NAME}] build information: $(cat manifest.json | jq -r '.build')"
+
+echo "[${SCRIPT_NAME}] extracting ZOWE_VERSION ..."
+ZOWE_VERSION=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 if [ -z "$ZOWE_VERSION" ]; then
-  echo "[$SCRIPT_NAME] ZOWE_VERSION environment variable is missing"
+  echo "[$SCRIPT_NAME] Error: failed to extract version from manifest.json"
   exit 1
 else
-  echo "[$SCRIPT_NAME] working on Zowe v${ZOWE_VERSION} ..."
+  echo "[$SCRIPT_NAME] - working on Zowe v${ZOWE_VERSION} ..."
 fi
 
-cd $BASE_DIR
-cd ..
-ROOT_DIR=$(pwd)
-PAX_WORKSPACE_DIR=${ROOT_DIR}/.pax
+cd "${ROOT_DIR}"
 
-# show what's already present
-echo "[${SCRIPT_NAME}] content \$PAX_WORKSPACE_DIR: ls -l ${PAX_WORKSPACE_DIR}/"
-ls -l "${PAX_WORKSPACE_DIR}/" || true
-
-# workspace path abbreviations, relative to $ROOT_DIR
+# workspace path abbreviations, relative to ${ROOT_DIR}
 ASCII_DIR="${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
 CONTENT_DIR="${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}"
 
 # prepare pax workspace
 echo "[${SCRIPT_NAME}] preparing folders ..."
-mkdir -p "${ASCII_DIR}"
-mkdir -p "${CONTENT_DIR}/bin"
-mkdir -p "${CONTENT_DIR}/install"
-mkdir -p "${CONTENT_DIR}/scripts"
+rm -fr "${ASCII_DIR}" && mkdir -p "${ASCII_DIR}"
+rm -fr "${CONTENT_DIR}" && mkdir -p "${CONTENT_DIR}/bin"
 mkdir -p "${CONTENT_DIR}/files"
+# FIXME: remove these debug code
+# rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
+# cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
 
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
+cd "${ROOT_DIR}"
 cp manifest.json       "${CONTENT_DIR}"
+cp ZOWE.md             "${CONTENT_DIR}/README.md"
 cp -R bin/*            "${CONTENT_DIR}/bin"
-cp -R install/*        "${CONTENT_DIR}/install"
-cp -R scripts/*        "${CONTENT_DIR}/scripts"
-cp -R shared/scripts/* "${CONTENT_DIR}/scripts"
 cp -R files/*          "${CONTENT_DIR}/files"
+
+# move licenses
+mkdir -p "${CONTENT_DIR}/licenses"
+echo "[${SCRIPT_NAME}] copy license file ..."
+mv "${PAX_BINARY_DEPENDENCIES}/zowe_licenses_full.zip" "${CONTENT_DIR}/licenses"
 
 # extract packaging utility tools to bin/utils
 echo "[${SCRIPT_NAME}] prepare utility tools ..."
-cd "$ROOT_DIR" && cd "${CONTENT_DIR}/files"
-mv zowe-utility-tools-*.zip zowe-utility-tools.zip
-cd "$ROOT_DIR" && cd "${CONTENT_DIR}/bin/utils"
-jar -xf "../../files/zowe-utility-tools.zip"
+cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
+echo "[${SCRIPT_NAME}] extract zowe-utility-tools.zip ..."
+jar -xf "${PAX_BINARY_DEPENDENCIES}"/zowe-utility-tools*.zip
 # we should get 2 tgz files as npm packages
 echo "[${SCRIPT_NAME}] extract zowe-fconv ..."
-tar zxvf zowe-fconv-*.tgz
+tar zxf zowe-fconv-*.tgz
 mv package fconv
 rm zowe-fconv-*.tgz
 echo "[${SCRIPT_NAME}] extract zowe-njq ..."
-tar zxvf zowe-njq-*.tgz
+tar zxf zowe-njq-*.tgz
 mv package njq
 rm zowe-njq-*.tgz
 echo "[${SCRIPT_NAME}] extract zowe-config-converter ..."
-tar zxvf zowe-config-converter-*.tgz
+tar zxf zowe-config-converter-*.tgz
 mv package config-converter
 rm zowe-config-converter-*.tgz
 # zowe-ncert.pax will be extracted on z/OS side
-cd "$ROOT_DIR"
-rm -f "${CONTENT_DIR}/files/zowe-utility-tools.zip"
+cd "${ROOT_DIR}"
+rm -f "${PAX_BINARY_DEPENDENCIES}"/zowe-utility-tools*.zip
 
 # put text files into ascii folder (recursive & verbose)
+echo "[${SCRIPT_NAME}] move ASCII files out of CONTENT directory for encoding conversion ..."
 rsync -rv \
   --exclude '*.zip' \
   --exclude '*.png' \
@@ -162,51 +181,47 @@ rsync -rv \
   "${CONTENT_DIR}/" \
   "${ASCII_DIR}"
 
-# move keyring-util to bin/utils/keyring-util
-KEYRING_UTIL_SRC="${PAX_WORKSPACE_DIR}/keyring-util"
-KEYRING_UTIL_DEST="${CONTENT_DIR}/bin/utils/keyring-util"
-mkdir -p "$KEYRING_UTIL_DEST"
-cp "$KEYRING_UTIL_SRC/keyring-util" "$KEYRING_UTIL_DEST/keyring-util"
+echo "[${SCRIPT_NAME}] copy keyring_utils"
+cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
+mkdir -p keyring-util
+mv "${PAX_BINARY_DEPENDENCIES}"/keyring-util-* keyring-util/keyring-util
 
-# cleanup working files
-rm -rf "$KEYRING_UTIL_SRC"
-
-# move licenses
-mkdir -p "${CONTENT_DIR}/licenses"
-mv "${CONTENT_DIR}/files/zowe_licenses_full.zip" \
-   "${CONTENT_DIR}/licenses"
-
-# move zlux files to zlux folder & give fixed name
+# move binary dependencies and prepare to extract on z/OS
+echo "[${SCRIPT_NAME}] move binary dependencies ..."
 mkdir -p "${CONTENT_DIR}/files/zlux"
-cd "${CONTENT_DIR}/files"
-mv zlux-core-*.pax          app-server-${ZOWE_VERSION}.pax
-mv zlux-editor-*.pax        zlux/zlux-editor.pax
-mv tn3270-ng2-*.pax         zlux/tn3270-ng2.pax
-mv vt-ng2-*.pax             zlux/vt-ng2.pax
-mv sample-react-app-*.pax   zlux/sample-react-app.pax
-mv sample-iframe-app-*.pax  zlux/sample-iframe-app.pax
-mv sample-angular-app-*.pax zlux/sample-angular-app.pax
-mv explorer-ip-*.pax        zlux/explorer-ip.pax
-mv zss-*.pax                zss-${ZOWE_VERSION}.pax
-cd "$ROOT_DIR"
+cd "${PAX_BINARY_DEPENDENCIES}"
+for zlux_dep in zlux-editor tn3270-ng2 vt-ng2 sample-react-app sample-iframe-app sample-angular-app explorer-ip ; do
+  mv ${zlux_dep}-*.pax        "${CONTENT_DIR}/files/zlux/${zlux_dep}.pax"
+done
+mv *.pax "${CONTENT_DIR}/files/"
+mv *.zip "${CONTENT_DIR}/files/"
+# PAX_BINARY_DEPENDENCIES should be empty now
+if [ -n "$(ls -1)" ]; then
+  echo "[$SCRIPT_NAME] Error: binaryDependencies directory is not clean"
+  exit 1
+fi
+cd "${ROOT_DIR}"
+rm -r "${PAX_BINARY_DEPENDENCIES}"
 
+echo "[${SCRIPT_NAME}] create customized workflows ..."
 # create customized workflows
 wf_from="workflows/files"
 wf_to="${ASCII_DIR}/files/workflows"
 _customizeWorkflow
-
-# copy smpe scripts -- build usage only
-mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe"
-cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"
-cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/bld"
-mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
-cp -R shared/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
 
 # copy source for workflows with matching JCL -- build usage only
 wf_from="workflows/templates"
 wf_to="${PAX_WORKSPACE_DIR}/ascii/templates"
 _templateWorkflow
 cp workflows/*.rex "$wf_to"                               # add tooling
+
+echo "[${SCRIPT_NAME}] copy smpe scripts ..."
+# copy smpe scripts -- build usage only
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe"
+cp -R smpe/. "${PAX_WORKSPACE_DIR}/ascii/smpe"
+cp -R smpe/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/bld"
+mkdir -p "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
+cp -R smpe/scripts/* "${PAX_WORKSPACE_DIR}/ascii/smpe/pax/scripts"
 
 echo "[$SCRIPT_NAME] done"
 
@@ -215,5 +230,4 @@ echo "[$SCRIPT_NAME] done"
 # ${PAX_WORKSPACE_DIR}/ascii/templates/
 # ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/
 # ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/
-# ${PAX_WORKSPACE_DIR}/keyring-util/  # already present
 # ascii/* will move into content/, translated to ebcdic

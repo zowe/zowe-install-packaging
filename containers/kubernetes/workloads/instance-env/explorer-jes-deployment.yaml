@@ -59,7 +59,7 @@ spec:
               cpu: "100m"
           ports:
             - name: jes-port
-              containerPort: 8546
+              containerPort: 7560
               protocol: TCP
           startupProbe:
             tcpSocket:

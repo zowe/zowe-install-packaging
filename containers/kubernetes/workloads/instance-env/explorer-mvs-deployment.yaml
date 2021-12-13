@@ -59,7 +59,7 @@ spec:
               cpu: "100m"
           ports:
             - name: mvs-port
-              containerPort: 8548
+              containerPort: 7561
               protocol: TCP
           startupProbe:
             tcpSocket:

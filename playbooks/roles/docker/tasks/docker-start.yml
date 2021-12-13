@@ -14,7 +14,7 @@
       --expose {{zowe_apiml_gateway_port}} \
       -p {{zowe_apiml_discovery_port}}:7553 \
       -p {{zowe_apiml_gateway_port}}:{{zowe_apiml_gateway_port}} \
-      -p {{zowe_zlux_port}}:8544 \
+      -p {{zowe_zlux_port}}:7556 \
       {{zowe_docker_image}}:{{zowe_docker_tag}}
   register: container_id_response
   delegate_to: localhost

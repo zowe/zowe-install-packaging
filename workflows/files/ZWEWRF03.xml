@@ -330,13 +330,13 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         </string>
     </variable>
     <variable name="ZWED_SERVER_HTTPS_PORT" scope="instance" visibility="public">
-        <label>Zowe ZLUX Server HTTPS Port</label>
-        <abstract>Zowe ZLUX Server HTTPS Port</abstract>
-        <description>Zowe ZLUX Server HTTPS Port</description>
+        <label>Zowe App Server HTTPS Port</label>
+        <abstract>Zowe App Server HTTPS Port</abstract>
+        <description>Zowe App Server HTTPS Port</description>
         <category>Zowe Desktop/app framework variables</category>
         <integer>
             <!-- validation -->
-            <default>8544</default>
+            <default>7556</default>
         </integer>
     </variable>
     <variable name="ZWES_SERVER_PORT" scope="instance" visibility="public">
@@ -346,7 +346,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         <category>Zowe Desktop/app framework variables</category>
         <integer>
             <!-- validation -->
-            <default>8542</default>
+            <default>7557</default>
         </integer>
     </variable>
     <variable name="ZWES_SERVER_TLS" scope="instance" visibility="public">
@@ -407,9 +407,9 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         </string>
     </variable>
     <variable name="ZWED_SSH_PORT" scope="instance" visibility="public">
-        <label>Zowe ZLUX SSH Port</label>
-        <abstract>Zowe ZLUX SSH Port</abstract>
-        <description>Zowe ZLUX SSH Port</description>
+        <label>Zowe Desktop VT Display Emulator Port</label>
+        <abstract>Zowe Desktop VT Display Emulator Port</abstract>
+        <description>Zowe Desktop VT Display Emulator Port</description>
         <category>Terminal app variables</category>
         <integer>
             <!-- validation -->
@@ -417,9 +417,9 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         </integer>
     </variable>
     <variable name="ZWED_TN3270_PORT" scope="instance" visibility="public">
-        <label>Zowe ZLUX Telnet Port</label>
-        <abstract>Zowe ZLUX Telnet Port</abstract>
-        <description>Zowe ZLUX Telnet Port</description>
+        <label>Zowe Desktop TN3270 Display Emulator Port</label>
+        <abstract>Zowe Desktop TN3270 Display Emulator Port</abstract>
+        <description>Zowe Desktop TN3270 Display Emulator Port</description>
         <category>Terminal app variables</category>
         <integer>
             <!-- validation -->
@@ -427,7 +427,7 @@ Keep this variable empty if you do not want to copy the STC task.</description>
         </integer>
     </variable>
     <variable name="ZWED_TN3270_SECURITY" scope="instance" visibility="public">
-        <label>Zowe ZLUX Security Type</label>
+        <label>Zowe Desktop TN3270 Display Emulator Security Type</label>
         <abstract>The security type of the tn3270 connection</abstract>
         <description>The security type of the tn3270 connection
 valid values are blank('') for telnet, or 'tls'</description>

@@ -1,0 +1,23 @@
+Start Zowe with main started task.
+
+These Zowe YAML configurations showing with sample values are required:
+
+```
+zowe:
+  setup:
+    security:
+      stcs:
+        zowe: ZWESLSTC
+  jobname: ZWE1SV
+haInstances:
+  <ha-instance>:
+    sysname: ZLP1
+```
+
+- `zowe.setup.security.stcs.zowe` is Zowe started task name.
+  This configuration is optional. Default value is `ZWESLSTC`.
+- `zowe.jobname` is the optional customized job name to start Zowe. If it's
+  empty, the start command will not pass `JOBNAME=` option to `S` command.
+- `haInstances.<ha-instance>.sysname` is the SYSNAME of the target HA instance.
+  If you pass `--ha-instance` parameter, this is the SYSNAME the start command
+  will be routed to.

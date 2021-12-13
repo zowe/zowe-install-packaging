@@ -59,7 +59,7 @@ spec:
               cpu: "300m"
           ports:
             - name: jobs-api-port
-              containerPort: 8545
+              containerPort: 7600
               protocol: TCP
           startupProbe:
             tcpSocket:
