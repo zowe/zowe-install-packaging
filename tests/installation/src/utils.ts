@@ -42,7 +42,7 @@ export function checkMandatoryEnvironmentVariables(vars: string[]): void {
   for (const v of vars) {
     expect(process.env).toHaveProperty(v);
   }
-};
+}
 
 /**
  * Generate MD5 hash of a variable
@@ -51,7 +51,7 @@ export function checkMandatoryEnvironmentVariables(vars: string[]): void {
  */
 export function calculateHash(obj: any): string {
   return crypto.createHash('md5').update(util.format('%j', obj)).digest('hex');
-};
+}
 
 /**
  * Copy sanity test report to install test report folder for future publish.
@@ -69,7 +69,7 @@ export function copySanityTestReport(reportHash: string): void {
   } else {
     debug(`junit.xml NOT found in ${SANITY_TEST_REPORTS_DIR}`);
   }
-};
+}
 
 /**
  * Clean up sanity test report directory for next test
@@ -78,7 +78,7 @@ export function cleanupSanityTestReportDir(): void {
   debug(`Clean up sanity test reports directory: ${SANITY_TEST_REPORTS_DIR}`);
   removeSync(SANITY_TEST_REPORTS_DIR);
   ensureDirSync(SANITY_TEST_REPORTS_DIR);
-};
+}
 
 /**
  * Import extra vars for Ansible playbook from environment variables.
@@ -108,7 +108,7 @@ export function importDefaultExtraVars(extraVars: {[key: string]: string}, serve
       }
     }
   });
-};
+}
 
 type PlaybookResponse = {
   reportHash: string;
@@ -172,7 +172,7 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
       }
     });
   });
-};
+}
 
 /**
  * Install and verify a Zowe build
@@ -219,7 +219,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   copySanityTestReport(resultVerify.reportHash);
 
   expect(resultVerify.code).toBe(0);
-};
+}
 
 async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   debug(`run install-ext.yml on ${serverId}`);
@@ -287,7 +287,7 @@ async function verifyExtension(testcase: string, serverId: string, extraVars: {[
  */
 export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
-};
+}
 
 /**
  * Install and verify docker build
@@ -334,7 +334,7 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
   copySanityTestReport(resultVerify.reportHash);
 
   expect(resultVerify.code).toBe(0);
-};
+}
 
 /**
  * Install and verify SMPE FMID
@@ -363,7 +363,7 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
-};
+}
 
 /**
  * Install and verify SMPE PTF
@@ -421,7 +421,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   copySanityTestReport(resultVerify.reportHash);
 
   expect(resultVerify.code).toBe(0);
-};
+}
 
 /**
  * Install Zowe and generate Swagger API definitions
@@ -466,7 +466,7 @@ export async function installAndGenerateApiDocs(testcase: string, serverId: stri
   copySanityTestReport(resultVerify.reportHash);
 
   expect(resultVerify.code).toBe(0);
-};
+}
 
 /**
  * Show all Zowe runtime logs
@@ -488,4 +488,4 @@ export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: st
   } catch (e) {
     debug(`showZoweRuntimeLogs failed: ${e}`);
   }
-};
+}
