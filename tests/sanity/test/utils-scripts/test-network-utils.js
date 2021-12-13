@@ -39,8 +39,8 @@ describe('verify network-utils', function() {
     }
   });
 
-  const validate_port_is_available = 'validate_port_is_available';
-  describe(`verify ${validate_port_is_available}`, function() {
+  const is_port_available = 'is_port_available';
+  describe(`verify ${is_port_available}`, function() {
 
     it('test zosmf port is not available', async function() {
       await test_port_available(process.env.ZOSMF_PORT, 'IZUSVR1');
@@ -51,7 +51,7 @@ describe('verify network-utils', function() {
     });
 
     async function test_port_available(port, expected_process = undefined) {
-      let command = `${validate_port_is_available} ${port}`;
+      let command = `${is_port_available} ${port}`;
       const expected_rc = expected_process ? 1 : 0;
       const expected_err = expected_process ? `Port ${port} is already in use by process (${expected_process}` : '';
       await test_network_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, '', expected_err);

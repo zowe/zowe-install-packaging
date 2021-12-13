@@ -22,14 +22,22 @@
 set -x
 
 SCRIPT_NAME=$(basename "$0")
-CURR_PWD=$(pwd)
+BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
+
+if [ -d "${BASE_DIR}/logs" ]; then
+  echo "[${SCRIPT_NAME}] display build logs"
+  find "${BASE_DIR}/logs" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+fi
+
 
 # if KEEP_TEMP_FOLDER is true, catchall-packaging.sh won't be executed.
 # remove data sets, unless build option requested to keep temp stuff
 if [ -f cleanup-smpe-packaging-datasets.txt ]; then
+  echo "[${SCRIPT_NAME}] cleanup SMPE packaging data sets"
+
   for dsprefix in $(cat cleanup-smpe-packaging-datasets.txt); do
     if [ -n "${dsprefix}" ]; then
-      echo "[${SCRIPT_NAME}] deleting ${dsprefix}.** ..."
+      echo "[${SCRIPT_NAME}] - deleting ${dsprefix}.** ..."
       tsocmd listds "'${dsprefix}'" level 2>&1 > .tmp-datasets-list &
       sleep 2
       datasets=$(cat .tmp-datasets-list \

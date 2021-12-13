@@ -1,0 +1,9 @@
+ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
+ZWEL0158W||%s already exists. This data set member will be overwritten during configuration.
+ZWEL0158E|158|%s already exists.
+ZWEL0159E|159|Failed to modify %s.
+ZWEL0160E|160|Failed to write to %s. Please check if target data set is opened by others.
+ZWEL0161E|161|Failed to run JCL %s.
+ZWEL0162E|162|Failed to find job %s result.
+ZWEL0163E|163|Job %s ends with code %s.
+ZWEL0164W|0|Zowe Caching Service is not configured to use VSAM. Command exits

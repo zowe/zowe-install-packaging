@@ -1,0 +1,3 @@
+target-dir,target|d|string|required||||Target directory where the component will be installed.
+component-file,component|o|string|required||||Path to the component package or directory.
+auto-encoding|e|string||auto|||If we want to automatically tagging the module files.

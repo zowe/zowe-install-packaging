@@ -50,7 +50,7 @@
   when: dataset_dscb.stdout_lines|length < 4
 
 - name: Extract SMS flag from FORMAT 1 DSCB record
-  raw: echo "{{ dataset_dscb.stdout_lines[2] }}" | sed -e 's#^.\{6\}\(.\{2\}\).*#\1#'
+  raw: echo "{{ dataset_dscb.stdout_lines[2] }}" | sed -e 's#^.\\{6\}\\(.\\{2\\}\\).*#\\1#'
   register: dataset_sms_flag
 
 - name: Check if we find SMS flag in data set

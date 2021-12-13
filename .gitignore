@@ -13,6 +13,9 @@ tmp/
 *.tar
 *.gz
 
+# compile java binary
+*.class
+
 # Mac files
 .DS_Store
 
