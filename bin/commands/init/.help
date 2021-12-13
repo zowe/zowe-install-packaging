@@ -1,3 +1,139 @@
 Init Zowe instance based on zowe.yaml configuration.
 
 You can find an example zowe.yaml in Zowe runtime directory bin folder.
+
+These Zowe YAML configurations showing with sample values are required:
+
+```yaml
+zowe:
+  setup:
+    mvs:
+      hlq: IBMUSER.ZWE
+      parmlib: IBMUSER.ZWE.CUST.PARMLIB
+      jcllib: IBMUSER.ZWE.CUST.JCLLIB
+      authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
+      authPluginLib: IBMUSER.ZWE.CUST.ZWESAPL
+    security:
+      product: RACF
+      groups:
+        admin: ZWEADMIN
+        stc: ZWEADMIN
+        sysProg: ZWEADMIN
+      users:
+        zowe: ZWESVUSR
+        xmem: ZWESIUSR
+        aux: ZWESIUSR
+      stcs:
+        zowe: ZWESLSTC
+        xmem: ZWESISTC
+        aux: ZWESASTC
+    certificate:
+      type: PKCS12
+      dname:
+        caCommonName:
+        commonName:
+        orgUnit:
+        org:
+        locality:
+        state:
+        country:
+      validity: 3650
+      pkcs12:
+        directory: /global/zowe/keystore
+        name: localhost
+        password: password
+        caAlias: local_ca
+        caPassword: local_ca_password
+      san:
+        - zos.my-company.com
+        - internal-lpar1.zos.my-company.com
+        - internal-lpar2.zos.my-company.com
+        - internal-lpar3.zos.my-company.com
+    vsam:
+      mode: NONRLS
+      volume: VOL123
+      storageClass:
+  externalDomains:
+   - zos.my-company.com
+  verifyCertificates: STRICT
+zOSMF:
+  host: zosmf.my-company.com
+  port: 443
+components:
+  caching-service:
+    storage:
+      mode: VSAM
+      vsam:
+        name: IBMUSER.ZWE.CUST.CACHE2
+```
+
+- `zowe.setup.mvs.hlq` shows where the `SZWEAUTH` data set is installed.
+- `zowe.setup.mvs.parmlib` is the user custom parameter library. Zowe server
+  command may generate sample PARMLIB members and stores here.
+- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe server command may
+  generate sample JCLs and put into this data set.
+- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
+  optional. If this is defined, members of `SZWEAUTH` will be copied over to
+  this data set and it will be APF authorized. If it's not defined, `SZWEAUTH`
+  from HLQ will be APF authorized.
+- `zowe.setup.mvs.authPluginLib` is the user custom APF PLUGINLIB.
+  You can install Zowe ZIS plugins into this load library.
+  This loadlib requires APF authorize.
+
+- `zowe.setup.security.product` is security product. Can be `RACF`, `ACF2`, or 
+  `TSS`. This configuration is optional. Default value is `RACF`.
+- `zowe.setup.security.groups.admin` is the group for Zowe administrators.
+  This configuration is optional. Default value is `ZWEADMIN`.
+- `zowe.setup.security.groups.stc` is the group for Zowe started tasks.
+  This configuration is optional. Default value is `ZWEADMIN`.
+- `zowe.setup.security.groups.sysProg` is system programmer user ID/group.
+  This configuration is optional. Default value is `ZWEADMIN`.
+- `zowe.setup.security.users.zowe` is the userid for Zowe started task.
+  This configuration is optional. Default value is `ZWESVUSR`.
+- `zowe.setup.security.users.xmem` is userid for xmem started task.
+  This configuration is optional. Default value is `ZWESIUSR`.
+- `zowe.setup.security.users.aux` is userid for xmem AUX started task.
+  This configuration is optional. Default value is `ZWESIUSR`.
+- `zowe.setup.security.stcs.zowe` is Zowe started task name.
+  This configuration is optional. Default value is `ZWESLSTC`.
+- `zowe.setup.security.stcs.xmem` is xmem started task name.
+  This configuration is optional. Default value is `ZWESISTC`.
+- `zowe.setup.security.stcs.aux` is xmem AUX started task name.
+  This configuration is optional. Default value is `ZWESASTC`.
+
+- `zowe.setup.certificate.type` is the type of certificate. Valid values are
+  "PKCS12" or "JCERACFKS".
+- `zowe.setup.certificate.dname` is the distinguished name of the certificate.
+  You can define `caCommonName`, `commonName`, `orgUnit`, `org`, `locality`,
+  `state`, and / or `country`. These configurations are optional.
+- `zowe.setup.certificate.validity` is the validity days of the certificate.
+  This is optional.
+- `zowe.setup.certificate.pkcs12.directory` is the directory where you plan to
+  store the PKCS12 keystore and truststore. This is required if
+  `zowe.setup.certificate.type` is `PKCS12`.
+- You can also define `name`, `password`, `caAlias` and `caPassword` under
+  `zowe.setup.certificate.pkcs12` to customized keystore and truststore. These
+  configurations are optional, but it is recommended to update them from
+  default values.
+- `zowe.setup.certificate.san` is the `Subject Alternative Name`(s) of the
+  certificate if they are different from `zowe.externalDomains`.
+
+- `zowe.setup.vsam.mode` indicates whether the VSAM will utilize Record Level
+  Sharing (RLS) services or not. Valid value is `RLS` or `NONRLS`.
+- `zowe.setup.vsam.volume` indicates the name of volume.
+  This field is required if VSAM mode is `NONRLS`.
+- `zowe.setup.vsam.storageClass` indicates the name of RLS storage class.
+  This field is required if VSAM mode is `RLS`.
+
+- `zowe.verifyCertificates` indicates how Zowe should validate the certificate
+  of services registered under Zowe APIML. Valid values are "STRICT",
+  "NONSTRICT" or "DISABLED". If this is "STRICT", this command will try to
+  validate the z/OSMF service certificate if z/OSMF is defined.
+
+- `zOSMF.host` and `zOSMF.port` is the z/OSMF service information. This is
+  required if you are using z/OSMF as authentication service.
+
+- `components.caching-service.storage.mode` indicates what storage Zowe Caching
+  Service will use. Only if this value is `VSAM`, this command will try to
+  create VSAM data set.
+- `components.caching-service.storage.vsam.name` defines the VSAM data set name.

@@ -63,17 +63,17 @@ pkcs12_create_certificate_authority() {
 
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
   mkdir -p "${keystore_dir}/${alias}"
-  pkeytool -genkeypair -v \
-    -alias "${alias}" \
-    -keyalg RSA -keysize 2048 \
-    -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_CA_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_CA_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_CA_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_CA_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COUNTRY}}" \
-    -keystore "${keystore_dir}/${alias}/${alias}.keystore.p12" \
-    -keypass "${password}" \
-    -storepass "${password}" \
-    -storetype "PKCS12" \
-    -validity "${ZWE_PRIVATE_CERTIFICATE_CA_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_VALIDITY}}" \
-    -ext KeyUsage="keyCertSign" \
-    -ext BasicConstraints:"critical=ca:true"
+  result=$(pkeytool -genkeypair -v \
+            -alias "${alias}" \
+            -keyalg RSA -keysize 2048 \
+            -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_CA_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_CA_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_CA_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_CA_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COUNTRY}}" \
+            -keystore "${keystore_dir}/${alias}/${alias}.keystore.p12" \
+            -keypass "${password}" \
+            -storepass "${password}" \
+            -storetype "PKCS12" \
+            -validity "${ZWE_PRIVATE_CERTIFICATE_CA_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_VALIDITY}}" \
+            -ext KeyUsage="keyCertSign" \
+            -ext BasicConstraints:"critical=ca:true")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -81,14 +81,14 @@ pkcs12_create_certificate_authority() {
   chmod 600 "${keystore_dir}/${alias}/${alias}.keystore.p12"
 
   print_message ">>>> Export local CA with alias ${alias}:"
-  pkeytool -export -v \
-    -alias "${alias}" \
-    -keystore "${keystore_dir}/${alias}/${alias}.keystore.p12" \
-    -keypass "${password}" \
-    -storepass "${password}" \
-    -storetype "PKCS12" \
-    -rfc \
-    -file "${keystore_dir}/${alias}/${alias}.cer"
+  result=$(pkeytool -export -v \
+            -alias "${alias}" \
+            -keystore "${keystore_dir}/${alias}/${alias}.keystore.p12" \
+            -keypass "${password}" \
+            -storepass "${password}" \
+            -storetype "PKCS12" \
+            -rfc \
+            -file "${keystore_dir}/${alias}/${alias}.cer")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -110,29 +110,29 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
   mkdir -p "${keystore_dir}/${keystore_name}"
-  pkeytool -genkeypair -v \
-    -alias "${alias}" \
-    -keyalg RSA -keysize 2048 \
-    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-    -keypass "${password}" \
-    -storepass "${password}" \
-    -storetype "PKCS12" \
-    -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
-    -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
+  result=$(pkeytool -genkeypair -v \
+            -alias "${alias}" \
+            -keyalg RSA -keysize 2048 \
+            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+            -keypass "${password}" \
+            -storepass "${password}" \
+            -storetype "PKCS12" \
+            -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
+            -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
   if [ $? -ne 0 ]; then
     return 1
   fi
 
   print_message ">>>> Generate CSR for the certificate \"${alias}\" in the keystore \"${keystore_name}\":"
-  pkeytool -certreq -v \
-    -alias "${alias}" \
-    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-    -storepass "${password}" \
-    -file "${keystore_dir}/${keystore_name}/${alias}.csr" \
-    -keyalg RSA \
-    -storetype "PKCS12" \
-    -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
-    -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
+  result=$(pkeytool -certreq -v \
+            -alias "${alias}" \
+            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+            -storepass "${password}" \
+            -file "${keystore_dir}/${keystore_name}/${alias}.csr" \
+            -keyalg RSA \
+            -storetype "PKCS12" \
+            -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
+            -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -152,19 +152,19 @@ pkcs12_create_certificate_and_sign() {
   san="${san}dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
   print_message ">>>> Sign the CSR using the Certificate Authority \"${ca_alias}\":"
-  pkeytool -gencert -v \
-    -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
-    -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
-    -keystore "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" \
-    -alias "${ca_alias}" \
-    -keypass "${ca_password}" \
-    -storepass "${ca_password}" \
-    -storetype "PKCS12" \
-    -ext "${san}" \
-    -ext "KeyUsage:critical=${ZWE_PRIVATE_CERTIFICATE_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE}}" \
-    -ext "ExtendedKeyUsage=${ZWE_PRIVATE_CERTIFICATE_EXTENDED_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE}}" \
-    -rfc \
-    -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
+  result=$(pkeytool -gencert -v \
+            -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
+            -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
+            -keystore "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" \
+            -alias "${ca_alias}" \
+            -keypass "${ca_password}" \
+            -storepass "${ca_password}" \
+            -storetype "PKCS12" \
+            -ext "${san}" \
+            -ext "KeyUsage:critical=${ZWE_PRIVATE_CERTIFICATE_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE}}" \
+            -ext "ExtendedKeyUsage=${ZWE_PRIVATE_CERTIFICATE_EXTENDED_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE}}" \
+            -rfc \
+            -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -178,13 +178,13 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    pkeytool -importcert -v \
-      -trustcacerts -noprompt \
-      -file "${keystore_dir}/${ca_alias}/${ca_alias}.cer" \
-      -alias "${ca_alias}" \
-      -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-      -storepass "${password}" \
-      -storetype "PKCS12"
+    result=$(pkeytool -importcert -v \
+              -trustcacerts -noprompt \
+              -file "${keystore_dir}/${ca_alias}/${ca_alias}.cer" \
+              -alias "${ca_alias}" \
+              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+              -storepass "${password}" \
+              -storetype "PKCS12")
   fi
 
   # test if we need to import CA into truststore
@@ -196,23 +196,23 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the truststore \"${keystore_name}\":"
-    pkeytool -importcert -v \
-      -trustcacerts -noprompt \
-      -file "${keystore_dir}/${ca_alias}/${ca_alias}.cer" \
-      -alias "${ca_alias}" \
-      -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
-      -storepass "${password}" \
-      -storetype "PKCS12"
+    result=$(pkeytool -importcert -v \
+              -trustcacerts -noprompt \
+              -file "${keystore_dir}/${ca_alias}/${ca_alias}.cer" \
+              -alias "${ca_alias}" \
+              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
+              -storepass "${password}" \
+              -storetype "PKCS12")
   fi
 
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
-  pkeytool -importcert -v \
-    -trustcacerts -noprompt \
-    -file "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
-    -alias "${alias}" \
-    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-    -storepass "${password}" \
-    -storetype "PKCS12"
+  result=$(pkeytool -importcert -v \
+            -trustcacerts -noprompt \
+            -file "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
+            -alias "${alias}" \
+            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+            -storepass "${password}" \
+            -storetype "PKCS12")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -222,13 +222,13 @@ pkcs12_create_certificate_and_sign() {
   rm -f "${keystore_dir}/${keystore_name}/${alias}.signed.cer"
 
   print_message ">>>> Export certificate \"${alias}\" to the PEM format"
-  pkeytool -exportcert -v \
-    -alias "${alias}" \
-    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-    -storepass "${password}" \
-    -storetype "PKCS12" \
-    -rfc \
-    -file "${keystore_dir}/${keystore_name}/${alias}.cer"
+  result=$(pkeytool -exportcert -v \
+            -alias "${alias}" \
+            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+            -storepass "${password}" \
+            -storetype "PKCS12" \
+            -rfc \
+            -file "${keystore_dir}/${keystore_name}/${alias}.cer")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -312,14 +312,14 @@ pkcs12_trust_service() {
     cert_file=$(basename "${cert}")
     cert_alias=${cert_file%.cer}
     echo ">>>> Import a certificate \"${cert_alias}\" to the truststore:"
-    pkeytool -importcert -v \
-      -trustcacerts \
-      -noprompt \
-      -file "${cert}" \
-      -alias "${cert_alias}" \
-      -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
-      -storepass "${password}" \
-      -storetype PKCS12
+    result=$(pkeytool -importcert -v \
+              -trustcacerts \
+              -noprompt \
+              -file "${cert}" \
+              -alias "${cert_alias}" \
+              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
+              -storepass "${password}" \
+              -storetype "PKCS12")
     if [ $? -ne 0 ]; then
       return 1
     fi

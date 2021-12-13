@@ -61,17 +61,17 @@ zowe:
       # Type of certificate storage.
       # Valid values are: PKCS12 or JCERACFKS
       type: PKCS12
-      # distinguished name for Zowe generated certificates
-      dname:
-        caCommonName: "Zowe Development Instances Certificate Authority"
-        commonName: "Zowe Service"
-        orgUnit: "API Mediation Layer"
-        org: "Zowe Sample"
-        locality: Prague
-        state: Prague
-        country: CZ
-      # validity days for Zowe generated certificates
-      validity: 3650
+      # # distinguished name for Zowe generated certificates. All optional
+      # dname:
+      #   caCommonName: ""
+      #   commonName: ""
+      #   orgUnit: ""
+      #   org: ""
+      #   locality: ""
+      #   state: ""
+      #   country: ""
+      # # validity days for Zowe generated certificates
+      # validity: 3650
       # domain names and IPs should be added to certificate SAN
       san:
         - dvipa.my-company.com
