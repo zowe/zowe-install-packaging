@@ -232,14 +232,14 @@ jobs:
 
             const finish_time_EST = finish_time.toLocaleString('en-CA', { timeZone: 'Canada/Eastern' }).split(', ')[1] + " EST"
             const finish_time_CET = finish_time.toLocaleString('en-EU', { timeZone: 'Europe/Prague' }).split(', ')[1] + " CET"
-            const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " UTC"
+            const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
             const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
             
             const { data: comment } = await github.rest.issues.createComment({ 
               issue_number: ${{ steps.get-pr-num.outputs.PR_NUM }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST} \n ${finish_time_CET} \n ${finish_time_UTC} \n ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             });
             return comment.id;
 
