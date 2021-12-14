@@ -228,7 +228,7 @@ jobs:
               }
             }
 
-            const finish_time = new Date(new Date().getTime() + 10*60*1000);
+            const finish_time = new Date(new Date().getTime() + total_bld_time*60*1000);
 
             const finish_time_EST = finish_time.toLocaleString('en-CA', { timeZone: 'Canada/Eastern' }).split(', ')[1] + " EST"
             const finish_time_CET = finish_time.toLocaleString('en-EU', { timeZone: 'Europe/Prague' }).split(', ')[1] + " CET"
