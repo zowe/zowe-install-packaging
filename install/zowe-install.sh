@@ -185,9 +185,9 @@ upgrade_components() {
 
 install_buildin_components() {
   if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-      component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service metrics-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
+      component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service metrics-service apiml-common-lib common-java-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server zss"
   else
-      component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service metrics-service apiml-common-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
+      component_list="launcher jobs-api files-api api-catalog discovery gateway caching-service metrics-service apiml-common-lib common-java-lib explorer-ui-server explorer-jes explorer-mvs explorer-uss app-server"
   fi
    # Upgrade the Zowe components by downloading the latest artifacts
   if [ -n "${ZOWE_COMPONENTS_UPGRADE}" ] && [ "${ZOWE_COMPONENTS_UPGRADE}" = "true" ]; then
