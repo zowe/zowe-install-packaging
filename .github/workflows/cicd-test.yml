@@ -201,7 +201,7 @@ jobs:
 
           # parse inputs
           if [[ "${{ inputs.nightly }}" == "true" ]]; then
-            TEST_FILE_SERVER=${{ env.ZOWE_NIGHTLY_TESTS_FULL }}
+            TEST_FILE_SERVER="${{ env.ZOWE_NIGHTLY_TESTS_FULL }}"
           elif [[ "${{ inputs.pr-auto-test }}" == "true" ]]; then
             # Get a random marist server, this is to prevent multiple pr auto test running on the same machine to reduce queue wait times
             test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
