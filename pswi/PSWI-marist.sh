@@ -61,11 +61,13 @@ export OUTPUT_ZFS="ZOWEAD2.OUTPUT.PSWI.ZFS"
 export OUTPUT_MOUNT="/u/zowead2/PSWI"
 
 echo "--------------------------------- Getting build specific variables ---------------------------------------"
-if [ -f pax/zowe-smpe*.zip ]
+PAX=`find ~ -type f -name zowe-smpe.zip -print`
+
+if [ -f ${PAX} ]
 then
   echo "ok"
   mkdir -p "unzipped"
-  unzip pax/zowe-smpe*.zip -d unzipped
+  unzip ${PAX} -d unzipped
 else
   echo "zowe-smpe file not found"
   exit -1
