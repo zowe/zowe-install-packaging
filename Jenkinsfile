@@ -22,16 +22,11 @@ node('zowe-jenkins-agent-dind-wdc') {
 
   // we have extra parameters for integration test
   pipeline.addBuildParameters(
-    booleanParam(
+    choice(
       name: 'BUILD_SMPE',
-      description: 'If we want to build SMP/e package.',
-      defaultValue: false
-    ),
-    booleanParam(
-      name: 'BUILD_PSWI',
-      description: 'If we want to build Portable Software Instance.',
-      defaultValue: false
-    ),
+      choices: ['NONE', 'SMPE', 'SMPE+PSWI'],
+      description: 'If we want to build SMP/e package (plus PSWI).',
+      defaultValue: 'NONE'
     booleanParam(
       name: 'BUILD_DOCKER',
       description: 'If we want to build docker image.',
@@ -119,7 +114,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       )
 
       // we want build log pulled in for SMP/e build
-      if (params.BUILD_SMPE) {
+      if (params.BUILD_SMPE != 'NONE' ) {
         def buildLogSpec = readJSON(text: '{"files":[]}')
         buildLogSpec['files'].push([
           "target": ".pax/content/smpe/",
@@ -158,16 +153,37 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
           filename            : 'zowe.pax',
           environments        : [
             'ZOWE_VERSION'    : pipeline.getVersion(),
-            'BUILD_SMPE'      : (params.BUILD_SMPE ? 'yes' : ''),
+            'BUILD_SMPE'      : (params.BUILD_SMPE == 'NONE' ? '' : 'yes'),
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
-          extraFiles          : (params.BUILD_SMPE ? 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh' : ''),
+          extraFiles          : (params.BUILD_SMPE == 'NONE' ? '' : 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh'),
           keepTempFolder      : params.KEEP_TEMP_FOLDER,
           paxOptions          : '-o saveext'
       )
-      if (params.BUILD_SMPE) {
+      if (params.BUILD_SMPE != 'NONE') {
         // rename SMP/e build with correct FMID name
         sh "cd .pax && chmod +x rename-back.sh && cat rename-back.sh && ./rename-back.sh"
+      }
+    }
+  )
+  pipeline.createStage(
+    name: "Build PSWI",
+    timeout: [ time: 60, unit: 'MINUTES' ],
+    isSkippable: true,
+    environments: [
+            'VERSION': pipeline.getVersion()
+          ],
+    stage : {
+      if (params.BUILD_SMPE == "SMPE+PSWI") {
+      withCredentials([
+          usernamePassword(
+            credentialsId: 'zzow03-ad2',
+            usernameVariable: 'ZOSMF_USER',
+            passwordVariable: 'ZOSMF_PASS'
+          )
+        ]){
+      sh "cd pswi && chmod +x PSWI-marist.sh && ./PSWI-marist.sh" 
+        }
       }
     }
   )
@@ -184,30 +200,6 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
     ]
   )
   
-  pipeline.createStage(
-    name: "Build PSWI",
-    timeout: [ time: 60, unit: 'MINUTES' ],
-    isSkippable: true,
-    environments: [
-            'VERSION'    : pipeline.getVersion()
-          ],
-    showExecute: {
-      return params.BUILD_PSWI
-    },
-    stage : {
-      if (params.BUILD_PSWI) {
-      withCredentials([
-          usernamePassword(
-            credentialsId: 'zzow03-ad2',
-            usernameVariable: 'ZOSMF_USER',
-            passwordVariable: 'ZOSMF_PASS'
-          )
-        ]){
-      sh "cd pswi && chmod +x PSWI-marist.sh && ./PSWI-marist.sh" 
-        }
-      }
-    }
-  )
   
   pipeline.createStage(
     name: "Build zLinux Docker",
