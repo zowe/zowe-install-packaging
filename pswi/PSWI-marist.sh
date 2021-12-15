@@ -110,10 +110,12 @@ cd unzipped
 HOST=${ZOSMF_URL#https:\/\/}
 
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
-cd ..
-cd ${SMPMCS}
-put ${RFDSNPFX}.${FMID}.${PTF1}
-put ${RFDSNPFX}.${FMID}.${PTF2}
+cd ${DIR}
+bin
+put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
+put ${RFDSNPFX}.${FMID}.${PTF2} ${PTF2}
+cp ${PTF1} "//'${SMPMCS}.${RFDSNPFX}.${FMID}.${PTF1}'"
+cp ${PTF2} "//'${SMPMCS}.${RFDSNPFX}.${FMID}.${PTF2}'" 
 EOF
 cd ..
 
