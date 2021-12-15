@@ -114,7 +114,7 @@ jobs:
     steps:
     - name: make matrix
       id: set-matrix
-      run: |
+      run: | 
         ##################################################################################################
         ### 1. Process inputs (from manual or reusable workflow call)
         ##################################################################################################
@@ -192,8 +192,9 @@ jobs:
         else 
           # must be call from reusable workflow call
           # first determine if either inputs is passed in
-          # note that inputs.something is only available 
-          if [[ -z "${{ inputs.nightly }}" ]] && [[ -z "${{ inputs.pr-auto-test }}" ]]; then
+          # note that inputs.something is only available when triggered by workflow_call
+          # if inputs not passed in, default will be false
+          if [[ "${{ inputs.nightly }}" == "false" ]] && [[ "${{ inputs.pr-auto-test }}" == "false" ]]; then
             echo "Reusable workflow call is triggered, but neither inputs nightly or pr-auto-test is provided, aborting.."
             exit 1
           fi
@@ -203,8 +204,8 @@ jobs:
             TEST_FILE_SERVER=${{ env.ZOWE_NIGHTLY_TESTS_FULL }}
           elif [[ "${{ inputs.pr-auto-test }}" == "true" ]]; then
             # Get a random marist server, this is to prevent multiple pr auto test running on the same machine to reduce queue wait times
-            test_server="zzow0"$(echo $(($RANDOM % 3 + 2)))
-            TEST_FILE_SERVER=$(echo "${{ env.ZOWE_NIGHTLY_TESTS_FULL }}" | sed "s|PLACE_HOLDER|$test_server|g")
+            test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
+            TEST_FILE_SERVER=$(echo "${{ env.ZOWE_PR_AUTO_TESTS_TEMPLATE }}" | sed "s/PLACE_HOLDER/$test_server/g")
           fi
         fi 
 
