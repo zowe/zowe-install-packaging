@@ -10,7 +10,7 @@ on:
         type: boolean
       pr-auto-build-num:
         required: false
-        type: number
+        type: string
     secrets:
       JF_ARTIFACTORY_TOKEN:
         required: true
@@ -349,7 +349,7 @@ jobs:
             # at here meaning this workflow is called from pr auto build
             input_custom_zowe_art_pat_or_bldnum=${{ inputs.pr-auto-build-num }}
           fi
-          
+
           if [[ -n "$input_custom_zowe_art_pat_or_bldnum" ]]; then
             if [[ "$input_custom_zowe_art_pat_or_bldnum" =~ ^[0-9]+$ ]]; then
               echo "[Check 1 INFO] Build number $input_custom_zowe_art_pat_or_bldnum is entered"
