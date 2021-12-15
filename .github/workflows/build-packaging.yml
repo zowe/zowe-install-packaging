@@ -463,3 +463,22 @@ jobs:
               comment_id: ${{ steps.create-comment.outputs.result }},
               body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} CANCELLED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             });
+
+  # only run auto integration tests when the workflow is triggered by pull request
+  call-integration-test:
+    needs: regular-build
+    if: github.event_name == 'pull_request'
+    uses: zowe/zowe-install-packaging/.github/workflows/cicd-test.yml@users/tom/enable-auto-pr-bld-test
+    with: 
+      pr-auto-test: true
+    secrets:
+      JF_ARTIFACTORY_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+    # Above secrets exists in the environment, doing secrets here to mitigate a problem of reusable workflows where environment secret can
+    #   not be passed in properly
+    # More info: https://github.community/t/reusable-workflows-secrets-and-environments/203695/23
+    # it was a bit weird to pass in above secrets, hope Github team can improve on this
+        
