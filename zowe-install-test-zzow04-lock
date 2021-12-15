@@ -1,1 +1,14 @@
-""
+{
+  "lockAcquiredTime": "Wed Dec 15 2021 21:49:19 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1639604959681328729",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/tom/enable-auto-pr-bld-test",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "FlappiTomic",
+  "runId": 1584801587,
+  "runNumber": 244
+}
