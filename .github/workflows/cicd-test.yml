@@ -8,6 +8,9 @@ on:
       pr-auto-test:
         required: false
         type: boolean
+      pr-auto-build-num:
+        required: false
+        type: number
     secrets:
       JF_ARTIFACTORY_TOKEN:
         required: true
@@ -340,8 +343,13 @@ jobs:
           ##################################################################################################
           ### 1. Process custom-zowe-artifactory-pattern
           ##################################################################################################
-          input_custom_zowe_art_pat_or_bldnum="${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}"
-
+          if [[ -z "${{ inputs.pr-auto-build-num }}" ]]; then
+            input_custom_zowe_art_pat_or_bldnum="${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}"
+          else
+            # at here meaning this workflow is called from pr auto build
+            input_custom_zowe_art_pat_or_bldnum=${{ inputs.pr-auto-build-num }}
+          fi
+          
           if [[ -n "$input_custom_zowe_art_pat_or_bldnum" ]]; then
             if [[ "$input_custom_zowe_art_pat_or_bldnum" =~ ^[0-9]+$ ]]; then
               echo "[Check 1 INFO] Build number $input_custom_zowe_art_pat_or_bldnum is entered"
@@ -721,7 +729,7 @@ jobs:
             body += `Running install test: ${installTest} \n`
             body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
             body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `please wait... \n 
+            body += `please wait... \n `
             body += `(This comment will get updated once build result is out) \n`
             body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             

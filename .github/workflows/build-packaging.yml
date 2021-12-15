@@ -467,6 +467,7 @@ jobs:
     uses: zowe/zowe-install-packaging/.github/workflows/cicd-test.yml@users/tom/enable-auto-pr-bld-test
     with: 
       pr-auto-test: true
+      pr-auto-build-num: ${{ github.run_number }}
     secrets:
       JF_ARTIFACTORY_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       SSH_HOST: ${{ secrets.SSH_HOST }}
