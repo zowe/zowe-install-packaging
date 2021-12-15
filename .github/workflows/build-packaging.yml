@@ -112,6 +112,7 @@ jobs:
               echo CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
             else
               echo CURRENT_BRANCH=PR-$pr_num
+            fi
           else
             echo CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
           fi
