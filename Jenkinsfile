@@ -27,6 +27,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       choices: ['NONE', 'SMPE', 'SMPE+PSWI'],
       description: 'If we want to build SMP/e package (plus PSWI).',
       defaultValue: 'NONE'
+    ),
     booleanParam(
       name: 'BUILD_DOCKER',
       description: 'If we want to build docker image.',
