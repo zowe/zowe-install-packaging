@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-permission
     steps:
-    - name: make matrix
+    - name: make test matrix
       id: set-matrix
       run: | 
         ##################################################################################################
@@ -235,7 +235,6 @@ jobs:
 
         MATRIX_JSON_STRING="$MATRIX_JSON_STRING]}"
         echo "::set-output name=matrix::$MATRIX_JSON_STRING"
-
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -703,6 +702,37 @@ jobs:
         timeout-minutes: 10
         working-directory: ${{ runner.temp }}/cli
         run: npm install -g zowe-cli*.tgz
+      
+      - name: '[Post comment] Post comments on PR about what tests are gonna be run'
+        uses: actions/github-script@v5
+        if: startsWith(env.CURRENT_BRANCH, 'PR-')
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var prNum=${{ env.CURRENT_BRANCH }}.split('-')[1]
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `please wait... \n 
+            body += `(This comment will get updated once build result is out) \n`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            const { data: comment } = await github.rest.issues.createComment({ 
+              issue_number: prNum,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+            return comment.id;
 
       - name: '[LOCK] Lock marist servers'
         uses: zowe-actions/shared-actions/lock-resource@main

@@ -104,12 +104,18 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --verify HEAD)
           CURRENT_TIME=$(date +%s)
-          if [ -z ${{ github.event.pull_request.number }} ]
-          then
-            CURRENT_BRANCH=${GITHUB_REF#refs/heads/} 
+          if [[ -z "${{ github.event.pull_request.number }}" ]]; then
+            # meaning the workflow is triggered from pull_request 
+            # now try to find out if a PR is opened against this running branch
+            pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
+            if [[ -z "$pr_num" ]]; then
+              echo CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+            else
+              echo CURRENT_BRANCH=PR-$pr_num
           else
-            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
+            echo CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
           fi
+
           sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
               -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
               -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
@@ -190,24 +196,11 @@ jobs:
           fi
 
           echo ::set-output name=BUILD_WHAT::$BUILD_WHAT
-
-      # github.event.pull_request.number is only available when event trigger is from pull_request
-      # when this workflow is manually triggered, and also PR is available on current branch, pr_num can be extracted from a curl cmd
-      # if no PR is opened against current running branch, pr_num is null from the curl cmd
-      - name: '[Prep 7] Get the PR number if a PR is opened against the current branch'
-        id: get-pr-num
-        run: |
-          if [[ -z "${{ github.event.pull_request.number }}" ]]; then
-            pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
-          else
-            pr_num=${{ github.event.pull_request.number }}
-          fi
-          echo ::set-output name=PR_NUM::$pr_num
       
-      - name: '[Prep 8] Comment on PR to indicate build is started'
+      - name: '[Prep 7] Comment on PR to indicate build is started'
         uses: actions/github-script@v5
         id: create-comment
-        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && steps.get-pr-num.outputs.PR_NUM != ''
+        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -235,8 +228,10 @@ jobs:
             const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
             const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
             
+            const pr_num=${{ env.CURRENT_BRANCH }}.split('-')[1]
+
             const { data: comment } = await github.rest.issues.createComment({ 
-              issue_number: ${{ steps.get-pr-num.outputs.PR_NUM }},
+              issue_number: pr_num,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
@@ -425,7 +420,7 @@ jobs:
         with:
           artifacts: containers/zowe-containerization.zip
 
-      - name: '[Post Prep 8] Update PR comment to indicate build succeeded'
+      - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
         uses: actions/github-script@v5
         if: steps.create-comment.outputs.result != '' && success()
         with:
@@ -438,7 +433,7 @@ jobs:
               body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} SUCCEEDED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             });
 
-      - name: '[Post Prep 8] Update PR comment to indicate build failed'
+      - name: '[Post Prep 7] Update PR comment to indicate build failed'
         uses: actions/github-script@v5
         if: steps.create-comment.outputs.result != '' && failure()
         with:
@@ -451,7 +446,7 @@ jobs:
               body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} FAILED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             });
 
-      - name: '[Post Prep 8] Update PR comment to indicate build cancelled'
+      - name: '[Post Prep 7] Update PR comment to indicate build cancelled'
         uses: actions/github-script@v5
         if: steps.create-comment.outputs.result != '' && cancelled()
         with:
@@ -477,8 +472,8 @@ jobs:
       SSH_PORT: ${{ secrets.SSH_PORT }}
       SSH_USER: ${{ secrets.SSH_USER }}
       SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-    # Above secrets exists in the environment, doing secrets here to mitigate a problem of reusable workflows where environment secret can
-    #   not be passed in properly
+    # Above secrets exists in the environment, doing secrets here to mitigate a problem of
+    #   reusable workflows where environment secret can not be passed in properly
     # More info: https://github.community/t/reusable-workflows-secrets-and-environments/203695/23
-    # it was a bit weird to pass in above secrets, hope Github team can improve on this
+    # it was a bit weird to pass in above secrets, hope Github team can improve/fix on this
         
