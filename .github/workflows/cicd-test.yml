@@ -715,7 +715,7 @@ jobs:
               installTest = 'Convenience Pax'
             }
 
-            var prNum=${{ env.CURRENT_BRANCH }}.split('-')[1]
+            var prNum='${{ env.CURRENT_BRANCH }}'.split('-')[1]
 
             var body=`Test workflow ${context.runNumber} is started.\n`
             body += `Running install test: ${installTest} \n`

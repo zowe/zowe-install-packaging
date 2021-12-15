@@ -229,10 +229,10 @@ jobs:
             const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
             const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
             
-            const pr_num=${{ env.CURRENT_BRANCH }}.split('-')[1]
+            const prNum='${{ env.CURRENT_BRANCH }}'.split('-')[1]
 
             const { data: comment } = await github.rest.issues.createComment({ 
-              issue_number: pr_num,
+              issue_number: prNum,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
