@@ -9,7 +9,7 @@ export ZOWE_ZFS="${CSIHLQ}.ZFS"
 export ZOWE_MOUNT="/u/zwe/zowe-smpe/"
 export VOLUME="ZOS003"
 export TEST_HLQ="ZOWEAD2.PSWIT"
-export VERSION="1.25.0"
+export VERSION="1.26.0"
 export SYSAFF=2964 
 export ACCOUNT=1
 
@@ -32,8 +32,8 @@ export CSI=$CSIHLQ
 export PTFDATASET="ZOWEAD2.ZOWE.AZWE001"
 export TARGET=$TZONE
 export DISTRIBUTION=$DZONE
-export PTF1="UO01994"
-export PTF2="UO01995"
+export PTF1="UO01996"
+export PTF2="UO01997"
 
 export JOBNAME="ZWEPSWI1"
 if [ -n "$ACCOUNT" ]
@@ -59,6 +59,64 @@ export SMPE_WF_NAME="ZOWE_SMPE_WF"
 export PTF_WF_NAME="ZOWE_PTF_WF"
 export OUTPUT_ZFS="ZOWEAD2.OUTPUT.PSWI.ZFS"
 export OUTPUT_MOUNT="/u/zowead2/PSWI"
+
+echo "--------------------------------- Getting build specific variables ---------------------------------------"
+if [ -f .pax/zowe-smpe*.zip ]
+then
+  echo "ok"
+  mkdir -p "unzipped"
+  unzip .pax/zowe-smpe*.zip -d unzipped
+else
+  echo "zowe-smpe file not found"
+  exit -1
+fi
+
+if [ -f unzipped/*.pax.Z ]
+then
+  echo "it's new fmid"
+  export FMID=`ls unzipped | tail -n 1 | cut -f1 -d'.'`
+  export RFDSNPFX=`cat unzipped/*htm | grep -o "hlq.*.${FMID}.F1" | cut -f2 -d'.'`
+else
+  echo "it's ptf/apar"
+  #TODO: version could be obtained from the pipeline but last time I tried it it wasn't working
+  export VERSION=`cat unzipped/*htm | grep -o "version.*," | grep -v "%" | cut -f2 -d' ' | cut -f1 -d','`
+  mv unzipped/*htm ptfs.html
+  NR=`ls unzipped | wc -l`
+  
+  if [ $NR -eq 2 ]
+  then
+    echo "standard situation"
+    export RFDSNPFX=`ls unzipped | tail -n 1 | cut -f1 -d'.'`
+    export FMID=`ls unzipped | tail -n 1 | cut -f2 -d'.'`
+#    FILES=`ls unzipped`
+#    IFS=$'\n'
+#    for FILE in $FILES
+#    do
+#      PTF="`echo $FILE | tail -n 2 | cut -f3 -d'.'`\n"
+#      export PTFS=$PTFS$PTF
+#    done
+    #TODO maybe I can read PTFs names from .htm file - from JCL I will still need in next shell script
+    export PTFDATASET="${SMPMCS}.${RFDSNPFX}.${FMID}"
+  else
+    echo "Different number of files"
+    #TODO:make it more universal (we have the workflow now just for two files anyway so change it with that)
+  fi
+fi
+
+# workaround for now with hardcoded ptf names (datasets already prepared)
+cd unzipped
+HOST=${ZOSMF_URL#https:\/\/}
+
+sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+cd ..
+cd ${SMPMCS}
+put ${RFDSNPFX}.${FMID}.${PTF1}
+put ${RFDSNPFX}.${FMID}.${PTF2}
+EOF
+cd ..
+
+rm -r unzipped
+echo "----------------------------------------------------------------------------------------------------------"
 
 # Create SMP/E
 sh 01_smpe.sh # last time didnt delete smpe - testing
