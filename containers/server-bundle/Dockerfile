@@ -66,6 +66,7 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
     mv app-server-*.pax zlux && \
     for f in *.pax; do \
         echo "Processing ebcdic pax $f" && \
+        cd /tmp/zowe-install/files &&\
         rm -rf tmp && \
         mkdir tmp && \
         cd tmp && \
@@ -80,6 +81,7 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
     cd zlux && \
     for f in *.pax; do \
         echo "Processing tagged pax $f" &&\
+        cd /tmp/zowe-install/files/zlux &&\
         rm -rf tmp &&\
         mkdir tmp &&\
         cd tmp &&\

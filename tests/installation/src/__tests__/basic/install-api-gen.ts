@@ -12,26 +12,26 @@ import {
   checkMandatoryEnvironmentVariables,
   installAndGenerateApiDocs,
 } from '../../utils';
-  import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
+import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../constants';
   
-  const testSuiteName = 'Test convenience build installation';
-  describe(testSuiteName, () => {
-    beforeAll(() => {
-      // validate variables
-      checkMandatoryEnvironmentVariables([
-        'TEST_SERVER',
-        'ZOWE_BUILD_LOCAL',
-      ]);
-    });
-  
-    test('install and generate api documentation', async () => {
-      await installAndGenerateApiDocs(
-        testSuiteName,
-        process.env.TEST_SERVER,
-        {
-          'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-          'zowe_lock_keystore': 'false',
-        }
-      );
-    }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+const testSuiteName = 'Test convenience build installation';
+describe(testSuiteName, () => {
+  beforeAll(() => {
+    // validate variables
+    checkMandatoryEnvironmentVariables([
+      'TEST_SERVER',
+      'ZOWE_BUILD_LOCAL',
+    ]);
   });
+  
+  test('install and generate api documentation', async () => {
+    await installAndGenerateApiDocs(
+      testSuiteName,
+      process.env.TEST_SERVER,
+      {
+        'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zowe_lock_keystore': 'false',
+      }
+    );
+  }, TEST_TIMEOUT_CONVENIENCE_BUILD);
+});
