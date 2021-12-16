@@ -39,7 +39,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - Zowe Release Tests
 - Note that `Zowe Release Tests` is generally run by the DevOps engineer during RC phase. It includes most of the tests above across all three zzow servers.  
 - Generally speaking, all tests listed above can be run on any zzow server.
-- For the tests automatically triggered by your PR build, it is running `Convenience Pax` test on `zzow04`. (In the future we would like to add the support to pick random zzow server for PR automatic test to reduce waiting in the queue when there are multiple changes to PRs).
+- For the tests automatically triggered by your PR build, it is running `Convenience Pax` test on any zzow server.
 - The time it takes to run each test see [appendix](#appendix)
 
 ### Custom Zowe Artifactory Pattern or Build Number
