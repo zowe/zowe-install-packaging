@@ -821,7 +821,7 @@ jobs:
             if (expectedTimeString != '') {
               body += `${expectedTimeString} \n`
             }
-            body += `Result: <PENDING> (will get updated once test is finished)`
+            body += `Result: <PENDING> (will get updated once test is finished) \n`
             body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             
             github.rest.issues.updateComment({
