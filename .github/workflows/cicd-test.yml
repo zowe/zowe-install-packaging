@@ -884,7 +884,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               comment_id: ${{ steps.create-comment.outputs.result }},
-              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} SUCCEEDED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              body: body
             });
 
       - name: '[Comment] Update PR comment to indicate test failed'
