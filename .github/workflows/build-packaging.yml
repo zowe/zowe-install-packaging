@@ -463,7 +463,7 @@ jobs:
   # only run auto integration tests when the workflow is triggered by pull request
   call-integration-test:
     needs: regular-build
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && env.CURRENT_BRANCH == 'staging')
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
     uses: zowe/zowe-install-packaging/.github/workflows/cicd-test.yml@users/tom/enable-auto-pr-bld-test
     with: 
       pr-auto-test: true
