@@ -138,8 +138,8 @@ detect_if_component_tagged() {
   component_manifest=$(get_component_manifest "${component_dir}")
   if [ -n "${component_manifest}" ]; then
       # manifest at least should have name defined
-    tag=$(chtag -p ${component_manifest} | cut -f 2 -d\ )
-    if [ ! "${tag}" = "untagged" ]; then
+    tag=$(get_file_encoding "${component_manifest}")
+    if [ "${tag}" != "UNTAGGED" ]; then
       echo "true"
     else
       echo "false"

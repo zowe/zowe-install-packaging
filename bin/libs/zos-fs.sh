@@ -21,6 +21,7 @@ get_file_encoding() {
   # m ISO8859-1   T=off <file>
   # - untagged    T=off <file>
   ls -T "${file}" | awk '{print $2;}' | upper_case
+  # or we can use "chtag -p" command, same result
 }
 
 ###############################
@@ -57,7 +58,7 @@ detect_file_encoding() {
   confirmed_encoding=
 
   current_tag=$(get_file_encoding "${file_name}")
-  if [ "${current_tag}" != "untagged" ]; then
+  if [ "${current_tag}" != "UNTAGGED" ]; then
     # tagged
     confirmed_encoding="${current_tag}"
   fi
