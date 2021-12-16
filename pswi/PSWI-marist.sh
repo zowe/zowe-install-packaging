@@ -28,6 +28,8 @@ export MOUNTPATH=$ZOWE_MOUNT
 export CSI=$CSIHLQ
 export TARGET=$TZONE
 export DISTRIBUTION=$DZONE
+export PTF1="UO01996"
+export PTF2="UO01997"
 
 export JOBNAME="ZWEPSWI1"
 if [ -n "$ACCOUNT" ]
@@ -84,14 +86,7 @@ else
     echo "standard situation"
     export RFDSNPFX=`ls unzipped | tail -n 1 | cut -f1 -d'.'`
     export FMID=`ls unzipped | tail -n 1 | cut -f2 -d'.'`
-    FILES=`ls unzipped`
-    N=0
-    IFS=$'\n'
-    for FILE in $FILES
-    do
-      N=$((N+1))
-      export PTF${N}=`echo $FILE | tail -n 2 | cut -f3 -d'.'`
-    done
+    
     #TODO maybe I can read PTFs names from .htm file - from JCL I will still need in next shell script
     export PTFDATASET="${SMPMCS}.${RFDSNPFX}.${FMID}"
   else
@@ -99,6 +94,19 @@ else
     #TODO:make it more universal (we have the workflow now just for two files anyway so change it with that)
   fi
 fi
+
+# workaround (datasets already prepared)
+#cd unzipped
+#HOST=${ZOSMF_URL#https:\/\/}
+#
+#sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+#cd ${DIR}/PSWI
+#put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
+#put ${RFDSNPFX}.${FMID}.${PTF2} ${PTF2}
+#cp -F bin ${PTF1} "//'${SMPMCS}.${RFDSNPFX}.${FMID}.${PTF1}'"
+#cp -F bin ${PTF2} "//'${SMPMCS}.${RFDSNPFX}.${FMID}.${PTF2}'" 
+#EOF
+#cd ..
 
 rm -r unzipped
 echo "----------------------------------------------------------------------------------------------------------"
