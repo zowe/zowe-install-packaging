@@ -121,9 +121,13 @@ ensure_file_encoding() {
   if [ -n "${file_encoding}" ]; then
     # any cases we cannot find encoding?
     if [ "${file_encoding}" != "${expected_encoding}" ]; then
+      print_trace "- Convert encoding of ${file} from ${file_encoding} to ${expected_encoding}."
       iconv -f "${file_encoding}" -t "${expected_encoding}" "${file}" > "${file}.tmp"
       mv "${file}.tmp" "${file}"
     fi
+    print_trace "- Remove encoding tag of ${file}."
     chtag -r "${file}" 2>/dev/null
+  else
+    print_trace "- Failed to detect encoding of ${file}."
   fi
 }
