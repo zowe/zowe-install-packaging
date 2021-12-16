@@ -80,7 +80,7 @@ global_validate() {
 
   # validate_runtime_user
   if [ "${USER}" = "IZUSVR" ]; then
-    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "ZWEL0142W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
+    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "ZWEL0302W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
   fi
 
   # reset error counter

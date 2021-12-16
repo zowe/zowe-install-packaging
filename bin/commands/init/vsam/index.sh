@@ -34,7 +34,7 @@ fi
 # caching_storage=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
 caching_storage=VSAM
 if [ "${caching_storage}" != "VSAM" ]; then
-  print_error_and_exit "Warning ZWEL0164W: Zowe Caching Service is not configured to use VSAM. Command exits." "" 0
+  print_error_and_exit "Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command exits." "" 0
 fi
 vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
 if [ -z "${vsam_mode}" -o "${vsam_mode}" = "null" ]; then
@@ -64,7 +64,7 @@ jcl_existence=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
 if [ "${jcl_existence}" = "true" ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0158W: ${jcllib}(ZWECSVSM) already exists. This data set member will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: ${jcllib}(ZWECSVSM) already exists. This data set member will be overwritten during configuration."
   else
     # error
     print_error_and_exit "Error ZWEL0158E: ${jcllib}(ZWECSVSM) already exists." "" 158

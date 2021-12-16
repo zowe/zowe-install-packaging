@@ -1,4 +1,4 @@
-ZWEL0158W||%s already exists. This %s will be overwritten during configuration.
+ZWEL0300W||%s already exists. This %s will be overwritten during configuration.
 ZWEL0158E|158|%s already exists.
 ZWEL0170E|170|Failed to trust service "%s".
 ZWEL0171E|171|Failed to verify certificate (CN and SAN) of service "%s".
