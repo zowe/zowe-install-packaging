@@ -17,7 +17,8 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
 ### Choose Test Server
 
 - This input is a choice, and it's mandatory.  
-- You can choose from one of `zzow02`, `zzow03`, `zzow04` or `zzow02,zzow03,zzow04` (if you want to run the test on all zzow servers).
+- You can choose from one of `zzow02`, `zzow03`, `zzow04`, `zzow02,zzow03,zzow04` (if you want to run the test on all zzow servers), or `Any zzow servers` (pick any zzow servers, potentially help reduce wait time)
+- Default is `Any zzow servers`
 
 ### Choose Install Test
 
