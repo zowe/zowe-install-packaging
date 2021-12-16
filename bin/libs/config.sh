@@ -111,6 +111,11 @@ sanitize_ha_instance_id() {
 load_environment_variables() {
   component_id=$1
 
+  # we must have $ZWE_zowe_workspaceDirectory at this time
+  if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+    export ZWE_RUN_IN_CONTAINER=true
+  fi
+
   # now we can load all variables
   if [ -n "${component_id}" -a -f "${ZWE_zowe_workspaceDirectory}/.env/${component_id}/.instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ]; then
     source_env "${ZWE_zowe_workspaceDirectory}/.env/${component_id}/.instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env"

@@ -88,7 +88,7 @@ global_validate() {
 
   validate_this "is_directory_writable \"${ZWE_zowe_workspaceDirectory}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
 
-  if [ ! -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+  if [ "${ZWE_RUN_IN_CONTAINER}" != "true" ]; then
     # only do these check when it's not running in container
 
     # currently node is always required
@@ -271,8 +271,11 @@ ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config ${ZWE_CLI_PARAMETER_CONFIG}
 if [ -z "${ZWE_zowe_workspaceDirectory}" -o "${ZWE_zowe_workspaceDirectory}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
 fi
-# write tmp to here so we can enable readOnlyRootFilesystem
 if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+  export ZWE_RUN_IN_CONTAINER=true
+fi
+# write tmp to here so we can enable readOnlyRootFilesystem
+if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
   print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Setting TMPDIR to ${ZWE_zowe_workspaceDirectory}/.tmp."
   mkdir -p "${ZWE_zowe_workspaceDirectory}/.tmp"
   export TMPDIR=${ZWE_zowe_workspaceDirectory}/.tmp
@@ -307,7 +310,7 @@ sanitize_ha_instance_id
 
 # extra preparations for running in container 
 # this is running in containers
-if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
   prepare_running_in_container
 fi
 
@@ -326,7 +329,7 @@ print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "<<<"
 # no validation for running in container
 global_validate
 # no validation for running in container
-if [ ! -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+if [ "${ZWE_RUN_IN_CONTAINER}" != "true" ]; then
   validate_components
 fi
 configure_components
