@@ -38,4 +38,4 @@ if [ "${ZWE_CLI_PARAMETER_VERIFY}" = "true" ]; then
   fi
 fi
 
-print_level2_message "Certificate ${ZWE_CLI_PARAMETER_ALIAS} is created successfully."
+print_level2_message "Certificate ${ZWE_CLI_PARAMETER_ALIAS} is added to truststore successfully."
