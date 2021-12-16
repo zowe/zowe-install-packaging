@@ -106,7 +106,7 @@ ensure_file_encoding() {
   expected_encoding=$3
 
   # only valid on z/OS
-  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
     return 0
   fi
 
