@@ -136,13 +136,17 @@ validate_components() {
       # check validate script
       validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- commands.validate is ${validate_script:-<undefined>}"
-      if [ -n "${validate_script}" -a "${validate_script}" != "null" -a -x "${validate_script}" ]; then
-        print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- process ${component_id} validate command ..."
-        ZWE_PRIVATE_OLD_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}
-        ZWE_PRIVATE_ERRORS_FOUND=0
-        (load_environment_variables "${component_id}" && . "${validate_script}" 2>&1 && return ${ZWE_PRIVATE_ERRORS_FOUND})
-        retval=$?
-        let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+${retval}"
+      if [ -n "${validate_script}" -a "${validate_script}" != "null" ]; then
+        if [ -f "${validate_script}" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- process ${component_id} validate command ..."
+          ZWE_PRIVATE_OLD_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}
+          ZWE_PRIVATE_ERRORS_FOUND=0
+          (load_environment_variables "${component_id}" && . "${validate_script}" 2>&1 && return ${ZWE_PRIVATE_ERRORS_FOUND})
+          retval=$?
+          let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+${retval}"
+        else
+          print_formatted_error "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.validate defined but the file is missing."
+        fi
       fi
 
       # check platform dependencies
@@ -183,7 +187,7 @@ configure_components() {
       if [ "${preconfigure_script}" = "null" ]; then
         preconfigure_script=
       fi
-      if [ -x "${preconfigure_script}" ]; then
+      if [ -f "${preconfigure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
         # execute configure step and snapshot environment
         result=$(load_environment_variables "${component_id}" && . "${preconfigure_script}")
@@ -195,6 +199,8 @@ configure_components() {
             print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
           fi
         fi
+      else
+        print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.preConfigure defined but the file is missing."
       fi
 
       # default build-in behaviors
@@ -236,7 +242,7 @@ configure_components() {
       if [ "${configure_script}" = "null" ]; then
         configure_script=
       fi
-      if [ -x "${configure_script}" ]; then
+      if [ -f "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
         result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
@@ -248,6 +254,8 @@ configure_components() {
             print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
           fi
         fi
+      else
+        print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.configure defined but the file is missing."
       fi
     fi
   done
