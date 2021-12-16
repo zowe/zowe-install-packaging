@@ -138,8 +138,8 @@ detect_if_component_tagged() {
   component_manifest=$(get_component_manifest "${component_dir}")
   if [ -n "${component_manifest}" ]; then
       # manifest at least should have name defined
-    tag=$(chtag -p ${component_manifest} | cut -f 2 -d\ )
-    if [ ! "${tag}" = "untagged" ]; then
+    tag=$(get_file_encoding "${component_manifest}")
+    if [ "${tag}" != "UNTAGGED" ]; then
       echo "true"
     else
       echo "false"
@@ -218,11 +218,15 @@ find_all_launch_components() {
       if [ "${start_script}" = "null" ]; then
         start_script=
       fi
-      if [ -n "${start_script}" -a -x "${component_dir}/${start_script}" ]; then
-        if [ -n "${components}" ]; then
-          components="${components},"
+      if [ -n "${start_script}" ]; then
+        if [ -f "${component_dir}/${start_script}" ]; then
+          if [ -n "${components}" ]; then
+            components="${components},"
+          fi
+          components="${components}${component}"
+        else
+          print_error "Error ZWEL0172E: Component ${component} has commands.start defined but the file is missing."
         fi
-        components="${components}${component}"
       fi
     fi
   done
