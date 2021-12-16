@@ -59,20 +59,24 @@ if [ -n "${component_dir}" ]; then
     start_script=
   fi
 
-  if [ -n "${start_script}" -a -x "${start_script}" ]; then
-    print_formatted_info "ZWELS" "zwe-internal-start-component:${LINENO}" "starting component ${ZWE_CLI_PARAMETER_COMPONENT} ..."
-    print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" ">>> environment for ${ZWE_CLI_PARAMETER_COMPONENT}\n$(get_environments)\n<<<"
-    # FIXME: we have assumption here start_script is pointing to a shell script
-    # if [[ "${start_script}" == *.sh ]]; then
-    if [ "${ZWE_CLI_PARAMETER_RUN_IN_BACKGROUND}" = "true" ]; then
-      . "${start_script}" &
+  if [ -n "${start_script}" ]; then
+    if [ -f "${start_script}" ]; then
+      print_formatted_info "ZWELS" "zwe-internal-start-component:${LINENO}" "starting component ${ZWE_CLI_PARAMETER_COMPONENT} ..."
+      print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" ">>> environment for ${ZWE_CLI_PARAMETER_COMPONENT}\n$(get_environments)\n<<<"
+      # FIXME: we have assumption here start_script is pointing to a shell script
+      # if [[ "${start_script}" == *.sh ]]; then
+      if [ "${ZWE_CLI_PARAMETER_RUN_IN_BACKGROUND}" = "true" ]; then
+        . "${start_script}" &
+      else
+        # wait for all background subprocesses created by bin/start.sh exit
+        # re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
+        cat "${start_script}" | { echo ". \"${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh
+      fi
     else
-      # wait for all background subprocesses created by bin/start.sh exit
-      # re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
-      cat "${start_script}" | { echo ". \"${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh
+      print_formatted_error "ZWELS" "zwe-internal-start-component:${LINENO}" "Error ZWEL0172E: Component ${ZWE_CLI_PARAMETER_COMPONENT} has commands.start defined but the file is missing."
     fi
   else
-    print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" "Component ${ZWE_CLI_PARAMETER_COMPONENT} doesn't have start command or it's not executable."
+    print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" "Component ${ZWE_CLI_PARAMETER_COMPONENT} doesn't have start command."
   fi
 else
   print_formatted_error "ZWELS" "zwe-internal-start-component:${LINENO}" "Failed to locate component directory for ${ZWE_CLI_PARAMETER_COMPONENT}."

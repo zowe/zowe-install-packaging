@@ -1,3 +1,3 @@
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
-ZWEL0158W||%s already exists. Members in this data set will be overwritten.
+ZWEL0300W||%s already exists. Members in this data set will be overwritten.
 ZWEL0158E|158|%s already exists.
