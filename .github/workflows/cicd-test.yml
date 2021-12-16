@@ -711,8 +711,9 @@ jobs:
         working-directory: ${{ runner.temp }}/cli
         run: npm install -g zowe-cli*.tgz
       
-      - name: '[Post comment] Post comments on PR about what tests are gonna be run'
+      - name: '[Comment] Post comments on PR about what tests are gonna be run'
         uses: actions/github-script@v5
+        id: create-comment
         if: startsWith(env.CURRENT_BRANCH, 'PR-')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -729,8 +730,8 @@ jobs:
             body += `Running install test: ${installTest} \n`
             body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
             body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `please wait... \n `
-            body += `(This comment will get updated once build result is out) \n`
+            body += `Acquiring the test server lock first, please wait... \n `
+            body += `ETA: unknown (This ETA will get updated once the machine lock is acquired) \n`
             body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             
             const { data: comment } = await github.rest.issues.createComment({ 
@@ -749,6 +750,86 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
           lock-avg-retry-interval: 60
+      
+      - name: '[Comment] Update comment after lock is acquired'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != ''
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            // get ETA for each test run
+            switch(installTest) {
+              case 'Convenience Pax':
+                eta = 27
+                break;
+              case 'SMPE PTF':
+                eta = 47
+                break;
+              case 'Tech Preview docker':
+                eta = 22
+                break;
+              case 'Extensions':
+                eta = 35
+                break;
+              case 'Keyring':
+                eta = 27
+                break;
+              case 'z/OS node v8':
+                eta = 25
+                break;
+              case 'z/OS node v12':
+                eta = 25
+                break;
+              case 'z/OS node v14':
+                eta = 25
+                break;
+              case 'Non-strict Verify External Certificate':
+                eta = 25
+                break;
+              case 'Zowe Release Tests':
+                eta = 240
+                break;
+              default:
+            }
+
+            var expectedTimeString
+            if (eta != '') {
+              const finish_time = new Date(new Date().getTime() + eta*60*1000);
+              const finish_time_EST = finish_time.toLocaleString('en-CA', { timeZone: 'Canada/Eastern' }).split(', ')[1] + " EST"
+              const finish_time_CET = finish_time.toLocaleString('en-EU', { timeZone: 'Europe/Prague' }).split(', ')[1] + " CET"
+              const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
+              const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
+              expectedTimeString = `Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n`
+            }
+            else {
+              eta = 'unknown'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Lock acquired, start the test now, please wait... \n `
+            body += `ETA: ${eta} mins \n`
+            if (expectedTimeString != '') {
+              body += `${expectedTimeString} \n`
+            }
+            body += `Result: <PENDING> (will get updated once test is finished)`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: body
+            });
 
       - name: '[Test] Test starts from here'
         timeout-minutes: 90
@@ -773,4 +854,85 @@ jobs:
       #   if: always()
       #   working-directory: ${{ env.INSTALL_TEST_PATH }}
       #   run: npm run merge-reports
+
+      - name: '[Comment] Update PR comment to indicate test succeeded'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Result: SUCCESS`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} SUCCEEDED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+
+      - name: '[Comment] Update PR comment to indicate test failed'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Result: FAILURE`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: body
+            });
+
+      - name: '[Comment] Update PR comment to indicate test cancelled'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && cancelled()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Result: CANCELLED`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: body
+            });
 
