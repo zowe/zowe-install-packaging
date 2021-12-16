@@ -29,8 +29,9 @@ on:
         description: 'Choose Test Server'
         type: choice
         required: true
-        default: 'zzow04'
+        default: 'Any zzow servers'
         options: 
+          - Any zzow servers
           - zzow02
           - zzow03
           - zzow04
@@ -215,9 +216,13 @@ jobs:
         # this is the final string that can be recognizable by the matrix processing script down below
         echo "TEST_FILE_SERVER is "$TEST_FILE_SERVER
 
-        if [[ -z "$TEST_FILE_SERVER" ]]; then
-          echo "Variable TEST_FILE_SERVER is not processed properly, aborting.."
-          exit 1
+        if [[ -z "$RELEASE_TESTS" ]]; then
+          if [[ "$test_server" == "Any zzow servers" ]]; then
+            test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
+          fi
+          TEST_FILE_SERVER="$TEST_FILE($test_server)"
+        else
+          TEST_FILE_SERVER="$TEST_FILE"
         fi
 
         # sanitize all whitespaces just in case
