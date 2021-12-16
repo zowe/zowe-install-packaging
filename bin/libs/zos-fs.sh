@@ -52,16 +52,18 @@ detect_file_encoding() {
   expected_sample=$2
   expected_encoding=$3
 
-  expected_encoding_uc=$(echo "${expected_encoding}" | tr '[:lower:]' '[:upper:]')
+  expected_encoding_uc=$(echo "${expected_encoding}" | upper_case)
 
   confirmed_encoding=
 
-  current_tag=$(ls -T "${file_name}" | awk '{print $2}')
+  current_tag=$(get_file_encoding "${file_name}")
   if [ "${current_tag}" != "untagged" ]; then
+    # tagged
     confirmed_encoding="${current_tag}"
   fi
 
-  if [ -z "${confirmed_encoding}" ]; then
+  # not tagged and expected_sample is provided, we can try to auto detect
+  if [ -z "${confirmed_encoding}" -a -n "${expected_sample}" ]; then
     if [ "${expected_encoding_uc}" = "IBM-1047" ]; then
       result=$(cat "${file_name}" | grep "${expected_sample}" 2>/dev/null)
       if [ -n "${result}" ]; then
@@ -93,5 +95,35 @@ detect_file_encoding() {
 
   if [ -n "${confirmed_encoding}" ]; then
     echo "${confirmed_encoding}"
+  fi
+}
+
+###############################
+# On z/OS, some file generated could be in ISO8859-1 encoding, but we need it to be IBM-1047
+ensure_file_encoding() {
+  file=$1
+  expected_sample=$2
+  expected_encoding=$3
+
+  # only valid on z/OS
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+    return 0
+  fi
+
+  if [ -z "${expected_encoding}" ]; then
+    expected_encoding=IBM-1047
+  fi
+  expected_encoding_uc=$(echo "${expected_encoding}" | upper_case)
+
+  # convert encoding to IBM-1047
+  # most likely it's tagged
+  file_encoding=$(detect_file_encoding "${file}" "${expected_sample}")
+  if [ -n "${file_encoding}" ]; then
+    # any cases we cannot find encoding?
+    if [ "${file_encoding}" != "${expected_encoding}" ]; then
+      iconv -f "${file_encoding}" -t "${expected_encoding}" "${file}" > "${file}.tmp"
+      mv "${file}.tmp" "${file}"
+    fi
+    chtag -r "${file}" 2>/dev/null
   fi
 }

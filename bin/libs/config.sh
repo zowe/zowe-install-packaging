@@ -39,7 +39,7 @@ ensure_zowe_yaml_encoding() {
   zowe_yaml=$1
 
   # convert encoding to IBM-1047
-  if [ "$(is_on_zos)" = "true" ]; then
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     # most likely it's tagged
     config_encoding=$(detect_file_encoding "${zowe_yaml}" "zowe:")
     if [ -n "${config_encoding}" ]; then
