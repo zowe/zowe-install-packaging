@@ -20,10 +20,11 @@
 find_sub_directories() {
   parent=$1
 
+  parent_absolute_path=$(cd "${parent}" && pwd)
   # find on z/OS USS doesn't support -d
-  children=$(ls -1 "${parent}" | sort)
+  children=$(cd "${parent_absolute_path}" && ls -1 | sort)
   while read -r child; do
-    if [ -d "${parent}/${child}" ]; then
+    if [ -d "${parent_absolute_path}/${child}" ]; then
       echo "${child}"
     fi
   done <<EOF
