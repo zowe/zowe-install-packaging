@@ -836,10 +836,13 @@ jobs:
               body: body
             });
 
+      - name: DEBUG 
+        run: echo "${{ matrix.test }}"
+
       - name: '[Test] Test starts from here'
         timeout-minutes: 90
         working-directory: ${{ env.INSTALL_TEST_PATH }}
-        run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo ${{ matrix.test }} | sed "s/.ts/.js/g")
+        run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo "${{ matrix.test }}" | sed "s/.ts/.js/g")
         env:
           ANSIBLE_FORCE_COLOR: true
           TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
