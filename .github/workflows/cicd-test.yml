@@ -830,9 +830,6 @@ jobs:
               body: body
             });
 
-      - name: DEBUG 
-        run: echo "${{ matrix.test }}"
-
       - name: '[Test] Test starts from here'
         timeout-minutes: 90
         working-directory: ${{ env.INSTALL_TEST_PATH }}
