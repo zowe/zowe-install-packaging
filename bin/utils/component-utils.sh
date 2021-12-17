@@ -625,8 +625,8 @@ process_component_gateway_shared_libs() {
       break
     fi
 
-    echo "List of API ML extensions: "
-    ls -la ${gateway_shared_libs_path}
+    >&2 echo "List of API ML extensions: "
+    ls -la "${gateway_shared_libs_path}"
     iterator_index=`expr $iterator_index + 1`
     gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   done
