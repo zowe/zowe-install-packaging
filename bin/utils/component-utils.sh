@@ -597,6 +597,9 @@ process_component_gateway_shared_libs() {
   plugin_id=
   gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
+  >&2 echo "I am outside while: ${gateway_shared_libs_path}"
+  ls -la "${gateway_shared_libs_path}"
+
   while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
 
