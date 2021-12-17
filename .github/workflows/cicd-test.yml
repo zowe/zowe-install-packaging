@@ -15,8 +15,9 @@ on:
         description: 'Choose Test Server'
         type: choice
         required: true
-        default: 'zzow04'
+        default: 'Any zzow servers'
         options: 
+          - Any zzow servers
           - zzow02
           - zzow03
           - zzow04
@@ -102,7 +103,7 @@ jobs:
     - name: make matrix
       id: set-matrix
       run: |
-        TEST_SERVER="${{ github.event.inputs.test-server }}"
+        test_server="${{ github.event.inputs.test-server }}"
         INSTALL_TEST_CHOICE="${{ github.event.inputs.install-test }}"
         TEST_FILE=
         case $INSTALL_TEST_CHOICE in
@@ -167,7 +168,10 @@ jobs:
         esac
 
         if [[ -z "$RELEASE_TESTS" ]]; then
-          TEST_FILE_SERVER="$TEST_FILE($TEST_SERVER)"
+          if [[ "$test_server" == "Any zzow servers" ]]; then
+            test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
+          fi
+          TEST_FILE_SERVER="$TEST_FILE($test_server)"
         else
           TEST_FILE_SERVER="$TEST_FILE"
         fi
