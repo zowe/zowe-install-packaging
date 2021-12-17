@@ -189,6 +189,9 @@ jobs:
           esac
 
           if [[ -z "$RELEASE_TESTS" ]]; then
+            if [[ "$test_server" == "Any zzow servers" ]]; then
+              test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
+            fi
             TEST_FILE_SERVER="$test_file($test_server)"
           else
             TEST_FILE_SERVER="$test_file"
@@ -215,15 +218,6 @@ jobs:
 
         # this is the final string that can be recognizable by the matrix processing script down below
         echo "TEST_FILE_SERVER is "$TEST_FILE_SERVER
-
-        if [[ -z "$RELEASE_TESTS" ]]; then
-          if [[ "$test_server" == "Any zzow servers" ]]; then
-            test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
-          fi
-          TEST_FILE_SERVER="$TEST_FILE($test_server)"
-        else
-          TEST_FILE_SERVER="$TEST_FILE"
-        fi
 
         # sanitize all whitespaces just in case
         TEST_FILE_SERVER=$TEST_FILE_SERVER | tr -d "[:space:]"
