@@ -322,6 +322,8 @@ configure_components() {
       # - gateway shared lib
       result=$(process_component_gateway_shared_libs "${component_dir}" 2>&1)
       retval=$?
+      echo "Called process_component_gateway_shared_libs"
+      echo "${retval}"
       print_formatted_debug "ZWELS" "here i am" "sharedLibs"
       ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/
       ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/apiml-sample-extension/

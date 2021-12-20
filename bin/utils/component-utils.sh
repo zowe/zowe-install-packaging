@@ -590,6 +590,7 @@ process_component_appfw_plugin() {
 #
 # @param string   component directory
 process_component_gateway_shared_libs() {
+  echo "INSIDE PROCESS GATEWAY SHARED"
   component_dir=$1
 
   all_succeed=true
