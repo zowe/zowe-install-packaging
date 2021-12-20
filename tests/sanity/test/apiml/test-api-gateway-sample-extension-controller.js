@@ -47,10 +47,10 @@ describe('test api gateway sample extension controller', function() {
     const req = {
       method: 'get',
       url: url,
-      auth: {
-        username,
-        password,
-      }
+      // auth: {
+      //   username,
+      //   password,
+      // }
     };
     debug('request', req);
 
