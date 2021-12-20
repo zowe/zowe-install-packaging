@@ -326,8 +326,7 @@ configure_components() {
       echo "${retval}"
       print_formatted_debug "ZWELS" "here i am" "sharedLibs"
       ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/
-      ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/apiml-sample-extension/
-      ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/org.zowe.apiml.sdk.apiml-sample-extension-package/
+      ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/org.zowe.apiml.sdk.apiml-sample-extension-package/bin/
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
           print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
