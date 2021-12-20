@@ -634,7 +634,8 @@ process_component_gateway_shared_libs() {
     gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   done
 
-  ls
+  >&2 echo "List of API ML extensions: "
+  ls -la "${gateway_shared_libs_path}"
   if [ "${all_succeed}" = "true" ]; then
     return 0
   else

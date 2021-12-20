@@ -322,6 +322,9 @@ configure_components() {
       # - gateway shared lib
       result=$(process_component_gateway_shared_libs "${component_dir}" 2>&1)
       retval=$?
+      print_formatted_debug "ZWELS" "here i am" "sharedLibs"
+      ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/
+      ls -la "${WORKSPACE_DIR}"/gateway/sharedLibs/apiml-sample-extension/
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
           print_formatted_debug "ZWELS" "prepare-instance.sh,configure_components:${LINENO}" "${result}"
