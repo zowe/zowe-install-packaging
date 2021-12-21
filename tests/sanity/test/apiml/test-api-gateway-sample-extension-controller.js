@@ -56,11 +56,13 @@ describe('test api gateway sample extension controller', function() {
 
     return REQ.request(req)
       .then(function(res) {
+        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
         addContext(_this, {
           title: 'http response',
           value: res && res.data
         });
 
+        expect(res).to.have.property('status');
         expect(res.status).to.equal(200);
         expect(res.data).to.not.be.empty;
       });
