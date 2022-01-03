@@ -64,7 +64,7 @@
     },
     "org.zowe.apiml.api-catalog-package": {
       "repository": "libs-release-local",
-      "version": "2.0.2-PR-1964-1",
+      "version": "2.0.3",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
