@@ -140,11 +140,11 @@ else
 fi
 
 # Directory containing all the Gateway shared jars to be added in the classpath
-ZWE_GATEWAY_SHARED_LIBS=${WORKSPACE_DIR}/gateway/sharedLibs/org.zowe.apiml.sdk.apiml-sample-extension-package/
-echo "The value of ZWE_GATEWAY_SHARED_LIBS ${ZWE_GATEWAY_SHARED_LIBS}:"
+ZWE_GATEWAY_SHARED_LIBS=${WORKSPACE_DIR}/gateway/sharedLibs/org.zowe.apiml.sdk.apiml-sample-extension-package/bin/
+echo "The value of ZWE_GATEWAY_SHARED_LIBS:"
 
 ls -la "${ZWE_GATEWAY_SHARED_LIBS}"
-ls -la "${ZWE_GATEWAY_SHARED_LIBS}"/org.zowe.apiml.sdk.apiml-sample-extension-package/bin/
+
 
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
