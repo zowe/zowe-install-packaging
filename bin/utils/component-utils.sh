@@ -607,7 +607,7 @@ process_component_gateway_shared_libs() {
     if [ -z "${plugin_id}" ]; then
       # prepare plugin directory
       plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
-      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
+      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs"
       mkdir -p "${gateway_shared_libs_workspace_path}"
     fi
 
