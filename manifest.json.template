@@ -12,27 +12,27 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~1.26.0-STAGING",
+      "version": "~1.26.0-192-zlux-app-server",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~1.26.0-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~1.26.0-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~1.26.0-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~1.26.0-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~1.26.0-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~1.26.0-STAGING",
+      "version": "~1.26.0-PR-387",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs": {
@@ -69,27 +69,27 @@
     },
     "org.zowe.apiml.discovery-package": {
       "repository": "libs-release-local",
-      "version": "2.0.2-PR-1964-1",
+      "version": "2.0.3",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "repository": "libs-release-local",
-      "version": "2.0.2-PR-1964-1",
+      "version": "2.0.3",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
       "repository": "libs-release-local",
-      "version": "2.0.2-PR-1964-1",
+      "version": "2.0.3",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
       "repository": "libs-release-local",
-      "version": "2.0.2-PR-1964-1",
+      "version": "2.0.3",
       "artifact": "metrics-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "repository": "libs-release-local",
-      "version": "2.0.2-PR-1964-1",
+      "version": "2.0.3",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
