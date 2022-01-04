@@ -1,1 +1,14 @@
-""
+{
+  "lockAcquiredTime": "Tue Jan 04 2022 21:41:18 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1641332478381599942",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/tom/debug-zlinux-docker",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "FlappiTomic",
+  "runId": 1655668941,
+  "runNumber": 250
+}
