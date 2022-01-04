@@ -141,9 +141,6 @@ fi
 
 # Directory containing all the Gateway shared jars to be added in the classpath
 ZWE_GATEWAY_SHARED_LIBS=${WORKSPACE_DIR}/gateway/sharedLibs/
-echo "The value of ZWE_GATEWAY_SHARED_LIBS:"
-
-ls -la "${ZWE_GATEWAY_SHARED_LIBS}"
 
 
 # caching-service with VSAM persistent can only run on z/OS

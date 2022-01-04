@@ -590,7 +590,7 @@ process_component_appfw_plugin() {
 #
 # @param string   component directory
 process_component_gateway_shared_libs() {
-  echo "INSIDE PROCESS GATEWAY SHARED"
+
   component_dir=$1
 
   all_succeed=true
@@ -598,8 +598,6 @@ process_component_gateway_shared_libs() {
   plugin_id=
   gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
-  >&2 echo "I am outside while: ${gateway_shared_libs_path}"
-  ls -la "${gateway_shared_libs_workspace_path}"
 
   while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
@@ -629,14 +627,10 @@ process_component_gateway_shared_libs() {
       break
     fi
 
-    >&2 echo "List of API ML extensions: "
-    ls -la "${gateway_shared_libs_workspace_path}"
     iterator_index=`expr $iterator_index + 1`
     gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   done
 
-  >&2 echo "List of API ML extensions: "
-  ls -la "${gateway_shared_libs_workspace_path}"
   if [ "${all_succeed}" = "true" ]; then
     return 0
   else

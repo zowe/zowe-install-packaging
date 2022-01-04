@@ -88,8 +88,9 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.26.18-PR-1947-SNAPSHOT",
-      "artifact": "gateway-package-1.26.18-PR-1947-20220103.123734-7.zip"
+      "version": "~1.26.0-SNAPSHOT",
+      "artifact": "gateway-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.caching-service-package": {
       "version": "~1.26.0-SNAPSHOT",
