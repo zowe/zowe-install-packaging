@@ -85,7 +85,7 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
         rm -rf tmp &&\
         mkdir tmp &&\
         cd tmp &&\
-        pax -rf ../$f &&\
+        pax -rf ../$f ;\
         rm ../$f &&\
         find . -type f -iregex '.*\.\(sh\)$' -exec sh -c "conv '{}' | sponge '{}'" \; && \
         find . -type f -name '*.sh' -exec sh -c "sed -i 's/-Xquickstart//' {}" \; &&\
