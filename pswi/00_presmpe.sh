@@ -20,6 +20,8 @@ echo "Checking/mounting ${TMP_ZFS}"
 sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
+HOST=${ZOSMF_URL#https:\/\/}
+
 cd unzipped
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
@@ -62,8 +64,6 @@ if [ $? -gt 0 ];then exit -1;fi
 rm JCL
   
   echo "Uploading PTFs"
-
-HOST=${ZOSMF_URL#https:\/\/}
 
 if [ $PTFNR -eq 2 ]
 then

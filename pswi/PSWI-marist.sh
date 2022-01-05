@@ -97,9 +97,9 @@ else
     echo "Different number of files"
     #TODO:make it more universal (we have the workflow now just for two files anyway so change it with that)
   fi
-  
+  ls -la ../.pax
   FMIDZIP=`find ~ -type f -name ${FMID}.zip -print` # should be ../.pax
-  
+  echo "FMIDZIP" $FMIDZIP
   if [ -n "${FMIDZIP}" ]
   then
     unzip ${FMIDZIP} -d unzipped
