@@ -45,7 +45,7 @@ require_java() {
   fi
 
   if [ -z "${JAVA_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0131E: Cannot find java. Please define JAVA_HOME environment variable." "" 131
+    print_error_and_exit "Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable." "" 122
   fi
 
   ensure_java_is_on_path

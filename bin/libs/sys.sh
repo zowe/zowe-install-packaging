@@ -40,6 +40,12 @@ get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME:-$(whoami 2>/dev/null)}}}
 }
 
+require_zos() {
+  if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
+    print_error_and_exit "Error ZWEL0120E: This command must run on a z/OS system." "" 120
+  fi
+}
+
 ###############################
 # List direct children PIDs of a process
 #

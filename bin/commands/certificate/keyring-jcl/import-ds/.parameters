@@ -1,0 +1,13 @@
+hlq||string|required||||High level qualifier where Zowe is installed.
+jcllib||string|required||||JCLLIB data set name where the JCL will be placed.
+security-dry-run||boolean|||||Whether to dry run security related setup.
+security-product||string||RACF|||Security product. Can be a value of RACF, ACF2 or TSS.
+keyring-owner||string|required||||Owner of the keyring.
+keyring-name||string|required||||Name of the keyring.
+alias|a|string|required|localhost|||Certificate alias name.
+external-cas||string|||||Labels of external certificate authorities separated by comma (Maximum 2).
+trust-zosmf||boolean|||||Whether to trust z/OSMF CA.
+zosmf-ca||string||_auto_|||Labels of z/OSMF root certificate authorities. Specify "_auto_" to let Zowe to detect automatically. This only works for RACF.
+zosmf-user||string||IZUSVR|||z/OSMF user name. This is used to automatically detect z/OSMF root certificate authorities.
+import-ds-name||string|required||||Name of the data set holds certificate to import into keyring.
+import-ds-password||string|required||||Password of the data set holds certificate to import.

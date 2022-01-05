@@ -397,3 +397,313 @@ validate_certificate_domain() {
   print_message "certificate of ${host}:${port} has valid common name and/or subject alternate name(s)"
   return 0
 }
+
+keyring_run_zwekring_jcl() {
+  hlq=$1
+  jcllib=$2
+  # should be 1, 2 or 3
+  jcloption=$3
+  keyring_owner="${4}"
+  keyring_name="${5}"
+  domains="${6}"
+  alias="${7}"
+  ca_alias="${8}"
+  # external CA labels separated by comma (label can have spaces)
+  ext_cas="${9}"
+  # set to 1 to import z/OSMF CA
+  trust_zosmf="${10:-0}"
+  zosmf_root_ca="${11}"
+  # option 3 - import from data set
+  import_ds_name="${12}"
+  import_ds_password="${13}"
+  validity="${14:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
+  security_product=${15:-RACF}
+
+  # generate from domains list
+  domain_name=
+  ip_address=
+  for item in $(echo "${domains}" | lower_case | tr "," " "); do
+    if [ -n "${item}" ]; then
+      # test if it's IP
+      if expr "${item}" : '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$' >/dev/null; then
+        if [ -z "${ip_address}" ]; then
+          ip_address="${item}"
+        fi
+      else
+        if [ -z "${domain_name}" ]; then
+          domain_name="${item}"
+        fi
+      fi
+    fi
+  done
+
+  import_ext_ca=0
+  import_ext_intermediate_ca_label=
+  import_ext_root_ca_label=
+  while read -r item; do
+    item=$(echo "${item}" | trim)
+    if [ -n "${item}" ]; then
+      if [ -z "${import_ext_intermediate_ca_label}" ]; then
+        import_ext_intermediate_ca_label="${item}"
+        import_ext_ca=1
+      elif [ -z "${import_ext_root_ca_label}" ]; then
+        import_ext_root_ca_label="${item}"
+        import_ext_ca=1
+      fi
+    fi
+  done <<EOF
+$(echo "${ext_cas}" | tr "," "\n")
+EOF
+
+  if [ "${zosmf_root_ca}" = "_auto_" ]; then
+    zosmf_root_ca=$(detect_zosmf_root_ca "${ZWE_PRIVATE_ZOSMF_USER}")
+  fi
+  if [ "${trust_zosmf}" = "1" -a -z "${zosmf_root_ca}" ]; then
+    print_error_and_exit "Error ZWEL0137E: z/OSMF root certificate authority is not provided (or cannot be detected) with trusting z/OSMF option enabled." "" 137
+  fi
+
+  date_add_util="${ZWE_zowe_runtimeDirectory}/bin/utils/date-add.rex"
+  validity_ymd=$("${date_add_util}" ${validity} 1234-56-78)
+  validity_mdy=$("${date_add_util}" ${validity} 56/78/34)
+
+  # used by ACF2
+  # TODO: how to pass this?
+  stc_group=
+
+  ###############################
+  # prepare ZWEKRING JCL
+  print_message ">>>> Modify ZWEKRING"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
+  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
+  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
+          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
+          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
+          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
+          sed   "s/^\/\/ \+SET \+OPTION=.*\$/\/\/         SET  OPTION=${jcloption}/" | \
+          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
+          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
+          sed       "s/^\/\/ \+SET \+CN=.*\$/\/\/         SET  CN='${ZWE_PRIVATE_CERTIFICATE_COMMON_NAME:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}'/" | \
+          sed       "s/^\/\/ \+SET \+OU=.*\$/\/\/         SET  OU='${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}'/" | \
+          sed        "s/^\/\/ \+SET \+O=.*\$/\/\/         SET  O='${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}'/" | \
+          sed        "s/^\/\/ \+SET \+L=.*\$/\/\/         SET  L='${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}'/" | \
+          sed       "s/^\/\/ \+SET \+SP=.*\$/\/\/         SET  SP='${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}'/" | \
+          sed        "s/^\/\/ \+SET \+C=.*\$/\/\/         SET  C='${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}'/" | \
+          sed "s/^\/\/ \+SET \+HOSTNAME=.*\$/\/\/         SET  HOSTNAME='${domain_name}'/" | \
+          sed "s/^\/\/ \+SET \+IPADDRES=.*\$/\/\/         SET  IPADDRES='${ip_address}'/" | \
+          sed   "s/^\/\/ \+SET \+DSNAME=.*\$/\/\/         SET  DSNAME=${import_ds_name}/" | \
+          sed "s/^\/\/ \+SET \+PKCSPASS=.*\$/\/\/         SET  PKCSPASS='${import_ds_password}'/" | \
+          sed "s/^\/\/ \+SET \+IFZOWECA=.*\$/\/\/         SET  IFZOWECA=${import_ext_ca}/" | \
+          sed "s/^\/\/ \+SET \+ITRMZWCA=.*\$/\/\/         SET  ITRMZWCA='${import_ext_intermediate_ca_label}'/" | \
+          sed "s/^\/\/ \+SET \+ROOTZWCA=.*\$/\/\/         SET  ROOTZWCA='${import_ext_root_ca_label}'/" | \
+          sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
+          sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
+          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" | \
+          sed  "s/2030-05-01/${validity_ymd}/g" | \
+          sed  "s#05/01/30#${validity_mdy}#g" \
+          > "${tmpfile}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+  fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
+    return 159
+  fi
+  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
+    return 160
+  fi
+  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
+  print_message
+
+  ###############################
+  # submit job
+  if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
+    print_message "Dry-run mode, JCL will NOT be submitted on the system."
+    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+  else
+    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
+    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      return 161
+    fi
+    print_debug "- job id ${jobid}"
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+      print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      return 162
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+    if [ ${code} -eq 0 ]; then
+      print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+    else
+      print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      return 163
+    fi
+  fi
+}
+
+keyring_run_zwenokyr_jcl() {
+  hlq=$1
+  jcllib=$2
+  keyring_owner="${3}"
+  keyring_name="${4}"
+  alias="${5}"
+  ca_alias="${6}"
+  security_product=${7:-RACF}
+
+  # used by ACF2
+  # TODO: how to pass this?
+  stc_group=
+
+  ###############################
+  # prepare ZWENOKYR JCL
+  print_message ">>>> Modify ZWENOKYR"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
+  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR) to ${tmpfile}"
+  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)'" | \
+          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
+          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
+          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
+          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
+          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
+          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" \
+          > "${tmpfile}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+  fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)"
+    return 159
+  fi
+  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
+    return 160
+  fi
+  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
+  print_message
+
+  ###############################
+  # submit job
+  if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
+    print_message "Dry-run mode, JCL will NOT be submitted on the system."
+    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+  else
+    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
+    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      return 161
+    fi
+    print_debug "- job id ${jobid}"
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+      print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      return 162
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+    if [ ${code} -eq 0 ]; then
+      print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+    else
+      print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      return 163
+    fi
+  fi
+}
+
+# this only works for RACF
+detect_zosmf_root_ca() {
+  zosmf_user=${1:-IZUSVR}
+  zosmf_root_ca=
+
+  print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user})"
+  zosmf_certs=$(tsocmd "RACDCERT LIST ID(${zosmf_user})" 2>&1)
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${zosmf_certs}" ]; then
+      print_trace "$(padding_left "${zosmf_certs}" "    ")"
+    fi
+    return 1
+  fi
+
+  zosmf_keyring_name=$(echo "${zosmf_certs}" | grep -v RACDCERT | awk "/Ring:/{x=NR+10;next}(NR<=x){print}" | awk '{print $1}' | sed -e 's/^>//' -e 's/<$//' | tr -d '\n')
+  if [ -n "${zosmf_keyring_name}" ]; then
+    print_trace "  * z/OSMF keyring name is ${zosmf_keyring_name}"
+    print_trace "- Detect z/OSMF root certificate authority by listing keyring (${zosmf_keyring_name})"
+    zosmf_keyring=$(tsocmd "RACDCERT LISTRING(${zosmf_keyring_name}) ID(${zosmf_user})" 2>&1)
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_trace "  * Exit code: ${code}"
+      print_trace "  * Output:"
+      if [ -n "${zosmf_keyring}" ]; then
+        print_trace "$(padding_left "${zosmf_keyring}" "    ")"
+      fi
+      return 2
+    fi
+
+    zosmf_root_ca=$(echo "${zosmf_keyring}" | grep -v RACDCERT | grep 'CERTAUTH' | head -n 1 | awk '{print $1}' | tr -d '\n')
+    if [ -z "${zosmf_root_ca}" ]; then
+      print_trace "  * Error: cannot detect z/OSMF root certificate authority"
+      return 3
+    else
+      print_trace "  * z/OSMF root certificate authority found: ${zosmf_root_ca}"
+      echo "${zosmf_root_ca}"
+      return 0
+    fi
+  else
+    print_trace "  * Error: failed to detect z/OSMF keyring name"
+    return 4
+  fi
+}

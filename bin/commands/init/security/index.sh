@@ -72,8 +72,7 @@ if [ -z "${security_stcs_aux}" -o "${security_stcs_aux}" = "null" ]; then
 fi
 
 ###############################
-# prepare STCs
-# ZWESLSTC
+# prepare ZWESECUR JCL
 print_message "Modify ZWESECUR"
 tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
 tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
