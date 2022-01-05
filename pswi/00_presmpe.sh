@@ -27,6 +27,7 @@ sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o Pubk
 cd ${TMP_MOUNT}
 put ${FMID}.pax.Z
 EOF
+cd..
 
 echo "Preparing SMPMCS and RELFILES"
 line=`cat unzipped/${FMID}.readme.txt | grep -n //UNPAX | cut -f1 -d:`
@@ -67,6 +68,7 @@ rm JCL
 
 if [ $PTFNR -eq 2 ]
 then
+cd unzipped
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
