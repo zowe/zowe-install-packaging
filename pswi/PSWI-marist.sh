@@ -101,6 +101,8 @@ else
   then
     unzip ${FMID}.zip -d unzipped
   else
+    pwd
+    ls -la ./.pax
     echo "File with FMID not found"
     exit -1
   fi
