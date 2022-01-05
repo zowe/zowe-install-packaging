@@ -32,7 +32,8 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$PTF_WF_NAME'",
 {"name":"TARGET","value":"'$TZONE'"},
 {"name":"DISTRIBUTION","value":"'$DZONE'"},
 {"name":"PTF1","value":"'$PTF1'"},
-{"name":"PTF2","value":"'$PTF2'"}]}'
+{"name":"PTF2","value":"'$PTF2'"}
+{"name":"PTFNR","value":"'$PTFNR'"}]}'
 
 cd workflows
 HOST=${ZOSMF_URL#https:\/\/}

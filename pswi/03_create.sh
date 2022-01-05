@@ -23,7 +23,6 @@ echo "Work mount point   :" $WORK_MOUNT # For z/OSMF v2.3
 echo "ZOWE zFS           :" $ZOWE_ZFS
 echo "ZOWE mount point   :" $ZOWE_MOUNT
 echo "Volume             :" $VOLUME
-echo "Storage Class      :" $STORCLAS
 echo "ACCOUNT            :" $ACCOUNT
 echo "SYSAFF             :" $SYSAFF
 echo "z/OSMF version     :" $ZOSMF_V
@@ -36,25 +35,9 @@ ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description"
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF05)"}},{"name":"ZOWE Cross-memory Workflow","description":"This workflow configure cross-memory server.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF06)"}},{"name":"ZOWE Instance and STC Workflow","description":"This workflow create zowe instance and STC.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF03)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
-if [ -n "$STORCLAS" ] # there has to be either STORCLAS or VOLUME
-then
-  ADD_WORKFLOW_DSN_JSON='{"dirblk":5,"avgblk":25000,"dsorg":"PO","alcunit":"TRK","primary":80,"secondary":40,"recfm":"VB","blksize":26000,"lrecl":4096,"storclass":"'${STORCLAS}'"}'
-else
-  ADD_WORKFLOW_DSN_JSON='{"dirblk":5,"avgblk":25000,"dsorg":"PO","alcunit":"TRK","primary":80,"secondary":40,"recfm":"VB","blksize":26000,"lrecl":4096,"volser":"'${VOLUME}'"}'
-fi
+ADD_WORKFLOW_DSN_JSON='{"dirblk":5,"avgblk":25000,"dsorg":"PO","alcunit":"TRK","primary":80,"secondary":40,"recfm":"VB","blksize":26000,"lrecl":4096,"volser":"'${VOLUME}'"}'
 ADD_EXPORT_DSN_JSON='{"dsorg":"PO","alcunit":"TRK","primary":10,"secondary":5,"dirblk":10,"avgblk":500,"recfm":"FB","blksize":400,"lrecl":80}'
-if [ -n "$STORCLAS" ] # there has to be either STORCLAS or VOLUME
-then
-  EXPORT_JCL_JSON='{"packagedir":"'${EXPORT}'","jcldataset":"'${EXPORT_DSN}'","workstorclas":"'${STORCLAS}'"}'
-else
-  EXPORT_JCL_JSON='{"packagedir":"'${EXPORT}'","jcldataset":"'${EXPORT_DSN}'","workvolume":"'${VOLUME}'"}'
-fi
-if [ -n "$STORCLAS" ] # there has to be either STORCLAS or VOLUME
-then
-  NEW_ZFS_JSON='{"cylsPri":1160,"cylsSec": 116,"storageClass":"'${STORCLAS}'"}'
-else
-  NEW_ZFS_JSON='{"cylsPri":1160,"cylsSec": 116,"volumes":[ "'${VOLUME}'" ]}'
-fi
+EXPORT_JCL_JSON='{"packagedir":"'${EXPORT}'","jcldataset":"'${EXPORT_DSN}'","workvolume":"'${VOLUME}'"}'
 MOUNT_ZOWE_ZFS_JSON='{"action":"mount","mount-point":"'${ZOWE_MOUNT}'","fs-type":"zFS","mode":"rdwr"}'
 
 # URLs 
@@ -63,286 +46,27 @@ LOAD_PRODUCTS_URL="${BASE_URL}/zosmf/swmgmt/swi/${ZOSMF_SYSTEM}/${SWI_NAME}/prod
 WORKFLOW_DSN_URL="${BASE_URL}/zosmf/restfiles/ds/${WORKFLOW_DSN}"
 EXPORT_DSN_URL="${BASE_URL}/zosmf/restfiles/ds/${EXPORT_DSN}"
 EXPORT_JCL_URL="${BASE_URL}/zosmf/swmgmt/swi/${ZOSMF_SYSTEM}/${SWI_NAME}/export"
-SUBMIT_JOB_URL="${BASE_URL}/zosmf/restjobs/jobs"
-NEW_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${TMP_ZFS}"
-NEW_WORK_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${WORK_ZFS}"
-NEW_OUTPUT_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${OUTPUT_ZFS}"
 DELETE_SWI_URL="${BASE_URL}/zosmf/swmgmt/swi/${ZOSMF_SYSTEM}/${SWI_NAME}"
 ACTION_ZOWE_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${ZOWE_ZFS}"
-GET_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs?fsname=${TMP_ZFS}"
-GET_WORK_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs?fsname=${WORK_ZFS}"
-GET_OUTPUT_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs?fsname=${OUTPUT_ZFS}"
 GET_ZOWE_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs?fsname=${ZOWE_ZFS}"
-GET_PATH_URL="${BASE_URL}/zosmf/restfiles/mfs?path=${TMP_MOUNT}"
-GET_WORK_PATH_URL="${BASE_URL}/zosmf/restfiles/mfs?path=${WORK_MOUNT}"
-GET_OUTPUT_PATH_URL="${BASE_URL}/zosmf/restfiles/mfs?path=${OUTPUT_MOUNT}"
 GET_ZOWE_PATH_URL="${BASE_URL}/zosmf/restfiles/mfs?path=${ZOWE_MOUNT}"
-CHECK_ZFS_URL="${BASE_URL}/zosmf/restfiles/ds?dslevel=${TMP_ZFS}"
-CHECK_WORK_ZFS_URL="${BASE_URL}/zosmf/restfiles/ds?dslevel=${WORK_ZFS}"
-CHECK_OUTPUT_ZFS_URL="${BASE_URL}/zosmf/restfiles/ds?dslevel=${OUTPUT_ZFS}"
 CHECK_WORKFLOW_DSN_URL="${BASE_URL}/zosmf/restfiles/ds?dslevel=${WORKFLOW_DSN}"
 CHECK_EXPORT_DSN_URL="${BASE_URL}/zosmf/restfiles/ds?dslevel=${EXPORT_DSN}"
 
 # Check if temp zFS for PSWI is mounted
-echo "Checking if temporary file system ${TMP_ZFS} is mounted."
-RESP=`curl -s $GET_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-MOUNTP=`echo $RESP | grep -o '"mountpoint":".*"' | cut -f4 -d\"`
+echo "Checking/mounting ${TMP_ZFS}"
+sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
+if [ $? -gt 0 ];then exit -1;fi 
 
-if [ -n "$MOUNTP" ]
-then
-  # Check if temp zFS is mounted to given mount point
-  if [ "$MOUNTP" = "$TMP_MOUNT" ]
-  then
-    echo "${TMP_MOUNT} with zFS ${TMP_ZFS} mounted will be used as is."
-    MOUNTED=true
-  else
-    echo "The file system ${TMP_ZFS} exists but is mounted to different mount point(${MOUNTP})."
-    echo "Use different name of zFS or ${MOUNTP} for mount point."
-    exit -1
-  fi
-else
-  echo "Temporary zFS isn't mounted. Now checking if mount point has any other zFS mounted."
-  RESP=`curl -s $GET_PATH_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-  sh scripts/check_response.sh "${RESP}" $?
-  if [ $? -gt 0 ];then exit -1;fi 
-  MOUNTZFS=`echo $RESP | grep -o "name":".*" | cut -f4 -d\"`
-  if [ -n "$MOUNTZFS" ]
-  then
-    # If zFS is not mounted to the mount point then this mount point has different zFS
-    echo "The mount point ${TMP_MOUNT} has different zFS (${MOUNTZFS}) mounted."
-    echo "Use different mount point (not ${TMP_MOUNT})."
-    echo "Or use ${MOUNTZFS} for zFS."
-    exit -1
-  fi
-fi
-
-
-if [ "$MOUNTED" = false ]
-then
-  # Check if data set exists
-  echo "Checking if temporary zFS ${TMP_ZFS} exists."
-  RESP=`curl -s $CHECK_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-  sh scripts/check_response.sh "${RESP}" $?
-  if [ $? -gt 0 ];then exit -1;fi
-  ZFS_COUNT=`echo $RESP | grep -o '"returnedRows":[0-9]*' | cut -f2 -d:`
-  if [ "$ZFS_COUNT" = "0" ]
-  then
-    # Create new zFS if not
-    echo "${TMP_ZFS} does not exists."
-    echo "Creating new zFS ${TMP_ZFS}."
-    RESP=`curl -s $NEW_ZFS_URL -k -X "POST" -d "$NEW_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-    sh scripts/check_response.sh "${RESP}" $?
-    if [ $? -gt 0 ];then exit -1;fi
-  else
-    #TODO: also check the first dsname because it can be something that just has tmp_zfs as HLQ
-    echo
-  fi
-  # Mount zFS to TMP_MOUNT
-  echo "Mounting zFS ${TMP_ZFS} to ${TMP_MOUNT} mount point with JCL because REST API doesn't allow AGGRGROW parm."
-
-echo ${JOBST1} > JCL
-echo ${JOBST2} >> JCL
-echo "//MKDIR  EXEC PGM=BPXBATCH" >> JCL
-echo "//STDOUT DD SYSOUT=*" >> JCL
-echo "//STDERR DD SYSOUT=*" >> JCL
-echo "//STDPARM  DD *" >> JCL
-echo "SH mkdir -p ${TMP_MOUNT}" >> JCL
-echo "/*" >> JCL
-echo "//MNT1ZFS1 EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >> JCL
-echo "//SYSTSPRT DD SYSOUT=*" >> JCL
-echo "//SYSTSOUT DD SYSOUT=*" >> JCL
-echo "//SYSTSIN DD * " >> JCL
-echo "MOUNT FILESYSTEM('${TMP_ZFS}') +  " >> JCL
-echo "TYPE(ZFS) MODE(RDWR) +     " >> JCL
-echo "PARM('AGGRGROW') +   " >> JCL                  
-echo "MOUNTPOINT('${TMP_MOUNT}')    " >> JCL                    
-echo "/*" >> JCL
-
-  sh scripts/submit_jcl.sh "`cat JCL`"
-  if [ $? -gt 0 ];then exit -1;fi
-  rm JCL
-fi
-
-if [ "$ZOSMF_V" = "2.3" ]
+if [ "$ZOSMF_V" == "2.3" ]
 then
 # z/OSMF 2.3
 
 # Check if work zFS for PSWI is mounted
-echo "Checking if work file system ${WORK_ZFS} is mounted."
-RESP=`curl -s $GET_WORK_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-WMOUNTP=`echo $RESP | grep -o '"mountpoint":".*"' | cut -f4 -d\"`
-
-if [  -n "$WMOUNTP" ]
-then
-  # Check if temp zFS is mounted to given mount point
-  if [ "$WMOUNTP" = "$WORK_MOUNT" ]
-  then
-    echo "${WORK_MOUNT} with work zFS ${WORK_ZFS} mounted will be used as is."
-    WMOUNTED=true
-  else
-    echo "The file system ${WORK_ZFS} exists but is mounted to different mount point(${WMOUNTP})."
-    echo "Use different name of zFS or ${WMOUNTP} for mount point."
-    exit -1
-  fi
-else
-  echo "Work zFS isn't mounted. Now checking if mount point has any other zFS mounted."
-  RESP=`curl -s $GET_WORK_PATH_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-  sh scripts/check_response.sh "${RESP}" $?
-  if [ $? -gt 0 ];then exit -1;fi 
-  WMOUNTZFS=`echo $RESP | grep -o "name":".*" | cut -f4 -d\"`
-  if [ -n "$WMOUNTZFS" ]
-  then
-    # If zFS is not mounted to the mount point then this mount point has different zFS
-    echo "The mount point ${WORK_MOUNT} has different zFS (${WMOUNTZFS}) mounted."
-    echo "Use different mount point (not ${WORK_MOUNT})."
-    echo "Or use ${WMOUNTZFS} for zFS."
-    exit -1
-  fi
-fi
-
-
-if [ "$WMOUNTED" = false ]
-then
-  # Check if data set exists
-  echo "Checking if temporary zFS ${WORK_ZFS} exists."
-  RESP=`curl -s $CHECK_WORK_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-  sh scripts/check_response.sh "${RESP}" $?
-  if [ $? -gt 0 ];then exit -1;fi
-  WZFS_COUNT=`echo $RESP | grep -o '"returnedRows":[0-9]*' | cut -f2 -d:`
-  if [ "$WZFS_COUNT" = "0" ]
-  then
-    # Create new zFS if not
-    echo "${WORK_ZFS} does not exists."
-    echo "Creating new zFS ${WORK_ZFS}."
-    RESP=`curl -s $NEW_WORK_ZFS_URL -k -X "POST" -d "$NEW_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-    sh scripts/check_response.sh "${RESP}" $?
-    if [ $? -gt 0 ];then exit -1;fi
-  else
-    #TODO: also check the first dsname because it can be something that just has tmp_zfs as HLQ
-    echo
-  fi
-  # Mount zFS to TMP_MOUNT with JCL because REST API doesn't allow AGGRGROW parm
-  echo "Mounting zFS ${WORK_ZFS} to ${WORK_MOUNT} mount point"
-  
-echo ${JOBST1} > JCL
-echo ${JOBST2} >> JCL
-echo "//MKDIR  EXEC PGM=BPXBATCH" >> JCL
-echo "//STDOUT DD SYSOUT=*" >> JCL
-echo "//STDERR DD SYSOUT=*" >> JCL
-echo "//STDPARM  DD *" >> JCL
-echo "SH mkdir -p ${WORK_MOUNT}" >> JCL
-echo "/*" >> JCL
-echo "//MNT1ZFS1 EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >> JCL
-echo "//SYSTSPRT DD SYSOUT=*" >> JCL
-echo "//SYSTSOUT DD SYSOUT=*" >> JCL
-echo "//SYSTSIN DD * " >> JCL
-echo "MOUNT FILESYSTEM('${WORK_ZFS}') +  " >> JCL
-echo "TYPE(ZFS) MODE(RDWR) +     " >> JCL
-echo "PARM('AGGRGROW') +   " >> JCL                  
-echo "MOUNTPOINT('${WORK_MOUNT}')    " >> JCL                    
-echo "/*" >> JCL
-
-  sh scripts/submit_jcl.sh "`cat JCL`"
-  if [ $? -gt 0 ];then exit -1;fi
-  rm JCL
-fi
+echo "Checking/mounting ${WORK_ZFS}"
+sh scripts/tmp_mounts.sh "${WORK_ZFS}" "${WORK_MOUNT}"
+if [ $? -gt 0 ];then exit -1;fi 
 fi 
-
-
-# Check if output zFS for PSWI is mounted
-echo "Checking if output file system ${OUTPUT_ZFS} is mounted."
-RESP=`curl -s $GET_OUTPUT_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-MOUNTO=`echo $RESP | grep -o '"mountpoint":".*"' | cut -f4 -d\"`
-
-if [ -n "$MOUNTO" ]
-then
-  # Check if output zFS is mounted to given mount point
-  if [ "$MOUNTO" = "$OUTPUT_MOUNT" ]
-  then
-    echo "${OUTPUT_MOUNT} with zFS ${OUTPUT_ZFS} mounted will be used as is."
-    OMOUNTED=true
-  else
-    echo "The file system ${OUTPUT_ZFS} exists but is mounted to different mount point(${MOUNTO})."
-    echo "Use different name of zFS or ${MOUNTO} for mount point."
-    exit -1
-  fi
-else
-  echo "Temporary zFS isn't mounted. Now checking if mount point has any other zFS mounted."
-  RESP=`curl -s $GET_OUTPUT_PATH_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-  sh scripts/check_response.sh "${RESP}" $?
-  if [ $? -gt 0 ];then exit -1;fi 
-  MOUNTOZFS=`echo $RESP | grep -o "name":".*" | cut -f4 -d\"`
-  if [ -n "$MOUNTOZFS" ]
-  then
-    # If zFS is not mounted to the mount point then this mount point has different zFS
-    echo "The mount point ${OUTPUT_ZFS} has different zFS (${MOUNTOZFS}) mounted."
-    echo "Use different mount point (not ${OUTPUT_MOUNT})."
-    echo "Or use ${MOUNTOZFS} for zFS."
-    exit -1
-  fi
-fi
-
-
-if [ "$OMOUNTED" = false ]
-then
-  # Check if data set exists
-  echo "Checking if temporary zFS ${OUTPUT_ZFS} exists."
-  RESP=`curl -s $CHECK_OUTPUT_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-  sh scripts/check_response.sh "${RESP}" $?
-  if [ $? -gt 0 ];then exit -1;fi
-  OUTPUT_ZFS_COUNT=`echo $RESP | grep -o '"returnedRows":[0-9]*' | cut -f2 -d:`
-  if [ "$OUTPUT_ZFS_COUNT" = "0" ]
-  then
-    # Create new zFS if not
-    echo "${OUTPUT_ZFS} does not exists."
-    echo "Creating new zFS ${OUTPUT_ZFS}."
-    RESP=`curl -s $NEW_OUTPUT_ZFS_URL -k -X "POST" -d "$NEW_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-    sh scripts/check_response.sh "${RESP}" $?
-    if [ $? -gt 0 ];then exit -1;fi
-  else
-    #TODO: also check the first dsname because it can be something that just has tmp_zfs as HLQ
-    echo
-  fi
-  # Mount zFS to OUTPUT_MOUNT
-  echo "Mounting zFS ${OUTPUT_ZFS} to ${OUTPUT_MOUNT} mount point with JCL because REST API doesn't allow AGGRGROW parm."
-  
-echo ${JOBST1} > JCL
-echo ${JOBST2} >> JCL
-echo "//MKDIR  EXEC PGM=BPXBATCH" >> JCL
-echo "//STDOUT DD SYSOUT=*" >> JCL
-echo "//STDERR DD SYSOUT=*" >> JCL
-echo "//STDPARM  DD *" >> JCL
-echo "SH mkdir -p ${OUTPUT_MOUNT}" >> JCL
-echo "/*" >> JCL
-echo "//MNT1ZFS1 EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >> JCL
-echo "//SYSTSPRT DD SYSOUT=*" >> JCL
-echo "//SYSTSOUT DD SYSOUT=*" >> JCL
-echo "//SYSTSIN DD * " >> JCL
-echo "MOUNT FILESYSTEM('${OUTPUT_ZFS}') +  " >> JCL
-echo "TYPE(ZFS) MODE(RDWR) +     " >> JCL
-echo "PARM('AGGRGROW') +   " >> JCL                  
-echo "MOUNTPOINT('${OUTPUT_MOUNT}')    " >> JCL                    
-echo "/*" >> JCL
-
-  sh scripts/submit_jcl.sh "`cat JCL`"
-  if [ $? -gt 0 ];then exit -1;fi
-  rm JCL
-fi
-
-echo "Deleting PAX files from ${OUTPUT_MOUNT} if there are any."
-
-echo ${JOBST1} > JCL
-echo ${JOBST2} >> JCL
-echo "//REMPAX EXEC PGM=BPXBATCH" >> JCL
-echo "//STDOUT DD SYSOUT=*" >> JCL
-echo "//STDERR DD SYSOUT=*" >> JCL
-echo "//STDPARM  DD *" >> JCL
-echo "SH cd ${OUTPUT_MOUNT};" >> JCL
-echo "rm *.pax.Z" >> JCL
-echo "/*" >> JCL
-
-  sh scripts/submit_jcl.sh "`cat JCL`"
-  rm JCL
   
 # Check if ZOWE zFS is mounted
 echo "Checking if file system ${ZOWE_ZFS} is mounted."

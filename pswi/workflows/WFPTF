@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="IBM-1047"?>
 <workflow>
     <autoTakeOwnership>true</autoTakeOwnership>
     <workflowInfo>
@@ -73,6 +73,13 @@
             <default>UO01993</default>
         </string>
     </variable>
+    <variable name="PTFNR" scope="instance" visibility="public">
+        <label>PTFs</label>
+        <abstract>Number of PTFs</abstract>
+        <description>Specify how many PTFs there are.</description>
+        <category>General</category>
+        <integer/>
+    </variable>
     <step name="DefineVariables" optional="false">
         <title>Workflow variables</title>
         <description> Prerequisite for the wf is that ptfs are already downloaded on system. On CA32 datasets with PTFs have prefix: PUBLIC.SMPE.AZWE001 </description>         
@@ -82,6 +89,7 @@
 	    <variableValue name="DISTRIBUTION" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="PTF1" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="PTF2" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="PTFNR" scope="instance" noPromptIfSet="false" required="false"/>
         <instructions substitution="false"> </instructions>
         <weight>1</weight>
         <autoEnable>true</autoEnable>
@@ -135,10 +143,10 @@ SET BOUNDARY(${instance-TARGET}).
             <maxLrecl>80</maxLrecl>
         </template>
     </step>  
-    <step name="ReceivePTFs" optional="false">
-        <title>Receive PTFs</title>
-        <description> This step will receive both PTFs. </description>
-        <instructions substitution="false">This step will receive both PTFs. </instructions>
+    <step name="PTFs" optional="false">
+        <title>Handle PTFs</title>
+        <description>This step will handle PTFs. </description>
+        <instructions substitution="false">This step will handle PTFs. </instructions>
         <weight>1</weight>
         <autoEnable>true</autoEnable>
         <canMarkAsFailed>false</canMarkAsFailed>
@@ -146,85 +154,45 @@ SET BOUNDARY(${instance-TARGET}).
         <inlineTemplate substitution="true">//RECEIVE  EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
 //SMPPTFIN DD DISP=SHR,DSN=${instance-PTFDATASET}.${instance-PTF1}
+#if (${instance-PTFNR} == 2)
 //         DD DISP=SHR,DSN=${instance-PTFDATASET}.${instance-PTF2}
+#end
 //SMPCNTL  DD *
    SET BOUNDARY(GLOBAL) .
    RECEIVE SELECT(
      ${instance-PTF1}
+#if (${instance-PTFNR} == 2)
      ${instance-PTF2}
+#end
    ) SYSMODS LIST .
-//*	    </inlineTemplate>
-            <submitAs maxRc="0">JCL</submitAs>
-            <maxLrecl>80</maxLrecl>
-        </template>
-    </step>
-    <step name="ApplyCheck" optional="true">
-        <title>Apply Check</title>
-        <description/>
-        <instructions substitution="false">Only check before apply. If the Return Code is CC 0004, it means HOLDDATA were bypassed.</instructions>
-        <weight>1</weight>
-        <autoEnable>true</autoEnable>
-        <canMarkAsFailed>false</canMarkAsFailed>
-        <template>
-            <inlineTemplate substitution="true">//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//*
+//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
 //SMPCNTL  DD *
    SET BOUNDARY(${instance-TARGET}) .
    APPLY SELECT(
      ${instance-PTF1}
+#if (${instance-PTFNR} == 2)
      ${instance-PTF2}
-   )
-   CHECK
-   BYPASS(HOLDSYS,HOLDERROR)
-   REDO COMPRESS(ALL) .
-//*     </inlineTemplate>
-            <submitAs maxRc="04">JCL</submitAs>
-            <maxLrecl>80</maxLrecl>
-        </template>
-    </step>
-    <step name="ApplyPTFs" optional="false">
-        <title>Apply PTFs</title>
-        <description/>
-        <instructions substitution="false">Apply PTFs. If the Return Code is CC 0004, it means HOLDDATA were bypassed.</instructions>
-        <weight>1</weight>
-        <autoEnable>true</autoEnable>
-        <canMarkAsFailed>false</canMarkAsFailed>
-        <template>
-            <inlineTemplate substitution="true">//APPLY    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
-//SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
-//SMPCNTL  DD *
-   SET BOUNDARY(${instance-TARGET}) .
-   APPLY SELECT(
-     ${instance-PTF1}
-     ${instance-PTF2}
+#end
    )
     BYPASS(HOLDSYS,HOLDERROR)
     REDO COMPRESS(ALL) .
-//*     </inlineTemplate>
-            <submitAs maxRc="04">JCL</submitAs>
-            <maxLrecl>80</maxLrecl>
-        </template>
-    </step>
-    <step name="AcceptPTFs" optional="false">
-        <title>Accept PTFs</title>
-        <description/>
-        <instructions substitution="false">Accept PTFs. If the Return Code is CC 0004, it means HOLDDATA were bypassed.</instructions>
-        <weight>1</weight>
-        <autoEnable>true</autoEnable>
-        <canMarkAsFailed>false</canMarkAsFailed>
-        <template>
-            <inlineTemplate substitution="true">//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//*
+//ACCEPT   EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
 //SMPCSI   DD DISP=OLD,DSN=${instance-CSI}.CSI
 //SMPCNTL  DD *
    SET BOUNDARY(${instance-DISTRIBUTION}) .
    ACCEPT SELECT(
      ${instance-PTF1}
+#if (${instance-PTFNR} == 2)
      ${instance-PTF2}
+#end
    ) 
      REDO COMPRESS(ALL) 
      BYPASS(HOLDSYS,HOLDERROR).
-//*     </inlineTemplate>
-            <submitAs maxRc="04">JCL</submitAs>
+//*</inlineTemplate>
+            <submitAs maxRc="0">JCL</submitAs>
             <maxLrecl>80</maxLrecl>
         </template>
     </step>
