@@ -55,7 +55,7 @@ export PTF_WF_NAME="ZOWE_PTF_WF"
 echo "--------------------------------- Getting build specific variables ---------------------------------------"
 PAX=`find ~ -type f -name zowe-smpe.zip -print`
 
-if [ -f ${PAX} ]
+if [ -n "${PAX}" ]
 then
   echo "ok"
   mkdir -p "unzipped"
@@ -97,14 +97,15 @@ else
     echo "Different number of files"
     #TODO:make it more universal (we have the workflow now just for two files anyway so change it with that)
   fi
-  if [ -f ${FMID}.zip ]
+  
+  FMIDZIP=`find ~ -type f -name ${FMID}.zip -print` # should be ../.pax
+  
+  if [ -n "${FMIDZIP}" ]
   then
-    unzip ${FMID}.zip -d unzipped
+    unzip ${FMIDZIP} -d unzipped
   else
-    pwd
-    ls -la ./.pax
     echo "File with FMID not found"
-    exit
+    exit -1
   fi
 fi
 echo "----------------------------------------------------------------------------------------------------------"
