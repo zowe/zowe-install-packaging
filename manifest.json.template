@@ -79,7 +79,7 @@
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
       "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "api-catalog-1.26.21-PR-1976-20220105.154310-2.zip"
+      "artifact": "api-catalog-1.26.21-PR-1976-20220105.154310-4.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
       "version": "1.26.21-PR-1976-SNAPSHOT",
@@ -91,15 +91,15 @@
     },
     "org.zowe.apiml.sdk.caching-service-package": {
       "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "caching-service-1.26.21-PR-1976-20220105.154310-2.zip"
+      "artifact": "caching-service-1.26.21-PR-1976-20220105.154310-4.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
       "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "metrics-service-1.26.21-PR-1976-20220105.154310-2.zip"
+      "artifact": "metrics-service-1.26.21-PR-1976-20220105.154310-1.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
       "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "apiml-common-lib-1.26.21-PR-1976-20220105.154310-2.zip"
+      "artifact": "apiml-common-lib-1.26.21-PR-1976-20220105.154310-4.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~1.21.3-SNAPSHOT",
