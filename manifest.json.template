@@ -113,8 +113,9 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "1.26.18-PR-1947-SNAPSHOT",
-      "artifact": "apiml-sample-extension-package-1.26.18-PR-1947-20220103.123734-6.zip"
+      "version": "~1.26.0-SNAPSHOT",
+      "artifact": "apiml-sample-extension-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.launcher": {
       "version": "~0.0.3-SNAPSHOT"
