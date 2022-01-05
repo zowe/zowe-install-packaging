@@ -97,9 +97,9 @@ else
     echo "Different number of files"
     #TODO:make it more universal (we have the workflow now just for two files anyway so change it with that)
   fi
-  if [ -f ${FMID}*.zip ]
+  if [ -f ${FMID}.zip ]
   then
-    unzip ${FMID}*.zip -d unzipped
+    unzip ${FMID}.zip -d unzipped
   else
     echo "File with FMID not found"
     exit -1
