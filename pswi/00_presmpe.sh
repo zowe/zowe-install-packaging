@@ -36,7 +36,9 @@ echo $JOBST2 >> JCL1
 cat unzipped/${FMID}.readme.txt | tail -n +$line >> JCL1
 sed "s|@zfs_path@|${TMP_MOUNT}|g" JCL1 > JCL2
 sed "s|@PREFIX@|${SMPMCS}|g" JCL2 > JCL1
-sed "s|/>|\n         volume=\"${VOLUME}\"/>|g" JCL1 > JCL
+sed "s|newname=\"...\"/>|newname=\"...\"|g" JCL1 > JCL2
+sed "s|/>|\n         volume=\"${VOLUME}\"/>|g" JCL2 > JCL1
+sed "s|<GIMUNZIP>|<GIMUNZIP>\n<TEMPDS volume=\"${VOLUME}\"> </TEMPDS>|g" JCL1 > JCL
 rm JCL1
 rm JCL2
 
