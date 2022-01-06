@@ -27,7 +27,7 @@ sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o Pubk
 cd ${TMP_MOUNT}
 put ${FMID}.pax.Z
 EOF
-cd..
+cd ..
 
 echo "Preparing SMPMCS and RELFILES"
 line=`cat unzipped/${FMID}.readme.txt | grep -n //UNPAX | cut -f1 -d:`
