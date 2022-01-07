@@ -84,10 +84,11 @@ else
     
     FILES=`ls unzipped`
     N=0
-    IFS=$'\n'
+    IFS=$' '
     for FILE in $FILES
     do
       N=$((N+1))
+      echo "FILE " $FILE
       export PTF${N}=`echo $FILE | tail -n 1 | cut -f3 -d'.'`
     done
   else
