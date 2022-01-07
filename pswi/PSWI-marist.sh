@@ -84,7 +84,6 @@ else
     
     FILES=`ls unzipped`
     N=0
-    IFS=$' '
     for FILE in $FILES
     do
       N=$((N+1))
