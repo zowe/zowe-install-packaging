@@ -12,7 +12,7 @@
 #######################################################################
 
 submit_job() {
-  jcl=$1
+  jcl="${1}"
 
   print_debug "- submit job ${jcl}"
   result=$(submit "${jcl}")
@@ -51,7 +51,7 @@ submit_job() {
 }
 
 wait_for_job() {
-  jobid=$1
+  jobid="${1}"
   jobstatus=
   jobname=
   jobcctext=

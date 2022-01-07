@@ -17,7 +17,7 @@ prepare_log_file() {
   # use absolute path to make sure we can always write to correct location even
   # if other scripts changed current working directory
   log_dir=$(convert_to_absolute_path "${1}" | remove_trailing_slash)
-  log_file_prefix=$2
+  log_file_prefix="${2}"
 
   ZWE_PRIVATE_LOG_FILE="${log_dir}/${log_file_prefix}-$(date +%Y%m%dT%H%M%S).log"
   if [ ! -f "${ZWE_PRIVATE_LOG_FILE}" ]; then

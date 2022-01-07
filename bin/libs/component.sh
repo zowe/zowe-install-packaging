@@ -15,7 +15,7 @@
 # @internal 
 
 get_component_manifest() {
-  component_dir=$1
+  component_dir="${1}"
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
     echo "${component_dir}/manifest.yaml"
@@ -43,7 +43,7 @@ get_component_manifest() {
 # @param string     component id, or path to component lifecycle scripts
 # Output            component directory will be written to stdout
 find_component_directory() {
-  component_id=$1
+  component_id="${1}"
   # find component lifecycle scripts directory
   component_dir=
 
@@ -91,8 +91,8 @@ find_component_directory() {
 #                          , or NODE_HOME is not defined
 #                 the value defined in the manifest of the selected key
 read_component_manifest() {
-  component_dir=$1
-  manifest_key=$2
+  component_dir="${1}"
+  manifest_key="${2}"
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
     read_yaml "${component_dir}/manifest.yaml" "${manifest_key}"
@@ -120,7 +120,7 @@ read_component_manifest() {
 #
 # @param string   component directory
 detect_component_manifest_encoding() {
-  component_dir=$1
+  component_dir="${1}"
 
   component_manifest=$(get_component_manifest "${component_dir}")
   if [ -n "${component_manifest}" ]; then
@@ -133,7 +133,7 @@ detect_component_manifest_encoding() {
 }
 
 detect_if_component_tagged() {
-  component_dir=$1
+  component_dir="${1}"
 
   component_manifest=$(get_component_manifest "${component_dir}")
   if [ -n "${component_manifest}" ]; then
@@ -251,7 +251,7 @@ find_all_launch_components() {
 #
 # @param string   component directory
 process_component_apiml_static_definitions() {
-  component_dir=$1
+  component_dir="${1}"
 
   if [ -z "${ZWE_STATIC_DEFINITIONS_DIR}" ]; then
     print_error "Error: ZWE_STATIC_DEFINITIONS_DIR is required to process component definitions for API Mediation Layer."
@@ -322,7 +322,7 @@ EOF
 #
 # @param string   component directory
 process_component_appfw_plugin() {
-  component_dir=$1
+  component_dir="${1}"
 
   all_succeed=true
   iterator_index=0
@@ -383,7 +383,7 @@ process_component_appfw_plugin() {
 #
 # @param string   component directory
 process_component_gateway_shared_libs() {
-  component_dir=$1
+  component_dir="${1}"
 
   all_succeed=true
   iterator_index=0

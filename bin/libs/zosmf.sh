@@ -14,8 +14,8 @@
 
 # Takes 2 parameters - zosmfhost, zosmfport
 validate_zosmf_host_and_port() {
-  zosmf_host=$1
-  zosmf_port=$2
+  zosmf_host="${1}"
+  zosmf_port="${2}"
 
   if [ -z "${zosmf_host}" ]; then 
     print_error "z/OSMF host is not set."
@@ -44,9 +44,9 @@ validate_zosmf_host_and_port() {
 }
 
 validate_zosmf_as_auth_provider() {
-  zosmf_host=$1
-  zosmf_port=$2
-  auth_provider=$3
+  zosmf_host="${1}"
+  zosmf_port="${2}"
+  auth_provider="${3}"
 
   if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then
     if [ "${auth_provider}" = "zosmf" ]; then

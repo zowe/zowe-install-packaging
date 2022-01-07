@@ -13,7 +13,7 @@
 
 ensure_java_is_on_path() {
   if [[ ":${PATH}:" != *":${JAVA_HOME}/bin:"* ]]; then
-    export PATH=${JAVA_HOME}/bin:${PATH}
+    export PATH="${JAVA_HOME}/bin:${PATH}"
   fi
 }
 
@@ -39,9 +39,10 @@ detect_java_home() {
 require_java() {
   # prepare the JAVA_HOME in zowe.yaml
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    export JAVA_HOME=$(shell_read_yaml_config ${ZWE_CLI_PARAMETER_CONFIG} 'java' 'home')
-  elif [ -z "${JAVA_HOME}" ]; then
-    export JAVA_HOME=$(detect_java_home)
+    export JAVA_HOME="$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'java' 'home')"
+  fi
+  if [ -z "${JAVA_HOME}" ]; then
+    export JAVA_HOME="$(detect_java_home)"
   fi
 
   if [ -z "${JAVA_HOME}" ]; then

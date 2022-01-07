@@ -17,7 +17,7 @@
 # @param string   file name
 # output          USS encoding if exists in upper case
 get_file_encoding() {
-  file=$1
+  file="${1}"
   # m ISO8859-1   T=off <file>
   # - untagged    T=off <file>
   ls -T "${file}" | awk '{print $2;}' | upper_case
@@ -49,9 +49,9 @@ get_file_encoding() {
 #                 When this value is auto, the function will try to guess common
 #                 encodings (IBM-1047, ISO8859-1, IBM-850). 
 detect_file_encoding() {
-  file_name=$1
-  expected_sample=$2
-  expected_encoding=$3
+  file_name="${1}"
+  expected_sample="${2}"
+  expected_encoding="${3}"
 
   expected_encoding_uc=$(echo "${expected_encoding}" | upper_case)
 
@@ -102,9 +102,9 @@ detect_file_encoding() {
 ###############################
 # On z/OS, some file generated could be in ISO8859-1 encoding, but we need it to be IBM-1047
 ensure_file_encoding() {
-  file=$1
-  expected_sample=$2
-  expected_encoding=$3
+  file="${1}"
+  expected_sample="${2}"
+  expected_encoding="${3}"
 
   # only valid on z/OS
   if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then

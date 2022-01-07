@@ -8,7 +8,7 @@ To enable this command, you can add Zowe `<runtime>/bin` directory to your `PATH
 
 ```
 # enable Zowe zwe command
-export PATH=${PATH}:/path/to/my/zowe/bin
+export PATH="${PATH}:/path/to/my/zowe/bin"
 ```
 
 Now you can issue `zwe` command in your USS terminal. You can start with `zwe --help` to see what commands you can use.

@@ -24,7 +24,7 @@ export __UNTAGGED_READ_MODE=V6
 
 ensure_node_is_on_path() {
   if [[ ":${PATH}:" != *":${NODE_HOME}/bin:"* ]]; then
-    export PATH=${NODE_HOME}/bin:${PATH}
+    export PATH="${NODE_HOME}/bin:${PATH}"
   fi
 }
 
@@ -50,8 +50,9 @@ detect_node_home() {
 require_node() {
   # prepare the NODE_HOME in zowe.yaml
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    export NODE_HOME=$(shell_read_yaml_config ${ZWE_CLI_PARAMETER_CONFIG} 'node' 'home')
-  elif [ -z "${NODE_HOME}" ]; then
+    export NODE_HOME=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'node' 'home')
+  fi
+  if [ -z "${NODE_HOME}" ]; then
     export NODE_HOME=$(detect_node_home)
   fi
 

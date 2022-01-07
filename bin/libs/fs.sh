@@ -18,7 +18,7 @@
 #
 # @param string   Path to parent directory
 find_sub_directories() {
-  parent=$1
+  parent="${1}"
 
   parent_absolute_path=$(cd "${parent}" && pwd)
   # find on z/OS USS doesn't support -d
@@ -34,7 +34,7 @@ EOF
 
 # Takes in the file that should be expanded and echos out the result, which the caller needs to read
 convert_to_absolute_path() {
-  file=$1
+  file="${1}"
 
   # If the value starts with a ~ for the home variable then evaluate it
   file=$(echo "${file}")
@@ -68,7 +68,7 @@ create_tmp_file() {
 }
 
 is_file_accessible() {
-  file=$1
+  file="${1}"
 
   if [ ! -f "${file}" ]; then
     print_error "File '${file}' doesn't exist, or is not accessible to $(get_user_id). If the file exists, check all the parent directories have traversal permission (execute)"
@@ -77,7 +77,7 @@ is_file_accessible() {
 }
 
 is_directory_accessible() {
-  directory=$1
+  directory="${1}"
 
   if [ ! -d "${directory}" ]; then
     print_error "Directory '${directory}' doesn't exist, or is not accessible to $(get_user_id). If the directory exists, check all the parent directories have traversal permission (execute)"
@@ -100,7 +100,7 @@ are_directories_accessible() {
 }
 
 is_directory_writable() {
-  directory=$1
+  directory="${1}"
 
   is_directory_accessible "${directory}"
   accessible_rc=$?

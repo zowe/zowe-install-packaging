@@ -53,8 +53,8 @@ require_zos() {
 # @param string   optional, process hierarchy list
 # Output          pid list separated by space
 find_direct_child_processes() {
-  parent=$1
-  tree=$2
+  parent="${1}"
+  tree="${2}"
 
   if [ -z "${tree}" ]; then
     tree=$(ps -o pid,ppid,comm -A | tail -n +2)
@@ -79,8 +79,8 @@ EOF
 # @param string   optional, process hierarchy list
 # Output          pid list separated by space
 find_all_child_processes() {
-  parent=$1
-  tree=$2
+  parent="${1}"
+  tree="${2}"
 
   if [ -z "${tree}" ]; then
     tree=$(ps -o pid,ppid,comm -A | tail -n +2)
@@ -107,7 +107,7 @@ find_all_child_processes() {
 #                 1 - process does not exit before timeout (30 seconds)
 # Output          message about how this PID exits
 wait_for_process_exit() {
-  pid=$1
+  pid="${1}"
 
   print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "waiting for process $pid to exit"
 

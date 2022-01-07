@@ -32,8 +32,8 @@ require_zowe_yaml() {
 }
 
 print_raw_message() {
-  message=$1
-  is_error=$2
+  message="${1}"
+  is_error="${2}"
   # can be combination of log and/or console
   # default to write to both
   write_to=${3:-console,log}
@@ -57,24 +57,24 @@ print_raw_message() {
 }
 
 print_message() {
-  message=$1
-  write_to=$2
+  message="${1}"
+  write_to="${2}"
 
   print_raw_message "${message}" "false" "${write_to}"
 }
 
 # errors are written to STDERR
 print_error() {
-  message=$1
-  write_to=$2
+  message="${1}"
+  write_to="${2}"
 
   print_raw_message "${message}" "true" "${write_to}"
 }
 
 # debug message are written to STDERR
 print_debug() {
-  message=$1
-  write_to=$2
+  message="${1}"
+  write_to="${2}"
 
   if [ "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "TRACE" ]; then
     print_raw_message "${message}" "true" "${write_to}"
@@ -83,8 +83,8 @@ print_debug() {
 
 # trace messages are written to STDERR
 print_trace() {
-  message=$1
-  write_to=$2
+  message="${1}"
+  write_to="${2}"
 
   if [ "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "TRACE" ]; then
     print_raw_message "${message}" "true" "${write_to}"
@@ -92,8 +92,8 @@ print_trace() {
 }
 
 print_error_and_exit() {
-  message=$1
-  write_to=$2
+  message="${1}"
+  write_to="${2}"
   # default exit code is 1
   exit_code=${3:-1}
 
@@ -103,15 +103,15 @@ print_error_and_exit() {
 
 print_empty_line() {
   # can be combination of log and/or console
-  write_to=$1
+  write_to="${1}"
 
   print_message "" "${write_to}"
 }
 
 print_level0_message() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_message "===============================================================================" "${write_to}"
   if [ -n "${title}" ]; then
@@ -121,9 +121,9 @@ print_level0_message() {
 }
 
 print_level1_message() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_message "-------------------------------------------------------------------------------" "${write_to}"
   if [ -n "${title}" ]; then
@@ -133,9 +133,9 @@ print_level1_message() {
 }
 
 print_level2_message() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_message "" "${write_to}"
   if [ -n "${title}" ]; then
@@ -145,9 +145,9 @@ print_level2_message() {
 }
 
 print_level0_debug() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_debug "===============================================================================" "${write_to}"
   if [ -n "${title}" ]; then
@@ -157,9 +157,9 @@ print_level0_debug() {
 }
 
 print_level1_debug() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_debug "-------------------------------------------------------------------------------" "${write_to}"
   if [ -n "${title}" ]; then
@@ -169,9 +169,9 @@ print_level1_debug() {
 }
 
 print_level2_debug() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_debug "" "${write_to}"
   if [ -n "${title}" ]; then
@@ -181,9 +181,9 @@ print_level2_debug() {
 }
 
 print_level0_trace() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_trace "===============================================================================" "${write_to}"
   if [ -n "${title}" ]; then
@@ -193,9 +193,9 @@ print_level0_trace() {
 }
 
 print_level1_trace() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_trace "-------------------------------------------------------------------------------" "${write_to}"
   if [ -n "${title}" ]; then
@@ -205,9 +205,9 @@ print_level1_trace() {
 }
 
 print_level2_trace() {
-  title=$1
+  title="${1}"
   # can be combination of log and/or console
-  write_to=$2
+  write_to="${2}"
 
   print_trace "" "${write_to}"
   if [ -n "${title}" ]; then
@@ -218,10 +218,10 @@ print_level2_trace() {
 
 # runtime logging functions, follow zowe service logging standard
 print_formatted_message() {
-  service=$1
-  logger=$2
-  level=$3
-  message=$4
+  service="${1}"
+  logger="${2}"
+  level="${3}"
+  message="${4}"
 
   if [ "${message}" = "-" ]; then
     read message

@@ -38,7 +38,7 @@ tso_command() {
 }
 
 operator_command() {
-  cmd=$1
+  cmd="${1}"
 
   opercmd=${ZWE_zowe_runtimeDirectory}/bin/utils/opercmd.rex
 

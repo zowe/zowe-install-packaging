@@ -114,7 +114,7 @@ if [ ! -f "${tmpfile}" ]; then
   print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
 fi
 print_trace "- ${tmpfile} created with content"
-print_trace "$(cat ${tmpfile})"
+print_trace "$(cat "${tmpfile}")"
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- copy to ${jcllib}(ZWECSVSM)"

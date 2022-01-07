@@ -16,8 +16,8 @@
 ###############################
 # Convert instance.env to zowe.yaml file
 convert_instance_env_to_yaml() {
-  instance_env=$1
-  zowe_yaml=$2
+  instance_env="${1}"
+  zowe_yaml="${2}"
 
   # we need node for following commands
   ensure_node_is_on_path 1>/dev/null 2>&1
@@ -41,7 +41,7 @@ convert_instance_env_to_yaml() {
 #
 # @param string    file to check and convert
 zos_convert_env_dir_file_encoding() {
-  file=$1
+  file="${1}"
 
   encoding=$(get_file_encoding "$file")
   echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>BEFORE ${file} encoding is ${encoding}"
@@ -66,7 +66,7 @@ zos_convert_env_dir_file_encoding() {
 #
 # @param string   HA instance ID
 generate_instance_env_from_yaml_config() {
-  ha_instance=$1
+  ha_instance="${1}"
 
   # delete old files to avoid potential issues
   print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "deleting old files under ${ZWE_zowe_workspaceDirectory}/.env"
@@ -109,7 +109,7 @@ sanitize_ha_instance_id() {
 }
 
 load_environment_variables() {
-  component_id=$1
+  component_id="${1}"
 
   # we must have $ZWE_zowe_workspaceDirectory at this time
   if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then

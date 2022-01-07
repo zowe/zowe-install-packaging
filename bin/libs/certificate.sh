@@ -56,9 +56,9 @@ pkeytool() {
 }
 
 pkcs12_create_certificate_authority() {
-  keystore_dir=$1
-  alias=$2
-  password=$3
+  keystore_dir="${1}"
+  alias="${2}"
+  password="${3}"
   common_name=${4:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COMMON_NAME}}
 
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
@@ -99,10 +99,10 @@ pkcs12_create_certificate_authority() {
 }
 
 pkcs12_create_certificate_and_sign() {
-  keystore_dir=$1
-  keystore_name=$2
-  alias=$3
-  password=$4
+  keystore_dir="${1}"
+  keystore_name="${2}"
+  alias="${3}"
+  password="${4}"
   common_name=${5:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}
   domains=${6}
   ca_alias=${7}
@@ -267,12 +267,12 @@ pkcs12_create_certificate_and_sign() {
 }
 
 pkcs12_trust_service() {
-  keystore_dir=$1
-  keystore_name=$2
+  keystore_dir="${1}"
+  keystore_name="${2}"
   # password of truststore (<keystore_dir>/<keystore_name>.truststore.p12)
-  password=$3
-  service_host=$4
-  service_port=$5
+  password="${3}"
+  service_host="${4}"
+  service_port="${5}"
   service_alias=${6}
 
   if [ ! -f "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" ]; then
@@ -340,8 +340,8 @@ compare_domain_with_wildcards() {
 }
 
 validate_certificate_domain() {
-  host=$1
-  port=$2
+  host="${1}"
+  port="${2}"
   host=$(echo "${host}" | lower_case)
 
   print_message ">>>> Validate certificate of ${host}:${port}"
@@ -399,10 +399,10 @@ validate_certificate_domain() {
 }
 
 keyring_run_zwekring_jcl() {
-  hlq=$1
-  jcllib=$2
+  hlq="${1}"
+  jcllib="${2}"
   # should be 1, 2 or 3
-  jcloption=$3
+  jcloption="${3}"
   keyring_owner="${4}"
   keyring_name="${5}"
   domains="${6}"
@@ -478,7 +478,7 @@ EOF
     racf_connect1="s/^ \+RACDCERT CONNECT\(SITE | ID\(userid\).*\$/   RACDCERT CONNECT(SITE +/"
     acf2_connect="s/^ \+CONNECT CERTDATA(SITECERT.digicert | userid.digicert).*\$/   CONNECT CERTDATA(SITECERT.${connect_label}) -/"
     tss_connect="s/^ \+RINGDATA(CERTSITE|userid,digicert).*\$/       RINGDATA(CERTSITE,${connect_label}) +/"
-  else [ -z "${connect_user}" ]; then
+  elif [ -z "${connect_user}" ]; then
     racf_connect1="s/^ \+RACDCERT CONNECT\(SITE | ID\(userid\).*\$/   RACDCERT CONNECT(ID(${connect_user}) +/"
     acf2_connect="s/^ \+CONNECT CERTDATA(SITECERT.digicert | userid.digicert).*\$/   CONNECT CERTDATA(${connect_user}.${connect_label}) -/"
     tss_connect="s/^ \+RINGDATA(CERTSITE|userid,digicert).*\$/       RINGDATA(${connect_user},${connect_label}) +/"
@@ -592,8 +592,8 @@ EOF
 }
 
 keyring_run_zwenokyr_jcl() {
-  hlq=$1
-  jcllib=$2
+  hlq="${1}"
+  jcllib="${2}"
   keyring_owner="${3}"
   keyring_name="${4}"
   alias="${5}"

@@ -267,7 +267,7 @@ configure_components() {
 # Few early steps even before initialization
 
 # we want to reset TMPDIR as early as possible
-ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config ${ZWE_CLI_PARAMETER_CONFIG} 'zowe' 'workspaceDirectory')
+ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'workspaceDirectory')
 if [ -z "${ZWE_zowe_workspaceDirectory}" -o "${ZWE_zowe_workspaceDirectory}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
 fi

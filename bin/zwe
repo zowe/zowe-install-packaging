@@ -21,7 +21,7 @@ if $(/bin/test -z "${PATH}" 2>/dev/null) ; then
   export PATH=/bin:.:/usr/bin
 fi
 if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
-  ZWE_zowe_runtimeDirectory=$(cd "$(dirname "$0")/../";pwd)
+  ZWE_zowe_runtimeDirectory="$(cd "$(dirname "$0")/../";pwd)"
 fi
 
 #######################################################################
@@ -42,7 +42,7 @@ for idx in 1 2 3 4 5 6 7 8 9 10; do
     ZWE_CLI_COMMANDS_LIST="${ZWE_CLI_COMMANDS_LIST} ${arg}"
   fi
 done
-ZWE_CLI_COMMANDS_LIST=$(trim "${ZWE_CLI_COMMANDS_LIST}")
+ZWE_CLI_COMMANDS_LIST="$(trim "${ZWE_CLI_COMMANDS_LIST}")"
 # load ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=
 zwecli_load_parameters_definition
 # load ZWE_CLI_PARAMETERS_LIST and ZWE_CLI_PARAMETER_*
@@ -51,18 +51,18 @@ zwecli_load_parameters_default_value
 while [ $# -gt 0 ]; do
   arg="$1"
   if [[ "${arg}" == -* ]] || [[ "${arg}" == --* ]]; then
-    definition=$(zwecli_locate_parameter_definition $arg)
+    definition="$(zwecli_locate_parameter_definition "${arg}")"
     if [ $? -gt 0 ]; then
       print_error_and_exit "Error ZWEL0102E: Invalid parameter ${arg}" "" 102
     fi
-    param_id=$(echo "${definition}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')
-    param_type=$(echo "${definition}" | awk -F"|" '{print $3}' | lower_case)
+    param_id="$(echo "${definition}" | awk -F"|" '{print $1}' | awk -F, '{print $1}')"
+    param_type="$(echo "${definition}" | awk -F"|" '{print $3}' | lower_case)"
     if [ "${param_type}" = "b" -o "${param_type}" = "bool" -o "${param_type}" = "boolean" ]; then
-      ZWE_CLI_PARAMETERS_LIST=$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")
+      ZWE_CLI_PARAMETERS_LIST="$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")"
       zwecli_set_parameter_value "${param_id}" "true"
     elif [ "${param_type}" = "s" -o "${param_type}" = "str" -o "${param_type}" = "string" ]; then
       shift
-      ZWE_CLI_PARAMETERS_LIST=$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")
+      ZWE_CLI_PARAMETERS_LIST="$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")"
       zwecli_set_parameter_value "${param_id}" "${1}"
     else
       print_error_and_exit "Error ZWEL0103E: Invalid type of parameter ${arg}" "" 103

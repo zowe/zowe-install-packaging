@@ -25,10 +25,10 @@
 # @param string   if this variable is required. If this is true and we cannot
 #                 find the value of the key, an error will be displayed.
 shell_read_json_config() {
-  json_file=$1
-  parent_key=$2
-  key=$3
-  required=$4
+  json_file="${1}"
+  parent_key="${2}"
+  key="${3}"
+  required="${4}"
 
   val=$(cat "${json_file}" | awk "/\"${parent_key}\":/{x=NR+200}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
@@ -54,10 +54,10 @@ shell_read_json_config() {
 # @param string   if this variable is required. If this is true and we cannot
 #                 find the value of the key, an error will be displayed.
 shell_read_yaml_config() {
-  yaml_file=$1
-  parent_key=$2
-  key=$3
-  required=$4
+  yaml_file="${1}"
+  parent_key="${2}"
+  key="${3}"
+  required="${4}"
 
   val=$(cat "${yaml_file}" | awk "/${parent_key}:/{x=NR+2000;next}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
@@ -70,8 +70,8 @@ shell_read_yaml_config() {
 }
 
 read_yaml() {
-  file=$1
-  key=$2
+  file="${1}"
+  key="${2}"
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   fconv="${utils_dir}/fconv/src/index.js"
@@ -104,8 +104,8 @@ read_yaml() {
 }
 
 read_json() {
-  file=$1
-  key=$2
+  file="${1}"
+  key="${2}"
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   jq="${utils_dir}/njq/src/index.js"
