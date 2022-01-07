@@ -11,7 +11,7 @@ echo "Host                        :" $ZOSMF_URL
 echo "Port                        :" $ZOSMF_PORT
 echo "z/OSMF system               :" $ZOSMF_SYSTEM
 echo "CSI HLQ                     :" $CSIHLQ
-echo "PTF dataset                 :" $PTFDATASET
+echo "PTF dataset                 :" $SMPE
 echo "1st PTF                     :" $PTF1
 echo "2nd PTF                     :" $PTF2
 echo "Dataset with workflows      :" $WORKFLOW_DS
@@ -28,7 +28,7 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$PTF_WF_NAME'",
 "owner":"'$ZOSMF_USER'",
 "assignToOwner" :true,
 "variables":[{"name":"CSI","value":"'$CSIHLQ'"},
-{"name":"PTFDATASET","value":"'$PTFDATASET'"},
+{"name":"PTFDATASET","value":"'$SMPE'"},
 {"name":"TARGET","value":"'$TZONE'"},
 {"name":"DISTRIBUTION","value":"'$DZONE'"},
 {"name":"PTF1","value":"'$PTF1'"},

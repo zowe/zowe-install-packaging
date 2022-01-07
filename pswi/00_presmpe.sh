@@ -11,8 +11,7 @@ echo "Port               :" $ZOSMF_PORT
 echo "z/OSMF system      :" $ZOSMF_SYSTEM
 echo "FMID               :" $FMID
 echo "RFDSNPFX           :" $RFDSNPFX
-echo "SMPMCS             :" $SMPMCS
-echo "PTF data sets      :" $PTFDATASET
+echo "SMPE data sets     :" $SMPE
 echo "Temporary zFS      :" $TMP_ZFS
 echo "Temporary directory:" $TMP_MOUNT
 
@@ -33,9 +32,15 @@ echo "Preparing SMPMCS and RELFILES"
 line=`cat unzipped/${FMID}.readme.txt | grep -n //UNPAX | cut -f1 -d:`
 echo $JOBST1 > JCL1
 echo $JOBST2 >> JCL1
+echo "//DELTZOWE EXEC PGM=IDCAMS" >> JCL1
+echo "//SYSPRINT DD SYSOUT=*" >> JCL1
+echo "//SYSIN    DD *" >> JCL1
+echo " DELETE ${SMPE}.** MASK" >> JCL1
+echo " SET MAXCC=0" >> JCL1
+echo "/*" >> JCL1
 cat unzipped/${FMID}.readme.txt | tail -n +$line >> JCL1
 sed "s|@zfs_path@|${TMP_MOUNT}|g" JCL1 > JCL2
-sed "s|@PREFIX@|${SMPMCS}|g" JCL2 > JCL1
+sed "s|@PREFIX@|${SMPEHLQ}|g" JCL2 > JCL1
 sed "s|newname=\"...\"/>|newname=\"...\"|g" JCL1 > JCL2
 sed "s|/>|\n         volume=\"${VOLUME}\"/>|g" JCL2 > JCL1
 sed "s|<GIMUNZIP>|<GIMUNZIP>\n<TEMPDS volume=\"${VOLUME}\"> </TEMPDS>|g" JCL1 > JCL
@@ -48,14 +53,14 @@ rm JCL
 
 
 
-if [ -n "$PTFDATASET" ]
+if [ -n "$PTFNR" ]
 then
   # There are PTFs
 echo "Allocating PTF datasets"
 line=`cat ptfs.html | grep -n //ALLOC | cut -f1 -d:`
 echo $JOBST1 > JCL1
 echo $JOBST2 >> JCL1
-echo "//         SET HLQ=${SMPMCS}" >> JCL1
+echo "//         SET HLQ=${SMPEHLQ}" >> JCL1
 cat ptfs.html | tail -n +$line >> JCL1
 endline=`cat JCL1 | grep --max-count=1 -n \</PRE\> | cut -f1 -d:`
 cat JCL1 | head -n $((endline-1)) > JCL2
@@ -76,14 +81,15 @@ sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o Pubk
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
 put ${RFDSNPFX}.${FMID}.${PTF2} ${PTF2}
-cp -F bin ${PTF1} "//'${SMPMCS}.${RFDSNPFX}.${FMID}.${PTF1}'"
-cp -F bin ${PTF2} "//'${SMPMCS}.${RFDSNPFX}.${FMID}.${PTF2}'" 
+cp -F bin ${PTF1} "//'${SMPE}.${PTF1}'"
+cp -F bin ${PTF2} "//'${SMPE}.${PTF2}'" 
 EOF
 else
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
-cp -F bin ${PTF1} "//'${SMPMCS}.${RFDSNPFX}.${FMID}.${PTF1}'" 
+cp -F bin ${PTF1} "//'${SMPE}.${PTF1}'"
+EOF
 fi
 fi
 cd ..

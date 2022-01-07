@@ -3,6 +3,7 @@ export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
 export DIR="/u/zowead2"
 export CSIHLQ="ZWE.PSWI.AZWE001"
+export SMPEHLQ="ZOWEAD2"
 export ZONE="TZONE"
 export TMP_ZFS="ZOWEAD2.TMP.ZFS"
 export ZOWE_ZFS="${CSIHLQ}.ZFS"
@@ -14,7 +15,6 @@ export ACCOUNT=1
 
 # Variables for workflows
 # SMPE
-export SMPMCS="ZOWEAD2"
 export CSIVOL="ZOS003"
 export TZONE=$ZONE
 # CSIHLQ for workflow is same as for PSWI
@@ -91,7 +91,6 @@ else
       export PTF${N}=`echo $FILE | tail -n 1 | cut -f3 -d'.'`
     done
     export PTFNR=$N
-    export PTFDATASET="${SMPMCS}.${RFDSNPFX}.${FMID}"
   else
     echo "Different number of files"
     #TODO:make it more universal (we have the workflow now just for two files anyway so change it with that)
@@ -105,6 +104,7 @@ else
     exit -1
   fi
 fi
+export SMPE="${SMPEHLQ}.${RFDSNPFX}.${FMID}"
 echo "----------------------------------------------------------------------------------------------------------"
 
 # Upload and prepare all files
