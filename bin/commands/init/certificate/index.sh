@@ -18,7 +18,10 @@ require_zowe_yaml
 # read cert type and validate
 cert_type=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.type")
 if [ -z "${cert_type}" -o "${cert_type}" = "null" ]; then
-  print_error_and_exit "Error ZWEL0157E: Certificate type must be PKCS12 or JCERACFKS." "" 157
+  print_error_and_exit "Error ZWEL0157E: Certificate type (zowe.setup.certificate.type) is not defined in Zowe YAML configuration file." "" 157
+fi
+if [ "${cert_type}" != "PKCS12" -a "${cert_type}" != "JCERACFKS" ]; then
+  print_error_and_exit "Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are PKCS12 or JCERACFKS." "" 164
 fi
 # read cert dname
 for item in caCommonName commonName orgUnit org locality state country; do
@@ -34,22 +37,27 @@ cert_validity=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate
 if [ "${cert_validity}" = "null" ]; then
   cert_validity=
 fi
-# read keystore info
-for item in directory name password caAlias caPassword; do
-  var_name="pkcs12_${item}"
-  var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
-  if [ "${var_val}" = "null" ]; then
-    var_val=
+if [ "${cert_type}" = "PKCS12" ]; then
+  # read keystore info
+  for item in directory name password caAlias caPassword; do
+    var_name="pkcs12_${item}"
+    var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
+    if [ "${var_val}" = "null" ]; then
+      var_val=
+    fi
+    eval "${var_name}=\"${var_val}\""
+  done
+  if [ -z "${pkcs12_directory}" ]; then
+    print_error_and_exit "Error ZWEL0157E: Keystore directory (zowe.setup.certificate.pkcs12.directory) is not defined in Zowe YAML configuration file." "" 157
   fi
-  eval "${var_name}=\"${var_val}\""
-done
-if [ -z "${pkcs12_directory}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Keystore directory is not defined." "" 157
 fi
 # read keystore domains
 cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.san" | tr '\n' ',')
 if [ -z "${cert_type}" -o "${cert_type}" = "null" ]; then
   cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.externalDomains" | tr '\n' ',')
+fi
+if [ "${cert_domains}" = "null" ]; then
+  cert_domains=
 fi
 # read z/OSMF info
 zosmf_host=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zOSMF.host")

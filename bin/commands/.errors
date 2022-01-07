@@ -1,5 +1,5 @@
 |100|If the user pass `--help` or `-h` parameter, the zwe command always exits with `100` code.
-ZWEL0101E|101|`ZWE_zowe_runtimeDirectory` is not defined when sourcing `bin/libs/index.sh`.
+ZWEL0101E|101|ZWE_zowe_runtimeDirectory is not defined.
 ZWEL0102E|102|Invalid parameter %s.
 ZWEL0103E|103|Invalid type of parameter %s.
 ZWEL0104E|104|Invalid command %s.

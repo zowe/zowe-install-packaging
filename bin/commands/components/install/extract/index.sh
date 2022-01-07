@@ -26,7 +26,7 @@ require_node
 # clean up
 cd "${ZWE_PWD}" && cd "${target_dir}"
 if [ "$(pwd)" = "/" ]; then
-  print_error_and_exit "Error ZWEL0153E: Cannot install Zowe module to system root directory." "" 153
+  print_error_and_exit "Error ZWEL0153E: Cannot install Zowe component to system root directory." "" 153
 fi
 if [ -z "${tmp_ext_dir}" ]; then
   print_error_and_exit "Error ZWEL0154E: Temporary directory is empty." "" 154
