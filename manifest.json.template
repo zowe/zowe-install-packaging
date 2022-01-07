@@ -108,7 +108,7 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "1.27.0-PR-1980-SNAPSHOT",
-      "artifact": "apiml-sample-extension-1.27.0-PR-1980-20220107.081854-1.zip"
+      "artifact": "apiml-sample-extension-package-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.launcher": {
       "version": "~0.0.3-SNAPSHOT"
