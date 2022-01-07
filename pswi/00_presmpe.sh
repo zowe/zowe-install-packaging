@@ -38,12 +38,6 @@ echo "Preparing SMPMCS and RELFILES"
 line=`cat unzipped/${FMID}.readme.txt | grep -n //UNPAX | cut -f1 -d:`
 echo $JOBST1 > JCL1
 echo $JOBST2 >> JCL1
-echo "//DELTZOWE EXEC PGM=IDCAMS" >> JCL1
-echo "//SYSPRINT DD SYSOUT=*" >> JCL1
-echo "//SYSIN    DD *" >> JCL1
-echo " DELETE ${SMPE}.** MASK" >> JCL1
-echo " SET MAXCC=0" >> JCL1
-echo "/*" >> JCL1
 cat unzipped/${FMID}.readme.txt | tail -n +$line >> JCL1
 sed "s|@zfs_path@|${TMP_MOUNT}|g" JCL1 > JCL2
 sed "s|@PREFIX@|${SMPEHLQ}|g" JCL2 > JCL1

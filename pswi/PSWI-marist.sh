@@ -87,7 +87,6 @@ else
     for FILE in $FILES
     do
       N=$((N+1))
-      echo "FILE " $FILE
       export PTF${N}=`echo $FILE | tail -n 1 | cut -f3 -d'.'`
     done
   else
@@ -108,6 +107,9 @@ echo "--------------------------------------------------------------------------
 
 # Upload and prepare all files
 sh 00_presmpe.sh
+
+# Clean RELFILEs and PTFs
+sh 08_presmpe_cleanup.sh
 
 exit #just for testing new code
 # Create SMP/E
