@@ -105,11 +105,11 @@ fi
 export SMPE="${SMPEHLQ}.${RFDSNPFX}.${FMID}"
 echo "----------------------------------------------------------------------------------------------------------"
 
-# Upload and prepare all files
-sh 00_presmpe.sh
-
 # Clean RELFILEs and PTFs
 sh 08_presmpe_cleanup.sh
+
+# Upload and prepare all files
+sh 00_presmpe.sh
 
 exit #just for testing new code
 # Create SMP/E
