@@ -50,13 +50,13 @@
       "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-jes": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "~2.0.0-V2-X-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "~2.0.0-V2-X-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "~1.0.0-SNAPSHOT"
+      "version": "~2.0.0-V2-X-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
