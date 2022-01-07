@@ -105,13 +105,11 @@ fi
 export SMPE="${SMPEHLQ}.${RFDSNPFX}.${FMID}"
 echo "----------------------------------------------------------------------------------------------------------"
 
-# Clean RELFILEs and PTFs
-sh 08_presmpe_cleanup.sh
-
 # Upload and prepare all files
 sh 00_presmpe.sh
+presmpe=$?
 
-exit #just for testing new code
+if [ $presmpe -eq 0 ];then
 # Create SMP/E
 sh 01_smpe.sh
 smpe=$?
@@ -142,14 +140,20 @@ fi
 
 # Cleanup of SMP/E
 sh 07_smpe_cleanup.sh
+fi 
+
+# Clean RELFILEs and PTFs
+sh 08_presmpe_cleanup.sh
 
 echo ""
 echo ""
 
-if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ]
+if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || [ $presmpe -ne 0 ]
 then
   echo "Build unsuccessful!"
-  if [ $smpe -ne 0 ]; then
+  if [ $presmpe -ne 0 ]; then
+    echo "Pre-SMP/E wasn't successful."
+  elif [ $smpe -ne 0 ]; then
     echo "SMP/E wasn't successful."
   elif [ $ptf -ne 0 ]; then
     echo "Applying PTFs wasn't successful."

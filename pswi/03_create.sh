@@ -2,9 +2,6 @@
 #version=1.0
 
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
-MOUNTED=false
-WMOUNTED=false
-OMOUNTED=false
 
 echo ""
 echo ""
