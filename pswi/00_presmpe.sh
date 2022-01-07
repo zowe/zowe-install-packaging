@@ -81,17 +81,38 @@ sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o Pubk
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
 put ${RFDSNPFX}.${FMID}.${PTF2} ${PTF2}
-cp -F bin ${PTF1} "//'${SMPE}.${PTF1}'"
-cp -F bin ${PTF2} "//'${SMPE}.${PTF2}'" 
 EOF
 else
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
-cp -F bin ${PTF1} "//'${SMPE}.${PTF1}'"
 EOF
 fi
-fi
 cd ..
+
+echo "Copying PTFs to ${SMPE} data set."
+
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//COPYWRFS EXEC PGM=BPXBATCH" >> JCL
+echo "//STDOUT DD SYSOUT=*" >> JCL
+echo "//STDERR DD SYSOUT=*" >> JCL
+echo "//STDPARM  DD *" >> JCL
+echo "SH set -x;" >> JCL 
+echo "source=\"${TMP_MOUNT}/${PTF1}\";" >> JCL
+echo "target=\"//'${SMPE}.${PTF1}'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+if [ $PTFNR -eq 2 ]
+then
+echo "source=\"${TMP_MOUNT}/${PTF2}\";" >> JCL
+echo "target=\"//'${SMPE}.${PTF2}'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+fi
+echo "/*" >> JCL
+
+sh scripts/submit_jcl.sh "`cat JCL`"
+if [ $? -gt 0 ];then exit -1;fi
+rm JCL
+fi
 
 rm -rf unzipped
