@@ -32,6 +32,8 @@ echo "Checking/mounting ${TMP_ZFS}"
 sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
+#TODO: upload pax from ../.pax
+
 # Unpax the directory (create directory for test_mount)
 echo "UnPAXing the final PSWI."
 
@@ -44,7 +46,7 @@ echo "//STDPARM  DD *" >> JCL
 echo "SH mkdir -p ${TEST_MOUNT};" >> JCL
 echo "mkdir -p ${EXPORT};" >> JCL
 echo "cd ${EXPORT};" >> JCL
-echo "pax -rv -f ${OUTPUT_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z" >> JCL
+echo "pax -rv -f ${SWI_NAME}-${VERSION}.pax.Z" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
@@ -54,6 +56,7 @@ rm JCL
 
 if [ "$ZOSMF_V" = "2.4" ]; then
   echo "Not covering deployment on z/OSMF 2.4 yet."
+#TODO: it's same as for 2.3 without work zfs - manage this in deploy_test_2_3.py and add api call to register PSWI
 # z/OSMF 2.4
 
 # Delete Portable Software Instance if it already exists
