@@ -78,28 +78,28 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "api-catalog-package-1.26.21-PR-1976-20220105.154310-4.zip"
+      "version": "1.27.0-PR-1980-SNAPSHOT",
+      "artifact": "api-catalog-package-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "discovery-package-1.26.21-PR-1976-20220105.154310-2.zip"
+      "version": "1.27.0-PR-1980-SNAPSHOT",
+      "artifact": "discovery-package-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "gateway-package-1.26.21-PR-1976-20220105.154310-2.zip"
+      "version": "1.27.0-PR-1980-SNAPSHOT",
+      "artifact": "gateway-package-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "caching-service-package-1.26.21-PR-1976-20220105.154310-4.zip"
+      "version": "1.27.0-PR-1980-SNAPSHOT",
+      "artifact": "caching-service-package-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "metrics-service-package-1.26.21-PR-1976-20220105.154310-1.zip"
+      "version": "1.27.0-PR-1980-SNAPSHOT",
+      "artifact": "metrics-service-package-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.26.21-PR-1976-SNAPSHOT",
-      "artifact": "apiml-common-lib-package-1.26.21-PR-1976-20220105.154310-4.zip"
+      "version": "1.27.0-PR-1980-SNAPSHOT",
+      "artifact": "apiml-common-lib-package-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~1.21.3-SNAPSHOT",
@@ -107,9 +107,8 @@
       "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "~1.26.0-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "version": "1.27.0-PR-1980-SNAPSHOT",
+      "artifact": "apiml-sample-extension-1.27.0-PR-1980-20220107.081854-1.zip"
     },
     "org.zowe.launcher": {
       "version": "~0.0.3-SNAPSHOT"
