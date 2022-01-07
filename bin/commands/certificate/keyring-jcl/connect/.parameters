@@ -4,7 +4,9 @@ security-dry-run||boolean|||||Whether to dry run security related setup.
 security-product||string||RACF|||Security product. Can be a value of RACF, ACF2 or TSS.
 keyring-owner||string|required||||Owner of the keyring.
 keyring-name||string|required||||Name of the keyring.
-external-cas||string|||||Labels of external certificate authorities separated by comma (Maximum 2).
+trust-cas||string|||||Labels of extra certificate authorities should be trusted, separated by comma (Maximum 2).
+connect-user||string|required||||Certificate owner. Can be `SITE` or a user ID.
+connect-label||string|required||||Certificate label to connect.
 trust-zosmf||boolean|||||Whether to trust z/OSMF CA.
 zosmf-ca||string||_auto_|||Labels of z/OSMF root certificate authorities. Specify "_auto_" to let Zowe to detect automatically. This only works for RACF.
 zosmf-user||string||IZUSVR|||z/OSMF user name. This is used to automatically detect z/OSMF root certificate authorities.

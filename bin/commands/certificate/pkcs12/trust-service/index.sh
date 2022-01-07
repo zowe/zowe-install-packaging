@@ -31,11 +31,4 @@ if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0170E: Failed to trust ${ZWE_CLI_PARAMETER_SERVICE_NAME} \"${ZWE_CLI_PARAMETER_HOST}:${ZWE_CLI_PARAMETER_PORT}\"." "" 170
 fi
 
-if [ "${ZWE_CLI_PARAMETER_VERIFY}" = "true" ]; then
-  validate_certificate_domain "${ZWE_CLI_PARAMETER_HOST}" "${ZWE_CLI_PARAMETER_PORT}"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0171E: Failed to verify certificate (CN and SAN) of ${ZWE_CLI_PARAMETER_SERVICE_NAME} \"${ZWE_CLI_PARAMETER_HOST}:${ZWE_CLI_PARAMETER_PORT}\"." "" 171
-  fi
-fi
-
 print_level2_message "Certificate ${ZWE_CLI_PARAMETER_ALIAS} is added to truststore successfully."

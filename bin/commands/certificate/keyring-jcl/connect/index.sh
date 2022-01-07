@@ -19,13 +19,6 @@ print_level1_message "Connect existing certificate to Zowe keyring"
 ###############################
 # validation
 
-# TODO: option 2 needs further changes on JCL
-# //*     ACTION:
-# //*     a. modify the following snippet
-# //*        CONNECT(SITE | ID(userid) +
-# //*        LABEL('certlabel') +
-# //*        to match the owner of the desired certificate
-
 ###############################
 # run ZWEKRING JCL
 ZWE_PRIVATE_ZOSMF_USER="${ZWE_CLI_PARAMETER_ZOSMF_USER}" \
@@ -41,6 +34,8 @@ ZWE_PRIVATE_ZOSMF_USER="${ZWE_CLI_PARAMETER_ZOSMF_USER}" \
     "${ZWE_CLI_PARAMETER_EXTERNAL_CAS}" \
     "${ZWE_CLI_PARAMETER_TRUST_ZOSMF}" \
     "${ZWE_CLI_PARAMETER_ZOSMF_CA}" \
+    "${ZWE_CLI_PARAMETER_CONNECT_USER}" \
+    "${ZWE_CLI_PARAMETER_CONNECT_LABEL}" \
     "" \
     "" \
     "" \

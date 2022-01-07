@@ -81,7 +81,7 @@ done
 # process
 # If we source a sub-command, these steps will be ignored
 if [ "${ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND}" = "true" ]; then
-  # TODO: separate verbose level by termnimal output and log file
+  # TODO: separate verbose level by terminal output and log file
   zwecli_process_loglevel
   # if it's in help mode, the script will exit with code 100
   zwecli_process_help

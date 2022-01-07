@@ -5,7 +5,7 @@ security-product||string||RACF|||Security product. Can be a value of RACF, ACF2 
 keyring-owner||string|required||||Owner of the keyring.
 keyring-name||string|required||||Name of the keyring.
 alias|a|string|required|localhost|||Certificate alias name.
-external-cas||string|||||Labels of external certificate authorities separated by comma (Maximum 2).
+trust-cas||string|||||Labels of extra certificate authorities should be trusted, separated by comma (Maximum 2).
 trust-zosmf||boolean|||||Whether to trust z/OSMF CA.
 zosmf-ca||string||_auto_|||Labels of z/OSMF root certificate authorities. Specify "_auto_" to let Zowe to detect automatically. This only works for RACF.
 zosmf-user||string||IZUSVR|||z/OSMF user name. This is used to automatically detect z/OSMF root certificate authorities.

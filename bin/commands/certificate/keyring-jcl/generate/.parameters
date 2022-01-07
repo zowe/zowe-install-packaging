@@ -14,7 +14,7 @@ locality||string|||||Locality of certificate and certificate authority.
 state||string|||||State of certificate and certificate authority.
 country||string|||||Country of certificate and certificate authority.
 validity||string|||||Validity days of certificate.
-external-cas||string|||||Labels of external certificate authorities separated by comma (Maximum 2).
+trust-cas||string|||||Labels of extra certificate authorities should be trusted, separated by comma (Maximum 2).
 trust-zosmf||boolean|||||Whether to trust z/OSMF CA.
 zosmf-ca||string||_auto_|||Labels of z/OSMF root certificate authorities. Specify "_auto_" to let Zowe to detect automatically. This only works for RACF.
 zosmf-user||string||IZUSVR|||z/OSMF user name. This is used to automatically detect z/OSMF root certificate authorities.

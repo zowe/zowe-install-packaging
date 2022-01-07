@@ -413,11 +413,14 @@ keyring_run_zwekring_jcl() {
   # set to 1 to import z/OSMF CA
   trust_zosmf="${10:-0}"
   zosmf_root_ca="${11}"
+  # option 2 - connect existing
+  connect_user="${12}"
+  connect_label="${13}"
   # option 3 - import from data set
-  import_ds_name="${12}"
-  import_ds_password="${13}"
-  validity="${14:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
-  security_product=${15:-RACF}
+  import_ds_name="${14}"
+  import_ds_password="${15}"
+  validity="${16:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
+  security_product=${17:-RACF}
 
   # generate from domains list
   domain_name=
@@ -466,6 +469,22 @@ EOF
   validity_ymd=$("${date_add_util}" ${validity} 1234-56-78)
   validity_mdy=$("${date_add_util}" ${validity} 56/78/34)
 
+  # option 2 needs further changes on JCL
+  racf_connect1="s/dummy/dummy/"
+  racf_connect2="s/dummy/dummy/"
+  acf2_connect="s/dummy/dummy/"
+  tss_connect="s/dummy/dummy/"
+  if [ "${connect_user}" = "SITE" ]; then
+    racf_connect1="s/^ \+RACDCERT CONNECT\(SITE | ID\(userid\).*\$/   RACDCERT CONNECT(SITE +/"
+    acf2_connect="s/^ \+CONNECT CERTDATA(SITECERT.digicert | userid.digicert).*\$/   CONNECT CERTDATA(SITECERT.${connect_label}) -/"
+    tss_connect="s/^ \+RINGDATA(CERTSITE|userid,digicert).*\$/       RINGDATA(CERTSITE,${connect_label}) +/"
+  else [ -z "${connect_user}" ]; then
+    racf_connect1="s/^ \+RACDCERT CONNECT\(SITE | ID\(userid\).*\$/   RACDCERT CONNECT(ID(${connect_user}) +/"
+    acf2_connect="s/^ \+CONNECT CERTDATA(SITECERT.digicert | userid.digicert).*\$/   CONNECT CERTDATA(${connect_user}.${connect_label}) -/"
+    tss_connect="s/^ \+RINGDATA(CERTSITE|userid,digicert).*\$/       RINGDATA(${connect_user},${connect_label}) +/"
+  fi
+  racf_connect2="s/^ \+LABEL('certlabel').*\$/            LABEL('${connect_label}') +/"
+
   # used by ACF2
   # TODO: how to pass this?
   stc_group=
@@ -499,6 +518,10 @@ EOF
           sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
           sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
           sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" | \
+          sed "${racf_connect1}" ｜ \
+          sed "${racf_connect2}" ｜ \
+          sed "${acf2_connect}" ｜ \
+          sed "${tss_connect}" ｜ \
           sed  "s/2030-05-01/${validity_ymd}/g" | \
           sed  "s#05/01/30#${validity_mdy}#g" \
           > "${tmpfile}")
