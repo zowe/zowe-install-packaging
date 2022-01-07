@@ -74,9 +74,9 @@ else
   #TODO: version could be obtained from the pipeline but last time I tried it it wasn't working
   export VERSION=`cat unzipped/*htm | grep -o "version.*," | grep -v "%" | cut -f2 -d' ' | cut -f1 -d','`
   mv unzipped/*htm ptfs.html
-  NR=`ls unzipped | wc -l`
+  export PTFNR=`ls unzipped | wc -l`
   
-  if [ $NR -le 2 ]
+  if [ $PTFNR -le 2 ]
   then
     echo "standard situation"
     export RFDSNPFX=`ls unzipped | tail -n 1 | cut -f1 -d'.'`
@@ -90,7 +90,6 @@ else
       N=$((N+1))
       export PTF${N}=`echo $FILE | tail -n 1 | cut -f3 -d'.'`
     done
-    export PTFNR=$N
   else
     echo "Different number of files"
     #TODO:make it more universal (we have the workflow now just for two files anyway so change it with that)

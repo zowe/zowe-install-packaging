@@ -14,6 +14,12 @@ echo "RFDSNPFX           :" $RFDSNPFX
 echo "SMPE data sets     :" $SMPE
 echo "Temporary zFS      :" $TMP_ZFS
 echo "Temporary directory:" $TMP_MOUNT
+if [ -n "$PTFNR" ]
+then
+echo "Number of PTFs     :" $PTFNR 
+echo "PTF1               :" $PTF1
+echo "PTF2               :" $PTF2
+fi 
 
 echo "Checking/mounting ${TMP_ZFS}"
 sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
@@ -74,9 +80,9 @@ rm JCL
   
   echo "Uploading PTFs"
 
+cd unzipped
 if [ $PTFNR -eq 2 ]
 then
-cd unzipped
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
