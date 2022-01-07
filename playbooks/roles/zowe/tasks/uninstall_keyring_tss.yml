@@ -7,10 +7,6 @@
   loop: "{{ zowe_known_keyring_personal_digicerts }}"
   ignore_errors: True
 
-- name: Remove Zowe TSS personal certficates
-  raw: tsocmd "TSS REM({{ zowe_runtime_user }}) DIGICERT({{ zowe_token_label }})"
-  ignore_errors: True
-
 - name: Remove Zowe TSS certauth certficates 
   raw: tsocmd "TSS REM(CERTAUTH) DIGICERT({{ item }})"
   loop: "{{ zowe_known_keyring_certauth_digicerts }}"
@@ -19,10 +15,6 @@
 - name: Deleting Zowe TSS keyrings
   raw: tsocmd "TSS REM({{ zowe_runtime_user }}) KEYRING({{ item }})"
   loop: "{{ zowe_known_tss_keyring_names }}"
-  ignore_errors: True
-
-- name: Deleting Zowe TSS token
-  raw: tsocmd "TSS P11TOKEN TOKENDEL LABLCTKN({{ zowe_token_name }}) FORCE"
   ignore_errors: True
 
 - name: List keyrings's TSS certificates
