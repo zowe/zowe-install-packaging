@@ -43,24 +43,24 @@ In the rest of the README, it will cover list of environmental variable and how 
 Here is the list of environmental variables with example or default value:
 
 
-|Environmental Variable	| Default Value	| Example Value                                 |
-|-----------------------|:-------------:|----------------------------------------------:|
-|ansible_user           |               |       zowead3                                 |
-|ansible_password		|               |       x123abc                                 |
-|ansible_ssh_host		|               | zzow01.zowe.marist.cloud                      |
-|kubeconfig	            |               |       ~/.kube/config                          |	
-|k8s_context		    |               |   docker-desktop                              |
-|zowe_instance_dir        |               | /ZOWE/tmp/.zowe  |
-|work_dir_remote        |               | /ZOWE/ansible  |
-|k8s_storageclass	    | hostpath      |                                               |	
-|k8s_pv_name		    |               |       zowe-workspace-pv                       |
-|k8s_pvc_labels		    |               |       “billingType”, “region”, “zone”       | 
-|k8s_service	        | loadbalancer	|                                               |
-|k8s_service_annot		|               |       “ip-type”,”zone”,”vlan”               |
-|k8s_list_domain_ip	    | localhost 	|                                               |
-|k8s_networking		    |               |       ingress                                 |
-|k8s_gateway_domain		|               |       *.nio.io                                |
-|k8s_discovery_domain	|               |       *.nio.io                                |
+|Environmental Variable	| Default Value	| Example Value                   |
+|-----------------------|:-------------:|--------------------------------:|
+|ansible_user           |               |                                 |
+|ansible_password		|               |                                 |
+|ansible_ssh_host		|               |                                 |
+|kubeconfig	            |               | ~/.kube/config                  |	
+|k8s_context		    |               | docker-desktop                  |
+|zowe_instance_dir      |               |                                 |
+|work_dir_remote        |               |                                 |
+|k8s_storageclass	    | hostpath      |                                 |	
+|k8s_pv_name		    |               | zowe-workspace-pv               |
+|k8s_pvc_labels		    |               | “billingType”, “region”, “zone” | 
+|k8s_service	        | loadbalancer	|                                 |
+|k8s_service_annot		|               | “ip-type”,”zone”,”vlan”         |
+|k8s_list_domain_ip	    | localhost 	|                                 |
+|k8s_networking		    |               | ingress                         |
+|k8s_gateway_domain		|               | *.nio.io                        |
+|k8s_discovery_domain	|               | *.nio.io                        |
 
 
 ### More details about the environmental variables: 
