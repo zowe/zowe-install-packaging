@@ -101,12 +101,12 @@ echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;" >> JCL 
 echo "source=\"${TMP_MOUNT}/${PTF1}\";" >> JCL
 echo "target=\"//'${SMPE}.${PTF1}'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "cp -F bin \$source \$target;" >> JCL
 if [ $PTFNR -eq 2 ]
 then
 echo "source=\"${TMP_MOUNT}/${PTF2}\";" >> JCL
 echo "target=\"//'${SMPE}.${PTF2}'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "cp -F bin \$source \$target;" >> JCL
 fi
 echo "/*" >> JCL
 
