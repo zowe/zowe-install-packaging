@@ -29,10 +29,6 @@
   loop: "{{ zowe_known_tss_keyring_names }}"
   ignore_errors: True
 
-- name: Add delete Zowe JWT secret ACF2 keyrings statement(s) to JCL
-  raw: echo "  DELETE {{ zowe_runtime_user }}.{{ zowe_token_label}}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
-  ignore_errors: True
-
 - name: Add full cleanup statement(s) to JCL
   raw: echo "  DELETE {{ zowe_runtime_user }}" >> "{{ work_dir_remote }}/ACFNOKYR.jcl"
   ignore_errors: True
