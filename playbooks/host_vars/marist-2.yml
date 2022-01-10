@@ -1,4 +1,3 @@
 ---
 zos_security_system: ACF2
-zowe_token_label: JWTSECRET
 zos_zosmf_ca: ZOSMFSRV

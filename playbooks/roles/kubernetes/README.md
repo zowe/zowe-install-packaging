@@ -43,24 +43,24 @@ In the rest of the README, it will cover list of environmental variable and how 
 Here is the list of environmental variables with example or default value:
 
 
-|Environmental Variable	| Default Value	| Example Value                                 |
-|-----------------------|:-------------:|----------------------------------------------:|
-|ansible_user           |               |       zowead3                                 |
-|ansible_password		|               |       x123abc                                 |
-|ansible_ssh_host		|               | zzow01.zowe.marist.cloud                      |
-|kubeconfig	            |               |       ~/.kube/config                          |	
-|k8s_context		    |               |   docker-desktop                              |
-|zowe_instance_dir        |               | /ZOWE/tmp/.zowe  |
-|work_dir_remote        |               | /ZOWE/ansible  |
-|k8s_storageclass	    | hostpath      |                                               |	
-|k8s_pv_name		    |               |       zowe-workspace-pv                       |
-|k8s_pvc_labels		    |               |       “billingType”, “region”, “zone”       | 
-|k8s_service	        | loadbalancer	|                                               |
-|k8s_service_annot		|               |       “ip-type”,”zone”,”vlan”               |
-|k8s_list_domain_ip	    | localhost 	|                                               |
-|k8s_networking		    |               |       ingress                                 |
-|k8s_gateway_domain		|               |       *.nio.io                                |
-|k8s_discovery_domain	|               |       *.nio.io                                |
+|Environmental Variable	| Default Value	| Example Value                   |
+|-----------------------|:-------------:|--------------------------------:|
+|ansible_user           |               |                                 |
+|ansible_password		|               |                                 |
+|ansible_ssh_host		|               |                                 |
+|kubeconfig	            |               | ~/.kube/config                  |	
+|k8s_context		    |               | docker-desktop                  |
+|zowe_instance_dir      |               |                                 |
+|work_dir_remote        |               |                                 |
+|k8s_storageclass	    | hostpath      |                                 |	
+|k8s_pv_name		    |               | zowe-workspace-pv               |
+|k8s_pvc_labels		    |               | “billingType”, “region”, “zone” | 
+|k8s_service	        | loadbalancer	|                                 |
+|k8s_service_annot		|               | “ip-type”,”zone”,”vlan”         |
+|k8s_list_domain_ip	    | localhost 	|                                 |
+|k8s_networking		    |               | ingress                         |
+|k8s_gateway_domain		|               | *.nio.io                        |
+|k8s_discovery_domain	|               | *.nio.io                        |
 
 
 ### More details about the environmental variables: 
@@ -126,15 +126,15 @@ k8s_service_annot:
 
 **Install Zowe containers on local Kubernetes service provisioned by Docker-Desktop:**
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e k8s_context=docker-desktop -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e zowe_instance_dir=/ZOWE/tmp/.zowe -e work_dir_remote=/ZOWE/ansible
+ansible-playbook -l <server> install-kubernetes.yml -e k8s_context=docker-desktop -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e zowe_instance_dir=<instance-dir-path> -e work_dir_remote=<work-dir-path>
 ```
 **Install Zowe containers on Kubernetes running on BareMetal:**
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e k8s_storageclass=<storageclassname> -e k8s_service=nodeport -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=ingress -e zowe_instance_dir=/ZOWE/tmp/.zowe -e work_dir_remote=/ZOWE/ansible
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e k8s_storageclass=<storageclassname> -e k8s_service=nodeport -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=ingress -e zowe_instance_dir=<instance-dir-path> -e work_dir_remote=<work-dir-path>
 ```
 **Install Zowe containers on OpenShift:**
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.gate.io,1.2.3.4.discover.io" -e k8s_networking=route -e zowe_instance_dir=/ZOWE/tmp/.zowe -e k8s_gateway_domain="gate.io" -e k8s_discovery_domain="discover.io" -e work_dir_remote=/ZOWE/ansible
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.gate.io,1.2.3.4.discover.io" -e k8s_networking=route -e zowe_instance_dir=<instance-dir-path> -e k8s_gateway_domain="gate.io" -e k8s_discovery_domain="discover.io" -e work_dir_remote=<work-dir-path>
 ```
 **Install Zowe containers on IBM Cloud Kubernetes:**
 
@@ -156,5 +156,5 @@ k8s_pvc_labels:
 
 Run: 
 ```
-ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e zowe_instance_dir=/ZOWE/tmp/.zowe -e work_dir_remote=/ZOWE/ansible
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e k8s_context=<name>  -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_storageclass=<storageclassname> -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e zowe_instance_dir=<instance-dir-path> -e work_dir_remote=<work-dir-path>
 ```
