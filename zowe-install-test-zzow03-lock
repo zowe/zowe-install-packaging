@@ -1,14 +1,1 @@
-{
-  "lockAcquiredTime": "Mon Jan 10 2022 17:39:35 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1641836375761981449",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/jack/fix-smpe-sso-issue",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "jackjia-ibm",
-  "runId": 1678663285,
-  "runNumber": 255
-}
+""
