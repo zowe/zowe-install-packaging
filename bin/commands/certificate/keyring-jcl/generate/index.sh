@@ -46,9 +46,8 @@ ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT="${ZWE_CLI_PARAMETER_ORG_UNIT}" \
     "" \
     "${ZWE_CLI_PARAMETER_IMPORT_VALIDITY}" \
     "${ZWE_CLI_PARAMETER_IMPORT_SECURITY_PRODUCT}"
-code=$?
-if [ ${code} -ne 0 ]; then
-  return ${code}
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 174
 fi
 
 ###############################

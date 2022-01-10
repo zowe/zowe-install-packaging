@@ -77,8 +77,6 @@ pkcs12_create_certificate_authority() {
   if [ $? -ne 0 ]; then
     return 1
   fi
- 
-  chmod 600 "${keystore_dir}/${alias}/${alias}.keystore.p12"
 
   print_message ">>>> Export local CA with alias ${alias}:"
   result=$(pkeytool -export -v \
@@ -95,6 +93,8 @@ pkcs12_create_certificate_authority() {
 
   if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias}/${alias}.cer" > "${keystore_dir}/${alias}/${alias}.cer-ebcdic"
+    mv "${keystore_dir}/${alias}/${alias}.cer-ebcdic" "${keystore_dir}/${alias}/${alias}.cer"
+    ensure_file_encoding "${keystore_dir}/${alias}/${alias}.cer" "-----BEGIN CERTIFICATE-----"
   fi
 }
 
@@ -221,7 +221,7 @@ pkcs12_create_certificate_and_sign() {
   rm -f "${keystore_dir}/${keystore_name}/${alias}.csr"
   rm -f "${keystore_dir}/${keystore_name}/${alias}.signed.cer"
 
-  print_message ">>>> Export certificate \"${alias}\" to the PEM format"
+  print_message ">>>> Export certificate \"${alias}\" to PEM format"
   result=$(pkeytool -exportcert -v \
             -alias "${alias}" \
             -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
@@ -234,6 +234,8 @@ pkcs12_create_certificate_and_sign() {
   fi
   if [ `uname` = "OS/390" ]; then
     iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${keystore_name}/${alias}.cer" > "${keystore_dir}/${keystore_name}/${alias}.cer-ebcdic"
+    mv "${keystore_dir}/${keystore_name}/${alias}.cer-ebcdic" "${keystore_dir}/${keystore_name}/${alias}.cer"
+    ensure_file_encoding "${keystore_dir}/${keystore_name}/${alias}.cer" "-----BEGIN CERTIFICATE-----"
   fi
 
   print_message ">>>> Exporting certificate \"${alias}\" private key"
@@ -250,7 +252,8 @@ pkcs12_create_certificate_and_sign() {
       return 1
     fi
 
-    iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${keystore_name}/${alias}.key" > "${keystore_dir}/${keystore_name}/${alias}.key-ebcdic"
+    # it's already EBCDIC, remove tag if there are any
+    ensure_file_encoding "${keystore_dir}/${keystore_name}/${alias}.key" "-----BEGIN PRIVATE KEY-----"
   else
     java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
       ExportPrivateKeyLinux \
@@ -410,8 +413,11 @@ keyring_run_zwekring_jcl() {
   ca_alias="${8}"
   # external CA labels separated by comma (label can have spaces)
   ext_cas="${9}"
-  # set to 1 to import z/OSMF CA
-  trust_zosmf="${10:-0}"
+  # set to 1 or true to import z/OSMF CA
+  trust_zosmf=0
+  if [ "${10}" = "true" -o "${10}" = "1" ]; then
+    trust_zosmf=1
+  fi
   zosmf_root_ca="${11}"
   # option 2 - connect existing
   connect_user="${12}"
@@ -458,11 +464,13 @@ keyring_run_zwekring_jcl() {
 $(echo "${ext_cas}" | tr "," "\n")
 EOF
 
-  if [ "${zosmf_root_ca}" = "_auto_" ]; then
-    zosmf_root_ca=$(detect_zosmf_root_ca "${ZWE_PRIVATE_ZOSMF_USER}")
-  fi
-  if [ "${trust_zosmf}" = "1" -a -z "${zosmf_root_ca}" ]; then
-    print_error_and_exit "Error ZWEL0137E: z/OSMF root certificate authority is not provided (or cannot be detected) with trusting z/OSMF option enabled." "" 137
+  if [ "${trust_zosmf}" = "1" ]; then
+    if [ "${zosmf_root_ca}" = "_auto_" ]; then
+      zosmf_root_ca=$(detect_zosmf_root_ca "${ZWE_PRIVATE_ZOSMF_USER}")
+    fi
+    if [ -z "${zosmf_root_ca}" ]; then
+      print_error_and_exit "Error ZWEL0137E: z/OSMF root certificate authority is not provided (or cannot be detected) with trusting z/OSMF option enabled." "" 137
+    fi
   fi
 
   date_add_util="${ZWE_zowe_runtimeDirectory}/bin/utils/date-add.rex"
@@ -474,16 +482,18 @@ EOF
   racf_connect2="s/dummy/dummy/"
   acf2_connect="s/dummy/dummy/"
   tss_connect="s/dummy/dummy/"
-  if [ "${connect_user}" = "SITE" ]; then
-    racf_connect1="s/^ \+RACDCERT CONNECT\(SITE | ID\(userid\).*\$/   RACDCERT CONNECT(SITE +/"
-    acf2_connect="s/^ \+CONNECT CERTDATA(SITECERT.digicert | userid.digicert).*\$/   CONNECT CERTDATA(SITECERT.${connect_label}) -/"
-    tss_connect="s/^ \+RINGDATA(CERTSITE|userid,digicert).*\$/       RINGDATA(CERTSITE,${connect_label}) +/"
-  elif [ -z "${connect_user}" ]; then
-    racf_connect1="s/^ \+RACDCERT CONNECT\(SITE | ID\(userid\).*\$/   RACDCERT CONNECT(ID(${connect_user}) +/"
-    acf2_connect="s/^ \+CONNECT CERTDATA(SITECERT.digicert | userid.digicert).*\$/   CONNECT CERTDATA(${connect_user}.${connect_label}) -/"
-    tss_connect="s/^ \+RINGDATA(CERTSITE|userid,digicert).*\$/       RINGDATA(${connect_user},${connect_label}) +/"
+  if [ "${jcloption}" =  "2" ]; then
+    if [ "${connect_user}" = "SITE" ]; then
+      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(SITE +/"
+      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(SITECERT.${connect_label}) -/"
+      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(CERTSITE,${connect_label}) +/"
+    elif [ -n "${connect_user}" ]; then
+      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(ID(${connect_user}) +/"
+      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(${connect_user}.${connect_label}) -/"
+      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(${connect_user},${connect_label}) +/"
+    fi
+    racf_connect2="s/^ \+LABEL[(]'certlabel'[)].*\$/            LABEL('${connect_label}') +/"
   fi
-  racf_connect2="s/^ \+LABEL('certlabel').*\$/            LABEL('${connect_label}') +/"
 
   # used by ACF2
   # TODO: how to pass this?
@@ -518,10 +528,10 @@ EOF
           sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
           sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
           sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" | \
-          sed "${racf_connect1}" ｜ \
-          sed "${racf_connect2}" ｜ \
-          sed "${acf2_connect}" ｜ \
-          sed "${tss_connect}" ｜ \
+          sed "${racf_connect1}" | \
+          sed "${racf_connect2}" | \
+          sed "${acf2_connect}" | \
+          sed "${tss_connect}" | \
           sed  "s/2030-05-01/${validity_ymd}/g" | \
           sed  "s#05/01/30#${validity_mdy}#g" \
           > "${tmpfile}")
@@ -545,7 +555,7 @@ EOF
     print_error "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
     return 159
   fi
-  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
   copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
@@ -638,7 +648,7 @@ keyring_run_zwenokyr_jcl() {
     print_error "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)"
     return 159
   fi
-  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
   copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"

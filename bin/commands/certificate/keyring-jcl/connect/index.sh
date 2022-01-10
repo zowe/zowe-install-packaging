@@ -40,11 +40,10 @@ ZWE_PRIVATE_ZOSMF_USER="${ZWE_CLI_PARAMETER_ZOSMF_USER}" \
     "" \
     "" \
     "${ZWE_CLI_PARAMETER_IMPORT_SECURITY_PRODUCT}"
-code=$?
-if [ ${code} -ne 0 ]; then
-  return ${code}
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0175E: Failed to connect existing certificate to Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 175
 fi
 
 ###############################
 # exit message
-print_level2_message "Certificate is connect to Zowe keyring successfully."
+print_level2_message "Certificate is connected to Zowe keyring successfully."

@@ -97,11 +97,11 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       print_error_and_exit "Error ZWEL0157E: The password for data set storing importing certificate (zowe.setup.certificate.keyring.import.password) is not defined in Zowe YAML configuration file." "" 157
     fi
   fi
-  keyring_connect_user=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.connect.user" | tr '\n' ',')
+  keyring_connect_user=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.connect.user")
   if [ "${keyring_connect_user}" = "null" ]; then
     keyring_connect_user=
   fi
-  keyring_connect_label=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.connect.label" | tr '\n' ',')
+  keyring_connect_label=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.connect.label")
   if [ "${keyring_connect_label}" = "null" ]; then
     keyring_connect_label=
   fi
@@ -111,15 +111,15 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
 fi
 # read keystore domains
 cert_import_CAs=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.importCertificateAuthorities" | tr '\n' ',')
-if [ "${cert_import_CAs}" = "null" ]; then
+if [ "${cert_import_CAs}" = "null" -o "${cert_import_CAs}" = "null," ]; then
   cert_import_CAs=
 fi
 # read keystore domains
 cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.san" | tr '\n' ',')
-if [ -z "${cert_type}" -o "${cert_type}" = "null" ]; then
+if [ -z "${cert_domains}" -o "${cert_domains}" = "null" -o "${cert_domains}" = "null," ]; then
   cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.externalDomains" | tr '\n' ',')
 fi
-if [ "${cert_domains}" = "null" ]; then
+if [ "${cert_domains}" = "null" -o "${cert_domains}" = "null," ]; then
   cert_domains=
 fi
 # read z/OSMF info
@@ -172,6 +172,9 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
   fi
   if [ -z "${keyring_caLabel}" ]; then
     keyring_caLabel=localca
+  fi
+  if [ -z "${zosmf_ca}" -a "${security_product}" = "RACF" -a -n "${zosmf_host}" ]; then
+    zosmf_ca="_auto_"
   fi
 fi
 

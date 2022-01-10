@@ -29,9 +29,8 @@ keyring_run_zwenokyr_jcl \
   "${ZWE_CLI_PARAMETER_ALIAS}" \
   "${ZWE_CLI_PARAMETER_CA_ALIAS}" \
   "${ZWE_CLI_PARAMETER_IMPORT_SECURITY_PRODUCT}"
-code=$?
-if [ ${code} -ne 0 ]; then
-  return ${code}
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0176E: Failed to clean up Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 176
 fi
 
 ###############################
