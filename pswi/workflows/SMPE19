@@ -263,24 +263,24 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change ${csihlq} to the high level qualifier for the CSI and
+//* 2) Change #csihlq to the high level qualifier for the CSI and
 //*    other SMP/E data sets. The maximum length is 35 characters.
 //*
-//* 3) Change ${tzone} to your CSI target zone name.
+//* 3) Change #tzone to your CSI target zone name.
 //*
-//* 4) Change ${dzone} to your CSI distribution zone name.
+//* 4) Change #dzone to your CSI distribution zone name.
 //*
-//* 5) Change ${csivol} to the volser for the CSI and SMP/E data sets,
+//* 5) Change #csivol to the volser for the CSI and SMP/E data sets,
 //*    if you choose not to use the default of letting your Automatic
 //*    Class Selection (ACS) routines decide which volume to use.
-//*    If you use ${csivol}, also uncomment all references to variable
+//*    If you use #csivol, also uncomment all references to variable
 //*    &amp;CSIVOL:
 //*    - VOLUMES(&amp;CSIVOL) in step DEFCSI
 //*    - VOL=SER=&amp;CSIVOL in multiple DDs of step ZONING
 //*
 //*    If you are using sms managed system, instead of
-//*    CSIVOL set STCLAS ${storclass} and
-//*    optionally DTCLAS ${dataclass} and MGCLAS ${mgmtclass}
+//*    CSIVOL set STCLAS #storclass and
+//*    optionally DTCLAS #dataclass and MGCLAS #mgmtclass
 //*
 //* Note(s):
 //*
@@ -672,16 +672,16 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//* 2) Change #csihlq to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change ${hlq} to the high level qualifier(s) of the SMPMCS and
+//* 3) Change #hlq to the high level qualifier(s) of the SMPMCS and
 //*    REL files, as specified when uploading the files to the host
 //*    (as described in the program directory).
 //*
 //* Note(s):
 //*
-//* 1. If ${hlq} is blank you must remove the RFPREFIX operand.
+//* 1. If #hlq is blank you must remove the RFPREFIX operand.
 //*
 //* 2. SMP/E makes copies of the relfiles and uses these as input.
 //*    Uncomment and customize DD SMPTLIB if you want to place these
@@ -765,10 +765,10 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change ${thlq} to the appropriate high level qualifier(s) for
+//* 2) Change #thlq to the appropriate high level qualifier(s) for
 //*    the target data sets. The maximum length is 35 characters.
 //*
-//* 3) Change ${dhlq} to the appropriate high level qualifier(s) for
+//* 3) Change #dhlq to the appropriate high level qualifier(s) for
 //*    the distribution datasets. The maximum length is 35 characters.
 //*
 //* 4) Change DSP=CATLG on the EXEC statements to the appropriate
@@ -778,14 +778,14 @@
 //* 5) By default, this job relies on your Automatic Class Selection
 //*    (ACS) routines to place the target data sets. You can
 //*    place the data sets on a specific volume when you:
-//*    a) Change ${tvol} to the volser for the target libraries.
+//*    a) Change #tvol to the volser for the target libraries.
 //*    b) Uncomment all references to variable &amp;TVOL:
 //*       - VOL=SER=&amp;TVOL in multiple DDs of step ALLOCT
 //*
 //* 6) By default, this job relies on your Automatic Class Selection
 //*    (ACS) routines to place the distribution data sets. You can
 //*    place the data sets on a specific volume when you:
-//*    a) Change ${dvol} to the volser for the target libraries.
+//*    a) Change #dvol to the volser for the target libraries.
 //*    b) Uncomment all references to variable &amp;DVOL:
 //*       - VOL=SER=&amp;DVOL in multiple DDs of step ALLOCD
 //*
@@ -990,16 +990,16 @@
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change the string "${csihlq}" to the appropriate data set name
+//* 2) Change the string "#csihlq" to the appropriate data set name
 //*    for the file system that will be created.
 //*
-//* 3) Change ${fsvol} to the volser for the file system,
+//* 3) Change #fsvol to the volser for the file system,
 //*    if you choose not to use the default of letting your Automatic
 //*    Class Selection (ACS) routines decide which volume to use.
-//*    If you use ${fsvol}, also uncomment all references to it:
-//*    - VOLUMES(${fsvol}) in step ZFSALLOC
+//*    If you use #fsvol, also uncomment all references to it:
+//*    - VOLUMES(#fsvol) in step ZFSALLOC
 //*
-//* 4) Change the string "${mountPath}" to the appropriate
+//* 4) Change the string "#mountPath" to the appropriate
 //*    high level directory name with leading and trailing "/". For
 //*    users installing in the root this would be "/". For others,
 //*    the high level directory may be something like "/service/",
@@ -1008,7 +1008,7 @@
 //*    Please note that the replacement string is case sensitive.
 //*
 //* 5a) If you are APPLYing this function for the first time, change
-//*    ${hlq}
+//*    #hlq
 //*    If you used the optional ZWE1SMPE job to define the CSI,
 //*    the ${hlq} value will match the CSI high level qualifier.
 //*
@@ -1017,9 +1017,9 @@
 //*    a target library.
 //*    - Uncomment the second SYSEXEC statement and comment out the
 //*      first one.
-//*    - Change ${thlq} to the high level qualifier of the target
+//*    - Change #thlq to the high level qualifier of the target
 //*      library, as used in the ZWE3ALOC job.
-//*    - Change ${tvol} to the volser of the target library, as used
+//*    - Change #tvol to the volser of the target library, as used
 //*      in the ZWE3ALOC job.
 //*
 //* Note(s):
@@ -1155,18 +1155,18 @@ $$
 //*    match the value for the same variable in that job.
 //*
 //* 3a) If you are APPLYing this function for the first time, change
-//*    ${hlq} 
+//*    #hlq 
 //*    If you used the optional ZWE1SMPE job to define the CSI,
-//*    the ${hlq} value will match the CSI high level qualifier.
+//*    the #hlq value will match the CSI high level qualifier.
 //*
 //* 3b) If you are running this job to install service after the
 //*    product has been APPLYed, the ZWEMKDIR EXEC will reside in
 //*    a target library.
 //*    - Uncomment the second SYSEXEC statement and comment out the
 //*      first one.
-//*    - Change ${thlq} to the high level qualifier of the target
+//*    - Change #thlq to the high level qualifier of the target
 //*      library, as used in the ZWE3ALOC job.
-//*    - Change ${tvol} to the volser of the target library, as used
+//*    - Change #tvol to the volser of the target library, as used
 //*      in the ZWE3ALOC job.
 //*
 //* Note(s):
@@ -1250,32 +1250,32 @@ $$
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//* 2) Change #csihlq to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change ${tzone} to your CSI target zone name.
+//* 3) Change #tzone to your CSI target zone name.
 //*
-//* 4) Change ${dzone} to your CSI distribution zone name.
+//* 4) Change #dzone to your CSI distribution zone name.
 //*
-//* 5) Change ${thlq} to the appropriate high level qualifier(s) for
+//* 5) Change #thlq to the appropriate high level qualifier(s) for
 //*    the target data sets, as used in the ZWE3ALOC job.
 //*
-//* 6) Change ${dhlq} to the appropriate high level qualifier(s) for
+//* 6) Change #dhlq to the appropriate high level qualifier(s) for
 //*    the distribution data sets, as used in the ZWE3ALOC job.
 //*
 //* 7) If you opted in job ZWE3ALOC to use non-cataloged target
 //*    data sets;
 //*    a) Uncomment all VOLUME(&amp;TVOL) statements.
-//*    b) Change ${tvol} to the volser of the target volume,
+//*    b) Change #tvol to the volser of the target volume,
 //*       as used in the ZWE3ALOC job.
 //*
 //* 8) If you opted in job ZWE3ALOC to use non-cataloged distribution
 //*    data sets;
 //*    a) Uncomment all VOLUME(&amp;DVOL) statements.
-//*    b) Change ${dvol} to the volser of the distribution volume,
+//*    b) Change #dvol to the volser of the distribution volume,
 //*       as used in the ZWE3ALOC job.
 //*
-//* 9) Change the string "${mountPath}" in step DEFPATH to the
+//* 9) Change the string "#mountPath" in step DEFPATH to the
 //*    high-level directory name, as used in job ZWE5MKD.
 //*
 //*    Please note that the replacement string is case sensitive.
@@ -1286,7 +1286,7 @@ $$
 //*    must also specify the same volume in the corresponding
 //*    data set allocation job, ZWE3ALOC.
 //*
-//* 2. Ensure that ${mountPath} 
+//* 2. Ensure that #mountPath 
 //*    is an absolute path name and begins
 //*    and ends with a slash (/).
 //*
@@ -1403,12 +1403,12 @@ $$
         SHR .
   ENDUCL .
 //*
-//*  Change the string "${mountPath}" to the appropriate
+//*  Change the string "#mountPath" to the appropriate
 //*  high level directory name. For users installing in the root,
 //*  this would be "/". For others, the high level directory may
 //*  be something like "/service/", or a more meaningful name.
 //*
-//*  "${mountPath}" must match the value used in job ZWE5MKD.
+//*  "#mountPath" must match the value used in job ZWE5MKD.
 //*
 //*  Verify that the changed path statement does not contain
 //*  double slashes (such as //usr/lpp) prior to running this step.
@@ -1458,10 +1458,10 @@ $$
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//* 2) Change #csihlq to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change ${tzone} to your CSI target zone name.
+//* 3) Change #tzone to your CSI target zone name.
 //*
 //* 4) Once the APPLY CHECK is successful, remove the CHECK operand
 //*    and run the job again to do the APPLY.
@@ -1520,10 +1520,10 @@ $$
 //*
 //* 1) Add the job parameters to meet your system requirements.
 //*
-//* 2) Change ${csihlq} to the high level qualifier for the global zone
+//* 2) Change #csihlq to the high level qualifier for the global zone
 //*    of the CSI.
 //*
-//* 3) Change ${dzone} to your CSI distribution zone name.
+//* 3) Change #dzone to your CSI distribution zone name.
 //*
 //* 4) Once the ACCEPT CHECK is successful, remove the CHECK operand
 //*    and run the job again to do the ACCEPT.
