@@ -32,7 +32,12 @@ echo "Checking/mounting ${TMP_ZFS}"
 sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
-#TODO: upload pax from ../.pax
+cd ../.pax
+sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+cd ${TMP_MOUNT}
+put ${SWI_NAME}-${VERSION}.pax.Z
+EOF
+cd ../pswi
 
 # Unpax the directory (create directory for test_mount)
 echo "UnPAXing the final PSWI."
@@ -45,8 +50,8 @@ echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH mkdir -p ${TEST_MOUNT};" >> JCL
 echo "mkdir -p ${EXPORT};" >> JCL
-echo "cd ${EXPORT};" >> JCL
-echo "pax -rv -f ${SWI_NAME}-${VERSION}.pax.Z" >> JCL
+echo "cd ${TMP_MOUNT}" >> JCL
+echo "pax -rv -f ${SWI_NAME}-${VERSION}.pax.Z ${EXPORT}" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"

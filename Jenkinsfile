@@ -198,6 +198,7 @@ sed -e 's#{BUILD_BRANCH}#${env.BRANCH_NAME}#g' \
       '.pax/pd.htm',
       '.pax/smpe-build-logs.pax.Z',
       '.pax/AZWE*'
+      '.pax/zowe-PSWI*'
     ]
   )
   
