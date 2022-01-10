@@ -14,7 +14,7 @@ const debug = require('debug')('zowe-sanity-test:explorer:api-gateway');
 const axios = require('axios');
 const addContext = require('mochawesome/addContext');
 
-let REQ, username, password;
+let REQ;
 
 
 describe('test api gateway sample extension controller', function() {
