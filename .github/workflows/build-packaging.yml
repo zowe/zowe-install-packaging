@@ -464,7 +464,7 @@ jobs:
   call-integration-test:
     needs: regular-build
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
-    uses: zowe/zowe-install-packaging/.github/workflows/cicd-test.yml@users/tom/enable-auto-pr-bld-test
+    uses: zowe/zowe-install-packaging/.github/workflows/cicd-test.yml@staging
     with: 
       pr-auto-test: true
       pr-auto-build-num: ${{ github.run_number }}
