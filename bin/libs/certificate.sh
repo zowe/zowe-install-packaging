@@ -124,25 +124,6 @@ pkcs12_create_certificate_authority() {
   if [ $? -ne 0 ]; then
     return 1
   fi
-
-  print_message ">>>> Export local CA with alias ${alias}:"
-  result=$(pkeytool -export -v \
-            -alias "${alias}" \
-            -keystore "${keystore_dir}/${alias}/${alias}.keystore.p12" \
-            -keypass "${password}" \
-            -storepass "${password}" \
-            -storetype "PKCS12" \
-            -rfc \
-            -file "${keystore_dir}/${alias}/${alias}.cer")
-  if [ $? -ne 0 ]; then
-    return 1
-  fi
-
-  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-    iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias}/${alias}.cer" > "${keystore_dir}/${alias}/${alias}.cer-ebcdic"
-    mv "${keystore_dir}/${alias}/${alias}.cer-ebcdic" "${keystore_dir}/${alias}/${alias}.cer"
-    ensure_file_encoding "${keystore_dir}/${alias}/${alias}.cer" "-----BEGIN CERTIFICATE-----"
-  fi
 }
 
 pkcs12_create_certificate_and_sign() {
@@ -216,6 +197,16 @@ pkcs12_create_certificate_and_sign() {
     return 1
   fi
 
+  # delete CSR
+  rm -f "${keystore_dir}/${keystore_name}/${alias}.csr"
+
+  ca_alias_lc=$(echo "${ca_alias}" | lower_case)
+  ca_cert_file="${keystore_dir}/${ca_alias}/${ca_alias_lc}.cer"
+  if [ ! -f "${ca_cert_file}" ]; then
+    print_error "Error: CA certificate is not exported. Check \"zwe certificate pkcs12 export --help\" to find more details."
+    return 1
+  fi
+
   # test if we need to import CA into keystore
   keytool -list -v -noprompt \
     -alias "${ca_alias}" \
@@ -227,7 +218,7 @@ pkcs12_create_certificate_and_sign() {
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
     result=$(pkeytool -importcert -v \
               -trustcacerts -noprompt \
-              -file "${keystore_dir}/${ca_alias}/${ca_alias}.cer" \
+              -file "${ca_cert_file}" \
               -alias "${ca_alias}" \
               -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
               -storepass "${password}" \
@@ -245,7 +236,7 @@ pkcs12_create_certificate_and_sign() {
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the truststore \"${keystore_name}\":"
     result=$(pkeytool -importcert -v \
               -trustcacerts -noprompt \
-              -file "${keystore_dir}/${ca_alias}/${ca_alias}.cer" \
+              -file "${ca_cert_file}" \
               -alias "${ca_alias}" \
               -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
               -storepass "${password}" \
@@ -264,56 +255,12 @@ pkcs12_create_certificate_and_sign() {
     return 1
   fi
 
-  # delete CSR
-  rm -f "${keystore_dir}/${keystore_name}/${alias}.csr"
+  # delete signed CSR
   rm -f "${keystore_dir}/${keystore_name}/${alias}.signed.cer"
+}
 
-  print_message ">>>> Export certificate \"${alias}\" to PEM format"
-  result=$(pkeytool -exportcert -v \
-            -alias "${alias}" \
-            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-            -storepass "${password}" \
-            -storetype "PKCS12" \
-            -rfc \
-            -file "${keystore_dir}/${keystore_name}/${alias}.cer")
-  if [ $? -ne 0 ]; then
-    return 1
-  fi
-  if [ `uname` = "OS/390" ]; then
-    iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${keystore_name}/${alias}.cer" > "${keystore_dir}/${keystore_name}/${alias}.cer-ebcdic"
-    mv "${keystore_dir}/${keystore_name}/${alias}.cer-ebcdic" "${keystore_dir}/${keystore_name}/${alias}.cer"
-    ensure_file_encoding "${keystore_dir}/${keystore_name}/${alias}.cer" "-----BEGIN CERTIFICATE-----"
-  fi
-
-  print_message ">>>> Exporting certificate \"${alias}\" private key"
-  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-    java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
-      ExportPrivateKeyZos \
-      "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-      PKCS12 \
-      "${password}" \
-      "${alias}" \
-      "${password}" \
-      "${keystore_dir}/${keystore_name}/${alias}.key"
-    if [ $? -ne 0 ]; then
-      return 1
-    fi
-
-    # it's already EBCDIC, remove tag if there are any
-    ensure_file_encoding "${keystore_dir}/${keystore_name}/${alias}.key" "-----BEGIN PRIVATE KEY-----"
-  else
-    java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
-      ExportPrivateKeyLinux \
-      "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-      PKCS12 \
-      "${password}" \
-      "${alias}" \
-      "${password}" \
-      "${keystore_dir}/${keystore_name}/${alias}.key"
-    if [ $? -ne 0 ]; then
-      return 1
-    fi
-  fi
+pkcs12_import_certificate() {
+  
 }
 
 pkcs12_trust_service() {
@@ -378,6 +325,102 @@ pkcs12_trust_service() {
   # clean up temporary files
   rm -f "${tmp_file}"
   rm -f "${keystore_dir}/${keystore_name}/${service_alias}"*
+}
+
+pkcs12_export_pem() {
+  keystore_file="${1}"
+  keystore_dir=$(dirname "${keystore_file}")
+  password="${2}"
+  # these private keys will also be exported
+  private_key_aliases="${3}"
+
+  print_message ">>>> List content of keystore \"${keystore_file}\":"
+  result=$(pkeytool -list \
+            -keystore "${keystore_file}" \
+            -storepass "${password}" \
+            -storetype "PKCS12")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
+  for alias in $(echo "${result}" | grep -i keyentry | awk -F, '{print $1}'); do
+    alias_lc=$(echo "${alias}" | lower_case)
+    print_message ">>>> Export certificate \"${alias}\" to PEM format"
+    result=$(pkeytool -exportcert -v \
+              -alias "${alias}" \
+              -keystore "${keystore_file}" \
+              -storepass "${password}" \
+              -storetype "PKCS12" \
+              -rfc \
+              -file "${keystore_dir}/${alias_lc}.cer")
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+    if [ `uname` = "OS/390" ]; then
+      iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+      mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+      ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
+    fi
+  done
+
+  for alias in $(echo "${result}" | grep -i trustedcertentry | awk -F, '{print $1}'); do
+    alias_lc=$(echo "${alias}" | lower_case)
+    print_message ">>>> Export certificate \"${alias}\" to PEM format"
+    result=$(pkeytool -exportcert -v \
+              -alias "${alias}" \
+              -keystore "${keystore_file}" \
+              -storepass "${password}" \
+              -storetype "PKCS12" \
+              -rfc \
+              -file "${keystore_dir}/${alias_lc}.cer")
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+    if [ `uname` = "OS/390" ]; then
+      iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+      mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+      ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
+    fi
+  done
+
+  while read -r alias; do
+    alias=$(echo "${alias}" | trim)
+    if [ -n "${alias}" ]; then
+      alias_lc=$(echo "${alias}" | lower_case)
+
+      print_message ">>>> Exporting certificate \"${alias}\" private key"
+      if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+        java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
+          ExportPrivateKeyZos \
+          "${keystore_file}" \
+          PKCS12 \
+          "${password}" \
+          "${alias}" \
+          "${password}" \
+          "${keystore_dir}/${alias_lc}.key"
+        if [ $? -ne 0 ]; then
+          return 1
+        fi
+
+        # it's already EBCDIC, remove tag if there are any
+        ensure_file_encoding "${keystore_dir}/${alias_lc}.key" "PRIVATE"
+      else
+        java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
+          ExportPrivateKeyLinux \
+          "${keystore_file}" \
+          PKCS12 \
+          "${password}" \
+          "${alias}" \
+          "${password}" \
+          "${keystore_dir}/${alias_lc}.key"
+        if [ $? -ne 0 ]; then
+          return 1
+        fi
+      fi
+    fi
+  done <<EOF
+$(echo "${private_key_aliases}" | tr "," "\n")
+EOF
 }
 
 compare_domain_with_wildcards() {

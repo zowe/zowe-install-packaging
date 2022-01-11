@@ -72,11 +72,11 @@ zowe:
       #   country: ""
       # # validity days for Zowe generated certificates
       # validity: 3650
-      # domain names and IPs should be added to certificate SAN
-      san:
-        - dvipa.my-company.com
-        # sample IP address
-        - 12.34.56.78
+      # # domain names and IPs should be added to certificate SAN
+      # san:
+      #   - dvipa.my-company.com
+      #   # sample IP address
+      #   - 12.34.56.78
       # customize below if you are using PKCS12 keystore
       pkcs12:
         # Keystore directory to store PKCS12 keystores

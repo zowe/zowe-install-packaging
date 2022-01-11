@@ -192,6 +192,8 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
     zosmf_ca="_auto_"
   fi
 fi
+pkcs12_name_lc=$(echo "${pkcs12_name}" | lower_case)
+pkcs12_caAlias_lc=$(echo "${pkcs12_caAlias}" | lower_case)
 
 ###############################
 if [ "${cert_type}" = "PKCS12" ]; then
@@ -208,6 +210,12 @@ if [ "${cert_type}" = "PKCS12" ]; then
     --state "${dname_state}" \
     --country "${dname_country}" \
     --validity "${cert_validity}"
+
+  # export CA cert in PEM format
+  zwecli_inline_execute_command \
+    certificate pkcs12 export \
+      --keystore "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.keystore.p12" \
+      --password "${pkcs12_caPassword}"
 
   # create default cert
   zwecli_inline_execute_command \
@@ -240,6 +248,18 @@ if [ "${cert_type}" = "PKCS12" ]; then
       --alias "zosmf"
   fi
 
+  # export all certs in PEM format
+  zwecli_inline_execute_command \
+    certificate pkcs12 export \
+      --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
+      --password "${pkcs12_password}" \
+      --private-keys "${pkcs12_name}"
+  zwecli_inline_execute_command \
+    certificate pkcs12 export \
+      --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
+      --password "${pkcs12_password}" \
+      --private-keys ""
+
   # lock keystore directory with proper permission
   # - group permission is none
   zwecli_inline_execute_command \
@@ -260,9 +280,9 @@ if [ "${cert_type}" = "PKCS12" ]; then
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "PKCS12"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "${pkcs12_password}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.certificateAuthorities" ""
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.key"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.cer"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthority" "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.cer"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthority" "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias_lc}.cer"
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -281,9 +301,9 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "      password: \"${pkcs12_password}\""
     print_message "      certificateAuthorities: \"\""
     print_message "    pem:"
-    print_message "      key: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.key\""
-    print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.cer\""
-    print_message "      certificateAuthority: \"${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.cer\""
+    print_message "      key: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key\""
+    print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer\""
+    print_message "      certificateAuthority: \"${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias_lc}.cer\""
     print_message ""
     print_level2_message "Zowe configuration requires manual updates."
   fi

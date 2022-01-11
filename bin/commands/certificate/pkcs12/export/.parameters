@@ -1,0 +1,3 @@
+keystore|f|string|required||||PKCS12 keystore file name.
+password|p|string|required||||Password of the certificate keystore.
+private-keys||string|||||Private keys should also be exported.

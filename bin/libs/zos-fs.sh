@@ -47,7 +47,10 @@ get_file_encoding() {
 # @param string   expected sample string to verify result
 # @param string   expected encoding. This is optional, and default value is "auto".
 #                 When this value is auto, the function will try to guess common
-#                 encodings (IBM-1047, ISO8859-1, IBM-850). 
+#                 encodings (IBM-1047, ISO8859-1, IBM-850).
+#                 Note: this option will be passed to grep, so it relies on
+#                 forming a valid grep command. For example, grep "---" is
+#                 invalid and will not work as expected.
 detect_file_encoding() {
   file_name="${1}"
   expected_sample="${2}"
