@@ -55,7 +55,7 @@ echo "Checking/mounting ${TMP_ZFS}"
 sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
-if [ "$ZOSMF_V" == "2.3" ]
+if [ "$ZOSMF_V" = "2.3" ]
 then
 # z/OSMF 2.3
 
