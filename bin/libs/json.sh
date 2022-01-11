@@ -126,10 +126,11 @@ read_json() {
   return ${code}
 }
 
-update_yaml_variable() {
+update_yaml() {
   file="${1}"
   key="${2}"
   val="${3}"
+  expected_sample="${4}"
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   config_converter="${utils_dir}/config-converter/src/cli.js"
@@ -152,5 +153,9 @@ update_yaml_variable() {
     print_error_and_exit "Error ZWEL0138E: Failed to update key ${key} of file ${file}." "" 138
   fi
 
-  ensure_file_encoding "${file}" "${val}"
+  ensure_file_encoding "${file}" "${expected_sample}"
+}
+
+update_zowe_yaml() {
+  update_yaml "${1}" "${2}" "${3}" "zowe:"
 }

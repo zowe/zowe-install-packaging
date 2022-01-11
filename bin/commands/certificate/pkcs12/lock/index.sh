@@ -23,4 +23,4 @@ if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0177E: Failed to lock keystore directory ${ZWE_CLI_PARAMETER_KEYSTORE_DIR}." "" 177
 fi
 
-print_level2_message "Keystore directory ${ZWE_CLI_PARAMETER_KEYSTORE_DIR} is locked successfully."
+print_level2_message "Keystore directory ${ZWE_CLI_PARAMETER_KEYSTORE_DIR} is locked."
