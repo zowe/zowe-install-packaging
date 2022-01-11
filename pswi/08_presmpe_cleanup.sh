@@ -57,18 +57,6 @@ check_response() {
 # Create a log file
 touch $LOG_FILE
 
-# Need to unmount temporary ZFS in case that create or test didn't run
-echo "Invoking REST API to unmount TEMP zFS ${TMP_ZFS} from its mountpoint."
-
-RESP=`curl -s $ACTION_TMP_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
-
-# Delete
-echo "Invoking REST API to delete ${TMP_ZFS} zFS."
-
-RESP=`curl -s $ZFS_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
-
 # Delete pre-SMPE datasets
 
 echo ${JOBST1} > JCL
