@@ -21,12 +21,16 @@ ${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) ds
 
 ###############################
 # validation
-require_zowe_yaml
+if [ -n "${ZWE_CLI_PARAMETER_HLQ}" ]; then
+  hlq="${ZWE_CLI_PARAMETER_HLQ}"
+else
+  require_zowe_yaml
 
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+  # read HLQ and validate
+  hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
+  if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+    print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+  fi
 fi
 
 ###############################
