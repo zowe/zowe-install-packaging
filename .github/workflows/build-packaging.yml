@@ -1,10 +1,10 @@
 name: Zowe Build and Packaging
 on:
-  # push:
-  #   branches:
-  #     - staging 
-  # pull_request:
-  #   types: [opened, synchronize]
+  push:
+    branches:
+      - staging 
+  pull_request:
+    types: [opened, synchronize]
   workflow_call:
     inputs:
       BUILD_SMPE:
@@ -104,12 +104,19 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --verify HEAD)
           CURRENT_TIME=$(date +%s)
-          if [ -z ${{ github.event.pull_request.number }} ]
-          then
-            CURRENT_BRANCH=${GITHUB_REF#refs/heads/} 
+          if [[ -z "${{ github.event.pull_request.number }}" ]]; then
+            # meaning the workflow is triggered from pull_request 
+            # now try to find out if a PR is opened against this running branch
+            pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
+            if [[ -z "$pr_num" ]]; then
+              echo CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+            else
+              echo CURRENT_BRANCH=PR-$pr_num
+            fi
           else
-            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
+            echo CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
           fi
+
           sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
               -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
               -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
@@ -135,35 +142,52 @@ jobs:
             }
 
       - name: '[Prep 6] Process github.event.inputs and inputs'
+        id: process-inputs
         run: |
+          BUILD_WHAT="PAX"
           if [[ -z "${{ github.event.inputs.BUILD_SMPE }}" ]]; then
             echo INPUTS_BUILD_SMPE=${{ inputs.BUILD_SMPE }} >> $GITHUB_ENV
           else 
             echo INPUTS_BUILD_SMPE=${{ github.event.inputs.BUILD_SMPE }} >> $GITHUB_ENV
+            if [[ "${{ github.event.inputs.BUILD_SMPE }}" == true ]]; then
+              BUILD_WHAT=$BUILD_WHAT", SMPE"
+            fi
           fi
           
           if [[ -z "${{ github.event.inputs.BUILD_PSIANDSMPE }}" ]]; then
             echo INPUTS_BUILD_PSIANDSMPE=${{ inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
           else 
             echo INPUTS_BUILD_PSIANDSMPE=${{ github.event.inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
+            if [[ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == true ]]; then
+              BUILD_WHAT=$BUILD_WHAT", PSIANDSMPE"
+            fi
           fi
 
           if [[ -z "${{ github.event.inputs.BUILD_DOCKER }}" ]]; then
             echo INPUTS_BUILD_DOCKER=${{ inputs.BUILD_DOCKER }} >> $GITHUB_ENV
           else 
             echo INPUTS_BUILD_DOCKER=${{ github.event.inputs.BUILD_DOCKER }} >> $GITHUB_ENV
+            if [[ "${{ github.event.inputs.BUILD_DOCKER }}" == true ]]; then
+              BUILD_WHAT=$BUILD_WHAT", DOCKER"
+            fi
           fi
 
           if [[ -z "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" ]]; then
             echo INPUTS_BUILD_DOCKER_SOURCES=${{ inputs.BUILD_DOCKER_SOURCES }} >> $GITHUB_ENV
           else 
             echo INPUTS_BUILD_DOCKER_SOURCES=${{ github.event.inputs.BUILD_DOCKER_SOURCES }} >> $GITHUB_ENV
+            if [[ "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" == true ]]; then
+              BUILD_WHAT=$BUILD_WHAT", DOCKER_SOURCES"
+            fi
           fi
 
           if [[ -z "${{ github.event.inputs.BUILD_KUBERNETES }}" ]]; then
             echo INPUTS_BUILD_KUBERNETES=${{ inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
           else 
             echo INPUTS_BUILD_KUBERNETES=${{ github.event.inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
+            if [[ "${{ github.event.inputs.BUILD_KUBERNETES }}" == true ]]; then
+              BUILD_WHAT=$BUILD_WHAT", K8S"
+            fi
           fi
 
           if [[ -z "${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}" ]]; then
@@ -172,12 +196,55 @@ jobs:
             echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
           fi
 
+          echo ::set-output name=BUILD_WHAT::$BUILD_WHAT
+      
+      - name: '[Prep 7] Comment on PR to indicate build is started'
+        uses: actions/github-script@v5
+        id: create-comment
+        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-')
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var base_pax_bld_time = 8
+            var smpe_bld_time_addon = 21
+            var docker_bld_time_addon = 11
+            var total_bld_time = 0
+
+            total_bld_time += base_pax_bld_time
+            
+            if ('${{ github.event_name }}' == 'workflow_dispatch') {
+              if ('${{ github.event.inputs.BUILD_SMPE }}' == 'true') {
+                total_bld_time += smpe_bld_time_addon
+              }
+
+              if ('${{ github.event.inputs.BUILD_DOCKER }}' == 'true') {
+                total_bld_time += docker_bld_time_addon
+              }
+            }
+
+            const finish_time = new Date(new Date().getTime() + total_bld_time*60*1000);
+
+            const finish_time_EST = finish_time.toLocaleString('en-CA', { timeZone: 'Canada/Eastern' }).split(', ')[1] + " EST"
+            const finish_time_CET = finish_time.toLocaleString('en-EU', { timeZone: 'Europe/Prague' }).split(', ')[1] + " CET"
+            const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
+            const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
+            
+            const prNum='${{ env.CURRENT_BRANCH }}'.split('-')[1]
+
+            const { data: comment } = await github.rest.issues.createComment({ 
+              issue_number: prNum,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+            return comment.id;
+
       - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
-          expected-count: 29
+          expected-count: 30
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
@@ -353,3 +420,61 @@ jobs:
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: containers/zowe-containerization.zip
+
+      - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} SUCCEEDED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+
+      - name: '[Post Prep 7] Update PR comment to indicate build failed'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} FAILED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+
+      - name: '[Post Prep 7] Update PR comment to indicate build cancelled'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && cancelled()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} CANCELLED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+
+  # only run auto integration tests when the workflow is triggered by pull request
+  call-integration-test:
+    needs: regular-build
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
+    uses: zowe/zowe-install-packaging/.github/workflows/cicd-test.yml@staging
+    with: 
+      pr-auto-test: true
+      pr-auto-build-num: ${{ github.run_number }}
+    secrets:
+      JF_ARTIFACTORY_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+    # Above secrets exists in the environment, doing secrets here to mitigate a problem of
+    #   reusable workflows where environment secret can not be passed in properly
+    # More info: https://github.community/t/reusable-workflows-secrets-and-environments/203695/23
+    # it was a bit weird to pass in above secrets, hope Github team can improve/fix on this
