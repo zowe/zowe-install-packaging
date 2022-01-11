@@ -10,6 +10,8 @@ zowe:
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
     security:
       product: RACF
+      groups:
+        admin: ZWEADMIN
       users:
         zowe: ZWESVUSR
     certificate:
@@ -88,6 +90,8 @@ zOSMF:
 - `zowe.setup.certificate.pkcs12.directory` is the directory where you plan to
   store the PKCS12 keystore and truststore. This is required if
   `zowe.setup.certificate.type` is `PKCS12`.
+- `zowe.setup.security.groups.admin` and `zowe.setup.security.users.zowe` will
+  be the default owner of keystore directory.
 - You can also define `name`, `password`, `caAlias` and `caPassword` under
   `zowe.setup.certificate.pkcs12` to customized keystore and truststore. These
   configurations are optional, but it is recommended to update them from

@@ -33,6 +33,10 @@ security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.secur
 if [ -z "${security_users_zowe}" -o "${security_users_zowe}" = "null" ]; then
   security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
 fi
+security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
+if [ -z "${security_groups_admin}" -o "${security_groups_admin}" = "null" ]; then
+  security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+fi
 # read cert type and validate
 cert_type=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.type")
 if [ -z "${cert_type}" -o "${cert_type}" = "null" ]; then
@@ -223,6 +227,15 @@ if [ "${cert_type}" = "PKCS12" ]; then
       --port "${zosmf_port}" \
       --alias "zosmf"
   fi
+
+  # lock keystore directory with proper permission
+  # - group permission is none
+  zwecli_inline_execute_command \
+    certificate pkcs12 lock \
+      --keystore-dir "${pkcs12_directory}" \
+      --user "${security_users_zowe}" \
+      --group "${security_groups_admin}" \
+      --group-permission none
 elif [ "${cert_type}" = "JCERACFKS" ]; then
   case ${keyring_option} in
     1)

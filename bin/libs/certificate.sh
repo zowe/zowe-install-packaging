@@ -55,6 +55,53 @@ pkeytool() {
   return ${code}
 }
 
+pkcs12_lock_keystore_directory() {
+  keystore_dir="${1}"
+  user="${2}"
+  group="${3}"
+  # can be read, write, or <none>
+  group_permission="${4}"
+
+  if [ "${group_permission}" = "write" ]; then
+    print_debug "- Change keystore directory \"${keystore_dir}\" permission to 570"
+    result=$(chmod -R 570 "${keystore_dir}" 2>&1)
+    code=$?
+  elif [ "${group_permission}" = "read" ]; then
+    print_debug "- Change keystore directory \"${keystore_dir}\" permission to 550"
+    result=$(chmod -R 550 "${keystore_dir}" 2>&1)
+    code=$?
+  else
+    print_debug "- Change keystore directory \"${keystore_dir}\" permission to 500"
+    result=$(chmod -R 500 "${keystore_dir}" 2>&1)
+    code=$?
+  fi
+  if [ ${code} -ne 0 ]; then
+    print_debug "  * chmod failed"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+    return 1
+  fi
+
+  print_debug "- Change keystore directory \"${keystore_dir}\" owner to ${user}"
+  result=$(chown -R ${user}:${group} "${keystore_dir}" 2>&1)
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_debug "  * chown failed"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+
+    print_message "WARNING: Unable to change the owner of the ${keystore_dir} directory to ${user}:${group}."
+    print_message "         Please change the owner and group of the ${keystore_dir} manually so that keystores are protected correctly!"
+    print_message "         Ideally, only ${user} should have read access to the ${keystore_dir}."
+  fi
+}
+
 pkcs12_create_certificate_authority() {
   keystore_dir="${1}"
   alias="${2}"
