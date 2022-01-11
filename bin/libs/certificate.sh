@@ -259,8 +259,60 @@ pkcs12_create_certificate_and_sign() {
   rm -f "${keystore_dir}/${keystore_name}/${alias}.signed.cer"
 }
 
-pkcs12_import_certificate() {
-  
+pkcs12_import_pkcs12_keystore() {
+  dest_keystore="${1}"
+  dest_password="${2}"
+  dest_alias="${3}"
+  source_keystore="${4}"
+  source_password="${5}"
+  source_alias="${6}"
+
+  print_message ">>>> Import ${source_alias} from keystore \"${source_keystore}\" to \"${dest_keystore}\" as ${dest_alias}:"
+  result=$(pkeytool -importkeystore -v \
+            -noprompt \
+            -deststoretype "PKCS12" \
+            -destkeystore "${dest_keystore}" \
+            -deststorepass "${dest_password}" \
+            -destkeypass "${dest_password}" \
+            -destalias "${dest_alias}" \
+            -srcstoretype "PKCS12" \
+            -srckeystore "${source_keystore}" \
+            -srcstorepass "${source_password}" \
+            -keypass "${source_password}" \
+            -srcalias "${source_alias}")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+}
+
+pkcs12_import_certificates() {
+  dest_keystore="${1}"
+  dest_password="${2}"
+  # CA files names separated by comma
+  ca_files="${3}"
+  alias="${4:-extca}"
+
+  ca_index=1
+  while read -r ca_file; do
+    ca_file=$(echo "${ca_file}" | trim)
+    if [ -n "${ca_file}" ]; then
+      print_message ">>>> Import \"${ca_file}\" to the keystore \"${dest_keystore}\":"
+      result=$(pkeytool -importcert -v \
+                -trustcacerts -noprompt \
+                -file "${ca_file}" \
+                -alias "${alias}${ca_index}" \
+                -keystore "${dest_keystore}" \
+                -storepass "${dest_password}" \
+                -storetype "PKCS12")
+      if [ $? -ne 0 ]; then
+        return 1
+      fi
+
+      ca_index=$((ca_index+1))
+    fi
+  done <<EOF
+$(echo "${ca_files}" | tr "," "\n")
+EOF
 }
 
 pkcs12_trust_service() {

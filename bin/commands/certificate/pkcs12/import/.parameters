@@ -1,0 +1,7 @@
+keystore|f|string|required||||Destination PKCS12 keystore file name.
+password|p|string|required||||Password of the destination PKCS12 keystore.
+alias|a|string|||||Alias in the destination PKCS12 keystore after imported.\nRequired if --source-alias is specified.
+source-keystore|sf|string|||||Source PKCS12 keystore file name.
+source-password|sp|string|||||Password of the source PKCS12 keystore.
+source-alias|sa|string|||||Private keys should also be exported.
+trust-cas||string|||||PEM files of extra certificate authorities should be trusted, separated by comma.
