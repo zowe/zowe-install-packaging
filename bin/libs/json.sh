@@ -135,7 +135,7 @@ update_yaml() {
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   config_converter="${utils_dir}/config-converter/src/cli.js"
   
-  print_debug "- update yaml file ${file} with ${key} => ${val}"
+  print_debug "- update \"${key}\" with value: ${val}"
   result=$(node "${config_converter}" yaml update "${file}" "${key}" "${val}")
   code=$?
   if [ ${code} -eq 0 ]; then
