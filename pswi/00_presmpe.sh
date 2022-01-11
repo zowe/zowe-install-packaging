@@ -21,6 +21,13 @@ echo "PTF1               :" $PTF1
 echo "PTF2               :" $PTF2
 fi 
 
+# URLs
+ACTION_TMP_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${TMP_ZFS}"
+ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${TMP_ZFS}"
+
+# JSONs  
+UNMOUNT_ZFS_JSON='{"action":"unmount"}'
+
 echo "Checking/mounting ${TMP_ZFS}"
 sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 

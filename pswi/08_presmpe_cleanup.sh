@@ -14,13 +14,6 @@ echo "HLQ for RELFILES and PTFs          :" $SMPE
 echo "Temp zFS                           :" $TMP_ZFS
 echo "Directory for logs                 :" $LOGDIR
 
-# URLs
-ACTION_TMP_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${TMP_ZFS}"
-ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${TMP_ZFS}"
-
-# JSONs  
-UNMOUNT_ZFS_JSON='{"action":"unmount"}'
-
 check_response() {
   RESP=$1
   RESPCODE=$2
