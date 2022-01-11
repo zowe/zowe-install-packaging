@@ -15,6 +15,7 @@
 # validation
 require_zowe_yaml
 
+###############################
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
@@ -26,16 +27,16 @@ if [ -z "${jcllib}" -o "${jcllib}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
-if [ -z "${security_product}" -o "${security_product}" = "null" ]; then
-  security_product=RACF
+if [ "${security_product}" = "null" ]; then
+  security_product=
 fi
 security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
-if [ -z "${security_users_zowe}" -o "${security_users_zowe}" = "null" ]; then
-  security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
+if [ "${security_users_zowe}" = "null" ]; then
+  security_users_zowe=
 fi
 security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
-if [ -z "${security_groups_admin}" -o "${security_groups_admin}" = "null" ]; then
-  security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+if [ "${security_groups_admin}" = "null" ]; then
+  security_groups_admin=
 fi
 # read cert type and validate
 cert_type=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.type")
@@ -153,7 +154,17 @@ else
   zosmf_port=
 fi
 
+###############################
 # set default values
+if [ -z "${security_product}" ]; then
+  security_product=RACF
+fi
+if [ -z "${security_users_zowe}" ]; then
+  security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
+fi
+if [ -z "${security_groups_admin}" ]; then
+  security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+fi
 if [ "${cert_type}" = "PKCS12" ]; then
   if [ -z "${pkcs12_caAlias}" ]; then
     pkcs12_caAlias=local_ca
@@ -182,6 +193,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
   fi
 fi
 
+###############################
 if [ "${cert_type}" = "PKCS12" ]; then
   # create CA
   zwecli_inline_execute_command \
@@ -236,6 +248,46 @@ if [ "${cert_type}" = "PKCS12" ]; then
       --user "${security_users_zowe}" \
       --group "${security_groups_admin}" \
       --group-permission none
+
+  # update zowe.yaml
+  if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
+    print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${pkcs12_name}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "${pkcs12_password}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "PKCS12"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "PKCS12"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "${pkcs12_password}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.certificateAuthorities" ""
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.key"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.cer"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthority" "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.cer"
+    print_level2_message "Zowe configuration is updated successfully."
+  else
+    print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
+    print_message "Please manually update to these values:"
+    print_message ""
+    print_message "zowe:"
+    print_message "  certificate:"
+    print_message "    keystore:"
+    print_message "      alias: \"${pkcs12_name}\""
+    print_message "      password: \"${pkcs12_password}\""
+    print_message "      file: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12\""
+    print_message "      type: PKCS12"
+    print_message "    truststore:"
+    print_message "      file: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12\""
+    print_message "      type: PKCS12"
+    print_message "      password: \"${pkcs12_password}\""
+    print_message "      certificateAuthorities: \"\""
+    print_message "    pem:"
+    print_message "      key: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.key\""
+    print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.cer\""
+    print_message "      certificateAuthority: \"${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.cer\""
+    print_message ""
+    print_level2_message "Zowe configuration requires manual updates."
+  fi
+###############################
 elif [ "${cert_type}" = "JCERACFKS" ]; then
   case ${keyring_option} in
     1)
@@ -296,8 +348,48 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         --zosmf-user "${zosmf_user}"
       ;;
   esac
+
+  # update zowe.yaml
+  if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
+    print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${keyring_label}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" ""
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "JCERACFKS"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "JCERACFKS"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" ""
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.certificateAuthorities" "${keyring_caLabel},${cert_import_CAs}"
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" ""
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" ""
+    update_yaml_variable "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthority" ""
+    print_level2_message "Zowe configuration is updated successfully."
+  else
+    print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
+    print_message "Please manually update to these values:"
+    print_message ""
+    print_message "zowe:"
+    print_message "  certificate:"
+    print_message "    keystore:"
+    print_message "      alias: \"${keyring_label}\""
+    print_message "      password: \"\""
+    print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
+    print_message "      type: JCERACFKS"
+    print_message "    truststore:"
+    print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
+    print_message "      type: JCERACFKS"
+    print_message "      password: \"\""
+    print_message "      certificateAuthorities: \"${keyring_caLabel},${cert_import_CAs}\""
+    print_message "    pem:"
+    print_message "      key: \"\""
+    print_message "      certificate: \"\""
+    print_message "      certificateAuthority: \"\""
+    print_message ""
+    print_level2_message "Zowe configuration requires manual updates."
+  fi
 fi
 
+###############################
 if [ -n "${zosmf_host}" -a "${verify_certificates}" = "STRICT" ]; then
   # CN/SAN must be valid if z/OSMF is used and in strict mode
   zwecli_inline_execute_command \

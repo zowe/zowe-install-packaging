@@ -77,6 +77,7 @@ zowe:
         - dvipa.my-company.com
         # sample IP address
         - 12.34.56.78
+      # customize below if you are using PKCS12 keystore
       pkcs12:
         # Keystore directory to store PKCS12 keystores
         directory: /global/zowe/keystore
@@ -86,10 +87,27 @@ zowe:
         # password: password
         # caAlias: local_ca
         # caPassword: local_ca_password
-      # # TODO: support of keyring is undergoing
+      # # customize below if you are using z/OS JCERACFKS keyring
       # keyring:
+      #   # owner of the keyring
       #   owner: ZWESVUSR
+      #   # keyring name
       #   name: ZoweKeyring
+      #   # label of Zowe certificate
+      #   label: localhost
+      #   # label of Zowe CA certificate
+      #   caLabel: localca
+      #   # If you want to import certificate from data set into Zowe keyring
+      #   import:
+      #     # name of the data set holds the certificate
+      #     dsName:
+      #     password:
+      #   # If you want to connect existing certificate into Zowe keyring
+      #   connect:
+      #     # current owner of the certificate, can be SITE of an user ID
+      #     user:
+      #     # label of the certificate to connect to Zowe keyring
+      #     label:
 
     # VSAM configurations if you are using VSAM as Caching Service storage
     vsam:
@@ -135,7 +153,8 @@ zowe:
     # set to "debug" or "trace" to display more information
     logLevel: ""
 
-  # default certificate
+  # default Zowe certificate
+  # these fields can be update automatically if you pass `--update-config` to `zwe init` command.
   certificate:
     keystore:
       alias: localhost
@@ -144,6 +163,8 @@ zowe:
       type: PKCS12
     truststore:
       file: /global/zowe/keystore/localhost/localhost.truststore.p12
+      type: PKCS12
+      password: password
       certificateAuthorities: ""
     pem:
       key: /global/zowe/keystore/localhost/localhost.keystore.key
@@ -191,18 +212,10 @@ components:
         authorization:
           endpoint:
             enabled: false
-            # default value is https://${ZWE_haInstance_hostname:-localhost}:${ZWE_configs_port}/zss/api/v1/saf-auth
-            url:
           provider: zosmf
-          resourceClass: ZOWE
-          resourceNamePrefix: "APIML."
         jwtInitializerTimeout: 5
         x509:
           enabled: false
-          # default value is https://${ZWE_haInstance_hostname:-localhost}:${ZWE_configs_port}/zss/api/v1/certificate/x509/map
-          externalMapperUrl:
-          # default value is Zowe runtime user defined in zowe.yaml "zowe.setup.security.users.zowe"
-          externalMapperUser:
         zosmf:
           applid: IZUDFLT
       service:
@@ -223,7 +236,6 @@ components:
     # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
     # certificates:
     #   alias:
-
 
   metrics-service:
     enabled: false

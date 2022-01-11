@@ -33,7 +33,7 @@ shell_read_json_config() {
   val=$(cat "${json_file}" | awk "/\"${parent_key}\":/{x=NR+200}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
     if [ "${required}" = "true" ]; then
-      exit_with_error "cannot find ${parent_key}.${key} defined in $(basename $json_file)" "instance/bin/internal/utils.sh,shell_read_json_config:${LINENO}"
+      print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${json_file}." "" 131
     fi
   else
     echo "${val}"
@@ -62,7 +62,7 @@ shell_read_yaml_config() {
   val=$(cat "${yaml_file}" | awk "/${parent_key}:/{x=NR+2000;next}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
     if [ "${required}" = "true" ]; then
-      exit_with_error "cannot find ${parent_key}.${key} defined in $(basename $yaml_file)" "instance/bin/internal/utils.sh,shell_read_yaml_config:${LINENO}"
+      print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${yaml_file}." "" 131
     fi
   else
     echo "${val}"
@@ -124,4 +124,33 @@ read_json() {
   fi
 
   return ${code}
+}
+
+update_yaml_variable() {
+  file="${1}"
+  key="${2}"
+  val="${3}"
+
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  
+  print_debug "- update yaml file ${file} with ${key} => ${val}"
+  result=$(node "${config_converter}" yaml update "${file}" "${key}" "${val}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+    print_error_and_exit "Error ZWEL0138E: Failed to update key ${key} of file ${file}." "" 138
+  fi
+
+  ensure_file_encoding "${file}" "${val}"
 }
