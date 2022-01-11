@@ -51,7 +51,7 @@ export WORKFLOW_DSN=${CSIHLQ}.WORKFLOW
 export ZOSMF_V="2.3"
 export SMPE_WF_NAME="ZOWE_SMPE_WF"
 export PTF_WF_NAME="ZOWE_PTF_WF"
-
+export HOST=${ZOSMF_URL#https:\/\/}
 echo "--------------------------------- Getting build specific variables ---------------------------------------"
 
 if [ -f ../.pax/zowe-smpe.zip ]

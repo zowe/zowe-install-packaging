@@ -41,7 +41,6 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$SMPE_WF_NAME'",
 echo "Uploading workflow SMPE into ${DIR} directory thru SSH"
 
 cd workflows
-HOST=${ZOSMF_URL#https:\/\/}
 
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${DIR}

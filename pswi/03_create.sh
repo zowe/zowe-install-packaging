@@ -122,7 +122,6 @@ fi
 echo "Uploading workflow ZWEWRF02 into ${DIR} directory thru SSH"
 
 cd workflows
-HOST=${ZOSMF_URL#https:\/\/}
 
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${WORK_MOUNT}
