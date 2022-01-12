@@ -80,7 +80,7 @@ global_validate() {
 
   # validate_runtime_user
   if [ "${USER}" = "IZUSVR" ]; then
-    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "ZWEL0142W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
+    print_formatted_warn "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "ZWEL0302W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively."
   fi
 
   # reset error counter
@@ -88,7 +88,7 @@ global_validate() {
 
   validate_this "is_directory_writable \"${ZWE_zowe_workspaceDirectory}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
 
-  if [ ! -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+  if [ "${ZWE_RUN_IN_CONTAINER}" != "true" ]; then
     # only do these check when it's not running in container
 
     # currently node is always required
@@ -136,13 +136,17 @@ validate_components() {
       # check validate script
       validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- commands.validate is ${validate_script:-<undefined>}"
-      if [ -n "${validate_script}" -a "${validate_script}" != "null" -a -x "${validate_script}" ]; then
-        print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- process ${component_id} validate command ..."
-        ZWE_PRIVATE_OLD_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}
-        ZWE_PRIVATE_ERRORS_FOUND=0
-        (load_environment_variables "${component_id}" && . "${validate_script}" 2>&1 && return ${ZWE_PRIVATE_ERRORS_FOUND})
-        retval=$?
-        let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+${retval}"
+      if [ -n "${validate_script}" -a "${validate_script}" != "null" ]; then
+        if [ -f "${validate_script}" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- process ${component_id} validate command ..."
+          ZWE_PRIVATE_OLD_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}
+          ZWE_PRIVATE_ERRORS_FOUND=0
+          (load_environment_variables "${component_id}" && . "${validate_script}" 2>&1 && return ${ZWE_PRIVATE_ERRORS_FOUND})
+          retval=$?
+          let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+${retval}"
+        else
+          print_formatted_error "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.validate defined but the file is missing."
+        fi
       fi
 
       # check platform dependencies
@@ -183,7 +187,7 @@ configure_components() {
       if [ "${preconfigure_script}" = "null" ]; then
         preconfigure_script=
       fi
-      if [ -x "${preconfigure_script}" ]; then
+      if [ -f "${preconfigure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
         # execute configure step and snapshot environment
         result=$(load_environment_variables "${component_id}" && . "${preconfigure_script}")
@@ -195,6 +199,8 @@ configure_components() {
             print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
           fi
         fi
+      else
+        print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.preConfigure defined but the file is missing."
       fi
 
       # default build-in behaviors
@@ -236,7 +242,7 @@ configure_components() {
       if [ "${configure_script}" = "null" ]; then
         configure_script=
       fi
-      if [ -x "${configure_script}" ]; then
+      if [ -f "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
         result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
@@ -248,6 +254,8 @@ configure_components() {
             print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
           fi
         fi
+      else
+        print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.configure defined but the file is missing."
       fi
     fi
   done
@@ -263,8 +271,11 @@ ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config ${ZWE_CLI_PARAMETER_CONFIG}
 if [ -z "${ZWE_zowe_workspaceDirectory}" -o "${ZWE_zowe_workspaceDirectory}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
 fi
-# write tmp to here so we can enable readOnlyRootFilesystem
 if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+  export ZWE_RUN_IN_CONTAINER=true
+fi
+# write tmp to here so we can enable readOnlyRootFilesystem
+if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
   print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Setting TMPDIR to ${ZWE_zowe_workspaceDirectory}/.tmp."
   mkdir -p "${ZWE_zowe_workspaceDirectory}/.tmp"
   export TMPDIR=${ZWE_zowe_workspaceDirectory}/.tmp
@@ -299,7 +310,7 @@ sanitize_ha_instance_id
 
 # extra preparations for running in container 
 # this is running in containers
-if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
   prepare_running_in_container
 fi
 
@@ -318,7 +329,7 @@ print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "<<<"
 # no validation for running in container
 global_validate
 # no validation for running in container
-if [ ! -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
+if [ "${ZWE_RUN_IN_CONTAINER}" != "true" ]; then
   validate_components
 fi
 configure_components

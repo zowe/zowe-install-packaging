@@ -111,6 +111,8 @@ fi
 if [ ! -f "${tmpfile}" ]; then
   print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)" "" 159
 fi
+print_trace "- ensure ${tmpfile} encoding before copying into data set"
+ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
 copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
 code=$?

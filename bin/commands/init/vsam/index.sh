@@ -20,6 +20,12 @@ print_level1_message "Create VSAM storage for Zowe Caching Service"
 # validation
 require_zowe_yaml
 
+caching_storage=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
+if [ "${caching_storage}" != "VSAM" ]; then
+  print_error "Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command exits."
+  return 0
+fi
+
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
 if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
@@ -29,12 +35,6 @@ fi
 jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
 if [ -z "${jcllib}" -o "${jcllib}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
-fi
-# FIXME: njq cannot handle - in the middle
-# caching_storage=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
-caching_storage=VSAM
-if [ "${caching_storage}" != "VSAM" ]; then
-  print_error_and_exit "Warning ZWEL0164W: Zowe Caching Service is not configured to use VSAM. Command exits." "" 0
 fi
 vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
 if [ -z "${vsam_mode}" -o "${vsam_mode}" = "null" ]; then
@@ -54,7 +54,6 @@ if [ "${vsam_mode}" = "RLS" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set RLS storage class (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi
-# FIXME: njq cannot handle - in the middle
 vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
 if [ -z "${vsam_name}" -o "${vsam_name}" = "null" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
@@ -64,7 +63,7 @@ jcl_existence=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
 if [ "${jcl_existence}" = "true" ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0158W: ${jcllib}(ZWECSVSM) already exists. This data set member will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: ${jcllib}(ZWECSVSM) already exists. This data set member will be overwritten during configuration."
   else
     # error
     print_error_and_exit "Error ZWEL0158E: ${jcllib}(ZWECSVSM) already exists." "" 158
@@ -116,6 +115,8 @@ if [ ! -f "${tmpfile}" ]; then
 fi
 print_trace "- ${tmpfile} created with content"
 print_trace "$(cat ${tmpfile})"
+print_trace "- ensure ${tmpfile} encoding before copying into data set"
+ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- copy to ${jcllib}(ZWECSVSM)"
 copy_to_data_set "${tmpfile}" "${jcllib}(ZWECSVSM)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
 code=$?
