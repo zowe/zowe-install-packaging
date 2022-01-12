@@ -284,7 +284,7 @@ jobs:
           fi
 
       - name: '[PAX/SMPE Pax 2] Packaging'
-        timeout-minutes: 90
+        timeout-minutes: 60
         uses: zowe-actions/shared-actions/make-pax@main
         with: 
           pax-name: zowe
