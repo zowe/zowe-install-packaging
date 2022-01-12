@@ -62,7 +62,7 @@ if [ "${cert_validity}" = "null" ]; then
 fi
 if [ "${cert_type}" = "PKCS12" ]; then
   # read keystore info
-  for item in directory name password caAlias caPassword importFrom; do
+  for item in directory name password caAlias caPassword; do
     var_name="pkcs12_${item}"
     var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
     if [ "${var_val}" = "null" ]; then
@@ -73,7 +73,23 @@ if [ "${cert_type}" = "PKCS12" ]; then
   if [ -z "${pkcs12_directory}" ]; then
     print_error_and_exit "Error ZWEL0157E: Keystore directory (zowe.setup.certificate.pkcs12.directory) is not defined in Zowe YAML configuration file." "" 157
   fi
-  # TODO: implement pkcs12_importFrom
+  # read keystore import info
+  for item in keystore password alias; do
+    var_name="pkcs12_import_${item}"
+    var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.import.${item}")
+    if [ "${var_val}" = "null" ]; then
+      var_val=
+    fi
+    eval "${var_name}=\"${var_val}\""
+  done
+  if [ -n "${pkcs12_import_keystore}" ]; then
+    if [ -z "${pkcs12_import_password}" ]; then
+      print_error_and_exit "Error ZWEL0157E: Password for import keystore (zowe.setup.certificate.pkcs12.import.password) is not defined in Zowe YAML configuration file." "" 157
+    fi
+    if [ -z "${pkcs12_import_alias}" ]; then
+      print_error_and_exit "Error ZWEL0157E: Certificate alias of import keystore (zowe.setup.certificate.pkcs12.import.alias) is not defined in Zowe YAML configuration file." "" 157
+    fi
+  fi
 elif [ "${cert_type}" = "JCERACFKS" ]; then
   keyring_option=1
   # read keyring info
@@ -115,16 +131,16 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
   fi
 fi
 # read keystore domains
-cert_import_CAs=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.importCertificateAuthorities" | tr '\n' ',')
-if [ "${cert_import_CAs}" = "null" -o "${cert_import_CAs}" = "null," ]; then
+cert_import_CAs=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.importCertificateAuthorities" | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' | tr '\n' ',')
+if [ "${cert_import_CAs}" = "null" ]; then
   cert_import_CAs=
 fi
 # read keystore domains
-cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.san" | tr '\n' ',')
-if [ -z "${cert_domains}" -o "${cert_domains}" = "null" -o "${cert_domains}" = "null," ]; then
-  cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.externalDomains" | tr '\n' ',')
+cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.san" | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' | tr '\n' ',')
+if [ -z "${cert_domains}" -o "${cert_domains}" = "null" ]; then
+  cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.externalDomains" | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' | tr '\n' ',')
 fi
-if [ "${cert_domains}" = "null" -o "${cert_domains}" = "null," ]; then
+if [ "${cert_domains}" = "null" ]; then
   cert_domains=
 fi
 # read z/OSMF info
@@ -197,43 +213,65 @@ pkcs12_caAlias_lc=$(echo "${pkcs12_caAlias}" | lower_case)
 
 ###############################
 if [ "${cert_type}" = "PKCS12" ]; then
-  # create CA
-  zwecli_inline_execute_command \
-    certificate pkcs12 create ca \
-    --keystore-dir "${pkcs12_directory}" \
-    --alias "${pkcs12_caAlias}" \
-    --password "${pkcs12_caPassword}" \
-    --common-name "${dname_caCommonName}" \
-    --org-unit "${dname_orgUnit}" \
-    --org "${dname_org}" \
-    --locality "${dname_locality}" \
-    --state "${dname_state}" \
-    --country "${dname_country}" \
-    --validity "${cert_validity}"
+  if [ -n "${pkcs12_import_keystore}" ]; then
+    # import keystore
+    zwecli_inline_execute_command \
+      certificate pkcs12 import \
+      --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
+      --password "${pkcs12_password}" \
+      --alias "${pkcs12_name}" \
+      --source-keystore "${pkcs12_import_keystore}" \
+      --source-password "${pkcs12_import_password}" \
+      --source-alias "${pkcs12_import_alias}"
+  else
+    # create CA
+    zwecli_inline_execute_command \
+      certificate pkcs12 create ca \
+      --keystore-dir "${pkcs12_directory}" \
+      --alias "${pkcs12_caAlias}" \
+      --password "${pkcs12_caPassword}" \
+      --common-name "${dname_caCommonName}" \
+      --org-unit "${dname_orgUnit}" \
+      --org "${dname_org}" \
+      --locality "${dname_locality}" \
+      --state "${dname_state}" \
+      --country "${dname_country}" \
+      --validity "${cert_validity}"
 
-  # export CA cert in PEM format
-  zwecli_inline_execute_command \
-    certificate pkcs12 export \
-      --keystore "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.keystore.p12" \
-      --password "${pkcs12_caPassword}"
+    # export CA cert in PEM format
+    zwecli_inline_execute_command \
+      certificate pkcs12 export \
+        --keystore "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.keystore.p12" \
+        --password "${pkcs12_caPassword}"
 
-  # create default cert
-  zwecli_inline_execute_command \
-    certificate pkcs12 create cert \
-    --keystore-dir "${pkcs12_directory}" \
-    --keystore "${pkcs12_name}" \
-    --alias "${pkcs12_name}" \
-    --password "${pkcs12_password}" \
-    --common-name "${dname_caCommonName}" \
-    --org-unit "${dname_orgUnit}" \
-    --org "${dname_org}" \
-    --locality "${dname_locality}" \
-    --state "${dname_state}" \
-    --country "${dname_country}" \
-    --validity "${cert_validity}" \
-    --ca-alias "${pkcs12_caAlias}" \
-    --ca-password "${pkcs12_caPassword}" \
-    --domains "${cert_domains}"
+    # create default cert
+    zwecli_inline_execute_command \
+      certificate pkcs12 create cert \
+      --keystore-dir "${pkcs12_directory}" \
+      --keystore "${pkcs12_name}" \
+      --alias "${pkcs12_name}" \
+      --password "${pkcs12_password}" \
+      --common-name "${dname_caCommonName}" \
+      --org-unit "${dname_orgUnit}" \
+      --org "${dname_org}" \
+      --locality "${dname_locality}" \
+      --state "${dname_state}" \
+      --country "${dname_country}" \
+      --validity "${cert_validity}" \
+      --ca-alias "${pkcs12_caAlias}" \
+      --ca-password "${pkcs12_caPassword}" \
+      --domains "${cert_domains}"
+  fi
+
+  # import extra CAs if they are defined
+  if [ -n "${cert_import_CAs}" ]; then
+    zwecli_inline_execute_command \
+      certificate pkcs12 import \
+      --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
+      --password "${pkcs12_password}" \
+      --alias "${pkcs12_name}" \
+      --trust-cas "${cert_import_CAs}"
+  fi
 
   # trust z/OSMF
   if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then

@@ -25,7 +25,7 @@ if [ -n "${ZWE_CLI_PARAMETER_SOURCE_KEYSTORE}" -a -n "${ZWE_CLI_PARAMETER_SOURCE
     "${ZWE_CLI_PARAMETER_SOURCE_PASSWORD}" \
     "${ZWE_CLI_PARAMETER_SOURCE_ALIAS}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0177E: Failed to import certificate into keystore ${ZWE_CLI_PARAMETER_KEYSTORE}." "" 177
+    print_error_and_exit "Error ZWEL0179E: Failed to import certificate into keystore ${ZWE_CLI_PARAMETER_KEYSTORE}." "" 179
   fi
 
   print_level2_message "Certificate is imported successfully."
@@ -41,7 +41,7 @@ if [ -n "${ZWE_CLI_PARAMETER_TRUST_CAS}" ]; then
     "${ZWE_CLI_PARAMETER_PASSWORD}" \
     "${ZWE_CLI_PARAMETER_TRUST_CAS}"
   if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0177E: Failed to import certificate authorities into keystore ${ZWE_CLI_PARAMETER_KEYSTORE}." "" 177
+    print_error_and_exit "Error ZWEL0179E: Failed to import certificate authorities into keystore ${ZWE_CLI_PARAMETER_KEYSTORE}." "" 179
   fi
 
   print_level2_message "Certificate authorities are imported successfully."

@@ -44,7 +44,10 @@ zowe:
         password: password
         caAlias: local_ca
         caPassword: local_ca_password
-        importFrom:
+        import:
+          keystore:
+          password:
+          alias:
       keyring:
         owner:
         name: ZoweKeyring
@@ -145,9 +148,14 @@ components:
   `zowe.setup.certificate.pkcs12` to customized keystore and truststore. These
   configurations are optional, but it is recommended to update them from
   default values.
-- Define `zowe.setup.certificate.pkcs12.importFrom` if you already acquired
-  certificate from other CA and want to import into Zowe PKCS12 keystore. The
-  certificate be imported will have alias specified in
+- Define `zowe.setup.certificate.pkcs12.import.keystore` if you already acquired
+  certificate from other CA, stored them in PKCS12 format, and want to import
+  into Zowe PKCS12 keystore.
+- `zowe.setup.certificate.pkcs12.import.password` is the password for keystore
+  defined in `zowe.setup.certificate.pkcs12.import.keystore`.
+- `zowe.setup.certificate.pkcs12.import.alias` is the original certificate alias
+  defined in `zowe.setup.certificate.pkcs12.import.keystore`. After imported,
+  the certificate will be saved as alias specified in
   `zowe.setup.certificate.pkcs12.name`.
 
 **For `JCERACFKS` certificate (z/OS keyring) users,**
