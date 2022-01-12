@@ -167,12 +167,11 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
 fi
 pkcs12_name_lc=$(echo "${pkcs12_name}" | lower_case)
 pkcs12_caAlias_lc=$(echo "${pkcs12_caAlias}" | lower_case)
+# what PEM format CAs we should tell Zowe to use
+yaml_pem_cas=
 
 ###############################
 if [ "${cert_type}" = "PKCS12" ]; then
-  # what PEM format CAs we should tell Zowe to use
-  yaml_pem_cas=
-
   if [ -n "${pkcs12_import_keystore}" ]; then
     # import from another keystore
     zwecli_inline_execute_command \
@@ -247,14 +246,6 @@ if [ "${cert_type}" = "PKCS12" ]; then
       --source-password "" \
       --source-alias "" \
       --trust-cas "${cert_import_CAs}"
-
-    # later when we export truststore, the CAs will be exported as extca*.cer
-    imported_cas=$(find "${pkcs12_directory}/${pkcs12_name}" -name 'extca*.cer' -type f | tr '\n' ',')
-    if [ -z "${yaml_pem_cas}" ]; then
-      yaml_pem_cas="${imported_cas}"
-    else
-      yaml_pem_cas="${yaml_pem_cas},${imported_cas}"
-    fi
   fi
 
   # trust z/OSMF
@@ -281,6 +272,16 @@ if [ "${cert_type}" = "PKCS12" ]; then
       --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
       --password "${pkcs12_password}" \
       --private-keys ""
+
+  # after we export truststore, the imported CAs will be exported as extca*.cer
+  if [ -n "${cert_import_CAs}" ]; then
+    imported_cas=$(find "${pkcs12_directory}/${pkcs12_name}" -name 'extca*.cer' -type f | tr '\n' ',')
+    if [ -z "${yaml_pem_cas}" ]; then
+      yaml_pem_cas="${imported_cas}"
+    else
+      yaml_pem_cas="${yaml_pem_cas},${imported_cas}"
+    fi
+  fi
 
   # lock keystore directory with proper permission
   # - group permission is none
@@ -329,6 +330,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
   fi
 ###############################
 elif [ "${cert_type}" = "JCERACFKS" ]; then
+  yaml_keyring_label=
   case ${keyring_option} in
     1)
       # generate new cert in keyring
@@ -353,6 +355,10 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         "${keyring_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
+      
+      yaml_keyring_label="${keyring_label}"
+      # keyring string for self-signed CA
+      yaml_pem_cas="safkeyring:////${keyring_owner}/${keyring_name}&${keyring_caLabel}"
       ;;
     2)
       # connect existing certs to zowe keyring
@@ -369,6 +375,8 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         "${keyring_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
+
+      yaml_keyring_label="${keyring_connect_label}"
       ;;
     3)
       # import certs from data set into zowe keyring
@@ -386,8 +394,28 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         "${keyring_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
+      # FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
+      #        the CA imported could have lable like LABEL00000001.
+
+      yaml_keyring_label="${keyring_label}"
       ;;
   esac
+
+  if [ -n "${cert_import_CAs}" ]; then
+    # append imported CAs to list
+    while read -r item; do
+      item=$(echo "${item}" | trim)
+      if [ -n "${item}" ]; then
+        if [ -n "${yaml_pem_cas}" ]; then
+          yaml_pem_cas="${yaml_pem_cas},safkeyring:////${keyring_owner}/${keyring_name}&${item}"
+        else
+          yaml_pem_cas="safkeyring:////${keyring_owner}/${keyring_name}&${item}"
+        fi
+      fi
+    done <<EOF
+$(echo "${cert_import_CAs}" | tr "," "\n")
+EOF
+  fi
 
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
@@ -395,13 +423,13 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "JCERACFKS"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" ""
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${keyring_label}"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${yaml_keyring_label}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "JCERACFKS"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" ""
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" ""
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" ""
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${keyring_caLabel},${cert_import_CAs}"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}"
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -413,7 +441,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
     print_message "      type: JCERACFKS"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
     print_message "      password: \"\""
-    print_message "      alias: \"${keyring_label}\""
+    print_message "      alias: \"${yaml_keyring_label}\""
     print_message "    truststore:"
     print_message "      type: JCERACFKS"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
@@ -421,7 +449,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
     print_message "    pem:"
     print_message "      key: \"\""
     print_message "      certificate: \"\""
-    print_message "      certificateAuthorities: \"${keyring_caLabel},${cert_import_CAs}\""
+    print_message "      certificateAuthorities: \"${yaml_pem_cas}\""
     print_message ""
     print_level2_message "Zowe configuration requires manual updates."
   fi
