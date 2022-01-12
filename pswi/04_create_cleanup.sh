@@ -20,10 +20,6 @@ echo "Directory for logs          :" $LOGDIR
 echo "z/OSMF version              :" $ZOSMF_V
 
 # URLs
-ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${TMP_ZFS}"
-ACTION_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${TMP_ZFS}"
-WORK_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${WORK_ZFS}"
-ACTION_WORK_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${WORK_ZFS}"
 ACTION_ZOWE_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${ZOWE_ZFS}"
 DELETE_SWI_URL="${BASE_URL}/zosmf/swmgmt/swi/${ZOSMF_SYSTEM}/${SWI_NAME}"
 EXPORT_DSN_URL="${BASE_URL}/zosmf/restfiles/ds/${EXPORT_DSN}"
@@ -87,32 +83,52 @@ echo "Invoking REST API to delete ${WORKFLOW_DSN} data set."
 RESP=`curl -s $WORKFLOW_DSN_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 check_response "${RESP}" $?
 
-# Unmount
-echo "Invoking REST API to unmount zFS ${TMP_ZFS} from its mountpoint."
+# Unmount and delete
+echo "Unmounting and deleting zFS ${TMP_ZFS}."
 
-RESP=`curl -s $ACTION_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//UNMNTZFS EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >> JCL
+echo "//SYSTSPRT DD SYSOUT=*" >> JCL
+echo "//SYSTSOUT DD SYSOUT=*" >> JCL
+echo "//SYSTSIN DD * " >> JCL
+echo "UNMOUNT FILESYSTEM('${TMP_ZFS}') +  " >> JCL               
+echo "IMMEDIATE" >> JCL                    
+echo "/*" >> JCL
+echo "//DELTZFST EXEC PGM=IDCAMS" >> JCL
+echo "//SYSPRINT DD SYSOUT=*" >> JCL
+echo "//SYSIN    DD *" >> JCL
+echo " DELETE ${TMP_ZFS}" >> JCL
+echo "/*" >> JCL
+
+sh scripts/submit_jcl.sh "`cat JCL`"
+if [ $? -gt 0 ];then exit -1;fi
+rm JCL
 
 if [ "$ZOSMF_V" = "2.3" ]
 then
-echo "Invoking REST API to unmount zFS ${WORK_ZFS} from its mountpoint."
+# Unmount and delete
+echo "Unmounting and deleting zFS ${WORK_ZFS}."
 
-RESP=`curl -s $ACTION_WORK_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//UNMNTZFS EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >> JCL
+echo "//SYSTSPRT DD SYSOUT=*" >> JCL
+echo "//SYSTSOUT DD SYSOUT=*" >> JCL
+echo "//SYSTSIN DD * " >> JCL
+echo "UNMOUNT FILESYSTEM('${WORK_ZFS}') +  " >> JCL               
+echo "IMMEDIATE" >> JCL                    
+echo "/*" >> JCL
+echo "//DELTZFST EXEC PGM=IDCAMS" >> JCL
+echo "//SYSPRINT DD SYSOUT=*" >> JCL
+echo "//SYSIN    DD *" >> JCL
+echo " DELETE ${WORK_ZFS}" >> JCL
+echo "/*" >> JCL
 
-sleep 20
-
-echo "Invoking REST API to delete ${WORK_ZFS} zFS."
-
-RESP=`curl -s $WORK_ZFS_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
+sh scripts/submit_jcl.sh "`cat JCL`"
+if [ $? -gt 0 ];then exit -1;fi
+rm JCL
 fi 
-
-# Delete
-echo "Invoking REST API to delete ${TMP_ZFS} zFS."
-
-RESP=`curl -s $ZFS_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-check_response "${RESP}" $?
 
 echo "Invoking REST API to unmount Zowe zFS ${ZOWE_ZFS} from its mountpoint."
 

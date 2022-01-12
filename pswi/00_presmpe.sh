@@ -21,12 +21,6 @@ echo "PTF1               :" $PTF1
 echo "PTF2               :" $PTF2
 fi 
 
-# URLs
-ACTION_TMP_ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/${TMP_ZFS}"
-ZFS_URL="${BASE_URL}/zosmf/restfiles/mfs/zfs/${TMP_ZFS}"
-
-# JSONs  
-UNMOUNT_ZFS_JSON='{"action":"unmount"}'
 
 echo "Checking/mounting ${TMP_ZFS}"
 sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
@@ -123,13 +117,23 @@ fi
 rm -rf unzipped
 
 # Need to unmount temporary ZFS so there won't be anything taking up space for next steps
-echo "Invoking REST API to unmount TEMP zFS ${TMP_ZFS} from its mountpoint."
+echo "Unmounting and deleting zFS ${TMP_ZFS}."
 
-RESP=`curl -s $ACTION_TMP_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-sh scripts/check_response.sh "${RESP}" $?
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//UNMNTZFS EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >> JCL
+echo "//SYSTSPRT DD SYSOUT=*" >> JCL
+echo "//SYSTSOUT DD SYSOUT=*" >> JCL
+echo "//SYSTSIN DD * " >> JCL
+echo "UNMOUNT FILESYSTEM('${TMP_ZFS}') +  " >> JCL               
+echo "IMMEDIATE" >> JCL                    
+echo "/*" >> JCL
+echo "//DELTZFST EXEC PGM=IDCAMS" >> JCL
+echo "//SYSPRINT DD SYSOUT=*" >> JCL
+echo "//SYSIN    DD *" >> JCL
+echo " DELETE ${TMP_ZFS}" >> JCL
+echo "/*" >> JCL
 
-# Delete
-echo "Invoking REST API to delete ${TMP_ZFS} zFS."
-
-RESP=`curl -s $ZFS_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-sh scripts/check_response.sh "${RESP}" $?
+sh scripts/submit_jcl.sh "`cat JCL`"
+if [ $? -gt 0 ];then exit -1;fi
+rm JCL
