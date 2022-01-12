@@ -23,40 +23,40 @@ require_zowe_yaml
 
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+if [ -z "${hlq}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read PROCLIB and validate
 proclib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.proclib")
-if [ -z "${proclib}" -o "${proclib}" = "null" ]; then
+if [ -z "${proclib}" ]; then
   print_error_and_exit "Error ZWEL0157E: PROCLIB (zowe.setup.mvs.proclib) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
 jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
-if [ -z "${jcllib}" -o "${jcllib}" = "null" ]; then
+if [ -z "${jcllib}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read PARMLIB and validate
 parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
-if [ -z "${parmlib}" -o "${parmlib}" = "null" ]; then
+if [ -z "${parmlib}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom parameter library (zowe.setup.mvs.parmlib) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read LOADLIB and validate
 authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
-if [ -z "${authLoadlib}" -o "${authLoadlib}" = "null" ]; then
+if [ -z "${authLoadlib}" ]; then
   # authLoadlib can be empty
   authLoadlib="${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
 fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
-if [ -z "${security_stcs_zowe}" -o "${security_stcs_zowe}" = "null" ]; then
+if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
 security_stcs_xmem=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.xmem")
-if [ -z "${security_stcs_xmem}" -o "${security_stcs_xmem}" = "null" ]; then
+if [ -z "${security_stcs_xmem}" ]; then
   security_stcs_xmem=${ZWE_PRIVATE_DEFAULT_XMEM_STC}
 fi
 security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
-if [ -z "${security_stcs_aux}" -o "${security_stcs_aux}" = "null" ]; then
+if [ -z "${security_stcs_aux}" ]; then
   security_stcs_aux=${ZWE_PRIVATE_DEFAULT_AUX_STC}
 fi
 target_proclibs="${security_stcs_zowe} ${security_stcs_xmem} ${security_stcs_aux}"

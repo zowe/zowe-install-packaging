@@ -36,7 +36,7 @@ shell_read_json_config() {
       print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${json_file}." "" 131
     fi
   else
-    echo "${val}"
+    printf "${val}"
   fi
 }
 
@@ -65,13 +65,14 @@ shell_read_yaml_config() {
       print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${yaml_file}." "" 131
     fi
   else
-    echo "${val}"
+    printf "${val}"
   fi
 }
 
 read_yaml() {
   file="${1}"
   key="${2}"
+  ignore_null="${3:-true}"
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   fconv="${utils_dir}/fconv/src/index.js"
@@ -97,7 +98,10 @@ read_yaml() {
   fi
 
   if [ ${code} -eq 0 ]; then
-    echo "${result}"
+    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
+      result=
+    fi
+    printf "${result}"
   fi
 
   return ${code}
@@ -106,6 +110,7 @@ read_yaml() {
 read_json() {
   file="${1}"
   key="${2}"
+  ignore_null="${3:-true}"
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   jq="${utils_dir}/njq/src/index.js"
@@ -120,7 +125,10 @@ read_json() {
   fi
 
   if [ ${code} -eq 0 ]; then
-    echo "${result}"
+    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
+      result=
+    fi
+    printf "${result}"
   fi
 
   return ${code}

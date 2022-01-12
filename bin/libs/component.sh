@@ -215,9 +215,6 @@ find_all_launch_components() {
     component_dir=$(find_component_directory "${component}")
     if [ -n "${component_dir}" ]; then
       start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
-      if [ "${start_script}" = "null" ]; then
-        start_script=
-      fi
       if [ -n "${start_script}" ]; then
         if [ -f "${component_dir}/${start_script}" ]; then
           if [ -n "${components}" ]; then
@@ -262,7 +259,7 @@ process_component_apiml_static_definitions() {
   all_succeed=true
 
   static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static[].file" 2>/dev/null)
-  if [ -z "${static_defs}" -o "${static_defs}" = "null" ]; then
+  if [ -z "${static_defs}" ]; then
     # does the component define it as object instead of array
     static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static.file" 2>/dev/null)
   fi
@@ -270,7 +267,7 @@ process_component_apiml_static_definitions() {
   cd "${component_dir}"
   while read -r one_def; do
     one_def_trimmed=$(echo "${one_def}" | xargs)
-    if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
+    if [ -n "${one_def_trimmed}" ]; then
       if [ ! -r "${one_def}" ]; then
         print_error "static definition file ${one_def} of component ${component_name} is not accessible"
         all_succeed=false
@@ -327,7 +324,7 @@ process_component_appfw_plugin() {
   all_succeed=true
   iterator_index=0
   appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
-  while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
+  while [ -n "${appfw_plugin_path}" ]; do
     cd "${component_dir}"
 
     # apply values if appfw_plugin_path has variables
@@ -345,7 +342,7 @@ process_component_appfw_plugin() {
       break
     fi
     appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
-    if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
+    if [ -z "${appfw_plugin_id}" ]; then
       print_error "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
       all_succeed=false
       break
@@ -390,7 +387,7 @@ process_component_gateway_shared_libs() {
   plugin_id=
   gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
-  while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
+  while [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
 
     if [ -z "${plugin_id}" ]; then

@@ -30,6 +30,8 @@ if [ -n "${ZWE_CLI_PARAMETER_SOURCE_KEYSTORE}" -a -n "${ZWE_CLI_PARAMETER_SOURCE
 
   print_level2_message "Certificate is imported successfully."
   updated=true
+else
+  print_debug "No certificate from PKCS12 keystore to import."
 fi
 
 # import certificate authorities
@@ -46,6 +48,8 @@ if [ -n "${ZWE_CLI_PARAMETER_TRUST_CAS}" ]; then
 
   print_level2_message "Certificate authorities are imported successfully."
   updated=true
+else
+  print_debug "No certificate authorities to import."
 fi
 
 if [ "${updated}" != "true" ]; then

@@ -157,19 +157,18 @@ zowe:
   # these fields can be update automatically if you pass `--update-config` to `zwe init` command.
   certificate:
     keystore:
-      alias: localhost
-      password: password
+      type: PKCS12
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
-      type: PKCS12
-    truststore:
-      file: /global/zowe/keystore/localhost/localhost.truststore.p12
-      type: PKCS12
       password: password
-      certificateAuthorities: ""
+      alias: localhost
+    truststore:
+      type: PKCS12
+      file: /global/zowe/keystore/localhost/localhost.truststore.p12
+      password: password
     pem:
       key: /global/zowe/keystore/localhost/localhost.keystore.key
       certificate: /global/zowe/keystore/localhost/localhost.keystore.cer-ebcdic
-      certificateAuthority: /global/zowe/keystore/local_ca/localca.cer-ebcdic
+      certificateAuthorities: /global/zowe/keystore/local_ca/localca.cer-ebcdic
 
   # How we want to verify SSL certificates of services. Valid values are:
   # - STRICT:    will validate if the certificate is trusted in our trust store and

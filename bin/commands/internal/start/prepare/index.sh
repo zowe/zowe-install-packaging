@@ -99,7 +99,7 @@ global_validate() {
       validate_this "validate_java_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
   else
-    if [ -z "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" -o "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" = "null" ]; then
+    if [ -z "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" ]; then
       validate_this "is_variable_set \"ZWE_PRIVATE_CONTAINER_COMPONENT_ID\" \"Cannot find name from the component image manifest file\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
   fi
@@ -136,7 +136,7 @@ validate_components() {
       # check validate script
       validate_script=$(read_component_manifest "${component_dir}" ".commands.validate" 2>/dev/null)
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- commands.validate is ${validate_script:-<undefined>}"
-      if [ -n "${validate_script}" -a "${validate_script}" != "null" ]; then
+      if [ -n "${validate_script}" ]; then
         if [ -f "${validate_script}" ]; then
           print_formatted_debug "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- process ${component_id} validate command ..."
           ZWE_PRIVATE_OLD_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}
@@ -152,7 +152,7 @@ validate_components() {
       # check platform dependencies
       if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
         zos_deps=$(read_component_manifest "${component_dir}" ".dependencies.zos" 2>/dev/null)
-        if [ -n "${zos_deps}" -a "${zos_deps}" != "null" ]; then
+        if [ -n "${zos_deps}" ]; then
           print_formatted_warn "ZWELS" "zwe-internal-start-prepare,validate_components:${LINENO}" "- ${component_id} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation"
         fi
       fi
@@ -184,9 +184,6 @@ configure_components() {
       # check configure script
       preconfigure_script=$(read_component_manifest "${component_dir}" ".commands.preConfigure" 2>/dev/null)
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- commands.preConfigure is ${preconfigure_script:-<undefined>}"
-      if [ "${preconfigure_script}" = "null" ]; then
-        preconfigure_script=
-      fi
       if [ -f "${preconfigure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
         # execute configure step and snapshot environment
@@ -239,9 +236,6 @@ configure_components() {
       # check configure script
       configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- commands.configure is ${configure_script:-<undefined>}"
-      if [ "${configure_script}" = "null" ]; then
-        configure_script=
-      fi
       if [ -f "${configure_script}" ]; then
         print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
         # execute configure step and snapshot environment
@@ -268,7 +262,7 @@ configure_components() {
 
 # we want to reset TMPDIR as early as possible
 ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'workspaceDirectory')
-if [ -z "${ZWE_zowe_workspaceDirectory}" -o "${ZWE_zowe_workspaceDirectory}" = "null" ]; then
+if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
 fi
 if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then

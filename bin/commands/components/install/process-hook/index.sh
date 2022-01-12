@@ -20,7 +20,7 @@ target_dir=$(remove_trailing_slash "${ZWE_CLI_PARAMETER_TARGET_DIR}")
 require_node
 
 commands_install=$(read_component_manifest "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}" ".commands.install" 2>/dev/null)
-if [ -n "${commands_install}" -a "${commands_install}" != "null" ]; then
+if [ -n "${commands_install}" ]; then
   print_message "Process ${commands_install} defined in manifest commands.install:"
   cd "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
   # run commands

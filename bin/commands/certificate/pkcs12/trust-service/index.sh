@@ -13,12 +13,6 @@
 
 print_level1_message "Trust ${ZWE_CLI_PARAMETER_SERVICE_NAME} \"${ZWE_CLI_PARAMETER_HOST}:${ZWE_CLI_PARAMETER_PORT}\""
 
-# check existence
-truststore="${ZWE_CLI_PARAMETER_KEYSTORE_DIR}/${ZWE_CLI_PARAMETER_KEYSTORE}/${ZWE_CLI_PARAMETER_KEYSTORE}.truststore.p12"
-if [ ! -f "${truststore}" ]; then
-  print_error_and_exit "Error ZWEL0158E: Truststore \"${truststore}\" does not exists." "" 158
-fi
-
 # import certificate
 pkcs12_trust_service \
   "${ZWE_CLI_PARAMETER_KEYSTORE_DIR}" \

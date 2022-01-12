@@ -26,7 +26,7 @@ ZWE_PRIVATE_LOG_LEVEL_CLI="${ZWE_PRIVATE_LOG_LEVEL_ZWELS}"
 sanitize_ha_instance_id
 
 ZWE_zowe_workspaceDirectory=$(read_yaml ${ZWE_CLI_PARAMETER_CONFIG} '.zowe.workspaceDirectory')
-if [ -z "${ZWE_zowe_workspaceDirectory}" -o "${ZWE_zowe_workspaceDirectory}" = "null" ]; then
+if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
 fi
 
@@ -55,9 +55,6 @@ if [ -n "${component_dir}" ]; then
 
   start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
   print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" "- command.start of ${ZWE_CLI_PARAMETER_COMPONENT} is ${start_script}"
-  if [ "${start_script}" = "null" ]; then
-    start_script=
-  fi
 
   if [ -n "${start_script}" ]; then
     if [ -f "${start_script}" ]; then

@@ -26,7 +26,7 @@ require_zowe_yaml
 
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+if [ -z "${hlq}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe high level qualifier (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
 fi
 
@@ -40,7 +40,7 @@ while read -r line; do
   
   # read def and validate
   ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.${key}")
-  if [ -z "${ds}" -o "${ds}" = "null" ]; then
+  if [ -z "${ds}" ]; then
     # authLoadlib can be empty
     if [ "${key}" = "authLoadlib" ]; then
       continue
@@ -85,7 +85,7 @@ done
 # copy auth lib members
 # FIXME: data_set_copy_to_data_set cannot be used to copy program?
 authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
-if [ -n "${authLoadlib}" -a "${authLoadlib}" != "null" ]; then
+if [ -n "${authLoadlib}" ]; then
   for ds in ZWESIS01 ZWESAUX; do
     print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
     # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"

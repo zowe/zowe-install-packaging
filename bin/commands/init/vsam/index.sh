@@ -28,34 +28,34 @@ fi
 
 # read HLQ and validate
 hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" -o "${hlq}" = "null" ]; then
+if [ -z "${hlq}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
 jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
-if [ -z "${jcllib}" -o "${jcllib}" = "null" ]; then
+if [ -z "${jcllib}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
 vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
-if [ -z "${vsam_mode}" -o "${vsam_mode}" = "null" ]; then
+if [ -z "${vsam_mode}" ]; then
   vsam_mode=NONRLS
 fi
 vsam_volume=
 if [ "${vsam_mode}" = "NONRLS" ]; then
   vsam_volume=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.volume")
-  if [ -z "${vsam_volume}" -o "${vsam_storageClass}" = "null" ]; then
+  if [ -z "${vsam_volume}" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set Non-RLS volume (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi
 vsam_storageClass=
 if [ "${vsam_mode}" = "RLS" ]; then
   vsam_storageClass=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.storageClass")
-  if [ -z "${vsam_storageClass}" -o "${vsam_storageClass}" = "null" ]; then
+  if [ -z "${vsam_storageClass}" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set RLS storage class (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi
 vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
-if [ -z "${vsam_name}" -o "${vsam_name}" = "null" ]; then
+if [ -z "${vsam_name}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
 fi
 

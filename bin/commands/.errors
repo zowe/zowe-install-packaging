@@ -20,5 +20,6 @@ ZWEL0135E|135|Failed to find volume of data set %s.
 ZWEL0136E|136|Failed to APF authorize data set %s.
 ZWEL0137E|137|z/OSMF root certificate authority is not provided (or cannot be detected) with trusting z/OSMF option enabled.
 ZWEL0138E|138|Failed to update key %s of file %s.
+ZWEL0139E|139|Failed to create directory %s.
 ZWEL0140E|140|Failed to translate Zowe configuration (%s).
 ZWEL0172E||Component %s has %s defined but the file is missing.

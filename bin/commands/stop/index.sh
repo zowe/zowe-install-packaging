@@ -20,12 +20,12 @@ require_zowe_yaml
 # read Zowe STC name and apply default value
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 echo "security_stcs_zowe=${security_stcs_zowe}"
-if [ -z "${security_stcs_zowe}" -o "${security_stcs_zowe}" = "null" ]; then
+if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
 # read job name and apply default value
 jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.jobname")
-if [ -z "${jobname}" -o "${jobname}" = "null" ]; then
+if [ -z "${jobname}" ]; then
   jobname="${security_stcs_zowe}"
 fi
 # read SYSNAME if --ha-instance is specified
@@ -33,7 +33,7 @@ route_sysname=
 sanitize_ha_instance_id
 if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
   route_sysname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.sysname")
-  if [ -z "${route_sysname}" -o "${route_sysname}" = "null" ]; then
+  if [ -z "${route_sysname}" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe HA instance SYSNAME (haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.sysname) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi

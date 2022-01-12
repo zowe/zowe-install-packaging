@@ -85,7 +85,7 @@ pkcs12_lock_keystore_directory() {
     return 1
   fi
 
-  print_debug "- Change keystore directory \"${keystore_dir}\" owner to ${user}"
+  print_debug "- Change keystore directory \"${keystore_dir}\" owner to ${user}:${group}"
   result=$(chown -R ${user}:${group} "${keystore_dir}" 2>&1)
   code=$?
   if [ ${code} -ne 0 ]; then
@@ -261,6 +261,7 @@ pkcs12_create_certificate_and_sign() {
 
 pkcs12_import_pkcs12_keystore() {
   dest_keystore="${1}"
+  dest_keystore_dir=$(dirname "${dest_keystore}")
   dest_password="${2}"
   dest_alias="${3}"
   source_keystore="${4}"
@@ -268,6 +269,19 @@ pkcs12_import_pkcs12_keystore() {
   source_alias="${6}"
 
   print_message ">>>> Import ${source_alias} from keystore \"${source_keystore}\" to \"${dest_keystore}\" as ${dest_alias}:"
+
+  # make sure directory exists
+  print_trace "- Make sure keystore directory ${dest_keystore_dir} exists."
+  result=$(mkdir -p "${dest_keystore_dir}")
+  if [ ! -d "${dest_keystore_dir}" ]; then
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+    print_error "Error ZWEL0139E: Failed to create directory ${dest_keystore_dir}."
+    return 139
+  fi
+
   result=$(pkeytool -importkeystore -v \
             -noprompt \
             -deststoretype "PKCS12" \
@@ -278,7 +292,6 @@ pkcs12_import_pkcs12_keystore() {
             -srcstoretype "PKCS12" \
             -srckeystore "${source_keystore}" \
             -srcstorepass "${source_password}" \
-            -keypass "${source_password}" \
             -srcalias "${source_alias}")
   if [ $? -ne 0 ]; then
     return 1
@@ -323,11 +336,6 @@ pkcs12_trust_service() {
   service_host="${4}"
   service_port="${5}"
   service_alias=${6}
-
-  if [ ! -f "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" ]; then
-    print_error "Truststore ${keystore_name}.truststore.p12 doesn't exist."
-    return 1
-  fi
 
   print_message ">>>> Getting certificates from service host"
   print_cert_cmd="-printcert -sslserver ${service_host}:${service_port} -J-Dfile.encoding=UTF8"
