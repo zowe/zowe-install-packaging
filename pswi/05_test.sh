@@ -48,10 +48,9 @@ echo "//UNPAXDIR EXEC PGM=BPXBATCH" >> JCL
 echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
-echo "SH mkdir -p ${TEST_MOUNT};" >> JCL
-echo "mkdir -p ${EXPORT};" >> JCL
-echo "cd ${TMP_MOUNT};" >> JCL
-echo "pax -rv -f ${SWI_NAME}-${VERSION}.pax.Z ${EXPORT}" >> JCL
+echo "SH mkdir -p ${EXPORT};" >> JCL
+echo "cd ${EXPORT};" >> JCL
+echo "pax -rv -f ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
