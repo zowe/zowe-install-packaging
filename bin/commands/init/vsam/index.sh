@@ -22,7 +22,7 @@ require_zowe_yaml
 
 caching_storage=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
 if [ "${caching_storage}" != "VSAM" ]; then
-  print_error "Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command exits."
+  print_error "Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command skipped."
   return 0
 fi
 
