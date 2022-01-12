@@ -50,7 +50,8 @@ echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH mkdir -p ${EXPORT};" >> JCL
 echo "cd ${EXPORT};" >> JCL
-echo "pax -rv -f ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z" >> JCL
+echo "pax -rv -f ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z;" >> JCL
+echo "rm ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
@@ -146,7 +147,7 @@ else
 
 # Check if work zFS for PSWI is mounted
 echo "Checking/mounting ${WORK_ZFS}"
-sh scripts/check_response.sh "${WORK_ZFS}" "${WORK_MOUNT}"
+sh scripts/tmp_mounts.sh "${WORK_ZFS}" "${WORK_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
 # Run the deployment test
