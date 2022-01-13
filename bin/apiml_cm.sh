@@ -41,7 +41,6 @@ function usage {
     echo "     - trust-zosmf - adds public certificates from z/OSMF to APIML truststore"
     echo "     - trust-keyring - adds a public certificate of a service to APIML keyring"
     echo "     - clean - removes files created by setup"
-    echo "     - jwt-keygen - generates and exports JWT key pair"
     echo ""
     echo "  Called with: ${PARAMS}"
 }
@@ -59,7 +58,6 @@ EXTERNAL_CA_FILENAME="keystore/local_ca/extca"
 EXTERNAL_CA=
 
 SERVICE_ALIAS="localhost"
-JWT_ALIAS="jwtsecret"
 SERVICE_PASSWORD="password"
 SERVICE_KEYSTORE="keystore/localhost/localhost.keystore"
 SERVICE_TRUSTSTORE="keystore/localhost/localhost.truststore"
@@ -126,12 +124,8 @@ function clean_service {
         chmod +x "${KEYRING_UTIL}"
         echo ">>>> Disconnecting ${SERVICE_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "${ZOWE_KEYRING}" "${SERVICE_ALIAS}"
-        echo ">>>> Disconnecting ${JWT_ALIAS} certificate from the ${ZOWE_KEYRING} keyring"
-        "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "${ZOWE_KEYRING}" "${JWT_ALIAS}"
         echo ">>>> Removing ${SERVICE_ALIAS} certificate from RACF database"
         "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "*" "${SERVICE_ALIAS}"
-        echo ">>>> Removing ${JWT_ALIAS} certificate from RACF database"
-        "${KEYRING_UTIL}" delcert "${ZOWE_USERID}" "*" "${JWT_ALIAS}"
     fi
 }
 
@@ -559,119 +553,8 @@ function trust_keyring {
             -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
 }
 
-function jwt_key_gen_and_export {
-    OLD_SERVICE_DNAME=${SERVICE_DNAME}
-    SERVICE_DNAME=$(echo "${COMPONENT_DNAME}" | sed -e "s#{component}#JWT#")
 
-    echo "Generates key pair for JWT secret and exports the public key"
-    if [[ "${SERVICE_STORETYPE}" == "JCERACFKS" ]]; then
-        pkeytool -genkeypair $V -alias "${JWT_ALIAS}" -keyalg RSA -keysize 2048 -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" \
-          -dname "${SERVICE_DNAME}" -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY} -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-    else
-        pkeytool -genkeypair $V -alias "${JWT_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${SERVICE_KEYSTORE}.p12" \
-        -dname "${SERVICE_DNAME}" -keypass "${SERVICE_PASSWORD}" -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE} -validity ${SERVICE_VALIDITY}
-        pkeytool -exportcert -keystore "${SERVICE_KEYSTORE}.p12" -alias "${JWT_ALIAS}" -rfc -storepass "${SERVICE_PASSWORD}" -storetype ${SERVICE_STORETYPE} -file "${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer"
 
-        if [ `uname` = "OS/390" ]; then
-          iconv -f ISO8859-1 -t IBM-1047 "${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer" > "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
-        else
-          mv "${SERVICE_KEYSTORE}.${JWT_ALIAS}.cer" "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
-        fi
-    fi
-
-    SERVICE_DNAME=${OLD_SERVICE_DNAME}
-}
-
-function export_jwt_from_keyring {
-    # Notes: this function requires UPDATE access to the <ringOwner>.<ringName>.LST resource of the RDATALIB class.
-    #        Otherwise may see this error:
-    #          keytool error (likely untranslated): java.io.IOException: The private key of ZoweCert is not available or no authority to access the private key
-    # Usage of this function has been removed.
-    echo ">>>> Export JWT secret from keyring"
-    pkeytool -export -rfc -alias "${JWT_ALIAS}" -keystore "safkeyring://${ZOWE_USERID}/${ZOWE_KEYRING}" -storetype ${SERVICE_STORETYPE} \
-      -file "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem" -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
-}
-
-function zosmf_jwt_public_key {
-    echo ">>>> Retrieves z/OSMF JWT public key and stores it to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
-
-    # If Zowe local CA keystore file does not exist (e.g. is defined in a keyring) then we have to create another CA
-    # whose sole purpose is to help forging a fake certificate that encapsulates JWT token from z/OSMF so that it can be
-    # connected with PKCS11 token.
-    if [[ ! -f "${LOCAL_CA_FILENAME}.keystore.p12" ]]; then
-        echo ">>>> Generate keystore with the CA private key and CA public certificate:"
-        pkeytool -genkeypair $V -alias "${LOCAL_CA_ALIAS}" -keyalg RSA -keysize 2048 -keystore "${LOCAL_CA_FILENAME}.keystore.p12" \
-            -dname "${LOCAL_CA_DNAME}" -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype PKCS12 -validity ${LOCAL_CA_VALIDITY} \
-            -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"
-        chmod 600 "${LOCAL_CA_FILENAME}.keystore.p12"
-
-        echo ">>>> Export the CA public certificate:"
-        pkeytool -export $V -alias "${LOCAL_CA_ALIAS}" -file "${LOCAL_CA_FILENAME}.cer" -keystore "${LOCAL_CA_FILENAME}.keystore.p12" -rfc \
-            -keypass "${LOCAL_CA_PASSWORD}" -storepass "${LOCAL_CA_PASSWORD}" -storetype PKCS12
-    fi
-
-    current_pwd=$(pwd)
-    cd "${BASE_DIR}"
-    if [[ "$LOG" != "" ]]; then
-      java -Xms16m -Xmx32m -Xquickstart \
-        -Dfile.encoding=UTF-8 \
-        -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
-        -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
-        -Dserver.ssl.trustStoreType=PKCS12 \
-        -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
-        -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
-        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service-lite.jar" \
-        -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
-        -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
-        org.springframework.boot.loader.PropertiesLauncher \
-        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${LOCAL_CA_ALIAS}" \
-        "${LOCAL_CA_FILENAME}.keystore.p12" PKCS12 "${LOCAL_CA_PASSWORD}" "${LOCAL_CA_PASSWORD}" >> $LOG 2>&1
-      RC=$?
-    else
-      java -Xms16m -Xmx32m -Xquickstart \
-        -Dfile.encoding=UTF-8 \
-        -Djava.io.tmpdir=${TEMP_DIR} \
-        -Dapiml.security.ssl.nonStrictVerifySslCertificatesOfServices=${NONSTRICT_VERIFY_CERTIFICATES} \
-        -Dserver.ssl.trustStore="${SERVICE_TRUSTSTORE}.p12" \
-        -Dserver.ssl.trustStoreType=PKCS12 \
-        -Dserver.ssl.trustStorePassword="${SERVICE_PASSWORD}" \
-        -Djava.protocol.handler.pkgs=com.ibm.crypto.provider \
-        -cp "${BASE_DIR}/../components/gateway/bin/gateway-service-lite.jar" \
-        -Dloader.path="../components/apiml-common-lib/bin/api-layer-lite-lib-all.jar" \
-        -Dloader.main=org.zowe.apiml.gateway.security.login.zosmf.SaveZosmfPublicKeyConsoleApplication \
-        org.springframework.boot.loader.PropertiesLauncher \
-        https://${ZOWE_ZOSMF_HOST}:${ZOWE_ZOSMF_PORT} "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${LOCAL_CA_ALIAS}" \
-        "${LOCAL_CA_FILENAME}.keystore.p12" PKCS12 "${LOCAL_CA_PASSWORD}" "${LOCAL_CA_PASSWORD}"
-      RC=$?
-    fi
-    cd "${current_pwd}"
-
-    if [ "$RC" != "0" ]; then
-      echo "Failed to retrieve z/OSMF JWT public key, exit with code ${RC}"
-    fi
-
-    if [ -f "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" ]; then
-      if [ `uname` = "OS/390" ]; then
-        echo "Convert encoding of ${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer and save to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
-        # java write the pem file in ISO8859-1 encoding, convert to IBM-1047
-        iconv -f ISO8859-1 -t IBM-1047 "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" > "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
-        rm -f "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer"
-      else
-        echo "Rename ${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer to ${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
-        mv "${SERVICE_KEYSTORE}.${JWT_ALIAS}.zosmf.cer" "${SERVICE_KEYSTORE}.${JWT_ALIAS}.pem"
-      fi
-    fi
-
-    if [ "$RC" != "0" ]; then
-      echo "Failed to retrieve z/OSMF JWT public key, exit with code ${RC}"
-      # return rc of java command?
-      # return $RC
-      return 99
-    else
-      return 0
-    fi
-}
 
 function compare_domain_with_wildcards {
   pattern=$(echo "$1" | tr '[:upper:]' '[:lower:]'})
@@ -910,9 +793,6 @@ while [ "$1" != "" ]; do
         --service-alias )       shift
                                 SERVICE_ALIAS=$1
                                 ;;
-        --jwt-alias )           shift
-                                JWT_ALIAS=$1
-                                ;;
         --service-ext )         shift
                                 SERVICE_EXT=$1
                                 ;;
@@ -988,7 +868,6 @@ case $ACTION in
         setup_local_ca
         new_service
         generate_component_level_certificates
-        jwt_key_gen_and_export
         ;;
     add-external-ca)
         add_external_ca
@@ -998,9 +877,6 @@ case $ACTION in
         ;;
     new-service)
         new_service
-        ;;
-    jwt-keygen)
-        jwt_key_gen_and_export
         ;;
     new-self-signed-service)
         new_self_signed_service
@@ -1013,7 +889,6 @@ case $ACTION in
         ;;
     trust-zosmf)
         trust_zosmf
-        zosmf_jwt_public_key
         ;;
     cert-key-export)
         export_service_certificate

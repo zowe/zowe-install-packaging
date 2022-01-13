@@ -26,7 +26,10 @@
 #       Default is local_ca_password.
 # -a    Optional. Certificate alias of local certificate authority.
 #       Default is localca.
+# -q    Optional. Disable any instructions/comments display. 
 # -v    Optional. Enable verbose mode to display more debugging information.
+# -e    Optional. Zowe External Port.
+#       Default is 7554
 ################################################################################
 
 ################################################################################
@@ -421,7 +424,9 @@ LOCAL_CA_PASSWORD=local_ca_password
 LOCAL_CA_ALIAS=localca
 LOCAL_CA_FILENAME="local_ca/localca"
 NEW_ZWE_EXTERNAL_HOSTS=localhost
+NEW_ZWE_EXTERNAL_PORT=7554
 VERBOSE_MODE=
+SILENT_MODE=
 # will be defined later
 LOCAL_CA_KEYSTORE=
 ZWELS_CONFIG_LOAD_METHOD=
@@ -431,7 +436,7 @@ userid=$(echo "${USER:-${USERNAME:-${LOGNAME}}}" | tr [a-z] [A-Z])
 
 # command line parameters
 OPTIND=1
-while getopts "c:x:n:u:p:a:v" opt; do
+while getopts "c:x:n:u:p:a:e:v:q" opt; do
   case ${opt} in
     c) INSTANCE_DIR=${OPTARG};;
     x) NEW_ZWE_EXTERNAL_HOSTS=${OPTARG};;
@@ -439,7 +444,9 @@ while getopts "c:x:n:u:p:a:v" opt; do
     u) ZWE_POD_CLUSTERNAME=${OPTARG};;
     p) LOCAL_CA_PASSWORD=${OPTARG};;
     a) LOCAL_CA_ALIAS=${OPTARG};;
+    e) NEW_ZWE_EXTERNAL_PORT=${OPTARG};;
     v) VERBOSE_MODE="-v";;
+    q) SILENT_MODE=true;;
     \?)
       echo "Invalid option: -${OPTARG}" >&2
       exit 1
@@ -475,16 +482,18 @@ mkdir -p "${temp_dir}"
 k8s_temp_keystore="${temp_dir}/${KEY_ALIAS}.keystore.p12"
 temp_hlq=${userid}.K8S${rnd}
 
-echo "SECURITY WARNING: This script may generate information including sensitive private"
-echo "                  keys. Please make sure the content will not be left on any devices"
-echo "                  after the process is done."
-echo "                  During the process, this utility script may generate temporary"
-echo "                  files under ${temp_dir}/."
-echo "                  Normally those files will be automatically deleted after the script"
-echo "                  exits. If the scipt exits with error, please double check if any of"
-echo "                  those files are left on the system and they MUST be manually"
-echo "                  deleted for security reason."
-echo
+if [ "${SILENT_MODE}" != "true" ]; then
+  echo "SECURITY WARNING: This script may generate information including sensitive private"
+  echo "                  keys. Please make sure the content will not be left on any devices"
+  echo "                  after the process is done."
+  echo "                  During the process, this utility script may generate temporary"
+  echo "                  files under ${temp_dir}/."
+  echo "                  Normally those files will be automatically deleted after the script"
+  echo "                  exits. If the scipt exits with error, please double check if any of"
+  echo "                  those files are left on the system and they MUST be manually"
+  echo "                  deleted for security reason."
+  echo
+fi
 
 # we need node and keytool for following commands
 ensure_node_is_on_path 1>/dev/null 2>&1
@@ -569,8 +578,10 @@ if [ "$(is_certificate_generated_by_zowe)" != "true" ]; then
     echo
   fi
 else
-  echo "It seems you are using Zowe generated certificates."
-  echo
+  if [ "${SILENT_MODE}" != "true" ]; then
+    echo "It seems you are using Zowe generated certificates."
+    echo
+  fi
 
   if [ "${ZOWE_APIM_VERIFY_CERTIFICATES}" = "true" ]; then
     echo "To make the certificates working properly in Kubernetes, we need to generate"
@@ -590,7 +601,7 @@ else
     KEYSTORE="${k8s_temp_keystore}"
     KEYSTORE_KEY="${k8s_temp_keystore}-key"
     KEYSTORE_CERTIFICATE="${k8s_temp_keystore}-cert"
-  elif [ "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" = "true" ]; then
+  elif [ "${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}" = "true" -a "${SILENT_MODE}" != "true" ]; then
     echo "You are using Non-Strict verify certificate mode. You existing certificates"
     echo "should work in Kubernetes without change."
     echo
@@ -694,12 +705,14 @@ if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.KEYRING_NAME"
   delete_yaml_variable "${temp_dir}/zowe.yaml" "zowe.environments.LOCAL_CA"
 
-  echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
-  echo "you need to match \"zowe.externalPort\" to be the port you are using. For example:"
-  echo
-  echo "zowe:"
-  echo "  externalPort: \"32554\""
-  echo
+  if [ "${SILENT_MODE}" != "true" ]; then
+    echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
+    echo "you need to match \"zowe.externalPort\" to be the port you are using. For example:"
+    echo
+    echo "zowe:"
+    echo "  externalPort: \"32554\""
+    echo
+  fi
 else
   NEW_INSATNCE_ENV_CONTENT=$(cat "${INSTANCE_DIR}"/instance.env | \
     grep -v -E "(ZWE_EXTERNAL_HOSTS=|ZOWE_EXTERNAL_HOST=|ZOWE_ZOS_HOST=|ZOWE_IP_ADDRESS=|ZWE_LAUNCH_COMPONENTS=|JAVA_HOME=|NODE_HOME=|SKIP_NODE=|skip using nodejs)" | \
@@ -729,27 +742,31 @@ else
     sed -e "s#ZWE_CACHING_SERVICE_PERSISTENT=.\+\$#ZWE_CACHING_SERVICE_PERSISTENT=#" | \
     sed -e "\$a\\
     \\
-    ZWE_EXTERNAL_PORT=7554\\
+    ZWE_EXTERNAL_PORT=${NEW_ZWE_EXTERNAL_PORT}\\
     ZWED_agent_host=\${ZOWE_ZOS_HOST}\\
     ZWED_agent_https_port=\${ZOWE_ZSS_SERVER_PORT}\\
     ZOWE_ZLUX_TELNET_HOST=\${ZWED_agent_host}\\
     ZOWE_ZLUX_SSH_HOST=\${ZWED_agent_host}")
 
-  echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
-  echo "you need to match \"ZWE_EXTERNAL_PORT\" to be the port you are using. For example:"
-  echo
-  echo "ZWE_EXTERNAL_PORT=32554"
-  echo
+  if [ "${SILENT_MODE}" != "true" ]; then
+    echo "Please note that depending on how you choose to Zowe Kubernetes gateway service,"
+    echo "you need to match \"ZWE_EXTERNAL_PORT\" to be the port you are using. For example:"
+    echo
+    echo "ZWE_EXTERNAL_PORT=32554"
+    echo
+  fi
 fi
 
 ################################################################################
 # start official output
-echo "Please copy all output below, save them as a YAML file on your local computer,"
-echo "then apply it to your Kubernetes cluster. After apply, you MUST delete and"
-echo "destroy the temporary file from your local computer."
-echo
-echo "  Example: kubectl apply -f /path/to/my/local-saved.yaml"
-echo
+if [ "${SILENT_MODE}" != "true" ]; then
+  echo "Please copy all output below, save them as a YAML file on your local computer,"
+  echo "then apply it to your Kubernetes cluster. After apply, you MUST delete and"
+  echo "destroy the temporary file from your local computer."
+  echo
+  echo "  Example: kubectl apply -f /path/to/my/local-saved.yaml"
+  echo
+fi
 
 ################################################################################
 # Prepare configs
@@ -812,8 +829,6 @@ data:
     ZOWE_APIM_VERIFY_CERTIFICATES=${ZOWE_APIM_VERIFY_CERTIFICATES}
     ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES=${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}
     SSO_FALLBACK_TO_NATIVE_AUTH=${SSO_FALLBACK_TO_NATIVE_AUTH}
-    PKCS11_TOKEN_NAME="${PKCS11_TOKEN_NAME}"
-    PKCS11_TOKEN_LABEL="${PKCS11_TOKEN_LABEL}"
 EOF
 fi
 

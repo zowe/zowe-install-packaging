@@ -134,7 +134,7 @@
       "version": "0.0.10"
     },
     "org.zowe.licenses": {
-      "version": "1.26.0",
+      "version": "1.27.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -434,7 +434,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.26.0-ubuntu"
+      "tag" : "1.27.0-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
