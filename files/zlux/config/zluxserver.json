@@ -28,10 +28,6 @@
     //host is for zlux to know, not zss
     "host": "localhost",
     "jwt": {
-      "token": {
-        "name": "",
-        "label": ""
-      },
       "fallback": true
     },
     "https": {
