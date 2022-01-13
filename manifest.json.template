@@ -466,7 +466,7 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-ip",
-      "tag" : "1-ubuntu"
+      "tag" : "1.0.1-ubuntu"
     },
     "explorer-jes": {
       "registry": "zowe-docker-release.jfrog.io",
