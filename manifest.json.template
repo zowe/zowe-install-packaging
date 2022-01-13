@@ -73,7 +73,7 @@
       "version": "1.0.15"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.21"
+      "version": "1.0.20"
     },
     "org.zowe.explorer-mvs": {
       "version": "1.0.18"
@@ -292,7 +292,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.21",
+        "tag": "v1.0.20",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -471,7 +471,7 @@
     "explorer-jes": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "1.0.21-ubuntu"
+      "tag" : "1.0.20-ubuntu"
     },
     "explorer-mvs": {
       "registry": "zowe-docker-release.jfrog.io",
