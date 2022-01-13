@@ -23,6 +23,7 @@ fi
 if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
   ZWE_zowe_runtimeDirectory="$(cd "$(dirname "$0")/../";pwd)"
 fi
+export ZWE_zowe_runtimeDirectory
 
 #######################################################################
 # import all shared libraries

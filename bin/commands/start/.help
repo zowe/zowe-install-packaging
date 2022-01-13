@@ -1,6 +1,6 @@
 Start Zowe with main started task.
 
-These Zowe YAML configurations showing with sample values are required:
+These Zowe YAML configurations showing with sample values are used:
 
 ```
 zowe:

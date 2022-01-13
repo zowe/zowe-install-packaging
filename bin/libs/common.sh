@@ -29,6 +29,16 @@ require_zowe_yaml() {
   elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     print_error_and_exit "Error ZWEL0109E: The Zowe YAML config file specified does not exist." "" 109
   fi
+
+  # do we have zowe.runtimeDirectory defined in zowe.yaml?
+  yaml_runtime_dir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
+  if [ -n "${yaml_runtime_dir}" ]; then
+    result=$(are_directories_same "${yaml_runtime_dir}" "${ZWE_zowe_runtimeDirectory}")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0105E: The Zowe YAML config file is limited to Zowe runtime of ${yaml_runtime_dir}, which is not same as where zwe command locates." "" 105
+    fi
+  fi
 }
 
 print_raw_message() {

@@ -14,7 +14,10 @@
 # YAML is a human-friendly data serialization language for all programming languages.
 # To learn more about YAML specifications, please check https://yaml.org/.
 #
-# Please pay more attention of entries marked with "**COMMONLY_CUSTOMIZED**"
+# To learn more details about the entries, please check https://docs.zowe.org/.
+#
+# For first time users, or for the most common use cases, please pay more
+# attention on the entries marked with "**COMMONLY_CUSTOMIZED**".
 #===============================================================================
 
 #-------------------------------------------------------------------------------
@@ -245,10 +248,15 @@ zowe:
       # Storage class name if you are using VSAM in RLS mode
       storageClass:
 
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # **COMMONLY_CUSTOMIZED**
-  # Zowe root directory
-  runtimeDirectory: /global/zowe/runtime
+  # # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # # Zowe root directory
+  # #
+  # # If it's not specified, this value will be generated with the path of where
+  # # you run the "zwe" command.
+  # #
+  # # If it's set with a value points to where Zowe is installed, it will limit
+  # # this YAML configuration only works with that copy of Zowe runtime.
+  # runtimeDirectory: /global/zowe/runtime
   # **COMMONLY_CUSTOMIZED**
   # Where to store runtime logs
   logDirectory: /global/zowe/instance/logs
@@ -300,7 +308,7 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Default Zowe certificate
-  # **NOTE**: these fields can be update automatically if you pass `--update-config` to `zwe init` command.
+  # **NOTE**: these fields can be updated automatically if you pass `--update-config` to `zwe init` command.
   certificate:
     keystore:
       type: PKCS12
@@ -332,23 +340,31 @@ zowe:
 #-------------------------------------------------------------------------------
 # Java configuraiton
 #
-# Zowe requires Java. Define the path where you have your Java is installed.
+# Some Zowe components requires Java. Define the path where you have your Java
+# is installed.
+#
+# **NOTE**: this field can be updated automatically if you pass `--update-config`
+# to `zwe init` command.
 #-------------------------------------------------------------------------------
-java:
-  # **COMMONLY_CUSTOMIZED**
-  # Path to your Java home directory
-  home: /usr/lpp/java/J8.0_64
+# java:
+#   # **COMMONLY_CUSTOMIZED**
+#   # Path to your Java home directory
+#   home: /usr/lpp/java/J8.0_64
 
 
 #-------------------------------------------------------------------------------
 # node.js configuraiton
 #
-# Zowe requires node.js. Define the path where you have your node.js is installed.
+# Some Zowe components requires node.js. Define the path where you have your
+# node.js is installed.
+#
+# **NOTE**: this field can be updated automatically if you pass `--update-config`
+# to `zwe init` command.
 #-------------------------------------------------------------------------------
-node:
-  # **COMMONLY_CUSTOMIZED**
-  # Path to your node.js home directory
-  home: /global/nodejs/v12/node-v12.18.0-os390-s390x
+# node:
+#   # **COMMONLY_CUSTOMIZED**
+#   # Path to your node.js home directory
+#   home: /global/nodejs/v12/node-v12.18.0-os390-s390x
 
 
 #-------------------------------------------------------------------------------

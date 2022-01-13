@@ -21,18 +21,22 @@ detect_java_home() {
   # do we have which?
   java_home=$(which java 2>/dev/null)
   if [ -z "${java_home}" ]; then
-    (
+    java_home=$(
       IFS=:
       for p in ${PATH}; do
-        if [ -f "${p}/node" ]; then
+        if [ -f "${p}/java" ]; then
           cd "${p}/.."
           pwd
           break
         fi
       done
-    )
-  else
-    echo "${java_home}"
+    ) 
+  fi
+  if [ -z "${java_home}" -a -f /usr/lpp/java/J8.0_64/bin/java ]; then
+    java_home=/usr/lpp/java/J8.0_64
+  fi
+  if [ -n "${java_home}" ]; then
+    printf "${java_home}"
   fi
 }
 
@@ -40,6 +44,14 @@ require_java() {
   # prepare the JAVA_HOME in zowe.yaml
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     export JAVA_HOME="$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'java' 'home')"
+    # validate JAVA_HOME
+    result=$(validate_java_home)
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      # incorrect JAVA_HOME, reset and try again
+      # this could be caused by failing to read java.home correctly from zowe.yaml
+      export JAVA_HOME=
+    fi
   fi
   if [ -z "${JAVA_HOME}" ]; then
     export JAVA_HOME="$(detect_java_home)"
@@ -54,17 +66,19 @@ require_java() {
 
 
 validate_java_home() {
-  if [ -z "${JAVA_HOME}" ]; then
+  java_home="${1:-${JAVA_HOME}}"
+
+  if [ -z "${java_home}" ]; then
     print_error "Cannot find java. Please define JAVA_HOME environment variable."
     return 1
   fi
 
-  if [ ! -f "${JAVA_HOME}/bin/java" ]; then
-    print_error "JAVA_HOME: ${JAVA_HOME}/bin does not point to a valid install of Java."
+  if [ ! -f "${java_home}/bin/java" ]; then
+    print_error "JAVA_HOME: ${java_home}/bin does not point to a valid install of Java."
     return 1
   fi
 
-  java_version=$("${JAVA_HOME}/bin/java" -version 2>&1) # Capture stderr to stdout, so we can print below if error
+  java_version=$("${java_home}/bin/java" -version 2>&1) # Capture stderr to stdout, so we can print below if error
   java_version_rc=$?
   if [ ${java_version_rc} -ne 0 ]; then
     print_error "Java version check failed with return code: ${java_version_rc}: ${java_version}"
@@ -91,5 +105,5 @@ validate_java_home() {
   fi
   print_debug "Java ${java_version_short} is supported."
 
-  print_message "Java check is successful."
+  print_debug "Java check is successful."
 }

@@ -112,3 +112,17 @@ is_directory_writable() {
     return 1
   fi
 }
+
+are_directories_same() {
+  dir1="${1}"
+  dir2="${2}"
+
+  abs_dir1=$(cd "${dir1}" && pwd)
+  abs_dir2=$(cd "${dir2}" && pwd)
+
+  if [ "${abs_dir1}" = "${abs_dir2}" ]; then
+    return 0
+  else
+    return 1
+  fi
+}

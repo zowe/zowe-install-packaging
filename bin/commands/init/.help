@@ -2,7 +2,14 @@ Init Zowe instance based on zowe.yaml configuration.
 
 You can find an example zowe.yaml in Zowe runtime directory bin folder.
 
-These Zowe YAML configurations showing with sample values are required:
+If you specify `--update-config` with this command, these configurations could
+be written back to your Zowe YAML configuration file:
+
+- `zowe.certificate` based on your `zowe.setup.certificate` configuration,
+- `java.home` based on your current JAVA_HOME or automatic detection,
+- `node.home` based on your current NODE_HOME or automatic detection.
+
+These Zowe YAML configurations showing with sample values are used:
 
 ```yaml
 zowe:
