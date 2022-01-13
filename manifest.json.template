@@ -439,23 +439,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "1.26.16-ubuntu"
+      "tag" : "1.27.2-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "1.26.16-ubuntu"
+      "tag" : "1.27.2-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "1.26.16-ubuntu"
+      "tag" : "1.27.2-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "1.26.16-ubuntu"
+      "tag" : "1.27.2-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
