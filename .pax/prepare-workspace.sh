@@ -137,6 +137,7 @@ echo "[${SCRIPT_NAME}] copying files ..."
 cd "${ROOT_DIR}"
 cp manifest.json       "${CONTENT_DIR}"
 cp ZOWE.md             "${CONTENT_DIR}/README.md"
+cp DEVELOPERS.md       "${CONTENT_DIR}/DEVELOPERS.md"
 cp -R bin/*            "${CONTENT_DIR}/bin"
 cp -R files/*          "${CONTENT_DIR}/files"
 
