@@ -98,7 +98,6 @@ echo " DELETE ${TMP_ZFS}" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
-if [ $? -gt 0 ];then exit -1;fi
 rm JCL
 
 if [ "$ZOSMF_V" = "2.3" ]
@@ -122,7 +121,6 @@ echo " DELETE ${WORK_ZFS}" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
-if [ $? -gt 0 ];then exit -1;fi
 rm JCL
 fi 
 
