@@ -33,8 +33,8 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$SMPE_WF_NAME'",
 {"name":"dzone","value":"'$DZONE'"},
 {"name":"thlq","value":"'$CSIHLQ'.T"}, 
 {"name":"dhlq","value":"'$CSIHLQ'.D"},
-{"name":"tvol","value":"'$CSIVOL'"},
-{"name":"dvol","value":"'$CSIVOL'"},
+{"name":"tvol","value":"'$VOLUME'"},
+{"name":"dvol","value":"'$VOLUME'"},
 {"name":"mountPath","value":"'$ZOWE_MOUNT'"}]}'
 
 # Store SMPE wokflow in the WORKFLOW dataset

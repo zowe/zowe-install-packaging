@@ -4,7 +4,6 @@ export ZOSMF_SYSTEM="S0W1"
 export DIR="/u/zowead2"
 export CSIHLQ="ZWE.PSWI.AZWE001"
 export SMPEHLQ="ZOWEAD2"
-export ZONE="TZONE"
 export TMP_ZFS="ZOWEAD2.TMP.ZFS"
 export ZOWE_ZFS="${CSIHLQ}.ZFS"
 export ZOWE_MOUNT="/u/zwe/zowe-smpe/"
@@ -15,19 +14,11 @@ export ACCOUNT=1
 
 # Variables for workflows
 # SMPE
-export CSIVOL="ZOS003"
-export TZONE=$ZONE
+export TZONE="TZONE"
 # CSIHLQ for workflow is same as for PSWI
 export DZONE="DZONE"
 export THLQ="${CSIHLQ}.T"
 export DHLQ="${CSIHLQ}.D"
-export TVOL=$CSIVOL
-export DVOL=$CSIVOL
-export MOUNTPATH=$ZOWE_MOUNT
-#PTF
-export CSI=$CSIHLQ
-export TARGET=$TZONE
-export DISTRIBUTION=$DZONE
 
 export JOBNAME="ZWEPSWI1"
 if [ -n "$ACCOUNT" ]
@@ -133,7 +124,7 @@ sh 05_test.sh
 test=$?
 
 # Cleanup after the test
-#sh 06_test_cleanup.sh
+sh 06_test_cleanup.sh
 fi 
 fi 
 fi

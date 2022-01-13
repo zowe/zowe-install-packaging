@@ -26,7 +26,7 @@ echo "z/OSMF version     :" $ZOSMF_V
 
 # JSONs      
 ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description":"ZOWE v'${VERSION}' Portable Software Instance",
-"globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${ZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
+"globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${TZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Security Workflow","description":"This workflow configure zowe security manager.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESECUR)"}},{"name":"ZOWE Certificates Workflow","description":"This workflow configure zowe security certificates.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF05)"}},{"name":"ZOWE Cross-memory Workflow","description":"This workflow configure cross-memory server.",
@@ -314,8 +314,9 @@ echo "//PAXDIREC EXEC PGM=BPXBATCH" >> JCL
 echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
-echo "SH cd ${EXPORT};" >> JCL
-echo "pax -wv -f ${SWI_NAME}-${VERSION}.pax.Z ." >> JCL
+echo "SH set -x;set -e;" >> JCL
+echo "cd ${EXPORT};" >> JCL
+echo "pax -wv -f ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z ." >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
@@ -324,7 +325,7 @@ rm JCL
 
 cd ../.pax
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
-cd ${EXPORT}
+cd ${TMP_MOUNT}
 get ${SWI_NAME}-${VERSION}.pax.Z
 EOF
 cd ../pswi
