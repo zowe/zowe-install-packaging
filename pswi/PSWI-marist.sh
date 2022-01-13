@@ -133,7 +133,7 @@ sh 05_test.sh
 test=$?
 
 # Cleanup after the test
-sh 06_test_cleanup.sh
+#sh 06_test_cleanup.sh
 fi 
 fi 
 fi
