@@ -16,44 +16,33 @@ print_level0_message "Configure Zowe"
 ###############################
 # detect and write node/java home
 if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
-  yaml_java_home="$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'java' 'home')"
-  result=$(validate_java_home "${yaml_java_home}")
-  code=$?
-  if [ ${code} -ne 0 ]; then
-    # incorrect JAVA_HOME, reset and try again
-    # this could be caused by failing to read java.home correctly from zowe.yaml
-    yaml_java_home=
-  fi
+  print_level1_message "Check if we need to update Java and/or node.js settings in Zowe YAML configuration"
+  yaml_updated=
+
+  yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
   # only try to update if it's not defined
-  if [ -z "${yaml_java_home}" ]; then
-    java_home_is_empty=
-    if [ -z "${JAVA_HOME}" ]; then
-      java_home_is_empty=true
-    fi
-    require_java
-    if [ "${java_home_is_empty}" = "true" -a -n "${JAVA_HOME}" ]; then
-      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${JAVA_HOME}"
+  if [ -z "${yaml_node_home}" ]; then
+    require_node
+    if [ -n "${NODE_HOME}" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${NODE_HOME}"
+      yaml_updated=true
     fi
   fi
 
-  yaml_node_home="$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'node' 'home')"
-  result=$(validate_node_home "${yaml_node_home}")
-  code=$?
-  if [ ${code} -ne 0 ]; then
-    # incorrect JAVA_HOME, reset and try again
-    # this could be caused by failing to read node.home correctly from zowe.yaml
-    yaml_node_home=
-  fi
+  yaml_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
   # only try to update if it's not defined
-  if [ -z "${yaml_node_home}" ]; then
-    node_home_is_empty=
-    if [ -z "${NODE_HOME}" ]; then
-      node_home_is_empty=true
+  if [ -z "${yaml_java_home}" ]; then
+    require_java
+    if [ -n "${JAVA_HOME}" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${JAVA_HOME}"
+      yaml_updated=true
     fi
-    require_node
-    if [ "${node_home_is_empty}" = "true" -a -n "${NODE_HOME}" ]; then
-      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${NODE_HOME}"
-    fi
+  fi
+
+  if [ "${yaml_updated}" = "true" ]; then
+    print_level2_message "Java and/or node.js settings are updated successfully."
+  else
+    print_level2_message "Java and node.js settings are not updated."
   fi
 fi
 

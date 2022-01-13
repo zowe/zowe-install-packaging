@@ -28,6 +28,24 @@ ensure_node_is_on_path() {
   fi
 }
 
+shell_read_yaml_node_home() {
+  yaml="${1}"
+
+  node_home=$(shell_read_yaml_config "${yaml}" 'node' 'home')
+  # validate NODE_HOME
+  result=$(validate_node_home "${node_home}")
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    # incorrect NODE_HOME, reset and try again
+    # this could be caused by failing to read node.home correctly from zowe.yaml
+    node_home=
+  fi
+
+  if [ -n "${node_home}" ]; then
+    printf "${node_home}"
+  fi
+}
+
 detect_node_home() {
   # do we have which?
   node_home=$(which node 2>/dev/null)
@@ -51,15 +69,7 @@ detect_node_home() {
 require_node() {
   # prepare the NODE_HOME in zowe.yaml
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    export NODE_HOME=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'node' 'home')
-    # validate NODE_HOME
-    result=$(validate_node_home)
-    code=$?
-    if [ ${code} -ne 0 ]; then
-      # incorrect NODE_HOME, reset and try again
-      # this could be caused by failing to read node.home correctly from zowe.yaml
-      export NODE_HOME=
-    fi
+    export NODE_HOME=$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")
   fi
   if [ -z "${NODE_HOME}" ]; then
     export NODE_HOME=$(detect_node_home)

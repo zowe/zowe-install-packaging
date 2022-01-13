@@ -17,6 +17,24 @@ ensure_java_is_on_path() {
   fi
 }
 
+shell_read_yaml_java_home() {
+  yaml="${1}"
+
+  java_home=$(shell_read_yaml_config "${yaml}" 'java' 'home')
+  # validate NODE_HOME
+  result=$(validate_java_home "${java_home}")
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    # incorrect NODE_HOME, reset and try again
+    # this could be caused by failing to read java.home correctly from zowe.yaml
+    java_home=
+  fi
+
+  if [ -n "${java_home}" ]; then
+    printf "${java_home}"
+  fi
+}
+
 detect_java_home() {
   # do we have which?
   java_home=$(which java 2>/dev/null)
@@ -43,15 +61,7 @@ detect_java_home() {
 require_java() {
   # prepare the JAVA_HOME in zowe.yaml
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    export JAVA_HOME="$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'java' 'home')"
-    # validate JAVA_HOME
-    result=$(validate_java_home)
-    code=$?
-    if [ ${code} -ne 0 ]; then
-      # incorrect JAVA_HOME, reset and try again
-      # this could be caused by failing to read java.home correctly from zowe.yaml
-      export JAVA_HOME=
-    fi
+    export JAVA_HOME="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
   fi
   if [ -z "${JAVA_HOME}" ]; then
     export JAVA_HOME="$(detect_java_home)"
