@@ -89,27 +89,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "1.26.16",
+      "version": "1.27.2",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "1.26.16",
+      "version": "1.27.2",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.26.16",
+      "version": "1.27.2",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "1.26.16",
+      "version": "1.27.2",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "1.26.16",
+      "version": "1.27.2",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.26.16",
+      "version": "1.27.2",
       "artifact": "apiml-common-lib-*.zip"
     },            
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -146,7 +146,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.26.16",
+        "tag": "v1.27.2",
         "destinations": ["Zowe PAX"]
       }]
     }, {
