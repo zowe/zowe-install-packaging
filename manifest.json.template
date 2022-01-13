@@ -73,7 +73,7 @@
       "version": "1.0.15"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.21"
+      "version": "1.0.20"
     },
     "org.zowe.explorer-mvs": {
       "version": "1.0.18"
@@ -115,6 +115,10 @@
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "1.21.3",
       "artifact": "common-java-lib-*.zip"
+    },
+    "org.zowe.apiml.sdk.apiml-sample-extension-package": {
+      "version": "1.27.2",
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
       "version": "0.0.8"
@@ -288,7 +292,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.21",
+        "tag": "v1.0.20",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -467,7 +471,7 @@
     "explorer-jes": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "1.0.21-ubuntu"
+      "tag" : "1.0.20-ubuntu"
     },
     "explorer-mvs": {
       "registry": "zowe-docker-release.jfrog.io",
