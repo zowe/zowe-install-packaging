@@ -14,52 +14,76 @@
 print_level0_message "Configure Zowe"
 
 ###############################
-# detect and write node/java home
-if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
-  print_level1_message "Check if we need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration"
-  yaml_updated=
-
-  yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
-  # only try to update if it's not defined
-  if [ -z "${yaml_node_home}" ]; then
-    require_node
-    if [ -n "${NODE_HOME}" ]; then
-      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${NODE_HOME}"
-      yaml_updated=true
-    fi
+print_level1_message "Check if need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration"
+# node.home
+update_node_home=
+yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
+# only try to update if it's not defined
+if [ -z "${yaml_node_home}" ]; then
+  require_node
+  if [ -n "${NODE_HOME}" ]; then
+    update_node_home="${NODE_HOME}"
   fi
-
-  yaml_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
-  # only try to update if it's not defined
-  if [ -z "${yaml_java_home}" ]; then
-    require_java
-    if [ -n "${JAVA_HOME}" ]; then
-      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${JAVA_HOME}"
-      yaml_updated=true
-    fi
+fi
+# java.home
+update_java_home=
+yaml_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
+# only try to update if it's not defined
+if [ -z "${yaml_java_home}" ]; then
+  require_java
+  if [ -n "${JAVA_HOME}" ]; then
+    update_java_home="${JAVA_HOME}"
   fi
-
-  require_zowe_yaml
-
-  # do we have zowe.runtimeDirectory defined in zowe.yaml?
-  yaml_runtime_dir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
-  if [ -n "${yaml_runtime_dir}" ]; then
-    result=$(are_directories_same "${yaml_runtime_dir}" "${ZWE_zowe_runtimeDirectory}")
-    code=$?
-    if [ ${code} -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime \"${yaml_runtime_dir}\", which is not same as where zwe command is located." "" 105
-    fi
-    # no need to update
-  else
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.runtimeDirectory" "${ZWE_zowe_runtimeDirectory}"
-    yaml_updated=true
+fi
+# zowe.runtimeDirectory
+require_zowe_yaml
+update_zowe_runtime_dir=
+# do we have zowe.runtimeDirectory defined in zowe.yaml?
+yaml_runtime_dir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
+if [ -n "${yaml_runtime_dir}" ]; then
+  result=$(are_directories_same "${yaml_runtime_dir}" "${ZWE_zowe_runtimeDirectory}")
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime \"${yaml_runtime_dir}\", which is not same as where zwe command is located." "" 105
   fi
+  # no need to update
+else
+  update_zowe_runtime_dir="${ZWE_zowe_runtimeDirectory}"
+fi
 
-  if [ "${yaml_updated}" = "true" ]; then
+if [ -n "${update_node_home}" -o -n "${update_java_home}" -o -n "${update_zowe_runtime_dir}" ]; then
+  if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
+    if [ -n "${update_node_home}" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${update_node_home}"
+    fi
+    if [ -n "${update_java_home}" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${update_java_home}"
+    fi
+    if [ -n "${update_zowe_runtime_dir}" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.runtimeDirectory" "${update_zowe_runtime_dir}"
+    fi
+
     print_level2_message "Runtime directory, Java and/or node.js settings are updated successfully."
   else
-    print_level2_message "Runtime directory, Java and node.js settings are not updated."
+    print_message "These configurations need to be added to your YAML configuration file:"
+    print_message ""
+    if [ -n "${update_zowe_runtime_dir}" ]; then
+      print_message "zowe:"
+      print_message "  runtimeDirectory: \"${update_zowe_runtime_dir}\""
+    fi
+    if [ -n "${update_node_home}" ]; then
+      print_message "node:"
+      print_message "  home: \"${update_node_home}\""
+    fi
+    if [ -n "${update_java_home}" ]; then
+      print_message "java:"
+      print_message "  home: \"${update_java_home}\""
+    fi
+
+    print_level2_message "Please manually update \"${ZWE_CLI_PARAMETER_CONFIG}\" before you start Zowe."
   fi
+else
+  print_level2_message "No need to update runtime directory, Java and node.js settings."
 fi
 
 ###############################
