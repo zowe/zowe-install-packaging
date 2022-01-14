@@ -18,6 +18,9 @@
 #
 # For first time users, or for the most common use cases, please pay more
 # attention on the entries marked with "**COMMONLY_CUSTOMIZED**".
+#
+# If you modify settings listed in "zwe init --help" command, you may need to
+# re-run "zwe init" command to make them take effect.
 #===============================================================================
 
 #-------------------------------------------------------------------------------
