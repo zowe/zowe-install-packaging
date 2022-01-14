@@ -309,9 +309,9 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
 
   expect(resultInstall.code).toBe(0);
 
-  // sleep extra 5 minutes
-  debug(`wait extra 5 min before sanity test`);
-  await sleep(300000);
+  // sleep extra 6.5 minutes
+  debug(`wait extra 6.5 min before sanity test`);
+  await sleep(390000);
 
   // clean up sanity test folder
   cleanupSanityTestReportDir();
