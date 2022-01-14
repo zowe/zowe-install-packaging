@@ -424,7 +424,7 @@ components:
         authorization:
           endpoint:
             enabled: false
-          provider: zosmf
+          provider:
         jwtInitializerTimeout: 5
         x509:
           enabled: false
