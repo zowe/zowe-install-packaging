@@ -19,7 +19,7 @@
 # For first time users, or for the most common use cases, please pay more
 # attention on the entries marked with "**COMMONLY_CUSTOMIZED**".
 #
-# If you modify settings listed in "zwe init --help" command, you may need to
+# If you modify any settings listed in "zwe init --help" command, you may need to
 # re-run "zwe init" command to make them take effect.
 #===============================================================================
 
@@ -27,7 +27,7 @@
 # Zowe global configurations
 #
 # This section includes Zowe setup information used by `zwe install` and
-# `zwe init` command, as well as default configurations for all Zowe components.
+# `zwe init` command, as well as default configurations for Zowe runtime.
 #-------------------------------------------------------------------------------
 zowe:
 
@@ -255,18 +255,21 @@ zowe:
   # **COMMONLY_CUSTOMIZED**
   # Zowe runtime (root) directory
   #
-  # If it's not specified and you passed "--update-config" argument when you run
-  # "zwe init" command, this value will be updated with the Zowe runtime where
-  # the "zwe" command is located.
+  # **NOTE**: if it's not specified and you passed "--update-config" argument
+  # when you run "zwe init" command, this value will be updated with the Zowe
+  # runtime where the "zwe" command is located.
   #
-  # This value is required for ZWESLSTC to know where is Zowe runtime.
-  runtimeDirectory:
+  # This value is required by ZWESLSTC to know where is Zowe runtime.
+  runtimeDirectory: ""
+
   # **COMMONLY_CUSTOMIZED**
   # Where to store runtime logs
   logDirectory: /global/zowe/instance/logs
+
   # **COMMONLY_CUSTOMIZED**
   # Zowe runtime workspace directory
   workspaceDirectory: /global/zowe/instance/workspace
+
   # **COMMONLY_CUSTOMIZED**
   # Where extensions are installed
   extensionDirectory: /global/zowe/extensions
@@ -289,7 +292,8 @@ zowe:
     - dvipa.my-company.com
   
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # This is the port you will use to access Zowe Gateway from your web browser.
+  # This is the port you use to access Zowe Gateway from your web browser.
+  #
   # In many use cases, this should be same as `components.gateway.port`. But in
   # some use cases, like containerization, this port could be different.
   externalPort: "7554"
@@ -312,7 +316,10 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Default Zowe certificate
-  # **NOTE**: these fields can be updated automatically if you pass `--update-config` to `zwe init` command.
+  #
+  # **NOTE**: these fields can be updated automatically if you pass
+  # `--update-config` to `zwe init` command. The generated value will base on
+  # your setup in `zowe.setup.certificate` section.
   certificate:
     keystore:
       type: PKCS12
@@ -350,10 +357,10 @@ zowe:
 # **NOTE**: this field can be updated automatically if you pass `--update-config`
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
-# java:
-#   # **COMMONLY_CUSTOMIZED**
-#   # Path to your Java home directory
-#   home: /usr/lpp/java/J8.0_64
+java:
+  # **COMMONLY_CUSTOMIZED**
+  # Path to your Java home directory
+  home: ""
 
 
 #-------------------------------------------------------------------------------
@@ -365,10 +372,10 @@ zowe:
 # **NOTE**: this field can be updated automatically if you pass `--update-config`
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
-# node:
-#   # **COMMONLY_CUSTOMIZED**
-#   # Path to your node.js home directory
-#   home: /global/nodejs/v12/node-v12.18.0-os390-s390x
+node:
+  # **COMMONLY_CUSTOMIZED**
+  # Path to your node.js home directory
+  home: ""
 
 
 #-------------------------------------------------------------------------------
@@ -392,8 +399,12 @@ zOSMF:
 # This section includes default configurations for all Zowe components installed
 # on the Zowe instance.
 #
-# Each component should have its own section under `components` with the
+# Every component should define their own section under `components` with their
 # component ID.
+#
+# For each component, they can always have "enabled" property and "certificate"
+# property. More configurations for each component can be found in component
+# manifest file.
 #-------------------------------------------------------------------------------
 components:
 
@@ -497,12 +508,12 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   jobs-api:
     enabled: false
-    port: 8545
+    port: 7558
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   files-api:
     enabled: false
-    port: 8547
+    port: 7559
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-jes:

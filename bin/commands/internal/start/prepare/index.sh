@@ -317,7 +317,7 @@ prepare_workspace_directory
 
 # now we can load all variables
 load_environment_variables
-print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" ">>> all environmen variables"
+print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" ">>> all environment variables"
 print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "$(env)"
 print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "<<<"
 
