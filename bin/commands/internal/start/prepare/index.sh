@@ -184,20 +184,22 @@ configure_components() {
       # check configure script
       preconfigure_script=$(read_component_manifest "${component_dir}" ".commands.preConfigure" 2>/dev/null)
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- commands.preConfigure is ${preconfigure_script:-<undefined>}"
-      if [ -f "${preconfigure_script}" ]; then
-        print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
-        # execute configure step and snapshot environment
-        result=$(load_environment_variables "${component_id}" && . "${preconfigure_script}")
-        retval=$?
-        if [ -n "${result}" ]; then
-          if [ "${retval}" = "0" ]; then
-            print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
-          else
-            print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+      if [ -n "${preconfigure_script}" ]; then
+        if [ -f "${preconfigure_script}" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} pre-configure command ..."
+          # execute configure step and snapshot environment
+          result=$(load_environment_variables "${component_id}" && . "${preconfigure_script}")
+          retval=$?
+          if [ -n "${result}" ]; then
+            if [ "${retval}" = "0" ]; then
+              print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+            else
+              print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+            fi
           fi
+        else
+          print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.preConfigure defined but the file is missing."
         fi
-      else
-        print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.preConfigure defined but the file is missing."
       fi
 
       # default build-in behaviors
@@ -236,20 +238,22 @@ configure_components() {
       # check configure script
       configure_script=$(read_component_manifest "${component_dir}" ".commands.configure" 2>/dev/null)
       print_formatted_trace "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- commands.configure is ${configure_script:-<undefined>}"
-      if [ -f "${configure_script}" ]; then
-        print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
-        # execute configure step and snapshot environment
-        result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
-        retval=$?
-        if [ -n "${result}" ]; then
-          if [ "${retval}" = "0" ]; then
-            print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
-          else
-            print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+      if [ -n "${configure_script}" ]; then
+        if [ -f "${configure_script}" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
+          # execute configure step and snapshot environment
+          result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
+          retval=$?
+          if [ -n "${result}" ]; then
+            if [ "${retval}" = "0" ]; then
+              print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+            else
+              print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+            fi
           fi
+        else
+          print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.configure defined but the file is missing."
         fi
-      else
-        print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "Error ZWEL0172E: Component ${component_id} has commands.configure defined but the file is missing."
       fi
     fi
   done
