@@ -240,6 +240,7 @@ jobs:
             return comment.id;
 
       - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
+        timeout-minutes: 5
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
@@ -249,10 +250,12 @@ jobs:
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
       - name: '[SMPE Download 2] Get publish target path'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/publish@main
 
       - name: '[SMPE Download 3] Download SMPE build log'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
@@ -309,6 +312,7 @@ jobs:
 
       - name: '[PAX/SMPE Publish] Upload to artifactory'
         id: publish
+        timeout-minutes: 5
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: |
@@ -349,18 +353,21 @@ jobs:
           zlinux-ssh-key-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
 
       - name: '[TP_ZLINUX_DOCKER 3] Upload zlinux docker to artifactory'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_DOCKER == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: server-bundle.s390x.tar
 
       - name: '[TP_ZLINUX_DOCKER 4] Upload zlinux docker sources to artifactory'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_DOCKER_SOURCES == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: server-bundle.sources.s390x.tar
 
       - name: '[TP_LINUX_DOCKER 1] Download zowe.pax'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_DOCKER == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
@@ -396,12 +403,14 @@ jobs:
           pwd && ls -ltr server-bundle.*
           
       - name: '[TP_LINUX_DOCKER 3] Upload linux docker to artifactory'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_DOCKER == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: containers/server-bundle/server-bundle.amd64.tar
 
       - name: '[TP_LINUX_DOCKER 4] Upload linux docker sources to artifactory'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_DOCKER_SOURCES == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
@@ -416,6 +425,7 @@ jobs:
           zip -r zowe-containerization.zip kubernetes
 
       - name: '[K8S 2] Upload k8s zip to artifactory'
+        timeout-minutes: 5
         if: env.INPUTS_BUILD_KUBERNETES == 'true'
         uses: zowe-actions/shared-actions/publish@main
         with:
