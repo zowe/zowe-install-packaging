@@ -20,7 +20,7 @@ export ZWE_PRIVATE_ERRORS_FOUND=0
 # @param string   function name
 # @output         true if the function is defined
 function_exists() {
-  fn=$1
+  fn="${1}"
   status=$(LC_ALL=C type $fn 2>&1 | grep 'function')
   if [ -n "${status}" ]; then
     echo "true"
@@ -64,7 +64,7 @@ get_environments() {
 #
 # @param string   env file name
 source_env() {
-  env_file=$1
+  env_file="${1}"
 
   . "${env_file}"
 

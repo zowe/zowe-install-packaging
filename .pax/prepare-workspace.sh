@@ -120,8 +120,8 @@ fi
 cd "${ROOT_DIR}"
 
 # workspace path abbreviations, relative to ${ROOT_DIR}
-ASCII_DIR="${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}"
-CONTENT_DIR="${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}"
+ASCII_DIR="${PAX_WORKSPACE_DIR}/ascii"
+CONTENT_DIR="${PAX_WORKSPACE_DIR}/content"
 
 # prepare pax workspace
 echo "[${SCRIPT_NAME}] preparing folders ..."
@@ -137,6 +137,7 @@ echo "[${SCRIPT_NAME}] copying files ..."
 cd "${ROOT_DIR}"
 cp manifest.json       "${CONTENT_DIR}"
 cp ZOWE.md             "${CONTENT_DIR}/README.md"
+cp DEVELOPERS.md       "${CONTENT_DIR}/DEVELOPERS.md"
 cp -R bin/*            "${CONTENT_DIR}/bin"
 cp -R files/*          "${CONTENT_DIR}/files"
 
@@ -228,6 +229,6 @@ echo "[$SCRIPT_NAME] done"
 # result:
 # ${PAX_WORKSPACE_DIR}/ascii/smpe/
 # ${PAX_WORKSPACE_DIR}/ascii/templates/
-# ${PAX_WORKSPACE_DIR}/ascii/zowe-${ZOWE_VERSION}/
-# ${PAX_WORKSPACE_DIR}/content/zowe-${ZOWE_VERSION}/
+# ${PAX_WORKSPACE_DIR}/ascii/
+# ${PAX_WORKSPACE_DIR}/content/
 # ascii/* will move into content/, translated to ebcdic

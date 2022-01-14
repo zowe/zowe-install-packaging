@@ -12,7 +12,7 @@
 #######################################################################
 
 is_data_set_exists() {
-  ds=$1
+  ds="${1}"
 
   (cat "//'${ds}'" 1>/dev/null 2>&1)
   if [ $? -eq 0 ]; then
@@ -28,7 +28,7 @@ is_data_set_exists() {
 #                2: data set member doesn't exist
 # @output        tso listds label output
 tso_is_data_set_exists() {
-  ds=$1
+  ds="${1}"
 
   cmd="listds '${ds}' label"
   print_debug "- ${cmd}"
@@ -61,18 +61,18 @@ tso_is_data_set_exists() {
 }
 
 create_data_set() {
-  ds_name=$1
-  ds_opts=$2
+  ds_name="${1}"
+  ds_opts="${2}"
 
   result=$(tso_command "ALLOCATE NEW DA('${ds_name}') ${ds_opts}")
   return $?
 }
 
 copy_to_data_set() {
-  uss_file=$1
-  ds_name=$2
-  cp_opts=$3
-  allow_overwrite=$4
+  uss_file="${1}"
+  ds_name="${2}"
+  cp_opts="${3}"
+  allow_overwrite="${4}"
 
   if [ "${allow_overwrite}" != "true" ]; then
     if [ "$(is_data_set_exists "//'${ds_name}'")" = "true" ]; then
@@ -99,10 +99,10 @@ copy_to_data_set() {
 }
 
 data_set_copy_to_data_set() {
-  hlq=$1
-  ds_from=$2
-  ds_to=$3
-  allow_overwrite=$4
+  hlq="${1}"
+  ds_from="${2}"
+  ds_to="${3}"
+  allow_overwrite="${4}"
 
   if [ "${allow_overwrite}" != "true" ]; then
     if [ "$(is_data_set_exists "//'${ds_to}'")" = "true" ]; then
@@ -186,7 +186,7 @@ list_data_set_user() {
 #                3: data set is in use
 # @output        tso listds label output
 delete_data_set() {
-  ds=$1
+  ds="${1}"
 
   cmd="delete '${ds}'"
   print_debug "- tsocmd ${cmd}"
@@ -223,7 +223,7 @@ delete_data_set() {
 }
 
 is_data_set_sms_managed() {
-  ds=$1
+  ds="${1}"
 
   # REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=dscbs-how-found
   #      bit DS1SMSDS at offset 78(X'4E')
@@ -279,7 +279,7 @@ is_data_set_sms_managed() {
 }
 
 get_data_set_volume() {
-  ds=$1
+  ds="${1}"
 
   print_trace "- Find volume of data set ${ds}"
   ds_info=$(tso_command listds "'${ds}'")
@@ -299,7 +299,7 @@ get_data_set_volume() {
 }
 
 apf_authorize_data_set() {
-  ds=$1
+  ds="${1}"
 
   ds_sms_managed=$(is_data_set_sms_managed "${ds}")
   code=$?

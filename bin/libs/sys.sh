@@ -40,6 +40,12 @@ get_user_id() {
   echo ${USER:-${USERNAME:-${LOGNAME:-$(whoami 2>/dev/null)}}}
 }
 
+require_zos() {
+  if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
+    print_error_and_exit "Error ZWEL0120E: This command must run on a z/OS system." "" 120
+  fi
+}
+
 ###############################
 # List direct children PIDs of a process
 #
@@ -47,8 +53,8 @@ get_user_id() {
 # @param string   optional, process hierarchy list
 # Output          pid list separated by space
 find_direct_child_processes() {
-  parent=$1
-  tree=$2
+  parent="${1}"
+  tree="${2}"
 
   if [ -z "${tree}" ]; then
     tree=$(ps -o pid,ppid,comm -A | tail -n +2)
@@ -73,8 +79,8 @@ EOF
 # @param string   optional, process hierarchy list
 # Output          pid list separated by space
 find_all_child_processes() {
-  parent=$1
-  tree=$2
+  parent="${1}"
+  tree="${2}"
 
   if [ -z "${tree}" ]; then
     tree=$(ps -o pid,ppid,comm -A | tail -n +2)
@@ -101,7 +107,7 @@ find_all_child_processes() {
 #                 1 - process does not exit before timeout (30 seconds)
 # Output          message about how this PID exits
 wait_for_process_exit() {
-  pid=$1
+  pid="${1}"
 
   print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "waiting for process $pid to exit"
 

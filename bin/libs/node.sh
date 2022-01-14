@@ -24,7 +24,25 @@ export __UNTAGGED_READ_MODE=V6
 
 ensure_node_is_on_path() {
   if [[ ":${PATH}:" != *":${NODE_HOME}/bin:"* ]]; then
-    export PATH=${NODE_HOME}/bin:${PATH}
+    export PATH="${NODE_HOME}/bin:${PATH}"
+  fi
+}
+
+shell_read_yaml_node_home() {
+  yaml="${1}"
+
+  node_home=$(shell_read_yaml_config "${yaml}" 'node' 'home')
+  # validate NODE_HOME
+  result=$(validate_node_home "${node_home}")
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    # incorrect NODE_HOME, reset and try again
+    # this could be caused by failing to read node.home correctly from zowe.yaml
+    node_home=
+  fi
+
+  if [ -n "${node_home}" ]; then
+    printf "${node_home}"
   fi
 }
 
@@ -32,7 +50,7 @@ detect_node_home() {
   # do we have which?
   node_home=$(which node 2>/dev/null)
   if [ -z "${node_home}" ]; then
-    (
+    node_home=$(
       IFS=:
       for p in ${PATH}; do
         if [ -f "${p}/node" ]; then
@@ -42,38 +60,42 @@ detect_node_home() {
         fi
       done
     )
-  else
-    echo "${node_home}"
+  fi
+  if [ -n "${node_home}" ]; then
+    printf "${node_home}"
   fi
 }
 
 require_node() {
   # prepare the NODE_HOME in zowe.yaml
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    export NODE_HOME=$(shell_read_yaml_config ${ZWE_CLI_PARAMETER_CONFIG} 'node' 'home')
-  elif [ -z "${NODE_HOME}" ]; then
+    export NODE_HOME=$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")
+  fi
+  if [ -z "${NODE_HOME}" ]; then
     export NODE_HOME=$(detect_node_home)
   fi
 
   if [ -z "${NODE_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0130E: Cannot find node. Please define NODE_HOME environment variable." "" 130
+    print_error_and_exit "Error ZWEL0121E: Cannot find node. Please define NODE_HOME environment variable." "" 121
   fi
 
   ensure_node_is_on_path
 }
 
 validate_node_home() {
-  if [ -z "${NODE_HOME}" ]; then
+  node_home="${1:-${NODE_HOME}}"
+
+  if [ -z "${node_home}" ]; then
     print_error "Cannot find node. Please define NODE_HOME environment variable."
     return 1
   fi
 
-  if [ ! -f "${NODE_HOME}/bin/node" ]; then
-    print_error "NODE_HOME: ${NODE_HOME}/bin does not point to a valid install of Node."
+  if [ ! -f "${node_home}/bin/node" ]; then
+    print_error "NODE_HOME: ${node_home}/bin does not point to a valid install of Node."
     return 1
   fi
 
-  node_version=$("${NODE_HOME}/bin/node" --version 2>&1) # Capture stderr to stdout, so we can print below if error
+  node_version=$("${node_home}/bin/node" --version 2>&1) # Capture stderr to stdout, so we can print below if error
   node_version_rc=$?
   if [ ${node_version_rc} -ne 0 ]; then
     print_error "Node version check failed with return code: ${node_version_rc}: ${node_version}"
@@ -94,12 +116,12 @@ validate_node_home() {
   fi
   print_debug "Node ${node_version} is supported."
 
-  node_ok=$("${NODE_HOME}/bin/node" -e "console.log('ok')" 2>&1)
+  node_ok=$("${node_home}/bin/node" -e "console.log('ok')" 2>&1)
   node_ok_rc=$?
   if [ "${node_ok}" != "ok" -o ${node_ok_rc} -ne 0 ]; then
-    print_error "${NODE_HOME}/bin/node is not functioning correctly (exit code ${node_ok_rc}): ${node_ok}"
+    print_error "${node_home}/bin/node is not functioning correctly (exit code ${node_ok_rc}): ${node_ok}"
     return 1
   fi
 
-  print_message "Node check is successful."
+  print_debug "Node check is successful."
 }

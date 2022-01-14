@@ -15,7 +15,7 @@
 # @internal 
 
 get_component_manifest() {
-  component_dir=$1
+  component_dir="${1}"
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
     echo "${component_dir}/manifest.yaml"
@@ -43,7 +43,7 @@ get_component_manifest() {
 # @param string     component id, or path to component lifecycle scripts
 # Output            component directory will be written to stdout
 find_component_directory() {
-  component_id=$1
+  component_id="${1}"
   # find component lifecycle scripts directory
   component_dir=
 
@@ -91,8 +91,8 @@ find_component_directory() {
 #                          , or NODE_HOME is not defined
 #                 the value defined in the manifest of the selected key
 read_component_manifest() {
-  component_dir=$1
-  manifest_key=$2
+  component_dir="${1}"
+  manifest_key="${2}"
 
   if [ -f "${component_dir}/manifest.yaml" ]; then
     read_yaml "${component_dir}/manifest.yaml" "${manifest_key}"
@@ -104,7 +104,7 @@ read_component_manifest() {
     read_json "${component_dir}/manifest.json" "${manifest_key}"
     return $?
   else
-    print_error_and_exit "Error ZWEL0132E: No manifest file found in module ${component_dir}." "" 132
+    print_error_and_exit "Error ZWEL0132E: No manifest file found in component ${component_dir}." "" 132
   fi
 }
 
@@ -120,7 +120,7 @@ read_component_manifest() {
 #
 # @param string   component directory
 detect_component_manifest_encoding() {
-  component_dir=$1
+  component_dir="${1}"
 
   component_manifest=$(get_component_manifest "${component_dir}")
   if [ -n "${component_manifest}" ]; then
@@ -133,7 +133,7 @@ detect_component_manifest_encoding() {
 }
 
 detect_if_component_tagged() {
-  component_dir=$1
+  component_dir="${1}"
 
   component_manifest=$(get_component_manifest "${component_dir}")
   if [ -n "${component_manifest}" ]; then
@@ -215,9 +215,6 @@ find_all_launch_components() {
     component_dir=$(find_component_directory "${component}")
     if [ -n "${component_dir}" ]; then
       start_script=$(read_component_manifest "${component_dir}" ".commands.start" 2>/dev/null)
-      if [ "${start_script}" = "null" ]; then
-        start_script=
-      fi
       if [ -n "${start_script}" ]; then
         if [ -f "${component_dir}/${start_script}" ]; then
           if [ -n "${components}" ]; then
@@ -251,7 +248,7 @@ find_all_launch_components() {
 #
 # @param string   component directory
 process_component_apiml_static_definitions() {
-  component_dir=$1
+  component_dir="${1}"
 
   if [ -z "${ZWE_STATIC_DEFINITIONS_DIR}" ]; then
     print_error "Error: ZWE_STATIC_DEFINITIONS_DIR is required to process component definitions for API Mediation Layer."
@@ -262,7 +259,7 @@ process_component_apiml_static_definitions() {
   all_succeed=true
 
   static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static[].file" 2>/dev/null)
-  if [ -z "${static_defs}" -o "${static_defs}" = "null" ]; then
+  if [ -z "${static_defs}" ]; then
     # does the component define it as object instead of array
     static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static.file" 2>/dev/null)
   fi
@@ -270,7 +267,7 @@ process_component_apiml_static_definitions() {
   cd "${component_dir}"
   while read -r one_def; do
     one_def_trimmed=$(echo "${one_def}" | xargs)
-    if [ -n "${one_def_trimmed}" -a "${one_def_trimmed}" != "null" ]; then
+    if [ -n "${one_def_trimmed}" ]; then
       if [ ! -r "${one_def}" ]; then
         print_error "static definition file ${one_def} of component ${component_name} is not accessible"
         all_succeed=false
@@ -322,12 +319,12 @@ EOF
 #
 # @param string   component directory
 process_component_appfw_plugin() {
-  component_dir=$1
+  component_dir="${1}"
 
   all_succeed=true
   iterator_index=0
   appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
-  while [ "${appfw_plugin_path}" != "null" ] && [ -n "${appfw_plugin_path}" ]; do
+  while [ -n "${appfw_plugin_path}" ]; do
     cd "${component_dir}"
 
     # apply values if appfw_plugin_path has variables
@@ -345,7 +342,7 @@ process_component_appfw_plugin() {
       break
     fi
     appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
-    if [ -z "${appfw_plugin_id}" -o "${appfw_plugin_id}" = "null" ]; then
+    if [ -z "${appfw_plugin_id}" ]; then
       print_error "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
       all_succeed=false
       break
@@ -383,14 +380,14 @@ process_component_appfw_plugin() {
 #
 # @param string   component directory
 process_component_gateway_shared_libs() {
-  component_dir=$1
+  component_dir="${1}"
 
   all_succeed=true
   iterator_index=0
   plugin_id=
   gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
-  while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
+  while [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
 
     if [ -z "${plugin_id}" ]; then

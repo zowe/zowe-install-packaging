@@ -100,8 +100,8 @@ upper_case() {
 #
 # @param string   optional string
 padding_left() {
-  str=$1
-  pad=$2
+  str="${1}"
+  pad="${2}"
 
   while read -r line; do
     echo "${pad}${line}"

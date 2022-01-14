@@ -2,7 +2,7 @@ This command will APF authorize load library for you.
 
 NOTE: You require proper permission to run APF authorize command.
 
-These Zowe YAML configurations showing with sample values are required:
+These Zowe YAML configurations showing with sample values are used:
 
 ```
 zowe:

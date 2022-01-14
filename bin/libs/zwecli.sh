@@ -67,7 +67,7 @@ zwecli_load_parameters_definition() {
 }
 
 zwecli_locate_parameter_definition() {
-  param=$1
+  param="${1}"
 
   match=
   while read -r line; do
@@ -105,22 +105,22 @@ EOF
 }
 
 zwecli_get_parameter_variable() {
-  param_id=$1
+  param_id="${1}"
 
   echo "ZWE_CLI_PARAMETER_${param_id}" | upper_case | sanitize_alphanum
 }
 
 zwecli_get_parameter_value() {
-  param_id=$1
+  param_id="${1}"
 
   get_var_value "$(zwecli_get_parameter_variable "${param_id}")"
 }
 
 zwecli_set_parameter_value() {
-  param_id=$1
-  value=$2
+  param_id="${1}"
+  value="${2}"
 
-  eval "export $(zwecli_get_parameter_variable "${param_id}")=${value}"
+  eval "export $(zwecli_get_parameter_variable "${param_id}")=\"${value}\""
 }
 
 zwecli_load_parameters_default_value() {
@@ -173,7 +173,7 @@ zwecli_process_logfile() {
 }
 
 zwecli_display_parameters_help() {
-  file=$1
+  file="${1}"
 
   while read -r line; do
     first_line=$(echo "${line}" | trim | head -n 1)
@@ -211,7 +211,7 @@ zwecli_display_parameters_help() {
       padding_left "${line_params_help}" "    "
     fi
   done <<EOF
-$(cat ${file})
+$(cat "${file}")
 EOF
 }
 

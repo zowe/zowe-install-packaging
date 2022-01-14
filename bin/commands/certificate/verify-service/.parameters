@@ -1,0 +1,2 @@
+host||string|required||||Host name of the service.
+port||string|required||||Port of the service.

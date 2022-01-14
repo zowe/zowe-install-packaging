@@ -25,18 +25,18 @@
 # @param string   if this variable is required. If this is true and we cannot
 #                 find the value of the key, an error will be displayed.
 shell_read_json_config() {
-  json_file=$1
-  parent_key=$2
-  key=$3
-  required=$4
+  json_file="${1}"
+  parent_key="${2}"
+  key="${3}"
+  required="${4}"
 
-  val=$(cat "${json_file}" | awk "/\"${parent_key}\":/{x=NR+200}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
+  val=$(cat "${json_file}" | awk "/\"${parent_key}\":/{x=NR+200}(NR<=x){print}" | grep "\"${key}\":" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
     if [ "${required}" = "true" ]; then
-      exit_with_error "cannot find ${parent_key}.${key} defined in $(basename $json_file)" "instance/bin/internal/utils.sh,shell_read_json_config:${LINENO}"
+      print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${json_file}." "" 131
     fi
   else
-    echo "${val}"
+    printf "${val}"
   fi
 }
 
@@ -54,24 +54,25 @@ shell_read_json_config() {
 # @param string   if this variable is required. If this is true and we cannot
 #                 find the value of the key, an error will be displayed.
 shell_read_yaml_config() {
-  yaml_file=$1
-  parent_key=$2
-  key=$3
-  required=$4
+  yaml_file="${1}"
+  parent_key="${2}"
+  key="${3}"
+  required="${4}"
 
-  val=$(cat "${yaml_file}" | awk "/${parent_key}:/{x=NR+2000;next}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//')
+  val=$(cat "${yaml_file}" | awk "/^ *${parent_key}:/{x=NR+2000;next}(NR<=x){print}" | grep -e "^ \+${key}:" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
     if [ "${required}" = "true" ]; then
-      exit_with_error "cannot find ${parent_key}.${key} defined in $(basename $yaml_file)" "instance/bin/internal/utils.sh,shell_read_yaml_config:${LINENO}"
+      print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${yaml_file}." "" 131
     fi
   else
-    echo "${val}"
+    printf "${val}"
   fi
 }
 
 read_yaml() {
-  file=$1
-  key=$2
+  file="${1}"
+  key="${2}"
+  ignore_null="${3:-true}"
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   fconv="${utils_dir}/fconv/src/index.js"
@@ -97,15 +98,19 @@ read_yaml() {
   fi
 
   if [ ${code} -eq 0 ]; then
-    echo "${result}"
+    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
+      result=
+    fi
+    printf "${result}"
   fi
 
   return ${code}
 }
 
 read_json() {
-  file=$1
-  key=$2
+  file="${1}"
+  key="${2}"
+  ignore_null="${3:-true}"
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   jq="${utils_dir}/njq/src/index.js"
@@ -120,8 +125,45 @@ read_json() {
   fi
 
   if [ ${code} -eq 0 ]; then
-    echo "${result}"
+    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
+      result=
+    fi
+    printf "${result}"
   fi
 
   return ${code}
+}
+
+update_yaml() {
+  file="${1}"
+  key="${2}"
+  val="${3}"
+  expected_sample="${4}"
+
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+  
+  print_message "- update \"${key}\" with value: ${val}"
+  result=$(node "${config_converter}" yaml update "${file}" "${key}" "${val}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+    print_error_and_exit "Error ZWEL0138E: Failed to update key ${key} of file ${file}." "" 138
+  fi
+
+  ensure_file_encoding "${file}" "${expected_sample}"
+}
+
+update_zowe_yaml() {
+  update_yaml "${1}" "${2}" "${3}" "zowe:"
 }

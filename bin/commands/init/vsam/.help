@@ -1,7 +1,7 @@
 This command will run ZWECSVSM jcl to create VSAM data set for Zowe APIML
 Caching Service.
 
-These Zowe YAML configurations showing with sample values are required:
+These Zowe YAML configurations showing with sample values are used:
 
 ```
 zowe:

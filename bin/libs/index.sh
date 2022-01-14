@@ -12,7 +12,7 @@
 #######################################################################
 
 if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
-  >&2 echo "Error ZWEL0101E: ZWE_zowe_runtimeDirectory is not defined"
+  >&2 echo "Error ZWEL0101E: ZWE_zowe_runtimeDirectory is not defined."
   exit 101
 fi
 

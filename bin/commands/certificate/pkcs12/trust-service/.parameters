@@ -5,4 +5,3 @@ password|p|string|required||||Password of the certificate keystore.
 host||string|required||||Host name of the service.
 port||string|required||||Port of the service.
 alias|a|string|required||||Certificate alias name for the imported the certificate.
-verify||boolean|||||Whether we should verify the certificate common name or subject alternate name(s) of the the service.
