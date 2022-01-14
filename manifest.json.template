@@ -63,32 +63,26 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "repository": "libs-release-local",
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "repository": "libs-release-local",
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "repository": "libs-release-local",
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "repository": "libs-release-local",
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "repository": "libs-release-local",
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "metrics-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "repository": "libs-release-local",
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip"
     },
