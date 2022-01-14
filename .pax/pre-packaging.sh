@@ -24,7 +24,7 @@
 # expected workspace layout:
 # ./content/smpe/
 # ./content/templates/
-# ./content/zowe-${ZOWE_VERSION}/
+# ./content/
 
 # ---------------------------------------------------------------------
 # --- create JCL files
@@ -150,7 +150,7 @@ BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 export NODE_HOME=/ZOWE/node/node-v12.18.4-os390-s390x
 
 cd "${BASE_DIR}"
-ZOWE_ROOT_DIR="${BASE_DIR}/content/$(ls -1 content | grep zowe-)"
+ZOWE_ROOT_DIR="${BASE_DIR}/content"
 ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 # add zwe command to PATH
 export PATH=${ZOWE_ROOT_DIR}/bin:${PATH}
@@ -279,8 +279,8 @@ mv -f "$WORKFLOW_PATH/smpe-install.properties" "$WORKFLOW_PATH/ZWEYML01.yml"
 #2. create all other workflow & JCL, must be last in workflow creation
 echo "[$SCRIPT_NAME] create all other workflow & JCL, must be last in workflow creation"
 cd "${BASE_DIR}"
-WORKFLOW_PATH="./content/zowe-$ZOWE_VERSION/files/workflows"
-JCL_PATH="./content/zowe-$ZOWE_VERSION/files/SZWESAMP"
+WORKFLOW_PATH="./content/files/workflows"
+JCL_PATH="./content/files/SZWESAMP"
 _createWorkflow "./templates"
 if [ -f "${ZOWE_ROOT_DIR}/files/SZWESAMP/ZWESECUR.jcl" ]; then
   mv "${ZOWE_ROOT_DIR}/files/SZWESAMP/ZWESECUR.jcl" "${ZOWE_ROOT_DIR}/files/SZWESAMP/ZWESECUR"
