@@ -39,7 +39,7 @@ zowe:
     mvs:
       # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
-      hlq: IBMUSER.ZWE
+      hlq: IBMUSER.ZWEV2
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: USER.PROCLIB
@@ -102,16 +102,16 @@ zowe:
         directory: /var/zowe/keystore
         # **COMMONLY_CUSTOMIZED**
         # # Certificate alias name. Optional, default value is localhost.
-        # name: ZoweCert
+        # name: localhost
         # **COMMONLY_CUSTOMIZED**
         # # Keystore password. Optional, default value is password.
-        # password: pass123456
+        # password: password
         # **COMMONLY_CUSTOMIZED**
         # # Alias name of self-signed certificate authority. Optional, default value is local_ca.
-        # caAlias: ZoweCA
+        # caAlias: local_ca
         # **COMMONLY_CUSTOMIZED**
         # # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
-        # caPassword: pass654321
+        # caPassword: local_ca_password
       # # Distinguished name for Zowe generated certificates. All optional.
       # dname:
       #   caCommonName: ""
