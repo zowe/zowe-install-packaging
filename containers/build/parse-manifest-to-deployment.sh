@@ -36,7 +36,7 @@ do
         tag=
     fi
     if [ -z "${tag}" ]; then
-        tag=latest-ubuntu
+        tag=1-ubuntu
     fi
     # construct image line
     image="${registry}/${name}:${tag}"

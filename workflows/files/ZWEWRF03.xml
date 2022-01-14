@@ -80,13 +80,16 @@ Keep this variable empty if you do not want to copy the STC task.</description>
     <variable name="LAUNCH_COMPONENT_GROUPS" scope="instance" visibility="public">
         <label>Launch Component Groups</label>
         <abstract>Comma separated list of components should start</abstract>
-        <description>Comma separated list of components should start</description>
+        <description>GATEWAY will start the API mediation layer which includes the API catalog, the API gateway, and the API discovery service.
+          DESKTOP will start the Zowe desktop which includes the browser GUI for hosting Zowe applications. It will also start ZSS. 
+          ZSS will start the ZSS server without including the Desktop and Application Framework server. This can be used with Docker.</description>
         <category>Global Config</category>
-        <string valueMustBeChoice="true" multiLine="false">
+        <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <choice>GATEWAY</choice>
             <choice>DESKTOP</choice>
             <choice>GATEWAY,DESKTOP</choice>
+            <choice>ZSS</choice>
             <default>GATEWAY,DESKTOP</default>
         </string>
     </variable>
