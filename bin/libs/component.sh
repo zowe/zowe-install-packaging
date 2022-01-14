@@ -56,12 +56,16 @@ find_component_directory() {
       component_dir="${ZWE_zowe_extensionDirectory}/${component_id}"
     fi
   elif [ -n "${ZWE_zowe_extensionDirectories}" ]; then
-    for extension_dir in $(echo "${ZWE_zowe_extensionDirectories}" | sed 's/,/ /g'); do
-      if [ -d "${extension_dir}/${component_id}" ]; then
+    # fix potential issue where ext dir has spaces
+    while read -r extension_dir; do
+      extension_dir=$(echo "${extension_dir}" | trim)
+      if [ -n "${extension_dir}" -a -d "${extension_dir}/${component_id}" ]; then
         # this is an extension installed/linked in ZWE_zowe_extensionDirectories
         component_dir="${extension_dir}/${component_id}"
       fi
-    done
+    done <<EOF
+$(echo "${ZWE_zowe_extensionDirectories}" | tr "," "\n")
+EOF
   fi
 
   echo "${component_dir}"
@@ -161,7 +165,7 @@ find_all_installed_components() {
     fi
   done
 
-  if [ -n "${ZWE_zowe_extensionDirectory}" ]; then
+  if [ -n "${ZWE_zowe_extensionDirectory}" -a -d "${ZWE_zowe_extensionDirectory}" ]; then
     for component in $(find_sub_directories "${ZWE_zowe_extensionDirectory}"); do
       component_dir="${ZWE_zowe_extensionDirectory}/${component}"
       if [ -f "${component_dir}/manifest.yaml" -o -f "${component_dir}/manifest.yml" -o -f "${component_dir}/manifest.json" ]; then
@@ -174,17 +178,22 @@ find_all_installed_components() {
   fi
 
   if [ -n "${ZWE_zowe_extensionDirectories}" ]; then
-    for extension_dir in $(echo "${ZWE_zowe_extensionDirectories}" | sed 's/,/ /g'); do
-      for component in $(find_sub_directories "${extension_dir}"); do
-        component_dir="${extension_dir}/${component}"
-        if [ -f "${component_dir}/manifest.yaml" -o -f "${component_dir}/manifest.yml" -o -f "${component_dir}/manifest.json" ]; then
-          if [ -n "${components}" ]; then
-            components="${components},"
+    while read -r extension_dir; do
+      extension_dir=$(echo "${extension_dir}" | trim)
+      if [ -n "${extension_dir}" -a -d "${extension_dir}" ]; then
+        for component in $(find_sub_directories "${extension_dir}"); do
+          component_dir="${extension_dir}/${component}"
+          if [ -f "${component_dir}/manifest.yaml" -o -f "${component_dir}/manifest.yml" -o -f "${component_dir}/manifest.json" ]; then
+            if [ -n "${components}" ]; then
+              components="${components},"
+            fi
+            components="${components}${component}"
           fi
-          components="${components}${component}"
-        fi
-      done
-    done
+        done
+      fi
+    done <<EOF
+$(echo "${ZWE_zowe_extensionDirectories}" | tr "," "\n")
+EOF
   fi
 
   echo "${components}"
