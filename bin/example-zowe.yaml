@@ -251,15 +251,16 @@ zowe:
       # Storage class name if you are using VSAM in RLS mode
       storageClass:
 
-  # # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # # Zowe root directory
-  # #
-  # # If it's not specified, this value will be generated with the path of where
-  # # you run the "zwe" command.
-  # #
-  # # If it's set with a value points to where Zowe is installed, it will limit
-  # # this YAML configuration only works with that copy of Zowe runtime.
-  # runtimeDirectory: /global/zowe/runtime
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # **COMMONLY_CUSTOMIZED**
+  # Zowe runtime (root) directory
+  #
+  # If it's not specified and you passed "--update-config" argument when you run
+  # "zwe init" command, this value will be updated with the Zowe runtime where
+  # the "zwe" command is located.
+  #
+  # This value is required for ZWESLSTC to know where is Zowe runtime.
+  runtimeDirectory:
   # **COMMONLY_CUSTOMIZED**
   # Where to store runtime logs
   logDirectory: /global/zowe/instance/logs

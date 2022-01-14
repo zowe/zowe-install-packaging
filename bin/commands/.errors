@@ -3,7 +3,7 @@ ZWEL0101E|101|ZWE_zowe_runtimeDirectory is not defined.
 ZWEL0102E|102|Invalid parameter %s.
 ZWEL0103E|103|Invalid type of parameter %s.
 ZWEL0104E|104|Invalid command %s.
-ZWEL0105E|105|The Zowe YAML config file is limited to Zowe runtime of %s, which is not same as where zwe command locates.
+ZWEL0105E|105|The Zowe YAML config file is associated to Zowe runtime "%s", which is not same as where zwe command is located.
 ZWEL0106E|106|%s parameter is required.
 ZWEL0107E|107|No handler defined for command %s.
 ZWEL0108E|108|Zowe YAML config file is required.

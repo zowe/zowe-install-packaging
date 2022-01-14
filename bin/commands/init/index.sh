@@ -16,7 +16,7 @@ print_level0_message "Configure Zowe"
 ###############################
 # detect and write node/java home
 if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
-  print_level1_message "Check if we need to update Java and/or node.js settings in Zowe YAML configuration"
+  print_level1_message "Check if we need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration"
   yaml_updated=
 
   yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
@@ -39,10 +39,26 @@ if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     fi
   fi
 
-  if [ "${yaml_updated}" = "true" ]; then
-    print_level2_message "Java and/or node.js settings are updated successfully."
+  require_zowe_yaml
+
+  # do we have zowe.runtimeDirectory defined in zowe.yaml?
+  yaml_runtime_dir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
+  if [ -n "${yaml_runtime_dir}" ]; then
+    result=$(are_directories_same "${yaml_runtime_dir}" "${ZWE_zowe_runtimeDirectory}")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime \"${yaml_runtime_dir}\", which is not same as where zwe command is located." "" 105
+    fi
+    # no need to update
   else
-    print_level2_message "Java and node.js settings are not updated."
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.runtimeDirectory" "${ZWE_zowe_runtimeDirectory}"
+    yaml_updated=true
+  fi
+
+  if [ "${yaml_updated}" = "true" ]; then
+    print_level2_message "Runtime directory, Java and/or node.js settings are updated successfully."
+  else
+    print_level2_message "Runtime directory, Java and node.js settings are not updated."
   fi
 fi
 
