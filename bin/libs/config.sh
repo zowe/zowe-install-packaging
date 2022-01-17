@@ -111,9 +111,12 @@ sanitize_ha_instance_id() {
 load_environment_variables() {
   component_id="${1}"
 
-  # we must have $ZWE_zowe_workspaceDirectory at this time
+  # we must have $ZWE_zowe_workspaceDirectory at this point
   if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
     export ZWE_RUN_IN_CONTAINER=true
+    # these are already set in prepare stage, re-ensure for start
+    export TMPDIR="${ZWE_zowe_workspaceDirectory}/.tmp"
+    export TMP="${ZWE_zowe_workspaceDirectory}/.tmp"
   fi
 
   # now we can load all variables
@@ -123,8 +126,14 @@ load_environment_variables() {
     source_env "${ZWE_zowe_workspaceDirectory}/.env/.instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env"
   fi
 
+  # these are already set in prepare stage, re-ensure for start
+  export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
+  export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
+  export ZWE_GATEWAY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/"
+
   # generate other variables
   export ZWE_INSTALLED_COMPONENTS="$(find_all_installed_components)"
   export ZWE_ENABLED_COMPONENTS="$(find_all_enabled_components)"
   export ZWE_LAUNCH_COMPONENTS="$(find_all_launch_components)"
+  # ZWE_DISCOVERY_SERVICES_LIST should have been prepared in zowe-install-packaging-tools
 }
