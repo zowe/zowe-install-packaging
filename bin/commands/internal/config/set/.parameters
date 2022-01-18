@@ -1,0 +1,2 @@
+path|p|string|required||||Path of the configuration. For example, `components.gateway.port`.
+value|e|string|||||New value of the configuration.

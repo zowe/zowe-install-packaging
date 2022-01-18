@@ -1,1 +1,0 @@
-configuration-path|p|string|required||||Path of the configuration. For example, `components.gateway.port`.
