@@ -14,10 +14,13 @@
  * It supports these parameters:
  *
  * -k: skip https certificate check
+ * --cacert: path to CA certificate PEM file
+ * -E|--cert: path to PEM format certificate file for client authentication
+ * --key: path to PEM format private key file for client authentication
  * -X: http method
  * -H: http header
  * -d: post/put method body
- * -u: username:password
+ * -u: basic authentication in format of username:password
  * -o, --output <file> Write to file instead of stdout
  * -v: verbose mode
  * -J: prettify JSON response to make it more readable

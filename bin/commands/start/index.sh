@@ -54,5 +54,5 @@ fi
 
 ###############################
 # exit message
-print_level1_message "Job ${security_stcs_zowe} is started successfully."
+print_level1_message "Job ${jobname:-security_stcs_zowe} is started successfully."
 

@@ -46,7 +46,7 @@ prepare_running_in_container() {
 prepare_workspace_directory() {
   export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
   export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
-  export ZWE_GATEWAY_SHARED_LIBS=${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/
+  export ZWE_GATEWAY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/"
 
   mkdir -p "${ZWE_zowe_workspaceDirectory}"
 
@@ -276,8 +276,8 @@ fi
 if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
   print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Setting TMPDIR to ${ZWE_zowe_workspaceDirectory}/.tmp."
   mkdir -p "${ZWE_zowe_workspaceDirectory}/.tmp"
-  export TMPDIR=${ZWE_zowe_workspaceDirectory}/.tmp
-  export TMP=${ZWE_zowe_workspaceDirectory}/.tmp
+  export TMPDIR="${ZWE_zowe_workspaceDirectory}/.tmp"
+  export TMP="${ZWE_zowe_workspaceDirectory}/.tmp"
 fi
 
 # Fix node.js piles up in IPC message queue
