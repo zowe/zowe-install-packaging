@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="IBM-1047" standalone="yes"?>
+<workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<autoTakeOwnership>true</autoTakeOwnership>
+<workflowInfo>
+        <workflowID scope="none">ZOWE_Mount</workflowID>
+        <workflowDefaultName>ZOWE Mount Workflow</workflowDefaultName>
+        <workflowDescription>This workflow performs mount action of ZOWE zFS.</workflowDescription>
+        <workflowVersion>1.0</workflowVersion>
+        <vendor>Open Mainframe Project</vendor>
+        <Configuration>
+            <productID>ZOWE</productID>
+            <productName>ZOWE</productName>
+            <productVersion>1.24.0</productVersion>
+        </Configuration>
+    </workflowInfo>
+    <variable name="izud-datasets">
+        <label>Data sets in instance</label>
+        <abstract>The list of data sets in the software instance.</abstract>
+        <description>The list of data sets in the software instance. izud-datasets is an array type variable.
+    </description>
+        <category>SWI Variables</category>
+        <array/>
+    </variable>
+    <variable name="izud-dsname">
+        <label>Dataset name</label>
+        <abstract>Data set in the software instance.</abstract>
+        <description>Data set in the software instance.
+    </description>
+        <category>SWI Variables</category>
+        <string/>
+    </variable>
+    <variable name="izud-dstype">
+        <label>Dataset type</label>
+        <abstract>Dataset type.</abstract>
+        <description>Dataset type.
+    </description>
+        <category>SWI Variables</category>
+        <string/>
+    </variable>
+    <variable name="izud-mountpoint">
+        <label>ZFS Dataset mountpoint</label>
+        <abstract>Indicates the mount point for the UNIX file system data set.</abstract>
+        <description>Indicates the mount point for the UNIX file system data set.
+    </description>
+        <category>SWI Variables</category>
+        <string/>
+    </variable>
+    <step name="MountZFS" optional="false">
+        <title>Mount ZOWE zFS</title>
+        <description>This step mounts ZOWE zFS on the mount point that was selected during the deployment.</description>
+        <instructions substitution="false">Make sure you have correct SYSAFF in the following JCL so the filesystem is
+         mounted correctly.
+        </instructions>
+        <weight>1</weight>
+        <skills>z/OS system programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">
+## Find ZFS dataset
+#foreach($ds in ${instance-izud-datasets})
+#if (${ds.izud-dstype} == "ZFS")
+#set ($zfsdsn = ${ds.izud-dsname})
+#set ($zfsmount = ${ds.izud-mountpoint})
+#break
+#end
+#end
+//MKDIR  EXEC PGM=BPXBATCH
+//STDOUT DD SYSOUT=*
+//STDERR DD SYSOUT=*
+//STDPARM  DD *
+SH mkdir -p ${zfsmount}
+/*
+//ZWE9MNT  EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50
+//SYSTSPRT DD SYSOUT=*
+//SYSTSOUT DD SYSOUT=*
+//SYSTSIN DD *
+MOUNT FILESYSTEM('${zfsdsn}') +
+TYPE(ZFS) MODE(RDWR) +
+PARM('AGGRGROW') +
+MOUNTPOINT('${zfsmount}')
+/*</inlineTemplate>
+            <submitAs maxRc="8">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+        </template>
+    </step>
+</workflow>
