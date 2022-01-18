@@ -36,7 +36,16 @@ shell_read_yaml_java_home() {
 }
 
 detect_java_home() {
+  java_home=
+
   # do we have which?
+  java_bin_home=$(which java 2>/dev/null)
+  if [ -n "${java_bin_home}" ]; then
+    # extract java home from result like: /var/jdk/bin/java
+    java_home=$(dirname "$(dirname "${java_bin_home}")")
+  fi
+
+  # fall back to check PATH
   java_home=$(which java 2>/dev/null)
   if [ -z "${java_home}" ]; then
     java_home=$(
@@ -50,9 +59,12 @@ detect_java_home() {
       done
     ) 
   fi
+
+  # fall back to the most well-known java path
   if [ -z "${java_home}" -a -f /usr/lpp/java/J8.0_64/bin/java ]; then
     java_home=/usr/lpp/java/J8.0_64
   fi
+
   if [ -n "${java_home}" ]; then
     printf "${java_home}"
   fi
