@@ -16,4 +16,8 @@
 require_zowe_yaml
 
 ###############################
-read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".${ZWE_CLI_PARAMETER_PATH}"
+if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ] && [[ "${ZWE_CLI_PARAMETER_PATH}" != "haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}."* ]]; then
+  read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.${ZWE_CLI_PARAMETER_PATH}"
+else
+  read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".${ZWE_CLI_PARAMETER_PATH}"
+fi

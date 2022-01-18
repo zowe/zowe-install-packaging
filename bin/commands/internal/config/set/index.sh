@@ -15,5 +15,12 @@
 # validation
 require_zowe_yaml
 
+# check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
+sanitize_ha_instance_id
+
 ###############################
-update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
+if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ] && [[ "${ZWE_CLI_PARAMETER_PATH}" != "haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}."* ]]; then
+  update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
+else
+  update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
+fi

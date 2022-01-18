@@ -1,2 +1,0 @@
-ha-instance|i|string|||||Zowe high availability instance ID.
-variable|r|string|required||||Environment variable name to get value.
