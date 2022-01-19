@@ -340,7 +340,7 @@ pkcs12_trust_service() {
   print_message ">>>> Getting certificates from service host"
   print_cert_cmd="-printcert -sslserver ${service_host}:${service_port} -J-Dfile.encoding=UTF8"
 
-  if [ "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "TRACE" ]; then
+  if [ "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "TRACE" ]; then
     # only run in debug mode
     service_fingerprints=$(pkeytool ${print_cert_cmd} | grep -e 'Owner:' -e 'Issuer:' -e 'SHA1:' -e 'SHA256:' -e 'MD5')
     code=$?

@@ -17,7 +17,7 @@ export ZWE_CLI_COMMANDS_LIST=
 export ZWE_CLI_PARAMETERS_LIST=
 export ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=
 export ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND=true
-export ZWE_PRIVATE_LOG_LEVEL_CLI=INFO
+export ZWE_PRIVATE_LOG_LEVEL_ZWELS=INFO
 
 zwecli_append_parameters_definition() {
   if [ $# -eq 0 ]; then
@@ -144,10 +144,10 @@ EOF
 
 zwecli_process_loglevel() {
   if [ "${ZWE_CLI_PARAMETER_DEBUG}" = "true" -o "${ZWE_CLI_PARAMETER_VERBOSE}" = "true" ]; then
-    ZWE_PRIVATE_LOG_LEVEL_CLI=DEBUG
+    ZWE_PRIVATE_LOG_LEVEL_ZWELS=DEBUG
   fi
   if [ "${ZWE_CLI_PARAMETER_TRACE}" = "true" ]; then
-    ZWE_PRIVATE_LOG_LEVEL_CLI=TRACE
+    ZWE_PRIVATE_LOG_LEVEL_ZWELS=TRACE
   fi
 }
 

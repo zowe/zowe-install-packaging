@@ -42,6 +42,20 @@ prepare_running_in_container() {
 }
 
 ########################################################
+# Prepare log directory
+prepare_log_directory() {
+  # TODO: is it ok ZWE_zowe_logDirectory is not defined?
+  if [ -n "${ZWE_zowe_logDirectory}" ]; then
+    mkdir -p "${ZWE_zowe_logDirectory}"
+
+    if [ ! -w "${ZWE_zowe_logDirectory}" ]; then
+      print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_log_directory:${LINENO}" "ZWEL0141E: User $(get_user_id) does not have write permission on ${ZWE_zowe_logDirectory}."
+      exit 141
+    fi
+  fi
+}
+
+########################################################
 # Prepare workspace directory
 prepare_workspace_directory() {
   export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
@@ -299,9 +313,8 @@ require_java
 require_node
 require_zowe_yaml
 
-export ZWE_PRIVATE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)
-# overwrite ZWE_PRIVATE_LOG_LEVEL_CLI with ZWE_PRIVATE_LOG_LEVEL_ZWELS
-ZWE_PRIVATE_LOG_LEVEL_CLI="${ZWE_PRIVATE_LOG_LEVEL_ZWELS}"
+# overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
+ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)"
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 sanitize_ha_instance_id
@@ -312,7 +325,10 @@ if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
   prepare_running_in_container
 fi
 
-# init workspace directory and load environment variables
+# init log directory
+prepare_log_directory
+
+# init workspace directory and generate environment variables from YAML
 prepare_workspace_directory
 
 # now we can load all variables

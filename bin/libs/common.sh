@@ -76,7 +76,7 @@ print_debug() {
   message="${1}"
   write_to="${2}"
 
-  if [ "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "TRACE" ]; then
+  if [ "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "TRACE" ]; then
     print_raw_message "${message}" "true" "${write_to}"
   fi
 }
@@ -86,7 +86,7 @@ print_trace() {
   message="${1}"
   write_to="${2}"
 
-  if [ "${ZWE_PRIVATE_LOG_LEVEL_CLI}" = "TRACE" ]; then
+  if [ "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "TRACE" ]; then
     print_raw_message "${message}" "true" "${write_to}"
   fi
 }

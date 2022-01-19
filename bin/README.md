@@ -100,8 +100,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PRIVATE_DS_SZWESAMP` is the data set name for Zowe sample configurations . Default value is `SZWESAMP`.
 - `ZWE_PRIVATE_DS_SZWEEXEC` is the data set name for Zowe executable utilities library. Default value is `SZWEEXEC`.
 - `ZWE_PRIVATE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
-- `ZWE_PRIVATE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` `zwe` command parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
-- `ZWE_PRIVATE_LOG_LEVEL_ZWELS` is the log level defined in zowe.yaml `zowe.launchScript.logLevel` to control Zowe runtime logging. Default value is `INFO`. This configuration is case insensitive.
+- `ZWE_PRIVATE_LOG_LEVEL_ZWELS`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` `zwe` command parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`. In Zowe runtime, value of `zowe.launchScript.logLevel` defined in Zowe YAML configuration file will overwrite this value.
 - `ZWE_PRIVATE_WORKSPACE_ENV_DIR` is where Zowe stores calculated environment
 
 ### Generated environment variables from Zowe YAML configuration
