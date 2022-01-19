@@ -128,7 +128,7 @@
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="racf_acid" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="racf_acid" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Use this step to define the variables for RACF.</instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
