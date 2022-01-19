@@ -18,9 +18,8 @@ require_java
 require_node
 require_zowe_yaml
 
-export ZWE_PRIVATE_LOG_LEVEL_ZWELS=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)
-# overwrite ZWE_PRIVATE_LOG_LEVEL_CLI with ZWE_PRIVATE_LOG_LEVEL_ZWELS
-ZWE_PRIVATE_LOG_LEVEL_CLI="${ZWE_PRIVATE_LOG_LEVEL_ZWELS}"
+# overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
+ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)"
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 sanitize_ha_instance_id
