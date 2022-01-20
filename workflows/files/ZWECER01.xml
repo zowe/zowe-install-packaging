@@ -202,7 +202,9 @@
                 </targetStateSet>
             </condition>
             <!--variableValues-->
-            <instructions substitution="true">This step will generate the CSR request into the ${instance-output_dataset}</instructions>
+            <instructions substitution="true"><![CDATA[This step will generate the CSR request into the ${instance-output_dataset}
+
+<p>This step uses the <a href="https://www.ibm.com/docs/en/zos/2.1.0?topic=syntax-racdcert-genreq-generate-request">RACDCERT GENREQ</a> command</p>]]></instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
             <autoEnable>true</autoEnable>
@@ -239,7 +241,8 @@ RACDCERT GENREQ ( +
                 </targetStateSet>
             </condition>
             <!--variableValues-->
-            <instructions substitution="true">This step will generate the CSR request into the ${instance-output_dataset}</instructions>
+            <instructions substitution="true"><![CDATA[This step will generate the CSR request into the ${instance-output_dataset}
+<p>TSS command <a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-top-secret-for-z-os/16-0/administrating/issuing-commands-to-communicate-administrative-requirements/command-functions/genreq-function-generate-a-certificate-request.html">GENREQ</a> is used here.</p>]]></instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
             <autoEnable>true</autoEnable>
@@ -299,7 +302,8 @@ GENREQ ${instance-acf2_acid} +
         <prereqStep name="generate_csr"/>
         <!-- condition -->
         <!--variableValues-->
-        <instructions substitution="true">Copies the CSR to the ${instance-uss_output_folder}request.csr</instructions>
+        <instructions substitution="true"><![CDATA[Copies the CSR to the ${instance-uss_output_folder}request.csr
+<p>This step uses ACF2 command <a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/command-reference/acf-subcommands/genreq-subcommand.html">GENREQ</a></p>]]></instructions>
         <weight>1</weight>
         <skills>Security Administrator</skills>
         <autoEnable>true</autoEnable>
