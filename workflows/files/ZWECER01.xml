@@ -285,7 +285,7 @@ TSS GENREQ(${instance-tss_acid}) +
 SET PROFILE(USER) DIV(CERTDATA)
 GENREQ ${instance-acf2_acid} +
     DSNAME('${instance-output_dataset}') +
-    LABEL('instance-certificate_label')
+    LABEL('${instance-certificate_label}')
 /*</inlineTemplate>
                 <submitAs maxRc="4">JCL</submitAs>
                 <maxLrecl>80</maxLrecl>
