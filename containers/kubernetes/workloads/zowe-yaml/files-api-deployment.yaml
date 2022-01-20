@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/version: "2.0.0"
     app.kubernetes.io/component: files-api
     app.kubernetes.io/part-of: explorer-api
     app.kubernetes.io/managed-by: manual
@@ -31,8 +31,6 @@ spec:
       serviceAccountName: zowe-sa
       volumes:
         - name: zowe-runtime
-          emptyDir: {}
-        - name: zowe-instance
           emptyDir: {}
         - name: zowe-config
           configMap:
@@ -58,17 +56,17 @@ spec:
               cpu: "300m"
           ports:
             - name: files-api-port
-              containerPort: 8547
+              containerPort: 7547
               protocol: TCP
           startupProbe:
             tcpSocket:
-              port: 8547
+              port: 7547
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
             periodSeconds: 10
             failureThreshold: 60
           livenessProbe:
             tcpSocket:
-              port: 8547
+              port: 7547
             # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
             periodSeconds: 10
             failureThreshold: 3
@@ -93,17 +91,15 @@ spec:
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
-            - name: zowe-instance
-              mountPath: "/home/zowe/instance"
             - name: zowe-config
-              mountPath: "/home/zowe/instance/zowe.yaml"
+              mountPath: "/home/zowe/zowe.yaml"
               subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
               mountPath: "/home/zowe/keystore/"
               readOnly: true
             - name: zowe-workspace
-              mountPath: "/home/zowe/instance/workspace"
+              mountPath: "/home/zowe/workspace"
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
@@ -125,11 +121,11 @@ spec:
           volumeMounts:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
-            - name: zowe-instance
-              mountPath: "/home/zowe/instance"
+            - name: zowe-workspace
+              mountPath: "/home/zowe/workspace"
         - name: update-workspace-permission
           image: busybox:1.28
-          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/workspace` && PERMISSION=`stat -c "%a" /home/zowe/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/workspace; fi']
           imagePullPolicy: Always
           resources:
             requests:
@@ -140,7 +136,7 @@ spec:
               cpu: "100m"
           volumeMounts:
             - name: zowe-workspace
-              mountPath: "/home/zowe/instance/workspace"
+              mountPath: "/home/zowe/workspace"
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false

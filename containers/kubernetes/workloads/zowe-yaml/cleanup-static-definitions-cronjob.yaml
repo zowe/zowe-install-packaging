@@ -26,8 +26,6 @@ spec:
           volumes:
             - name: zowe-runtime
               emptyDir: {}
-            - name: zowe-instance
-              emptyDir: {}
             - name: zowe-config
               configMap:
                 name: zowe-config
@@ -65,21 +63,19 @@ spec:
               volumeMounts:
                 - name: zowe-runtime
                   mountPath: "/home/zowe/runtime"
-                - name: zowe-instance
-                  mountPath: "/home/zowe/instance"
                 - name: zowe-config
-                  mountPath: "/home/zowe/instance/zowe.yaml"
+                  mountPath: "/home/zowe/zowe.yaml"
                   subPath: zowe.yaml
                   readOnly: true
                 - name: zowe-keystore
                   mountPath: "/home/zowe/keystore/"
                   readOnly: true
                 - name: zowe-workspace
-                  mountPath: "/home/zowe/instance/workspace"
+                  mountPath: "/home/zowe/workspace"
           initContainers:
             - name: update-workspace-permission
               image: busybox:1.28
-              command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+              command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/workspace` && PERMISSION=`stat -c "%a" /home/zowe/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/workspace; fi']
               imagePullPolicy: Always
               resources:
                 requests:
@@ -90,7 +86,7 @@ spec:
                   cpu: "100m"
               volumeMounts:
                 - name: zowe-workspace
-                  mountPath: "/home/zowe/instance/workspace"
+                  mountPath: "/home/zowe/workspace"
               securityContext:
                 readOnlyRootFilesystem: true
                 allowPrivilegeEscalation: false
