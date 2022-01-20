@@ -56,17 +56,17 @@ spec:
               cpu: "300m"
           ports:
             - name: jobs-api-port
-              containerPort: 7545
+              containerPort: 7600
               protocol: TCP
           startupProbe:
             tcpSocket:
-              port: 7545
+              port: 7600
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
             periodSeconds: 10
             failureThreshold: 60
           livenessProbe:
             tcpSocket:
-              port: 7545
+              port: 7600
             # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
             periodSeconds: 10
             failureThreshold: 3

@@ -56,17 +56,17 @@ spec:
               cpu: "100m"
           ports:
             - name: mvs-port
-              containerPort: 7548
+              containerPort: 7561
               protocol: TCP
           startupProbe:
             tcpSocket:
-              port: 7548
+              port: 7561
             # this should give 18 * periodSeconds(default to 10) seconds about 3 minutes to confirm it's ready
             periodSeconds: 10
             failureThreshold: 18
           livenessProbe:
             tcpSocket:
-              port: 7548
+              port: 7561
             # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
             periodSeconds: 10
             failureThreshold: 3
