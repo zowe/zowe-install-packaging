@@ -293,8 +293,6 @@ fi
 echo "[$SCRIPT_NAME] clean up working files"
 rm -rf "./templates"
 
-# prepare for SMPE
-
 echo "[$SCRIPT_NAME] compile java utilities ..."
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 javac HashFiles.java && rm HashFiles.java
