@@ -17,7 +17,7 @@
     "mocha-jenkins-reporter": "0.4.6",
     "mocha-multi-reporters": "1.5.1",
     "mochawesome": "6.3.1",
-    "node-fetch": "2.6.1",
+    "node-fetch": "3.1.1",
     "node-ssh": "12.0.1",
     "selenium-webdriver": "4.0.0-beta.4"
   },
