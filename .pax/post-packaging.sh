@@ -92,6 +92,9 @@ if [ ! -f smpe.pax ]; then
   exit 1
 fi
 
+echo PAUSE
+exit 1
+
 # get build info from manifest.json
 # input:
 # {
