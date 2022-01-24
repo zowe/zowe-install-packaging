@@ -590,6 +590,7 @@ process_component_appfw_plugin() {
 #
 # @param string   component directory
 process_component_gateway_shared_libs() {
+
   component_dir=$1
 
   all_succeed=true
@@ -597,13 +598,14 @@ process_component_gateway_shared_libs() {
   plugin_id=
   gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
+
   while [ "${gateway_shared_libs_path}" != "null" ] && [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
 
     if [ -z "${plugin_id}" ]; then
       # prepare plugin directory
       plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
-      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs/${plugin_id}"
+      gateway_shared_libs_workspace_path="${WORKSPACE_DIR}/gateway/sharedLibs"
       mkdir -p "${gateway_shared_libs_workspace_path}"
     fi
 

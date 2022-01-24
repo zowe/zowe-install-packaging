@@ -29,7 +29,7 @@ async function readXml(file: string): Promise<any> {
   });
   const parseOpt: parseStringOptions = {trim: true};
   return await parseStringPromise(xml, parseOpt);
-};
+}
 
 (async (): Promise<void> => {
   // ---------------------------------------------------------

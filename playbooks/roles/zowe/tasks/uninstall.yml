@@ -76,12 +76,7 @@
 # ============================================================================
 - import_role:
     name: zowe
-    tasks_from: uninstall_keyring  
-
-# ============================================================================
-- import_role:
-    name: zowe
-    tasks_from: delete_sso_token  
+    tasks_from: uninstall_keyring
 
 # ============================================================================
 - name: Check APF settings of {{ zowe_xmem_loadlib }}

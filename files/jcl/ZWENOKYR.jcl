@@ -62,8 +62,6 @@
 //         SET    LABEL='localhost'
 //*      * Zowe's local CA name
 //         SET  LOCALCA='localca'
-//*      * Certificate label of Zowe's JWT secret
-//         SET JWTLABEL='jwtsecret'
 //*
 //* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*                     12345678
@@ -93,9 +91,6 @@
   PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
-
-/* Delete jwtsecret certificate .....................................*/
-  RACDCERT DELETE(LABEL('&JWTLABEL.')) ID(&ZOWEUSER.)
 
 /* Delete LABEL certificate ........................................*/
   RACDCERT DELETE(LABEL('&LABEL.')) ID(&ZOWEUSER.)
@@ -131,10 +126,6 @@ ACF
 
   F ACF2,REBUILD(FAC)
 
-* Delete jwtsecret certificate .....................................*/
-  SET PROFILE(USER) DIVISION(CERTDATA)
-  DELETE &ZOWEUSER..ZOWEJWT
-
 * Delete LABEL certificate ........................................*/
   DELETE &ZOWEUSER..ZOWECERT
 
@@ -161,9 +152,6 @@ $$
 
 /* Remove permit to read keyring ................................... */
    TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
-
-/* Delete jwtsecret certificate .....................................*/
-   TSS REM(&ZOWEUSER.) DIGICERT(ZOWEJWT)
 
 /* Delete LABEL certificate ........................................*/
    TSS REM(&ZOWEUSER.) DIGICERT(ZOWECERT)
