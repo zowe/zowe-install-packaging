@@ -1,7 +1,5 @@
 ---
 zos_security_system: TSS
 zowe_sanity_test_testcases: "./test/**/!(api-doc-gen).js"
-zowe_token_name: ZWETOKEN
-zowe_token_label: ZoweJwtSecret
 zowe_apiml_security_x509_enabled: true
 zos_zosmf_ca: ZOSMFCA

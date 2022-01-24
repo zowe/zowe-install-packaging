@@ -1,0 +1,9 @@
+---
+  - name: Remove Zowe completely from your Kubernetes Cluster
+    delegate_to: localhost
+    kubernetes.core.k8s:
+      kubeconfig: "{{ kubeconfig }}" 
+      context: "{{ k8s_context }}"
+      state: absent 
+      src: ../containers/kubernetes/common/zowe-ns.yaml
+      wait: true

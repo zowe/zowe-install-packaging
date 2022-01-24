@@ -125,7 +125,7 @@ then
 else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
-    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,metrics-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
+    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,metrics-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss,apiml-sample-extension
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
@@ -141,6 +141,7 @@ fi
 
 # Directory containing all the Gateway shared jars to be added in the classpath
 ZWE_GATEWAY_SHARED_LIBS=${WORKSPACE_DIR}/gateway/sharedLibs/
+
 
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
