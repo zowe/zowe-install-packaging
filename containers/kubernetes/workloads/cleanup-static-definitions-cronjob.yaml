@@ -68,7 +68,7 @@ spec:
                   subPath: zowe.yaml
                   readOnly: true
                 - name: zowe-keystore
-                  mountPath: "/home/zowe/keystore/"
+                  mountPath: "/home/zowe/keystore"
                   readOnly: true
                 - name: zowe-workspace
                   mountPath: "/home/zowe/workspace"

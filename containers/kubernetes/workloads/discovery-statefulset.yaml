@@ -1,28 +1,31 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: caching
+  name: discovery
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/version: "2.0.0"
-    app.kubernetes.io/component: caching
+    app.kubernetes.io/component: discovery
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
+  serviceName: discovery-service
   selector:
     matchLabels:
       app.kubernetes.io/name: zowe
       app.kubernetes.io/instance: zowe
-      app.kubernetes.io/component: caching
+      app.kubernetes.io/component: discovery
+  # FIXME: please match this with ZWE_DISCOVERY_SERVICES_REPLICAS defined in ConfigMap zowe-config zowe.yaml section
+  replicas: 1
   template:
     metadata:
       labels:
         app.kubernetes.io/name: zowe
         app.kubernetes.io/instance: zowe
-        app.kubernetes.io/component: caching
+        app.kubernetes.io/component: discovery
     spec:
       securityContext:
         runAsUser: 20000
@@ -46,35 +49,35 @@ spec:
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
       containers:
-        - name: caching
-          image: zowe-docker-release.jfrog.io/ompzowe/caching-service:2-ubuntu
+        - name: discovery
+          image: zowe-docker-release.jfrog.io/ompzowe/discovery-service:2-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "100m"
+              memory: "384Mi"
+              cpu: "300m"
             limits:
               memory: "512Mi"
-              cpu: "400m"
+              cpu: "800m"
           ports:
-            - name: caching-port
-              containerPort: 7555
+            - name: discovery-port
+              containerPort: 7553
               protocol: TCP
           startupProbe:
             tcpSocket:
-              port: 7555
+              port: 7553
             # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
             periodSeconds: 10
             failureThreshold: 90
           livenessProbe:
             tcpSocket:
-              port: 7555
+              port: 7553
             # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
             periodSeconds: 10
             failureThreshold: 3
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
+            - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/zowe.yaml"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
@@ -102,7 +105,7 @@ spec:
               subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
-              mountPath: "/home/zowe/keystore/"
+              mountPath: "/home/zowe/keystore"
               readOnly: true
             - name: zowe-workspace
               mountPath: "/home/zowe/workspace"

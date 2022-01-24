@@ -72,7 +72,7 @@ spec:
             failureThreshold: 3
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
+            - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/zowe.yaml"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
@@ -96,7 +96,7 @@ spec:
               subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
-              mountPath: "/home/zowe/keystore/"
+              mountPath: "/home/zowe/keystore"
               readOnly: true
             - name: zowe-workspace
               mountPath: "/home/zowe/workspace"
