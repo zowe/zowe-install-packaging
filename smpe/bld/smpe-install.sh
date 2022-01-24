@@ -160,16 +160,19 @@ done    #
 test "$alter" && _cmd $alter $debug ZOWE PRE $extract -
 
 # install product
-echo "-- installing product in $stage & $mvsI"
+echo "-- installing product in $mvsI"
 echo The extract $extract contains
 ls -l $extract
 
 opts=""
-opts="$opts --hlq $mvsI"                          # target HLQ
-opts="$opts -i $stage"                         # target directory
-opts="$opts -f $log/$logFile"                  # install log
-test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
-_cmd $extract/$zweScript install -v $opts </dev/null
+opts="$opts --hlq $mvsI"                       # target HLQ
+opts="$opts -vv"                               # trace level debug info
+opts="$opts -l $log"                           # install log
+_cmd $extract/$zweScript install $opts </dev/null
+
+echo "-- copying product to  $stage"
+mkdir -p $stage
+cp -r $extract/ $stage
 
 # allow caller to alter product after install                    #debug
 test "$alter" && _cmd $alter $debug ZOWE POST $extract $stage
