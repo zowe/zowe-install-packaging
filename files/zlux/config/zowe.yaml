@@ -1,0 +1,62 @@
+components:
+  app-server:
+    node:
+      https:
+        ipAddresses:
+        - 0.0.0.0
+        port: 7556
+        keys:
+        - "../defaults/serverConfig/zlux.keystore.key"
+        certificates:
+        - "../defaults/serverConfig/zlux.keystore.cer"
+        certificateAuthorities:
+        - "../defaults/serverConfig/apiml-localca.cer"
+      mediationLayer:
+        server:
+          hostname: localhost
+          port: 7554
+          isHttps: true
+        enabled: false
+      headers:
+        X-frame-Options:
+          override: true
+          value: sameorigin
+    agent:
+      host: localhost
+      jwt:
+        fallback: true
+      https:
+        ipAddresses:
+        - 127.0.0.1
+        port: 7557
+      mediationLayer:
+        serviceName: zss
+        enabled: false
+    privilegedServerName: ZWESIS_STD
+    productDir: "../defaults"
+    siteDir: "../deploy/site"
+    instanceDir: "../deploy/instance"
+    groupsDir: "../deploy/instance/groups"
+    usersDir: "../deploy/instance/users"
+    pluginsDir: "../defaults/plugins"
+    dataserviceAuthentication:
+      defaultAuthentication: saf
+      rbac: false
+      implementationDefaults:
+        saf:
+          plugins:
+          - org.zowe.zlux.auth.safsso
+  zss:
+    agent:
+      host: localhost
+      jwt:
+        fallback: true
+      https:
+        ipAddresses:
+        - 127.0.0.1
+        port: 7557
+      mediationLayer:
+        serviceName: zss
+        enabled: false
+
+    
