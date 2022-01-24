@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Jan 24 2022 14:31:36 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1643034696840146834",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "refs/pull/2580/merge",
+  "workflow": "Zowe Build and Packaging",
+  "job": "cicd-test",
+  "actor": "FlappiTomic",
+  "runId": 1740325278,
+  "runNumber": 231,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/1740325278"
+}
