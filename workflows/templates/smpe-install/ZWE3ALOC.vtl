@@ -135,6 +135,30 @@
 //            BLKSIZE=0,
 //            DSN=&THLQ..SZWESAMP
 //*
+//SZWEEXEC DD SPACE=(TRK,(15,5,30)),
+//            UNIT=SYSALLDA,
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
+//            VOL=SER=&TVOL,
+#end
+#if($ibmTemplate == 'YES')
+//*           VOL=SER=&TVOL,
+#end
+#if( $tsclass and $tsclass != "" and $tsclass != '#tsclass')
+//            STORCLAS=${tsclass},
+#end
+#if( $tdclass and $tdclass != "" and $tdclass != '#tdclass')
+//            DATACLAS=${tdclass},
+#end
+#if( $tmclass and $tmclass != "" and $tmclass != '#tmclass')
+//            MGMTCLAS=${tmclass},
+#end
+//            DISP=(NEW,&DSP),
+//            DSNTYPE=LIBRARY,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            DSN=&THLQ..SZWEEXEC
+//*
 //EALLOCT  PEND
 //*
 //* ALLOCATE DISTRIBUTION LIBRARIES
