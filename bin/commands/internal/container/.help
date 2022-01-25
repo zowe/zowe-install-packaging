@@ -1,0 +1,3 @@
+Internal commands to help manager workloads in Zowe containers.
+
+NOTE: these internal commands are only used by Zowe Containerization use scenario.

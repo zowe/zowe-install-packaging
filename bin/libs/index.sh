@@ -28,6 +28,7 @@ export ZWE_PRIVATE_DEFAULT_XMEM_STC=ZWESISTC
 export ZWE_PRIVATE_DEFAULT_AUX_STC=ZWESASTC
 
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/certificate.sh"
+. "${ZWE_zowe_runtimeDirectory}/bin/libs/container.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/common.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/component.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/config.sh"

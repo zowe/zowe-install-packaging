@@ -1,3 +1,0 @@
-Actions will be executed before a service is stopped.
-
-NOTE: this internal command is used by Zowe Containerization use scenario.

@@ -36,4 +36,4 @@ COPY --chown=zowe:zowe zowe/LICENSE /licenses
 
 ##################################
 # start command
-CMD ["/component/bin/internal/container-init.sh"]
+CMD ["/component/bin/zwe internal container init"]

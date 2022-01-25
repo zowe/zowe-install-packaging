@@ -45,7 +45,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: app-server
-          image: zowe-docker-release.jfrog.io/ompzowe/app-server:2-ubuntu
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:2.0.0-ubuntu.v2-x-staging
           imagePullPolicy: Always
           resources:
             requests:
@@ -81,7 +81,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/zwe internal prestop -c /home/zowe/zowe.yaml"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/zwe internal container prestop -c /home/zowe/zowe.yaml"]
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false

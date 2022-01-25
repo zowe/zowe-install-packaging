@@ -85,7 +85,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/zwe internal prestop -c /home/zowe/zowe.yaml"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/zwe internal container prestop -c /home/zowe/zowe.yaml"]
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
