@@ -59,7 +59,7 @@
 # more definitions in main()
 removeInstall=0                # 1 if install removes installed files
 smpeFilter="/smpe"             # regex to find SMP/E archive name
-prodScript=install/zowe-install.sh  # product install script
+zweScript=bin/zwe              # path to v2 zwe command
 smpeScript=zowe-install-smpe.sh  # SMP/E-member install script
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
 cfgScript=get-config.sh        # script to read smpe.yaml config data
@@ -160,16 +160,19 @@ done    #
 test "$alter" && _cmd $alter $debug ZOWE PRE $extract -
 
 # install product
-echo "-- installing product in $stage & $mvsI"
+echo "-- installing product in $mvsI"
 echo The extract $extract contains
 ls -l $extract
 
 opts=""
-opts="$opts -h $mvsI"                          # target HLQ
-opts="$opts -i $stage"                         # target directory
-opts="$opts -f $log/$logFile"                  # install log
-test $removeInstall -eq 1 && opts="$opts -R"   # remove input when done
-_cmd $extract/$prodScript $debug $opts </dev/null
+opts="$opts --hlq $mvsI"                       # target HLQ
+opts="$opts -vv"                               # trace level debug info
+opts="$opts -l $log"                           # install log
+_cmd $extract/$zweScript install $opts </dev/null
+
+echo "-- copying product to  $stage"
+mkdir -p $stage
+cp -r $extract/ $stage
 
 # allow caller to alter product after install                    #debug
 test "$alter" && _cmd $alter $debug ZOWE POST $extract $stage

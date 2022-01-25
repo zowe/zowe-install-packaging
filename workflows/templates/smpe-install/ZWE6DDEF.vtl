@@ -167,6 +167,17 @@
 #end
         WAITFORDSN
         SHR .
+    ADD DDDEF (SZWEEXEC)
+        DATASET(&THLQ..SZWEEXEC)
+        UNIT(SYSALLDA)
+#if( $tvol and $tvol != "" and $tvol != '#tvol') 
+        VOLUME(&TVOL)
+#end
+#if($ibmTemplate == 'YES')
+     /* VOLUME(&TVOL) */
+#end
+        WAITFORDSN
+        SHR .
     ADD DDDEF (SZWEZFS)
      /* do NOT alter PATH, correction is done in step DEFPATH */
         PATH('/usr/lpp/zowe/SMPE/') .
