@@ -32,7 +32,6 @@ export ZWE_PRIVATE_DEFAULT_AUX_STC=ZWESASTC
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/component.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/config.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/fs.sh"
-. "${ZWE_zowe_runtimeDirectory}/bin/libs/http.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/java.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/json.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/logging.sh"

@@ -72,7 +72,7 @@ spec:
             failureThreshold: 3
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
+            - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/zowe.yaml"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
@@ -81,7 +81,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/internal/container-prestop.sh"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/zwe internal prestop -c /home/zowe/zowe.yaml"]
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
@@ -96,14 +96,14 @@ spec:
               subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
-              mountPath: "/home/zowe/keystore/"
+              mountPath: "/home/zowe/keystore"
               readOnly: true
             - name: zowe-workspace
               mountPath: "/home/zowe/workspace"
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.staging
           imagePullPolicy: Always
           resources:
             requests:

@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/version: "2.0.0"
     app.kubernetes.io/component: job-cleanup-static-definitions
     app.kubernetes.io/managed-by: manual
 spec:
@@ -41,7 +41,7 @@ spec:
           containers:
             - name: cleanup-static-definitions
               # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.staging
               imagePullPolicy: Always
               resources:
                 requests:

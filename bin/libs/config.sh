@@ -111,6 +111,16 @@ sanitize_ha_instance_id() {
 load_environment_variables() {
   component_id="${1}"
 
+  # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
+  sanitize_ha_instance_id
+
+  if [ -n "${ZWE_zowe_workspaceDirectory}" ]; then
+    ZWE_zowe_workspaceDirectory=$(read_yaml ${ZWE_CLI_PARAMETER_CONFIG} '.zowe.workspaceDirectory')
+    if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
+      print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
+    fi
+  fi
+
   # we must have $ZWE_zowe_workspaceDirectory at this point
   if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
     export ZWE_RUN_IN_CONTAINER=true
@@ -135,5 +145,6 @@ load_environment_variables() {
   export ZWE_INSTALLED_COMPONENTS="$(find_all_installed_components)"
   export ZWE_ENABLED_COMPONENTS="$(find_all_enabled_components)"
   export ZWE_LAUNCH_COMPONENTS="$(find_all_launch_components)"
+
   # ZWE_DISCOVERY_SERVICES_LIST should have been prepared in zowe-install-packaging-tools
 }
