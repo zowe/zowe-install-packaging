@@ -108,8 +108,8 @@ spec:
               mountPath: "/home/zowe/workspace"
       initContainers:
         - name: init-zowe
-          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.staging
+          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.users-jack-v2-containerization
           imagePullPolicy: Always
           resources:
             requests:
