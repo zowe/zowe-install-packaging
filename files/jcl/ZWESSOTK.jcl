@@ -13,5 +13,5 @@
 //*
 //* Zowe Open Source Project
 //*
-//* This sample is obsolete and is not used by Zowe from v1.27.0.
+//* This sample is obsolete.
 //*
