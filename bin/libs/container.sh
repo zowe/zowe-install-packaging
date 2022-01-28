@@ -41,10 +41,10 @@ prepare_container_runtime_environments() {
     export ZWE_POD_CLUSTERNAME=cluster.local
   fi
 
-  # read ZOWE_CONTAINER_COMPONENT_ID from component manifest
+  # read ZWE_PRIVATE_CONTAINER_COMPONENT_ID from component manifest
   # /component is hardcoded path we asked for in conformance
-  if [ -z "${ZOWE_CONTAINER_COMPONENT_ID}" ]; then
-    export ZOWE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
+  if [ -z "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" ]; then
+    export ZWE_PRIVATE_CONTAINER_COMPONENT_ID=$(read_component_manifest /component '.name')
   fi
 
   # in kubernetes, replace ZWE_haInstance_hostname with pod dns name
@@ -71,9 +71,9 @@ prepare_container_runtime_environments() {
   done
 
   # overwrite component list variables
-  export ZWE_INSTALLED_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
-  export ZWE_ENABLED_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
-  export ZWE_LAUNCH_COMPONENTS="${ZOWE_CONTAINER_COMPONENT_ID}"
+  export ZWE_INSTALLED_COMPONENTS="${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}"
+  export ZWE_ENABLED_COMPONENTS="${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}"
+  export ZWE_LAUNCH_COMPONENTS="${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}"
 
   # FIXME: below variables are different from HA configuration, we should consolidate and make them consistent
   # in HA setup, this is used to point where is gateway accessible from internal
