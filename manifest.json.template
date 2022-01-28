@@ -12,31 +12,31 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.0.0-V2.X/STAGING",
+      "version": "~2.0.0-PR-97",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~1.26.0-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
@@ -63,27 +63,27 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "~2.0.4-SNAPSHOT",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "~2.0.4-SNAPSHOT",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "~2.0.4-SNAPSHOT",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "~2.0.4-SNAPSHOT",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "~2.0.4-SNAPSHOT",
       "artifact": "metrics-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "~2.0.4-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
