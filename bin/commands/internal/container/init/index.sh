@@ -32,7 +32,6 @@ cp -r ${ZWE_PRIVATE_CONTAINER_COMPONENT_RUNTIME_DIRECTORY}/. ${ZWE_PRIVATE_CONTA
 
 #######################################################################
 print_level1_message "Prepare log and workspace directories"
-mkdir -p "${ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY}"
 mkdir -p "${ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY}/tmp"
 touch ${ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY}/.init-for-container
 

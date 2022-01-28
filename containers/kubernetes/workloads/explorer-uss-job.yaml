@@ -26,6 +26,8 @@ spec:
         fsGroup: 20000
       serviceAccountName: zowe-sa
       volumes:
+        - name: tmp
+          emptyDir: {}
         - name: zowe-runtime
           emptyDir: {}
         - name: zowe-config
@@ -36,6 +38,8 @@ spec:
             sources:
               - secret:
                   name: zowe-certificates-secret
+        - name: zowe-logs
+          emptyDir: {}
         - name: zowe-workspace
           persistentVolumeClaim:
             claimName: zowe-workspace-pvc
@@ -64,6 +68,8 @@ spec:
               drop:
                 - all
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
             - name: zowe-config
@@ -73,6 +79,8 @@ spec:
             - name: zowe-keystore
               mountPath: "/home/zowe/keystore"
               readOnly: true
+            - name: zowe-logs
+              mountPath: "/home/zowe/logs"
             - name: zowe-workspace
               mountPath: "/home/zowe/workspace"
       initContainers:
@@ -94,6 +102,8 @@ spec:
               drop:
                 - all
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
             - name: zowe-workspace

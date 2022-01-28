@@ -124,9 +124,6 @@ load_environment_variables() {
   # we must have $ZWE_zowe_workspaceDirectory at this point
   if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
     export ZWE_RUN_IN_CONTAINER=true
-    # these are already set in prepare stage, re-ensure for start
-    export TMPDIR="${ZWE_zowe_workspaceDirectory}/.tmp"
-    export TMP="${ZWE_zowe_workspaceDirectory}/.tmp"
   fi
 
   # now we can load all variables
