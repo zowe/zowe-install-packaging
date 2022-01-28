@@ -66,7 +66,7 @@ prepare_container_runtime_environments() {
     if [ -n "${ZWE_DISCOVERY_SERVICES_LIST}" ]; then
       ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST},"
     fi
-    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}:${DISCOVERY_PORT}/eureka/"
+    ZWE_DISCOVERY_SERVICES_LIST="${ZWE_DISCOVERY_SERVICES_LIST}https://discovery-${discovery_index}.discovery-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}:${ZWE_components_discovery_port}/eureka/"
     discovery_index=`expr $discovery_index + 1`
   done
 

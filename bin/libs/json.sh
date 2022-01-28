@@ -98,8 +98,10 @@ read_yaml() {
   fi
 
   if [ ${code} -eq 0 ]; then
-    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
-      result=
+    if [ "${ignore_null}" = "true" ]; then
+      if [ "${result}" = "null" -o "${result}" = "undefined" ]; then
+        result=
+      fi
     fi
     printf "${result}"
   fi
