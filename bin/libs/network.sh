@@ -95,3 +95,52 @@ is_port_available() {
       ;;
   esac
 }
+
+# get current IP address
+get_ipaddress() {
+  hostname=$1
+  method=
+  ip=
+
+  # dig is preferred than ping
+  dig_result=$(dig -4 +short ${hostname} 2>/dev/null || dig +short ${hostname} 2>/dev/null)
+  if [ -n "${dig_result}" ]; then
+    method=dig
+    ip=$(echo "${dig_result}" | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+  fi
+
+  # try ping
+  if [ -z "${ip}" ]; then
+    ping=$(get_ping)
+    timeout=2
+    ip=
+    if [ -n "${ping}" ]; then
+      # try to get IPv4 address only
+      # - z/OS: -A ipv4
+      # - Linux: -4
+      # - Mac: not supported
+      # timeout
+      # - z/OS: -t
+      # - Linux: -W
+      # - Mac: -t
+      # try in sequence of z/OS, Linux, Mac
+      ping_result=$(${ping} -c 1 -A ipv4 -t ${timeout} ${hostname} 2>/dev/null || ${ping} -c 1 -4 -W ${timeout} ${hostname} 2>/dev/null || ${ping} -c 1 -t ${timeout} ${hostname} 2>/dev/null)
+      if [ $? -eq 0 ]; then
+        method=ping
+        ip=$(echo "${ping_result}" | sed -n -E 's/^[^(]+\(([^)]+)\).*/\1/p' | head -1)
+      fi
+    fi
+  fi
+
+  # we don't have dig and ping, let's check /etc/hosts
+  if [ -z "${ip}" -a -f /etc/hosts ]; then
+    method=hosts
+    ip=$(cat /etc/hosts | awk '{$1=$1;print}' | grep -v -e '^#' | grep -v -e '^$' | grep -e " ${hostname}$" | awk '{print $1}' | grep -v ':' | head -1)
+  fi
+
+  if [ -n "${ip}" ]; then
+    echo "${ip}"
+  else
+    return 1
+  fi
+}

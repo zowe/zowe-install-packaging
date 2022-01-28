@@ -144,4 +144,8 @@ load_environment_variables() {
   export ZWE_LAUNCH_COMPONENTS="$(find_all_launch_components)"
 
   # ZWE_DISCOVERY_SERVICES_LIST should have been prepared in zowe-install-packaging-tools
+
+  if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
+    prepare_container_runtime_environments
+  fi
 }
