@@ -11,6 +11,47 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+# get ping command, could be empty
+get_ping() {
+  ping=
+
+  # z/OS
+  ping -? 2>/dev/null 1>/dev/null
+  if [ $? -eq 0 ]; then
+    ping="ping"
+  fi
+
+  # z/OS
+  if [ -z "${ping}" ]; then
+    oping -? 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+      ping="oping"
+    fi
+  fi
+
+  # non-z/OS, try which
+  if [ -z "${ping}" ]; then
+    which ping 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+      ping="ping"
+    fi
+  fi
+
+  # non-z/OS may not support -? option, or -? exit code is not 0
+  if [ -z "${ping}" ]; then
+    ping -c 1 localhost 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+      ping="ping"
+    fi
+  fi
+
+  if [ -n "${ping}" ]; then
+    echo "${ping}"
+  else
+    return 1
+  fi
+}
+
 # get netstat command, could be empty
 get_netstat() {
   # z/OS
@@ -52,9 +93,11 @@ is_port_available() {
     return 1
   fi
 
+  # QUESTION: should we ignore netstat command stderr?
+
   case $(uname) in
     "OS/390")
-      result=$(${netstat} -c SERVER -P ${port} 2>/dev/null)
+      result=$(${netstat} -c SERVER -P ${port} 2>&1)
       code=$?
       if [ ${code} -ne 0 ]; then
         print_error "Netstat test fail with exit code ${code} (${result})"
@@ -67,7 +110,7 @@ is_port_available() {
       fi
       ;;
     "Darwin")
-      result=$(${netstat} -an -p tcp 2>/dev/null)
+      result=$(${netstat} -an -p tcp 2>&1)
       code=$?
       if [ ${code} -ne 0 ]; then
         print_error "Netstat test fail with exit code ${code} (${result})"
@@ -81,7 +124,7 @@ is_port_available() {
       ;;
     *)
       # assume it's Linux format
-      result=$(${netstat} -nlt 2>/dev/null)
+      result=$(${netstat} -nlt 2>&1)
       code=$?
       if [ ${code} -ne 0 ]; then
         print_error "Netstat test fail with exit code ${code} (${result})"
