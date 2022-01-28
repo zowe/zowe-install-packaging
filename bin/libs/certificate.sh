@@ -28,11 +28,23 @@ ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY="3650"
 ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE="keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment"
 ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE="clientAuth,serverAuth"
 
+
+keytool_on_path=`type keytool &> /dev/null && echo true`
+if [ "${keytool_on_path}" != "true" ]; then
+  if [ -n "${JAVA_HOME}" ]; then
+    keytool_bin="${JAVA_HOME}/bin/keytool"
+  else
+    print_message "WARNING: keytool cannot be found, please put on PATH or define JAVA_HOME"
+  fi
+else
+  keytool_bin=keytool
+fi
+
 pkeytool() {
   args=$@
 
-  print_debug "- Calling keytool ${args}"
-  result=$(keytool "$@" 2>&1)
+  print_debug "- Calling ${keytool_bin} ${args}"
+  result=$("${keytool_bin}" "$@" 2>&1)
   code=$?
 
   if [ ${code} -eq 0 ]; then
