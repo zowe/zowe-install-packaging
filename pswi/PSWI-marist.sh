@@ -2,10 +2,8 @@ export ZOSMF_URL="https://zzow03.zowe.marist.cloud"
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
 export DIR="/u/zowead2"
-export CSIHLQ="ZWE.PSWI.AZWE001"
 export SMPEHLQ="ZOWEAD2"
 export TMP_ZFS="ZOWEAD2.TMP.ZFS"
-export ZOWE_ZFS="${CSIHLQ}.ZFS"
 export ZOWE_MOUNT="/u/zwe/zowe-smpe/"
 export VOLUME="ZOS003"
 export TEST_HLQ="ZOWEAD2.PSWIT"
@@ -15,10 +13,7 @@ export ACCOUNT=1
 # Variables for workflows
 # SMPE
 export TZONE="TZONE"
-# CSIHLQ for workflow is same as for PSWI
 export DZONE="DZONE"
-export THLQ="${CSIHLQ}.T"
-export DHLQ="${CSIHLQ}.D"
 
 export JOBNAME="ZWEPSWI1"
 if [ -n "$ACCOUNT" ]
@@ -36,9 +31,6 @@ export TEST_MOUNT="${DIR}/test_mount"
 export EXPORT="${TMP_MOUNT}/export/"
 export WORK_MOUNT="${DIR}/work"
 export WORK_ZFS="ZOWEAD2.WORK.ZFS"
-export GLOBAL_ZONE=${CSIHLQ}.CSI
-export EXPORT_DSN=${CSIHLQ}.EXPORT
-export WORKFLOW_DSN=${CSIHLQ}.WORKFLOW
 export ZOSMF_V="2.3"
 export SMPE_WF_NAME="ZOWE_SMPE_WF"
 export PTF_WF_NAME="ZOWE_PTF_WF"
@@ -95,6 +87,15 @@ else
 fi
 export SMPE="${SMPEHLQ}.${RFDSNPFX}.${FMID}"
 echo "----------------------------------------------------------------------------------------------------------"
+
+# More variables
+export CSIHLQ="ZWE.PSWI.${FMID}"
+export THLQ="${CSIHLQ}.T"
+export DHLQ="${CSIHLQ}.D"
+export GLOBAL_ZONE=${CSIHLQ}.CSI
+export EXPORT_DSN=${CSIHLQ}.EXPORT
+export WORKFLOW_DSN=${CSIHLQ}.WORKFLOW
+export ZOWE_ZFS="${CSIHLQ}.ZFS"
 
 # Upload and prepare all files
 sh 00_presmpe.sh
