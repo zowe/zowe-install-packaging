@@ -106,9 +106,14 @@ sh 01_smpe.sh
 smpe=$?
 
 if [ $smpe -eq 0 ];then
+if [ -n "$PTFNR" ];then
 # Apply PTFs
 sh 02_ptf.sh
 ptf=$?
+else
+# There are no PTFs
+ptf=0
+fi 
 
 if [ $ptf -eq 0 ];then
 # Create PSWI

@@ -16,23 +16,23 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~1.27.0-V2.X-STAGING",
+      "version": "~2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
@@ -101,7 +101,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~2.0.0-SNAPSHOT"
+      "version": "~2.0.0-USERS-CARSON-PORT-OFFSET"
     },
     "org.zowe.licenses": {
       "version": "1.25.0",
@@ -342,7 +342,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v2.x/master",
+        "tag": "users/carson/port_offset",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",

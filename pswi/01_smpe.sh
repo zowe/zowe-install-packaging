@@ -20,7 +20,7 @@ SMPE_WF_LIST_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows?owner=${ZOSMF_US
 # JSONs 
 
 ADD_WORKFLOW_JSON='{"workflowName":"'$SMPE_WF_NAME'",
-"workflowDefinitionFile":"'${DIR}'/SMPE19",
+"workflowDefinitionFile":"'${DIR}'/SMPE20",
 "system":"'$ZOSMF_SYSTEM'",
 "owner":"'$ZOSMF_USER'",
 "assignToOwner" :true,
@@ -44,7 +44,7 @@ cd workflows
 
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${DIR}
-put SMPE19
+put SMPE20
 EOF
 cd ..
 

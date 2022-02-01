@@ -95,54 +95,6 @@
         <autoEnable>true</autoEnable>
         <canMarkAsFailed>false</canMarkAsFailed>
     </step>
-        <step name="Increase" optional="false">
-        <title>Increase space on SYSUT1 and SMPWRK6 DDDEFs</title>
-        <description> This step will increase space on SYSUT1 and SMPWRK6 DDDEF work files</description>
-        <instructions substitution="false">This step will increase space. </instructions>
-        <weight>1</weight>
-        <autoEnable>true</autoEnable>
-        <canMarkAsFailed>false</canMarkAsFailed>
-        <template>
-        <inlineTemplate substitution="true">//SYSU1UPD EXEC PGM=GIMSMP,REGION=0M 
-//SMPCSI   DD DISP=SHR,DSN=ZWE.PSWI.AZWE001.CSI
-//SMPCNTL  DD *                                 
- SET BOUNDARY(GLOBAL).                          
- UCLIN.                                         
- REP DDDEF(SYSUT1)                              
-     CYL SPACE(200,60) UNIT(SYSDA) NEW DELETE . 
- ENDUCL.                                                   
-SET BOUNDARY(${instance-DISTRIBUTION}).
- UCLIN.                                                    
-REP DDDEF(SYSUT1)                                          
-    CYL SPACE(200,60) UNIT(SYSDA)       NEW DELETE         
-     .                                                     
- ENDUCL.                                                   
-SET BOUNDARY(${instance-TARGET}).
- UCLIN.                                                    
- REP DDDEF(SYSUT1)                                         
-     CYL SPACE(200,60) UNIT(SYSDA)       NEW DELETE        
-      .
- ENDUCL.                                                   
-//*	    
-//WRK6UPD  EXEC PGM=GIMSMP,REGION=0M 
-//SMPCSI   DD DISP=SHR,DSN=${instance-CSI}.CSI         
-//SMPCNTL  DD *                              
-SET BOUNDARY(${instance-DISTRIBUTION}). 
- UCLIN.                                                  
- REP DDDEF(SMPWRK6)                                      
-     CYL SPACE(100,30) UNIT(SYSDA) NEW DELETE .          
- ENDUCL.                                                 
-SET BOUNDARY(${instance-TARGET}). 
- UCLIN. 
- REP DDDEF(SMPWRK6)
-     CYL SPACE(100,30) UNIT(SYSDA) NEW DELETE .
- ENDUCL.                                       
-//*
-</inlineTemplate>
-            <submitAs maxRc="0">JCL</submitAs>
-            <maxLrecl>80</maxLrecl>
-        </template>
-    </step>  
     <step name="PTFs" optional="false">
         <title>Handle PTFs</title>
         <description>This step will handle PTFs. </description>
