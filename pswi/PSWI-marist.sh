@@ -96,6 +96,8 @@ export GLOBAL_ZONE=${CSIHLQ}.CSI
 export EXPORT_DSN=${CSIHLQ}.EXPORT
 export WORKFLOW_DSN=${CSIHLQ}.WORKFLOW
 export ZOWE_ZFS="${CSIHLQ}.ZFS"
+#TODO: get version from manifest file
+export VERSION="2.0"
 
 # Upload and prepare all files
 sh 00_presmpe.sh
