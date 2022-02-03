@@ -152,6 +152,7 @@ echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
 echo "cp \$source \$target;" >> JCL
 echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
