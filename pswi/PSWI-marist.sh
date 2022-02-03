@@ -54,8 +54,6 @@ then
   export RFDSNPFX=`cat unzipped/*htm | grep -o "hlq.*.${FMID}.F1" | cut -f2 -d'.'`
 else
   echo "it's ptf/apar"
-  #TODO: version could be obtained from the pipeline but last time I tried it it wasn't working
-  export VERSION=`cat unzipped/*htm | grep -o "version.*," | grep -v "%" | cut -f2 -d' ' | cut -f1 -d','`
   mv unzipped/*htm ptfs.html
   export PTFNR=`ls unzipped | wc -l`
   
@@ -96,8 +94,7 @@ export GLOBAL_ZONE=${CSIHLQ}.CSI
 export EXPORT_DSN=${CSIHLQ}.EXPORT
 export WORKFLOW_DSN=${CSIHLQ}.WORKFLOW
 export ZOWE_ZFS="${CSIHLQ}.ZFS"
-#TODO: get version from manifest file
-export VERSION="2.0"
+export VERSION=`cat ../manifest.json.template | grep -o '"version": ".*"' | head -1 | cut -f4 -d\"`
 
 # Upload and prepare all files
 sh 00_presmpe.sh
