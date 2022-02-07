@@ -207,8 +207,8 @@ zwecli_display_parameters_help() {
       line_params_requirement=$(echo "${first_line}" | awk -F"|" '{print $4};' | lower_case)
 
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
-      echo "  ${display_param} ${line_params_type}     (${line_params_requirement:-optional})"
-      padding_left "${line_params_help}" "      "
+      echo "  ${display_param} ${line_params_type} (${line_params_requirement:-optional})"
+      padding_left "${line_params_help} " "      "
     fi
   done <<EOF
 $(cat "${file}")
@@ -232,7 +232,7 @@ zwecli_calculate_command_path() {
 zwecli_process_help() {
   if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
     >&2 echo "Name"
-    >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST}"
+    >&2 echo "  zwe ${ZWE_CLI_COMMANDS_LIST}"
     >&2 echo
 
     # display help message if exists
