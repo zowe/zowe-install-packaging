@@ -207,8 +207,8 @@ zwecli_display_parameters_help() {
       line_params_requirement=$(echo "${first_line}" | awk -F"|" '{print $4};' | lower_case)
 
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
-      echo "  ${display_param} ${line_params_type} (${line_params_requirement:-optional})"
-      padding_left "${line_params_help} " "      "
+      echo "    ${display_param} ${line_params_type} (${line_params_requirement:-optional})"
+      padding_left "${line_params_help} " "        "
       echo 
     fi
   done <<EOF
@@ -249,7 +249,6 @@ zwecli_process_help() {
       >&2 echo "------------------"
       >&2 echo "Global parameters"
       >&2 zwecli_display_parameters_help "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters"
-      >&2 echo
     fi
 
     # display command parameters
@@ -271,7 +270,6 @@ zwecli_process_help() {
         if [ -f "${command_path}/.exclusive-parameters" ]; then
           >&2 zwecli_display_parameters_help "${command_path}/.exclusive-parameters"
         fi
-        >&2 echo
       fi
     done
 
@@ -282,7 +280,7 @@ zwecli_process_help() {
       >&2 echo "------------------"
       >&2 echo "Available sub-command(s)"
       while read -r line; do
-        echo "  - $(basename "${line}")"
+        echo "    - $(basename "${line}")"
       done <<EOF
 $(echo "${subdirs}")
 EOF
