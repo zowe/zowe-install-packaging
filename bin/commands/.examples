@@ -1,4 +1,5 @@
     zwe install -h
-    zwe install --allow-overwritten --config  /path/to/zowe.yaml
+
     zwe init --allow-overwritten --config /path/to/zowe.yaml
+
     zwe start -c /path/to/zowe.yaml

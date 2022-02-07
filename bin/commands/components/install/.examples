@@ -1,3 +1,4 @@
     zwe components install -d path/to/target/dir -o /path/to/component/package
+
     zwe components install extract -d /path/to/target/dir -o /path/to/component/package
     

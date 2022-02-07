@@ -1,4 +1,6 @@
     zwe init --allow-overwritten -c /path/to/zowe.yaml
+
     zwe init apfauth -v -c /path/to/zowe.yaml
+
     zwe init certificate -v -c /path/to/zowe.yaml
     
