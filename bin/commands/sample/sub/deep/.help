@@ -1,3 +1,8 @@
-Sample of deep embedded sub-command.
+Synopsis
+    zwe sample sub deep [parameter [parameter]...]
 
-Also inherit parameters from upper level.
+------------------
+Description
+    Sample of deep embedded sub-command.
+
+    Also inherit parameters from upper level.

@@ -1,1 +1,6 @@
-Connect existing certificate to Zowe keyring.
+Synopsis
+    zwe certificate keyring-jcl connect [parameter [parameter]...]
+
+------------------
+Description
+    Connect existing certificate to Zowe keyring.

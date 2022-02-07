@@ -1,3 +1,8 @@
-A command line utility helps you managing Zowe instance.
+Synopsis
+    zwe [sub-command [sub-command]...] [parameter [parameter]...]
 
-You can issue --help or -h to find information for all commands it supports.
+------------------
+Description
+    A command line utility helps you managing Zowe instance.
+
+    You can issue --help or -h to find information for all commands it supports.

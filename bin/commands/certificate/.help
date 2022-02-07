@@ -1,1 +1,6 @@
-Set of commands to help you manage certificates.
+Synopsis
+    zwe certificate [sub-command [sub-command]...] [parameter [parameter]...]
+
+------------------
+Description
+    Set of commands to help you manage certificates.

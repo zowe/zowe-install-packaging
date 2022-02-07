@@ -1,1 +1,6 @@
-Display Zowe version.
+Synopsis
+    zwe version [parameter]...
+
+------------------
+Description
+    Display Zowe version.

@@ -1,3 +1,8 @@
-Return component list should be started in specified HA instance.
+Synopsis
+    zwe internal get-launch-components [parameter [parameter]...]
 
-NOTE: This command only returns a list of enabled components with start command.
+------------------
+Description 
+    Return component list should be started in specified HA instance.
+
+    NOTE: This command only returns a list of enabled components with start command.

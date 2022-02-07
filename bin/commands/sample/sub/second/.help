@@ -1,0 +1,6 @@
+Synopsis
+    zwe sample sub second [parameter [parameter]...]
+
+------------------
+Description
+    Sample of second embedded sub-command.

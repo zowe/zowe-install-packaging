@@ -1,1 +1,6 @@
-Manage PKCS12 format keystore and truststore.
+Synopsis
+    zwe certificate pkcs12 [sub-command] [parameter [parameter]...]
+
+------------------
+Description
+    Manage PKCS12 format keystore and truststore.

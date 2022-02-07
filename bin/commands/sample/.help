@@ -1,1 +1,6 @@
-This is a sample command.
+Synopsis
+    zwe sample [sub-command [sub-command]...] [parameter]...
+
+------------------
+Description
+    This is a sample command.

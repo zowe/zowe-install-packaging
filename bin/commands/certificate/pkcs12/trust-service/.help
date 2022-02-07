@@ -1,4 +1,9 @@
-This command can detect and trust any service by importing the certificate
-into truststore.
+Synopsis
+    zwe certificate pkcs12 trust-service [parameter [parameter]...]
 
-NOTE: the service must be online and accessible.
+------------------
+Description
+    This command can detect and trust any service by importing the certificate
+    into truststore.
+
+    NOTE: the service must be online and accessible.

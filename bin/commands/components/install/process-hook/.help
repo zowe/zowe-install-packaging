@@ -1,4 +1,9 @@
-Process module install hook if exists.
+Synopsis
+    zwe components install process-hook [parameter [parameter]...]
 
-NOTE: this sub-command will be automatically executed by `zwe components install`,
-      so usually you don't need to execute this manually.
+------------------
+Description
+    Process module install hook if exists.
+
+    NOTE: this sub-command will be automatically executed by `zwe components install`,
+        so usually you don't need to execute this manually.

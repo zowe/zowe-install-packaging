@@ -1,1 +1,6 @@
-Create a new  PKCS12 format certificate.
+Synopsis
+    zwe certificate pkcs12 export [parameter [parameter]...]
+
+------------------
+Description
+    Create a new  PKCS12 format certificate.

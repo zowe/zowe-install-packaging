@@ -1,0 +1,6 @@
+Synopsis
+    zwe certificate pkcs12 create [sub-command] [parameter [parameter]...]
+
+------------------
+Description
+    Create a new PKCS12 format certificate or certificate authority.

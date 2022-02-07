@@ -1,1 +1,6 @@
-Generate new set of certificate in Zowe keyring.
+Synopsis
+    zwe certificate keyring-jcl generate [parameter [parameter]...]
+
+------------------
+Description
+    Generate new set of certificate in Zowe keyring.

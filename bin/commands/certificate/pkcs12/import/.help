@@ -1,1 +1,6 @@
-Import certificate and/or certificate authorities into PKCS12 keystore.
+Synopsis
+    zwe certificate pkcs12 import [parameter [parameter]...]
+
+------------------
+Description
+    Import certificate and/or certificate authorities into PKCS12 keystore.

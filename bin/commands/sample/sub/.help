@@ -1,1 +1,6 @@
-A sample sub-command.
+Synopsis
+    zwe sample sub [sub-command] [parameter [parameter]...]
+
+------------------
+Description
+    A sample sub-command.

@@ -198,17 +198,17 @@ zwecli_display_parameters_help() {
       fi
 
       line_params_type=$(echo "${first_line}" | awk -F"|" '{print $3};' | lower_case)
-      if [ "${line_params_type}" = "b" -o "${line_params_type}" = "bool" ]; then
-        line_params_type=boolean
+      if [ "${line_params_type}" = "b" -o "${line_params_type}" = "bool" -o "${line_params_type}" = "boolean" ]; then
+        line_params_type=
       elif [ "${line_params_type}" = "s" -o "${line_params_type}" = "str" ]; then
-        line_params_type=string
+        line_params_type="string"
       fi
 
       line_params_requirement=$(echo "${first_line}" | awk -F"|" '{print $4};' | lower_case)
 
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
-      echo "  ${display_param}: ${line_params_type}, ${line_params_requirement:-optional}"
-      padding_left "${line_params_help}" "    "
+      echo "  ${display_param} ${line_params_type}     (${line_params_requirement:-optional})"
+      padding_left "${line_params_help}" "      "
     fi
   done <<EOF
 $(cat "${file}")
@@ -231,7 +231,8 @@ zwecli_calculate_command_path() {
 
 zwecli_process_help() {
   if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
-    >&2 echo "Zowe server command: zwe ${ZWE_CLI_COMMANDS_LIST}"
+    >&2 echo "Name"
+    >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST}"
     >&2 echo
 
     # display help message if exists
@@ -244,7 +245,7 @@ zwecli_process_help() {
     # display global parameters
     if [ -f "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters" ]; then
       >&2 echo "------------------"
-      >&2 echo "Global parameters:"
+      >&2 echo "Global parameters"
       >&2 zwecli_display_parameters_help "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters"
       >&2 echo
     fi
@@ -261,7 +262,7 @@ zwecli_process_help() {
       fi
       if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" ]; then
         >&2 echo "------------------"
-        >&2 echo "Parameters for command \"${command_tree}\":"
+        >&2 echo "Parameters for command \"${command_tree}\""
         if [ -f "${command_path}/.parameters" ]; then
           >&2 zwecli_display_parameters_help "${command_path}/.parameters"
         fi
@@ -275,17 +276,22 @@ zwecli_process_help() {
     # find sub-commands
     command_path=$(zwecli_calculate_command_path)
     subdirs=$(find_sub_directories "${command_path}")
-    if [ -n "${subdirs}" ]; then
+    if [ -n "${subdirs}" ]; then 
       >&2 echo "------------------"
-      >&2 echo "Available sub-command(s):"
+      >&2 echo "Available sub-command(s)"
       while read -r line; do
         echo "  - $(basename "${line}")"
       done <<EOF
 $(echo "${subdirs}")
 EOF
-      echo
+      echo 
     fi
-
+    if [ -f "${command_path}/.examples" ]; then
+      >&2 echo "------------------"
+      >&2 echo "Example(s)"
+      >&2 cat "${command_path}/.examples"
+      >&2 echo
+    fi  
     exit 100
   fi
 }
