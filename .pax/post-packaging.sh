@@ -22,7 +22,7 @@
 set -x
 
 SCRIPT_NAME=$(basename "$0")
-CURR_PWD=$(pwd)
+CURR_PWD=$(cd $(dirname "$0"); pwd)
 
 if [ "$BUILD_SMPE" != "yes" ]; then
   echo "[$SCRIPT_NAME] not building SMP/E package, skipping."

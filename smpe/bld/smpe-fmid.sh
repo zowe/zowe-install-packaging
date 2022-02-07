@@ -89,6 +89,9 @@ dd="S${prefix}SAMP"
 list=$(awk '/^'$dd'/{print $2}' $log/$parts \
      | grep -v ^${prefix}[[:digit:]] | grep -v ^${prefix}MKDIR$)
 _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "8800" "PO" "5,5"
+dd="S${prefix}EXEC"
+list=$(awk '/^'$dd'/{print $2}' $log/$parts)
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "8800" "PO" "5,5"
 
 # F3 - all load modules
 dd="S${prefix}AUTH"
