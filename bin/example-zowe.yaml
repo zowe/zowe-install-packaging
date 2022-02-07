@@ -75,7 +75,7 @@ zowe:
     #     zowe: ZWESVUSR
     #     # Zowe runtime user name of Cross Memory Server
     #     xmem: ZWESIUSR
-    #     # Zowe runtime user name of Auxilary Service
+    #     # Zowe runtime user name of Auxiliary Service
     #     aux: ZWESIUSR
     #   # STC names
     #   stcs:
@@ -83,7 +83,7 @@ zowe:
     #     zowe: ZWESLSTC
     #     # STC name of Zowe Cross Memory Server
     #     xmem: ZWESISTC
-    #     # STC name of Zowe Auxilary Service
+    #     # STC name of Zowe Auxiliary Service
     #     aux: ZWESASTC
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -353,7 +353,7 @@ zowe:
 
 
 #-------------------------------------------------------------------------------
-# Java configuraiton
+# Java configuration
 #
 # Some Zowe components requires Java. Define the path where you have your Java
 # is installed.
@@ -368,7 +368,7 @@ java:
 
 
 #-------------------------------------------------------------------------------
-# node.js configuraiton
+# node.js configuration
 #
 # Some Zowe components requires node.js. Define the path where you have your
 # node.js is installed.
@@ -383,7 +383,7 @@ node:
 
 
 #-------------------------------------------------------------------------------
-# z/OSMF configuraiton
+# z/OSMF configuration
 #
 # If your Zowe instance is configured to use z/OSMF for authentication or other
 # features. You need to define how to access your z/OSMF instance.
