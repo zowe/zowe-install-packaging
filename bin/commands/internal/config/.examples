@@ -1,2 +1,3 @@
     zwe internal config get -p path-of-configuration -c /path/to/zowe.yaml
+    zwe internal config set -p path-of-configuration -e new-value-of-configuration -c /path/to/zowe.yaml
     

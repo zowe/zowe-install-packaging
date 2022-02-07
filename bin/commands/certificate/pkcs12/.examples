@@ -1,2 +1,2 @@
     zwe certificate pkcs12 trust-service -s service-name -d /path/to/my/keystore/dir -k keystore-name -p keystore-cert-password --host service-hostname --port service-port -a cert-alias
-    
+    zwe certificate pkcs12 export -f /path/to/my/keystore/file -p keystore-cert-password
