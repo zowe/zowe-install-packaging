@@ -1,1 +1,2 @@
     zwe certificate pkcs12 create ca -d /path/to/my/keystore/dir -a ca-alias -p ca-keystore-password
+    

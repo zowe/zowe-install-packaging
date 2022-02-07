@@ -1,1 +1,2 @@
     zwe init apfauth --security-dry-run -c /path/to/zowe.yaml
+    

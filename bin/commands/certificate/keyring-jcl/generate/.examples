@@ -1,1 +1,2 @@
     zwe certificate keyring-jcl generate --hlq my-hlq --jcllib my-jcllib --security-dry-run --security-dry-run --keyring-owner my-keyring-owner --keyring-name my-keyring-name -d my-domain -a certificate-alias -ca ca-alias
+    

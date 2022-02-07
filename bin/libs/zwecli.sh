@@ -238,6 +238,7 @@ zwecli_process_help() {
     # display help message if exists
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
+      >&2 echo "------------------"
       >&2 cat "${command_path}/.help"
       >&2 echo
     fi

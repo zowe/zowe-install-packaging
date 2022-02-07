@@ -1,1 +1,2 @@
     zwe internal config get -p path-of-configuration -c /path/to/zowe.yaml
+    
