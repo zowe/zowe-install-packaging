@@ -1,0 +1,2 @@
+    zwe certificate pkcs12 lock -d /path/to/my/keystore/dir --user keystore-user --group keystore-group
+    
