@@ -1,6 +1,4 @@
-Description
-    This command can verify if the service certificate is valid by checking the
-    certificate Common Name (CN) and Subject Alternate Name (SAN).
+This command can verify if the service certificate is valid by checking the
+certificate Common Name (CN) and Subject Alternate Name (SAN).
 
-    NOTE: the service must be online and accessible.
-    
+NOTE: the service must be online and accessible.

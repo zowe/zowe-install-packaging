@@ -1,3 +1,2 @@
-Description
-    This command will lock the keystore directory to only be accessible by specified user group.
-    
+This command will lock the keystore directory to only be accessible by specified
+user group.

@@ -1,22 +1,21 @@
-Description 
-    After you extract Zowe convenience build, you can run this command to install
-    MVS data sets.
+After you extract Zowe convenience build, you can run this command to install
+MVS data sets.
 
-    If you are using SMPE build, you can skip this command since MVS data sets are
-    already prepared during SMPE install.
+If you are using SMPE build, you can skip this command since MVS data sets are
+already prepared during SMPE install.
 
-    These Zowe YAML configurations showing with sample values are used:
+These Zowe YAML configurations showing with sample values are used:
 
-    ```
-    zowe:
-      setup:
-        mvs:
-          hlq: IBMUSER.ZWE
-    ```
+```
+zowe:
+  setup:
+    mvs:
+      hlq: IBMUSER.ZWE
+```
 
-    Expected outputs:
+Expected outputs:
 
-    - Will create these data sets under `zowe.setup.mvs.hlq` definition:
-      * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
-      * `SZWESAMP` contains several sample configurations.
-      * `SZWEEXEC` contains few utilities used by Zowe.
+- Will create these data sets under `zowe.setup.mvs.hlq` definition:
+  * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
+  * `SZWESAMP` contains several sample configurations.
+  * `SZWEEXEC` contains few utilities used by Zowe.

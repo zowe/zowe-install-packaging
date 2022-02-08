@@ -237,12 +237,6 @@ zwecli_process_help() {
 
     # Display synopsis (command format)
     command_path=$(zwecli_calculate_command_path)
-    if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" ]; then
-      parameter_level="[parameter [parameter]...]"
-    else
-      parameter_level="[parameter]..."
-    fi
-
     subdirs=$(find_sub_directories "${command_path}")
     if [ -n "${subdirs}" ]; then 
       sub_command_level="[sub-command]"
@@ -259,6 +253,12 @@ EOF
       sub_command_level=
     fi
 
+    if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" -o -n "${sub_command_level}" ]; then
+      parameter_level="[parameter [parameter]...]"
+    else
+      parameter_level="[parameter]..."
+    fi
+
     >&2 echo "------------------"
     >&2 echo "Synopsis"
     if [ -n "$sub_command_level" ]; then
@@ -272,8 +272,9 @@ EOF
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
       >&2 echo "------------------"
-      >&2 cat "${command_path}/.help"
-      >&2 echo
+      >&2 echo "Description"
+      help_message=`cat "${command_path}/.help"`
+      >&2 padding_left "$help_message" "    "
     fi
 
     # display global parameters

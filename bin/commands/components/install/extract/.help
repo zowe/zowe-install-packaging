@@ -1,6 +1,4 @@
-Description
-    Extract module package and lay down to target directory.
+Extract module package and lay down to target directory.
 
-    NOTE: this sub-command will be automatically executed by `zwe components install`,
-        so usually you don't need to execute this manually.
-        
+NOTE: this sub-command will be automatically executed by `zwe components install`,
+      so usually you don't need to execute this manually.
