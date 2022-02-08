@@ -230,6 +230,13 @@ zwecli_calculate_command_path() {
   fi
 }
 
+zwecli_padding_left() {
+  str="${1}"
+  pad="${2}"
+
+  echo "${str}" | sed "s/^/${pad}/"
+}
+
 zwecli_process_help() {
   if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
     >&2 echo "zwe ${ZWE_CLI_COMMANDS_LIST}"
@@ -271,11 +278,11 @@ EOF
     # display description message if exists
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
-      >&2 echo "------------------"
-      >&2 echo "Description"
+      echo "------------------"
+      echo "Description"
       help_message=`cat "${command_path}/.help"`
-      >&2 padding_left "$help_message" "    "
-      >&2 echo
+      zwecli_padding_left "$help_message" "    "
+      echo
     fi
 
     # display global parameters
