@@ -103,11 +103,18 @@ padding_left() {
   str="${1}"
   pad="${2}"
 
-  while read -r line; do
-    echo "${pad}${line}"
-  done <<EOF
-$(echo "${str}")
-EOF
+  echo "${str}" | sed "s/^/${pad}/"
+}
+
+###############################
+# Padding string of every line of a multiple-line string
+#
+# @param string   optional string
+file_padding_left() {
+  file="${1}"
+  pad="${2}"
+
+  cat "${file}" | sed "s/^/${pad}/"
 }
 
 ###############################

@@ -17,7 +17,7 @@ export ZWE_CLI_COMMANDS_LIST=
 export ZWE_CLI_PARAMETERS_LIST=
 export ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS=
 export ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND=true
-export ZWE_PRIVATE_LOG_LEVEL_CLI=INFO
+export ZWE_PRIVATE_LOG_LEVEL_ZWELS=INFO
 
 zwecli_append_parameters_definition() {
   if [ $# -eq 0 ]; then
@@ -144,10 +144,10 @@ EOF
 
 zwecli_process_loglevel() {
   if [ "${ZWE_CLI_PARAMETER_DEBUG}" = "true" -o "${ZWE_CLI_PARAMETER_VERBOSE}" = "true" ]; then
-    ZWE_PRIVATE_LOG_LEVEL_CLI=DEBUG
+    ZWE_PRIVATE_LOG_LEVEL_ZWELS=DEBUG
   fi
   if [ "${ZWE_CLI_PARAMETER_TRACE}" = "true" ]; then
-    ZWE_PRIVATE_LOG_LEVEL_CLI=TRACE
+    ZWE_PRIVATE_LOG_LEVEL_ZWELS=TRACE
   fi
 }
 
@@ -198,17 +198,18 @@ zwecli_display_parameters_help() {
       fi
 
       line_params_type=$(echo "${first_line}" | awk -F"|" '{print $3};' | lower_case)
-      if [ "${line_params_type}" = "b" -o "${line_params_type}" = "bool" ]; then
-        line_params_type=boolean
+      if [ "${line_params_type}" = "b" -o "${line_params_type}" = "bool" -o "${line_params_type}" = "boolean" ]; then
+        line_params_type=
       elif [ "${line_params_type}" = "s" -o "${line_params_type}" = "str" ]; then
-        line_params_type=string
+        line_params_type="string"
       fi
 
       line_params_requirement=$(echo "${first_line}" | awk -F"|" '{print $4};' | lower_case)
 
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
-      echo "  ${display_param}: ${line_params_type}, ${line_params_requirement:-optional}"
-      padding_left "${line_params_help}" "    "
+      echo "    ${display_param} ${line_params_type} (${line_params_requirement:-optional})"
+      padding_left "${line_params_help} " "        "
+      echo 
     fi
   done <<EOF
 $(cat "${file}")
@@ -231,22 +232,57 @@ zwecli_calculate_command_path() {
 
 zwecli_process_help() {
   if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
-    >&2 echo "Zowe server command: zwe ${ZWE_CLI_COMMANDS_LIST}"
+    >&2 echo "zwe ${ZWE_CLI_COMMANDS_LIST}"
     >&2 echo
 
-    # display help message if exists
+    # Display synopsis (command format)
+    command_path=$(zwecli_calculate_command_path)
+    subdirs=$(find_sub_directories "${command_path}")
+    if [ -n "${subdirs}" ]; then 
+      sub_command_level="[sub-command]"
+      while read -r line; do
+        subdirs_deep=$(find_sub_directories "${command_path}/$(basename "${line}")")
+        if [ -n "${subdirs_deep}" ]; then
+          sub_command_level="[sub-command [sub-command]...]"
+          break
+        fi
+      done <<EOF
+$(echo "${subdirs}")
+EOF
+    else
+      sub_command_level=
+    fi
+
+    if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" -o -n "${sub_command_level}" ]; then
+      parameter_level="[parameter [parameter]...]"
+    else
+      parameter_level="[parameter]..."
+    fi
+
+    >&2 echo "------------------"
+    >&2 echo "Synopsis"
+    if [ -n "$sub_command_level" ]; then
+      >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $sub_command_level $parameter_level"
+    else
+      >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $parameter_level"
+    fi
+    >&2 echo
+
+    # display description message if exists
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
-      >&2 cat "${command_path}/.help"
-      >&2 echo
+      echo "------------------"
+      echo "Description"
+      help_message=`cat "${command_path}/.help"`
+      padding_left "$help_message" "    "
+      echo
     fi
 
     # display global parameters
     if [ -f "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters" ]; then
       >&2 echo "------------------"
-      >&2 echo "Global parameters:"
+      >&2 echo "Global parameters"
       >&2 zwecli_display_parameters_help "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters"
-      >&2 echo
     fi
 
     # display command parameters
@@ -261,31 +297,37 @@ zwecli_process_help() {
       fi
       if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" ]; then
         >&2 echo "------------------"
-        >&2 echo "Parameters for command \"${command_tree}\":"
+        >&2 echo "Parameters for command \"${command_tree}\""
         if [ -f "${command_path}/.parameters" ]; then
           >&2 zwecli_display_parameters_help "${command_path}/.parameters"
         fi
         if [ -f "${command_path}/.exclusive-parameters" ]; then
           >&2 zwecli_display_parameters_help "${command_path}/.exclusive-parameters"
         fi
-        >&2 echo
       fi
     done
 
     # find sub-commands
     command_path=$(zwecli_calculate_command_path)
     subdirs=$(find_sub_directories "${command_path}")
-    if [ -n "${subdirs}" ]; then
+    if [ -n "${subdirs}" ]; then 
       >&2 echo "------------------"
-      >&2 echo "Available sub-command(s):"
+      >&2 echo "Available sub-command(s)"
       while read -r line; do
-        echo "  - $(basename "${line}")"
+        echo "    - $(basename "${line}")"
       done <<EOF
 $(echo "${subdirs}")
 EOF
-      echo
+      echo 
     fi
 
+    # display example(s)   
+    if [ -f "${command_path}/.examples" ]; then
+      >&2 echo "------------------"
+      >&2 echo "Example(s)"
+      >&2 cat "${command_path}/.examples"
+      >&2 echo
+    fi  
     exit 100
   fi
 }

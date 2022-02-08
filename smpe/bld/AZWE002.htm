@@ -11,13 +11,13 @@
   <BR> </H1>
 <H2>V0.0.1   </H2>
 <H2>  <H2>
-<H2>FMID AZWE001 </H2>
+<H2>FMID AZWE002 </H2>
 <H3>for use with
   <BR>z/OS V2.2.0 or later
   <BR>
   <BR> </H3>
 <H3> </H3>
-<H3>Document Date: February 2020 </H3>
+<H3>Document Date: February 2022 </H3>
 <H3> </H3>
 </CENTER>
 &nbsp;<BR>
@@ -25,7 +25,7 @@
 <P>Before using this information and the product it supports, be sure
 to read the general information under <A HREF="#HDRNOTICES">"Notices"</A>.
 </TD></TR></TABLE>
-<P>Copyright Contributors to the Zowe Project. 2019, 2020
+<P>Copyright Contributors to the Zowe Project. 2022
 <HR><H1><A NAME="ToC">Table of Contents</A></H1>
 <P><B><A NAME="ToC_1" HREF="#HDRFIGLIST_START">Figures</A></B><BR>
 <P><B><A NAME="ToC_2" HREF="#HDRINTRO">Introduction</A></B><BR>
@@ -140,7 +140,7 @@ third-party vendors.
 <HR><H2><A NAME="Header_4" HREF="#ToC_4">Zowe FMIDs</A></H2>
 <P>Zowe consists of the following FMIDs:
 <DL COMPACT>
-<DD>AZWE001
+<DD>AZWE002
 </DL>
 <HR><H1><A NAME="HDRMATERLS" HREF="#ToC_5">Program Materials</A></H1>
 <P>Basic Machine-Readable Materials are materials that are supplied
@@ -909,7 +909,7 @@ DIR
 <BR>
 Blks
 </TH></TR><TR>
-<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F1
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.F1
 </TD><TD ALIGN="CENTER" VALIGN="TOP">U
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
@@ -917,7 +917,7 @@ Blks
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">5
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
-<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F2
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.F2
 </TD><TD ALIGN="CENTER" VALIGN="TOP">U
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
@@ -925,7 +925,7 @@ Blks
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">5
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
-<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F3
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.F3
 </TD><TD ALIGN="CENTER" VALIGN="TOP">U
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">U
@@ -933,7 +933,7 @@ Blks
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">30
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
-<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.F4
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.F4
 </TD><TD ALIGN="CENTER" VALIGN="TOP">U
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">VB
@@ -941,7 +941,7 @@ Blks
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">9900
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
-<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE001.SMPMCS
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.SMPMCS
 </TD><TD ALIGN="CENTER" VALIGN="TOP">U
 </TD><TD ALIGN="CENTER" VALIGN="TOP">SEQ
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
@@ -1032,13 +1032,13 @@ updating the global zone.
 <P><LI>Run REPORT CROSSZONE
 </OL>
 <P><H3><A NAME="Header_35" HREF="#ToC_35">Allocate file system to hold web download package</A></H3>
-<P>These instructions are also in the AZWE001.readme.txt file that you
+<P>These instructions are also in the AZWE002.readme.txt file that you
 downloaded from the web.
 <P>The SMP/E input data sets to install Zowe Open Source Project are provided as
-compressed files in AZWE001.pax.Z, which must be uploaded to z/OS as a
+compressed files in AZWE002.pax.Z, which must be uploaded to z/OS as a
 z/OS UNIX file. You can either create a new z/OS UNIX file system (zFS)
 or create a new directory in an existing file system to place
-AZWE001.pax.Z.
+AZWE002.pax.Z.
 <P>
 <P>You can use the following sample JCL to create a new file system,
 and directory, for the download package.
@@ -1090,9 +1090,9 @@ and directory, for the download package.
 </PRE><P><B>Expected Return Codes and Messages:</B>
 You will receive a return code of 0 if this job runs correctly.
 <P><H3><A NAME="Header_36" HREF="#ToC_36">Upload the web download package to the host</A></H3>
-<P>These instructions are also in the AZWE001.readme.txt file that you
+<P>These instructions are also in the AZWE002.readme.txt file that you
 downloaded from the web.
-<P>Upload the AZWE001.readme.txt file in text format and the AZWE001.pax.Z file
+<P>Upload the AZWE002.readme.txt file in text format and the AZWE002.pax.Z file
 in binary format from your workstation to the z/OS UNIX file system.
 <P>In the following sample dialog, we use FTP from a Microsoft Windows
 command line to do the transfer. Commands or other information entered
@@ -1132,26 +1132,26 @@ Password:</I> <B>tsopw</B>
 <I>250 HFS directory @zfs_path@ is the current working directory
 </I>ftp&gt; <B>ascii</B>
 <I>200 Representation type is Ascii NonPrint
-</I>ftp&gt; <B>put d:\AZWE001.readme.txt</B>
+</I>ftp&gt; <B>put d:\AZWE002.readme.txt</B>
 <I>200 Port request OK.
-125 Storing data set @zfs_path@/AZWE001.readme.txt
+125 Storing data set @zfs_path@/AZWE002.readme.txt
 250 Transfer completed successfully.
 ftp: 19278 bytes sent in 0.01 sec. (1366.67 Kb/s)
 </I>ftp&gt; <B>binary</B>
 <I>200 Representation type is Image
-</I>ftp&gt; <B>put d:\AZWE001.pax.Z</B>
+</I>ftp&gt; <B>put d:\AZWE002.pax.Z</B>
 <I>200 Port request OK.
-125 Storing data set @zfs_path@/AZWE001.pax.Z
+125 Storing data set @zfs_path@/AZWE002.pax.Z
 250 Transfer completed successfully.
 ftp: #FTPSIZPAX bytes sent in 1.26 sec. (1040.52 Kb/s)
 </I>ftp&gt; <B>quit</B>
 <I>221 Quit command received. Goodbye.
 </I></PRE><P><H3><A NAME="HDRUNPAX" HREF="#ToC_37">Extract and expand the compressed SMPMCS and RELFILEs</A></H3>
-<P>These instructions are also in the AZWE001.readme.txt file that you
+<P>These instructions are also in the AZWE002.readme.txt file that you
 downloaded from the web.
-<P>The AZWE001.readme.txt file uploaded in the previous step holds a sample
+<P>The AZWE002.readme.txt file uploaded in the previous step holds a sample
 JCL to expand the compressed SMPMCS and RELFILEs from the uploaded
-AZWE001.pax.Z file into data sets for use by the SMP/E RECEIVE job. The
+AZWE002.pax.Z file into data sets for use by the SMP/E RECEIVE job. The
 JCL is repeated here for your convenience.
 <UL>
 <P><LI>@zfs_path@ matches the variable you specified in the previous step.
@@ -1192,7 +1192,7 @@ JCL is repeated here for your convenience.
 //SYSTSPRT DD SYSOUT=*
 //SYSTSIN  DD *
   oshell cd @zfs_path@/ ; +
-    pax -rvf AZWE001.pax.Z
+    pax -rvf AZWE002.pax.Z
 //*
 //GIMUNZIP EXEC PGM=GIMUNZIP,REGION=0M,COND=(0,LT)
 //*STEPLIB  DD DISP=SHR,DSN=SYS1.MIGLIB
@@ -1204,16 +1204,16 @@ JCL is repeated here for your convenience.
 // PATH='@zfs_path@/'
 //SYSIN    DD *
 </PRE><PRE>&lt;GIMUNZIP&gt;
-&lt;ARCHDEF archid="AZWE001.SMPMCS"
-         newname="@PREFIX@.ZOWE.AZWE001.SMPMCS"/&gt;
-&lt;ARCHDEF archid="AZWE001.F1"
-         newname="@PREFIX@.ZOWE.AZWE001.F1"/&gt;
-&lt;ARCHDEF archid="AZWE001.F2"
-         newname="@PREFIX@.ZOWE.AZWE001.F2"/&gt;
-&lt;ARCHDEF archid="AZWE001.F3"
-         newname="@PREFIX@.ZOWE.AZWE001.F3"/&gt;
-&lt;ARCHDEF archid="AZWE001.F4"
-         newname="@PREFIX@.ZOWE.AZWE001.F4"/&gt;
+&lt;ARCHDEF archid="AZWE002.SMPMCS"
+         newname="@PREFIX@.ZOWE.AZWE002.SMPMCS"/&gt;
+&lt;ARCHDEF archid="AZWE002.F1"
+         newname="@PREFIX@.ZOWE.AZWE002.F1"/&gt;
+&lt;ARCHDEF archid="AZWE002.F2"
+         newname="@PREFIX@.ZOWE.AZWE002.F2"/&gt;
+&lt;ARCHDEF archid="AZWE002.F3"
+         newname="@PREFIX@.ZOWE.AZWE002.F3"/&gt;
+&lt;ARCHDEF archid="AZWE002.F4"
+         newname="@PREFIX@.ZOWE.AZWE002.F4"/&gt;
 &lt;/GIMUNZIP&gt;
 //*
 </PRE><P><H3><A NAME="HDRZJUMP2" HREF="#ToC_38">Sample Jobs</A></H3>
@@ -1231,43 +1231,43 @@ product to help you install Zowe:
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE1SMPE
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SMP/E
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to create an SMP/E environment (optional)
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE2RCVE
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">RECEIVE
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample SMP/E RECEIVE job
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE3ALOC
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ALLOCATE
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to allocate target and distribution libraries
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE4ZFS
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ALLOMZFS
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to allocate, create mountpoint, and mount zFS data sets
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE5MKD
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">MKDIR
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to invoke the supplied ZWEMKDIR EXEC to allocate
 file system paths
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE6DDEF
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">DDDEF
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample job to define SMP/E DDDEFs
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE7APLY
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">APPLY
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample SMP/E APPLY job
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ZWE8ACPT
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ACCEPT
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">Sample SMP/E ACCEPT job
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE001.F1
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">ZOWE.AZWE002.F1
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="4" WIDTH="100%"><B>Note&#58; </B> When Zowe is downloaded from the web, the RELFILE data
 set name will be prefixed by your chosen high level qualifier, as
@@ -1284,7 +1284,7 @@ Before you submit the job, add a job card and change the lowercase
 parameters to uppercase values to meet the requirements of your site.
 <PRE>//STEP1    EXEC PGM=IEBCOPY
 //SYSPRINT DD SYSOUT=*
-//IN       DD DSN=ZOWE.AZWE001.F1,
+//IN       DD DSN=ZOWE.AZWE002.F1,
 //            DISP=SHR,
 //*           VOL=SER=<B>filevol</B>,
 //            UNIT=SYSALLDA

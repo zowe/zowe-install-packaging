@@ -37,6 +37,7 @@ Each command is represented as a directory with some assistant files.
   8. is the parameter help. This help message will be displayed if the user issue `--help` or `-h` parameter.
 - `.exclusive-parameters`: is in same format of `.parameters` except all parameters defined in this file will NOT be propagated to sub-commands.
 - `.experimental`: This is an _optional_ file indicate this command is for experimental purpose. It may be changed or improved in the future, and it may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
+- `.examples`: This is an _optional_ file contains examples of this command. These examples will be displayed if the user issue `--help` or `-h` parameter.
 - `index.sh`: This is required file to process the command. This file will be sourced to `zwe` when it's executed.
 
 ### Extend new command
@@ -102,8 +103,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PRIVATE_DS_SZWESAMP` is the data set name for Zowe sample configurations . Default value is `SZWESAMP`.
 - `ZWE_PRIVATE_DS_SZWEEXEC` is the data set name for Zowe executable utilities library. Default value is `SZWEEXEC`.
 - `ZWE_PRIVATE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
-- `ZWE_PRIVATE_LOG_LEVEL_CLI`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` `zwe` command parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`.
-- `ZWE_PRIVATE_LOG_LEVEL_ZWELS` is the log level defined in zowe.yaml `zowe.launchScript.logLevel` to control Zowe runtime logging. Default value is `INFO`. This configuration is case insensitive.
+- `ZWE_PRIVATE_LOG_LEVEL_ZWELS`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` `zwe` command parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`. In Zowe runtime, value of `zowe.launchScript.logLevel` defined in Zowe YAML configuration file will overwrite this value.
 - `ZWE_PRIVATE_WORKSPACE_ENV_DIR` is where Zowe stores calculated environment
 
 ### Generated environment variables from Zowe YAML configuration
