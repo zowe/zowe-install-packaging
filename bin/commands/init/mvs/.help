@@ -1,7 +1,3 @@
-Synopsis
-    zwe init mvs [parameter [parameter]...]
-
-------------------
 Description
     This command will prepare Zowe custom data sets.
 

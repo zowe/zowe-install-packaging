@@ -1,7 +1,3 @@
-Synopsis
-    zwe internal config [sub-command] [parameter [parameter]...]
-
-------------------
 Description
     Get or Set a configuration defined in YAML configuration.
     

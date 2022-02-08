@@ -1,7 +1,3 @@
-Synopsis
-    zwe internal config get [parameter [parameter]...]
-
-------------------
 Description
     Return value of a configuration defined in YAML configuration.
     

@@ -1,7 +1,3 @@
-Synopsis
-    zwe certificate pkcs12 export [parameter [parameter]...]
-
-------------------
 Description
     Export PKCS12 keystore as PEM files.
     

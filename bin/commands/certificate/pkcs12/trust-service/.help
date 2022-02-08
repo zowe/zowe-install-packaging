@@ -1,7 +1,3 @@
-Synopsis
-    zwe certificate pkcs12 trust-service [parameter [parameter]...]
-
-------------------
 Description
     This command can detect and trust any service by importing the certificate
     into truststore.

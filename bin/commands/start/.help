@@ -1,7 +1,3 @@
-Synopsis
-    zwe start [parameter [parameter]...]
-
-------------------
 Description
     Start Zowe with main started task.
 

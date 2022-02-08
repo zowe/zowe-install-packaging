@@ -1,7 +1,3 @@
-Synopsis
-    zwe components install extract [parameter [parameter]...]
-
-------------------
 Description
     Extract module package and lay down to target directory.
 

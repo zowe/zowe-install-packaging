@@ -1,7 +1,3 @@
-Synopsis
-    zwe [sub-command [sub-command]...] [parameter [parameter]...]
-
-------------------
 Description
     A command line utility helps you managing Zowe instance.
 

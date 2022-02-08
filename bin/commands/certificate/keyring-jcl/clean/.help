@@ -1,7 +1,3 @@
-Synopsis
-    zwe certificate keyring-jcl clean [parameter [parameter]...]
-
-------------------
 Description
     Remove Zowe keyring.
     

@@ -1,7 +1,3 @@
-Synopsis
-    zwe init stc [parameter [parameter]...]
-
-------------------
 Description 
     This command will copy Zowe started tasks `ZWESLSTC`, `ZWESISTC`, `ZWESASTC` to
     your target procedure library.

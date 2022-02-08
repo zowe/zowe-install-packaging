@@ -1,7 +1,3 @@
-Synopsis
-    zwe stop [parameter [parameter]...]
-
-------------------
 Description
     Stop Zowe main job.
 

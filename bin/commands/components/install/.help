@@ -1,6 +1,2 @@
-Synopsis
-    zwe components install [sub-command] [parameter [parameter]...]
-
-------------------
 Description
     Install a Zowe module.

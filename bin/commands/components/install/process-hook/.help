@@ -1,7 +1,3 @@
-Synopsis
-    zwe components install process-hook [parameter [parameter]...]
-
-------------------
 Description
     Process module install hook if exists.
 

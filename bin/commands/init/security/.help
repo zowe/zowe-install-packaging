@@ -1,7 +1,3 @@
-Synopsis
-    zwe init security [parameter [parameter]...]
-
-------------------
 Description
     This command will run ZWESECUR jcl.
 

@@ -1,7 +1,3 @@
-Synopsis
-    zwe certificate verify-service [parameter [parameter]...]
-
-------------------
 Description
     This command can verify if the service certificate is valid by checking the
     certificate Common Name (CN) and Subject Alternate Name (SAN).

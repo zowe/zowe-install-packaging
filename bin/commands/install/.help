@@ -1,7 +1,3 @@
-Synopsis
-    zwe install [parameter [parameter]...]
-
-------------------
 Description 
     After you extract Zowe convenience build, you can run this command to install
     MVS data sets.

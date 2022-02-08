@@ -1,7 +1,3 @@
-Synopsis
-    zwe init apfauth [parameter [parameter]...]
-
-------------------
 Description
     This command will APF authorize load library for you.
 

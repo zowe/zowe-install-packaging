@@ -1,7 +1,3 @@
-Synopsis
-    zwe certificate keyring-jcl import-ds [parameter [parameter]...]
-
-------------------
 Description
     Import certificate stored in MVS data set into Zowe keyring.
     

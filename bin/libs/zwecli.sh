@@ -232,11 +232,43 @@ zwecli_calculate_command_path() {
 
 zwecli_process_help() {
   if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
-    >&2 echo "Name"
-    >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST}"
+    >&2 echo "zwe ${ZWE_CLI_COMMANDS_LIST}"
     >&2 echo
 
-    # display help message if exists
+    # Display synopsis (command format)
+    command_path=$(zwecli_calculate_command_path)
+    if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" ]; then
+      parameter_level="[parameter [parameter]...]"
+    else
+      parameter_level="[parameter]..."
+    fi
+
+    subdirs=$(find_sub_directories "${command_path}")
+    if [ -n "${subdirs}" ]; then 
+      sub_command_level="[sub-command]"
+      while read -r line; do
+        subdirs_deep=$(find_sub_directories "${command_path}/$(basename "${line}")")
+        if [ -n "${subdirs_deep}" ]; then
+          sub_command_level="[sub-command [sub-command]...]"
+          break
+        fi
+      done <<EOF
+$(echo "${subdirs}")
+EOF
+    else
+      sub_command_level=
+    fi
+
+    >&2 echo "------------------"
+    >&2 echo "Synopsis"
+    if [ -n "$sub_command_level" ]; then
+      >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $sub_command_level $parameter_level"
+    else
+      >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $parameter_level"
+    fi
+    >&2 echo
+
+    # display description message if exists
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
       >&2 echo "------------------"
@@ -286,6 +318,8 @@ $(echo "${subdirs}")
 EOF
       echo 
     fi
+
+    # display example(s)   
     if [ -f "${command_path}/.examples" ]; then
       >&2 echo "------------------"
       >&2 echo "Example(s)"

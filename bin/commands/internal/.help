@@ -1,7 +1,3 @@
-Synopsis
-    zwe internal [sub-command [sub-command]...] [parameter [parameter]...]
-
-------------------
 Description
     Commands will be executed internally by other Zowe commands.
     

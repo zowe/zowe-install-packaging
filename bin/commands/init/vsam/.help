@@ -1,7 +1,3 @@
-Synopsis
-    zwe init vsam [parameter [parameter]...]
-
-------------------
 Description
     This command will run ZWECSVSM jcl to create VSAM data set for Zowe APIML
     Caching Service.

@@ -1,7 +1,3 @@
-Synopsis
-    zwe certificate pkcs12 lock [parameter [parameter]...]
-
-------------------
 Description
     This command will lock the keystore directory to only be accessible by specified user group.
     

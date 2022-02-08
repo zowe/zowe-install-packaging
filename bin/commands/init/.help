@@ -1,7 +1,3 @@
-Synopsis
-    zwe init [sub-command] [parameter [parameter]...]
-
-------------------
 Description
     Init Zowe instance based on zowe.yaml configuration.
 

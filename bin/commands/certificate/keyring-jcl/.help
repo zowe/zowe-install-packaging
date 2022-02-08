@@ -1,7 +1,3 @@
-Synopsis
-    zwe certificate keyring-jcl [sub-command] [parameter [parameter]...]
-
-------------------
 Description
     Manage z/OS Keyring with JCL.
     

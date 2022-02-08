@@ -1,7 +1,3 @@
-Synopsis
-    zwe internal config set [parameter [parameter]...]
-
-------------------
 Description
     Set value of a configuration and write back to the YAML configuration.
     
