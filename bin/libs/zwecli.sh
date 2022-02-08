@@ -275,6 +275,7 @@ EOF
       >&2 echo "Description"
       help_message=`cat "${command_path}/.help"`
       >&2 padding_left "$help_message" "    "
+      >&2 echo
     fi
 
     # display global parameters
