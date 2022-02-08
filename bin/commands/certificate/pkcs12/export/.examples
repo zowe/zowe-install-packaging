@@ -1,0 +1,2 @@
+    zwe certificate pkcs12 export -f /path/to/my/keystore/file -p keystore-cert-password
+    
