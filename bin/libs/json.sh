@@ -169,3 +169,36 @@ update_yaml() {
 update_zowe_yaml() {
   update_yaml "${1}" "${2}" "${3}" "zowe:"
 }
+
+delete_yaml() {
+  file="${1}"
+  key="${2}"
+  expected_sample="${3}"
+
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  config_converter="${utils_dir}/config-converter/src/cli.js"
+
+  print_message "- delete \"${key}\""
+  result=$(node "${config_converter}" yaml delete "${file}" "${key}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+    print_error_and_exit "Error ZWEL0138E: Failed to delete key ${key} of file ${file}." "" 138
+  fi
+
+  ensure_file_encoding "${file}" "${expected_sample}"
+}
+
+delete_zowe_yaml() {
+  delete_yaml "${1}" "${2}" "zowe:"
+}

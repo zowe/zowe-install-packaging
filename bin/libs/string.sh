@@ -125,8 +125,18 @@ remove_trailing_slash() {
   if [ $# -eq 0 ]; then
     read input
   else
-    input=${1}
+    input="${1}"
   fi
 
   echo "${input}" | sed 's#/$##'
+}
+
+###############################
+# Base64 encode a string
+#
+# Note: this tool requires uuencode.
+#
+# @param string   optional string
+base64_encode() {
+  uuencode -m "${1}" dummy | sed '1d;$d' | tr -d '\n'
 }

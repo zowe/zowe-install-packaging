@@ -55,6 +55,40 @@ pkeytool() {
   return ${code}
 }
 
+ncert_utility() {
+  args=$@
+
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  zct="${utils_dir}/ncert/src/cli.js"
+
+  print_debug "- Calling ncert ${args}"
+  ncert_verbose=
+  if [ "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "TRACE" ]; then
+    ncert_verbose="-v"
+  fi
+  result=$(node "${zct}" "$@" "${ncert_verbose}" 2>&1)
+  code=$?
+
+  if [ ${code} -eq 0 ]; then
+    echo "${result}"
+    print_debug "  * ncert succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * ncert failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+  fi
+
+  return ${code}
+}
+
 pkcs12_lock_keystore_directory() {
   keystore_dir="${1}"
   user="${2}"
@@ -257,6 +291,79 @@ pkcs12_create_certificate_and_sign() {
 
   # delete signed CSR
   rm -f "${keystore_dir}/${keystore_name}/${alias}.signed.cer"
+}
+
+# This function acts similar pkcs12_create_certificate_and_sign but doesn't use keytool
+# JDK8 keytool does not support SAN dns with * in it.
+# TODO: allow to customize dname
+pkcs12_create_certificate_and_sign_with_node() {
+  keystore_dir="${1}"
+  keystore_name="${2}"
+  alias="${3}"
+  password="${4}"
+  common_name=${5:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}
+  domains=${6}
+  ca_alias=${7}
+  ca_password=${8}
+
+  ca_alias_lc=$(echo "${ca_alias}" | lower_case)
+
+  print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
+  mkdir -p "${keystore_dir}/${keystore_name}"
+
+  # generate --alt list from domains list
+  alt_names=
+  for item in $(echo "${domains}" | lower_case | tr "," " "); do
+    if [ -n "${item}" ]; then
+      alt_names="${alt_names} --alt ${item}"
+    fi
+  done
+
+  # make sure keystore file is tagged as binary
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+    if [ -f "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" ]; then
+      chtag -b "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12"
+    fi
+    if [ -f "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" ]; then
+      chtag -b "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12"
+    fi
+  fi
+
+  # generate cert
+  result=$(ncert_utility pkcs12 generate "${alias}" \
+            --ca "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" \
+            --cap "${ca_password}" \
+            --caa "${ca_alias_lc}" \
+            -f "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+            -p "${password}" \
+            ${alt_names})
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
+  ca_cert_file="${keystore_dir}/${ca_alias}/${ca_alias_lc}.cer"
+  if [ ! -f "${ca_cert_file}" ]; then
+    print_error "Error: CA certificate is not exported. Check \"zwe certificate pkcs12 export --help\" to find more details."
+    return 1
+  fi
+
+  # test if we need to import CA into keystore
+  keytool -list -v -noprompt \
+    -alias "${ca_alias}" \
+    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+    -storepass "${password}" \
+    -storetype "PKCS12" \
+    >/dev/null 2>/dev/null
+  if [ "$?" != "0" ]; then
+    print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
+    result=$(pkeytool -importcert -v \
+              -trustcacerts -noprompt \
+              -file "${ca_cert_file}" \
+              -alias "${ca_alias}" \
+              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+              -storepass "${password}" \
+              -storetype "PKCS12")
+  fi
 }
 
 pkcs12_import_pkcs12_keystore() {
@@ -481,6 +588,24 @@ pkcs12_export_pem() {
   done <<EOF
 $(echo "${private_key_aliases}" | tr "," "\n")
 EOF
+}
+
+pkcs12_show_info() {
+  keystore_file="${1}"
+  alias="${2}"
+  password="${3}"
+
+  print_debug ">>>> Show certificate information of ${alias}:"
+  result=$(pkeytool -list -v \
+            -alias "${alias}" \
+            -keystore "${keystore_file}" \
+            -storepass "${password}" \
+            -storetype "PKCS12")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
+  echo "${result}"
 }
 
 compare_domain_with_wildcards() {
@@ -844,6 +969,19 @@ keyring_run_zwenokyr_jcl() {
   fi
 }
 
+keyring_show_info() {
+  keyring_owner="${1}"
+  keyring_name="${2}"
+
+  print_debug ">>>> Show certificate information of ${alias}:"
+  result=$(tso_command "RACDCERT LIST(LABEL('${keyring_name}')) ID(${keyring_owner})")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
+  echo "${result}"
+}
+
 # this only works for RACF
 detect_zosmf_root_ca() {
   zosmf_user=${1:-IZUSVR}
@@ -888,5 +1026,31 @@ detect_zosmf_root_ca() {
   else
     print_trace "  * Error: failed to detect z/OSMF keyring name"
     return 4
+  fi
+}
+
+is_certificate_generated_by_zowe() {
+  issuer_keyword="${1:-Zowe Development Instances}"
+
+  if [ "${ZWE_zowe_certificate_keystore_type}" = "PKCS12" ]; then
+    issuer=$(pkcs12_show_info "${ZWE_zowe_certificate_keystore_file}" "${ZWE_zowe_certificate_keystore_alias}" "${ZWE_zowe_certificate_keystore_password}" | grep "Issuer:")
+    if [ -z "${issuer}" ]; then
+      # FIXME: error code
+      print_error_and_exit "Error: cannot find issuer of certificate ${ZWE_zowe_certificate_keystore_alias} in ${ZWE_zowe_certificate_keystore_file}." "" 1
+    fi
+    found=$(echo "${issuer}" | grep "${issuer_keyword}")
+    if [ -n "${found}" ]; then
+      echo "true"
+    fi
+  elif [ "${KEYSTORE_TYPE}" = "JCERACFKS" ]; then
+    issuer=$(keyring_show_info "${ZWE_zowe_certificate_keystore_file}" "${ZWE_zowe_certificate_keystore_alias}" | sed -n '/Issuer/{n;p;}')
+    if [ -z "${issuer}" ]; then
+      # FIXME: error code
+      print_error_and_exit "Error: cannot find issuer of certificate ${ZWE_zowe_certificate_keystore_alias} with owner ${ZWE_zowe_certificate_keystore_file}." "" 1
+    fi
+    found=$(echo "${issuer}" | grep "${issuer_keyword}")
+    if [ -n "${found}" ]; then
+      echo "true"
+    fi
   fi
 }

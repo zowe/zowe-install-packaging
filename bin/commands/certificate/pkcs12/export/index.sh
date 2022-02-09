@@ -13,7 +13,7 @@
 
 print_level1_message "Export keystore ${ZWE_CLI_PARAMETER_KEYSTORE}"
 
-# lock keystore directory with proper permission
+# export all certs in PKCS#12 keystore as PEM format
 pkcs12_export_pem \
   "${ZWE_CLI_PARAMETER_KEYSTORE}" \
   "${ZWE_CLI_PARAMETER_PASSWORD}" \
