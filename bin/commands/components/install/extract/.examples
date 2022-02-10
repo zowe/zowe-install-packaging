@@ -1,2 +1,2 @@
-    zwe components install extract -d /path/to/target/dir -o /path/to/component/package
+    zwe components install extract -c /path/to/zowe.yaml -o /path/to/component/package
     
