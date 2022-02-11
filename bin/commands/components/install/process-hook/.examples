@@ -1,0 +1,2 @@
+    zwe components install process-hook -d /path/to/target/dir -n component-name
+    
