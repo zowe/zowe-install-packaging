@@ -40,7 +40,13 @@ const PRE_INSTALLED_APPS = [
   'Sample React App',
   'IFrame Sample',
   // 'Hello World',
+  'IP Explorer',
 ];
+
+const PRE_INSTALLED_APPS_DISABLED_FOR_DOCKER = [
+  'IP Explorer'
+];
+
 const PRE_PINNED_APPS = [
   'TN3270',
   'JES Explorer',
@@ -648,6 +654,7 @@ const saveScreenshotWithIframeAppContext = async(testcase, driver, testScript, s
 // export constants and methods
 module.exports = {
   PRE_INSTALLED_APPS,
+  PRE_INSTALLED_APPS_DISABLED_FOR_DOCKER,
   PRE_PINNED_APPS,
   DEFAULT_PAGE_LOADING_TIMEOUT,
   DEFAULT_ELEMENT_CHECK_INTERVAL,

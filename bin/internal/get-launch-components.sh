@@ -60,6 +60,9 @@ if [ -z "${ROOT_DIR}" ]; then
   fi
 fi
 
+# prepare some environment variables we always need
+. ${ROOT_DIR}/bin/internal/zowe-set-env.sh
+
 # suppress any output to make sure this script only output LAUNCH_COMPONENTS
 . ${ROOT_DIR}/bin/internal/prepare-environment.sh -c "${INSTANCE_DIR}" -r "${ROOT_DIR}" -i "${ZWELS_HA_INSTANCE_ID}" 1>/dev/null 2>&1
 # display component list

@@ -20,7 +20,4 @@
 # - ZOWE_INSTANCE
 
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
-# check if we need to load variables
-if [ -z "${ZOWE_PREFIX}" ]; then
-  read_essential_vars
-fi
+read_essential_vars

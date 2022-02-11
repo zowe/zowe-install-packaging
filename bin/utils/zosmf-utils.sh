@@ -104,7 +104,7 @@ validate_zosmf_host_and_port() {
   then
     log_message "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
   else
-    http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/curl.js https://${zosmf_host}:${zosmf_port}/zosmf/info -k --response-type status)
+    http_response_code=$(${NODE_HOME}/bin/node ${utils_dir}/curl.js https://${zosmf_host}:${zosmf_port}/zosmf/info -k -H "X-CSRF-ZOSMF-HEADER: true" --response-type status)
     check_zosmf_info_response_code "${zosmf_host}" "${zosmf_port}" "${http_response_code}"
     return $?
   fi

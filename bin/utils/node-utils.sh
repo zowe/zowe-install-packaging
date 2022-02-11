@@ -70,6 +70,26 @@ ensure_node_is_on_path() {
   fi
 }
 
+detect_node_home() {
+  # do we have which?
+  node_home=$(which node 2>/dev/null)
+  node_home=
+  if [ -z "${node_home}" ]; then
+    (
+      IFS=:
+      for p in ${PATH}; do
+        if [ -f "${p}/node" ]; then
+          cd "${p}/.."
+          pwd
+          break
+        fi
+      done
+    )
+  else
+    echo "${node_home}"
+  fi
+}
+
 validate_node_home() {
   validate_node_home_not_empty
   node_empty_rc=$?
@@ -117,9 +137,9 @@ check_node_version() {
   current_year=$(date +"%Y")
   current_month=$(date +"%m")
 
-  if [[ ${node_version} == "v8.16.1" ]]
+  if [ "${node_version}" = "v8.16.1" -o "${node_version}" = "v14.17.2" ]
   then
-    print_error_message "Node v8.16.1 specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
+    print_error_message "Node ${node_version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
     return 1
   fi
 
@@ -129,27 +149,24 @@ check_node_version() {
   
   too_low=""
   too_low_support=""
-  if [[ ${node_major_version} -lt 6 ]]
+  if [[ ${node_major_version} -lt 8 ]]
   then
     too_low="true"
-  elif [[ ${node_major_version} -eq 6 ]] && [[ $node_minor_version -lt 14 ]]
-  then
-    too_low="true"
-  elif [[ ${node_major_version} -eq 6 ]] && [[ $node_minor_version -eq 14 ]] && [[ $node_fix_version -lt 4 ]]
-  then
-    too_low="true"
-  elif [[ ${node_major_version} -eq 6 ]]
+  elif [[ ${node_major_version} -eq 8 ]] && [[ ${current_year} -gt 2021 ]]
   then
     too_low_support="true"
   fi
 
   if [[ ${too_low} == "true" ]]
   then
-    print_error_message "Node ${node_version} is less than the minimum level required of v6.14.4"
+    print_error_message "Node ${node_version} is less than the minimum level required of v8+"
     return 1
   elif [[ ${too_low_support} == "true" ]]
   then
-    log_message "Warning: Zowe is no longer offering support for Node v6. Please use a higher version."
+    log_message "Warning: Zowe is no longer offering support for Node v6 and v8. Please use a higher version."
+  elif [[ ${node_major_version} -eq 8 ]]
+  then
+    log_message "Deprecation Warning: Zowe will be ending support for Node v8 by the end of December 2021."
   else
     log_message "Node ${node_version} is supported."
   fi

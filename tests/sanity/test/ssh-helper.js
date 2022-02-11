@@ -10,8 +10,8 @@
 
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:install:ssh-helper');
-const SSH = require('node-ssh');
-const ssh = new SSH();
+const { NodeSSH } = require('node-ssh');
+const ssh = new NodeSSH();
 
 const prepareConnection = () => {
   expect(process.env.SSH_HOST, 'SSH_HOST is not defined').to.not.be.empty;

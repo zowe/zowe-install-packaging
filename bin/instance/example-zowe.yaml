@@ -28,6 +28,11 @@ zowe:
     ZOWE_ZLUX_SECURITY_TYPE: ""
     EXTERNAL_ROOT_CA: ""
     SSO_FALLBACK_TO_NATIVE_AUTH: "true"
+
+  # enable debug mode for zowe launch scripts
+  # launchScript:
+  #   logLevel: debug
+
   # this should be the port you defined on DVIPA for gateway external port
   externalPort: "7554"
 
@@ -155,7 +160,7 @@ components:
   app-server:
     enabled: true
     port: "8544"
-    # we can customize zss certificate
+    # we can customize app-server certificate
     # the missing definitions will be picked from "zowe.internalCertificate"
     certificate:
       keystore:

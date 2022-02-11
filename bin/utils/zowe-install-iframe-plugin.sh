@@ -96,6 +96,12 @@ if [[ $has_multiple_domains == "yes" ]]; then
   fi
 fi
 
+is_on_zos() {
+  if [ `uname` = "OS/390" ]; then
+    echo "true"
+  fi
+}
+
 # remove any previous plugin files
 rm -rf ${plugin_dir}/web/assets
 rm -f ${plugin_dir}/web/index.html
@@ -104,7 +110,9 @@ rm -f ${plugin_dir}/pluginDefinition.json
 mkdir -p ${plugin_dir}/web/assets
 cp ${tile_image_path} ${plugin_dir}/web/assets
 # Tag the graphic as binary.
-chtag -b ${plugin_dir}/web/assets/$(basename ${tile_image_path})
+if [ "$(is_on_zos)" = "true" ]; then
+  chtag -b ${plugin_dir}/web/assets/$(basename ${tile_image_path})
+fi
 
 cat <<EOF >$plugin_dir/web/index.html
 <!DOCTYPE html>
@@ -119,7 +127,9 @@ cat <<EOF >$plugin_dir/web/index.html
     </body>
 </html>
 EOF
-chtag -tc 1047 ${plugin_dir}/web/index.html
+if [ "$(is_on_zos)" = "true" ]; then
+  chtag -tc 1047 ${plugin_dir}/web/index.html
+fi
 
 cat <<EOF >${plugin_dir}/pluginDefinition.json
 {
@@ -145,7 +155,9 @@ cat <<EOF >${plugin_dir}/pluginDefinition.json
   }
 }
 EOF
-chtag -tc 1047 ${plugin_dir}/pluginDefinition.json
+if [ "$(is_on_zos)" = "true" ]; then
+  chtag -tc 1047 ${plugin_dir}/pluginDefinition.json
+fi
 
 chmod -R a+rx ${plugin_dir}
 ${INSTANCE_DIR}/bin/install-app.sh ${plugin_dir}

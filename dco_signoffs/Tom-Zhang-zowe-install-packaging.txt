@@ -1,3 +1,8 @@
 I, Tom Zhang hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: tom.yczhang@gmail.com
 
 f3f780e66e27133d658009b4b5939585af96afb3 Fix hardcoded staging keyword for auto test
+14e6cab28a62e7ac97febc68603d324f01cdfd89 optimize some action inputs
+37c30d7cadb8f24cc48c460e710ad55a58f32db0 comment out auto triggers
+16083c3107bf8ce9737d636496105fc0505e1457 Change from VOL ZOWE02 to ZOWE03
+4b0c0608a4e563d4abe783476f017311ca2c4c51 ZOWE03 is only for marist 4
+4616dc18479f4677bcb7d29168d2dadd14315722 readme doc changes

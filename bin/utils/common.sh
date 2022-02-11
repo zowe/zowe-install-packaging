@@ -64,7 +64,7 @@ print_and_log_message() {
 
 # return current user id
 get_user_id() {
-  echo ${USER:-${USERNAME:-${LOGNAME}}}
+  echo ${USER:-${USERNAME:-${LOGNAME:-$(whoami 2>/dev/null)}}}
 }
 
 get_tmp_dir() {
@@ -145,10 +145,10 @@ $(echo "${message}")
 EOF
 
   # reset values
-  service=
-  logger=
-  level=
-  message=
+  export service=
+  export logger=
+  export level=
+  export message=
 }
 
 print_formatted_trace() {

@@ -35,6 +35,19 @@ is_instance_utils_sourced() {
 }
 
 ###############################
+# Check if a shell function is defined
+#
+# @param string   function name
+# Output          true if the function is defined
+function_exists() {
+  fn=$1
+  status=$(LC_ALL=C type $fn 2>&1 | grep 'function')
+  if [ -n "${status}" ]; then
+    echo "true"
+  fi
+}
+
+###############################
 # Exit script with error message
 #
 # @param string   error message
@@ -70,6 +83,35 @@ source_env() {
     key=${line%%=*}
     export $key
   done < "${env_file}"
+}
+
+###############################
+# Read JSON configuration from shell script
+#
+# Note: this is not a reliable way to read JSON file. The JSON file must be
+#       properly formatted, each key/value pair takes one line.
+#
+# FIXME: we should have a language neutral JSON reading tool, not using shell script.
+#
+# @param string   JSON file name
+# @param string   parent key to read after
+# @param string   which key to read
+# @param string   if this variable is required. If this is true and we cannot
+#                 find the value of the key, an error will be displayed.
+shell_read_json_config() {
+  json_file=$1
+  parent_key=$2
+  key=$3
+  required=$4
+
+  val=$(cat "${json_file}" | awk "/\"${parent_key}\":/{x=NR+200}(NR<=x){print}" | grep "${key}" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
+  if [ -z "${val}" ]; then
+    if [ "${required}" = "true" ]; then
+      exit_with_error "cannot find ${parent_key}.${key} defined in $(basename $json_file)" "instance/bin/internal/utils.sh,shell_read_json_config:${LINENO}"
+    fi
+  else
+    echo "${val}"
+  fi
 }
 
 ###############################
@@ -118,6 +160,7 @@ read_essential_vars() {
     source_env "${INSTANCE_DIR}/instance.env"
   elif [ "${ZWELS_CONFIG_LOAD_METHOD}" = "zowe.yaml" ]; then
     export ROOT_DIR=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "runtimeDirectory" "true")
+    export ZOWE_ROOT_DIR="${ROOT_DIR}"
     export ZOWE_PREFIX=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "jobPrefix" "true")
     export ZOWE_INSTANCE=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "zowe" "identifier" "true")
     export KEYSTORE_DIRECTORY=$(shell_read_yaml_config "${INSTANCE_DIR}/zowe.yaml" "environments" "KEYSTORE_DIRECTORY" "false")

@@ -272,6 +272,7 @@ _stopAt smpe-service.sh $debug -c $YAML $opts
 _cmd $here/smpe-service.sh $debug -c $YAML $opts
 # result (final): $ship                      # zip with sysmod & readme
 
+
 #  signal that we ended successfully
 test -n "$SuCcEsS" && _cmd touch "$SuCcEsS"
 

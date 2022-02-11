@@ -54,4 +54,23 @@ describe('cli check zosmf status', function() {
     expect(result.stdout).to.include('zosmf_full_version:');
     expect(result.stdout).to.include('z/OSMF Plug-ins that are installed on');
   });
+
+  it('should return list of zomsf systems', async function() {
+    const result = await execZoweCli(`zowe zosmf list systems --zosmf-profile ${defaultZOSMFProfileName}`);
+
+    debug('result:', result);
+    // addContext(this, {
+    //   title: 'cli result',
+    //   value: result
+    // });
+
+    expect(result).to.have.property('stdout');
+    expect(result).to.have.property('stderr');
+
+    expect(result.stderr).to.be.empty;
+    expect(result.stdout).to.include('systemNickName');
+    expect(result.stdout).to.include('systemName');
+    expect(result.stdout).to.include('url');
+    expect(result.stdout).to.include('jesMemberName');
+  });
 });

@@ -52,6 +52,11 @@ if [[ -z ${INSTANCE_DIR} ]]; then
   echo "INSTANCE_DIR is not defined. You can either pass the value with -c parameter or define it as global environment variable." >&2
   exit 1
 fi
+if [ "$(pwd 2>&1)" = "" ]; then
+  # switch to instance/bin directory
+  # this should solve issues caused by ZWESVUSR home directory doesn't exist
+  cd "${INSTANCE_DIR}/bin"
+fi
 
 # find runtime directory if it's not defined
 if [ -z "${ROOT_DIR}" ]; then
@@ -70,6 +75,10 @@ fi
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${INSTANCE_DIR}/bin/internal/utils.sh
 [ -z "$(is_runtime_utils_sourced 2>/dev/null || true)" ] && . ${ROOT_DIR}/bin/utils/utils.sh
 
+# ignore default value passed from ZWESLSTC
+if [ "${ZWELS_HA_INSTANCE_ID}" = "{{ha_instance_id}}" -o "${ZWELS_HA_INSTANCE_ID}" = "__ha_instance_id__" ]; then
+  ZWELS_HA_INSTANCE_ID=
+fi
 # assign default value
 if [ -z "${ZWELS_HA_INSTANCE_ID}" ]; then
   ZWELS_HA_INSTANCE_ID=$(get_sysname)
@@ -97,6 +106,11 @@ NONSTRICT_VERIFY_CERTIFICATES="${ZOWE_APIM_NONSTRICT_VERIFY_CERTIFICATES}"
 # this configuration is deprecated and settings in instance.env will not affect how Zowe is starting
 APIML_PREFER_IP_ADDRESS=false
 
+# by default, set ZWE_EXTERNAL_PORT to be same as GATEWAY_PORT
+if [ -z "${ZWE_EXTERNAL_PORT}" ]; then
+  ZWE_EXTERNAL_PORT="${GATEWAY_PORT}"
+fi
+
 LAUNCH_COMPONENTS=""
 # FIXME: if ZOWE_INSTANCE is same as last character of ZOWE_PREFIX, it will never be appended
 if [[ "${ZOWE_PREFIX}" != *"${ZOWE_INSTANCE}" ]]; then
@@ -111,7 +125,7 @@ then
 else
   if [[ ${LAUNCH_COMPONENT_GROUPS} == *"GATEWAY"* ]]
   then
-    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss
+    LAUNCH_COMPONENTS=discovery,gateway,api-catalog,caching-service,metrics-service,files-api,jobs-api,explorer-jes,explorer-mvs,explorer-uss,apiml-sample-extension
   fi
 
   #Explorers may be present, but have a prereq on gateway, not desktop
@@ -125,9 +139,13 @@ else
   fi
 fi
 
+# Directory containing all the Gateway shared jars to be added in the classpath
+ZWE_GATEWAY_SHARED_LIBS=${WORKSPACE_DIR}/gateway/sharedLibs/
+
+
 # caching-service with VSAM persistent can only run on z/OS
 # FIXME: should we let sysadmin to decide this?
-if [ `uname` != "OS/390" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" != "true" -a "${ZWE_CACHING_SERVICE_PERSISTENT}" = "VSAM" ]; then
   # to avoid potential retries on starting caching-service, do not start caching-service
   LAUNCH_COMPONENTS=$(echo "${LAUNCH_COMPONENTS}" | sed -e 's#caching-service##' | sed -e 's#,,#,#')
 fi
@@ -148,12 +166,21 @@ LAUNCH_COMPONENTS=${LAUNCH_COMPONENTS}",${EXTERNAL_COMPONENTS}"
 # prepare-environment.sh shouldn't have any output, but these 2 functions may output:
 #   Prepending JAVA_HOME/bin to the PATH...
 #   Prepending NODE_HOME/bin to the PATH...
-# so we surpressed all output for those 2 functions
+# so we suppressed all output for those 2 functions
 if [ -n "${JAVA_HOME}" ]; then
   ensure_java_is_on_path 1>/dev/null 2>&1
 fi
+if [ -z "${NODE_HOME}" ]; then
+  NODE_HOME=$(detect_node_home)
+fi
 if [ -n "${NODE_HOME}" ]; then
   ensure_node_is_on_path 1>/dev/null 2>&1
+fi
+
+# this is running in containers
+if [ -f "${INSTANCE_DIR}/.init-for-container" ]; then
+  # these values cannot be modified by other logics
+  prepare_container_runtime_environments
 fi
 
 # turn off automatic export

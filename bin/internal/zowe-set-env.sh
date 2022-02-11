@@ -10,11 +10,19 @@
 # Copyright IBM Corporation 2020, 2021
 ################################################################################
 
+export ZWE_RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
+
 export _CEE_RUNOPTS="FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
 export _TAG_REDIR_IN=txt
 export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 export _BPXK_AUTOCVT="ON"
+
+# enforce encoding of stdio/stdout/stderr
+# sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding
+export NODE_STDOUT_CCSID=1047
+export NODE_STDERR_CCSID=1047
+export NODE_STDIN_CCSID=1047
 
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output

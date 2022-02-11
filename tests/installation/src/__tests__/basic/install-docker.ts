@@ -20,7 +20,7 @@ const extraVars = {
   // we start docker container on localhost
   'zowe_docker_image_url': process.env['ZOWE_DOCKER_URL'],
   'zowe_external_domain_name': 'localhost',
-  'zowe_sanity_test_testcases': '-- --config .mocharc-docker.yml',
+  'zowe_sanity_test_testcases': '--config .mocharc-docker.yml',
 }
 
 const testSuiteName = 'Test docker build installation';

@@ -61,14 +61,6 @@ export ROOT_DIR="${ZOWE_ROOT_DIR}"
 # this utils usually be sourced from instance dir, but here we are too early
 [ -z "$(is_instance_utils_sourced 2>/dev/null || true)" ] && . ${ZOWE_ROOT_DIR}/bin/instance/internal/utils.sh
 
-# node is required for read_component_manifest
-if [ -n "${NODE_HOME}" ]; then
-  ensure_node_is_on_path
-fi
-
-# is on z/OS?
-RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
-
 #######################################################################
 # Functions
 error_handler(){
@@ -109,7 +101,7 @@ extract_to_target_dir(){
     fi
 
     # automatically tag files
-    if [ "${RUN_ON_ZOS}" = "true" ]; then
+    if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
         manifest_encoding=$(detect_component_manifest_encoding "${TARGET_DIR}/temp-ext-dir")
         log_message "Component manifest encoding=${manifest_encoding}, requested auto_encoding=${AUTO_ENCODING}"
         #the autotag script we have is for tagging when files are ascii, so we assume tagging cant be done unless ascii
@@ -213,7 +205,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
             fi
             shift
         ;;
-        -i|--instance_dir) #Represents the path to zowe's instance directory (optional)
+        -i|--instance-dir) #Represents the path to zowe's instance directory (optional)
             shift
             path=$(get_full_path "$1")
             validate_directory_is_accessible "$path"
@@ -221,14 +213,14 @@ while [ $# -gt 0 ]; do #Checks for parameters
                 if [ -e "$path/instance.env" -o -e "$path/zowe.yaml" ]; then
                     INSTANCE_DIR="${path}"
                 else
-                    error_handler "-i|--instance_dir: Given path is not a zowe instance directory"
+                    error_handler "-i|--instance-dir: Given path is not a zowe instance directory"
                 fi
             else
-                error_handler "-i|--instance_dir: Given path is not a zowe instance directory or does not exist"
+                error_handler "-i|--instance-dir: Given path is not a zowe instance directory or does not exist"
             fi
             shift
         ;;
-        -d|--target_dir) # Represents the path to the desired target directory to place the extensions (optional)
+        -d|--target-dir) # Represents the path to the desired target directory to place the extensions (optional)
             shift
             TARGET_DIR=$(get_full_path "$1")
             shift
@@ -259,7 +251,7 @@ while [ $# -gt 0 ]; do #Checks for parameters
 done
 
 #######################################################################
-# Check and sanitize valiables
+# Check and sanitize variables
 if [ -z "${COMPONENT_FILE}" ]; then
     #Ensures that the required parameters are entered, otherwise exit the program
     error_handler "Missing parameters, try: zowe-install-component.sh -o <PATH_TO_COMPONENT>"
@@ -279,6 +271,9 @@ if [ -z "${TARGET_DIR}" ]; then
                 zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
             elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
                 zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
+                if [ "${zwe_extension_dir}" = "null" ]; then
+                    zwe_extension_dir=
+                fi
             fi
         fi
         if [ -z "${zwe_extension_dir}" ]; then
@@ -311,6 +306,9 @@ if [ "${IS_ZOWE_CORE}" = "false" ]; then
             zwe_extension_dir=$(read_zowe_instance_variable "ZWE_EXTENSION_DIR")
         elif [ -e "${INSTANCE_DIR}/zowe.yaml" ]; then
             zwe_extension_dir=$(read_zowe_yaml_variable ".zowe.extensionDirectory")
+            if [ "${zwe_extension_dir}" = "null" ]; then
+                zwe_extension_dir=
+            fi
         fi
         if [ -n "${zwe_extension_dir}" -a "${TARGET_DIR}" != "${zwe_extension_dir}" ]; then
             error_handler "It's recommended to install all Zowe extensions into same directory. The recommended target directory is ZWE_EXTENSION_DIR (${ZWE_EXTENSION_DIR}) defined in Zowe instance.env."
@@ -332,11 +330,34 @@ fi
 if [ -z "${LOG_FILE}" -a -z "${LOG_DIRECTORY}" -a -n "${INSTANCE_DIR}" ]; then
     LOG_DIRECTORY="${INSTANCE_DIR}/logs"
 fi
+prepare_log_file
+
+# node is required for read_component_manifest
+prompt_for_node_home_if_required
+if [ -n "${NODE_HOME}" ]; then
+  ensure_node_is_on_path
+fi
+$(validate_node_home 2>/dev/null 1>/dev/null)
+if [ $? -gt 0 ]; then
+    error_handler "NODE_HOME environment variable is required to continue."
+fi
+
+# only need java to handle zip file
+if [[ "$COMPONENT_FILE" = *.zip ]]; then
+    prompt_java_home_if_required
+    if [ -n "${JAVA_HOME}" ]; then
+        ensure_java_is_on_path
+    fi
+
+    $(validate_java_home 2>/dev/null 1>/dev/null)
+    if [ $? -gt 0 ]; then
+        error_handler "JAVA_HOME environment variable is required to continue."
+    fi
+fi
+
 
 #######################################################################
 # Install
-
-prepare_log_file
 
 print_and_log_message "Install Zowe component ${COMPONENT_FILE} to ${TARGET_DIR}"
 
