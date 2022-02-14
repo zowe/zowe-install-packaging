@@ -65,23 +65,25 @@ target_proclibs="${security_stcs_zowe} ${security_stcs_xmem} ${security_stcs_aux
 for mb in ${proclibs}; do
   jcl_existence=$(is_data_set_exists "${jcllib}(${mb})")
   if [ "${jcl_existence}" = "true" ]; then
-    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${jcllib}(${mb}) already exists. This data set member will be overwritten during configuration."
     else
-      # error
-      print_error_and_exit "Error ZWEL0158E: ${jcllib}(${mb}) already exists." "" 158
+      # print_error_and_exit "Error ZWEL0158E: ${jcllib}(${mb}) already exists." "" 158
+      # warning
+      print_message "Warning ZWEL0301W: ${jcllib}(${mb}) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
     fi
   fi
 
   stc_existence=$(is_data_set_exists "${proclib}(${mb})")
   if [ "${stc_existence}" = "true" ]; then
-    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${proclib}(${mb}) already exists. This data set member will be overwritten during configuration."
     else
-      # error
-      print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists." "" 158
+      # print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists." "" 158
+      # warning
+      print_message "Warning ZWEL0301W: ${proclib}(${mb}) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
     fi
   fi
 done
@@ -118,7 +120,7 @@ fi
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})"
-copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zowe})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zowe})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
 code=$?
 print_trace "- Delete ${tmpfile}"
 rm -f "${tmpfile}"
@@ -158,7 +160,7 @@ fi
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_xmem})"
-copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_xmem})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_xmem})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
 code=$?
 print_trace "- Delete ${tmpfile}"
 rm -f "${tmpfile}"
@@ -197,7 +199,7 @@ fi
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})"
-copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_aux})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_aux})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
 code=$?
 print_trace "- Delete ${tmpfile}"
 rm -f "${tmpfile}"
@@ -212,7 +214,7 @@ print_message
 # copy to proclib
 for mb in ${target_proclibs}; do
   print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
-  data_set_copy_to_data_set "${hlq}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  data_set_copy_to_data_set "${hlq}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi

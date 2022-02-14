@@ -61,12 +61,13 @@ fi
 
 jcl_existence=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
 if [ "${jcl_existence}" = "true" ]; then
-  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
     print_message "Warning ZWEL0300W: ${jcllib}(ZWECSVSM) already exists. This data set member will be overwritten during configuration."
   else
-    # error
-    print_error_and_exit "Error ZWEL0158E: ${jcllib}(ZWECSVSM) already exists." "" 158
+    # print_error_and_exit "Error ZWEL0158E: ${jcllib}(ZWECSVSM) already exists." "" 158
+    # warning
+    print_message "Warning ZWEL0301W: ${jcllib}(ZWECSVSM) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
   fi
 fi
 
@@ -77,7 +78,7 @@ if [ "${vsam_existence}" = "true" ]; then
   # error
   print_error_and_exit "Error ZWEL0158E: ${vsam_name} already exists." "" 158
 fi
-if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
   # delete blindly and ignore errors
   result=$(tso_command delete "'${vsam_name}'")
 fi
@@ -118,7 +119,7 @@ print_trace "$(cat "${tmpfile}")"
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- copy to ${jcllib}(ZWECSVSM)"
-copy_to_data_set "${tmpfile}" "${jcllib}(ZWECSVSM)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+copy_to_data_set "${tmpfile}" "${jcllib}(ZWECSVSM)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
 code=$?
 print_trace "- Delete ${tmpfile}"
 rm -f "${tmpfile}"
