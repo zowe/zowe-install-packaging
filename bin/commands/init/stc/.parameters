@@ -1,1 +1,1 @@
-allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
+allow-overwrite||boolean|||||Allow overwritten existing MVS data set.
