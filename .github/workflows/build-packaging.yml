@@ -44,12 +44,12 @@ on:
         type: string
 
 jobs:
-  display-runid:
-    if: ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }} != ''
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
     runs-on: ubuntu-latest
     steps:
       - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
-        run: echo "echo random dispatch even id parsed from workflow dispatch event"
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
 
   check-permission:
     runs-on: ubuntu-latest
