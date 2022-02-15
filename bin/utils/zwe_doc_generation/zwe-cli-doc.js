@@ -11,7 +11,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const rootDirectory = '../commands';
+const docsRootDirectory = path.join(__dirname, '../../commands');
+const generatedDocDirectory = path.join(__dirname, './generated');
 
 const documentationFiles = [
     {
@@ -40,19 +41,23 @@ const documentationFiles = [
     }
 ]
 
-function getDocumentationTree(rootDirectory) {
+const docsTree = getDocumentationTree(docsRootDirectory);
+console.log(JSON.stringify(docsTree, null, 2));
+
+writeMdFiles(docsTree);
+
+function getDocumentationTree(directory) {
     const documentationNode = { children: [] };
-    const objectsInDirectory = fs.readdirSync(rootDirectory);
+    const objectsInDirectory = fs.readdirSync(directory);
 
     for (const file of objectsInDirectory) {
-        const objectPath = path.join(rootDirectory, file);
+        const objectPath = path.join(directory, file);
         if (fs.statSync(objectPath).isDirectory()) {
             documentationNode.children.push(getDocumentationTree(objectPath));
         } else {
             const docFileType = documentationFiles.find((df) => df.fileName === file);
-            console.log(docFileType);
             if (docFileType) {
-                documentationNode.command = path.basename(rootDirectory);
+                documentationNode.command = path.basename(directory);
                 documentationNode[docFileType.use] = objectPath;
             }
         }
@@ -61,6 +66,28 @@ function getDocumentationTree(rootDirectory) {
     return documentationNode;
 }
 
-const docsTree = getDocumentationTree('../commands');
-console.log(JSON.stringify(docsTree, null, 2));
+function writeMdFiles(docsNode) {
+    if (docsNode.children && docsNode.children.length) {
+        for (const child of docsNode.children) {
+            writeMdFiles(child);
+        }
+    }
 
+    // TODO need to apply parent parameters to child docs
+    const mdContent = `# zwe ${docsNode.command}${getMdContentForNode(docsNode)}`;
+    fs.writeFileSync(`${generatedDocDirectory}/zwe-doc-${docsNode.command}.md`, mdContent);
+}
+
+function getMdContentForNode(docNode) {
+    // TODO need to order the file content
+    // TODO need to transform from . file format to md format (e.g. tables)
+    let mdContent = "";
+    for (const fileType of documentationFiles) {
+        if (docNode[fileType.use]) {
+            const fileContent = fs.readFileSync(docNode[fileType.use], 'utf-8');
+            mdContent = mdContent.concat(`\n\n## ${fileType.use}\n\n${fileContent}`);
+        }
+    }
+
+    return mdContent;
+}
