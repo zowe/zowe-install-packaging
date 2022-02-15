@@ -140,3 +140,28 @@ remove_trailing_slash() {
 base64_encode() {
   uuencode -m "${1}" dummy | sed '1d;$d' | tr -d '\n'
 }
+
+###############################
+# Check if an item is part of comma separated list
+#
+# @param string   list separated by <separator>
+# @param string   the item to check
+# @param string   separator, default value is comman (,).
+item_in_list() {
+  list="${1}"
+  item="${2}"
+  separator="${3:-,}"
+
+  OLDIFS=$IFS
+  IFS="${separator}"
+  found=
+  for one in ${list}; do
+    if [ "${one}" = "${item}" ]; then
+      found=true
+    fi
+  done
+  IFS=$OLDIFS
+
+  printf "${found}"
+}
+

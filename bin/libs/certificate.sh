@@ -28,6 +28,40 @@ ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY="3650"
 ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE="keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment"
 ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE="clientAuth,serverAuth"
 
+#######################################################################
+# Notes: some keyring related functions, like ncert, are using R_datalib behind the scene. It requires proper
+#        permission setup on the server.
+#
+# If you see error message like this, that means your user id doesn't have proper permission:
+#
+#   R_datalib call failed: function code: 01, SAF rc: 8, RACF rc: 8, RACF rsn: 8
+#
+# Check below link to learn failure reason codes:
+#   https://www.ibm.com/docs/en/zos/2.3.0?topic=library-return-reason-codes
+#
+# Check this link to learn how to configure permission for RDATALIB:
+#   https://www.ibm.com/docs/en/zos/2.3.0?topic=library-racf-authorization
+# To retrieve private key of others, you need UPDATE access to
+# <ringOwner>.<ringName>.LST resource in the RDATALIB class.
+# To retrieve private key of CERTAUTH, you need CONTROL access to
+# <ringOwner>.<ringName>.LST resource in the RDATALIB class.
+#   https://www.ibm.com/docs/en/zos/2.3.0?topic=library-usage-notes#usgntrdata
+#
+# Example permission setup on RACF:
+#   Keyring owner is ZWESVUSR
+#   Keyring name is Zowe2Keyring
+#
+# - define permission and disable access for all
+# RDEFINE RDATALIB ZWESVUSR.Zowe2Keyring.LST UACC(NONE)
+# - allow list permission to IBMUSER
+# PERMIT ZWESVUSR.Zowe2Keyring.LST CLASS(RDATALIB) ID(IBMUSER) ACCESS(CONTROL)
+# - refresh RDATALIB permission
+# SETROPTS RACLIST(RDATALIB) REFRESH
+# - verify permission setup
+# RLIST  RDATALIB ZWESVUSR.Zowe2Keyring.LST  ALL
+# RLIST  FACILITY IRR.DIGTCERT.LISTRING  ALL
+#######################################################################
+
 pkeytool() {
   args=$@
 
@@ -62,11 +96,8 @@ ncert_utility() {
   zct="${utils_dir}/ncert/src/cli.js"
 
   print_debug "- Calling ncert ${args}"
-  ncert_verbose=
-  if [ "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "DEBUG" -o "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "TRACE" ]; then
-    ncert_verbose="-v"
-  fi
-  result=$(node "${zct}" "$@" "${ncert_verbose}" 2>&1)
+  # show we enable verbose mode of ncert command?
+  result=$(node "${zct}" "$@" 2>&1)
   code=$?
 
   if [ ${code} -eq 0 ]; then
@@ -608,6 +639,23 @@ pkcs12_show_info() {
   echo "${result}"
 }
 
+pkcs12_delete_cert() {
+  keystore_file="${1}"
+  password="${2}"
+  alias="${3}"
+
+  print_message ">>>> Delete ${alias} from keystore \"${keystore_file}\":"
+
+  result=$(pkeytool -delete -v \
+            -storetype "PKCS12" \
+            -keystore "${keystore_file}" \
+            -storepass "${password}" \
+            -alias "${alias}")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+}
+
 compare_domain_with_wildcards() {
   pattern=$(echo "$1" | lower_case)
   domain=$(echo "$2" | lower_case)
@@ -969,17 +1017,241 @@ keyring_run_zwenokyr_jcl() {
   fi
 }
 
+# FIXME: this only works for RACF
 keyring_show_info() {
   keyring_owner="${1}"
   keyring_name="${2}"
 
-  print_debug ">>>> Show certificate information of ${alias}:"
+  print_debug ">>>> Show certificate information of safkeyring:////${keyring_owner}/${keyring_name}:"
   result=$(tso_command "RACDCERT LIST(LABEL('${keyring_name}')) ID(${keyring_owner})")
   if [ $? -ne 0 ]; then
     return 1
   fi
 
   echo "${result}"
+}
+
+keyring_show_info_node() {
+  keyring_owner="${1}"
+  keyring_name="${2}"
+  # usage of the certificate: PERSONAL or CERTAUTH
+  usage="${3}"
+  label="${4}"
+  output="${5}"
+
+  opts=
+  if [ -n "${label}" ]; then
+    opts="${opts} -l \"${label}\""
+  fi
+  if [ -n "${usage}" ]; then
+    opts="${opts} -u \"${usage}\""
+  fi
+  if [ "${output}" = "label" ]; then
+    opts="${opts} --label-only"
+  elif [ "${output}" = "owner" ]; then
+    opts="${opts} --owner-only"
+  fi
+  
+  print_debug ">>>> Show certificate information of safkeyring:////${keyring_owner}/${keyring_name}&${label}"
+  result=$(ncert_utility keyring info "${keyring_owner}" "${keyring_name}" ${opts})
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+  echo "${result}"
+}
+
+keyring_export_to_pkcs12() {
+  keyring_owner="${1}"
+  keyring_name="${2}"
+  label="${3}"
+  uss_temp_dir="${4}"
+  keystore_file="${5}"
+  keystore_password="${6}"
+  cert_only="${7}"
+
+  dummy_cert=keyring-export-to-pkcs12-dummy
+  dummy_cert_created=
+  uss_temp_target=$(create_tmp_file "keyring-export-to-pkcs12" "${uss_temp_dir}")
+
+  # remove temp files if they exists
+  rm -f "${uss_temp_target}.cer"
+  rm -f "${uss_temp_target}.key"
+  rm -f "${uss_temp_target}.p12"
+
+  print_debug ">>>> Export certificate \"${label}\" from safkeyring:////${keyring_owner}/${keyring_name} to PKCS#12 keystore ${keystore_file}"
+
+  # create keystore if it doesn't exist
+  if [ -f "${keystore_file}" ]; then
+    print_debug "- Create keystore with dummy certificate ${dummy_cert}"
+    result=$(pkeytool -genkeypair \
+            -alias "${dummy_cert}" \
+            -dname "CN=Zowe Dummy Cert, OU=ZWELS, O=Zowe, C=US" \
+            -keystore "${keystore_file}" \
+            -storetype PKCS12 \
+            -storepass "${keystore_password}" \
+            -validity 90 \
+            -keyalg RSA -keysize 2048)
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+    if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+      chtag -b "${keystore_file}"
+    fi
+    dummy_cert_created=true
+  fi
+
+  # QUESTION: do we need to know cert owner?
+  cert_owner=$(keyring_show_info_node "${keyring_owner}" "${keyring_name}" "PERSONAL" "${cert}" "owner")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
+  print_debug "- Export certificate \"${label}\" in PEM format"
+  result=$(ncert_utility keyring export "${keyring_owner}" "${keyring_name}" "${label}" -f "${uss_temp_target}.cer")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
+  if [ "${cert_only}" = "true" ]; then
+    # use keytool to import certificate
+    print_debug "- Import certificate into keystore as \"${label}\""
+    result=$(pkeytool -import -v \
+            -trustcacerts -noprompt \
+            -alias "${label}" \
+            -file "${uss_temp_target}.cer" \
+            -keystore "${keystore_file}" \
+            -storetype PKCS12 \
+            -keypass "${keystore_password}" \
+            -storepass "${keystore_password}")
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+  else
+    # keytool cannot import PEM private key, use ncert utility
+
+    # export private key
+    print_debug "- Export private key of \"${label}\" in PEM format"
+    result=$(ncert_utility keyring export "${keyring_owner}" "${keyring_name}" "${label}" -k -f "${uss_temp_target}.key")
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+
+    # convert PEM format into temporary PKCS#12 keystore
+    print_debug "- Generate PKCS#12 keystore from the certificate and private key in PEM format"
+    result=$(ncert_utility pkcs12 create-from-pem "${label}" -f "${uss_temp_target}.p12" -p "${keystore_password}" --cert "${uss_temp_target}.cer" --key "${uss_temp_target}.key")
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+
+    # import into target keystore
+    pkcs12_import_pkcs12_keystore \
+      "${keystore_file}" \
+      "${keystore_password}" \
+      "${label}" \
+      "${uss_temp_target}.p12" \
+      "${keystore_password}" \
+      "${label}"
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+  fi
+
+  if [ "${dummy_cert_created}" = "true" ]; then
+    print_debug "- Delete dummy certificate ${dummy_cert} from keystore"
+    result=$(pkeytool -delete \
+            -alias "${dummy_cert}" \
+            -keystore "${keystore_file}" \
+            -storetype PKCS12 \
+            -storepass "${keystore_password}")
+  fi
+
+  print_debug
+}
+
+keyring_export_all_to_pkcs12() {
+  keyring_owner="${1}"
+  keyring_name="${2}"
+  uss_temp_dir="${3}"
+  keystore_password="${4}"
+
+  keystore_name=localhost
+  mkdir -p "${uss_temp_dir}/keystore/${keystore_name}"
+  keystore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.keystore.p12"
+  truststore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.truststore.p12"
+
+  # converting keystore
+  print_debug ">>>> Listing PERSONAL certificates"
+  certs=$(keyring_show_info_node "${keyring_owner}" "${keyring_name}" "PERSONAL" "" "label")
+  print_debug "- Found these certificates: ${certs}"
+  print_debug
+  while read -r cert; do
+    if [ -n "${cert}" ]; then
+      keyring_export_to_pkcs12 \
+         "${keyring_owner}" \
+         "${keyring_name}" \
+         "${cert}" \
+         "${uss_temp_dir}" \
+         "${keystore_file}" \
+         "${keystore_password}"
+      if [ $? -ne 0 ]; then
+        return 1
+      fi
+    fi
+  done <<EOF
+$(echo "${certs}")
+EOF
+
+  # converting truststore
+  print_debug ">>>> Listing CERTAUTH certificates"
+  certs=$(keyring_show_info_node "${keyring_owner}" "${keyring_name}" "CERTAUTH" "" "label")
+  print_debug "- Found these certificates: ${certs}"
+  print_debug
+  while read -r cert; do
+    if [ -n "${cert}" ]; then
+      found=$(item_in_list "${ZWE_zowe_certificate_pem_certificateAuthorities}" "safkeyring:////${keyring_owner}/${keyring_name}&${cert}")
+      if [ "${found}" = "true" ]; then
+        # this is Zowe CA, will try to export both cert and private key into truststore
+        keyring_export_to_pkcs12 \
+          "${keyring_owner}" \
+          "${keyring_name}" \
+          "${cert}" \
+          "${uss_temp_dir}" \
+          "${truststore_file}" \
+          "${keystore_password}"
+        if [ $? -ne 0 ]; then
+          return 1
+        fi
+
+        # also put it into keystore to create full chain
+        keyring_export_to_pkcs12 \
+          "${keyring_owner}" \
+          "${keyring_name}" \
+          "${cert}" \
+          "${uss_temp_dir}" \
+          "${keystore_file}" \
+          "${keystore_password}" \
+          "true"
+        if [ $? -ne 0 ]; then
+          return 1
+        fi
+      else
+        # Not Zowe CA, we only export cert without private key
+        keyring_export_to_pkcs12 \
+          "${keyring_owner}" \
+          "${keyring_name}" \
+          "${cert}" \
+          "${uss_temp_dir}" \
+          "${truststore_file}" \
+          "${keystore_password}" \
+          "true"
+        if [ $? -ne 0 ]; then
+          return 1
+        fi
+      fi
+    fi
+  done <<EOF
+$(echo "${certs}")
+EOF
 }
 
 # this only works for RACF
