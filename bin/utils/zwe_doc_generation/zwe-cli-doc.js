@@ -63,3 +63,4 @@ function getDocumentationTree(rootDirectory) {
 
 const docsTree = getDocumentationTree('../commands');
 console.log(JSON.stringify(docsTree, null, 2));
+
