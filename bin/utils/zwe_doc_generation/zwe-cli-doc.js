@@ -14,47 +14,55 @@ const path = require('path');
 const docsRootDirectory = path.join(__dirname, '../../commands');
 const generatedDocDirectory = path.join(__dirname, './generated');
 
+const SEPARATOR = '\n\n';
+const FILE_CONTENT_TOKEN = '%f';
+const SECTION_HEADER = '## ';
+
+const EXPERIMENTAL = {
+    fileName: '.experimental',
+    key: 'experimental',
+    order: 1,
+    content: '**Warning:** This command is for experimental purposes and may not fully function.'
+};
 const HELP = {
     fileName: '.help',
     key: 'help',
-    order: 1,
-    title: 'Help'
+    order: 2,
+    content: FILE_CONTENT_TOKEN
 };
 const EXAMPLES = {
     fileName: '.examples',
     key: 'examples',
-    order: 2,
-    title: 'Examples'
+    order: 3,
+    content: `${SECTION_HEADER}Examples${SEPARATOR}${FILE_CONTENT_TOKEN}`
+};
+const EXCLUSIVE_PARAMETERS = {
+    fileName: '.exclusive-parameters',
+    key: 'exclusive-parameters',
+    order: 4,
+    content: `${SECTION_HEADER}Parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`
 };
 const PARAMETERS = {
     fileName: '.parameters',
     key: 'parameters',
-    order: 3,
-    title: 'Parameters'
-};
-const EXCLUSIVE_PARAMETERS = {
-    fileName: '.exclusive-parameters',
-    key: 'exclusive-parameters'
+    order: 5,
+    content: `${SECTION_HEADER}Parent command parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`
 };
 const ERRORS = {
     fileName: '.errors',
     key: 'errors',
-    order: 4,
-    title: 'Errors'
-};
-const EXPERIMENTAL = {
-    fileName: '.experimental',
-    key: 'experimental'
+    order: 6,
+    content: `${SECTION_HEADER}Errors${SEPARATOR}${FILE_CONTENT_TOKEN}`
 };
 
-const documentationFiles = [
-    HELP, EXAMPLES, PARAMETERS, EXCLUSIVE_PARAMETERS, ERRORS, EXPERIMENTAL
-]
+const documentationTypes = [
+    EXPERIMENTAL, HELP, EXAMPLES, EXCLUSIVE_PARAMETERS, PARAMETERS, ERRORS
+];
 
 const docsTree = getDocumentationTree(docsRootDirectory);
 console.log(JSON.stringify(docsTree, null, 2));
 
-writeMdFiles(docsTree);
+writeMdFiles(docsTree); // TODO can this process be merged into getting the docs tree? So its one pass, not two?
 
 function getDocumentationTree(directory) {
     const documentationNode = { children: [] };
@@ -65,7 +73,7 @@ function getDocumentationTree(directory) {
         if (fs.statSync(objectPath).isDirectory()) {
             documentationNode.children.push(getDocumentationTree(objectPath));
         } else {
-            const docFileType = documentationFiles.find((df) => df.fileName === file);
+            const docFileType = documentationTypes.find((df) => df.fileName === file);
             if (docFileType) {
                 documentationNode.command = path.basename(directory);
                 if (documentationNode.command === 'commands') {
@@ -92,19 +100,19 @@ function writeMdFiles(docsNode, parent) {
 }
 
 function getMdContentForNode(docNode, command) {
-    // TODO need to order the file content
     // TODO need to transform from . file format to md format (e.g. tables)
     // TODO need to apply parent experimental, parameters and errors to child docs
     let mdContent = `# ${command}`;
 
-    if (docNode[EXPERIMENTAL.key]) {
-        mdContent = mdContent + '\n\n**Warning:** This command is for experimental purposes and may not fully function.';
-    }
-
-    for (const fileType of documentationFiles) {
-        if (docNode[fileType.key]) {
-            const fileContent = fs.readFileSync(docNode[fileType.key], 'utf-8');
-            mdContent = mdContent + `\n\n## ${fileType.key}\n\n${fileContent}`;
+    const orderedDocumentationTypes = documentationTypes.sort((a, b) => a.order - b.order); // ensure append in correct order
+    for (const type of orderedDocumentationTypes) {
+        if (docNode[type.key]) {
+            let typeContent = type.content;
+            if (typeContent.includes(FILE_CONTENT_TOKEN)){ 
+                const fileContent = fs.readFileSync(docNode[type.key], 'utf-8');
+                typeContent = typeContent.replace(FILE_CONTENT_TOKEN, fileContent);
+            }
+            mdContent = mdContent + SEPARATOR + typeContent;
         }
     }
 
