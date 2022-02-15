@@ -1,4 +1,4 @@
-allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
+allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
 alias|a|string|required||||Certificate authority alias name.
 password|p|string|required||||Password of the certificate authority keystore.
 common-name|cn|string|||||Common name of certificate authority.

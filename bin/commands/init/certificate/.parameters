@@ -1,2 +1,2 @@
-allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
+allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
 update-config||boolean|||||Whether to update YAML configuration file with initialization result.
