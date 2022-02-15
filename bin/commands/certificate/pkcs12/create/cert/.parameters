@@ -1,4 +1,4 @@
-allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
+allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
 keystore|k|string|required||||PKCS12 keystore name.
 alias|a|string|required||||Certificate alias name.
 password|p|string|required||||Password of the certificate keystore.

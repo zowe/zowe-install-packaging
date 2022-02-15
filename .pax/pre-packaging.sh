@@ -200,6 +200,12 @@ echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
 chmod +x templates/*.rex
 
+echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
+cat <<EOT >> "${BASE_DIR}/zowe.yaml"
+zowe:
+  extensionDirectory: "${ZOWE_ROOT_DIR}/components"
+EOT
+
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
@@ -209,7 +215,7 @@ for component in launcher zlux-core zss apiml-common-lib common-java-lib gateway
   "${ZOWE_ROOT_DIR}/bin/zwe" \
     components install extract \
     --component-file "${component_file}" \
-    --target-dir "${ZOWE_ROOT_DIR}/components" \
+    --config "${BASE_DIR}/zowe.yaml" \
     --trace \
     --log-dir "${BASE_DIR}/logs"
   rm "${component_file}"
@@ -226,7 +232,7 @@ for component in app-server; do
   "${ZOWE_ROOT_DIR}/bin/zwe" \
     components install process-hook \
     --component-name "${component}" \
-    --target-dir "${ZOWE_ROOT_DIR}/components" \
+    --config "${BASE_DIR}/zowe.yaml" \
     --trace \
     --log-dir "${BASE_DIR}/logs"
 done
