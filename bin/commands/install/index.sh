@@ -34,8 +34,8 @@ else
 fi
 
 ###############################
-# create data sets if they are not exist
-print_message "Create MVS data sets if they are not exist"
+# create data sets if they do not exist
+print_message "Create MVS data sets if they do not exist"
 while read -r line; do
   ds=$(echo "${line}" | awk -F"|" '{print $1}')
   name=$(echo "${line}" | awk -F"|" '{print $2}')
@@ -64,68 +64,73 @@ $(echo "${cust_ds_list}")
 EOF
 print_message
 
-###############################
-# copy members
-cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWESAMP}"
-for mb in $(find . -type f); do
-  print_message "Copy files/${ZWE_PRIVATE_DS_SZWESAMP}/$(basename ${mb}) to ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}"
-  copy_to_data_set "${mb}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_level1_message "Zowe MVS data sets installation skipped."
+else
+  ###############################
+  # copy members
+  cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWESAMP}"
+  for mb in $(find . -type f); do
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWESAMP}/$(basename ${mb}) to ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}"
+    copy_to_data_set "${mb}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
+
+  cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWEEXEC}"
+  for mb in $(find . -type f); do
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWEEXEC}/$(basename ${mb}) to ${hlq}.${ZWE_PRIVATE_DS_SZWEEXEC}"
+    copy_to_data_set "${mb}" "${hlq}.${ZWE_PRIVATE_DS_SZWEEXEC}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
+
+  # prepare MVS for launcher
+  cd "${ZWE_zowe_runtimeDirectory}/components/launcher"
+  print_message "Copy components/launcher/samplib/ZWESLSTC to ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}"
+  copy_to_data_set "samplib/ZWESLSTC" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
-done
-
-cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWEEXEC}"
-for mb in $(find . -type f); do
-  print_message "Copy files/${ZWE_PRIVATE_DS_SZWEEXEC}/$(basename ${mb}) to ${hlq}.${ZWE_PRIVATE_DS_SZWEEXEC}"
-  copy_to_data_set "${mb}" "${hlq}.${ZWE_PRIVATE_DS_SZWEEXEC}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  print_message "Copy components/launcher/bin/zowe_launcher to ${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
+  copy_to_data_set "bin/zowe_launcher" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(ZWELNCH)" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
-done
 
-# prepare MVS for launcher
-cd "${ZWE_zowe_runtimeDirectory}/components/launcher"
-print_message "Copy components/launcher/samplib/ZWESLSTC to ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}"
-copy_to_data_set "samplib/ZWESLSTC" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+  # FIXME: move these parts to zss commands.install?
+  # FIXME: ZWESIPRG is in zowe-install-packaging
+  cd "${ZWE_zowe_runtimeDirectory}/components/zss"
+  zss_samplib="ZWESAUX=ZWESASTC ZWESIP00 ZWESIS01=ZWESISTC ZWESISCH"
+  for mb in ${zss_samplib}; do
+    mb_from=$(echo "${mb}" | awk -F= '{print $1}')
+    mb_to=$(echo "${mb}" | awk -F= '{print $2}')
+    if [ -z "${mb_to}" ]; then
+      mb_to="${mb_from}"
+    fi
+    print_message "Copy components/zss/SAMPLIB/${mb_from} to ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})"
+    copy_to_data_set "SAMPLIB/${mb_from}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
+  zss_loadlib="ZWESIS01 ZWESAUX"
+  for mb in ${zss_loadlib}; do
+    print_message "Copy components/zss/LOADLIB/${mb} to ${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
+    copy_to_data_set "LOADLIB/${mb}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
+  print_message
+
+  ###############################
+  # exit message
+  print_level1_message "Zowe MVS data sets are installed successfully."
 fi
-print_message "Copy components/launcher/bin/zowe_launcher to ${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
-copy_to_data_set "bin/zowe_launcher" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(ZWELNCH)" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-fi
 
-# FIXME: move these parts to zss commands.install?
-# FIXME: ZWESIPRG is in zowe-install-packaging
-cd "${ZWE_zowe_runtimeDirectory}/components/zss"
-zss_samplib="ZWESAUX=ZWESASTC ZWESIP00 ZWESIS01=ZWESISTC ZWESISCH"
-for mb in ${zss_samplib}; do
-  mb_from=$(echo "${mb}" | awk -F= '{print $1}')
-  mb_to=$(echo "${mb}" | awk -F= '{print $2}')
-  if [ -z "${mb_to}" ]; then
-    mb_to="${mb_from}"
-  fi
-  print_message "Copy components/zss/SAMPLIB/${mb_from} to ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})"
-  copy_to_data_set "SAMPLIB/${mb_from}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-done
-zss_loadlib="ZWESIS01 ZWESAUX"
-for mb in ${zss_loadlib}; do
-  print_message "Copy components/zss/LOADLIB/${mb} to ${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
-  copy_to_data_set "LOADLIB/${mb}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-done
-print_message
-
-###############################
-# exit message
-print_level1_message "Zowe MVS data sets are installed successfully."
 
 print_message "Zowe installation completed. In order to use Zowe, you need to run \"zwe init\" command to initialize Zowe instance."
 print_message "- Type \"zwe init --help\" to get more information."

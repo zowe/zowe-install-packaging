@@ -31,8 +31,8 @@ if [ -z "${hlq}" ]; then
 fi
 
 ###############################
-# create data sets if they are not exist
-print_message "Create data sets if they are not exist"
+# create data sets if they do not exist
+print_message "Create data sets if they do not exist"
 while read -r line; do
   key=$(echo "${line}" | awk -F"|" '{print $1}')
   name=$(echo "${line}" | awk -F"|" '{print $2}')
@@ -71,38 +71,42 @@ $(echo "${cust_ds_list}")
 EOF
 print_message
 
-###############################
-# copy sample lib members
-parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
-for ds in ZWESIP00; do
-  print_message "Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
-  data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-done
+if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${ds}. To write, you must use --allow-overwrite."
+else
+  ###############################
+  # copy sample lib members
+  parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
+  for ds in ZWESIP00; do
+    print_message "Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
+    data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
 
-###############################
-# copy auth lib members
-# FIXME: data_set_copy_to_data_set cannot be used to copy program?
-authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
-if [ -n "${authLoadlib}" ]; then
-  for ds in ZWESIS01 ZWESAUX; do
-    print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
-    # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-    fi
-  done
-  for ds in ZWELNCH; do
-    print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${ds})"
-    # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-    fi
-  done
+  ###############################
+  # copy auth lib members
+  # FIXME: data_set_copy_to_data_set cannot be used to copy program?
+  authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
+  if [ -n "${authLoadlib}" ]; then
+    for ds in ZWESIS01 ZWESAUX; do
+      print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
+      # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      if [ $? -ne 0 ]; then
+        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      fi
+    done
+    for ds in ZWELNCH; do
+      print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${ds})"
+      # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      if [ $? -ne 0 ]; then
+        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      fi
+    done
+  fi
 fi
 
 ###############################

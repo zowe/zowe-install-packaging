@@ -88,137 +88,145 @@ for mb in ${proclibs}; do
   fi
 done
 
-###############################
-# prepare STCs
-# ZWESLSTC
-print_message "Modify ZWESLSTC"
-tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
-        sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
-        sed "s#^CONFIG=.*\$#CONFIG=${ZWE_CLI_PARAMETER_CONFIG}#" \
-        > "${tmpfile}")
-code=$?
-if [ ${code} -eq 0 ]; then
-  print_debug "  * Succeeded"
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
-  fi
+if [ "${jcl_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${jcllib}(${mb}). To write, you must use --allow-overwrite."
 else
-  print_debug "  * Failed"
-  print_error "  * Exit code: ${code}"
-  print_error "  * Output:"
-  if [ -n "${result}" ]; then
-    print_error "$(padding_left "${result}" "    ")"
+  ###############################
+  # prepare STCs
+  # ZWESLSTC
+  print_message "Modify ZWESLSTC"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
+  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
+          sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
+          sed "s#^CONFIG=.*\$#CONFIG=${ZWE_CLI_PARAMETER_CONFIG}#" \
+          > "${tmpfile}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
   fi
-fi
-if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" 159
-fi
-print_trace "- ensure ${tmpfile} encoding before copying into data set"
-ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})"
-copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zowe})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-code=$?
-print_trace "- Delete ${tmpfile}"
-rm -f "${tmpfile}"
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_zowe}). Please check if target data set is opened by others." "" 160
-fi
-print_debug "- ${jcllib}(${security_stcs_zowe}) is prepared"
+  if [ ! -f "${tmpfile}" ]; then
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" 159
+  fi
+  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zowe})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_zowe}). Please check if target data set is opened by others." "" 160
+  fi
+  print_debug "- ${jcllib}(${security_stcs_zowe}) is prepared"
 
-# ZWESISTC
-print_message "Modify ZWESISTC"
-tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
-        sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
-        sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
-        > "${tmpfile}")
-code=$?
-if [ ${code} -eq 0 ]; then
-  print_debug "  * Succeeded"
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
+  # ZWESISTC
+  print_message "Modify ZWESISTC"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
+  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
+          sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
+          sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
+          > "${tmpfile}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+    exit 1
   fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)" "" 159
+  fi
+  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_xmem})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_xmem})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_xmem}). Please check if target data set is opened by others." "" 160
+  fi
+  print_debug "- ${jcllib}(${security_stcs_xmem}) is prepared"
+
+  # ZWESASTC
+  print_message "Modify ZWESASTC"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
+  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
+          sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" \
+          > "${tmpfile}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+    exit 1
+  fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)" "" 159
+  fi
+  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_aux})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_aux}). Please check if target data set is opened by others." "" 160
+  fi
+  print_debug "- ${jcllib}(${security_stcs_aux}) is prepared"
+
+  print_message
+fi
+
+if [ "${stc_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${proclib}(${mb}). To write, you must use --allow-overwrite."
 else
-  print_debug "  * Failed"
-  print_error "  * Exit code: ${code}"
-  print_error "  * Output:"
-  if [ -n "${result}" ]; then
-    print_error "$(padding_left "${result}" "    ")"
-  fi
-  exit 1
+  ###############################
+  # copy to proclib
+  for mb in ${target_proclibs}; do
+    print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
+    data_set_copy_to_data_set "${hlq}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
 fi
-if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)" "" 159
-fi
-print_trace "- ensure ${tmpfile} encoding before copying into data set"
-ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_xmem})"
-copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_xmem})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-code=$?
-print_trace "- Delete ${tmpfile}"
-rm -f "${tmpfile}"
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_xmem}). Please check if target data set is opened by others." "" 160
-fi
-print_debug "- ${jcllib}(${security_stcs_xmem}) is prepared"
-
-# ZWESASTC
-print_message "Modify ZWESASTC"
-tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
-        sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" \
-        > "${tmpfile}")
-code=$?
-if [ ${code} -eq 0 ]; then
-  print_debug "  * Succeeded"
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
-  fi
-else
-  print_debug "  * Failed"
-  print_error "  * Exit code: ${code}"
-  print_error "  * Output:"
-  if [ -n "${result}" ]; then
-    print_error "$(padding_left "${result}" "    ")"
-  fi
-  exit 1
-fi
-if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)" "" 159
-fi
-print_trace "- ensure ${tmpfile} encoding before copying into data set"
-ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})"
-copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_aux})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-code=$?
-print_trace "- Delete ${tmpfile}"
-rm -f "${tmpfile}"
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_aux}). Please check if target data set is opened by others." "" 160
-fi
-print_debug "- ${jcllib}(${security_stcs_aux}) is prepared"
-
-print_message
-
-###############################
-# copy to proclib
-for mb in ${target_proclibs}; do
-  print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
-  data_set_copy_to_data_set "${hlq}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  if [ $? -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-  fi
-done
 
 ###############################
 # exit message

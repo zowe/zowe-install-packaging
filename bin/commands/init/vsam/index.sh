@@ -83,51 +83,56 @@ if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
   result=$(tso_command delete "'${vsam_name}'")
 fi
 
-###############################
-# prepare STCs
-# ZWESLSTC
-print_message "Modify ZWECSVSM"
-tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
-result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
-        sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | \
-        sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | \
-        sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | \
-        sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" \
-        > "${tmpfile}")
-code=$?
-if [ ${code} -eq 0 ]; then
-  print_debug "  * Succeeded"
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
-  fi
+
+if [ "${jcl_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${jcllib}(ZWECSVSM). To write, you must use --allow-overwrite."
 else
-  print_debug "  * Failed"
-  print_error "  * Exit code: ${code}"
-  print_error "  * Output:"
-  if [ -n "${result}" ]; then
-    print_error "$(padding_left "${result}" "    ")"
+  ###############################
+  # prepare STCs
+  # ZWESLSTC
+  print_message "Modify ZWECSVSM"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
+  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
+          sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | \
+          sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | \
+          sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | \
+          sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" \
+          > "${tmpfile}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
   fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
+  fi
+  print_trace "- ${tmpfile} created with content"
+  print_trace "$(cat "${tmpfile}")"
+  print_trace "- ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- copy to ${jcllib}(ZWECSVSM)"
+  copy_to_data_set "${tmpfile}" "${jcllib}(ZWECSVSM)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(ZWECSVSM). Please check if target data set is opened by others." "" 160
+  fi
+  print_message "- ${jcllib}(ZWECSVSM) is prepared"
+  print_message
 fi
-if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
-fi
-print_trace "- ${tmpfile} created with content"
-print_trace "$(cat "${tmpfile}")"
-print_trace "- ensure ${tmpfile} encoding before copying into data set"
-ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-print_trace "- copy to ${jcllib}(ZWECSVSM)"
-copy_to_data_set "${tmpfile}" "${jcllib}(ZWECSVSM)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-code=$?
-print_trace "- Delete ${tmpfile}"
-rm -f "${tmpfile}"
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(ZWECSVSM). Please check if target data set is opened by others." "" 160
-fi
-print_message "- ${jcllib}(ZWECSVSM) is prepared"
-print_message
 
 ###############################
 # submit job
