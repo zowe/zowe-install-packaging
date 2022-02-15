@@ -31,14 +31,12 @@ function ensure_zowe_yaml_encoding() {
 # we need node for following commands
 ensure_node_is_on_path 1>/dev/null 2>&1
 echo "Migrating from ${instance_env} to ${zowe_yaml}"
-if [ -z "${zowe_yaml}" ]; then
-   node "${ROOT_DIR}/config-converter/src/cli.js" env yaml "${instance_env}"
-else
-   node "${ROOT_DIR}/config-converter/src/cli.js" env yaml "${instance_env}" -o "${zowe_yaml}"
 
-   ensure_zowe_yaml_encoding "${zowe_yaml}"
+node "${ROOT_DIR}/config-converter/src/cli.js" yaml update-all "${instance_env}" "${zowe_yaml}"
 
-   chmod 640 "${zowe_yaml}"
-fi
+ensure_zowe_yaml_encoding "${zowe_yaml}"
+
+chmod 640 "${zowe_yaml}"
+
 
 
