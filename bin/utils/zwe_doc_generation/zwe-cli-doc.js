@@ -11,57 +11,10 @@
 const fs = require('fs');
 const path = require('path');
 
+const {FILE_CONTENT_TOKEN, SEPARATOR, orderedDocumentationTypes} = require('./doc-configuration');
+
 const docsRootDirectory = path.join(__dirname, '../../commands');
 const generatedDocDirectory = path.join(__dirname, './generated');
-
-const SEPARATOR = '\n\n';
-const FILE_CONTENT_TOKEN = '%f';
-const SECTION_HEADER = '## ';
-
-const EXPERIMENTAL = {
-    fileName: '.experimental',
-    key: 'experimental',
-    order: 1,
-    content: '**Warning:** This command is for experimental purposes and may not fully function.'
-};
-const HELP = {
-    fileName: '.help',
-    key: 'help',
-    order: 2,
-    content: FILE_CONTENT_TOKEN
-};
-const EXAMPLES = {
-    fileName: '.examples',
-    key: 'examples',
-    order: 3,
-    content: `${SECTION_HEADER}Examples${SEPARATOR}${FILE_CONTENT_TOKEN}`
-};
-const EXCLUSIVE_PARAMETERS = {
-    fileName: '.exclusive-parameters',
-    key: 'exclusive-parameters',
-    order: 4,
-    content: `${SECTION_HEADER}Parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`
-};
-const PARAMETERS = {
-    fileName: '.parameters',
-    key: 'parameters',
-    order: 5,
-    content: `${SECTION_HEADER}Parent command parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`, // TODO change heading
-    fileContentTransformation: (fileContent) => '|Parameter full name|Parameter alias|Parameter type|Required|Default value|Reserved|Reserved|Help message|\n' +
-        '|---|---|---|---|---|---|---|---|\n' +
-        fileContent
-};
-const ERRORS = {
-    fileName: '.errors',
-    key: 'errors',
-    order: 6,
-    content: `${SECTION_HEADER}Errors${SEPARATOR}${FILE_CONTENT_TOKEN}`,
-    fileContentTransformation: (fileContent) => '|Error code|Exit code|Error message|\n|---|---|---|\n' + fileContent
-};
-
-const documentationTypes = [
-    EXPERIMENTAL, HELP, EXAMPLES, EXCLUSIVE_PARAMETERS, PARAMETERS, ERRORS
-];
 
 const docsTree = getDocumentationTree(docsRootDirectory);
 console.log(JSON.stringify(docsTree, null, 2));
@@ -77,7 +30,7 @@ function getDocumentationTree(directory) {
         if (fs.statSync(objectPath).isDirectory()) {
             documentationNode.children.push(getDocumentationTree(objectPath));
         } else {
-            const docFileType = documentationTypes.find((df) => df.fileName === file);
+            const docFileType = orderedDocumentationTypes.find((df) => df.fileName === file);
             if (docFileType) {
                 documentationNode.command = path.basename(directory);
                 if (documentationNode.command === 'commands') {
@@ -104,11 +57,10 @@ function writeMdFiles(docNode, parent = {}) {
 }
 
 function getMdContentForNode(docNode, parent) {
-    // TODO need to transform from . file format to md format (e.g. tables)
     // TODO need to apply parent experimental, parameters and errors to child docs
+    // TODO need to link to children and parent commands
     let mdContent = `# ${parent.command} ${docNode.command}`;
 
-    const orderedDocumentationTypes = documentationTypes.sort((a, b) => a.order - b.order); // ensure append in correct order
     for (const type of orderedDocumentationTypes) {
         if (docNode[type.key]) {
             let typeContent = type.content;
