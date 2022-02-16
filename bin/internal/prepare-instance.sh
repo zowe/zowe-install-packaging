@@ -122,6 +122,7 @@ prepare_workspace_dir() {
       echo $(ls -l $item)
   done
   mkdir -p ${WORKSPACE_DIR}
+  cd /home/zowe/instance
 
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
   echo After creating the directory*****************************************
