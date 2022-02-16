@@ -46,13 +46,17 @@ const PARAMETERS = {
     fileName: '.parameters',
     key: 'parameters',
     order: 5,
-    content: `${SECTION_HEADER}Parent command parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`
+    content: `${SECTION_HEADER}Parent command parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`, // TODO change heading
+    fileContentTransformation: (fileContent) => '|Parameter full name|Parameter alias|Parameter type|Required|Default value|Reserved|Reserved|Help message|\n' +
+        '|---|---|---|---|---|---|---|---|\n' +
+        fileContent
 };
 const ERRORS = {
     fileName: '.errors',
     key: 'errors',
     order: 6,
-    content: `${SECTION_HEADER}Errors${SEPARATOR}${FILE_CONTENT_TOKEN}`
+    content: `${SECTION_HEADER}Errors${SEPARATOR}${FILE_CONTENT_TOKEN}`,
+    fileContentTransformation: (fileContent) => '|Error code|Exit code|Error message|\n|---|---|---|\n' + fileContent
 };
 
 const documentationTypes = [
@@ -87,29 +91,33 @@ function getDocumentationTree(directory) {
     return documentationNode;
 }
 
-function writeMdFiles(docsNode, parent) {
-    const command = parent ? `${parent} ${docsNode.command}` : docsNode.command;
-    if (docsNode.children && docsNode.children.length) {
-        for (const child of docsNode.children) {
-            writeMdFiles(child, command);
+function writeMdFiles(docNode, parent = {}) {
+    const command = parent.command ? `${parent.command} ${docNode.command}` : docNode.command;
+    if (docNode.children && docNode.children.length) {
+        for (const child of docNode.children) {
+            writeMdFiles(child, { command });
         }
     }
 
-    const mdContent = getMdContentForNode(docsNode, command);
+    const mdContent = getMdContentForNode(docNode, parent);
     fs.writeFileSync(`${generatedDocDirectory}/doc-${command.replace(/\s/g, '-')}.md`, mdContent);
 }
 
-function getMdContentForNode(docNode, command) {
+function getMdContentForNode(docNode, parent) {
     // TODO need to transform from . file format to md format (e.g. tables)
     // TODO need to apply parent experimental, parameters and errors to child docs
-    let mdContent = `# ${command}`;
+    let mdContent = `# ${parent.command} ${docNode.command}`;
 
     const orderedDocumentationTypes = documentationTypes.sort((a, b) => a.order - b.order); // ensure append in correct order
     for (const type of orderedDocumentationTypes) {
         if (docNode[type.key]) {
             let typeContent = type.content;
-            if (typeContent.includes(FILE_CONTENT_TOKEN)){ 
-                const fileContent = fs.readFileSync(docNode[type.key], 'utf-8');
+            if (typeContent.includes(FILE_CONTENT_TOKEN)) {
+                let fileContent = fs.readFileSync(docNode[type.key], 'utf-8');
+                if (type.fileContentTransformation) {
+                    fileContent = type.fileContentTransformation(fileContent);
+                }
+
                 typeContent = typeContent.replace(FILE_CONTENT_TOKEN, fileContent);
             }
             mdContent = mdContent + SEPARATOR + typeContent;
