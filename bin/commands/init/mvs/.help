@@ -31,4 +31,4 @@ Below data sets will be initialized by this command:
   This loadlib requires APF authorize.
 
 NOTE: Existing members in custom data sets will not be overwritten by default.
-      You can pass `--allow-overwritten` parameters to force update.
+      You can pass `--allow-overwrite` parameters to force update.

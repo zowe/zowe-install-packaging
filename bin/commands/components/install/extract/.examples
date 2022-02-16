@@ -1,0 +1,2 @@
+    zwe components install extract -c /path/to/zowe.yaml -o /path/to/component/package
+    

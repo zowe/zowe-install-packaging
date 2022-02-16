@@ -37,6 +37,7 @@ Each command is represented as a directory with some assistant files.
   8. is the parameter help. This help message will be displayed if the user issue `--help` or `-h` parameter.
 - `.exclusive-parameters`: is in same format of `.parameters` except all parameters defined in this file will NOT be propagated to sub-commands.
 - `.experimental`: This is an _optional_ file indicate this command is for experimental purpose. It may be changed or improved in the future, and it may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
+- `.examples`: This is an _optional_ file contains examples of this command. These examples will be displayed if the user issue `--help` or `-h` parameter.
 - `index.sh`: This is required file to process the command. This file will be sourced to `zwe` when it's executed.
 
 ### Extend new command
