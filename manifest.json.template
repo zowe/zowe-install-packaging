@@ -101,7 +101,7 @@
       "excludePatterns": ["*PR*"]
    },
     "org.zowe.utility_tools": {
-      "version": "~2.0.0-USERS-CARSON-PORT-OFFSET"
+      "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.licenses": {
       "version": "1.25.0",
@@ -342,7 +342,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "users/carson/port_offset",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
