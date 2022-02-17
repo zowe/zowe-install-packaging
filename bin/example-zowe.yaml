@@ -39,7 +39,7 @@ zowe:
     mvs:
       # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
-      hlq: IBMUSER.ZWEV2
+      prefix: IBMUSER.ZWEV2
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: USER.PROCLIB
@@ -50,7 +50,7 @@ zowe:
       # JCL library where Zowe will store temporary JCLs during initialization
       jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
       # APF authorized LOADLIB for Zowe
-      # Optional. If it's empty, <hlq>.SZWEAUTH will be APF authorized.
+      # Optional. If it's empty, <prefix>.SZWEAUTH will be APF authorized.
       authLoadlib: ""
       # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins

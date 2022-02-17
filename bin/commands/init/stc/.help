@@ -9,7 +9,7 @@ These Zowe YAML configurations showing with sample values are used:
 zowe:
   setup:
     mvs:
-      hlq: IBMUSER.ZWE
+      prefix: IBMUSER.ZWE
       proclib: USER.PROCLIB
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
@@ -21,7 +21,7 @@ zowe:
         aux: ZWESASTC
 ```
 
-- `zowe.setup.mvs.hlq` shows where the `SZWESAMP` data set is installed,
+- `zowe.setup.mvs.prefix` shows where the `SZWESAMP` data set is installed,
 - `zowe.setup.mvs.proclib` shows what is the target procedure library.
 - `zowe.setup.mvs.parmlib` is the user custom parameter library. Zowe server
   command may generate sample PARMLIB members and stores here.

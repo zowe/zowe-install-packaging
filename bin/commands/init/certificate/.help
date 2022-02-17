@@ -11,7 +11,7 @@ These Zowe YAML configurations showing with sample values are used:
 zowe:
   setup:
     mvs:
-      hlq: IBMUSER.ZWE
+      prefix: IBMUSER.ZWE
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
     security:
       product: RACF
