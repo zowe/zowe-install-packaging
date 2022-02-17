@@ -137,6 +137,7 @@ mkdir -p "${BASE_DIR}/${WORK_DIR}"
 ###############################
 echo ">>>>> prepare basic files"
 cd "${REPO_ROOT_DIR}"
+cp example-zowe.yaml "${BASE_DIR}/${WORK_DIR}"
 cp ZOWE.md "${BASE_DIR}/${WORK_DIR}/README.md"
 cp LICENSE "${BASE_DIR}/${WORK_DIR}"
 cp DEVELOPERS.md "${BASE_DIR}/${WORK_DIR}"

@@ -137,7 +137,7 @@ components:
   This is optional.
 - `zowe.setup.certificate.san` is the `Subject Alternative Name`(s) of the
   certificate if they are different from `zowe.externalDomains`. Please note,
-  for `JCERACFKS`` type, with limitation of RACDCERT command, this should
+  for `JCERACFKS` type, with limitation of RACDCERT command, this should
   contain exact one hostname (domain) and one IP address.
 - `zowe.setup.certificate.importCertificateAuthorities` is the list of
   certificate authorities will be imported to Zowe PKCS12 keystore or JCERACFKS

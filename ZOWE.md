@@ -29,7 +29,7 @@ _Note: this step is optional. If Zowe runtime bin directory is not added to `PAT
 
 Zowe uses a YAML file, usually mentioned as `zowe.yaml` to instruct Zowe how to install, configure and start Zowe.
 
-Copy the `example-zowe.yaml` located in Zowe `bin` directory to your preferred location, for example, your home directory. You can modify the file based on your environment and then move to next step.
+Copy the `example-zowe.yaml` located in Zowe root directory to your preferred location, for example, your home directory. You can modify the file based on your environment and then move to next step.
 
 ## Install
 
