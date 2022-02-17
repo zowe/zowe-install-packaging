@@ -19,7 +19,6 @@ zowe:
       users:
         zowe: ZWESVUSR
         zis: ZWESIUSR
-        aux: ZWESIUSR
       stcs:
         zowe: ZWESLSTC
         zis: ZWESISTC
@@ -40,8 +39,6 @@ zowe:
 - `zowe.setup.security.users.zowe` is the userid for Zowe started task.
   This configuration is optional. Default value is `ZWESVUSR`.
 - `zowe.setup.security.users.zis` is userid for ZIS started task.
-  This configuration is optional. Default value is `ZWESIUSR`.
-- `zowe.setup.security.users.aux` is userid for ZIS auxiliary started task.
   This configuration is optional. Default value is `ZWESIUSR`.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.

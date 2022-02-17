@@ -54,10 +54,6 @@ security_users_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.securi
 if [ -z "${security_users_zis}" ]; then
   security_users_zis=${ZWE_PRIVATE_DEFAULT_ZIS_USER}
 fi
-security_users_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.aux")
-if [ -z "${security_users_aux}" ]; then
-  security_users_aux=${ZWE_PRIVATE_DEFAULT_ZIS_USER}
-fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
@@ -84,7 +80,7 @@ result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${security_groups_stc}/" | \
         sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${security_users_zowe}/" | \
         sed  "s/^\/\/ \+SET \+ZISUSER=.*\$/\/\/         SET  ZISUSER=${security_users_zis}/" | \
-        sed  "s/^\/\/ \+SET \+AUXUSER=.*\$/\/\/         SET  AUXUSER=${security_users_aux}/" | \
+        sed  "s/^\/\/ \+SET \+AUXUSER=.*\$/\/\/         SET  AUXUSER=${security_users_zis}/" | \
         sed  "s/^\/\/ \+SET \+ZOWESTC=.*\$/\/\/         SET  ZOWESTC=${security_stcs_zowe}/" | \
         sed   "s/^\/\/ \+SET \+ZISSTC=.*\$/\/\/         SET  ZISSTC=${security_stcs_zis}/" | \
         sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \

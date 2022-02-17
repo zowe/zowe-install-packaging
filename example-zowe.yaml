@@ -75,8 +75,6 @@ zowe:
     #     zowe: ZWESVUSR
     #     # Zowe runtime user name of ZIS
     #     zis: ZWESIUSR
-    #     # Zowe runtime user name of ZIS Auxiliary Server
-    #     aux: ZWESIUSR
     #   # STC names
     #   stcs:
     #     # STC name of Zowe main service
