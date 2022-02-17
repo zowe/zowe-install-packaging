@@ -12,7 +12,7 @@ const FILE_CONTENT_TOKEN = '%f';
 const SECTION_HEADER = '## ';
 
 function transformParameters(fileContent) {
-    const headings = ['Full name (--)', 'Alias (-)', 'Type', 'Required', 'Default value', 'Help message'];
+    const headings = ['Full name (--)', 'Alias (-)', 'Type', 'Required', 'Default value', 'Help message']; // TODO more configurable
     const unusedFieldIndices = [5, 6]; // TODO no magic number
     const cleanedFields = fileContent.split(/$/gm).map(fields => {
         const cleaned = fields.trim().split('|').reduce((filteredFields, field, index) => {
@@ -45,7 +45,7 @@ const HELP = {
     fileName: '.help',
     key: 'help',
     order: 2,
-    content: `${SECTION_HEADER}Synposis${SEPARATOR}${FILE_CONTENT_TOKEN}`
+    content: FILE_CONTENT_TOKEN
 };
 const EXAMPLES = {
     fileName: '.examples',

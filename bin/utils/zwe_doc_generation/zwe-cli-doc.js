@@ -49,9 +49,9 @@ const PARENT_TYPES = {
 
 function writeMdFiles(docNode, parent = {}) {
     const nodeContent = getNodeContent(docNode, parent);
-    let mdContent = `# ${nodeContent.command}`;
+    let mdContent = `# ${nodeContent.commandWithLink}${SEPARATOR}## Synopsis${SEPARATOR}\t${nodeContent.command} [sub-command [sub-command]...] [parameter [parameter]..]`;
     if (nodeContent.childCommandLinks && nodeContent.childCommandLinks.length) {
-        mdContent = mdContent + SEPARATOR + '## Commands' + SEPARATOR + nodeContent.childCommandLinks.join('\n');
+        mdContent = mdContent + SEPARATOR + '## Sub-commands' + SEPARATOR + nodeContent.childCommandLinks.join('\n');
     }
 
     for (const type of orderedDocumentationTypes) {
@@ -77,10 +77,12 @@ function writeMdFiles(docNode, parent = {}) {
 function getNodeContent(docNode, parent) {
     const fileName = getFileName(docNode.command, parent.fileName);
 
-    const docNodeCommand = `[${docNode.command}](./${fileName})`;
-    const command = parent.command ? `${parent.command} > ${docNodeCommand}` : docNodeCommand;
+    const command = parent.command ? parent.command + ' ' + docNode.command : docNode.command;
 
-    const nodeContent = { command, fileName };
+    const docNodeCommandWithLink = `[${docNode.command}](./${fileName})`;
+    const commandWithLink = parent.commandWithLink ? `${parent.commandWithLink} > ${docNodeCommandWithLink}` : docNodeCommandWithLink;
+
+    const nodeContent = { command, commandWithLink, fileName };
 
     if (docNode.children && docNode.children.length) {
         nodeContent.childCommandLinks = docNode.children.map(c => `* [${c.command}](./${getFileName(c.command, fileName)})`);
