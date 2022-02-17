@@ -73,17 +73,17 @@ zowe:
     #   users:
     #     # Zowe runtime user name of main service
     #     zowe: ZWESVUSR
-    #     # Zowe runtime user name of Cross Memory Server
-    #     xmem: ZWESIUSR
-    #     # Zowe runtime user name of Auxiliary Service
+    #     # Zowe runtime user name of ZIS
+    #     zis: ZWESIUSR
+    #     # Zowe runtime user name of ZIS Auxiliary Server
     #     aux: ZWESIUSR
     #   # STC names
     #   stcs:
     #     # STC name of Zowe main service
     #     zowe: ZWESLSTC
-    #     # STC name of Zowe Cross Memory Server
-    #     xmem: ZWESISTC
-    #     # STC name of Zowe Auxiliary Service
+    #     # STC name of Zowe ZIS
+    #     zis: ZWESISTC
+    #     # STC name of Zowe ZIS Auxiliary Server
     #     aux: ZWESASTC
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

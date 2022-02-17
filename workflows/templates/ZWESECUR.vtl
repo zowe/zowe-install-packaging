@@ -47,11 +47,11 @@
 //* 5) Update the SET ZOWEUSER= statement to match the desired
 //*    user ID for the ZOWE started task.
 //*
-//* 6) Update the SET XMEMUSER= statement to match the desired
-//*    user ID for the XMEM started task.
+//* 6) Update the SET ZISUSER= statement to match the desired
+//*    user ID for the ZIS started task.
 //*
 //* 7) Update the SET AUXUSER= statement to match the desired
-//*    user ID for the XMEM Auxilary started task.
+//*    user ID for the ZIS Auxiliary started task.
 //*
 //* 8) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
@@ -60,11 +60,11 @@
 //*    Zowe launcher started task name. It is applicable if you
 //*    run Zowe for high availability.
 //*
-//* 10) Update the SET XMEMSTC= statement to match the desired
-//*    XMEM started task name.
+//* 10) Update the SET ZISSTC= statement to match the desired
+//*    ZIS started task name.
 //*
 //* 11) Update the SET AUXSTC= statement to match the desired
-//*    XMEM Auxilary started task name.
+//*    ZIS Auxiliary started task name.
 //*
 //* 12) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
@@ -111,12 +111,12 @@
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
 //         SET   STCGRP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
-//         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
-//         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
+//         SET  ZISUSER=ZWESIUSR     * userid for ZIS started task
+//         SET  AUXUSER=&ZISUSER.    * userid for ZIS AUX started task
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
 //         SET ZLNCHSTC=ZWESLSTC     * Zowe started task name for HA
-//         SET  XMEMSTC=ZWESISTC     * xmem started task name
-//         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
+//         SET   ZISSTC=ZWESISTC     * ZIS started task name
+//         SET   AUXSTC=ZWESASTC     * ZIS AUX started task name
 //         SET      HLQ=ZWE          * data set high level qualifier
 //         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
 //*                     12345678
@@ -127,8 +127,8 @@
 //         SET ADMINGID=             * Group ID for ZOWE administrators
 //         SET   STCGID=&ADMINGID.   * Group ID for ZOWE started tasks
 //         SET  ZOWEUID=             * UID for ZOWE started task User
-//         SET  XMEMUID=             * UID for xmem started task User
-//         SET   AUXUID=&XMEMUID.    * UID for xm AUX started task User
+//         SET   ZISUID=             * UID for ZIS started task User
+//         SET   AUXUID=&ZISUID.     * UID for xm AUX started task User
 //*
 //* For RACF: If using AUTOUID and AUTOGID, the RACF database must be
 //*           at AIM 2 or higher, and BPX.NEXT.USER must exist.
@@ -155,13 +155,13 @@
 //         SET ADMINGRP=${ADMINGRP}  * group for Zowe administrators
 //         SET   STCGRP=${STCGRP}    * group for Zowe started tasks
 //         SET ZOWEUSER=${ZOWEUSER}  * userid for Zowe started task
-//         SET XMEMUSER=${XMEMUSER}  * userid for xmem started task
-//         SET  AUXUSER=${AUXUSER}   * userid for xmem AUX started task
-//         SET  ZOWESTC=${ZOWESTC}  * Zowe started task name
+//         SET  ZISUSER=${ZISUSER}   * userid for ZIS started task
+//         SET  AUXUSER=${AUXUSER}   * userid for ZIS AUX started task
+//         SET  ZOWESTC=${ZOWESTC}   * Zowe started task name
 //         SET ZLNCHSTC=${ZLNCHSTC}  * Zowe started task name for HA
-//         SET  XMEMSTC=${XMEMSTC}  * xmem started task name
-//         SET   AUXSTC=${AUXSTC}  * xmem AUX started task name
-//         SET      HLQ=${HLQ}    * data set high level qualifier
+//         SET   ZISSTC=${ZISSTC}    * ZIS started task name
+//         SET   AUXSTC=${AUXSTC}    * ZIS AUX started task name
+//         SET      HLQ=${HLQ}       * data set high level qualifier
 //         SET  SYSPROG=${SYSPROG}   * system programmer user ID/group
 //*                     12345678
 //*
@@ -171,7 +171,7 @@
 //         SET ADMINGID=${ADMINGID}  * Group ID for ZOWE administrators
 //         SET   STCGID=${STCGID}    * Group ID for ZOWE started tasks
 //         SET  ZOWEUID=${ZOWEUID}   * UID for ZOWE started task User
-//         SET  XMEMUID=${XMEMUID}   * UID for xmem started task User
+//         SET   ZISUID=${ZISUID}    * UID for ZIS started task User
 //         SET   AUXUID=${AUXUID}    * UID for xm AUX started task User
 //*
 //* For RACF: If using AUTOUID and AUTOGID, the RACF database must be
@@ -216,7 +216,7 @@
 /* display current settings                                          */
 /*SETROPTS LIST                                                      */
 
-/* activate FACILITY class for z/OS UNIX & Zowe XMEM profiles        */
+/* activate FACILITY class for z/OS UNIX & Zowe ZIS profiles         */
   SETROPTS GENERIC(FACILITY)
   SETROPTS CLASSACT(FACILITY) RACLIST(FACILITY)
 
@@ -252,7 +252,7 @@
 /* - The sample commands assume automatic generation of UID and GID  */
 /*   is enabled.                                                     */
 
-/* comment out if STCGRP matches ADMINGRP (default), expect        */
+/* comment out if STCGRP matches ADMINGRP (default), expect          */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
 /* replace AUTOGID with GID(&STCGID.) if AUTOGID not enabled */
@@ -272,27 +272,27 @@
    NAME('ZOWE SERVER') -
    DATA('ZOWE MAIN SERVER')
 
-/* userid for XMEM cross memory server                               */
-/* replace AUTOUID with UID(&XMEMUID.) if AUTOUID not enabled */
-  LISTUSER &XMEMUSER. OMVS
-  ADDUSER  &XMEMUSER. -
+/* userid for ZIS cross memory server                                */
+/* replace AUTOUID with UID(&ZISUID.) if AUTOUID not enabled */
+  LISTUSER &ZISUSER. OMVS
+  ADDUSER  &ZISUSER. -
    NOPASSWORD -
    DFLTGRP(&STCGRP.) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
-   NAME('ZOWE XMEM SERVER') -
-   DATA('ZOWE XMEM CROSS MEMORY SERVER')
+   NAME('ZOWE ZIS SERVER') -
+   DATA('ZOWE ZIS CROSS MEMORY SERVER')
 
-/* comment out if AUXUSER matches XMEMUSER (default), expect       */
+/* comment out if AUXUSER matches ZISUSER (default), expect          */
 /*   warning messages otherwise                                      */
-/* userid for XMEM auxilary cross memory server                      */
+/* userid for ZIS Auxiliary cross memory server                      */
 /* replace AUTOUID with UID(&AUXUID.) if AUTOUID not enabled */
   LISTUSER &AUXUSER. OMVS
   ADDUSER  &AUXUSER. -
    NOPASSWORD -
    DFLTGRP(&STCGRP.) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
-   NAME('ZOWE XMEM AUX SERVER') -
-   DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')
+   NAME('ZOWE ZIS AUX SERVER') -
+   DATA('ZOWE ZIS AUX CROSS MEMORY SERVER')
 
 /* */
 
@@ -308,45 +308,45 @@
    STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE LAUNCHER SERVER')
 
-/* started task for XMEM cross memory server                         */
-  RLIST   STARTED &XMEMSTC..* ALL STDATA
-  RDEFINE STARTED &XMEMSTC..* -
-   STDATA(USER(&XMEMUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
-   DATA('ZOWE XMEM CROSS MEMORY SERVER')
+/* started task for ZIS cross memory server                         */
+  RLIST   STARTED &ZISSTC..* ALL STDATA
+  RDEFINE STARTED &ZISSTC..* -
+   STDATA(USER(&ZISUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
+   DATA('ZOWE ZIS CROSS MEMORY SERVER')
 
-/* started task for XMEM auxilary cross memory server                */
+/* started task for ZIS Auxiliary cross memory server                */
   RLIST   STARTED &AUXSTC..* ALL STDATA
   RDEFINE STARTED &AUXSTC..* -
    STDATA(USER(&AUXUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
-   DATA('ZOWE XMEM AUX CROSS MEMORY SERVER')
+   DATA('ZOWE ZIS AUX CROSS MEMORY SERVER')
 
   SETROPTS RACLIST(STARTED) REFRESH
 
 /* show results .................................................... */
   LISTGRP  &STCGRP. OMVS
   LISTUSER &ZOWEUSER. OMVS
-  LISTUSER &XMEMUSER. OMVS
+  LISTUSER &ZISUSER. OMVS
   LISTUSER &AUXUSER.  OMVS
   RLIST STARTED &ZOWESTC..* ALL STDATA
   RLIST STARTED &ZLNCHSTC..* ALL STDATA
-  RLIST STARTED &XMEMSTC..* ALL STDATA
+  RLIST STARTED &ZISSTC..* ALL STDATA
   RLIST STARTED &AUXSTC..*  ALL STDATA
 
-/* DEFINE XMEM SECURITY RESOURCES .................................. */
+/* DEFINE ZIS SECURITY RESOURCES ................................... */
 
-/* define xmem security profile                                      */
+/* define ZIS security profile                                       */
   RLIST   FACILITY ZWES.IS ALL
   RDEFINE FACILITY ZWES.IS UACC(NONE)
 
 /* DEFINE AUX SERVER PERMISIONS .................................... */
 
-/* permit AUX STC to use XMEM cross memory server                    */
+/* permit AUX STC to use ZIS cross memory server                     */
   PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&AUXUSER.)
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
-/* permit Zowe main server to use XMEM cross memory server           */
+/* permit Zowe main server to use ZIS cross memory server            */
   PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -502,18 +502,18 @@ SET PROFILE(USER) DIV(OMVS)
 INSERT &ZOWEUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
-* userid for XMEM cross memory server
-* replace AUTOUID with UID(&XMEMUID.) if AUTOUID is not enabled
+* userid for ZIS cross memory server
+* replace AUTOUID with UID(&ZISUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT &XMEMUSER. STC GROUP(&STCGRP.)
+INSERT &ZISUSER. STC GROUP(&STCGRP.)
 SET PROFILE(USER) DIV(OMVS)
-INSERT &XMEMUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+INSERT &ZISUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
-* comment out if AUXUSER matches XMEMUSER (default), expect
+* comment out if AUXUSER matches ZISUSER (default), expect
 *   warning messages otherwise
-* userid for XMEM auxilary cross memory server
+* userid for ZIS Auxiliary cross memory server
 * replace AUTOUID with UID(&AUXUID.) if AUTOUID is not enabled
 *
 SET LID
@@ -540,15 +540,15 @@ GROUP(&STCGRP.) +
 STCID(&ZLNCHSTC.)
 F ACF2,REFRESH(STC)
 *
-* started task for XMEM cross memory server
+* started task for ZIS cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.&XMEMSTC. LOGONID(&XMEMUSER.) +
+INSERT STC.&ZISSTC. LOGONID(&ZISUSER.) +
 GROUP(&STCGRP.) +
-STCID(&XMEMSTC.)
+STCID(&ZISSTC.)
 F ACF2,REFRESH(STC)
 *
-* started task for XMEM auxilary cross memory server
+* started task for ZIS Auxiliary cross memory server
 *
 SET CONTROL(GSO)
 INSERT STC.&AUXSTC. LOGONID(&AUXUSER.) +
@@ -556,7 +556,7 @@ GROUP(&STCGRP.) +
 STCID(&AUXSTC.)
 F ACF2,REFRESH(STC)
 *
-* DEFINE XMEM SECURITY RESOURCES ..................................
+* DEFINE ZIS SECURITY RESOURCES ..................................
 *
 * define a role holding the permissions, add &AUXUSER and
 * &ZOWEUSER to it
@@ -569,7 +569,7 @@ F ACF2,NEWXREF,TYPE(ROL)
 *
 * DEFINE STC SERVER PERMISIONS ....................................
 *
-* permit AUX and Zowe main server to use XMEM cross memory server
+* permit AUX and Zowe main server to use ZIS cross memory server
 *
 SET RESOURCE(FAC)
 RECKEY ZWES ADD(IS SERVICE(READ) ROLE(&STCGRP.) ALLOW)
@@ -680,7 +680,7 @@ $$
 
 /* DEFINE STARTED TASK ............................................. */
 
-/* comment out if STCGRP matches ADMINGRP (default), expect        */
+/* comment out if STCGRP matches ADMINGRP (default), expect          */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
   TSS LIST(&STCGRP.) SEGMENT(OMVS)
@@ -700,21 +700,21 @@ $$
    DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZOWEUID.)
 
-/* userid for XMEM cross memory server                               */
-  TSS LIST(&XMEMUSER.) SEGMENT(OMVS)
-  TSS CREATE(&XMEMUSER.) TYPE(USER) PASS(NOPW,0) +
-   NAME('ZOWE XMEM CROSS MEMORY SERVER') +
+/* userid for ZIS cross memory server                                */
+  TSS LIST(&ZISUSER.) SEGMENT(OMVS)
+  TSS CREATE(&ZISUSER.) TYPE(USER) PASS(NOPW,0) +
+   NAME('ZOWE ZIS CROSS MEMORY SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD(&XMEMUSER.) GROUP(&STCGRP.) +
+  TSS ADD(&ZISUSER.) GROUP(&STCGRP.) +
    DFLTGRP(&STCGRP.) +
-   HOME(/tmp) OMVSPGM(/bin/sh) UID(&XMEMUID.)
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZISUID.)
 
-/* comment out if AUXUSER matches XMEMUSER (default), expect       */
+/* comment out if AUXUSER matches ZISUSER (default), expect          */
 /*   warning messages otherwise                                      */
-/* userid for XMEM auxilary cross memory server                      */
+/* userid for ZIS Auxiliary cross memory server                      */
   TSS LIST(&AUXUSER.) SEGMENT(OMVS)
   TSS CREATE(&AUXUSER.) TYPE(USER) PASS(NOPW,0) +
-   NAME('ZOWE XMEM AUX SERVER') +
+   NAME('ZOWE ZIS AUX SERVER') +
    DEPT(&STCUDEP.)
   TSS ADD(&AUXUSER.) GROUP(&STCGRP.) +
    DFLTGRP(&STCGRP.) +
@@ -732,29 +732,29 @@ $$
   TSS ADD(STC) PROCNAME(&ZLNCHSTC.) ACID(&ZOWEUSER.)
   TSS ADD(&ZOWEUSER.) FAC(STC)
 
-/* started task for XMEM cross memory server                         */
-  TSS LIST(STC) PROCNAME(&XMEMSTC.) PREFIX
-  TSS ADD(STC) PROCNAME(&XMEMSTC.) ACID(&XMEMUSER.)
-  TSS ADD(&XMEMUSER.) FAC(STC)
+/* started task for ZIS cross memory server                          */
+  TSS LIST(STC) PROCNAME(&ZISSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&ZISSTC.) ACID(&ZISUSER.)
+  TSS ADD(&ZISUSER.) FAC(STC)
 
-/* started task for XMEM auxilary cross memory server                */
+/* started task for ZIS Auxiliary cross memory server                */
   TSS LIST(STC) PROCNAME(&AUXSTC.) PREFIX
   TSS ADD(STC) PROCNAME(&AUXSTC.) ACID(&AUXUSER.)
   TSS ADD(&AUXUSER.) FAC(STC)
 
-/* DEFINE XMEM SECURITY RESOURCES .................................. */
+/* DEFINE ZIS SECURITY RESOURCES ................................... */
 
-/* define xmem security profile                                      */
+/* define ZIS security profile                                       */
   TSS ADD(&FACACID.) IBMFAC(ZWES.IS)
 
 /* DEFINE AUX SERVER PERMISIONS .................................... */
 
-/* permit AUX STC to use XMEM cross memory server                    */
+/* permit AUX STC to use ZIS cross memory server                     */
   TSS WHOHAS IBMFAC(ZWES.IS)
   TSS PERMIT(&AUXUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
 
 #if($ibmTemplate != 'YES')
-/* The ZOWESTC started task is a multi-user address space therefore */
+/* The ZOWESTC started task is a multi-user address space therefore  */
 /* a TSS FACILITY needs to be defined and assigned to the started    */
 /* task. The all acids signing on to the started task will need to   */
 /* be authorized to the FACILITY.                                    */
@@ -783,7 +783,7 @@ $$
 #end
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
-/* permit Zowe main server to use XMEM cross memory server           */
+/* permit Zowe main server to use ZIS cross memory server            */
   TSS WHOHAS IBMFAC(ZWES.IS)
   TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
 
@@ -815,7 +815,7 @@ $$
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
-/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly    */
+/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly     */
 /*   advised to protect it against updates.                          */
 
 /* HLQ stub                                                          */

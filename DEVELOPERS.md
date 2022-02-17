@@ -26,9 +26,9 @@ zowe:
       users:
         # Zowe runtime user name of main service
         zowe: IBMUSER
-        # Zowe runtime user name of Cross Memory Server
-        xmem: IBMUSER
-        # Zowe runtime user name of Auxilary Service
+        # Zowe runtime user name of ZIS
+        zis: IBMUSER
+        # Zowe runtime user name of Auxiliary Service
         aux: IBMUSER
 ```
 

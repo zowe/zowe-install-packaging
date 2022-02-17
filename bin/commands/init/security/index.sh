@@ -50,21 +50,21 @@ security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.secur
 if [ -z "${security_users_zowe}" ]; then
   security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
 fi
-security_users_xmem=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.xmem")
-if [ -z "${security_users_xmem}" ]; then
-  security_users_xmem=${ZWE_PRIVATE_DEFAULT_XMEM_USER}
+security_users_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zis")
+if [ -z "${security_users_zis}" ]; then
+  security_users_zis=${ZWE_PRIVATE_DEFAULT_ZIS_USER}
 fi
 security_users_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.aux")
 if [ -z "${security_users_aux}" ]; then
-  security_users_aux=${ZWE_PRIVATE_DEFAULT_XMEM_USER}
+  security_users_aux=${ZWE_PRIVATE_DEFAULT_ZIS_USER}
 fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
-security_stcs_xmem=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.xmem")
-if [ -z "${security_stcs_xmem}" ]; then
-  security_stcs_xmem=${ZWE_PRIVATE_DEFAULT_XMEM_STC}
+security_stcs_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zis")
+if [ -z "${security_stcs_zis}" ]; then
+  security_stcs_zis=${ZWE_PRIVATE_DEFAULT_ZIS_STC}
 fi
 security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
 if [ -z "${security_stcs_aux}" ]; then
@@ -83,10 +83,10 @@ result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed "s/^\/\/ \+SET \+ADMINGRP=.*\$/\/\/         SET  ADMINGRP=${security_groups_admin}/" | \
         sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${security_groups_stc}/" | \
         sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${security_users_zowe}/" | \
-        sed "s/^\/\/ \+SET \+XMEMUSER=.*\$/\/\/         SET  XMEMUSER=${security_users_xmem}/" | \
+        sed  "s/^\/\/ \+SET \+ZISUSER=.*\$/\/\/         SET  ZISUSER=${security_users_zis}/" | \
         sed  "s/^\/\/ \+SET \+AUXUSER=.*\$/\/\/         SET  AUXUSER=${security_users_aux}/" | \
         sed  "s/^\/\/ \+SET \+ZOWESTC=.*\$/\/\/         SET  ZOWESTC=${security_stcs_zowe}/" | \
-        sed  "s/^\/\/ \+SET \+XMEMSTC=.*\$/\/\/         SET  XMEMSTC=${security_stcs_xmem}/" | \
+        sed   "s/^\/\/ \+SET \+ZISSTC=.*\$/\/\/         SET  ZISSTC=${security_stcs_zis}/" | \
         sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \
         sed      "s/^\/\/ \+SET \+HLQ=.*\$/\/\/         SET  HLQ=${hlq}/" | \
         sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/" \

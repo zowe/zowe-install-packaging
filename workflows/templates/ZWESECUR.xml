@@ -108,10 +108,10 @@
 			<default>#ZWESVUSR</default>
 		</string>
 	</variable>
-    <variable name="XMEMUSER" scope="instance" visibility="public">
-		<label>XMEMUSER</label>
-		<abstract>Userid for xmem started task</abstract>
-		<description>Userid for xmem started task</description>
+    <variable name="ZISUSER" scope="instance" visibility="public">
+		<label>ZISUSER</label>
+		<abstract>Userid for ZIS started task</abstract>
+		<description>Userid for ZIS started task</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<default>#ZWESIUSR</default>
@@ -119,8 +119,8 @@
 	</variable>
     <variable name="AUXUSER" scope="instance" visibility="public">
 		<label>AUXUSER</label>
-		<abstract>userid for xmem AUX started task</abstract>
-		<description>userid for xmem AUX started task</description>
+		<abstract>userid for ZIS AUX started task</abstract>
+		<description>userid for ZIS AUX started task</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<default>#AUXUSER</default>
@@ -144,10 +144,10 @@
 			<default>#ZWESLSTC</default>
 		</string>
 	</variable>
-    <variable name="XMEMSTC" scope="instance" visibility="public">
-		<label>XMEMSTC</label>
-		<abstract>Xmem started task name</abstract>
-		<description>Xmem started task name</description>
+    <variable name="ZISSTC" scope="instance" visibility="public">
+		<label>ZISSTC</label>
+		<abstract>ZIS started task name</abstract>
+		<description>ZIS started task name</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<default>#ZWESISTC</default>
@@ -155,8 +155,8 @@
 	</variable>
     <variable name="AUXSTC" scope="instance" visibility="public">
 		<label>AUXSTC</label>
-		<abstract>Xmem AUX started task name</abstract>
-		<description>Xmem AUX started task name</description>
+		<abstract>ZIS AUX started task name</abstract>
+		<description>ZIS AUX started task name</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
 			<default>#ZWESASTC</default>
@@ -208,13 +208,13 @@
 			<default>#ZOWEUID</default>
 		</string>
 	</variable>
-  <variable name="XMEMUID" scope="instance" visibility="public">
-		<label>XMEMUID</label>
-		<abstract>UID for xmem started task User</abstract>
-	  <description>UID for xmem started task User</description>
+  <variable name="ZISUID" scope="instance" visibility="public">
+		<label>ZISUID</label>
+		<abstract>UID for ZIS started task User</abstract>
+	  <description>UID for ZIS started task User</description>
 		<category>ACF2</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#XMEMUID</default>
+			<default>#ZISUID</default>
 		</string>
 	</variable>
   <variable name="AUXUID" scope="instance" visibility="public">
@@ -269,17 +269,17 @@
 		<variableValue name="ADMINGRP" noPromptIfSet="false" required="false" scope="instance"/>
    		<variableValue name="STCGRP" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="ZOWEUSER" noPromptIfSet="false" required="false" scope="instance"/>
-    	<variableValue name="XMEMUSER" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="ZISUSER" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="AUXUSER" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ZOWESTC" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="XMEMSTC" noPromptIfSet="false" required="false" scope="instance"/>
+		<variableValue name="ZISSTC" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="AUXSTC" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="HLQ" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="SYSPROG" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ADMINGID" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="STCGID" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ZOWEUID" noPromptIfSet="false" required="false" scope="instance"/>
-    	<variableValue name="XMEMUID" noPromptIfSet="false" required="false" scope="instance"/>
+    	<variableValue name="ZISUID" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="AUXUID" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ADMINDEP" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="STCGDEP" noPromptIfSet="false" required="false" scope="instance"/>

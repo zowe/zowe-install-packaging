@@ -96,8 +96,8 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PRIVATE_CONTAINER_COMPONENT_ID` indicates the component ID of current container. This variable is only applicable when Zowe is running in Kubernetes.
 - `ZWE_PRIVATE_DEFAULT_ADMIN_GROUP` is the default Zowe admin group. Default value is `ZWEADMIN`.
 - `ZWE_PRIVATE_DEFAULT_AUX_STC` is the default name of Zowe Auxiliary Server started task. Default value is `ZWESASTC`.
-- `ZWE_PRIVATE_DEFAULT_XMEM_STC` is the default name of Zowe Cross Memory Server started task. Default value is `ZWESISTC`.
-- `ZWE_PRIVATE_DEFAULT_XMEM_USER` is the default Zowe Cross Memory Server user. Default value is `ZWESIUSR`.
+- `ZWE_PRIVATE_DEFAULT_ZIS_STC` is the default name of Zowe ZIS server started task. Default value is `ZWESISTC`.
+- `ZWE_PRIVATE_DEFAULT_ZIS_USER` is the default Zowe ZIS server user. Default value is `ZWESIUSR`.
 - `ZWE_PRIVATE_DEFAULT_ZOWE_STC` is the default name of Zowe started task. Default value is `ZWESLSTC`.
 - `ZWE_PRIVATE_DEFAULT_ZOWE_USER` is the default Zowe user. Default value is `ZWESVUSR`.
 - `ZWE_PRIVATE_DS_SZWEAUTH` is the data set name for Zowe load modules. Default value is `SZWEAUTH`.
