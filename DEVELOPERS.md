@@ -28,8 +28,6 @@ zowe:
         zowe: IBMUSER
         # Zowe runtime user name of ZIS
         zis: IBMUSER
-        # Zowe runtime user name of Auxiliary Service
-        aux: IBMUSER
 ```
 
 With this change, `zwe init` command will be initialized to configure permissions for your own user ID. The `zowe.setup.security.users.zowe` setting can affect both `zwe init security` and `zwe init certificate` steps.

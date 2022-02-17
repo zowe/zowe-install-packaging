@@ -80,7 +80,6 @@ result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${security_groups_stc}/" | \
         sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${security_users_zowe}/" | \
         sed  "s/^\/\/ \+SET \+ZISUSER=.*\$/\/\/         SET  ZISUSER=${security_users_zis}/" | \
-        sed  "s/^\/\/ \+SET \+AUXUSER=.*\$/\/\/         SET  AUXUSER=${security_users_zis}/" | \
         sed  "s/^\/\/ \+SET \+ZOWESTC=.*\$/\/\/         SET  ZOWESTC=${security_stcs_zowe}/" | \
         sed   "s/^\/\/ \+SET \+ZISSTC=.*\$/\/\/         SET  ZISSTC=${security_stcs_zis}/" | \
         sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \

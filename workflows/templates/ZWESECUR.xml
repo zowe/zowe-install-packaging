@@ -117,15 +117,6 @@
 			<default>#ZWESIUSR</default>
 		</string>
 	</variable>
-    <variable name="AUXUSER" scope="instance" visibility="public">
-		<label>AUXUSER</label>
-		<abstract>userid for ZIS AUX started task</abstract>
-		<description>userid for ZIS AUX started task</description>
-		<category>General Security</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<default>#AUXUSER</default>
-		</string>
-	</variable>
     <variable name="ZOWESTC" scope="instance" visibility="public">
 		<label>ZOWESTC</label>
 		<abstract>Zowe started task name</abstract>
@@ -217,15 +208,6 @@
 			<default>#ZISUID</default>
 		</string>
 	</variable>
-  <variable name="AUXUID" scope="instance" visibility="public">
-		<label>AUXUID</label>
-		<abstract>UID for xm AUX started task User</abstract>
-		<description>UID for xm AUX started task User</description>
-		<category>ACF2</category>
-		<string multiLine="false" valueMustBeChoice="false">
-			<default>#AUXUID</default>
-		</string>
-	</variable>
    <variable name="ADMINDEP" scope="instance" visibility="public">
 		<label>ADMINDEP</label>
 		<abstract>Department owning the STC group</abstract>
@@ -270,7 +252,6 @@
    		<variableValue name="STCGRP" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="ZOWEUSER" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ZISUSER" noPromptIfSet="false" required="false" scope="instance"/>
-		<variableValue name="AUXUSER" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ZOWESTC" noPromptIfSet="false" required="false" scope="instance"/>
 		<variableValue name="ZISSTC" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="AUXSTC" noPromptIfSet="false" required="false" scope="instance"/>
@@ -280,7 +261,6 @@
     	<variableValue name="STCGID" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ZOWEUID" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ZISUID" noPromptIfSet="false" required="false" scope="instance"/>
-    	<variableValue name="AUXUID" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="ADMINDEP" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="STCGDEP" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="STCUDEP" noPromptIfSet="false" required="false" scope="instance"/>
