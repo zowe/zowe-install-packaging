@@ -7,7 +7,6 @@
  *
  * Copyright IBM Corporation 2021
  */
-
 const fs = require('fs');
 const path = require('path');
 
