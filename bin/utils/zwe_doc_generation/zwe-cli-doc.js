@@ -16,8 +16,6 @@ const docsRootDirectory = path.join(__dirname, '../../commands');
 const generatedDocDirectory = path.join(__dirname, './generated');
 
 const docsTree = getDocumentationTree(docsRootDirectory);
-console.log(JSON.stringify(docsTree, null, 2));
-
 writeMdFiles(docsTree); // TODO can this process be merged into getting the docs tree? So its one pass, not two?
 
 function getDocumentationTree(directory) {
@@ -59,6 +57,9 @@ function writeMdFiles(docNode, parent = {}) {
             let content = type.content;
             if (content.includes(FILE_CONTENT_TOKEN)) {
                 const fileContent = type.fileContentTransformation ? type.fileContentTransformation(nodeContent[type.key]) : nodeContent[type.key];
+                if (docNode.command === 'zwe' && type.key === 'errors') {
+                    console.log(fileContent);
+                }
                 content = content.replace(FILE_CONTENT_TOKEN, fileContent);
             }
             mdContent = mdContent + SEPARATOR + content;
@@ -94,9 +95,9 @@ function getNodeContent(docNode, parent) {
 
         if (docNode[type.key]) {
             const fileContent = fs.readFileSync(docNode[type.key], 'utf-8');
-            const inheritedContent = type.inherit ? parent[type.key] : '';
+            const inheritedContent = type.inherit && parent[type.key] ? parent[type.key] : '';
             content = inheritedContent + fileContent;
-        } else if (type.inherit) {
+        } else if (type.inherit && parent[type.key]) {
             content = parent[type.key];
         }
 
