@@ -332,7 +332,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
 elif [ "${cert_type}" = "JCERACFKS" ]; then
   # FIXME: how do we check if keyring exists without permission on RDATALIB?
   # should we clean up before creating new
-  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}" = "true" ]; then
+  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
     print_message "Warning ZWEL0300W: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
 
