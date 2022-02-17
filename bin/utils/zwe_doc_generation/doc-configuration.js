@@ -26,6 +26,7 @@ function transformParameters(fileContent) {
 }
 
 const EXPERIMENTAL = {
+    inherit: true,
     fileName: '.experimental',
     key: 'experimental',
     order: 1,
@@ -41,7 +42,8 @@ const EXAMPLES = {
     fileName: '.examples',
     key: 'examples',
     order: 3,
-    content: `${SECTION_HEADER}Examples${SEPARATOR}${FILE_CONTENT_TOKEN}`
+    content: `${SECTION_HEADER}Examples${SEPARATOR}${FILE_CONTENT_TOKEN}`,
+    fileContentTransformation: (fileContent) => fileContent,
 };
 const EXCLUSIVE_PARAMETERS = {
     fileName: '.exclusive-parameters',
@@ -51,13 +53,15 @@ const EXCLUSIVE_PARAMETERS = {
     fileContentTransformation: transformParameters
 };
 const PARAMETERS = {
+    inherit: true,
     fileName: '.parameters',
     key: 'parameters',
     order: 5,
-    content: `${SECTION_HEADER}Parent command parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`, // TODO change heading
+    content: `${SECTION_HEADER}Global Parameters${SEPARATOR}${FILE_CONTENT_TOKEN}`,
     fileContentTransformation: transformParameters
 };
 const ERRORS = {
+    inherit: true,
     fileName: '.errors',
     key: 'errors',
     order: 6,

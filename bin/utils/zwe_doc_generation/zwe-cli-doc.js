@@ -11,7 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const {FILE_CONTENT_TOKEN, SEPARATOR, orderedDocumentationTypes} = require('./doc-configuration');
+const { FILE_CONTENT_TOKEN, SEPARATOR, orderedDocumentationTypes } = require('./doc-configuration');
 
 const docsRootDirectory = path.join(__dirname, '../../commands');
 const generatedDocDirectory = path.join(__dirname, './generated');
@@ -44,37 +44,56 @@ function getDocumentationTree(directory) {
     return documentationNode;
 }
 
-function writeMdFiles(docNode, parent = {}) {
-    const command = parent.command ? `${parent.command} ${docNode.command}` : docNode.command;
-    if (docNode.children && docNode.children.length) {
-        for (const child of docNode.children) {
-            writeMdFiles(child, { command });
-        }
-    }
-
-    const mdContent = getMdContentForNode(docNode, parent);
-    fs.writeFileSync(`${generatedDocDirectory}/doc-${command.replace(/\s/g, '-')}.md`, mdContent);
+const PARENT_TYPES = {
+    PARAMETER: "parameters",
+    ERRORS: "errors",
+    EXPERIMENTAL: "experimental"
 }
 
-function getMdContentForNode(docNode, parent) {
-    // TODO need to apply parent experimental, parameters and errors to child docs
-    // TODO need to link to children and parent commands
-    let mdContent = `# ${parent.command} ${docNode.command}`;
-
+function writeMdFiles(docNode, parent = {}) {
+    // TODO undefined errMessage and help param for root zwe files
+    const nodeContent = getNodeContent(docNode, parent);
+    let mdContent = `# ${nodeContent.command}`;
     for (const type of orderedDocumentationTypes) {
-        if (docNode[type.key]) {
-            let typeContent = type.content;
-            if (typeContent.includes(FILE_CONTENT_TOKEN)) {
-                let fileContent = fs.readFileSync(docNode[type.key], 'utf-8');
-                if (type.fileContentTransformation) {
-                    fileContent = type.fileContentTransformation(fileContent);
-                }
-
-                typeContent = typeContent.replace(FILE_CONTENT_TOKEN, fileContent);
+        if (nodeContent[type.key]) {
+            let content = type.content;
+            if (content.includes(FILE_CONTENT_TOKEN)) {
+                const fileContent = type.fileContentTransformation ? type.fileContentTransformation(nodeContent[type.key]) : nodeContent[type.key];
+                content = content.replace(FILE_CONTENT_TOKEN, fileContent);
             }
-            mdContent = mdContent + SEPARATOR + typeContent;
+            mdContent = mdContent + SEPARATOR + content;
         }
     }
 
-    return mdContent;
+    fs.writeFileSync(`${generatedDocDirectory}/doc-${nodeContent.command.replace(/\s/g, '-')}.md`, mdContent);
+
+    if (docNode.children && docNode.children.length) {
+        for (const child of docNode.children) {
+            writeMdFiles(child, nodeContent);
+        }
+    }
+}
+
+function getNodeContent(docNode, parent) {
+    // TODO need to link to children and parent commands
+    const command = parent.command ? `${parent.command} ${docNode.command}` : docNode.command;
+    const nodeContent = { command };
+
+    for (const type of orderedDocumentationTypes) {
+        let content = null;
+
+        if (docNode[type.key]) {
+            const fileContent = fs.readFileSync(docNode[type.key], 'utf-8');
+            const inheritedContent = type.inherit ? parent[type.key] : '';
+            content = inheritedContent + fileContent;
+        } else if (type.inherit) {
+            content = parent[type.key];
+        }
+
+        if (content) {
+            nodeContent[type.key] = content;
+        }
+    }
+
+    return nodeContent;
 }
