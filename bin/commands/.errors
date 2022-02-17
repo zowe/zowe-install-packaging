@@ -14,6 +14,7 @@ ZWEL0112E|112|Zowe runtime environment must be prepared first with "zwe internal
 ZWEL0120E|120|This command must run on a z/OS system.
 ZWEL0121E|121|Cannot find node. Please define NODE_HOME environment variable.
 ZWEL0122E|122|Cannot find java. Please define JAVA_HOME environment variable.
+ZWEL0123E|123|This function is only available in Zowe Containerization deployment.
 ZWEL0131E|131|Cannot find key %s defined in file %s.
 ZWEL0132E|132|No manifest file found in component %s.
 ZWEL0133E|133|Data set %s already exists.
@@ -24,4 +25,5 @@ ZWEL0137E|137|z/OSMF root certificate authority is not provided (or cannot be de
 ZWEL0138E|138|Failed to update key %s of file %s.
 ZWEL0139E|139|Failed to create directory %s.
 ZWEL0140E|140|Failed to translate Zowe configuration (%s).
+ZWEL0142E|142|Failed to refresh APIML static registrations.
 ZWEL0172E||Component %s has %s defined but the file is missing.

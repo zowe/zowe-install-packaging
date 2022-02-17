@@ -41,7 +41,7 @@ print_raw_message() {
   if [[ "${write_to}" = *console* ]]; then
     if [ "${is_error}" = "true" ]; then
       >&2 echo "${message}"
-    else
+    elif [ "${ZWE_CLI_PARAMETER_SILENT}" != "true" ]; then
       echo "${message}"
     fi
   fi

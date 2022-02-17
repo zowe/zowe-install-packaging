@@ -330,6 +330,26 @@ if [ "${cert_type}" = "PKCS12" ]; then
   fi
 ###############################
 elif [ "${cert_type}" = "JCERACFKS" ]; then
+  # FIXME: how do we check if keyring exists without permission on RDATALIB?
+  # should we clean up before creating new
+  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
+    # warning
+    print_message "Warning ZWEL0300W: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
+
+    zwecli_inline_execute_command \
+      certificate keyring-jcl clean \
+      --hlq "${hlq}" \
+      --jcllib "${jcllib}" \
+      --keyring-owner "${keyring_owner}" \
+      --keyring-name "${keyring_name}" \
+      --alias "${keyring_label}" \
+      --ca-alias "${keyring_caLabel}" \
+      --security-product "${security_product}"
+  else
+    # error
+    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" already exists." "" 158
+  fi
+
   yaml_keyring_label=
   case ${keyring_option} in
     1)

@@ -24,8 +24,8 @@ node('zowe-jenkins-agent-dind-wdc') {
   pipeline.addBuildParameters(
     choice(
       name: 'BUILD_SMPE',
-      description: 'If we want to build SMP/e package.',
-      choices: ['NONE', 'SMPE', 'PSIANDSMPE'],
+      description: 'If we want to build SMP/e package (and PSWI).',
+      choices: ['NONE', 'SMPE', 'SMPE+PSWI'],
       defaultValue: 'NONE'
     ),
     booleanParam(
@@ -142,7 +142,6 @@ node('zowe-jenkins-agent-dind-wdc') {
           environments        : [
             'ZOWE_VERSION'    : pipeline.getVersion(),
             'BUILD_SMPE'      : (params.BUILD_SMPE == 'NONE' ? '' : 'yes'),
-            'BUILD_PSI'       : (params.BUILD_SMPE == 'PSIANDSMPE' ? 'yes' : ''),
             'KEEP_TEMP_FOLDER': (params.KEEP_TEMP_FOLDER ? 'yes' : '')
           ],
           extraFiles          : (params.BUILD_SMPE == 'NONE' ? '' : 'zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh'),
@@ -155,6 +154,27 @@ node('zowe-jenkins-agent-dind-wdc') {
       }
     }
   )
+  pipeline.createStage(
+    name: "Build PSWI",
+    timeout: [ time: 60, unit: 'MINUTES' ],
+    isSkippable: true,
+    environments: [
+            'VERSION': pipeline.getVersion()
+          ],
+    stage : {
+      if (params.BUILD_SMPE == "SMPE+PSWI") {
+      withCredentials([
+          usernamePassword(
+            credentialsId: 'zzow03-ad2',
+            usernameVariable: 'ZOSMF_USER',
+            passwordVariable: 'ZOSMF_PASS'
+          )
+        ]){
+      sh "cd pswi && chmod +x PSWI-marist.sh && ./PSWI-marist.sh" 
+        }
+      }
+    }
+  )
 
   // define we need publish stage
   pipeline.publish(
@@ -164,7 +184,8 @@ node('zowe-jenkins-agent-dind-wdc') {
       '.pax/smpe-promote.tar',
       '.pax/pd.htm',
       '.pax/smpe-build-logs.pax.Z',
-      '.pax/AZWE*'
+      '.pax/AZWE*',
+      '.pax/zowe-PSWI*'
     ]
   )
   

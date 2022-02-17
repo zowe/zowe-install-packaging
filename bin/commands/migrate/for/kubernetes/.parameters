@@ -1,0 +1,8 @@
+domains|d|string||localhost|||Domain list of certificate Subject Alternative Name (SAN).
+external-port||string||7554|||Port number to access APIML Gateway running in Kubernetes.
+k8s-namespace||string||zowe|||Kubernetes namespace.
+k8s-cluster-name||string||cluster.local|||Kubernetes cluster name.
+alias|a|string||localhost|||Certificate alias name.
+password|p|string||password|||Password of the certificate keystore.
+ca-alias||string||local_ca|||Alias name of the certificate authority which is used to sign CSR.
+ca-password||string||local_ca_password|||Password of the certificate authority keystore which is used to sign CSR.

@@ -23,7 +23,7 @@ zwecli_inline_execute_command internal start prepare
 # start component(s)
 if [ -n "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" ]; then
   # we only start one component in container
-  zwecli_inline_execute_command internal start component --component "${run_zowe_start_component_id}" &
+  zwecli_inline_execute_command internal start component --component "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" &
   # explicit wait is required
   wait
 else

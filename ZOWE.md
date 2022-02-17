@@ -48,7 +48,7 @@ Run `zwe init --config /path/to/my/zowe.yaml` command to initialize environment 
 These `zwe init` arguments could be useful:
 
 - `--update-config` argument allows the init process update your `zowe.yaml` based on automatic detection and your `zowe.setup`. For example, if `java.home` and `node.home` are not defined, they could be updated based on the information we collect on the system. Another example is `zowe.certificate` section can be updated automatically based on your `zowe.setup.certificate` settings.
-- `--allow-overwritten` argument allows you to re-run `zwe init` command repeatedly, even though some data sets are already created.
+- `--allow-overwrite` argument allows you to re-run `zwe init` command repeatedly, even though some data sets are already created.
 - `-v` or `--verbose` will provide you more information on `zwe` command execution details. This is for troubleshooting purpose if the error message is not clear enough.
 - `-vv` or `--trace` will provide you EVEN more information than `--verbose` mode on `zwe` command execution details. This is for troubleshooting purpose if the error message is not clear enough.
 
