@@ -51,6 +51,7 @@ const PARENT_TYPES = {
 
 function writeMdFiles(docNode, parent = {}) {
     // TODO undefined errMessage and help param for root zwe files
+    // TODO display sub commands
     const nodeContent = getNodeContent(docNode, parent);
     let mdContent = `# ${nodeContent.command}`;
     for (const type of orderedDocumentationTypes) {
@@ -64,7 +65,7 @@ function writeMdFiles(docNode, parent = {}) {
         }
     }
 
-    fs.writeFileSync(`${generatedDocDirectory}/doc-${nodeContent.command.replace(/\s/g, '-')}.md`, mdContent);
+    fs.writeFileSync(`${generatedDocDirectory}/${nodeContent.fileName}.md`, mdContent);
 
     if (docNode.children && docNode.children.length) {
         for (const child of docNode.children) {
@@ -74,9 +75,12 @@ function writeMdFiles(docNode, parent = {}) {
 }
 
 function getNodeContent(docNode, parent) {
-    // TODO need to link to children and parent commands
-    const command = parent.command ? `${parent.command} ${docNode.command}` : docNode.command;
-    const nodeContent = { command };
+    const fileName = (parent.fileName ? `${parent.fileName}-${docNode.command}` : `doc-${docNode.command}`);
+
+    const docNodeCommand = `[${docNode.command}](./${fileName})`;
+    const command = parent.command ? `${parent.command} > ${docNodeCommand}` : docNodeCommand;
+
+    const nodeContent = { command, fileName };
 
     for (const type of orderedDocumentationTypes) {
         let content = null;
