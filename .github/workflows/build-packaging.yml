@@ -113,61 +113,38 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
-      - name: '[Prep 6] Process github.event.inputs and inputs'
+      - name: '[Prep 6] Process github.event.inputs'
         id: process-inputs
         run: |
           BUILD_WHAT="PAX"
-          if [[ -z "${{ github.event.inputs.BUILD_SMPE }}" ]]; then
-            echo INPUTS_BUILD_SMPE=${{ inputs.BUILD_SMPE }} >> $GITHUB_ENV
-          else 
-            echo INPUTS_BUILD_SMPE=${{ github.event.inputs.BUILD_SMPE }} >> $GITHUB_ENV
-            if [[ "${{ github.event.inputs.BUILD_SMPE }}" == true ]]; then
-              BUILD_WHAT=$BUILD_WHAT", SMPE"
-            fi
+          
+          echo INPUTS_BUILD_SMPE=${{ github.event.inputs.BUILD_SMPE }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_SMPE }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", SMPE"
           fi
           
-          if [[ -z "${{ github.event.inputs.BUILD_PSIANDSMPE }}" ]]; then
-            echo INPUTS_BUILD_PSIANDSMPE=${{ inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
-          else 
-            echo INPUTS_BUILD_PSIANDSMPE=${{ github.event.inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
-            if [[ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == true ]]; then
-              BUILD_WHAT=$BUILD_WHAT", PSIANDSMPE"
-            fi
+          echo INPUTS_BUILD_PSIANDSMPE=${{ github.event.inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", PSIANDSMPE"
+          fi
+                  
+          echo INPUTS_BUILD_DOCKER=${{ github.event.inputs.BUILD_DOCKER }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_DOCKER }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", DOCKER"
+          fi
+                
+          echo INPUTS_BUILD_DOCKER_SOURCES=${{ github.event.inputs.BUILD_DOCKER_SOURCES }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", DOCKER_SOURCES"
+          fi   
+
+          echo INPUTS_BUILD_KUBERNETES=${{ github.event.inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_KUBERNETES }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", K8S"
           fi
 
-          if [[ -z "${{ github.event.inputs.BUILD_DOCKER }}" ]]; then
-            echo INPUTS_BUILD_DOCKER=${{ inputs.BUILD_DOCKER }} >> $GITHUB_ENV
-          else 
-            echo INPUTS_BUILD_DOCKER=${{ github.event.inputs.BUILD_DOCKER }} >> $GITHUB_ENV
-            if [[ "${{ github.event.inputs.BUILD_DOCKER }}" == true ]]; then
-              BUILD_WHAT=$BUILD_WHAT", DOCKER"
-            fi
-          fi
-
-          if [[ -z "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" ]]; then
-            echo INPUTS_BUILD_DOCKER_SOURCES=${{ inputs.BUILD_DOCKER_SOURCES }} >> $GITHUB_ENV
-          else 
-            echo INPUTS_BUILD_DOCKER_SOURCES=${{ github.event.inputs.BUILD_DOCKER_SOURCES }} >> $GITHUB_ENV
-            if [[ "${{ github.event.inputs.BUILD_DOCKER_SOURCES }}" == true ]]; then
-              BUILD_WHAT=$BUILD_WHAT", DOCKER_SOURCES"
-            fi
-          fi
-
-          if [[ -z "${{ github.event.inputs.BUILD_KUBERNETES }}" ]]; then
-            echo INPUTS_BUILD_KUBERNETES=${{ inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
-          else 
-            echo INPUTS_BUILD_KUBERNETES=${{ github.event.inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
-            if [[ "${{ github.event.inputs.BUILD_KUBERNETES }}" == true ]]; then
-              BUILD_WHAT=$BUILD_WHAT", K8S"
-            fi
-          fi
-
-          if [[ -z "${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }}" ]]; then
-            echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
-          else 
-            echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
-          fi
-
+          echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
+          
           echo ::set-output name=BUILD_WHAT::$BUILD_WHAT
       
       - name: '[Prep 7] Comment on PR to indicate build is started'
