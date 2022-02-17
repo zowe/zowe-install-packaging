@@ -14,8 +14,16 @@
 ###############################
 # Constants
 tmp_ext_dir=tmp_ext_dir
+
+require_zowe_yaml
+
+# read extensionDirectory
+extensionDir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.extensionDirectory")
+if [ -z "${extensionDir}" ]; then
+  print_error_and_exit "Error ZWEL0180E: Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file." "" 180
+fi
 # Variables
-target_dir=$(remove_trailing_slash "${ZWE_CLI_PARAMETER_TARGET_DIR}")
+target_dir=$(remove_trailing_slash "${extensionDir}")
 module_file_short=$(basename "${ZWE_CLI_PARAMETER_COMPONENT_FILE}")
 
 ###############################
