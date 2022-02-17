@@ -45,7 +45,7 @@ const HELP = {
     fileName: '.help',
     key: 'help',
     order: 2,
-    content: FILE_CONTENT_TOKEN
+    content: `${SECTION_HEADER}Synposis${SEPARATOR}${FILE_CONTENT_TOKEN}`
 };
 const EXAMPLES = {
     fileName: '.examples',

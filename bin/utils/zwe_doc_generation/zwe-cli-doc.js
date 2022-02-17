@@ -48,25 +48,21 @@ const PARENT_TYPES = {
 }
 
 function writeMdFiles(docNode, parent = {}) {
-    // TODO undefined errMessage and help param for root zwe files
-    // TODO move sub commands up before examples (or just after examples?)
     const nodeContent = getNodeContent(docNode, parent);
     let mdContent = `# ${nodeContent.command}`;
+    if (nodeContent.childCommandLinks && nodeContent.childCommandLinks.length) {
+        mdContent = mdContent + SEPARATOR + '## Commands' + SEPARATOR + nodeContent.childCommandLinks.join('\n');
+    }
+
     for (const type of orderedDocumentationTypes) {
         if (nodeContent[type.key]) {
             let content = type.content;
             if (content.includes(FILE_CONTENT_TOKEN)) {
                 const fileContent = type.fileContentTransformation ? type.fileContentTransformation(nodeContent[type.key]) : nodeContent[type.key];
-                if (docNode.command === 'zwe' && type.key === 'errors') {
-                    console.log(fileContent);
-                }
                 content = content.replace(FILE_CONTENT_TOKEN, fileContent);
             }
             mdContent = mdContent + SEPARATOR + content;
         }
-    }
-    if (nodeContent.childCommandLinks && nodeContent.childCommandLinks.length) {
-        mdContent = mdContent + SEPARATOR + '## Commands' + SEPARATOR + nodeContent.childCommandLinks.join('\n');
     }
 
     fs.writeFileSync(`${generatedDocDirectory}/${nodeContent.fileName}.md`, mdContent);
