@@ -16,10 +16,10 @@
 require_zowe_yaml
 
 ###############################
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe high level qualifier (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+# read prefix and validate
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.prefix")
+if [ -z "${prefix}" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.mvs.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
 jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
@@ -336,7 +336,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # generate new cert in keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl generate \
-        --hlq "${hlq}" \
+        --prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
@@ -364,7 +364,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # connect existing certs to zowe keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl connect \
-        --hlq "${hlq}" \
+        --prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
@@ -382,7 +382,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # import certs from data set into zowe keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl import-ds \
-        --hlq "${hlq}" \
+        --prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \

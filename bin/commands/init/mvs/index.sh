@@ -24,10 +24,10 @@ authPluginLib|Zowe authorized plugin library|dsntype(library) dsorg(po) recfm(u)
 # validation
 require_zowe_yaml
 
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe high level qualifier (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+# read prefix and validate
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.prefix")
+if [ -z "${prefix}" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.mvs.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
 ###############################
@@ -74,8 +74,8 @@ print_message
 # copy sample lib members
 parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
 for ds in ZWESIP00; do
-  print_message "Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
-  data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+  print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
+  data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
@@ -88,7 +88,7 @@ authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadl
 if [ -n "${authLoadlib}" ]; then
   for ds in ZWESIS01 ZWESAUX; do
     print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
-    # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+    # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
     copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
@@ -96,7 +96,7 @@ if [ -n "${authLoadlib}" ]; then
   done
   for ds in ZWELNCH; do
     print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${ds})"
-    # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
+    # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
     copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITTEN}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111

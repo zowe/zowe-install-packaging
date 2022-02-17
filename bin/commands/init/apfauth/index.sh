@@ -21,10 +21,10 @@ auth_libs="authLoadlib authPluginLib"
 # validation
 require_zowe_yaml
 
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe high level qualifier (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+# read prefix and validate
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.prefix")
+if [ -z "${prefix}" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.mvs.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
 ###############################
@@ -35,7 +35,7 @@ for key in ${auth_libs}; do
   if [ -z "${ds}" ]; then
     # authLoadlib can be empty
     if [ "${key}" = "authLoadlib" ]; then
-      ds="${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
+      ds="${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}"
     else
       print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.mvs.${key}) is not defined in Zowe YAML configuration file." "" 157
     fi

@@ -6,14 +6,14 @@ These Zowe YAML configurations showing with sample values are used:
 zowe:
   setup:
     mvs:
-      hlq: IBMUSER.ZWE
+      prefix: IBMUSER.ZWE
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
       authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
       authPluginLib: IBMUSER.ZWE.CUST.ZWESAPL
 ```
 
-`zowe.setup.mvs.hlq` shows where the `SZWESAMP` and `SZWEAUTH` data sets are
+`zowe.setup.mvs.prefix` shows where the `SZWESAMP` and `SZWEAUTH` data sets are
 installed.
 
 Below data sets will be initialized by this command:

@@ -8,12 +8,12 @@ These Zowe YAML configurations showing with sample values are used:
 zowe:
   setup:
     mvs:
-      hlq: IBMUSER.ZWE
+      prefix: IBMUSER.ZWE
       authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
       authPluginLib: IBMUSER.ZWE.CUST.ZWESAPL
 ```
 
-- `zowe.setup.mvs.hlq` shows where the `SZWEAUTH` data set is installed.
+- `zowe.setup.mvs.prefix` shows where the `SZWEAUTH` data set is installed.
 - `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
   optional. If it's not defined, `SZWEAUTH` from HLQ will be APF authorized.
 - `zowe.setup.mvs.authPluginLib` is the user custom APF PLUGINLIB.
