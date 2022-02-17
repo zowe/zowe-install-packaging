@@ -87,5 +87,6 @@ const orderedDocumentationTypes = documentationTypes.sort((a, b) => a.order - b.
 module.exports = {
     FILE_CONTENT_TOKEN,
     SEPARATOR,
+    SECTION_HEADER,
     orderedDocumentationTypes
 }

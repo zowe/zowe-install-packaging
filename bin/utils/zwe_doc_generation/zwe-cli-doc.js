@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { FILE_CONTENT_TOKEN, SEPARATOR, orderedDocumentationTypes } = require('./doc-configuration');
+const { FILE_CONTENT_TOKEN, SEPARATOR, SECTION_HEADER, orderedDocumentationTypes } = require('./doc-configuration');
 
 const docsRootDirectory = path.join(__dirname, '../../commands');
 const generatedDocDirectory = path.join(__dirname, './generated');
@@ -41,21 +41,16 @@ function getDocumentationTree(directory) {
     return documentationNode;
 }
 
-const PARENT_TYPES = {
-    PARAMETER: "parameters",
-    ERRORS: "errors",
-    EXPERIMENTAL: "experimental"
-}
-
 function writeMdFiles(docNode, parent = {}) {
     const nodeContent = getNodeContent(docNode, parent);
-    let mdContent = `# ${nodeContent.commandWithLink}${SEPARATOR}## Synopsis${SEPARATOR}\t${nodeContent.command} [sub-command [sub-command]...] [parameter [parameter]..]`;
+    let mdContent = `# ${nodeContent.commandWithLink}${SEPARATOR}\t${nodeContent.command} [sub-command [sub-command]...] [parameter [parameter]...]`;
     if (nodeContent.childCommandLinks && nodeContent.childCommandLinks.length) {
-        mdContent = mdContent + SEPARATOR + '## Sub-commands' + SEPARATOR + nodeContent.childCommandLinks.join('\n');
+        mdContent = mdContent + SEPARATOR + SECTION_HEADER + 'Sub-commands' + SEPARATOR + nodeContent.childCommandLinks.join('\n');
     }
+    mdContent = mdContent + SEPARATOR + SECTION_HEADER + 'Synopsis';
 
     for (const type of orderedDocumentationTypes) {
-        if (nodeContent[type.key]) {
+        if (hasDocType(nodeContent, type)) {
             let content = type.content;
             if (content.includes(FILE_CONTENT_TOKEN)) {
                 const fileContent = type.fileContentTransformation ? type.fileContentTransformation(nodeContent[type.key]) : nodeContent[type.key];
@@ -74,6 +69,8 @@ function writeMdFiles(docNode, parent = {}) {
     }
 }
 
+// TODO fix naming for global parameters and parameters
+
 function getNodeContent(docNode, parent) {
     const fileName = getFileName(docNode.command, parent.fileName);
 
@@ -91,15 +88,15 @@ function getNodeContent(docNode, parent) {
     for (const type of orderedDocumentationTypes) {
         let content = null;
 
-        if (docNode[type.key]) {
+        if (hasDocType(docNode, type)) {
             const fileContent = fs.readFileSync(docNode[type.key], 'utf-8');
-            const inheritedContent = type.inherit && parent[type.key] ? parent[type.key] : '';
+            const inheritedContent = type.inherit && hasDocType(parent, type) ? parent[type.key] : '';
             content = inheritedContent + fileContent;
-        } else if (type.inherit && parent[type.key]) {
+        } else if (type.inherit && hasDocType(parent, type)) {
             content = parent[type.key];
         }
 
-        if (content) {
+        if (content !== null && content !== undefined) {
             nodeContent[type.key] = content;
         }
     }
@@ -109,4 +106,8 @@ function getNodeContent(docNode, parent) {
 
 function getFileName(command, parentFileName) {
     return parentFileName ? `${parentFileName}-${command}` : `doc-${command}`;
+}
+
+function hasDocType(obj, type) {
+    return obj[type.key] !== null && obj[type.key] !== undefined;
 }
