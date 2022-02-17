@@ -533,7 +533,7 @@ pkcs12_export_pem() {
   private_key_aliases="${3}"
 
   print_message ">>>> List content of keystore \"${keystore_file}\":"
-  result=$(pkeytool -list \
+  keystore_content=$(pkeytool -list \
             -keystore "${keystore_file}" \
             -storepass "${password}" \
             -storetype "PKCS12")
@@ -541,45 +541,55 @@ pkcs12_export_pem() {
     return 1
   fi
 
-  for alias in $(echo "${result}" | grep -i keyentry | awk -F, '{print $1}'); do
-    alias_lc=$(echo "${alias}" | lower_case)
-    print_message ">>>> Export certificate \"${alias}\" to PEM format"
-    result=$(pkeytool -exportcert -v \
-              -alias "${alias}" \
-              -keystore "${keystore_file}" \
-              -storepass "${password}" \
-              -storetype "PKCS12" \
-              -rfc \
-              -file "${keystore_dir}/${alias_lc}.cer")
-    if [ $? -ne 0 ]; then
-      return 1
+  aliases=$(echo "${keystore_content}" | grep -i keyentry | awk -F, '{print $1}')
+  while read -r alias; do
+    if [ -n "${alias}" ]; then
+      alias_lc=$(echo "${alias}" | lower_case)
+      print_message ">>>> Export certificate \"${alias}\" to PEM format"
+      result=$(pkeytool -exportcert -v \
+                -alias "${alias}" \
+                -keystore "${keystore_file}" \
+                -storepass "${password}" \
+                -storetype "PKCS12" \
+                -rfc \
+                -file "${keystore_dir}/${alias_lc}.cer")
+      if [ $? -ne 0 ]; then
+        return 1
+      fi
+      if [ `uname` = "OS/390" ]; then
+        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
+      fi
     fi
-    if [ `uname` = "OS/390" ]; then
-      iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-      mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-      ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
-    fi
-  done
+  done <<EOF
+$(echo "${aliases}")
+EOF
 
-  for alias in $(echo "${result}" | grep -i trustedcertentry | awk -F, '{print $1}'); do
-    alias_lc=$(echo "${alias}" | lower_case)
-    print_message ">>>> Export certificate \"${alias}\" to PEM format"
-    result=$(pkeytool -exportcert -v \
-              -alias "${alias}" \
-              -keystore "${keystore_file}" \
-              -storepass "${password}" \
-              -storetype "PKCS12" \
-              -rfc \
-              -file "${keystore_dir}/${alias_lc}.cer")
-    if [ $? -ne 0 ]; then
-      return 1
+  aliases=$(echo "${keystore_content}" | grep -i trustedcertentry | awk -F, '{print $1}')
+  while read -r alias; do
+    if [ -n "${alias}" ]; then
+      alias_lc=$(echo "${alias}" | lower_case)
+      print_message ">>>> Export certificate \"${alias}\" to PEM format"
+      result=$(pkeytool -exportcert -v \
+                -alias "${alias}" \
+                -keystore "${keystore_file}" \
+                -storepass "${password}" \
+                -storetype "PKCS12" \
+                -rfc \
+                -file "${keystore_dir}/${alias_lc}.cer")
+      if [ $? -ne 0 ]; then
+        return 1
+      fi
+      if [ `uname` = "OS/390" ]; then
+        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
+      fi
     fi
-    if [ `uname` = "OS/390" ]; then
-      iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-      mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-      ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
-    fi
-  done
+  done <<EOF
+$(echo "${aliases}")
+EOF
 
   while read -r alias; do
     alias=$(echo "${alias}" | trim)
@@ -825,8 +835,12 @@ EOF
   ###############################
   # prepare ZWEKRING JCL
   print_message ">>>> Modify ZWEKRING"
+  print_debug "- Create temp file"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "  > temp file: ${tmpfile}"
+  print_debug "- Create temp data set member"
   tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
+  print_debug "  > data set member: ${jcllib}(tmpdsm)"
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
           sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
@@ -940,8 +954,12 @@ keyring_run_zwenokyr_jcl() {
   ###############################
   # prepare ZWENOKYR JCL
   print_message ">>>> Modify ZWENOKYR"
+  print_debug "- Create temp file"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "  > temp file: ${tmpfile}"
+  print_debug "- Create temp data set member"
   tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
+  print_debug "  > data set member: ${jcllib}(tmpdsm)"
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)'" | \
           sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
@@ -1172,12 +1190,13 @@ keyring_export_all_to_pkcs12() {
   keyring_owner="${1}"
   keyring_name="${2}"
   uss_temp_dir="${3}"
-  keystore_password="${4}"
+  keystore_name="${4:-localhost}"
+  keystore_password="${5}"
 
-  keystore_name=localhost
   mkdir -p "${uss_temp_dir}/keystore/${keystore_name}"
-  keystore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.keystore.p12"
-  truststore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.truststore.p12"
+  temp_keystore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.keystore.p12"
+  temp_truststore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.truststore.p12"
+  labels_with_private_key=
 
   # converting keystore
   print_debug ">>>> Listing PERSONAL certificates"
@@ -1191,11 +1210,15 @@ keyring_export_all_to_pkcs12() {
          "${keyring_name}" \
          "${cert}" \
          "${uss_temp_dir}" \
-         "${keystore_file}" \
+         "${temp_keystore_file}" \
          "${keystore_password}"
       if [ $? -ne 0 ]; then
         return 1
       fi
+      if [ -z "${labels_with_private_key}" ]; then
+        labels_with_private_key="${labels_with_private_key},"
+      fi
+      labels_with_private_key="${labels_with_private_key}${cert}"
     fi
   done <<EOF
 $(echo "${certs}")
@@ -1210,14 +1233,15 @@ EOF
     if [ -n "${cert}" ]; then
       found=$(item_in_list "${ZWE_zowe_certificate_pem_certificateAuthorities}" "safkeyring:////${keyring_owner}/${keyring_name}&${cert}")
       if [ "${found}" = "true" ]; then
-        # this is Zowe CA, will try to export both cert and private key into truststore
+        # RDATALIB cannot export private key of CERTAUTH certificate, so only the cert itself, no private key
         keyring_export_to_pkcs12 \
           "${keyring_owner}" \
           "${keyring_name}" \
           "${cert}" \
           "${uss_temp_dir}" \
-          "${truststore_file}" \
-          "${keystore_password}"
+          "${temp_truststore_file}" \
+          "${keystore_password}" \
+          "true"
         if [ $? -ne 0 ]; then
           return 1
         fi
@@ -1228,7 +1252,7 @@ EOF
           "${keyring_name}" \
           "${cert}" \
           "${uss_temp_dir}" \
-          "${keystore_file}" \
+          "${temp_keystore_file}" \
           "${keystore_password}" \
           "true"
         if [ $? -ne 0 ]; then
@@ -1241,7 +1265,7 @@ EOF
           "${keyring_name}" \
           "${cert}" \
           "${uss_temp_dir}" \
-          "${truststore_file}" \
+          "${temp_truststore_file}" \
           "${keystore_password}" \
           "true"
         if [ $? -ne 0 ]; then
@@ -1252,6 +1276,12 @@ EOF
   done <<EOF
 $(echo "${certs}")
 EOF
+
+  # export keystore to PEM format
+  pkcs12_export_pem \
+    "${temp_keystore_file}" \
+    "${keystore_password}" \
+    "${labels_with_private_key}"
 }
 
 # this only works for RACF

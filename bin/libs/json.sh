@@ -167,7 +167,16 @@ update_yaml() {
 }
 
 update_zowe_yaml() {
-  update_yaml "${1}" "${2}" "${3}" "zowe:"
+  file="${1}"
+  key="${2}"
+  val="${3}"
+
+  if [ "${val}" = "" ]; then
+    # empty string
+    val="\"\""
+  fi
+
+  update_yaml "${file}" "${key}" "${val}" "zowe:"
 }
 
 delete_yaml() {
