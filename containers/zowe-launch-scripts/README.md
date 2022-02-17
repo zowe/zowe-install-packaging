@@ -15,4 +15,4 @@ Each image supports both `amd64` and `s390x` CPU architectures.
 
 ## Usage
 
-Image `zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest` can be used as `initContainers` spec of Kubernetes configuration.
+Image `zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu` can be used as `initContainers` spec of Kubernetes configuration.

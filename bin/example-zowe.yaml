@@ -51,7 +51,7 @@ zowe:
       jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
       # APF authorized LOADLIB for Zowe
       # Optional. If it's empty, <hlq>.SZWEAUTH will be APF authorized.
-      authLoadlib: 
+      authLoadlib: ""
       # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins
       authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
@@ -75,7 +75,7 @@ zowe:
     #     zowe: ZWESVUSR
     #     # Zowe runtime user name of Cross Memory Server
     #     xmem: ZWESIUSR
-    #     # Zowe runtime user name of Auxilary Service
+    #     # Zowe runtime user name of Auxiliary Service
     #     aux: ZWESIUSR
     #   # STC names
     #   stcs:
@@ -83,7 +83,7 @@ zowe:
     #     zowe: ZWESLSTC
     #     # STC name of Zowe Cross Memory Server
     #     xmem: ZWESISTC
-    #     # STC name of Zowe Auxilary Service
+    #     # STC name of Zowe Auxiliary Service
     #     aux: ZWESASTC
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -129,6 +129,7 @@ zowe:
       # # If this field is not defined, `zwe init` command will use
       # # `zowe.externalDomains`.
       # san:
+      #   # sample domain name
       #   - dvipa.my-company.com
       #   # sample IP address
       #   - 12.34.56.78
@@ -150,19 +151,19 @@ zowe:
     #     import:
     #       # **COMMONLY_CUSTOMIZED**
     #       # Existing PKCS12 keystore which holds the certificate issued by external CA.
-    #       keystore: /var/zowe/extcerts/dummy_certs.keystore.p12
+    #       keystore: ""
     #       # **COMMONLY_CUSTOMIZED**
     #       # Password of the above keystore
-    #       password: dummycert
+    #       password: ""
     #       # **COMMONLY_CUSTOMIZED**
     #       # Certificate alias will be imported
     #       # Note: please use all lower cases as alias.
-    #       alias: dummy_certs
+    #       alias: ""
     #   # **COMMONLY_CUSTOMIZED**
     #   # PEM format certificate authorities will also be imported and trusted.
     #   importCertificateAuthorities:
-    #     # This should be the certificate authority signed the certificate will be imported.
-    #     - /var/zowe/extcerts/dummy_ca.cer
+    #     # Path to the certificate authority signed the certificate will be imported.
+    #     - ""
 
     # # >>>> Certificate setup scenario 3
     # # JCERACFKS (z/OS Keyring) with Zowe generated certificates.
@@ -172,13 +173,13 @@ zowe:
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
-    #     name: Zowe2Keyring
+    #     name: ZoweKeyring
     #     # **COMMONLY_CUSTOMIZED**
     #     # # Label of Zowe certificate. Optional, default value is localhost.
-    #     # label: Primary Zowe v2 Cert
+    #     # label: localhost
     #     # **COMMONLY_CUSTOMIZED**
     #     # # label of Zowe CA certificate. Optional, default value is localca.
-    #     # caLabel: Zowe v2 CA
+    #     # caLabel: localca
     #   # # Distinguished name for Zowe generated certificates. All optional.
     #   # dname:
     #   #   caCommonName: ""
@@ -207,21 +208,21 @@ zowe:
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
-    #     name: Zowe2Keyring
+    #     name: ZoweKeyring
     #     connect:
     #       # **COMMONLY_CUSTOMIZED**
     #       # Current owner of the existing certificate, can be SITE or an user ID.
     #       user: IBMUSER
     #       # **COMMONLY_CUSTOMIZED**
     #       # Label of the existing certificate will be connected to Zowe keyring.
-    #       label: Dummy Cert
+    #       label: ""
     #   # **COMMONLY_CUSTOMIZED**
     #   # If you have other certificate authorities want to be trusted in Zowe keyring,
     #   # list the certificate labels here.
     #   # **NOTE**, due to the limitation of RACDCERT command, this field should
     #   #           contain maximum 2 entries.
     #   importCertificateAuthorities:
-    #     - Dummy CA
+    #     - ""
 
     # # >>>> Certificate setup scenario 5
     # # JCERACFKS (z/OS Keyring) with importing certificate stored in data set
@@ -231,18 +232,18 @@ zowe:
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
-    #     name: Zowe2Keyring
+    #     name: ZoweKeyring
     #     # **COMMONLY_CUSTOMIZED**
     #     # # Label of Zowe certificate. Optional, default value is localhost.
-    #     # label: Primary Zowe v2 Cert
+    #     # label: localhost
     #     import:
     #       # **COMMONLY_CUSTOMIZED**
     #       # Name of the data set holds the certificate issued by other CA.
     #       # This data set should be in PKCS12 format and contain private key.
-    #       dsName: IBMUSER.DUMMY.CERTP12
+    #       dsName: ""
     #       # **COMMONLY_CUSTOMIZED**
     #       # Password for the PKCS12 data set.
-    #       password: dummycert
+    #       password: ""
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # VSAM configurations if you are using VSAM as Caching Service storage
@@ -251,9 +252,9 @@ zowe:
       # Valid values could be: NONRLS or RLS.
       mode: NONRLS
       # Volume name if you are using VSAM in NONRLS mode
-      volume: VOL123
+      volume: ""
       # Storage class name if you are using VSAM in RLS mode
-      storageClass:
+      storageClass: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # **COMMONLY_CUSTOMIZED**
@@ -292,19 +293,22 @@ zowe:
   # This should be the domain list you would like to put into your web browser
   # address bar.
   externalDomains:
-    # this should be the domain name of you Dynamic VIP Address (DVIPA)
-    - dvipa.my-company.com
+    # this should be the domain name to access Zowe APIML Gateway
+    - sample-domain.com
   
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
   #
   # In many use cases, this should be same as `components.gateway.port`. But in
   # some use cases, like containerization, this port could be different.
-  externalPort: "7554"
+  externalPort: 7554
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can define any extra environment variables as key/value pairs here
-  environments:
+  # **NOTE**: before you adding new variables under zowe.environments, make sure
+  #           you remove the {} after this line. Currently the {} here will make
+  #           sure `zowe.environments` is treated as "object" instead of "string".
+  environments: {}
     # Example of a global environment variable for all components
     # MY_ENV_VAR: my_env_val
 
@@ -343,17 +347,17 @@ zowe:
   # How we want to verify SSL certificates of services. Valid values are:
   # - STRICT:    will validate if the certificate is trusted in our trust store and
   #              if the certificate Command Name and Subject Alternative Name (SAN)
-  #              is validate. This is recommendate for the best security.
+  #              is validate. This is recommended for the best security.
   # - NONSTRICT: will validate if the certificate is trusted in our trust store.
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
-  # - DISABLED:  disable certificate validation. This is NOT recommendated for
+  # - DISABLED:  disable certificate validation. This is NOT recommended for
   #              security 
   verifyCertificates: STRICT
 
 
 #-------------------------------------------------------------------------------
-# Java configuraiton
+# Java configuration
 #
 # Some Zowe components requires Java. Define the path where you have your Java
 # is installed.
@@ -368,7 +372,7 @@ java:
 
 
 #-------------------------------------------------------------------------------
-# node.js configuraiton
+# node.js configuration
 #
 # Some Zowe components requires node.js. Define the path where you have your
 # node.js is installed.
@@ -383,7 +387,7 @@ node:
 
 
 #-------------------------------------------------------------------------------
-# z/OSMF configuraiton
+# z/OSMF configuration
 #
 # If your Zowe instance is configured to use z/OSMF for authentication or other
 # features. You need to define how to access your z/OSMF instance.
@@ -393,7 +397,7 @@ zOSMF:
   # host name of your z/OSMF instance
   host: dvipa.my-company.com
   # **COMMONLY_CUSTOMIZED**
-  port: "443"
+  port: 443
   applId: IZUDFLT
 
 

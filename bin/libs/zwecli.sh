@@ -29,7 +29,7 @@ zwecli_append_parameters_definition() {
   command_path=$(zwecli_calculate_command_path "${commands}")
   if [ -d "${command_path}" ]; then
     if [ -f "${command_path}/.parameters" ]; then
-      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
+      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="$(printf "%s\n%s" "${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}" "$(cat "${command_path}/.parameters")")"
     fi
   elif [ -n "${commands}" ]; then
     print_error "Error ZWEL0104E: Invalid command \"${commands}\""
@@ -47,7 +47,7 @@ zwecli_append_exclusive_parameters_definition() {
   command_path=$(zwecli_calculate_command_path "${commands}")
   if [ -d "${command_path}" ]; then
     if [ -f "${command_path}/.exclusive-parameters" ]; then
-      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.exclusive-parameters")"
+      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="$(printf "%s\n%s" "${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}" "$(cat "${command_path}/.exclusive-parameters")")"
     fi
   elif [ -n "${commands}" ]; then
     print_error "Error ZWEL0104E: Invalid command \"${commands}\""

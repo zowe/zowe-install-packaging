@@ -84,13 +84,15 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_RUN_ON_ZOS` indicates if current is running on z/OS. If yes, the value is `true`.
 - `ZWE_PWD` indicates which directory the user is located when executing `zwe` command.
 - `ZWE_STATIC_DEFINITIONS_DIR` is where Zowe stores API-ML static registration files.
+- `ZWE_POD_NAMESPACE` indicates the current Kubernetes namespace Zowe is running. This variable is only applicable when Zowe is running in Kubernetes.
+- `ZWE_POD_CLUSTERNAME` indicates the current Kubernetes cluster name Zowe is running. This variable is only applicable when Zowe is running in Kubernetes.
 
 **`ZWE_PRIVATE_*` are variables used by Zowe internally. It's not suggested for component to use or modify.**
 
 - `ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS`, this is a calculated variable holds all parameter definitions based on current command chain.
 - `ZWE_PRIVATE_CLI_LIBRARY_LOADED` indicates is `bin/libs` are already sourced or not.
 - `ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND` indicates if currently is running as top-level command, or triggered by top-level command.
-- `ZWE_PRIVATE_CONTAINER_COMPONENT_ID` indicates the component ID of current container. This variable is only applicable to Zowe running in container.
+- `ZWE_PRIVATE_CONTAINER_COMPONENT_ID` indicates the component ID of current container. This variable is only applicable when Zowe is running in Kubernetes.
 - `ZWE_PRIVATE_DEFAULT_ADMIN_GROUP` is the default Zowe admin group. Default value is `ZWEADMIN`.
 - `ZWE_PRIVATE_DEFAULT_ZOWE_USER` is the default Zowe user. Default value is `ZWESVUSR`.
 - `ZWE_PRIVATE_DEFAULT_XMEM_USER` is the default Zowe Cross Memory Server user. Default value is `ZWESIUSR`.

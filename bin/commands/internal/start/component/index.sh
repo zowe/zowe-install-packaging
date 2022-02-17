@@ -58,7 +58,7 @@ if [ -n "${component_dir}" ]; then
   if [ -n "${start_script}" ]; then
     if [ -f "${start_script}" ]; then
       print_formatted_info "ZWELS" "zwe-internal-start-component:${LINENO}" "starting component ${ZWE_CLI_PARAMETER_COMPONENT} ..."
-      print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" ">>> environment for ${ZWE_CLI_PARAMETER_COMPONENT}\n$(get_environments)\n<<<"
+      print_formatted_trace "ZWELS" "zwe-internal-start-component:${LINENO}" "$(printf ">>> environment for %s\n%s\n<<<" "${ZWE_CLI_PARAMETER_COMPONENT}" "$(get_environments)")"
       # FIXME: we have assumption here start_script is pointing to a shell script
       # if [[ "${start_script}" == *.sh ]]; then
       if [ "${ZWE_CLI_PARAMETER_RUN_IN_BACKGROUND}" = "true" ]; then

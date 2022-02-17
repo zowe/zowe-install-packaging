@@ -1,4 +1,4 @@
-service-name|s|string|required||||Service name.
+service-name|n|string|required||||Service name.
 keystore-dir|d|string|required||||Keystore directory.
 keystore|k|string|required||||PKCS12 keystore name.
 password|p|string|required||||Password of the certificate keystore.

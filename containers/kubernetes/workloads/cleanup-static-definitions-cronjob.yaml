@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "1.25.0"
+    app.kubernetes.io/version: "2.0.0"
     app.kubernetes.io/component: job-cleanup-static-definitions
     app.kubernetes.io/managed-by: manual
 spec:
@@ -24,9 +24,9 @@ spec:
             fsGroup: 20000
           serviceAccountName: zowe-sa
           volumes:
-            - name: zowe-runtime
+            - name: tmp
               emptyDir: {}
-            - name: zowe-instance
+            - name: zowe-runtime
               emptyDir: {}
             - name: zowe-config
               configMap:
@@ -36,14 +36,16 @@ spec:
                 sources:
                   - secret:
                       name: zowe-certificates-secret
+            - name: zowe-logs
+              emptyDir: {}
             - name: zowe-workspace
               persistentVolumeClaim:
                 claimName: zowe-workspace-pvc
           restartPolicy: OnFailure
           containers:
             - name: cleanup-static-definitions
-              # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+              # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
+              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.users-jack-v2-containerization
               imagePullPolicy: Always
               resources:
                 requests:
@@ -63,23 +65,25 @@ spec:
                   drop:
                     - all
               volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
                 - name: zowe-runtime
                   mountPath: "/home/zowe/runtime"
-                - name: zowe-instance
-                  mountPath: "/home/zowe/instance"
                 - name: zowe-config
-                  mountPath: "/home/zowe/instance/zowe.yaml"
+                  mountPath: "/home/zowe/zowe.yaml"
                   subPath: zowe.yaml
                   readOnly: true
                 - name: zowe-keystore
-                  mountPath: "/home/zowe/keystore/"
+                  mountPath: "/home/zowe/keystore"
                   readOnly: true
+                - name: zowe-logs
+                  mountPath: "/home/zowe/logs"
                 - name: zowe-workspace
-                  mountPath: "/home/zowe/instance/workspace"
+                  mountPath: "/home/zowe/workspace"
           initContainers:
             - name: update-workspace-permission
               image: busybox:1.28
-              command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
+              command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/workspace` && PERMISSION=`stat -c "%a" /home/zowe/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/workspace; fi']
               imagePullPolicy: Always
               resources:
                 requests:
@@ -90,7 +94,7 @@ spec:
                   cpu: "100m"
               volumeMounts:
                 - name: zowe-workspace
-                  mountPath: "/home/zowe/instance/workspace"
+                  mountPath: "/home/zowe/workspace"
               securityContext:
                 readOnlyRootFilesystem: true
                 allowPrivilegeEscalation: false

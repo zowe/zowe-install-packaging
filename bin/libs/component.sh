@@ -435,3 +435,49 @@ process_component_gateway_shared_libs() {
     return 1
   fi
 }
+
+###############################
+# Call API Catalog to refresh static registration
+#
+# @param string   API Catalog hostname
+# @param string   API Catalog port
+# @param string   Path to Authentication private key
+# @param string   Path to Authentication certificate
+# @param string   Path to Certificate Authority certificate
+refresh_static_registration() {
+  apicatalog_host="${1:-${ZWE_GATEWAY_HOST:-${ZWE_haInstance_hostname:-localhost}}}"
+  apicatalog_port="${2:-${ZWE_components_api_catalog_port}}"
+  auth_key="${3:-${ZWE_zowe_certificate_pem_key}}"
+  auth_cert="${4:-${ZWE_zowe_certificate_pem_certificate}}"
+  ca_cert="${5:-${ZWE_zowe_certificate_pem_certificateAuthorities}}"
+
+  require_node
+
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+
+  print_trace "- calling API Catalog /static-api/refresh to refresh static registrations"
+  result=$("${NODE_HOME}/bin/node" \
+            "${utils_dir}/curl.js" \
+            "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
+            -X POST \
+            --key "${auth_key}" \
+            --cert "${auth_cert}" \
+            --cacert "${ca_cert}")
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+    print_error_and_exit "Error ZWEL0142E: Failed to refresh APIML static registrations." "" 142
+  fi
+
+  return ${code}
+}
