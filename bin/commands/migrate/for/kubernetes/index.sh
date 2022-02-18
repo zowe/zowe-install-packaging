@@ -56,6 +56,7 @@ cp "${ZWE_CLI_PARAMETER_CONFIG}" "${temp_dir}/zowe.yaml"
 
 if [ "${ZWE_zowe_certificate_keystore_type}" = "JCERACFKS" ]; then
   # export keyring to PKCS#12 format
+  print_level1_message "Convert Keyring to PKCS#12 keystore for Kubernetes"
   print_message "You are using z/OS Keyring. All certificates used by Zowe will be exported."
   keyring_owner=$(echo "${ZWE_zowe_certificate_keystore_file}" | awk -F/ '{print $5}')
   if [ -z "${keyring_owner}" ]; then
@@ -109,6 +110,8 @@ EOF
 fi
 
 if [ "${ZWE_zowe_setup_certificate_type}" = "PKCS12" -a "${ZWE_zowe_verifyCertificates}" = "STRICT" -a "$(is_certificate_generated_by_zowe)" = "true" ]; then
+  print_level1_message "Re-generate Zowe certificate to include proper domains."
+
   print_message "To make the certificates working properly in Kubernetes, we need to generate"
   print_message "a new certificate with proper domains."
   print_message "You can customize domains by passing --domains option to this command."
@@ -173,10 +176,14 @@ if [ "${ZWE_zowe_setup_certificate_type}" = "PKCS12" -a "${ZWE_zowe_verifyCertif
   ZWE_zowe_certificate_pem_key="${temp_dir}/keystore/${ZWE_zowe_setup_certificate_pkcs12_name}/$(lower_case "${ZWE_zowe_setup_certificate_pkcs12_name}").key"
   ZWE_zowe_certificate_pem_certificate="${temp_dir}/keystore/${ZWE_zowe_setup_certificate_pkcs12_name}/$(lower_case "${ZWE_zowe_setup_certificate_pkcs12_name}").cer"
   # truststore will reuse original
+
+  print_message
 fi
 
 ################################################################################
 # update zowe.yaml suitable for k8s
+print_level1_message "Update zowe.yaml configuration for Kubernetes"
+
 delete_zowe_yaml "${temp_dir}/zowe.yaml" "java.home"
 delete_zowe_yaml "${temp_dir}/zowe.yaml" "node.home"
 
@@ -228,8 +235,12 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.certificate.keystore.type" "${ZWE
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.certificate.truststore.password" "${ZWE_zowe_certificate_truststore_password}"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.certificate.truststore.type" "${ZWE_zowe_certificate_truststore_type}"
 
+print_message
+
 ################################################################################
 # start official output
+print_level1_message "Output Kubernetes ConfigMap and Secret manifests"
+
 print_message "Please copy content between >>> START and <<< END, save them as a YAML file on your local"
 print_message "computer, then apply it to your Kubernetes cluster. After apply, you MUST delete"
 print_message "and destroy the temporary file from your local computer."
@@ -290,4 +301,4 @@ rm -fr "${temp_dir}"
 
 ###############################
 # exit message
-print_level1_message "Kubernetes manifest to run Zowe in containers are ready."
+print_level1_message "Kubernetes manifests to run Zowe in containers are ready."
