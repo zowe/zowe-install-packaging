@@ -1,13 +1,30 @@
 Init Zowe instance based on zowe.yaml configuration.
 
-You can find an example zowe.yaml in Zowe runtime directory bin folder.
+You can find an example zowe.yaml in Zowe runtime directory folder.
 
-If you specify `--update-config` with this command, these configurations could
+This command will run these sub-commands in sequence:
+
+- `zwe init mvs`
+- `zwe init vsam`
+- `zwe init apfauth`
+- `zwe init security`
+- `zwe init certificate`
+- `zwe init stc`
+
+If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
+`zwe init security` steps will be skipped.
+
+If you pass `--update-config` with this command, these configurations could
 be written back to your Zowe YAML configuration file:
 
+- `zowe.runtimeDirectory` based on where your `zwe` command is located, and if it
+  is not defined,
 - `zowe.certificate` based on your `zowe.setup.certificate` configuration,
 - `java.home` based on your current JAVA_HOME or automatic detection,
 - `node.home` based on your current NODE_HOME or automatic detection.
+
+**IMPORTANT**, if you modify any of the values below, it's suggested to re-run
+relevant `zwe init` command to make them taking effect.
 
 These Zowe YAML configurations showing with sample values are used:
 
