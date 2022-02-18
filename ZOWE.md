@@ -31,6 +31,12 @@ Zowe uses a YAML file, usually mentioned as `zowe.yaml` to instruct Zowe how to 
 
 Copy the `example-zowe.yaml` located in Zowe root directory to your preferred location, for example, your home directory. You can modify the file based on your environment and then move to next step.
 
+Many `zwe` commands requires `zowe.yaml` as `--config|-c` parameter. If you don't want to pass it on every command, you can define `ZWE_CLI_PARAMETER_CONFIG` environment variable points to your `zowe.yaml`:
+
+```
+export ZWE_CLI_PARAMETER_CONFIG=/path/to/my/zowe.yaml
+```
+
 ## Install
 
 If you are using Zowe convenience build, you should run `zwe install --config /path/to/my/zowe.yaml` command to install Zowe MVS data sets. If you are using Zowe SMPE build, you can skip this and move on to next step.
