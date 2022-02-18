@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: explorer-ip 
+  name: explorer-ip
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
