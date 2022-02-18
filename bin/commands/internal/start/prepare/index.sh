@@ -302,7 +302,7 @@ print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and h
 
 ###############################
 # validation
-require_java
+# require_java
 require_node
 require_zowe_yaml
 

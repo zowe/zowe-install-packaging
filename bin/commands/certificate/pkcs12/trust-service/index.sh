@@ -13,6 +13,10 @@
 
 print_level1_message "Trust ${ZWE_CLI_PARAMETER_SERVICE_NAME} \"${ZWE_CLI_PARAMETER_HOST}:${ZWE_CLI_PARAMETER_PORT}\""
 
+###############################
+# validation
+require_java
+
 # import certificate
 pkcs12_trust_service \
   "${ZWE_CLI_PARAMETER_KEYSTORE_DIR}" \
