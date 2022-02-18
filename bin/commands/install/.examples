@@ -1,2 +1,1 @@
-    zwe install -v -c /path/to/zowe.yaml
-    
+zwe install -v -c /path/to/zowe.yaml

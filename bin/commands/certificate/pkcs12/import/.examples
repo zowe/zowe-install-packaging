@@ -1,2 +1,1 @@
-    zwe certificate pkcs12 import -f /path/to/my/keystore/file -p keystore-cert-password
-    
+zwe certificate pkcs12 import -f /path/to/my/keystore/file -p keystore-cert-password
