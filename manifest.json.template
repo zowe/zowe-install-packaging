@@ -371,7 +371,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "2.0.0-ubuntu.users-jack-v2-containerization"
+      "tag" : "2.0.0-ubuntu.v2-x-staging"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
