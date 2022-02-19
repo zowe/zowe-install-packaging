@@ -267,11 +267,11 @@ zowe:
 
   # **COMMONLY_CUSTOMIZED**
   # Where to store runtime logs
-  logDirectory: /global/zowe/instance/logs
+  logDirectory: /global/zowe/logs
 
   # **COMMONLY_CUSTOMIZED**
   # Zowe runtime workspace directory
-  workspaceDirectory: /global/zowe/instance/workspace
+  workspaceDirectory: /global/zowe/workspace
 
   # **COMMONLY_CUSTOMIZED**
   # Where extensions are installed
