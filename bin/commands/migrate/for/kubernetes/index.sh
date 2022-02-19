@@ -50,6 +50,8 @@ generate_instance_env_from_yaml_config convert-for-k8s
 source_env "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/.instance-convert-for-k8s.env"
 # prepare full SAN list for k8s
 full_k8s_domain_list="${ZWE_CLI_PARAMETER_DOMAINS},localhost.localdomain,localhost,127.0.0.1,*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.pod.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.discovery-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.gateway-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME}"
+original_zss_host="${ZWE_zowe_externalDomains_0}"
+original_zss_port="${ZWE_components_zss_port}"
 
 # prepare target zowe.yaml for k8s
 cp "${ZWE_CLI_PARAMETER_CONFIG}" "${temp_dir}/zowe.yaml"
@@ -66,11 +68,11 @@ if [ "${ZWE_zowe_certificate_keystore_type}" = "JCERACFKS" ]; then
   if [ -z "${keyring_name}" ]; then
     print_error_and_exit "Error: Failed to find keyring name from zowe.certificate.keystore.file. The keystore file must be in format of safkeyring:////<owner>/<name>."
   fi
-  keyring_export_all_to_pkcs12 "${keyring_owner}" "${keyring_name}" "${temp_dir}" "localhost" "${ZWE_CLI_PARAMETER_PASSWORD}"
+  keyring_export_all_to_pkcs12 "${keyring_owner}" "${keyring_name}" "${temp_dir}" "${ZWE_CLI_PARAMETER_ALIAS}" "${ZWE_CLI_PARAMETER_PASSWORD}"
   ZWE_zowe_certificate_keystore_type=PKCS12
   ZWE_zowe_certificate_truststore_type=PKCS12
-  ZWE_zowe_certificate_keystore_file="${temp_dir}/keystore/localhost/localhost.keystore.p12"
-  ZWE_zowe_certificate_truststore_file="${temp_dir}/keystore/localhost/localhost.truststore.p12"
+  ZWE_zowe_certificate_keystore_file="${temp_dir}/keystore/${ZWE_CLI_PARAMETER_ALIAS}/${ZWE_CLI_PARAMETER_ALIAS}.keystore.p12"
+  ZWE_zowe_certificate_truststore_file="${temp_dir}/keystore/${ZWE_CLI_PARAMETER_ALIAS}/${ZWE_CLI_PARAMETER_ALIAS}.truststore.p12"
   ZWE_zowe_certificate_keystore_password="${ZWE_CLI_PARAMETER_PASSWORD}"
   ZWE_zowe_certificate_truststore_password="${ZWE_CLI_PARAMETER_PASSWORD}"
 
@@ -85,8 +87,8 @@ if [ "${ZWE_zowe_certificate_keystore_type}" = "JCERACFKS" ]; then
     if [ -n "${alias}" ]; then
       alias_lc=$(lower_case "${alias}")
       ZWE_zowe_certificate_keystore_alias="${alias}"
-      ZWE_zowe_certificate_pem_certificate="${temp_dir}/keystore/localhost/${alias_lc}.cer"
-      ZWE_zowe_certificate_pem_key="${temp_dir}/keystore/localhost/${alias_lc}.key"
+      ZWE_zowe_certificate_pem_certificate="${temp_dir}/keystore/${ZWE_CLI_PARAMETER_ALIAS}/${alias_lc}.cer"
+      ZWE_zowe_certificate_pem_key="${temp_dir}/keystore/${ZWE_CLI_PARAMETER_ALIAS}/${alias_lc}.key"
     fi
   done <<EOF
 $(echo "${aliases}")
@@ -100,7 +102,7 @@ EOF
       if [ -n "${ZWE_zowe_certificate_pem_certificateAuthorities}" ]; then
         ZWE_zowe_certificate_pem_certificateAuthorities="${ZWE_zowe_certificate_pem_certificateAuthorities},"
       fi
-      ZWE_zowe_certificate_pem_certificateAuthorities="${ZWE_zowe_certificate_pem_certificateAuthorities}${temp_dir}/keystore/localhost/${alias_lc}.cer"
+      ZWE_zowe_certificate_pem_certificateAuthorities="${ZWE_zowe_certificate_pem_certificateAuthorities}${temp_dir}/keystore/${ZWE_CLI_PARAMETER_ALIAS}/${alias_lc}.cer"
     fi
   done <<EOF
 $(echo "${aliases}")
@@ -186,11 +188,17 @@ print_level1_message "Update zowe.yaml configuration for Kubernetes"
 
 delete_zowe_yaml "${temp_dir}/zowe.yaml" "java.home"
 delete_zowe_yaml "${temp_dir}/zowe.yaml" "node.home"
+delete_zowe_yaml "${temp_dir}/zowe.yaml" "haInstances"
+delete_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalDomains"
 
-update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.runtimeDirectory" "/home/zowe/runtime"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.runtimeDirectory" "${ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY}"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.workspaceDirectory" "${ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY}"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.logDirectory" "${ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY}"
 
-for host in $(echo "${NEW_ZWE_EXTERNAL_HOSTS}" | sed 's#[,]# #g'); do
+iterator_index=0
+for host in $(echo "${ZWE_CLI_PARAMETER_DOMAINS}" | sed 's#[,]# #g'); do
   update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalDomains[${iterator_index}]" "${host}"
+  iterator_index=`expr $iterator_index + 1`
 done
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalPort" "${ZWE_CLI_PARAMETER_EXTERNAL_PORT}"
@@ -198,7 +206,7 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.port" "7554"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.port" "7553"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.api-catalog.port" "7552"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.port" "7555"
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.app-server.port" "8544"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.app-server.port" "7556"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.jobs-api.port" "8545"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.files-api.port" "8547"
 
@@ -213,16 +221,15 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-jes.enabled" "true
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-mvs.enabled" "true"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-uss.enabled" "true"
 
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" "https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/certificate/x509/map"
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" "https://\${GATEWAY_HOST}:\${GATEWAY_PORT}/zss/api/v1/saf-auth"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" ""
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" ""
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.storage.mode" ""
 
-# FIXME: after update zowe.environments., we get line of: environments:[object Object]
-# update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_host" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
-# update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_https_port" "${ZOWE_ZSS_SERVER_PORT}"
-# update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_TELNET_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
-# update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_SSH_HOST" "${ORIGINAL_ZOWE_EXPLORER_HOST}"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_host" "${original_zss_host}"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZWED_agent_https_port" "${original_zss_port}"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_TELNET_HOST" "${original_zss_host}"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.environments.ZOWE_ZLUX_SSH_HOST" "${original_zss_host}"
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.certificate.keystore.file" "${ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY}/keystore.p12"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.certificate.truststore.file" "${ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY}/truststore.p12"

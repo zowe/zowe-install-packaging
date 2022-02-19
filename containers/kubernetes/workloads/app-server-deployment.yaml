@@ -82,6 +82,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: WORKSPACE_DIR
+              # FIXME: app-server hardcoded /home/zowe/instance/workspace as WORKSPACE_DIR, overwrite it
+              value: /home/zowe/workspace
           lifecycle:
             preStop:
               exec:

@@ -302,17 +302,15 @@ zowe:
   externalPort: 7554
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # You can define any extra environment variables as key/value pairs here
-  # **NOTE**: before you adding new variables under zowe.environments, make sure
-  #           you remove the {} after this line. Currently the {} here will make
-  #           sure `zowe.environments` is treated as "object" instead of "string".
-  environments: {}
-    # Example of a global environment variable for all components
-    # MY_ENV_VAR: my_env_val
+  # You can un-comment and define any extra environment variables as key/value
+  # pairs here.
+  # environments:
+  #   # Example of a global environment variable for all components
+  #   MY_ENV_VAR: my_env_val
 
-    # Another example to customize SSH port for VT Terminal Desktop app
-    # ZWED_SSH_PORT: 22
-    # ZWED_TN3270_PORT: 23
+  #   # Another example to customize SSH port for VT Terminal Desktop app
+  #   ZWED_SSH_PORT: 22
+  #   ZWED_TN3270_PORT: 23
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Enable debug mode for zowe launch scripts
