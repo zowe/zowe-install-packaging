@@ -57,7 +57,7 @@ spec:
               command:
                 - /bin/bash
                 - -c
-                - /component/bin/internal/container-init.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
+                - /component/bin/zwe internal container init; /component/bin/zwe internal container cleanup
               securityContext:
                 readOnlyRootFilesystem: true
                 allowPrivilegeEscalation: false

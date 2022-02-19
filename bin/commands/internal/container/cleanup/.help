@@ -1,0 +1,3 @@
+Clean up Kubernetes runtime.
+
+Currently this command will remove all outdated static definitions.
