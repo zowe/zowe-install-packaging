@@ -14,7 +14,10 @@
 
 ###############################
 # validation
-# require_java
+if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
+  # other extensions need to specify `require_java` in their validate.sh
+  require_java
+fi
 require_node
 require_zowe_yaml
 
