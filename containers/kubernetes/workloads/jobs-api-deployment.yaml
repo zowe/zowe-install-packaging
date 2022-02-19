@@ -49,7 +49,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: jobs-api
-          image: zowe-docker-release.jfrog.io/ompzowe/jobs-api:2-ubuntu
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/jobs-api:2.0.0-ubuntu.v2-x-master
           imagePullPolicy: Always
           resources:
             requests:
@@ -60,17 +60,17 @@ spec:
               cpu: "300m"
           ports:
             - name: jobs-api-port
-              containerPort: 7600
+              containerPort: 8545
               protocol: TCP
           startupProbe:
             tcpSocket:
-              port: 7600
+              port: 8545
             # this should give 60 * periodSeconds(default to 10) seconds about 10 minutes to confirm it's ready
             periodSeconds: 10
             failureThreshold: 60
           livenessProbe:
             tcpSocket:
-              port: 7600
+              port: 8545
             # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
             periodSeconds: 10
             failureThreshold: 3
@@ -111,7 +111,7 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.users-jack-v2-containerization
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.v2-x-staging
           imagePullPolicy: Always
           resources:
             requests:

@@ -13,6 +13,10 @@
 
 print_level1_message "Verify certificate of \"${ZWE_CLI_PARAMETER_HOST}:${ZWE_CLI_PARAMETER_PORT}\""
 
+###############################
+# validation
+require_java
+
 validate_certificate_domain "${ZWE_CLI_PARAMETER_HOST}" "${ZWE_CLI_PARAMETER_PORT}"
 if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0171E: Failed to verify certificate (CN and SAN) of \"${ZWE_CLI_PARAMETER_HOST}:${ZWE_CLI_PARAMETER_PORT}\"." "" 171

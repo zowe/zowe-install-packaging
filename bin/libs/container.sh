@@ -16,6 +16,7 @@ export ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY=/home/zowe/runtime
 export ZWE_PRIVATE_CONTAINER_COMPONENT_RUNTIME_DIRECTORY=/component
 export ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY=/home/zowe/workspace
 export ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY=/home/zowe/logs
+export ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY=/home/zowe/keystore
 
 # prepare all environment variables used in containerization
 # these variables shouldn't be modified

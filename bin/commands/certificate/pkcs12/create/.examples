@@ -1,4 +1,3 @@
-    zwe certificate pkcs12 create cert -d /path/to/my/keystore/dir -a cert-alias -p cert-keystore-password -k keystore-name --ca-alias ca-alias --ca-password ca-keystore-password
+zwe certificate pkcs12 create cert -d /path/to/my/keystore/dir -a cert-alias -p cert-keystore-password -k keystore-name --ca-alias ca-alias --ca-password ca-keystore-password
 
-    zwe certificate pkcs12 create ca -d /path/to/my/keystore/dir -a ca-alias -p ca-keystore-password
-    
+zwe certificate pkcs12 create ca -d /path/to/my/keystore/dir -a ca-alias -p ca-keystore-password

@@ -29,7 +29,13 @@ _Note: this step is optional. If Zowe runtime bin directory is not added to `PAT
 
 Zowe uses a YAML file, usually mentioned as `zowe.yaml` to instruct Zowe how to install, configure and start Zowe.
 
-Copy the `example-zowe.yaml` located in Zowe `bin` directory to your preferred location, for example, your home directory. You can modify the file based on your environment and then move to next step.
+Copy the `example-zowe.yaml` located in Zowe root directory to your preferred location, for example, your home directory. You can modify the file based on your environment and then move to next step.
+
+Many `zwe` commands requires `zowe.yaml` as `--config|-c` parameter. If you don't want to pass it on every command, you can define `ZWE_CLI_PARAMETER_CONFIG` environment variable points to your `zowe.yaml`:
+
+```
+export ZWE_CLI_PARAMETER_CONFIG=/path/to/my/zowe.yaml
+```
 
 ## Install
 

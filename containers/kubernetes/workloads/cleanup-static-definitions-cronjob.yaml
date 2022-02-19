@@ -45,7 +45,7 @@ spec:
           containers:
             - name: cleanup-static-definitions
               # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
-              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.users-jack-v2-containerization
+              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.v2-x-staging
               imagePullPolicy: Always
               resources:
                 requests:
@@ -57,7 +57,7 @@ spec:
               command:
                 - /bin/bash
                 - -c
-                - /component/bin/internal/container-init.sh; /home/zowe/instance/bin/utils/cleanup-static-definitions.sh
+                - /component/bin/zwe internal container init; /component/bin/zwe internal container cleanup
               securityContext:
                 readOnlyRootFilesystem: true
                 allowPrivilegeEscalation: false

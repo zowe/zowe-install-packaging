@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: explorer-ip 
+  name: explorer-ip
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
@@ -85,7 +85,7 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.users-jack-v2-containerization
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.v2-x-staging
           imagePullPolicy: Always
           resources:
             requests:

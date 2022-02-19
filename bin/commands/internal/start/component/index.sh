@@ -14,7 +14,7 @@
 
 ###############################
 # validation
-require_java
+# require_java
 require_node
 require_zowe_yaml
 
