@@ -85,6 +85,9 @@ spec:
             - name: WORKSPACE_DIR
               # FIXME: app-server hardcoded /home/zowe/instance/workspace as WORKSPACE_DIR, overwrite it
               value: /home/zowe/workspace
+            - name: KEYSTORE_CERTIFICATE_AUTHORITY
+              # FIXME: ZWE_zowe_certificate_pem_certificateAuthorities is not recognized
+              value: /home/zowe/keystore/ca.cer,
           lifecycle:
             preStop:
               exec:
