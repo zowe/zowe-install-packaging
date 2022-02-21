@@ -1,2 +1,1 @@
-    zwe internal get-launch-components -c /path/to/zowe.yaml
-    
+zwe internal get-launch-components -c /path/to/zowe.yaml

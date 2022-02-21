@@ -1,13 +1,30 @@
 Init Zowe instance based on zowe.yaml configuration.
 
-You can find an example zowe.yaml in Zowe runtime directory bin folder.
+You can find an example zowe.yaml in Zowe runtime directory folder.
 
-If you specify `--update-config` with this command, these configurations could
+This command will run these sub-commands in sequence:
+
+- `zwe init mvs`
+- `zwe init vsam`
+- `zwe init apfauth`
+- `zwe init security`
+- `zwe init certificate`
+- `zwe init stc`
+
+If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
+`zwe init security` steps will be skipped.
+
+If you pass `--update-config` with this command, these configurations could
 be written back to your Zowe YAML configuration file:
 
+- `zowe.runtimeDirectory` based on where your `zwe` command is located, and if it
+  is not defined,
 - `zowe.certificate` based on your `zowe.setup.certificate` configuration,
 - `java.home` based on your current JAVA_HOME or automatic detection,
 - `node.home` based on your current NODE_HOME or automatic detection.
+
+**IMPORTANT**, if you modify any of the values below, it's suggested to re-run
+relevant `zwe init` command to make them taking effect.
 
 These Zowe YAML configurations showing with sample values are used:
 
@@ -28,11 +45,10 @@ zowe:
         sysProg: ZWEADMIN
       users:
         zowe: ZWESVUSR
-        xmem: ZWESIUSR
-        aux: ZWESIUSR
+        zis: ZWESIUSR
       stcs:
         zowe: ZWESLSTC
-        xmem: ZWESISTC
+        zis: ZWESISTC
         aux: ZWESASTC
     certificate:
       type: PKCS12
@@ -117,15 +133,13 @@ components:
   This configuration is optional. Default value is `ZWEADMIN`.
 - `zowe.setup.security.users.zowe` is the userid for Zowe started task.
   This configuration is optional. Default value is `ZWESVUSR`.
-- `zowe.setup.security.users.xmem` is userid for xmem started task.
-  This configuration is optional. Default value is `ZWESIUSR`.
-- `zowe.setup.security.users.aux` is userid for xmem AUX started task.
+- `zowe.setup.security.users.zis` is userid for ZIS started task.
   This configuration is optional. Default value is `ZWESIUSR`.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
-- `zowe.setup.security.stcs.xmem` is xmem started task name.
+- `zowe.setup.security.stcs.zis` is ZIS started task name.
   This configuration is optional. Default value is `ZWESISTC`.
-- `zowe.setup.security.stcs.aux` is xmem AUX started task name.
+- `zowe.setup.security.stcs.aux` is ZIS auxiliary started task name.
   This configuration is optional. Default value is `ZWESASTC`.
 
 - `zowe.setup.certificate.type` is the type of certificate. Valid values are
@@ -137,7 +151,7 @@ components:
   This is optional.
 - `zowe.setup.certificate.san` is the `Subject Alternative Name`(s) of the
   certificate if they are different from `zowe.externalDomains`. Please note,
-  for `JCERACFKS`` type, with limitation of RACDCERT command, this should
+  for `JCERACFKS` type, with limitation of RACDCERT command, this should
   contain exact one hostname (domain) and one IP address.
 - `zowe.setup.certificate.importCertificateAuthorities` is the list of
   certificate authorities will be imported to Zowe PKCS12 keystore or JCERACFKS

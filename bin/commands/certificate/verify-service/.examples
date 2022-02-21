@@ -1,2 +1,1 @@
-    zwe certificate verify-service --host service-hostname --port service-port
-    
+zwe certificate verify-service --host service-hostname --port service-port

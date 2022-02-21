@@ -58,9 +58,12 @@ create_tmp_file() {
   if [ -z "${tmpdir}" ]; then
     tmpdir=$(get_tmp_dir)
   fi
+  print_trace "  > create_tmp_file on ${tmpdir}"
   while true ; do
     file="${tmpdir}/${prefix}-${RANDOM}"
+    print_trace "    - test ${file}"
     if [ ! -f "${file}" ]; then
+      print_trace "    - good"
       echo "${file}"
       break
     fi

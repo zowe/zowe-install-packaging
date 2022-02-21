@@ -349,10 +349,14 @@ create_data_set_tmp_member() {
   ds=${1}
   prefix=${2:-ZW}
 
+  print_trace "  > create_data_set_tmp_member in ${ds}"
   while true ; do
     member=$(echo "${prefix}${RANDOM}" | cut -c1-8)
+    print_trace "    - test ${member}"
     member_exist=$(is_data_set_exists "${ds}(${member})")
+    print_trace "    - exist? ${member_exist}"
     if [ "${member_exist}" != "true" ]; then
+      print_trace "    - good"
       echo "${member}"
       break
     fi
