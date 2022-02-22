@@ -77,11 +77,13 @@ jobs:
           COMMIT_HASH=$(git rev-parse --verify HEAD)
           CURRENT_TIME=$(date +%s)
           if [[ -z "${{ github.event.pull_request.number }}" ]]; then
-            # meaning the workflow is triggered from pull_request 
-            # now try to find out if a PR is opened against this running branch
+            # meaning the workflow is NOT triggered from pull_request 
+            # sometimes user can manually trigger a workflow on a branch that a PR is open,
+            # thus try to find out if a PR is opened against this running branch
             pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
             if [[ -z "$pr_num" ]]; then
-              echo CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+              # meaning PR is not open, we collect the branch name
+              echo CURRENT_BRANCH=${GITHUB_REF_NAME}
             else
               echo CURRENT_BRANCH=PR-$pr_num
             fi
@@ -426,6 +428,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
     steps:
+      - name: 'Determine branch name'
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
+          fi
+
       - name: 'Call test workflow'
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
         id: call-test
@@ -434,7 +444,7 @@ jobs:
           owner: zowe
           repo: zowe-install-packaging
           workflow-filename: cicd-test.yml
-          branch-name: users/tom/repository-dispatch
+          branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 3
           inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}"}'
         # env:
