@@ -1,2 +1,1 @@
-    zwe init security -v -c /path/to/zowe.yaml
-    
+zwe init security -v -c /path/to/zowe.yaml

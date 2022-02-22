@@ -125,10 +125,14 @@ load_environment_variables() {
   sanitize_ha_instance_id
 
   if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
-    ZWE_zowe_workspaceDirectory=$(read_yaml ${ZWE_CLI_PARAMETER_CONFIG} '.zowe.workspaceDirectory')
+    ZWE_zowe_workspaceDirectory=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" '.zowe.workspaceDirectory')
     if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
       print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
     fi
+  fi
+
+  if [ -z "${ZWE_VERSION}" ]; then
+    export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
   fi
 
   # we must have $ZWE_zowe_workspaceDirectory at this point

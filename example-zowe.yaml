@@ -73,17 +73,15 @@ zowe:
     #   users:
     #     # Zowe runtime user name of main service
     #     zowe: ZWESVUSR
-    #     # Zowe runtime user name of Cross Memory Server
-    #     xmem: ZWESIUSR
-    #     # Zowe runtime user name of Auxiliary Service
-    #     aux: ZWESIUSR
+    #     # Zowe runtime user name of ZIS
+    #     zis: ZWESIUSR
     #   # STC names
     #   stcs:
     #     # STC name of Zowe main service
     #     zowe: ZWESLSTC
-    #     # STC name of Zowe Cross Memory Server
-    #     xmem: ZWESISTC
-    #     # STC name of Zowe Auxiliary Service
+    #     # STC name of Zowe ZIS
+    #     zis: ZWESISTC
+    #     # STC name of Zowe ZIS Auxiliary Server
     #     aux: ZWESASTC
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -269,11 +267,11 @@ zowe:
 
   # **COMMONLY_CUSTOMIZED**
   # Where to store runtime logs
-  logDirectory: /global/zowe/instance/logs
+  logDirectory: /global/zowe/logs
 
   # **COMMONLY_CUSTOMIZED**
   # Zowe runtime workspace directory
-  workspaceDirectory: /global/zowe/instance/workspace
+  workspaceDirectory: /global/zowe/workspace
 
   # **COMMONLY_CUSTOMIZED**
   # Where extensions are installed
@@ -304,17 +302,15 @@ zowe:
   externalPort: 7554
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # You can define any extra environment variables as key/value pairs here
-  # **NOTE**: before you adding new variables under zowe.environments, make sure
-  #           you remove the {} after this line. Currently the {} here will make
-  #           sure `zowe.environments` is treated as "object" instead of "string".
-  environments: {}
-    # Example of a global environment variable for all components
-    # MY_ENV_VAR: my_env_val
+  # You can un-comment and define any extra environment variables as key/value
+  # pairs here.
+  # environments:
+  #   # Example of a global environment variable for all components
+  #   MY_ENV_VAR: my_env_val
 
-    # Another example to customize SSH port for VT Terminal Desktop app
-    # ZWED_SSH_PORT: 22
-    # ZWED_TN3270_PORT: 23
+  #   # Another example to customize SSH port for VT Terminal Desktop app
+  #   ZWED_SSH_PORT: 22
+  #   ZWED_TN3270_PORT: 23
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Enable debug mode for zowe launch scripts

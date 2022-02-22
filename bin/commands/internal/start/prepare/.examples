@@ -1,2 +1,1 @@
-    zwe internal start prepare -c /path/to/zowe.yaml
-    
+zwe internal start prepare -c /path/to/zowe.yaml

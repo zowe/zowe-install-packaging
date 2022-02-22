@@ -13,6 +13,10 @@
 
 updated=false
 
+###############################
+# validation
+require_java
+
 # import certificate
 if [ -n "${ZWE_CLI_PARAMETER_SOURCE_KEYSTORE}" -a -n "${ZWE_CLI_PARAMETER_SOURCE_PASSWORD}" -a -n "${ZWE_CLI_PARAMETER_SOURCE_ALIAS}" ]; then
   print_level1_message "Import certificate into keystore ${ZWE_CLI_PARAMETER_KEYSTORE}"

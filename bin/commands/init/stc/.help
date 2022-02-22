@@ -17,7 +17,7 @@ zowe:
     security:
       stcs:
         zowe: ZWESLSTC
-        xmem: ZWESISTC
+        zis: ZWESISTC
         aux: ZWESASTC
 ```
 
@@ -32,7 +32,7 @@ zowe:
   in STCs.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
-- `zowe.setup.security.stcs.xmem` is xmem started task name.
+- `zowe.setup.security.stcs.zis` is ZIS started task name.
   This configuration is optional. Default value is `ZWESISTC`.
-- `zowe.setup.security.stcs.aux` is xmem AUX started task name.
+- `zowe.setup.security.stcs.aux` is ZIS auxiliary started task name.
   This configuration is optional. Default value is `ZWESASTC`.

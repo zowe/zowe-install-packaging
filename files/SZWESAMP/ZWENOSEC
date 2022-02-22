@@ -34,28 +34,25 @@
 //* 5) Update the SET ZOWEUSER= statement to match the desired
 //*    user ID for the ZOWE started task.
 //*
-//* 6) Update the SET XMEMUSER= statement to match the desired
-//*    user ID for the XMEM Cross Memory started task.
+//* 6) Update the SET ZISUSER= statement to match the desired
+//*    user ID for the ZIS started task.
 //*
-//* 7) Update the SET AUXUSER= statement to match the desired
-//*    user ID for the XMEM Auxilary Cross Memory started task.
-//*
-//* 8) Update the SET ZOWESTC= statement to match the desired
+//* 7) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
 //*
-//* 9) Update the SET XMEMSTC= statement to match the desired
-//*    XMEM Cross Memory started task name.
+//* 8) Update the SET ZISSTC= statement to match the desired
+//*    ZIS started task name.
 //*
-//* 10) Update the SET AUXSTC= statement to match the desired
-//*     XMEM Auxilary Cross Memory started task name.
+//* 9) Update the SET AUXSTC= statement to match the desired
+//*     ZIS Auxiliary Server started task name.
 //*
-//* 11) Update the SET HLQ= statement to match the desired
+//* 10) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
 //*
-//* 12) Update the SET SYSPROG= statement to match the existing
+//* 11) Update the SET SYSPROG= statement to match the existing
 //*     user ID or group used by z/OS system programmers.
 //*
-//* 13) Customize the commands in the DD statement that matches your
+//* 12) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -77,11 +74,10 @@
 //         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
 //         SET   STCGRP=&ADMINGRP.   * group for Zowe started tasks
 //         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
-//         SET XMEMUSER=ZWESIUSR     * userid for xmem started task
-//         SET  AUXUSER=&XMEMUSER.   * userid for xmem AUX started task
+//         SET  ZISUSER=ZWESIUSR     * userid for ZIS started task
 //         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
-//         SET  XMEMSTC=ZWESISTC     * xmem started task name
-//         SET   AUXSTC=ZWESASTC     * xmem AUX started task name
+//         SET   ZISSTC=ZWESISTC     * ZIS started task name
+//         SET   AUXSTC=ZWESASTC     * ZIS AUX started task name
 //         SET      HLQ=ZWE          * data set high level qualifier
 //         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
 //*                     12345678
@@ -128,7 +124,7 @@
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
 
-/* remove permit to use XMEM Cross Memory server                     */
+/* remove permit to use ZIS                                          */
   RLIST  FACILITY ZWES.IS ALL
   PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
@@ -155,9 +151,9 @@
 
 /* REMOVE AUX SERVER PERMISIONS .................................... */
 
-/* remove permit to use XMEM Cross Memory server                     */
+/* remove permit to use ZIS                                          */
   RLIST  FACILITY ZWES.IS ALL
-  PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&AUXUSER.)
+  PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&ZISUSER.)
 
 /* REMOVE STARTED TASKS ............................................ */
 
@@ -165,15 +161,9 @@
   LISTUSER &ZOWEUSER. OMVS
   DELUSER  &ZOWEUSER.
 
-/* remove userid for XMEM Cross Memory server                        */
-  LISTUSER &XMEMUSER. OMVS
-  DELUSER  &XMEMUSER.
-
-/* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
-/*   warning messages otherwise                                      */
-/* remove userid for XMEM auxilary cross memory server               */
-  LISTUSER &AUXUSER. OMVS
-  DELUSER  &AUXUSER.
+/* remove userid for ZIS                                             */
+  LISTUSER &ZISUSER. OMVS
+  DELUSER  &ZISUSER.
 
 /* comment out if &STCGRP matches &ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
@@ -185,11 +175,11 @@
   RLIST   STARTED &ZOWESTC..* ALL STDATA
   RDELETE STARTED &ZOWESTC..*
 
-/* remove started task for XMEM Cross Memory server                  */
-  RLIST   STARTED &XMEMSTC..* ALL STDATA
-  RDELETE STARTED &XMEMSTC..*
+/* remove started task for ZIS                                       */
+  RLIST   STARTED &ZISSTC..* ALL STDATA
+  RDELETE STARTED &ZISSTC..*
 
-/* remove started task for XMEM Auxilary Cross Memory server         */
+/* remove started task for ZIS Auxiliary server                      */
   RLIST   STARTED &AUXSTC..* ALL STDATA
   RDELETE STARTED &AUXSTC..*
 
@@ -243,19 +233,19 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 SET LID
 SET PROFILE(USER) DIV(OMVS)
-DELETE &XMEMUSER.
+DELETE &ZISUSER.
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
-* remove userid for ZOWE main server (XMEMSTC,AUXSTC have same user id)
+* remove userid for ZOWE main server (ZISSTC,AUXSTC have same user id)
 SET LID
 LIST &ZOWEUSER
 DELETE &ZOWEUSER.
 *
 *
-* remove userid for XMEM Cross Memory server                        */
+* remove userid for ZIS                                              */
 SET LID
-LIST &XMEMUSER
-DELETE &XMEMUSER.
+LIST &ZISUSER
+DELETE &ZISUSER.
 *
 *
 *****
@@ -267,19 +257,19 @@ LIST LIKE(STC.Z-)
 DELETE STC.&ZOWESTC.
 F ACF2,REFRESH(STC)
 *
-* started task for XMEM cross memory server
+* started task for ZIS
 *
 SET CONTROL(GSO)
-DELETE STC.&XMEMSTC.
+DELETE STC.&ZISSTC.
 F ACF2,REFRESH(STC)
 *
-* started task for XMEM auxilary cross memory server
+* started task for ZIS Auxiliary server
 *
 SET CONTROL(GSO)
 DELETE STC.&AUXSTC.
 F ACF2,REFRESH(STC)
 *
-* Revoke access to XMEM
+* Revoke access to ZIS
 SET RESOURCE(FAC)
 RECKEY ZWES DEL(IS ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
@@ -338,7 +328,7 @@ TSS REMOVE(&ADMINDEP) DATASET(&HLQ..)
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
 
-/* remove permit to use XMEM Cross Memory server                     */
+/* remove permit to use ZIS                                          */
 TSS WHOHAS IBMFAC(ZWES.IS)
 TSS REVOKE(&ZOWEUSER) IBMFAC(ZWES.IS)
 
@@ -361,9 +351,9 @@ TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP)
 
 /* REMOVE AUX SERVER PERMISIONS .................................... */
 
-/* remove permit to use XMEM Cross Memory server                     */
+/* remove permit to use ZIS                                          */
 TSS WHOHAS IBMFAC(ZWES.IS)
-TSS REVOKE(&AUXUSER) IBMFAC(ZWES.IS)
+TSS REVOKE(&ZISUSER) IBMFAC(ZWES.IS)
 
 /* REMOVE STARTED TASKS ............................................ */
 
@@ -371,15 +361,9 @@ TSS REVOKE(&AUXUSER) IBMFAC(ZWES.IS)
 TSS LIST(&ZOWEUSER)
 TSS DELETE(&ZOWEUSER)
 
-/* remove userid for XMEM Cross Memory server                        */
-TSS LIST(&XMEMUSER)
-TSS DELETE(&XMEMUSER)
-
-/* comment out if &AUXUSER matches &XMEMUSER (default), expect       */
-/*   warning messages otherwise                                      */
-/* remove userid for XMEM auxilary cross memory server               */
-TSS LIST(&AUXUSER)
-TSS DELETE(&AUXUSER)
+/* remove userid for ZIS                                             */
+TSS LIST(&ZISUSER)
+TSS DELETE(&ZISUSER)
 
 /* comment out if &STCGRP matches &ADMINGRP (default), expect        */
 /*   warning messages otherwise                                      */
@@ -391,11 +375,11 @@ TSS DELETE(&STCGRP)
 TSS LIST(STC)
 TSS REMOVE(STC) PROCNAME(&ZOWESTC)
 
-/* remove started task for XMEM Cross Memory server                  */
+/* remove started task for ZIS                                       */
 TSS LIST(STC)
-TSS REMOVE(STC) PROCNAME(&XMEMSTC)
+TSS REMOVE(STC) PROCNAME(&ZISSTC)
 
-/* remove started task for XMEM Auxilary Cross Memory server         */
+/* remove started task for ZIS Auxiliary server                      */
 TSS LIST(STC)
 TSS REMOVE(STC) PROCNAME(&AUXSTC)
 

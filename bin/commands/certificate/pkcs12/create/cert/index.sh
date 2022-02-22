@@ -13,6 +13,10 @@
 
 print_level1_message "Creating certificate \"${ZWE_CLI_PARAMETER_ALIAS}\""
 
+###############################
+# validation
+require_java
+
 # check existence
 keystore="${ZWE_CLI_PARAMETER_KEYSTORE_DIR}/${ZWE_CLI_PARAMETER_KEYSTORE}/${ZWE_CLI_PARAMETER_KEYSTORE}.keystore.p12"
 if [ -f "${keystore}" ]; then
