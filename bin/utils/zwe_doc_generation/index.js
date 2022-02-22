@@ -14,12 +14,11 @@ const { generateDocumentationForNode } = require('./md-content');
 
 const generatedDocDirectory = path.join(__dirname, './generated')
 
-// TODO can we do the generation in one pass rather than multiple?
 const rootDocNode = getDocumentationTree({ dir: path.join(__dirname, '../../commands'), command: 'zwe' });
-writeMdFiles(rootDocNode, {});
+writeMdFiles(rootDocNode);
 
-function writeMdFiles(docNode, parent) {
-    const { mdContent, parts } = generateDocumentationForNode(docNode, parent);
+function writeMdFiles(docNode, writtenParentNode = {}) {
+    const { mdContent, parts } = generateDocumentationForNode(docNode, writtenParentNode);
     fs.writeFileSync(`${generatedDocDirectory}/${parts.fileName}.md`, mdContent);
 
     if (docNode.children && docNode.children.length) {

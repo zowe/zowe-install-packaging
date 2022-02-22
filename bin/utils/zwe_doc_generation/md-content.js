@@ -26,8 +26,8 @@ const orderedDocumentationTypes = [
     { ...ERRORS, prefix: SECTION_HEADER_PREFIX + 'Errors' + SEPARATOR }
 ];
 
-function generateDocumentationForNode(curNode, parentNode) {
-    const assembledDocNode = assembleDocumentationElementsForNode(curNode, parentNode);
+function generateDocumentationForNode(curNode, assembledParentNode) {
+    const assembledDocNode = assembleDocumentationElementsForNode(curNode, assembledParentNode);
     const { title, command, children, fileName } = assembledDocNode;
 
     let mdContent = title + SEPARATOR + `\t${command}`;
@@ -67,11 +67,11 @@ function generateDocumentationForNode(curNode, parentNode) {
     };
 }
 
-function assembleDocumentationElementsForNode(curNode, parentNode) {
-    const fileName = getFileName(curNode.command, parentNode.fileName);
-    const command = parentNode.command ? parentNode.command + ' ' + curNode.command : curNode.command;
+function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
+    const fileName = getFileName(curNode.command, assembledParentNode.fileName);
+    const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
-    const title = parentNode.title ? `${parentNode.title} > ${link}` : '# ' + link;
+    const title = assembledParentNode.title ? `${assembledParentNode.title} > ${link}` : '# ' + link;
 
     const docElements = {
         fileName,
@@ -104,13 +104,13 @@ function assembleDocumentationElementsForNode(curNode, parentNode) {
             }
         }
 
-        if (hasDocType(parentNode, docType) && docType.inherit) {
+        if (hasDocType(assembledParentNode, docType) && docType.inherit) {
             let parentContent = '';
-            if (parentNode[docType.fileName].content) {
-                parentContent += parentNode[docType.fileName].content;
+            if (assembledParentNode[docType.fileName].content) {
+                parentContent += assembledParentNode[docType.fileName].content;
             }
-            if (parentNode[docType.fileName].parentContent) {
-                parentContent += parentNode[docType.fileName].parentContent;
+            if (assembledParentNode[docType.fileName].parentContent) {
+                parentContent += assembledParentNode[docType.fileName].parentContent;
             }
             docForType.parentContent = parentContent;
         }
