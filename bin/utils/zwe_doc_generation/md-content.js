@@ -21,7 +21,7 @@ const orderedDocumentationTypes = [
     { ...HELP, prefix: SECTION_HEADER_PREFIX + 'Description' + SEPARATOR },
     { ...EXPERIMENTAL },
     { ...EXAMPLES, prefix: SECTION_HEADER_PREFIX + 'Examples' + SEPARATOR },
-    { ...EXCLUSIVE_PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Exclusive parameters' + SEPARATOR },
+    { ...EXCLUSIVE_PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Parameters only for this command' + SEPARATOR },
     { ...PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Parameters' + SEPARATOR },
     { ...ERRORS, prefix: SECTION_HEADER_PREFIX + 'Errors' + SEPARATOR }
 ];
