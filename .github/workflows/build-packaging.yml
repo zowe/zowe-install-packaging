@@ -426,8 +426,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
     steps:
-      - name: 'Call Test Workflow'
+      - name: 'Call test workflow'
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        id: call-test
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           owner: zowe
@@ -438,4 +439,10 @@ jobs:
           inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}"}'
         # env:
         #   DEBUG: 'workflow-remote-call-wait'
-    
+      
+      - name: 'Report test failure if applied'
+        if: ${{ steps.call-test.outputs.workflow-run-conclusion }} != "success"
+        uses: actions/github-script@v5
+        with:
+          script: |
+            core.setFailed('Test workflow ${{ steps.call-test.outputs.workflow-run-num }} is not successful')
