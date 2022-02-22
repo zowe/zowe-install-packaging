@@ -28,9 +28,9 @@ const orderedDocumentationTypes = [
 
 function generateDocumentationForNode(curNode, assembledParentNode) {
     const assembledDocNode = assembleDocumentationElementsForNode(curNode, assembledParentNode);
-    const { title, command, children, fileName } = assembledDocNode;
+    const { command, linkCommand, children, fileName } = assembledDocNode;
 
-    let mdContent = title + SEPARATOR + `\t${command}`;
+    let mdContent = '# ' + command + SEPARATOR + linkCommand + SEPARATOR + '\t' + command;
 
     if (children.length) {
         mdContent += ' [sub-command [sub-command]...] [parameter [parameter]...]' + SEPARATOR;
@@ -71,12 +71,12 @@ function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
     const fileName = getFileName(curNode.command, assembledParentNode.fileName);
     const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
-    const title = assembledParentNode.title ? `${assembledParentNode.title} > ${link}` : '# ' + link;
+    const linkCommand = assembledParentNode.linkCommand ? `${assembledParentNode.linkCommand} > ${link}` : link;
 
     const docElements = {
         fileName,
         command,
-        title,
+        linkCommand,
         children: curNode.children,
     };
 

@@ -14,7 +14,7 @@ const { generateDocumentationForNode } = require('./md-content');
 
 const generatedDocDirectory = path.join(__dirname, './generated')
 
-const rootDocNode = getDocumentationTree({ dir: path.join(__dirname, '../../commands'), command: 'zwe' });
+const rootDocNode = getDocumentationTree({ dir: path.join(__dirname, '../../bin/commands'), command: 'zwe' });
 writeMdFiles(rootDocNode);
 
 function writeMdFiles(docNode, writtenParentNode = {}) {
