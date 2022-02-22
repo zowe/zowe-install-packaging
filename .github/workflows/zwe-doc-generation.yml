@@ -25,6 +25,7 @@ jobs:
         run: node .dependency/zwe_doc_generation
       
       - name: Open PR to docs-site
+        # TODO change git checkout command to v2-docs-branch
         run: |
           git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git
           git config --global user.email "zowe-robot@users.noreply.github.com"
