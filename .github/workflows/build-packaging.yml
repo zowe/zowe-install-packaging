@@ -83,12 +83,12 @@ jobs:
             pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
             if [[ -z "$pr_num" ]]; then
               # meaning PR is not open, we collect the branch name
-              echo CURRENT_BRANCH=${GITHUB_REF_NAME}
+              CURRENT_BRANCH=${GITHUB_REF_NAME}
             else
-              echo CURRENT_BRANCH=PR-$pr_num
+              CURRENT_BRANCH=PR-$pr_num
             fi
           else
-            echo CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
+            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
           fi
 
           sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
