@@ -8,25 +8,64 @@
  * Copyright IBM Corporation 2021
  */
 const fs = require('fs');
-const { EXPERIMENTAL, HELP, EXAMPLES, EXCLUSIVE_PARAMETERS, PARAMETERS, ERRORS } = require('./dot-file-structure');
+const { EXPERIMENTAL, HELP, EXAMPLES, EXCLUSIVE_PARAMETERS, PARAMETERS, ERRORS, DOT_FILE_TABLE_ENTRY_DELIMITER, DOT_FILE_TABLE_ROW_DELIMITER } = require('./dot-file-structure');
 
 const SEPARATOR = '\n\n';
 const SECTION_HEADER_PREFIX = '## ';
+const SUB_SECTION_HEADER_PREFIX = '### ';
 const MD_TABLE_ROW_DELIMITER = '\n';
 const MD_TABLE_ENTRY_DELIMITER = '|';
-
-const TABLE_ENTRY_DELIMITER = '|';
-const TABLE_ROW_DELIMITER = '\n';
 
 // order content will appear, with prefix/postfix as needed
 const orderedDocumentationTypes = [
     { ...HELP, prefix: SECTION_HEADER_PREFIX + 'Description' + SEPARATOR },
-    { ...EXPERIMENTAL, prefix: '**', postfix: '**' },
+    { ...EXPERIMENTAL },
     { ...EXAMPLES, prefix: SECTION_HEADER_PREFIX + 'Examples' + SEPARATOR },
     { ...EXCLUSIVE_PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Exclusive parameters' + SEPARATOR },
     { ...PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Parameters' + SEPARATOR },
     { ...ERRORS, prefix: SECTION_HEADER_PREFIX + 'Errors' + SEPARATOR }
 ];
+
+function generateDocumentationForNode(curNode, parentNode) {
+    const assembledDocNode = assembleDocumentationElementsForNode(curNode, parentNode);
+    const { title, command, children, fileName } = assembledDocNode;
+
+    let mdContent = title + SEPARATOR + `\t${command}`;
+
+    if (children.length) {
+        mdContent += ' [sub-command [sub-command]...] [parameter [parameter]...]' + SEPARATOR;
+        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + children.map(c => `* [${c.command}](./${getFileName(c.command, fileName)})`).join('\n');
+    } else {
+        mdContent += ' [parameter [parameter]...]';
+    }
+
+    for (const docType of orderedDocumentationTypes) {
+        let docContent = '';
+        if (hasDocType(assembledDocNode, docType)) {
+            docContent += createDocContent(assembledDocNode[docType.fileName].content, docType);
+            const parentDocContent = createDocContent(assembledDocNode[docType.fileName].parentContent, docType);
+            if (parentDocContent) {
+                docContent += SUB_SECTION_HEADER_PREFIX + 'Inherited from parent command' + SEPARATOR + parentDocContent;
+            }
+        }
+
+        if (docContent) {
+            mdContent += SEPARATOR;
+            if (docType.prefix) {
+                mdContent += docType.prefix;
+            }
+            mdContent += docContent;
+            if (docType.postfix) {
+                mdContent += docType.postfix;
+            }
+        }
+    }
+
+    return {
+        parts: assembledDocNode,
+        mdContent: mdContent
+    };
+}
 
 function assembleDocumentationElementsForNode(curNode, parentNode) {
     const fileName = getFileName(curNode.command, parentNode.fileName);
@@ -50,14 +89,15 @@ function assembleDocumentationElementsForNode(curNode, parentNode) {
             } else {
                 const docFileContent = fs.readFileSync(curNode[docType.fileName], 'utf-8');
                 if (docType.table) {
-                    docForType.content = docFileContent.split(/$/gm).map(line =>  // filter out ignored table entries
+                    // filter out ignored table entries
+                    docForType.content = docFileContent.split(/$/gm).map(line =>
                         line
                             .trim()
                             .split(docType.table.delimiter)
                             .filter((_, index) => !docType.table.orderedSegments[index] || !docType.table.orderedSegments[index].ignore)
-                            .join(TABLE_ENTRY_DELIMITER)
+                            .join(DOT_FILE_TABLE_ENTRY_DELIMITER)
                     )
-                    .join(TABLE_ROW_DELIMITER);
+                        .join(DOT_FILE_TABLE_ROW_DELIMITER);
                 } else {
                     docForType.content = docFileContent;
                 }
@@ -81,59 +121,36 @@ function assembleDocumentationElementsForNode(curNode, parentNode) {
     return docElements
 }
 
-function generateDocumentationForNode(curNode, parentNode) {
-    const assembledDocNode = assembleDocumentationElementsForNode(curNode, parentNode);
-    const { title, command, children, fileName } = assembledDocNode;
-
-    let mdContent = title + SEPARATOR + `\t${command}`;
-
-    if (children.length) {
-        mdContent += ' [sub-command [sub-command]...] [parameter [parameter]...]' + SEPARATOR;
-        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + children.map(c => `* [${c.command}](./${getFileName(c.command, fileName)})`).join('\n');
-    } else {
-        mdContent += ' [parameter [parameter]...]';
-    }
-
-    for (const docType of orderedDocumentationTypes) {
-        let docContent = '';
-        if (hasDocType(assembledDocNode, docType) && (assembledDocNode[docType.fileName].content || assembledDocNode[docType.fileName].parentContent)) {
-            const rawContent = assembledDocNode[docType.fileName].content + assembledDocNode[docType.fileName].parentContent;
-
-            if (docType.table) {
-                const filteredSegments = docType.table.orderedSegments.filter(o => !o.ignore);
-                docContent += filteredSegments.map(o => o.meaning).join(MD_TABLE_ENTRY_DELIMITER) + MD_TABLE_ROW_DELIMITER; // Set table headings
-                docContent += filteredSegments.map(_ => '|---').join('') + MD_TABLE_ROW_DELIMITER; // Set table separator between headings and fields
-
-                docContent += rawContent.split(TABLE_ROW_DELIMITER).map(line => line.trim().split(TABLE_ENTRY_DELIMITER) // transform table entries
-                    .map((segment, index) => {
-                        if (docType.table.orderedSegments[index] && docType.table.orderedSegments[index].transform) {
-                            return docType.table.orderedSegments[index].transform(segment);
-                        }
-                        return segment;
-                    })
-                    .join(MD_TABLE_ENTRY_DELIMITER)) // join fields in a row
-                    .join(MD_TABLE_ROW_DELIMITER); // join rows with newline
-            } else {
-                docContent += rawContent;
-            }
-        }
-
-        if (docContent) {
-            mdContent += SEPARATOR;
-            if (docType.prefix) {
-                mdContent += docType.prefix;
-            }
-            mdContent += docContent;
-            if (docType.postfix) {
-                mdContent += docType.postfix;
-            }
+function createDocContent(rawContent, docType) {
+    let docContent = '';
+    if (rawContent) {
+        if (docType.table) {
+            docContent += createMdTable(rawContent, docType.table);
+        } else {
+            docContent += rawContent;
         }
     }
+    return docContent;
+}
 
-    return {
-        parts: assembledDocNode,
-        mdContent: mdContent
-    };
+function createMdTable(rawContent, docFileTableSyntax) {
+    const filteredSegments = docFileTableSyntax.orderedSegments.filter(o => !o.ignore);
+
+    let docContent = '';
+    docContent += filteredSegments.map(o => o.meaning).join(MD_TABLE_ENTRY_DELIMITER) + MD_TABLE_ROW_DELIMITER; // Set table headings
+    docContent += filteredSegments.map(_ => '|---').join('') + MD_TABLE_ROW_DELIMITER; // Set table separator between headings and fields
+
+    docContent += rawContent.split(DOT_FILE_TABLE_ROW_DELIMITER).map(line => line.trim().split(DOT_FILE_TABLE_ENTRY_DELIMITER) // transform table entries
+        .map((segment, index) => {
+            if (docFileTableSyntax.orderedSegments[index] && docFileTableSyntax.orderedSegments[index].transform) {
+                return docFileTableSyntax.orderedSegments[index].transform(segment);
+            }
+            return segment;
+        })
+        .join(MD_TABLE_ENTRY_DELIMITER)) // join fields in a row
+        .join(MD_TABLE_ROW_DELIMITER); // join rows with newline
+
+    return docContent;
 }
 
 function getFileName(command, parentFileName) {

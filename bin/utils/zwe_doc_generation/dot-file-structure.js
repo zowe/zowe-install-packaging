@@ -8,6 +8,9 @@
  * Copyright IBM Corporation 2021
  */
 
+const DOT_FILE_TABLE_ENTRY_DELIMITER = '|';
+const DOT_FILE_TABLE_ROW_DELIMITER = '\n';
+
 const parameterTable = {
     delimiter: '|',
     orderedSegments: [
@@ -90,5 +93,5 @@ const ERRORS = {
 };
 
 module.exports = {
-    EXPERIMENTAL, HELP, EXAMPLES, EXCLUSIVE_PARAMETERS, PARAMETERS, ERRORS
+    EXPERIMENTAL, HELP, EXAMPLES, EXCLUSIVE_PARAMETERS, PARAMETERS, ERRORS, DOT_FILE_TABLE_ENTRY_DELIMITER, DOT_FILE_TABLE_ROW_DELIMITER
 };
