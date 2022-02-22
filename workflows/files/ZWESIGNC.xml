@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<autoTakeOwnership>true</autoTakeOwnership>
+    <workflowInfo>
+        <workflowID scope="none" >zowe_csr_sign</workflowID>
+        <workflowDefaultName>Sign a CSR request</workflowDefaultName>
+        <workflowDescription>Use this workflow to sign the request by a local CA.</workflowDescription>
+        <workflowVersion>###ZOWE_VERSION###</workflowVersion>
+        <vendor>Zowe</vendor>
+        <General/>
+    </workflowInfo>
+    <variable name="certificate_alias" scope="instance" visibility="public">
+        <label>Certificate Authority Alias</label>
+        <abstract>Specifies the CA that signs the CSR request</abstract>
+        <description>- Specifies the CA that signs the CSR request.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>localca</default>
+        </string>
+    </variable>
+    <variable name="uss_infile" scope="instance" visibility="public">
+        <label>Input file</label>
+        <abstract>Specifies the CSR file that will be signed by CA</abstract>
+        <description>Specifies the CSR file that will be signed by CA.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>user.csr</default>
+        </string>
+    </variable>
+    <variable name="uss_outfile" scope="instance" visibility="public">
+        <label>Output file</label>
+        <abstract>Specifies the location for the signed certificate</abstract>
+        <description>Specifies the location for the signed certificate.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>user.pem</default>
+        </string>
+    </variable>
+    <variable name="keystore" scope="instance" visibility="public">
+        <label>Keystore location</label>
+        <abstract>Specifies the keystore location (keyring) of the signing CA</abstract>
+        <description>Note that the value of variable will be prefixed with "safkeyring://", so use the "/" if "/" is required for the proper location.</description>        
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <default>ZWESVUSR/ZOWE</default>
+        </string>
+    </variable>
+    <variable name="validity" scope="instance" visibility="public">
+        <label>Validity period</label>
+        <abstract>Certificate Validity Days</abstract>
+        <description>Specifies the number of days the certificate is valid for.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>[0-9]{1,7}</regularExpression>
+            <errorMessage>Please enter a valid number</errorMessage>
+            <default>3650</default>
+        </string>
+    </variable>
+    <variable name="JAVA_HOME" scope="instance" visibility="public">
+        <label>JAVA HOME</label>
+        <abstract>JAVA home location</abstract>
+        <description>JAVA home location</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^\/.{0,50}[^\/]$</regularExpression>
+            <default>/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64</default>
+        </string>
+    </variable>
+    <step name="define_variables" optional="false">
+            <title>Define variables</title>
+            <description>Use this step to define the variables. An admin has to have rights to access the private key of the local CA.</description>
+            <variableValue name="keystore" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="certificate_alias" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="uss_infile" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="uss_outfile" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="validity" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="JAVA_HOME" scope="instance" noPromptIfSet="false" required="true"/>
+            <instructions substitution="false">Use this step to define the variables for signing the request by the local CA.</instructions>
+            <weight>1</weight>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+        </step>
+        <step name="Sign_CSR_local_CA" optional="false">
+            <title>Sign CSR by local CA</title>
+            <description>Sign the request by the local CA</description>
+            <prereqStep name="define_variables"/>
+            <instructions substitution="true">This step signs the CSR by local CA.</instructions>
+            <weight>1</weight>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">set -x
+export JAVA_HOME="${instance-JAVA_HOME}"
+export PATH=$JAVA_HOME/bin:$PATH
+keytool -gencert -infile "${instance-uss_infile}" -outfile "${instance-uss_outfile}" -keystore "safkeyring://${instance-keystore}" -storetype JCERACFKS -alias "${instance-certificate_alias}" -validity "${instance-validity}" -ext ExtendedKeyUsage=clientAuth -rfc -J-Djava.protocol.handler.pkgs=com.ibm.crypto.provider
+                </inlineTemplate>
+                <submitAs maxRc="0">shell-JCL</submitAs>
+                <maxLrecl>1024</maxLrecl>
+         </template>
+    </step>
+</workflow> 

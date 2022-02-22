@@ -30,8 +30,11 @@ ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description"
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Security Workflow","description":"This workflow configure zowe security manager.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESECUR)"}},{"name":"ZOWE Certificates Workflow","description":"This workflow configure zowe security certificates.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF05)"}},{"name":"ZOWE Cross-memory Workflow","description":"This workflow configure cross-memory server.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF06)"}},{"name":"ZOWE Instance and STC Workflow","description":"This workflow create zowe instance and STC.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF03)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF06)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWECRECR)"}},{"name":"ZOWE Sign a CSR request","description":"This workflow signs the certificate sign request by a local CA.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWESIGNC)"}},{"name":"ZOWE Load Authentication Certificate into ESM","description":"This workflow loads a signed client authentication certificate to the ESM.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWELOADC)"}},{"name":"ZOWE Define key ring and certificates","description":"This workflow defines key ring and certificates for Zowe.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEKRING)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
 ADD_WORKFLOW_DSN_JSON='{"dirblk":5,"avgblk":25000,"dsorg":"PO","alcunit":"TRK","primary":80,"secondary":40,"recfm":"VB","blksize":26000,"lrecl":4096,"volser":"'${VOLUME}'"}'
 ADD_EXPORT_DSN_JSON='{"dsorg":"PO","alcunit":"TRK","primary":10,"secondary":5,"dirblk":10,"avgblk":500,"recfm":"FB","blksize":400,"lrecl":80}'
 EXPORT_JCL_JSON='{"packagedir":"'${EXPORT}'","jcldataset":"'${EXPORT_DSN}'","workvolume":"'${VOLUME}'"}'
@@ -141,9 +144,6 @@ echo "SH set -x;set -e;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESECUR.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESECUR)'\";" >> JCL
 echo "cp \$source \$target;" >> JCL
-echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEWRF03.xml\";" >> JCL
-echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF03)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEWRF05.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF05)'\";" >> JCL
 echo "cp \$source \$target;" >> JCL
@@ -152,6 +152,18 @@ echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
 echo "cp \$source \$target;" >> JCL
 echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECRECR.xml;" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWECRECR)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEKRING.xml;" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWEKRING)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWELOADC.xml;" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWELOADC)'\";" >> JCL
+echo "cp \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESIGNC.xml;" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >> JCL
 echo "cp \$source \$target;" >> JCL
 echo "/*" >> JCL
 

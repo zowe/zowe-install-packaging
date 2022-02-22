@@ -1,0 +1,1168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<autoTakeOwnership>true</autoTakeOwnership>
+<!-- instance prefix settings -->
+<workflowSettingInfo>
+    <variablesSetting isInstanceVariableWithoutPrefix="true"/>
+</workflowSettingInfo>
+    <workflowInfo>
+        <workflowID scope="none" >ZWEKRING</workflowID>
+        <workflowDefaultName>Define key ring and certificates</workflowDefaultName>
+        <workflowDescription>Use this workflow to define key ring and certificates for Zowe</workflowDescription>
+        <workflowVersion>###ZOWE_VERSION###</workflowVersion>
+        <vendor>Zowe</vendor>
+        <!-- workflow type -->
+        <General/>
+    </workflowInfo>
+    <!--variables-->
+    <variable name="product" scope="instance" visibility="public">
+        <label>Security product</label>
+        <abstract>Security system</abstract>
+        <description>Choose your security product</description>
+        <category>General</category>        
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>RACF</choice>
+            <choice>ACF2</choice>
+            <choice>TSS</choice>
+            <default>RACF</default>
+        </string>
+    </variable>
+    <variable name="zoweuser" scope="instance" visibility="public">
+        <label>Zowe user</label>
+        <abstract>Existing user ID</abstract>
+        <description>Existing user ID for the Zowe started task.</description>
+        <category>General</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^([A-Z0-9#$@]{1,8})$</regularExpression>
+            <errorMessage>Syntax error in the specified value</errorMessage>            
+            <default>ZWESVUSR</default>
+        </string>
+    </variable>
+    <variable name="zowering" scope="instance" visibility="public">
+        <label>Keyring name</label>
+        <abstract>Zowe Keyring name</abstract>
+        <description>The desired name of the keyring that is owned by the &amp;ZOWEUSER user ID.</description>
+        <category>General</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>ZoweKeyring</default>
+        </string>
+    </variable>
+    <variable name="option" scope="instance" visibility="public">
+        <label>Option</label>
+        <abstract>The option number</abstract>
+        <description><![CDATA[
+        Specify the option number which is suitable for your environment:<br/>
+        <li>1.  Generate Zowe's certificate that will be signed by the Zowe's local CA</li>
+        <li>2.  Zowe's certificate is already loaded in security product's database</li>
+        <li>3.  Import external Zowe's certificate from a data set in PKCS12 format</li>
+        ]]></description>
+        <category>General</category>        
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>1</choice>
+            <choice>2</choice>
+            <choice>3</choice>            
+            <default>1</default>
+        </string>
+    </variable>
+    <variable name="label" scope="instance" visibility="public">
+        <label>Certificate's name</label>
+        <abstract>Name of the Zowe certificate</abstract>
+        <description>The name of the Zowe certificate that will be defined or added to the security
+database, or an existing lable if the certificate is already stored in the security database.</description>
+        <category>General</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>localhost</default>
+        </string>
+    </variable>
+    <variable name="localca" scope="instance" visibility="public">
+        <label>Local CA</label>
+        <abstract>Local Certificate Authority</abstract>
+        <description>The alias of the Zowe local CA.</description>
+        <category>CA</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>localca</default>
+        </string>
+    </variable>
+    <variable name="ca_common_name" scope="instance" visibility="public">
+        <label>Common name</label>
+        <abstract>Zowe local CA common name</abstract>
+        <description>Zowe local CA common name</description>
+        <category>CA</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>Zowe Development Instances</default>
+        </string>
+    </variable>
+    <variable name="ca_organizational_unit" scope="instance" visibility="public">
+        <label>Organizational unit</label>
+        <abstract>Zowe local CA organizational unit</abstract>
+        <description>Zowe local CA organizational unit</description>
+        <category>CA</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>API Mediation Layer</default>
+        </string>
+    </variable>
+    <variable name="ca_organization" scope="instance" visibility="public">
+        <label>Organization</label>
+        <abstract>Zowe local CA organization</abstract>
+        <description>Zowe local CA organization</description>
+        <category>CA</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>Zowe Sample</default>
+        </string>
+    </variable>
+    <variable name="ca_locality" scope="instance" visibility="public">
+        <label>City/locality</label>
+        <abstract>Zowe local CA city/locality</abstract>
+        <description>Zowe local CA city/locality</description>
+        <category>CA</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>Prague</default>
+        </string>
+    </variable>
+    <variable name="ca_state" scope="instance" visibility="public">
+        <label>State/province</label>
+        <abstract>Zowe local CA state/province</abstract>
+        <description>Zowe local CA state/province</description>
+        <category>CA</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>Prague</default>
+        </string>
+    </variable>
+    <variable name="ca_country" scope="instance" visibility="public">
+        <label>Country</label>
+        <abstract>Zowe local CA country</abstract>
+        <description>Zowe local CA country</description>
+        <category>CA</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>CZ</default>
+        </string>
+    </variable>
+    <variable name="hostname" scope="instance" visibility="public">
+        <label>Hostname</label>
+        <abstract>Zowe hostname</abstract>
+        <description>The hostname where Zowe runs.</description>
+        <category>Network</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="ipaddress" scope="instance" visibility="public">
+        <label>IP address</label>
+        <abstract>Zowe IP address</abstract>
+        <description>The IP address where Zowe runs.</description>
+        <category>Network</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="dsname" scope="instance" visibility="public">
+        <label>DS Name</label>
+        <abstract>Dataset name</abstract>
+        <description>Update this variable if you plan to add the Zowe
+certificate from a data set in PKCS12 format.</description>
+        <category>Keyring</category>        
+        <string valueMustBeChoice="false" multiLine="false">            
+            <validationType>DSNAME</validationType>
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="pkcspass" scope="instance" visibility="public">
+        <label>PKCS password</label>
+        <abstract>Password for PKCS12 dataset</abstract>
+        <description>The password for the PKCS12 data set.</description>
+        <category>Keyring</category>        
+        <password>
+            <!-- Any string validation except basic -->
+        </password>
+    </variable>
+    <variable name="itrmzwca" scope="instance" visibility="public">
+        <label>Intermediate CA</label>
+        <abstract>Intermediate Certificate authority</abstract>
+        <description>The intermediate CA of the Zowe certificate. It is only applicable if Zowe
+certificate is signed by a recognized certificate authority (CA). If you plan to add more CAs, separate them by a comma.</description>
+        <category>Options</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="rootzwca" scope="instance" visibility="public">
+        <label>ROOTZWCA</label>
+        <abstract>Root CA of the Zowe certificate</abstract>
+        <description>The root CA of the Zowe certificate. It is only applicable if a Zowe certificate
+signed by a recognized certificate authority (CA).</description>
+        <category>Options</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="rootzfca" scope="instance" visibility="public">
+        <label>ROOTZFCA</label>
+        <abstract>Root CA of the z/OSMF certificate</abstract>
+        <description>The root CA of the z/OSMF certificate. It is only applicable if a z/OSMF
+ certificate signed by a recognized certificate authority (CA).</description>
+        <category>z/OSMF Options</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>    
+    <variable name="ifrozfca" scope="instance" visibility="public">
+        <label>z/OSMF certificate authority</label>
+        <abstract>Connect z/OSMF certificate authority to Zowe keyring</abstract>
+        <description>If you enable VERIFY_CERTIFICATES or NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, 
+set this variable to 1 to connect the z/OSMF certificate authority to the Zowe keyring.</description>
+        <category>z/OSMF Options</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <choice>1</choice>
+            <choice>0</choice>            
+            <default>0</default>
+        </string>
+    </variable>
+    <variable name="stcgrp" scope="instance" visibility="public">
+        <label>STC group</label>
+        <abstract>ACF2 STC Group</abstract>
+        <description>Group for the Zowe started tasks.</description>
+        <category>ACF2</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="owner" scope="instance" visibility="public">
+        <label>Certificate owner</label>
+        <abstract>Who is the certificate owner</abstract>
+        <description>Specify whether the owner of the certificate is SITE or ID(zweusr).</description>
+        <category>General</category>        
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <choice>SITE</choice>
+            <choice>ID</choice>
+        </string>
+    </variable>
+    <variable name="digicert" scope="instance" visibility="public">
+        <label>Digicert</label>
+        <abstract>Digicert ID of existing certificate</abstract>
+        <description>Digicert specifies a case-sensitive unique character ID that identifies the certificate. 
+        It is a 1-8 character long name of an already existing certificate that is required for ACF2 and Top Secret.</description>
+        <category>General</category>        
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^([A-Z0-9#$@]{1,8})$</regularExpression>
+            <errorMessage>Syntax error in the specified value</errorMessage> 
+        </string>
+    </variable>    
+    <step name="define_variables" optional="false">
+       <title>Define variables</title>
+       <description>This step is used to set variable values.</description>       
+       <variableValue name="product" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="zoweuser" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="zowering" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="option" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="owner" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="label" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="localca" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="ca_common_name" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="ca_organizational_unit" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="ca_organization" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="ca_locality" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="ca_state" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="ca_country" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="hostname" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="ipaddress" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="itrmzwca" scope="instance" noPromptIfSet="false" required="false"/>
+       <variableValue name="rootzwca" scope="instance" noPromptIfSet="false" required="false"/>
+       <variableValue name="ifrozfca" scope="instance" noPromptIfSet="false" required="true"/>       
+       <instructions substitution="true">Run this step to define the values for the variables.</instructions>
+       <weight>1</weight>
+       <skills>z/OS System Programmer</skills>
+       <autoEnable>true</autoEnable>
+       <canMarkAsFailed>false</canMarkAsFailed>
+       <!--template-->
+    </step>
+    <step name="digicert" optional="false">
+       <title>Digicert</title>
+       <description>Define digicert.</description>       
+       <prereqStep name="define_variables"/>       
+       <condition>
+          <expression>&quot;1&quot; == &quot;1&quot;</expression>
+          <description></description>
+          <targetStateSet>
+				<extendStateExpression>
+					<description>Actual condition</description>
+					<expression><![CDATA[(${product}!="ACF2"&&${product}!="TSS")||${option}!="2"]]></expression>
+					<targetState>skipped</targetState>
+				</extendStateExpression>
+			</targetStateSet>
+       </condition>       
+       <variableValue name="digicert" scope="instance" noPromptIfSet="false" required="true"/>
+       <instructions substitution="true">Fill in the digicert variable.</instructions>
+       <weight>1</weight>
+       <skills>z/OS System Programmer</skills>
+       <autoEnable>true</autoEnable>
+       <canMarkAsFailed>false</canMarkAsFailed>
+       <!--template-->
+    </step>
+    <step name="ifrozfca" optional="false">
+       <title>Root CA of the z/OSMF certificate</title>
+       <description>Define root CA of the z/OSMF certificate.</description>       
+       <prereqStep name="define_variables"/>       
+       <condition>
+          <expression>&quot;1&quot; == &quot;1&quot;</expression>
+          <description></description>
+          <targetStateSet>
+				<extendStateExpression>
+					<description>Actual condition</description>
+					<expression><![CDATA[${ifrozfca}=="0"]]></expression>
+					<targetState>skipped</targetState>
+				</extendStateExpression>
+			</targetStateSet>
+       </condition>       
+       <variableValue name="rootzfca" scope="instance" noPromptIfSet="false" required="true"/>
+       <instructions substitution="true">Fill in the rootzfca variable.</instructions>
+       <weight>1</weight>
+       <skills>z/OS System Programmer</skills>
+       <autoEnable>true</autoEnable>
+       <canMarkAsFailed>false</canMarkAsFailed>
+       <!--template-->
+    </step>
+    <step name="acf2" optional="false">
+       <title>STC group</title>
+       <description>Define STC group for ACF2.</description>       
+       <prereqStep name="define_variables"/>       
+       <condition>
+          <expression>&quot;1&quot; == &quot;1&quot;</expression>
+          <description></description>
+          <targetStateSet>
+				<extendStateExpression>
+					<description>Actual condition</description>
+					<expression><![CDATA[${product} != "ACF2"]]></expression>
+					<targetState>skipped</targetState>
+				</extendStateExpression>
+			</targetStateSet>
+       </condition>      
+       <variableValue name="stcgrp" scope="instance" noPromptIfSet="false" required="true"/>
+       <instructions substitution="true">Fill in the STCGRP variable.</instructions>
+       <weight>1</weight>
+       <skills>z/OS System Programmer</skills>
+       <autoEnable>true</autoEnable>
+       <canMarkAsFailed>false</canMarkAsFailed>
+       <!--template-->
+    </step>
+    <step name="option3" optional="false">
+       <title>Zowe's certificate data set</title>
+       <description>Define a data set name in which the Zowe certificate resides in PKCS12 format.</description>       
+       <prereqStep name="define_variables"/>       
+        <condition>
+          <expression>&quot;1&quot; == &quot;1&quot;</expression>
+          <description>Always true</description>
+          <targetStateSet>
+					<extendStateExpression>
+					<description>Actual condition</description>
+					<expression><![CDATA[${option}!="3"]]></expression>
+					<targetState>skipped</targetState>
+				</extendStateExpression>
+			</targetStateSet>
+       </condition>       
+       <variableValue name="dsname" scope="instance" noPromptIfSet="false" required="true"/>
+       <variableValue name="pkcspass" scope="instance" noPromptIfSet="false" required="true"/>
+       <instructions substitution="true">Fill in the variables.</instructions>
+       <weight>1</weight>
+       <skills>z/OS System Programmer</skills>
+       <autoEnable>true</autoEnable>
+       <canMarkAsFailed>false</canMarkAsFailed>
+       <!--template-->
+    </step>
+    <step name="zwekring" optional="false">
+        <title>Configure keyring and certificate for Zowe</title>
+        <description>This JCL is used to a define key ring and certificates for Zowe.</description>        
+        <prereqStep name="define_variables"/>
+        <!-- condition -->
+        <!--variableValues-->
+        <instructions substitution="true">Run this JCL to a define key ring and certificates for Zowe.</instructions>
+        <weight>100</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <!--template-->
+        <template>
+            <inlineTemplate substitution="true">//*
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL can be used to define key ring and certificates for Zowe
+//*
+//*********************************************************************
+//* ATTENTION!
+//* Configure certificate for Zowe
+//* Select one of three options which is the most suitable for your
+//* environment and follow the appropriate action
+//*
+//* Options:
+//*  1. (default option) Generate a Zowe certificate that will be
+//*     signed by the Zowe local CA
+//*
+//*  2. The Zowe certificate is already loaded in RACF database
+//*     ACTION:
+//*     a. modify the following snippet
+//*        CONNECT(SITE | ID(userid) +
+//*        LABEL('certlabel') +
+//*        to match the owner of the desired certificate
+//*
+//*  3. Import an external Zowe certificate from a data set in PKCS12
+//*     format
+//*
+//*********************************************************************
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add a job name and job parameters to the JOB statement to
+//*    meet your system requirements.
+//*
+//* 2) Update the SET PRODUCT= statement to match your security
+//*    product.
+//*
+//* 3) Update the SET ZOWEUSER= statement to match the existing
+//*    user ID for the Zowe started task.
+//*
+//* 4) Update the SET ZOWERING= statement to match the desired
+//*    name of the keyring owned by the &amp;ZOWEUSER user ID.
+//*
+//* 5) Specify the option number which is suitable for your
+//*    environment by the SET OPTION statement.
+//*    Option 1 considers as default option.
+//*
+//* 6) Update the SET LABEL= statement with the name of the Zowe
+//*    certificate that will be defined or added to the security
+//*    database or use label name that is already stored 
+//*    in the security database.
+//* 7) Specify the distinguished name of the Zowe local CA by
+//*    updating the SET statements CN=, OU=, O=, L=, SP=, C=, and
+//*    LOCALCA=.
+//*
+//* 8) Update the SET HOSTNAME= variable to match the hostname where
+//*    Zowe runs.
+//*
+//* 9) Update the SET IPADDRES= variable to match the IP address
+//*    where Zowe runs.
+//*
+//* 10) Update the SET DSNAME= statement if you plan to add the Zowe
+//*     certificate from a data set in PKCS12 format.
+//*
+//* 11) Update the SET PKCSPASS= statement to match the password for
+//*     the PKCS12 data set.
+//*
+//* 12) If you have external certificate authorities for ITRMZWCA
+//*     and/or ROOTZWCA, set IFZOWECA to 1 to connect 
+//*     to Zowe keyring.
+//*
+//* 13) Update the SET ITRMZWCA= variable to match the intermediate
+//*     CA of the Zowe certificate. It is only applicable if the Zowe
+//*     certificate is signed by 
+//*     a recognized certificate authority (CA).
+//*
+//* 14) Update the SET ROOTZWCA= variable to match the root CA of the
+//*     Zowe certificate. It is only applicable if the Zowe 
+//*     certificate is signed by a recognized 
+//*     certificate authority (CA).
+//*
+//* 15) If you enable VERIFY_CERTIFICATES or
+//*     NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
+//*     IFROZFCA to 1 to connect the z/OSMF certificate authority
+//*     to the Zowe keyring. Otherwise set to 0.
+//*
+//* 16) Update the SET ROOTZFCA= variable to match the root CA of the
+//*     z/OSMF certificate. It is only applicable if the z/OSMF
+//*     certificate is signed by 
+//*     a recognized certificate authority (CA).
+//*
+//* 17) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. The userid that runs this job must have sufficient authority
+//*    to alter security definitions
+//*
+//* 2. Assumption: The signed CA chain of 
+//*    the Zowe external certificate is added to 
+//*    the security database under the CERTAUTH userid.
+//*
+//* 3. If the Zowe certificate is imported from a data set then
+//*    the certificate has to be in PKCS12 format and has to
+//*    contain the Zowe certificate signed CA chain and private key.
+//*
+//* 4. This job completes with return code 0.
+//*    Verify the results of each command after completion.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//         SET  PRODUCT=${product}         * RACF, ACF2, or TSS
+//*                     12345678
+//         SET ZOWEUSER=${zoweuser}     * userid for the Zowe STC
+//*                     12345678
+//*
+//*      * Keyring for the Zowe userid
+//         SET ZOWERING='${zowering}'
+//*      * Option number to configure the Zowe certificate
+//*      * Valid options: 1,2,3
+//*      * Default option is 1
+//         SET OPTION=${option}
+//*      * Zowe certificate label
+//         SET LABEL='${label}'
+//*      * Zowe local CA name
+//         SET LOCALCA='${localca}'
+//*      * Zowe local CA common name
+//         SET CN='${ca_common_name}'
+//*      * Zowe local CA organizational unit
+//         SET OU='${ca_organizational_unit}'
+//*      * Zowe local CA organization
+//         SET O='${ca_organization}'
+//*      * Zowe local CA city/locality
+//         SET L='${ca_locality}'
+//*      * Zowe local CA state/province
+//         SET SP='${ca_state}'
+//*      * Zowe local CA country
+//         SET C='${ca_country}'
+//*      * Hostname of the system where Zowe runs
+//         SET HOSTNAME='${hostname}'
+//*      * IP address of the system where Zowe runs
+//         SET IPADDRES='${ipaddress}'
+#if (${option} == "3")
+//*      * Name of the data set containing the Zowe cert (PKCS12)
+//         SET DSNAME=${dsname}
+//*      * Password for the PKCS12 data set
+//         SET PKCSPASS='${pkcspass}'
+#else
+//*      * Name of the data set containing the Zowe cert (PKCS12)
+//         SET DSNAME=
+//*      * Password for the PKCS12 data set
+//         SET PKCSPASS=''
+#end
+//*      * If you have external certificate authorities for ITRMZWCA
+//*      * and/or ROOTZWCA, set IFZOWECA to 1 to connect 
+//*      * to Zowe keyring.
+//         SET IFZOWECA=1
+//*      * Label of the intermediate CA of the Zowe certificate
+//*        if applicable
+//         SET ITRMZWCA='${itrmzwca}'
+//*      * Label of the root CA of the Zowe certificate if applicable
+//         SET ROOTZWCA='${rootzwca}'
+//*      * Label of the root CA of the Zowe certificate if applicable
+//         SET ROOTZWCA=''
+//*      * If you enable VERIFY_CERTIFICATES or
+//*      * NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
+//*      * IFROZFCA to 1 to connect the z/OSMF certificate authority
+//*      * to the Zowe keyring. Otherwise set to 0.
+//         SET IFROZFCA=${ifrozfca}
+#if (${ifrozfca} == "1")
+//*      * Label of the root CA of the z/OSMF certificate if
+//*        applicable
+//         SET ROOTZFCA='${rootzfca}'
+#else
+//*      * Label of the root CA of the z/OSMF certificate if
+//*        applicable
+//         SET ROOTZFCA=''
+#end
+//*
+#if( $digicert and $digicert != "") 
+//         SET DIGICERT='${digicert}'
+#else
+//         SET DIGICERT=''
+#end
+#if (${product} == "ACF2")
+//* ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*                     12345678
+//         SET STCGRP=${stcgrp}        * group for Zowe started tasks
+//*                     12345678
+//*
+//* end ACF2 ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+//*
+#end
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUNRACF  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//*
+//*********************************************************************
+//*
+#if (${product} == "RACF")
+//* RACF ONLY, customize to meet your system requirements
+//*
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Create the keyring .............................................. */
+   RACDCERT ADDRING(&amp;ZOWERING.) ID(&amp;ZOWEUSER.)
+   SETROPTS RACLIST(DIGTRING) REFRESH
+$$
+//IFOPT1   IF (&amp;OPTION EQ 1) THEN
+//RUNOPT1  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 1 - Default Option - BEGINNING ........................... */
+/* Create the Zowe local CA authority ...............................*/
+   RACDCERT GENCERT CERTAUTH +
+            SUBJECTSDN( +
+              CN('&amp;CN. CA') +
+              OU('&amp;OU.') +
+              O('&amp;O.') +
+              L('&amp;L.') +
+              SP('&amp;SP.') +
+              C('&amp;C.')) +
+            SIZE(2048) +
+            NOTAFTER(DATE(2030-05-01)) +
+            WITHLABEL('&amp;LOCALCA') +
+            KEYUSAGE(CERTSIGN)
+
+/* Connect the Zowe local CA authority to the keyring .............. */
+   RACDCERT CONNECT(CERTAUTH LABEL('&amp;LOCALCA') +
+            RING(&amp;ZOWERING.)) +
+            ID(&amp;ZOWEUSER.)
+
+/* Create a certificate that is signed by local the Zowe CA ........ */
+   RACDCERT GENCERT ID(&amp;ZOWEUSER.) +
+            SUBJECTSDN( +
+              CN('&amp;CN. certificate') +
+              OU('&amp;OU.') +
+              O('&amp;O.') +
+              L('&amp;L.') +
+              SP('&amp;SP.') +
+              C('&amp;C.')) +
+            SIZE(2048) +
+            NOTAFTER(DATE(2030-05-01)) +
+            WITHLABEL('&amp;LABEL.') +
+            KEYUSAGE(HANDSHAKE) +
+            ALTNAME(IP(&amp;IPADDRES) +
+                DOMAIN('&amp;HOSTNAME')) +
+            SIGNWITH(CERTAUTH LABEL('&amp;LOCALCA'))
+
+/* Connect a Zowe certificate to the keyring ................... */
+   RACDCERT CONNECT(ID(&amp;ZOWEUSER.) +
+            LABEL('&amp;LABEL.') +
+            RING(&amp;ZOWERING.) +
+            USAGE(PERSONAL) DEFAULT) +
+            ID(&amp;ZOWEUSER.)
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+
+/* Option 1 - Default Option - END ................................. */
+$$
+//IFOPT1ED ENDIF
+//*
+//IFOPT2   IF (&amp;OPTION EQ 2) THEN
+//RUNOPT2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 2 - BEGINNING ............................................ */
+/* Connect a Zowe certificate to the keyring ................... */
+#if (${owner} == "SITE")
+   RACDCERT CONNECT(SITE) +
+#else
+   RACDCERT CONNECT(ID(&amp;ZOWEUSER.) +
+#end
+            LABEL('&amp;LABEL.') +
+            RING(&amp;ZOWERING.) +
+            USAGE(PERSONAL) DEFAULT) +
+            ID(&amp;ZOWEUSER.)
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+
+/* Option 2 - END .................................................. */
+$$
+//IFOPT2ED ENDIF
+//*
+//IFOPT3   IF (&amp;OPTION EQ 3) THEN
+//RUNOPT3  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 3 - BEGINNING ............................................ */
+/* Import an external certificate from a data set .................. */
+   RACDCERT ADD('&amp;DSNAME.') +
+            ID(&amp;ZOWEUSER.) +
+            WITHLABEL('&amp;LABEL.') +
+            PASSWORD('&amp;PKCSPASS.') +
+            TRUST
+
+/* Connect a Zowe certificate to the keyring ................... */
+   RACDCERT CONNECT(ID(&amp;ZOWEUSER.) +
+            LABEL('&amp;LABEL.') +
+            RING(&amp;ZOWERING.) +
+            USAGE(PERSONAL) DEFAULT) +
+            ID(&amp;ZOWEUSER.)
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+
+/* Option 3 - END .................................................. */
+$$
+//IFOPT3ED ENDIF
+//*
+//IFZWCA   IF (&amp;IFZOWECA EQ 1) THEN
+//RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Connect all CAs of the Zowe certificate signed chain to the  */
+/* keyring ......................................................... */
+#foreach($zwca in $itrmzwca.split(','))                
+   RACDCERT CONNECT(CERTAUTH +                          
+            LABEL('${zwca}') +
+            RING(&amp;ZOWERING.) USAGE(CERTAUTH)) +
+            ID(&amp;ZOWEUSER.)
+
+#end                
+   RACDCERT CONNECT(CERTAUTH +
+            LABEL('&amp;ROOTZWCA.') +
+            RING(&amp;ZOWERING.) USAGE(CERTAUTH)) +
+            ID(&amp;ZOWEUSER.)
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+$$
+//IFZWCAED ENDIF
+//*
+//IFZFCA   IF (&amp;IFROZFCA EQ 1) THEN
+//RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Connect the z/OSMF root CA that is signed by a recognized  .......*/
+/* certificate authority (CA) with the keyring ..................... */
+   RACDCERT CONNECT(CERTAUTH +
+            LABEL('&amp;ROOTZFCA.') +
+            RING(&amp;ZOWERING.) USAGE(CERTAUTH)) +
+            ID(&amp;ZOWEUSER.)
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+$$
+//IFZFCAED ENDIF
+//*
+//COMRACF  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* A common part for all options - BEGINNING ....................... */
+/* Allow ZOWEUSER to access keyring ................................ */
+   PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) ID(&amp;ZOWEUSER.) +
+          ACCESS(READ)
+#if (${owner} == "SITE")
+/* Uncomment this command if the SITE user owns the Zowe certificate */
+  PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY) ID(&amp;ZOWEUSER.) +
+         ACCESS(CONTROL)
+else
+/* Uncomment this command if the SITE user owns the Zowe certificate */
+/*  PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY) ID(&amp;ZOWEUSER.) +
+/*         ACCESS(CONTROL)                
+#end
+   SETROPTS RACLIST(FACILITY) REFRESH
+
+/* List the keyring ................................................ */
+   RACDCERT LISTRING(&amp;ZOWERING.) ID(&amp;ZOWEUSER.)
+
+/* Common part - END ............................................... */
+/* only the last RC is returned, this command ensures it is a 0 .... */
+PROFILE
+$$
+#end
+#if (${product} == "ACF2")
+//*******************************************************************
+//*
+//* ACF2 ONLY, customize to meet your system requirements
+//*
+//*******************************************************************
+//RUNACF2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//*
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Create the keyring .............................................. */
+  SET PROFILE(USER) DIVISION(KEYRING)
+  INSERT &amp;ZOWEUSER..ZOWERING RINGNAME(&amp;ZOWERING.)
+  F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
+$$
+//IFOPT1   IF (&amp;OPTION EQ 1) THEN
+//RUNOPT1  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Option 1 - Default Option - BEGINNING ........................... */
+* Create Zowe's local CA authority ................................ */
+  SET PROFILE(USER) DIVISION(CERTDATA)
+  GENCERT CERTAUTH.ZOWECA LABEL(&amp;LOCALCA) SIZE(2048) -
+          SUBJSDN(CN='&amp;CN. CA' -
+                  OU='&amp;OU.' -
+                  O='&amp;O.' -
+                  L='&amp;L.' -
+                  SP='&amp;SP.' -
+                  C='&amp;C.') -
+  EXPIRE(05/01/30) -
+  KEYUSAGE(CERTSIGN)
+*
+* Connect the Zowe local CA authority to the keyring .............. */
+  SET PROFILE(USER) DIVISION(CERTDATA)
+  CONNECT CERTDATA(CERTAUTH.ZOWECA) RINGNAME(&amp;ZOWERING.) -
+  KEYRING(&amp;ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+  CHKCERT CERTAUTH.ZOWECA
+*
+* Create a certificate that is signed by a local Zowe CA ........... */
+   SET PROFILE(USER) DIV(CERTDATA)
+   GENCERT &amp;ZOWEUSER..ZOWECERT -
+            SUBJSDN(CN='&amp;CN. certificate' -
+                    OU='&amp;OU.' -
+                    O='&amp;O.' -
+                    L='&amp;L.' -
+                    SP='&amp;SP.' -
+                    C='&amp;C.') -
+           SIZE(2048) -
+           EXPIRE(05/01/30) -
+           LABEL(&amp;LABEL.) -
+           KEYUSAGE(HANDSHAKE) -
+           ALTNAME(IP=&amp;IPADDRES DOMAIN=&amp;HOSTNAME) -
+           SIGNWITH(CERTAUTH.ZOWECA)
+*
+* Connect a Zowe certificate to the keyring ................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(&amp;ZOWEUSER..ZOWECERT) -
+   KEYRING(&amp;ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
+   CHKCERT &amp;ZOWEUSER..ZOWECERT
+*
+* Option 1 - Default Option - END ................................. */
+$$
+//IFOPT1ED ENDIF
+//*
+//IFOPT2   IF (&amp;OPTION EQ 2) THEN
+//RUNOPT2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Option 2 - BEGINNING ............................................ */
+* Connect a Zowe certificate to the keyring ................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+#if (${owner} == "SITE")
+   CONNECT CERTDATA(SITECERT.&amp;DIGICERT.)
+#else
+   CONNECT CERTDATA(&amp;ZOWEUSER..&amp;DIGICERT.)
+#end
+   KEYRING(&amp;ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
+   CHKCERT &amp;ZOWEUSER..ZOWECERT
+*
+* Option 2 - END .................................................. */
+$$
+//IFOPT2ED ENDIF
+//*
+//IFOPT3   IF (&amp;OPTION EQ 3) THEN
+//RUNOPT3  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Option 3 - BEGINNING ............................................ */
+* Import an external certificate from a data set ................... */
+   SET PROFILE(USER) DIV(CERTDATA)
+   INSERT &amp;ZOWEUSER..ZOWECERT -
+          DSNAME('&amp;DSNAME.') -
+          LABEL(&amp;LABEL.) -
+          PASSWORD('&amp;PKCSPASS.') -
+          TRUST
+*
+* Connect a Zowe certificate to the keyring ................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(&amp;ZOWEUSER..ZOWECERT) -
+   KEYRING(&amp;ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
+   CHKCERT &amp;ZOWEUSER..ZOWECERT
+*
+* Option 3 - END .................................................. */
+$$
+//IFOPT3ED ENDIF
+//*
+//IFZWCA   IF (&amp;IFZOWECA EQ 1) THEN
+//RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Connect all CAs of the Zowe certificate signed chain to the  */
+* keyring ......................................................... */
+#foreach($zwca in $itrmzwca.split(','))
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(CERTAUTH.$zwca) RINGNAME(&amp;ZOWERING.) -
+   KEYRING(&amp;ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+*
+#end
+   CONNECT CERTDATA(CERTAUTH.&amp;ROOTZWCA.) RINGNAME(&amp;ZOWERING.) -
+   KEYRING(&amp;ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+$$
+//IFZWCAED ENDIF
+//*
+//IFZFCA   IF (&amp;IFROZFCA EQ 1) THEN
+//RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Connect the z/OSMF root CA that is signed by a recognized  ....... */
+* certificate authority (CA) with the keyring ...................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(CERTAUTH.&amp;ROOTZFCA.) RINGNAME(&amp;ZOWERING.) -
+   KEYRING(&amp;ZOWEUSER..ZOWERING) USAGE(CERTAUTH)
+$$
+//IFZFCAED ENDIF
+//*
+//COMACF2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* A common part for all options - BEGINNING ....................... */
+* Allow ZOWEUSER to access keyring ................................ */
+  SET RESOURCE(FAC)
+  RECKEY IRR ADD(DIGTCERT.LISTRING ROLE(&amp;STCGRP) -
+  SERVICE(READ) ALLOW)
+*
+#if (${owner} == "SITE")
+* Uncomment this command if the SITE acid owns the Zowe certificate */
+  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&amp;STCGRP) -
+  SERVICE(CONTROL) ALLOW)
+#else
+* Uncomment this command if the SITE acid owns the Zowe certificate */
+*  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&amp;STCGRP) -
+*  SERVICE(CONTROL) ALLOW)
+#end
+*
+  F ACF2,REBUILD(FAC)
+*
+* List the keyring ................................................ */
+  SET PROFILE(USER) DIVISION(KEYRING)
+  LIST &amp;ZOWEUSER..ZOWERING
+* Common part - END ............................................... */
+$$
+#end
+#if (${product} == "TSS")
+//********************************************************************
+//*
+//* Top Secret ONLY, customize to meet your system requirements
+//*
+//********************************************************************
+//RUNTSS   EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//*
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Create the keyring .............................................. */
+  TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&amp;ZOWERING.)
+$$
+//IFOPT1   IF (&amp;OPTION EQ 1) THEN
+//RUNOPT1  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Create a Zowe local CA authority ............................... */
+  TSS GENCERT(CERTAUTH) +
+        DIGICERT(ZOWECA) +
+        SUBJECTN( +
+          'CN="&amp;CN. CA" +
+          OU="&amp;OU." +
+          O="&amp;O." +
+          L="&amp;L." +
+          SP="&amp;SP." +
+          C="&amp;C." ') +
+        KEYSIZE(2048) +
+        NADATE(05/01/30) +
+        LABLCERT(&amp;LOCALCA) +
+        KEYUSAGE('CERTSIGN')
+
+/* Connect the Zowe local CA authority to the keyring .............. */
+  TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&amp;ZOWERING.) +
+      RINGDATA(CERTAUTH,ZOWECA)
+
+/* Create a certificate that is signed by a local Zowe CA .......... */
+   TSS GENCERT(&amp;ZOWEUSER.) +
+       DIGICERT(ZOWECERT) +
+       SUBJECTN( +
+         'CN="&amp;CN. certificate" +
+         OU="&amp;OU." +
+         O="&amp;O." +
+         L="&amp;L." +
+         SP="&amp;SP." +
+         C="&amp;C." ') +
+       KEYSIZE(2048) +
+       NADATE(05/01/30) +
+       LABLCERT(&amp;LABEL.) +
+       KEYUSAGE('HANDSHAKE') +
+       ALTNAME('DOMAIN=&amp;HOSTNAME') +
+       SIGNWITH(CERTAUTH,ZOWECA)
+
+/* Connect a Zowe certificate to the keyring ................... */
+   TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) +
+       RINGDATA(&amp;ZOWEUSER.,ZOWECERT) +
+       USAGE(PERSONAL) DEFAULT
+
+/* Option 1 - Default Option - END ................................. */
+$$
+//IFOPT1ED ENDIF
+//*
+//IFOPT2   IF (&amp;OPTION EQ 2) THEN
+//RUNOPT2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 2 - BEGINNING ............................................ */
+/* Connect a Zowe certificate to the keyring ................... */
+   TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) +
+#if (${owner} == "SITE")                
+       RINGDATA(CERTSITE,&amp;DIGICERT.) +  
+#else
+       RINGDATA(&amp;ZOWEUSER.,&amp;DIGICERT.) +
+#end
+       USAGE(PERSONAL) DEFAULT
+
+/* Option 2 - END .................................................. */
+$$
+//IFOPT2ED ENDIF
+//*
+//IFOPT3   IF (&amp;OPTION EQ 3) THEN
+//RUNOPT3  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 3 - BEGINNING ............................................ */
+/* Import an external certificate from a data set .................. */
+   TSS ADD(&amp;ZOWEUSER.) +
+        DIGICERT(ZOWECERT) +
+        DCDSN(&amp;DSNAME.) +
+        LABLCERT(&amp;LABEL.) +
+        PKCSPASS('&amp;PKCSPASS.') +
+        TRUST
+
+/* Connect a Zowe certificate to the keyring ................... */
+   TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) +
+       RINGDATA(&amp;ZOWEUSER.,ZOWECERT) +
+       USAGE(PERSONAL) DEFAULT
+
+/* Option 3 - END .................................................. */
+$$
+//IFOPT3ED ENDIF
+//*
+//IFZWCA   IF (&amp;IFZOWECA EQ 1) THEN
+//RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Connect all CAs of the Zowe certificate signed chain to the  */
+/* keyring ......................................................... */
+#foreach($zwca in $itrmzwca.split(',')) 
+   TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&amp;ZOWERING.) +
+       RINGDATA(CERTAUTH,${zwca}) USAGE(CERTAUTH)
+
+#end
+   TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&amp;ZOWERING.) +
+       RINGDATA(CERTAUTH,&amp;ROOTZWCA.) USAGE(CERTAUTH)
+$$
+//IFZWCAED ENDIF
+//*
+//IFZFCA   IF (&amp;IFROZFCA EQ 1) THEN
+//RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Connect the z/OSMF root CA that is signed by a recognized  ... */
+/* certificate authority (CA) with the keyring .................... */
+   TSS ADD(&amp;ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&amp;ZOWERING.) +
+       RINGDATA(CERTAUTH,&amp;ROOTZFCA.) USAGE(CERTAUTH)
+$$
+//IFZFCAED ENDIF
+//*
+//COMTSS   EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=&amp;PRODUCT
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* A common part for all options starts here ....................... */
+/* Allow ZOWEUSER to access keyring ................................ */
+  TSS PERMIT(&amp;ZOWEUSER.) IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
+
+#if (${owner} == "SITE")
+/* Uncomment this command if the SITE acid owns the Zowe certificate */
+  TSS PERMIT(&amp;ZOWEUSER.) IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
+#else
+/* TSS PERMIT(&amp;ZOWEUSER.) IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
+#end
+/* List the keyring ................................................ */
+  TSS LIST(&amp;ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&amp;ZOWERING.)
+
+/* Common part - END ............................................... */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
+$$
+#end
+//*
+</inlineTemplate>
+            <submitAs maxRc="0">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+</workflow>
