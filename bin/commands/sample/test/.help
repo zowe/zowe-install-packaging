@@ -1,6 +1,4 @@
-Sample of deep embedded sub-command.
-
-Also inherit parameters from upper level.
+A sample command.
 
 NOTE: This command is to demonstrate how `zwe` command works. There are no real
       meaningful functionalities defined in this command and sub-commands.

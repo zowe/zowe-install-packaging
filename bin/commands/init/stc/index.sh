@@ -51,15 +51,15 @@ security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.securi
 if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
-security_stcs_xmem=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.xmem")
-if [ -z "${security_stcs_xmem}" ]; then
-  security_stcs_xmem=${ZWE_PRIVATE_DEFAULT_XMEM_STC}
+security_stcs_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zis")
+if [ -z "${security_stcs_zis}" ]; then
+  security_stcs_zis=${ZWE_PRIVATE_DEFAULT_ZIS_STC}
 fi
 security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
 if [ -z "${security_stcs_aux}" ]; then
   security_stcs_aux=${ZWE_PRIVATE_DEFAULT_AUX_STC}
 fi
-target_proclibs="${security_stcs_zowe} ${security_stcs_xmem} ${security_stcs_aux}"
+target_proclibs="${security_stcs_zowe} ${security_stcs_zis} ${security_stcs_aux}"
 
 # check existence
 for mb in ${proclibs}; do
@@ -162,15 +162,15 @@ else
   fi
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_xmem})"
-  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_xmem})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zis})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zis})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
   code=$?
   print_trace "- Delete ${tmpfile}"
   rm -f "${tmpfile}"
   if [ ${code} -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_xmem}). Please check if target data set is opened by others." "" 160
+    print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_zis}). Please check if target data set is opened by others." "" 160
   fi
-  print_debug "- ${jcllib}(${security_stcs_xmem}) is prepared"
+  print_debug "- ${jcllib}(${security_stcs_zis}) is prepared"
 
   # ZWESASTC
   print_message "Modify ZWESASTC"

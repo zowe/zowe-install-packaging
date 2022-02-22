@@ -271,11 +271,10 @@ EOF
     # display description message if exists
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
-      echo "------------------"
-      echo "Description"
-      help_message=`cat "${command_path}/.help"`
-      padding_left "$help_message" "    "
-      echo
+      >&2 echo "------------------"
+      >&2 echo "Description"
+      >&2 padding_left "$(cat "${command_path}/.help")" "    "
+      >&2 echo
     fi
 
     # display global parameters
@@ -325,7 +324,7 @@ EOF
     if [ -f "${command_path}/.examples" ]; then
       >&2 echo "------------------"
       >&2 echo "Example(s)"
-      >&2 cat "${command_path}/.examples"
+      >&2 padding_left "$(cat "${command_path}/.examples")" "    "
       >&2 echo
     fi  
     exit 100
