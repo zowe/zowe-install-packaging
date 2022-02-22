@@ -26,11 +26,10 @@ jobs:
       
       - name: Open PR to docs-site
         run: |
-          ls -la .dependency/zwe_doc_generation/generated
           git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git
           git config --global user.email "zowe-robot@users.noreply.github.com"
           git config --global user.name "Zowe Robot"
           cd docs-site
           git checkout users/carson/test_zwe_doc_automation
-          cp ../.dependency/zwe_doc_generation/* docs/appendix/zwe_server_command_reference
+          cp ../.dependency/zwe_doc_generation/generated/* docs/appendix/zwe_server_command_reference
           ls -la docs/appendix/zwe_server_command_reference
