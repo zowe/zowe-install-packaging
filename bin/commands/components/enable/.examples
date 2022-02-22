@@ -1,4 +1,4 @@
-    zwe components install -d path/to/target/dir -o /path/to/component/package
+    zwe components enable --component-name gateway
 
-    zwe components install extract -d /path/to/target/dir -o /path/to/component/package
+    zwe components enable --component-name gateway --ha-instance lpar1
     
