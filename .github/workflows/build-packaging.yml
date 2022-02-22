@@ -420,20 +420,22 @@ jobs:
             });
 
   # only run auto integration tests when the workflow is triggered by pull request
+  # default running Convenience Pax on any zzow server
   call-integration-test:
     needs: regular-build
+    runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
-    uses: zowe/zowe-install-packaging/.github/workflows/cicd-test.yml@staging
-    with: 
-      pr-auto-test: true
-      pr-auto-build-num: ${{ github.run_number }}
-    secrets:
-      JF_ARTIFACTORY_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
-      SSH_HOST: ${{ secrets.SSH_HOST }}
-      SSH_PORT: ${{ secrets.SSH_PORT }}
-      SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-    # Above secrets exists in the environment, doing secrets here to mitigate a problem of
-    #   reusable workflows where environment secret can not be passed in properly
-    # More info: https://github.community/t/reusable-workflows-secrets-and-environments/203695/23
-    # it was a bit weird to pass in above secrets, hope Github team can improve/fix on this
+    steps:
+      - name: 'Call Test Workflow'
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        with:
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          owner: zowe
+          repo: zowe-install-packaging
+          workflow-filename: cicd-test.yml
+          branch-name: users/tom/repository-dispatch
+          poll-frequency: 3
+          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}"}'
+        # env:
+        #   DEBUG: 'workflow-remote-call-wait'
+    
