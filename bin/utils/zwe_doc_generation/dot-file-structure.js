@@ -8,7 +8,7 @@
  * Copyright IBM Corporation 2021
  */
 
-const parameterSyntax = {
+const parameterTable = {
     delimiter: '|',
     orderedSegments: [
         {
@@ -60,17 +60,17 @@ const EXAMPLES = {
 };
 const EXCLUSIVE_PARAMETERS = {
     fileName: '.exclusive-parameters',
-    syntax: parameterSyntax
+    table: parameterTable
 };
 const PARAMETERS = {
     inherit: true,
     fileName: '.parameters',
-    syntax: parameterSyntax
+    table: parameterTable
 };
 const ERRORS = {
     inherit: true,
     fileName: '.errors',
-    syntax: {
+    table: {
         delimiter: '|',
         orderedSegments: [
             {

@@ -12,8 +12,13 @@ const { EXPERIMENTAL, HELP, EXAMPLES, EXCLUSIVE_PARAMETERS, PARAMETERS, ERRORS }
 
 const SEPARATOR = '\n\n';
 const SECTION_HEADER_PREFIX = '## ';
+const MD_TABLE_ROW_DELIMITER = '\n';
+const MD_TABLE_ENTRY_DELIMITER = '|';
 
-// order content will appear, with heading prefix if applicable
+const TABLE_ENTRY_DELIMITER = '|';
+const TABLE_ROW_DELIMITER = '\n';
+
+// order content will appear, with prefix/postfix as needed
 const orderedDocumentationTypes = [
     { ...HELP, prefix: SECTION_HEADER_PREFIX + 'Description' + SEPARATOR },
     { ...EXPERIMENTAL, prefix: '**', postfix: '**' },
@@ -23,48 +28,94 @@ const orderedDocumentationTypes = [
     { ...ERRORS, prefix: SECTION_HEADER_PREFIX + 'Errors' + SEPARATOR }
 ];
 
-function generateDocumentationForNode(curNode, parentNode) {
+function assembleDocumentationElementsForNode(curNode, parentNode) {
     const fileName = getFileName(curNode.command, parentNode.fileName);
     const command = parentNode.command ? parentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
     const title = parentNode.title ? `${parentNode.title} > ${link}` : '# ' + link;
 
+    const docElements = {
+        fileName,
+        command,
+        title,
+        children: curNode.children,
+    };
+
+    for (const docType of orderedDocumentationTypes) {
+        const docForType = { content: '', parentContent: '' };
+
+        if (hasDocType(curNode, docType)) {
+            if (docType.meaning) {
+                docForType.content = docType.meaning;
+            } else {
+                const docFileContent = fs.readFileSync(curNode[docType.fileName], 'utf-8');
+                if (docType.table) {
+                    docForType.content = docFileContent.split(/$/gm).map(line =>  // filter out ignored table entries
+                        line
+                            .trim()
+                            .split(docType.table.delimiter)
+                            .filter((_, index) => !docType.table.orderedSegments[index] || !docType.table.orderedSegments[index].ignore)
+                            .join(TABLE_ENTRY_DELIMITER)
+                    )
+                    .join(TABLE_ROW_DELIMITER);
+                } else {
+                    docForType.content = docFileContent;
+                }
+            }
+        }
+
+        if (hasDocType(parentNode, docType) && docType.inherit) {
+            let parentContent = '';
+            if (parentNode[docType.fileName].content) {
+                parentContent += parentNode[docType.fileName].content;
+            }
+            if (parentNode[docType.fileName].parentContent) {
+                parentContent += parentNode[docType.fileName].parentContent;
+            }
+            docForType.parentContent = parentContent;
+        }
+
+        docElements[docType.fileName] = docForType;
+    }
+
+    return docElements
+}
+
+function generateDocumentationForNode(curNode, parentNode) {
+    const assembledDocNode = assembleDocumentationElementsForNode(curNode, parentNode);
+    const { title, command, children, fileName } = assembledDocNode;
+
     let mdContent = title + SEPARATOR + `\t${command}`;
 
-    if (curNode.children && curNode.children.length) {
+    if (children.length) {
         mdContent += ' [sub-command [sub-command]...] [parameter [parameter]...]' + SEPARATOR;
-        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + curNode.children.map(c => `* [${c.command}](./${getFileName(c.command, fileName)})`).join('\n');
+        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + children.map(c => `* [${c.command}](./${getFileName(c.command, fileName)})`).join('\n');
     } else {
         mdContent += ' [parameter [parameter]...]';
     }
 
     for (const docType of orderedDocumentationTypes) {
         let docContent = '';
-        if (hasDocType(curNode, docType)) {
-            if (docType.meaning) {
-                docContent += docType.meaning;
-            } else {
-                const docFileContent = fs.readFileSync(curNode[docType.fileName], 'utf-8');
-                if (docType.syntax) {
-                    const filteredSegments = docType.syntax.orderedSegments.filter(o => !o.ignore);
-                    docContent += filteredSegments.map(o => o.meaning).join('|') + '\n'; // Set table headings
-                    docContent += filteredSegments.map(_ => '|---').join('') + '\n'; // Set table separator between headings and fields
+        if (hasDocType(assembledDocNode, docType) && (assembledDocNode[docType.fileName].content || assembledDocNode[docType.fileName].parentContent)) {
+            const rawContent = assembledDocNode[docType.fileName].content + assembledDocNode[docType.fileName].parentContent;
 
-                    docContent += docFileContent.split(/$/gm).map(line => line.trim().split(docType.syntax.delimiter) // transform table entries
-                        .filter((_, index) => !docType.syntax.orderedSegments[index] || !docType.syntax.orderedSegments[index].ignore)
-                        .map((segment, index) => {
-                            if (docType.syntax.orderedSegments[index] && docType.syntax.orderedSegments[index].transform) {
-                                return docType.syntax.orderedSegments[index].transform(segment);
-                            }
-                            return segment;
-                        })
-                        .join('|')) // join fields in a row
-                        .join('\n'); // join rows with newline
-                } else {
-                    docContent += docFileContent;
-                }
+            if (docType.table) {
+                const filteredSegments = docType.table.orderedSegments.filter(o => !o.ignore);
+                docContent += filteredSegments.map(o => o.meaning).join(MD_TABLE_ENTRY_DELIMITER) + MD_TABLE_ROW_DELIMITER; // Set table headings
+                docContent += filteredSegments.map(_ => '|---').join('') + MD_TABLE_ROW_DELIMITER; // Set table separator between headings and fields
+
+                docContent += rawContent.split(TABLE_ROW_DELIMITER).map(line => line.trim().split(TABLE_ENTRY_DELIMITER) // transform table entries
+                    .map((segment, index) => {
+                        if (docType.table.orderedSegments[index] && docType.table.orderedSegments[index].transform) {
+                            return docType.table.orderedSegments[index].transform(segment);
+                        }
+                        return segment;
+                    })
+                    .join(MD_TABLE_ENTRY_DELIMITER)) // join fields in a row
+                    .join(MD_TABLE_ROW_DELIMITER); // join rows with newline
+            } else {
+                docContent += rawContent;
             }
-            // TODO inherited content - may need to return object of each type of doc, with another function for assembling them in the right order
         }
 
         if (docContent) {
@@ -80,10 +131,7 @@ function generateDocumentationForNode(curNode, parentNode) {
     }
 
     return {
-        fileName: fileName,
-        command: command,
-        title: title,
-        link: link,
+        parts: assembledDocNode,
         mdContent: mdContent
     };
 }
