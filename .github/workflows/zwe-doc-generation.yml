@@ -7,6 +7,9 @@ on:
   #     - v2.x/staging
   workflow_dispatch:
 
+env:
+  DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
+
 jobs:
   update-zwe-documentation:
     name: Update zwe documentation on docs-site
@@ -26,11 +29,14 @@ jobs:
       
       - name: Open PR to docs-site
         # TODO change git checkout command to v2-docs-branch
+        # Will eventually change checkout command to a docs staging branch when v2 is out
         run: |
           git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git
           git config --global user.email "zowe-robot@users.noreply.github.com"
           git config --global user.name "Zowe Robot"
           cd docs-site
           git checkout users/carson/test_zwe_doc_automation
-          cp ../.dependency/zwe_doc_generation/generated/* docs/appendix/zwe_server_command_reference
-          ls -la docs/appendix/zwe_server_command_reference
+          cp ../.dependency/zwe_doc_generation/generated/* ${{ DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+          git add ${{ DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+          git commit -s -m"Update zwe command reference"
+          git push
