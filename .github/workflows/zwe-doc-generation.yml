@@ -1,7 +1,7 @@
 name: Update zwe documentation
 
 on:
-  # Will eventually run this automatically when v2 is out
+  # Will run this on push when v2 is out
   # push:
   #   branches:
   #     - v2.x/staging
@@ -9,8 +9,8 @@ on:
 
 env:
   DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
-  # Will change this to a docs staging branch (or master branch) when v2 is out
-  DOCS_SITE_TARGET_BRANCH: users/carson/test_zwe_doc_automation # TODO change to v2-docs-branch
+  # Will change this to a docs staging branch when v2 is out
+  DOCS_SITE_TARGET_BRANCH: v2-docs-branch
   DOCS_SITE_COMMIT_BRANCH: auto-update-zwe-reference
   ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
 
