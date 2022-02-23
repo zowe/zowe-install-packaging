@@ -50,6 +50,7 @@ jobs:
       - name: Commit changes to branch and push
         id: commitChanges
         run: |
+          cd docs-site
           git add ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
           if git commit -s -m"Update zwe command reference";
           then 
