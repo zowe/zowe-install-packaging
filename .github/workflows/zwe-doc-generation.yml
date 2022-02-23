@@ -28,16 +28,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Generate zwe documentation
-        run: node ${{ env.ZWE_DOC_GENERATION_DIR }}
-
       - name: Set up git
         run: |
           git config --global user.email "zowe-robot@users.noreply.github.com"
           git config --global user.name "Zowe Robot"
 
       - name: Clone docs site
-        run: git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git
+        run: git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git --depth 1 --branch ${{ env.DOCS_SITE_TARGET_BRANCH }}
+
+      - name: Generate zwe documentation
+        run: node ${{ env.ZWE_DOC_GENERATION_DIR }}
 
       - name: Copy generated zwe documentation files to docs site
         run: |
