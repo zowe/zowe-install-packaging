@@ -1,0 +1,79 @@
+name: Update zwe documentation
+
+on:
+  # Will run this on push when v2 is out
+  # push:
+  #   branches:
+  #     - v2.x/staging
+  workflow_dispatch:
+
+env:
+  DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
+  # Will change this to a docs staging branch when v2 is out
+  DOCS_SITE_TARGET_BRANCH: v2-docs-branch
+  DOCS_SITE_COMMIT_BRANCH: auto-update-zwe-reference
+  ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
+
+jobs:
+  update-zwe-documentation:
+    name: Update zwe documentation on docs-site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up git
+        run: |
+          git config --global user.email "zowe-robot@users.noreply.github.com"
+          git config --global user.name "Zowe Robot"
+
+      - name: Clone docs site
+        run: git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git --depth 1 --branch ${{ env.DOCS_SITE_TARGET_BRANCH }}
+
+      - name: Generate zwe documentation
+        run: node ${{ env.ZWE_DOC_GENERATION_DIR }}
+
+      - name: Copy generated zwe documentation files to docs site
+        run: |
+          cd docs-site
+          # check out branch that will contain update and unsure there are no remote differences
+          git checkout -b ${{ env.DOCS_SITE_COMMIT_BRANCH }}
+          git pull origin ${{ env.DOCS_SITE_COMMIT_BRANCH }} || true # swallow error in case branch doesn't exist in remote
+          cp ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+      
+      - name: Commit changes to branch and push
+        id: commitChanges
+        run: |
+          cd docs-site
+          git add ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+          if git commit -s -m"Update zwe command reference";
+          then 
+            echo ">>>>>Changes committed to ${{ env.DOCS_SITE_COMMIT_BRANCH }}, now pushing";
+            git push origin ${{ env.DOCS_SITE_COMMIT_BRANCH }}
+            echo "::set-output name=createPr::true"
+          else
+            echo ">>>>>No update to documentation";
+            echo "::set-output name=createPr::false"
+          fi
+
+      - name: Create pull request
+        if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          script: |
+            const res = await github.rest.pulls.create({
+              owner: 'zowe',
+              repo: 'docs-site',
+              title: 'Update zwe server command reference',
+              body: 'Automatic update of the zwe server command reference',
+              head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+              base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
+            });
+            console.log(`The pull request is at: ${res.data.html_url}`);
