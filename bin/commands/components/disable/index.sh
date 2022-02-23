@@ -17,11 +17,11 @@ require_zowe_yaml
 componentCfgPath=
 componentCfg=
 if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
-  componentCfgPath=".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+  componentCfgPath="haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
 else
-  componentCfgPath=".components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+  componentCfgPath="components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
 fi
-componentCfg=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "${componentCfgPath}")
+componentCfg=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".${componentCfgPath}")
 if [ -z "${componentCfg}" ]; then
   print_error_and_exit "Error ZWEL0156E: Component ${ZWE_CLI_PARAMETER_COMPONENT_NAME} does not exist in zowe.yaml." "" 156 #todo create new error code
 fi
