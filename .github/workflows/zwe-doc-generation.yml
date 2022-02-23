@@ -61,7 +61,7 @@ jobs:
 
       - name: Create pull request
         if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
-        uses: actions/github-scripts@v5
+        uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           script: |
