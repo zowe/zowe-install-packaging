@@ -36,7 +36,7 @@ jobs:
           git config --global user.name "Zowe Robot"
           cd docs-site
           git checkout users/carson/test_zwe_doc_automation
-          cp ../.dependency/zwe_doc_generation/generated/* ${{ DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
-          git add ${{ DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+          cp ../.dependency/zwe_doc_generation/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+          git add ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
           git commit -s -m"Update zwe command reference"
           git push
