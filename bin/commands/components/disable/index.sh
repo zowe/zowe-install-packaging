@@ -16,7 +16,7 @@ require_zowe_yaml
 
 componentCfgPath=
 componentCfg=
-if [ -z "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
+if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
   componentCfgPath=".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
 else
   componentCfgPath=".components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
