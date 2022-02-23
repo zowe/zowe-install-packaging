@@ -1,28 +1,5 @@
 name: Zowe CICD Integration Tests
-on:
-  workflow_call:
-    inputs:
-      nightly:
-        required: false
-        type: boolean
-      pr-auto-test:
-        required: false
-        type: boolean
-      pr-auto-build-num:
-        required: false
-        type: string
-    secrets:
-      JF_ARTIFACTORY_TOKEN:
-        required: true
-      SSH_HOST:
-        required: true
-      SSH_PORT:
-        required: true
-      SSH_USER:
-        required: true
-      SSH_PASSWORD:
-        required: true
-      
+on:   
   workflow_dispatch:
     inputs:
       test-server:
@@ -54,6 +31,7 @@ on:
           - Non-strict Verify External Certificate
           - Install PTF Twice
           - Generate API Documentation
+          - Zowe Nightly Tests
           - Zowe Release Tests
       custom-zowe-artifactory-pattern-or-build-number:
         description: 'Custom Zowe Artifactory Pattern or Build Number:'
@@ -65,6 +43,10 @@ on:
         description: 'Custom Extension List:'
         required: false
         default: 'sample-node-api;sample-trial-app'
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
 
 # create a new branch to overwrite following defaults if necessary
 env:
@@ -99,9 +81,15 @@ env:
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_RELEAE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04)
-  ZOWE_PR_AUTO_TESTS_TEMPLATE: basic/install.ts(PLACE_HOLDER)
 
 jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
   check-permission:
     runs-on: ubuntu-latest
     steps:
@@ -118,102 +106,82 @@ jobs:
     - name: make test matrix
       id: set-matrix
       run: | 
-        ##################################################################################################
-        ### 1. Process inputs (from manual or reusable workflow call)
-        ##################################################################################################
-        
-        # github.event.inputs is only available when triggered by manual (workflow_dispatch)
-        if [[ -n "${{ github.event.inputs.test-server }}" ]]; then
-          test_server="${{ github.event.inputs.test-server }}"
-          install_test_choice="${{ github.event.inputs.install-test }}"
-          case $install_test_choice in
+        test_server="${{ github.event.inputs.test-server }}"
+        install_test_choice="${{ github.event.inputs.install-test }}"
+        case $install_test_choice in
 
-            "Convenience Pax")
-              test_file="${{ env.CONVENIENCE_PAX_TESTFILE }}"
-              ;;
+          "Convenience Pax")
+            test_file="${{ env.CONVENIENCE_PAX_TESTFILE }}"
+            ;;
 
-            "SMPE FMID")
-              test_file="${{ env.SMPE_FMID_TESTFILE }}"
-              ;;
+          "SMPE FMID")
+            test_file="${{ env.SMPE_FMID_TESTFILE }}"
+            ;;
 
-            "SMPE PTF")
-              test_file="${{ env.SMPE_PTF_TESTFILE }}"
-              ;;
+          "SMPE PTF")
+            test_file="${{ env.SMPE_PTF_TESTFILE }}"
+            ;;
 
-            "Tech Preview Docker")
-              test_file="${{ env.TECH_PREVIEW_DOCKER_TESTFILE }}"
-              ;;
+          "Tech Preview Docker")
+            test_file="${{ env.TECH_PREVIEW_DOCKER_TESTFILE }}"
+            ;;
 
-            "Extensions")
-              test_file="${{ env.EXTENSIONS_TESTFILE }}"
-              ;;
+          "Extensions")
+            test_file="${{ env.EXTENSIONS_TESTFILE }}"
+            ;;
 
-            "Keyring")
-              test_file="${{ env.KEYRING_TESTFILE }}"
-              ;;
-            
-            "z/OS node v12")
-              test_file="${{ env.ZOS_NODE_V12_TESTFILE }}"
-              ;;
+          "Keyring")
+            test_file="${{ env.KEYRING_TESTFILE }}"
+            ;;
+          
+          "z/OS node v12")
+            test_file="${{ env.ZOS_NODE_V12_TESTFILE }}"
+            ;;
 
-            "z/OS node v14")
-              test_file="${{ env.ZOS_NODE_V14_TESTFILE }}"
-              ;;
+          "z/OS node v14")
+            test_file="${{ env.ZOS_NODE_V14_TESTFILE }}"
+            ;;
 
-            "z/OS node v16")
-              test_file="${{ env.ZOS_NODE_V16_TESTFILE }}"
-              ;;
+          "z/OS node v16")
+            test_file="${{ env.ZOS_NODE_V16_TESTFILE }}"
+            ;;
 
-            "Non-strict Verify External Certificate")
-              test_file="${{ env.NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE }}"
-              ;;
+          "Non-strict Verify External Certificate")
+            test_file="${{ env.NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE }}"
+            ;;
 
-            "Install PTF Twice")
-              test_file="${{ env.INSTALL_PTF_TWICE_TESTFILE }}"
-              ;;
+          "Install PTF Twice")
+            test_file="${{ env.INSTALL_PTF_TWICE_TESTFILE }}"
+            ;;
 
-            "Generate API Documentation")
-              test_file="${{ env.GENERAL_API_DOCUMENTATION_TESTFILE }}"
-              ;;
+          "Generate API Documentation")
+            test_file="${{ env.GENERAL_API_DOCUMENTATION_TESTFILE }}"
+            ;;
+          
+          "Zowe Nightly Tests")
+            test_file="${{ env.ZOWE_NIGHTLY_TESTS_FULL }}"
+            dont_parse_test_server=true
+            ;;
 
-            "Zowe Release Tests")
-              test_file="${{ env.ZOWE_RELEAE_TESTS_FULL }}"
-              RELEASE_TESTS=true
-              ;;
-            
-            *)
-              echo "Something went wrong when parsing install test choice input"
-              exit 1
-              ;;
-          esac
-
-          if [[ -z "$RELEASE_TESTS" ]]; then
-            if [[ "$test_server" == "Any zzow servers" ]]; then
-              test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
-            fi
-            TEST_FILE_SERVER="$test_file($test_server)"
-          else
-            TEST_FILE_SERVER="$test_file"
-          fi
-        else 
-          # must be call from reusable workflow call
-          # first determine if either inputs is passed in
-          # note that inputs.something is only available when triggered by workflow_call
-          # if inputs not passed in, default will be false
-          if [[ "${{ inputs.nightly }}" == "false" ]] && [[ "${{ inputs.pr-auto-test }}" == "false" ]]; then
-            echo "Reusable workflow call is triggered, but neither inputs nightly or pr-auto-test is provided, aborting.."
+          "Zowe Release Tests")
+            test_file="${{ env.ZOWE_RELEAE_TESTS_FULL }}"
+            dont_parse_test_server=true
+            ;;
+          
+          *)
+            echo "Something went wrong when parsing install test choice input"
             exit 1
-          fi
+            ;;
+        esac
 
-          # parse inputs
-          if [[ "${{ inputs.nightly }}" == "true" ]]; then
-            TEST_FILE_SERVER="${{ env.ZOWE_NIGHTLY_TESTS_FULL }}"
-          elif [[ "${{ inputs.pr-auto-test }}" == "true" ]]; then
-            # Get a random marist server, this is to prevent multiple pr auto test running on the same machine to reduce queue wait times
+        if [[ -z "$dont_parse_test_server" ]]; then
+          if [[ "$test_server" == "Any zzow servers" ]]; then
             test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
-            TEST_FILE_SERVER=$(echo "${{ env.ZOWE_PR_AUTO_TESTS_TEMPLATE }}" | sed "s/PLACE_HOLDER/$test_server/g")
           fi
-        fi 
+          TEST_FILE_SERVER="$test_file($test_server)"
+        else
+          TEST_FILE_SERVER="$test_file"
+        fi        
 
         # this is the final string that can be recognizable by the matrix processing script down below
         echo "TEST_FILE_SERVER is "$TEST_FILE_SERVER
@@ -341,12 +309,8 @@ jobs:
           ##################################################################################################
           ### 1. Process custom-zowe-artifactory-pattern
           ##################################################################################################
-          if [[ -z "${{ inputs.pr-auto-build-num }}" ]]; then
-            input_custom_zowe_art_pat_or_bldnum="${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}"
-          else
-            # at here meaning this workflow is called from pr auto build
-            input_custom_zowe_art_pat_or_bldnum=${{ inputs.pr-auto-build-num }}
-          fi
+          
+          input_custom_zowe_art_pat_or_bldnum="${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}"
 
           if [[ -n "$input_custom_zowe_art_pat_or_bldnum" ]]; then
             if [[ "$input_custom_zowe_art_pat_or_bldnum" =~ ^[0-9]+$ ]]; then
