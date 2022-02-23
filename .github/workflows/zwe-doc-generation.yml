@@ -11,7 +11,7 @@ env:
   DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
   # Will change this to a docs staging branch (or master branch) when v2 is out
   DOCS_SITE_TARGET_BRANCH: users/carson/test_zwe_doc_automation # TODO change to v2-docs-branch
-  DOCS_SITE_COMMIT_BRANCH: TODO MY BRANCH
+  DOCS_SITE_COMMIT_BRANCH: auto-update-zwe-reference
   ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
       - name: Copy generated zwe documentation files to docs site
         run: |
           cd docs-site
-          git checkout -b ${{ DOCS_SITE_COMMIT_BRANCH }}
+          git checkout -b ${{ env.DOCS_SITE_COMMIT_BRANCH }}
           cp ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
       
       - name: Commit changes to branch and push
@@ -51,8 +51,8 @@ jobs:
           git add ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
           if git commit -s -m"Update zwe command reference";
           then 
-            echo ">>>>>Changes committed to ${{ DOCS_SITE_COMMIT_BRANCH }}, now pushing";
-            git push origin ${{ DOCS_SITE_COMMIT_BRANCH }}
+            echo ">>>>>Changes committed to ${{ env.DOCS_SITE_COMMIT_BRANCH }}, now pushing";
+            git push origin ${{ env.DOCS_SITE_COMMIT_BRANCH }}
             echo "::set-output name=createPr::true"
           else
             echo ">>>>>No update to documentation";
@@ -70,7 +70,7 @@ jobs:
               repo: 'docs-site',
               title: 'Update zwe server command reference',
               body: 'Automatic update of the zwe server command reference',
-              head: '${{ DOCS_SITE_COMMIT_BRANCH }}',
-              base: '${{ DOCS_SITE_TARGET_BRANCH }}'
+              head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+              base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
             });
             console.log(`The pull request is at: ${res.data.html_url}`);
