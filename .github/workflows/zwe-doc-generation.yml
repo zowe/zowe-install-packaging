@@ -9,6 +9,9 @@ on:
 
 env:
   DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
+  # Will change this to a docs staging branch (or master branch) when v2 is out
+  DOCS_SITE_BRANCH: checkout users/carson/test_zwe_doc_automation # TODO change to v2-docs-branch
+  ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
 
 jobs:
   update-zwe-documentation:
@@ -25,18 +28,15 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate zwe documentation
-        run: node .dependency/zwe_doc_generation
+        run: node ${{ env.ZWE_DOC_GENERATION_DIR }}
       
       - name: Open PR to docs-site
-        # TODO change git checkout command to v2-docs-branch
-        # Will eventually change checkout command to a docs staging branch when v2 is out
         run: |
           git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git
           git config --global user.email "zowe-robot@users.noreply.github.com"
           git config --global user.name "Zowe Robot"
           cd docs-site
-          git checkout users/carson/test_zwe_doc_automation
-          cp ../.dependency/zwe_doc_generation/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+          git checkout ${{ env.DOCS_SITE_BRANCH }}
+          cp ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
           git add ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
-          git commit -s -m"Update zwe command reference"
-          git push
+          if git commit -s -m"Update zwe command reference"; then git push && echo ">>>>>Pushed changes to ${{ env.DOCS_SITE_BRANCH }}"; else echo ">>>>>No update to documentation, not pushing commit"; fi
