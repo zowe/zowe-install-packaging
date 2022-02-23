@@ -42,6 +42,8 @@ jobs:
       - name: Copy generated zwe documentation files to docs site
         run: |
           cd docs-site
+          # Check out branch that will receive new documentation, then create a branch off of it for the PR
+          git checkout ${{ env.DOCS_SITE_TARGET_BRANCH }}
           git checkout -b ${{ env.DOCS_SITE_COMMIT_BRANCH }}
           cp ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
       
