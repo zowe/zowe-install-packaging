@@ -451,7 +451,7 @@ jobs:
         #   DEBUG: 'workflow-remote-call-wait'
       
       - name: 'Report test failure if applied'
-        if: ${{ steps.call-test.outputs.workflow-run-conclusion }} != "success"
+        if: ${{ steps.call-test.outputs.workflow-run-conclusion != 'success' }}
         uses: actions/github-script@v5
         with:
           script: |
