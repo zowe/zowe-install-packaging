@@ -68,7 +68,8 @@ for mb in ${proclibs}; do
   if [ "${samp_existence}" != "true" ]; then
       print_error_and_exit "Error ZWEL0143E: ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
   fi
-
+done
+for mb in ${target_proclibs}; do
   # JCL for preview purpose
   jcl_existence=$(is_data_set_exists "${jcllib}(${mb})")
   if [ "${jcl_existence}" = "true" ]; then
