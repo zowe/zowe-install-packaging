@@ -177,17 +177,21 @@ In the runtime, the Zowe content is organized in this structure:
       +- /logs
       +- /workspace
     +- /keystore
-      +- zowe-certificates.env
+      +- keystore.p12
+      +- truststore.p12
+      +- keystore.key
+      +- keystore.cer
+      +- ca.cer
 ```
 
 - `/home/zowe/runtime` is a shared volume initialized by the `zowe-launch-scripts` container.
 - `/home/zowe/runtime/components/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is the `name` entry defined in `/component/manifest.(yaml|yml|json)`.
 - `/home/zowe/instance/zowe.yaml` is a Zowe configuration file and MUST be mounted from a ConfigMap.
 - `/home/zowe/instance/logs` is the logs directory of Zowe instance. This folder will be created automatically by `zowe-launch-scripts` container.
-- `/home/zowe/instance/tmp` is the temporary directory of Zowe instance. This folder will be created automatically by `zowe-launch-scripts` container.
 - `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component container.
   * Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
   * Components writing to this directory must NOT write container-specific information to this directory as it may potentially be overwritten by another container.
+- `/home/zowe/keystore` is the directory where certificate is mounted.
 - Any confidential environment variables, for example, a Redis password, in `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
 ### ConfigMap and Secrets
