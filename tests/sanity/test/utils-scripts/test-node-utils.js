@@ -123,7 +123,7 @@ describe('verify node-utils', function () {
     it('test v8.17.0 issues warning', async function () {
       const command = `${check_node_version} "v8.17.0"`;
       const expected_rc = 0;
-      let expected_out = 'Deprecation Warning: Zowe will be ending support for Node v8 by the end of December 2021.';
+      let expected_out = 'Warning: Zowe is no longer offering support for Node v6 and v8. Please use a higher version.';
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, '');
     });
 

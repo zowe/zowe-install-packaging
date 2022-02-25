@@ -53,7 +53,7 @@ FMID=AZWE${FMID_VERSION}
 # to package on another server, we may need different settings
 export TMPDIR=/ZOWE/tmp
 SMPE_BUILD_HLQ=ZOWEAD3
-SMPE_BUILD_VOLSER=ZOWE02
+SMPE_BUILD_VOLSER=ZOWE03
 
 # write data sets list we want to clean up
 echo "${SMPE_BUILD_HLQ}.${RANDOM_MLQ}" > ${CURR_PWD}/cleanup-smpe-packaging-datasets.txt
@@ -166,7 +166,6 @@ echo
 #% -E success    exit with RC 0, create file on successful completion
 #% -p version    product version
 #% -P            fail build if APAR/USERMOD is created instead of PTF
-#% -S            create PSI package (Portable Software Instance for z/osmf)
 #% -V volume     allocate data sets on specified volume(s)
 
 external=""
@@ -176,8 +175,6 @@ echo "BUILD_NUMBER=$BUILD_NUMBER"
 test -n "$BUILD_NUMBER" && external="$external -B $BUILD_NUMBER"
 echo "ZOWE_VERSION=$ZOWE_VERSION"
 test -n "$ZOWE_VERSION" && external="$external -p $ZOWE_VERSION"
-echo "BUILD_PSI=$BUILD_PSI"
-test -n "$BUILD_PSI" && external="$external -S"
 
 ${CURR_PWD}/smpe/bld/smpe.sh \
   -a ${CURR_PWD}/smpe/bld/alter.sh \
