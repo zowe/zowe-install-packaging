@@ -28,8 +28,8 @@ zowe:
 - `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe will create temporary
   started tasks here before putting into target procedure library.
 - `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
-  optional. If this is not defined, `SZWEAUTH` from HLQ will be used as STEPLIB
-  in STCs.
+  optional. If this is not defined, `SZWEAUTH` from `zowe.setup.dataset.prefix`
+  data set will be used as STEPLIB in STCs.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
 - `zowe.setup.security.stcs.zis` is ZIS started task name.

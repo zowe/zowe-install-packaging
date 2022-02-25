@@ -15,6 +15,7 @@ zowe:
 
 - `zowe.setup.dataset.prefix` shows where the `SZWEAUTH` data set is installed.
 - `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
-  optional. If it's not defined, `SZWEAUTH` from HLQ will be APF authorized.
+  optional. If it's not defined, `SZWEAUTH` from `zowe.setup.dataset.prefix` data
+  set will be APF authorized.
 - `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
   You can install Zowe ZIS plugins into this load library.
