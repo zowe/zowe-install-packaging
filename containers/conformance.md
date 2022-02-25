@@ -2,7 +2,7 @@
 
 **DRAFT**
 
-These conformance criteria are applicable for all Zowe components intending to run in a containerized environment. The containerized environment could be Kubernetes or OpenShift running on Linux or Linux on Z. This may also apply to `docker-compose` running on Linux, Windows, Mac OS, or zCX.
+These conformance criteria are applicable for all Zowe components intending to run in a containerized environment. The containerized environment could be Kubernetes or OpenShift running on Linux or Linux on Z.
 
 ## Image
 
@@ -154,7 +154,7 @@ The below sections are mainly targeting Kubernetes or OpenShift environments. St
 - listen to only ONE port in the container except for API Mediation Layer Gateway.
 - be cloud-vendor neutral and must NOT rely on features provided by a specific cloud vendor.
 - NOT rely on host information such as `hostIP`, `hostPort`, `hostPath`, `hostNetwork`, `hostPID` and `hostIPC`.
-- MUST accept either `instance.env` or `zowe.yaml` as a configuration file, the same as when running on z/OS.
+- MUST accept `zowe.yaml` as a configuration file, the same as when running on z/OS.
 
 ### Persistent Volume(s)
 
@@ -173,9 +173,8 @@ In the runtime, the Zowe content is organized in this structure:
       +- /components
         +- /<component-id>
     +- /instance
-      +- instance.env or zowe.yaml
+      +- zowe.yaml
       +- /logs
-      +- /tmp
       +- /workspace
     +- /keystore
       +- zowe-certificates.env
@@ -183,19 +182,17 @@ In the runtime, the Zowe content is organized in this structure:
 
 - `/home/zowe/runtime` is a shared volume initialized by the `zowe-launch-scripts` container.
 - `/home/zowe/runtime/components/<component-id>` is a symbolic link to the `/component` directory. `<component-id>` is the `name` entry defined in `/component/manifest.(yaml|yml|json)`.
-- `/home/zowe/instance/(instance.env|zowe.yaml)` is a Zowe configuration file and MUST be mounted from a ConfigMap.
+- `/home/zowe/instance/zowe.yaml` is a Zowe configuration file and MUST be mounted from a ConfigMap.
 - `/home/zowe/instance/logs` is the logs directory of Zowe instance. This folder will be created automatically by `zowe-launch-scripts` container.
 - `/home/zowe/instance/tmp` is the temporary directory of Zowe instance. This folder will be created automatically by `zowe-launch-scripts` container.
 - `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component container.
   * Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
   * Components writing to this directory must NOT write container-specific information to this directory as it may potentially be overwritten by another container.
-- `/home/zowe/keystore/zowe-certificates.env` is optional if the user is using `instance.env`. If this configuration exists, it MUST be mounted from a ConfigMap.
-- Any confidential environment variables, for example, a Redis password, in `instance.env` or `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
+- Any confidential environment variables, for example, a Redis password, in `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
 ### ConfigMap and Secrets
 
-- `instance.env` or `zowe.yaml` must be stored in a ConfigMap and be mounted under `/home/zowe/instance` directory.
-- If the user is using `instance.env`, `<keystore>/zowe-certificates.env` content must also be stored in a ConfigMap and be mounted to `/home/zowe/keystore`.
+- `zowe.yaml` must be stored in a ConfigMap and be mounted under `/home/zowe/instance` directory.
 - All certificates must be stored in Secrets. Those files will be mounted under the `/home/zowe/keystore` directory.
 - Secrets must be defined manually by a system administrator. Zowe Helm Chart and Zowe Operator do NOT define the content of Secrets.
 
@@ -212,7 +209,7 @@ In the runtime, the Zowe content is organized in this structure:
   ```yaml
   command: ["/bin/bash", "-c"]
   args:
-    - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/zowe.yaml"
+    - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/instance/zowe.yaml"
   ```
 
 ### Environment Variables

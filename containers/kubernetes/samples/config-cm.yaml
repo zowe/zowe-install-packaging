@@ -26,8 +26,8 @@ data:
   zowe.yaml: |
     zowe:
       runtimeDirectory: /home/zowe/runtime
-      logDirectory: /home/zowe/logs
-      workspaceDirectory: /home/zowe/workspace
+      logDirectory: /home/zowe/instance/logs
+      workspaceDirectory: /home/zowe/instance/workspace
 
       job:
         name: ZWE1SV
