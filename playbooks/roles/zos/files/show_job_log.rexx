@@ -47,49 +47,21 @@ do ix=1 to JNAME.0
     Say 'Return Code :' RETCODE.ix
     Say ''
 
-    /*****************************************/
-    /* Issue the ? (JDS) action against the  */
-    /* row to list the data sets in the job. */
-    /******************************************/
-    Address SDSF "ISFACT ST TOKEN('"TOKEN.ix"') PARM(NP ?)" ,
-        "( prefix jds_"
-    if rc<>0 then
-      exit 20
-
-    /**********************************************/
-    /* Find the JESMSGLG data set and read it     */
-    /* using ISFBROWSE.  Use isflinelim to limit  */
-    /* the number of REXX variables returned.     */
-    /**********************************************/
-    isflinelim=500
-    do jx=1 to jds_DDNAME.0
-
-      Say '-------------------------------' jds_STEPN.jx':'jds_DDNAME.jx '-------------------------------'
-      Say ''
-
-      /*****************************************************/
-      /* Read the records from the data set.               */
-      /*****************************************************/
-      total_lines = 0
-      do until isfnextlinetoken=''
-
-        Address SDSF "ISFBROWSE ST TOKEN('"jds_TOKEN.jx"')"
-
-        do kx=1 to isfline.0
-          Say isfline.kx
-        end
-
-        total_lines = total_lines + isfline.0
-          /*****************************/
-          /* Set start for next browse */
-          /*****************************/
-        isfstartlinetoken = isfnextlinetoken
-
-      end
-
-      Say ''
-
+    /* On z/OS v2.5, this line sometimes failed to establish TSO session */
+    /*   Address SDSF "ISFACT ST TOKEN('"TOKEN.ix"') PARM(NP ?)" */
+    /* Possible error message is: */
+    /* IRX0250E System abend code 0C4, reason code 00000017.   */
+    /* IRX0255E Abend in host command ISFACT or address environment routine SDSF.     */
+    /*     54 *-*  Address SDSF "ISFACT ST TOKEN('"TOKEN.ix"') PARM(NP ?)" ,        "( prefix jds_" */
+    /*        +++ RC(-196) +++ */
+    /* rc= -196 */
+    /* Temporary fix is removing call of ISFACT */
+    Address SDSF "ISFBROWSE ST TOKEN('"TOKEN.ix"')"
+    do kx=1 to isfline.0
+      Say isfline.kx
     end
+
+    Say ''
 end
 
 Say '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'

@@ -102,7 +102,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       )
 
       // we want build log pulled in for SMP/e build
-      if (params.BUILD_SMPE != 'NONE') {
+      if (params.BUILD_SMPE != 'NONE' ) {
         def buildLogSpec = readJSON(text: '{"files":[]}')
         buildLogSpec['files'].push([
           "target": ".pax/content/smpe/",
@@ -188,6 +188,7 @@ node('zowe-jenkins-agent-dind-wdc') {
       '.pax/zowe-PSWI*'
     ]
   )
+  
   
   pipeline.createStage(
     name: "Build zLinux Docker",

@@ -2,21 +2,23 @@
 
 This project targets to use Ansible to uninstall / install Zowe.
 
-- [Prepare Environment](#prepare-environment)
-  - [Verify Inventory and Variables](#verify-inventory-and-variables)
-  - [Other verifications or tools](#other-verifications-or-tools)
-- [Install (Uninstall) Zowe](#install-uninstall-zowe)
-  - [Convenience Build](#convenience-build)
-  - [SMPE FMID](#smpe-fmid)
-  - [SMPE PTF](#smpe-ptf)
-  - [Uninstall Zowe](#uninstall-zowe)
-  - [Docker](#docker)
-  - [Install Zowe Extensions](#install-zowe-extensions)
-- [Other Predefined Playbooks](#other-predefined-playbooks)
-  - [Sanity Test a Zowe Instance](#sanity-test-a-zowe-instance)
-  - [Start and Stop a Zowe Instance](#start-and-stop-a-zowe-instance)
-  - [Show Zowe Logs](#show-zowe-logs)
-- [Other Build Variables](#other-build-variables)
+- [Use Ansible to control Zowe instance](#use-ansible-to-control-zowe-instance)
+  - [Prepare Environment](#prepare-environment)
+    - [Verify Inventory and Variables](#verify-inventory-and-variables)
+    - [Other verifications or tools](#other-verifications-or-tools)
+  - [Install (Uninstall) Zowe](#install-uninstall-zowe)
+    - [Convenience Build](#convenience-build)
+    - [SMPE FMID](#smpe-fmid)
+    - [SMPE PTF](#smpe-ptf)
+    - [Uninstall Zowe](#uninstall-zowe)
+    - [Docker](#docker)
+    - [Kubernetes/Openshift](#kubernetesopenshift)
+    - [Install Zowe Extensions](#install-zowe-extensions)
+  - [Other Predefined Playbooks](#other-predefined-playbooks)
+    - [Sanity Test a Zowe Instance](#sanity-test-a-zowe-instance)
+    - [Start and Stop a Zowe Instance](#start-and-stop-a-zowe-instance)
+    - [Show Zowe Logs](#show-zowe-logs)
+  - [Other Build Variables](#other-build-variables)
 
 ## Prepare Environment
 
@@ -178,6 +180,27 @@ $ ansible-playbook -l <server> install-docker.yml -v --extra-vars "zowe_docker_i
 ```
 
 For example, you can pick a downloadable Zowe build from https://zowe.jfrog.io/zowe/webapp/#/artifacts/browse/tree/General/libs-snapshot-local/org/zowe.
+
+### Kubernetes/Openshift
+
+You can use playbook `install-kubernetes.yml` to install Zowe containers in a container orchestration cluster (i.e. Kubernetes, OpenShift, IBM Cloud Kubernetes, Google Cloud Kubernetes)
+
+Please Note:
+- This install playbook does NOT install Zowe convenience build onto the target z/OS system. But, it will require ZSS, ZIS and z/OSMF be installled and started on z/OS side. 
+- This install playbook does NOT install any container orchestation cluster. But, it will require one to deploy the Zowe containers.
+  
+There are many environmental variables for this playbook. Since there are different Kubernetes/OpenShift cluster, you can customize environmental variable to accomadate your needs. Please read the README file, found in Kubernetes role folder, for more information about the list of environmental variables can be used for this playboook `install-kubernetes.yml`. 
+
+For example, Install Zowe containers on local Kubernetes service provisioned by Docker-Desktop:
+
+```
+ansible-playbook -l <server> install-kubernetes.yml -e k8s_context=docker-desktop -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e zowe_instance_dir=<zowe-instance-location>
+```
+
+Install Zowe containers on Kubernetes running on BareMetal:
+```
+ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig -e ansible_user=<user> -e ansible_password=<password> -e ansible_ssh_host=<host> -e k8s_gateway_domain="*.nio.io" -e k8s_discovery_domain="*.nio.io" -e k8s_storageclass=<storageclassname> -e k8s_service=nodeport -e k8s_list_domain_ip="1.2.3.4.nip.io,1.2.3.4" -e k8s_networking=ingress -e zowe_instance_dir=<zowe-instance-location>
+```
 
 ### Install Zowe Extensions
 
