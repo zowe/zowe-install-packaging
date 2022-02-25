@@ -36,7 +36,7 @@ zowe:
   #-------------------------------------------------------------------------------
   setup:
     # MVS data set related configurations
-    mvs:
+    dataset:
       # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
       prefix: IBMUSER.ZWEV2
