@@ -64,9 +64,9 @@ target_proclibs="${security_stcs_zowe} ${security_stcs_zis} ${security_stcs_aux}
 # check existence
 for mb in ${proclibs}; do
   # source in SZWESAMP
-  samp_existence=$(is_data_set_exists "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
+  samp_existence=$(is_data_set_exists "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
   if [ "${samp_existence}" != "true" ]; then
-      print_error_and_exit "Error ZWEL0143E: ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
+      print_error_and_exit "Error ZWEL0143E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
   fi
 done
 for mb in ${target_proclibs}; do
