@@ -63,6 +63,14 @@ target_proclibs="${security_stcs_zowe} ${security_stcs_zis} ${security_stcs_aux}
 
 # check existence
 for mb in ${proclibs}; do
+  # source in SZWESAMP
+  samp_existence=$(is_data_set_exists "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
+  if [ "${samp_existence}" != "true" ]; then
+      print_error_and_exit "Error ZWEL0143E: ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
+  fi
+done
+for mb in ${target_proclibs}; do
+  # JCL for preview purpose
   jcl_existence=$(is_data_set_exists "${jcllib}(${mb})")
   if [ "${jcl_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
@@ -75,6 +83,7 @@ for mb in ${proclibs}; do
     fi
   fi
 
+  # STCs in target proclib
   stc_existence=$(is_data_set_exists "${proclib}(${mb})")
   if [ "${stc_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
@@ -94,7 +103,7 @@ else
   ###############################
   # prepare STCs
   # ZWESLSTC
-  print_message "Modify ZWESLSTC"
+  print_message "Modify ZWESLSTC and save as ${jcllib}(${security_stcs_zowe})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
@@ -133,7 +142,7 @@ else
   print_debug "- ${jcllib}(${security_stcs_zowe}) is prepared"
 
   # ZWESISTC
-  print_message "Modify ZWESISTC"
+  print_message "Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
@@ -173,7 +182,7 @@ else
   print_debug "- ${jcllib}(${security_stcs_zis}) is prepared"
 
   # ZWESASTC
-  print_message "Modify ZWESASTC"
+  print_message "Modify ZWESASTC and save as ${jcllib}(${security_stcs_aux})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
