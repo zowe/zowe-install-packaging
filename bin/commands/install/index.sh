@@ -21,8 +21,8 @@ ${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) ds
 
 ###############################
 # validation
-if [ -n "${ZWE_CLI_PARAMETER_PREFIX}" ]; then
-  prefix="${ZWE_CLI_PARAMETER_PREFIX}"
+if [ -n "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" ]; then
+  prefix="${ZWE_CLI_PARAMETER_DATASET_PREFIX}"
 else
   require_zowe_yaml
 

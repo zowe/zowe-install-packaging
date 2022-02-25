@@ -1,2 +1,2 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
-prefix||string|||||Install Zowe to this dataset prefix.\nIf you specify this value, --config is not required.
+dataset-prefix,ds-prefix||string|||||Install Zowe to this dataset prefix.\nIf you specify this value, --config is not required.

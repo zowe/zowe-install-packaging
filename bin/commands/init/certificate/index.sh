@@ -338,7 +338,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
 
     zwecli_inline_execute_command \
       certificate keyring-jcl clean \
-      --prefix "${prefix}" \
+      --dataset-prefix "${prefix}" \
       --jcllib "${jcllib}" \
       --keyring-owner "${keyring_owner}" \
       --keyring-name "${keyring_name}" \
@@ -356,7 +356,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # generate new cert in keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl generate \
-        --prefix "${prefix}" \
+        --dataset-prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
@@ -384,7 +384,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # connect existing certs to zowe keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl connect \
-        --prefix "${prefix}" \
+        --dataset-prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
@@ -402,7 +402,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # import certs from data set into zowe keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl import-ds \
-        --prefix "${prefix}" \
+        --dataset-prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
