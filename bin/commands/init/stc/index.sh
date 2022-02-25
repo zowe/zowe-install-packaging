@@ -103,7 +103,7 @@ else
   ###############################
   # prepare STCs
   # ZWESLSTC
-  print_message "Modify ZWESLSTC"
+  print_message "Modify ZWESLSTC and save as ${jcllib}(${security_stcs_zowe})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
@@ -142,7 +142,7 @@ else
   print_debug "- ${jcllib}(${security_stcs_zowe}) is prepared"
 
   # ZWESISTC
-  print_message "Modify ZWESISTC"
+  print_message "Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
@@ -182,7 +182,7 @@ else
   print_debug "- ${jcllib}(${security_stcs_zis}) is prepared"
 
   # ZWESASTC
-  print_message "Modify ZWESASTC"
+  print_message "Modify ZWESASTC and save as ${jcllib}(${security_stcs_aux})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
   result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
