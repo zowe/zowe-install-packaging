@@ -24,10 +24,11 @@ zowe_apiml_verify_certficates_of_services: false
 zowe_apiml_nonstrict_verify_certficates_of_services: false
 # the current z/OSMF level doesn't support some jwt features, fall back to use LTPA mode
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: LTPA
+zowe_jcllib: IBMUSER.JCLLIB
 zowe_proclib_dsname: USER.PROCLIB
 zowe_xmem_proclib: USER.PROCLIB
-# this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib: IBMUSER.LOADLIB
+zowe_xmem_pluginlib: IBMUSER.PLUGLIB
 zowe_xmem_parmlib: IBMUSER.PARMLIB
 # variables for zowe smpe uninstallation and installation
 # during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed

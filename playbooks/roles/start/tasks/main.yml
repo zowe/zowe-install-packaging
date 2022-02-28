@@ -18,11 +18,11 @@
 
 - import_role:
     name: configure
-    tasks_from: locate_zowe_start
-- name: Check if zowe_start_path has a value
+    tasks_from: zowe_zwe_command
+- name: Check if zowe_zwe_command has a value
   fail:
     msg: Cannot find zowe-start.sh
-  when: zowe_start_path == ""
+  when: zowe_zwe_command == ""
 
 # ============================================================================
 - name: Start Cross Memory Server
@@ -33,7 +33,7 @@
     opercmd: "S {{ zowe_xmem_stc_name }},REUSASID=YES"
 
 - name: Start Zowe
-  raw: "{{ zowe_start_path }}"
+  raw: "{{ zowe_zwe_command }} start"
 
 # ============================================================================
 # Wait for services started

@@ -34,18 +34,18 @@
       name: common
       tasks_from: upload-zowe
 
-  # ============================================================================
-  # Install Zowe
-  - import_role:
-      name: zowe
+  # # ============================================================================
+  # # Install Zowe
+  # - import_role:
+  #     name: zowe
 
-  # ============================================================================
-  # Configure Zowe
-  - import_role:
-      name: configure
+  # # ============================================================================
+  # # Configure Zowe
+  # - import_role:
+  #     name: configure
 
-  # ============================================================================
-  # Start Zowe
-  - import_role:
-      name: start
-    when: not skip_start|default(False)
+  # # ============================================================================
+  # # Start Zowe
+  # - import_role:
+  #     name: start
+  #   when: not skip_start|default(False)

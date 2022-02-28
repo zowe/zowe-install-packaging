@@ -109,6 +109,7 @@ zowe_install_logs_dir: ~/.zowe/logs
 zowe_xmem_proclib:
 zowe_xmem_parmlib:
 zowe_xmem_loadlib:
+zowe_xmem_pluginlib:
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_proclib_member_aux: ZWESASTC
 

@@ -86,6 +86,7 @@ zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
 zowe_keyring_external_root_ca:
 zowe_keystore_alias: localhost
+zowe_jcllib:
 zowe_proclib_dsname: auto
 zowe_proclib_membername: ZWESVSTC
 zowe_runtime_user: ZWESVUSR
@@ -99,6 +100,7 @@ zowe_configure_skip_zwesecur: false
 zowe_xmem_proclib:
 zowe_xmem_parmlib:
 zowe_xmem_loadlib:
+zowe_xmem_pluginlib:
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_proclib_member_aux: ZWESASTC
 zowe_xmem_stc_user: ZWESIUSR
