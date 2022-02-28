@@ -235,7 +235,7 @@
     tasks_from: list_jobs
   vars:
     list_jobs_name: "ZWESECUR"
-- import_role:
+- include_role:
     name: zos
     tasks_from: show_job_log
   vars:
@@ -251,7 +251,7 @@
     tasks_from: list_jobs
   vars:
     list_jobs_name: "ZWEKRING"
-- import_role:
+- include_role:
     name: zos
     tasks_from: show_job_log
   vars:
@@ -267,7 +267,7 @@
     tasks_from: list_jobs
   vars:
     list_jobs_name: "ZWENOKYR"
-- import_role:
+- include_role:
     name: zos
     tasks_from: show_job_log
   vars:
