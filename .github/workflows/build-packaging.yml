@@ -2,7 +2,7 @@ name: Zowe Build and Packaging
 on:
   push:
     branches:
-      - staging 
+      - v2.x/staging 
   pull_request:
     types: [opened, synchronize]
 
