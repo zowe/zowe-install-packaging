@@ -228,6 +228,54 @@
   raw: find {{ zowe_install_logs_dir }} -name "zwe-init-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
 
+# ============================================================================
+# Show ZWESECUR log
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWESECUR"
+- import_role:
+    name: zos
+    tasks_from: show_job_log
+  vars:
+    show_job_log_id: '{{ item.split(",")[0] }}'
+    show_job_log_owner: '*'
+    show_job_log_name: "*"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Show ZWEKRING log
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWEKRING"
+- import_role:
+    name: zos
+    tasks_from: show_job_log
+  vars:
+    show_job_log_id: '{{ item.split(",")[0] }}'
+    show_job_log_owner: '*'
+    show_job_log_name: "*"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Show ZWENOKYR log
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "ZWENOKYR"
+- import_role:
+    name: zos
+    tasks_from: show_job_log
+  vars:
+    show_job_log_id: '{{ item.split(",")[0] }}'
+    show_job_log_owner: '*'
+    show_job_log_name: "*"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
 # # ============================================================================
 # # Make sure we uninstall keyring setup before we do it again to avoid failures like
 # #   RACDCERT ADD('ZOWEAD3.SMPE.CERT.JWTSCRT') ID(ZWESVUSR) WITHLABEL('JWTSECRET') TRUST
