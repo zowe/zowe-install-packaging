@@ -102,6 +102,10 @@ fi
 
 cd "${ROOT_DIR}"
 
+echo "DEBUGGGGGGGGG"
+ls ${PAX_BINARY_DEPENDENCIES}
+echo "DEBUGGGGGGGGG"
+
 # workspace path abbreviations, relative to ${ROOT_DIR}
 ASCII_DIR="${PAX_WORKSPACE_DIR}/ascii"
 CONTENT_DIR="${PAX_WORKSPACE_DIR}/content"
