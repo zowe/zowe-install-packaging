@@ -246,6 +246,8 @@ jobs:
             .pax/pd.htm
             .pax/smpe-build-logs.pax.Z
             .pax/AZWE*
+        env:
+          DEBUG: 'zowe-actions:shared-actions:publish'
 
       - name: '[K8S 1] Build Kubernetes'
         timeout-minutes: 10
