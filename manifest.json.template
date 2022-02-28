@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.0.0-387-zlux-server-framework",
+      "version": "~2.0.0-zlux-server-framework-PR-387",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
