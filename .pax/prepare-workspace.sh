@@ -103,7 +103,7 @@ fi
 cd "${ROOT_DIR}"
 
 echo "DEBUGGGGGGGGG"
-ls ${PAX_BINARY_DEPENDENCIES}
+ls -al ${PAX_BINARY_DEPENDENCIES}
 echo "DEBUGGGGGGGGG"
 
 # workspace path abbreviations, relative to ${ROOT_DIR}
