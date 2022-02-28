@@ -5,8 +5,14 @@ ZFS=${1}
 MOUNT=${2}
 MOUNTED=false
 
+echo "Using ${ZOSMF_USER} credentials on ${BASE_URL}"
+echo "Checking ${BASE_URL}"
+ping ${BASE_URL}
+
+
 echo "Checking if file system ${ZFS} is mounted."
 RESP=`curl -s "${BASE_URL}/zosmf/restfiles/mfs?fsname=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
+sh scripts/check_response.sh "${RESP}" $?
 MOUNTP=`echo $RESP | grep -o '"mountpoint":".*"' | cut -f4 -d\"`
 
 NEW_ZFS_JSON='{"cylsPri":1160,"cylsSec": 116,"volumes":[ "'${VOLUME}'" ]}'
