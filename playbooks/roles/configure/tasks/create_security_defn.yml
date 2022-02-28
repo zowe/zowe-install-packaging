@@ -20,6 +20,7 @@
     sed -e "s+AUXSTC=ZWESASTC+AUXSTC={{ zowe_xmem_proclib_member_aux }}+" \
     > "{{ work_dir_remote }}/ZWESECUR.jcl"
 
+# FIXME: something missing from ZWESECUR (zwe init security)
 - name: Update ZWESECUR.jcl not to create user/group
   raw: >-
     cat "{{ work_dir_remote }}/ZWESECUR.jcl" | \

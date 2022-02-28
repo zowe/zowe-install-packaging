@@ -19,7 +19,12 @@
     rm -fr "{{ zowe_root_dir }}" && \
     mkdir -p "{{ zowe_root_dir }}" && \
     cd "{{ zowe_root_dir }}" && \
-    pax -ppx -rf '{{ work_dir_remote }}/{{ zowe_build_file }}'
+    pax -ppx -rf '{{ work_dir_remote }}/{{ zowe_build_file }}' && \
+    echo "Content of {{ zowe_root_dir }} after extracted" && \
+    ls -laT
+
+- name: Show Zowe manifest
+  raw: cat "{{ zowe_root_dir }}/manifest.json"
 
 - name: Initialize zowe.yaml
   raw: >-
@@ -32,7 +37,9 @@
     tasks_from: update_zowe_yaml
   vars:
     configs:
+      # FIXME: we should only keep one set
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
+      "zowe.setup.mvs.hlq": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe
   import_role:

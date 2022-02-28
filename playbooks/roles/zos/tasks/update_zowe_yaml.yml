@@ -10,7 +10,6 @@
 
 - name: Update zowe.yaml configuration
   raw: >-
-    echo "Updating {{ item }} to {{ configs[item] | default('') }}" && \
     touch {{ zos_uss_user_profile }} && \
     . {{ zos_uss_user_profile }} \
     {{ zowe_environment_variable_overrides | default('') }} && \
