@@ -167,7 +167,7 @@
       "zowe.workspaceDirectory": "{{ zowe_instance_dir }}/workspace"
       "zowe.extensionDirectory": "{{ zowe_extension_dir }}"
       "zowe.job.name": "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
-      "zowe.job.prefix": "{{ zowe_extension_dir }}{{ zowe_instance_id }}"
+      "zowe.job.prefix": "{{ zowe_job_prefix }}{{ zowe_instance_id }}"
       "zowe.externalDomains.0": "{{ zowe_external_domain_name }}"
       "zowe.externalPort": "{{ zowe_apiml_gateway_port }}"
       "java.home": "{{ zos_java_home }}"
@@ -183,6 +183,7 @@
   vars:
     configs:
       "components.gateway.port": "{{ zowe_apiml_gateway_port }}"
+      # gateway configs
       "components.metrics-service.port": "{{ zowe_apiml_metrics_service_port }}"
       "components.api-catalog.port": "{{ zowe_apiml_catalog_port }}"
       "components.discovery.port": "{{ zowe_apiml_discovery_port }}"

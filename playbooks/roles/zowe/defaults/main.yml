@@ -88,6 +88,9 @@ zowe_known_xmem_stc_users:
 # this profile is abandoned after v1.7.0
 zowe_user_profile: ~/.zowe_profile
 
+# If we clean up history job output during uninstall
+cleanup_zowe_job_history: True
+
 # ==============================================================================
 # Variables should be verified and overwrittern.
 # ==============================================================================
