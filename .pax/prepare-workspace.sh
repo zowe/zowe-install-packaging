@@ -108,7 +108,7 @@ ROOT_DIR=$(cd "${PAX_WORKSPACE_DIR}/../";pwd)
 #     manifest.json.template > manifest.json
 #echo "[${SCRIPT_NAME}] build information: $(cat manifest.json | jq -r '.build')"
 
-echo "[DEBUGGGGGGGGGG] manifest.json content is $(cat manifest.json)"
+# echo "[DEBUGGGGGGGGGG] manifest.json content is $(cat manifest.json)"
 
 echo "[${SCRIPT_NAME}] extracting ZOWE_VERSION ..."
 ZOWE_VERSION=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
