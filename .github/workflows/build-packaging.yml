@@ -195,7 +195,7 @@ jobs:
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
-          default-target-path: .pax/binaryDependencies
+          default-target-path: .pax/binaryDependencies/
           expected-count: 26
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
