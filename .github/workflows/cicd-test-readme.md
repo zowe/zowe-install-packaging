@@ -132,9 +132,9 @@ Selected test running elapsed time:
 | Convenience Pax | 27m |
 | SMPE PTF | 47m |
 | Tech Preview Docker | 22m |
-| z/OS node v8 | 25m |
-| z/OS node v12 | 25m |
+| z/OS node v16 | 25m |
 | z/OS node v14 | 25m |
+| z/OS node v12 | 25m |
 | Keyring | 27m |
 | Non-strict Verify External Certificate | 25m |
 | Extensions | 35m
