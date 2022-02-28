@@ -17,3 +17,6 @@
   set_fact:
     zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export {{ item.key }}={{ item.value }}"
   loop: "{{ zowe_extra_environment_variables|dict2items }}"
+- name: Set zowe.yaml file path
+  set_fact:
+    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export ZWE_CLI_PARAMETER_CONFIG=\"{{ zowe_instance_dir }}/zowe.yaml\""

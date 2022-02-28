@@ -6,8 +6,15 @@ work_dir_remote:
 
 # default uss shell profile name
 zos_uss_user_profile: ~/.profile
+# default zowe runtime root directory
+zowe_root_dir: ~/zowe
+# instanceDir
+zowe_instance_dir: ~/.zowe/instance
 
 # to check job status, how many retries we do before exit with timeout
 job_wait_for_retries: 60
 # how many seconds delay we wait before next check of job status
 job_wait_for_delay: 5
+
+# zwe command verbose level
+zwe_command_verbose_level: "-vv"
