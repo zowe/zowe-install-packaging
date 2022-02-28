@@ -145,6 +145,7 @@ jobs:
             
             if ('${{ github.event_name }}' == 'workflow_dispatch' && '${{ github.event.inputs.BUILD_SMPE }}' == 'true') {
               total_bld_time += smpe_bld_time_addon
+            }
 
             const finish_time = new Date(new Date().getTime() + total_bld_time*60*1000);
 
