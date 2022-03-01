@@ -140,12 +140,12 @@ SET BOUNDARY(${instance-TARGET}).
 SET BOUNDARY(${instance-DISTRIBUTION}). 
  UCLIN.                                                  
  REP DDDEF(SMPWRK6)                                      
-     CYL SPACE(100,30) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE .          
+     CYL SPACE(200,30) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE .          
  ENDUCL.                                                 
 SET BOUNDARY(${instance-TARGET}). 
  UCLIN. 
  REP DDDEF(SMPWRK6)
-     CYL SPACE(100,30) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE .
+     CYL SPACE(200,30) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE .
  ENDUCL.                                       
 //*
 </inlineTemplate>
