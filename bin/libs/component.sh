@@ -350,21 +350,6 @@ process_component_appfw_plugin() {
       all_succeed=false
       break
     fi
-    appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
-    if [ -z "${appfw_plugin_id}" ]; then
-      print_error "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
-      all_succeed=false
-      break
-    fi
-
-    # copy to workspace/app-server/pluginDirs
-    appfw_plugin_workspace_path="${ZWE_zowe_workspaceDirectory}/app-server/pluginDirs/${appfw_plugin_id}"
-    mkdir -p "${appfw_plugin_workspace_path}"
-    cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
-
-    # install app
-    "${ZWE_zowe_runtimeDirectory}/components/app-server/share/zlux-app-server/bin/install-app.sh" "${appfw_plugin_workspace_path}"
-    # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
     iterator_index=`expr $iterator_index + 1`
     appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
