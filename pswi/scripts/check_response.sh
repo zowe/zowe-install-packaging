@@ -1,7 +1,5 @@
 RESP=$1
 RESPCODE=$2
-
-echo "Response code is ${RESPCODE}."
   
 REASON=`echo $RESP | grep -o '"reason":'`
 MSG=`echo $RESP | grep -o '"messageText":'`
