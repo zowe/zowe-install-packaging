@@ -273,12 +273,12 @@ jobs:
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: |
-            '.pax/zowe.pax',
-            '.pax/zowe-smpe.zip',
-            '.pax/smpe-promote.tar',
-            '.pax/pd.htm',
-            '.pax/smpe-build-logs.pax.Z',
-            '.pax/AZWE*',
+            '.pax/zowe.pax'
+            '.pax/zowe-smpe.zip'
+            '.pax/smpe-promote.tar'
+            '.pax/pd.htm'
+            '.pax/smpe-build-logs.pax.Z'
+            '.pax/AZWE*'
             '.pax/zowe-PSWI*'
 
       - name: '[TP_ZLINUX_DOCKER 1] Configure SSH'
