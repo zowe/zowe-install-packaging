@@ -47,7 +47,7 @@ done
 cert_validity=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.validity")
 if [ "${cert_type}" = "PKCS12" ]; then
   # read keystore info
-  for item in directory name password caAlias caPassword; do
+  for item in directory lock name password caAlias caPassword; do
     var_name="pkcs12_${item}"
     var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
     eval "${var_name}=\"${var_val}\""
@@ -285,12 +285,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
 
   # lock keystore directory with proper permission
   # - group permission is none
-  zwecli_inline_execute_command \
-    certificate pkcs12 lock \
-      --keystore-dir "${pkcs12_directory}" \
-      --user "${security_users_zowe}" \
-      --group "${security_groups_admin}" \
-      --group-permission none
+  if [ "$(lower_case "${pkcs12_directory}")" != "false" ]; then
+    zwecli_inline_execute_command \
+      certificate pkcs12 lock \
+        --keystore-dir "${pkcs12_directory}" \
+        --user "${security_users_zowe}" \
+        --group "${security_groups_admin}" \
+        --group-permission none
+  fi
 
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then

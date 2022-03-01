@@ -93,6 +93,7 @@
     configs:
       "zowe.setup.certificate.type": "PKCS12"
       "zowe.setup.certificate.pkcs12.directory": "{{ zowe_keystore_dir }}"
+      "zowe.setup.certificate.pkcs12.lock": "{{ zowe_lock_keystore|string|lower }}"
       "zowe.setup.certificate.pkcs12.name": "{{ zowe_keystore_alias }}"
       "zowe.setup.certificate.pkcs12.password": "{{ zowe_keystore_password }}"
       # "zowe.setup.certificate.pkcs12.caAlias": "{{ zowe_keystore_alias }}"
