@@ -255,18 +255,31 @@ jobs:
           cat rename-back.sh
           ./rename-back.sh
 
+      - name: '[SMPE Pax 4] Build PSWI'
+        if: env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        timeout-minutes: 60
+        run: |
+          cd pswi
+          chmod +x PSWI-marist.sh 
+          ./PSWI-marist.sh
+        env:
+          ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
+          ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          VERSION: ${{ env.P_VERSION }}
+
       - name: '[PAX/SMPE Publish] Upload to artifactory'
         id: publish
         timeout-minutes: 5
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: |
-            .pax/zowe.pax
-            .pax/zowe-smpe.zip
-            .pax/smpe-promote.tar
-            .pax/pd.htm
-            .pax/smpe-build-logs.pax.Z
-            .pax/AZWE*
+            '.pax/zowe.pax',
+            '.pax/zowe-smpe.zip',
+            '.pax/smpe-promote.tar',
+            '.pax/pd.htm',
+            '.pax/smpe-build-logs.pax.Z',
+            '.pax/AZWE*',
+            '.pax/zowe-PSWI*'
 
       - name: '[TP_ZLINUX_DOCKER 1] Configure SSH'
         if: env.INPUTS_BUILD_DOCKER == 'true'
