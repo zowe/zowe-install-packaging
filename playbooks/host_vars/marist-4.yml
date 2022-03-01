@@ -7,7 +7,6 @@ zowe_root_dir: /ZOWE/runtime
 zowe_instance_dir: /ZOWE/instance
 zowe_extension_dir: /ZOWE/extensions
 zowe_keystore_dir: /ZOWE/keystore
-zowe_logs_dir: /ZOWE/logs
 zowe_install_logs_dir: /ZOWE/logs
 
 zowe_smpe_volser: ZOWE03

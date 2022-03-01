@@ -104,7 +104,7 @@ zowe_dataset_prefix:
 zowe_instance_dir: ~/.zowe/instance
 # keystore directory
 zowe_keystore_dir: ~/.zowe/keystore
-#logs directory
+# install logs directory
 zowe_install_logs_dir: ~/.zowe/logs
 
 ################################################################################

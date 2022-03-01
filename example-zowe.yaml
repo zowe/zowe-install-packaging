@@ -429,29 +429,25 @@ components:
           endpoint:
             enabled: false
           provider: ""
-        jwtInitializerTimeout: 5
         x509:
           enabled: false
-        zosmf:
-          applid: IZUDFLT
-      service:
-        allowEncodedSlashes: true
-        corsEnabled: false
     server:
       internal:
       # gateway supports internal connector
         enabled: false
-        port: 7556
+        port: 7550
         ssl:
           enabled: false
           # internal connector can use different certificate
-          # certificates:
-          #   alias: ""
+          # certificate:
+          #   keystore:
+          #     alias: ""
 
     # If we customize this to use different external certificate, than should also
     # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
-    # certificates:
-    #   alias: ""
+    # certificate:
+    #   keystore:
+    #     alias: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   metrics-service:

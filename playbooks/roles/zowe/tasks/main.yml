@@ -47,11 +47,3 @@
     tasks_from: run_zwe
   vars:
     parameters: "install -l \"{{ zowe_install_logs_dir }}\""
-
-- name: List log dir
-  raw: ls -l "{{ zowe_install_logs_dir }}"
-  ignore_errors: True
-
-- name: Show installation log
-  raw: find {{ zowe_install_logs_dir }} -name "zwe-install-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
-  ignore_errors: True

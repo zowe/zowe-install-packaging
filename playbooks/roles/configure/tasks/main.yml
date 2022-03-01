@@ -11,6 +11,7 @@
     - zowe_root_dir
     - zowe_instance_dir
     - zowe_keystore_dir
+    - zowe_install_logs_dir
     - zowe_dataset_prefix
     - zowe_jcllib
     - zowe_proclib_dsname
@@ -30,9 +31,6 @@
     - zowe_apiml_catalog_port
     - zowe_apiml_discovery_port
     - zowe_apiml_gateway_port
-    - zowe_apiml_allow_encoded_slashes
-    - zowe_apiml_cors_enabled
-    - zowe_apiml_prefer_ip_address
     - zowe_apiml_gateway_timeout_millis
     - zowe_apiml_security_x509_enabled
     - zowe_apiml_security_zosmf_applid
@@ -57,6 +55,7 @@
     tasks_from: update_zowe_yaml
   vars:
     configs:
+      # FIXME: we should only keep one set
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
       "zowe.setup.dataset.proclib": "{{ zowe_proclib_dsname }}"
       "zowe.setup.dataset.parmlib": "{{ zowe_xmem_parmlib }}"
@@ -163,7 +162,7 @@
   vars:
     configs:
       "zowe.runtimeDirectory": "{{ zowe_root_dir }}"
-      "zowe.logDirectory": "{{ zowe_logs_dir }}"
+      "zowe.logDirectory": "{{ zowe_instance_dir }}/logs"
       "zowe.workspaceDirectory": "{{ zowe_instance_dir }}/workspace"
       "zowe.extensionDirectory": "{{ zowe_extension_dir }}"
       "zowe.job.name": "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
@@ -183,7 +182,6 @@
   vars:
     configs:
       "components.gateway.port": "{{ zowe_apiml_gateway_port }}"
-      # gateway configs
       "components.metrics-service.port": "{{ zowe_apiml_metrics_service_port }}"
       "components.api-catalog.port": "{{ zowe_apiml_catalog_port }}"
       "components.discovery.port": "{{ zowe_apiml_discovery_port }}"
@@ -192,6 +190,16 @@
       "components.zss.port": "{{ zowe_zss_port }}"
       "components.jobs-api.port": "{{ zowe_jobs_api_port }}"
       "components.files-api.port": "{{ zowe_mvs_api_port }}"
+      # other gateway configs
+      "components.gateway.apiml.gateway.timeoutMillis": "{{ zowe_apiml_gateway_timeout_millis }}"
+      "components.gateway.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
+      "components.gateway.apiml.security.auth.provider": "{{ zowe_apiml_security_auth_provider|string|lower }}"
+      "components.gateway.apiml.security.auth.zosmf.jwtAutoconfiguration": "{{ zowe_apiml_security_zosmf_jwt_autoconfiguration_mode }}"
+      # FIXME: uncertain configs
+      # sed -e "s+^ZWES_XMEM_SERVER_NAME=.*\$+ZWES_XMEM_SERVER_NAME={{ zowe_zss_xmem_name }}+" | \
+      # sed -e "s+^ZWED_SSH_PORT=.*\$+ZWED_SSH_PORT={{ zowe_zlux_terminal_ssh_port }}+" | \
+      # sed -e "s+^ZWED_TN3270_PORT=.*\$+ZWED_TN3270_PORT={{ zowe_zlux_terminal_telnet_port }}+" | \
+      # sed -e "s+^ZWED_TN3270_SECURITY=.*\$+ZWED_TN3270_SECURITY={{ zowe_zlux_terminal_telnet_security_type }}+" | \
 
 - name: Update zowe.yaml components enable status
   when: zowe_launch_components != '' and zowe_launch_components is not none
@@ -214,75 +222,16 @@
     with_items: "{{ zowe_launch_components.split(',') }}"
 
 # ============================================================================
-- name: Show zowe.yaml
+- name: Show zowe.yaml before zwe init
   raw: cat "{{ zowe_instance_dir }}/zowe.yaml"
 
+# ============================================================================
 - name: Init Zowe
   import_role:
     name: zos
     tasks_from: run_zwe
   vars:
     parameters: "init --update-config -l \"{{ zowe_install_logs_dir }}\""
-
-- name: Show init log
-  raw: find {{ zowe_install_logs_dir }} -name "zwe-init-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
-  ignore_errors: True
-
-# ============================================================================
-# Show ZWESECUR log
-- include_role:
-    name: zos
-    tasks_from: list_jobs
-  vars:
-    list_jobs_name: "ZWESECUR"
-- include_role:
-    name: zos
-    tasks_from: show_job_log
-  vars:
-    show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: '*'
-    show_job_log_name: "*"
-  loop: "{{ list_jobs_result.stdout_lines }}"
-
-# ============================================================================
-# Show ZWEKRING log
-- include_role:
-    name: zos
-    tasks_from: list_jobs
-  vars:
-    list_jobs_name: "ZWEKRING"
-- include_role:
-    name: zos
-    tasks_from: show_job_log
-  vars:
-    show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: '*'
-    show_job_log_name: "*"
-  loop: "{{ list_jobs_result.stdout_lines }}"
-
-# ============================================================================
-# Show ZWENOKYR log
-- include_role:
-    name: zos
-    tasks_from: list_jobs
-  vars:
-    list_jobs_name: "ZWENOKYR"
-- include_role:
-    name: zos
-    tasks_from: show_job_log
-  vars:
-    show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: '*'
-    show_job_log_name: "*"
-  loop: "{{ list_jobs_result.stdout_lines }}"
-
-# # ============================================================================
-# # Make sure we uninstall keyring setup before we do it again to avoid failures like
-# #   RACDCERT ADD('ZOWEAD3.SMPE.CERT.JWTSCRT') ID(ZWESVUSR) WITHLABEL('JWTSECRET') TRUST
-# #   IRRD111I The certificate cannot be added.  The label jwtsecret is already in use.
-# - import_role:
-#     name: zowe
-#     tasks_from: uninstall_keyring
 
 # # ============================================================================
 # # Run ZWEKRING

@@ -11,7 +11,7 @@
     - zowe_root_dir
     - zowe_instance_dir
     - zowe_extension_dir
-    - zowe_logs_dir
+    - zowe_install_logs_dir
 
 # ============================================================================
 # Download Extension
@@ -28,14 +28,14 @@
   vars:
     script_chdir: "{{ zowe_root_dir }}/bin"
     script_filename: ./zowe-install-component.sh
-    script_parameters: "-d \"{{ zowe_extension_dir }}\" -i \"{{ zowe_instance_dir }}\" -o \"{{ work_dir_remote }}/{{ zowe_extension_filename }}\" -l \"{{ zowe_logs_dir }}\""
+    script_parameters: "-d \"{{ zowe_extension_dir }}\" -i \"{{ zowe_instance_dir }}\" -o \"{{ work_dir_remote }}/{{ zowe_extension_filename }}\" -l \"{{ zowe_install_logs_dir }}\""
 
 # ============================================================================
 # Display logs
 - name: List log dir
-  raw: ls -l "{{ zowe_logs_dir}}"
+  raw: ls -l "{{ zowe_install_logs_dir}}"
   ignore_errors: True
 
 - name: Show installation log
-  raw: find {{ zowe_logs_dir}} -name "zowe-install-component*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  raw: find {{ zowe_install_logs_dir}} -name "zowe-install-component*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True

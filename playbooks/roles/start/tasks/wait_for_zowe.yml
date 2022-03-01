@@ -74,7 +74,7 @@
 
 - name: Wait for Jobs API port {{ zowe_jobs_api_port }} to be available
   uri:
-    url: "https://{{ zowe_zos_host }}:{{ zowe_jobs_api_port }}/api/v1/jobs?prefix=ZWE*&status=ACTIVE"
+    url: "https://{{ zowe_zos_host }}:{{ zowe_jobs_api_port }}/jobs/api/v1?prefix=ZWE*&status=ACTIVE"
     url_password: "{{ zowe_test_password }}"
     url_username: "{{ zowe_test_user }}"
     follow_redirects: none
@@ -86,7 +86,7 @@
   delay: "{{ wait_for_zowe_service_delay | int }}"
   # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
   # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "jobs-api" in zowe_launch_components)
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is not none and "jobs-api" in zowe_launch_components)
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
@@ -108,7 +108,7 @@
 
 - name: Wait for being able to login to API Catalog
   uri:
-    url: "https://{{ zowe_zos_host }}:{{ zowe_apiml_gateway_port }}/api/v1/apicatalog/auth/login"
+    url: "https://{{ zowe_zos_host }}:{{ zowe_apiml_gateway_port }}/apicatalog/api/v1/auth/login"
     follow_redirects: none
     method: POST
     body_format: json
@@ -174,18 +174,3 @@
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
-
-# This check will be added back later
-
-#- name: Wait for APIML Caching service to be available
-#  uri:
-#    url: "https://{{ zowe_external_domain_name }}:{{ zowe_caching_service_port }}/cachingservice/v2/api-docs"
-#    follow_redirects: none
-#    method: GET
-#    validate_certs: false
-#  register: _result
-#  until: _result.status == 200
-#  retries: "{{ wait_for_zowe_service_retries | int }}"
-#  delay: "{{ wait_for_zowe_service_delay | int }}"
-#  delegate_to: localhost
-#  when: zowe_apiml_caching_service_start
