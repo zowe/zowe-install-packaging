@@ -143,6 +143,8 @@ zowe:
     #     # **COMMONLY_CUSTOMIZED**
     #     # Keystore directory
     #     directory: /var/zowe/keystore
+    #     # Lock the keystore directory to only accessible by Zowe runtime user and group.
+    #     lock: true
     #     # # Certificate alias name. Optional, default value is localhost.
     #     # # Note: please use all lower cases as alias.
     #     # name: localhost

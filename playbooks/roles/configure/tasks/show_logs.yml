@@ -3,7 +3,7 @@
 
 # ============================================================================
 - name: Show final zowe.yaml
-  raw: cat "{{ zowe_instance_dir }}/zowe.yaml"
+  raw: cat "{{ zowe_instance_dir }}/zowe.yaml" | grep -v '^ *#' | sed '/^[[:space:]]*$/d'
 
 # ============================================================================
 - import_role:
@@ -16,8 +16,8 @@
     name: zos
     tasks_from: show_job_log
   vars:
-    show_job_log_id:
-    show_job_log_owner: '*'
+    show_job_log_id: ""
+    show_job_log_owner: "*"
     show_job_log_name: "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
 
 - import_role:
@@ -25,8 +25,8 @@
     tasks_from: show_job_log
   when: zowe_xmem_stc_name != ""
   vars:
-    show_job_log_id:
-    show_job_log_owner: '*'
+    show_job_log_id: ""
+    show_job_log_owner: "*"
     show_job_log_name: "{{ zowe_xmem_stc_name }}"
 
 # ============================================================================
@@ -41,7 +41,7 @@
     tasks_from: show_job_log
   vars:
     show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: '*'
+    show_job_log_owner: "*"
     show_job_log_name: "*"
   loop: "{{ list_jobs_result.stdout_lines }}"
 
@@ -57,7 +57,7 @@
     tasks_from: show_job_log
   vars:
     show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: '*'
+    show_job_log_owner: "*"
     show_job_log_name: "*"
   loop: "{{ list_jobs_result.stdout_lines }}"
 
@@ -73,7 +73,7 @@
     tasks_from: show_job_log
   vars:
     show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: '*'
+    show_job_log_owner: "*"
     show_job_log_name: "*"
   loop: "{{ list_jobs_result.stdout_lines }}"
 
