@@ -60,7 +60,7 @@
 
   # ============================================================================
   # if zowe_build_remote is set, we copy the FMID from zowe_fmids_dir_remote to our work folder
-  # the value of zowe_build_remote should be FMID like AZWE001
+  # the value of zowe_build_remote should be FMID like AZWE002
   - name: Copy Zowe FMID files from {{ zowe_fmids_dir_remote }}/{{ zowe_build_remote }} if it has value
     when: zowe_build_remote is defined
     import_role:
