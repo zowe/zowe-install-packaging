@@ -27,10 +27,7 @@ echo "z/OSMF version     :" $ZOSMF_V
 # JSONs      
 ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description":"ZOWE v'${VERSION}' Portable Software Instance",
 "globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${TZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Security Workflow","description":"This workflow configure zowe security manager.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWESECUR)"}},{"name":"ZOWE Certificates Workflow","description":"This workflow configure zowe security certificates.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF05)"}},{"name":"ZOWE Cross-memory Workflow","description":"This workflow configure cross-memory server.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF06)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWECRECR)"}},{"name":"ZOWE Sign a CSR request","description":"This workflow signs the certificate sign request by a local CA.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESIGNC)"}},{"name":"ZOWE Load Authentication Certificate into ESM","description":"This workflow loads a signed client authentication certificate to the ESM.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWELOADC)"}},{"name":"ZOWE Define key ring and certificates","description":"This workflow defines key ring and certificates for Zowe.",
@@ -140,16 +137,7 @@ echo "//COPYWRFS EXEC PGM=BPXBATCH" >> JCL
 echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
-echo "SH set -x;set -e;" >> JCL 
-echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESECUR.xml\";" >> JCL
-echo "target=\"//'${WORKFLOW_DSN}(ZWESECUR)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
-echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEWRF05.xml\";" >> JCL
-echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF05)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
-echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEWRF06.xml\";" >> JCL
-echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "SH set -x;set -e;" >> JCL
 echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
 echo "cp \$source \$target;" >> JCL
