@@ -255,6 +255,14 @@ jobs:
           cat rename-back.sh
           ./rename-back.sh
 
+      - name: '[PSI-LOCK] Lock marist servers'
+        uses: zowe-actions/shared-actions/lock-resource@main
+        with:
+          lock-repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-resource-name: zowe-psi-build-zzow03-lock
+          lock-avg-retry-interval: 60
+      
       - name: '[SMPE Pax 4] Build PSWI'
         if: env.INPUTS_BUILD_PSWI_SMPE == 'true'
         timeout-minutes: 60
