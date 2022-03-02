@@ -132,7 +132,7 @@
       "version": "~0.0.8-SNAPSHOT"
     },
     "org.zowe.licenses": {
-      "version": "1.25.0",
+      "version": "1.27.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -451,9 +451,9 @@
       "tag" : "1-ubuntu"
     },
     "gateway": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/gateway-service",
-        "tag" : "1-ubuntu"
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/gateway-service",
+      "tag" : "1-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
