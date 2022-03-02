@@ -35,7 +35,7 @@ if [ $? -gt 0 ];then exit -1;fi
 cd ../.pax
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
-put ${SWI_NAME}-${VERSION}.pax.Z
+put ${SWI_NAME}.pax.Z
 EOF
 cd ../pswi
 
@@ -51,8 +51,8 @@ echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;set -e;" >> JCL
 echo "mkdir -p ${EXPORT};" >> JCL
 echo "cd ${EXPORT};" >> JCL
-echo "pax -rv -f ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z;" >> JCL
-echo "rm ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z;" >> JCL
+echo "pax -rv -f ${TMP_MOUNT}/${SWI_NAME}.pax.Z;" >> JCL
+echo "rm ${TMP_MOUNT}/${SWI_NAME}.pax.Z;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"

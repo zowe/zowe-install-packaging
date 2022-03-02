@@ -316,7 +316,7 @@ echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;set -e;" >> JCL
 echo "cd ${EXPORT};" >> JCL
-echo "pax -wv -f ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z ." >> JCL
+echo "pax -wv -f ${TMP_MOUNT}/${SWI_NAME}.pax.Z ." >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
@@ -326,7 +326,7 @@ rm JCL
 cd ../.pax
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
-get ${SWI_NAME}-${VERSION}.pax.Z
+get ${SWI_NAME}.pax.Z
 EOF
 cd ../pswi
 

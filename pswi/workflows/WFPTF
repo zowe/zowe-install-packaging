@@ -80,6 +80,15 @@
         <category>General</category>
         <integer/>
     </variable>
+    <variable name="csivol" scope="instance" visibility="public">
+		  <label>CSI Volume Serial</label>
+		  <abstract>Change csivol to the volser for the CSI and SMP/E data sets, if you choose not to use the defau..</abstract>
+		  <description>Change csivol to the volser for the CSI and SMP/E data sets,&lt;br&gt;if you choose not to use the default of letting your Automatic&lt;br&gt;Class Selection (ACS) routines decide which volume to use.</description>
+		  <category>CSI</category>
+		  <string multiLine="false" valueMustBeChoice="false">
+			  <validationType>VOLSER</validationType>
+		  </string>
+	  </variable>
     <step name="DefineVariables" optional="false">
         <title>Workflow variables</title>
         <description> Prerequisite for the wf is that ptfs are already downloaded on system. On CA32 datasets with PTFs have prefix: PUBLIC.SMPE.AZWE001 </description>         
@@ -90,6 +99,7 @@
         <variableValue name="PTF1" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="PTF2" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="PTFNR" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="csivol" scope="instance" noPromptIfSet="false" required="false"/>
         <instructions substitution="false"> </instructions>
         <weight>1</weight>
         <autoEnable>true</autoEnable>
@@ -104,23 +114,23 @@
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
         <inlineTemplate substitution="true">//SYSU1UPD EXEC PGM=GIMSMP,REGION=0M 
-//SMPCSI   DD DISP=SHR,DSN=ZWE.PSWI.AZWE001.CSI
+//SMPCSI   DD DISP=SHR,DSN=${instance-CSI}.CSI
 //SMPCNTL  DD *                                 
  SET BOUNDARY(GLOBAL).                          
  UCLIN.                                         
  REP DDDEF(SYSUT1)                              
-     CYL SPACE(200,60) UNIT(SYSDA) NEW DELETE . 
+     CYL SPACE(200,60) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE . 
  ENDUCL.                                                   
 SET BOUNDARY(${instance-DISTRIBUTION}).
  UCLIN.                                                    
 REP DDDEF(SYSUT1)                                          
-    CYL SPACE(200,60) UNIT(SYSDA)       NEW DELETE         
+    CYL SPACE(200,60) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE         
      .                                                     
  ENDUCL.                                                   
 SET BOUNDARY(${instance-TARGET}).
  UCLIN.                                                    
  REP DDDEF(SYSUT1)                                         
-     CYL SPACE(200,60) UNIT(SYSDA)       NEW DELETE        
+     CYL SPACE(200,60) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE        
       .
  ENDUCL.                                                   
 //*	    
@@ -130,12 +140,12 @@ SET BOUNDARY(${instance-TARGET}).
 SET BOUNDARY(${instance-DISTRIBUTION}). 
  UCLIN.                                                  
  REP DDDEF(SMPWRK6)                                      
-     CYL SPACE(100,30) UNIT(SYSDA) NEW DELETE .          
+     CYL SPACE(200,30) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE .          
  ENDUCL.                                                 
 SET BOUNDARY(${instance-TARGET}). 
  UCLIN. 
  REP DDDEF(SMPWRK6)
-     CYL SPACE(100,30) UNIT(SYSDA) NEW DELETE .
+     CYL SPACE(200,30) UNIT(SYSDA) VOLUME(${instance-csivol}) NEW DELETE .
  ENDUCL.                                       
 //*
 </inlineTemplate>
