@@ -13,6 +13,7 @@
     touch {{ zos_uss_user_profile }} && \
     . {{ zos_uss_user_profile }} \
     {{ zowe_environment_variable_overrides | default('') }} && \
+    export ZWE_zowe_runtimeDirectory="{{ zowe_root_dir }}" && \
     test -f "{{ zowe_root_dir }}/bin/zwe" && \
     cd "{{ zowe_root_dir }}/bin" && \
     ./zwe {{ parameters | default('') }} {{ zwe_command_verbose_level }}

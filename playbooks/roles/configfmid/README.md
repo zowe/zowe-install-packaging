@@ -1,5 +1,5 @@
-# Ansible Role - Configure Zowe FMID
+# Ansible Role - Configure Zowe convenience build and PTF
 
-This role will configure Zowe after Zowe FMID has been laid down on the server.
+This role will configure Zowe after Zowe runtime has been laid down on the server.
 
-This role is separated from `configure` role because with new changes go into `configure`, it may not be compatible with configuring FMID.
+Please note: if you want to configure FMID, should use `configfmid` role.

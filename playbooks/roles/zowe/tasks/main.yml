@@ -32,7 +32,7 @@
     cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
 
 - name: Update zowe.yaml zowe.setup.dataset.prefix
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -42,7 +42,7 @@
       "zowe.setup.mvs.hlq": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe
-  import_role:
+  include_role:
     name: zos
     tasks_from: run_zwe
   vars:

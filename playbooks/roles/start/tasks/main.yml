@@ -11,14 +11,14 @@
 
 # ============================================================================
 - name: Start Cross Memory Server
-  import_role:
+  include_role:
     name: zos
     tasks_from: opercmd
   vars:
     opercmd: "S {{ zowe_xmem_stc_name }},REUSASID=YES"
 
 - name: Start Zowe
-  import_role:
+  include_role:
     name: zos
     tasks_from: run_zwe
   vars:

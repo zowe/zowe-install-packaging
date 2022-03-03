@@ -30,52 +30,24 @@
     show_job_log_name: "{{ zowe_xmem_stc_name }}"
 
 # ============================================================================
-# Show ZWESECUR log
+# Show zwe init job logs
 - include_role:
     name: zos
-    tasks_from: list_jobs
+    tasks_from: show_all_job_logs
   vars:
-    list_jobs_name: "ZWESECUR"
-- include_role:
-    name: zos
-    tasks_from: show_job_log
-  vars:
-    show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: "*"
-    show_job_log_name: "*"
-  loop: "{{ list_jobs_result.stdout_lines }}"
+    show_jobs_name: "{{ job_name_to_show }}"
+  loop:
+  - ZWESECUR
+  - ZWEKRING
+  - ZWENOKYR
+  loop_control:
+    loop_var: job_name_to_show
 
 # ============================================================================
-# Show ZWEKRING log
+# Show SMPE job logs
 - include_role:
-    name: zos
-    tasks_from: list_jobs
-  vars:
-    list_jobs_name: "ZWEKRING"
-- include_role:
-    name: zos
-    tasks_from: show_job_log
-  vars:
-    show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: "*"
-    show_job_log_name: "*"
-  loop: "{{ list_jobs_result.stdout_lines }}"
-
-# ============================================================================
-# Show ZWENOKYR log
-- include_role:
-    name: zos
-    tasks_from: list_jobs
-  vars:
-    list_jobs_name: "ZWENOKYR"
-- include_role:
-    name: zos
-    tasks_from: show_job_log
-  vars:
-    show_job_log_id: '{{ item.split(",")[0] }}'
-    show_job_log_owner: "*"
-    show_job_log_name: "*"
-  loop: "{{ list_jobs_result.stdout_lines }}"
+    name: fmid
+    tasks_from: show_logs
 
 # ============================================================================
 - name: List install log dir
