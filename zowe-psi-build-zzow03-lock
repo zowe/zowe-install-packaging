@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Mar 03 2022 20:21:33 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1646338893788737012",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/tom/PSI-v2-pipelinechanges",
-  "workflow": "Zowe Build and Packaging",
-  "job": "regular-build",
-  "actor": "FlappiTomic",
-  "runId": 1930122302,
-  "runNumber": 447,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/1930122302"
-}
+""
