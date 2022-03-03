@@ -2,7 +2,7 @@
 # This playbook performs regular configuration after Zowe is installed.
 
 # ============================================================================
-- import_role:
+- include_role:
     name: common
     tasks_from: validate_variables
   vars:
@@ -49,8 +49,19 @@
     - zowe_lock_keystore
 
 # ============================================================================
+- name: Test convenience build install folder
+  raw: test -f "{{ zowe_instance_dir }}/zowe.yaml"
+  register: zowe_yaml_exists
+  ignore_errors: True
+
+- name: Initialize zowe.yaml
+  raw: >-
+    mkdir -p "{{ zowe_instance_dir }}" && \
+    cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
+  when: zowe_yaml_exists.rc != 0
+
 - name: Update zowe.yaml zowe.setup.dataset
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -70,7 +81,7 @@
       "zowe.setup.mvs.authPluginLib": "{{ zowe_xmem_pluginlib }}"
 
 - name: Update zowe.yaml zowe.setup.security
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -89,14 +100,14 @@
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
   block:
   - name: Delete keyring certificate setup
-    import_role:
+    include_role:
       name: zos
       tasks_from: delete_zowe_yaml
     vars:
       configs:
       - zowe.setup.certificate.keyring
   - name: Update common PKCS12 setup
-    import_role:
+    include_role:
       name: zos
       tasks_from: update_zowe_yaml
     vars:
@@ -109,7 +120,7 @@
         "zowe.setup.certificate.importCertificateAuthorities.0": "{{ zowe_external_certficate_authorities }}"
   - name: Update PKCS12 setup when importing from external keystore
     when: zowe_external_certficate is not none and zowe_external_certficate != ''
-    import_role:
+    include_role:
       name: zos
       tasks_from: update_zowe_yaml
     vars:
@@ -122,14 +133,14 @@
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
   block:
   - name: Delete PKCS12 certificate setup
-    import_role:
+    include_role:
       name: zos
       tasks_from: delete_zowe_yaml
     vars:
       configs:
       - zowe.setup.certificate.pkcs12
   - name: Update common keyring setup
-    import_role:
+    include_role:
       name: zos
       tasks_from: update_zowe_yaml
     vars:
@@ -140,7 +151,7 @@
         "zowe.setup.certificate.importCertificateAuthorities.0": "{{ zowe_external_certficate_authorities }},{{ zowe_keyring_external_intermediate_ca }},{{ zowe_keyring_external_root_ca }}"
   - name: Update keyring setup when connecting to external certificate
     when: zowe_external_certficate is not none and zowe_external_certficate != ''
-    import_role:
+    include_role:
       name: zos
       tasks_from: update_zowe_yaml
     vars:
@@ -152,7 +163,7 @@
         "zowe.setup.certificate.keyring.import.password": "{{ zowe_external_certficate_alias }}"
   - name: Update keyring setup to help import z/OSMF CA
     when: zowe_external_certficate is not none and zowe_external_certficate != ''
-    import_role:
+    include_role:
       name: zos
       tasks_from: update_zowe_yaml
     vars:
@@ -161,7 +172,7 @@
         "zowe.setup.certificate.keyring.zOSMF.user": "{{ zos_zosmf_user }}"
 
 - name: Update zowe.yaml zowe.verifyCertificates to STRICT
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -170,7 +181,7 @@
   when: zowe_apiml_verify_certficates_of_services and zowe_apiml_nonstrict_verify_certficates_of_services
 
 - name: Update zowe.yaml zowe.verifyCertificates to NONSTRICT
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -179,7 +190,7 @@
   when: not zowe_apiml_verify_certficates_of_services and zowe_apiml_nonstrict_verify_certficates_of_services
 
 - name: Update zowe.yaml zowe.verifyCertificates to DISABLED
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -188,7 +199,7 @@
   when: not zowe_apiml_verify_certficates_of_services and not zowe_apiml_nonstrict_verify_certficates_of_services
 
 - name: Update zowe.yaml zowe.setup.vsam
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -199,7 +210,7 @@
       "components.caching-service.storage.vsam.name": "{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}"
 
 - name: Update zowe.yaml zowe.setup.vsam.mode to NONRLS
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -208,7 +219,7 @@
   when: not zos_vsam_rls
 
 - name: Update zowe.yaml zowe.setup.vsam.mode to RLS
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -217,7 +228,7 @@
   when: zos_vsam_rls
 
 - name: Update zowe.yaml runtime configs
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -240,7 +251,7 @@
 
 - name: Update zowe.yaml runtime configs if IP is defined
   when: zowe_external_ip_address is not none and zowe_external_ip_address != ''
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -248,7 +259,7 @@
       "zowe.externalDomains.1": "{{ zowe_external_ip_address }}"
 
 - name: Update zowe.yaml components configs
-  import_role:
+  include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
@@ -299,60 +310,8 @@
 
 # ============================================================================
 - name: Init Zowe
-  import_role:
+  include_role:
     name: zos
     tasks_from: run_zwe
   vars:
     parameters: "init --update-config -l \"{{ zowe_install_logs_dir }}\""
-
-# # ============================================================================
-# # Setup client certificates
-
-# # Upload client certificate
-# - import_role:
-#     name: configure
-#     tasks_from: upload_certificate
-#   vars:
-#     filename: USER-cert.cer
-#     method: scp
-# # Upload client CA certificate
-# # This certificate will be configured in task Add the external CA to the truststore
-# - import_role:
-#     name: configure
-#     tasks_from: upload_certificate
-#   vars:
-#     filename: APIML_External_Certificate_Authority.cer
-#     method: scp
-
-# # Upload client CA certificate in PKCS12
-# # This certificate will be configured in task Add the external CA to the keyring
-# - import_role:
-#     name: configure
-#     tasks_from: upload_certificate
-#   vars:
-#     filename: APIML_External_Certificate_Authority.p12
-#     method: sftp
-
-# - import_role:
-#     name: configure
-#     tasks_from: configure_client_certificates
-#   vars:
-#     certificate: "{{ work_dir_remote }}/USER-cert.cer"
-#     dataset: USER
-#     label: API ML Client
-
-# # ============================================================================
-# # Add external API ML CA to the truststore
-# - name: Add the external CA to the truststore
-#   import_role:
-#     name: zos
-#     tasks_from: run_script
-#   vars:
-#     script_chdir: "{{ zowe_root_dir }}/bin"
-#     script_filename: ./apiml_cm.sh
-#     script_parameters: "--action trust --service-password {{ zowe_keystore_password }} --service-truststore {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore --service-storetype PKCS12 --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
-#   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
-
-# - name: Add the external CA to the keyring
-#   raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca CERTAUTH {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password"
-#   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'

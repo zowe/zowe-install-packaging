@@ -231,5 +231,6 @@ $ ansible-playbook -l <server> show-logs.yml -v
 - **zos_keystore_mode**: An optional string to configure Zowe instance to store certificates into Keyring instead of keystore. Valid values are `<empty>` (default value) or `KEYSTORE_MODE_KEYRING`.
 - **skip_start**: A boolean value to skip automatically starting Zowe after installation. Default value is `false`.
 - **zowe_uninstall_before_install**: If you want to uninstall Zowe before installing a new version. Default value is `true`.
+- **zowe_custom_for_test**: If you want to customize the Zowe instance to run sanity test from zowe-install-packaging.
 - **ZOWE_COMPONENTS_UPGRADE**: An optional boolean value to enable upgrading Zowe components to the latest version. If set to `true`,
 the `zowe-upgrade-component.sh` script will be called to upgrade Zowe during the installation process.
