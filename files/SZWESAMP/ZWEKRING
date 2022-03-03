@@ -358,14 +358,16 @@ $$
           ACCESS(CONTROL) 
 
 /* Uncomment this command to allow other user to access key ring ... */
-/* PERMIT &ZOWEUSER..&ZOWERING..LST CLASS(RDATALIB) ID(<user>) +
-/*        ACCESS(CONTROL) 
+/* PERMIT &ZOWEUSER..&ZOWERING..LST CLASS(RDATALIB) ID(<user>) +     */
+/*        ACCESS(READ)                                               */
 
 /* Refresh to dynamically activate the changes. .................... */
    SETROPTS RACLIST(RDATALIB) REFRESH
 
-/* ALTERNATIVE to using RDATALIB profiles ...........................*/
+/* permit server user ID to access certificates .....................*/
    PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) ID(&ZOWEUSER.) +
+          ACCESS(READ)
+   PERMIT IRR.DIGTCERT.LIST CLASS(FACILITY) ID(&ZOWEUSER.) +
           ACCESS(READ)
 
 /* Uncomment this command if SITE user owns the Zowe certificate ... */
@@ -377,6 +379,7 @@ $$
 /* show results .................................................... */
    RLIST  RDATALIB &ZOWEUSER..&ZOWERING..LST ALL
    RLIST  FACILITY IRR.DIGTCERT.LISTRING ALL
+   RLIST  FACILITY IRR.DIGTCERT.LIST ALL
    RLIST  FACILITY IRR.DIGTCERT.GENCERT ALL
 
 /* List the keyring ................................................ */
