@@ -141,7 +141,7 @@ echo "SH set -x;set -e;" >> JCL
 echo "echo \$_UNIX03" >> JCL
 echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
-echo "cp -T \$source \$target;" >> JCL
+echo "cp -F T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECRECR.xml;" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWECRECR)'\";" >> JCL
 echo "sed \"s|UTF-8|IBM-1047|g\" \$source > \$target;" >> JCL
