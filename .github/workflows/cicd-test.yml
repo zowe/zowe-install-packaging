@@ -22,7 +22,6 @@ on:
           - Convenience Pax
           - SMPE FMID
           - SMPE PTF
-          - Tech Preview Docker
           - Extensions
           - Keyring
           - z/OS node v12
@@ -70,7 +69,6 @@ env:
   CONVENIENCE_PAX_TESTFILE: basic/install.ts
   SMPE_FMID_TESTFILE: basic/install-fmid.ts
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
-  TECH_PREVIEW_DOCKER_TESTFILE: basic/install-docker.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
   ZOS_NODE_V12_TESTFILE: extended/node-versions/node-v12.ts
@@ -79,8 +77,8 @@ env:
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04)
+  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v8.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04)
 
 jobs:
   display-dispatch-event-id:
@@ -120,10 +118,6 @@ jobs:
 
           "SMPE PTF")
             test_file="${{ env.SMPE_PTF_TESTFILE }}"
-            ;;
-
-          "Tech Preview Docker")
-            test_file="${{ env.TECH_PREVIEW_DOCKER_TESTFILE }}"
             ;;
 
           "Extensions")
@@ -302,7 +296,7 @@ jobs:
           }
           
           total_check=3
-          if [[ "${{ matrix.test }}" == *"install-ext"* ]] || [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
+          if [[ "${{ matrix.test }}" == *"install-ext"* ]]; then
             ((total_check++))
           fi
 
@@ -526,84 +520,6 @@ jobs:
           fi
 
           ##################################################################################################
-          ### 5. Process custom-zowe-tp-docker-artifactory-pattern (if test-docker is selected)
-          ##################################################################################################
-          if [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
-            if [[ -n "$ZOWE_ARTIFACTORY_FINAL" ]]; then
-              # note that in here, $ZOWE_ARTIFACTORY_FINAL must be pax because smpe.zip should already be ruled out and fail before reaching here
-              # get the build name and build number of the zowe pax we processed.
-              json_output=$(jfrog rt search "$ZOWE_ARTIFACTORY_FINAL")
-              processed_zowe_art_bldname=$(echo "$json_output" | jq -r '.[].props."build.name"[]')
-              processed_zowe_art_bldnum=$(echo "$json_output" | jq -r '.[].props."build.number"[]')
-              
-              # then get branch name from the build name returned above
-              # build name should be either 'zowe-install-packaging/branchname' (jenkins) or 'zowe-install-packaging :: branchname' (GHA)
-              processed_zowe_art_branchname=$(echo "$processed_zowe_art_bldname" | sed "s|zowe-install-packaging/||g")
-              if [[ "$processed_zowe_art_branchname" == "$processed_zowe_art_bldname" ]]; then
-                # means above sed replacement command didn't work, forward slash does not exists, highly likely this build is made from jenkins
-                # try with colon colon as some builds are published from jenkins in the past and expecting to have colon colon in the build name
-                processed_zowe_art_branchname=$(echo "$processed_zowe_art_bldname" | sed "s|zowe-install-packaging :: ||g")
-                if [[ "$processed_zowe_art_branchname" == "$processed_zowe_art_bldname" ]]; then
-                  printf "${RED}[Check ${total_check} ERROR] Unable to parse branch name from $processed_zowe_art_bldname as it is not a valid build name.\n"
-                  printf "${RED}[Check ${total_check} ERROR] Just for the record, the zowe artifactory path is $ZOWE_ARTIFACTORY_FINAL\n"
-                  exit 1
-                fi
-              fi
-
-              echo "[Check ${total_check} INFO] Zowe artifactory full path earlier is $ZOWE_ARTIFACTORY_FINAL"
-              echo "[Check ${total_check} INFO] The build name got from above is $processed_zowe_art_bldname"
-              echo "[Check ${total_check} INFO] The build number got from above is $processed_zowe_art_bldnum"
-              echo "[Check ${total_check} INFO] The branch name got from above is $processed_zowe_art_branchname"
-              echo "[Check ${total_check} INFO] We will use build number parsed $processed_zowe_art_bldnum to search if docker build exists in the same build."
-
-              # now use processed build name and build number to search the docker artifact associated with it
-              if [[ -n "$processed_zowe_art_bldname" ]] && [[ -n "$processed_zowe_art_bldnum" ]] && [[ -n "$processed_zowe_art_branchname" ]]; then
-                if [[ "$processed_zowe_art_branchname" == "master" ]] ; then
-                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#snapshot#g")
-                else
-                  processed_zowe_art_branchname=$(echo "$processed_zowe_art_branchname" | sed "s#\/#-#g")
-                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#$processed_zowe_art_branchname#g")
-                fi
-
-                echo "[Check ${total_check} INFO] TP docker artifactory pattern is $zowe_tp_docker_artifactory_pattern"
-                ZOWE_TP_DOCKER_ARTIFACTORY=$(jfrog_search_build "$zowe_tp_docker_artifactory_pattern" "$processed_zowe_art_bldname" "$processed_zowe_art_bldnum")
-                ZOWE_TP_DOCKER_ARTIFACTORY_URL="https://zowe.jfrog.io/zowe/$ZOWE_TP_DOCKER_ARTIFACTORY"
-              else
-                printf "${RED}[Check ${total_check} ERROR] Either the parsing of build name, build number or branch name of $ZOWE_ARTIFACTORY_FINAL failed.\n"
-                exit 1
-              fi
-            else
-              printf "${RED}[Check ${total_check} ERROR] Zowe artifactory full path is not processed properly. This is extremely rare.\n"
-              exit 1
-            fi
-
-            # try to know if this docker artifact searched comes from an older build and gives warning
-            if [[ "$ZOWE_TP_DOCKER_ARTIFACTORY" == *"server-bundle.amd64"*tar ]]; then
-              tpdocker_out=$(jfrog rt search "$ZOWE_TP_DOCKER_ARTIFACTORY")
-              tpdocker_bld_name=$(echo "$tpdocker_out" | jq -r '.[].props."build.name"[]')
-              tpdocker_bld_num=$(echo "$tpdocker_out" | jq -r '.[].props."build.number"[]')
-
-              # encode '/' or ' ' in tpdocker build name to avoid confusion for jfrog REST API
-              if [[ "$tpdocker_bld_name" == *"/"* ]]; then
-                tpdocker_bld_name_encoded=$(echo "$tpdocker_bld_name" | sed "s|/|\%2F|g")
-              elif [[ "$tpdocker_bld_name" == *"::"* ]]; then
-                tpdocker_bld_name_encoded=$(echo "$tpdocker_bld_name" | sed "s| |\%20|g")
-              fi
-
-              latest_pax_bld_num=$(jfrog rt curl -s -XGET "/api/build/$tpdocker_bld_name_encoded" | jq '.buildsNumbers[0].uri' | sed "s|/||g" | sed "s|\"||g" )
-        
-              if [[ "$latest_pax_bld_num" != "$tpdocker_bld_num" ]]; then            
-                printf "${YELLOW}[Check $total_check WARNING] I see that you are trying to grab an older docker build $tpdocker_bld_num on $tpdocker_bld_name.\n"
-                printf "${YELLOW}[Check $total_check WARNING] However just be aware that there are more code changes (newer builds) after $tpdocker_bld_num, which is $latest_pax_bld_num.\n"
-                printf "${YELLOW}[Check $total_check WARNING] You should always test latest code on your branch unless you want to compare with older builds for regression.\n"            
-              fi
-            fi
-
-            assert_env_var ZOWE_TP_DOCKER_ARTIFACTORY_URL
-            printf "${GREEN}[Check $total_check/$total_check] Zowe tech preview docker artifactory full path processing complete!${NC}\n"
-          fi
-
-          ##################################################################################################
           ### Set outputs
           ##################################################################################################
           echo ::set-output name=ZOWE_ARTIFACTORY_FINAL::$ZOWE_ARTIFACTORY_FINAL
@@ -623,7 +539,6 @@ jobs:
           printf "Zowe artifactory path: ${CYAN}$ZOWE_ARTIFACTORY_FINAL${NC}\n"
           printf "Zowe artifactory file name: ${CYAN}$ZOWE_ARTIFACTORY_FINAL_FILENAME${NC}\n"
           printf "Zowe CLI artifactory path: ${CYAN}$ZOWE_CLI_ARTIFACTORY_FINAL${NC}\n"
-          printf "Zowe TP Docker artifactory path: ${CYAN}$ZOWE_TP_DOCKER_ARTIFACTORY_URL${NC}\n"
           printf "Zowe extension list: ${CYAN}$EXTENSION_LIST${NC}\n"
           printf "Test server: ${CYAN}$TEST_SERVER${NC}\n"
           printf "Test server nickname: ${CYAN}$TEST_SERVER_NICKNAME${NC}\n"
@@ -733,9 +648,6 @@ jobs:
                 break;
               case 'SMPE PTF':
                 eta = 47
-                break;
-              case 'Tech Preview docker':
-                eta = 22
                 break;
               case 'Extensions':
                 eta = 35
