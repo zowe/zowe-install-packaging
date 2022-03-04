@@ -52,6 +52,22 @@
     msg: zowe_root_dir is {{ zowe_root_dir }}
 
 # ============================================================================
+- name: Detect PROCLIB automatically
+  when: zowe_proclib_dsname == "auto"
+  block:
+  - name: Get PROCLIB concatenation
+    import_role:
+      name: zos
+      tasks_from: opercmd
+    vars:
+      opercmd: "$D PROCLIB"
+  - name: Find the first proclib
+    set_fact:
+      zowe_proclib_dsname: "{{ opercmd_result.stdout | regex_search(qry, '\\1') | first }}"
+    vars:
+      qry: \$HASP319 +DD\(1\)=\(DSNAME=(.+),
+
+# ============================================================================
 - name: Test convenience build install folder
   raw: test -f "{{ zowe_instance_dir }}/zowe.yaml"
   register: zowe_yaml_exists
