@@ -118,25 +118,14 @@ else
   fi  
 fi
 
-echo "Preparing workflows"
-sed "s|UTF-8|IBM-1047|g" ../workflows/files/ZWECRECR.xml > workflows/ZWECRECR
-sed "s|UTF-8|IBM-1047|g" ../workflows/files/ZWEKRING.xml > workflows/ZWEKRING
-sed "s|UTF-8|IBM-1047|g" ../workflows/files/ZWELOADC.xml > workflows/ZWELOADC
-sed "s|UTF-8|IBM-1047|g" ../workflows/files/ZWESIGNC.xml > workflows/ZWESIGNC
-
-
-# Store wokflows in the WORKFLOW dataset
-echo "Uploading workflows into ${DIR} directory thru SSH"
+# Store ZWEWRF02 wokflow in the WORKFLOW dataset
+echo "Uploading workflow ZWEWRF02 into ${DIR} directory thru SSH"
 
 cd workflows
 
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${WORK_MOUNT}
 put ZWEWRF02
-put ZWECRECR
-put ZWEKRING
-put ZWELOADC
-put ZWESIGNC
 EOF
 cd ..
 
@@ -151,19 +140,19 @@ echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;set -e;" >> JCL
 echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
-echo "source=\"${WORK_MOUNT}/ZWECRECR\";" >> JCL
+echo "cp -T \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECRECR.xml;" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWECRECR)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
-echo "source=\"${WORK_MOUNT}/ZWEKRING\";" >> JCL
+echo "cp -T \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEKRING.xml;" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEKRING)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
-echo "source=\"${WORK_MOUNT}/ZWELOADC\";" >> JCL
+echo "cp -T \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWELOADC.xml;" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWELOADC)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
-echo "source=\"${WORK_MOUNT}/ZWESIGNC\";" >> JCL
+echo "cp -T \$source \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESIGNC.xml;" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
