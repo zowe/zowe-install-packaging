@@ -119,7 +119,7 @@ if [ $ptf -eq 0 ];then
 # Create PSWI
 sh 03_create.sh
 create=$?
-
+exit -1
 # Cleanup after the creation of PSWI
 sh 04_create_cleanup.sh
 
