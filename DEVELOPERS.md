@@ -39,7 +39,7 @@ Zowe YAML configuration has a section for you to define PROCLIB where Zowe STCs 
 ```yaml
 zowe:
   setup:
-    mvs:
+    dataset:
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: IBMUSER.PROCLIB
