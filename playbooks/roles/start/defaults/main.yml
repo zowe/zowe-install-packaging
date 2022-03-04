@@ -2,8 +2,8 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
-# 60 * 10 seconds = 10 mins
-wait_for_zowe_service_retries: 60
+# 120 * 10 seconds = 20 mins
+wait_for_zowe_service_retries: 120
 # Every 10 seconds
 wait_for_zowe_service_delay: 10
 
