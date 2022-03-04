@@ -417,7 +417,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
       # FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
-      #        the CA imported could have lable like LABEL00000001.
+      #        the CA imported could have label like LABEL00000001.
 
       yaml_keyring_label="${keyring_label}"
       ;;
