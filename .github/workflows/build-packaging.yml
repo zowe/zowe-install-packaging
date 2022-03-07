@@ -13,8 +13,8 @@ on:
         required: false
         default: false
         type: boolean
-      BUILD_PSIANDSMPE:
-        description: 'Build PSI and SMPE'
+      BUILD_PSWI_SMPE:
+        description: 'Build PSWI and SMPE'
         required: false
         default: false
         type: boolean
@@ -125,9 +125,9 @@ jobs:
             BUILD_WHAT=$BUILD_WHAT", SMPE"
           fi
           
-          echo INPUTS_BUILD_PSIANDSMPE=${{ github.event.inputs.BUILD_PSIANDSMPE }} >> $GITHUB_ENV
-          if [[ "${{ github.event.inputs.BUILD_PSIANDSMPE }}" == true ]]; then
-            BUILD_WHAT=$BUILD_WHAT", PSIANDSMPE"
+          echo INPUTS_BUILD_PSWI_SMPE=${{ github.event.inputs.BUILD_PSWI_SMPE }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_PSWI_SMPE }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", PSWI+SMPE"
           fi
                   
           echo INPUTS_BUILD_DOCKER=${{ github.event.inputs.BUILD_DOCKER }} >> $GITHUB_ENV
@@ -197,17 +197,19 @@ jobs:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/content/zowe-${{ env.P_VERSION }}/files/
           expected-count: 30
+        # env:
+        #   DEBUG: 'zowe-actions:shared-actions:jfrog-download'
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
       - name: '[SMPE Download 2] Get publish target path'
         timeout-minutes: 5
-        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI_SMPE == 'true'
         uses: zowe-actions/shared-actions/publish@main
 
       - name: '[SMPE Download 3] Download SMPE build log'
         timeout-minutes: 5
-        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI_SMPE == 'true'
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
@@ -218,7 +220,7 @@ jobs:
       - name: '[PAX/SMPE 1] Pre-packaging'
         id: pax-prep
         run: |
-          if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSIANDSMPE }}" == "true" ] ; then
+          if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSWI_SMPE }}" == "true" ] ; then
             echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
             echo ::set-output name=BUILD_SMPE::yes
           else
@@ -226,11 +228,6 @@ jobs:
             echo ::set-output name=BUILD_SMPE::
           fi
           
-          if [ "${{ env.INPUTS_BUILD_PSIANDSMPE }}" == "true" ] ; then
-            echo ::set-output name=BUILD_PSI::yes
-          else
-            echo ::set-output name=BUILD_PSI::
-          fi
           if [ "${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
             echo ::set-output name=KEEP_TEMP_FOLDER::yes
           else
@@ -250,16 +247,36 @@ jobs:
           extra-environment-vars: |
             ZOWE_VERSION=${{ env.P_VERSION }}
             BUILD_SMPE=${{ steps.pax-prep.outputs.BUILD_SMPE }}
-            BUILD_PSI=${{ steps.pax-prep.outputs.BUILD_PSI }}
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
 
       - name: '[SMPE Pax 3] Post-make pax'
-        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSIANDSMPE == 'true'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI_SMPE == 'true'
         run: |
           cd .pax
           chmod +x rename-back.sh
           cat rename-back.sh
           ./rename-back.sh
+
+      - name: '[PSI-LOCK] Lock marist servers to build PSWI'
+        uses: zowe-actions/shared-actions/lock-resource@main
+        if: env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        with:
+          lock-repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-resource-name: zowe-psi-build-zzow03-lock
+          lock-avg-retry-interval: 60
+      
+      - name: '[SMPE Pax 4] Build PSWI'
+        if: env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        timeout-minutes: 60
+        run: |
+          cd pswi
+          chmod +x PSWI-marist.sh 
+          ./PSWI-marist.sh
+        env:
+          ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
+          ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          VERSION: ${{ env.P_VERSION }}
 
       - name: '[PAX/SMPE Publish] Upload to artifactory'
         id: publish
@@ -273,6 +290,7 @@ jobs:
             .pax/pd.htm
             .pax/smpe-build-logs.pax.Z
             .pax/AZWE*
+            .pax/zowe-PSWI*
 
       - name: '[TP_ZLINUX_DOCKER 1] Configure SSH'
         if: env.INPUTS_BUILD_DOCKER == 'true'
