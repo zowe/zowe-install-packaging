@@ -364,7 +364,12 @@ $$
 /* Refresh to dynamically activate the changes. .................... */
    SETROPTS RACLIST(RDATALIB) REFRESH
 
-/* permit server user ID to access certificates .....................*/
+/* IRR.DIGTCERT logic pre-dates RDATALIB logic, and is not used when */
+/* the RDATALIB profile is used. The following PERMIT commands are . */
+/* present for customers who do not wish to use RDATALIB and want to */
+/* continue using their existing IRR.DIGTCERT setup. Note that the . */
+/* PERMIT commands will fail if the IRR.DIGTCERT profiles do not ... */
+/* already exist. .................................................. */
    PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) ID(&ZOWEUSER.) +
           ACCESS(READ)
    PERMIT IRR.DIGTCERT.LIST CLASS(FACILITY) ID(&ZOWEUSER.) +
