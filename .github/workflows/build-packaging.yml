@@ -229,8 +229,9 @@ jobs:
           cat rename-back.sh
           ./rename-back.sh
 
-      - name: '[PSI-LOCK] Lock marist servers'
+      - name: '[PSI-LOCK] Lock marist servers to build PSWI'
         uses: zowe-actions/shared-actions/lock-resource@main
+        if: env.INPUTS_BUILD_PSWI_SMPE == 'true'
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

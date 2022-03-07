@@ -22,7 +22,7 @@ print_level1_message "Remove Zowe keyring"
 ###############################
 # run ZWENOKYR JCL
 keyring_run_zwenokyr_jcl \
-  "${ZWE_CLI_PARAMETER_HLQ}" \
+  "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" \
   "${ZWE_CLI_PARAMETER_JCLLIB}" \
   "${ZWE_CLI_PARAMETER_KEYRING_OWNER}" \
   "${ZWE_CLI_PARAMETER_KEYRING_NAME}" \
