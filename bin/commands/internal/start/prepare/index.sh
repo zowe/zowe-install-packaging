@@ -190,8 +190,15 @@ configure_components() {
       cd "${component_dir}"
 
       # prepare component workspace
-      component_name=$(basename "${component_dir}")
+      component_name=$(read_component_manifest "${component_dir}" ".name")
+      mkdir -p "${ZWE_zowe_workspaceDirectory}/${component_name}"
       mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}"
+
+      # copy manifest to workspace
+      component_manifest=$(get_component_manifest "${component_dir}")
+      if [ ! -z "${component_manifest}" -a -f "${component_manifest}" ]; then
+        cp "${component_manifest}" "${ZWE_zowe_workspaceDirectory}/${component_name}/"
+      fi
 
       print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- configure ${component_id}"
 

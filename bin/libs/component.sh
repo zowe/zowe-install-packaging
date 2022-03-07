@@ -264,7 +264,7 @@ process_component_apiml_static_definitions() {
     return 1
   fi
 
-  component_name=$(basename "${component_dir}")
+  component_name=$(read_component_manifest "${component_dir}" ".name")
   all_succeed=true
 
   static_defs=$(read_component_manifest "${component_dir}" ".apimlServices.static[].file" 2>/dev/null)
@@ -391,33 +391,22 @@ process_component_appfw_plugin() {
 process_component_gateway_shared_libs() {
   component_dir="${1}"
 
+  # make sure $ZWE_GATEWAY_SHARED_LIBS exists
+  mkdir -p "${ZWE_GATEWAY_SHARED_LIBS}"
+
   all_succeed=true
   iterator_index=0
-  plugin_id=
-  gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   while [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
 
-    if [ -z "${plugin_id}" ]; then
-      # prepare plugin directory
-      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
-      gateway_shared_libs_workspace_path="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/${plugin_id}"
-      mkdir -p "${gateway_shared_libs_workspace_path}"
-    fi
-
-    # copy to workspace/gateway/sharedLibs/
+    # copy libraries to workspace/gateway/sharedLibs/
+    # Due to limitation of how Java loading shared libraries, all jars are copied to ZWE_GATEWAY_SHARED_LIBS directly.
+    # Potentially jar file names from different extensions may conflict/overwrite each other
     if [ -f "${gateway_shared_libs_path}" ]; then
-      gateway_shared_libs_path_dir=$(dirname "${gateway_shared_libs_path}")
-      if [ "${gateway_shared_libs_path_dir}" = "." ]; then
-        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}"
-      else
-        mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
-        cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path_dir}"
-      fi
+      cp "${gateway_shared_libs_path}" "${ZWE_GATEWAY_SHARED_LIBS}"
     elif [ -d "${gateway_shared_libs_path}" ]; then
-      mkdir -p "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
-      cp -r "${gateway_shared_libs_path}/." "${gateway_shared_libs_workspace_path}/${gateway_shared_libs_path}"
+      cp -r "${gateway_shared_libs_path}/." "${ZWE_GATEWAY_SHARED_LIBS}"
     else
       print_error "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
       all_succeed=false
