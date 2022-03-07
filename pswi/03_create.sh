@@ -143,16 +143,16 @@ echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
 echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECRECR.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWECRECR)'\";" >> JCL
-echo "sed \"s|UTF-8|IBM-1047|g\" \$source > \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEKRING.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEKRING)'\";" >> JCL
-echo "sed \"s|UTF-8|IBM-1047|g\" \$source > \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWELOADC.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWELOADC)'\";" >> JCL
-echo "sed \"s|UTF-8|IBM-1047|g\" \$source > \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESIGNC.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >> JCL
-echo "sed \"s|UTF-8|IBM-1047|g\" \$source > \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
