@@ -118,17 +118,6 @@ else
   fi  
 fi
 
-# Store ZWEWRF02 wokflow in the WORKFLOW dataset
-echo "Uploading workflow ZWEWRF02 into ${DIR} directory thru SSH"
-
-cd workflows
-
-sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
-cd ${WORK_MOUNT}
-put ZWEWRF02
-EOF
-cd ..
-
 echo "Copying workflows to ${WORKFLOW_DSN} data set."
 
 echo ${JOBST1} > JCL
@@ -138,7 +127,7 @@ echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;set -e;" >> JCL
-echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEWRF02.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
 echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECRECR.xml\";" >> JCL
@@ -154,7 +143,7 @@ echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESIGNC.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >> JCL
 echo "cp -T \$source \$target;" >> JCL
 echo "/*" >> JCL
-exit -1
+
 sh scripts/submit_jcl.sh "`cat JCL`"
 if [ $? -gt 0 ];then exit -1;fi
 rm JCL
