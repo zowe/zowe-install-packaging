@@ -138,21 +138,27 @@ echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;" >> JCL 
+echo "cd ${WORK_MOUNT};" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWESECUR.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESECUR)'\";" >> JCL
-echo "cp -T \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWESECUR;" >> JCL                         
+echo "cp -T _ZWESECUR \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF03.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF03)'\";" >> JCL
-echo "cp -T \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF03;" >> JCL                         
+echo "cp -T _ZWEWRF03 \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF05.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF05)'\";" >> JCL
-echo "cp -T \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF05;" >> JCL                         
+echo "cp -T _ZWEWRF05 \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF06.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
-echo "cp -T \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF06;" >> JCL                         
+echo "cp -T _ZWEWRF06 \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF02.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
-echo "cp -T \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF02;" >> JCL                         
+echo "cp -T _ZWEWRF02 \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
