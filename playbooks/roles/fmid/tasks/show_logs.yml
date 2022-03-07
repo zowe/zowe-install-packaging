@@ -1,0 +1,22 @@
+---
+# Show SMPE related Job Logs
+
+# ============================================================================
+# Show SMPE job logs
+- include_role:
+    name: zos
+    tasks_from: show_all_job_logs
+  vars:
+    show_jobs_name: "{{ job_name_to_show }}"
+  loop:
+  - ZWE0GUNZ
+  loop_control:
+    loop_var: job_name_to_show
+- include_role:
+    name: zos
+    tasks_from: show_all_job_logs
+  vars:
+    show_jobs_name: "{{ job_name_to_show }}"
+  loop: "{{ zowe_smpe_fmid_install_steps }}"
+  loop_control:
+    loop_var: job_name_to_show

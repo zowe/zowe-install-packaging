@@ -6,15 +6,15 @@ zowe_root_dir: /ZOWE/staging/zowe
 zowe_instance_dir: /ZOWE/tmp/.zowe
 zowe_extension_dir: /ZOWE/extensions
 zowe_keystore_dir: /ZOWE/tmp/keystore
-zowe_logs_dir: /ZOWE/tmp/logs
 zowe_install_logs_dir: /ZOWE/tmp/logs
 zowe_dataset_prefix: ZOWEAD3.ZWE
 zowe_apiml_verify_certficates_of_services: false
 # enable Non-Strict verify certificates by default
 zowe_apiml_nonstrict_verify_certficates_of_services: true
+zowe_jcllib: ZOWEAD3.JCLLIB
 zowe_xmem_proclib: VENDOR.PROCLIB
-# this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib: ZOWEAD3.LOADLIB
+zowe_xmem_pluginlib: ZOWEAD3.PLUGLIB
 zowe_xmem_parmlib: ZOWEAD3.PARMLIB
 # # variables for zowe smpe uninstallation and installation
 # during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed

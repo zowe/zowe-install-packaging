@@ -16,15 +16,15 @@
 require_zowe_yaml
 
 ###############################
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe high level qualifier (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+# read prefix and validate
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+if [ -z "${prefix}" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 if [ -z "${jcllib}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
 security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
@@ -47,7 +47,7 @@ done
 cert_validity=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.validity")
 if [ "${cert_type}" = "PKCS12" ]; then
   # read keystore info
-  for item in directory name password caAlias caPassword; do
+  for item in directory lock name password caAlias caPassword; do
     var_name="pkcs12_${item}"
     var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
     eval "${var_name}=\"${var_val}\""
@@ -285,12 +285,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
 
   # lock keystore directory with proper permission
   # - group permission is none
-  zwecli_inline_execute_command \
-    certificate pkcs12 lock \
-      --keystore-dir "${pkcs12_directory}" \
-      --user "${security_users_zowe}" \
-      --group "${security_groups_admin}" \
-      --group-permission none
+  if [ "$(lower_case "${pkcs12_directory}")" != "false" ]; then
+    zwecli_inline_execute_command \
+      certificate pkcs12 lock \
+        --keystore-dir "${pkcs12_directory}" \
+        --user "${security_users_zowe}" \
+        --group "${security_groups_admin}" \
+        --group-permission none
+  fi
 
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
@@ -338,7 +340,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
 
     zwecli_inline_execute_command \
       certificate keyring-jcl clean \
-      --hlq "${hlq}" \
+      --dataset-prefix "${prefix}" \
       --jcllib "${jcllib}" \
       --keyring-owner "${keyring_owner}" \
       --keyring-name "${keyring_name}" \
@@ -356,7 +358,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # generate new cert in keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl generate \
-        --hlq "${hlq}" \
+        --dataset-prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
@@ -384,7 +386,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # connect existing certs to zowe keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl connect \
-        --hlq "${hlq}" \
+        --dataset-prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
@@ -402,7 +404,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
       # import certs from data set into zowe keyring
       zwecli_inline_execute_command \
         certificate keyring-jcl import-ds \
-        --hlq "${hlq}" \
+        --dataset-prefix "${prefix}" \
         --jcllib "${jcllib}" \
         --keyring-owner "${keyring_owner}" \
         --keyring-name "${keyring_name}" \
@@ -415,7 +417,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
       # FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
-      #        the CA imported could have lable like LABEL00000001.
+      #        the CA imported could have label like LABEL00000001.
 
       yaml_keyring_label="${keyring_label}"
       ;;
@@ -443,12 +445,12 @@ EOF
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "JCERACFKS"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "dummy"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "password"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${yaml_keyring_label}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "JCERACFKS"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "dummy"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" ""
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" ""
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}"
@@ -462,12 +464,12 @@ EOF
     print_message "    keystore:"
     print_message "      type: JCERACFKS"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
-    print_message "      password: \"dummy\""
+    print_message "      password: \"password\""
     print_message "      alias: \"${yaml_keyring_label}\""
     print_message "    truststore:"
     print_message "      type: JCERACFKS"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
-    print_message "      password: \"dummy\""
+    print_message "      password: \"password\""
     print_message "    pem:"
     print_message "      key: \"\""
     print_message "      certificate: \"\""

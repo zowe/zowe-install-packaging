@@ -24,10 +24,10 @@ authPluginLib|Zowe authorized plugin library|dsntype(library) dsorg(po) recfm(u)
 # validation
 require_zowe_yaml
 
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe high level qualifier (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+# read prefix and validate
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+if [ -z "${prefix}" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
 ###############################
@@ -39,13 +39,13 @@ while read -r line; do
   spec=$(echo "${line}" | awk -F"|" '{print $3}')
   
   # read def and validate
-  ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.${key}")
+  ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.${key}")
   if [ -z "${ds}" ]; then
     # authLoadlib can be empty
     if [ "${key}" = "authLoadlib" ]; then
       continue
     else
-      print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.mvs.${key}) is not defined in Zowe YAML configuration file." "" 157
+      print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.dataset.${key}) is not defined in Zowe YAML configuration file." "" 157
     fi
   fi
   # check existence
@@ -76,10 +76,10 @@ if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" !
 else
   ###############################
   # copy sample lib members
-  parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
+  parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
   for ds in ZWESIP00; do
-    print_message "Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
-    data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
+    data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi
@@ -88,11 +88,11 @@ else
   ###############################
   # copy auth lib members
   # FIXME: data_set_copy_to_data_set cannot be used to copy program?
-  authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
+  authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authLoadlib")
   if [ -n "${authLoadlib}" ]; then
     for ds in ZWESIS01 ZWESAUX; do
       print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
-      # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
       copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
       if [ $? -ne 0 ]; then
         print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
@@ -100,7 +100,7 @@ else
     done
     for ds in ZWELNCH; do
       print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${ds})"
-      # data_set_copy_to_data_set "${hlq}" "${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
       copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
       if [ $? -ne 0 ]; then
         print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111

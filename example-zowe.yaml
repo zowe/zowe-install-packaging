@@ -36,10 +36,10 @@ zowe:
   #-------------------------------------------------------------------------------
   setup:
     # MVS data set related configurations
-    mvs:
+    dataset:
       # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
-      hlq: IBMUSER.ZWEV2
+      prefix: IBMUSER.ZWEV2
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: USER.PROCLIB
@@ -50,7 +50,7 @@ zowe:
       # JCL library where Zowe will store temporary JCLs during initialization
       jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
       # APF authorized LOADLIB for Zowe
-      # Optional. If it's empty, <hlq>.SZWEAUTH will be APF authorized.
+      # Optional. If it's empty, <prefix>.SZWEAUTH will be APF authorized.
       authLoadlib: ""
       # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins
@@ -98,6 +98,8 @@ zowe:
         # **COMMONLY_CUSTOMIZED**
         # Keystore directory
         directory: /var/zowe/keystore
+        # # Lock the keystore directory to only accessible by Zowe runtime user and group.
+        # lock: true
         # **COMMONLY_CUSTOMIZED**
         # # Certificate alias name. Optional, default value is localhost.
         # # Note: please use all lower cases as alias.
@@ -141,6 +143,8 @@ zowe:
     #     # **COMMONLY_CUSTOMIZED**
     #     # Keystore directory
     #     directory: /var/zowe/keystore
+    #     # Lock the keystore directory to only accessible by Zowe runtime user and group.
+    #     lock: true
     #     # # Certificate alias name. Optional, default value is localhost.
     #     # # Note: please use all lower cases as alias.
     #     # name: localhost
@@ -428,30 +432,26 @@ components:
         authorization:
           endpoint:
             enabled: false
-          provider:
-        jwtInitializerTimeout: 5
+          provider: ""
         x509:
           enabled: false
-        zosmf:
-          applid: IZUDFLT
-      service:
-        allowEncodedSlashes: true
-        corsEnabled: false
     server:
       internal:
       # gateway supports internal connector
         enabled: false
-        port: 7556
+        port: 7550
         ssl:
           enabled: false
           # internal connector can use different certificate
-          # certificates:
-          #   alias:
+          # certificate:
+          #   keystore:
+          #     alias: ""
 
     # If we customize this to use different external certificate, than should also
     # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
-    # certificates:
-    #   alias:
+    # certificate:
+    #   keystore:
+    #     alias: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   metrics-service:
@@ -487,7 +487,7 @@ components:
       vsam:
         # your VSAM data set created by ZWECSVSM job
         # this is required if storage mode is VSAM
-        name: 
+        name: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:

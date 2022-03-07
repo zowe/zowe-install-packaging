@@ -44,52 +44,6 @@
 
 # ============================================================================
 # Wait for Zowe services be started
-# - name: Wait for ZSS at {{zowe_zos_host}} port {{ zowe_zss_port }} to be available
-#   uri:
-#     url: "{{ zowe_zss_https | ternary('https', 'http') }}://{{ zowe_zos_host }}:{{ zowe_zss_port }}/plugins"
-#     follow_redirects: none
-#     method: GET
-#     validate_certs: false
-#   register: _result
-#   until: _result.status == 200
-#   retries: "{{ wait_for_zowe_service_retries | int }}"
-#   delay: "{{ wait_for_zowe_service_delay | int }}"
-#   when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "zss" in zowe_launch_components)
-#   delegate_to: localhost
-
-- name: Wait for Desktop at {{zowe_zos_host}} port {{ zowe_zlux_port }} to be available
-  uri:
-    url: "https://{{ zowe_zos_host }}:{{ zowe_zlux_port }}"
-    follow_redirects: all
-    method: GET
-    validate_certs: false
-  register: _result
-  until: _result.status == 200
-  retries: "{{ wait_for_zowe_service_retries | int }}"
-  delay: "{{ wait_for_zowe_service_delay | int }}"
-  # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
-  # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "app-server" in zowe_launch_components)
-  delegate_to: localhost
-
-- name: Wait for Jobs API port {{ zowe_jobs_api_port }} to be available
-  uri:
-    url: "https://{{ zowe_zos_host }}:{{ zowe_jobs_api_port }}/api/v1/jobs?prefix=ZWE*&status=ACTIVE"
-    url_password: "{{ zowe_test_password }}"
-    url_username: "{{ zowe_test_user }}"
-    follow_redirects: none
-    method: GET
-    validate_certs: false
-  register: _result
-  until: _result.status == 200
-  retries: "{{ wait_for_zowe_service_retries | int }}"
-  delay: "{{ wait_for_zowe_service_delay | int }}"
-  # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
-  # started off z/OS and then we couldn't test right now
-  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "jobs-api" in zowe_launch_components)
-  delegate_to: localhost
-  # hide log to avoid exposing zowe_test_user and zowe_test_password
-  no_log: True
 
 - name: Wait for APIML port {{ zowe_apiml_gateway_port }} to be available
   uri:
@@ -108,7 +62,7 @@
 
 - name: Wait for being able to login to API Catalog
   uri:
-    url: "https://{{ zowe_zos_host }}:{{ zowe_apiml_gateway_port }}/api/v1/apicatalog/auth/login"
+    url: "https://{{ zowe_zos_host }}:{{ zowe_apiml_gateway_port }}/apicatalog/api/v1/auth/login"
     follow_redirects: none
     method: POST
     body_format: json
@@ -130,26 +84,39 @@
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
 
-# - name: Wait for being able to login to ZSS
-#   uri:
-#     url: "{{ zowe_zss_https | ternary('https', 'http') }}://{{ zowe_zos_host }}:{{ zowe_zss_port }}/login"
-#     follow_redirects: none
-#     method: POST
-#     body_format: json
-#     body: 
-#       username: "{{ zowe_test_user }}"
-#       password: "{{ zowe_test_password }}"
-#     validate_certs: false
-#     status_code:
-#     - 200
-#   register: _result
-#   until: _result.status == 200
-#   retries: "{{ wait_for_zowe_service_retries | int }}"
-#   delay: "{{ wait_for_zowe_service_delay | int }}"
-#   delegate_to: localhost
-#   when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "zss" in zowe_launch_components)
-#   # hide log to avoid exposing zowe_test_user and zowe_test_password
-#   no_log: True
+- name: Wait for Jobs API port {{ zowe_jobs_api_port }} to be available
+  uri:
+    url: "https://{{ zowe_zos_host }}:{{ zowe_jobs_api_port }}/jobs/api/v1?prefix=ZWE*&status=ACTIVE"
+    url_password: "{{ zowe_test_password }}"
+    url_username: "{{ zowe_test_user }}"
+    follow_redirects: none
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
+  # started off z/OS and then we couldn't test right now
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is not none and "jobs-api" in zowe_launch_components)
+  delegate_to: localhost
+  # hide log to avoid exposing zowe_test_user and zowe_test_password
+  no_log: True
+
+- name: Wait for Desktop at {{zowe_zos_host}} port {{ zowe_zlux_port }} to be available
+  uri:
+    url: "https://{{ zowe_zos_host }}:{{ zowe_zlux_port }}"
+    follow_redirects: all
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
+  # started off z/OS and then we couldn't test right now
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "app-server" in zowe_launch_components)
+  delegate_to: localhost
 
 - name: Wait for being able to login to zLux
   uri:
@@ -175,17 +142,36 @@
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
 
-# This check will be added back later
+# - name: Wait for being able to login to ZSS
+#   uri:
+#     url: "{{ zowe_zss_https | ternary('https', 'http') }}://{{ zowe_zos_host }}:{{ zowe_zss_port }}/login"
+#     follow_redirects: none
+#     method: POST
+#     body_format: json
+#     body: 
+#       username: "{{ zowe_test_user }}"
+#       password: "{{ zowe_test_password }}"
+#     validate_certs: false
+#     status_code:
+#     - 200
+#   register: _result
+#   until: _result.status == 200
+#   retries: "{{ wait_for_zowe_service_retries | int }}"
+#   delay: "{{ wait_for_zowe_service_delay | int }}"
+#   delegate_to: localhost
+#   when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "zss" in zowe_launch_components)
+#   # hide log to avoid exposing zowe_test_user and zowe_test_password
+#   no_log: True
 
-#- name: Wait for APIML Caching service to be available
-#  uri:
-#    url: "https://{{ zowe_external_domain_name }}:{{ zowe_caching_service_port }}/cachingservice/v2/api-docs"
-#    follow_redirects: none
-#    method: GET
-#    validate_certs: false
-#  register: _result
-#  until: _result.status == 200
-#  retries: "{{ wait_for_zowe_service_retries | int }}"
-#  delay: "{{ wait_for_zowe_service_delay | int }}"
-#  delegate_to: localhost
-#  when: zowe_apiml_caching_service_start
+# - name: Wait for ZSS at {{zowe_zos_host}} port {{ zowe_zss_port }} to be available
+#   uri:
+#     url: "{{ zowe_zss_https | ternary('https', 'http') }}://{{ zowe_zos_host }}:{{ zowe_zss_port }}/plugins"
+#     follow_redirects: none
+#     method: GET
+#     validate_certs: false
+#   register: _result
+#   until: _result.status == 200
+#   retries: "{{ wait_for_zowe_service_retries | int }}"
+#   delay: "{{ wait_for_zowe_service_delay | int }}"
+#   when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "zss" in zowe_launch_components)
+#   delegate_to: localhost

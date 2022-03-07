@@ -11,6 +11,8 @@ zos_node_home:
 file_upload_method: sftp
 # if we perform hash (MD5) check before uploading the file
 file_upload_hashcheck: false
+# instanceDir
+zowe_instance_dir: ~/.zowe/instance
 
 # default the security system to RACF. Should be one of RACF, ACF2, or TSS
 zos_security_system: RACF

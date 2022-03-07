@@ -1,0 +1,19 @@
+# This playbook will run zwe command on the server
+
+# input:
+# - parameters: optional
+
+- name: Check if zowe_root_dir has a value
+  fail:
+    msg: zowe_root_dir is required
+  when: zowe_root_dir is not defined or zowe_root_dir is none or zowe_root_dir == ''
+
+- name: Run zwe command
+  raw: >-
+    touch {{ zos_uss_user_profile }} && \
+    . {{ zos_uss_user_profile }} \
+    {{ zowe_environment_variable_overrides | default('') }} && \
+    export ZWE_zowe_runtimeDirectory="{{ zowe_root_dir }}" && \
+    test -f "{{ zowe_root_dir }}/bin/zwe" && \
+    cd "{{ zowe_root_dir }}/bin" && \
+    ./zwe {{ parameters | default('') }} {{ zwe_command_verbose_level }}

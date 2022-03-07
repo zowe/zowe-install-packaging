@@ -1,0 +1,18 @@
+---
+# This task will purge all jobs with same name
+
+# Input:
+# - purge_jobs_name: job names like ZWESECUR
+
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "{{ purge_jobs_name }}"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"

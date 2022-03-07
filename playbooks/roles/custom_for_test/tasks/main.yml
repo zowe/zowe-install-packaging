@@ -1,0 +1,101 @@
+---
+# This playbook performs regular configuration after Zowe is installed.
+
+# ============================================================================
+- include_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - work_dir_remote
+    - zowe_root_dir
+    # - zowe_instance_dir
+    # - zowe_keystore_dir
+    # - zowe_install_logs_dir
+    # - zowe_dataset_prefix
+    # - zowe_jcllib
+    # - zowe_proclib_dsname
+    # - zowe_proclib_membername
+    # - zowe_runtime_group
+    # - zowe_runtime_user
+    # - zowe_xmem_proclib
+    # - zowe_xmem_parmlib
+    # # optional
+    # # - zowe_xmem_loadlib
+    # - zowe_xmem_pluginlib
+    # - zowe_xmem_proclib_member_zss
+    # - zowe_xmem_proclib_member_aux
+    # - zowe_xmem_stc_user
+    # - zowe_job_prefix
+    # - zowe_instance_id
+    # - zowe_apiml_catalog_port
+    # - zowe_apiml_discovery_port
+    # - zowe_apiml_gateway_port
+    # - zowe_apiml_gateway_timeout_millis
+    # - zowe_apiml_security_x509_enabled
+    # - zowe_apiml_security_zosmf_applid
+    # - zowe_apiml_security_auth_provider
+    # - zowe_jobs_api_port
+    # - zowe_mvs_api_port
+    # - zowe_jobs_explorer_port
+    # - zowe_mvs_explorer_port
+    # - zowe_uss_explorer_port
+    # - zowe_zlux_port
+    # - zowe_zss_port
+    # - zowe_zss_xmem_name
+    # - zowe_zlux_terminal_ssh_port
+    # - zowe_zlux_terminal_telnet_port
+    # - zos_security_system
+    # - zowe_lock_keystore
+
+# # ============================================================================
+# # Setup client certificates
+
+# # Upload client certificate
+# - include_role:
+#     name: configure
+#     tasks_from: upload_certificate
+#   vars:
+#     filename: USER-cert.cer
+#     method: scp
+# # Upload client CA certificate
+# # This certificate will be configured in task Add the external CA to the truststore
+# - include_role:
+#     name: configure
+#     tasks_from: upload_certificate
+#   vars:
+#     filename: APIML_External_Certificate_Authority.cer
+#     method: scp
+
+# # Upload client CA certificate in PKCS12
+# # This certificate will be configured in task Add the external CA to the keyring
+# - include_role:
+#     name: configure
+#     tasks_from: upload_certificate
+#   vars:
+#     filename: APIML_External_Certificate_Authority.p12
+#     method: sftp
+
+# - include_role:
+#     name: configure
+#     tasks_from: configure_client_certificates
+#   vars:
+#     certificate: "{{ work_dir_remote }}/USER-cert.cer"
+#     dataset: USER
+#     label: API ML Client
+
+# # ============================================================================
+# # Add external API ML CA to the truststore
+# - name: Add the external CA to the truststore
+#   include_role:
+#     name: zos
+#     tasks_from: run_script
+#   vars:
+#     script_chdir: "{{ zowe_root_dir }}/bin"
+#     script_filename: ./apiml_cm.sh
+#     script_parameters: "--action trust --service-password {{ zowe_keystore_password }} --service-truststore {{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore --service-storetype PKCS12 --certificate {{ work_dir_remote }}/APIML_External_Certificate_Authority.cer --alias amlexca"
+#   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+
+# - name: Add the external CA to the keyring
+#   raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca CERTAUTH {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password"
+#   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'

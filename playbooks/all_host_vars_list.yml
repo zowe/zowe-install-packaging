@@ -5,24 +5,32 @@
 
 # You can use this as starting point of a new host or host group.
 
+convert_for_k8s:
+k8s_context:
+k8s_discovery_domain:
+k8s_gateway_domain:
+k8s_list_domain_ip: localhost
+k8s_networking:
+k8s_pv_name:
+k8s_required_apps: ["api-catalog", "app-server", "caching", "explorer-jes", "explorer-mvs", "explorer-uss", "discovery", "files-api", "gateway", "jobs-api"]
+k8s_service: loadbalancer
+k8s_storageclass: 
+kubeconfig:
 work_dir_remote:
 zos_java_home:
 zos_node_home:
-zos_keystore_mode:
 zos_security_system: RACF
 zos_vsam_rls: false
 zos_zosmf_ca:
 zos_zosmf_host:
 zos_zosmf_port: 10443
 zos_zosmf_user: IZUSVR
-zowe_apiml_allow_encoded_slashes: true
 zowe_apiml_catalog_port: 7552
-zowe_apiml_cors_enabled: false
 zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
 zowe_apiml_gateway_timeout_millis: 600000
+zowe_apiml_metrics_service_port: 7551
 zowe_apiml_nonstrict_verify_certficates_of_services: true
-zowe_apiml_prefer_ip_address: false
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_x509_enabled: false
 zowe_apiml_security_zosmf_applid: IZUDFLT
@@ -47,6 +55,7 @@ zowe_fmids_dir_remote:
 zowe_install_logs_dir: ~/.zowe/logs
 zowe_instance_dir: ~/.zowe/instance
 zowe_instance_id: 1
+zowe_jcllib:
 zowe_job_prefix: ZWE
 zowe_jobs_api_port: 7600
 zowe_jobs_explorer_port: 7560
@@ -58,17 +67,17 @@ zowe_keystore_alias: localhost
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_keystore_password: password
 zowe_launch_components:
-# Restrict permissions to keystores after the certificate setup script
+zowe_launch_scripts_loglevel:
 zowe_lock_keystore: true
-zowe_logs_dir: ~/.zowe/logs
 zowe_mvs_api_port: 7559
 zowe_mvs_explorer_port: 7561
 zowe_proclib_dsname: auto
-zowe_proclib_membername: ZWESVSTC
+zowe_proclib_membername: ZWESLSTC
 zowe_ptf_install_jcls:
 zowe_root_dir: ~/zowe
 zowe_runtime_group: ZWEADMIN
 zowe_runtime_user: ZWESVUSR
+zowe_sanity_test_debug_mode: ""
 zowe_smpe_dir_prefix: /var
 zowe_smpe_hlq_csi:
 zowe_smpe_hlq_dsn:
@@ -78,13 +87,11 @@ zowe_smpe_rel_file_prefix:
 zowe_smpe_volser:
 zowe_test_password:
 zowe_test_user:
-zowe_token_label: jwtsecret
-zowe_token_name: ZWETOKEN
 zowe_user_profile: ~/.zowe_profile
 zowe_uss_explorer_port: 7562
-# this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib:
 zowe_xmem_parmlib:
+zowe_xmem_pluginlib:
 zowe_xmem_proclib:
 zowe_xmem_proclib_member_aux: ZWESASTC
 zowe_xmem_proclib_member_zss: ZWESISTC
@@ -99,3 +106,4 @@ zowe_zosmf_certificate:
 zowe_zss_https: True
 zowe_zss_port: 7557
 zowe_zss_xmem_name: ZWESIS_STD
+zwe_command_verbose_level: "-vv"

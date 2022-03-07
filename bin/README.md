@@ -133,9 +133,9 @@ For examples:
 
 - `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` server command is located.
 - `ZWE_zowe_workspaceDirectory` is the path of user customized workspace directory.
-- `ZWE_zowe_setup_mvs_hlq` is the high level qualifier where Zowe MVS data sets are installed.
-- `ZWE_zowe_setup_mvs_parmlib` is the data set that end-user configured to store his customized version of parameter library members.
-- `ZWE_zowe_setup_mvs_authPluginLib` is the data set that end-user configured to store his APF authorized ZIS plugins load library.
+- `ZWE_zowe_setup_dataset_prefix` is the dataset prefix where Zowe MVS data sets are installed.
+- `ZWE_zowe_setup_dataset_parmlib` is the data set that end-user configured to store his customized version of parameter library members.
+- `ZWE_zowe_setup_dataset_authPluginLib` is the data set that end-user configured to store his APF authorized ZIS plugins load library.
 - `ZWE_zowe_setup_security_users_zowe` is the name of Zowe runtime user.
 - `ZWE_configs_port` is your component port number you can use in your start script. It points to the value of `haInstances.<current-ha-instance>.components.<your-component>.port`, or fall back to `components.<my-component>.port`, or fall back to `configs.port` defined in your component manifest.
 
