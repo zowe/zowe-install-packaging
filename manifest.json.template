@@ -80,42 +80,42 @@
     "org.zowe.apiml.sdk.api-catalog-package": {
       "version": "~1.27.0-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.discovery-package": {
       "version": "~1.27.0-SNAPSHOT",
       "artifact": "discovery-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.gateway-package": {
       "version": "~1.27.0-SNAPSHOT",
       "artifact": "gateway-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.caching-service-package": {
       "version": "~1.27.0-SNAPSHOT",
       "artifact": "caching-service-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
       "version": "~1.27.0-SNAPSHOT",
       "artifact": "metrics-service-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
       "version": "~1.27.0-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~1.21.3-SNAPSHOT",
       "artifact": "common-java-lib-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "~1.27.0-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.launcher": {
       "version": "~0.0.3-SNAPSHOT"
@@ -126,7 +126,7 @@
       "target": ".pax/keyring-util/keyring-util",
       "explode": "false",
       "flat": "true",
-      "excludePatterns": ["*PR*"]
+      "exclusions": ["*PR*"]
    },
     "org.zowe.utility_tools": {
       "version": "~0.0.8-SNAPSHOT"
