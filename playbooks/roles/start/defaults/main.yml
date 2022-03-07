@@ -2,12 +2,10 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
-# 60 * 10 seconds = 10 mins
-wait_for_zowe_service_retries: 60
+# 120 * 10 seconds = 20 mins
+wait_for_zowe_service_retries: 120
 # Every 10 seconds
 wait_for_zowe_service_delay: 10
-# If we clean up history job output befor starting new
-cleanup_zowe_job_history: True
 
 # ==============================================================================
 # Variables should be verified and overwrittern.

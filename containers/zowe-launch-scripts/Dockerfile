@@ -10,7 +10,7 @@
 #######################################################################
 
 # base image tag
-ARG ZOWE_BASE_IMAGE=latest-ubuntu
+ARG ZOWE_BASE_IMAGE=2-ubuntu
 
 FROM zowe-docker-release.jfrog.io/ompzowe/base-node:${ZOWE_BASE_IMAGE}
 
@@ -36,4 +36,4 @@ COPY --chown=zowe:zowe zowe/LICENSE /licenses
 
 ##################################
 # start command
-CMD ["/component/bin/internal/container-init.sh"]
+CMD ["/bin/sh", "-c", "/component/bin/zwe internal container init"]

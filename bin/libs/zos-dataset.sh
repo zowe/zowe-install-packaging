@@ -99,7 +99,7 @@ copy_to_data_set() {
 }
 
 data_set_copy_to_data_set() {
-  hlq="${1}"
+  prefix="${1}"
   ds_from="${2}"
   ds_to="${3}"
   allow_overwrite="${4}"
@@ -110,7 +110,7 @@ data_set_copy_to_data_set() {
     fi
   fi
 
-  cmd="exec '${hlq}.${ZWE_PRIVATE_DS_SZWEEXEC}(ZWEMCOPY)' '${ds_from} ${ds_to}'"
+  cmd="exec '${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC}(ZWEMCOPY)' '${ds_from} ${ds_to}'"
   print_debug "- tsocmd ${cmd}"
   result=$(tsocmd "${cmd}" 2>&1)
   code=$?
@@ -349,10 +349,14 @@ create_data_set_tmp_member() {
   ds=${1}
   prefix=${2:-ZW}
 
+  print_trace "  > create_data_set_tmp_member in ${ds}"
   while true ; do
     member=$(echo "${prefix}${RANDOM}" | cut -c1-8)
+    print_trace "    - test ${member}"
     member_exist=$(is_data_set_exists "${ds}(${member})")
+    print_trace "    - exist? ${member_exist}"
     if [ "${member_exist}" != "true" ]; then
+      print_trace "    - good"
       echo "${member}"
       break
     fi

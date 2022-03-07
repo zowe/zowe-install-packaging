@@ -11,6 +11,47 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+# get ping command, could be empty
+get_ping() {
+  ping=
+
+  # z/OS
+  ping -? 2>/dev/null 1>/dev/null
+  if [ $? -eq 0 ]; then
+    ping="ping"
+  fi
+
+  # z/OS
+  if [ -z "${ping}" ]; then
+    oping -? 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+      ping="oping"
+    fi
+  fi
+
+  # non-z/OS, try which
+  if [ -z "${ping}" ]; then
+    which ping 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+      ping="ping"
+    fi
+  fi
+
+  # non-z/OS may not support -? option, or -? exit code is not 0
+  if [ -z "${ping}" ]; then
+    ping -c 1 localhost 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+      ping="ping"
+    fi
+  fi
+
+  if [ -n "${ping}" ]; then
+    echo "${ping}"
+  else
+    return 1
+  fi
+}
+
 # get netstat command, could be empty
 get_netstat() {
   # z/OS
@@ -52,9 +93,11 @@ is_port_available() {
     return 1
   fi
 
+  # QUESTION: should we ignore netstat command stderr?
+
   case $(uname) in
     "OS/390")
-      result=$(${netstat} -c SERVER -P ${port} 2>/dev/null)
+      result=$(${netstat} -c SERVER -P ${port} 2>&1)
       code=$?
       if [ ${code} -ne 0 ]; then
         print_error "Netstat test fail with exit code ${code} (${result})"
@@ -67,7 +110,7 @@ is_port_available() {
       fi
       ;;
     "Darwin")
-      result=$(${netstat} -an -p tcp 2>/dev/null)
+      result=$(${netstat} -an -p tcp 2>&1)
       code=$?
       if [ ${code} -ne 0 ]; then
         print_error "Netstat test fail with exit code ${code} (${result})"
@@ -81,7 +124,7 @@ is_port_available() {
       ;;
     *)
       # assume it's Linux format
-      result=$(${netstat} -nlt 2>/dev/null)
+      result=$(${netstat} -nlt 2>&1)
       code=$?
       if [ ${code} -ne 0 ]; then
         print_error "Netstat test fail with exit code ${code} (${result})"
@@ -94,4 +137,53 @@ is_port_available() {
       fi
       ;;
   esac
+}
+
+# get current IP address
+get_ipaddress() {
+  hostname=$1
+  method=
+  ip=
+
+  # dig is preferred than ping
+  dig_result=$(dig -4 +short ${hostname} 2>/dev/null || dig +short ${hostname} 2>/dev/null)
+  if [ -n "${dig_result}" ]; then
+    method=dig
+    ip=$(echo "${dig_result}" | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | head -1)
+  fi
+
+  # try ping
+  if [ -z "${ip}" ]; then
+    ping=$(get_ping)
+    timeout=2
+    ip=
+    if [ -n "${ping}" ]; then
+      # try to get IPv4 address only
+      # - z/OS: -A ipv4
+      # - Linux: -4
+      # - Mac: not supported
+      # timeout
+      # - z/OS: -t
+      # - Linux: -W
+      # - Mac: -t
+      # try in sequence of z/OS, Linux, Mac
+      ping_result=$(${ping} -c 1 -A ipv4 -t ${timeout} ${hostname} 2>/dev/null || ${ping} -c 1 -4 -W ${timeout} ${hostname} 2>/dev/null || ${ping} -c 1 -t ${timeout} ${hostname} 2>/dev/null)
+      if [ $? -eq 0 ]; then
+        method=ping
+        ip=$(echo "${ping_result}" | sed -n -E 's/^[^(]+\(([^)]+)\).*/\1/p' | head -1)
+      fi
+    fi
+  fi
+
+  # we don't have dig and ping, let's check /etc/hosts
+  if [ -z "${ip}" -a -f /etc/hosts ]; then
+    method=hosts
+    ip=$(cat /etc/hosts | awk '{$1=$1;print}' | grep -v -e '^#' | grep -v -e '^$' | grep -e " ${hostname}$" | awk '{print $1}' | grep -v ':' | head -1)
+  fi
+
+  if [ -n "${ip}" ]; then
+    echo "${ip}"
+  else
+    return 1
+  fi
 }

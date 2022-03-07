@@ -26,10 +26,8 @@ zowe:
       users:
         # Zowe runtime user name of main service
         zowe: IBMUSER
-        # Zowe runtime user name of Cross Memory Server
-        xmem: IBMUSER
-        # Zowe runtime user name of Auxilary Service
-        aux: IBMUSER
+        # Zowe runtime user name of ZIS
+        zis: IBMUSER
 ```
 
 With this change, `zwe init` command will be initialized to configure permissions for your own user ID. The `zowe.setup.security.users.zowe` setting can affect both `zwe init security` and `zwe init certificate` steps.
@@ -41,7 +39,7 @@ Zowe YAML configuration has a section for you to define PROCLIB where Zowe STCs 
 ```yaml
 zowe:
   setup:
-    mvs:
+    dataset:
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: IBMUSER.PROCLIB

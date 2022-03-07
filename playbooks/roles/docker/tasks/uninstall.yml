@@ -1,6 +1,0 @@
----
-- name: remove docker if running
-  raw: >-
-    docker ps --format "{% raw %}{{.ID}} {{.Image}}{% endraw %}" 2>&1 | grep {{ zowe_docker_image }} | awk '{print $1}' | xargs -r docker rm -f
-  ignore_errors: True
-  delegate_to: localhost

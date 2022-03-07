@@ -278,20 +278,13 @@ configure_components() {
 ###############################
 # Few early steps even before initialization
 
-# we want to reset TMPDIR as early as possible
+# init ZWE_RUN_IN_CONTAINER variable
 ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'workspaceDirectory')
 if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
 fi
 if [ -f "${ZWE_zowe_workspaceDirectory}/.init-for-container" ]; then
   export ZWE_RUN_IN_CONTAINER=true
-fi
-# write tmp to here so we can enable readOnlyRootFilesystem
-if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
-  print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Setting TMPDIR to ${ZWE_zowe_workspaceDirectory}/.tmp."
-  mkdir -p "${ZWE_zowe_workspaceDirectory}/.tmp"
-  export TMPDIR="${ZWE_zowe_workspaceDirectory}/.tmp"
-  export TMP="${ZWE_zowe_workspaceDirectory}/.tmp"
 fi
 
 # Fix node.js piles up in IPC message queue
@@ -303,13 +296,16 @@ fi
 
 ###############################
 # display starting information
-print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'version' 'version')"
+export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
+print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v${ZWE_VERSION}"
 print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and hash: $(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'number') ($(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'commitHash'))"
-print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "starting Zowe instance ${ZWE_CLI_PARAMETER_HA_INSTANCE} with ${ZWE_CLI_PARAMETER_CONFIG} ..."
 
 ###############################
 # validation
-require_java
+if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
+  # other extensions need to specify `require_java` in their validate.sh
+  require_java
+fi
 require_node
 require_zowe_yaml
 
@@ -318,6 +314,7 @@ ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.la
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 sanitize_ha_instance_id
+print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "starting Zowe instance ${ZWE_CLI_PARAMETER_HA_INSTANCE} with ${ZWE_CLI_PARAMETER_CONFIG} ..."
 
 # extra preparations for running in container 
 # this is running in containers

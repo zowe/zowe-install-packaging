@@ -40,7 +40,7 @@ $SCRIPT Hlq Csihlq Thlq Dhlq Pathprefix download_path zfs_path FMID PREFIX volse
  b.  For GIMUNZIP job:
  6  download_path   /tmp            where PAX and README are located
  7  zfs_path 	    /tmp/zowe/smpe	SMPDIR where GIMUNZIP unzips the PAX file
- 8  FMID	        AZWE001	        The FMID for this release (omitted in archid of SMPMCS?)
+ 8  FMID	        AZWE002	        The FMID for this release (omitted in archid of SMPMCS?)
  9  PREFIX	        ZOE             RELFILE prefix?
 10  volser          B3PRD3          volume serial number of a DASD volume to hold MVS datasets 
 
@@ -219,7 +219,7 @@ fi
 # Extract the GIMUNZIP job step
 # sed -n '/\/\/GIMUNZIP /,$p' $download_path/$FMID.$README > gimunzip.jcl0
 sed -n '/\/\/GIMUNZIP /,$p' $zfs_path/readme.EBCDIC.jcl > $zfs_path/gimunzip.jcl0
-# chmod a+r AZWE001.readme.EBCDIC.txt
+# chmod a+r AZWE002.readme.EBCDIC.txt
 
 # Tailor the GIMUNZIP JCL
 # sed "\

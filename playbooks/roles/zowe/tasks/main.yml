@@ -16,30 +16,34 @@
 
 - name: Extract Zowe
   raw: >-
-    rm -fr "{{ work_dir_remote }}/extracted" && \
-    mkdir -p "{{ work_dir_remote }}/extracted" && \
-    cd "{{ work_dir_remote }}/extracted" && \
-    pax -ppx -rf '{{ work_dir_remote }}/{{ zowe_build_file }}'
+    rm -fr "{{ zowe_root_dir }}" && \
+    mkdir -p "{{ zowe_root_dir }}" && \
+    cd "{{ zowe_root_dir }}" && \
+    pax -ppx -rf '{{ work_dir_remote }}/{{ zowe_build_file }}' && \
+    echo "Content of {{ zowe_root_dir }} after extracted" && \
+    ls -laT
 
-# after extracted, we should have a folder like "zowe-1.9.0"
-- name: Check subfolder after Zowe build is extracted
-  raw: cd "{{ work_dir_remote }}/extracted" && ls -1 | tr -d '\n'
-  register: zowe_build_extracted_subfolder
-  failed_when: zowe_build_extracted_subfolder.stdout == ""
+- name: Show Zowe manifest
+  raw: cat "{{ zowe_root_dir }}/manifest.json"
+
+- name: Initialize zowe.yaml
+  raw: >-
+    mkdir -p "{{ zowe_instance_dir }}" && \
+    cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
+
+- name: Update zowe.yaml zowe.setup.dataset.prefix
+  include_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      # FIXME: we should only keep one set
+      "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
+      "zowe.setup.mvs.hlq": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe
-  import_role:
+  include_role:
     name: zos
-    tasks_from: run_script
+    tasks_from: run_zwe
   vars:
-    script_chdir: "{{ work_dir_remote }}/extracted/{{ zowe_build_extracted_subfolder.stdout }}/install"
-    script_filename: ./zowe-install.sh
-    script_parameters: "-i \"{{ zowe_root_dir }}\" -h \"{{ zowe_dataset_prefix }}\" -l \"{{ zowe_install_logs_dir }}\""
-
-- name: List log dir
-  raw: ls -l "{{ zowe_install_logs_dir }}"
-  ignore_errors: True
-
-- name: Show installation log
-  raw: find {{ zowe_install_logs_dir }} -name "zowe-install-*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
-  ignore_errors: True
+    parameters: "install -l \"{{ zowe_install_logs_dir }}\""

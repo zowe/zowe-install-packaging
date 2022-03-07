@@ -47,29 +47,27 @@ do
         echo "    image: ${image}";
     fi
 
-    for config in $(echo "instance-env zowe-yaml") ; do
-        if [ "${eachImageDep}" = "zowe-launch-scripts" ]; then
-            cd "${PROJECT_ROOT_PWD}/containers/kubernetes/workloads/${config}"
-            for file in $(find . -type f -name "*.yaml"); do
-                if [ -n "${debug}" ]; then
-                    echo "    updating: workloads/${config}/${file}"
-                fi
-                if [ "${file}" = "./cleanup-static-definitions-cronjob.yaml" ];
-                then
-                    IMAGE="${image}" yq e -i '.spec.jobTemplate.spec.template.spec.containers[0].image = strenv(IMAGE)' "${file}"
-                else
-                    IMAGE="${image}" yq e -i '.spec.template.spec.initContainers[0].image = strenv(IMAGE)' "${file}"
-                fi
-            done
-            # replace image line with information parsed from manifest
-        else
+    if [ "${eachImageDep}" = "zowe-launch-scripts" ]; then
+        cd "${PROJECT_ROOT_PWD}/containers/kubernetes/workloads"
+        for file in $(find . -type f -name "*.yaml"); do
             if [ -n "${debug}" ]; then
-                echo "    updating: workloads/${config}/${eachImageDep}-${kind}.yaml"
+                echo "    updating: workloads/${file}"
             fi
-            yamlFile="${PROJECT_ROOT_PWD}/containers/kubernetes/workloads/${config}/${eachImageDep}-${kind}.yaml"
-            IMAGE="${image}" yq e -i '.spec.template.spec.containers[0].image = strenv(IMAGE)' "${yamlFile}"
+            if [ "${file}" = "./cleanup-static-definitions-cronjob.yaml" ];
+            then
+                IMAGE="${image}" yq e -i '.spec.jobTemplate.spec.template.spec.containers[0].image = strenv(IMAGE)' "${file}"
+            else
+                IMAGE="${image}" yq e -i '.spec.template.spec.initContainers[0].image = strenv(IMAGE)' "${file}"
+            fi
+        done
+        # replace image line with information parsed from manifest
+    else
+        if [ -n "${debug}" ]; then
+            echo "    updating: workloads/${eachImageDep}-${kind}.yaml"
         fi
-    done
+        yamlFile="${PROJECT_ROOT_PWD}/containers/kubernetes/workloads/${eachImageDep}-${kind}.yaml"
+        IMAGE="${image}" yq e -i '.spec.template.spec.containers[0].image = strenv(IMAGE)' "${yamlFile}"
+    fi
 done
 
 # parse version in manifest and replace each file in kubernetes directory with current version

@@ -9,15 +9,15 @@ work_dir_remote: /var/zowe/ansible
 zowe_root_dir: /var/zowe/runtime
 zowe_instance_dir: /var/zowe/zowe-instance-dir
 zowe_keystore_dir: /var/zowe/keystore
-zowe_logs_dir: /var/zowe/logs
 zowe_install_logs_dir: /var/zowe/logs
 
 zowe_dataset_prefix: ZWE.V1R0M0
 zowe_apiml_verify_certficates_of_services: false
+zowe_jcllib: CLJIA.JCLLIB
 zowe_proclib_dsname: DSWMG.PROCLIB
 zowe_xmem_proclib: DSWMG.PROCLIB
-# this variable is deprecated in favor of zowe_dataset_prefix
 zowe_xmem_loadlib: CLJIA.LOADLIB
+zowe_xmem_pluginlib: CLJIA.PLUGLIB
 zowe_xmem_parmlib: CLJIA.PARMLIB
 # variables for zowe smpe uninstallation and installation
 # during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed

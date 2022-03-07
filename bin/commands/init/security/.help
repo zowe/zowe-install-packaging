@@ -7,8 +7,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```
 zowe:
   setup:
-    mvs:
-      hlq: IBMUSER.ZWE
+    dataset:
+      prefix: IBMUSER.ZWE
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
     security:
       product: RACF
@@ -18,16 +18,15 @@ zowe:
         sysProg: ZWEADMIN
       users:
         zowe: ZWESVUSR
-        xmem: ZWESIUSR
-        aux: ZWESIUSR
+        zis: ZWESIUSR
       stcs:
         zowe: ZWESLSTC
-        xmem: ZWESISTC
+        zis: ZWESISTC
         aux: ZWESASTC
 ```
 
-- `zowe.setup.mvs.hlq` shows where the `SZWESAMP` data set is installed,
-- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe will create customized
+- `zowe.setup.dataset.prefix` shows where the `SZWESAMP` data set is installed,
+- `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe will create customized
   ZWESECUR JCL here before applying it.
 - `zowe.setup.security.product` is security product. Can be `RACF`, `ACF2`, or 
   `TSS`. This configuration is optional. Default value is `RACF`.
@@ -39,13 +38,11 @@ zowe:
   This configuration is optional. Default value is `ZWEADMIN`.
 - `zowe.setup.security.users.zowe` is the userid for Zowe started task.
   This configuration is optional. Default value is `ZWESVUSR`.
-- `zowe.setup.security.users.xmem` is userid for xmem started task.
-  This configuration is optional. Default value is `ZWESIUSR`.
-- `zowe.setup.security.users.aux` is userid for xmem AUX started task.
+- `zowe.setup.security.users.zis` is userid for ZIS started task.
   This configuration is optional. Default value is `ZWESIUSR`.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
-- `zowe.setup.security.stcs.xmem` is xmem started task name.
+- `zowe.setup.security.stcs.zis` is ZIS started task name.
   This configuration is optional. Default value is `ZWESISTC`.
-- `zowe.setup.security.stcs.aux` is xmem AUX started task name.
+- `zowe.setup.security.stcs.aux` is ZIS auxiliary started task name.
   This configuration is optional. Default value is `ZWESASTC`.

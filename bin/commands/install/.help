@@ -9,13 +9,13 @@ These Zowe YAML configurations showing with sample values are used:
 ```
 zowe:
   setup:
-    mvs:
-      hlq: IBMUSER.ZWE
+    dataset:
+      prefix: IBMUSER.ZWE
 ```
 
 Expected outputs:
 
-- Will create these data sets under `zowe.setup.mvs.hlq` definition:
+- Will create these data sets under `zowe.setup.dataset.prefix` definition:
   * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
   * `SZWESAMP` contains several sample configurations.
   * `SZWEEXEC` contains few utilities used by Zowe.

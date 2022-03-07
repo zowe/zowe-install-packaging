@@ -24,7 +24,7 @@ zowe_root_dir: ~/zowe
 zowe_instance_dir: ~/.zowe/instance
 # zowe job prefix.
 zowe_job_prefix: ZWE
-zowe_proclib_membername: ZWESVSTC
+zowe_proclib_membername: ZWESLSTC
 zowe_instance_id: 1
 # ports will be tested
 zowe_apiml_gateway_port: 7554

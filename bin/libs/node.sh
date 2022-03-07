@@ -30,15 +30,19 @@ ensure_node_is_on_path() {
 
 shell_read_yaml_node_home() {
   yaml="${1}"
+  skip_validate="${2}"
 
   node_home=$(shell_read_yaml_config "${yaml}" 'node' 'home')
-  # validate NODE_HOME
-  result=$(validate_node_home "${node_home}")
-  code=$?
-  if [ ${code} -ne 0 ]; then
-    # incorrect NODE_HOME, reset and try again
-    # this could be caused by failing to read node.home correctly from zowe.yaml
-    node_home=
+
+  if [ "${skip_validate}" = "true" ]; then
+    # validate NODE_HOME, we can ignore errors here, only need exit code
+    result=$(validate_node_home "${node_home}" 2>/dev/null)
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      # incorrect NODE_HOME, reset and try again
+      # this could be caused by failing to read node.home correctly from zowe.yaml
+      node_home=
+    fi
   fi
 
   if [ -n "${node_home}" ]; then

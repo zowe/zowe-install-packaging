@@ -29,7 +29,7 @@ zwecli_append_parameters_definition() {
   command_path=$(zwecli_calculate_command_path "${commands}")
   if [ -d "${command_path}" ]; then
     if [ -f "${command_path}/.parameters" ]; then
-      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.parameters")"
+      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="$(printf "%s\n%s" "${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}" "$(cat "${command_path}/.parameters")")"
     fi
   elif [ -n "${commands}" ]; then
     print_error "Error ZWEL0104E: Invalid command \"${commands}\""
@@ -47,7 +47,7 @@ zwecli_append_exclusive_parameters_definition() {
   command_path=$(zwecli_calculate_command_path "${commands}")
   if [ -d "${command_path}" ]; then
     if [ -f "${command_path}/.exclusive-parameters" ]; then
-      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}\n$(cat "${command_path}/.exclusive-parameters")"
+      ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS="$(printf "%s\n%s" "${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}" "$(cat "${command_path}/.exclusive-parameters")")"
     fi
   elif [ -n "${commands}" ]; then
     print_error "Error ZWEL0104E: Invalid command \"${commands}\""
@@ -271,11 +271,10 @@ EOF
     # display description message if exists
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
-      echo "------------------"
-      echo "Description"
-      help_message=`cat "${command_path}/.help"`
-      padding_left "$help_message" "    "
-      echo
+      >&2 echo "------------------"
+      >&2 echo "Description"
+      >&2 padding_left "$(cat "${command_path}/.help")" "    "
+      >&2 echo
     fi
 
     # display global parameters
@@ -325,7 +324,7 @@ EOF
     if [ -f "${command_path}/.examples" ]; then
       >&2 echo "------------------"
       >&2 echo "Example(s)"
-      >&2 cat "${command_path}/.examples"
+      >&2 padding_left "$(cat "${command_path}/.examples")" "    "
       >&2 echo
     fi  
     exit 100

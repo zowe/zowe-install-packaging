@@ -45,6 +45,12 @@
       name: configure
 
   # ============================================================================
+  # Customize for testing
+  - import_role:
+      name: custom_for_test
+    when: zowe_custom_for_test|default(False)
+
+  # ============================================================================
   # Start Zowe
   - import_role:
       name: start

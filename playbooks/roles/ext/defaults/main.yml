@@ -12,4 +12,5 @@ zos_uss_user_profile: ~/.profile
 zowe_root_dir: ~/zowe
 zowe_instance_dir: ~/.zowe/instance
 zowe_extension_dir: ~/zowe/extensions
-zowe_logs_dir: ~/.zowe/logs
+# install logs directory
+zowe_install_logs_dir: ~/.zowe/logs

@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.0.0-V2.X/STAGING",
+      "version": "~2.0.0-zlux-build-",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -50,13 +50,13 @@
       "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-jes": {
-      "version": "~2.0.0-V2-X-SNAPSHOT"
+      "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~2.0.0-V2-X-SNAPSHOT"
+      "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "~2.0.0-V2-X-SNAPSHOT"
+      "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
@@ -64,31 +64,43 @@
     },
     "org.zowe.apiml.api-catalog-package": {
       "version": "~2.0.2-SNAPSHOT",
-      "artifact": "api-catalog-*.zip"
+      "artifact": "api-catalog-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
       "version": "~2.0.2-SNAPSHOT",
-      "artifact": "discovery-*.zip"
+      "artifact": "discovery-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
       "version": "~2.0.2-SNAPSHOT",
-      "artifact": "gateway-*.zip"
+      "artifact": "gateway-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "~2.0.2-SNAPSHOT",
-      "artifact": "caching-service-*.zip"
+      "artifact": "caching-service-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.metrics-service-package": {
       "version": "~2.0.2-SNAPSHOT",
-      "artifact": "metrics-service-*.zip"
+      "artifact": "metrics-service-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "~2.0.2-SNAPSHOT",
-      "artifact": "apiml-common-lib-*.zip"
+      "artifact": "apiml-common-lib-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~1.21.3-SNAPSHOT",
-      "artifact": "common-java-lib-*.zip"
+      "artifact": "common-java-lib-*.zip",
+      "excludePatterns": ["*PR*.zip"]
+    },
+    "org.zowe.apiml.sdk.apiml-sample-extension-package": {
+      "version": "~1.27.0-SNAPSHOT",
+      "artifact": "apiml-sample-extension-*.zip",
+      "excludePatterns": ["*PR*.zip"]
     },
     "org.zowe.launcher": {
       "version": "~2.0.0-SNAPSHOT"
@@ -371,7 +383,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.25.0-ubuntu.staging"
+      "tag" : "2.0.0-ubuntu.v2-x-staging"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
@@ -395,39 +407,43 @@
         "tag" : "2-ubuntu"
     },
     "app-server": {
-      "registry": "zowe-docker-release.jfrog.io",
+      "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "2-ubuntu"
+      "tag" : "2.0.0-ubuntu.v2-x-staging"
     },
     "explorer-ip": {
+        "kind": "job",
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-ip",
         "tag" : "2-ubuntu"
     },
     "explorer-jes": {
-        "registry": "zowe-docker-release.jfrog.io",
+        "kind": "job",
+        "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/explorer-jes",
-        "tag" : "2-ubuntu"
+        "tag" : "2.0.0-ubuntu.v2-x-master"
     },
     "explorer-mvs": {
-        "registry": "zowe-docker-release.jfrog.io",
+        "kind": "job",
+        "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/explorer-mvs",
-        "tag" : "2-ubuntu"
+        "tag" : "2.0.0-ubuntu.v2-x-master"
     },
     "explorer-uss": {
-        "registry": "zowe-docker-release.jfrog.io",
+        "kind": "job",
+        "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/explorer-uss",
-        "tag" : "2-ubuntu"
+        "tag" : "2.0.0-ubuntu.v2-x-master"
     },
     "files-api": {
-        "registry": "zowe-docker-release.jfrog.io",
+        "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/files-api",
-        "tag" : "2-ubuntu"
+        "tag" : "2.0.0-ubuntu.v2-x-master"
     },
     "jobs-api": {
-        "registry": "zowe-docker-release.jfrog.io",
+        "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/jobs-api",
-        "tag" : "2-ubuntu"
+        "tag" : "2.0.0-ubuntu.v2-x-master"
     }
   },
   "dependencyDecisions": {

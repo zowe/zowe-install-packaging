@@ -137,9 +137,10 @@ mkdir -p "${BASE_DIR}/${WORK_DIR}"
 ###############################
 echo ">>>>> prepare basic files"
 cd "${REPO_ROOT_DIR}"
-cp README.md "${BASE_DIR}/${WORK_DIR}"
+cp example-zowe.yaml "${BASE_DIR}/${WORK_DIR}"
+cp ZOWE.md "${BASE_DIR}/${WORK_DIR}/README.md"
 cp LICENSE "${BASE_DIR}/${WORK_DIR}"
-cp CHANGELOG.md "${BASE_DIR}/${WORK_DIR}"
+cp DEVELOPERS.md "${BASE_DIR}/${WORK_DIR}"
 
 ###############################
 echo ">>>>> prepare manifest.json"
@@ -161,17 +162,9 @@ cat manifest.json.template | \
   > "${BASE_DIR}/${WORK_DIR}/manifest.json"
 
 ###############################
-echo ">>>>> prepare bin and script directory"
+echo ">>>>> prepare bin directory"
 cd "${REPO_ROOT_DIR}"
 cp -r bin "${BASE_DIR}/${WORK_DIR}"
-cp -r scripts "${BASE_DIR}/${WORK_DIR}"
-# tweaks for scripts directory
-mkdir "${BASE_DIR}/${WORK_DIR}/scripts/internal"
-mv "${BASE_DIR}/${WORK_DIR}/scripts/ocopyshr.clist" "${BASE_DIR}/${WORK_DIR}/scripts/internal"
-mv "${BASE_DIR}/${WORK_DIR}/scripts/ocopyshr.sh" "${BASE_DIR}/${WORK_DIR}/scripts/internal"
-mv "${BASE_DIR}/${WORK_DIR}/scripts/opercmd" "${BASE_DIR}/${WORK_DIR}/scripts/internal"
-mv "${BASE_DIR}/${WORK_DIR}/scripts/tag-files.sh" "${BASE_DIR}/${WORK_DIR}/scripts/utils"
-rm "${BASE_DIR}/${WORK_DIR}/scripts/zowe-install-MVS.sh"
 
 ###############################
 # prepare utility tools
@@ -229,7 +222,8 @@ rm -f zlux-core.tar
 ###############################
 # copy to target context
 echo ">>>>> copy to target build context"
-cp -r "${BASE_DIR}/${WORK_DIR}" "${BASE_DIR}/${linux_distro}/${cpu_arch}/zowe"
+# || true is to solve error messages like: node_modules/.bin/node-gyp-build: No such file or directory
+cp -r "${BASE_DIR}/${WORK_DIR}" "${BASE_DIR}/${linux_distro}/${cpu_arch}/zowe" || true
 
 ###############################
 # done

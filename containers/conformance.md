@@ -212,7 +212,7 @@ In the runtime, the Zowe content is organized in this structure:
   ```yaml
   command: ["/bin/bash", "-c"]
   args:
-    - "/home/zowe/runtime/bin/internal/run-zowe.sh -c /home/zowe/instance"
+    - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/zowe.yaml"
   ```
 
 ### Environment Variables

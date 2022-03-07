@@ -4,44 +4,47 @@
     name: configure
     tasks_from: locate_xmem
 
-- import_role:
-    name: configure
-    tasks_from: locate_zowe_stop
-
 # ============================================================================
 - name: Stop Cross Memory Server
   when: zowe_xmem_stc_name != ""
-  import_role:
+  include_role:
     name: zos
     tasks_from: opercmd
   vars:
     opercmd: "P {{ zowe_xmem_stc_name }}"
 
 - name: Stop Zowe
-  when: zowe_stop_path != ""
-  raw: "{{ zowe_stop_path }}"
+  block:
+  - include_role:
+      name: zos
+      tasks_from: run_zwe
+    vars:
+      parameters: "stop"
+  ignore_errors: True
 
 - name: Stop other known Zowe Cross Memory Server
-  include_role:
-    name: zos
-    tasks_from: opercmd
-  vars:
-    opercmd: P {{ item }}
-  loop: "{{ zowe_known_xmem_jobnames }}"
+  block:
+  - include_role:
+      name: zos
+      tasks_from: opercmd
+    vars:
+      opercmd: P {{ item }}
+    loop: "{{ zowe_known_xmem_jobnames }}"
   ignore_errors: True
 
 - name: Stopping other known Zowe jobs
-  include_role:
-    name: zos
-    tasks_from: opercmd
-  vars:
-    opercmd: C {{ item }}
-  loop: "{{ zowe_known_jobnames }}"
+  block:
+  - include_role:
+      name: zos
+      tasks_from: opercmd
+    vars:
+      opercmd: P {{ item }}
+    loop: "{{ zowe_known_jobnames }}"
   ignore_errors: True
 
 - name: Wait for Zowe stopping
   pause:
-    seconds: 10
+    seconds: 30
 
 - name: Cancelling all address spaces left behind if there are
   raw: cd "{{ work_dir_remote }}" && ./kill-zombies.sh {{ zowe_runtime_user }}

@@ -1,21 +1,38 @@
 Init Zowe instance based on zowe.yaml configuration.
 
-You can find an example zowe.yaml in Zowe runtime directory bin folder.
+You can find an example zowe.yaml in Zowe runtime directory folder.
 
-If you specify `--update-config` with this command, these configurations could
+This command will run these sub-commands in sequence:
+
+- `zwe init mvs`
+- `zwe init vsam`
+- `zwe init apfauth`
+- `zwe init security`
+- `zwe init certificate`
+- `zwe init stc`
+
+If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
+`zwe init security` steps will be skipped.
+
+If you pass `--update-config` with this command, these configurations could
 be written back to your Zowe YAML configuration file:
 
+- `zowe.runtimeDirectory` based on where your `zwe` command is located, and if it
+  is not defined,
 - `zowe.certificate` based on your `zowe.setup.certificate` configuration,
 - `java.home` based on your current JAVA_HOME or automatic detection,
 - `node.home` based on your current NODE_HOME or automatic detection.
+
+**IMPORTANT**, if you modify any of the values below, it's suggested to re-run
+relevant `zwe init` command to make them taking effect.
 
 These Zowe YAML configurations showing with sample values are used:
 
 ```yaml
 zowe:
   setup:
-    mvs:
-      hlq: IBMUSER.ZWE
+    dataset:
+      prefix: IBMUSER.ZWE
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
       authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
@@ -28,11 +45,10 @@ zowe:
         sysProg: ZWEADMIN
       users:
         zowe: ZWESVUSR
-        xmem: ZWESIUSR
-        aux: ZWESIUSR
+        zis: ZWESIUSR
       stcs:
         zowe: ZWESLSTC
-        xmem: ZWESISTC
+        zis: ZWESISTC
         aux: ZWESASTC
     certificate:
       type: PKCS12
@@ -47,6 +63,7 @@ zowe:
       validity: 3650
       pkcs12:
         directory: /global/zowe/keystore
+        lock: true
         name: localhost
         password: password
         caAlias: local_ca
@@ -94,16 +111,16 @@ components:
         name: IBMUSER.ZWE.CUST.CACHE2
 ```
 
-- `zowe.setup.mvs.hlq` shows where the `SZWEAUTH` data set is installed.
-- `zowe.setup.mvs.parmlib` is the user custom parameter library. Zowe server
+- `zowe.setup.dataset.prefix` shows where the `SZWEAUTH` data set is installed.
+- `zowe.setup.dataset.parmlib` is the user custom parameter library. Zowe server
   command may generate sample PARMLIB members and stores here.
-- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe server command may
+- `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe server command may
   generate sample JCLs and put into this data set.
-- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
+- `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
   optional. If this is defined, members of `SZWEAUTH` will be copied over to
   this data set and it will be APF authorized. If it's not defined, `SZWEAUTH`
-  from HLQ will be APF authorized.
-- `zowe.setup.mvs.authPluginLib` is the user custom APF PLUGINLIB.
+  from `zowe.setup.dataset.prefix` data set will be APF authorized.
+- `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
   You can install Zowe ZIS plugins into this load library.
   This loadlib requires APF authorize.
 
@@ -117,15 +134,13 @@ components:
   This configuration is optional. Default value is `ZWEADMIN`.
 - `zowe.setup.security.users.zowe` is the userid for Zowe started task.
   This configuration is optional. Default value is `ZWESVUSR`.
-- `zowe.setup.security.users.xmem` is userid for xmem started task.
-  This configuration is optional. Default value is `ZWESIUSR`.
-- `zowe.setup.security.users.aux` is userid for xmem AUX started task.
+- `zowe.setup.security.users.zis` is userid for ZIS started task.
   This configuration is optional. Default value is `ZWESIUSR`.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
-- `zowe.setup.security.stcs.xmem` is xmem started task name.
+- `zowe.setup.security.stcs.zis` is ZIS started task name.
   This configuration is optional. Default value is `ZWESISTC`.
-- `zowe.setup.security.stcs.aux` is xmem AUX started task name.
+- `zowe.setup.security.stcs.aux` is ZIS auxiliary started task name.
   This configuration is optional. Default value is `ZWESASTC`.
 
 - `zowe.setup.certificate.type` is the type of certificate. Valid values are
@@ -137,7 +152,7 @@ components:
   This is optional.
 - `zowe.setup.certificate.san` is the `Subject Alternative Name`(s) of the
   certificate if they are different from `zowe.externalDomains`. Please note,
-  for `JCERACFKS`` type, with limitation of RACDCERT command, this should
+  for `JCERACFKS` type, with limitation of RACDCERT command, this should
   contain exact one hostname (domain) and one IP address.
 - `zowe.setup.certificate.importCertificateAuthorities` is the list of
   certificate authorities will be imported to Zowe PKCS12 keystore or JCERACFKS
@@ -151,6 +166,9 @@ components:
 - `zowe.setup.certificate.pkcs12.directory` is the directory where you plan to
   store the PKCS12 keystore and truststore. This is required if
   `zowe.setup.certificate.type` is `PKCS12`.
+- `zowe.setup.certificate.pkcs12.lock` is a boolean configuration to tell if we
+  should lock the PKCS12 keystore directory only for Zowe runtime user and group.
+  Default value is true.
 - You can also define `name`, `password`, `caAlias` and `caPassword` under
   `zowe.setup.certificate.pkcs12` to customized keystore and truststore. These
   configurations are optional, but it is recommended to update them from

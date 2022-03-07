@@ -462,6 +462,7 @@ else         # stderr -> stdout, caller can add >/dev/null to trash all
                           "$@"  2>&1
 fi    #
 sTaTuS=$?
+
 if test $sTaTuS -ne 0
 then
   echo "** ERROR $me '$@' ended with status $sTaTuS"
