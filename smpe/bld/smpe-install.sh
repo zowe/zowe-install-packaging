@@ -380,17 +380,11 @@ else         # stderr -> stdout, caller can add >/dev/null to trash all
 fi    #
 status=$?
 
-######
-# FIXME: sometimes zlux-server-framework has strange error like this, ignore this error temporarily
-# chown: FSUM6180 file "/ZOWE/tmp/zowe-packaging-20220219020827/zowe/extract/components/app-server/share/zlux-server-framework/node_modules/.bin/node-gyp-build": EDC5129I No such file or directory. (errno2=0x0594003D)
-# chown: FSUM6180 file "/ZOWE/tmp/zowe-packaging-20220219020827/zowe/extract/components/app-server/share/zlux-server-framework/node_modules/.bin/node-gyp-build-optional": EDC5129I No such file or directory. (errno2=0x0594003D)
-# chown: FSUM6180 file "/ZOWE/tmp/zowe-packaging-20220219020827/zowe/extract/components/app-server/share/zlux-server-framework/node_modules/.bin/node-gyp-build-test": EDC5129I No such file or directory. (errno2=0x0594003D)
-######
-# if test $status -ne 0
-# then
-#     echo "** ERROR $me '$@' ended with status $sTaTuS"
-#   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-# fi    #
+if test $status -ne 0
+then
+    echo "** ERROR $me '$@' ended with status $sTaTuS"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
 }    # _super
 
 # ---------------------------------------------------------------------
@@ -469,17 +463,11 @@ else         # stderr -> stdout, caller can add >/dev/null to trash all
 fi    #
 sTaTuS=$?
 
-######
-# FIXME: sometimes zlux-server-framework has strange error like this, ignore this error temporarily
-# chown: FSUM6180 file "/ZOWE/tmp/zowe-packaging-20220219020827/zowe/extract/components/app-server/share/zlux-server-framework/node_modules/.bin/node-gyp-build": EDC5129I No such file or directory. (errno2=0x0594003D)
-# chown: FSUM6180 file "/ZOWE/tmp/zowe-packaging-20220219020827/zowe/extract/components/app-server/share/zlux-server-framework/node_modules/.bin/node-gyp-build-optional": EDC5129I No such file or directory. (errno2=0x0594003D)
-# chown: FSUM6180 file "/ZOWE/tmp/zowe-packaging-20220219020827/zowe/extract/components/app-server/share/zlux-server-framework/node_modules/.bin/node-gyp-build-test": EDC5129I No such file or directory. (errno2=0x0594003D)
-######
-# if test $sTaTuS -ne 0
-# then
-#   echo "** ERROR $me '$@' ended with status $sTaTuS"
-#   test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
-# fi    #
+if test $sTaTuS -ne 0
+then
+  echo "** ERROR $me '$@' ended with status $sTaTuS"
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+fi    #
 }    # _cmd
 
 # ---------------------------------------------------------------------

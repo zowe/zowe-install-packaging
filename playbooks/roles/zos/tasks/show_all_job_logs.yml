@@ -1,0 +1,19 @@
+---
+# this playbook show logs of all jobs by pattern
+
+# input:
+# - show_jobs_name: job name search pattern
+
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "{{ show_jobs_name }}"
+- include_role:
+    name: zos
+    tasks_from: show_job_log
+  vars:
+    show_job_log_id: '{{ item.split(",")[0] }}'
+    show_job_log_owner: "*"
+    show_job_log_name: "*"
+  loop: "{{ list_jobs_result.stdout_lines }}"

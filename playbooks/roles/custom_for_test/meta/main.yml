@@ -1,6 +1,6 @@
 galaxy_info:
   author: Zowe Committers
-  description: Install Zowe Docker
+  description: Custom configuration to setup test environments
   company: Zowe
 
   license: EPL-2.0

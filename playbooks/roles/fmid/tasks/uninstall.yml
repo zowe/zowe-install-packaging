@@ -12,6 +12,13 @@
     - zowe_smpe_hlq_dzone
 
 # ============================================================================
+# Clean up history SMPE job output
+- import_role:
+    name: fmid
+    tasks_from: purge_job_outputs
+  when: cleanup_zowe_job_history
+
+# ============================================================================
 - name: Remove SMPE installation folders
   raw: echo rm -fr {{ item }} | su
   loop:

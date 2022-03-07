@@ -11,7 +11,6 @@ This project targets to use Ansible to uninstall / install Zowe.
     - [SMPE FMID](#smpe-fmid)
     - [SMPE PTF](#smpe-ptf)
     - [Uninstall Zowe](#uninstall-zowe)
-    - [Docker](#docker)
     - [Kubernetes/Openshift](#kubernetesopenshift)
     - [Install Zowe Extensions](#install-zowe-extensions)
   - [Other Predefined Playbooks](#other-predefined-playbooks)
@@ -100,7 +99,7 @@ Please Note:
 If you want to install a Zowe FMID pre-uploaded to your remote server, you can run the playbook with variable `zowe_build_remote` (You must define `zowe_fmids_dir_remote` if you choose this option):
 
 ```
-$ ansible-playbook -l <server> install-fmid.yml -v --extra-vars "zowe_build_remote=AZWE001"
+$ ansible-playbook -l <server> install-fmid.yml -v --extra-vars "zowe_build_remote=AZWE002"
 ```
 
 If you want to install a Zowe downloaded to your local computer, you can run the playbook with variable `zowe_build_local`:
@@ -151,35 +150,6 @@ You can uninstall and cleanup the host by running `uninstall.yml` playbook.
 ```
 $ ansible-playbook -l <server> uninstall.yml -v
 ```
-
-### Docker
-
-You can use playbook `install-docker.yml` to start Zowe in a docker container.
-
-```
-$ ansible-playbook -l <server> install-docker.yml -v
-```
-
-Please Note:
-
-- Similar to `install.yml` playbook, this playbook will install Zowe convenience build onto the target z/OS system, but only ZSS will be started on z/OS side. To customize which convenience build to start, `zowe_build_local` and `zowe_build_url` are also supported.
-- The playbook will also start Zowe on your computer in Docker container where this playbook is running. By default, the docker image been used is `ompzowe/server-bundle:amd64`. You can customize it with `zowe_docker_image` and `zowe_docker_tag` variables.
-- The install playbook will uninstall Zowe by default.
-- The `-v` option allows you to see stdout from server side, which includes installation log, etc.
-
-If you want to start container with a Zowe Docker image downloaded to your local computer, you can run the playbook with variable `zowe_docker_image_local`:
-
-```
-$ ansible-playbook -l <server> install-docker.yml -v --extra-vars "zowe_docker_image_local=/path/to/your/local/server-bundle.tar"
-```
-
-If you want to start container with a Zowe Docker image from a URL, you can run the playbook with variable `zowe_docker_image_url`:
-
-```
-$ ansible-playbook -l <server> install-docker.yml -v --extra-vars "zowe_docker_image_url=https://zowe.jfrog.io/zowe/libs-snapshot-local/org/zowe/1.18.0-STAGING/server-bundle-1.18.0.tar"
-```
-
-For example, you can pick a downloadable Zowe build from https://zowe.jfrog.io/zowe/webapp/#/artifacts/browse/tree/General/libs-snapshot-local/org/zowe.
 
 ### Kubernetes/Openshift
 
@@ -252,8 +222,6 @@ $ ansible-playbook -l <server> show-logs.yml -v
 - **zowe_build_local**: An optional string to define where is the Zowe package on your local computer.
 - **zowe_build_url**: An optional URL string to define where to download Zowe package.
 - **zowe_build_remote**: An optional string to define the FMID you want to install and the FMID has been pre-uploaded to your target server `zowe_fmids_dir_remote` folder.
-- **zowe_docker_image_local**: An optional string to define where is the Zowe Docker image on your local computer.
-- **zowe_docker_image_url**: An optional URL string to define where to download Zowe Docker image.
 - **zowe_ext_local**: A string to define where the Zowe Extension is on your local computer. (one of zowe_ext_local or zowe_ext_url MUST be defined)
 - **zowe_ext_url**: A string to define where to download the Zowe Extension. (one of zowe_ext_local or zowe_ext_url MUST be defined)
 - **zos_java_home**: An optional string to customize your Java version by specifying the full path to your Java folder.
@@ -263,5 +231,6 @@ $ ansible-playbook -l <server> show-logs.yml -v
 - **zos_keystore_mode**: An optional string to configure Zowe instance to store certificates into Keyring instead of keystore. Valid values are `<empty>` (default value) or `KEYSTORE_MODE_KEYRING`.
 - **skip_start**: A boolean value to skip automatically starting Zowe after installation. Default value is `false`.
 - **zowe_uninstall_before_install**: If you want to uninstall Zowe before installing a new version. Default value is `true`.
+- **zowe_custom_for_test**: If you want to customize the Zowe instance to run sanity test from zowe-install-packaging.
 - **ZOWE_COMPONENTS_UPGRADE**: An optional boolean value to enable upgrading Zowe components to the latest version. If set to `true`,
 the `zowe-upgrade-component.sh` script will be called to upgrade Zowe during the installation process.
