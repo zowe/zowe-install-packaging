@@ -140,18 +140,19 @@ echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;" >> JCL 
 echo "source=\"${ZOWE_MOUNT}workflows/ZWESECUR.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESECUR)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF03.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF03)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF05.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF05)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF06.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
+echo "cp -T \$source \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
