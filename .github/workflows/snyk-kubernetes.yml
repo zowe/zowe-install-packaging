@@ -1,5 +1,13 @@
 name: Kubernetes IaC Scan
-on: push
+
+on:
+  push:
+    branches:
+      - staging 
+      - v1.x/staging 
+  pull_request:
+    types: [opened, synchronize]
+
 jobs:
   snyk:
     strategy:
