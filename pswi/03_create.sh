@@ -154,7 +154,7 @@ echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESIGNC.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >> JCL
 echo "cp -T \$source \$target;" >> JCL
 echo "/*" >> JCL
-
+exit -1
 sh scripts/submit_jcl.sh "`cat JCL`"
 if [ $? -gt 0 ];then exit -1;fi
 rm JCL
