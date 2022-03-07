@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="IBM-1047" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <autoTakeOwnership>true</autoTakeOwnership>
 <workflowInfo>
