@@ -97,9 +97,9 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PRIVATE_CONTAINER_COMPONENT_RUNTIME_DIRECTORY` is the directory of component runtime in Kubernetes deployment. Default value is `/component`.
 - `ZWE_PRIVATE_CONTAINER_HOME_DIRECTORY` is the directory of Zowe home directory in Kubernetes deployment. Default value is `/home/zowe`.
 - `ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY` is the directory of Keystore directory in Kubernetes deployment. Default value is `/home/zowe/keystore`.
-- `ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY` is the directory of logs in Kubernetes deployment. Default value is `/home/zowe/logs`.
+- `ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY` is the directory of logs in Kubernetes deployment. Default value is `/home/zowe/instance/logs`.
 - `ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY` is the directory of Zowe runtime in Kubernetes deployment. Default value is `/home/zowe/runtime`.
-- `ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY` is the directory of workspace in Kubernetes deployment. Default value is `/home/zowe/workspace`.
+- `ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY` is the directory of workspace in Kubernetes deployment. Default value is `/home/zowe/instance/workspace`.
 - `ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA` is a list of java components shipped with Zowe.
 - `ZWE_PRIVATE_DEFAULT_ADMIN_GROUP` is the default Zowe admin group. Default value is `ZWEADMIN`.
 - `ZWE_PRIVATE_DEFAULT_AUX_STC` is the default name of Zowe Auxiliary Server started task. Default value is `ZWESASTC`.
