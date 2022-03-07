@@ -177,11 +177,6 @@ In the runtime, the Zowe content is organized in this structure:
       +- /logs
       +- /workspace
     +- /keystore
-      +- keystore.p12
-      +- truststore.p12
-      +- keystore.key
-      +- keystore.cer
-      +- ca.cer
 ```
 
 - `/home/zowe/runtime` is a shared volume initialized by the `zowe-launch-scripts` container.
@@ -191,7 +186,7 @@ In the runtime, the Zowe content is organized in this structure:
 - `/home/zowe/instance/workspace` is the persistent volume mounted to every Zowe component container.
   * Components writing to this directory should be aware of the potential conflicts of same-time writing by multiple instances of the same component.
   * Components writing to this directory must NOT write container-specific information to this directory as it may potentially be overwritten by another container.
-- `/home/zowe/keystore` is the directory where certificate is mounted.
+- `/home/zowe/keystore` is the directory where certificate is mounted. With a typical setup (by using `zwe migrate for kubernetes` command), this folder contains `keystore.p12`, `truststore.p12`, `keystore.key`, `keystore.cer` and `ca.cer`.
 - Any confidential environment variables, for example, a Redis password, in `zowe.yaml` must be extracted and stored as Secrets. These configurations must be imported back as environment variables.
 
 ### ConfigMap and Secrets
