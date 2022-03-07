@@ -127,7 +127,7 @@ echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;set -e;" >> JCL
-echo "cd ${WORK_MOUNT}"
+echo "cd ${WORK_MOUNT};" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEWRF02.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
 echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF02;" >> JCL                         
