@@ -150,7 +150,7 @@ echo "cp -T \$source \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF06.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
 echo "cp -T \$source \$target;" >> JCL
-echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
+echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF02.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
 echo "cp -T \$source \$target;" >> JCL
 echo "/*" >> JCL
