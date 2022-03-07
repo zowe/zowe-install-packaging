@@ -376,8 +376,8 @@ $$
           ACCESS(READ)
 
 /* Uncomment this command if SITE user owns the Zowe certificate ... */
-/*  PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY) ID(&ZOWEUSER.) +
-/*         ACCESS(CONTROL)
+/*  PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY) ID(&ZOWEUSER.) +     */
+/*         ACCESS(CONTROL)                                           */
 
    SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -390,7 +390,7 @@ $$
 /* List the keyring ................................................ */
    RACDCERT LISTRING(&ZOWERING.) ID(&ZOWEUSER.)
 
-/* Common part - END ................................................ */
+/* Common part - END ............................................... */
 /* only the last RC is returned, this command ensures it is a 0 .... */
 PROFILE
 $$
