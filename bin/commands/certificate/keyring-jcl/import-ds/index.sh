@@ -23,7 +23,7 @@ print_level1_message "Import certificate to Zowe keyring"
 # run ZWEKRING JCL
 ZWE_PRIVATE_ZOSMF_USER="${ZWE_CLI_PARAMETER_ZOSMF_USER}" \
   keyring_run_zwekring_jcl \
-    "${ZWE_CLI_PARAMETER_HLQ}" \
+    "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" \
     "${ZWE_CLI_PARAMETER_JCLLIB}" \
     3 \
     "${ZWE_CLI_PARAMETER_KEYRING_OWNER}" \
