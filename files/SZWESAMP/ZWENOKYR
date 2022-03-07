@@ -93,9 +93,9 @@
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* Remove keyring profile defined on RDATALIB class ................ */
+  RLIST   RDATALIB &ZOWEUSER..&ZOWERING..LST ALL
   PERMIT &ZOWEUSER..&ZOWERING..LST CLASS(RDATALIB) DELETE +
          ID(&ZOWEUSER.)
-  RLIST   RDATALIB &ZOWEUSER..&ZOWERING..LST ALL
   RDELETE RDATALIB &ZOWEUSER..&ZOWERING..LST
 
 /* Refresh to dynamically activate the changes. .................... */
