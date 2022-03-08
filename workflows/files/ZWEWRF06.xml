@@ -6,8 +6,8 @@
         <workflowID scope="none" >configure_xmem</workflowID>
         <workflowDefaultName>Configure Cross Memory Server</workflowDefaultName>
         <workflowDescription>This workflow is used to configure the Cross Memory Server</workflowDescription>
-        <workflowVersion>#ZOWE_VERSION#</workflowVersion>
-        <vendor>ZOWE</vendor>
+        <workflowVersion>###ZOWE_VERSION###</workflowVersion>
+        <vendor>Zowe</vendor>
         <General/>
     </workflowInfo>
     <variable name="zowe_install_path" scope="instance" visibility="public">
