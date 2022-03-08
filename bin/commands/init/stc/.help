@@ -8,8 +8,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```
 zowe:
   setup:
-    mvs:
-      hlq: IBMUSER.ZWE
+    dataset:
+      prefix: IBMUSER.ZWE
       proclib: USER.PROCLIB
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
@@ -21,15 +21,15 @@ zowe:
         aux: ZWESASTC
 ```
 
-- `zowe.setup.mvs.hlq` shows where the `SZWESAMP` data set is installed,
-- `zowe.setup.mvs.proclib` shows what is the target procedure library.
-- `zowe.setup.mvs.parmlib` is the user custom parameter library. Zowe server
+- `zowe.setup.dataset.prefix` shows where the `SZWESAMP` data set is installed,
+- `zowe.setup.dataset.proclib` shows what is the target procedure library.
+- `zowe.setup.dataset.parmlib` is the user custom parameter library. Zowe server
   command may generate sample PARMLIB members and stores here.
-- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe will create temporary
+- `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe will create temporary
   started tasks here before putting into target procedure library.
-- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
-  optional. If this is not defined, `SZWEAUTH` from HLQ will be used as STEPLIB
-  in STCs.
+- `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
+  optional. If this is not defined, `SZWEAUTH` from `zowe.setup.dataset.prefix`
+  data set will be used as STEPLIB in STCs.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
 - `zowe.setup.security.stcs.zis` is ZIS started task name.

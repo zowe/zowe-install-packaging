@@ -26,8 +26,8 @@ data:
   zowe.yaml: |
     zowe:
       runtimeDirectory: /home/zowe/runtime
-      logDirectory: /home/zowe/logs
-      workspaceDirectory: /home/zowe/workspace
+      logDirectory: /home/zowe/instance/logs
+      workspaceDirectory: /home/zowe/instance/workspace
 
       job:
         name: ZWE1SV
@@ -56,11 +56,13 @@ data:
           file: /home/zowe/keystore/keystore.p12
           type: PKCS12
         trustStore:
+          password: password
           file: /home/zowe/keystore/truststore.p12
+          type: PKCS12
         pem:
           key: /home/zowe/keystore/keystore.key
-          certificate: /home/zowe/keystore/keystore.cert
-          certificateAuthorities: /home/zowe/keystore/localca.cert
+          certificate: /home/zowe/keystore/keystore.cer
+          certificateAuthorities: /home/zowe/keystore/ca.cer
 
       verifyCertificates: STRICT
 
@@ -83,32 +85,6 @@ data:
         enabled: true
         port: 7554
         debug: false
-
-        apiml:
-          security:
-            auth:
-              provider: zosmf
-              zosmf:
-                jwtAutoconfiguration: auto
-                serviceId: zosmf
-            authorization:
-              endpoint:
-                enabled: false
-              provider:
-            jwtInitializerTimeout: 5
-            x509:
-              enabled: false
-            zosmf:
-              applid: IZUDFLT
-          service:
-            allowEncodedSlashes: true
-            corsEnabled: false
-        server:
-          internal:
-            enabled: false
-            port: 7556
-            ssl:
-              enabled: false
 
       discovery:
         enabled: true
@@ -140,7 +116,7 @@ data:
 
       zss:
         enabled: true
-        port: "8542"
+        port: 8542
         tls: true
         crossMemoryServerName: ZWESIS_STD
 

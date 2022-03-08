@@ -1,0 +1,357 @@
+name: Zowe Build and Packaging
+on:
+  push:
+    branches:
+      - v2.x/staging 
+  pull_request:
+    types: [opened, synchronize]
+
+  workflow_dispatch:
+    inputs:
+      BUILD_SMPE:
+        description: 'Build SMPE'
+        required: false
+        default: false
+        type: boolean
+      BUILD_PSWI_SMPE:
+        description: 'Build PSWI and SMPE'
+        required: false
+        default: false
+        type: boolean
+      BUILD_KUBERNETES:
+        description: 'Build Kubernetes'
+        required: false
+        default: false
+        type: boolean
+      KEEP_TEMP_PAX_FOLDER:
+        description: 'do we need to keep temp pax folder?'
+        required: false
+        default: false
+        type: boolean
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
+
+jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
+  check-permission:
+    runs-on: ubuntu-latest
+    steps:
+      # this action will fail the whole workflow if permission check fails
+      - name: check permission
+        uses: zowe-actions/shared-actions/permission-check@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}  
+  
+  regular-build:
+    runs-on: ubuntu-latest
+    needs: check-permission
+    steps: 
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+  
+      - name: '[Prep 2] Setup jFrog CLI'
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      
+      - name: '[Prep 3] Convert manifest template to manifest.json'
+        run: |
+          COMMIT_HASH=$(git rev-parse --verify HEAD)
+          CURRENT_TIME=$(date +%s)
+          if [[ -z "${{ github.event.pull_request.number }}" ]]; then
+            # meaning the workflow is NOT triggered from pull_request 
+            # sometimes user can manually trigger a workflow on a branch that a PR is open,
+            # thus try to find out if a PR is opened against this running branch
+            pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
+            if [[ -z "$pr_num" ]]; then
+              # meaning PR is not open, we collect the branch name
+              CURRENT_BRANCH=${GITHUB_REF_NAME}
+            else
+              CURRENT_BRANCH=PR-$pr_num
+            fi
+          else
+            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
+          fi
+
+          sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
+              -e "s#{BUILD_NUMBER}#${{ github.run_number }}#g" \
+              -e "s#{BUILD_COMMIT_HASH}#${COMMIT_HASH}#g" \
+              -e "s#{BUILD_TIMESTAMP}#${CURRENT_TIME}#g" \
+              manifest.json.template > manifest.json
+          
+          echo "Current manifest.json is:"
+          cat manifest.json
+
+      - name: '[Prep 4] Validate package.json'
+        uses: zowe-actions/shared-actions/validate-package-json@main
+
+      - name: '[Prep 5] Prepare workflow'
+        uses: zowe-actions/shared-actions/prepare-workflow@main
+        with:
+          package-name: org.zowe
+          extra-init: |
+            const fs = require('fs');
+            var mjson = '${{ github.workspace }}/manifest.json';
+            var _manifestObject = JSON.parse(fs.readFileSync(mjson));
+            if (!_manifestObject || !_manifestObject['name'] || _manifestObject['name'] != 'Zowe' || !_manifestObject['version']) {
+              console.error('Cannot read manifest or manifest is invalid.');
+            }
+
+      - name: '[Prep 6] Process github.event.inputs'
+        id: process-inputs
+        run: |
+          BUILD_WHAT="PAX"
+          
+          echo INPUTS_BUILD_SMPE=${{ github.event.inputs.BUILD_SMPE }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_SMPE }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", SMPE"
+          fi
+          
+          echo INPUTS_BUILD_PSWI_SMPE=${{ github.event.inputs.BUILD_PSWI_SMPE }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_PSWI_SMPE }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", PSWI+SMPE"
+          fi
+
+          echo INPUTS_BUILD_KUBERNETES=${{ github.event.inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.BUILD_KUBERNETES }}" == true ]]; then
+            BUILD_WHAT=$BUILD_WHAT", K8S"
+          fi
+
+          echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
+          
+          echo ::set-output name=BUILD_WHAT::$BUILD_WHAT
+      
+      - name: '[Prep 7] Comment on PR to indicate build is started'
+        uses: actions/github-script@v5
+        id: create-comment
+        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-')
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var base_pax_bld_time = 8
+            var smpe_bld_time_addon = 21
+            var docker_bld_time_addon = 11
+            var total_bld_time = 0
+
+            total_bld_time += base_pax_bld_time
+            
+            if ('${{ github.event_name }}' == 'workflow_dispatch' && '${{ github.event.inputs.BUILD_SMPE }}' == 'true') {
+              total_bld_time += smpe_bld_time_addon
+            }
+
+            const finish_time = new Date(new Date().getTime() + total_bld_time*60*1000);
+
+            const finish_time_EST = finish_time.toLocaleString('en-CA', { timeZone: 'Canada/Eastern' }).split(', ')[1] + " EST"
+            const finish_time_CET = finish_time.toLocaleString('en-EU', { timeZone: 'Europe/Prague' }).split(', ')[1] + " CET"
+            const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
+            const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
+            
+            const prNum='${{ env.CURRENT_BRANCH }}'.split('-')[1]
+
+            const { data: comment } = await github.rest.issues.createComment({ 
+              issue_number: prNum,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+            return comment.id;
+
+      - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
+        timeout-minutes: 5
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          manifest-file-path: ${{ github.workspace }}/manifest.json
+          default-target-path: .pax/binaryDependencies/
+          expected-count: 26
+      
+      # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
+      # and it will be used in the next step: [Download 3] Download SMPE build log
+      - name: '[SMPE Download 2] Get publish target path'
+        timeout-minutes: 5
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        uses: zowe-actions/shared-actions/publish@main
+
+      - name: '[SMPE Download 3] Download SMPE build log'
+        timeout-minutes: 5
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
+          default-target-path: .pax/content/smpe/
+          extra-options: --flat=true --sort-by=created --sort-order=desc --limit=1
+          bypass-validation: true
+
+      - name: '[PAX/SMPE 1] Pre-packaging'
+        id: pax-prep
+        run: |
+          if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSWI_SMPE }}" == "true" ] ; then
+            echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
+            echo ::set-output name=BUILD_SMPE::yes
+          else
+            echo ::set-output name=EXTRA_FILES::
+            echo ::set-output name=BUILD_SMPE::
+          fi
+          
+          if [ "${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
+            echo ::set-output name=KEEP_TEMP_FOLDER::yes
+          else
+            echo ::set-output name=KEEP_TEMP_FOLDER::
+          fi
+
+      - name: '[PAX/SMPE Pax 2] Packaging'
+        timeout-minutes: 60
+        uses: zowe-actions/shared-actions/make-pax@main
+        with: 
+          pax-name: zowe
+          pax-options: '-o saveext'
+          pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
+          pax-ssh-password: ${{ secrets.SSH_MARIST_RACF_PASSWORD  }}
+          keep-temp-folders: ${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}
+          extra-files: ${{ steps.pax-prep.outputs.EXTRA_FILES }}
+          extra-environment-vars: |
+            ZOWE_VERSION=${{ env.P_VERSION }}
+            BUILD_SMPE=${{ steps.pax-prep.outputs.BUILD_SMPE }}
+            KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
+
+      - name: '[SMPE Pax 3] Post-make pax'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        run: |
+          cd .pax
+          chmod +x rename-back.sh
+          cat rename-back.sh
+          ./rename-back.sh
+
+      - name: '[PSI-LOCK] Lock marist servers to build PSWI'
+        uses: zowe-actions/shared-actions/lock-resource@main
+        if: env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        with:
+          lock-repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-resource-name: zowe-psi-build-zzow03-lock
+          lock-avg-retry-interval: 60
+
+      - name: '[SMPE Pax 4] Build PSWI'
+        if: env.INPUTS_BUILD_PSWI_SMPE == 'true'
+        timeout-minutes: 60
+        run: |
+          cd pswi
+          chmod +x PSWI-marist.sh 
+          ./PSWI-marist.sh
+        env:
+          ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
+          ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          VERSION: ${{ env.P_VERSION }}
+
+      - name: '[PAX/SMPE Publish] Upload to artifactory'
+        id: publish
+        timeout-minutes: 5
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: |
+            .pax/zowe.pax
+            .pax/zowe-smpe.zip
+            .pax/smpe-promote.tar
+            .pax/pd.htm
+            .pax/smpe-build-logs.pax.Z
+            .pax/AZWE*
+            .pax/zowe-PSWI*
+        # env:
+        #   DEBUG: 'zowe-actions:shared-actions:publish'
+
+      - name: '[K8S 1] Build Kubernetes'
+        timeout-minutes: 10
+        if: env.INPUTS_BUILD_KUBERNETES == 'true'
+        working-directory: containers
+        run: |
+          ./build/parse-manifest-to-deployment.sh
+          zip -r zowe-containerization.zip kubernetes
+
+      - name: '[K8S 2] Upload k8s zip to artifactory'
+        timeout-minutes: 5
+        if: env.INPUTS_BUILD_KUBERNETES == 'true'
+        uses: zowe-actions/shared-actions/publish@main
+        with:
+          artifacts: containers/zowe-containerization.zip
+
+      - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} SUCCEEDED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+
+      - name: '[Post Prep 7] Update PR comment to indicate build failed'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} FAILED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+
+      - name: '[Post Prep 7] Update PR comment to indicate build cancelled'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && cancelled()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} CANCELLED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            });
+
+  # only run auto integration tests when the workflow is triggered by pull request
+  # default running Convenience Pax on any zzow server
+  call-integration-test:
+    needs: regular-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
+    steps:
+      - name: 'Determine branch name'
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
+          fi
+
+      - name: 'Call test workflow'
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        id: call-test
+        with:
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          owner: zowe
+          repo: zowe-install-packaging
+          workflow-filename: cicd-test.yml
+          branch-name: ${{ env.BRANCH_NAME }}
+          poll-frequency: 3
+          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}"}'
+        # env:
+        #   DEBUG: 'workflow-remote-call-wait'
+      
+      - name: 'Report test failure if applied'
+        if: ${{ steps.call-test.outputs.workflow-run-conclusion != 'success' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            core.setFailed('Test workflow ${{ steps.call-test.outputs.workflow-run-num }} is not successful')

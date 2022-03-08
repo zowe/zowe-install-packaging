@@ -1,13 +1,6 @@
 ---
 
 # ============================================================================
-# Clean up history job output
-- import_role:
-    name: configure
-    tasks_from: purge_job_outputs
-  when: cleanup_zowe_job_history
-
-# ============================================================================
 - import_role:
     name: configure
     tasks_from: locate_xmem
@@ -16,24 +9,20 @@
     msg: Cannot find cross memory server
   when: zowe_xmem_stc_name == ""
 
-- import_role:
-    name: configure
-    tasks_from: locate_zowe_start
-- name: Check if zowe_start_path has a value
-  fail:
-    msg: Cannot find zowe-start.sh
-  when: zowe_start_path == ""
-
 # ============================================================================
 - name: Start Cross Memory Server
-  import_role:
+  include_role:
     name: zos
     tasks_from: opercmd
   vars:
     opercmd: "S {{ zowe_xmem_stc_name }},REUSASID=YES"
 
 - name: Start Zowe
-  raw: "{{ zowe_start_path }}"
+  include_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "start"
 
 # ============================================================================
 # Wait for services started

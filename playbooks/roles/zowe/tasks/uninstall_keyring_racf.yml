@@ -2,14 +2,6 @@
 
 # Delete racf Keyrings and certificates we've created
 # ============================================================================
-- name: Delete zowe token
-  raw: tsocmd "RACDCERT DELTOKEN({{ zowe_token_name }}) FORCE"
-  ignore_errors: True
-
-- name: List zowe token certificates
-  raw: tsocmd "RACDCERT LISTTOKEN({{ zowe_token_name }})"
-  ignore_errors: True
-
 - name: Remove Zowe RACF personal certficates from keyrings
   raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) REMOVE(LABEL('{{ item[0] }}') RING({{ item[1] }}))"
   loop: "{{ zowe_known_keyring_personal_certificates |product(zowe_known_keyring_names)|list }}"
@@ -28,11 +20,7 @@
 - name: Remove Zowe RACF personal certficates
   raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) DELETE(LABEL('{{ item }}'))"
   loop: "{{ zowe_known_keyring_personal_certificates }}"
-  ignore_errors: True 
-
-- name: Remove Zowe RACF JWT secret certficates
-  raw: tsocmd "RACDCERT ID({{ zowe_runtime_user }}) DELETE(LABEL('{{ zowe_token_label }}'))"
-  ignore_errors: True 
+  ignore_errors: True
 
 - name: Remove Zowe RACF certauth certficates
   raw: tsocmd "RACDCERT CERTAUTH DELETE(LABEL('{{ item }}'))"

@@ -10,7 +10,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Copyright Contributors to the Zowe Project. 2019, 2021
+# Copyright Contributors to the Zowe Project. 2019, 2022
 #######################################################################
 
 #######################################################################
@@ -90,23 +90,6 @@ SCRIPT_NAME=$(basename "$0")  # $0=./.pax/prepare-workspace.sh
 PAX_WORKSPACE_DIR=$(cd "$(dirname "$0")";pwd)      # <something>/.pax
 PAX_BINARY_DEPENDENCIES="${PAX_WORKSPACE_DIR}/binaryDependencies"
 ROOT_DIR=$(cd "${PAX_WORKSPACE_DIR}/../";pwd)
-# BUILD_BRANCH should be a Jenkins variable
-if [ -z "${BUILD_BRANCH}" ]; then
-  # generate if it's not running on Jenkins
-  BUILD_BRANCH=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-fi
-BUILD_COMMIT_HASH=$(git rev-parse --verify HEAD)
-BUILD_TIMESTAMP=$(node -e "console.log((new Date()).getTime())")
-
-# BUILD_NUMBER should be a Jenkins variable
-cd "${ROOT_DIR}"
-echo "[${SCRIPT_NAME}] preparing manifest.json ..."
-sed -e "s#{BUILD_BRANCH}#${BUILD_BRANCH}#g" \
-    -e "s#{BUILD_NUMBER}#${BUILD_NUMBER}#g" \
-    -e "s#{BUILD_COMMIT_HASH}#${BUILD_COMMIT_HASH}#g" \
-    -e "s#{BUILD_TIMESTAMP}#${BUILD_TIMESTAMP}#g" \
-    manifest.json.template > manifest.json
-echo "[${SCRIPT_NAME}] build information: $(cat manifest.json | jq -r '.build')"
 
 echo "[${SCRIPT_NAME}] extracting ZOWE_VERSION ..."
 ZOWE_VERSION=$(cat ${ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')

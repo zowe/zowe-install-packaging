@@ -76,7 +76,7 @@ spec:
             failureThreshold: 3
           command: ["/bin/bash", "-c"]
           args:
-            - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/zowe.yaml"
+            - "/home/zowe/runtime/bin/zwe internal start -c /home/zowe/instance/zowe.yaml"
           env:
             - name: ZWE_POD_NAMESPACE
               valueFrom:
@@ -85,7 +85,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/zwe internal container prestop -c /home/zowe/zowe.yaml"]
+                command: ["/bin/sh", "-c", "/home/zowe/runtime/bin/zwe internal container prestop -c /home/zowe/instance/zowe.yaml"]
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
@@ -98,16 +98,16 @@ spec:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
             - name: zowe-config
-              mountPath: "/home/zowe/zowe.yaml"
+              mountPath: "/home/zowe/instance/zowe.yaml"
               subPath: zowe.yaml
               readOnly: true
             - name: zowe-keystore
               mountPath: "/home/zowe/keystore"
               readOnly: true
             - name: zowe-logs
-              mountPath: "/home/zowe/logs"
+              mountPath: "/home/zowe/instance/logs"
             - name: zowe-workspace
-              mountPath: "/home/zowe/workspace"
+              mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
@@ -132,10 +132,10 @@ spec:
             - name: zowe-runtime
               mountPath: "/home/zowe/runtime"
             - name: zowe-workspace
-              mountPath: "/home/zowe/workspace"
+              mountPath: "/home/zowe/instance/workspace"
         - name: update-workspace-permission
           image: busybox:1.28
-          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/workspace` && PERMISSION=`stat -c "%a" /home/zowe/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/workspace; fi']
+          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
           imagePullPolicy: Always
           resources:
             requests:
@@ -146,7 +146,7 @@ spec:
               cpu: "100m"
           volumeMounts:
             - name: zowe-workspace
-              mountPath: "/home/zowe/workspace"
+              mountPath: "/home/zowe/instance/workspace"
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false

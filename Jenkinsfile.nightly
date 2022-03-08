@@ -59,9 +59,9 @@ node('zowe-jenkins-agent-dind-wdc') {
   )
 
   // we want to run daily on master branch
-  if (isStagingBranch) {
-    pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 23 * * *")]))
-  }
+//   if (isStagingBranch) {
+//     pipeline.addBuildOption(pipelineTriggers([cron("TZ=America/New_York\nH 23 * * *")]))
+//   }
 
   // get the day of the week
   def currentDayofWeek = sh(script: 'date +"%a"', returnStdout: true).trim()
@@ -168,7 +168,7 @@ node('zowe-jenkins-agent-dind-wdc') {
         def build_result = build(
           job: '/zowe-install-packaging/staging',
           parameters: [
-            string(name: 'BUILD_SMPE', value: 'SMPE'),
+            booleanParam(name: 'BUILD_SMPE', value: true),
             booleanParam(name: 'BUILD_DOCKER', value: true),
             booleanParam(name: 'BUILD_KUBERNETES', value: true),
             booleanParam(name: 'Skip Stage: Test Convenience Build', value: true),

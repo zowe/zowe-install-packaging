@@ -1,0 +1,51 @@
+---
+# ==============================================================================
+# Constants
+# ==============================================================================
+# 120 * 10 seconds = 20 mins
+wait_for_zowe_service_retries: 120
+# Every 10 seconds
+wait_for_zowe_service_delay: 10
+# Timeout after 900sec = 15min for Zowe Pods to become ready status
+timeout_for_pod_ready: 900
+# Every 60 seconds check if Zowe pods are ready status
+wait_for_pod_ready: 60
+
+
+# ==============================================================================
+# Variables should be verified and overwrittern.
+# ==============================================================================
+# default zowe runtime root directory
+zowe_root_dir: ~/zowe
+# default z/OSMF port. Optional, default value is ansible_ssh_host
+zos_zosmf_host:
+# default z/OSMF port
+zos_zosmf_port: 10443
+zowe_zss_https: True
+zowe_zss_port: 7557
+zowe_launch_components: zss
+
+zowe_zlux_terminal_telnet_port: 23
+# The security type of the tn3270 connection - valid values are blank('') for telnet, or 'tls'
+zowe_zlux_terminal_telnet_security_type:
+
+# convert-for-k8s script for generating configmap and secrets in z/OS host for Kubernetes
+# Please make sure to get the latest script, which has Silent option (-q), to avoid deployment failure.
+# Default location is from marist. 
+convert_for_k8s:
+
+# Kubernetes environmental variables.  
+kubeconfig:
+k8s_context:
+k8s_storageclass: 
+k8s_pv_name:
+#k8s_pvc_labels:
+k8s_service: loadbalancer
+#k8s_service_annot:
+k8s_list_domain_ip: localhost
+k8s_networking:
+k8s_gateway_domain:
+k8s_discovery_domain:
+
+#list of the apps required for zowe
+k8s_required_apps: ["api-catalog", "app-server", "caching", "explorer-jes", "explorer-mvs", "explorer-uss", "discovery", "files-api", "gateway", "jobs-api"]

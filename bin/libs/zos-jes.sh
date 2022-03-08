@@ -15,6 +15,23 @@ submit_job() {
   jcl="${1}"
 
   print_debug "- submit job ${jcl}"
+
+  print_trace "- content of ${jcl}"
+  result=$(cat "${jcl}" 2>&1)
+  code=$?
+  if [ ${code} -eq 0 ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  else
+    print_trace "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+
+    return ${code}
+  fi
+
   result=$(submit "${jcl}")
   # expected: JOB JOB????? submitted from path '...'
   code=$?

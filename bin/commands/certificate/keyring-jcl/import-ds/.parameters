@@ -1,4 +1,4 @@
-hlq||string|required||||High level qualifier where Zowe is installed.
+dataset-prefix,ds-prefix||string|required||||Dataset prefix where Zowe is installed.
 jcllib||string|required||||JCLLIB data set name where the JCL will be placed.
 security-dry-run||boolean|||||Whether to dry run security related setup.
 security-product||string||RACF|||Security product. Can be a value of RACF, ACF2 or TSS.
