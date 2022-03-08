@@ -295,7 +295,7 @@ $(file_padding_left "${ZWE_zowe_certificate_pem_key}" "    ")
   keystore.cer: |
 $(file_padding_left "${ZWE_zowe_certificate_pem_certificate}" "    ")
   ca.cer: |
-$(file_padding_left "${ZWE_zowe_certificate_pem_certificateAuthorities}" "    ")
+$(files_padding_left "${ZWE_zowe_certificate_pem_certificateAuthorities}" "    ")
 EOF
 
 print_message
