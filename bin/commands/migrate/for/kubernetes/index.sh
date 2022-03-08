@@ -223,6 +223,11 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-uss.enabled" "true
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" ""
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" ""
+gateway_auth_provider=$(read_yaml "${temp_dir}/zowe.yaml" ".components.gateway.apiml.security.authorization.endpoint.provider")
+if [ "${gateway_auth_provider}" != "" ]; then
+  print_message "Zowe APIML Gateway authorization provider is suggested to be empty when running in Kubernetes. 'native' is not supported off Z platform."
+fi
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.provider" ""
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.storage.mode" ""
 
