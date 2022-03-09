@@ -81,11 +81,19 @@ wait_for_job() {
     print_trace "  * Wait for ${secs} seconds"
     sleep ${secs}
     result=$(operator_command "\$D ${jobid},CC")
+    # if it's JES3, we receive this:
+    # ...             ISF031I CONSOLE IBMUSER ACTIVATED
+    # ...            -$D JOB00132,CC
+    # ...  IBMUSER7   IEE305I $D       COMMAND INVALID
     is_jes3=$(echo "${result}" | grep '\$D \+COMMAND INVALID')
     if [ -n "${is_jes3}" ]; then
       print_debug "  * JES3 identified"
       show_jobid=$(echo "${jobid}" | cut -c4-)
       result=$(operator_command "*I J=${show_jobid}")
+      # $I J= gives ...
+      # ...            -*I J=00132
+      # ...  JES3       IAT8674 JOB BPXAS    (JOB00132) P=15 CL=A        OUTSERV(PENDING WTR)
+      # ...  JES3       IAT8699 INQUIRY ON JOB STATUS COMPLETE,       1 JOB  DISPLAYED
       jobname=$(echo "${result}" | grep 'IAT8674' | sed 's#^.*IAT8674 *JOB *##' | awk '{print $1}')
       break
     else
