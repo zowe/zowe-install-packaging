@@ -1,3 +1,5 @@
 ---
 zos_security_system: ACF2
 zos_zosmf_ca: ZOSMFSRV
+zowe_sanity_test_testcases: "./test/**/!(api-doc-gen).js"
+zowe_apiml_security_x509_enabled: true
