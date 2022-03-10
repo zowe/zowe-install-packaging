@@ -115,31 +115,11 @@ global_validate() {
 # Prepare workspace directory
 prepare_workspace_dir() {
   print_formatted_info "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "prepare workspace directory ..."
-  print_formatted_info "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "prepare workspace directory ..."
-  echo $(whoami)
-  for item in *
-  do
-      echo $(ls -l $item)
-  done
+
   mkdir -p ${WORKSPACE_DIR}
-  cd /home/zowe/instance
 
+  # Make accessible to group so owning user can edit?
   chmod -R 771 ${WORKSPACE_DIR} 1> /dev/null 2> /dev/null
-  echo After creating the directory*****************************************
-  echo $(whoami)
-  for item in *
-  do
-      echo $(ls -l $item)
-  done
-
-  chgrp -R 0 ${WORKSPACE_DIR}
-  chmod -R g=u ${WORKSPACE_DIR}
-  echo After creating the directory and setting permission****************************************
-  echo $(whoami)
-  for item in *
-  do
-      echo $(ls -l $item)
-  done
   if [ "$?" != "0" ]; then
     print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "permission of instance workspace directory (${WORKSPACE_DIR}) is not setup correctly"
     print_formatted_debug "ZWELS" "prepare-instance.sh,prepare_workspace_dir:${LINENO}" "a proper configured workspace directory should allow group write permission to both Zowe runtime user and installation / configuration user(s)"
