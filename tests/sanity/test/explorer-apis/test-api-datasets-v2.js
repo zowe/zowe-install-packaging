@@ -31,11 +31,11 @@ describe('test explorer server datasets api v2',async function() {
     const uuid = utils.uuid();
     const authenticationCookie = await utils.login(uuid);
 
-    utils.log(uuid, ' URL: /api/v2/datasets/' + encodeURIComponent(TEST_DATASET_PATTERN));
+    utils.log(uuid, ' URL: /datasets/api/v2/' + encodeURIComponent(TEST_DATASET_PATTERN));
 
     const req = {
       method: 'get',
-      url: '/api/v2/datasets/' + encodeURIComponent(TEST_DATASET_PATTERN),
+      url: '/datasets/api/v2/' + encodeURIComponent(TEST_DATASET_PATTERN),
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
@@ -66,11 +66,11 @@ describe('test explorer server datasets api v2',async function() {
     const uuid = utils.uuid();
     const authenticationCookie = await utils.login(uuid);
 
-    utils.log(uuid, ' URL: /api/v2/datasets/' + encodeURIComponent(TEST_DATASET_NAME) + '/members');
+    utils.log(uuid, ' URL: /datasets/api/v2/' + encodeURIComponent(TEST_DATASET_NAME) + '/members');
 
     const req = {
       method: 'get',
-      url: '/api/v2/datasets/' + encodeURIComponent(TEST_DATASET_NAME) + '/members',
+      url: '/datasets/api/v2/' + encodeURIComponent(TEST_DATASET_NAME) + '/members',
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'
@@ -102,10 +102,10 @@ describe('test explorer server datasets api v2',async function() {
     const uuid = utils.uuid();
     const authenticationCookie = await utils.login(uuid);
 
-    utils.log(uuid, ' URL: /api/v2/datasets/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content');
+    utils.log(uuid, ' URL: /datasets/api/v2/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content');
     const req = {
       method: 'get',
-      url:'/api/v2/datasets/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content', 
+      url:'/datasets/api/v2/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content', 
       headers: {
         'Cookie': authenticationCookie,
         'X-CSRF-ZOSMF-HEADER': '*'

@@ -48,24 +48,24 @@
     # - zos_security_system
     # - zowe_lock_keystore
 
-# # ============================================================================
-# # Setup client certificates
+# ============================================================================
+# Setup client certificates
 
-# # Upload client certificate
-# - include_role:
-#     name: configure
-#     tasks_from: upload_certificate
-#   vars:
-#     filename: USER-cert.cer
-#     method: scp
-# # Upload client CA certificate
-# # This certificate will be configured in task Add the external CA to the truststore
-# - include_role:
-#     name: configure
-#     tasks_from: upload_certificate
-#   vars:
-#     filename: APIML_External_Certificate_Authority.cer
-#     method: scp
+# Upload client certificate
+- include_role:
+    name: configure
+    tasks_from: upload_certificate
+  vars:
+    filename: USER-cert.cer
+    method: scp
+# Upload client CA certificate
+# This certificate will be configured in task Add the external CA to the truststore
+- include_role:
+    name: configure
+    tasks_from: upload_certificate
+  vars:
+    filename: APIML_External_Certificate_Authority.cer
+    method: scp
 
 # # Upload client CA certificate in PKCS12
 # # This certificate will be configured in task Add the external CA to the keyring

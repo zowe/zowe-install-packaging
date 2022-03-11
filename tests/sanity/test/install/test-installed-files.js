@@ -24,12 +24,12 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`test -d ${process.env.ZOWE_ROOT_DIR}`);
   });
 
-  it('bin/zowe-start.sh should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_INSTANCE_DIR}/bin/zowe-start.sh`);
+  it('bin/zwe should exist', async function() {
+    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/bin/zwe`);
   });
 
-  it('scripts/internal/opercmd should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/scripts/internal/opercmd`);
+  it('bin/utils/opercmd.rex should exist', async function() {
+    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/bin/utils/opercmd.rex`);
   });
 
   it('components/jobs-api/bin/jobs-api-server-*.jar should exist', async function() {
@@ -48,7 +48,7 @@ describe('verify installed files', function() {
   // $binDir/zowe-verify-authenticity.sh # No parameters! 
   // You need to 'source' the profile to get JAVA_HOME
 
-  it('fingerprint should match', async function() {
+  it.skip('fingerprint should match', async function() {
     const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
     debug('fingerprint show result:', fingerprintStdout);
     addContext(this, {

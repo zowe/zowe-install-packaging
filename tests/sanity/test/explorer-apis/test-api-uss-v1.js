@@ -44,7 +44,7 @@ describe('test explorer server uss files api', function() {
 
     const req = {
       method: 'get',
-      url: `/api/v1/unixfiles?path=${process.env.ZOWE_INSTANCE_DIR}`,
+      url: `/unixfiles/api/v1?path=${process.env.ZOWE_INSTANCE_DIR}`,
       auth: {
         username,
         password,

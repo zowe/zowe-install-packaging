@@ -26,7 +26,7 @@ async function getDatasetHelper(manualDecompress=false) {
 
   const req = {
     method: 'get',
-    url: '/api/v1/datasets/' + encodeURIComponent(TEST_DATASET_PATTERN),
+    url: '/datasets/api/v1/' + encodeURIComponent(TEST_DATASET_PATTERN),
     auth: {
       username,
       password,
@@ -56,7 +56,7 @@ async function getDatasetMemberHelper(manualDecompress=false) {
 
   const req = {
     method: 'get',
-    url: '/api/v1/datasets/' + encodeURIComponent(TEST_DATASET_NAME) + '/members',
+    url: '/datasets/api/v1/' + encodeURIComponent(TEST_DATASET_NAME) + '/members',
     auth: {
       username,
       password,
@@ -88,7 +88,7 @@ async function getDatasetContentHelper(manualDecompress=false) {
 
   const req = {
     method: 'get',
-    url: '/api/v1/datasets/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content',
+    url: '/datasets/api/v1/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content',
     auth: {
       username,
       password,
@@ -171,7 +171,7 @@ describe('test explorer server datasets api', function() {
 
     const req = {
       method: 'get',
-      url: '/api/v1/datasets/username',
+      url: '/datasets/api/v1/username',
       auth: {
         username,
         password,

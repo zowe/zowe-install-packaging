@@ -30,8 +30,8 @@ describe('test explorer server jobs api v2', function() {
     const uuid = utils.uuid();
     const authenticationCookie = await utils.login(uuid);
 
-    utils.log(uuid, ' URL: /api/v2/jobs');
-    const req = {url:'/api/v2/jobs', 
+    utils.log(uuid, ' URL: /jobs/api/v2');
+    const req = {url:'/jobs/api/v2', 
       params: {
         prefix: `${ZOWE_JOB_NAME}*`,
         owner: 'ZWE*',

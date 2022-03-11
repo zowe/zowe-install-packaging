@@ -44,7 +44,7 @@ describe('test explorer server jobs api', function() {
 
     const req = {
       method: 'get',
-      url: '/api/v1/jobs',
+      url: '/jobs/api/v1',
       params: {
         prefix: `${ZOWE_JOB_NAME}*`,
         owner: 'ZWE*',
@@ -86,7 +86,7 @@ describe('test explorer server jobs api', function() {
 
     const req = {
       method: 'get',
-      url: '/api/v1/jobs/username',
+      url: '/jobs/api/v1/username',
       auth: {
         username,
         password,
