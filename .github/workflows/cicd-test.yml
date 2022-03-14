@@ -812,10 +812,17 @@ jobs:
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
-      # - name: '[After Test] Merge Report'
-      #   if: always()
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: npm run merge-reports
+      - name: '[After Test] Merge Report'
+        if: always()
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: zip -r reports.zip reports
+
+      - name: '[After Test] Upload test report'
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: InstallTestReports
+          path: ${{ env.INSTALL_TEST_PATH }}/reports.zip
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
         uses: actions/github-script@v5
