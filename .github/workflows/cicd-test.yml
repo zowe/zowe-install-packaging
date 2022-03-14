@@ -819,13 +819,15 @@ jobs:
       - name: '[After Test] Merge Report'
         if: always()
         working-directory: ${{ env.INSTALL_TEST_PATH }}
-        run: zip -r reports.zip reports
+        run: | 
+          zip -r reports.zip reports
+          echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
 
       - name: '[After Test] Upload test report'
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: InstallTestReports
+          name: InstallTestReports-${{ matrix.test }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
           path: ${{ env.INSTALL_TEST_PATH }}/reports.zip
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
