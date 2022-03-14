@@ -396,17 +396,36 @@ process_component_gateway_shared_libs() {
 
   all_succeed=true
   iterator_index=0
+  plugin_id=
+  gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   while [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
 
-    # copy libraries to workspace/gateway/sharedLibs/
-    # Due to limitation of how Java loading shared libraries, all jars are copied to ZWE_GATEWAY_SHARED_LIBS directly.
-    # Potentially jar file names from different extensions may conflict/overwrite each other
+    if [ -z "${plugin_id}" ]; then
+      # prepare plugin directory
+      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
+      if [ -z "${plugin_id}" ]; then
+        print_error "Cannot read ID from the plugin ${component_dir}"
+        all_succeed=false
+        break
+      fi
+      gateway_shared_libs_workspace_path="${ZWE_GATEWAY_SHARED_LIBS}/${plugin_id}"
+      mkdir -p "${gateway_shared_libs_workspace_path}"
+    fi
+
+    # copy manifest to workspace
+    component_manifest=$(get_component_manifest "${component_dir}")
+    if [ ! -z "${component_manifest}" -a -f "${component_manifest}" ]; then
+      cp "${component_manifest}" "${gateway_shared_libs_workspace_path}"
+    fi
+
+    # copy libraries to workspace/gateway/sharedLibs/<plugin-id>
+    # Due to limitation of how Java loading shared libraries, all jars are copied to plugin root directly.
     if [ -f "${gateway_shared_libs_path}" ]; then
-      cp "${gateway_shared_libs_path}" "${ZWE_GATEWAY_SHARED_LIBS}"
+      cp "${gateway_shared_libs_path}" "${gateway_shared_libs_workspace_path}"
     elif [ -d "${gateway_shared_libs_path}" ]; then
-      cp -r "${gateway_shared_libs_path}/." "${ZWE_GATEWAY_SHARED_LIBS}"
+      find "${gateway_shared_libs_path}" -type f | xargs -I{} cp {} "${gateway_shared_libs_workspace_path}"
     else
       print_error "Gateway shared libs directory ${gateway_shared_libs_path} is not accessible"
       all_succeed=false
