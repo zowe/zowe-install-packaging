@@ -85,19 +85,12 @@
     tasks_from: update_zowe_yaml
   vars:
     configs:
-      # FIXME: we should only keep one set
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
       "zowe.setup.dataset.proclib": "{{ zowe_proclib_dsname }}"
       "zowe.setup.dataset.parmlib": "{{ zowe_xmem_parmlib }}"
       "zowe.setup.dataset.jcllib": "{{ zowe_jcllib }}"
       "zowe.setup.dataset.authLoadlib": "{{ zowe_xmem_loadlib }}"
       "zowe.setup.dataset.authPluginLib": "{{ zowe_xmem_pluginlib }}"
-      "zowe.setup.mvs.hlq": "{{ zowe_dataset_prefix }}"
-      "zowe.setup.mvs.proclib": "{{ zowe_proclib_dsname }}"
-      "zowe.setup.mvs.parmlib": "{{ zowe_xmem_parmlib }}"
-      "zowe.setup.mvs.jcllib": "{{ zowe_jcllib }}"
-      "zowe.setup.mvs.authLoadlib": "{{ zowe_xmem_loadlib }}"
-      "zowe.setup.mvs.authPluginLib": "{{ zowe_xmem_pluginlib }}"
 
 - name: Update zowe.yaml zowe.setup.security
   import_role:

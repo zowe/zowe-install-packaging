@@ -37,9 +37,7 @@
     tasks_from: update_zowe_yaml
   vars:
     configs:
-      # FIXME: we should only keep one set
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
-      "zowe.setup.mvs.hlq": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe
   include_role:
