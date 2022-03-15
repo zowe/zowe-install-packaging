@@ -27,6 +27,8 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
+        seLinuxOptions:
+          level: s0:c1,c0
       serviceAccountName: zowe-sa
       volumes:
         - name: zowe-runtime
