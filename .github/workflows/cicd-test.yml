@@ -822,12 +822,13 @@ jobs:
         run: | 
           zip -r reports.zip reports
           echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
+          echo TEST_NAME=$(echo "${{ matrix.test }}" | sed 's#.*\/##g') >> $GITHUB_ENV
 
       - name: '[After Test] Upload test report'
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: InstallTestReports-${{ matrix.test }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
+          name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
           path: ${{ env.INSTALL_TEST_PATH }}/reports.zip
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
