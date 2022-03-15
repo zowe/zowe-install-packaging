@@ -111,3 +111,15 @@
 - include_role:
     name: custom_for_test
     tasks_from: permit_apiml_services
+
+# ============================================================================
+# Enable disabled services
+- name: Update zowe.yaml zowe.setup.vsam
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "components.files-api.enabled": "true"
+      "components.jobs-api.enabled": "true"
+  
