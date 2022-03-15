@@ -46,12 +46,14 @@
     "org.zowe.explorer.jobs.jobs-zowe-server-package": {
       "version": "~2.0.0-SNAPSHOT",
       "artifact": "jobs-zowe-server-package-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"],
+      "target": "jobs-api.zip"
     },
     "org.zowe.explorer.files.data-sets-zowe-server-package": {
       "version": "~2.0.0-USERS-CARSON-MIGRATE-GHA-V2-SNAPSHOT",
       "artifact": "data-sets-zowe-server-package-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"],
+      "target": "files-api.zip"
     },
     "org.zowe.explorer-jes": {
       "version": "~2.0.0-SNAPSHOT"

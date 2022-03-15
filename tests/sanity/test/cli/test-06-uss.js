@@ -37,7 +37,7 @@ describe('cli perform ssh commands with zos-uss', function() {
     expect(result.stdout).to.have.string('Profile created successfully');
   });
 
-  it('checks to see if instance.env exists in zowe-instance-dir', async function() {
+  it('checks to see if manifest.json exists in zowe-workspace-dir', async function() {
     const result = await execZoweCli(`zowe zos-uss issue ssh "ls -la" --cwd ${process.env.ZOWE_WORKSPACE_DIR} --ssh-profile ${defaultUSSProfileName}`);
 
     debug('result:', result);
