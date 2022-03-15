@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.0.0-zlux-build-",
+      "version": "~2.0.0-v2.x-staging-zlux-core",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -65,42 +65,42 @@
     "org.zowe.apiml.api-catalog-package": {
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "discovery-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "gateway-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "caching-service-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.metrics-service-package": {
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "metrics-service-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "~2.0.2-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~1.21.3-SNAPSHOT",
       "artifact": "common-java-lib-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "~2.0.4-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip",
-      "excludePatterns": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.launcher": {
       "version": "~2.0.0-SNAPSHOT"
@@ -110,7 +110,7 @@
       "artifact": "keyring-util-*",
       "explode": "false",
       "flat": "true",
-      "excludePatterns": ["*PR*"]
+      "exclusions": ["*PR*"]
    },
     "org.zowe.utility_tools": {
       "version": "~2.0.0-SNAPSHOT"

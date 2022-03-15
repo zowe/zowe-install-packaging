@@ -96,7 +96,7 @@ upper_case() {
 }
 
 ###############################
-# Padding string of every line of a multiple-line string
+# Padding string on every lines of a multiple-line string
 #
 # @param string   optional string
 padding_left() {
@@ -107,7 +107,7 @@ padding_left() {
 }
 
 ###############################
-# Padding string of every line of a multiple-line string
+# Padding string on every lines of a file
 #
 # @param string   optional string
 file_padding_left() {
@@ -115,6 +115,26 @@ file_padding_left() {
   pad="${2}"
 
   cat "${file}" | sed "s/^/${pad}/"
+}
+
+###############################
+# Padding string on every lines of multiple files separated by comma
+#
+# @param string   optional string
+files_padding_left() {
+  files="${1}"
+  pad="${2}"
+  separator="${3:-,}"
+
+  OLDIFS=$IFS
+  IFS="${separator}"
+  for file in ${files}; do
+    file=$(trim "${file}")
+    if [ -n "${file}" -a -f "${file}" ]; then
+      cat "${file}" | sed "s/^/${pad}/"
+    fi
+  done
+  IFS=$OLDIFS
 }
 
 ###############################
