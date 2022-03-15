@@ -12,7 +12,9 @@ const _ = require('lodash');
 const debug = require('debug')('zowe-sanity-test:http-helper');
 const axios = require('axios');
 const expect = require('chai').expect;
+const zlib = require('zlib');
 const fs = require('fs');
+const http = require('http');
 const https = require('https');
 const {
   DEFAULT_HTTP_REQUEST_TIMEOUT,
@@ -21,6 +23,22 @@ const {
   DEFAULT_CLIENT_CERTIFICATE_PRIVATE_KEY,
 } = require('./constants');
 
+const deflate = (dataStream) => new Promise((resolve, reject) => {
+  try {
+    let gunzip = zlib.createGunzip();
+    dataStream.pipe(gunzip);
+    gunzip.on('data', function(data) {
+      let dataStr = data.toString();
+      // content JSON.parse(data.toString()) parsing can cause exception
+      resolve(JSON.parse(dataStr));
+    });
+    gunzip.on('error', function(err) {
+      reject(err);
+    });
+  } catch(err) {
+    reject(err);
+  }
+});
 
 const uuid = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -42,7 +60,7 @@ const HTTP_STATUS = {
 };
 
 class HTTPRequest {
-  constructor(baseURL, timeout, headers) {
+  constructor(baseURL, timeout, headers, auth) {
     if (!baseURL) {
       expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
       expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
@@ -60,18 +78,41 @@ class HTTPRequest {
     this._request = axios.create({
       baseURL,
       headers,
+      auth,
       timeout,
     });
   }
 
-  async request(config) {
+  async request(config, compressionOptions) {
     let res;
     const _uuid = uuid();
     const reqDebug = debug.extend(_uuid);
 
     try {
       reqDebug('>>>> request:', config);
+
+      // merge compression options with default values
+      const normalizedCompressionOptions =  Object.assign({},{
+        manualDecompress: false,
+        ungzip: true,
+      }, compressionOptions);
+      reqDebug('   > compression options:',normalizedCompressionOptions);
+
+      if (normalizedCompressionOptions.manualDecompress) {
+        // disable auto decompression
+        config.responseType = 'stream';
+        config.decompress = false;
+        if (!config.headers) {
+          config.headers = {};
+        }
+        config.headers['Accept-Encoding'] = 'gzip';
+      }
+
       res = await this._request.request(config);
+
+      if (normalizedCompressionOptions.manualDecompress && normalizedCompressionOptions.ungzip) {
+        res.data = await deflate(res.data);
+      }
     } catch (err) {
       reqDebug('   < error:', err.message);
       if (err.response) {
@@ -85,12 +126,15 @@ class HTTPRequest {
     reqDebug('   < status:', conciseRes && conciseRes.status, conciseRes && conciseRes.statusText);
     reqDebug('   < headers:', conciseRes && conciseRes.headers);
     if (conciseRes && conciseRes.data) {
-      reqDebug('   < data:', conciseRes.data);
+      if (conciseRes.data instanceof http.IncomingMessage) {
+        reqDebug('   < data: <IncomingMessage> (readable=', conciseRes.data.readable, ', complete=', conciseRes.data.complete, ')');
+      } else {
+        reqDebug('   < data:', conciseRes.data);
+      }
     }
 
     return res;
   }
-
 
   findCookieInResponse(res, cookieName) {
     const cookies = res.headers['set-cookie'];
@@ -270,6 +314,7 @@ class ZluxAuth {
 }
 
 module.exports = {
+  deflate,
   uuid,
   HTTP_STATUS,
   HTTPRequest,
