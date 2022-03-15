@@ -19,7 +19,6 @@ const prepareConnection = () => {
   expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
   expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
   expect(process.env.ZOWE_ROOT_DIR, 'ZOWE_ROOT_DIR is not defined').to.not.be.empty;
-  expect(process.env.ZOWE_INSTANCE_DIR, 'ZOWE_INSTANCE_DIR is not defined').to.not.be.empty;
 
   const password = process.env.SSH_PASSWD;
 
