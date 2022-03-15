@@ -816,20 +816,19 @@ jobs:
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
-      - name: '[After Test] Merge Report'
+      - name: '[After Test 1] Prepare to upload test report'
         if: always()
         working-directory: ${{ env.INSTALL_TEST_PATH }}
         run: | 
-          zip -r reports.zip reports
           echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
           echo TEST_NAME=$(echo "${{ matrix.test }}" | sed 's#.*\/##g') >> $GITHUB_ENV
 
-      - name: '[After Test] Upload test report'
+      - name: '[After Test 2] Upload test report'
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
-          path: ${{ env.INSTALL_TEST_PATH }}/reports.zip
+          path: ${{ env.INSTALL_TEST_PATH }}/reports/
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
         uses: actions/github-script@v5
