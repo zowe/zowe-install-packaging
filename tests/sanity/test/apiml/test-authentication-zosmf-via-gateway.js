@@ -12,13 +12,13 @@ const expect = require('chai').expect;
 const { HTTPRequest, APIMLAuth } = require('../http-helper');
 const { APIML_AUTH_COOKIE, ZOSMF_TOKEN } = require('../constants');
 
-describe('test api mediation layer zosmf authentication', () => {
+describe('test api mediation layer zosmf authentication', function() {
 
   let hq;
   let apiml;
   let username, password;
 
-  before('verify environment variables', () => {
+  before('verify environment variables', function() {
     hq = new HTTPRequest(null, null, {
       // required header by z/OSMF API
       'X-CSRF-ZOSMF-HEADER': '*',
@@ -31,14 +31,14 @@ describe('test api mediation layer zosmf authentication', () => {
     password = process.env.SSH_PASSWD;
   });
 
-  describe('should be able to get data from z/OSMF ', () => {
+  describe('should be able to get data from z/OSMF ', function() {
 
     const assertNotEmptyValidResponse = (res) => {
       expect(res.status).to.equal(200);
       expect(res.data).to.not.be.empty;
     };
 
-    it('with valid basic header', async () => {
+    it('with valid basic header', async function() {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
       const res = await hq.request({
         url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
@@ -50,7 +50,7 @@ describe('test api mediation layer zosmf authentication', () => {
       assertNotEmptyValidResponse(res);
     });
 
-    it('with valid cookie', async () => {
+    it('with valid cookie', async function() {
       const token = await apiml.login();
       const res = await hq.request({
         url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
@@ -62,7 +62,7 @@ describe('test api mediation layer zosmf authentication', () => {
       assertNotEmptyValidResponse(res);
     });
 
-    it('with valid LTPA cookie', async () => {
+    it('with valid LTPA cookie', async function() {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
       const loginResponse = await hq.request({
         url: '/zosmf/api/v1/info',
@@ -82,7 +82,7 @@ describe('test api mediation layer zosmf authentication', () => {
       assertNotEmptyValidResponse(response);
     });
 
-    it('with valid JWT token via Bearer', async () => {
+    it('with valid JWT token via Bearer', async function() {
       const token = await apiml.login();
       const res = await hq.request({
         url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',

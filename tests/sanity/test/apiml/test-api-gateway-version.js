@@ -12,15 +12,15 @@ const expect = require('chai').expect;
 const { HTTPRequest, HTTP_STATUS } = require('../http-helper');
 const debug = require('debug')('zowe-sanity-test:apiml:api-gateway-version');
 
-describe('test api gateway version', () => {
+describe('test api gateway version', function() {
 
   let hq;
 
-  before('verify environment variables', () => {
+  before('verify environment variables', function() {
     hq = new HTTPRequest();
   });
 
-  it('should return the version information of the API Mediation Layer and Zowe', async () => {
+  it('should return the version information of the API Mediation Layer and Zowe', async function() {
     debug('Verify access to version via /application/version');
 
     const res = await hq.request({

@@ -12,13 +12,13 @@ const expect = require('chai').expect;
 const { HTTPRequest, HTTP_STATUS, APIMLAuth } = require('../http-helper');
 const { APIML_AUTH_COOKIE } = require('../constants');
 
-describe('test api mediation layer zosmf api', () => {
+describe('test api mediation layer zosmf api', function() {
 
   let hq;
   let apiml;
   let token;
 
-  before('verify environment variables', () => {
+  before('verify environment variables', function() {
     hq = new HTTPRequest(null, null, {
       // required header by z/OSMF API
       'X-CSRF-ZOSMF-HEADER': '*',
@@ -26,12 +26,12 @@ describe('test api mediation layer zosmf api', () => {
     apiml = new APIMLAuth(hq);
   });
 
-  it('should be able to login to z/OS', async () => {
+  it('should be able to login to z/OS', async function() {
     // FIXME: /zosmf/api/v1/info doesn't require authentication, do we need to login?
     token = await apiml.login();
   });
 
-  it('should be able to get z/OS Info via the gateway port and endpoint (/api/v1/zosmf/info)', async () => {
+  it('should be able to get z/OS Info via the gateway port and endpoint (/api/v1/zosmf/info)', async function() {
     if (!token) {
       this.skip();
     }

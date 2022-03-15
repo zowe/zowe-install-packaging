@@ -17,7 +17,7 @@ const {
 } = require('../http-helper');
 const { APIML_AUTH_COOKIE } = require('../constants');
 
-describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, () => {
+describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
 
   let zluxHost;
   let zluxBaseUrl;
@@ -29,7 +29,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
   // let apiml;
   let token;
 
-  before('verify environment variables', async () => {
+  before('verify environment variables', async function() {
     zluxHost = `${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`;
     zluxBaseUrl = `https://${zluxHost}`;
     hqZlux = new HTTPRequest(zluxBaseUrl, null, { 'Content-Type': 'application/json' });
@@ -41,8 +41,8 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     token = await zlux.login();
   });
 
-  describe('GET /', () => {
-    it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async () => {
+  describe('GET /', function() {
+    it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async function() {
       const res = await hqZlux.request({
         url: '/',
         maxRedirects: 0,
@@ -55,7 +55,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
       expect(res.headers.location).to.equal('./ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
     });
 
-    it('should return ok', async () => {
+    it('should return ok', async function() {
       const res = await hqZlux.request({
         url: '/',
       });
@@ -67,8 +67,8 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     });
   });
 
-  describe('GET /ZLUX/plugins', () => {
-    it('/org.zowe.explorer-jes/web/index.html is an unprotected path', async () => {
+  describe('GET /ZLUX/plugins', function() {
+    it('/org.zowe.explorer-jes/web/index.html is an unprotected path', async function() {
       const res = await hqZlux.request({
         method: 'get',
         url: '/ZLUX/plugins/org.zowe.explorer-jes/web/index.html',
@@ -78,7 +78,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
       expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     });
 
-    it('/org.zowe.explorer-mvs/web/index.html should return ok', async () => {
+    it('/org.zowe.explorer-mvs/web/index.html should return ok', async function() {
       const res = await hqZlux.request({
         method: 'get',
         url: '/ZLUX/plugins/org.zowe.explorer-mvs/web/index.html',
@@ -91,7 +91,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
       expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     });
 
-    it('/org.zowe.explorer-uss/web/index.html should return ok', async () => {
+    it('/org.zowe.explorer-uss/web/index.html should return ok', async function() {
       const res = await hqZlux.request({
         method: 'get',
         url: '/ZLUX/plugins/org.zowe.explorer-uss/web/index.html',
@@ -105,8 +105,8 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     });
   });
 
-  describe('GET ZLUX Logger and Iframe Adapter', () => {
-    it('GET /zlux/ui/v1/ZLUX/plugins/org.zowe.zlux.bootstrap/web/iframe-adapter.js', async () => {
+  describe('GET ZLUX Logger and Iframe Adapter', function() {
+    it('GET /zlux/ui/v1/ZLUX/plugins/org.zowe.zlux.bootstrap/web/iframe-adapter.js', async function() {
       const res = await hqApiml.request({
         method: 'get',
         url: '/zlux/ui/v1/ZLUX/plugins/org.zowe.zlux.bootstrap/web/iframe-adapter.js',
@@ -118,7 +118,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
       expect(JSON.stringify(res.data)).contains('ZoweZLUX.iframe');
     });
 
-    it('GET /zlux/ui/v1/lib/org.zowe.zlux.logger/0.9.0/logger.js', async () => {
+    it('GET /zlux/ui/v1/lib/org.zowe.zlux.logger/0.9.0/logger.js', async function() {
       const res = await hqApiml.request({
         method: 'get',
         url: '/zlux/ui/v1/lib/org.zowe.zlux.logger/0.9.0/logger.js',
@@ -131,8 +131,8 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     });
   });
 
-  describe('GET ZLUX & ZSS swagger docs', () => {
-    it('GET ZLUX Swagger', async () => {
+  describe('GET ZLUX & ZSS swagger docs', function() {
+    it('GET ZLUX Swagger', async function() {
       const res = await hqApiml.request({
         method: 'get',
         url: '/zlux/ui/v1/ZLUX/plugins/org.zowe.zlux/catalogs/swagger',
@@ -148,7 +148,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
       expect(res.data.paths).to.have.property('/server/environment');
     });
   
-    it('GET ZSS Swagger', async () => {
+    it('GET ZSS Swagger', async function() {
       const res = await hqApiml.request({
         method: 'get',
         url: '/zlux/ui/v1/ZLUX/plugins/org.zowe.zlux.agent/catalogs/swagger',

@@ -12,19 +12,19 @@ const expect = require('chai').expect;
 const { HTTPRequest, HTTP_STATUS, APIMLAuth } = require('../http-helper');
 const { APIML_AUTH_COOKIE } = require('../constants');
 
-describe('test endpoint /services and its authentication', () => {
+describe('test endpoint /services and its authentication', function() {
 
   let hq;
   let apiml;
   let token;
 
-  before('obtain JWT token', async () => {
+  before('obtain JWT token', async function() {
     hq = new HTTPRequest();
     apiml = new APIMLAuth(hq);
     token = await apiml.login();
   });
 
-  it('should be able get list of services with authenticated user', async () => {
+  it('should be able get list of services with authenticated user', async function() {
     const res = await hq.request({
       url: '/gateway/services',
       headers: {
@@ -38,7 +38,7 @@ describe('test endpoint /services and its authentication', () => {
     expect(res.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
   });
 
-  it('should be able get list of services with authenticated user, routed version', async () => {
+  it('should be able get list of services with authenticated user, routed version', async function() {
     const res = await hq.request({
       url: '/gateway/api/v1/services',
       headers: {

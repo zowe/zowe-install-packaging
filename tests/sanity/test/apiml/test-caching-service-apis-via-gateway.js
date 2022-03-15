@@ -17,7 +17,7 @@ const {
   DEFAULT_CLIENT_CERTIFICATE_PRIVATE_KEY,
 } = require('../constants');
 
-describe('test caching service via gateway', () => {
+describe('test caching service via gateway', function() {
 
   let hq;
   let httpsAgent;
@@ -26,7 +26,7 @@ describe('test caching service via gateway', () => {
   let value = 'testValue';
   const CACHING_PATH = '/cachingservice/api/v1/cache';
   
-  before('verify environment variables', () => {
+  before('verify environment variables', function() {
     hq = new HTTPRequest();
 
     httpsAgent = new https.Agent({
@@ -36,8 +36,8 @@ describe('test caching service via gateway', () => {
     });
   });
 
-  describe('should be able to use caching service ', () => {
-    it('to store a key', async () => {
+  describe('should be able to use caching service ', function() {
+    it('to store a key', async function() {
       const res = await hq.request({
         url: CACHING_PATH,
         method: 'post',
@@ -50,7 +50,7 @@ describe('test caching service via gateway', () => {
       expect(res.status).to.equal(HTTP_STATUS.CREATED);
     });
 
-    it('to get a key', async () => {
+    it('to get a key', async function() {
       const res = await hq.request({
         url: CACHING_PATH + '/' + key,
         httpsAgent
@@ -60,7 +60,7 @@ describe('test caching service via gateway', () => {
       expect(res.data).to.not.be.empty;
     });
 
-    it('to update the key value', async () => {
+    it('to update the key value', async function() {
       value = 'newKey';
       const resPut = await hq.request({
         url: CACHING_PATH,
@@ -69,8 +69,8 @@ describe('test caching service via gateway', () => {
         httpsAgent
       });
 
-      expect(resPut.status).to.equal(HTTP_STATUS.SUCCESS);
-      expect(resPut.data).to.not.be.empty;
+      expect(resPut.status).to.equal(HTTP_STATUS.NO_CONTENT);
+      expect(resPut.data).to.be.empty;
 
       const res = await hq.request({
         url: CACHING_PATH + '/' + key,
@@ -81,7 +81,7 @@ describe('test caching service via gateway', () => {
       expect(res.data).to.not.be.empty;
     });
 
-    it('to delete the key', async () => {
+    it('to delete the key', async function() {
       const res = await hq.request({
         url: CACHING_PATH + '/' + key,
         method: 'delete',
@@ -89,7 +89,7 @@ describe('test caching service via gateway', () => {
       });
 
       expect(res.status).to.equal(HTTP_STATUS.NO_CONTENT);
-      expect(res.data).to.not.be.empty;
+      expect(res.data).to.be.empty;
     });
   });
 });

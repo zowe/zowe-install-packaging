@@ -12,7 +12,7 @@ const expect = require('chai').expect;
 const { HTTPRequest, HTTP_STATUS, APIMLAuth } = require('../http-helper');
 const { APIML_AUTH_COOKIE } = require('../constants');
 
-describe('test api mediation layer logout functionality', () => {
+describe('test api mediation layer logout functionality', function() {
 
   let hq;
   let apiml;
@@ -26,12 +26,12 @@ describe('test api mediation layer logout functionality', () => {
     expect(afterStatus).to.equal(HTTP_STATUS.UNAUTHORIZED);
   };
 
-  before('verify environment variables', () => {
+  before('verify environment variables', function() {
     hq = new HTTPRequest();
     apiml = new APIMLAuth(hq);
   });
 
-  it('should login to the system and properly logout with Bearer', async () => {
+  it('should login to the system and properly logout with Bearer', async function() {
     const token = await apiml.login();
 
     const authenticationHeader = {
@@ -41,7 +41,7 @@ describe('test api mediation layer logout functionality', () => {
     await assertLogout(authenticationHeader);
   });
 
-  it('should login to the system and properly logout using Cookie', async () => {
+  it('should login to the system and properly logout using Cookie', async function() {
     const token = await apiml.login();
 
     const authenticationHeader = {

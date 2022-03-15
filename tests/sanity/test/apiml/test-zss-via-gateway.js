@@ -18,13 +18,13 @@ describe('test zss x509 certificate mapping via gateway', function() {
   let apiml;
   let token;
 
-  it('obtain JWT for certificate', async () => {
+  it('obtain JWT for certificate', async function() {
     hq = new HTTPRequest();
     apiml = new APIMLAuth(hq);
     token = await apiml.loginWithCertificate();
   });
 
-  it('call endpoint with valid certificate', async () => {
+  it('call endpoint with valid certificate', async function() {
     if (!token) {
       this.skip();
     }

@@ -16,15 +16,15 @@ const zosHost = process.env.ZOWE_ZOS_HOST || process.env.ZOWE_EXTERNAL_HOST;
 //        so disable this test if Gateway/Discovery host and z/OS host are not same.
 const skipTest = process.env.ZOWE_EXTERNAL_HOST !== zosHost;
 
-(skipTest ? describe.skip : describe)('test zss can be routed via gateway', () => {
+(skipTest ? describe.skip : describe)('test zss can be routed via gateway', function() {
 
   let hq;
 
-  before('verify environment variables', () => {
+  before('verify environment variables', function() {
     hq = new HTTPRequest();
   });
 
-  it('call zss plugins endpoint', async () => {
+  it('call zss plugins endpoint', async function() {
     const res = await hq.request({
       url: '/zss/api/v1/plugins',
     });

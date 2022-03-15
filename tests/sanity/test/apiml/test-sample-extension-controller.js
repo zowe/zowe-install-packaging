@@ -12,15 +12,15 @@ const expect = require('chai').expect;
 const { HTTPRequest, HTTP_STATUS } = require('../http-helper');
 const debug = require('debug')('zowe-sanity-test:apiml:sample-extension-controller');
 
-describe('test api gateway sample extension controller', () => {
+describe('test api gateway sample extension controller', function() {
 
   let hq;
 
-  before('verify environment variables', () => {
+  before('verify environment variables', function() {
     hq = new HTTPRequest();
   });
 
-  it('should return the greeting message from the gateway sample extension controller', async () => {
+  it('should return the greeting message from the gateway sample extension controller', async function() {
     debug('Verify access to greeting endpoint via /api/v1/greeting');
 
     const res = await hq.request({
