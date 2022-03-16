@@ -283,7 +283,7 @@ jobs:
               echo -e "${RED}In jfrog_search_build function, build number is not provided" > /dev/stderr
               exit 1
             fi
-            out=$(jfrog rt search --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[].path')
+            out=$(jfrog rt search --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[-1].path')
             if [[ -z "$out" ]]; then
               echo -e "${RED}Cannot find the artifact in pattern: $search_pattern associated with $bld_num of $build_name" > /dev/stderr
               exit 1
