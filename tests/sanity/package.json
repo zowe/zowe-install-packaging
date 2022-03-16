@@ -23,7 +23,6 @@
   },
   "scripts": {
     "test": "mocha",
-    "test:docker": "mocha --config .mocharc-docker.yml",
     "lint": "eslint ."
   }
 }
