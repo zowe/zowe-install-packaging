@@ -24,7 +24,7 @@ describe('test api gateway sample extension controller', function() {
     debug('Verify access to greeting endpoint via /api/v1/greeting');
 
     const res = await hq.request({
-      url: '/greeting/api/v1',
+      url: '/gateway/api/v1/greeting',
       method: 'get',
     });
 

@@ -122,4 +122,4 @@
     configs:
       "components.files-api.enabled": "true"
       "components.jobs-api.enabled": "true"
-  
+      "components.apiml-sample-extension.enabled": "true"
