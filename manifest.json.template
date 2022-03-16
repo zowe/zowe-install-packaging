@@ -60,8 +60,10 @@
       "artifact": "jobs-api-package-*.zip",
       "exclusions": ["*PR*.zip"]
     },
-    "org.zowe.explorer.files": {
-      "version": "~1.0.0-SNAPSHOT"
+    "org.zowe.explorer.files.files-api-package": {
+      "version": "~1.0.0-SNAPSHOT",
+      "artifact": "files-api-package-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.explorer-jes": {
       "version": "~1.0.0-SNAPSHOT"
