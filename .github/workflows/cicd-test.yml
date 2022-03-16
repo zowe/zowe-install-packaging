@@ -367,8 +367,12 @@ jobs:
 
           # note that below if-else does not always get to run the sed part, as we only replace if {branch-name} exists in the pattern,
           #   which isn't the case for customized path. In either case, $zowe_artifactory_pattern_final should be filled
-          if [[ "$CURRENT_BRANCH_NEW" == "master" ]] ; then
-            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#snapshot#g")
+          if [[ "$CURRENT_BRANCH_NEW" =~ ^v([0-9])\.x-master$ ]] ; then
+            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*snapshot#g")
+          elif [[ "$CURRENT_BRANCH_NEW" =~ ^v([0-9])\.x-staging$ ]] ; then
+            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*staging#g")
+          elif [[ "$CURRENT_BRANCH_NEW" =~ ^v([0-9])\.x-rc$ ]] ; then
+            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*rc#g")
           else
             zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           fi
@@ -812,10 +816,19 @@ jobs:
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
-      # - name: '[After Test] Merge Report'
-      #   if: always()
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: npm run merge-reports
+      - name: '[After Test 1] Prepare to upload test report'
+        if: always()
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: | 
+          echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
+          echo TEST_NAME=$(echo "${{ matrix.test }}" | sed 's#.*\/##g') >> $GITHUB_ENV
+
+      - name: '[After Test 2] Upload test report'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
+          path: ${{ env.INSTALL_TEST_PATH }}/reports/
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
         uses: actions/github-script@v5
