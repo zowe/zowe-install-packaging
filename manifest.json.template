@@ -55,11 +55,10 @@
       "version": "~1.28.0-STAGING",
       "artifact": "*.pax"
     },
-    "org.zowe.explorer.jobs.jobs-zowe-server-package": {
+    "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "~1.0.0-SNAPSHOT",
-      "artifact": "jobs-zowe-server-package-*.zip",
-      "exclusions": ["*PR*.zip"],
-      "target": ".pax/binaryDependencies/jobs-api.zip"
+      "artifact": "jobs-api-package-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.explorer.files": {
       "version": "~1.0.0-SNAPSHOT"
