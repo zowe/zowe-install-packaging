@@ -55,11 +55,15 @@
       "version": "~1.28.0-STAGING",
       "artifact": "*.pax"
     },
-    "org.zowe.explorer.jobs": {
-      "version": "~1.0.0-SNAPSHOT"
+    "org.zowe.explorer.jobs.jobs-api-package": {
+      "version": "~1.0.0-SNAPSHOT",
+      "artifact": "jobs-api-package-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
-    "org.zowe.explorer.files": {
-      "version": "~1.0.0-SNAPSHOT"
+    "org.zowe.explorer.files.files-api-package": {
+      "version": "~1.0.0-SNAPSHOT",
+      "artifact": "files-api-package-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.explorer-jes": {
       "version": "~1.0.0-SNAPSHOT"
