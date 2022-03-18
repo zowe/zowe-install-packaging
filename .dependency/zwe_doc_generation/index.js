@@ -20,11 +20,14 @@ writeMdFiles(rootDocNode);
 function writeMdFiles(docNode, writtenParentNode = {}) {
     const { mdContent, parts } = generateDocumentationForNode(docNode, writtenParentNode);
     let directoryToWriteFile = generatedDocDirectory + '/' + parts.command.replace(/\s/g, '/');
-    if (parts.children) {
+    if (parts.children && parts.children.length) {
         // create directory for command
         if (!fs.existsSync(directoryToWriteFile)) {
             fs.mkdirSync(directoryToWriteFile);
         }
+    } else {
+        // remove last segment from file path so directory isn't created for child command
+        directoryToWriteFile = directoryToWriteFile.substring(0, directoryToWriteFile.lastIndexOf('/'));
     }
     fs.writeFileSync(`${directoryToWriteFile}/${parts.fileName}.md`, mdContent);
 
