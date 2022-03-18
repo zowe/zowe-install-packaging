@@ -15,12 +15,13 @@ const SECTION_HEADER_PREFIX = '## ';
 const SUB_SECTION_HEADER_PREFIX = '#' + SECTION_HEADER_PREFIX;
 const MD_TABLE_ROW_DELIMITER = '\n';
 const MD_TABLE_ENTRY_DELIMITER = '|';
+const CODE_SECTION = '```';
 
 // order content will appear, with prefix/postfix as needed
 const orderedDocumentationTypes = [
     { ...HELP, prefix: SECTION_HEADER_PREFIX + 'Description' + SEPARATOR },
     { ...EXPERIMENTAL },
-    { ...EXAMPLES, prefix: SECTION_HEADER_PREFIX + 'Examples' + SEPARATOR },
+    { ...EXAMPLES, prefix: SECTION_HEADER_PREFIX + 'Examples' + SEPARATOR + CODE_SECTION + '\n', postfix: '\n' + CODE_SECTION },
     { ...EXCLUSIVE_PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Parameters only for this command' + SEPARATOR },
     { ...PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Parameters' + SEPARATOR },
     { ...ERRORS, prefix: SECTION_HEADER_PREFIX + 'Errors' + SEPARATOR }
