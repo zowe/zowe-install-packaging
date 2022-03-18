@@ -72,16 +72,19 @@ function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
     const fileName = getFileName(curNode.command, assembledParentNode.fileName);
     const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
+    const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
 
+    let relPathToParentLinks = './';
     let directory = assembledParentNode.directory ? assembledParentNode.directory : '.';
+
     if (curNode.children.length) {
         directory += '/' + curNode.command;
+        relPathToParentLinks = '../';
     }
 
-    const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
+    // add '../'to make link to parent commands proper given the directory structure
     for (let elementIndex = 0; elementIndex < linkCommandElements.length - 1; elementIndex++) {
-        // add '../'to make link to parent commands proper given the directory structure
-        linkCommandElements[elementIndex] = linkCommandElements[elementIndex].replace(/\(/, '(../'); // path starts after '(', so add '../' after '('
+        linkCommandElements[elementIndex] = linkCommandElements[elementIndex].replace(/\(/, '(' + relPathToParentLinks); // path starts after '(', so add '../' after '('
     }
 
     const linkCommand = linkCommandElements.join(' > ');
