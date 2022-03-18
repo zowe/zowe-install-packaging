@@ -63,7 +63,7 @@ function generateDocumentationForNode(curNode, assembledParentNode) {
     }
 
     return {
-        parts: assembledDocNode,
+        assembledDocNode,
         mdContent: mdContent
     };
 }
@@ -72,12 +72,19 @@ function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
     const fileName = getFileName(curNode.command, assembledParentNode.fileName);
     const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
-    const linkCommand = assembledParentNode.linkCommand ? `${assembledParentNode.linkCommand} > ${link}` : link;
+    const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
 
+    for (let elementIndex = 0; elementIndex < linkCommandElements.length - 1; elementIndex++) {
+        // add '../'to make link to parent commands proper given the directory structure
+        linkCommandElements[elementIndex] = linkCommandElements[elementIndex].replace(/\(/, '(../'); // path starts after '(', so add '../' after '('
+    }
+
+    const linkCommand = linkCommandElements.join(' > ');
     const docElements = {
         fileName,
         command,
         linkCommand,
+        linkCommandElements,
         children: curNode.children,
     };
 

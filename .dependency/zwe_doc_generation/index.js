@@ -18,9 +18,9 @@ const rootDocNode = getDocumentationTree({ dir: path.join(__dirname, '../../bin/
 writeMdFiles(rootDocNode);
 
 function writeMdFiles(docNode, writtenParentNode = {}) {
-    const { mdContent, parts } = generateDocumentationForNode(docNode, writtenParentNode);
-    let directoryToWriteFile = generatedDocDirectory + '/' + parts.command.replace(/\s/g, '/');
-    if (parts.children && parts.children.length) {
+    const { mdContent, assembledDocNode } = generateDocumentationForNode(docNode, writtenParentNode);
+    let directoryToWriteFile = generatedDocDirectory + '/' + assembledDocNode.command.replace(/\s/g, '/');
+    if (assembledDocNode.children && assembledDocNode.children.length) {
         // create directory for command
         if (!fs.existsSync(directoryToWriteFile)) {
             fs.mkdirSync(directoryToWriteFile);
@@ -29,11 +29,11 @@ function writeMdFiles(docNode, writtenParentNode = {}) {
         // remove last segment from file path so directory isn't created for child command
         directoryToWriteFile = directoryToWriteFile.substring(0, directoryToWriteFile.lastIndexOf('/'));
     }
-    fs.writeFileSync(`${directoryToWriteFile}/${parts.fileName}.md`, mdContent);
+    fs.writeFileSync(`${directoryToWriteFile}/${assembledDocNode.fileName}.md`, mdContent);
 
     if (docNode.children && docNode.children.length) {
         for (const child of docNode.children) {
-            writeMdFiles(child, parts);
+            writeMdFiles(child, assembledDocNode);
         }
     }
 }
