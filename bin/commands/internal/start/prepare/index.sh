@@ -63,6 +63,9 @@ prepare_workspace_directory() {
   export ZWE_GATEWAY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/"
 
   mkdir -p "${ZWE_zowe_workspaceDirectory}"
+  # FIXME: 771 is inherited from v1, we should consider disable read permission for `other`
+  umask 0002
+  chmod -R 771 "${ZWE_zowe_workspaceDirectory}"
 
   if [ ! -w "${ZWE_zowe_workspaceDirectory}" ]; then
     print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "ZWEL0141E: User $(get_user_id) does not have write permission on ${ZWE_zowe_workspaceDirectory}."
