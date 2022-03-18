@@ -19,15 +19,9 @@ writeMdFiles(rootDocNode);
 
 function writeMdFiles(docNode, writtenParentNode = {}) {
     const { mdContent, assembledDocNode } = generateDocumentationForNode(docNode, writtenParentNode);
-    let directoryToWriteFile = generatedDocDirectory + '/' + assembledDocNode.command.replace(/\s/g, '/');
-    if (assembledDocNode.children && assembledDocNode.children.length) {
-        // create directory for command
-        if (!fs.existsSync(directoryToWriteFile)) {
-            fs.mkdirSync(directoryToWriteFile);
-        }
-    } else {
-        // remove last segment from file path so directory isn't created for child command
-        directoryToWriteFile = directoryToWriteFile.substring(0, directoryToWriteFile.lastIndexOf('/'));
+    const directoryToWriteFile = generatedDocDirectory + '/' + assembledDocNode.directory;
+    if (!fs.existsSync(directoryToWriteFile)) {
+        fs.mkdirSync(directoryToWriteFile, { recursive: true});
     }
     fs.writeFileSync(`${directoryToWriteFile}/${assembledDocNode.fileName}.md`, mdContent);
 

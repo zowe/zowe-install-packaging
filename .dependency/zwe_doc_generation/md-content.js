@@ -72,8 +72,13 @@ function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
     const fileName = getFileName(curNode.command, assembledParentNode.fileName);
     const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
-    const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
 
+    let directory = assembledParentNode.directory ? assembledParentNode.directory : '.';
+    if (curNode.children.length) {
+        directory += '/' + curNode.command;
+    }
+
+    const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
     for (let elementIndex = 0; elementIndex < linkCommandElements.length - 1; elementIndex++) {
         // add '../'to make link to parent commands proper given the directory structure
         linkCommandElements[elementIndex] = linkCommandElements[elementIndex].replace(/\(/, '(../'); // path starts after '(', so add '../' after '('
@@ -85,6 +90,7 @@ function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
         command,
         linkCommand,
         linkCommandElements,
+        directory,
         children: curNode.children,
     };
 
