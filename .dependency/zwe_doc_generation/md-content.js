@@ -35,7 +35,7 @@ function generateDocumentationForNode(curNode, assembledParentNode) {
 
     if (children.length) {
         mdContent += ' [sub-command [sub-command]...] [parameter [parameter]...]' + SEPARATOR;
-        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + children.map(c => `* [${c.command}](./${getFileName(c.command, fileName)})`).join('\n');
+        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + children.map(c => `* [${c.command}](./${getRelativeFilePathForChild(c, fileName)})`).join('\n');
     } else {
         mdContent += ' [parameter [parameter]...]';
     }
@@ -69,7 +69,7 @@ function generateDocumentationForNode(curNode, assembledParentNode) {
 }
 
 function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
-    const fileName = getFileName(curNode.command, assembledParentNode.fileName);
+    const fileName = assembledParentNode.fileName ? `${assembledParentNode.fileName}-${curNode.command}` : curNode.command;
     const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
     const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
@@ -170,8 +170,12 @@ function createMdTable(rawContent, docFileTableSyntax) {
     return docContent;
 }
 
-function getFileName(command, parentFileName) {
-    return parentFileName ? `${parentFileName}-${command}` : command;
+function getRelativeFilePathForChild(child, curCommandFileName) {
+    if (curCommandFileName) {
+        const childFileName = `${curCommandFileName}-${child.command}`;
+        return child.children.length ? child.command + '/' + childFileName : childFileName;
+    }
+    return child.command;
 }
 
 function hasDocType(docNode, type) {
