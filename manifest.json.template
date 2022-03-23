@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.0.0-v2.x-staging-zlux-core",
+      "version": "2.0.0-63-v2.x-staging-zlux-core",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -103,7 +103,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.launcher": {
-      "version": "~2.0.0-PR-34"
+      "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
