@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Wed Mar 23 2022 19:34:47 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1648064087430273162",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/aditya/bugfix/encoding-issue",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 2030308999,
-  "runNumber": 442,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2030308999"
-}
+""
