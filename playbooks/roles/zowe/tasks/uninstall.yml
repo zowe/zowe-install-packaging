@@ -13,7 +13,9 @@
     - zowe_keystore_dir
     - zowe_install_logs_dir
     - zowe_dataset_prefix
+    - zowe_jcllib
     - zowe_xmem_loadlib
+    - zowe_xmem_pluginlib
     - zowe_xmem_parmlib
     - zowe_xmem_proclib_member_zss
     - zowe_xmem_proclib_member_aux
@@ -32,6 +34,13 @@
 - name: Stopping Zowe
   include_role:
     name: stop
+
+# ============================================================================
+# Clean up history job output
+- import_role:
+    name: zowe
+    tasks_from: purge_job_outputs
+  when: cleanup_zowe_job_history
 
 # ============================================================================
 - import_role:
@@ -76,12 +85,7 @@
 # ============================================================================
 - import_role:
     name: zowe
-    tasks_from: uninstall_keyring  
-
-# ============================================================================
-- import_role:
-    name: zowe
-    tasks_from: delete_sso_token  
+    tasks_from: uninstall_keyring
 
 # ============================================================================
 - name: Check APF settings of {{ zowe_xmem_loadlib }}
@@ -104,6 +108,26 @@
   - zowe_xmem_loadlib_volume.stdout != '*SMS*'
 
 # ============================================================================
+- name: Check APF settings of {{ zowe_xmem_pluginlib }}
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'D PROG,APF,DSNAME={{ zowe_xmem_pluginlib }}' | grep '[0-9]\{1,\} \{1,\}[0-9a-zA-Z*]\{1,\} \{1,\}{{ zowe_xmem_pluginlib }}' | awk '{print $2}' | tr -d '\n'
+  register: zowe_xmem_pluginlib_volume
+  ignore_errors: true
+
+- name: Delete APF settings of {{ zowe_xmem_pluginlib }} for SMS volume
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_pluginlib }},SMS'
+  when: zowe_xmem_pluginlib_volume.stdout == 'SMS' or zowe_xmem_pluginlib_volume.stdout == '*SMS*'
+
+- name: Delete APF settings of {{ zowe_xmem_pluginlib }} for non-SMS volume
+  raw: >-
+    '{{ work_dir_remote }}/opercmd.rexx' 'SETPROG APF,DELETE,DSNAME={{ zowe_xmem_pluginlib }},VOLUME={{ zowe_xmem_pluginlib_volume.stdout }}'
+  when:
+  - zowe_xmem_pluginlib_volume.stdout != ''
+  - zowe_xmem_pluginlib_volume.stdout != 'SMS'
+  - zowe_xmem_pluginlib_volume.stdout != '*SMS*'
+
+# ============================================================================
 - name: Check APF settings of {{ zowe_dataset_prefix }}.SZWEAUTH
   raw: >-
     '{{ work_dir_remote }}/opercmd.rexx' 'D PROG,APF,DSNAME={{ zowe_dataset_prefix }}.SZWEAUTH' | grep '[0-9]\{1,\} \{1,\}[0-9a-zA-Z*]\{1,\} \{1,\}{{ zowe_dataset_prefix }}.SZWEAUTH' | awk '{print $2}' | tr -d '\n'
@@ -124,9 +148,9 @@
   - zowe_dataset_authlib_volume.stdout != '*SMS*'
 
 # ============================================================================
-- name: Delete members of loadlib/parmlib data sets
+- name: Delete members of jcllib/loadlib/parmlib data sets
   raw: (tsocmd listds "'{{ item[0] }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1' | grep '^{{ item[1] }}$') && echo "Deleting {{ item[0] }}({{ item[1] }}) ..." && tsocmd DELETE "'{{ item[0] }}({{ item[1] }})'"
-  loop: "{{ [zowe_xmem_loadlib, zowe_xmem_parmlib]|product([zowe_known_loadlib_members, zowe_known_parmlib_members]|flatten)|list }}"
+  loop: "{{ [zowe_jcllib, zowe_xmem_loadlib, zowe_xmem_pluginlib, zowe_xmem_parmlib]|product([zowe_known_loadlib_members, zowe_known_parmlib_members]|flatten)|list }}"
   ignore_errors: True
 
 # ============================================================================

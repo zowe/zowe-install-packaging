@@ -31,8 +31,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```yaml
 zowe:
   setup:
-    mvs:
-      hlq: IBMUSER.ZWE
+    dataset:
+      prefix: IBMUSER.ZWE
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
       authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
@@ -63,6 +63,7 @@ zowe:
       validity: 3650
       pkcs12:
         directory: /global/zowe/keystore
+        lock: true
         name: localhost
         password: password
         caAlias: local_ca
@@ -110,16 +111,16 @@ components:
         name: IBMUSER.ZWE.CUST.CACHE2
 ```
 
-- `zowe.setup.mvs.hlq` shows where the `SZWEAUTH` data set is installed.
-- `zowe.setup.mvs.parmlib` is the user custom parameter library. Zowe server
+- `zowe.setup.dataset.prefix` shows where the `SZWEAUTH` data set is installed.
+- `zowe.setup.dataset.parmlib` is the user custom parameter library. Zowe server
   command may generate sample PARMLIB members and stores here.
-- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe server command may
+- `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe server command may
   generate sample JCLs and put into this data set.
-- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
+- `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
   optional. If this is defined, members of `SZWEAUTH` will be copied over to
   this data set and it will be APF authorized. If it's not defined, `SZWEAUTH`
-  from HLQ will be APF authorized.
-- `zowe.setup.mvs.authPluginLib` is the user custom APF PLUGINLIB.
+  from `zowe.setup.dataset.prefix` data set will be APF authorized.
+- `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
   You can install Zowe ZIS plugins into this load library.
   This loadlib requires APF authorize.
 
@@ -165,6 +166,9 @@ components:
 - `zowe.setup.certificate.pkcs12.directory` is the directory where you plan to
   store the PKCS12 keystore and truststore. This is required if
   `zowe.setup.certificate.type` is `PKCS12`.
+- `zowe.setup.certificate.pkcs12.lock` is a boolean configuration to tell if we
+  should lock the PKCS12 keystore directory only for Zowe runtime user and group.
+  Default value is true.
 - You can also define `name`, `password`, `caAlias` and `caPassword` under
   `zowe.setup.certificate.pkcs12` to customized keystore and truststore. These
   configurations are optional, but it is recommended to update them from

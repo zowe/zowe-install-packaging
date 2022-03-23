@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<autoTakeOwnership>true</autoTakeOwnership>
+<!-- instance prefix settings -->
+    <workflowInfo>
+        <workflowID scope="none" >zowe_load_authcertificate</workflowID>
+        <workflowDefaultName>Load Authentication Certificate into ESM</workflowDefaultName>
+        <workflowDescription>Use this workflow to load a signed client authentication certificate to the ESM</workflowDescription>
+        <workflowVersion>###ZOWE_VERSION###</workflowVersion>
+        <vendor>Zowe</vendor>
+        <General/>
+    </workflowInfo>    
+    <variable name="uss_input_folder" scope="instance" visibility="public">
+        <label>Certificate USS input folder</label>
+        <abstract>USS folder that contains a signed client certificate file which is stored in a data set</abstract>
+        <description>This folder will contain the input PEM-encoded signed cert file that is signed by your CA authority.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^\/([^\/]+\/)+$</regularExpression>
+            <errorMessage>Path must start and end with a slash, e.g.: /tmp/</errorMessage>
+            <default>/tmp/</default>
+        </string>
+    </variable>
+    <variable name="certificate_file_name" scope="instance" visibility="public">
+        <label>Certificate File Name</label>
+        <abstract>Name of the PEM-encoded signed certificate that is stored in "Certificate USS input folder"</abstract>
+        <description>Specifies the name of the PEM-encoded signed certificate (.pem file)</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="certificate_encoding" scope="instance" visibility="public">
+        <label>Certificate File Encoding</label>
+        <abstract>Encoding of a stored certificate .pem file"</abstract>
+        <description>Specifies the encoding format of a signed certificate (.pem file)</description>
+        <category>General</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <regularExpression>^(ASCII|EBCDIC)$</regularExpression>
+            <choice>ASCII</choice>
+            <choice>EBCDIC</choice>            
+            <default>ASCII</default>
+        </string>
+    </variable>
+    <variable name="output_dataset" scope="instance" visibility="public">
+        <label>Output Data Set</label>
+        <abstract>Data set that contains a certificate converted from a USS file</abstract>
+        <description>Specifies the name of the data set into which a PEM-encoded signed certificate (.pem file) is written. 
+        The data set must not already exist. 
+        The signed certificate is loaded into ESM from this data set</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <default>PUBLIC.SCEBC1</default>
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="certificate_label" scope="instance" visibility="public">
+        <label>Certificate Label</label>
+        <abstract>Label of the certificate that is used for the PEM-encoded signed cert</abstract>
+        <description>Specifies the label of the certificate that is used to obtain the distinguished name and public key for the PEM-encoded signed certificate</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>    
+    <variable name="esm" scope="instance" visibility="public">
+        <label>Security Manager</label>
+        <abstract>Please specify your security management software</abstract>
+        <description>Please specify the ESM system you use on your workstation</description>
+        <category>General</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>RACF</choice>
+            <choice>TSS</choice>
+            <choice>ACF2</choice>
+            <default>RACF</default>
+        </string>
+    </variable>
+    <variable name="racf_acid" scope="instance" visibility="public">
+        <label>RACF ACID</label>
+        <abstract>[ ID(certificate-owner) ]</abstract>
+        <description>Indicates that the specified certificate is either a user certificate associated with the specified user ID.        
+        Certificate-owner defaults to the user ID of the command issuer.
+        If more than one keyword is specified, the last specified keyword is processed and
+        the others are ignored by TSO command parse processing.</description>
+        <category>RACF</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^(ID\([^ )]+\))?$</regularExpression>
+            <errorMessage>Syntax error in the specified value</errorMessage>
+            <choice>ID(certificate-owner)</choice>            
+        </string>
+    </variable> 
+    <variable name="tss_acid" scope="instance" visibility="public">
+        <label>User ACID to add a certificate to</label>
+        <abstract>Case-sensitive ID that identifies a certificate with the user ACID</abstract>
+        <description>ACID that is used for loading the certificate load</description>
+        <category>TSS</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^([A-Z0-9#$@]{1,8})$</regularExpression>
+            <errorMessage>Syntax error in the specified value</errorMessage>            
+        </string>
+    </variable>
+    <variable name="tss_digicert_id" scope="instance" visibility="public">
+        <label>Digicert ID </label>
+        <abstract>Digicert Specifies a case-sensitive character ID that identifies the certificate, must be unique ID</abstract>
+        <description>ID that identifies the certificate, must be uniq (different from digicert ID used for CSR creation)</description>
+        <category>TSS</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^([A-Z0-9#$@]{1,8})$</regularExpression>
+            <errorMessage>Syntax error in the specified value</errorMessage>            
+        </string>
+    </variable>
+    <variable name="tss_certificate_label" scope="instance" visibility="public">
+        <label>Certificate Label</label>
+        <abstract>Label of the certificate to be used for the PEM-encoded signed cert</abstract>
+        <description>Specifies the label to be associated with the certificate that is added to a user. 
+        Spaces are allowed if you use single quotation marks. 
+        This label is used as an identifier (instead of the serial number and issuer's distinguished name) and must be unique for an individual user.
+         If you do not specify a label, the label field defaults to the value specified within the DIGICERT keyword.</description>
+        <category>TSS</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="acf2_acid" scope="instance" visibility="public">
+        <label>logonid|logonid.suffix</label>
+        <abstract>USERID, If a suffix is not specified, the label parameter must be specified.</abstract>
+        <description>Specifies the record key that is used to save the certificate in the database. 
+        If a suffix is not specified, the label parameter must be specified.
+        User ID is used for the certificate creation</description>
+        <category>ACF2</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^([A-Z0-9#$@]{1,8}|[A-Z0-9#$@]{1,8}.[A-Z0-9#$@]{1,8})$</regularExpression>
+            <errorMessage>Syntax error in the specified value, logonid, or logonid.suffix</errorMessage>            
+        </string>
+    </variable>  
+    <variable name="acf2_certificate_label" scope="instance" visibility="public">
+        <label>Certificate Label</label>
+        <abstract>Label of the certificate that is used for the PEM-encoded signed cert</abstract>
+        <description>Specifies a 32-character label that is associated with the certificate. The label can contain blanks and mixed-case characters. 
+        If a label is not specified, the label field defaults to the uppercase version of the logonid that was specified.</description>
+        <category>ACF2</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>  
+    <!--atCreate-->
+    <step name="define_variables" optional="false">
+        <title>Define variables for execution</title>
+        <description>Use this step to define the variables for execution</description>
+        <step name="define_general" optional="false">
+            <title>Define general variables</title>
+            <description>Define the variables that are common for all security systems.</description>
+            <!-- pre-requisite step -->
+            <!-- condition -->
+            <variableValue name="uss_input_folder" scope="instance" noPromptIfSet="true" required="true"/>
+            <variableValue name="certificate_file_name" scope="instance" noPromptIfSet="true" required="true"/>
+            <variableValue name="certificate_encoding" scope="instance" noPromptIfSet="true" required="true"/>            
+            <variableValue name="output_dataset" scope="instance" noPromptIfSet="true" required="true"/>
+            <variableValue name="esm" scope="instance" noPromptIfSet="true" required="true"/>            
+            <instructions substitution="true">Run this step to define the common variables and specify which security system you want to use.</instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="define_racf" optional="false">
+            <title>Define RACF variables</title>
+            <description>Use this step to define the variables for RACF</description>
+            <prereqStep name="define_general"/>
+            <!-- pre-requisite step -->
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if RACF was not selected</description>
+                        <expression>${instance-esm} != "RACF"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <variableValue name="racf_acid" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="certificate_label" scope="instance" noPromptIfSet="true" required="true"/>
+            <instructions substitution="false">
+            <![CDATA[
+	<p>Use this step to define the variables for RACF.</p>
+	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation here
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/traditional-management/mainframe-common-maintenance-procedures/1-0/configure-ca-smp-e-internet-service-retrieval/configure-ibm-racf-security.html">configure RACF security certificates</a>
+    or there <a href="https://www.ibm.com/docs/en/zos/2.2.0?topic=syntax-racdcert-add-add-certificate">RACDCERT ADD (Add certificate) command</a>.</p>
+	]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="define_tss" optional="false">
+            <title>Define TSS variables</title>
+            <description>Use this step to define the variables for TSS.</description>
+            <!-- pre-requisite step -->
+            <prereqStep name="define_general"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if TSS was not selected</description>
+                        <expression>${instance-esm} != "TSS"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <variableValue name="tss_acid" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="tss_digicert_id" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="tss_certificate_label" scope="instance" noPromptIfSet="false" required="false"/>
+            <instructions substitution="false"><![CDATA[
+	<p>Use this step to define the variables for TSS.</p>
+	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-top-secret-for-z-os/16-0/administrating/digital-certificates/add-a-certificate-to-an-acid.html">configure TSS security certificates</a>.</p>
+	]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="define_acf2" optional="false">
+            <title>Define ACF2 variables</title>
+            <description>Use this step to define the variables for ACF2.</description>
+            <!-- pre-requisite step -->
+            <prereqStep name="define_general"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ACF2 was not selected</description>
+                        <expression>${instance-esm} != "ACF2"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <variableValue name="acf2_acid" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="acf2_certificate_label" scope="instance" noPromptIfSet="false" required="false"/>
+            <instructions substitution="false"><![CDATA[
+	<p>Use this step to define the variables for ACF2.</p>
+	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-ca-acf2.html#concept.dita_742faf19321a7e7286b7e3f9b1c1a66acb9562f7_INSERTSubcommand">configure ACF2 security certificates</a>.</p>
+	]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+    </step>
+    <step name="conversion_step" optional="false">
+        <title>Convert signed certificate from USS file into data set</title>
+        <description>Converts the signed certificate from the USS file into the data set.</description>
+        <step name="ds_certificateASC" optional="false">
+            <title>Convert ASCII-encoded certificate from USS file into data set</title>
+            <description>Converts the ASCII-encoded signed certificate from the USS file into the data set.</description>
+            <prereqStep name="define_general"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ASCII was not selected</description>
+                        <expression>${instance-certificate_encoding} != "ASCII"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>            
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[
+	<p><b>Copies the signed certificate from the ${instance-uss_input_folder}${instance-certificate_file_name} into ${instance-output_dataset} data set.</b></p>
+	<p>During copy from file to dataset, for data conversion depends on file tagging and on what is set in USS user .profile,
+    if there are or are not set <br/> 
+    <b>export _BPXK_AUTOCVT='ON' <br/>                              
+    export _CEE_RUNOPTS='FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)' </b><br/>
+    To have same behave for copy command regardless of this .profile setup and file tagging, there is issued remove tag command for .pem file <br/>
+    before and after data conversion via <b>iconv</b> command</p>
+	]]>
+    </instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">set -e
+    set -x
+    chtag -r ${instance-uss_input_folder}${instance-certificate_file_name}
+    iconv -f ISO8859-1 -t IBM1047 ${instance-uss_input_folder}${instance-certificate_file_name} > ${instance-uss_input_folder}${instance-certificate_file_name}ebc
+    chtag -r ${instance-uss_input_folder}${instance-certificate_file_name}ebc
+    cp -F crnl '${instance-uss_input_folder}${instance-certificate_file_name}ebc' "//'${instance-output_dataset}'" </inlineTemplate>
+                <submitAs maxRc="0">shell-JCL</submitAs>
+                <maxLrecl>1024</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+        <step name="ds_certificateEBC" optional="false">
+            <title>Convert EBCDIC encoded certificate from USS file into data set</title>
+            <description>Converts the EBCDIC-encoded signed certificate from the USS file into the data set.</description>
+            <prereqStep name="define_general"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if EBCDIC was not selected</description>
+                        <expression>${instance-certificate_encoding} != "EBCDIC"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>            
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[
+	<p><b>Copies the signed certificate from the ${instance-uss_input_folder}${instance-certificate_file_name} into ${instance-output_dataset} data set.</b></p>
+	<p>During copy from file to dataset, for data conversion depends on file tagging and on what is set in USS user .profile,
+    if there are or are not set <br/> 
+    <b>export _BPXK_AUTOCVT='ON' <br/>                              
+    export _CEE_RUNOPTS='FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)' </b><br/>
+    To have same behave for copy command regardless of this .profile setup and file tagging, there is issued remove tag command for .pem file</p>
+	]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">set -e
+    set -x
+    chtag -r ${instance-uss_input_folder}${instance-certificate_file_name}
+    cp -F crnl '${instance-uss_input_folder}${instance-certificate_file_name}' "//'${instance-output_dataset}'" </inlineTemplate>
+                <submitAs maxRc="0">shell-JCL</submitAs>
+                <maxLrecl>1024</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+    </step>
+    <step name="load_certificate" optional="false">
+        <title>Load Signed Client Authentication Certificate</title>
+        <description>These steps will load a signed client authentication certificate into a specific security system.</description>
+        <step name="load_certificate_racf" optional="false">
+            <title>Load Signed Client Authentication Certificate using RACF</title>
+            <description>Load a signed client authentication certificate using RACF</description>
+            <prereqStep name="define_variables"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ESM isn't RACF</description>
+                        <expression>${instance-esm} != "RACF"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[
+	<p>This step will load signed client authentication certificate from the ${instance-output_dataset} into ESM</p>
+	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation here
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/traditional-management/mainframe-common-maintenance-procedures/1-0/configure-ca-smp-e-internet-service-retrieval/configure-ibm-racf-security.html">configure RACF security certificates</a> <br/>
+    or there <a href="https://www.ibm.com/docs/en/zos/2.2.0?topic=syntax-racdcert-add-add-certificate">RACDCERT ADD (Add certificate) command</a>.</p>
+	]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">//RACFCMD1 EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD *
+#if(${instance-racf_acid} and "${instance-racf_acid}" != "")
+RACDCERT ${instance-racf_acid} ADD('${instance-output_dataset}') +
+#else
+RACDCERT ADD('${instance-output_dataset}') +
+#end    
+WITHLABEL('${instance-certificate_label}') TRUST   
+SETROPTS RACLIST(DIGTCERT) REFRESH 
+/*</inlineTemplate>
+                <submitAs maxRc="4">JCL</submitAs>
+                <maxLrecl>80</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+        <step name="load_certificate_tss" optional="false">
+            <title>Load Signed Client Authentication Certificate using TSS</title>
+            <description>Load a signed client authentication certificate using TSS</description>
+            <prereqStep name="define_variables"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ESM isn't TSS</description>
+                        <expression>${instance-esm} != "TSS"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[
+	<p>This step will load signed client authentication certificate from the ${instance-output_dataset} into ESM</p>
+	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-top-secret-for-z-os/16-0/administrating/digital-certificates/add-a-certificate-to-an-acid.html">configure TSS security certificates</a>.</p>
+	]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">//TSSCMD01 EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD * 
+#if(${instance-tss_certificate_label} and "${instance-tss_certificate_label}" != "")
+TSS ADD(${instance-tss_acid}) DIGICERT(${instance-tss_digicert_id}) LABLCERT('${instance-tss_certificate_label}') -
+DCDSN(${instance-output_dataset}) TRUST
+#else
+TSS ADD(${instance-tss_acid}) DIGICERT(${instance-tss_digicert_id}) -
+DCDSN(${instance-output_dataset}) TRUST
+#end
+/*</inlineTemplate>
+                <submitAs maxRc="4">JCL</submitAs>
+                <maxLrecl>80</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+        <step name="load_certificate_acf2" optional="false">
+            <title>Load Signed Client Authentication Certificate ACF2</title>
+            <description>Load a signed client authentication certificate using ACF2</description>
+            <prereqStep name="define_variables"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ESM isn't ACF2</description>
+                        <expression>${instance-esm} != "ACF2"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[
+	<p>This step will load signed client authentication certificate from the ${instance-output_dataset} into ESM</p>
+	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-ca-acf2.html#concept.dita_742faf19321a7e7286b7e3f9b1c1a66acb9562f7_INSERTSubcommand">configure ACF2 security certificates</a>.</p>
+	]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">//ACF2CMD1 EXEC PGM=ACFBATCH
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+SET PROFILE(USER) DIV(CERTDATA)
+INSERT ${instance-acf2_acid} DSN('${instance-output_dataset}') -
+#if(${instance-acf2_certificate_label} and "${instance-acf2_certificate_label}" != "")
+LABEL(${instance-acf2_certificate_label}) TRUST
+#else
+TRUST
+#end
+/*</inlineTemplate>
+                <submitAs maxRc="4">JCL</submitAs>
+                <maxLrecl>80</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+    </step>    
+</workflow>

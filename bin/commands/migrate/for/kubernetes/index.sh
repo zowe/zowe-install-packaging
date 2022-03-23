@@ -27,15 +27,15 @@ require_zowe_yaml
 # opening message
 print_level0_message "Prepare Kubernetes manifests"
 
-print_message "SECURITY WARNING: This script may generate information including sensitive private"
-print_message "                  keys. Please make sure the content will not be left on any devices"
-print_message "                  after the process is done."
-print_message "                  During the process, this utility script may generate temporary"
-print_message "                  files under ${temp_dir}/."
-print_message "                  Normally those files will be automatically deleted after the script"
-print_message "                  exits. If the script exits with error, please double check if any of"
-print_message "                  those files are left on the system and they MUST be manually"
-print_message "                  deleted for security reason."
+print_message "SECURITY WARNING: This script will generate information with sensitive certificate"
+print_message "                  private keys. Please make sure the content will not be left on any"
+print_message "                  devices after the process is done."
+print_message "                  During the process, this command will generate temporary files under"
+print_message "                    ${temp_dir}/."
+print_message "                  Normally those files will be deleted automatically before the script"
+print_message "                  exits. If the script exits with an error, please verify if any of"
+print_message "                  those files are left on the system and they MUST be manually deleted"
+print_message "                  for security purposes."
 print_message
 
 ###############################
@@ -223,6 +223,11 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-uss.enabled" "true
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" ""
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" ""
+gateway_auth_provider=$(read_yaml "${temp_dir}/zowe.yaml" ".components.gateway.apiml.security.authorization.endpoint.provider")
+if [ "${gateway_auth_provider}" != "" ]; then
+  print_message "Zowe APIML Gateway authorization provider is suggested to be empty when running in Kubernetes. 'native' is not supported off Z platform."
+fi
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.provider" ""
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.storage.mode" ""
 
@@ -295,7 +300,7 @@ $(file_padding_left "${ZWE_zowe_certificate_pem_key}" "    ")
   keystore.cer: |
 $(file_padding_left "${ZWE_zowe_certificate_pem_certificate}" "    ")
   ca.cer: |
-$(file_padding_left "${ZWE_zowe_certificate_pem_certificateAuthorities}" "    ")
+$(files_padding_left "${ZWE_zowe_certificate_pem_certificateAuthorities}" "    ")
 EOF
 
 print_message

@@ -88,6 +88,9 @@ zowe_known_xmem_stc_users:
 # this profile is abandoned after v1.7.0
 zowe_user_profile: ~/.zowe_profile
 
+# If we clean up history job output during uninstall
+cleanup_zowe_job_history: True
+
 # ==============================================================================
 # Variables should be verified and overwrittern.
 # ==============================================================================
@@ -101,7 +104,7 @@ zowe_dataset_prefix:
 zowe_instance_dir: ~/.zowe/instance
 # keystore directory
 zowe_keystore_dir: ~/.zowe/keystore
-#logs directory
+# install logs directory
 zowe_install_logs_dir: ~/.zowe/logs
 
 ################################################################################
@@ -109,6 +112,7 @@ zowe_install_logs_dir: ~/.zowe/logs
 zowe_xmem_proclib:
 zowe_xmem_parmlib:
 zowe_xmem_loadlib:
+zowe_xmem_pluginlib:
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_proclib_member_aux: ZWESASTC
 
@@ -119,7 +123,6 @@ zowe_known_keyring_names:
 - ZoweKeyring
 zowe_known_keyring_personal_certificates:
 - ZoweCert
-- jwtsecret
 - "API ML Client"
 - ZOWE
 - amlexca
@@ -135,7 +138,6 @@ zowe_known_keyring_personal_digicerts:
 - ZOWECERT
 - ZOWEJWT
 - USER
-- JWTSCRT
 - ZOWECC
 zowe_known_keyring_certauth_digicerts:
 - ZOWECA

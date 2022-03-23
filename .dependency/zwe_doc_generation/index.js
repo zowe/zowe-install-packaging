@@ -18,12 +18,16 @@ const rootDocNode = getDocumentationTree({ dir: path.join(__dirname, '../../bin/
 writeMdFiles(rootDocNode);
 
 function writeMdFiles(docNode, writtenParentNode = {}) {
-    const { mdContent, parts } = generateDocumentationForNode(docNode, writtenParentNode);
-    fs.writeFileSync(`${generatedDocDirectory}/${parts.fileName}.md`, mdContent);
+    const { mdContent, assembledDocNode } = generateDocumentationForNode(docNode, writtenParentNode);
+    const directoryToWriteFile = generatedDocDirectory + '/' + assembledDocNode.directory;
+    if (!fs.existsSync(directoryToWriteFile)) {
+        fs.mkdirSync(directoryToWriteFile, { recursive: true});
+    }
+    fs.writeFileSync(`${directoryToWriteFile}/${assembledDocNode.fileName}.md`, mdContent);
 
     if (docNode.children && docNode.children.length) {
         for (const child of docNode.children) {
-            writeMdFiles(child, parts);
+            writeMdFiles(child, assembledDocNode);
         }
     }
 }

@@ -1,0 +1,4 @@
+I, James Struga hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails: jstruga@rocketsoftware.com
+
+17cc425e2ccfaf1c988426d847cf918deed752bb Merge pull request #2580
+c5261e82bd8c9ff8f6d3611a984e05f643674126 Merge pull requrst #2580

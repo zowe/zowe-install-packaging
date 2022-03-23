@@ -5,67 +5,51 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
-const testUtils = require('./utils');
-
-let request = testUtils.verifyAndSetupEnvironment();
-let authenticationCookie;
+const { HTTPRequest, HTTP_STATUS, APIMLAuth } = require('../http-helper');
+const { APIML_AUTH_COOKIE } = require('../constants');
 
 describe('test endpoint /services and its authentication', function() {
 
-  before('obtain JWT token', async () => {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    const uuid = testUtils.uuid();
-    authenticationCookie = await testUtils.login(uuid);
+  let hq;
+  let apiml;
+  let token;
+
+  before('obtain JWT token', async function() {
+    hq = new HTTPRequest();
+    apiml = new APIMLAuth(hq);
+    token = await apiml.login();
   });
 
-  describe('should be able get list of services', () => {
-  });
-  it('with authenticated user', async () => {
-    const uuid = testUtils.uuid();
-    let response;
-    try {
-      response = await request.get('/gateway/services', {
-        headers: {
-          'Cookie': authenticationCookie
-        }
-      });
-      testUtils.logResponse(uuid, response);
-    } catch (error) {
-      testUtils.logResponse(uuid, error.response);
-      response = error.response;
-    }
+  it('should be able get list of services with authenticated user', async function() {
+    const res = await hq.request({
+      url: '/gateway/services',
+      headers: {
+        Cookie: `${APIML_AUTH_COOKIE}=${token}`,
+      },
+    });
 
-    expect(response).to.have.property('status');
-    expect(response.status).to.equal(200);
-    expect(response.data).to.be.an('array').that.is.not.empty;
-    expect(response.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
+    expect(res).to.have.property('status');
+    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+    expect(res.data).to.be.an('array').that.is.not.empty;
+    expect(res.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
   });
 
-  describe('should be able get list of services, routed version', () => {
-  });
-  it('with authenticated user', async () => {
-    const uuid = testUtils.uuid();
-    let response;
-    try {
-      response = await request.get('/gateway/api/v1/services/', {
-        headers: {
-          'Cookie': authenticationCookie
-        }
-      });
-      testUtils.logResponse(uuid, response);
-    } catch (error) {
-      testUtils.logResponse(uuid, error.response);
-      response = error.response;
-    }
+  it('should be able get list of services with authenticated user, routed version', async function() {
+    const res = await hq.request({
+      url: '/gateway/api/v1/services',
+      headers: {
+        Cookie: `${APIML_AUTH_COOKIE}=${token}`,
+      },
+    });
 
-    expect(response).to.have.property('status');
-    expect(response.status).to.equal(200);
-    expect(response.data).to.be.an('array').that.is.not.empty;
-    expect(response.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
+    expect(res).to.have.property('status');
+    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+    expect(res.data).to.be.an('array').that.is.not.empty;
+    expect(res.data.map(x => x.serviceId)).to.include.members(['gateway', 'discovery']);
   });
 
 });

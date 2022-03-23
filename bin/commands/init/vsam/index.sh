@@ -26,15 +26,15 @@ if [ "${caching_storage}" != "VSAM" ]; then
   return 0
 fi
 
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+# read prefix and validate
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+if [ -z "${prefix}" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 if [ -z "${jcllib}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
 vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
 if [ -z "${vsam_mode}" ]; then
@@ -92,8 +92,8 @@ else
   # ZWESLSTC
   print_message "Modify ZWECSVSM"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
-  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
           sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | \
           sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | \
           sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | \
@@ -116,7 +116,7 @@ else
     fi
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
   fi
   print_trace "- ${tmpfile} created with content"
   print_trace "$(cat "${tmpfile}")"

@@ -6,10 +6,10 @@
 	</workflowSettingInfo>
 	<workflowInfo>
 		<workflowID scope="none">Zowe_certificate_generation</workflowID>
-		<workflowDefaultName>Zowe_certificate_generation</workflowDefaultName>
+		<workflowDefaultName>Zowe certificate generation</workflowDefaultName>
 		<workflowDescription>This workflow will generate certificates for ZOWE</workflowDescription>
 		<workflowVersion>###ZOWE_VERSION###</workflowVersion>
-		<vendor>ZOWE</vendor>
+		<vendor>Zowe</vendor>
 		<General/>
 	</workflowInfo>
     <variable name="zowe_install_path" scope="instance" visibility="public">
@@ -174,12 +174,12 @@ and that will be also used to secure newly generated keystores for API Mediation
         <variableValue name="ZOWE_GROUP_ID" scope="instance" noPromptIfSet="false" required="true"/>
 		<instructions substitution="false">Run this step to initialize variable values</instructions>
 		<weight>1</weight>
-		<autoEnable>false</autoEnable>
+		<autoEnable>true</autoEnable>
 		<canMarkAsFailed>false</canMarkAsFailed>
 	</step>
     <step name="Substitute_vars_in_env_file" optional="true">
         <title>New Custom zowe-setup-certificates.env</title>
-        <description>Creates new zowe-setup-certificates.env in user specified location adn substitutes values</description>
+        <description>Creates new zowe-setup-certificates.env in user specified location and substitutes values</description>
         <prereqStep name="define_variables"/>
         <instructions substitution="false">This step creates zowe-setup-certificates.env and substitutes variables</instructions>
         <weight>1</weight>

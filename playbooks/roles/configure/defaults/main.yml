@@ -3,6 +3,21 @@
 # Constants
 # ==============================================================================
 
+# full core components list, they should show up in components section in zowe.yaml
+zowe_core_components:
+- gateway
+- metrics-service
+- api-catalog
+- discovery
+- caching-service
+- app-server
+- zss
+- jobs-api
+- files-api
+- explorer-jes
+- explorer-mvs
+- explorer-uss
+
 # this should list all known cross memory server stc we ever setup during install
 zowe_known_xmem_proc_stcs:
 - ZWESIS01
@@ -23,6 +38,8 @@ zos_vsam_rls: false
 zowe_dataset_prefix:
 # instanceDir
 zowe_instance_dir: ~/.zowe/instance
+# install logs directory
+zowe_install_logs_dir: ~/.zowe/logs
 # zowe job prefix.
 zowe_job_prefix: ZWE
 # instance id. This will be put into zowe job name after {{ zowe_job_prefix }}
@@ -36,15 +53,13 @@ zos_zosmf_user: IZUSVR
 # default z/OSMF Certificate Authority
 zos_zosmf_ca:
 # APIML ports
+zowe_apiml_metrics_service_port: 7551
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
 zowe_apiml_verify_certficates_of_services: true
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 # APIML configuration properties
-zowe_apiml_allow_encoded_slashes: true
-zowe_apiml_cors_enabled: false
-zowe_apiml_prefer_ip_address: false
 zowe_apiml_gateway_timeout_millis: 600000
 zowe_apiml_security_x509_enabled: false
 zowe_apiml_security_zosmf_applid: IZUDFLT
@@ -59,7 +74,7 @@ zowe_uss_explorer_port: 7562
 # caching service
 zowe_caching_service_port: 7555
 zowe_caching_service_persistent: VSAM
-# the final data set name will be: {zowe_job_prefix}.{zowe_caching_service_vsam_dsprefix}{zowe_instance_id}
+# the final data set name will be: {zowe_dataset_prefix}.{zowe_caching_service_vsam_dsprefix}{zowe_instance_id}
 # for example: IBMUSER.ZWE.CACHE1
 zowe_caching_service_vsam_dsprefix: CACHE
 zowe_caching_vsam_storage_class:
@@ -79,15 +94,15 @@ zowe_external_certficate:
 zowe_external_certficate_alias:
 zowe_external_certficate_authorities:
 zowe_keystore_dir: ~/.zowe/keystore
-zowe_logs_dir: ~/.zowe/logs
 zowe_keystore_password: password
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
 zowe_keyring_external_root_ca:
 zowe_keystore_alias: localhost
+zowe_jcllib:
 zowe_proclib_dsname: auto
-zowe_proclib_membername: ZWESVSTC
+zowe_proclib_membername: ZWESLSTC
 zowe_runtime_user: ZWESVUSR
 zowe_runtime_group: ZWEADMIN
 zowe_auto_create_user_group: false
@@ -98,7 +113,9 @@ zowe_configure_skip_zwesecur: false
 # these are default variables for cross memory configuration
 zowe_xmem_proclib:
 zowe_xmem_parmlib:
+# this is optional, it will fall back to {{zowe_dataset_prefix}}.SZWEAUTH
 zowe_xmem_loadlib:
+zowe_xmem_pluginlib:
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_proclib_member_aux: ZWESASTC
 zowe_xmem_stc_user: ZWESIUSR
@@ -116,9 +133,7 @@ zowe_external_domain_name:
 zowe_external_ip_address:
 # Restrict permissions to keystore/truststore after the certificate setup script
 zowe_lock_keystore: true
-#
+# comma separated string
 zowe_launch_components:
-
-# PKCS#11 token name and label of jwt secret used by SSO
-zowe_token_name: ZWETOKEN
-zowe_token_label: jwtsecret
+# log level for Zowe launch scripts
+zowe_launch_scripts_loglevel: 

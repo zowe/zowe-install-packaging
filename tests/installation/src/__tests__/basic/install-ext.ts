@@ -33,6 +33,7 @@ describe(testSuiteName, () => {
       process.env.TEST_SERVER,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zowe_custom_for_test': 'true',
         'zowe_lock_keystore': 'false',
         //skip_start - for optimal runtime purposes
       }
@@ -40,12 +41,12 @@ describe(testSuiteName, () => {
     beforeAllResult = true;
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
 
-  process.env.EXTENSIONS_LIST.split(',').forEach((extension) => {
+  process.env.EXTENSIONS_LIST.split(';').forEach((extension) => {
     if (!extension){
       return;
     }
-    const extensionArray = extension.split(':');
-    if (extensionArray.length !== 2){
+    const extensionArray = extension.split(/[()]/);
+    if (extensionArray.length !== 3){
       return;
     }
 

@@ -1,0 +1,21 @@
+---
+  # input:
+  # - kubeconfig: required, a file used to configure access to Kubernetes. 
+  #               Can be found in the Kubernetes Node: ~/.kube/config. Update server field from local to actual Node IP (local = 127.0.0.1)
+  # - ansible_user: z/OS host's User.
+  # - ansible_password: z/OS host's Password
+  # - ansible_ssh_host: z/OS host  
+  # For example: ansible-playbook -l localhost install-kubernetes.yml -e kubeconfig=<location_of_the_file>/kubeconfig \
+  #              -e ansible_user=<user> -e ansible_password=<pass> -e ansible_ssh_host=<z/os_host>
+  - name: Test Kuberenetes
+    hosts: all 
+    gather_facts: false
+    become: false
+    roles:
+    - kwoodson.yedit
+
+    tasks:
+    # ============================================================================
+    # Uninstall and Deploy Zowe Kubernetes 
+    - import_role:
+        name: kubernetes

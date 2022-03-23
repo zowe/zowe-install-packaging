@@ -5,79 +5,61 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
-const _ = require('lodash');
 const expect = require('chai').expect;
-const debug = require('debug')('zowe-sanity-test:explorer:api-uss');
-const axios = require('axios');
-const addContext = require('mochawesome/addContext');
-const { handleCompressionRequest } = require('./zlib-helper');
-
-let REQ, username, password;
+const { HTTPRequest, HTTP_STATUS } = require('../http-helper');
 
 describe('test explorer server uss files api', function() {
-  before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
+  let hq;
+
+  before('verify environment variables', function() {
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_ROOT_DIR, 'ZOWE_ROOT_DIR is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
-    REQ = axios.create({
-      baseURL: `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
-      timeout: 30000,
+    hq = new HTTPRequest(null, null, null, {
+      username: process.env.SSH_USER,
+      password: process.env.SSH_PASSWD,
     });
-
-    username = process.env.SSH_USER;
-    password = process.env.SSH_PASSWD;
-
-    debug(`Explorer server URL: https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
   });
 
   it('Gets a list of files and directories for a given path', async function() {
-    const _this = this;
+    const res = await hq.request({
+      url: `/unixfiles/api/v1?path=${process.env.ZOWE_WORKSPACE_DIR}`,
+    });
 
-    const req = {
-      method: 'get',
-      url: `/api/v1/unixfiles?path=${process.env.ZOWE_INSTANCE_DIR}`,
-      auth: {
-        username,
-        password,
-      }
-    };
-    debug('request', req);
+    expect(res).to.have.property('status');
+    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+    expect(res.data).to.be.an('object');
+    expect(res.data).to.have.property('type');
+    expect(res.data.type).to.be.a('string');
+    expect(res.data).to.have.property('owner');
+    expect(res.data.owner).to.be.a('string');
+    expect(res.data).to.have.property('group');
+    expect(res.data.group).to.be.a('string');
+    expect(res.data).to.have.property('permissionsSymbolic');
+    expect(res.data.permissionsSymbolic).to.be.a('string');
+  });
 
-    function verifyResponse(res) {
-      debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
-      addContext(_this, {
-        title: 'http response',
-        value: res && res.data
-      });
+  it('Gets a list of files and directories for a given path (manual decompress)', async function() {
+    const res = await hq.request({
+      url: `/unixfiles/api/v1?path=${process.env.ZOWE_WORKSPACE_DIR}`,
+    }, {
+      manualDecompress: true,
+    });
 
-      expect(res).to.have.property('status');
-      expect(res.status).to.equal(200);
-      expect(res.data).to.be.an('object');
-      expect(res.data).to.have.property('type');
-      expect(res.data.type).to.be.a('string');
-      expect(res.data).to.have.property('owner');
-      expect(res.data.owner).to.be.a('string');
-      expect(res.data).to.have.property('group');
-      expect(res.data.group).to.be.a('string');
-      expect(res.data).to.have.property('permissionsSymbolic');
-      expect(res.data.permissionsSymbolic).to.be.a('string');
-    }
-
-    debug('list unix directory default');
-    let res = await REQ.request(req);
-    verifyResponse(res);
-
-    debug('list unix directory decompress with zlib');
-    res = await handleCompressionRequest(REQ,req);
-    verifyResponse(res);
+    expect(res).to.have.property('status');
+    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+    expect(res.data).to.be.an('object');
+    expect(res.data).to.have.property('type');
+    expect(res.data.type).to.be.a('string');
+    expect(res.data).to.have.property('owner');
+    expect(res.data.owner).to.be.a('string');
+    expect(res.data).to.have.property('group');
+    expect(res.data.group).to.be.a('string');
+    expect(res.data).to.have.property('permissionsSymbolic');
+    expect(res.data.permissionsSymbolic).to.be.a('string');
   });
 });

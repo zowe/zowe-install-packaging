@@ -5,28 +5,28 @@ These Zowe YAML configurations showing with sample values are used:
 ```
 zowe:
   setup:
-    mvs:
-      hlq: IBMUSER.ZWE
+    dataset:
+      prefix: IBMUSER.ZWE
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
       authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
       authPluginLib: IBMUSER.ZWE.CUST.ZWESAPL
 ```
 
-`zowe.setup.mvs.hlq` shows where the `SZWESAMP` and `SZWEAUTH` data sets are
+`zowe.setup.dataset.prefix` shows where the `SZWESAMP` and `SZWEAUTH` data sets are
 installed.
 
 Below data sets will be initialized by this command:
 
-- `zowe.setup.mvs.parmlib` is the user custom parameter library. Zowe server
+- `zowe.setup.dataset.parmlib` is the user custom parameter library. Zowe server
   command may generate sample PARMLIB members and stores here.
-- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe server command may
+- `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe server command may
   generate sample JCLs and put into this data set.
-- `zowe.setup.mvs.authLoadlib` is the user custom APF LOADLIB. This field is
+- `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
   optional. If this is defined, members of `SZWEAUTH` will be copied over to
   this data set.
   This loadlib requires APF authorize.
-- `zowe.setup.mvs.authPluginLib` is the user custom APF PLUGINLIB.
+- `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
   You can install Zowe ZIS plugins into this load library.
   This loadlib requires APF authorize.
 
