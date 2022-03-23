@@ -19,6 +19,7 @@ export NODE_STDOUT_CCSID=1047
 export NODE_STDERR_CCSID=1047
 export NODE_STDIN_CCSID=1047
 
+
 # Workaround Fix for node 8.16.1 that requires compatibility mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
