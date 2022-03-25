@@ -15,9 +15,9 @@
 
 # enforce encoding of stdio/stdout/stderr
 # sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding
-export NODE_STDOUT_CCSID=1047
-export NODE_STDERR_CCSID=1047
-export NODE_STDIN_CCSID=1047
+export NODE_STDOUT_CCSID=819
+export NODE_STDERR_CCSID=819
+export NODE_STDIN_CCSID=819
 
 # Workaround Fix for node 8.16.1 that requires compatibility mode for untagged files
 export __UNTAGGED_READ_MODE=V6
