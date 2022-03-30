@@ -138,20 +138,27 @@ echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;" >> JCL 
+echo "cd ${WORK_MOUNT};" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWESECUR.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESECUR)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWESECUR;" >> JCL                         
+echo "cp -T _ZWESECUR \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF03.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF03)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF03;" >> JCL                         
+echo "cp -T _ZWEWRF03 \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF05.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF05)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF05;" >> JCL                         
+echo "cp -T _ZWEWRF05 \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF06.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF06)'\";" >> JCL
-echo "cp \$source \$target;" >> JCL
-echo "source=\"${WORK_MOUNT}/ZWEWRF02\";" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF06;" >> JCL                         
+echo "cp -T _ZWEWRF06 \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}workflows/ZWEWRF02.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF02;" >> JCL                         
+echo "cp -T _ZWEWRF02 \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
@@ -316,7 +323,7 @@ echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;set -e;" >> JCL
 echo "cd ${EXPORT};" >> JCL
-echo "pax -wv -f ${TMP_MOUNT}/${SWI_NAME}-${VERSION}.pax.Z ." >> JCL
+echo "pax -wv -f ${TMP_MOUNT}/${SWI_NAME}.pax.Z ." >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
@@ -326,7 +333,7 @@ rm JCL
 cd ../.pax
 sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
-get ${SWI_NAME}-${VERSION}.pax.Z
+get ${SWI_NAME}.pax.Z
 EOF
 cd ../pswi
 
