@@ -119,9 +119,18 @@
   - zowe_dataset_authlib_volume.stdout != '*SMS*'
 
 # ============================================================================
-- name: Delete members of loadlib/parmlib data sets
-  raw: (tsocmd listds "'{{ item[0] }}'" members | sed -e '1,/--MEMBERS--/d' | awk '{$1=$1};1' | grep '^{{ item[1] }}$') && echo "Deleting {{ item[0] }}({{ item[1] }}) ..." && tsocmd DELETE "'{{ item[0] }}({{ item[1] }})'"
-  loop: "{{ [zowe_xmem_loadlib, zowe_xmem_parmlib]|product([zowe_known_loadlib_members, zowe_known_parmlib_members]|flatten)|list }}"
+- name: Delete all members of loadlib/parmlib data sets
+  raw: tsocmd DELETE "'{{ item }}'"
+  loop:
+  - "{{ zowe_xmem_loadlib }}"
+  - "{{ zowe_xmem_parmlib }}"
+  ignore_errors: True
+
+# ============================================================================
+- name: Delete other data sets should be cleaned up
+  raw: >-
+    [ -n "{{ item }}" ] && tsocmd DELETE "'{{ item }}'"
+  loop: "{{ zowe_uninstall_extra_data_sets }}"
   ignore_errors: True
 
 # ============================================================================
