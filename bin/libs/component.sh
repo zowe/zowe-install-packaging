@@ -445,6 +445,72 @@ process_component_gateway_shared_libs() {
 }
 
 ###############################
+# Parse and process manifest Discovery Shared Libs (discoverySharedLibs) definitions
+#
+# The supported manifest entry is ".discoverySharedLibs". All shared libs
+# defined will be passed to install-app.sh for proper installation.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# @param string   component directory
+process_component_discovery_shared_libs() {
+  component_dir="${1}"
+
+  # make sure $ZWE_DISCOVERY_SHARED_LIBS exists
+  mkdir -p "${ZWE_DISCOVERY_SHARED_LIBS}"
+
+  all_succeed=true
+  iterator_index=0
+  plugin_id=
+  discovery_shared_libs_workspace_path=
+  discovery_shared_libs_path=$(read_component_manifest "${component_dir}" ".discoverySharedLibs[${iterator_index}]" 2>/dev/null)
+  while [ -n "${discovery_shared_libs_path}" ]; do
+    cd "${component_dir}"
+
+    if [ -z "${plugin_id}" ]; then
+      # prepare plugin directory
+      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
+      if [ -z "${plugin_id}" ]; then
+        print_error "Cannot read ID from the plugin ${component_dir}"
+        all_succeed=false
+        break
+      fi
+      discovery_shared_libs_workspace_path="${ZWE_DISCOVERY_SHARED_LIBS}/${plugin_id}"
+      mkdir -p "${discovery_shared_libs_workspace_path}"
+    fi
+
+    # copy manifest to workspace
+    component_manifest=$(get_component_manifest "${component_dir}")
+    if [ ! -z "${component_manifest}" -a -f "${component_manifest}" ]; then
+      cp "${component_manifest}" "${discovery_shared_libs_workspace_path}"
+    fi
+
+    # copy libraries to workspace/discovery/sharedLibs/<plugin-id>
+    # Due to limitation of how Java loading shared libraries, all jars are copied to plugin root directly.
+    if [ -f "${discovery_shared_libs_path}" ]; then
+      cp "${discovery_shared_libs_path}" "${discovery_shared_libs_workspace_path}"
+    elif [ -d "${discovery_shared_libs_path}" ]; then
+      find "${discovery_shared_libs_path}" -type f | xargs -I{} cp {} "${discovery_shared_libs_workspace_path}"
+    else
+      print_error "Discovery shared libs directory ${discovery_shared_libs_path} is not accessible"
+      all_succeed=false
+      break
+    fi
+
+    iterator_index=`expr $iterator_index + 1`
+    discovery_shared_libs_path=$(read_component_manifest "${component_dir}" ".discoverySharedLibs[${iterator_index}]" 2>/dev/null)
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+###############################
 # Call API Catalog to refresh static registration
 #
 # @param string   API Catalog hostname
