@@ -396,21 +396,21 @@ process_component_gateway_shared_libs() {
 
   all_succeed=true
   iterator_index=0
-  plugin_id=
+  plugin_name=
   gateway_shared_libs_workspace_path=
   gateway_shared_libs_path=$(read_component_manifest "${component_dir}" ".gatewaySharedLibs[${iterator_index}]" 2>/dev/null)
   while [ -n "${gateway_shared_libs_path}" ]; do
     cd "${component_dir}"
 
-    if [ -z "${plugin_id}" ]; then
+    if [ -z "${plugin_name}" ]; then
       # prepare plugin directory
-      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
-      if [ -z "${plugin_id}" ]; then
-        print_error "Cannot read ID from the plugin ${component_dir}"
+      plugin_name=$(read_component_manifest "${component_dir}" ".name" 2>/dev/null)
+      if [ -z "${plugin_name}" ]; then
+        print_error "Cannot read name from the plugin ${component_dir}"
         all_succeed=false
         break
       fi
-      gateway_shared_libs_workspace_path="${ZWE_GATEWAY_SHARED_LIBS}/${plugin_id}"
+      gateway_shared_libs_workspace_path="${ZWE_GATEWAY_SHARED_LIBS}/${plugin_name}"
       mkdir -p "${gateway_shared_libs_workspace_path}"
     fi
 
@@ -462,21 +462,21 @@ process_component_discovery_shared_libs() {
 
   all_succeed=true
   iterator_index=0
-  plugin_id=
+  plugin_name=
   discovery_shared_libs_workspace_path=
   discovery_shared_libs_path=$(read_component_manifest "${component_dir}" ".discoverySharedLibs[${iterator_index}]" 2>/dev/null)
   while [ -n "${discovery_shared_libs_path}" ]; do
     cd "${component_dir}"
 
-    if [ -z "${plugin_id}" ]; then
+    if [ -z "${plugin_name}" ]; then
       # prepare plugin directory
-      plugin_id=$(read_component_manifest "${component_dir}" ".id" 2>/dev/null)
-      if [ -z "${plugin_id}" ]; then
-        print_error "Cannot read ID from the plugin ${component_dir}"
+      plugin_name=$(read_component_manifest "${component_dir}" ".name" 2>/dev/null)
+      if [ -z "${plugin_name}" ]; then
+        print_error "Cannot read name from the plugin ${component_dir}"
         all_succeed=false
         break
       fi
-      discovery_shared_libs_workspace_path="${ZWE_DISCOVERY_SHARED_LIBS}/${plugin_id}"
+      discovery_shared_libs_workspace_path="${ZWE_DISCOVERY_SHARED_LIBS}/${plugin_name}"
       mkdir -p "${discovery_shared_libs_workspace_path}"
     fi
 
