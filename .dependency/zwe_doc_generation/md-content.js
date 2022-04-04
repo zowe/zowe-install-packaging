@@ -15,12 +15,13 @@ const SECTION_HEADER_PREFIX = '## ';
 const SUB_SECTION_HEADER_PREFIX = '#' + SECTION_HEADER_PREFIX;
 const MD_TABLE_ROW_DELIMITER = '\n';
 const MD_TABLE_ENTRY_DELIMITER = '|';
+const CODE_SECTION = '```';
 
 // order content will appear, with prefix/postfix as needed
 const orderedDocumentationTypes = [
     { ...HELP, prefix: SECTION_HEADER_PREFIX + 'Description' + SEPARATOR },
     { ...EXPERIMENTAL },
-    { ...EXAMPLES, prefix: SECTION_HEADER_PREFIX + 'Examples' + SEPARATOR },
+    { ...EXAMPLES, prefix: SECTION_HEADER_PREFIX + 'Examples' + SEPARATOR + CODE_SECTION + '\n', postfix: '\n' + CODE_SECTION },
     { ...EXCLUSIVE_PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Parameters only for this command' + SEPARATOR },
     { ...PARAMETERS, prefix: SECTION_HEADER_PREFIX + 'Parameters' + SEPARATOR },
     { ...ERRORS, prefix: SECTION_HEADER_PREFIX + 'Errors' + SEPARATOR }
@@ -34,7 +35,7 @@ function generateDocumentationForNode(curNode, assembledParentNode) {
 
     if (children.length) {
         mdContent += ' [sub-command [sub-command]...] [parameter [parameter]...]' + SEPARATOR;
-        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + children.map(c => `* [${c.command}](./${getFileName(c.command, fileName)})`).join('\n');
+        mdContent += SECTION_HEADER_PREFIX + 'Sub-commands' + SEPARATOR + children.map(c => `* [${c.command}](./${getRelativeFilePathForChild(c, fileName)})`).join('\n');
     } else {
         mdContent += ' [parameter [parameter]...]';
     }
@@ -62,21 +63,37 @@ function generateDocumentationForNode(curNode, assembledParentNode) {
     }
 
     return {
-        parts: assembledDocNode,
+        assembledDocNode,
         mdContent: mdContent
     };
 }
 
 function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
-    const fileName = getFileName(curNode.command, assembledParentNode.fileName);
+    const fileName = assembledParentNode.fileName ? `${assembledParentNode.fileName}-${curNode.command}` : curNode.command;
     const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
     const link = `[${curNode.command}](./${fileName})`;
-    const linkCommand = assembledParentNode.linkCommand ? `${assembledParentNode.linkCommand} > ${link}` : link;
+    const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
 
+    let relPathToParentLinks = './';
+    let directory = assembledParentNode.directory ? assembledParentNode.directory : '.';
+
+    if (curNode.children.length) {
+        directory += '/' + curNode.command;
+        relPathToParentLinks = '../';
+    }
+
+    // add '../'to make link to parent commands proper given the directory structure
+    for (let elementIndex = 0; elementIndex < linkCommandElements.length - 1; elementIndex++) {
+        linkCommandElements[elementIndex] = linkCommandElements[elementIndex].replace(/\(/, '(' + relPathToParentLinks); // path starts after '(', so add '../' after '('
+    }
+
+    const linkCommand = linkCommandElements.join(' > ');
     const docElements = {
         fileName,
         command,
         linkCommand,
+        linkCommandElements,
+        directory,
         children: curNode.children,
     };
 
@@ -153,8 +170,12 @@ function createMdTable(rawContent, docFileTableSyntax) {
     return docContent;
 }
 
-function getFileName(command, parentFileName) {
-    return parentFileName ? `${parentFileName}-${command}` : command;
+function getRelativeFilePathForChild(child, curCommandFileName) {
+    if (curCommandFileName) {
+        const childFileName = `${curCommandFileName}-${child.command}`;
+        return child.children.length ? child.command + '/' + childFileName : childFileName;
+    }
+    return child.command;
 }
 
 function hasDocType(docNode, type) {
