@@ -12,9 +12,9 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "1.27.0-RC",
+      "version": "1.27.2-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.27.0-20220111.185200.pax"
+      "artifact": "zlux-core-1.27.2-20220214.202602.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "1.27.0-RC",
@@ -134,7 +134,7 @@
       "version": "0.0.10"
     },
     "org.zowe.licenses": {
-      "version": "1.27.0",
+      "version": "1.27.2",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -164,12 +164,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v1.27.0-RC1",
+          "tag": "v1.27.2-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v1.27.0-RC1",
+          "tag": "v1.27.2-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -184,17 +184,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v1.27.0-RC1",
+          "tag": "v1.27.2-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v1.27.0-RC1",
+          "tag": "v1.27.2-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v1.27.0-RC1",
+          "tag": "v1.27.2-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -204,7 +204,7 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v1.27.0-RC1",
+          "tag": "v1.27.2-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
