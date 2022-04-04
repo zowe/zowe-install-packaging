@@ -134,6 +134,7 @@
   ignore_errors: True
 
 # ============================================================================
+# data set name pattern is: ZWESVUSR.D018.T0947331.P3000564
 - name: Delete dump data sets under Zowe runtime user
   raw: >-
     tsocmd listds "'{{ item }}'" level 2>/dev/null | grep "{{ item }}.D[0-9]\+.T[0-9]\+.P[0-9A-Z]\+" | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
