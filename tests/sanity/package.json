@@ -10,7 +10,7 @@
     "chromedriver": "2.46.0",
     "debug": "4.3.3",
     "eslint": "8.10.0",
-    "explorer-fvt-utilities": "1.0.8",
+    "explorer-fvt-utilities": "2.0.1",
     "geckodriver": "2.0.4",
     "lodash": "4.17.21",
     "mocha": "9.2.1",
