@@ -143,24 +143,24 @@
        "componentGroup": "Zowe common java libraries",
        "entries": [{
          "repository": "common-java",
-         "tag": "master",
+         "tag": "v2.x.x",
          "destinations": ["Zowe PAX"]
        }]
      }, {
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-file-explorer",
-          "tag": "master",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -170,17 +170,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -190,17 +190,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "staging",
+          "tag": "v2.x/staging",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -285,7 +285,7 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -307,14 +307,14 @@
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-        "tag": "staging",
+        "tag": "v2.x/staging",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-        "tag": "staging",
+        "tag": "v2.x/staging",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -322,7 +322,7 @@
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-        "tag": "staging",
+        "tag": "v2.x/staging",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -330,7 +330,7 @@
       "componentGroup": "Zowe Desktop Sample React Application",
       "entries": [{
         "repository": "sample-react-app",
-        "tag": "staging",
+        "tag": "v2.x/staging",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -338,7 +338,7 @@
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
-        "tag": "staging",
+        "tag": "v2.x/staging",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -346,7 +346,7 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "staging",
+        "tag": "v2.x/staging",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -362,7 +362,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -370,7 +370,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "master",
+        "tag": "next",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -378,7 +378,7 @@
       "componentGroup": "Zowe Desktop IP Explorer Plug-in",
       "entries": [{
         "repository": "explorer-ip",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }
