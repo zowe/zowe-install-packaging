@@ -134,6 +134,13 @@
   ignore_errors: True
 
 # ============================================================================
+- name: Delete dump data sets under Zowe runtime user
+  raw: >-
+    tsocmd listds "'{{ item }}'" level 2>/dev/null | grep "{{ item }}.D[0-9]\+.T[0-9]\+.P[0-9A-Z]\+" | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
+  loop: "{{ zowe_known_runtime_users }}"
+  ignore_errors: True
+
+# ============================================================================
 - name: Remove everything prefix with {{ zowe_dataset_prefix }}
   raw: tsocmd listds "'{{ zowe_dataset_prefix }}'" level | grep '{{ zowe_dataset_prefix }}' | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
   ignore_errors: True
