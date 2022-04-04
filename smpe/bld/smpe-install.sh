@@ -165,7 +165,7 @@ echo The extract $extract contains
 ls -l $extract
 
 opts=""
-opts="$opts --hlq $mvsI"                       # target HLQ
+opts="$opts --dataset-prefix $mvsI"                       # target HLQ
 opts="$opts -vv"                               # trace level debug info
 opts="$opts -l $log"                           # install log
 _cmd $extract/$zweScript install $opts </dev/null

@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
@@ -19,7 +19,7 @@ describe('cli perform ssh commands with zos-uss', function() {
     expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is not defined').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_INSTANCE_DIR, 'ZOWE_INSTANCE_DIR is not defined').to.not.be.empty;
+    expect(process.env.ZOWE_WORKSPACE_DIR, 'ZOWE_WORKSPACE_DIR is not defined').to.not.be.empty;
 
     const result = await createDefaultUSSProfile(
       process.env.ZOWE_EXTERNAL_HOST,
@@ -37,8 +37,8 @@ describe('cli perform ssh commands with zos-uss', function() {
     expect(result.stdout).to.have.string('Profile created successfully');
   });
 
-  it('checks to see if instance.env exists in zowe-instance-dir', async function() {
-    const result = await execZoweCli(`zowe zos-uss issue ssh "ls -la" --cwd ${process.env.ZOWE_INSTANCE_DIR} --ssh-profile ${defaultUSSProfileName}`);
+  it('checks to see if manifest.json exists in zowe-workspace-dir', async function() {
+    const result = await execZoweCli(`zowe zos-uss issue ssh "ls -la" --cwd ${process.env.ZOWE_WORKSPACE_DIR} --ssh-profile ${defaultUSSProfileName}`);
 
     debug('result:', result);
     // addContext(this, {
@@ -51,6 +51,6 @@ describe('cli perform ssh commands with zos-uss', function() {
     
     expect(result.stderr).to.be.empty;
 
-    expect(result.stdout).to.have.string('instance.env');
+    expect(result.stdout).to.have.string('manifest.json');
   });
 });

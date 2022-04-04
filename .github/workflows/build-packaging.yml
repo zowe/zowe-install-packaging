@@ -263,8 +263,8 @@ jobs:
             .pax/smpe-build-logs.pax.Z
             .pax/AZWE*
             .pax/zowe-PSWI*
-        # env:
-        #   DEBUG: 'zowe-actions:shared-actions:publish'
+        env:
+          DEBUG: 'zowe-actions:shared-actions:publish'
 
       - name: '[K8S 1] Build Kubernetes'
         timeout-minutes: 10

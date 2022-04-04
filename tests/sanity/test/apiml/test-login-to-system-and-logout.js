@@ -5,72 +5,49 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
-const testUtils = require('./utils');
-
-let request;
-const HttpStatus = {
-  SUCCESS: 200,
-  UNAUTHORIZED: 401
-};
-
-let logged = async (uuid, headers, expectedStatus) => {
-  const response = await testUtils.httpRequest(request, {
-    url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
-    headers,
-  });
-  const status = response.status;
-
-  expect(status).to.equal(expectedStatus);
-};
-
-let logout = async (uuid, headers) => {
-  testUtils.log(uuid, 'URL: ' + '/api/v1/gateway/auth/logout');
-  const response = await testUtils.httpRequest(request, {
-    url: '/api/v1/gateway/auth/logout',
-    method: 'post',
-    headers,
-  });
-  testUtils.logResponse(uuid, response);
-  expect(response.status).to.equal(204);
-};
-
-let assertLogout = async (uuid, authorizationHeaders) => {
-  await logged(uuid, authorizationHeaders, HttpStatus.SUCCESS);
-  await logout(uuid, authorizationHeaders);
-  await logged(uuid, authorizationHeaders, HttpStatus.UNAUTHORIZED);
-};
+const { HTTPRequest, HTTP_STATUS, APIMLAuth } = require('../http-helper');
+const { APIML_AUTH_COOKIE } = require('../constants');
 
 describe('test api mediation layer logout functionality', function() {
+
+  let hq;
+  let apiml;
+
+  const assertLogout = async (authenticationHeader) => {
+    const beforeStatus = await apiml.checkLoginStatus(authenticationHeader);
+    expect(beforeStatus).to.equal(HTTP_STATUS.SUCCESS);
+    const logoutResponse = await apiml.logout(authenticationHeader);
+    expect(logoutResponse.status).to.equal(HTTP_STATUS.NO_CONTENT);
+    const afterStatus = await apiml.checkLoginStatus(authenticationHeader);
+    expect(afterStatus).to.equal(HTTP_STATUS.UNAUTHORIZED);
+  };
+
   before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-    request = testUtils.verifyAndSetupEnvironment();
+    hq = new HTTPRequest();
+    apiml = new APIMLAuth(hq);
   });
 
-  it('should login to the system and properly logout with Bearer', async () => {
-    const uuid = testUtils.uuid();
-    const authenticationCookie = await testUtils.login(uuid);
-    const jwtToken = authenticationCookie.split(';')[0]
-      .split('=')[1];
-    const authorizationHeaders = {
-      'Authorization': 'Bearer ' + jwtToken
+  it('should login to the system and properly logout with Bearer', async function() {
+    const token = await apiml.login();
+
+    const authenticationHeader = {
+      'Authorization': 'Bearer ' + token
     };
 
-    await assertLogout(uuid, authorizationHeaders);
+    await assertLogout(authenticationHeader);
   });
 
-  it('should login to the system and properly logout using Cookie', async () => {
-    const uuid = testUtils.uuid();
-    const authenticationCookie = await testUtils.login();
-    const authorizationHeaders = {
-      'Cookie': authenticationCookie
+  it('should login to the system and properly logout using Cookie', async function() {
+    const token = await apiml.login();
+
+    const authenticationHeader = {
+      'Cookie': `${APIML_AUTH_COOKIE}=${token}`
     };
 
-    await assertLogout(uuid, authorizationHeaders);
+    await assertLogout(authenticationHeader);
   });
 });

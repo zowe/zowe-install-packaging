@@ -1,0 +1,23 @@
+---
+# Customize APIML.SERVICES permission
+# these commands are picked from ZWESECUR
+- name: Allow test user to read APIML.SERVICES profile in ZOWE class (RACF)
+  when: zos_security_system == 'RACF'
+  raw: |
+    tsocmd 'SETROPTS CLASSACT(CDT) RACLIST(CDT)'
+    tsocmd 'RDEFINE CDT ZOWE UACC(NONE) CDTINFO(DEFAULTUACC(NONE) FIRST(ALPHA) OTHER(ALPHA,NATIONAL,NUMERIC,SPECIAL) MAXLENGTH(246) POSIT(607) RACLIST(DISALLOWED))'
+    tsocmd 'SETROPTS RACLIST(CDT) REFRESH'
+    tsocmd 'SETROPTS CLASSACT(ZOWE)'
+    tsocmd 'RDEFINE ZOWE APIML.SERVICES UACC(NONE)'
+    tsocmd 'PERMIT APIML.SERVICES CLASS(ZOWE) ID({{ ansible_user }}) ACCESS(READ)'
+    tsocmd "RLIST ZOWE *"
+
+- name: Allow test user to read APIML.SERVICES profile in ZOWE class (TSS)
+  when: zos_security_system == 'TSS'
+  raw: |
+    tsocmd 'TSS ADDTO(RDT) RESCLASS(ZOWE) MAXLEN(246) ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)'
+    tsocmd 'TSS ADDTO(ZWEADMIN) ZOWE(APIML.)'
+    tsocmd 'TSS PERMIT({{ ansible_user }}) ZOWE(APIML.SERVICES) ACCESS(READ)'
+    tsocmd "TSS LIST(RDT) RESCLASS(ZOWE)"
+
+# FIXME: ACF2 JCL

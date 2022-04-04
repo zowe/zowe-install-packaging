@@ -196,18 +196,18 @@ class Deploy_test:
                {"name": "ZOWE Mount Workflow",
                 "description": "This workflow performs mount action of ZOWE zFS.",
                 "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF02)"}},
-               {"name":"ZOWE Security Workflow",
-                "description":"This workflow configure zowe security manager.",
-                "location": {"dsname": self.hlq + ".WORKFLOW(ZWESECUR)"}},
-               {"name":"ZOWE Certificates Workflow",
-                "description":"This workflow configure zowe security certificates.",
-                "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF05)"}},
-               {"name":"ZOWE Cross-memory Workflow",
-                "description":"This workflow configure cross-memory server.",
-                "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF06)"}},
-               {"name":"ZOWE Instance and STC Workflow",
-                "description":"This workflow create zowe instance and STC.",
-                "location": {"dsname": self.hlq + ".WORKFLOW(ZWEWRF03)"}}
+              {"name":"ZOWE Creation of CSR request workflow",
+               "description":"This workflow creates a certificate sign request.",
+               "location": {"dsname": self.hlq + ".WORKFLOW(ZWECRECR)"}},
+              {"name":"ZOWE Sign a CSR request",
+               "description":"This workflow signs the certificate sign request by a local CA.",
+               "location": {"dsname": self.hlq + ".WORKFLOW(ZWESIGNC)"}},
+              {"name":"ZOWE Load Authentication Certificate into ESM",
+               "description":"This workflow loads a signed client authentication certificate to the ESM.",
+               "location": {"dsname": self.hlq + ".WORKFLOW(ZWELOADC)"}},
+              {"name":"ZOWE Define key ring and certificates",
+               "description":"This workflow defines key ring and certificates for Zowe.",
+               "location": {"dsname": self.hlq + ".WORKFLOW(ZWEKRING)"}}
             ]
         }
         swi_url = "{0}/zosmf/swmgmt/swi".format(self.url)
