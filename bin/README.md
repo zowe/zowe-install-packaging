@@ -75,6 +75,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
   * `ZWE_CLI_PARAMETER_HA_INSTANCE` is a commonly used variable which indicates the current HA instance ID.
 - `ZWE_CLI_PARAMETERS_LIST`, command parameter names separated by comma.
 - `ZWE_DISCOVERY_SERVICES_LIST` contains a full list of enabled discovery services.
+- `ZWE_DISCOVERY_SHARED_LIBS` contains a directory where discovery shared libraries are installed.
 - `ZWE_ENABLED_COMPONENTS` is a list of components will be started in current HA instance.
 - `ZWE_GATEWAY_HOST` contains domain name to access gateway internally.
 - `ZWE_GATEWAY_SHARED_LIBS` contains a directory where gateway shared libraries are installed.
