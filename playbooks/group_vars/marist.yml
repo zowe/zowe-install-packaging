@@ -33,3 +33,7 @@ zowe_fmids_dir_remote: /ZOWE/zowe-fmids
 # caching service volume
 zowe_caching_vsam_volume: ZOWE02
 zos_zosmf_ca: zOSMFCA
+# extra cleanup, mainly to delete v2 data sets
+zowe_uninstall_extra_data_sets:
+- ZOWEAD3.JCLLIB
+- ZOWEAD3.PLUGLIB

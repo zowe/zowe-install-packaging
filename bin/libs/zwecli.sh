@@ -209,7 +209,7 @@ zwecli_display_parameters_help() {
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
       echo "    ${display_param} ${line_params_type} (${line_params_requirement:-optional})"
       padding_left "${line_params_help} " "        "
-      echo 
+      echo
     fi
   done <<EOF
 $(cat "${file}")
@@ -238,7 +238,7 @@ zwecli_process_help() {
     # Display synopsis (command format)
     command_path=$(zwecli_calculate_command_path)
     subdirs=$(find_sub_directories "${command_path}")
-    if [ -n "${subdirs}" ]; then 
+    if [ -n "${subdirs}" ]; then
       sub_command_level="[sub-command]"
       while read -r line; do
         subdirs_deep=$(find_sub_directories "${command_path}/$(basename "${line}")")
@@ -317,10 +317,10 @@ EOF
       done <<EOF
 $(echo "${subdirs}")
 EOF
-      echo 
+      echo
     fi
 
-    # display example(s)   
+    # display example(s)
     if [ -f "${command_path}/.examples" ]; then
       echo "------------------"
       echo "Example(s)"

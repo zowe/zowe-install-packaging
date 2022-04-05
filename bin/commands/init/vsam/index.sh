@@ -100,6 +100,7 @@ else
           sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
