@@ -70,6 +70,16 @@ prepare_workspace_directory() {
     exit 141
   fi
 
+  # set workspace dir permission
+  # FIXME: 771 is inherited from v1, we should consider disable read permission for `other`
+  umask 0002
+  result=$(chmod -R 771 "${ZWE_zowe_workspaceDirectory}" 2>&1)
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "WARNING: Failed to set permission of some existing files or directories in ${ZWE_zowe_workspaceDirectory}:"
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "${result}"
+  fi
+
   # create apiml static defs directory
   mkdir -p "${ZWE_STATIC_DEFINITIONS_DIR}"
   # create apiml gateway share library directory
