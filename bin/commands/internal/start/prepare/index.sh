@@ -61,6 +61,7 @@ prepare_workspace_directory() {
   export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
   export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
   export ZWE_GATEWAY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/"
+  export ZWE_DISCOVERY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/discovery/sharedLibs/"
 
   mkdir -p "${ZWE_zowe_workspaceDirectory}"
 
@@ -69,10 +70,22 @@ prepare_workspace_directory() {
     exit 141
   fi
 
+  # set workspace dir permission
+  # FIXME: 771 is inherited from v1, we should consider disable read permission for `other`
+  umask 0002
+  result=$(chmod -R 771 "${ZWE_zowe_workspaceDirectory}" 2>&1)
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "WARNING: Failed to set permission of some existing files or directories in ${ZWE_zowe_workspaceDirectory}:"
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "${result}"
+  fi
+
   # create apiml static defs directory
   mkdir -p "${ZWE_STATIC_DEFINITIONS_DIR}"
   # create apiml gateway share library directory
   mkdir -p "${ZWE_GATEWAY_SHARED_LIBS}"
+  # create apiml discovery share library directory
+  mkdir -p "${ZWE_DISCOVERY_SHARED_LIBS}"
 
   # Copy Zowe manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
   cp ${ZWE_zowe_runtimeDirectory}/manifest.json ${ZWE_zowe_workspaceDirectory}
@@ -190,8 +203,14 @@ configure_components() {
       cd "${component_dir}"
 
       # prepare component workspace
-      component_name=$(basename "${component_dir}")
+      component_name=$(read_component_manifest "${component_dir}" ".name")
       mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}"
+
+      # copy manifest to workspace
+      component_manifest=$(get_component_manifest "${component_dir}")
+      if [ ! -z "${component_manifest}" -a -f "${component_manifest}" ]; then
+        cp "${component_manifest}" "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/"
+      fi
 
       print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "- configure ${component_id}"
 
@@ -240,6 +259,17 @@ configure_components() {
 
       # - gateway shared lib
       result=$(process_component_gateway_shared_libs "${component_dir}" 2>&1)
+      retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+        else
+          print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+        fi
+      fi
+
+      # - discovery shared lib
+      result=$(process_component_discovery_shared_libs "${component_dir}" 2>&1)
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then

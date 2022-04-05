@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 // default Zowe JES job name
@@ -14,7 +14,7 @@ const ZOWE_XMEM_JOB_NAME = 'ZWESISTC';
 
 const APIML_AUTH_COOKIE = 'apimlAuthenticationToken';
 const ZOSMF_TOKEN = 'LtpaToken2';
-const DEFAULT_HTTP_REQUEST_TIMEOUT = 120000;
+const DEFAULT_HTTP_REQUEST_TIMEOUT = 60000;
 
 const DEFAULT_CLIENT_CERTIFICATE = '../../playbooks/roles/custom_for_test/files/USER-cert.cer';
 const DEFAULT_CLIENT_CERTIFICATE_PRIVATE_KEY = '../../playbooks/roles/custom_for_test/files/USER-PRIVATEKEY.key';
