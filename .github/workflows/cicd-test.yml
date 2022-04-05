@@ -557,10 +557,8 @@ jobs:
 
       - name: '[Setup 2] Project Setup 2'
         working-directory: ${{ env.SANITY_TEST_PATH }}
-        # require explorer-fvt-utilities devDependencies
         run: |
           npm ci
-          cd node_modules/explorer-fvt-utilities/ && npm install
 
       - name: '[Lint 1] Lint 1'
         timeout-minutes: 2
