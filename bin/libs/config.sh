@@ -76,7 +76,7 @@ generate_instance_env_from_yaml_config() {
   print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "deleting old files under ${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
   find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".*-${ha_instance}.env" | xargs rm -f
   find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".*-${ha_instance}.json" | xargs rm -f
-  find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".zowe.yaml" | xargs rm -f
+  find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".zowe.json" | xargs rm -f
 
   # prepare .zowe.json and .zowe-<ha-id>.json
   print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "config-converter yaml convert --ha ${ha_instance} ${ZWE_CLI_PARAMETER_CONFIG}"
