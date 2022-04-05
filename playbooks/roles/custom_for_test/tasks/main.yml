@@ -124,4 +124,6 @@
       "components.jobs-api.enabled": "true"
       "components.apiml-sample-extension.enabled": "true"
       # debug mode for troubleshooting/profiling
-      "zowe.launchScript.logLevel": "trace"
+      # "zowe.launchScript.logLevel": "trace"
+      # this must be commented out to avoid flooding spool
+      "components.gateway.debug": "true"
