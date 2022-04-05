@@ -127,4 +127,3 @@
       # "zowe.launchScript.logLevel": "trace"
       # this must be commented out to avoid flooding spool
       "components.gateway.debug": "true"
-      "zowe.environments.NODE_DEBUG": "http,https"
