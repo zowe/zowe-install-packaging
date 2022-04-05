@@ -54,6 +54,7 @@ env:
   SANITY_TEST_PATH: tests/sanity
   DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
   DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
+  # FIXME: next line change '-1' to '-2'
   DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
