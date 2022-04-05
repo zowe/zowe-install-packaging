@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Tue Apr 05 2022 01:24:15 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1649121855169842943",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/jack/change-timeout",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "jackjia-ibm",
-  "runId": 2093448814,
-  "runNumber": 496,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2093448814"
-}
+""
