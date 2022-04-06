@@ -328,7 +328,7 @@ EOF
 #
 # @param string   component directory
 process_component_appfw_plugin() {
-  echo "********** inside process_component_appfw_plugin ************"
+  echo "********** inside process_component_appfw_plugin ************" >&2
   component_dir="${1}"
 
   all_succeed=true
@@ -352,18 +352,18 @@ process_component_appfw_plugin() {
       all_succeed=false
       break
     fi
-    echo "********** before ZWE_RUN_ON_ZOS check ************"
+    echo "********** before ZWE_RUN_ON_ZOS check ************" >&2
 
     if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
       # for containers, copy to workspace/app-server/pluginDirs and run install-app. on zos, this is done at startup.
       appfw_plugin_workspace_path="${ZWE_zowe_workspaceDirectory}/app-server/pluginDirs/${appfw_plugin_id}"
       mkdir -p "${appfw_plugin_workspace_path}"
       cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
-      echo "********** inside ZWE_RUN_ON_ZOS check ************"
+      echo "********** inside ZWE_RUN_ON_ZOS check ************" >&2
 
       # install app into container
       "${ZWE_zowe_runtimeDirectory}/components/app-server/share/zlux-app-server/bin/install-app.sh" "${appfw_plugin_workspace_path}"
-      echo "********** after  install-app.sh $? ************"
+      echo "********** after  install-app.sh $? ************" >&2
       # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
     fi
     
