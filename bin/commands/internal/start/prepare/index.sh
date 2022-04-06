@@ -228,6 +228,7 @@ configure_components() {
         fi
       fi
       # - generic app framework plugin
+      echo "************ process_component_appfw_plugin *********"
       result=$(process_component_appfw_plugin "${component_dir}" 2>&1)
       retval=$?
       if [ -n "${result}" ]; then
