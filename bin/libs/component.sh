@@ -345,6 +345,13 @@ process_component_appfw_plugin() {
       break
     fi
 
+    appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
+    if [ -z "${appfw_plugin_id}" ]; then
+      print_error "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
+      all_succeed=false
+      break
+    fi
+
     if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
       # for containers, copy to workspace/app-server/pluginDirs and run install-app. on zos, this is done at startup.
       appfw_plugin_workspace_path="${ZWE_zowe_workspaceDirectory}/app-server/pluginDirs/${appfw_plugin_id}"
