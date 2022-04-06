@@ -231,6 +231,7 @@ configure_components() {
       echo "************ process_component_appfw_plugin *********"
       result=$(process_component_appfw_plugin "${component_dir}" 2>&1)
       retval=$?
+      echo "************after process_component_appfw_plugin = $retval *********"
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then
           print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
