@@ -340,6 +340,8 @@ process_component_appfw_plugin() {
     appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
     appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
 
+    check_zss_pc_bit "${appfw_plugin_path}"
+
     if [ ! -r "${appfw_plugin_path}" ]; then
       print_error "App Framework plugin directory ${appfw_plugin_path} is not accessible"
       all_succeed=false
@@ -377,6 +379,66 @@ process_component_appfw_plugin() {
     return 1
   fi
 }
+
+check_zss_pc_bit() {
+  appfw_plugin_path=${1}
+
+  services=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices" 2>/dev/null)
+  if [ -n "${services}" ]; then
+    echo "Checking ZSS services in plugin path=${1}"
+    service_iterator_index=0
+    service_type=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].type" 2>/dev/null)
+    while [ -n "${service_type}" ]; do
+      if [ "${service_type}" = "service" ]; then
+        libraryName31=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName31" 2>/dev/null)
+        libraryName64=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName64" 2>/dev/null)
+        libraryName=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName" 2>/dev/null)
+        if [ -n "${libraryName31}" ]; then
+          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName31}"
+          if [ "$?" = "1" ]; then
+            break
+          fi
+        fi
+        if [ -n "${libraryName64}" ]; then
+          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName64}"
+          if [ "$?" = "1" ]; then
+            break
+          fi
+        fi
+        if [ -n "${libraryName}" ]; then
+          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName}"
+          if [ "$?" = "1" ]; then
+            break
+          fi
+        fi
+      fi
+      service_iterator_index=`expr $service_iterator_index + 1`
+      service_type=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].type 2>/dev/null")
+    done
+  fi
+}
+
+test_or_set_pc_bit() {
+  path="${1}"
+
+  testpc=`extattr $path | sed -n '3 p'`
+  if [ "$testpc" = "Program controlled = YES" ]; then
+    # normal
+    return 0
+  else
+    echo "Plugin ZSS API not program controlled. Attempting to add PC bit." 
+    extattr +p $path
+    testpc2=$(extattr $path | sed -n '3 p')
+    if [ "$testpc2" = "Program controlled = YES" ]; then
+      echo "PC bit set successfully."
+      return 0
+    else
+      echo "PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege."
+      return 1
+    fi
+  fi
+}
+
 
 ###############################
 # Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
