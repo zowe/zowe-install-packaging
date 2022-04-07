@@ -92,12 +92,12 @@ prepare_workspace_directory() {
 
   # prepare .env directory
   mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
-  # should we do chmod -R?
-  # we lock this folder for zowe runtime user
-  chmod -R 700 "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
 
   print_formatted_debug "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "initialize .instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env(s)"
   generate_instance_env_from_yaml_config "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
+
+  # we lock this folder only for zowe runtime user
+  chmod -R 700 "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
 }
 
 ########################################################
@@ -205,6 +205,9 @@ configure_components() {
       # prepare component workspace
       component_name=$(read_component_manifest "${component_dir}" ".name")
       mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}"
+      if [ -e "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}" ]; then
+        chmod 700 "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}"
+      fi
 
       # copy manifest to workspace
       component_manifest=$(get_component_manifest "${component_dir}")
@@ -285,9 +288,13 @@ configure_components() {
       if [ -n "${configure_script}" ]; then
         if [ -f "${configure_script}" ]; then
           print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "* process ${component_id} configure command ..."
-          # execute configure step and snapshot environment
+          # execute configure step and generate environment snapshot
           result=$(load_environment_variables "${component_id}" && . ${configure_script} ; rc=$? ; get_environment_exports > "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ; return $rc)
           retval=$?
+          # set permission for the component environment snapshot
+          if [ -f "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ]; then
+            chmod 700 "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_name}/.${ZWE_CLI_PARAMETER_HA_INSTANCE}.env"
+          fi
           if [ -n "${result}" ]; then
             if [ "${retval}" = "0" ]; then
               print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"

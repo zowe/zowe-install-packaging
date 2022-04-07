@@ -33,7 +33,7 @@ describe('cli check zosmf status', function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.have.string('Profile created successfully');
+    expect(result.stdout).to.be.empty;
   });
 
   it('should be able to return zosmf status', async function() {

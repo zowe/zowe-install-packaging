@@ -43,7 +43,7 @@ describe(`cli list data sets of ${EXPLORER_API_TEST_DATASET_PATTERN}`, function(
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.have.string('Profile created successfully');
+    expect(result.stdout).to.be.empty;
   });
 
   it(`should have an data set of ${EXPLORER_API_TEST_DATASET_NAME}`, async function() {

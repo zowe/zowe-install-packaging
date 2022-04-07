@@ -13,7 +13,7 @@ const debug = require('debug')('zowe-sanity-test:cli:console');
 // const addContext = require('mochawesome/addContext');
 const { execZoweCli, defaultZOSMFProfileName, createDefaultZOSMFProfile } = require('./utils');
 
-describe.skip('cli console', function() {
+describe('cli console', function() {
   before('verify environment variables', async function() {
     expect(process.env.ZOSMF_PORT, 'ZOSMF_PORT is not defined').to.not.be.empty;
     expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is not defined').to.not.be.empty;
@@ -33,7 +33,7 @@ describe.skip('cli console', function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.have.string('Profile created successfully');
+    expect(result.stdout).to.be.empty;
   });
 
   it('command should return the IPL information for the system', async function() {
