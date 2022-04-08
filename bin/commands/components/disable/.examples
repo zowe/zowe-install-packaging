@@ -1,0 +1,3 @@
+zwe components disable --component-name gateway
+
+zwe components disable --component-name gateway --ha-instance lpar1
