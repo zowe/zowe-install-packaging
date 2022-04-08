@@ -381,8 +381,10 @@ process_component_appfw_plugin() {
 }
 
 check_zss_pc_bit() {
+  echo "********************************************** CHECK ZSS PC BIT ****************************" 
   appfw_plugin_path=${1}
-
+  echo "********************************************** APP FRAMEWORK PLUGIN PATH: ${1}" 
+  echo $appfw_plugin_path 
   services=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices" 2>/dev/null)
   if [ -n "${services}" ]; then
     echo "Checking ZSS services in plugin path=${1}"
@@ -419,7 +421,11 @@ check_zss_pc_bit() {
 }
 
 test_or_set_pc_bit() {
+  echo "********************************************** TEST OR SET PC BIT ****************************" 
+
   path="${1}"
+  echo "********************************************** PATH: ${1}" 
+  echo $path 
 
   testpc=`extattr $path | sed -n '3 p'`
   if [ "$testpc" = "Program controlled = YES" ]; then
