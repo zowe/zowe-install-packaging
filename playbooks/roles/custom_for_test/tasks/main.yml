@@ -123,3 +123,12 @@
       "components.files-api.enabled": "true"
       "components.jobs-api.enabled": "true"
       "components.apiml-sample-extension.enabled": "true"
+      # debug mode for troubleshooting/profiling
+      "zowe.launchScript.logLevel": "trace"
+      # # this must be commented out to avoid flooding spool
+      # "components.gateway.debug": "true"
+      # # trace java apps
+      # "zowe.environments.LOGGING_LEVEL_ORG_APACHE_HTTP": "TRACE"
+      # "zowe.environments.LOGGING_LEVEL_ORG_APACHE": "TRACE"
+      # "zowe.environments.LOGGING_LEVEL_COM_NETFLIX": "TRACE"
+      # "zowe.environments.LOGGING_LEVEL_ORG_SPRINGFRAMEWORK": "TRACE"

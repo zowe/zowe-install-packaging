@@ -87,6 +87,7 @@ result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/" \
         > "${tmpfile}")
 code=$?
+chmod 700 "${tmpfile}"
 if [ ${code} -eq 0 ]; then
   print_debug "  * Succeeded"
   print_trace "  * Exit code: ${code}"

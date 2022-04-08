@@ -209,7 +209,7 @@ zwecli_display_parameters_help() {
       line_params_help=$(echo "${line}" | sed -e 's#^[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|[^|]*|##')
       echo "    ${display_param} ${line_params_type} (${line_params_requirement:-optional})"
       padding_left "${line_params_help} " "        "
-      echo 
+      echo
     fi
   done <<EOF
 $(cat "${file}")
@@ -232,13 +232,13 @@ zwecli_calculate_command_path() {
 
 zwecli_process_help() {
   if [ "${ZWE_CLI_PARAMETER_HELP}" = "true" ]; then
-    >&2 echo "zwe ${ZWE_CLI_COMMANDS_LIST}"
-    >&2 echo
+    echo "zwe ${ZWE_CLI_COMMANDS_LIST}"
+    echo
 
     # Display synopsis (command format)
     command_path=$(zwecli_calculate_command_path)
     subdirs=$(find_sub_directories "${command_path}")
-    if [ -n "${subdirs}" ]; then 
+    if [ -n "${subdirs}" ]; then
       sub_command_level="[sub-command]"
       while read -r line; do
         subdirs_deep=$(find_sub_directories "${command_path}/$(basename "${line}")")
@@ -259,29 +259,29 @@ EOF
       parameter_level="[parameter]..."
     fi
 
-    >&2 echo "------------------"
-    >&2 echo "Synopsis"
+    echo "------------------"
+    echo "Synopsis"
     if [ -n "$sub_command_level" ]; then
-      >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $sub_command_level $parameter_level"
+      echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $sub_command_level $parameter_level"
     else
-      >&2 echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $parameter_level"
+      echo "    zwe ${ZWE_CLI_COMMANDS_LIST} $parameter_level"
     fi
-    >&2 echo
+    echo
 
     # display description message if exists
     command_path=$(zwecli_calculate_command_path)
     if [ -f "${command_path}/.help" ]; then
-      >&2 echo "------------------"
-      >&2 echo "Description"
-      >&2 padding_left "$(cat "${command_path}/.help")" "    "
-      >&2 echo
+      echo "------------------"
+      echo "Description"
+      padding_left "$(cat "${command_path}/.help")" "    "
+      echo
     fi
 
     # display global parameters
     if [ -f "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters" ]; then
-      >&2 echo "------------------"
-      >&2 echo "Global parameters"
-      >&2 zwecli_display_parameters_help "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters"
+      echo "------------------"
+      echo "Global parameters"
+      zwecli_display_parameters_help "${ZWE_zowe_runtimeDirectory}/bin/commands/.parameters"
     fi
 
     # display command parameters
@@ -291,17 +291,17 @@ EOF
       command_tree=$(echo "${command_tree} ${command}" | trim)
       command_path="${command_path}/${command}"
       if [ -f "${command_path}/.experimental" ]; then
-        >&2 echo "WARNING: command \"${command_tree}\" is for experimental purpose."
-        >&2 echo
+        echo "WARNING: command \"${command_tree}\" is for experimental purpose."
+        echo
       fi
       if [ -f "${command_path}/.parameters" -o -f "${command_path}/.exclusive-parameters" ]; then
-        >&2 echo "------------------"
-        >&2 echo "Parameters for command \"${command_tree}\""
+        echo "------------------"
+        echo "Parameters for command \"${command_tree}\""
         if [ -f "${command_path}/.parameters" ]; then
-          >&2 zwecli_display_parameters_help "${command_path}/.parameters"
+          zwecli_display_parameters_help "${command_path}/.parameters"
         fi
         if [ -f "${command_path}/.exclusive-parameters" ]; then
-          >&2 zwecli_display_parameters_help "${command_path}/.exclusive-parameters"
+          zwecli_display_parameters_help "${command_path}/.exclusive-parameters"
         fi
       fi
     done
@@ -310,22 +310,22 @@ EOF
     command_path=$(zwecli_calculate_command_path)
     subdirs=$(find_sub_directories "${command_path}")
     if [ -n "${subdirs}" ]; then 
-      >&2 echo "------------------"
-      >&2 echo "Available sub-command(s)"
+      echo "------------------"
+      echo "Available sub-command(s)"
       while read -r line; do
         echo "    - $(basename "${line}")"
       done <<EOF
 $(echo "${subdirs}")
 EOF
-      echo 
+      echo
     fi
 
-    # display example(s)   
+    # display example(s)
     if [ -f "${command_path}/.examples" ]; then
-      >&2 echo "------------------"
-      >&2 echo "Example(s)"
-      >&2 padding_left "$(cat "${command_path}/.examples")" "    "
-      >&2 echo
+      echo "------------------"
+      echo "Example(s)"
+      padding_left "$(cat "${command_path}/.examples")" "    "
+      echo
     fi  
     exit 100
   fi

@@ -143,7 +143,7 @@
        "componentGroup": "Zowe common java libraries",
        "entries": [{
          "repository": "common-java",
-         "tag": "master",
+         "tag": "v2.x.x",
          "destinations": ["Zowe PAX"]
        }]
      }, {
@@ -285,7 +285,7 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -362,7 +362,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -370,7 +370,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "master",
+        "tag": "next",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -378,7 +378,7 @@
       "componentGroup": "Zowe Desktop IP Explorer Plug-in",
       "entries": [{
         "repository": "explorer-ip",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }

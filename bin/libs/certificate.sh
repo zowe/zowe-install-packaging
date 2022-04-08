@@ -494,6 +494,7 @@ pkcs12_trust_service() {
   print_debug "> Temporary certificate file is ${tmp_file}"
   keytool ${print_cert_cmd} -rfc > "${tmp_file}"
   code=$?
+  chmod 700 "${tmp_file}"
   if [ ${code} -ne 0 ]; then
     print_error "Failed to get certificate of service instance https://${service_host}:${service_port}, exit code ${code}."
     return 1
@@ -873,6 +874,7 @@ EOF
           sed  "s#05/01/30#${validity_mdy}#g" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -970,6 +972,7 @@ keyring_run_zwenokyr_jcl() {
           sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -1129,6 +1132,7 @@ keyring_export_to_pkcs12() {
   if [ $? -ne 0 ]; then
     return 1
   fi
+  chmod 700 "${uss_temp_target}.cer"
 
   if [ "${cert_only}" = "true" ]; then
     # use keytool to import certificate
@@ -1153,6 +1157,7 @@ keyring_export_to_pkcs12() {
     if [ $? -ne 0 ]; then
       return 1
     fi
+    chmod 700 "${uss_temp_target}.key"
 
     # convert PEM format into temporary PKCS#12 keystore
     print_debug "- Generate PKCS#12 keystore from the certificate and private key in PEM format"
@@ -1160,6 +1165,7 @@ keyring_export_to_pkcs12() {
     if [ $? -ne 0 ]; then
       return 1
     fi
+    chmod 700 "${uss_temp_target}.p12"
 
     # import into target keystore
     pkcs12_import_pkcs12_keystore \
