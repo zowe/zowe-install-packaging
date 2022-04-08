@@ -8,7 +8,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: zowe-workspace-pv
-  namespace: zowe
+  namespace: zowe-v2-pen-testing
 spec:
   capacity:
     storage: 10G
@@ -24,7 +24,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: zowe-workspace-pvc
-  namespace: zowe
+  namespace: zowe-v2-pen-testing
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe

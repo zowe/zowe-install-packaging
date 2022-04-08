@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: caching
-  namespace: zowe
+  namespace: zowe-v2-pen-testing
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
@@ -28,6 +28,8 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
+        seLinuxOptions:
+          level: s0:c1,c0
       serviceAccountName: zowe-sa
       volumes:
         - name: tmp

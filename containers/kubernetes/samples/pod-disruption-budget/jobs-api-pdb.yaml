@@ -3,7 +3,7 @@ apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
   name: jobs-api-pdb
-  namespace: zowe
+  namespace: zowe-v2-pen-testing
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe

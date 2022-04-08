@@ -3,7 +3,7 @@ apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: files-api-hpa
-  namespace: zowe
+  namespace: zowe-v2-pen-testing
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe

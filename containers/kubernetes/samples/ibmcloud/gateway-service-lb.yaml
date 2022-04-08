@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: gateway-service
-  namespace: zowe
+  namespace: zowe-v2-pen-testing
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
