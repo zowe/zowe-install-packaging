@@ -15,7 +15,7 @@ require_zowe_yaml
 
 component_dir=$(find_component_directory "${ZWE_CLI_PARAMETER_COMPONENT_NAME}")
 if [ -z "${component_dir}" ]; then
-  print_error_and_exit "Error ZWEL0156E: Cannot find component ${ZWE_CLI_PARAMETER_COMPONENT_NAME}." "" 156 #todo create new error code
+  print_error_and_exit "Error ZWEL0152E: Cannot find component ${ZWE_CLI_PARAMETER_COMPONENT_NAME}." "" 152
 fi
 componentCfgPath=
 if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
