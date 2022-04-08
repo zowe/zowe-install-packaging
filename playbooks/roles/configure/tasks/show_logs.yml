@@ -40,6 +40,7 @@
   - ZWESECUR
   - ZWEKRING
   - ZWENOKYR
+  - ZWECSVSM
   loop_control:
     loop_var: job_name_to_show
 
