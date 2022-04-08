@@ -1,0 +1,4 @@
+    zwe components enable --component-name gateway
+
+    zwe components enable --component-name gateway --ha-instance lpar1
+    
