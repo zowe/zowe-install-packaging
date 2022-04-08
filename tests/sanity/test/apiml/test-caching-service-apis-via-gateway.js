@@ -5,55 +5,40 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
-const https = require('https');
+const { HTTPRequest, HTTP_STATUS } = require('../http-helper');
 const fs = require('fs');
-const utils = require('./utils.js');
-// const debug = require('debug')('zowe-sanity-test:apiml:caching');
-let request;
-const httpsAgent = new https.Agent({
-  rejectUnauthorized: false,
-  cert: fs.readFileSync('../../playbooks/roles/configure/files/USER-cert.cer'),
-  key: fs.readFileSync('../../playbooks/roles/configure/files/USER-PRIVATEKEY.key'),
-});
-
-let key = 'testKey';
-let value = 'testValue';
-
-const testUtils = require('./utils');
-const CACHING_PATH = '/cachingservice/api/v1/cache';
-
-let assertStatusCodeCreated = (response) => {
-  utils.logResponse('Assert created', response);
-  expect(response.status).to.equal(201);
-};
-
-let assertStatusCodeOk = (response) => {
-  utils.logResponse('Assert ok', response);
-  expect(response.status).to.equal(200);
-  expect(response.data).to.not.be.empty;
-};
-
-let assertStatusNoContent = (response) => {
-  utils.logResponse('Assert no content', response);
-  expect(response.status).to.equal(204);
-};
+const https = require('https');
+const {
+  DEFAULT_CLIENT_CERTIFICATE,
+  DEFAULT_CLIENT_CERTIFICATE_PRIVATE_KEY,
+} = require('../constants');
 
 describe('test caching service via gateway', function() {
-  before('verify environment variables', function () {
-    utils.log('Caching path', 'Caching Service Test Begin');
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    request = testUtils.verifyAndSetupEnvironment();
-    utils.log('Caching path', CACHING_PATH);
+
+  let hq;
+  let httpsAgent;
+
+  let key = 'testKey';
+  let value = 'testValue';
+  const CACHING_PATH = '/cachingservice/api/v1/cache';
+  
+  before('verify environment variables', function() {
+    hq = new HTTPRequest();
+
+    httpsAgent = new https.Agent({
+      rejectUnauthorized: false,
+      cert: fs.readFileSync(DEFAULT_CLIENT_CERTIFICATE),
+      key: fs.readFileSync(DEFAULT_CLIENT_CERTIFICATE_PRIVATE_KEY),
+    });
   });
 
-  describe('should be able to use caching service ', () => {
-    it('to store a key', async () => {
-      const response = await utils.httpRequest(request, {
+  describe('should be able to use caching service ', function() {
+    it('to store a key', async function() {
+      const res = await hq.request({
         url: CACHING_PATH,
         method: 'post',
         data: {
@@ -62,44 +47,49 @@ describe('test caching service via gateway', function() {
         httpsAgent
       });
 
-      assertStatusCodeCreated(response);
+      expect(res.status).to.equal(HTTP_STATUS.CREATED);
     });
 
-    it('to get a key', async () => {
-      const response = await utils.httpRequest(request, {
+    it('to get a key', async function() {
+      const res = await hq.request({
         url: CACHING_PATH + '/' + key,
         httpsAgent
       });
 
-      assertStatusCodeOk(response);
+      expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+      expect(res.data).to.not.be.empty;
     });
 
-    it('to update the key value', async () => {
+    it('to update the key value', async function() {
       value = 'newKey';
-      const putResponse = await utils.httpRequest(request, {
+      const resPut = await hq.request({
         url: CACHING_PATH,
         method: 'put',
         data: { key, value },
         httpsAgent
       });
-      utils.log('Put response', putResponse);
 
-      const response = await utils.httpRequest(request, {
+      expect(resPut.status).to.equal(HTTP_STATUS.NO_CONTENT);
+      expect(resPut.data).to.be.empty;
+
+      const res = await hq.request({
         url: CACHING_PATH + '/' + key,
         httpsAgent
       });
 
-      assertStatusCodeOk(response);
+      expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+      expect(res.data).to.not.be.empty;
     });
 
-    it('to delete the key', async () => {
-      const response = await utils.httpRequest(request, {
+    it('to delete the key', async function() {
+      const res = await hq.request({
         url: CACHING_PATH + '/' + key,
         method: 'delete',
         httpsAgent
       });
 
-      assertStatusNoContent(response);
+      expect(res.status).to.equal(HTTP_STATUS.NO_CONTENT);
+      expect(res.data).to.be.empty;
     });
   });
 });

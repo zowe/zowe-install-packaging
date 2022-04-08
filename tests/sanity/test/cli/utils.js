@@ -99,10 +99,38 @@ const execZoweCli = async(command) => {
   return result;
 };
 
+const globalZoweCliConfigFile = '.zowe/zowe.config.json';
 // default z/OSMF CLI profile name, separated by process pid
 const defaultZOSMFProfileName = `zowe-install-test-ZOSMF-${process.pid}`;
-const defaultUSSProfileName = `zowe-install-test-USS-${process.pid}`;
+const defaultSSHProfileName = `zowe-install-test-SSH-${process.pid}`;
 const defaultTSOProfileName = `zowe-install-test-TSO-${process.pid}`;
+
+/**
+ * Init CLI configuration with "zowe config init" command
+ *
+ * @return {Object}         exec result object with stdout, stderr properties
+ */
+const initZoweCliConfig = async() => {
+  const testHomeDir = await exec('cd ~ && pwd');
+  debug(`User home directory is ${testHomeDir.stdout.trim()}`);
+  if (fs.existsSync(`${testHomeDir.stdout.trim()}/${globalZoweCliConfigFile}`)) {
+    debug(`${testHomeDir.stdout.trim()}/${globalZoweCliConfigFile} already exists, skipping zowe config init`);
+    return;
+  }
+
+  const command = [
+    'zowe',
+    'config',
+    'init',
+    '--global-config',
+    '--overwrite',
+    '--for-sure',
+    '--prompt',
+    'false',
+  ];
+
+  return await execZoweCli(command.join(' '));
+};
 
 /**
  * Create z/OSMF CLI profile
@@ -115,76 +143,93 @@ const defaultTSOProfileName = `zowe-install-test-TSO-${process.pid}`;
  * @return {Object}         exec result object with stdout, stderr properties
  */
 const createDefaultZOSMFProfile = async(hostname, port, username, password, profile) => {
+  // init v2 config
+  await initZoweCliConfig();
+
   const command = [
     'zowe',
-    'profiles',
-    'create',
-    'zosmf-profile',
-    profile || defaultZOSMFProfileName,
-    '--host',
-    hostname,
-    '--port',
-    port,
-    '--user',
-    username,
-    '--pass',
-    password,
-    '--reject-unauthorized',
-    'false',
-    '--overwrite',
+    'config',
+    'set',
+    `"profiles.${profile || defaultZOSMFProfileName}"`,
+    '"' + JSON.stringify({
+      type: 'zosmf',
+      properties: {
+        host: hostname,
+        port: parseInt(port, 10),
+        user: username,
+        password: password,
+        rejectUnauthorized: false,
+      },
+      secure: []
+    }).replace(/"/g, '\\"') + '"',
+    '--json',
+    '--global-config',
   ];
 
   return await execZoweCli(command.join(' '));
 };
 
 /**
- * Create USS profile
+ * Create SSH profile
  *
- * @param  {String} hostname  USS hostname
- * @param  {String} port      USS port
+ * @param  {String} hostname  SSH hostname
+ * @param  {String} port      SSH port
  * @param  {String} username  username
  * @param  {String} password  password
  * @param  {String} profile   profile name, optional
  * @return {Object}         exec result object with stdout, stderr properties
  */
-const createDefaultUSSProfile = async(hostname, username, password, port, profile) => {
+const createDefaultSSHProfile = async(hostname, username, password, port, profile) => {
+  // init v2 config
+  await initZoweCliConfig();
+
   const command = [
     'zowe',
-    'profiles',
-    'create',
-    'ssh-profile',
-    profile || defaultUSSProfileName,
-    '--host',
-    hostname,
-    '--port',
-    port || '22',
-    '--user',
-    username,
-    '--pass',
-    password,
-    '--overwrite',
+    'config',
+    'set',
+    `"profiles.${profile || defaultSSHProfileName}"`,
+    '"' + JSON.stringify({
+      type: 'ssh',
+      properties: {
+        host: hostname,
+        port: parseInt(port || 22, 10),
+        user: username,
+        password: password,
+      },
+      secure: []
+    }).replace(/"/g, '\\"') + '"',
+    '--json',
+    '--global-config',
   ];
 
   return await execZoweCli(command.join(' '));
 };
 
 /**
- * Create USS profile
+ * Create TSO profile
  *
  * @param  {String} accountname  TSO account
  * @param  {String} profile   profile name, optional
  * @return {Object}         exec result object with stdout, stderr properties
  */
 const createDefaultTSOProfile = async(accountname, profile) => {
+  // init v2 config
+  await initZoweCliConfig();
+
   const command = [
     'zowe',
-    'profiles',
-    'create',
-    'tso-profile',
-    profile || defaultTSOProfileName,
-    '--account',
-    accountname,
-    '--overwrite',
+    'config',
+    'set',
+    `"profiles.${profile || defaultTSOProfileName}"`,
+    '"' + JSON.stringify({
+      type: 'tso',
+      properties: {
+        account: accountname,
+      },
+      secure: []
+    }).replace(/"/g, '\\"') + '"',
+    '--json',
+    '--global-config',
   ];
 
   return await execZoweCli(command.join(' '));
@@ -193,10 +238,12 @@ const createDefaultTSOProfile = async(accountname, profile) => {
 // export constants and methods
 module.exports = {
   execZoweCli,
+  globalZoweCliConfigFile,
   defaultZOSMFProfileName,
-  defaultUSSProfileName,
+  defaultSSHProfileName,
   defaultTSOProfileName,
+  initZoweCliConfig,
   createDefaultZOSMFProfile,
-  createDefaultUSSProfile,
+  createDefaultSSHProfile,
   createDefaultTSOProfile,
 };

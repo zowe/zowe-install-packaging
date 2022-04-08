@@ -26,3 +26,12 @@
   set_fact:
     zowe_external_domain_name: "{{ zowe_zos_host|default('') }}"
   when: zowe_external_domain_name == '' or zowe_external_domain_name is none
+
+- name: Find z/OS IP address if it's not defined
+  when: zowe_external_ip_address is undefined or zowe_external_ip_address is none or zowe_external_ip_address|length == 0
+  block:
+  - name: Set ip address
+    raw: dig +short $(hostname) | sed -n 2p
+    register: zowe_external_ip_address_output
+  - set_fact:
+      zowe_external_ip_address: "{{ zowe_external_ip_address_output.stdout | trim}}"

@@ -13,9 +13,9 @@
 # Requires opercmd.rexx to check job RC
 
 # Inputs
-# -rw-r--r--   1 OMVSKERN SYS1     302706000 Feb 11 08:37 ZOWE.AZWE001.TMP0001
-# -rw-r--r--   1 OMVSKERN SYS1          7457 Feb 11 08:37 ZOWE.AZWE001.TMP0001.readme.htm
-# -rw-r--r--   1 OMVSKERN SYS1     182429840 Feb 11 08:37 ZOWE.AZWE001.TMP0002
+# -rw-r--r--   1 OMVSKERN SYS1     302706000 Feb 11 08:37 ZOWE.AZWE002.TMP0001
+# -rw-r--r--   1 OMVSKERN SYS1          7457 Feb 11 08:37 ZOWE.AZWE002.TMP0001.readme.htm
+# -rw-r--r--   1 OMVSKERN SYS1     182429840 Feb 11 08:37 ZOWE.AZWE002.TMP0002
 
 # $download_path/ZOWE.$FMID.$SYSMOD1.readme.htm     # ASCII text of README htm file
 # $download_path/ZOWE.$FMID.$SYSMOD1                # binary SMP/E SYSMOD file 1 of Zowe product
@@ -45,7 +45,7 @@ fi
 #   - #globalcsi    ZOE.SMPE.CSI    the data set name of your CSI
 #   - #dzone        DZONE           name of distribution zone
 #   - #tzone        TZONE           name of target zone
-#   - #fmid         AZWE001         name of FMID
+#   - #fmid         AZWE002         name of FMID
 #   - #sysmod1      TMP0001         SYSMOD file 1
 #   - #sysmod2      TMP0002         SYSMOD file 2
 
@@ -65,7 +65,7 @@ $SCRIPT Hlq Csihlq download_path pathprefix FMID SYSMOD1 SYSMOD2 volser install
  3  pathprefix      /tmp/           Path Prefix of usr/lpp/zowe,
                                     where SMP/E will install zowe runtimes
  4  download_path   /tmp            where SYSMODs (binary) and JCL (EBCDIC) are located
- 5  FMID            AZWE001         The FMID for base release 
+ 5  FMID            AZWE002         The FMID for base release 
  6  SYSMOD1         TMP0001         The name of the first  part of the SYSMOD
  7  SYSMOD2         TMP0002         The name of the second part of the SYSMOD 
  8  volser          USER10          volume serial number of a DASD volume to hold MVS datasets 
@@ -302,7 +302,7 @@ do
 #   - #globalcsi    ZOE.SMPE.CSI    the data set name of your CSI
 #   - #dzone        DZONE           name of distribution zone
 #   - #tzone        TZONE           name of target zone
-#   - #fmid         AZWE001         name of FMID
+#   - #fmid         AZWE002         name of FMID
 #   - #sysmod1      TMP0001         SYSMOD file 1
 #   - #sysmod2      TMP0002         SYSMOD file 2
 

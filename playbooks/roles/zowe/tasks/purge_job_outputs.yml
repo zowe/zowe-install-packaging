@@ -1,0 +1,52 @@
+---
+# This task will purge all Zowe job output
+
+# ============================================================================
+# Purge Zowe Job Output
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  vars:
+    list_jobs_name: "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge Cross Memory Job Output
+- import_role:
+    name: configure
+    tasks_from: locate_xmem
+
+- include_role:
+    name: zos
+    tasks_from: list_jobs
+  when: zowe_xmem_stc_name != ""
+  vars:
+    list_jobs_name: "{{ zowe_xmem_stc_name }}"
+
+- include_role:
+    name: zos
+    tasks_from: purge_job_output
+  vars:
+    purge_job_output_id: "{{ item }}"
+  loop: "{{ list_jobs_result.stdout_lines }}"
+
+# ============================================================================
+# Purge jobs created by zwe init
+- name: Purge other job logs
+  include_role:
+    name: zos
+    tasks_from: purge_all_job_outputs
+  vars:
+    purge_jobs_name: "{{ job_name_to_purge }}"
+  loop:
+  - ZWESECUR
+  - ZWEKRING
+  - ZWENOKYR
+  loop_control:
+    loop_var: job_name_to_purge

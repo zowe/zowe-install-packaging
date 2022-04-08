@@ -10,7 +10,6 @@ work_dir_remote: /var/zowe/ansible
 zowe_root_dir: /var/zowe/runtime
 zowe_instance_dir: /var/zowe/zowe-instance-dir
 zowe_keystore_dir: /var/zowe/keystore
-zowe_logs_dir: /var/zowe/logs
 zowe_install_logs_dir: /var/zowe/logs
 
 zowe_apiml_verify_certficates_of_services: false

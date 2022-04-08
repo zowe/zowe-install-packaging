@@ -67,15 +67,6 @@ zowe_known_xmem_proc_stcs:
 - ZWEXMSTC
 - ZWESISTC
 
-# this should list all loadlib members we ever setup during install
-zowe_known_loadlib_members:
-- ZWESIS01
-- ZWESAUX
-
-# this should list all parmlib members we ever setup during install
-zowe_known_parmlib_members:
-- ZWESIP00
-
 # this should list all known zowe runtime server user ids we ever setup during install
 zowe_known_runtime_users:
 - ZWESVUSR
@@ -87,6 +78,9 @@ zowe_known_xmem_stc_users:
 # default zowe profile
 # this profile is abandoned after v1.7.0
 zowe_user_profile: ~/.zowe_profile
+
+# If we clean up history job output during uninstall
+cleanup_zowe_job_history: True
 
 # ==============================================================================
 # Variables should be verified and overwrittern.
@@ -101,14 +95,17 @@ zowe_dataset_prefix:
 zowe_instance_dir: ~/.zowe/instance
 # keystore directory
 zowe_keystore_dir: ~/.zowe/keystore
-#logs directory
+# install logs directory
 zowe_install_logs_dir: ~/.zowe/logs
+
+zowe_uninstall_extra_data_sets:
 
 ################################################################################
 # these are default variables for cross memory configuration
 zowe_xmem_proclib:
 zowe_xmem_parmlib:
 zowe_xmem_loadlib:
+zowe_xmem_pluginlib:
 zowe_xmem_proclib_member_zss: ZWESISTC
 zowe_xmem_proclib_member_aux: ZWESASTC
 

@@ -21,31 +21,31 @@ proclibs="ZWESLSTC ZWESISTC ZWESASTC"
 # validation
 require_zowe_yaml
 
-# read HLQ and validate
-hlq=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.hlq")
-if [ -z "${hlq}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe HLQ (zowe.setup.mvs.hlq) is not defined in Zowe YAML configuration file." "" 157
+# read prefix and validate
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+if [ -z "${prefix}" ]; then
+  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read PROCLIB and validate
-proclib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.proclib")
+proclib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.proclib")
 if [ -z "${proclib}" ]; then
-  print_error_and_exit "Error ZWEL0157E: PROCLIB (zowe.setup.mvs.proclib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: PROCLIB (zowe.setup.dataset.proclib) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.jcllib")
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 if [ -z "${jcllib}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.mvs.jcllib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read PARMLIB and validate
-parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.parmlib")
+parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
 if [ -z "${parmlib}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe custom parameter library (zowe.setup.mvs.parmlib) is not defined in Zowe YAML configuration file." "" 157
+  print_error_and_exit "Error ZWEL0157E: Zowe custom parameter library (zowe.setup.dataset.parmlib) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read LOADLIB and validate
-authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.mvs.authLoadlib")
+authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authLoadlib")
 if [ -z "${authLoadlib}" ]; then
   # authLoadlib can be empty
-  authLoadlib="${hlq}.${ZWE_PRIVATE_DS_SZWEAUTH}"
+  authLoadlib="${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}"
 fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
@@ -64,9 +64,9 @@ target_proclibs="${security_stcs_zowe} ${security_stcs_zis} ${security_stcs_aux}
 # check existence
 for mb in ${proclibs}; do
   # source in SZWESAMP
-  samp_existence=$(is_data_set_exists "${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
+  samp_existence=$(is_data_set_exists "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
   if [ "${samp_existence}" != "true" ]; then
-      print_error_and_exit "Error ZWEL0143E: ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
+      print_error_and_exit "Error ZWEL0143E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
   fi
 done
 for mb in ${target_proclibs}; do
@@ -105,12 +105,13 @@ else
   # ZWESLSTC
   print_message "Modify ZWESLSTC and save as ${jcllib}(${security_stcs_zowe})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
-  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
           sed "s#^CONFIG=.*\$#CONFIG=${ZWE_CLI_PARAMETER_CONFIG}#" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -127,7 +128,7 @@ else
     fi
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" 159
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" 159
   fi
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
@@ -144,12 +145,13 @@ else
   # ZWESISTC
   print_message "Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
-  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
           sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -167,7 +169,7 @@ else
     exit 1
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)" "" 159
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)" "" 159
   fi
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
@@ -184,11 +186,12 @@ else
   # ZWESASTC
   print_message "Modify ZWESASTC and save as ${jcllib}(${security_stcs_aux})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
-  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -206,7 +209,7 @@ else
     exit 1
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error_and_exit "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)" "" 159
+    print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)" "" 159
   fi
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
@@ -230,7 +233,7 @@ else
   # copy to proclib
   for mb in ${target_proclibs}; do
     print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
-    data_set_copy_to_data_set "${hlq}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi

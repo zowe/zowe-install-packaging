@@ -13,9 +13,10 @@
   when: purge_job_output_id is not defined or purge_job_output_id is none or purge_job_output_id == ''
 
 - name: Purge log of {{ purge_job_output_id }}
-  include_role:
-    name: zos
-    tasks_from: opercmd
-  vars:
-    opercmd: $P O {{ purge_job_output_id.split(",")[0] }}
+  block:
+  - include_role:
+      name: zos
+      tasks_from: opercmd
+    vars:
+      opercmd: $P O {{ purge_job_output_id.split(",")[0] }}
   ignore_errors: True

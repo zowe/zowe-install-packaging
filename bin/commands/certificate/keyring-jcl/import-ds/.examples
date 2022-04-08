@@ -1,1 +1,1 @@
-zwe certificate keyring-jcl import-ds --hlq my-hlq --jcllib my-jcllib --security-dry-run --security-dry-run --keyring-owner my-keyring-owner --keyring-name my-keyring-name -a certificate-alias --import-ds-name my-ds-name --import-ds-password my-ds-password
+zwe certificate keyring-jcl import-ds --dataset-prefix my-dataset-prefix --jcllib my-jcllib --security-dry-run --keyring-owner my-keyring-owner --keyring-name my-keyring-name -a certificate-alias --import-ds-name my-ds-name --import-ds-password my-ds-password
