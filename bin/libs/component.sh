@@ -327,7 +327,74 @@ EOF
 #       and ensure_node_is_on_path should have been executed.
 #
 # @param string   component directory
+test_or_set_pc_bit() {
+  echo "********************************************** TEST OR SET PC BIT ****************************" >&2
+
+  path="${1}"
+  echo "********************************************** PATH: ${1}" >&2
+  echo $path >&2
+
+  testpc=`extattr $path | sed -n '3 p'`
+  if [ "$testpc" = "Program controlled = YES" ]; then
+    # normal
+    return 0
+  else
+    echo "Plugin ZSS API not program controlled. Attempting to add PC bit." 
+    extattr +p $path
+    testpc2=$(extattr $path | sed -n '3 p')
+    if [ "$testpc2" = "Program controlled = YES" ]; then
+      echo "PC bit set successfully."
+      return 0
+    else
+      echo "PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege."
+      return 1
+    fi
+  fi
+}
+
+check_zss_pc_bit() {
+  echo "********************************************** CHECK ZSS PC BIT ****************************" >&2
+  appfw_plugin_path=${1}
+  echo "********************************************** APP FRAMEWORK PLUGIN PATH: ${1}" >&2
+  echo $appfw_plugin_path >&2
+  services=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices" 2>/dev/null)
+  if [ -n "${services}" ]; then
+    echo "Checking ZSS services in plugin path=${1}"
+    service_iterator_index=0
+    service_type=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].type" 2>/dev/null)
+    while [ -n "${service_type}" ]; do
+      if [ "${service_type}" = "service" ]; then
+        libraryName31=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName31" 2>/dev/null)
+        libraryName64=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName64" 2>/dev/null)
+        libraryName=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName" 2>/dev/null)
+        if [ -n "${libraryName31}" ]; then
+          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName31}"
+          if [ "$?" = "1" ]; then
+            break
+          fi
+        fi
+        if [ -n "${libraryName64}" ]; then
+          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName64}"
+          if [ "$?" = "1" ]; then
+            break
+          fi
+        fi
+        if [ -n "${libraryName}" ]; then
+          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName}"
+          if [ "$?" = "1" ]; then
+            break
+          fi
+        fi
+      fi
+      service_iterator_index=`expr $service_iterator_index + 1`
+      service_type=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].type 2>/dev/null")
+    done
+  fi
+}
+
 process_component_appfw_plugin() {
+  echo "********************************************** PROCESS COMPONENT APP FW PLUGIN ****************************" >&2
+
   component_dir="${1}"
 
   all_succeed=true
@@ -340,6 +407,7 @@ process_component_appfw_plugin() {
     appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
     appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
 
+    echo "********************************************** CALLING CHECK ZSS PC BIT ****************************" >&2
     check_zss_pc_bit "${appfw_plugin_path}"
 
     if [ ! -r "${appfw_plugin_path}" ]; then
@@ -377,71 +445,6 @@ process_component_appfw_plugin() {
   else
     # error message should have be echoed before this
     return 1
-  fi
-}
-
-check_zss_pc_bit() {
-  echo "********************************************** CHECK ZSS PC BIT ****************************" 
-  appfw_plugin_path=${1}
-  echo "********************************************** APP FRAMEWORK PLUGIN PATH: ${1}" 
-  echo $appfw_plugin_path 
-  services=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices" 2>/dev/null)
-  if [ -n "${services}" ]; then
-    echo "Checking ZSS services in plugin path=${1}"
-    service_iterator_index=0
-    service_type=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].type" 2>/dev/null)
-    while [ -n "${service_type}" ]; do
-      if [ "${service_type}" = "service" ]; then
-        libraryName31=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName31" 2>/dev/null)
-        libraryName64=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName64" 2>/dev/null)
-        libraryName=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].libraryName" 2>/dev/null)
-        if [ -n "${libraryName31}" ]; then
-          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName31}"
-          if [ "$?" = "1" ]; then
-            break
-          fi
-        fi
-        if [ -n "${libraryName64}" ]; then
-          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName64}"
-          if [ "$?" = "1" ]; then
-            break
-          fi
-        fi
-        if [ -n "${libraryName}" ]; then
-          test_or_set_pc_bit "${appfw_plugin_path}/lib/${libraryName}"
-          if [ "$?" = "1" ]; then
-            break
-          fi
-        fi
-      fi
-      service_iterator_index=`expr $service_iterator_index + 1`
-      service_type=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices[${service_iterator_index}].type 2>/dev/null")
-    done
-  fi
-}
-
-test_or_set_pc_bit() {
-  echo "********************************************** TEST OR SET PC BIT ****************************" 
-
-  path="${1}"
-  echo "********************************************** PATH: ${1}" 
-  echo $path 
-
-  testpc=`extattr $path | sed -n '3 p'`
-  if [ "$testpc" = "Program controlled = YES" ]; then
-    # normal
-    return 0
-  else
-    echo "Plugin ZSS API not program controlled. Attempting to add PC bit." 
-    extattr +p $path
-    testpc2=$(extattr $path | sed -n '3 p')
-    if [ "$testpc2" = "Program controlled = YES" ]; then
-      echo "PC bit set successfully."
-      return 0
-    else
-      echo "PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege."
-      return 1
-    fi
   fi
 }
 
