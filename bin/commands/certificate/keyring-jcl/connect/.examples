@@ -1,1 +1,1 @@
-zwe certificate keyring-jcl connect --hlq my-hlq --jcllib my-jcllib --security-dry-run --keyring-owner my-keyring-owner --keyring-name my-keyring-name --connect-user cert-owner --connect-label cert-label
+zwe certificate keyring-jcl connect --dataset-prefix my-dataset-prefix --jcllib my-jcllib --security-dry-run --keyring-owner my-keyring-owner --keyring-name my-keyring-name --connect-user cert-owner --connect-label cert-label

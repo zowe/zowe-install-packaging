@@ -5,193 +5,134 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
-const _ = require('lodash');
 const expect = require('chai').expect;
-const debug = require('debug')('zowe-sanity-test:explorer:api-datasets');
-const axios = require('axios');
-const addContext = require('mochawesome/addContext');
-const { handleCompressionRequest } = require('./zlib-helper');
+const { HTTPRequest, HTTP_STATUS } = require('../http-helper');
+const {
+  EXPLORER_API_TEST_DATASET_PATTERN,
+  EXPLORER_API_TEST_DATASET_NAME,
+  EXPLORER_API_TEST_DATASET_MEMBER_NAME,
+} = require('../constants');
 
-let REQ, username, password;
-const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
-const TEST_DATASET_NAME = 'SYS1.LINKLIB';
-const TEST_DATASET_MEMBER_NAME = 'ACCOUNT';
+const getDatasetHelper = async function(hq, manualDecompress=false) {
+  const res = await hq.request({
+    url: '/datasets/api/v1/' + encodeURIComponent(EXPLORER_API_TEST_DATASET_PATTERN),
+  }, {
+    manualDecompress,
+  });
 
+  expect(res).to.have.property('status');
+  expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
 
-async function getDatasetHelper(manualDecompress=false) {
-  const _this = this;
+  expect(res).to.have.property('headers');
+  if (manualDecompress) {
+    expect(res.headers).to.have.property('content-encoding');
+    expect(res.headers['content-encoding']).to.equal('gzip');
+  }
 
-  const req = {
-    method: 'get',
-    url: '/api/v1/datasets/' + encodeURIComponent(TEST_DATASET_PATTERN),
-    auth: {
-      username,
-      password,
-    },
-  };
-  debug('request', req);
+  expect(res.data).to.be.an('object');
+  expect(res.data).to.have.property('items');
+  expect(res.data.items).to.be.an('array');
+  expect(res.data.items.map(one => one.name)).to.include(EXPLORER_API_TEST_DATASET_NAME);
+};
 
-  return handleCompressionRequest(REQ, req, {manualDecompress})
-    .then(function(res) {
-      
-      debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
-      addContext(_this, {
-        title: 'http response',
-        value: res && res.data
-      });
+const getDatasetMemberHelper = async function(hq, manualDecompress=false) {
+  const res = await hq.request({
+    url: '/datasets/api/v1/' + encodeURIComponent(EXPLORER_API_TEST_DATASET_NAME) + '/members',
+  }, {
+    manualDecompress,
+  });
 
-      expect(res).to.have.property('status');
-      expect(res).to.have.property('headers');
-      expect(res.status).to.equal(200);
-      expect(res.data.items).to.be.an('array');
-      expect(res.data.items.map(one => one.name)).to.include(TEST_DATASET_NAME);
-    });
-}
+  expect(res).to.have.property('status');
+  expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
 
-async function getDatasetMemberHelper(manualDecompress=false) {
-  const _this = this;
+  expect(res).to.have.property('headers');
+  if (manualDecompress) {
+    expect(res.headers).to.have.property('content-encoding');
+    expect(res.headers['content-encoding']).to.equal('gzip');
+  }
 
-  const req = {
-    method: 'get',
-    url: '/api/v1/datasets/' + encodeURIComponent(TEST_DATASET_NAME) + '/members',
-    auth: {
-      username,
-      password,
-    },
-  };
-  debug('request', req);
+  expect(res.data).to.be.an('object');
+  expect(res.data).to.have.property('items');
+  expect(res.data.items).to.be.an('array');
+  expect(res.data.items).to.include(EXPLORER_API_TEST_DATASET_MEMBER_NAME);
+};
 
-  return handleCompressionRequest(REQ,req,{manualDecompress})
-    .then(function(res) {
-      debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
-      addContext(_this, {
-        title: 'http response',
-        value: res && res.data
-      });
+const getDatasetContentHelper = async function(hq, manualDecompress=false) {
+  const res = await hq.request({
+    url: '/datasets/api/v1/' + encodeURIComponent(`${EXPLORER_API_TEST_DATASET_NAME}(${EXPLORER_API_TEST_DATASET_MEMBER_NAME})`) + '/content',
+  }, {
+    manualDecompress,
+    ungzip: false,
+  });
 
-      expect(res).to.have.property('status');
-      expect(res.status).to.equal(200);
-      expect(res).to.have.property('headers');
-      expect(res.data).to.be.an('object');
-      expect(res.data).to.have.property('items');
-      expect(res.data.items).to.be.an('array');
-      expect(res.data.items).to.include(TEST_DATASET_MEMBER_NAME);
-    });
-}
+  //checks for both paths
+  expect(res).to.have.property('status');
+  expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
 
-async function getDatasetContentHelper(manualDecompress=false) {
+  expect(res).to.have.property('headers');
+  if (manualDecompress) {
+    expect(res.headers).to.have.property('content-encoding');
+    expect(res.headers['content-encoding']).to.equal('gzip');
+    return;
+  }
 
-  const _this = this;
-
-  const req = {
-    method: 'get',
-    url: '/api/v1/datasets/' + encodeURIComponent(`${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`) + '/content',
-    auth: {
-      username,
-      password,
-    }
-  };
-  debug('request', req);
-
-  return handleCompressionRequest(REQ, req, {manualDecompress, ungzip: false})
-    .then(function(res) {
-      debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
-      addContext(_this, {
-        title: 'http response',
-        value: res && res.data
-      });
-
-      //checks for both paths
-      expect(res).to.have.property('status');
-      expect(res.status).to.equal(200);
-
-      if(manualDecompress) return;
-
-      // checks for default path only - content JSON.parse(data.toString()) parsing cause exception
-      expect(res.data).to.be.an('object');
-      expect(res.data).to.have.property('records');
-      expect(res.data.records).to.be.a('string');
-    });
-}
+  // checks for default path only - content JSON.parse(data.toString()) parsing cause exception
+  expect(res.data).to.be.an('object');
+  expect(res.data).to.have.property('records');
+  expect(res.data.records).to.be.a('string');
+};
 
 describe('test explorer server datasets api', function() {
+
+  let hq;
+
   before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-  
-    expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is empty').to.not.be.empty;
     expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
     expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
-    expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
 
-    REQ = axios.create({
-      baseURL: `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`,
-      timeout: 30000,
+    hq = new HTTPRequest(null, null, null, {
+      username: process.env.SSH_USER,
+      password: process.env.SSH_PASSWD,
     });
-    username = process.env.SSH_USER;
-    password = process.env.SSH_PASSWD;
-    debug(`Explorer server URL: https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
   });
 
-  it(`should be able to list data sets of ${TEST_DATASET_PATTERN} default`, async function() {
-    var _this = this;
-    await getDatasetHelper.call(_this);
+  it(`should be able to list data sets of ${EXPLORER_API_TEST_DATASET_PATTERN} default`, async function() {
+    await getDatasetHelper(hq);
   });
 
-  it(`should be able to list data sets of ${TEST_DATASET_PATTERN} decompress with zlib`, async function() {
-    var _this = this;
-    await getDatasetHelper.call(_this, true);
+  it(`should be able to list data sets of ${EXPLORER_API_TEST_DATASET_PATTERN} decompress with zlib`, async function() {
+    await getDatasetHelper(hq, true);
   });
 
-  it(`should be able to get members of data set ${TEST_DATASET_NAME} default`, async function() {
-    var _this = this;
-    await getDatasetMemberHelper.call(_this);
+  it(`should be able to get members of data set ${EXPLORER_API_TEST_DATASET_NAME} default`, async function() {
+    await getDatasetMemberHelper(hq);
   });
 
-  it(`should be able to get members of data set ${TEST_DATASET_NAME} decompress with zlib`, async function() {
-    var _this = this;
-    await getDatasetMemberHelper.call(_this, true);
+  it(`should be able to get members of data set ${EXPLORER_API_TEST_DATASET_NAME} decompress with zlib`, async function() {
+    await getDatasetMemberHelper(hq, true);
   });
 
-  it(`should be able to get content of data set ${TEST_DATASET_NAME} default`, async function() {
-    var _this = this;
-    await getDatasetContentHelper.call(_this);
+  it(`should be able to get content of data set ${EXPLORER_API_TEST_DATASET_NAME} default`, async function() {
+    await getDatasetContentHelper(hq);
   });
 
-  it(`should be able to get content of data set ${TEST_DATASET_NAME} decompress with zlib`, async function() {
-    var _this = this;
-    await getDatasetContentHelper.call(_this, true);
+  it(`should be able to get content of data set ${EXPLORER_API_TEST_DATASET_NAME} decompress with zlib`, async function() {
+    await getDatasetContentHelper(hq, true);
   });
   
-  it('returns the current user\'s TSO userid', function() {
-    const _this = this;
-
-    const req = {
+  it('returns the current user\'s TSO userid', async function() {
+    const res = await hq.request({
+      url: '/datasets/api/v1/username',
       method: 'get',
-      url: '/api/v1/datasets/username',
-      auth: {
-        username,
-        password,
-      }
-    };
-    debug('request', req);
+    });
 
-    return REQ.request(req)
-      .then(function(res) {
-        debug('response', _.pick(res, ['status', 'statusText', 'headers', 'data']));
-        addContext(_this, {
-          title: 'http response',
-          value: res && res.data
-        });
-
-        expect(res).to.have.property('status');
-        expect(res.status).to.equal(200);
-        expect(res.data).to.be.an('object');
-        expect(res.data).to.have.property('username');
-        expect(res.data.username).to.be.a('string');
-      });
+    expect(res).to.have.property('status');
+    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+    expect(res.data).to.be.an('object');
+    expect(res.data).to.have.property('username');
+    expect(res.data.username).to.be.a('string');
   });
 });

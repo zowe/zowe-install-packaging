@@ -7,8 +7,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```
 zowe:
   setup:
-    mvs:
-      hlq: IBMUSER.ZWE
+    dataset:
+      prefix: IBMUSER.ZWE
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
     security:
       product: RACF
@@ -25,8 +25,8 @@ zowe:
         aux: ZWESASTC
 ```
 
-- `zowe.setup.mvs.hlq` shows where the `SZWESAMP` data set is installed,
-- `zowe.setup.mvs.jcllib` is the custom JCL library. Zowe will create customized
+- `zowe.setup.dataset.prefix` shows where the `SZWESAMP` data set is installed,
+- `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe will create customized
   ZWESECUR JCL here before applying it.
 - `zowe.setup.security.product` is security product. Can be `RACF`, `ACF2`, or 
   `TSS`. This configuration is optional. Default value is `RACF`.

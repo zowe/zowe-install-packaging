@@ -75,6 +75,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
   * `ZWE_CLI_PARAMETER_HA_INSTANCE` is a commonly used variable which indicates the current HA instance ID.
 - `ZWE_CLI_PARAMETERS_LIST`, command parameter names separated by comma.
 - `ZWE_DISCOVERY_SERVICES_LIST` contains a full list of enabled discovery services.
+- `ZWE_DISCOVERY_SHARED_LIBS` contains a directory where discovery shared libraries are installed.
 - `ZWE_ENABLED_COMPONENTS` is a list of components will be started in current HA instance.
 - `ZWE_GATEWAY_HOST` contains domain name to access gateway internally.
 - `ZWE_GATEWAY_SHARED_LIBS` contains a directory where gateway shared libraries are installed.
@@ -97,9 +98,9 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PRIVATE_CONTAINER_COMPONENT_RUNTIME_DIRECTORY` is the directory of component runtime in Kubernetes deployment. Default value is `/component`.
 - `ZWE_PRIVATE_CONTAINER_HOME_DIRECTORY` is the directory of Zowe home directory in Kubernetes deployment. Default value is `/home/zowe`.
 - `ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY` is the directory of Keystore directory in Kubernetes deployment. Default value is `/home/zowe/keystore`.
-- `ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY` is the directory of logs in Kubernetes deployment. Default value is `/home/zowe/logs`.
+- `ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY` is the directory of logs in Kubernetes deployment. Default value is `/home/zowe/instance/logs`.
 - `ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY` is the directory of Zowe runtime in Kubernetes deployment. Default value is `/home/zowe/runtime`.
-- `ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY` is the directory of workspace in Kubernetes deployment. Default value is `/home/zowe/workspace`.
+- `ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY` is the directory of workspace in Kubernetes deployment. Default value is `/home/zowe/instance/workspace`.
 - `ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA` is a list of java components shipped with Zowe.
 - `ZWE_PRIVATE_DEFAULT_ADMIN_GROUP` is the default Zowe admin group. Default value is `ZWEADMIN`.
 - `ZWE_PRIVATE_DEFAULT_AUX_STC` is the default name of Zowe Auxiliary Server started task. Default value is `ZWESASTC`.
@@ -133,9 +134,9 @@ For examples:
 
 - `ZWE_zowe_runtimeDirectory`, parent directory of where `zwe` server command is located.
 - `ZWE_zowe_workspaceDirectory` is the path of user customized workspace directory.
-- `ZWE_zowe_setup_mvs_hlq` is the high level qualifier where Zowe MVS data sets are installed.
-- `ZWE_zowe_setup_mvs_parmlib` is the data set that end-user configured to store his customized version of parameter library members.
-- `ZWE_zowe_setup_mvs_authPluginLib` is the data set that end-user configured to store his APF authorized ZIS plugins load library.
+- `ZWE_zowe_setup_dataset_prefix` is the dataset prefix where Zowe MVS data sets are installed.
+- `ZWE_zowe_setup_dataset_parmlib` is the data set that end-user configured to store his customized version of parameter library members.
+- `ZWE_zowe_setup_dataset_authPluginLib` is the data set that end-user configured to store his APF authorized ZIS plugins load library.
 - `ZWE_zowe_setup_security_users_zowe` is the name of Zowe runtime user.
 - `ZWE_configs_port` is your component port number you can use in your start script. It points to the value of `haInstances.<current-ha-instance>.components.<your-component>.port`, or fall back to `components.<my-component>.port`, or fall back to `configs.port` defined in your component manifest.
 

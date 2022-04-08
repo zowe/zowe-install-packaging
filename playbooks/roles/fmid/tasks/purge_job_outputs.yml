@@ -1,0 +1,24 @@
+---
+# This task will purge all Zowe SMPE job output
+
+# ============================================================================
+# Purge SMPE jobs
+- name: Purge SMPE job logs
+  include_role:
+    name: zos
+    tasks_from: purge_all_job_outputs
+  vars:
+    purge_jobs_name: "{{ job_name_to_purge }}"
+  loop:
+  - ZWE0GUNZ
+  loop_control:
+    loop_var: job_name_to_purge
+- name: Purge SMPE job logs
+  include_role:
+    name: zos
+    tasks_from: purge_all_job_outputs
+  vars:
+    purge_jobs_name: "{{ job_name_to_purge }}"
+  loop: "{{ zowe_smpe_fmid_install_steps }}"
+  loop_control:
+    loop_var: job_name_to_purge

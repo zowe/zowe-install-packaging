@@ -543,6 +543,7 @@ pkcs12_trust_service() {
   print_debug "> Temporary certificate file is ${tmp_file}"
   keytool ${print_cert_cmd} -rfc > "${tmp_file}"
   code=$?
+  chmod 700 "${tmp_file}"
   if [ ${code} -ne 0 ]; then
     print_error "Failed to get certificate of service instance https://${service_host}:${service_port}, exit code ${code}."
     return 1
@@ -789,7 +790,7 @@ validate_certificate_domain() {
 }
 
 keyring_run_zwekring_jcl() {
-  hlq="${1}"
+  prefix="${1}"
   jcllib="${2}"
   # should be 1, 2 or 3
   jcloption="${3}"
@@ -895,8 +896,8 @@ EOF
   print_debug "- Create temp data set member"
   tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
   print_debug "  > data set member: ${jcllib}(tmpdsm)"
-  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
-  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
           sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
           sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
           sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
@@ -927,6 +928,7 @@ EOF
           sed  "s#05/01/30#${validity_mdy}#g" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -943,7 +945,7 @@ EOF
     fi
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
+    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
     return 159
   fi
   print_trace "- Ensure ${tmpfile} encoding before copying into data set"
@@ -993,7 +995,7 @@ EOF
 }
 
 keyring_run_zwenokyr_jcl() {
-  hlq="${1}"
+  prefix="${1}"
   jcllib="${2}"
   keyring_owner="${3}"
   keyring_name="${4}"
@@ -1014,8 +1016,8 @@ keyring_run_zwenokyr_jcl() {
   print_debug "- Create temp data set member"
   tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
   print_debug "  > data set member: ${jcllib}(tmpdsm)"
-  print_debug "- Copy ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR) to ${tmpfile}"
-  result=$(cat "//'${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)'" | \
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR) to ${tmpfile}"
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)'" | \
           sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
           sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
           sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
@@ -1024,6 +1026,7 @@ keyring_run_zwenokyr_jcl() {
           sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -1040,7 +1043,7 @@ keyring_run_zwenokyr_jcl() {
     fi
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error "Error ZWEL0159E: Failed to modify ${hlq}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)"
+    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)"
     return 159
   fi
   print_trace "- Ensure ${tmpfile} encoding before copying into data set"
@@ -1186,6 +1189,7 @@ keyring_export_to_pkcs12() {
   if [ $? -ne 0 ]; then
     return 1
   fi
+  chmod 700 "${uss_temp_target}.cer"
 
   if [ "${cert_only}" = "true" ]; then
     # use keytool to import certificate
@@ -1210,6 +1214,7 @@ keyring_export_to_pkcs12() {
     if [ $? -ne 0 ]; then
       return 1
     fi
+    chmod 700 "${uss_temp_target}.key"
 
     # convert PEM format into temporary PKCS#12 keystore
     print_debug "- Generate PKCS#12 keystore from the certificate and private key in PEM format"
@@ -1217,6 +1222,7 @@ keyring_export_to_pkcs12() {
     if [ $? -ne 0 ]; then
       return 1
     fi
+    chmod 700 "${uss_temp_target}.p12"
 
     pkcs12_ensure_binary_tag "${uss_temp_target}.p12"
     if [ $? -ne 0 ]; then

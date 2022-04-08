@@ -53,16 +53,16 @@ spec:
         - name: zowe-runtime
           mountPath: "/home/zowe/runtime"
         - name: zowe-config
-          mountPath: "/home/zowe/zowe.yaml"
+          mountPath: "/home/zowe/instance/zowe.yaml"
           subPath: zowe.yaml
           readOnly: true
         - name: zowe-keystore
           mountPath: "/home/zowe/keystore"
           readOnly: true
         - name: zowe-logs
-          mountPath: "/home/zowe/logs"
+          mountPath: "/home/zowe/instance/logs"
         - name: zowe-workspace
-          mountPath: "/home/zowe/workspace"
+          mountPath: "/home/zowe/instance/workspace"
       command: ["/bin/bash", "-c"]
       args:
         - sleep 3600

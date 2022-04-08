@@ -1,0 +1,18 @@
+{
+  "ServiceId": "AZWE001BASE0U",
+  "ServiceName": "Zowe Configuration - User",
+  "MetaValidationItemVersion": 1.0,
+  "Vendor": "OPEN MAINFRAME PROJECT",
+  "SecurityValidationItems": [
+    {
+      "ItemID": "AZWE001BASE0UI00001000",
+      "ItemType": "PROGRAMMABLE",
+      "ItemCategory": "USER",
+      "ResourceProfile": "APIML.SERVICES",
+      "ResourceClass": "ZOWE",
+      "WhoNeedsAccess": "<User of the Services>",
+      "LevelOfAccessRequired": "READ",
+      "ItemDescription": "To allow Zowe user to use API Mediation Layer services."
+    }
+  ]
+}
