@@ -46,7 +46,7 @@ for key in ${auth_libs}; do
   apf_authorize_data_set "${ds}"
   code=$?
   if [ $code -ne 0 ]; then
-    if [ "${ZWE_CLI_PARAMETER_SECURITY_IGNORE_FAILURES}" = "true" ]; then
+    if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
       job_has_failures=true
     else
       exit $code

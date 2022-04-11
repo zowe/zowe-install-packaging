@@ -330,10 +330,10 @@
     zwe_init_params: "{{ zwe_init_params }} --security-dry-run"
   when: zowe_configure_security_dry_run
 
-- name: Set --security-ignore-failures or not
+- name: Set --ignore-security-failures or not
   set_fact:
-    zwe_init_params: "{{ zwe_init_params }} --security-ignore-failures"
-  when: zowe_configure_ignore_job_failure
+    zwe_init_params: "{{ zwe_init_params }} --ignore-security-failures"
+  when: zowe_configure_ignore_security_failures
 
 # ============================================================================
 - name: Init Zowe

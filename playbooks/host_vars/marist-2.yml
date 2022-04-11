@@ -2,4 +2,4 @@
 zos_security_system: ACF2
 zos_zosmf_ca: ZOSMFSRV
 
-zowe_configure_ignore_job_failure: true
+zowe_configure_ignore_security_failures: true

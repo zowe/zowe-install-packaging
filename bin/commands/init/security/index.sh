@@ -131,7 +131,7 @@ else
   code=$?
   if [ ${code} -ne 0 ]; then
     job_has_failures=true
-    if [ "${ZWE_CLI_PARAMETER_SECURITY_IGNORE_FAILURES}" = "true" ]; then
+    if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
       print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${tmpdsm})."
       # skip wait for job status step
       jobid=
@@ -146,7 +146,7 @@ else
     code=$?
     if [ ${code} -eq 1 ]; then
       job_has_failures=true
-      if [ "${ZWE_CLI_PARAMETER_SECURITY_IGNORE_FAILURES}" = "true" ]; then
+      if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
         print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
       else
         print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
@@ -159,7 +159,7 @@ else
       print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
     else
       job_has_failures=true
-      if [ "${ZWE_CLI_PARAMETER_SECURITY_IGNORE_FAILURES}" = "true" ]; then
+      if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
         print_error "Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
       else
         print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163

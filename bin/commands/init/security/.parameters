@@ -1,2 +1,2 @@
 security-dry-run||boolean|||||Whether to dry run security related setup.
-security-ignore-failures||boolean|||||Whether to ignore security setup job failures.
+ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
