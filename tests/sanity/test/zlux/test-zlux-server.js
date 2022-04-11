@@ -134,7 +134,8 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
         method: 'get',
         url: '/ZLUX/plugins/org.zowe.explorer-jes/iframe',
         headers: {
-          cookie: apimlAuthCookie
+          cookie: apimlAuthCookie,
+          Referer: zluxBaseUrl
         }
       };
       debug('request', req);
@@ -164,7 +165,8 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
         method: 'get',
         url: '/ZLUX/plugins/org.zowe.explorer-mvs/iframe',
         headers: {
-          cookie: apimlAuthCookie
+          cookie: apimlAuthCookie,
+          Referer: zluxBaseUrl
         }
       };
       debug('request', req);
@@ -194,7 +196,8 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
         method: 'get',
         url: '/ZLUX/plugins/org.zowe.explorer-uss/iframe',
         headers: {
-          cookie: apimlAuthCookie
+          cookie: apimlAuthCookie,
+          Referer: zluxBaseUrl
         }
       };
       debug('request', req);
