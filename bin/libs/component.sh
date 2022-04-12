@@ -350,6 +350,7 @@ test_or_set_pc_bit() {
 
 check_zss_pc_bit() {
   appfw_plugin_path=${1}
+
   services=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices" 2>/dev/null)
   if [ -n "${services}" ]; then
     echo "Checking ZSS services in plugin path=${1}"
@@ -386,7 +387,6 @@ check_zss_pc_bit() {
 }
 
 process_component_appfw_plugin() {
-
   component_dir="${1}"
 
   all_succeed=true
@@ -399,7 +399,6 @@ process_component_appfw_plugin() {
     appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
     appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
 
-    echo "********************************************** CALLING CHECK ZSS PC BIT ****************************" >&2
     check_zss_pc_bit "${appfw_plugin_path}"
 
     if [ ! -r "${appfw_plugin_path}" ]; then
