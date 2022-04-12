@@ -386,7 +386,30 @@ check_zss_pc_bit() {
   fi
 }
 
+process_zss_plugin_install() {
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+    print_trace "- Checking for zss plugins and verifying them"
+    component_dir="${1}"
+
+    iterator_index=0
+    appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+    while [ -n "${appfw_plugin_path}" ]; do
+      cd "${component_dir}"
+
+      # apply values if appfw_plugin_path has variables
+      appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
+      appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
+
+      check_zss_pc_bit "${appfw_plugin_path}"
+
+      iterator_index=`expr $iterator_index + 1`
+      appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
+    done
+  fi
+}
+
 process_component_appfw_plugin() {
+  print_trace "- Starting appfw plugin configure check"
   component_dir="${1}"
 
   all_succeed=true
@@ -399,33 +422,30 @@ process_component_appfw_plugin() {
     appfw_plugin_path=$(parse_string_vars "${appfw_plugin_path}")
     appfw_plugin_path=$(cd "${appfw_plugin_path}"; pwd)
 
-    check_zss_pc_bit "${appfw_plugin_path}"
-
-    if [ ! -r "${appfw_plugin_path}" ]; then
-      print_error "App Framework plugin directory ${appfw_plugin_path} is not accessible"
-      all_succeed=false
-      break
-    fi
     if [ ! -r "${appfw_plugin_path}/pluginDefinition.json" ]; then
       print_error "App Framework plugin directory ${appfw_plugin_path} does not have pluginDefinition.json"
       all_succeed=false
       break
     fi
-    appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
-    if [ -z "${appfw_plugin_id}" ]; then
-      print_error "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
-      all_succeed=false
-      break
+
+    if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
+      # for containers, copy to workspace/app-server/pluginDirs and run install-app. on zos, this is done at startup.
+      appfw_plugin_id=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".identifier")
+      if [ -z "${appfw_plugin_id}" ]; then
+        print_error "Cannot read identifier from App Framework plugin ${appfw_plugin_path}/pluginDefinition.json"
+        all_succeed=false
+        break
+      fi
+
+      # copy to workspace/app-server/pluginDirs
+      appfw_plugin_workspace_path="${ZWE_zowe_workspaceDirectory}/app-server/pluginDirs/${appfw_plugin_id}"
+      mkdir -p "${appfw_plugin_workspace_path}"
+      cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
+
+      # install app
+      "${ZWE_zowe_runtimeDirectory}/components/app-server/share/zlux-app-server/bin/install-app.sh" "${appfw_plugin_workspace_path}"
+      # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
     fi
-
-    # copy to workspace/app-server/pluginDirs
-    appfw_plugin_workspace_path="${ZWE_zowe_workspaceDirectory}/app-server/pluginDirs/${appfw_plugin_id}"
-    mkdir -p "${appfw_plugin_workspace_path}"
-    cp -r "${appfw_plugin_path}/." "${appfw_plugin_workspace_path}/"
-
-    # install app
-    "${ZWE_zowe_runtimeDirectory}/components/app-server/share/zlux-app-server/bin/install-app.sh" "${appfw_plugin_workspace_path}"
-    # FIXME: do we know if install-app.sh fails. if so, we need to set all_succeed=false
 
     iterator_index=`expr $iterator_index + 1`
     appfw_plugin_path=$(read_component_manifest "${component_dir}" ".appfwPlugins[${iterator_index}].path" 2>/dev/null)
