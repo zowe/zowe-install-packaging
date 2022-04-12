@@ -13,35 +13,35 @@
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
       "version": "~2.0.0-v2.x-staging-zlux-core",
-      "artifact": "*.pax"
+      "artifact": "zlux-core-2.0.0-20220412.214643.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~2.0.0-V2.X-STAGING",
-      "artifact": "*.pax"
+      "version": "~2.0.0-v2.x/staging",
+      "artifact": "sample-angular-app-2.0.0-20220412.214111.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~2.0.0-V2.X-STAGING",
-      "artifact": "*.pax"
+      "version": "~2.0.0-v2.x/staging",
+      "artifact": "sample-iframe-app-2.0.0-20220412.213958.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~2.0.0-V2.X-STAGING",
-      "artifact": "*.pax"
+      "version": "~2.0.0-v2.x/staging",
+      "artifact": "sample-react-app-2.0.0-20220412.214040.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~2.0.0-V2.X-STAGING",
-      "artifact": "*.pax"
+      "version": "~2.0.0-v2.x/staging",
+      "artifact": "tn3270-ng2-2.0.0-20220412.214154.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~2.0.0-V2.X-STAGING",
-      "artifact": "*.pax"
+      "version": "~2.0.0-v2.x/staging",
+      "artifact": "vt-ng2-2.0.0-20220412.214111.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~2.0.0-V2.X-STAGING",
-      "artifact": "*.pax"
+      "version": "~2.0.0-v2.x/staging",
+      "artifact": "zlux-editor-2.0.0-20220412.214233.pax"
     },
     "org.zowe.zss": {
-      "version": "~2.0.0-V2-X-STAGING",
-      "artifact": "*.pax"
+      "version": "~2.0.0-STAGING",
+      "artifact": "zss-2.0.0-staging-148-20220412215824.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "~2.0.0-SNAPSHOT",
