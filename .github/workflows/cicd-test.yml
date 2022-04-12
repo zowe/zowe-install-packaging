@@ -222,8 +222,6 @@ jobs:
         with:
           node-version: '12'
 
-      - run: node -v
-
       - name: '[Prep 2] Cache node modules'
         uses: actions/cache@v2
         with:
