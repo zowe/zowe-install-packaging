@@ -439,7 +439,6 @@ process_component_appfw_plugin() {
   fi
 }
 
-
 ###############################
 # Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
 #
