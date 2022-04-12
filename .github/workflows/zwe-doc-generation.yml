@@ -11,7 +11,7 @@ env:
   DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
   # Will change this to a docs staging branch when v2 is out
   DOCS_SITE_TARGET_BRANCH: v2-doc-branch
-  DOCS_SITE_COMMIT_BRANCH: auto-update-zwe-reference
+  DOCS_SITE_COMMIT_BRANCH: carson-test-zwe-improvements #auto-update-zwe-reference
   ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
 
 jobs:
@@ -32,6 +32,7 @@ jobs:
         run: |
           git config --global user.email "zowe-robot@users.noreply.github.com"
           git config --global user.name "Zowe Robot"
+          git config --global pull.rebase false # configure to merge in changes from remote branches
 
       - name: Clone docs site
         run: git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git --depth 1 --branch ${{ env.DOCS_SITE_TARGET_BRANCH }}
