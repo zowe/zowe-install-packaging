@@ -328,11 +328,7 @@ EOF
 #
 # @param string   component directory
 test_or_set_pc_bit() {
-  echo "********************************************** TEST OR SET PC BIT ****************************" >&2
-
   path="${1}"
-  echo "********************************************** PATH: ${1}" >&2
-  echo $path >&2
 
   testpc=`extattr $path | sed -n '3 p'`
   if [ "$testpc" = "Program controlled = YES" ]; then
@@ -353,10 +349,7 @@ test_or_set_pc_bit() {
 }
 
 check_zss_pc_bit() {
-  echo "********************************************** CHECK ZSS PC BIT ****************************" >&2
   appfw_plugin_path=${1}
-  echo "********************************************** APP FRAMEWORK PLUGIN PATH: ${1}" >&2
-  echo $appfw_plugin_path >&2
   services=$(read_json "${appfw_plugin_path}/pluginDefinition.json" ".dataServices" 2>/dev/null)
   if [ -n "${services}" ]; then
     echo "Checking ZSS services in plugin path=${1}"
@@ -393,7 +386,6 @@ check_zss_pc_bit() {
 }
 
 process_component_appfw_plugin() {
-  echo "********************************************** PROCESS COMPONENT APP FW PLUGIN ****************************" >&2
 
   component_dir="${1}"
 
