@@ -37,7 +37,7 @@ describe('cli list jobs of ZWE*', function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.have.string('Profile created successfully');
+    expect(result.stdout).to.be.empty;
   });
 
   it(`should have an active job ${ZOWE_JOB_NAME}`, async function() {

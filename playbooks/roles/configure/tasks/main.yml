@@ -322,9 +322,24 @@
   raw: cat "{{ zowe_instance_dir }}/zowe.yaml" | grep -v '^ *#' | sed '/^[[:space:]]*$/d'
 
 # ============================================================================
+- name: Set zwe_init_params variables
+  set_fact:
+    zwe_init_params: "--update-config -l \"{{ zowe_install_logs_dir }}\""
+
+- name: Set --security-dry-run or not
+  set_fact:
+    zwe_init_params: "{{ zwe_init_params }} --security-dry-run"
+  when: zowe_configure_security_dry_run
+
+- name: Set --ignore-security-failures or not
+  set_fact:
+    zwe_init_params: "{{ zwe_init_params }} --ignore-security-failures"
+  when: zowe_configure_ignore_security_failures
+
+# ============================================================================
 - name: Init Zowe
   import_role:
     name: zos
     tasks_from: run_zwe
   vars:
-    parameters: "init --update-config -l \"{{ zowe_install_logs_dir }}\""
+    parameters: "init {{ zwe_init_params }}"
