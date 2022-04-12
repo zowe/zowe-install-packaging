@@ -53,8 +53,9 @@ env:
   # constants
   INSTALL_TEST_PATH: tests/installation
   SANITY_TEST_PATH: tests/sanity
-  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
-  DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
+  # FIXME: for next 2 lines, remove '-1' after branch 'staging' changes to 'v1.x/staging'
+  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-1*{branch-name}*.pax
+  DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe-1*{branch-name}*.zip
   DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar
   DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
@@ -233,7 +234,7 @@ jobs:
       - name: '[Prep 3] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - name: '[Prep 4] Validate package.json'
         uses: zowe-actions/shared-actions/validate-package-json@main
@@ -284,7 +285,7 @@ jobs:
               exit 1
             fi
             out=$(jfrog rt search --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[-1].path')
-            if [[ -z "$out" ]]; then
+            if [[ "$out" == "null" ]]; then
               echo -e "${RED}Cannot find the artifact in pattern: $search_pattern associated with $bld_num of $build_name" > /dev/stderr
               exit 1
             fi

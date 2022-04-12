@@ -8,6 +8,7 @@ work_dir_local: .tmp
 # this should list all FMIDs we ever setup during install
 zowe_smpe_knwon_fmids:
 - AZWE001
+- AZWE002
 
 # default install path for SMP/e
 zowe_smpe_default_path: usr/lpp/zowe
