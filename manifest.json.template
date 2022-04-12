@@ -97,9 +97,8 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "~1.27.0-SNAPSHOT",
-      "artifact": "caching-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.27.23-PR-PR-0000-SNAPSHOT",
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
       "version": "~1.27.0-SNAPSHOT",
