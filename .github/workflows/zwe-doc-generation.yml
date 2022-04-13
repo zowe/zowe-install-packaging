@@ -11,7 +11,7 @@ env:
   DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
   # Will change this to a docs staging branch when v2 is out
   DOCS_SITE_TARGET_BRANCH: v2-doc-branch
-  DOCS_SITE_COMMIT_BRANCH: carson-test-zwe-improvements #auto-update-zwe-reference
+  DOCS_SITE_COMMIT_BRANCH: auto-update-zwe-reference
   ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
 
 jobs:
@@ -64,7 +64,7 @@ jobs:
           fi
 
       - name: Create PR if doesn't exist
-       #if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
+        if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
@@ -78,7 +78,7 @@ jobs:
             });
             if (pulls && pulls.length) {
               // PR exists, assume correct one is at index 0
-              console.log(`The pull request has been updated and is at: ${pulls[0].html_url}`);
+              console.log(`>>>>>The pull request has been updated and is at: ${pulls[0].html_url}`);
             } else { // PR does not exist so create one
               const { data: pull } = await github.rest.pulls.create({
                 owner: 'zowe',
@@ -88,5 +88,5 @@ jobs:
                 head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
                 base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
               });
-              console.log(`The pull request is at: ${pull.html_url}`);
+              console.log(`>>>>>A new pull request was created and is at: ${pull.html_url}`);
             }
