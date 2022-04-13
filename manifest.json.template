@@ -103,7 +103,7 @@
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
-      "version": "0.0.8"
+      "version": "2.0.0"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -112,7 +112,7 @@
       "flat": "true"
    },
     "org.zowe.utility_tools": {
-      "version": "0.0.10"
+      "version": "2.0.0"
     },
     "org.zowe.licenses": {
       "version": "1.27.0",
@@ -353,11 +353,11 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v0.0.10",
+        "tag": "v2.0.0",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v0.0.8",
+        "tag": "v2.0.0",
         "destinations": ["Zowe PAX"]
       }]
     },
