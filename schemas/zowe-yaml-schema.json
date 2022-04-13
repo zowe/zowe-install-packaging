@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zowe.org/schemas/v2/server-base",
   "title": "Zowe configuration file",
   "description": "Configuration file for Zowe (zowe.org) version 2.",
   "type": "object",
@@ -556,6 +557,7 @@
       }
     },
     "component": {
+      "$anchor": "zoweComponent",
       "type": "object",
       "properties": {
         "enabled": {
