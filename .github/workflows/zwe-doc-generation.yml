@@ -57,28 +57,30 @@ jobs:
           then 
             echo ">>>>>Changes committed to ${{ env.DOCS_SITE_COMMIT_BRANCH }}, now pushing";
             git push origin ${{ env.DOCS_SITE_COMMIT_BRANCH }}
-            echo "::set-output name=checkPr::true"
+            echo "::set-output name=createPr::true"
           else
             echo ">>>>>No update to documentation";
-            echo "::set-output name=checkPr::false"
+            echo "::set-output name=createPr::false"
           fi
 
       - name: Create PR if doesn't exist
-       #if: ${{ steps.commitChanges.outputs.checkPr == 'true' }}
+       #if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           script: |
-            const pulls = await github.rest.pulls.list({
+            const { data: pulls } = await github.rest.pulls.list({
               owner: 'zowe',
               repo: 'docs-site',
               state: 'open',
+              head: 'zowe:${{ env.DOCS_SITE_COMMIT_BRANCH }}',
               base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
             });
-            // TODO check pulls returned, then filter either by title, or by head - head ideal since can add in body in list request
-            console.log(pulls);
-            if (false) {
-              const res = await github.rest.pulls.create({
+            if (pulls && pulls.length) {
+              // PR exists, assume correct one is at index 0
+              console.log(`The pull request has been updated and is at: ${pulls[0].html_url}`);
+            } else { // PR does not exist so create one
+              const { data: pull } = await github.rest.pulls.create({
                 owner: 'zowe',
                 repo: 'docs-site',
                 title: 'Update zwe server command reference',
@@ -86,5 +88,5 @@ jobs:
                 head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
                 base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
               });
-              console.log(`The pull request is at: ${res.data.html_url}`);
+              console.log(`The pull request is at: ${pull.html_url}`);
             }
