@@ -32,6 +32,7 @@ jobs:
         run: |
           git config --global user.email "zowe-robot@users.noreply.github.com"
           git config --global user.name "Zowe Robot"
+          git config --global pull.rebase false # configure to merge in changes from remote branches
 
       - name: Clone docs site
         run: git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git --depth 1 --branch ${{ env.DOCS_SITE_TARGET_BRANCH }}
@@ -62,18 +63,38 @@ jobs:
             echo "::set-output name=createPr::false"
           fi
 
-      - name: Create pull request
+      - name: Create PR if doesn't exist
         if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           script: |
-            const res = await github.rest.pulls.create({
+            const { data: pulls } = await github.rest.pulls.list({
               owner: 'zowe',
               repo: 'docs-site',
-              title: 'Update zwe server command reference',
-              body: 'Automatic update of the zwe server command reference',
-              head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+              state: 'open',
+              head: 'zowe:${{ env.DOCS_SITE_COMMIT_BRANCH }}',
               base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
             });
-            console.log(`The pull request is at: ${res.data.html_url}`);
+            if (pulls && pulls.length) {
+              const existingPr = pulls[0]; // PR exists, assume correct one is at index 0
+              const repoUrl = '${{ github.server_url }}/${{ github.repository }}';
+              await github.rest.issues.createComment({
+                owner: 'zowe',
+                repo: 'docs-site',
+                issue_number: existingPr.number,
+                body: `This PR has been updated with a new commit due to changes at: ${repoUrl}/tree/${{ github.ref }}/bin
+                      Update by: ${repoUrl}/actions/runs/${{ github.run_id }}`
+              });
+              console.log(`>>>>>The pull request has been updated and is at: ${existingPr.html_url}`);
+            } else { // PR does not exist so create one
+              const { data: pr } = await github.rest.pulls.create({
+                owner: 'zowe',
+                repo: 'docs-site',
+                title: 'Update zwe server command reference',
+                body: 'Automatic update of the zwe server command reference',
+                head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+                base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
+              });
+              console.log(`>>>>>A new pull request was created and is at: ${pr.html_url}`);
+            }
