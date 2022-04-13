@@ -57,24 +57,34 @@ jobs:
           then 
             echo ">>>>>Changes committed to ${{ env.DOCS_SITE_COMMIT_BRANCH }}, now pushing";
             git push origin ${{ env.DOCS_SITE_COMMIT_BRANCH }}
-            echo "::set-output name=createPr::true"
+            echo "::set-output name=checkPr::true"
           else
             echo ">>>>>No update to documentation";
-            echo "::set-output name=createPr::false"
+            echo "::set-output name=checkPr::false"
           fi
 
-      - name: Create pull request
-        if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
+      - name: Create PR if doesn't exist
+       #if: ${{ steps.commitChanges.outputs.checkPr == 'true' }}
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           script: |
-            const res = await github.rest.pulls.create({
+            const pulls = await github.rest.pulls.list({
               owner: 'zowe',
               repo: 'docs-site',
-              title: 'Update zwe server command reference',
-              body: 'Automatic update of the zwe server command reference',
-              head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+              state: 'open',
               base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
             });
-            console.log(`The pull request is at: ${res.data.html_url}`);
+            // TODO check pulls returned, then filter either by title, or by head - head ideal since can add in body in list request
+            console.log(pulls);
+            if (false) {
+              const res = await github.rest.pulls.create({
+                owner: 'zowe',
+                repo: 'docs-site',
+                title: 'Update zwe server command reference',
+                body: 'Automatic update of the zwe server command reference',
+                head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+                base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
+              });
+              console.log(`The pull request is at: ${res.data.html_url}`);
+            }
