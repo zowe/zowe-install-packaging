@@ -15,7 +15,7 @@ print_level0_message "Verify Zowe file fingerprints"
 
 ###############################
 # constants
-tmp_file_prefix=zwe-supoort-verify-fingerprints
+tmp_file_prefix=zwe-support-verify-fingerprints
 ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
 
 clean_up_tmp_files() {
