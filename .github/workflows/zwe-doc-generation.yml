@@ -78,11 +78,13 @@ jobs:
             });
             if (pulls && pulls.length) {
               const existingPr = pulls[0]; // PR exists, assume correct one is at index 0
+              const repoUrl = '${{ github.server_url }}/${{ github.repository }}';
               await github.rest.issues.createComment({
                 owner: 'zowe',
                 repo: 'docs-site',
                 issue_number: existingPr.number,
-                body: 'This PR has been updated with a new commit due to changes at ${{ github.ref }}. GHA: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+                body: `This PR has been updated with a new commit due to changes at: ${repoUrl}/tree/${{ github.ref }}/bin
+                      Update by: ${repoUrl}/actions/runs/${{ github.run_id }}`
               });
               console.log(`>>>>>The pull request has been updated and is at: ${existingPr.html_url}`);
             } else { // PR does not exist so create one
