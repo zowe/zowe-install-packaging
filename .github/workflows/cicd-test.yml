@@ -466,7 +466,7 @@ jobs:
           if [[ -z "${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}" ]]; then
             zowe_cli_artifactory_pattern="${{ env.DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN }}"
             # determine if we shall use libs-snapshot-local or libs-release-local
-            if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
+            if [[ "${{ env.CURRENT_BRANCH }}" =~ ^v([0-9])\.x-rc$ ]] || [[ "${{ env.CURRENT_BRANCH }}" =~ ^v([0-9])\.x-master$ ]] ; then
               zowe_cli_artifactory_pattern=$(echo "$zowe_cli_artifactory_pattern" | sed "s#PLACE_HOLDER#libs-release-local#g")
             else
               zowe_cli_artifactory_pattern=$(echo "$zowe_cli_artifactory_pattern" | sed "s#PLACE_HOLDER#libs-snapshot-local#g")
@@ -546,7 +546,7 @@ jobs:
               processed_zowe_art_bldnum=$(echo "$json_output" | jq -r '.[].props."build.number"[]')
               
               # then get branch name from the build name returned above
-              # build name should be either 'zowe-install-packaging/branchname' (jenkins) or 'zowe-install-packaging :: branchname' (GHA)
+              # build name should be either 'zowe-install-packaging/branchname' (GHA) or 'zowe-install-packaging :: branchname' (Jenkins)
               processed_zowe_art_branchname=$(echo "$processed_zowe_art_bldname" | sed "s|zowe-install-packaging/||g")
               if [[ "$processed_zowe_art_branchname" == "$processed_zowe_art_bldname" ]]; then
                 # means above sed replacement command didn't work, forward slash does not exists, highly likely this build is made from jenkins
@@ -567,8 +567,12 @@ jobs:
 
               # now use processed build name and build number to search the docker artifact associated with it
               if [[ -n "$processed_zowe_art_bldname" ]] && [[ -n "$processed_zowe_art_bldnum" ]] && [[ -n "$processed_zowe_art_branchname" ]]; then
-                if [[ "$processed_zowe_art_branchname" == "master" ]] ; then
-                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#snapshot#g")
+                if [[ "$processed_zowe_art_branchname" =~ ^v([0-9])\.x-master$ ]] ; then
+                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*snapshot#g")
+                elif [[ "$processed_zowe_art_branchname" =~ ^v([0-9])\.x-rc$ ]] ; then
+                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*rc#g")
+                elif [[ "$processed_zowe_art_branchname" =~ ^v([0-9])\.x-staging$ ]] ; then
+                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*staging#g")
                 else
                   processed_zowe_art_branchname=$(echo "$processed_zowe_art_branchname" | sed "s#\/#-#g")
                   zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#$processed_zowe_art_branchname#g")
