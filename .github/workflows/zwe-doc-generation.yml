@@ -77,10 +77,16 @@ jobs:
               base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
             });
             if (pulls && pulls.length) {
-              // PR exists, assume correct one is at index 0
-              console.log(`>>>>>The pull request has been updated and is at: ${pulls[0].html_url}`);
+              const existingPr = pulls[0]; // PR exists, assume correct one is at index 0
+              await github.rest.issues.createComment({
+                owner: 'zowe',
+                repo: 'docs-site',
+                issue_number: existingPr.number,
+                body: 'This PR has been updated with a new commit due to changes at ${{ github.ref }}. GHA: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+              });
+              console.log(`>>>>>The pull request has been updated and is at: ${existingPr.html_url}`);
             } else { // PR does not exist so create one
-              const { data: pull } = await github.rest.pulls.create({
+              const { data: pr } = await github.rest.pulls.create({
                 owner: 'zowe',
                 repo: 'docs-site',
                 title: 'Update zwe server command reference',
@@ -88,5 +94,5 @@ jobs:
                 head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
                 base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
               });
-              console.log(`>>>>>A new pull request was created and is at: ${pull.html_url}`);
+              console.log(`>>>>>A new pull request was created and is at: ${pr.html_url}`);
             }
