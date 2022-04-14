@@ -52,7 +52,7 @@ find . -name ./SMPE          -prune \
     -o -name ./fingerprint   -prune \
     -o -type f -print > "${all_files}"
 if [ ! -f "${all_files}" ]; then
-  print_error "  * Error ZWEL0151E: Failed to create temporary file ${all_files}. Please check permission or volume free space." "" 151
+  print_error "  * Error ZWEL0151E: Failed to create temporary file ${all_files}. Please check permission or volume free space."
   clean_up_tmp_files
   exit 151
 fi
@@ -64,7 +64,7 @@ cust_hashes=$(create_tmp_file "${tmp_file_prefix}")
 result=$(java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils/" HashFiles "${all_files}" | sort > "${cust_hashes}")
 code=$?
 if [ ${code} -eq 1 -o ! -f "${cust_hashes}" ]; then
-  print_error "  * Error ZWEL0151E: Failed to create temporary file ${cust_hashes}. Please check permission or volume free space." "" 151
+  print_error "  * Error ZWEL0151E: Failed to create temporary file ${cust_hashes}. Please check permission or volume free space."
   print_error "  * Exit code: ${code}"
   print_error "  * Output:"
   if [ -n "${result}" ]; then
@@ -84,7 +84,7 @@ while read -r step; do
   print_message "- Find ${step_name} files"
   result=$(comm -${comm_param} "${ZWE_zowe_runtimeDirectory}/fingerprint/RefRuntimeHash-${ZWE_VERSION}.txt" "${cust_hashes}")
   if [ ${code} -eq 1 ]; then
-    print_error "  * Error ZWEL0151E: Failed to compare hashes of fingerprint/RefRuntimeHash-${ZWE_VERSION}.txt and current." "" 151
+    print_error "  * Error ZWEL0151E: Failed to compare hashes of fingerprint/RefRuntimeHash-${ZWE_VERSION}.txt and current."
     print_error "  * Exit code: ${code}"
     print_error "  * Output:"
     if [ -n "${result}" ]; then
