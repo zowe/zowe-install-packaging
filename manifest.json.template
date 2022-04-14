@@ -51,11 +51,13 @@
       "repository": "libs-snapshot-local",
       "artifact": "zss-1.27.0-rc-83-20220111184458.pax"
     },
-    "org.zowe.explorer.jobs": {
-      "version": "1.0.13"
+    "org.zowe.explorer.jobs.jobs-api-package": {
+      "version": "~2.0.1",
+      "artifact": "jobs-api-package-*.zip"
     },
-    "org.zowe.explorer.files": {
-      "version": "1.0.15"
+    "org.zowe.explorer.files.files-api-package": {
+      "version": "~2.0.1",
+      "artifact": "files-api-package-*.zip",
     },
     "org.zowe.explorer-jes": {
       "version": "1.0.20"
