@@ -334,6 +334,7 @@
       "entries": [{
         "repository": "vt-ng2",
         "tag": "v2.0.0-RC1",
+		"destinations": ["Zowe PAX"]
       }]
     },
     {
