@@ -57,7 +57,7 @@
     },
     "org.zowe.explorer.files.files-api-package": {
       "version": "~2.0.1",
-      "artifact": "files-api-package-*.zip",
+      "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
       "version": "1.0.20"
