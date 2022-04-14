@@ -209,7 +209,7 @@ EOT
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
-for component in launcher zlux-core zss apiml-common-lib common-java-lib gateway caching-service metrics-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
+for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension gateway caching-service metrics-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
   component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
   "${ZOWE_ROOT_DIR}/bin/zwe" \
@@ -313,7 +313,7 @@ find . -name ./SMPE             -prune \
     -o -name "./ZWE*"           -prune \
     -o -name ./fingerprint      -prune \
     -o -type f -print > "${BASE_DIR}/fingerprints/files.in"
-java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" > "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
+java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" | sort > "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
 echo "[$SCRIPT_NAME] cleanup fingerprints code"
 rm -fr "${BASE_DIR}/fingerprints"
 

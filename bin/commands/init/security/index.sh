@@ -87,6 +87,7 @@ result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/" \
         > "${tmpfile}")
 code=$?
+chmod 700 "${tmpfile}"
 if [ ${code} -eq 0 ]; then
   print_debug "  * Succeeded"
   print_trace "  * Exit code: ${code}"
@@ -120,6 +121,7 @@ print_message
 
 ###############################
 # submit job
+job_has_failures=
 if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
   print_message "Dry-run mode, security setup is NOT performed on the system."
   print_message "Please submit ${jcllib}(${tmpdsm}) manually."
@@ -128,24 +130,48 @@ else
   jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
   code=$?
   if [ ${code} -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})." "" 161
+    job_has_failures=true
+    if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+      print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${tmpdsm})."
+      # skip wait for job status step
+      jobid=
+    else
+      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})." "" 161
+    fi
   fi
-  print_debug "- job id ${jobid}"
-  jobstate=$(wait_for_job "${jobid}")
-  code=$?
-  if [ ${code} -eq 1 ]; then
-    print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
-  fi
-  jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-  jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-  jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-  if [ ${code} -eq 0 ]; then
-    print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
-  else
-    print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+
+  if [ -n "${jobid}" ]; then
+    print_debug "- job id ${jobid}"
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+      job_has_failures=true
+      if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+        print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
+      else
+        print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
+      fi
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+    if [ ${code} -eq 0 ]; then
+      print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+    else
+      job_has_failures=true
+      if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+        print_error "Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      else
+        print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+      fi
+    fi
   fi
 fi
 
 ###############################
 # exit message
-print_level2_message "Zowe security configurations are applied successfully."
+if [ "${job_has_failures}" = "true" ]; then
+  print_level2_message "Failed to apply Zowe security configurations. Please check job log for details."
+else
+  print_level2_message "Zowe security configurations are applied successfully."
+fi

@@ -1,0 +1,2 @@
+component-name,component|o|string|required||||Component name to be disabled.
+ha-instance|i|string|||||Zowe high availability instance ID from zowe.yaml.

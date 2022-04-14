@@ -40,7 +40,7 @@
     chdir: "{{ zowe_sanity_test_root_dir }}"
   environment:
     ZOWE_ROOT_DIR: "{{ zowe_root_dir }}"
-    ZOWE_INSTANCE_DIR: "{{ zowe_instance_dir }}"
+    ZOWE_WORKSPACE_DIR: "{{ zowe_instance_dir }}/workspace"
     ZOWE_EXTERNAL_HOST: "{{ zowe_external_domain_name }}"
     ZOWE_ZOS_HOST: "{{ zowe_zos_host }}"
     SSH_HOST: "{{ ansible_ssh_host }}"
@@ -54,4 +54,6 @@
     ZOWE_ZLUX_HTTPS_PORT: "{{ zowe_zlux_port }}"
     ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT: "{{ zowe_apiml_gateway_port }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
+    # # this should be commented out for live tests
+    # NODE_DEBUG: "http,https"
   delegate_to: localhost

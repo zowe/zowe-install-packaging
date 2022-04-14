@@ -62,7 +62,7 @@ create_tmp_file() {
   while true ; do
     file="${tmpdir}/${prefix}-${RANDOM}"
     print_trace "    - test ${file}"
-    if [ ! -f "${file}" ]; then
+    if [ ! -e "${file}" ]; then
       print_trace "    - good"
       echo "${file}"
       break

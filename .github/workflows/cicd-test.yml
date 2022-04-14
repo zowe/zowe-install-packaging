@@ -54,8 +54,7 @@ env:
   SANITY_TEST_PATH: tests/sanity
   DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
   DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
-  DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*server-bundle.amd64*{branch-name}*.tar
-  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
+  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/next/zowe-cli-package-next-*.zip
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # can be overwritten, adjusted by DevOps only
@@ -213,7 +212,12 @@ jobs:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
 
-      - name: '[Prep 2] Cache node modules'
+      - name: '[Prep 2] Setup Node'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '12'
+
+      - name: '[Prep 3] Cache node modules'
         uses: actions/cache@v2
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
@@ -225,18 +229,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-cache-node-modules-
 
-      - name: '[Prep 3] Setup jFrog CLI'
+      - name: '[Prep 4] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - name: '[Prep 4] Validate package.json'
+      - name: '[Prep 5] Validate package.json'
         uses: zowe-actions/shared-actions/validate-package-json@main
 
-      - name: '[Prep 5] Prepare workflow'
+      - name: '[Prep 6] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
 
-      - name: '[Prep 6] Additional Prep work'
+      - name: '[Prep 7] Additional Prep work'
         id: more-test-prep
         run: |
           RED='\033[0;31m'
@@ -278,8 +282,8 @@ jobs:
               echo -e "${RED}In jfrog_search_build function, build number is not provided" > /dev/stderr
               exit 1
             fi
-            out=$(jfrog rt search --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[].path')
-            if [[ -z "$out" ]]; then
+            out=$(jfrog rt search --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[-1].path')
+            if [[ "$out" == "null" ]]; then
               echo -e "${RED}Cannot find the artifact in pattern: $search_pattern associated with $bld_num of $build_name" > /dev/stderr
               exit 1
             fi
@@ -362,8 +366,12 @@ jobs:
 
           # note that below if-else does not always get to run the sed part, as we only replace if {branch-name} exists in the pattern,
           #   which isn't the case for customized path. In either case, $zowe_artifactory_pattern_final should be filled
-          if [[ "$CURRENT_BRANCH_NEW" == "master" ]] ; then
-            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#snapshot#g")
+          if [[ "$CURRENT_BRANCH_NEW" =~ ^v([0-9])\.x-master$ ]] ; then
+            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*snapshot#g")
+          elif [[ "$CURRENT_BRANCH_NEW" =~ ^v([0-9])\.x-staging$ ]] ; then
+            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*staging#g")
+          elif [[ "$CURRENT_BRANCH_NEW" =~ ^v([0-9])\.x-rc$ ]] ; then
+            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#${BASH_REMATCH[1]}.*rc#g")
           else
             zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
           fi
@@ -725,10 +733,19 @@ jobs:
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
-      # - name: '[After Test] Merge Report'
-      #   if: always()
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: npm run merge-reports
+      - name: '[After Test 1] Prepare to upload test report'
+        if: always()
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: | 
+          echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
+          echo TEST_NAME=$(echo "${{ matrix.test }}" | sed 's#.*\/##g') >> $GITHUB_ENV
+
+      - name: '[After Test 2] Upload test report'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
+          path: ${{ env.INSTALL_TEST_PATH }}/reports/
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
         uses: actions/github-script@v5

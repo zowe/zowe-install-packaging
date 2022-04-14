@@ -111,6 +111,7 @@ else
           sed "s#^CONFIG=.*\$#CONFIG=${ZWE_CLI_PARAMETER_CONFIG}#" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -150,6 +151,7 @@ else
           sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -189,6 +191,7 @@ else
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
