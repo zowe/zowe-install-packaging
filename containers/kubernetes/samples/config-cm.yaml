@@ -82,7 +82,7 @@ data:
     # specify the path where the Soft-Index store will keep its data files for the Infinispan Soft-Index Cache Store
     ZWE_CACHING_SERVICE_INFINISPAN_PERSISTENCE_DATALOCATION=data
     # Infinispan/Jgroup TCPPING property that specifies the list of cluster nodes (members)
-    ZWE_CACHING_SERVICE_INFINISPAN_INITIALHOSTS="${ZOWE_EXPLORER_HOST}[7098]"
+    ZWE_CACHING_SERVICE_INFINISPAN_INITIALHOSTS="${ZOWE_EXPLORER_HOST}[${ZWE_CACHING_SERVICE_INFINISPAN_JGROUPS_BIND_PORT}]"
 
     # explorer variables
     JOBS_API_PORT=8545
