@@ -97,6 +97,11 @@ print_message
 
 ###############################
 # TODO: job log
+# To avoid of using SDSF, we used to use TSO output command to export job log
+# but it always fails with below error for me:
+#   IKJ56328I JOB ZWE1SV REJECTED - JOBNAME MUST BE YOUR USERID OR MUST START WITH YOUR USERID
+# REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=subcommands-output-command
+# REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=ikj-ikj56328i
 
 ###############################
 # Collect instance logs
