@@ -71,27 +71,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "1.27.4",
+      "version": "2.0.8",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "1.27.4",
+      "version": "2.0.8",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "1.27.4",
+      "version": "2.0.8",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "1.27.4",
+      "version": "2.0.8",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "1.27.4",
+      "version": "2.0.8",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "1.27.4",
+      "version": "2.0.8",
       "artifact": "apiml-common-lib-*.zip"
     },            
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -99,7 +99,7 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "1.27.4",
+      "version": "2.0.8",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
@@ -131,7 +131,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.27.4",
+        "tag": "v2.0.8",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -387,23 +387,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "1.27.4-ubuntu"
+      "tag" : "2.0.8-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "1.27.4-ubuntu"
+      "tag" : "2.0.8-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "1.27.4-ubuntu"
+      "tag" : "2.0.8-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "1.27.4-ubuntu"
+      "tag" : "2.0.8-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
