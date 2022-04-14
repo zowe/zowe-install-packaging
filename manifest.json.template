@@ -58,13 +58,13 @@
       "version": "1.0.15"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.20"
+      "version": "2.0.0"
     },
     "org.zowe.explorer-mvs": {
-      "version": "1.0.18"
+      "version": "2.0.0"
     },
     "org.zowe.explorer-uss": {
-      "version": "1.0.19"
+      "version": "2.0.0"
     },
     "org.zowe.explorer-ip": {
       "version": "1.0.0",
