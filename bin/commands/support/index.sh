@@ -118,6 +118,7 @@ curr_pwd=$(pwd)
 cd "${tmp_dir}"
 pax -w -v -o saveext -f "${tmp_pax}" .
 compress "${tmp_pax}"
+chmod 700 "${tmp_pax}"*
 cd "${curr_pwd}"
 rm -fr "${tmp_dir}"
 print_message
