@@ -74,15 +74,15 @@
     when: zowe_instance_dir is none 
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for loadbalancer service. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} > {{ work_dir_remote }}/config_secret.yaml
+      {{ zowe_instance_dir }}/bin/zwe migrate for kubernetes -s --domains {{ k8s_list_domain_ip }} --config {{ zowe_instance_dir }}/zowe.yaml> {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "loadbalancer" and k8s_networking != "route"
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for OpenShift. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 443 > {{ work_dir_remote }}/config_secret.yaml
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -s --domains {{ k8s_list_domain_ip }}  --config {{ zowe_instance_dir }}/zowe.yaml -e 443 > {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "loadbalancer" and k8s_networking == "route"
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for nodeport service. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -q -x {{ k8s_list_domain_ip }} -e 32554 > {{ work_dir_remote }}/config_secret.yaml
+      {{ zowe_instance_dir }}/bin/utils/convert-for-k8s.sh -s --domains {{ k8s_list_domain_ip }}  --config {{ zowe_instance_dir }}/zowe.yaml -e 32554 > {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "nodeport"
   - name: Copy the created ConfigMap & Secret to local system 
     delegate_to: localhost
@@ -226,10 +226,10 @@
       src: ../containers/kubernetes/samples/openshift/discovery-route.yaml
     when: k8s_networking|lower == "route"
 
-  - name: Find all the deployment files in the workloads instance-env
+  - name: Find all the deployment files in the workloads
     delegate_to: localhost
     find:
-      paths: ../containers/kubernetes/workloads/instance-env/
+      paths: ../containers/kubernetes/workloads/
       file_type: file
       recurse: yes
     register: k8s_manifests
